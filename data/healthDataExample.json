@@ -1,0 +1,424 @@
+{
+  "bodyFatRecords": [
+    {
+      "metadata": {
+        "recordingMethod": 0,
+        "device": 0,
+        "clientRecordVersion": 0,
+        "dataOrigin": "com.google.android.apps.fitness",
+        "clientRecordId": null,
+        "lastModifiedTime": "2024-05-26T09:17:38.907Z",
+        "id": "27db6789-3c30-4d37-89b2-1438d0fe3499"
+      },
+      "percentage": 19.899999618530273,
+      "time": "2024-05-26T09:12:00Z"
+    }
+  ],
+  "heightRecords": [
+    {
+      "height": {
+        "inInches": 70.86613985497182,
+        "inMiles": 0.0011184708963402912,
+        "inFeet": 5.905511654580985,
+        "inKilometers": 0.0017999999523162843,
+        "inMeters": 1.7999999523162842
+      },
+      "metadata": {
+        "recordingMethod": 0,
+        "device": 0,
+        "clientRecordVersion": 0,
+        "dataOrigin": "com.google.android.apps.fitness",
+        "clientRecordId": null,
+        "lastModifiedTime": "2024-06-24T08:13:18.358Z",
+        "id": "b13204e6-900d-482d-92df-487e30dd0d89"
+      },
+      "time": "2024-06-24T07:42:00Z"
+    }
+  ],
+  "latest": {
+    "dataId": "b13204e6-900d-482d-92df-487e30dd0d89",
+    "fatPercentage": 18.799999237060547,
+    "height": 1.7999999523162842,
+    "macros": {
+      "totalCalories": 77992.79500000001,
+      "totalCarbs": 7830.341117934917,
+      "totalProtein": 6234.805802542635,
+      "totalSaturatedFat": 979.2768661750154,
+      "totalTransFat": 0
+    },
+    "unitSystem": "metric",
+    "weight": 85.4000015258789
+  },
+  "nutritionRecords": [
+    {
+      "name": "Brocolli",
+      "mealType": 3,
+      "zinc": {
+        "inPounds": 0,
+        "inOunces": 0,
+        "inMicrograms": 0,
+        "inGrams": 0,
+        "inMilligrams": 0,
+        "inKilograms": 0
+      },
+      "vitaminK": {
+        "inPounds": 0,
+        "inOunces": 0,
+        "inMicrograms": 0,
+        "inGrams": 0,
+        "inMilligrams": 0,
+        "inKilograms": 0
+      },
+      "vitaminC": {
+        "inPounds": 0,
+        "inOunces": 0,
+        "inMicrograms": 0,
+        "inGrams": 0,
+        "inMilligrams": 0,
+        "inKilograms": 0
+      },
+      "vitaminB12": {
+        "inPounds": 0,
+        "inOunces": 0,
+        "inMicrograms": 0,
+        "inGrams": 0,
+        "inMilligrams": 0,
+        "inKilograms": 0
+      },
+      "vitaminA": {
+        "inPounds": 0,
+        "inOunces": 0,
+        "inMicrograms": 0,
+        "inGrams": 0,
+        "inMilligrams": 0,
+        "inKilograms": 0
+      },
+      "unsaturatedFat": {
+        "inPounds": 0,
+        "inOunces": 0,
+        "inMicrograms": 0,
+        "inGrams": 0,
+        "inMilligrams": 0,
+        "inKilograms": 0
+      },
+      "vitaminE": {
+        "inPounds": 0,
+        "inOunces": 0,
+        "inMicrograms": 0,
+        "inGrams": 0,
+        "inMilligrams": 0,
+        "inKilograms": 0
+      },
+      "totalFat": {
+        "inPounds": 0.0016975593899650472,
+        "inOunces": 0.027160953233423355,
+        "inMicrograms": 769999.9869100001,
+        "inGrams": 0.76999998691,
+        "inMilligrams": 769.9999869100001,
+        "inKilograms": 0.0007699999869100001
+      },
+      "totalCarbohydrate": {
+        "inPounds": 0.0019400679360854329,
+        "inOunces": 0.031041090399061437,
+        "inMicrograms": 880000.0130900001,
+        "inGrams": 0.8800000130900001,
+        "inMilligrams": 880.00001309,
+        "inKilograms": 0.00088000001309
+      },
+      "thiamin": {
+        "inPounds": 0,
+        "inOunces": 0,
+        "inMicrograms": 0,
+        "inGrams": 0,
+        "inMilligrams": 0,
+        "inKilograms": 0
+      },
+      "selenium": {
+        "inPounds": 0,
+        "inOunces": 0,
+        "inMicrograms": 0,
+        "inGrams": 0,
+        "inMilligrams": 0,
+        "inKilograms": 0
+      },
+      "protein": {
+        "inPounds": 0.00727525465210096,
+        "inOunces": 0.11640408726496958,
+        "inMicrograms": 3300000.0000000005,
+        "inGrams": 3.3000000000000003,
+        "inMilligrams": 3300,
+        "inKilograms": 0.0033000000000000004
+      },
+      "polyunsaturatedFat": {
+        "inPounds": 0,
+        "inOunces": 0,
+        "inMicrograms": 0,
+        "inGrams": 0,
+        "inMilligrams": 0,
+        "inKilograms": 0
+      },
+      "vitaminB6": {
+        "inPounds": 0,
+        "inOunces": 0,
+        "inMicrograms": 0,
+        "inGrams": 0,
+        "inMilligrams": 0,
+        "inKilograms": 0
+      },
+      "pantothenicAcid": {
+        "inPounds": 0,
+        "inOunces": 0,
+        "inMicrograms": 0,
+        "inGrams": 0,
+        "inMilligrams": 0,
+        "inKilograms": 0
+      },
+      "niacin": {
+        "inPounds": 0,
+        "inOunces": 0,
+        "inMicrograms": 0,
+        "inGrams": 0,
+        "inMilligrams": 0,
+        "inKilograms": 0
+      },
+      "sugar": {
+        "inPounds": 0.0012125424420168268,
+        "inOunces": 0.019400681210828264,
+        "inMicrograms": 550000.0000000001,
+        "inGrams": 0.55,
+        "inMilligrams": 550,
+        "inKilograms": 0.00055
+      },
+      "monounsaturatedFat": {
+        "inPounds": 0,
+        "inOunces": 0,
+        "inMicrograms": 0,
+        "inGrams": 0,
+        "inMilligrams": 0,
+        "inKilograms": 0
+      },
+      "calcium": {
+        "inPounds": 0,
+        "inOunces": 0,
+        "inMicrograms": 0,
+        "inGrams": 0,
+        "inMilligrams": 0,
+        "inKilograms": 0
+      },
+      "iodine": {
+        "inPounds": 0,
+        "inOunces": 0,
+        "inMicrograms": 0,
+        "inGrams": 0,
+        "inMilligrams": 0,
+        "inKilograms": 0
+      },
+      "molybdenum": {
+        "inPounds": 0,
+        "inOunces": 0,
+        "inMicrograms": 0,
+        "inGrams": 0,
+        "inMilligrams": 0,
+        "inKilograms": 0
+      },
+      "vitaminD": {
+        "inPounds": 0,
+        "inOunces": 0,
+        "inMicrograms": 0,
+        "inGrams": 0,
+        "inMilligrams": 0,
+        "inKilograms": 0
+      },
+      "manganese": {
+        "inPounds": 0,
+        "inOunces": 0,
+        "inMicrograms": 0,
+        "inGrams": 0,
+        "inMilligrams": 0,
+        "inKilograms": 0
+      },
+      "magnesium": {
+        "inPounds": 0,
+        "inOunces": 0,
+        "inMicrograms": 0,
+        "inGrams": 0,
+        "inMilligrams": 0,
+        "inKilograms": 0
+      },
+      "transFat": {
+        "inPounds": 0,
+        "inOunces": 0,
+        "inMicrograms": 0,
+        "inGrams": 0,
+        "inMilligrams": 0,
+        "inKilograms": 0
+      },
+      "folicAcid": {
+        "inPounds": 0,
+        "inOunces": 0,
+        "inMicrograms": 0,
+        "inGrams": 0,
+        "inMilligrams": 0,
+        "inKilograms": 0
+      },
+      "copper": {
+        "inPounds": 0,
+        "inOunces": 0,
+        "inMicrograms": 0,
+        "inGrams": 0,
+        "inMilligrams": 0,
+        "inKilograms": 0
+      },
+      "iron": {
+        "inPounds": 0,
+        "inOunces": 0,
+        "inMicrograms": 0,
+        "inGrams": 0,
+        "inMilligrams": 0,
+        "inKilograms": 0
+      },
+      "saturatedFat": {
+        "inPounds": 0,
+        "inOunces": 0,
+        "inMicrograms": 0,
+        "inGrams": 0,
+        "inMilligrams": 0,
+        "inKilograms": 0
+      },
+      "chromium": {
+        "inPounds": 0,
+        "inOunces": 0,
+        "inMicrograms": 0,
+        "inGrams": 0,
+        "inMilligrams": 0,
+        "inKilograms": 0
+      },
+      "caffeine": {
+        "inPounds": 0,
+        "inOunces": 0,
+        "inMicrograms": 0,
+        "inGrams": 0,
+        "inMilligrams": 0,
+        "inKilograms": 0
+      },
+      "cholesterol": {
+        "inPounds": 0,
+        "inOunces": 0,
+        "inMicrograms": 0,
+        "inGrams": 0,
+        "inMilligrams": 0,
+        "inKilograms": 0
+      },
+      "phosphorus": {
+        "inPounds": 0,
+        "inOunces": 0,
+        "inMicrograms": 0,
+        "inGrams": 0,
+        "inMilligrams": 0,
+        "inKilograms": 0
+      },
+      "metadata": {
+        "recordingMethod": 0,
+        "device": 0,
+        "clientRecordVersion": 0,
+        "dataOrigin": "com.sillens.shapeupclub",
+        "clientRecordId": null,
+        "lastModifiedTime": "2024-05-25T20:09:18.084Z",
+        "id": "cb72768c-0fd8-496a-9828-2f91c60c2367"
+      },
+      "chloride": {
+        "inPounds": 0,
+        "inOunces": 0,
+        "inMicrograms": 0,
+        "inGrams": 0,
+        "inMilligrams": 0,
+        "inKilograms": 0
+      },
+      "energy": {
+        "inKilocalories": 29.700000000000003,
+        "inKilojoules": 124.26480001958414,
+        "inJoules": 124264.80001958415,
+        "inCalories": 29700.000000000004
+      },
+      "folate": {
+        "inPounds": 0,
+        "inOunces": 0,
+        "inMicrograms": 0,
+        "inGrams": 0,
+        "inMilligrams": 0,
+        "inKilograms": 0
+      },
+      "biotin": {
+        "inPounds": 0,
+        "inOunces": 0,
+        "inMicrograms": 0,
+        "inGrams": 0,
+        "inMilligrams": 0,
+        "inKilograms": 0
+      },
+      "sodium": {
+        "inPounds": 0.00004850169768067307,
+        "inOunces": 0.0007760272484331306,
+        "inMicrograms": 22000.000000000004,
+        "inGrams": 0.022000000000000002,
+        "inMilligrams": 22,
+        "inKilograms": 0.000022000000000000003
+      },
+      "riboflavin": {
+        "inPounds": 0,
+        "inOunces": 0,
+        "inMicrograms": 0,
+        "inGrams": 0,
+        "inMilligrams": 0,
+        "inKilograms": 0
+      },
+      "dietaryFiber": {
+        "inPounds": 0.00727525465210096,
+        "inOunces": 0.11640408726496958,
+        "inMicrograms": 3300000.0000000005,
+        "inGrams": 3.3000000000000003,
+        "inMilligrams": 3300,
+        "inKilograms": 0.0033000000000000004
+      },
+      "endTime": "2024-05-25T20:09:18.076Z",
+      "energyFromFat": {
+        "inKilocalories": 0,
+        "inKilojoules": 0,
+        "inJoules": 0,
+        "inCalories": 0
+      },
+      "potassium": {
+        "inPounds": 0,
+        "inOunces": 0,
+        "inMicrograms": 0,
+        "inGrams": 0,
+        "inMilligrams": 0,
+        "inKilograms": 0
+      },
+      "startTime": "2024-05-25T20:09:18.075Z"
+    }
+  ],
+  "totalCaloriesBurnedRecords": [],
+  "weightRecords": [
+    {
+      "weight": {
+        "inPounds": 193.1249383099656,
+        "inOunces": 3089.999353573574,
+        "inMicrograms": 87599998474.1211,
+        "inGrams": 87599.9984741211,
+        "inMilligrams": 87599998.4741211,
+        "inKilograms": 87.5999984741211
+      },
+      "metadata": {
+        "recordingMethod": 0,
+        "device": 0,
+        "clientRecordVersion": 0,
+        "dataOrigin": "com.google.android.apps.fitness",
+        "clientRecordId": null,
+        "lastModifiedTime": "2024-05-26T09:17:40.059Z",
+        "id": "9db0dcd1-2a14-4e3c-b2aa-36f6580064d7"
+      },
+      "time": "2024-05-26T09:12:00Z"
+    }
+  ]
+}
