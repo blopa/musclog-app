@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/blopa/musclog-app/8c92a80baeea089d655817878d45a9b2d5ff2f67/assets/images/adaptive-icon.png" width="20%" alt="Musclog-logo">
+  <img src="https://raw.githubusercontent.com/blopa/musclog-app/main/assets/images/icon.png" width="20%" alt="Musclog-logo">
 </p>
 <p align="center">
     <h1 align="center">Musclog - Lift, Log, Repeat</h1>
@@ -63,19 +63,19 @@ Musclog isn’t just another workout tracker; it’s your personal fitness compa
 
 #####  Table of Contents
 
-- [ Overview](#-overview)
-- [ Features](#-features)
-- [ Repository Structure](#-repository-structure)
-- [ Modules](#-modules)
-- [ Getting Started](#-getting-started)
-  - [ Prerequisites](#-prerequisites)
-  - [ Installation](#-installation)
-  - [ Usage](#-usage)
-  - [ Tests](#-tests)
-- [ Project Roadmap](#-project-roadmap)
-- [ Contributing](#-contributing)
-- [ License](#-license)
-- [ Resources](#-resources)
+- [ Overview](#overview)
+- [ Features](#features)
+- [ Repository Structure](#repository-structure)
+- [ Modules](#modules)
+- [ Getting Started](#getting-started)
+  - [ Prerequisites](#prerequisites)
+  - [ Installation](#installation)
+  - [ Usage](#usage)
+  - [ Tests](#tests)
+- [ Project Roadmap](#project-roadmap)
+- [ Contributing](#contributing)
+- [ License](#license)
+- [ Resources](#resources)
 
 ---
 
