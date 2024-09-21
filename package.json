@@ -1,11 +1,21 @@
 {
-  "name": "musclog-app",
+  "name": "logger",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "main": "expo/AppEntry.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web"
   },
-  "author": "",
-  "license": "MIT"
+  "dependencies": {
+    "expo": "~51.0.28",
+    "expo-status-bar": "~1.12.1",
+    "react": "18.2.0",
+    "react-native": "0.74.5"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.0"
+  },
+  "private": true
 }
