@@ -21,6 +21,9 @@
 - https://medium.com/@uncledev/local-push-notifications-in-react-native-using-expo-without-a-backend-c14114faed0f
 - https://docs.expo.dev/versions/latest/sdk/notifications/#present-the-notification-to-the-user
 
+## BLE
+- https://stormotion.io/blog/how-to-create-an-app-for-fitness-devices-in-react-native/
+
 ## Roadmap for Production
 - Make current workout buttons more cute
 - Add more feature to the chat
