@@ -482,12 +482,12 @@ The **Musclog** software project is an interactive fitness application designed 
 
 <details closed><summary>lang.locales</summary>
 
-| File | Summary |
-| --- | --- |
-| [pt-br.json](https://github.com/blopa/musclog-app/lang/locales/pt-br.json) | User Profiles and MetricsIt allows users to create and view personalized profiles, manage their workout data, and track metrics like user measurements and nutrition, ensuring a tailored fitness experience.-**Workout ManagementThe framework supports creating, scheduling, and reviewing workouts, empowering users to maintain an organized workout regimen.-**Dashboards and InsightsIt includes dashboard views that provide users with insights into their workouts, metrics, and recent activities, enhancing user engagement and motivation.-**User InteractionBy facilitating user-generated content and promoting interaction, this code enhances the overall user experience in the fitness domain.Overall, this code file plays a vital role in the architecture of the `Musclog` repository by connecting various functionalities that support users in their fitness journeys, thereby fostering an interactive and personalized experience. |
-| [en-us.json](https://github.com/blopa/musclog-app/lang/locales/en-us.json) | User InteractionThe various components allow users to create and manage personal workouts, exercises, and track performance metrics seamlessly, enhancing user engagement and experience.2. **Data VisualizationComponents such as userMetricsCharts are designed to present workout data and metrics visually, making it easier for users to analyze their progress and make informed fitness decisions.3. **Dashboard FunctionalityThe dashboard and related components provide an overview of a user's fitness journey, consolidating various data points into a single, accessible interface.4. **Customization and SettingsThe presence of settings and profile management features signal a focus on personalized user experiences, allowing users to tailor the application to their individual fitness goals and preferences.Overall, this code file plays a crucial role in the overarching architecture of the `Musclog` repository by promoting an organized and user-centric approach to fitness tracking and management. |
-| [es-es.json](https://github.com/blopa/musclog-app/lang/locales/es-es.json) | User-Centric DesignThe components like `createWorkout.tsx` and `dashboard.tsx` allow users to create, view, and manage their workouts effortlessly, promoting an intuitive user experience.2. **Data ManagementModules such as `listUserMetrics.tsx` and `createUserMeasurements.tsx` facilitate the input and visualization of user metrics, which is essential for personal fitness tracking.3. **Integration of FunctionalitiesThe presence of components for both workout scheduling (`scheduleWorkout.tsx`) and nutrition tracking (`createUserNutrition.tsx`) indicates a holistic approach to user fitness, ensuring all aspects of health are considered.4. **Dynamic Content LoadingThe `+html.tsx` and `_layout.tsx` files suggest a structure that supports dynamic content rendering, enhancing performance and responsiveness throughout the user interface.Collectively, these features contribute to a robust application architecture that prioritizes user engagement and comprehensive fitness management. |
-| [nl-nl.json](https://github.com/blopa/musclog-app/lang/locales/nl-nl.json) | The code file in question is part of the `Musclog/` repository, which is designed to facilitate a comprehensive workout management system. Its primary purpose revolves around providing users with the ability to track, create, and analyze various aspects of their fitness routines. Key features of this code file include user interaction with workout data, such as creating and listing exercises, tracking user measurements and nutrition, and accessing workout history. The structure also supports a dashboard for visual insights into user progress, enhancing the user experience by integrating various functionalities within a cohesive layout.Overall, this code contributes significantly to the repositorys architecture by promoting a user-friendly interface and ensuring seamless navigation through workout-related functionalities, thereby encouraging users to engage more consistently with their fitness goals. |
+| File                                                                       | Summary                          |
+|----------------------------------------------------------------------------|----------------------------------|
+| [pt-br.json](https://github.com/blopa/musclog-app/lang/locales/pt-br.json) | File for Portuguese translations |
+| [en-us.json](https://github.com/blopa/musclog-app/lang/locales/en-us.json) | File for English translations    |
+| [es-es.json](https://github.com/blopa/musclog-app/lang/locales/es-es.json) | File for Spanish translations    |
+| [nl-nl.json](https://github.com/blopa/musclog-app/lang/locales/nl-nl.json) | File for Dutch translations      |
 
 </details>
 
@@ -497,11 +497,9 @@ The **Musclog** software project is an interactive fitness application designed 
 
 ###  Prerequisites
 
-**TypeScript**: `version 5.6.2`
+**Node**: `version 21`
 
 ###  Installation
-
-Build the project from source:
 
 1. Clone the Musclog repository:
 ```sh
