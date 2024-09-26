@@ -3,7 +3,7 @@
     "name": "Musclog - Lift, Log, Repeat",
     "slug": "logger",
     "jsEngine": "hermes",
-    "version": "1.1.1",
+    "version": "1.1.2",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "musclog",
@@ -16,11 +16,11 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.werules.logger",
-      "buildNumber": "48"
+      "buildNumber": "49"
     },
     "android": {
       "package": "com.werules.logger",
-      "versionCode": 48,
+      "versionCode": 49,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -45,9 +45,6 @@
         "android.permission.health.READ_LEAN_BODY_MASS",
         "android.permission.health.READ_BODY_FAT",
         "android.permission.health.READ_HEALTH_DATA_HISTORY",
-        "android.permission.health.READ_MENSTRUATION",
-        "android.permission.health.READ_INTERMENSTRUAL_BLEEDING",
-        "android.permission.health.READ_OVULATION_TEST",
         "android.permission.health.READ_BASAL_METABOLIC_RATE",
         "android.permission.health.READ_NUTRITION"
       ]
