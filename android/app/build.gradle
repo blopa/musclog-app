@@ -118,6 +118,7 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 49
         versionName "1.1.2"
+        manifestPlaceholders = [appAuthRedirectScheme: "musclog"]
     }
     signingConfigs {
         debug {
