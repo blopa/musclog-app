@@ -14,10 +14,7 @@
     },
     "production": {
       "distribution": "store",
-      "channel": "default",
-      "env": {
-        "EXPO_PUBLIC_ENCRYPTED_GEMINI_API_KEY": "EXPO_PUBLIC_ENCRYPTED_GEMINI_API_KEY"
-      }
+      "channel": "default"
     }
   },
   "submit": {
