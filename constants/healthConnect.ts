@@ -11,9 +11,13 @@ export const NEEDED_PERMISSIONS = [
     { accessType: 'read', recordType: 'Steps' },
     { accessType: 'read', recordType: 'TotalCaloriesBurned' },
     { accessType: 'read', recordType: 'Weight' },
-    { accessType: 'read', recordType: 'MenstruationFlow' },
-    { accessType: 'read', recordType: 'MenstruationPeriod' },
-    { accessType: 'read', recordType: 'OvulationTest' },
+    // TODO enable when menstrual tracking is implemented:
+    // "android.permission.health.READ_MENSTRUATION",
+    // "android.permission.health.READ_INTERMENSTRUAL_BLEEDING",
+    // "android.permission.health.READ_OVULATION_TEST",
+    // { accessType: 'read', recordType: 'MenstruationFlow' },
+    // { accessType: 'read', recordType: 'MenstruationPeriod' },
+    // { accessType: 'read', recordType: 'OvulationTest' },
     { accessType: 'read', recordType: 'BasalMetabolicRate' },
     // { accessType: 'read', recordType: 'DataHistory' }, // TODO what is the type of this record?
 ] as Permission[];
