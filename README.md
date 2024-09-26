@@ -1,5 +1,7 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/blopa/musclog-app/main/assets/images/icon.png" width="20%" alt="Musclog-logo">
+    <a href="https://play.google.com/store/apps/details?id=com.werules.logger">
+        <img src="https://raw.githubusercontent.com/blopa/musclog-app/main/assets/images/icon.png" width="20%" alt="Musclog-logo">
+    </a>
 </p>
 <p align="center">
     <h1 align="center">Musclog - Lift, Log, Repeat</h1>
@@ -586,8 +588,8 @@ Contributions are welcome! Here are several ways you can contribute:
 <summary>Contributor Graph</summary>
 <br>
 <p align="left">
-   <a href="https://LOCAL{/Projects/Musclog/}graphs/contributors">
-      <img src="https://contrib.rocks/image?repo=Projects/Musclog">
+   <a href="https://github.com/blopa/musclog-app/graphs/contributors">
+      <img src="https://contrib.rocks/image?repo=blopa/musclog-app">
    </a>
 </p>
 </details>
