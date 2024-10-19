@@ -49,7 +49,7 @@
   { "name": "Hip Adduction Machine", "muscleGroup": "legs", "type": "machine", "description": "Een machine oefening die de binnenkant van de dijen richt door de benen naar elkaar toe te bewegen." },
   { "name": "Cable Face Pull", "muscleGroup": "shoulders", "type": "isolation", "description": "Een schouderoefening die de achterste schouderspieren richt door een kabelattachment naar het gezicht te trekken." },
   { "name": "Incline Dumbbell Fly", "muscleGroup": "chest", "type": "isolation", "description": "Een borst oefening uitgevoerd op een schuine bank die de bovenkant van de borst richt." },
-  { "name": "Dips", "muscleGroup": "Triceps", "type": "bodyweight", "description": "Een oefening voor de borst en triceps waarbij je je lichaam laat zakken en optilt met behulp van parallelle stangen." },
+  { "name": "Dips", "muscleGroup": "arms", "type": "bodyweight", "description": "Een oefening voor de borst en triceps waarbij je je lichaam laat zakken en optilt met behulp van parallelle stangen." },
   { "name": "Push-Up", "muscleGroup": "chest", "type": "bodyweight", "description": "Een oefening voor de borst, schouders en triceps waarbij je je lichaam van de grond omhoog duwt." },
   { "name": "Plank", "muscleGroup": "core", "type": "bodyweight", "description": "Een oefening voor de core waarbij je een opdrukpositie vasthoudt voor een bepaalde tijd." },
   { "name": "Russian Twist", "muscleGroup": "core", "type": "bodyweight", "description": "Een schuine oefening waarbij je je torso van de ene naar de andere kant draait terwijl je een gewicht vasthoudt." },

@@ -49,7 +49,7 @@
   { "name": "Hip Adduction Machine", "muscleGroup": "legs", "type": "machine", "description": "A machine exercise that targets the inner thighs by bringing the legs together." },
   { "name": "Cable Face Pull", "muscleGroup": "shoulders", "type": "isolation", "description": "A shoulder exercise that targets the rear delts by pulling a cable attachment towards the face." },
   { "name": "Incline Dumbbell Fly", "muscleGroup": "chest", "type": "isolation", "description": "A chest exercise performed on an incline bench that targets the upper chest." },
-  { "name": "Dips", "muscleGroup": "Triceps", "type": "bodyweight", "description": "A chest and triceps exercise where you lower and lift your body using parallel bars." },
+  { "name": "Dips", "muscleGroup": "arms", "type": "bodyweight", "description": "A chest and triceps exercise where you lower and lift your body using parallel bars." },
   { "name": "Push-Up", "muscleGroup": "chest", "type": "bodyweight", "description": "A chest, shoulders, and triceps exercise where you push your body up from the ground." },
   { "name": "Plank", "muscleGroup": "core", "type": "bodyweight", "description": "A core exercise where you hold a push-up position for a set amount of time." },
   { "name": "Russian Twist", "muscleGroup": "core", "type": "bodyweight", "description": "An oblique exercise where you twist your torso side to side while holding a weight." },

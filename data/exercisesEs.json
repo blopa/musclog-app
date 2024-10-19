@@ -49,7 +49,7 @@
   { "name": "Máquina de Aducción de Cadera", "muscleGroup": "legs", "type": "machine", "description": "Un ejercicio en máquina que apunta a la parte interna de los muslos al cerrar las piernas." },
   { "name": "Face Pull", "muscleGroup": "shoulders", "type": "isolation", "description": "Un ejercicio para los hombros que apunta a los deltoides posteriores al tirar de un accesorio de polea hacia el rostro." },
   { "name": "Aperturas con Mancuernas en Banco Inclinado", "muscleGroup": "chest", "type": "isolation", "description": "Un ejercicio para el pecho realizado en un banco inclinado que apunta a la parte superior del pecho." },
-  { "name": "Fondos", "muscleGroup": "Triceps", "type": "bodyweight", "description": "Un ejercicio para el pecho y los tríceps donde bajas y levantas tu cuerpo usando barras paralelas." },
+  { "name": "Fondos", "muscleGroup": "arms", "type": "bodyweight", "description": "Un ejercicio para el pecho y los tríceps donde bajas y levantas tu cuerpo usando barras paralelas." },
   { "name": "Flexiones", "muscleGroup": "chest", "type": "bodyweight", "description": "Un ejercicio para el pecho, los hombros y los tríceps donde empujas tu cuerpo hacia arriba desde el suelo." },
   { "name": "Plancha", "muscleGroup": "core", "type": "bodyweight", "description": "Un ejercicio para el core donde mantienes la posición de flexión por un tiempo determinado." },
   { "name": "Giro Ruso", "muscleGroup": "core", "type": "bodyweight", "description": "Un ejercicio oblicuo donde giras el torso de un lado a otro mientras sostienes un peso." },
