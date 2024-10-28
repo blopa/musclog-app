@@ -49,7 +49,7 @@
   { "name": "Máquina de Adução de Quadril", "muscleGroup": "legs", "type": "machine", "description": "Um exercício em máquina que atinge a parte interna das coxas ao fechar as pernas." },
   { "name": "Face Pull", "muscleGroup": "shoulders", "type": "isolation", "description": "Um exercício para os ombros que atinge os deltoides posteriores ao puxar um acessório de polia em direção ao rosto." },
   { "name": "Crucifixo Inclinado com Halteres", "muscleGroup": "chest", "type": "isolation", "description": "Um exercício para o peito realizado em um banco inclinado que atinge a parte superior do peito." },
-  { "name": "Paralelas", "muscleGroup": "Triceps", "type": "bodyweight", "description": "Um exercício para o peito e tríceps onde você abaixa e levanta seu corpo usando barras paralelas." },
+  { "name": "Paralelas", "muscleGroup": "arms", "type": "bodyweight", "description": "Um exercício para o peito e tríceps onde você abaixa e levanta seu corpo usando barras paralelas." },
   { "name": "Flexão", "muscleGroup": "chest", "type": "bodyweight", "description": "Um exercício para peito, ombros e tríceps onde você empurra seu corpo para cima a partir do chão." },
   { "name": "Prancha", "muscleGroup": "core", "type": "bodyweight", "description": "Um exercício para o core onde você mantém a posição de flexão por um determinado tempo." },
   { "name": "Russian Twist", "muscleGroup": "core", "type": "bodyweight", "description": "Um exercício oblíquo onde você gira o torso de um lado para o outro enquanto segura um peso." },
