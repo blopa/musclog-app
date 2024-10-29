@@ -72,7 +72,7 @@ const CreateWorkout = () => {
     const { colors, dark } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors, dark);
 
-    const [workout, setWorkout] = useState<WorkoutExercise[]>([]);
+    const [workout, setWorkout] = useState<WorkoutExercise[]>([{ exercise:{ name:'Declined Bench Press',muscleGroup:'chest',type:'compound',description:'A variation of the bench press performed on a declined bench to target the lower chest.' },sets:[],supersetName:'ppp' },{ exercise:{ name:'Pec Fly Machine',muscleGroup:'chest',type:'machine',description:'A machine exercise that isolates the chest muscles by mimicking the motion of a fly.' },sets:[],supersetName:'ppp' },{ exercise:{ name:'Bench Press',muscleGroup:'chest',type:'compound',description:'A chest exercise where you press a barbell upwards while lying on a bench.' },sets:[],supersetName:'www' },{ exercise:{ name:'Inclined Bench Press',muscleGroup:'chest',type:'compound',description:'A variation of the bench press performed on an inclined bench to target the upper chest.' },sets:[],supersetName:'www' },{ exercise:{ name:'Overhead Shoulder Press',muscleGroup:'shoulders',type:'compound',description:'A shoulder exercise where you press a weight overhead while standing or seated.' },sets:[],supersetName:null }]);
     const [supersetName, setSupersetName] = useState('');
     const [selectedExercises, setSelectedExercises] = useState<number[]>([]);
     const [selectedMuscleGroup, setSelectedMuscleGroup] = useState<string | null>(null);
@@ -196,55 +196,43 @@ const CreateWorkout = () => {
         setWorkout((prevWorkout) => {
             const newWorkout = [...prevWorkout];
             const movedExercise = newWorkout[fromIndex];
+            const targetIndex = direction === 'up' ? fromIndex - 1 : fromIndex + 1;
 
-            const isSupersetExercise = !!movedExercise.supersetName;
+            // Boundary checks
+            if (targetIndex < 0 || targetIndex >= newWorkout.length) return newWorkout;
 
-            if (isSupersetExercise) {
-                const supersetName = movedExercise.supersetName;
-                const supersetStart = newWorkout.findIndex((ex) => ex.supersetName === supersetName);
-                const supersetEnd = newWorkout
-                    .map((ex, idx) => ({ ex, idx }))
-                    .filter((item) => item.ex.supersetName === supersetName)
-                    .pop()?.idx ?? supersetStart;
+            // Find the bounds of any surrounding supersets
+            const findSupersetBounds = (index: number) => {
+                let start = index;
+                let end = index;
+                const supersetName = newWorkout[index].supersetName;
 
-                // Prevent moving outside of the superset
-                if (direction === 'up' && fromIndex > supersetStart) {
-                    // Move the entire superset
-                    newWorkout.splice(fromIndex, 1);
-                    const newSupersetPosition = Math.max(supersetStart, fromIndex - 1);
-                    newWorkout.splice(newSupersetPosition, 0, movedExercise);
-                } else if (direction === 'down' && fromIndex < supersetEnd) {
-                    // Move the entire superset
-                    newWorkout.splice(fromIndex, 1);
-                    const newSupersetPosition = Math.min(supersetEnd, fromIndex + 1);
-                    newWorkout.splice(newSupersetPosition, 0, movedExercise);
-                }
-            } else {
-                // Handle movement for regular exercises
-                const targetIndex = direction === 'up' ? fromIndex - 1 : fromIndex + 1;
-                const nextItem = newWorkout[targetIndex];
-
-                if (nextItem && nextItem.supersetName) {
-                    // It's a superset; count how many exercises are in this superset
-                    const supersetExercises = newWorkout.filter((ex) => ex.supersetName === nextItem.supersetName);
-                    const adjustment = supersetExercises.length;
-
-                    if (direction === 'up') {
-                        // Calculate the new index to insert
-                        const newIndex = Math.max(0, targetIndex - adjustment);
-                        newWorkout.splice(fromIndex, 1);
-                        newWorkout.splice(newIndex, 0, movedExercise);
-                    } else if (direction === 'down') {
-                        // Calculate the new index to insert
-                        const newIndex = Math.min(newWorkout.length, targetIndex + adjustment);
-                        newWorkout.splice(fromIndex, 1);
-                        newWorkout.splice(newIndex, 0, movedExercise);
+                if (supersetName) {
+                    while (start > 0 && newWorkout[start - 1].supersetName === supersetName) {
+                        start--;
                     }
-                } else {
-                    // Regular movement
-                    newWorkout.splice(fromIndex, 1);
-                    newWorkout.splice(targetIndex, 0, movedExercise);
+                    while (end < newWorkout.length - 1 && newWorkout[end + 1].supersetName === supersetName) {
+                        end++;
+                    }
                 }
+                return { start, end };
+            };
+
+            // Calculate the bounds for the current and target position
+            const movedBounds = findSupersetBounds(fromIndex);
+            const targetBounds = findSupersetBounds(targetIndex);
+
+            // Move logic for supersets or single exercises
+            if (direction === 'up' && movedBounds.start > 0) {
+                // Moving up
+                const insertAt = targetBounds.start < movedBounds.start ? targetBounds.start : movedBounds.start - 1;
+                newWorkout.splice(movedBounds.start, movedBounds.end - movedBounds.start + 1);
+                newWorkout.splice(insertAt, 0, ...prevWorkout.slice(movedBounds.start, movedBounds.end + 1));
+            } else if (direction === 'down' && movedBounds.end < newWorkout.length - 1) {
+                // Moving down
+                const insertAt = targetBounds.end > movedBounds.end ? targetBounds.end + 1 - (movedBounds.end - movedBounds.start + 1) : movedBounds.end + 1;
+                newWorkout.splice(movedBounds.start, movedBounds.end - movedBounds.start + 1);
+                newWorkout.splice(insertAt, 0, ...prevWorkout.slice(movedBounds.start, movedBounds.end + 1));
             }
 
             return newWorkout;
