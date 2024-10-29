@@ -215,12 +215,12 @@ const CreateWorkout = () => {
                                 </View>
                                 <View style={styles.supersetButtons}>
                                     <IconButton
-                                        icon="arrow-upward"
+                                        icon="arrow-up"
                                         onPress={() => moveSuperset(exerciseIndex, 'up')}
                                         disabled={exerciseIndex === 0}
                                     />
                                     <IconButton
-                                        icon="arrow-downward"
+                                        icon="arrow-down"
                                         onPress={() => moveSuperset(exerciseIndex, 'down')}
                                         disabled={exerciseIndex >= workout.length - 1}
                                     />
@@ -562,115 +562,114 @@ const CreateWorkout = () => {
     );
 };
 
-const makeStyles = (colors: CustomThemeColorsType, dark: boolean) =>
-    StyleSheet.create({
-        addSetButton: {
-            marginBottom: 8,
-            marginTop: 12,
-        },
-        appbarHeader: {
-            backgroundColor: colors.primary,
-            justifyContent: 'center',
-            paddingHorizontal: 16,
-        },
-        appbarTitle: {
-            color: colors.onPrimary,
-            fontSize: Platform.OS === 'web' ? 20 : 26,
-        },
-        button: {
-            marginVertical: 10,
-        },
-        checkboxContainer: {
-            alignItems: 'center',
-            flexDirection: 'row',
-            marginVertical: 8,
-        },
-        container: {
-            backgroundColor: colors.background,
-            flex: 1,
-        },
-        content: {
-            padding: 16,
-        },
-        exerciseContainer: {
-            backgroundColor: colors.surface,
-            borderColor: colors.primary,
-            borderRadius: 8,
-            borderWidth: 1,
-            marginBottom: 16,
-            padding: 16,
-        },
-        exerciseDescription: {
-            color: colors.onSurface,
-            marginBottom: 8,
-        },
-        exerciseHeader: {
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            marginBottom: 8,
-        },
-        exerciseTitle: {
-            color: colors.primary,
-            fontSize: 18,
-            fontWeight: 'bold',
-        },
-        footer: {
-            alignItems: 'center',
-            borderTopColor: colors.shadow,
-            borderTopWidth: 1,
-            padding: 16,
-        },
-        label: {
-            fontSize: 16,
-            fontWeight: '600',
-            marginBottom: 8,
-        },
-        overlay: {
-            ...StyleSheet.absoluteFillObject,
-            alignItems: 'center',
-            backgroundColor: 'rgba(0,0,0,0.5)',
-            flex: 1,
-            justifyContent: 'center',
-        },
-        setContainer: {
-            alignItems: 'center',
-            flexDirection: 'row',
-            marginBottom: 8,
-        },
-        setText: {
-            color: colors.onSurface,
-            marginRight: 8,
-        },
-        smallInput: {
-            backgroundColor: colors.surface,
-            borderColor: colors.onSurface,
-            borderRadius: 4,
-            borderWidth: 1,
-            color: colors.onSurface,
-            marginHorizontal: 4,
-            padding: 4,
-            textAlign: 'center',
-            width: 60,
-        },
-        supersetButtons: {
-            flexDirection: 'row',
-        },
-        supersetContainer: {
-            borderColor: colors.primary,
-            borderRadius: 8,
-            borderWidth: 1,
-            marginBottom: 16,
-            padding: 8,
-        },
-        supersetHeader: {
-            alignItems: 'center',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            marginBottom: 8,
-        },
-        workoutContainer: {
-            paddingBottom: 32,
-        },
-    });
+const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
+    addSetButton: {
+        marginBottom: 8,
+        marginTop: 12,
+    },
+    appbarHeader: {
+        backgroundColor: colors.primary,
+        justifyContent: 'center',
+        paddingHorizontal: 16,
+    },
+    appbarTitle: {
+        color: colors.onPrimary,
+        fontSize: Platform.OS === 'web' ? 20 : 26,
+    },
+    button: {
+        marginVertical: 10,
+    },
+    checkboxContainer: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        marginVertical: 8,
+    },
+    container: {
+        backgroundColor: colors.background,
+        flex: 1,
+    },
+    content: {
+        padding: 16,
+    },
+    exerciseContainer: {
+        backgroundColor: colors.surface,
+        borderColor: colors.primary,
+        borderRadius: 8,
+        borderWidth: 1,
+        marginBottom: 16,
+        padding: 16,
+    },
+    exerciseDescription: {
+        color: colors.onSurface,
+        marginBottom: 8,
+    },
+    exerciseHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 8,
+    },
+    exerciseTitle: {
+        color: colors.primary,
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    footer: {
+        alignItems: 'center',
+        borderTopColor: colors.shadow,
+        borderTopWidth: 1,
+        padding: 16,
+    },
+    label: {
+        fontSize: 16,
+        fontWeight: '600',
+        marginBottom: 8,
+    },
+    overlay: {
+        ...StyleSheet.absoluteFillObject,
+        alignItems: 'center',
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        flex: 1,
+        justifyContent: 'center',
+    },
+    setContainer: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        marginBottom: 8,
+    },
+    setText: {
+        color: colors.onSurface,
+        marginRight: 8,
+    },
+    smallInput: {
+        backgroundColor: colors.surface,
+        borderColor: colors.onSurface,
+        borderRadius: 4,
+        borderWidth: 1,
+        color: colors.onSurface,
+        marginHorizontal: 4,
+        padding: 4,
+        textAlign: 'center',
+        width: 60,
+    },
+    supersetButtons: {
+        flexDirection: 'row',
+    },
+    supersetContainer: {
+        borderColor: colors.primary,
+        borderRadius: 8,
+        borderWidth: 1,
+        marginBottom: 16,
+        padding: 8,
+    },
+    supersetHeader: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 8,
+    },
+    workoutContainer: {
+        paddingBottom: 32,
+    },
+});
 
 export default CreateWorkout;
