@@ -192,12 +192,61 @@ const CreateWorkout = () => {
         navigation.navigate('WorkoutList');
     }, [navigation, resetScreenData]);
 
-    const moveExercise = (fromIndex: number, toIndex: number) => {
+    const moveExercise = (fromIndex: number, direction: 'up' | 'down') => {
         setWorkout((prevWorkout) => {
             const newWorkout = [...prevWorkout];
             const movedExercise = newWorkout[fromIndex];
-            newWorkout.splice(fromIndex, 1);
-            newWorkout.splice(toIndex, 0, movedExercise);
+
+            const isSupersetExercise = !!movedExercise.supersetName;
+
+            if (isSupersetExercise) {
+                const supersetName = movedExercise.supersetName;
+                const supersetStart = newWorkout.findIndex((ex) => ex.supersetName === supersetName);
+                const supersetEnd = newWorkout
+                    .map((ex, idx) => ({ ex, idx }))
+                    .filter((item) => item.ex.supersetName === supersetName)
+                    .pop()?.idx ?? supersetStart;
+
+                // Prevent moving outside of the superset
+                if (direction === 'up' && fromIndex > supersetStart) {
+                    // Move the entire superset
+                    newWorkout.splice(fromIndex, 1);
+                    const newSupersetPosition = Math.max(supersetStart, fromIndex - 1);
+                    newWorkout.splice(newSupersetPosition, 0, movedExercise);
+                } else if (direction === 'down' && fromIndex < supersetEnd) {
+                    // Move the entire superset
+                    newWorkout.splice(fromIndex, 1);
+                    const newSupersetPosition = Math.min(supersetEnd, fromIndex + 1);
+                    newWorkout.splice(newSupersetPosition, 0, movedExercise);
+                }
+            } else {
+                // Handle movement for regular exercises
+                const targetIndex = direction === 'up' ? fromIndex - 1 : fromIndex + 1;
+                const nextItem = newWorkout[targetIndex];
+
+                if (nextItem && nextItem.supersetName) {
+                    // It's a superset; count how many exercises are in this superset
+                    const supersetExercises = newWorkout.filter((ex) => ex.supersetName === nextItem.supersetName);
+                    const adjustment = supersetExercises.length;
+
+                    if (direction === 'up') {
+                        // Calculate the new index to insert
+                        const newIndex = Math.max(0, targetIndex - adjustment);
+                        newWorkout.splice(fromIndex, 1);
+                        newWorkout.splice(newIndex, 0, movedExercise);
+                    } else if (direction === 'down') {
+                        // Calculate the new index to insert
+                        const newIndex = Math.min(newWorkout.length, targetIndex + adjustment);
+                        newWorkout.splice(fromIndex, 1);
+                        newWorkout.splice(newIndex, 0, movedExercise);
+                    }
+                } else {
+                    // Regular movement
+                    newWorkout.splice(fromIndex, 1);
+                    newWorkout.splice(targetIndex, 0, movedExercise);
+                }
+            }
+
             return newWorkout;
         });
     };
@@ -354,35 +403,13 @@ const CreateWorkout = () => {
                 <View style={styles.moveButtonsContainer}>
                     <IconButton
                         icon="arrow-up"
-                        onPress={() => {
-                            if (isSuperset) {
-                                const supersetIndex = workout.findIndex((ex) => ex.supersetName === workoutExercise.supersetName);
-                                if (supersetIndex > 0) {
-                                    moveExercise(exerciseIndex, supersetIndex - 1);
-                                }
-                            } else {
-                                if (exerciseIndex > 0) {
-                                    moveExercise(exerciseIndex, exerciseIndex - 1);
-                                }
-                            }
-                        }}
-                        disabled={isSuperset ? (exerciseIndex === 0 || workout[exerciseIndex - 1].supersetName !== workoutExercise.supersetName) : exerciseIndex === 0}
+                        onPress={() => moveExercise(exerciseIndex, 'up')}
+                        disabled={isSuperset ? (exerciseIndex === workout.findIndex((ex) => ex.supersetName === workoutExercise.supersetName)) : exerciseIndex === 0}
                     />
                     <IconButton
                         icon="arrow-down"
-                        onPress={() => {
-                            if (isSuperset) {
-                                const supersetIndex = workout.findIndex((ex) => ex.supersetName === workoutExercise.supersetName);
-                                if (supersetIndex + 1 < workout.length) {
-                                    moveExercise(exerciseIndex, supersetIndex + 1);
-                                }
-                            } else {
-                                if (exerciseIndex < workout.length - 1) {
-                                    moveExercise(exerciseIndex, exerciseIndex + 1);
-                                }
-                            }
-                        }}
-                        disabled={isSuperset ? (exerciseIndex === workout.length - 1 || workout[exerciseIndex + 1].supersetName === workoutExercise.supersetName) : exerciseIndex === workout.length - 1}
+                        onPress={() => moveExercise(exerciseIndex, 'down')}
+                        disabled={isSuperset ? (exerciseIndex === workout.length - 1 || exerciseIndex === workout.findIndex((ex) => ex.supersetName === workoutExercise.supersetName) + workout.filter((ex) => ex.supersetName === workoutExercise.supersetName).length - 1) : exerciseIndex === workout.length - 1}
                     />
                 </View>
             </View>
