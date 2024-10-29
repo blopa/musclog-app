@@ -1,15 +1,15 @@
-import { CustomThemeColorsType } from '@/utils/colors';
+import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import React, { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { View, Text, ScrollView, StyleSheet, TextInput } from 'react-native';
+import { View, ScrollView, StyleSheet, TextInput } from 'react-native';
 import {
     Button,
     Dialog,
     Portal,
     Checkbox,
-    Badge,
     IconButton,
     useTheme,
+    Text,
 } from 'react-native-paper';
 
 type Exercise = {
@@ -46,9 +46,9 @@ const muscleGroups = Array.from(
     new Set(exerciseList.map((ex) => ex.muscleGroup))
 );
 
-export default function CustomWorkoutBuilder() {
+export default function CreateWorkout() {
     const { t } = useTranslation();
-    const { colors } = useTheme();
+    const { colors } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors);
 
     const [workout, setWorkout] = useState<WorkoutExercise[]>([]);
@@ -340,9 +340,9 @@ export default function CustomWorkoutBuilder() {
                 acc.push(
                     <View key={`superset-${exerciseIndex}`} style={styles.supersetContainer}>
                         <View style={styles.supersetHeader}>
-                            <Badge>
-                                {t('superset')}: {workoutExercise.supersetName}
-                            </Badge>
+                            <View>
+                                <Text>{t('superset')}: {workoutExercise.supersetName || ''}</Text>
+                            </View>
                             <View style={styles.supersetButtons}>
                                 <IconButton
                                     icon="arrow-upward"
@@ -479,6 +479,10 @@ const makeStyles = (colors: CustomThemeColorsType) => StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 16,
         textAlign: 'center',
+    },
+    label: {
+        color: colors.onSurface,
+        marginBottom: 8,
     },
     muscleGroupButton: {
         flex: 1,
