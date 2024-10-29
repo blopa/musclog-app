@@ -255,7 +255,9 @@ const CreateWorkout = () => {
         setWorkout((prevWorkout) => {
             const newWorkout = [...prevWorkout];
             const supersetName = newWorkout[fromIndex].supersetName;
-            if (!supersetName) return newWorkout;
+            if (!supersetName) {
+                return newWorkout;
+            }
 
             const supersetExercises = newWorkout.filter(
                 (ex) => ex.supersetName === supersetName
@@ -263,32 +265,50 @@ const CreateWorkout = () => {
             const firstIndex = newWorkout.findIndex(
                 (ex) => ex.supersetName === supersetName
             );
-            const lastIndex =
-                newWorkout
-                    .map((ex, idx) => ({ ex, idx }))
-                    .filter((item) => item.ex.supersetName === supersetName)
-                    .pop()?.idx ?? firstIndex;
+            const lastIndex = firstIndex + supersetExercises.length - 1;
 
             if (direction === 'up' && firstIndex > 0) {
-                const beforeSuperset = newWorkout.slice(0, firstIndex - 1);
-                const afterSuperset = newWorkout.slice(lastIndex + 1);
-                const exerciseBeforeSuperset = newWorkout[firstIndex - 1];
-                return [
-                    ...beforeSuperset,
-                    ...supersetExercises,
-                    exerciseBeforeSuperset,
-                    ...afterSuperset,
-                ];
+                const targetIndex = Math.max(0, firstIndex - 1);
+                const moveLength = lastIndex - firstIndex + 1;
+                const itemAbove = newWorkout[targetIndex - 1];
+
+                if (itemAbove && itemAbove.supersetName && itemAbove.supersetName !== supersetName) {
+                    // Check entire superset length above and adjust
+                    const aboveSupersetStart = newWorkout.findIndex(
+                        (ex) => ex.supersetName === itemAbove.supersetName
+                    );
+                    const aboveSupersetCount = newWorkout.filter(
+                        (ex) => ex.supersetName === itemAbove.supersetName
+                    ).length;
+
+                    newWorkout.splice(firstIndex, moveLength);
+                    newWorkout.splice(aboveSupersetStart, 0, ...supersetExercises);
+                } else {
+                    // Normal move up
+                    newWorkout.splice(firstIndex, moveLength);
+                    newWorkout.splice(targetIndex, 0, ...supersetExercises);
+                }
             } else if (direction === 'down' && lastIndex < newWorkout.length - 1) {
-                const beforeSuperset = newWorkout.slice(0, firstIndex);
-                const afterSuperset = newWorkout.slice(lastIndex + 2);
-                const exerciseAfterSuperset = newWorkout[lastIndex + 1];
-                return [
-                    ...beforeSuperset,
-                    exerciseAfterSuperset,
-                    ...supersetExercises,
-                    ...afterSuperset,
-                ];
+                const targetIndex = Math.min(newWorkout.length - 1, lastIndex + 1);
+                const moveLength = lastIndex - firstIndex + 1;
+                const itemBelow = newWorkout[targetIndex + 1];
+
+                if (itemBelow && itemBelow.supersetName && itemBelow.supersetName !== supersetName) {
+                    // Check entire superset length below and adjust
+                    const belowSupersetEnd = newWorkout.lastIndexOf(
+                        newWorkout.findLast((ex) => ex.supersetName === itemBelow.supersetName) ?? {} as WorkoutExercise
+                    );
+                    const belowSupersetCount = newWorkout.filter(
+                        (ex) => ex.supersetName === itemBelow.supersetName
+                    ).length;
+
+                    newWorkout.splice(firstIndex, moveLength);
+                    newWorkout.splice(belowSupersetEnd + 1 - belowSupersetCount, 0, ...supersetExercises);
+                } else {
+                    // Normal move down
+                    newWorkout.splice(firstIndex, moveLength);
+                    newWorkout.splice(targetIndex - moveLength + 1, 0, ...supersetExercises);
+                }
             }
 
             return newWorkout;
