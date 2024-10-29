@@ -323,7 +323,7 @@ const CreateWorkout = () => {
                                     <IconButton
                                         icon="arrow-down"
                                         onPress={() => moveSuperset(exerciseIndex, 'down')}
-                                        disabled={exerciseIndex >= workout.length - 1}
+                                        disabled={exerciseIndex >= workout.length - workout.filter((ex) => ex.supersetName === workoutExercise.supersetName).length}
                                     />
                                 </View>
                             </View>
