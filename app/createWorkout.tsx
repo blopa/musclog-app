@@ -1,7 +1,10 @@
 import CompletionModal from '@/components/CompletionModal';
 import CustomPicker from '@/components/CustomPicker';
+import CustomTextArea from '@/components/CustomTextArea';
 import CustomTextInput from '@/components/CustomTextInput';
+import { VOLUME_CALCULATION_TYPES_VALUES } from '@/constants/exercises';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
+import { VolumeCalculationTypeType } from '@/utils/types';
 import { NavigationProp, useNavigation, useFocusEffect } from '@react-navigation/native';
 import React, { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -24,6 +27,7 @@ import {
     IconButton,
     useTheme,
     Text,
+    Switch,
 } from 'react-native-paper';
 
 type Exercise = {
@@ -34,7 +38,9 @@ type Exercise = {
 };
 
 type Set = {
+    isDropSet?: boolean;
     reps: number;
+    restTime: number;
     weight: number;
 };
 
@@ -42,7 +48,18 @@ type WorkoutExercise = {
     exercise: Exercise;
     sets: Set[];
     supersetName: string | null;
+    description?: string;
 };
+
+const daysOfWeek = [
+    { label: 'Monday', value: 'Monday' },
+    { label: 'Tuesday', value: 'Tuesday' },
+    { label: 'Wednesday', value: 'Wednesday' },
+    { label: 'Thursday', value: 'Thursday' },
+    { label: 'Friday', value: 'Friday' },
+    { label: 'Saturday', value: 'Saturday' },
+    { label: 'Sunday', value: 'Sunday' },
+];
 
 const exerciseList: Exercise[] = [
     { name: 'Bench Press', muscleGroup: 'chest', type: 'compound', description: 'A chest exercise where you press a barbell upwards while lying on a bench.' },
@@ -72,6 +89,11 @@ const CreateWorkout = () => {
     const { colors, dark } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors, dark);
 
+    const [workoutTitle, setWorkoutTitle] = useState('');
+    const [workoutDescription, setWorkoutDescription] = useState('');
+    const [recurringOnWeek, setRecurringOnWeek] = useState('');
+    const [volumeCalculationType, setVolumeCalculationType] = useState<VolumeCalculationTypeType>('');
+
     const [workout, setWorkout] = useState<WorkoutExercise[]>([
         { exercise:{ name:'Declined Bench Press',muscleGroup:'chest',type:'compound',description:'A variation of the bench press performed on a declined bench to target the lower chest.' },sets:[],supersetName:'ppp' },
         { exercise:{ name:'Pec Fly Machine',muscleGroup:'chest',type:'machine',description:'A machine exercise that isolates the chest muscles by mimicking the motion of a fly.' },sets:[],supersetName:'ppp' },
@@ -80,6 +102,7 @@ const CreateWorkout = () => {
         { exercise:{ name:'Inclined Bench Press',muscleGroup:'chest',type:'compound',description:'A variation of the bench press performed on an inclined bench to target the upper chest.' },sets:[],supersetName:'www' },
         { exercise:{ name:'Overhead Shoulder Press',muscleGroup:'shoulders',type:'compound',description:'A shoulder exercise where you press a weight overhead while standing or seated.' },sets:[],supersetName:null },
     ]);
+
     const [supersetName, setSupersetName] = useState('');
     const [selectedExercises, setSelectedExercises] = useState<number[]>([]);
     const [selectedMuscleGroup, setSelectedMuscleGroup] = useState<string | null>(null);
@@ -94,6 +117,10 @@ const CreateWorkout = () => {
         setSupersetName('');
         setSelectedExercises([]);
         setSelectedMuscleGroup(null);
+        setWorkoutTitle('');
+        setWorkoutDescription('');
+        setRecurringOnWeek('');
+        setVolumeCalculationType('');
     }, []);
 
     useFocusEffect(
@@ -131,7 +158,10 @@ const CreateWorkout = () => {
         setWorkout((prevWorkout) => {
             const newWorkout = [...prevWorkout];
             const updatedExercise = { ...newWorkout[exerciseIndex] };
-            updatedExercise.sets = [...updatedExercise.sets, { reps: 0, weight: 0 }];
+            updatedExercise.sets = [
+                ...updatedExercise.sets,
+                { reps: 0, weight: 0, restTime: 60, isDropSet: false },
+            ];
             newWorkout[exerciseIndex] = updatedExercise;
             return newWorkout;
         });
@@ -177,6 +207,11 @@ const CreateWorkout = () => {
     };
 
     const handleSaveWorkout = useCallback(async () => {
+        if (!workoutTitle.trim()) {
+            Alert.alert(t('validation_error'), t('workout_title_required'));
+            return;
+        }
+
         if (workout.length === 0) {
             Alert.alert(t('validation_error'), t('workout_must_have_exercises'));
             return;
@@ -193,7 +228,7 @@ const CreateWorkout = () => {
         } finally {
             setIsSaving(false);
         }
-    }, [workout, t]);
+    }, [workout, t, workoutTitle]);
 
     const handleModalClose = useCallback(() => {
         setIsModalVisible(false);
@@ -426,10 +461,28 @@ const CreateWorkout = () => {
                             keyboardType="numeric"
                             value={set.weight.toString()}
                             onChangeText={(text) =>
-                                updateSet(exerciseIndex, setIndex, 'weight', parseInt(text))
+                                updateSet(exerciseIndex, setIndex, 'weight', parseFloat(text))
                             }
                             placeholder={t('weight')}
                         />
+                        <RNTextInput
+                            style={styles.smallInput}
+                            keyboardType="numeric"
+                            value={set.restTime.toString()}
+                            onChangeText={(text) =>
+                                updateSet(exerciseIndex, setIndex, 'restTime', parseInt(text))
+                            }
+                            placeholder={t('rest_time_sec')}
+                        />
+                        <View style={styles.row}>
+                            <Text style={styles.labelToggleSwitch}>{t('is_drop_set')}</Text>
+                            <Switch
+                                onValueChange={(value) =>
+                                    updateSet(exerciseIndex, setIndex, 'isDropSet', value)
+                                }
+                                value={!!set.isDropSet}
+                            />
+                        </View>
                         <IconButton
                             icon="remove"
                             size={20}
@@ -464,8 +517,8 @@ const CreateWorkout = () => {
     function updateSet(
         exerciseIndex: number,
         setIndex: number,
-        field: 'reps' | 'weight',
-        value: number
+        field: keyof Set,
+        value: any
     ) {
         setWorkout((prevWorkout) => {
             const newWorkout = [...prevWorkout];
@@ -473,7 +526,7 @@ const CreateWorkout = () => {
             const updatedSets = [...updatedExercise.sets];
             updatedSets[setIndex] = {
                 ...updatedSets[setIndex],
-                [field]: isNaN(value) ? 0 : value,
+                [field]: field === 'isDropSet' ? value : isNaN(value) ? 0 : value,
             };
             updatedExercise.sets = updatedSets;
             newWorkout[exerciseIndex] = updatedExercise;
@@ -639,6 +692,42 @@ const CreateWorkout = () => {
             </Portal>
 
             <ScrollView contentContainerStyle={styles.content}>
+                <CustomTextInput
+                    label={t('workout_title')}
+                    onChangeText={setWorkoutTitle}
+                    placeholder={t('enter_workout_title')}
+                    value={workoutTitle}
+                />
+                <CustomTextArea
+                    label={t('workout_description')}
+                    onChangeText={setWorkoutDescription}
+                    placeholder={t('enter_workout_description')}
+                    value={workoutDescription}
+                />
+                <CustomPicker
+                    items={VOLUME_CALCULATION_TYPES_VALUES.map((value) => ({
+                        label: t(value),
+                        value,
+                    }))}
+                    label={t('volume_calculation_type')}
+                    onValueChange={(value) =>
+                        setVolumeCalculationType(value as VolumeCalculationTypeType)
+                    }
+                    selectedValue={volumeCalculationType}
+                />
+                <CustomPicker
+                    items={[
+                        { label: t('none'), value: '' },
+                        ...daysOfWeek.map((day) => ({
+                            label: t(day.label.toLowerCase()),
+                            value: day.value,
+                        })),
+                    ]}
+                    label={t('repeat_on_day_of_week')}
+                    onValueChange={(value) => setRecurringOnWeek(value)}
+                    selectedValue={recurringOnWeek}
+                />
+
                 <Button
                     mode="contained"
                     onPress={() => setIsExerciseModalOpen(true)}
@@ -680,9 +769,15 @@ const CreateWorkout = () => {
 };
 
 const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
+    addButton: {
+        marginTop: 16,
+    },
     addSetButton: {
         marginBottom: 8,
         marginTop: 12,
+    },
+    alignCenter: {
+        alignItems: 'center',
     },
     appbarHeader: {
         backgroundColor: colors.primary,
@@ -736,10 +831,19 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         borderTopWidth: 1,
         padding: 16,
     },
+    input: {
+        flex: 1,
+        marginLeft: 8,
+    },
     label: {
         fontSize: 16,
         fontWeight: '600',
         marginBottom: 8,
+    },
+    labelToggleSwitch: {
+        color: colors.onSurface,
+        fontSize: 16,
+        fontWeight: '600',
     },
     moveButtonsContainer: {
         flexDirection: 'row',
@@ -753,9 +857,15 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         flex: 1,
         justifyContent: 'center',
     },
+    row: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        marginVertical: 8,
+    },
     setContainer: {
         alignItems: 'center',
         flexDirection: 'row',
+        flexWrap: 'wrap',
         marginBottom: 8,
     },
     setText: {
@@ -769,6 +879,7 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         borderWidth: 1,
         color: colors.onSurface,
         marginHorizontal: 4,
+        marginVertical: 4,
         padding: 4,
         textAlign: 'center',
         width: 60,
@@ -788,6 +899,9 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         flexDirection: 'row',
         justifyContent: 'space-between',
         marginBottom: 8,
+    },
+    toggleSwitch: {
+        marginLeft: 8,
     },
     workoutContainer: {
         paddingBottom: 32,
