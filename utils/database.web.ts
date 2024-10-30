@@ -2052,6 +2052,48 @@ export const addUserMeasurementsTable = async (): Promise<void> => {
     }
 };
 
+export const createNewWorkoutTables = async (): Promise<void> => {
+    const currentVersion = await getLatestVersion();
+    if (currentVersion && currentVersion <= packageJson.version) {
+        if (database.isOpen()) {
+            database.close();
+        }
+
+        database.version(6).stores({
+            workouts: [
+                '++id',
+                'title',
+                'description',
+                // 'workoutExerciseIds', // remove this one in the workout table
+                'recurringOnWeek',
+                'volumeCalculationType',
+                'createdAt',
+                'deletedAt',
+            ].join(', '),
+            sets: [
+                '++id',
+                'reps',
+                'weight',
+                'restTime',
+                'isDropSet',
+                'difficultyLevel',
+                'exerciseId',
+                'createdAt',
+                'deletedAt',
+                'workoutId',
+                'order',
+                'supersetName',
+            ].join(', '),
+        });
+
+        if (!database.isOpen()) {
+            database.open();
+        }
+
+        await addVersioning(packageJson.version);
+    }
+};
+
 export const addAlcoholMacroToUserNutritionTable = async (): Promise<void> => {
     const currentVersion = await getLatestVersion();
     if (currentVersion && currentVersion <= packageJson.version) {

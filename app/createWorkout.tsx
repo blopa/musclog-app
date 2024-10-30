@@ -38,10 +38,16 @@ type Exercise = {
 };
 
 type Set = {
-    isDropSet?: boolean;
     reps: number;
-    restTime: number;
     weight: number;
+    restTime: number;
+    isDropSet?: boolean;
+    difficultyLevel?: number;
+    exerciseId: number;
+    createdAt?: string;
+    deletedAt?: string;
+    order: number;
+    supersetName?: string;
 };
 
 type WorkoutExercise = {
@@ -160,7 +166,16 @@ const CreateWorkout = () => {
             const updatedExercise = { ...newWorkout[exerciseIndex] };
             updatedExercise.sets = [
                 ...updatedExercise.sets,
-                { reps: 0, weight: 0, restTime: 60, isDropSet: false },
+                {
+                    reps: 0,
+                    weight: 0,
+                    restTime: 60,
+                    isDropSet: false,
+                    // TODO: missing fields
+                    // exerciseId
+                    // order
+                    // supersetName
+                },
             ];
             newWorkout[exerciseIndex] = updatedExercise;
             return newWorkout;
