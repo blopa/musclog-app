@@ -72,7 +72,14 @@ const CreateWorkout = () => {
     const { colors, dark } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors, dark);
 
-    const [workout, setWorkout] = useState<WorkoutExercise[]>([{ exercise:{ name:'Declined Bench Press',muscleGroup:'chest',type:'compound',description:'A variation of the bench press performed on a declined bench to target the lower chest.' },sets:[],supersetName:'ppp' },{ exercise:{ name:'Pec Fly Machine',muscleGroup:'chest',type:'machine',description:'A machine exercise that isolates the chest muscles by mimicking the motion of a fly.' },sets:[],supersetName:'ppp' },{ exercise:{ name:'Bench Press',muscleGroup:'chest',type:'compound',description:'A chest exercise where you press a barbell upwards while lying on a bench.' },sets:[],supersetName:'www' },{ exercise:{ name:'Inclined Bench Press',muscleGroup:'chest',type:'compound',description:'A variation of the bench press performed on an inclined bench to target the upper chest.' },sets:[],supersetName:'www' },{ exercise:{ name:'Overhead Shoulder Press',muscleGroup:'shoulders',type:'compound',description:'A shoulder exercise where you press a weight overhead while standing or seated.' },sets:[],supersetName:null }]);
+    const [workout, setWorkout] = useState<WorkoutExercise[]>([
+        { exercise:{ name:'Declined Bench Press',muscleGroup:'chest',type:'compound',description:'A variation of the bench press performed on a declined bench to target the lower chest.' },sets:[],supersetName:'ppp' },
+        { exercise:{ name:'Pec Fly Machine',muscleGroup:'chest',type:'machine',description:'A machine exercise that isolates the chest muscles by mimicking the motion of a fly.' },sets:[],supersetName:'ppp' },
+        { exercise:{ name:'Seated Shoulder Press',muscleGroup:'shoulders',type:'compound',description:'A shoulder exercise where you press a weight overhead while standing or seated.' },sets:[],supersetName:null },
+        { exercise:{ name:'Bench Press',muscleGroup:'chest',type:'compound',description:'A chest exercise where you press a barbell upwards while lying on a bench.' },sets:[],supersetName:'www' },
+        { exercise:{ name:'Inclined Bench Press',muscleGroup:'chest',type:'compound',description:'A variation of the bench press performed on an inclined bench to target the upper chest.' },sets:[],supersetName:'www' },
+        { exercise:{ name:'Overhead Shoulder Press',muscleGroup:'shoulders',type:'compound',description:'A shoulder exercise where you press a weight overhead while standing or seated.' },sets:[],supersetName:null },
+    ]);
     const [supersetName, setSupersetName] = useState('');
     const [selectedExercises, setSelectedExercises] = useState<number[]>([]);
     const [selectedMuscleGroup, setSelectedMuscleGroup] = useState<string | null>(null);
@@ -213,6 +220,7 @@ const CreateWorkout = () => {
                         end++;
                     }
                 }
+
                 return { start, end };
             };
 
@@ -240,13 +248,29 @@ const CreateWorkout = () => {
                     if (nextItem && nextItem.supersetName) {
                         // Move past the entire superset if the target is within one
                         const { start, end } = findSupersetBounds(targetIndex);
-                        const newIndex = direction === 'up' ? start : end + 1;
+                        let newIndex = direction === 'up' ? start : end + 1;
+
+                        // Remove the exercise
                         newWorkout.splice(fromIndex, 1);
+
+                        // Adjust newIndex if necessary
+                        if (newIndex > fromIndex) {
+                            newIndex -= 1;
+                        }
+
+                        // Insert the exercise at the new index
                         newWorkout.splice(newIndex, 0, movedExercise);
                     } else {
                         // Normal movement
                         newWorkout.splice(fromIndex, 1);
-                        newWorkout.splice(targetIndex, 0, movedExercise);
+
+                        // Adjust targetIndex if necessary
+                        let adjustedTargetIndex = targetIndex;
+                        if (targetIndex > fromIndex) {
+                            adjustedTargetIndex -= 1;
+                        }
+
+                        newWorkout.splice(adjustedTargetIndex, 0, movedExercise);
                     }
                 }
             }
