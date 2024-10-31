@@ -251,7 +251,10 @@ export default function CreateRecentWorkout({ navigation }: { navigation: Naviga
                     reps: Number(set.reps),
                     restTime: Number(set.restTime),
                     setId: set.id,
-                    weight: Number(set.weight)
+                    weight: Number(set.weight),
+                    workoutId: workoutId!,
+                    setOrder: 0, // TODO is this ok?
+                    supersetName: '', // TODO is this ok?
                 };
 
                 if (exerciseIndex >= 0) {

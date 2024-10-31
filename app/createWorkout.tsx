@@ -2,9 +2,16 @@ import CompletionModal from '@/components/CompletionModal';
 import CustomPicker from '@/components/CustomPicker';
 import CustomTextArea from '@/components/CustomTextArea';
 import CustomTextInput from '@/components/CustomTextInput';
-import { VOLUME_CALCULATION_TYPES_VALUES } from '@/constants/exercises';
+import { VOLUME_CALCULATION_TYPES, VOLUME_CALCULATION_TYPES_VALUES } from '@/constants/exercises';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
-import { VolumeCalculationTypeType } from '@/utils/types';
+import { addSet, addWorkout, getAllExercises } from '@/utils/database';
+import {
+    ExerciseReturnType,
+    SetInsertType,
+    VolumeCalculationTypeType,
+    WorkoutInsertType,
+    WorkoutReturnType
+} from '@/utils/types';
 import { NavigationProp, useNavigation, useFocusEffect } from '@react-navigation/native';
 import React, { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -30,28 +37,18 @@ import {
     Switch,
 } from 'react-native-paper';
 
-type Exercise = {
-    name: string;
-    muscleGroup: string;
-    type: string;
-    description: string;
-};
-
 type Set = {
     reps: number;
     weight: number;
     restTime: number;
     isDropSet?: boolean;
-    difficultyLevel?: number;
     exerciseId: number;
-    createdAt?: string;
-    deletedAt?: string;
-    order: number;
-    supersetName?: string;
+    setOrder?: number;
+    supersetName?: string | null;
 };
 
 type WorkoutExercise = {
-    exercise: Exercise;
+    exercise: ExerciseReturnType;
     sets: Set[];
     supersetName: string | null;
     description?: string;
@@ -67,28 +64,6 @@ const daysOfWeek = [
     { label: 'Sunday', value: 'Sunday' },
 ];
 
-const exerciseList: Exercise[] = [
-    { name: 'Bench Press', muscleGroup: 'chest', type: 'compound', description: 'A chest exercise where you press a barbell upwards while lying on a bench.' },
-    { name: 'Inclined Bench Press', muscleGroup: 'chest', type: 'compound', description: 'A variation of the bench press performed on an inclined bench to target the upper chest.' },
-    { name: 'Declined Bench Press', muscleGroup: 'chest', type: 'compound', description: 'A variation of the bench press performed on a declined bench to target the lower chest.' },
-    { name: 'Overhead Shoulder Press', muscleGroup: 'shoulders', type: 'compound', description: 'A shoulder exercise where you press a weight overhead while standing or seated.' },
-    { name: 'Deadlift', muscleGroup: 'back', type: 'compound', description: 'A full-body exercise that involves lifting a barbell from the ground to a standing position.' },
-    { name: 'Pec Fly Machine', muscleGroup: 'chest', type: 'machine', description: 'A machine exercise that isolates the chest muscles by mimicking the motion of a fly.' },
-    { name: 'Leg Extension Machine', muscleGroup: 'legs', type: 'machine', description: 'A machine exercise that targets the quadriceps by extending the legs from a seated position.' },
-    { name: 'Squat', muscleGroup: 'legs', type: 'compound', description: 'A lower body exercise where you bend your knees and hips to lower your body, then stand back up.' },
-    { name: 'Barbell Back Squat', muscleGroup: 'legs', type: 'compound', description: 'A lower body exercise where you bend your knees and hips to lower your body, with a barbell placed across your upper back, then stand back up.' },
-    { name: 'Leg Press Machine', muscleGroup: 'legs', type: 'machine', description: 'A machine exercise where you push a weight away from you using your legs.' },
-    { name: 'Lat Pulldown', muscleGroup: 'back', type: 'machine', description: 'A machine exercise that targets the upper back by pulling a bar down towards your chest.' },
-    { name: 'Pull-Up', muscleGroup: 'back', type: 'bodyweight', description: 'An upper body exercise where you lift your body up to a bar using your back and arm muscles.' },
-    { name: 'Seated Row', muscleGroup: 'back', type: 'machine', description: 'A machine exercise that targets the back muscles by pulling a handle towards your torso while seated.' },
-    { name: 'Bicep Curl', muscleGroup: 'arms', type: 'isolation', description: 'An arm exercise that targets the biceps by lifting a weight towards your shoulder.' },
-    { name: 'Tricep Overhead Extension', muscleGroup: 'arms', type: 'isolation', description: 'An arm exercise that targets the triceps by extending the arm at the elbow.' },
-];
-
-const muscleGroups = Array.from(
-    new Set(exerciseList.map((ex) => ex.muscleGroup))
-);
-
 const CreateWorkout = () => {
     const navigation = useNavigation<NavigationProp<any>>();
     const { t } = useTranslation();
@@ -100,15 +75,7 @@ const CreateWorkout = () => {
     const [recurringOnWeek, setRecurringOnWeek] = useState('');
     const [volumeCalculationType, setVolumeCalculationType] = useState<VolumeCalculationTypeType>('');
 
-    const [workout, setWorkout] = useState<WorkoutExercise[]>([
-        { exercise:{ name:'Declined Bench Press',muscleGroup:'chest',type:'compound',description:'A variation of the bench press performed on a declined bench to target the lower chest.' },sets:[],supersetName:'ppp' },
-        { exercise:{ name:'Pec Fly Machine',muscleGroup:'chest',type:'machine',description:'A machine exercise that isolates the chest muscles by mimicking the motion of a fly.' },sets:[],supersetName:'ppp' },
-        { exercise:{ name:'Seated Shoulder Press',muscleGroup:'shoulders',type:'compound',description:'A shoulder exercise where you press a weight overhead while standing or seated.' },sets:[],supersetName:null },
-        { exercise:{ name:'Bench Press',muscleGroup:'chest',type:'compound',description:'A chest exercise where you press a barbell upwards while lying on a bench.' },sets:[],supersetName:'www' },
-        { exercise:{ name:'Inclined Bench Press',muscleGroup:'chest',type:'compound',description:'A variation of the bench press performed on an inclined bench to target the upper chest.' },sets:[],supersetName:'www' },
-        { exercise:{ name:'Overhead Shoulder Press',muscleGroup:'shoulders',type:'compound',description:'A shoulder exercise where you press a weight overhead while standing or seated.' },sets:[],supersetName:null },
-    ]);
-
+    const [workout, setWorkout] = useState<WorkoutExercise[]>([]);
     const [supersetName, setSupersetName] = useState('');
     const [selectedExercises, setSelectedExercises] = useState<number[]>([]);
     const [selectedMuscleGroup, setSelectedMuscleGroup] = useState<string | null>(null);
@@ -117,6 +84,8 @@ const CreateWorkout = () => {
     const [isSaving, setIsSaving] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isModalVisible, setIsModalVisible] = useState(false);
+
+    const [allExercises, setAllExercises] = useState<ExerciseReturnType[]>([]);
 
     const resetScreenData = useCallback(() => {
         setWorkout([]);
@@ -151,11 +120,37 @@ const CreateWorkout = () => {
         }, [navigation])
     );
 
-    const addExerciseToWorkout = (exercise: Exercise) => {
-        setWorkout((prevWorkout) => [
-            ...prevWorkout,
-            { exercise, sets: [], supersetName: null },
-        ]);
+    // Load exercises from the database
+    useFocusEffect(
+        useCallback(() => {
+            const loadExercises = async () => {
+                try {
+                    setIsLoading(true);
+                    const exercises = await getAllExercises();
+                    setAllExercises(exercises);
+                } catch (error) {
+                    console.error(t('failed_to_load_exercises'), error);
+                } finally {
+                    setIsLoading(false);
+                }
+            };
+
+            loadExercises();
+        }, [t])
+    );
+
+    const muscleGroups = Array.from(
+        new Set(allExercises.map((ex) => ex.muscleGroup))
+    ) as string[];
+
+    const addExerciseToWorkout = (exerciseId: number) => {
+        const exercise = allExercises.find((ex) => ex.id === exerciseId);
+        if (exercise) {
+            setWorkout((prevWorkout) => [
+                ...prevWorkout,
+                { exercise, sets: [], supersetName: null },
+            ]);
+        }
         setIsExerciseModalOpen(false);
         setSelectedMuscleGroup(null);
     };
@@ -171,10 +166,7 @@ const CreateWorkout = () => {
                     weight: 0,
                     restTime: 60,
                     isDropSet: false,
-                    // TODO: missing fields
-                    // exerciseId
-                    // order
-                    // supersetName
+                    exerciseId: updatedExercise.exercise.id,
                 },
             ];
             newWorkout[exerciseIndex] = updatedExercise;
@@ -235,15 +227,45 @@ const CreateWorkout = () => {
         setIsSaving(true);
 
         try {
-            // Save workout logic here
-            // await addWorkout(workout);
+            const workoutData: WorkoutInsertType = {
+                title: workoutTitle,
+                description: workoutDescription,
+                recurringOnWeek: (recurringOnWeek || undefined) as WorkoutReturnType['recurringOnWeek'],
+                volumeCalculationType: volumeCalculationType || VOLUME_CALCULATION_TYPES.NONE,
+            };
+
+            // Save the workout and get the workoutId
+            const workoutId = await addWorkout(workoutData);
+
+            let setOrder = 0;
+
+            // For each exercise in the workout
+            for (const workoutExercise of workout) {
+                // For each set in the exercise
+                for (const set of workoutExercise.sets) {
+                    const setData: SetInsertType = {
+                        workoutId,
+                        exerciseId: workoutExercise.exercise.id,
+                        setOrder: setOrder++,
+                        supersetName: workoutExercise.supersetName || '',
+                        reps: set.reps,
+                        weight: set.weight,
+                        restTime: set.restTime,
+                        isDropSet: set.isDropSet,
+                    };
+
+                    // Save the set
+                    await addSet(setData);
+                }
+            }
+
             setIsModalVisible(true);
         } catch (error) {
             console.error(t('failed_to_save_workout'), error);
         } finally {
             setIsSaving(false);
         }
-    }, [workout, t, workoutTitle]);
+    }, [workout, t, workoutTitle, workoutDescription, recurringOnWeek, volumeCalculationType]);
 
     const handleModalClose = useCallback(() => {
         setIsModalVisible(false);
@@ -622,7 +644,10 @@ const CreateWorkout = () => {
                     <Dialog.Content>
                         <CustomPicker
                             items={[
-                                { label: t('select_muscle_group'), value: '' },
+                                {
+                                    label: t('select_muscle_group'),
+                                    value: ''
+                                },
                                 ...muscleGroups.map((group) => ({
                                     label: t(
                                         group.charAt(0).toUpperCase() + group.slice(1)
@@ -638,23 +663,19 @@ const CreateWorkout = () => {
                             <CustomPicker
                                 items={[
                                     { label: t('select_exercise'), value: '' },
-                                    ...exerciseList
+                                    ...allExercises
                                         .filter(
                                             (ex) => ex.muscleGroup === selectedMuscleGroup
                                         )
                                         .map((exercise) => ({
                                             label: exercise.name,
-                                            value: exercise.name,
+                                            value: exercise.id.toString(),
                                         })),
                                 ]}
                                 label={t('exercise')}
                                 onValueChange={(value) => {
-                                    const exercise = exerciseList.find(
-                                        (ex) => ex.name === value
-                                    );
-                                    if (exercise) {
-                                        addExerciseToWorkout(exercise);
-                                    }
+                                    const exerciseId = Number(value);
+                                    addExerciseToWorkout(exerciseId);
                                 }}
                                 selectedValue=""
                             />
@@ -666,8 +687,6 @@ const CreateWorkout = () => {
                         </Button>
                     </Dialog.Actions>
                 </Dialog>
-
-                {/* Superset Modal */}
                 <Dialog
                     visible={isSupersetModalOpen}
                     onDismiss={() => setIsSupersetModalOpen(false)}
@@ -705,7 +724,6 @@ const CreateWorkout = () => {
                     </Dialog.Actions>
                 </Dialog>
             </Portal>
-
             <ScrollView contentContainerStyle={styles.content}>
                 <CustomTextInput
                     label={t('workout_title')}
@@ -742,7 +760,6 @@ const CreateWorkout = () => {
                     onValueChange={(value) => setRecurringOnWeek(value)}
                     selectedValue={recurringOnWeek}
                 />
-
                 <Button
                     mode="contained"
                     onPress={() => setIsExerciseModalOpen(true)}
@@ -750,7 +767,6 @@ const CreateWorkout = () => {
                 >
                     {t('add_exercise')}
                 </Button>
-
                 <Button
                     mode="contained"
                     onPress={() => setIsSupersetModalOpen(true)}
@@ -759,10 +775,8 @@ const CreateWorkout = () => {
                 >
                     {t('create_superset')}
                 </Button>
-
                 <View style={styles.workoutContainer}>{renderWorkoutExercises()}</View>
             </ScrollView>
-
             <View style={styles.footer}>
                 <Button
                     disabled={isSaving}
@@ -773,7 +787,6 @@ const CreateWorkout = () => {
                     {t('save_workout')}
                 </Button>
             </View>
-
             {(isSaving || isLoading) && (
                 <View style={styles.overlay}>
                     <ActivityIndicator color={colors.primary} size="large" />

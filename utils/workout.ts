@@ -309,6 +309,9 @@ export async function calculateNextWorkoutRepsAndSets(
                             reps: set.reps || originalSet.reps,
                             restTime: set.restTime || originalSet.restTime,
                             weight: set.weight || originalSet.weight,
+                            setOrder: set.setOrder || originalSet.setOrder,
+                            workoutId: set.workoutId || originalSet.workoutId,
+                            supersetName: set.supersetName || originalSet.supersetName,
                         };
 
                         await updateSet(set.id!, updatedSet);
@@ -320,6 +323,9 @@ export async function calculateNextWorkoutRepsAndSets(
                             reps: set.reps,
                             restTime: set.restTime || 0,
                             weight: set.weight,
+                            setOrder: set.setOrder,
+                            workoutId: set.workoutId,
+                            supersetName: set.supersetName,
                         };
 
                         const newSetId = await addSet(newSet);

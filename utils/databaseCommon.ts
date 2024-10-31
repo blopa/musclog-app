@@ -39,7 +39,6 @@ interface CommonFunctionsParams {
     getAllExercises: () => Promise<ExerciseReturnType[]>;
     getAllWorkoutsWithTrashed: () => Promise<WorkoutReturnType[]>;
     getExerciseById: (id: number) => Promise<ExerciseReturnType | undefined>;
-    getExercisesByWorkoutExerciseIds: (exerciseIds: number[]) => Promise<ExerciseReturnType[]>;
     getSetById: (id: number) => Promise<SetReturnType | null | undefined>;
     getSetsByIds: (ids: number[]) => Promise<SetReturnType[]>;
     getUser: () => Promise<any>;
@@ -66,7 +65,6 @@ export const getCommonFunctions = ({
     getAllExercises,
     getAllWorkoutsWithTrashed,
     getExerciseById,
-    getExercisesByWorkoutExerciseIds,
     getSetById,
     getSetsByIds,
     getUser,
@@ -117,7 +115,8 @@ export const getCommonFunctions = ({
             const existingWorkoutExercisesId = workoutExercises.map((ex) => ex.exerciseId);
 
             for (const existingWorkout of allExistingWorkouts) {
-                const exercises = await getExercisesByWorkoutExerciseIds(existingWorkout.workoutExerciseIds);
+                // TODO: get all the sets and then all exercises from sets
+                const exercises = [] as ExerciseReturnType[];
                 const exerciseIds = exercises.map((e) => e.id);
 
                 const containsAll = existingWorkoutExercisesId.every((id) => exerciseIds.includes(id));
@@ -178,6 +177,9 @@ export const getCommonFunctions = ({
                             reps: set.reps,
                             restTime: 60,
                             weight: set.weight,
+                            setOrder: 0, // TODO: fix this?
+                            workoutId: 0, // TODO: fix this?
+                            supersetName: '', // TODO: fix this?
                         });
                         setIds.push(setId);
                     }
@@ -201,28 +203,10 @@ export const getCommonFunctions = ({
                         description: parsedWorkout.description || '',
                         title: parsedWorkout.title,
                         volumeCalculationType: VOLUME_CALCULATION_TYPES.NONE,
-                        workoutExerciseIds: [],
                     }, workoutExercises);
 
                     existingWorkout = await getWorkoutByIdWithTrashed(workoutId);
-                } else {
-                    // const workoutId = existingWorkout.id!;
-                    // await updateWorkout(workoutId, { ...existingWorkout, workoutExerciseIds: [] });
-                    // await deleteWorkoutExercisesByWorkoutId(workoutId);
                 }
-
-                // if (!foundWorkout) {
-                //     for (const workoutExercise of workoutExercises) {
-                //         workoutExercise.workoutId = existingWorkout?.id!;
-                //         const workoutExerciseId = await addWorkoutExercise(workoutExercise);
-                //         existingWorkout!.workoutExerciseIds.push(workoutExerciseId);
-                //     }
-                //
-                //     await updateWorkout(existingWorkout?.id!, {
-                //         ...existingWorkout!,
-                //         workoutExerciseIds: existingWorkout!.workoutExerciseIds
-                //     });
-                // }
 
                 const user = await getUser();
                 await addWorkoutEvent({
@@ -277,6 +261,9 @@ export const getCommonFunctions = ({
                                 reps: set.reps || originalSet.reps,
                                 restTime: set.restTime || originalSet.restTime,
                                 weight: set.weight || originalSet.weight,
+                                setOrder: set.setOrder || originalSet.setOrder,
+                                workoutId: set.workoutId || originalSet.workoutId,
+                                supersetName: set.supersetName || originalSet.supersetName,
                             };
 
                             await updateSet(set.setId, updatedSet);
@@ -288,6 +275,9 @@ export const getCommonFunctions = ({
                                 reps: set.reps,
                                 restTime: set.restTime || 0,
                                 weight: set.weight,
+                                setOrder: set.setOrder,
+                                workoutId: set.workoutId,
+                                supersetName: set.supersetName,
                             };
 
                             const newSetId = await addSet(newSet);

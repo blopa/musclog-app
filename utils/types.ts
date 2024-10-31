@@ -38,6 +38,9 @@ export type SetInsertType = {
     reps: number;
     restTime: number;
     weight: number;
+    workoutId: number;
+    setOrder: number;
+    supersetName?: string;
 };
 
 export type CurrentWorkoutProgressType = {
@@ -89,7 +92,6 @@ export type WorkoutInsertType = {
         | typeof WEDNESDAY;
     title: string;
     volumeCalculationType: VolumeCalculationTypeType;
-    workoutExerciseIds: number[];
 };
 
 export type VersioningInsertType = {
@@ -222,9 +224,7 @@ export type ChatReturnType = {
     id: number;
 } & Omit<ChatInsertType, 'id'>;
 
-type WorkoutTypeWithOptionalExerciseIds = {
-    workoutExerciseIds?: number[]; // TODO maybe remove it
-} & Omit<WorkoutReturnType, 'volumeCalculationType' | 'workoutExerciseIds'>;
+type WorkoutTypeWithOptionalExerciseIds = {} & Omit<WorkoutReturnType, 'volumeCalculationType'>;
 
 export type WorkoutEventInsertType = {
     alcohol?: number;

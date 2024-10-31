@@ -122,7 +122,7 @@ type WorkoutExerciseInsertTypeWithStrValues = { setIds: string } & Omit<WorkoutE
 
 type WorkoutExerciseReturnTypeWithStrValues = { setIds: string } & Omit<WorkoutExerciseReturnType, 'setIds'>;
 
-type WorkoutInsertTypeWithStrValues = { workoutExerciseIds: string } & Omit<WorkoutInsertType, 'workoutExerciseIds'>;
+type WorkoutInsertTypeWithStrValues = WorkoutInsertType;
 
 export class WorkoutLoggerDatabase extends Dexie implements IDatabase {
     bio!: Dexie.Table<BioReturnType, number, BioInsertType>;
@@ -352,17 +352,11 @@ export const addWorkoutWithExercises = async (workout: WorkoutInsertType, workou
         workoutId = await addWorkout(workout);
     }
 
-    const workoutExerciseIds = [];
     for (let i = 0; i < workoutExercises.length; i++) {
         workoutExercises[i].workoutId = workoutId;
         workoutExercises[i].order = i;
-        const workoutExerciseId = await addWorkoutExercise(workoutExercises[i]);
-        workoutExerciseIds.push(workoutExerciseId);
+        await addWorkoutExercise(workoutExercises[i]);
     }
-
-    await database.workouts.update(workoutId, {
-        workoutExerciseIds: JSON.stringify(workoutExerciseIds),
-    });
 
     return workoutId;
 };
@@ -372,7 +366,6 @@ export const addWorkout = async (workout: WorkoutInsertType): Promise<number> =>
     return database.workouts.add({
         ...workout,
         createdAt,
-        workoutExerciseIds: JSON.stringify(workout.workoutExerciseIds),
     });
 };
 
@@ -395,6 +388,7 @@ export const addWorkoutEvent = async (workoutEvent: WorkoutEventInsertType): Pro
         exerciseData = JSON.stringify(exercisesWithSets.map((exercisesWithSet) => {
             return {
                 exerciseId: exercisesWithSet.id,
+                workoutId: workoutEvent.workoutId,
                 sets: exercisesWithSet.sets.map((set) => {
                     return {
                         difficultyLevel: set.difficultyLevel,
@@ -404,7 +398,8 @@ export const addWorkoutEvent = async (workoutEvent: WorkoutEventInsertType): Pro
                         restTime: set.restTime,
                         setId: set.id,
                         weight: set.weight,
-                    } as Omit<SetReturnType, 'exerciseId'>;
+                        // setOrder: set.setOrder, // TODO not needed?
+                    } as Omit<SetReturnType, 'exerciseId' | 'workoutId' | 'setOrder' | 'supersetName'>;
                 }),
             };
         }));
@@ -452,7 +447,10 @@ export const addExercise = async (exercise: ExerciseInsertType): Promise<number>
 
 export const addSet = async (set: SetInsertType): Promise<number> => {
     const createdAt = set.createdAt || getCurrentTimestamp();
-    return database.sets.add({ ...set, createdAt });
+    return database.sets.add({
+        ...set,
+        createdAt,
+    });
 };
 
 export const addOrUpdateUser = async (user: UserInsertType, userMetrics?: UserMetricsInsertType): Promise<number> => {
@@ -946,22 +944,6 @@ export const getTotalExercisesCount = async (): Promise<number> => {
     return database.exercises.count();
 };
 
-export const getExercisesByWorkoutExerciseIds = async (workoutExerciseIds: number[]): Promise<ExerciseReturnType[]> => {
-    const workoutExercises = await database.workoutExercises
-        .where('id')
-        .anyOf(workoutExerciseIds)
-        .filter((workoutExercise) => workoutExercise.deletedAt === null || workoutExercise.deletedAt === undefined)
-        .toArray();
-
-    const exerciseIds = workoutExercises.map((workoutExercise) => workoutExercise.exerciseId);
-
-    return database.exercises
-        .where('id')
-        .anyOf(exerciseIds)
-        .filter((exercise) => exercise.deletedAt === null || exercise.deletedAt === undefined)
-        .toArray();
-};
-
 export const getAllWorkouts = async (): Promise<WorkoutReturnType[]> => {
     const result = await database.workouts
         .filter((workout) => workout.deletedAt === null || workout.deletedAt === undefined)
@@ -969,7 +951,6 @@ export const getAllWorkouts = async (): Promise<WorkoutReturnType[]> => {
 
     return result.map((workout) => ({
         ...workout,
-        workoutExerciseIds: JSON.parse(workout.workoutExerciseIds as unknown as string || '[]') as number[],
     }));
 };
 
@@ -978,8 +959,6 @@ export const getAllWorkoutsWithTrashed = async (): Promise<WorkoutReturnType[]> 
 
     return result.map((workout) => ({
         ...workout,
-        // TODO: maybe have a type for saving and for getting
-        workoutExerciseIds: JSON.parse(workout.workoutExerciseIds as unknown as string || '[]') as number[],
     }));
 };
 
@@ -990,7 +969,6 @@ export const getRecurringWorkouts = async (): Promise<WorkoutReturnType[] | unde
 
     return result.map((workout) => ({
         ...workout,
-        workoutExerciseIds: JSON.parse(workout.workoutExerciseIds as unknown as string || '[]') as number[],
     }));
 };
 
@@ -1001,7 +979,6 @@ export const getWorkouts = async (): Promise<WorkoutReturnType[] | undefined> =>
 
     return result.map((workout) => ({
         ...workout,
-        workoutExerciseIds: JSON.parse(workout.workoutExerciseIds as unknown as string || '[]') as number[],
     }));
 };
 
@@ -1013,7 +990,6 @@ export const getWorkoutById = async (id: number): Promise<WorkoutReturnType | un
 
     return {
         ...result,
-        workoutExerciseIds: JSON.parse(result?.workoutExerciseIds as unknown as string || '[]') as number[],
     } as WorkoutReturnType;
 };
 
@@ -1024,7 +1000,6 @@ export const getWorkoutByIdWithTrashed = async (id: number): Promise<WorkoutRetu
 
     return {
         ...result,
-        workoutExerciseIds: JSON.parse(result?.workoutExerciseIds as unknown as string || '[]') as number[],
     } as WorkoutReturnType;
 };
 
@@ -1313,7 +1288,6 @@ export const getWorkoutDetails = async (workoutId: number): Promise<{ workout: W
     return {
         workout: {
             ...workout,
-            workoutExerciseIds: JSON.parse(workout?.workoutExerciseIds as unknown as string || '[]') as number[],
         },
         workoutExercises,
     };
@@ -1349,7 +1323,6 @@ export const getWorkoutsPaginated = async (offset: number, limit: number): Promi
 
     return result.map((workout) => ({
         ...workout,
-        workoutExerciseIds: JSON.parse(workout.workoutExerciseIds as unknown as string || '[]') as number[],
     }));
 };
 
@@ -1848,7 +1821,6 @@ export const processWorkoutPlan = async (workoutPlan: WorkoutPlan): Promise<void
             description: workout.description || '',
             title: workout.title,
             volumeCalculationType: VOLUME_CALCULATION_TYPES.NONE,
-            workoutExerciseIds: [],
         };
 
         for (const planExercise of workout.exercises) {
@@ -1885,9 +1857,12 @@ export const processWorkoutPlan = async (workoutPlan: WorkoutPlan): Promise<void
                 const weight = oneRepMaxWeight * (oneRepMaxPercentage / 100);
                 const setId = await addSet({
                     exerciseId: exercise?.id!,
-                    reps: reps,
-                    restTime: restTime,
-                    weight: weight,
+                    reps,
+                    restTime,
+                    weight,
+                    workoutId: 0, // TODO create the workout first
+                    setOrder: i, // TODO create the workout first
+                    supersetName: '', // TODO: fix this
                 });
                 setIds.push(setId);
             }
@@ -2081,7 +2056,7 @@ export const createNewWorkoutTables = async (): Promise<void> => {
                 'createdAt',
                 'deletedAt',
                 'workoutId',
-                'order',
+                'setOrder',
                 'supersetName',
             ].join(', '),
         });
@@ -2237,7 +2212,6 @@ const commonFunctions = getCommonFunctions({
     getAllExercises,
     getAllWorkoutsWithTrashed,
     getExerciseById,
-    getExercisesByWorkoutExerciseIds,
     getSetById,
     getSetsByIds,
     getUser,

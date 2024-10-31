@@ -84,7 +84,7 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
                 const workout = await getWorkoutById(workoutId);
                 setWorkout(workout);
 
-                if (workout && workout.workoutExerciseIds.length > 0) {
+                if (workout) {
                     const workoutExercises = await getWorkoutExercisesByWorkoutId(workoutId);
 
                     const exerciseDetails = await Promise.all(
@@ -201,6 +201,9 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
                             targetWeight: item.targetWeight,
                             unitSystem,
                             weight: item.weight,
+                            setOrder: item.setOrder,
+                            workoutId: workout.id,
+                            supersetName: item.supersetName,
                         };
 
                         exercise.sets.push(set);

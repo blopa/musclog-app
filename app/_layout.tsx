@@ -59,7 +59,7 @@ import {
     countExercises,
     getLatestUser,
     getUser,
-} from '@/utils/database';
+    createNewWorkoutTables } from '@/utils/database';
 import { getCurrentTimestamp } from '@/utils/date';
 import { getEncryptionKey } from '@/utils/encryption';
 import { getLatestHealthConnectData } from '@/utils/healthConnect';
@@ -225,10 +225,13 @@ function RootLayout() {
                 await getLatestHealthConnectData();
             }
 
+            // TODO: migrations only work if user update on every version
+            // every time it's out, which is not ideal
             await addMacrosToWorkoutEventTable();
             await addUserMeasurementsTable();
             await addAlcoholAndFiberMacroToWorkoutEventTable();
             await addAlcoholMacroToUserNutritionTable();
+            await createNewWorkoutTables();
 
             await AsyncStorage.setItem(LAST_TIME_APP_USED, getCurrentTimestamp().toString());
         };
