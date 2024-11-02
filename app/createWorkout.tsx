@@ -6,7 +6,14 @@ import { VOLUME_CALCULATION_TYPES, VOLUME_CALCULATION_TYPES_VALUES } from '@/con
 import { IMPERIAL_SYSTEM } from '@/constants/storage';
 import useUnit from '@/hooks/useUnit';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
-import { addSet, addWorkout, getAllExercises, getWorkoutDetails, updateSet, updateWorkout } from '@/utils/database';
+import {
+    addSet,
+    addWorkout,
+    getAllExercises,
+    getWorkoutDetails,
+    updateSet,
+    updateWorkout,
+} from '@/utils/database';
 import {
     ExerciseReturnType,
     SetInsertType,
@@ -584,6 +591,13 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                     title={workoutWithExercisesAndSets.exercise.name}
                     description={workoutWithExercisesAndSets.exercise.description}
                     left={(props) => <List.Icon {...props} icon="dumbbell" />}
+                    right={() => (
+                        <IconButton
+                            icon="delete"
+                            size={20}
+                            onPress={() => removeExercise(exerciseIndex)}
+                        />
+                    )}
                 >
                     {workoutWithExercisesAndSets.sets.map((set, setIndex) => (
                         <View key={setIndex} style={styles.setContainer}>
