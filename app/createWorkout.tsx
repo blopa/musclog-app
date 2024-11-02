@@ -782,41 +782,46 @@ const CreateWorkout = () => {
                 </Dialog>
             </Portal>
             <ScrollView contentContainerStyle={styles.content}>
-                <CustomTextInput
-                    label={t('workout_title')}
-                    onChangeText={setWorkoutTitle}
-                    placeholder={t('enter_workout_title')}
-                    value={workoutTitle}
-                />
-                <CustomTextArea
-                    label={t('workout_description')}
-                    onChangeText={setWorkoutDescription}
-                    placeholder={t('enter_workout_description')}
-                    value={workoutDescription}
-                />
-                <CustomPicker
-                    items={VOLUME_CALCULATION_TYPES_VALUES.map((value) => ({
-                        label: t(value),
-                        value,
-                    }))}
-                    label={t('volume_calculation_type')}
-                    onValueChange={(value) =>
-                        setVolumeCalculationType(value as VolumeCalculationTypeType)
-                    }
-                    selectedValue={volumeCalculationType}
-                />
-                <CustomPicker
-                    items={[
-                        { label: t('none'), value: '' },
-                        ...daysOfWeek.map((day) => ({
-                            label: t(day.label.toLowerCase()),
-                            value: day.value,
-                        })),
-                    ]}
-                    label={t('repeat_on_day_of_week')}
-                    onValueChange={(value) => setRecurringOnWeek(value)}
-                    selectedValue={recurringOnWeek}
-                />
+                <List.Accordion
+                    title={t('workout_details')}
+                    left={(props) => <List.Icon {...props} icon="information-outline" />}
+                >
+                    <CustomTextInput
+                        label={t('workout_title')}
+                        onChangeText={setWorkoutTitle}
+                        placeholder={t('enter_workout_title')}
+                        value={workoutTitle}
+                    />
+                    <CustomTextArea
+                        label={t('workout_description')}
+                        onChangeText={setWorkoutDescription}
+                        placeholder={t('enter_workout_description')}
+                        value={workoutDescription}
+                    />
+                    <CustomPicker
+                        items={VOLUME_CALCULATION_TYPES_VALUES.map((value) => ({
+                            label: t(value),
+                            value,
+                        }))}
+                        label={t('volume_calculation_type')}
+                        onValueChange={(value) =>
+                            setVolumeCalculationType(value as VolumeCalculationTypeType)
+                        }
+                        selectedValue={volumeCalculationType}
+                    />
+                    <CustomPicker
+                        items={[
+                            { label: t('none'), value: '' },
+                            ...daysOfWeek.map((day) => ({
+                                label: t(day.label.toLowerCase()),
+                                value: day.value,
+                            })),
+                        ]}
+                        label={t('repeat_on_day_of_week')}
+                        onValueChange={(value) => setRecurringOnWeek(value)}
+                        selectedValue={recurringOnWeek}
+                    />
+                </List.Accordion>
                 <Button
                     mode="contained"
                     onPress={() => setIsExerciseModalOpen(true)}

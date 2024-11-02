@@ -1850,7 +1850,7 @@ export const restoreDatabase = async (dump: string, decryptionPhrase?: string): 
 
 export const addUserMeasurementsTable = async (): Promise<void> => {
     const currentVersion = await getLatestVersion();
-    if (currentVersion && currentVersion <= packageJson.version) {
+    if (currentVersion && currentVersion < packageJson.version) {
         if (database.isOpen()) {
             database.close();
         }
@@ -1878,7 +1878,7 @@ export const addUserMeasurementsTable = async (): Promise<void> => {
 
 export const createNewWorkoutTables = async (): Promise<void> => {
     const currentVersion = await getLatestVersion();
-    if (currentVersion && currentVersion <= packageJson.version) {
+    if (currentVersion && currentVersion < packageJson.version) {
         // Close the database if open to apply version changes
         if (database.isOpen()) {
             database.close();
@@ -1940,7 +1940,7 @@ export const createNewWorkoutTables = async (): Promise<void> => {
 
 export const addAlcoholMacroToUserNutritionTable = async (): Promise<void> => {
     const currentVersion = await getLatestVersion();
-    if (currentVersion && currentVersion <= packageJson.version) {
+    if (currentVersion && currentVersion < packageJson.version) {
         if (database.isOpen()) {
             database.close();
         }
@@ -1981,7 +1981,7 @@ export const addAlcoholMacroToUserNutritionTable = async (): Promise<void> => {
 
 export const addAlcoholAndFiberMacroToWorkoutEventTable = async (): Promise<void> => {
     const currentVersion = await getLatestVersion();
-    if (currentVersion && currentVersion <= packageJson.version) {
+    if (currentVersion && currentVersion < packageJson.version) {
         if (database.isOpen()) {
             database.close();
         }
@@ -2025,7 +2025,7 @@ export const addAlcoholAndFiberMacroToWorkoutEventTable = async (): Promise<void
 
 export const addMacrosToWorkoutEventTable = async (): Promise<void> => {
     const currentVersion = await getLatestVersion();
-    if (currentVersion && currentVersion <= packageJson.version) {
+    if (currentVersion && currentVersion < packageJson.version) {
         if (database.isOpen()) {
             database.close();
         }
