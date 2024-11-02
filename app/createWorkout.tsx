@@ -13,7 +13,7 @@ import {
     WorkoutReturnType
 } from '@/utils/types';
 import { NavigationProp, useNavigation, useFocusEffect } from '@react-navigation/native';
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
     View,
@@ -130,6 +130,7 @@ const CreateWorkout = () => {
                     setAllExercises(exercises);
                 } catch (error) {
                     console.error(t('failed_to_load_exercises'), error);
+                    Alert.alert(t('error'), t('failed_to_load_exercises'));
                 } finally {
                     setIsLoading(false);
                 }
@@ -182,6 +183,17 @@ const CreateWorkout = () => {
 
     const createSuperset = () => {
         if (selectedExercises.length < 2 || !supersetName) {
+            Alert.alert(t('validation_error'), t('superset_requires_min_exercises'));
+            return;
+        }
+
+        // Check for duplicate superset names
+        const existingSupersetNames = workout
+            .filter((ex) => ex.supersetName)
+            .map((ex) => ex.supersetName?.toLowerCase());
+
+        if (existingSupersetNames.includes(supersetName.toLowerCase())) {
+            Alert.alert(t('validation_error'), t('superset_name_exists'));
             return;
         }
 
@@ -191,12 +203,14 @@ const CreateWorkout = () => {
                 (index) => newWorkout[index]
             );
 
+            // Remove selected exercises from their current positions
             selectedExercises
                 .sort((a, b) => b - a)
                 .forEach((index) => {
                     newWorkout.splice(index, 1);
                 });
 
+            // Insert supersets at the position of the first selected exercise
             const insertIndex = Math.min(...selectedExercises);
             supersetExercises.forEach((exercise, index) => {
                 newWorkout.splice(insertIndex + index, 0, {
@@ -214,6 +228,7 @@ const CreateWorkout = () => {
     };
 
     const handleSaveWorkout = useCallback(async () => {
+        // Validation: Ensure at least one exercise and each exercise has at least one set
         if (!workoutTitle.trim()) {
             Alert.alert(t('validation_error'), t('workout_title_required'));
             return;
@@ -221,6 +236,16 @@ const CreateWorkout = () => {
 
         if (workout.length === 0) {
             Alert.alert(t('validation_error'), t('workout_must_have_exercises'));
+            return;
+        }
+
+        const exercisesWithoutSets = workout.filter((ex) => ex.sets.length === 0);
+        if (exercisesWithoutSets.length > 0) {
+            Alert.alert(
+                t('validation_error'),
+                t('all_exercises_must_have_at_least_one_set')
+            );
+
             return;
         }
 
@@ -262,6 +287,7 @@ const CreateWorkout = () => {
             setIsModalVisible(true);
         } catch (error) {
             console.error(t('failed_to_save_workout'), error);
+            Alert.alert(t('error'), t('failed_to_save_workout'));
         } finally {
             setIsSaving(false);
         }
@@ -427,7 +453,7 @@ const CreateWorkout = () => {
                         <View key={`superset-${exerciseIndex}`} style={styles.supersetContainer}>
                             <View style={styles.supersetHeader}>
                                 <View>
-                                    <Text>
+                                    <Text style={styles.supersetTitle}>
                                         {t('superset')}: {workoutWithExercisesAndSets.supersetName || ''}
                                     </Text>
                                 </View>
@@ -440,7 +466,10 @@ const CreateWorkout = () => {
                                     <IconButton
                                         icon="arrow-down"
                                         onPress={() => moveSuperset(exerciseIndex, 'down')}
-                                        disabled={exerciseIndex >= workout.length - workout.filter((ex) => ex.supersetName === workoutWithExercisesAndSets.supersetName).length}
+                                        disabled={
+                                            exerciseIndex >=
+                                            workout.length - workout.filter((ex) => ex.supersetName === workoutWithExercisesAndSets.supersetName).length
+                                        }
                                     />
                                 </View>
                             </View>
@@ -539,12 +568,20 @@ const CreateWorkout = () => {
                     <IconButton
                         icon="arrow-up"
                         onPress={() => moveExercise(exerciseIndex, 'up')}
-                        disabled={isSuperset ? (exerciseIndex === workout.findIndex((ex) => ex.supersetName === workoutWithExercisesAndSets.supersetName)) : exerciseIndex === 0}
+                        disabled={
+                            isSuperset
+                                ? exerciseIndex === workout.findIndex((ex) => ex.supersetName === workoutWithExercisesAndSets.supersetName)
+                                : exerciseIndex === 0
+                        }
                     />
                     <IconButton
                         icon="arrow-down"
                         onPress={() => moveExercise(exerciseIndex, 'down')}
-                        disabled={isSuperset ? (exerciseIndex === workout.length - 1 || exerciseIndex === workout.findIndex((ex) => ex.supersetName === workoutWithExercisesAndSets.supersetName) + workout.filter((ex) => ex.supersetName === workoutWithExercisesAndSets.supersetName).length - 1) : exerciseIndex === workout.length - 1}
+                        disabled={
+                            isSuperset
+                                ? exerciseIndex >= workout.length - workout.filter((ex) => ex.supersetName === workoutWithExercisesAndSets.supersetName).length
+                                : exerciseIndex === workout.length - 1
+                        }
                     />
                 </View>
             </View>
@@ -604,6 +641,24 @@ const CreateWorkout = () => {
             return newWorkout;
         });
     }
+
+    const canSaveWorkout = useMemo(() => {
+        if (!workoutTitle.trim()) {
+            return false;
+        }
+
+        if (workout.length === 0) {
+            return false;
+        }
+
+        for (const ex of workout) {
+            if (ex.sets.length === 0) {
+                return false;
+            }
+        }
+
+        return true;
+    }, [workoutTitle, workout]);
 
     return (
         <View style={styles.container}>
@@ -714,6 +769,15 @@ const CreateWorkout = () => {
                     </Dialog.Content>
                     <Dialog.Actions>
                         <Button
+                            onPress={() => {
+                                setSupersetName('');
+                                setSelectedExercises([]);
+                                setIsSupersetModalOpen(false);
+                            }}
+                        >
+                            {t('cancel')}
+                        </Button>
+                        <Button
                             onPress={createSuperset}
                             disabled={selectedExercises.length < 2 || !supersetName}
                         >
@@ -777,12 +841,12 @@ const CreateWorkout = () => {
             </ScrollView>
             <View style={styles.footer}>
                 <Button
-                    disabled={isSaving}
+                    disabled={isSaving || isLoading || !canSaveWorkout}
                     mode="contained"
                     onPress={handleSaveWorkout}
                     style={styles.button}
                 >
-                    {t('save_workout')}
+                    {isSaving ? t('saving') : t('save_workout')}
                 </Button>
             </View>
             {(isSaving || isLoading) && (
@@ -925,6 +989,11 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         flexDirection: 'row',
         justifyContent: 'space-between',
         marginBottom: 8,
+    },
+    supersetTitle: {
+        color: colors.onSurface,
+        fontSize: 16,
+        fontWeight: '600',
     },
     toggleSwitch: {
         marginLeft: 8,
