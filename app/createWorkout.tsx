@@ -13,9 +13,10 @@ import {
     getWorkoutDetails,
     updateSet,
     updateWorkout,
+    deleteWorkout,
 } from '@/utils/database';
 import {
-    ExerciseReturnType,
+    ExerciseReturnType, ExerciseWithSetsType,
     SetInsertType,
     VolumeCalculationTypeType,
     WorkoutInsertType,
@@ -56,6 +57,7 @@ type SetLocalType = {
     exerciseId: number;
     setOrder?: number;
     supersetName?: string | null;
+    isNew?: boolean;
 };
 
 type WorkoutWithExercisesAndSets = {
@@ -92,6 +94,7 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
     const [volumeCalculationType, setVolumeCalculationType] = useState<VolumeCalculationTypeType>('');
 
     const [workout, setWorkout] = useState<WorkoutWithExercisesAndSets[]>([]);
+    const [workoutDetails, setWorkoutDetails] = useState<{ workout: WorkoutReturnType; exercisesWithSets: ExerciseWithSetsType[] } | null>(null);
     const [supersetName, setSupersetName] = useState('');
     const [selectedExercises, setSelectedExercises] = useState<number[]>([]);
     const [selectedMuscleGroup, setSelectedMuscleGroup] = useState<string | null>(null);
@@ -109,8 +112,9 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
         try {
             const workoutData = await getWorkoutDetails(Number(id));
             if (workoutData) {
+                setWorkoutDetails(workoutData);
+
                 const { workout, exercisesWithSets } = workoutData;
-                // Populate the workout details in the state
                 setWorkoutTitle(workout.title || '');
                 setWorkoutDescription(workout.description || '');
                 setRecurringOnWeek(workout.recurringOnWeek || '');
@@ -188,7 +192,6 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
         }, [navigation])
     );
 
-    // Load exercises from the database
     useFocusEffect(
         useCallback(() => {
             const loadExercises = async () => {
@@ -236,6 +239,7 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                     restTime: 60,
                     isDropSet: false,
                     exerciseId: updatedExercise.exercise.id,
+                    isNew: true,
                 },
             ];
             newWorkout[exerciseIndex] = updatedExercise;
@@ -255,7 +259,6 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
             return;
         }
 
-        // Check for duplicate superset names
         const existingSupersetNames = workout
             .filter((ex) => ex.supersetName)
             .map((ex) => ex.supersetName?.toLowerCase());
@@ -271,14 +274,12 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                 (index) => newWorkout[index]
             );
 
-            // Remove selected exercises from their current positions
             selectedExercises
                 .sort((a, b) => b - a)
                 .forEach((index) => {
                     newWorkout.splice(index, 1);
                 });
 
-            // Insert supersets at the position of the first selected exercise
             const insertIndex = Math.min(...selectedExercises);
             supersetExercises.forEach((exercise, index) => {
                 newWorkout.splice(insertIndex + index, 0, {
@@ -296,7 +297,6 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
     };
 
     const handleSaveWorkout = useCallback(async () => {
-        // Validation: Ensure at least one exercise and each exercise has at least one set
         if (!workoutTitle.trim()) {
             Alert.alert(t('validation_error'), t('workout_title_required'));
             return;
@@ -330,11 +330,10 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
             let workoutId: number;
 
             if (id) {
-                // Update the existing workout
                 workoutId = Number(id);
                 await updateWorkout(workoutId, workoutData);
+                const { exercisesWithSets = [] } = workoutDetails || {};
 
-                // Update each set for each exercise
                 for (const workoutWithExercisesAndSets of workout) {
                     for (const set of workoutWithExercisesAndSets.sets) {
                         const setData: SetInsertType = {
@@ -348,11 +347,19 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                             isDropSet: set.isDropSet,
                         };
 
-                        await updateSet(set?.id!, setData);
+                        if (set.isNew) {
+                            await addSet(setData);
+                        } else {
+                            await updateSet(set?.id!, setData);
+                        }
                     }
+
+                    const existingSets = workoutWithExercisesAndSets.sets.map((set) => set.id);
+
+                    // TODO: use the exercisesWithSets variable to determine which sets to delete
+                    // const originalExercise = exercisesWithSets.find maybe?
                 }
             } else {
-                // Create a new workout and save its sets
                 workoutId = await addWorkout(workoutData);
 
                 let setOrder = 0;
@@ -381,7 +388,19 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
         } finally {
             setIsSaving(false);
         }
-    }, [workoutTitle, workout, t, workoutDescription, recurringOnWeek, volumeCalculationType, id]);
+    }, [workoutDetails, workoutTitle, workout, t, workoutDescription, recurringOnWeek, volumeCalculationType, id]);
+
+    const handleDeleteWorkout = useCallback(async () => {
+        if (id) {
+            try {
+                await deleteWorkout(Number(id));
+                navigation.navigate('listWorkouts');
+            } catch (error) {
+                console.error(t('failed_to_delete_workout'), error);
+                Alert.alert(t('error'), t('failed_to_delete_workout'));
+            }
+        }
+    }, [id, t, navigation]);
 
     const handleModalClose = useCallback(() => {
         setIsModalVisible(false);
@@ -781,7 +800,6 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
             </Appbar.Header>
 
             <Portal>
-                {/* Exercise Modal */}
                 <Dialog
                     visible={isExerciseModalOpen}
                     onDismiss={() => setIsExerciseModalOpen(false)}
@@ -943,6 +961,13 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                     style={styles.button}
                 >
                     {isSaving ? t('saving') : t('save_workout')}
+                </Button>
+                <Button
+                    mode="contained"
+                    onPress={handleDeleteWorkout}
+                    style={styles.button}
+                >
+                    {t('delete_workout')}
                 </Button>
             </View>
             {(isSaving || isLoading) && (
