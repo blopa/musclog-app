@@ -6,7 +6,7 @@ import { VOLUME_CALCULATION_TYPES, VOLUME_CALCULATION_TYPES_VALUES } from '@/con
 import { IMPERIAL_SYSTEM } from '@/constants/storage';
 import useUnit from '@/hooks/useUnit';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
-import { addSet, addWorkout, getAllExercises, getWorkoutById } from '@/utils/database';
+import { addSet, addWorkout, getAllExercises, getWorkoutDetails } from '@/utils/database';
 import {
     ExerciseReturnType,
     SetInsertType,
@@ -99,12 +99,42 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
 
     const loadWorkout = useCallback(async () => {
         try {
-            const workout = await getWorkoutById(Number(id));
-            if (workout) {
-                // TODO: Load workout data into state
+            const workoutData = await getWorkoutDetails(Number(id));
+            if (workoutData) {
+                const { workout, exercisesWithSets } = workoutData;
+                // Populate the workout details in the state
+                setWorkoutTitle(workout.title || '');
+                setWorkoutDescription(workout.description || '');
+                setRecurringOnWeek(workout.recurringOnWeek || '');
+                setVolumeCalculationType(workout.volumeCalculationType || '');
+
+                const workoutExercises = exercisesWithSets.map((exercise) => ({
+                    exercise: {
+                        id: exercise.id,
+                        name: exercise.name,
+                        muscleGroup: exercise.muscleGroup,
+                        description: exercise.description,
+                    },
+                    sets: exercise.sets.map((set) => ({
+                        reps: set.reps,
+                        weight: set.weight,
+                        restTime: set.restTime,
+                        isDropSet: set.isDropSet,
+                        exerciseId: exercise.id,
+                        setOrder: set.setOrder,
+                        supersetName: set.supersetName,
+                    })),
+                    supersetName: exercise.sets.find((set) => set.supersetName)?.supersetName || null,
+                    description: exercise.description || '',
+                }));
+
+                setWorkout(workoutExercises);
             }
         } catch (error) {
             console.error(t('failed_to_load_workout'), error);
+            Alert.alert(t('error'), t('failed_to_load_workout'));
+        } finally {
+            setIsLoading(false);
         }
     }, [id, t]);
 
@@ -288,28 +318,32 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                 volumeCalculationType: volumeCalculationType || VOLUME_CALCULATION_TYPES.NONE,
             };
 
-            // Save the workout and get the workoutId
-            const workoutId = await addWorkout(workoutData);
+            if (id) {
+                // TODO: if there's an id, update the workout and the workout sets
+            } else {
+                // Save the workout and get the workoutId
+                const workoutId = await addWorkout(workoutData);
 
-            let setOrder = 0;
+                let setOrder = 0;
 
-            // For each exercise in the workout
-            for (const workoutWithExercisesAndSets of workout) {
-                // For each set in the exercise
-                for (const set of workoutWithExercisesAndSets.sets) {
-                    const setData: SetInsertType = {
-                        workoutId,
-                        exerciseId: workoutWithExercisesAndSets.exercise.id,
-                        setOrder: setOrder++,
-                        supersetName: workoutWithExercisesAndSets.supersetName || '',
-                        reps: set.reps,
-                        weight: set.weight,
-                        restTime: set.restTime,
-                        isDropSet: set.isDropSet,
-                    };
+                // For each exercise in the workout
+                for (const workoutWithExercisesAndSets of workout) {
+                    // For each set in the exercise
+                    for (const set of workoutWithExercisesAndSets.sets) {
+                        const setData: SetInsertType = {
+                            workoutId,
+                            exerciseId: workoutWithExercisesAndSets.exercise.id,
+                            setOrder: setOrder++,
+                            supersetName: workoutWithExercisesAndSets.supersetName || '',
+                            reps: set.reps,
+                            weight: set.weight,
+                            restTime: set.restTime,
+                            isDropSet: set.isDropSet,
+                        };
 
-                    // Save the set
-                    await addSet(setData);
+                        // Save the set
+                        await addSet(setData);
+                    }
                 }
             }
 
