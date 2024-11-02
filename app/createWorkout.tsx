@@ -6,7 +6,7 @@ import { VOLUME_CALCULATION_TYPES, VOLUME_CALCULATION_TYPES_VALUES } from '@/con
 import { IMPERIAL_SYSTEM } from '@/constants/storage';
 import useUnit from '@/hooks/useUnit';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
-import { addSet, addWorkout, getAllExercises, getWorkoutDetails } from '@/utils/database';
+import { addSet, addWorkout, getAllExercises, getWorkoutDetails, updateSet, updateWorkout } from '@/utils/database';
 import {
     ExerciseReturnType,
     SetInsertType,
@@ -40,7 +40,8 @@ import {
     List,
 } from 'react-native-paper';
 
-type Set = {
+type SetLocalType = {
+    id?: number;
     reps: number;
     weight: number;
     restTime: number;
@@ -52,7 +53,7 @@ type Set = {
 
 type WorkoutWithExercisesAndSets = {
     exercise: ExerciseReturnType;
-    sets: Set[];
+    sets: SetLocalType[];
     supersetName: string | null;
     description?: string;
 };
@@ -123,6 +124,7 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                         exerciseId: exercise.id,
                         setOrder: set.setOrder,
                         supersetName: set.supersetName,
+                        id: set.id,
                     })),
                     supersetName: exercise.sets.find((set) => set.supersetName)?.supersetName || null,
                     description: exercise.description || '',
@@ -318,17 +320,36 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                 volumeCalculationType: volumeCalculationType || VOLUME_CALCULATION_TYPES.NONE,
             };
 
+            let workoutId: number;
+
             if (id) {
-                // TODO: if there's an id, update the workout and the workout sets
+                // Update the existing workout
+                workoutId = Number(id);
+                await updateWorkout(workoutId, workoutData);
+
+                // Update each set for each exercise
+                for (const workoutWithExercisesAndSets of workout) {
+                    for (const set of workoutWithExercisesAndSets.sets) {
+                        const setData: SetInsertType = {
+                            workoutId,
+                            exerciseId: workoutWithExercisesAndSets.exercise.id,
+                            setOrder: set.setOrder || 0,
+                            supersetName: workoutWithExercisesAndSets.supersetName || '',
+                            reps: set.reps,
+                            weight: set.weight,
+                            restTime: set.restTime,
+                            isDropSet: set.isDropSet,
+                        };
+
+                        await updateSet(set?.id!, setData);
+                    }
+                }
             } else {
-                // Save the workout and get the workoutId
-                const workoutId = await addWorkout(workoutData);
+                // Create a new workout and save its sets
+                workoutId = await addWorkout(workoutData);
 
                 let setOrder = 0;
-
-                // For each exercise in the workout
                 for (const workoutWithExercisesAndSets of workout) {
-                    // For each set in the exercise
                     for (const set of workoutWithExercisesAndSets.sets) {
                         const setData: SetInsertType = {
                             workoutId,
@@ -341,7 +362,6 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                             isDropSet: set.isDropSet,
                         };
 
-                        // Save the set
                         await addSet(setData);
                     }
                 }
@@ -354,7 +374,7 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
         } finally {
             setIsSaving(false);
         }
-    }, [workout, t, workoutTitle, workoutDescription, recurringOnWeek, volumeCalculationType]);
+    }, [workoutTitle, workout, t, workoutDescription, recurringOnWeek, volumeCalculationType, id]);
 
     const handleModalClose = useCallback(() => {
         setIsModalVisible(false);
@@ -575,7 +595,7 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                                 keyboardType="numeric"
                                 value={set.reps.toString()}
                                 onChangeText={(text) =>
-                                    updateSet(exerciseIndex, setIndex, 'reps', parseInt(text))
+                                    updateLocalSet(exerciseIndex, setIndex, 'reps', parseInt(text))
                                 }
                                 placeholder={t('reps')}
                             />
@@ -584,7 +604,7 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                                 keyboardType="numeric"
                                 value={set.weight.toString()}
                                 onChangeText={(text) =>
-                                    updateSet(exerciseIndex, setIndex, 'weight', parseFloat(text))
+                                    updateLocalSet(exerciseIndex, setIndex, 'weight', parseFloat(text))
                                 }
                                 placeholder={t('weight')}
                             />
@@ -593,7 +613,7 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                                 keyboardType="numeric"
                                 value={set.restTime.toString()}
                                 onChangeText={(text) =>
-                                    updateSet(exerciseIndex, setIndex, 'restTime', parseInt(text))
+                                    updateLocalSet(exerciseIndex, setIndex, 'restTime', parseInt(text))
                                 }
                                 placeholder={t('rest_time_sec')}
                             />
@@ -601,7 +621,7 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                                 <Text style={styles.labelToggleSwitch}>{t('is_drop_set')}</Text>
                                 <Switch
                                     onValueChange={(value) =>
-                                        updateSet(exerciseIndex, setIndex, 'isDropSet', value)
+                                        updateLocalSet(exerciseIndex, setIndex, 'isDropSet', value)
                                     }
                                     value={!!set.isDropSet}
                                 />
@@ -645,10 +665,10 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
         );
     }
 
-    function updateSet(
+    function updateLocalSet(
         exerciseIndex: number,
         setIndex: number,
-        field: keyof Set,
+        field: keyof SetLocalType,
         value: any
     ) {
         setWorkout((prevWorkout) => {
