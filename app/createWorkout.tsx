@@ -14,6 +14,7 @@ import {
     updateSet,
     updateWorkout,
     deleteWorkout,
+    deleteSet,
 } from '@/utils/database';
 import {
     ExerciseReturnType, ExerciseWithSetsType,
@@ -332,7 +333,11 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
             if (id) {
                 workoutId = Number(id);
                 await updateWorkout(workoutId, workoutData);
+
                 const { exercisesWithSets = [] } = workoutDetails || {};
+                const originalSetIds = exercisesWithSets.flatMap((exercise) =>
+                    exercise.sets.map((set) => set.id)
+                );
 
                 for (const workoutWithExercisesAndSets of workout) {
                     for (const set of workoutWithExercisesAndSets.sets) {
@@ -350,14 +355,22 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                         if (set.isNew) {
                             await addSet(setData);
                         } else {
-                            await updateSet(set?.id!, setData);
+                            await updateSet(set.id!, setData);
                         }
                     }
+                }
 
-                    const existingSets = workoutWithExercisesAndSets.sets.map((set) => set.id);
+                // Identify sets to delete
+                const currentSetIds = workout.flatMap((exercise) =>
+                    exercise.sets.map((set) => set.id)
+                );
 
-                    // TODO: use the exercisesWithSets variable to determine which sets to delete
-                    // const originalExercise = exercisesWithSets.find maybe?
+                const setsToDelete = originalSetIds.filter(
+                    (originalId) => !currentSetIds.includes(originalId)
+                );
+
+                for (const setId of setsToDelete) {
+                    await deleteSet(setId);
                 }
             } else {
                 workoutId = await addWorkout(workoutData);
