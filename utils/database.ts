@@ -2627,15 +2627,11 @@ export const createNewWorkoutTables = async (): Promise<void> => {
                 console.log('Added "supersetName" column to "Set" table.');
             }
 
-            // 4. (Optional) Remove 'workoutExerciseIds' from 'Workout' table
-            // SQLite does not support DROP COLUMN directly. To remove a column:
-            // a. Create a new temporary table without the 'workoutExerciseIds' column.
-            // b. Copy data from the old table to the new table.
-            // c. Drop the old table.
-            // d. Rename the new table to the original name.
-
+            // 4. Remove 'workoutExerciseIds' column from 'Workout' table if it exists
             const hasWorkoutExerciseIds = await columnExists('Workout', 'workoutExerciseIds');
             if (hasWorkoutExerciseIds) {
+                // SQLite does not support DROP COLUMN directly. Perform the following steps:
+                // a. Create a new temporary table without the 'workoutExerciseIds' column.
                 await database.runSync(`
                     CREATE TABLE IF NOT EXISTS "Workout_temp" (
                         "id" INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -2649,6 +2645,7 @@ export const createNewWorkoutTables = async (): Promise<void> => {
                 `);
                 console.log('Created temporary "Workout_temp" table without "workoutExerciseIds".');
 
+                // b. Copy data from the original 'Workout' table to the temporary table.
                 await database.runSync(`
                     INSERT INTO "Workout_temp" ("id", "title", "description", "volumeCalculationType", "recurringOnWeek", "createdAt", "deletedAt")
                     SELECT "id", "title", "description", "volumeCalculationType", "recurringOnWeek", "createdAt", "deletedAt"
@@ -2656,19 +2653,38 @@ export const createNewWorkoutTables = async (): Promise<void> => {
                 `);
                 console.log('Copied data from "Workout" to "Workout_temp".');
 
+                // c. Drop the original 'Workout' table.
                 await database.runSync('DROP TABLE "Workout";');
                 console.log('Dropped original "Workout" table.');
 
+                // d. Rename the temporary table to 'Workout'.
                 await database.runSync('ALTER TABLE "Workout_temp" RENAME TO "Workout";');
                 console.log('Renamed "Workout_temp" to "Workout".');
             }
 
-            // 5. Update the versioning table to reflect the new version
+            // 5. Set 'deletedAt' for all existing records in 'Workout' and 'Set' tables
+            const currentTimestamp = getCurrentTimestamp();
+
+            // Update 'Workout' table
+            const updateWorkoutResult = await database.runSync(
+                'UPDATE "Workout" SET "deletedAt" = ? WHERE "deletedAt" IS NULL;',
+                [currentTimestamp]
+            );
+            console.log(`Set "deletedAt" for ${updateWorkoutResult.changes} existing records in "Workout" table.`);
+
+            // Update 'Set' table
+            const updateSetResult = await database.runSync(
+                'UPDATE "Set" SET "deletedAt" = ? WHERE "deletedAt" IS NULL;',
+                [currentTimestamp]
+            );
+            console.log(`Set "deletedAt" for ${updateSetResult.changes} existing records in "Set" table.`);
+
+            // 6. Update versioning table to reflect the new version
             await addVersioning(packageJson.version);
             console.log(`Database schema updated to version ${packageJson.version}.`);
         } catch (error) {
             console.error('Error in createNewWorkoutTables:', error);
-            throw error; // Re-throw the error after logging
+            throw error;
         }
     } else {
         console.log('No migration needed for createNewWorkoutTables.');

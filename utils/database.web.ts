@@ -1879,10 +1879,12 @@ export const addUserMeasurementsTable = async (): Promise<void> => {
 export const createNewWorkoutTables = async (): Promise<void> => {
     const currentVersion = await getLatestVersion();
     if (currentVersion && currentVersion <= packageJson.version) {
+        // Close the database if open to apply version changes
         if (database.isOpen()) {
             database.close();
         }
 
+        // Define version 6 schema with updated structure (removing 'workoutExerciseIds' from 'workouts' table)
         database.version(6).stores({
             workouts: [
                 '++id',
@@ -1910,11 +1912,29 @@ export const createNewWorkoutTables = async (): Promise<void> => {
             ].join(', '),
         });
 
+        // Re-open the database to start using the new version schema
         if (!database.isOpen()) {
-            database.open();
+            await database.open();
         }
 
+        // Set 'deletedAt' for all existing workouts and sets where it is currently not set
+        const currentTimestamp = new Date().toISOString();
+
+        await database.transaction('rw', database.workouts, database.sets, async () => {
+            // Update all workouts without a 'deletedAt' timestamp
+            await database.workouts
+                .filter((set) => set.deletedAt === null || set.deletedAt === undefined)
+                .modify({ deletedAt: currentTimestamp });
+
+            // Update all sets without a 'deletedAt' timestamp
+            await database.sets
+                .filter((set) => set.deletedAt === null || set.deletedAt === undefined)
+                .modify({ deletedAt: currentTimestamp });
+        });
+
+        // Update versioning information to reflect the new version
         await addVersioning(packageJson.version);
+        console.log(`Database updated to version ${packageJson.version} with 'deletedAt' timestamps set on existing records.`);
     }
 };
 
