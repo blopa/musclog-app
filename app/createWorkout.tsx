@@ -3,8 +3,10 @@ import CustomPicker from '@/components/CustomPicker';
 import CustomTextArea from '@/components/CustomTextArea';
 import CustomTextInput from '@/components/CustomTextInput';
 import { VOLUME_CALCULATION_TYPES, VOLUME_CALCULATION_TYPES_VALUES } from '@/constants/exercises';
+import { IMPERIAL_SYSTEM } from '@/constants/storage';
+import useUnit from '@/hooks/useUnit';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
-import { addSet, addWorkout, getAllExercises } from '@/utils/database';
+import { addSet, addWorkout, getAllExercises, getWorkoutById } from '@/utils/database';
 import {
     ExerciseReturnType,
     SetInsertType,
@@ -12,7 +14,7 @@ import {
     WorkoutInsertType,
     WorkoutReturnType
 } from '@/utils/types';
-import { NavigationProp, useNavigation, useFocusEffect } from '@react-navigation/native';
+import { NavigationProp, useFocusEffect, useRoute } from '@react-navigation/native';
 import React, { useState, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -65,8 +67,13 @@ const daysOfWeek = [
     { label: 'Sunday', value: 'Sunday' },
 ];
 
-const CreateWorkout = () => {
-    const navigation = useNavigation<NavigationProp<any>>();
+type RouteParams = {
+    id?: string;
+};
+
+export default function CreateWorkout({ navigation }: { navigation: NavigationProp<any> }) {
+    const route = useRoute();
+    const { id } = (route.params as RouteParams) || {};
     const { t } = useTranslation();
     const { colors, dark } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors, dark);
@@ -87,6 +94,27 @@ const CreateWorkout = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
 
     const [allExercises, setAllExercises] = useState<ExerciseReturnType[]>([]);
+    const { unitSystem, weightUnit } = useUnit();
+    const isImperial = unitSystem === IMPERIAL_SYSTEM;
+
+    const loadWorkout = useCallback(async () => {
+        try {
+            const workout = await getWorkoutById(Number(id));
+            if (workout) {
+                // TODO: Load workout data into state
+            }
+        } catch (error) {
+            console.error(t('failed_to_load_workout'), error);
+        }
+    }, [id, t]);
+
+    useFocusEffect(
+        useCallback(() => {
+            if (id) {
+                loadWorkout();
+            }
+        }, [id, loadWorkout])
+    );
 
     const resetScreenData = useCallback(() => {
         setWorkout([]);
@@ -1002,5 +1030,3 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         paddingBottom: 32,
     },
 });
-
-export default CreateWorkout;
