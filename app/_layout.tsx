@@ -59,7 +59,8 @@ import {
     countExercises,
     getLatestUser,
     getUser,
-    createNewWorkoutTables } from '@/utils/database';
+    createNewWorkoutTables,
+} from '@/utils/database';
 import { getCurrentTimestamp } from '@/utils/date';
 import { getEncryptionKey } from '@/utils/encryption';
 import { getLatestHealthConnectData } from '@/utils/healthConnect';
