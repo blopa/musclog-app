@@ -78,11 +78,23 @@ const WorkoutModal = ({ onClose, visible }: WorkoutModalProps) => {
             return;
         }
 
-        const setsByExercise: { exerciseId: number; sets: SetReturnType[] }[] = [];
-        for (const exerciseWithSets of workoutDetails.exercisesWithSets) {
-            const { id: exerciseId, sets } = exerciseWithSets;
-            setsByExercise.push({ exerciseId: exerciseId!, sets });
-        }
+        // Compute the minimum setOrder for each exercise and sort exercises accordingly
+        const exerciseOrderArray = workoutDetails.exercisesWithSets.map(
+            (exerciseWithSets) => {
+                const { id: exerciseId, sets } = exerciseWithSets;
+                const minSetOrder = Math.min(...sets.map((set) => set.setOrder));
+                return { exerciseId: exerciseId!, sets, minSetOrder };
+            }
+        );
+
+        // Sort exercises by their minimum setOrder
+        exerciseOrderArray.sort((a, b) => a.minSetOrder - b.minSetOrder);
+
+        // Prepare the setsByExercise array
+        const setsByExercise = exerciseOrderArray.map(({ exerciseId, sets }) => ({
+            exerciseId,
+            sets: sets.sort((a, b) => a.setOrder - b.setOrder),
+        }));
 
         setExerciseSets(setsByExercise);
     }, []);

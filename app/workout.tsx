@@ -96,21 +96,31 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
                         exerciseSetsMap[set.exerciseId].push(set);
                     });
 
-                    // Get unique exerciseIds
-                    const exerciseIds = Object.keys(exerciseSetsMap).map((id) => parseInt(id, 10));
+                    // Compute the minimum setOrder for each exercise and sort exercises accordingly
+                    const exerciseOrderArray = Object.entries(exerciseSetsMap).map(
+                        ([exerciseId, sets]) => {
+                            const minSetOrder = Math.min(...sets.map((set) => set.setOrder));
+                            return { exerciseId: parseInt(exerciseId, 10), minSetOrder, sets };
+                        }
+                    );
 
-                    // Fetch exercises
+                    // Sort exercises by their minimum setOrder
+                    exerciseOrderArray.sort((a, b) => a.minSetOrder - b.minSetOrder);
+
+                    // Fetch exercises in the sorted order
                     const exercisesData = await Promise.all(
-                        exerciseIds.map(async (exerciseId) => {
+                        exerciseOrderArray.map(async ({ exerciseId }) => {
                             const exercise = await getExerciseById(exerciseId);
                             return exercise!;
                         })
                     );
 
-                    // Combine exercises and sets
-                    const exerciseDetails = exercisesData.map((exercise) => ({
+                    // Combine exercises and their sorted sets
+                    const exerciseDetails = exercisesData.map((exercise, index) => ({
                         exercise,
-                        sets: exerciseSetsMap[exercise.id!],
+                        sets: exerciseOrderArray[index].sets.sort(
+                            (a, b) => a.setOrder - b.setOrder
+                        ),
                     }));
 
                     setExercises(exerciseDetails);
