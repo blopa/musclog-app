@@ -35,6 +35,7 @@ import {
     useTheme,
     Text,
     Switch,
+    List,
 } from 'react-native-paper';
 
 type Set = {
@@ -497,73 +498,67 @@ const CreateWorkout = () => {
 
         return (
             <View key={exerciseIndex} style={styles.exerciseContainer}>
-                <View style={styles.exerciseHeader}>
-                    <Text style={styles.exerciseTitle}>{workoutWithExercisesAndSets.exercise.name}</Text>
-                    <IconButton
-                        icon="close"
-                        size={20}
-                        onPress={() => removeExercise(exerciseIndex)}
-                    />
-                </View>
-                <Text style={styles.exerciseDescription}>
-                    {workoutWithExercisesAndSets.exercise.description}
-                </Text>
-                {workoutWithExercisesAndSets.sets.map((set, setIndex) => (
-                    <View key={setIndex} style={styles.setContainer}>
-                        <Text style={styles.setText}>
-                            {t('set')} {setIndex + 1}:
-                        </Text>
-                        <RNTextInput
-                            style={styles.smallInput}
-                            keyboardType="numeric"
-                            value={set.reps.toString()}
-                            onChangeText={(text) =>
-                                updateSet(exerciseIndex, setIndex, 'reps', parseInt(text))
-                            }
-                            placeholder={t('reps')}
-                        />
-                        <RNTextInput
-                            style={styles.smallInput}
-                            keyboardType="numeric"
-                            value={set.weight.toString()}
-                            onChangeText={(text) =>
-                                updateSet(exerciseIndex, setIndex, 'weight', parseFloat(text))
-                            }
-                            placeholder={t('weight')}
-                        />
-                        <RNTextInput
-                            style={styles.smallInput}
-                            keyboardType="numeric"
-                            value={set.restTime.toString()}
-                            onChangeText={(text) =>
-                                updateSet(exerciseIndex, setIndex, 'restTime', parseInt(text))
-                            }
-                            placeholder={t('rest_time_sec')}
-                        />
-                        <View style={styles.row}>
-                            <Text style={styles.labelToggleSwitch}>{t('is_drop_set')}</Text>
-                            <Switch
-                                onValueChange={(value) =>
-                                    updateSet(exerciseIndex, setIndex, 'isDropSet', value)
+                <List.Accordion
+                    title={workoutWithExercisesAndSets.exercise.name}
+                    description={workoutWithExercisesAndSets.exercise.description}
+                    left={(props) => <List.Icon {...props} icon="dumbbell" />}
+                >
+                    {workoutWithExercisesAndSets.sets.map((set, setIndex) => (
+                        <View key={setIndex} style={styles.setContainer}>
+                            <Text style={styles.setText}>
+                                {t('set')} {setIndex + 1}:
+                            </Text>
+                            <RNTextInput
+                                style={styles.smallInput}
+                                keyboardType="numeric"
+                                value={set.reps.toString()}
+                                onChangeText={(text) =>
+                                    updateSet(exerciseIndex, setIndex, 'reps', parseInt(text))
                                 }
-                                value={!!set.isDropSet}
+                                placeholder={t('reps')}
+                            />
+                            <RNTextInput
+                                style={styles.smallInput}
+                                keyboardType="numeric"
+                                value={set.weight.toString()}
+                                onChangeText={(text) =>
+                                    updateSet(exerciseIndex, setIndex, 'weight', parseFloat(text))
+                                }
+                                placeholder={t('weight')}
+                            />
+                            <RNTextInput
+                                style={styles.smallInput}
+                                keyboardType="numeric"
+                                value={set.restTime.toString()}
+                                onChangeText={(text) =>
+                                    updateSet(exerciseIndex, setIndex, 'restTime', parseInt(text))
+                                }
+                                placeholder={t('rest_time_sec')}
+                            />
+                            <View style={styles.row}>
+                                <Text style={styles.labelToggleSwitch}>{t('is_drop_set')}</Text>
+                                <Switch
+                                    onValueChange={(value) =>
+                                        updateSet(exerciseIndex, setIndex, 'isDropSet', value)
+                                    }
+                                    value={!!set.isDropSet}
+                                />
+                            </View>
+                            <IconButton
+                                icon="delete"
+                                size={20}
+                                onPress={() => removeSet(exerciseIndex, setIndex)}
                             />
                         </View>
-                        <IconButton
-                            icon="delete"
-                            size={20}
-                            onPress={() => removeSet(exerciseIndex, setIndex)}
-                        />
-                    </View>
-                ))}
-                <Button
-                    mode="text"
-                    onPress={() => addSetToExercise(exerciseIndex)}
-                    style={styles.addSetButton}
-                >
-                    {t('add_set')}
-                </Button>
-
+                    ))}
+                    <Button
+                        mode="text"
+                        onPress={() => addSetToExercise(exerciseIndex)}
+                        style={styles.addSetButton}
+                    >
+                        {t('add_set')}
+                    </Button>
+                </List.Accordion>
                 <View style={styles.moveButtonsContainer}>
                     <IconButton
                         icon="arrow-up"
