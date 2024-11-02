@@ -14,7 +14,7 @@ import {
     ChatInsertType,
     ChatReturnType,
     ExerciseInsertType,
-    ExerciseReturnType,
+    ExerciseReturnType, ExerciseWithSetsType,
     MetricsForUserType,
     OneRepMaxReturnType,
     SetInsertType,
@@ -35,8 +35,6 @@ import {
     VersioningReturnType,
     WorkoutEventInsertType,
     WorkoutEventReturnType,
-    WorkoutExerciseInsertType,
-    WorkoutExerciseReturnType,
     WorkoutInsertType,
     WorkoutPlan,
     WorkoutReturnType,
@@ -307,35 +305,6 @@ export const addVersioning = async (version: string): Promise<number> => {
     }
 };
 
-export const addWorkoutWithExercises = async (
-    workout: WorkoutInsertType,
-    workoutExercises: WorkoutExerciseInsertType[],
-    existingWorkoutId?: number
-): Promise<number> => {
-    let workoutId;
-
-    try {
-        if (existingWorkoutId) {
-            workoutId = existingWorkoutId;
-            await updateWorkout(existingWorkoutId, workout);
-            await deleteWorkoutExercisesByWorkoutId(existingWorkoutId);
-        } else {
-            workoutId = await addWorkout(workout);
-        }
-
-        for (let i = 0; i < workoutExercises.length; i++) {
-            workoutExercises[i].workoutId = workoutId;
-            workoutExercises[i].order = i;
-            await addWorkoutExercise(workoutExercises[i]);
-        }
-
-        return workoutId;
-    } catch (error) {
-        console.error('Error in addWorkoutWithExercises:', error);
-        throw new Error('Failed to add workout with exercises');
-    }
-};
-
 export const addWorkout = async (workout: WorkoutInsertType): Promise<number> => {
     const createdAt = workout.createdAt || getCurrentTimestamp();
     try {
@@ -356,21 +325,6 @@ export const addWorkout = async (workout: WorkoutInsertType): Promise<number> =>
     }
 };
 
-export const addWorkoutExercise = async (workoutExercise: WorkoutExerciseInsertType): Promise<number> => {
-    const createdAt = workoutExercise.createdAt || getCurrentTimestamp();
-    try {
-        const setIdsStr = JSON.stringify(workoutExercise.setIds);
-        const result = database.runSync(`
-            INSERT INTO "WorkoutExercise" ("workoutId", "exerciseId", "setIds", "order", "createdAt")
-            VALUES (?, ?, ?, ?, ?)
-        `, [workoutExercise.workoutId, workoutExercise.exerciseId, setIdsStr, workoutExercise.order, createdAt]);
-
-        return result.lastInsertRowId;
-    } catch (error) {
-        throw error;
-    }
-};
-
 export const addWorkoutEvent = async (workoutEvent: WorkoutEventInsertType): Promise<number> => {
     const createdAt = workoutEvent.createdAt || getCurrentTimestamp();
     const user = await getUser();
@@ -381,6 +335,7 @@ export const addWorkoutEvent = async (workoutEvent: WorkoutEventInsertType): Pro
         exerciseData = JSON.stringify(exercisesWithSets.map((exercisesWithSet) => {
             return {
                 exerciseId: exercisesWithSet.id,
+                workoutId: workoutEvent.workoutId,
                 sets: exercisesWithSet.sets.map((set) => {
                     return {
                         difficultyLevel: set.difficultyLevel,
@@ -762,7 +717,7 @@ export const getTotalUserMeasurementsCount = async (): Promise<number> => {
     }
 };
 
-export const getLatestVersioning = async (): Promise<string | undefined> => {
+export const getLatestVersion = async (): Promise<string | undefined> => {
     try {
         const result = database.getFirstSync<{ version: string }>('SELECT * FROM "Versioning" ORDER BY "id" DESC LIMIT 1');
         return result?.version;
@@ -1294,18 +1249,6 @@ export const getWorkoutById = async (id: number): Promise<WorkoutReturnType | un
     }
 };
 
-export const getWorkoutByIdWithTrashed = async (id: number): Promise<WorkoutReturnType | undefined> => {
-    try {
-        const result = database.getFirstSync<WorkoutReturnType>('SELECT * FROM "Workout" WHERE "id" = ?', [id]) ?? undefined;
-
-        return {
-            ...result,
-        } as WorkoutReturnType;
-    } catch (error) {
-        throw error;
-    }
-};
-
 export const getSetsByExerciseId = async (exerciseId: number): Promise<SetReturnType[]> => {
     try {
         return database.getAllSync<SetReturnType>('SELECT * FROM "Set" WHERE "exerciseId" = ? AND "deletedAt" IS NULL', [exerciseId]);
@@ -1337,6 +1280,19 @@ export const getSetsByIds = async (setIds: number[]): Promise<SetReturnType[]> =
     }
 };
 
+export const getSetsByWorkoutId = async (workoutId: number): Promise<SetReturnType[]> => {
+    try {
+        const sets = database.getAllSync<SetReturnType>(
+            'SELECT * FROM "Set" WHERE "workoutId" = ? AND "deletedAt" IS NULL ORDER BY "setOrder" ASC',
+            [workoutId]
+        );
+        return sets;
+    } catch (error) {
+        console.error('Error in getSetsByWorkoutId:', error);
+        throw error;
+    }
+};
+
 export const getSetsByIdsAndExerciseId = async (setIds: number[], exerciseId: number): Promise<SetReturnType[]> => {
     let sets: SetReturnType[];
     try {
@@ -1359,26 +1315,6 @@ export const getExerciseById = async (id: number): Promise<ExerciseReturnType | 
     }
 };
 
-export const getExercisesForWorkout = async (workoutId: number): Promise<ExerciseReturnType[]> => {
-    const workoutExercises = await database.getAllSync<WorkoutExerciseReturnType>(`
-        SELECT * FROM "WorkoutExercise"
-        WHERE "workoutId" = ?
-        AND ("deletedAt" IS NULL)
-    `, [workoutId]);
-
-    const exerciseIds = workoutExercises.map((workoutExercise) => workoutExercise.exerciseId);
-
-    try {
-        return database.getAllSync<ExerciseReturnType>(`
-            SELECT * FROM "Exercise"
-            WHERE "id" IN (${exerciseIds.join(',')})
-            AND ("deletedAt" IS NULL)
-        `);
-    } catch (error) {
-        throw error;
-    }
-};
-
 export const getWorkoutEvent = async (id: number): Promise<WorkoutEventReturnType | undefined> => {
     try {
         const result = database.getFirstSync<WorkoutEventReturnType>('SELECT * FROM "WorkoutEvent" WHERE "id" = ? AND "deletedAt" IS NULL', [id]);
@@ -1392,27 +1328,6 @@ export const getWorkoutEvent = async (id: number): Promise<WorkoutEventReturnTyp
 export const getWorkoutEvents = async (): Promise<WorkoutEventReturnType[]> => {
     try {
         return database.getAllSync<WorkoutEventReturnType>('SELECT * FROM "WorkoutEvent" WHERE "deletedAt" IS NULL');
-    } catch (error) {
-        throw error;
-    }
-};
-
-export const getWorkoutEventsByExerciseId = async (exerciseId: number): Promise<WorkoutEventReturnType[]> => {
-    const workoutExercises = await database.getAllSync<WorkoutExerciseReturnType>(`
-        SELECT * FROM "WorkoutExercise"
-        WHERE "exerciseId" = ?
-        AND "deletedAt" IS NULL
-    `, [exerciseId]);
-
-    const workoutIds = workoutExercises.map((workoutExercise) => workoutExercise.workoutId);
-
-    try {
-        const workoutsStr = workoutIds.join(',');
-        return database.getAllSync<WorkoutEventReturnType>(`
-            SELECT * FROM "WorkoutEvent"
-            WHERE "workoutId" IN (${workoutsStr})
-            AND "deletedAt" IS NULL
-        `);
     } catch (error) {
         throw error;
     }
@@ -1567,118 +1482,77 @@ export const getRecentWorkoutsPaginated = async (offset: number, limit: number):
     }
 };
 
-export const getWorkoutExercisesByExerciseIds = async (exerciseIds: number[]): Promise<WorkoutExerciseReturnType[]> => {
+export const getWorkoutByIdWithTrashed = async (id: number): Promise<WorkoutReturnType | undefined> => {
     try {
-        const result = database.getAllSync<WorkoutExerciseReturnType>(`
-            SELECT * FROM "WorkoutExercise"
-            WHERE "exerciseId" IN (${exerciseIds.join(',')})
-            AND ("deletedAt" IS NULL)
-        `);
+        const result = database.getFirstSync<WorkoutReturnType>('SELECT * FROM "Workout" WHERE "id" = ?', [id]) ?? undefined;
 
-        return result.map((workoutExercise) => ({
-            ...workoutExercise,
-            // TODO: maybe have a type for saving and for getting
-            setIds: JSON.parse(workoutExercise.setIds as unknown as string || '[]') as number[],
-        }));
+        return {
+            ...result,
+        } as WorkoutReturnType;
     } catch (error) {
         throw error;
     }
 };
 
-export const getWorkoutExercises = async (id: number): Promise<WorkoutExerciseReturnType | undefined> => {
-    try {
-        const result = database.getFirstSync<WorkoutExerciseReturnType>('SELECT * FROM "WorkoutExercise" WHERE "workoutId" = ? AND "deletedAt" IS NULL', [id]);
-
-        if (result) {
-            return {
-                ...result,
-                // TODO: maybe have a type for saving and for getting
-                setIds: JSON.parse(result.setIds as unknown as string || '[]') as number[],
-            };
-        }
-
-        return result ?? undefined;
-    } catch (error) {
-        throw error;
-    }
-};
-
-export const getWorkoutExercisesByWorkoutId = async (workoutId: number): Promise<WorkoutExerciseReturnType[]> => {
-    try {
-        const result = database.getAllSync<WorkoutExerciseReturnType>(`
-            SELECT * FROM "WorkoutExercise"
-            WHERE "workoutId" = ?
-            AND ("deletedAt" IS NULL)
-            ORDER BY "order"
-        `, [workoutId]);
-
-        return result.map((workoutExercise) => ({
-            ...workoutExercise,
-            // TODO: maybe have a type for saving and for getting
-            setIds: JSON.parse(workoutExercise.setIds as unknown as string || '[]') as number[],
-        }));
-    } catch (error) {
-        throw error;
-    }
-};
-
-export const getWorkoutExerciseByWorkoutIdAndExerciseId = async (workoutId: number, exerciseId: number): Promise<WorkoutExerciseReturnType | undefined> => {
-    try {
-        const result = database.getFirstSync<WorkoutExerciseReturnType>(
-            'SELECT * FROM "WorkoutExercise" WHERE "workoutId" = ? AND "exerciseId" = ? AND "deletedAt" IS NULL',
-            [workoutId, exerciseId]
-        );
-
-        if (result) {
-            return {
-                ...result,
-                // TODO: maybe have a type for saving and for getting
-                setIds: JSON.parse(result.setIds as unknown as string || '[]') as number[],
-            };
-        }
-
-        return result ?? undefined;
-    } catch (error) {
-        throw error;
-    }
-};
-
-export const getWorkoutExerciseByExerciseId = async (exerciseId: number): Promise<WorkoutExerciseReturnType[] | undefined> => {
-    try {
-        const result = database.getAllSync<WorkoutExerciseReturnType>(
-            'SELECT * FROM "WorkoutExercise" WHERE "exerciseId" = ? AND "deletedAt" IS NULL',
-            [exerciseId]
-        );
-
-        if (!result) {
-            return undefined;
-        }
-
-        return result.map((workoutExercise) => ({
-            ...workoutExercise,
-            // TODO: maybe have a type for saving and for getting
-            setIds: JSON.parse(workoutExercise.setIds as unknown as string || '[]') as number[],
-        }));
-    } catch (error) {
-        throw error;
-    }
-};
-
-export const getWorkoutDetails = async (workoutId: number): Promise<{ workout: WorkoutReturnType, workoutExercises: WorkoutExerciseReturnType[] } | undefined> => {
+export const getWorkoutDetails = async (
+    workoutId: number
+): Promise<{ workout: WorkoutReturnType; exercisesWithSets: ExerciseWithSetsType[] } | undefined> => {
     try {
         const workout = database.getFirstSync<WorkoutReturnType>('SELECT * FROM "Workout" WHERE "id" = ? AND ("deletedAt" IS NULL)', [workoutId]);
         if (!workout) {
             return undefined;
         }
 
-        const workoutExercises = await getWorkoutExercisesByWorkoutId(workoutId);
+        const exercisesWithSets = await getExercisesWithSetsByWorkoutId(workoutId);
         return {
-            workout: {
-                ...workout,
-            },
-            workoutExercises,
+            workout,
+            exercisesWithSets,
         };
     } catch (error) {
+        throw error;
+    }
+};
+
+export const getExercisesWithSetsByWorkoutId = async (
+    workoutId: number
+): Promise<(ExerciseReturnType & { sets: SetReturnType[] })[]> => {
+    try {
+        // Step 1: Get all sets associated with the workout
+        const sets = database.getAllSync<SetReturnType>(
+            'SELECT * FROM "Set" WHERE "workoutId" = ? AND "deletedAt" IS NULL ORDER BY "setOrder" ASC',
+            [workoutId]
+        );
+
+        // Step 2: Map sets to their respective exercises
+        const exerciseSetsMap: { [key: number]: SetReturnType[] } = {};
+        for (const set of sets) {
+            if (!exerciseSetsMap[set.exerciseId]) {
+                exerciseSetsMap[set.exerciseId] = [];
+            }
+            exerciseSetsMap[set.exerciseId].push(set);
+        }
+
+        // Step 3: Get the unique exercise IDs
+        const exerciseIds = Object.keys(exerciseSetsMap).map((id) => parseInt(id, 10));
+
+        if (exerciseIds.length === 0) {
+            return [];
+        }
+
+        // Step 4: Fetch the exercises using the exercise IDs
+        const exercises = database.getAllSync<ExerciseReturnType>(
+            `SELECT * FROM "Exercise" WHERE "id" IN (${exerciseIds.join(',')}) AND "deletedAt" IS NULL`
+        );
+
+        // Step 5: Combine exercises with their sets
+        const exercisesWithSets = exercises.map((exercise) => ({
+            ...exercise,
+            sets: exerciseSetsMap[exercise.id!] || [],
+        }));
+
+        return exercisesWithSets;
+    } catch (error) {
+        console.error('Error in getExercisesWithSetsByWorkoutId:', error);
         throw error;
     }
 };
@@ -1690,11 +1564,12 @@ export const getWorkoutWithExercisesRepsAndSetsDetails = async (workoutId: numbe
         return undefined;
     }
 
+    const exercises = await getExercisesWithSetsByWorkoutId(workoutId);
+
     return {
-        description: workout.description,
-        exercises: await getExercisesWithSetsFromWorkout(workoutId),
         id: workout.id,
         title: workout.title,
+        exercises,
     };
 };
 
@@ -2142,44 +2017,6 @@ export const updateWorkout = async (id: number, workout: WorkoutInsertType): Pro
     }
 };
 
-export const updateWorkoutExercise = async (id: number, workoutExercise: WorkoutExerciseInsertType): Promise<number> => {
-    const existingWorkoutExercise = await getWorkoutExercises(id);
-
-    try {
-        const setIdsStr = JSON.stringify(existingWorkoutExercise?.setIds || workoutExercise.setIds);
-        database.runSync(
-            'UPDATE "WorkoutExercise" SET "workoutId" = ?, "exerciseId" = ?, "setIds" = ?, "order" = ? WHERE "id" = ?',
-            [
-                workoutExercise.workoutId || existingWorkoutExercise?.workoutId || 0,
-                workoutExercise.exerciseId || existingWorkoutExercise?.exerciseId || 0,
-                setIdsStr,
-                workoutExercise.order || existingWorkoutExercise?.order || 0,
-                id
-            ]
-        );
-
-        return id;
-    } catch (error) {
-        throw error;
-    }
-};
-
-export const updateWorkoutExerciseOrder = async (workoutId: number, workoutExercises: WorkoutExerciseInsertType[]): Promise<void> => {
-    const updatePromises = workoutExercises.map((exercise, index) => {
-        return database.runSync(
-            'UPDATE "WorkoutExercise" SET "order" = ? WHERE "workoutId" = ? AND "exerciseId" = ?',
-            [index, workoutId, exercise.exerciseId]
-        );
-    });
-
-    try {
-        await Promise.all(updatePromises);
-    } catch (error) {
-        console.error('Failed to update workout exercise order:', error);
-        throw error;
-    }
-};
-
 export const updateUserNutrition = async (id: number, userNutrition: UserNutritionInsertType): Promise<number> => {
     const existingUserNutrition = await getUserNutrition(id);
 
@@ -2340,20 +2177,6 @@ export const deleteSetting = async (type: string): Promise<void> => {
 };
 
 export const deleteSet = async (id: number): Promise<void> => {
-    const workoutExercises = database.getAllSync<WorkoutExerciseReturnType>('SELECT * FROM "WorkoutExercise" WHERE instr(\',\' || setIds || \',\', \',\' || ? || \',\') > 0', [id]);
-
-    for (const workoutExercise of workoutExercises) {
-        // TODO: maybe have a type for saving and for getting
-        const setIds = (JSON.parse(workoutExercise.setIds as unknown as string || '[]') as number[]).filter((setId: number) => setId !== id);
-
-        if (setIds.length === 0) {
-            database.runSync('DELETE FROM "WorkoutExercise" WHERE "id" = ?', [workoutExercise.id!]);
-        } else {
-            const setIdsStr = JSON.stringify(setIds);
-            database.runSync('UPDATE "WorkoutExercise" SET "setIds" = ? WHERE "id" = ?', [setIdsStr, workoutExercise.id!]);
-        }
-    }
-
     database.runSync('DELETE FROM "Set" WHERE "id" = ?', [id]);
 };
 
@@ -2379,25 +2202,6 @@ export const deleteWorkout = async (id: number): Promise<void> => {
     } catch (error) {
         throw error;
     }
-};
-
-export const deleteWorkoutExercisesByExerciseId = async (exerciseId: number): Promise<void> => {
-    const workoutExercises = await getWorkoutExerciseByExerciseId(exerciseId);
-
-    if (workoutExercises) {
-        for (const workoutExercise of workoutExercises) {
-            // TODO: maybe have a type for saving and for getting
-            for (const setId of JSON.parse(workoutExercise.setIds as unknown as string || '[]') as number[]) {
-                database.runSync('DELETE FROM "Set" WHERE "id" = ?', [setId]);
-            }
-
-            database.runSync('DELETE FROM "WorkoutExercise" WHERE "id" = ?', [workoutExercise.id!]);
-        }
-    }
-};
-
-export const deleteWorkoutExercisesByWorkoutId = async (workoutId: number): Promise<void> => {
-    database.runSync('DELETE FROM "WorkoutExercise" WHERE "workoutId" = ?', [workoutId]);
 };
 
 export const deleteAllUserMetricsFromHealthConnect = async (): Promise<void> => {
@@ -2447,82 +2251,79 @@ export const countChatMessages = async (): Promise<number> => {
 };
 
 export const processWorkoutPlan = async (workoutPlan: WorkoutPlan): Promise<void> => {
-    try {
-        const existingExercises = await getAllExercises();
-        const exerciseMap: { [name: string]: ExerciseReturnType } = {};
+    const existingExercises = await getAllExercises();
+    const exerciseMap: { [name: string]: ExerciseReturnType } = {};
 
-        for (const exercise of existingExercises) {
-            if (exercise.name) {
-                exerciseMap[normalizeName(exercise.name)] = exercise;
-            }
+    // Map existing exercises by normalized name for quick lookup
+    for (const exercise of existingExercises) {
+        if (exercise.name) {
+            exerciseMap[normalizeName(exercise.name)] = exercise;
         }
+    }
 
-        for (const workout of workoutPlan.workoutPlan) {
-            const workoutExercises: WorkoutExerciseInsertType[] = [];
+    for (const workout of workoutPlan.workoutPlan) {
+        const newWorkout: WorkoutInsertType = {
+            description: workout.description || '',
+            title: workout.title,
+            volumeCalculationType: VOLUME_CALCULATION_TYPES.NONE,
+            createdAt: getCurrentTimestamp(),
+        };
 
-            const newWorkout: WorkoutInsertType = {
-                description: workout.description || '',
-                title: workout.title,
-                volumeCalculationType: VOLUME_CALCULATION_TYPES.NONE,
-            };
+        // Create the workout and get the workoutId
+        const workoutId = await addWorkout(newWorkout);
 
-            for (const planExercise of workout.exercises) {
-                let exercise: ExerciseReturnType | undefined;
-                const normalizedExerciseName = normalizeName(planExercise.name);
+        let setOrder = 0; // Initialize set order for the workout
 
-                if (exerciseMap[normalizedExerciseName]) {
-                    exercise = exerciseMap[normalizedExerciseName];
-                } else {
-                    const exerciseId = await addExercise({
-                        description: '',
-                        image: '',
-                        muscleGroup: '',
-                        name: planExercise.name,
-                        type: '',
-                    });
-                    exercise = await getExerciseById(exerciseId);
+        for (const planExercise of workout.exercises) {
+            let exercise: ExerciseReturnType | undefined;
+            const normalizedExerciseName = normalizeName(planExercise.name);
 
-                    if (exercise) {
-                        exerciseMap[normalizedExerciseName] = exercise;
-                    }
-                }
-
-                const oneRepMax = await getOneRepMax(exercise?.id!);
-                const oneRepMaxWeight = oneRepMax ? oneRepMax.weight : 60;
-
-                const reps = planExercise.reps ?? 12;
-                const sets = planExercise.sets ?? 3;
-                const restTime = planExercise.restTime ?? 60;
-                const oneRepMaxPercentage = planExercise.oneRepMaxPercentage || 60;
-
-                const setIds: number[] = [];
-                for (let i = 0; i < sets; i++) {
-                    const weight = oneRepMaxWeight * (oneRepMaxPercentage / 100);
-                    const setId = await addSet({
-                        exerciseId: exercise?.id!,
-                        reps: reps,
-                        restTime: restTime,
-                        weight: weight,
-                        workoutId: 0, // TODO: fix this
-                        setOrder: i, // TODO: is this ok?
-                        supersetName: '', // TODO: fix this
-                    });
-                    setIds.push(setId);
-                }
-
-                workoutExercises.push({
-                    exerciseId: exercise?.id!,
-                    order: workoutExercises.length,
-                    setIds,
-                    workoutId: 0,
+            // Check if the exercise already exists; if not, create it
+            if (exerciseMap[normalizedExerciseName]) {
+                exercise = exerciseMap[normalizedExerciseName];
+            } else {
+                const exerciseId = await addExercise({
+                    description: '',
+                    image: '',
+                    muscleGroup: '',
+                    name: planExercise.name,
+                    type: '',
+                    createdAt: getCurrentTimestamp(),
                 });
+                exercise = await getExerciseById(exerciseId);
+
+                if (exercise) {
+                    exerciseMap[normalizedExerciseName] = exercise;
+                }
             }
 
-            await addWorkoutWithExercises(newWorkout, workoutExercises);
+            // Calculate weight based on one-rep max percentage
+            const oneRepMax = await getOneRepMax(exercise?.id!);
+            const oneRepMaxWeight = oneRepMax ? oneRepMax.weight : 60; // Default to 60 if no one-rep max
+            const oneRepMaxPercentage = planExercise.oneRepMaxPercentage || 60; // Default to 60%
+            const calculatedWeight = oneRepMaxWeight * (oneRepMaxPercentage / 100);
+
+            const reps = planExercise.reps ?? 12; // Default to 12 reps
+            const sets = planExercise.sets ?? 3; // Default to 3 sets
+            const restTime = planExercise.restTime ?? 60; // Default to 60 seconds rest
+
+            // Add sets for the exercise
+            for (let i = 0; i < sets; i++) {
+                const set: SetInsertType = {
+                    workoutId: workoutId,
+                    exerciseId: exercise?.id!,
+                    setOrder: setOrder++,
+                    supersetName: '', // Adjust if needed
+                    reps,
+                    weight: calculatedWeight,
+                    restTime,
+                    isDropSet: false, // Adjust if needed
+                    createdAt: getCurrentTimestamp(),
+                };
+
+                await addSet(set);
+            }
         }
-    } catch (error) {
-        console.error('Error processing workout plan:', error);
-        throw error;
     }
 };
 
@@ -2764,7 +2565,7 @@ const tableExists = async (tableName: string): Promise<boolean> => {
 };
 
 export const addUserMeasurementsTable = async (): Promise<void> => {
-    const currentVersion = await getLatestVersioning();
+    const currentVersion = await getLatestVersion();
     if (currentVersion && currentVersion <= packageJson.version) {
         if (!(await tableExists('UserMeasurements'))) {
             await database.execAsync(`
@@ -2790,7 +2591,7 @@ export const createNewWorkoutTables = async (): Promise<void> => {
 };
 
 export const addAlcoholMacroToUserNutritionTable = async (): Promise<void> => {
-    const currentVersion = await getLatestVersioning();
+    const currentVersion = await getLatestVersion();
     if (currentVersion && currentVersion <= packageJson.version) {
         if (!(await columnExists('UserNutrition', 'alcohol'))) {
             await database.execAsync('ALTER TABLE "UserNutrition" ADD COLUMN "alcohol" TEXT');
@@ -2801,7 +2602,7 @@ export const addAlcoholMacroToUserNutritionTable = async (): Promise<void> => {
 };
 
 export const addAlcoholAndFiberMacroToWorkoutEventTable = async (): Promise<void> => {
-    const currentVersion = await getLatestVersioning();
+    const currentVersion = await getLatestVersion();
     if (currentVersion && currentVersion <= packageJson.version) {
         if (!(await columnExists('WorkoutEvent', 'alcohol'))) {
             await database.execAsync('ALTER TABLE "WorkoutEvent" ADD COLUMN "alcohol" REAL DEFAULT 0');
@@ -2816,7 +2617,7 @@ export const addAlcoholAndFiberMacroToWorkoutEventTable = async (): Promise<void
 };
 
 export const addMacrosToWorkoutEventTable = async (): Promise<void> => {
-    const currentVersion = await getLatestVersioning();
+    const currentVersion = await getLatestVersion();
     if (currentVersion && currentVersion <= packageJson.version) {
         if (!(await columnExists('WorkoutEvent', 'protein'))) {
             await database.execAsync('ALTER TABLE "WorkoutEvent" ADD COLUMN "protein" REAL DEFAULT 0');
@@ -2848,22 +2649,18 @@ const commonFunctions = getCommonFunctions({
     addUserMetrics,
     addUserNutrition,
     addWorkoutEvent,
-    addWorkoutExercise,
     countChatMessages,
     countExercises,
     getAllExercises,
     getAllWorkoutsWithTrashed,
     getExerciseById,
     getSetById,
-    getSetsByIds,
     getUser,
     getWorkoutByIdWithTrashed,
-    getWorkoutExerciseByWorkoutIdAndExerciseId,
-    getWorkoutExercisesByWorkoutId,
     updateSet,
     updateWorkout,
-    updateWorkoutExercise,
-    addWorkoutWithExercises,
+    addWorkout,
+    getSetsByWorkoutId,
 });
 
 export const {

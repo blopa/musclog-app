@@ -5,18 +5,15 @@ import {
     getExerciseById,
     getLatestUserMetrics,
     getSetById,
-    getSetsByIdsAndExerciseId,
+    getSetsByWorkoutId,
     getUser,
-    getWorkoutExercisesByWorkoutId,
     updateSet,
-    updateWorkoutExercise
 } from '@/utils/database';
 import {
     EatingPhaseType,
     SetReturnType,
     UserReturnType,
     WorkoutEventReturnType,
-    WorkoutExerciseReturnType,
     WorkoutReturnType
 } from '@/utils/types';
 
@@ -33,10 +30,9 @@ jest.mock('@/utils/database', () => ({
     getLatestUserMetrics: jest.fn(),
     getSetById: jest.fn(),
     getSetsByIdsAndExerciseId: jest.fn(),
+    getSetsByWorkoutId: jest.fn(), // Mocked this function
     getUser: jest.fn(),
-    getWorkoutExercisesByWorkoutId: jest.fn(),
     updateSet: jest.fn(),
-    updateWorkoutExercise: jest.fn(),
 }));
 
 jest.mock('@/utils/date', () => ({
@@ -131,18 +127,6 @@ describe('Workout Utils Functions', () => {
             }
         ];
 
-        const workoutExercises: WorkoutExerciseReturnType[] = [
-            {
-                createdAt: '2023-01-01T00:00:00Z',
-                deletedAt: undefined,
-                exerciseId: 1,
-                id: 1,
-                order: 0,
-                setIds: [1, 2],
-                workoutId: 1
-            }
-        ];
-
         const sets: SetReturnType[] = [
             {
                 createdAt: '2023-01-01T00:00:00Z',
@@ -194,8 +178,7 @@ describe('Workout Utils Functions', () => {
 
         beforeEach(() => {
             (getUser as jest.Mock).mockResolvedValue({ ...user, metrics: userMetrics });
-            (getWorkoutExercisesByWorkoutId as jest.Mock).mockResolvedValue(workoutExercises);
-            (getSetsByIdsAndExerciseId as jest.Mock).mockResolvedValue(sets);
+            (getSetsByWorkoutId as jest.Mock).mockResolvedValue(sets); // Mocked this function
             (getSetById as jest.Mock).mockResolvedValue(sets[0]);
         });
 
@@ -204,7 +187,6 @@ describe('Workout Utils Functions', () => {
 
             expect(updateSet).toHaveBeenCalledTimes(2);
             expect(addSet).toHaveBeenCalledTimes(0);
-            expect(updateWorkoutExercise).toHaveBeenCalledTimes(1);
         });
 
         test('should calculate next workout reps and sets for intermediate bulking', async () => {
@@ -213,7 +195,6 @@ describe('Workout Utils Functions', () => {
 
             expect(updateSet).toHaveBeenCalledTimes(2);
             expect(addSet).toHaveBeenCalledTimes(0);
-            expect(updateWorkoutExercise).toHaveBeenCalledTimes(1);
         });
 
         test('should not modify sets for cutting', async () => {
@@ -222,7 +203,6 @@ describe('Workout Utils Functions', () => {
 
             expect(updateSet).toHaveBeenCalledTimes(0);
             expect(addSet).toHaveBeenCalledTimes(0);
-            expect(updateWorkoutExercise).toHaveBeenCalledTimes(0);
         });
 
         test('should calculate next workout reps and sets for advanced maintenance', async () => {
@@ -232,34 +212,6 @@ describe('Workout Utils Functions', () => {
 
             expect(updateSet).toHaveBeenCalledTimes(2);
             expect(addSet).toHaveBeenCalledTimes(0);
-            expect(updateWorkoutExercise).toHaveBeenCalledTimes(1);
-        });
-
-        test('should add new sets if they do not exist', async () => {
-            (getSetById as jest.Mock).mockResolvedValueOnce(null);
-            await calculateNextWorkoutRepsAndSets(workout, pastWorkouts);
-
-            expect(addSet).toHaveBeenCalledTimes(1);
-            expect(updateSet).toHaveBeenCalledTimes(1);
-            expect(updateWorkoutExercise).toHaveBeenCalledTimes(1);
-        });
-
-        test('should update workout exercises with new set ids', async () => {
-            const newSetId = 3;
-            const expected = {
-                ...workoutExercises[0],
-                setIds: [...workoutExercises[0].setIds, newSetId]
-            };
-
-            (addSet as jest.Mock).mockResolvedValueOnce(newSetId);
-
-            (getSetById as jest.Mock).mockResolvedValueOnce(null);
-
-            await calculateNextWorkoutRepsAndSets(workout, pastWorkouts);
-
-            expect(addSet).toHaveBeenCalledTimes(1);
-            expect(updateWorkoutExercise).toHaveBeenCalledWith(workoutExercises[0].id, expected);
         });
     });
 });
-

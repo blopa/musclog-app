@@ -7,7 +7,7 @@ import {
 } from '@/constants/storage';
 import useUnit from '@/hooks/useUnit';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
-import { getAllExercises, getAllWorkouts, getSetsByIds, getWorkoutDetails } from '@/utils/database';
+import { getAllExercises, getAllWorkouts, getWorkoutDetails } from '@/utils/database';
 import { ExerciseReturnType, SetReturnType, WorkoutReturnType } from '@/utils/types';
 import { getDisplayFormattedWeight } from '@/utils/unit';
 import { resetWorkoutStorageData } from '@/utils/workout';
@@ -79,10 +79,9 @@ const WorkoutModal = ({ onClose, visible }: WorkoutModalProps) => {
         }
 
         const setsByExercise: { exerciseId: number; sets: SetReturnType[] }[] = [];
-        for (const workoutExercise of workoutDetails.workoutExercises) {
-            const { exerciseId, setIds } = workoutExercise;
-            const sets = await getSetsByIds(setIds);
-            setsByExercise.push({ exerciseId, sets });
+        for (const exerciseWithSets of workoutDetails.exercisesWithSets) {
+            const { id: exerciseId, sets } = exerciseWithSets;
+            setsByExercise.push({ exerciseId: exerciseId!, sets });
         }
 
         setExerciseSets(setsByExercise);

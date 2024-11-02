@@ -28,9 +28,8 @@ import { calculatePastWorkoutsWeeklyAverages } from '@/utils/data';
 import {
     getExerciseById,
     getRecentWorkoutsByWorkoutId,
-    getSetsByIds,
+    getSetsByWorkoutId,
     getWorkoutById,
-    getWorkoutExercisesByWorkoutId,
 } from '@/utils/database';
 import { formatDate } from '@/utils/date';
 import { exportWorkout } from '@/utils/file';
@@ -39,7 +38,6 @@ import {
     LineChartDataType,
     SetReturnType,
     WorkoutEventReturnType,
-    WorkoutExerciseReturnType,
     WorkoutReturnType
 } from '@/utils/types';
 import { getDisplayFormattedWeight } from '@/utils/unit';
@@ -65,8 +63,8 @@ const WHOLE_WORKOUT = 'wholeWorkout';
 const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
     const { t } = useTranslation();
     const [workout, setWorkout] = useState<WorkoutReturnType | undefined>();
-    const [workoutExercises, setWorkoutExercises] = useState<({ sets: SetReturnType[] } & WorkoutExerciseReturnType)[]>([]);
-    const [exercises, setExercises] = useState<(ExerciseReturnType | undefined)[]>([]);
+    const [workoutExercises, setWorkoutExercises] = useState<{ exerciseId: number; sets: SetReturnType[] }[]>([]);
+    const [exercisesMap, setExercisesMap] = useState<Map<number, ExerciseReturnType>>(new Map());
     const [recentWorkouts, setRecentWorkouts] = useState<WorkoutEventReturnType[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [modalVisible, setModalVisible] = useState(false);
@@ -121,22 +119,52 @@ const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
                 recentWorkouts.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
             );
 
-            const workoutExercisesDetails = await getWorkoutExercisesByWorkoutId(Number(id));
-            workoutExercisesDetails.sort((a, b) => a.order - b.order);
+            // Fetch all sets for this workout
+            const sets = await getSetsByWorkoutId(Number(id));
 
-            const exercisesWithSetsPromises = workoutExercisesDetails.map(async (we) => {
-                const sets = await getSetsByIds(we.setIds);
-                return { ...we, sets };
+            // Group sets by exerciseId
+            const exerciseSetsMap: { [exerciseId: number]: SetReturnType[] } = {};
+            sets.forEach((set) => {
+                if (!exerciseSetsMap[set.exerciseId]) {
+                    exerciseSetsMap[set.exerciseId] = [];
+                }
+                exerciseSetsMap[set.exerciseId].push(set);
             });
 
-            const exercisesWithSets = await Promise.all(exercisesWithSetsPromises);
-            setWorkoutExercises(exercisesWithSets);
+            // Get unique exerciseIds from sets and sort them
+            const exerciseIds = Object.keys(exerciseSetsMap).map((id) => parseInt(id, 10));
 
-            const exerciseDetailsPromises = workoutExercisesDetails.map((we) =>
-                getExerciseById(we.exerciseId)
-            );
-            const exercises = await Promise.all(exerciseDetailsPromises);
-            setExercises(exercises);
+            // Fetch exercises
+            const exercisesPromises = exerciseIds.map((exerciseId) => getExerciseById(exerciseId));
+            const exercisesData = await Promise.all(exercisesPromises);
+
+            // Map exerciseId to exercise data
+            const exercisesMap = new Map<number, ExerciseReturnType>();
+            exercisesData.forEach((exercise) => {
+                if (exercise) {
+                    exercisesMap.set(exercise.id!, exercise);
+                }
+            });
+            setExercisesMap(exercisesMap);
+
+            // Create an array of exercises with sets, sorted as needed
+            const exercisesWithSets = exerciseIds.map((exerciseId) => ({
+                exerciseId,
+                sets: exerciseSetsMap[exerciseId],
+            }));
+
+            // Sort exercises by exercise name
+            exercisesWithSets.sort((a, b) => {
+                const exerciseA = exercisesMap.get(a.exerciseId);
+                const exerciseB = exercisesMap.get(b.exerciseId);
+                if (exerciseA && exerciseB) {
+                    return exerciseA.name.localeCompare(exerciseB.name);
+                } else {
+                    return a.exerciseId - b.exerciseId;
+                }
+            });
+
+            setWorkoutExercises(exercisesWithSets);
         } catch (error) {
             console.error(t('failed_to_load_workout_details'), error);
         } finally {
@@ -151,7 +179,7 @@ const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
         setLoading(false);
         setWorkout(undefined);
         setWorkoutExercises([]);
-        setExercises([]);
+        setExercisesMap(new Map());
         setShowWeeklyAverages(false);
         setTimeRange('30');
         setIsAiEnabled(false);
@@ -198,11 +226,16 @@ const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
 
                 let workoutVolume = 0;
                 if (selectedChartData === WHOLE_WORKOUT) {
-                    workoutVolume = parseFloat(recentWorkout.workoutVolume || '0') || await calculateWorkoutVolume(
-                        exerciseData.filter((ex) => exercises.find((e) => e?.id === ex.exerciseId)),
-                    ) || 0;
+                    workoutVolume =
+                        parseFloat(recentWorkout.workoutVolume || '0') ||
+                        (await calculateWorkoutVolume(
+                            exerciseData.filter((ex) => exercisesMap.has(ex.exerciseId)),
+                        )) ||
+                        0;
                 } else {
-                    const selectedExerciseData = exerciseData.find((ex) => ex.exerciseId.toString() === selectedChartData);
+                    const selectedExerciseData = exerciseData.find(
+                        (ex) => ex.exerciseId.toString() === selectedChartData
+                    );
 
                     if (selectedExerciseData) {
                         workoutVolume = await calculateWorkoutVolume([selectedExerciseData], 0);
@@ -211,7 +244,10 @@ const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
 
                 data.push({
                     date: recentWorkout.date,
-                    marker: t('value_weight', { value: getDisplayFormattedWeight(workoutVolume, KILOGRAMS, isImperial), weightUnit }),
+                    marker: t('value_weight', {
+                        value: getDisplayFormattedWeight(workoutVolume, KILOGRAMS, isImperial),
+                        weightUnit,
+                    }),
                     x: index,
                     y: getDisplayFormattedWeight(workoutVolume, KILOGRAMS, isImperial),
                 });
@@ -224,7 +260,7 @@ const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
         if (recentWorkouts.length > 1) {
             getChartData();
         }
-    }, [recentWorkouts, timeRange, showWeeklyAverages, t, weightUnit, isImperial, selectedChartData, exercises]);
+    }, [recentWorkouts, timeRange, showWeeklyAverages, t, weightUnit, isImperial, selectedChartData, exercisesMap]);
 
     const chartLabels = useMemo(() => {
         const filteredWorkouts = recentWorkouts.slice(-parseInt(timeRange));
@@ -417,7 +453,7 @@ const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
                             </Text>
                             {workoutExercises.map((we, index) => (
                                 <WorkoutExerciseDetail
-                                    exercise={exercises.find((ex) => ex?.id === we.exerciseId)}
+                                    exercise={exercisesMap.get(we.exerciseId)}
                                     exerciseVolume={{
                                         exerciseId: we.exerciseId,
                                         sets: we.sets.map((set) => ({
@@ -448,7 +484,10 @@ const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
                             <CustomPicker
                                 items={[
                                     { label: t('whole_workout'), value: WHOLE_WORKOUT },
-                                    ...exercises.map((ex) => ({ label: ex?.name || '', value: ex?.id!.toString() || '' }))
+                                    ...Array.from(exercisesMap.values()).map((ex) => ({
+                                        label: ex.name || '',
+                                        value: ex.id!.toString() || '',
+                                    }))
                                 ]}
                                 label={t('select_metric')}
                                 onValueChange={setSelectedChartData}

@@ -26,10 +26,9 @@ import {
     getExerciseById,
     getRecentWorkoutsByWorkoutId,
     getSetById,
-    getSetsByIds,
+    getSetsByWorkoutId,
     getUserNutritionFromDate,
     getWorkoutById,
-    getWorkoutExercisesByWorkoutId,
     updateSet,
     updateWorkoutSetsVolume
 } from '@/utils/database';
@@ -85,25 +84,51 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
                 setWorkout(workout);
 
                 if (workout) {
-                    const workoutExercises = await getWorkoutExercisesByWorkoutId(workoutId);
+                    // Fetch all sets for this workout
+                    const sets = await getSetsByWorkoutId(workoutId);
 
-                    const exerciseDetails = await Promise.all(
-                        workoutExercises.map(async (workoutExercise) => {
-                            const exercise = await getExerciseById(workoutExercise.exerciseId);
-                            const sets = await getSetsByIds(workoutExercise.setIds);
-                            return { exercise: exercise!, sets };
+                    // Group sets by exerciseId
+                    const exerciseSetsMap: { [exerciseId: number]: SetReturnType[] } = {};
+                    sets.forEach((set) => {
+                        if (!exerciseSetsMap[set.exerciseId]) {
+                            exerciseSetsMap[set.exerciseId] = [];
+                        }
+                        exerciseSetsMap[set.exerciseId].push(set);
+                    });
+
+                    // Get unique exerciseIds
+                    const exerciseIds = Object.keys(exerciseSetsMap).map((id) => parseInt(id, 10));
+
+                    // Fetch exercises
+                    const exercisesData = await Promise.all(
+                        exerciseIds.map(async (exerciseId) => {
+                            const exercise = await getExerciseById(exerciseId);
+                            return exercise!;
                         })
                     );
 
+                    // Combine exercises and sets
+                    const exerciseDetails = exercisesData.map((exercise) => ({
+                        exercise,
+                        sets: exerciseSetsMap[exercise.id!],
+                    }));
+
                     setExercises(exerciseDetails);
+
                     if (exerciseDetails.length > 0) {
-                        const currentIndex = parseInt(await AsyncStorage.getItem(CURRENT_EXERCISE_INDEX) || '0', 10);
+                        const currentIndex = parseInt(
+                            (await AsyncStorage.getItem(CURRENT_EXERCISE_INDEX)) || '0',
+                            10
+                        );
 
                         setCurrentExerciseIndex(currentIndex);
                         const currentExercise = exerciseDetails[currentIndex];
 
                         setExercise(currentExercise.exercise);
-                        await AsyncStorage.setItem(CURRENT_EXERCISE_INDEX, currentIndex.toString());
+                        await AsyncStorage.setItem(
+                            CURRENT_EXERCISE_INDEX,
+                            currentIndex.toString()
+                        );
                     }
                 }
             }
@@ -284,7 +309,7 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
 
                         increaseUnreadMessages(1);
                     }
-                    
+
                     if (workout.volumeCalculationType === VOLUME_CALCULATION_TYPES.AI_GENERATED) {
                         // Start the long-running task in a setTimeout to prevent blocking the UI
                         setTimeout(async () => {
@@ -356,7 +381,7 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
             setWorkout(undefined);
             setStartTime(null);
             setWorkoutDuration(0);
-            
+
             await resetWorkoutStorageData();
 
             navigation.navigate('index');

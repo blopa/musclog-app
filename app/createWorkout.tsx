@@ -47,7 +47,7 @@ type Set = {
     supersetName?: string | null;
 };
 
-type WorkoutExercise = {
+type WorkoutWithExercisesAndSets = {
     exercise: ExerciseReturnType;
     sets: Set[];
     supersetName: string | null;
@@ -75,7 +75,7 @@ const CreateWorkout = () => {
     const [recurringOnWeek, setRecurringOnWeek] = useState('');
     const [volumeCalculationType, setVolumeCalculationType] = useState<VolumeCalculationTypeType>('');
 
-    const [workout, setWorkout] = useState<WorkoutExercise[]>([]);
+    const [workout, setWorkout] = useState<WorkoutWithExercisesAndSets[]>([]);
     const [supersetName, setSupersetName] = useState('');
     const [selectedExercises, setSelectedExercises] = useState<number[]>([]);
     const [selectedMuscleGroup, setSelectedMuscleGroup] = useState<string | null>(null);
@@ -240,14 +240,14 @@ const CreateWorkout = () => {
             let setOrder = 0;
 
             // For each exercise in the workout
-            for (const workoutExercise of workout) {
+            for (const workoutWithExercisesAndSets of workout) {
                 // For each set in the exercise
-                for (const set of workoutExercise.sets) {
+                for (const set of workoutWithExercisesAndSets.sets) {
                     const setData: SetInsertType = {
                         workoutId,
-                        exerciseId: workoutExercise.exercise.id,
+                        exerciseId: workoutWithExercisesAndSets.exercise.id,
                         setOrder: setOrder++,
-                        supersetName: workoutExercise.supersetName || '',
+                        supersetName: workoutWithExercisesAndSets.supersetName || '',
                         reps: set.reps,
                         weight: set.weight,
                         restTime: set.restTime,
@@ -393,7 +393,7 @@ const CreateWorkout = () => {
                 if (itemBelow && itemBelow.supersetName && itemBelow.supersetName !== supersetName) {
                     // Check entire superset length below and adjust
                     const belowSupersetEnd = newWorkout.lastIndexOf(
-                        newWorkout.findLast((ex) => ex.supersetName === itemBelow.supersetName) ?? {} as WorkoutExercise
+                        newWorkout.findLast((ex) => ex.supersetName === itemBelow.supersetName) ?? {} as WorkoutWithExercisesAndSets
                     );
                     const belowSupersetCount = newWorkout.filter(
                         (ex) => ex.supersetName === itemBelow.supersetName
@@ -412,15 +412,15 @@ const CreateWorkout = () => {
         });
     };
 
-    const renderWorkoutExercises = () => {
+    const renderWorkoutWithExercisesAndSetss = () => {
         return workout.reduce(
-            (acc: any[], workoutExercise: WorkoutExercise, exerciseIndex: number) => {
-                const isSuperset = !!workoutExercise.supersetName;
+            (acc: any[], workoutWithExercisesAndSets: WorkoutWithExercisesAndSets, exerciseIndex: number) => {
+                const isSuperset = !!workoutWithExercisesAndSets.supersetName;
                 const isFirstInSuperset =
                     isSuperset &&
                     (exerciseIndex === 0 ||
                         workout[exerciseIndex - 1].supersetName !==
-                        workoutExercise.supersetName);
+                        workoutWithExercisesAndSets.supersetName);
 
                 if (isFirstInSuperset) {
                     acc.push(
@@ -428,7 +428,7 @@ const CreateWorkout = () => {
                             <View style={styles.supersetHeader}>
                                 <View>
                                     <Text>
-                                        {t('superset')}: {workoutExercise.supersetName || ''}
+                                        {t('superset')}: {workoutWithExercisesAndSets.supersetName || ''}
                                     </Text>
                                 </View>
                                 <View style={styles.supersetButtons}>
@@ -440,11 +440,11 @@ const CreateWorkout = () => {
                                     <IconButton
                                         icon="arrow-down"
                                         onPress={() => moveSuperset(exerciseIndex, 'down')}
-                                        disabled={exerciseIndex >= workout.length - workout.filter((ex) => ex.supersetName === workoutExercise.supersetName).length}
+                                        disabled={exerciseIndex >= workout.length - workout.filter((ex) => ex.supersetName === workoutWithExercisesAndSets.supersetName).length}
                                     />
                                 </View>
                             </View>
-                            {renderExercise(workoutExercise, exerciseIndex)}
+                            {renderExercise(workoutWithExercisesAndSets, exerciseIndex)}
                         </View>
                     );
                 } else if (isSuperset) {
@@ -452,10 +452,10 @@ const CreateWorkout = () => {
                     acc[acc.length - 1] = React.cloneElement(
                         lastSuperset,
                         {},
-                        [...lastSuperset.props.children, renderExercise(workoutExercise, exerciseIndex)]
+                        [...lastSuperset.props.children, renderExercise(workoutWithExercisesAndSets, exerciseIndex)]
                     );
                 } else {
-                    acc.push(renderExercise(workoutExercise, exerciseIndex));
+                    acc.push(renderExercise(workoutWithExercisesAndSets, exerciseIndex));
                 }
                 return acc;
             },
@@ -463,13 +463,13 @@ const CreateWorkout = () => {
         );
     };
 
-    function renderExercise(workoutExercise: WorkoutExercise, exerciseIndex: number) {
-        const isSuperset = !!workoutExercise.supersetName;
+    function renderExercise(workoutWithExercisesAndSets: WorkoutWithExercisesAndSets, exerciseIndex: number) {
+        const isSuperset = !!workoutWithExercisesAndSets.supersetName;
 
         return (
             <View key={exerciseIndex} style={styles.exerciseContainer}>
                 <View style={styles.exerciseHeader}>
-                    <Text style={styles.exerciseTitle}>{workoutExercise.exercise.name}</Text>
+                    <Text style={styles.exerciseTitle}>{workoutWithExercisesAndSets.exercise.name}</Text>
                     <IconButton
                         icon="close"
                         size={20}
@@ -477,9 +477,9 @@ const CreateWorkout = () => {
                     />
                 </View>
                 <Text style={styles.exerciseDescription}>
-                    {workoutExercise.exercise.description}
+                    {workoutWithExercisesAndSets.exercise.description}
                 </Text>
-                {workoutExercise.sets.map((set, setIndex) => (
+                {workoutWithExercisesAndSets.sets.map((set, setIndex) => (
                     <View key={setIndex} style={styles.setContainer}>
                         <Text style={styles.setText}>
                             {t('set')} {setIndex + 1}:
@@ -521,7 +521,7 @@ const CreateWorkout = () => {
                             />
                         </View>
                         <IconButton
-                            icon="remove"
+                            icon="delete"
                             size={20}
                             onPress={() => removeSet(exerciseIndex, setIndex)}
                         />
@@ -539,12 +539,12 @@ const CreateWorkout = () => {
                     <IconButton
                         icon="arrow-up"
                         onPress={() => moveExercise(exerciseIndex, 'up')}
-                        disabled={isSuperset ? (exerciseIndex === workout.findIndex((ex) => ex.supersetName === workoutExercise.supersetName)) : exerciseIndex === 0}
+                        disabled={isSuperset ? (exerciseIndex === workout.findIndex((ex) => ex.supersetName === workoutWithExercisesAndSets.supersetName)) : exerciseIndex === 0}
                     />
                     <IconButton
                         icon="arrow-down"
                         onPress={() => moveExercise(exerciseIndex, 'down')}
-                        disabled={isSuperset ? (exerciseIndex === workout.length - 1 || exerciseIndex === workout.findIndex((ex) => ex.supersetName === workoutExercise.supersetName) + workout.filter((ex) => ex.supersetName === workoutExercise.supersetName).length - 1) : exerciseIndex === workout.length - 1}
+                        disabled={isSuperset ? (exerciseIndex === workout.length - 1 || exerciseIndex === workout.findIndex((ex) => ex.supersetName === workoutWithExercisesAndSets.supersetName) + workout.filter((ex) => ex.supersetName === workoutWithExercisesAndSets.supersetName).length - 1) : exerciseIndex === workout.length - 1}
                     />
                 </View>
             </View>
@@ -649,9 +649,7 @@ const CreateWorkout = () => {
                                     value: ''
                                 },
                                 ...muscleGroups.map((group) => ({
-                                    label: t(
-                                        group.charAt(0).toUpperCase() + group.slice(1)
-                                    ),
+                                    label: t(`muscle_groups.${group}`),
                                     value: group,
                                 })),
                             ]}
@@ -775,7 +773,7 @@ const CreateWorkout = () => {
                 >
                     {t('create_superset')}
                 </Button>
-                <View style={styles.workoutContainer}>{renderWorkoutExercises()}</View>
+                <View style={styles.workoutContainer}>{renderWorkoutWithExercisesAndSetss()}</View>
             </ScrollView>
             <View style={styles.footer}>
                 <Button
