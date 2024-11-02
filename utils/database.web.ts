@@ -1883,7 +1883,6 @@ export const createNewWorkoutTables = async (): Promise<void> => {
             database.close();
         }
 
-        console.log('VOU RODAR EIIIM');
         database.version(6).stores({
             workouts: [
                 '++id',

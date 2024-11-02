@@ -2553,15 +2553,29 @@ export const restoreDatabase = async (dump: string, decryptionPhrase?: string): 
 // Migrations
 
 const columnExists = async (tableName: string, columnName: string): Promise<boolean> => {
-    const query = `PRAGMA table_info("${tableName}");`;
-    const columns = await database.getAllAsync<{ name: string }>(query, []);
-    return columns.some((column) => column.name === columnName);
+    try {
+        const result = await database.getAllSync<{ name: string }>(
+            `PRAGMA table_info("${tableName}");`
+        );
+        return result.some((column) => column.name.toLowerCase() === columnName.toLowerCase());
+    } catch (error) {
+        console.error(`Error checking if column "${columnName}" exists in table "${tableName}":`, error);
+        throw error;
+    }
 };
 
 const tableExists = async (tableName: string): Promise<boolean> => {
-    const query = `SELECT name FROM sqlite_master WHERE type='table' AND name='${tableName}';`;
-    const result = await database.getFirstAsync<{ name: string }>(query, []);
-    return !!result;
+    try {
+        const result = await database.getFirstSync<{ name: string }>(
+            'SELECT name FROM sqlite_master WHERE type=\'table\' AND name=?;',
+            [tableName]
+        );
+
+        return !!result;
+    } catch (error) {
+        console.error(`Error checking if table "${tableName}" exists:`, error);
+        throw error;
+    }
 };
 
 export const addUserMeasurementsTable = async (): Promise<void> => {
@@ -2587,7 +2601,78 @@ export const addUserMeasurementsTable = async (): Promise<void> => {
 };
 
 export const createNewWorkoutTables = async (): Promise<void> => {
-    // TODO: implement this
+    const currentVersion = await getLatestVersion();
+
+    // Check if migration is needed
+    if (currentVersion && currentVersion <= packageJson.version) {
+        try {
+            // 1. Add 'workoutId' column to 'Set' table if it doesn't exist
+            const hasWorkoutId = await columnExists('Set', 'workoutId');
+            if (!hasWorkoutId) {
+                await database.runSync('ALTER TABLE "Set" ADD COLUMN "workoutId" INTEGER DEFAULT 0;');
+                console.log('Added "workoutId" column to "Set" table.');
+            }
+
+            // 2. Add 'setOrder' column to 'Set' table if it doesn't exist
+            const hasSetOrder = await columnExists('Set', 'setOrder');
+            if (!hasSetOrder) {
+                await database.runSync('ALTER TABLE "Set" ADD COLUMN "setOrder" INTEGER DEFAULT 0;');
+                console.log('Added "setOrder" column to "Set" table.');
+            }
+
+            // 3. Add 'supersetName' column to 'Set' table if it doesn't exist
+            const hasSupersetName = await columnExists('Set', 'supersetName');
+            if (!hasSupersetName) {
+                await database.runSync('ALTER TABLE "Set" ADD COLUMN "supersetName" TEXT DEFAULT "";');
+                console.log('Added "supersetName" column to "Set" table.');
+            }
+
+            // 4. (Optional) Remove 'workoutExerciseIds' from 'Workout' table
+            // SQLite does not support DROP COLUMN directly. To remove a column:
+            // a. Create a new temporary table without the 'workoutExerciseIds' column.
+            // b. Copy data from the old table to the new table.
+            // c. Drop the old table.
+            // d. Rename the new table to the original name.
+
+            const hasWorkoutExerciseIds = await columnExists('Workout', 'workoutExerciseIds');
+            if (hasWorkoutExerciseIds) {
+                await database.runSync(`
+                    CREATE TABLE IF NOT EXISTS "Workout_temp" (
+                        "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+                        "title" TEXT,
+                        "description" TEXT,
+                        "volumeCalculationType" TEXT,
+                        "recurringOnWeek" TEXT,
+                        "createdAt" TEXT DEFAULT CURRENT_TIMESTAMP,
+                        "deletedAt" TEXT
+                    );
+                `);
+                console.log('Created temporary "Workout_temp" table without "workoutExerciseIds".');
+
+                await database.runSync(`
+                    INSERT INTO "Workout_temp" ("id", "title", "description", "volumeCalculationType", "recurringOnWeek", "createdAt", "deletedAt")
+                    SELECT "id", "title", "description", "volumeCalculationType", "recurringOnWeek", "createdAt", "deletedAt"
+                    FROM "Workout";
+                `);
+                console.log('Copied data from "Workout" to "Workout_temp".');
+
+                await database.runSync('DROP TABLE "Workout";');
+                console.log('Dropped original "Workout" table.');
+
+                await database.runSync('ALTER TABLE "Workout_temp" RENAME TO "Workout";');
+                console.log('Renamed "Workout_temp" to "Workout".');
+            }
+
+            // 5. Update the versioning table to reflect the new version
+            await addVersioning(packageJson.version);
+            console.log(`Database schema updated to version ${packageJson.version}.`);
+        } catch (error) {
+            console.error('Error in createNewWorkoutTables:', error);
+            throw error; // Re-throw the error after logging
+        }
+    } else {
+        console.log('No migration needed for createNewWorkoutTables.');
+    }
 };
 
 export const addAlcoholMacroToUserNutritionTable = async (): Promise<void> => {
