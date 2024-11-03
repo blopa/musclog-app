@@ -408,6 +408,35 @@ const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
         t,
     ]);
 
+    // Group workoutExercises by supersetName
+    const groupedExercises = useMemo(() => {
+        const supersets: { [supersetName: string]: { exerciseId: number; sets: SetReturnType[] }[] } = {};
+        const standaloneExercises: { exerciseId: number; sets: SetReturnType[] }[] = [];
+
+        workoutExercises.forEach((we) => {
+            const supersetNames = Array.from(new Set(we.sets.map((set) => set.supersetName).filter(Boolean))) as string[];
+
+            if (supersetNames.length > 0) {
+                supersetNames.forEach((supersetName) => {
+                    if (!supersets[supersetName]) {
+                        supersets[supersetName] = [];
+                    }
+                    const setsInSuperset = we.sets.filter((set) => set.supersetName === supersetName);
+                    if (setsInSuperset.length > 0) {
+                        supersets[supersetName].push({
+                            exerciseId: we.exerciseId,
+                            sets: setsInSuperset,
+                        });
+                    }
+                });
+            } else {
+                standaloneExercises.push(we);
+            }
+        });
+
+        return { supersets, standaloneExercises };
+    }, [workoutExercises]);
+
     return (
         <FABWrapper actions={fabActions} icon="cog" visible>
             <View style={styles.container}>
@@ -451,22 +480,47 @@ const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
                             <Text style={styles.exercisesTitle}>
                                 {t('exercises')}
                             </Text>
-                            {workoutExercises.map((we, index) => (
-                                <WorkoutExerciseDetail
-                                    exercise={exercisesMap.get(we.exerciseId)}
-                                    exerciseVolume={{
-                                        exerciseId: we.exerciseId,
-                                        sets: we.sets.map((set) => ({
-                                            ...set,
-                                            setId: set.id ?? 0,
-                                            weight: getDisplayFormattedWeight(Number(set.weight), KILOGRAMS, isImperial),
-                                        })),
-                                    }}
-                                    key={index}
-                                    // onDeleteSet={handleDeleteSet(we.exerciseId)}
-                                    // onEditSet={handleEditSet(we.exerciseId)}
-                                />
+                            {Object.keys(groupedExercises.supersets).map((supersetName) => (
+                                <View key={`superset-${supersetName}`} style={styles.supersetContainer}>
+                                    <Text style={styles.supersetHeader}>{`${t('superset')}: ${supersetName}`}</Text>
+                                    {groupedExercises.supersets[supersetName].map((we, index) => (
+                                        <WorkoutExerciseDetail
+                                            exercise={exercisesMap.get(we.exerciseId)}
+                                            exerciseVolume={{
+                                                exerciseId: we.exerciseId,
+                                                sets: we.sets.map((set) => ({
+                                                    ...set,
+                                                    setId: set.id ?? 0,
+                                                    weight: getDisplayFormattedWeight(Number(set.weight), KILOGRAMS, isImperial),
+                                                })),
+                                            }}
+                                            key={`superset-${supersetName}-exercise-${we.exerciseId}-${index}`}
+                                            // onDeleteSet={handleDeleteSet(we.exerciseId)}
+                                            // onEditSet={handleEditSet(we.exerciseId)}
+                                        />
+                                    ))}
+                                </View>
                             ))}
+                            {groupedExercises.standaloneExercises.length > 0 && (
+                                <View>
+                                    {groupedExercises.standaloneExercises.map((we, index) => (
+                                        <WorkoutExerciseDetail
+                                            exercise={exercisesMap.get(we.exerciseId)}
+                                            exerciseVolume={{
+                                                exerciseId: we.exerciseId,
+                                                sets: we.sets.map((set) => ({
+                                                    ...set,
+                                                    setId: set.id ?? 0,
+                                                    weight: getDisplayFormattedWeight(Number(set.weight), KILOGRAMS, isImperial),
+                                                })),
+                                            }}
+                                            key={`standalone-exercise-${we.exerciseId}-${index}`}
+                                            // onDeleteSet={handleDeleteSet(we.exerciseId)}
+                                            // onEditSet={handleEditSet(we.exerciseId)}
+                                        />
+                                    ))}
+                                </View>
+                            )}
                         </ThemedCard>
                     ) : (
                         <Text style={styles.noDataText}>{t('no_workout_details')}</Text>
@@ -620,6 +674,20 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     },
     snackbarText: {
         color: colors.onBackground,
+    },
+    supersetContainer: {
+        backgroundColor: colors.surfaceVariant,
+        borderColor: colors.primary,
+        borderRadius: 8,
+        borderWidth: 1,
+        marginBottom: 16,
+        padding: 8,
+    },
+    supersetHeader: {
+        color: colors.primary,
+        fontSize: 16,
+        fontWeight: 'bold',
+        marginBottom: 8,
     },
 });
 
