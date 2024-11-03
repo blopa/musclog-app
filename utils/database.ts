@@ -15,6 +15,7 @@ import {
     ChatReturnType,
     ExerciseInsertType,
     ExerciseReturnType,
+    ExerciseVolumeType,
     ExerciseWithSetsType,
     MetricsForUserType,
     OneRepMaxReturnType,
@@ -2711,8 +2712,10 @@ export const createNewWorkoutTables = async (): Promise<void> => {
             await database.runSync('DELETE FROM "Workout";');
             console.log("Cleared existing data from 'Set' and 'Workout' tables.");
 
-            // 4. Insert data back with the new structure and keep track of new workout IDs
+            // 4. Insert data back with the new structure and keep track of new workout and set IDs
             const workoutIdMapping: Record<number, number> = {}; // Map old workoutId -> new workoutId
+            const setIdMapping: Record<number, number> = {}; // Map old setId -> new setId
+
             for (const workout of workoutData) {
                 const workoutResult = await database.runSync(
                     'INSERT INTO "Workout" ("id", "title", "description", "volumeCalculationType", "recurringOnWeek", "createdAt", "deletedAt") VALUES (?, ?, ?, ?, ?, ?, ?)',
@@ -2732,7 +2735,7 @@ export const createNewWorkoutTables = async (): Promise<void> => {
                 for (const exercise of workout.exercises) {
                     setOrder += 1;
                     for (const set of exercise.sets) {
-                        await database.runSync(
+                        const setResult = await database.runSync(
                             'INSERT INTO "Set" ("id", "reps", "weight", "restTime", "exerciseId", "difficultyLevel", "isDropSet", "createdAt", "deletedAt", "workoutId", "setOrder", "supersetName") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
                             set.id,
                             set.reps,
@@ -2747,12 +2750,14 @@ export const createNewWorkoutTables = async (): Promise<void> => {
                             setOrder++,
                             set.supersetName,
                         );
+
+                        setIdMapping[set.id] = setResult.lastInsertRowId;
                     }
                 }
             }
             console.log("Reinserted data into 'Workout' and 'Set' tables with the new structure.");
 
-            // 5. Update `WorkoutEvent` table to reflect new `workoutId`
+            // 5. Update `WorkoutEvent` table to reflect new `workoutId` and update `exerciseData`
             const workoutEvents = await database.getAllSync(`
                 SELECT * FROM "WorkoutEvent" WHERE "deletedAt" IS NULL
             `) as WorkoutEventReturnType[];
@@ -2760,14 +2765,34 @@ export const createNewWorkoutTables = async (): Promise<void> => {
             for (const event of workoutEvents) {
                 const newWorkoutId = workoutIdMapping[event.workoutId];
                 if (newWorkoutId) {
+                    // Update workoutId in WorkoutEvent table
                     await database.runSync(
                         'UPDATE "WorkoutEvent" SET "workoutId" = ? WHERE "id" = ?',
                         newWorkoutId,
                         event.id
                     );
+
+                    // Update exerciseData field
+                    const exerciseData = JSON.parse(event.exerciseData || '[]') as ExerciseVolumeType[];
+                    const updatedExerciseData = exerciseData.map((exercise) => ({
+                        ...exercise,
+                        // exerciseId: exercise.exerciseId,
+                        sets: exercise.sets.map((set) => ({
+                            ...set,
+                            setId: setIdMapping[set.setId],
+                            workoutId: newWorkoutId,
+                        })),
+                    }));
+
+                    // Save updated exerciseData back to WorkoutEvent table
+                    await database.runSync(
+                        'UPDATE "WorkoutEvent" SET "exerciseData" = ? WHERE "id" = ?',
+                        JSON.stringify(updatedExerciseData),
+                        event.id
+                    );
                 }
             }
-            console.log('Updated "WorkoutEvent" table with new workout IDs.');
+            console.log('Updated "WorkoutEvent" table with new workout IDs and updated exerciseData.');
 
             // 6. Update the versioning table
             await addVersioning(packageJson.version);
