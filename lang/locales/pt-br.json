@@ -219,6 +219,7 @@
     "delete_set": "Excluir Série",
     "add_exercise": "Adicionar Exercício",
     "delete_exercise": "Excluir Exercício",
+    "delete_workout": "Excluir Treino",
     "save_workout": "Salvar Treino",
     "create": "Criar",
     "workout_created_successfully": "Treino criado com sucesso!",

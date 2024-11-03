@@ -220,6 +220,7 @@
     "delete_set": "Eliminar Serie",
     "add_exercise": "Añadir Ejercicio",
     "delete_exercise": "Eliminar Ejercicio",
+    "delete_workout": "Eliminar Entrenamiento",
     "save_workout": "Guardar Entrenamiento",
     "create": "Crear",
     "workout_created_successfully": "¡Entrenamiento creado con éxito!",

@@ -220,6 +220,7 @@
     "delete_set": "Delete Set",
     "add_exercise": "Add Exercise",
     "delete_exercise": "Delete Exercise",
+    "delete_workout": "Delete Workout",
     "save_workout": "Save Workout",
     "create": "Create",
     "workout_created_successfully": "Workout created successfully!",

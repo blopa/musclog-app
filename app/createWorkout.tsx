@@ -976,13 +976,15 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                 >
                     {isSaving ? t('saving') : t('save_workout')}
                 </Button>
-                <Button
-                    mode="contained"
-                    onPress={handleDeleteWorkout}
-                    style={styles.button}
-                >
-                    {t('delete_workout')}
-                </Button>
+                {id ? (
+                    <Button
+                        mode="contained"
+                        onPress={handleDeleteWorkout}
+                        style={styles.button}
+                    >
+                        {t('delete_workout')}
+                    </Button>
+                ) : null}
             </View>
             {(isSaving || isLoading) && (
                 <View style={styles.overlay}>

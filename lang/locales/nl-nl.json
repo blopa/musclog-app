@@ -219,6 +219,7 @@
     "delete_set": "Set verwijderen",
     "add_exercise": "Oefening toevoegen",
     "delete_exercise": "Oefening verwijderen",
+    "delete_workout": "Training verwijderen",
     "save_workout": "Training opslaan",
     "create": "Maken",
     "workout_created_successfully": "Training succesvol gemaakt!",
