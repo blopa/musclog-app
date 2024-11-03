@@ -51,6 +51,7 @@ export type CurrentWorkoutProgressType = {
     restTime: number;
     setId: number;
     setIndex: number;
+    setOrder: number;
     targetReps: number;
     targetWeight: number;
     weight: number;

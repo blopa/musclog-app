@@ -282,6 +282,8 @@ const WorkoutSession = ({
             targetWeight: currentSet.weight,
             weight: getSaveFormattedWeight(Number(weightLifted), POUNDS, isImperial),
             workoutDuration,
+            setOrder: currentSet.setOrder,
+            supersetName: currentSet.supersetName,
         } as CurrentWorkoutProgressType;
 
         try {
@@ -410,7 +412,7 @@ const WorkoutSession = ({
             await handleStartCountdown(Math.min(currentSetIndex + 1, sets.length - 1));
         } else {
             await handleStartCountdown(0);
-            handleFinishExercise();
+            await handleFinishExercise();
         }
 
         setLoading(false);
