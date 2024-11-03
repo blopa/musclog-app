@@ -28,6 +28,11 @@ const CurrentWorkoutProgressModal: React.FC<PreviousSetDataModalProps> = ({
     const { weightUnit } = useUnit();
     const windowHeight = Dimensions.get('window').height;
 
+    // Map remainingWorkoutData sets by their set IDs for quick lookup
+    const remainingSetIds = new Set(
+        remainingWorkoutData.flatMap((exercise) => exercise.sets.map((set) => set.id))
+    );
+
     // Group completedWorkoutData by supersetName and then by exerciseName
     const groupedCompletedData = useMemo(() => {
         const supersets: { [supersetName: string]: ExerciseProgressType[] } = {};
@@ -51,19 +56,17 @@ const CurrentWorkoutProgressModal: React.FC<PreviousSetDataModalProps> = ({
         return { supersets, standaloneExercises };
     }, [completedWorkoutData]);
 
-    // Group remainingWorkoutData by supersetName and then by exerciseName using orderedExercises
+    // Group remaining data by supersetName and exerciseName using orderedExercises for ordering
     const groupedRemainingData = useMemo(() => {
         const supersets: { [supersetName: string]: ExerciseWithSetsType[] } = {};
         const standaloneExercises: ExerciseWithSetsType[] = [];
 
         orderedExercises.forEach(({ exercise, sets }) => {
-            // Filter out sets that are already completed or skipped
-            const remainingSets = sets.filter(
-                (set) => !completedWorkoutData.some((cSet) => cSet.setId === set.id)
-            );
+            // Filter out sets that are not in remainingWorkoutData
+            const remainingSets = sets.filter((set) => remainingSetIds.has(set.id));
 
             if (remainingSets.length > 0) {
-                const supersetName = sets[0].supersetName || null;
+                const supersetName = remainingSets[0].supersetName || null;
                 if (supersetName) {
                     if (!supersets[supersetName]) {
                         supersets[supersetName] = [];
@@ -82,7 +85,7 @@ const CurrentWorkoutProgressModal: React.FC<PreviousSetDataModalProps> = ({
         });
 
         return { supersets, standaloneExercises };
-    }, [orderedExercises, completedWorkoutData]);
+    }, [orderedExercises, remainingSetIds]);
 
     return (
         <ThemedModal
