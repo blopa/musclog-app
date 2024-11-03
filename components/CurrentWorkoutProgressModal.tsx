@@ -1,7 +1,7 @@
 import ThemedModal from '@/components/ThemedModal';
 import useUnit from '@/hooks/useUnit';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
-import { CurrentWorkoutProgressType, ExerciseWithSetsType } from '@/utils/types';
+import { CurrentWorkoutProgressType, ExerciseReturnType, ExerciseWithSetsType, SetReturnType } from '@/utils/types';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Dimensions, ScrollView, StyleSheet, View } from 'react-native';
@@ -12,6 +12,7 @@ interface PreviousSetDataModalProps {
     isVisible: boolean;
     onClose: () => void;
     remainingWorkoutData: ExerciseWithSetsType[];
+    orderedExercises: { exercise: ExerciseReturnType; sets: SetReturnType[] }[];
 }
 
 const CurrentWorkoutProgressModal: React.FC<PreviousSetDataModalProps> = ({
@@ -19,6 +20,7 @@ const CurrentWorkoutProgressModal: React.FC<PreviousSetDataModalProps> = ({
     isVisible,
     onClose,
     remainingWorkoutData,
+    orderedExercises,
 }) => {
     const { colors } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors);
@@ -32,12 +34,12 @@ const CurrentWorkoutProgressModal: React.FC<PreviousSetDataModalProps> = ({
         const standaloneExercises: { [exerciseName: string]: CurrentWorkoutProgressType[] } = {};
 
         completedWorkoutData.forEach((set) => {
-            const superset = set.supersetName || null;
-            if (superset) {
-                if (!supersets[superset]) {
-                    supersets[superset] = [];
+            const supersetName = set.supersetName || null;
+            if (supersetName) {
+                if (!supersets[supersetName]) {
+                    supersets[supersetName] = [];
                 }
-                supersets[superset].push(set);
+                supersets[supersetName].push(set);
             } else {
                 if (!standaloneExercises[set.name]) {
                     standaloneExercises[set.name] = [];
@@ -49,25 +51,38 @@ const CurrentWorkoutProgressModal: React.FC<PreviousSetDataModalProps> = ({
         return { supersets, standaloneExercises };
     }, [completedWorkoutData]);
 
-    // Group remainingWorkoutData by supersetName and then by exerciseName
+    // Group remainingWorkoutData by supersetName and then by exerciseName using orderedExercises
     const groupedRemainingData = useMemo(() => {
         const supersets: { [supersetName: string]: ExerciseWithSetsType[] } = {};
         const standaloneExercises: ExerciseWithSetsType[] = [];
 
-        remainingWorkoutData.forEach((exercise) => {
-            const superset = exercise.sets.find((set) => set.supersetName)?.supersetName || null;
-            if (superset) {
-                if (!supersets[superset]) {
-                    supersets[superset] = [];
+        orderedExercises.forEach(({ exercise, sets }) => {
+            // Filter out sets that are already completed or skipped
+            const remainingSets = sets.filter(
+                (set) => !completedWorkoutData.some((cSet) => cSet.setId === set.id)
+            );
+
+            if (remainingSets.length > 0) {
+                const supersetName = sets[0].supersetName || null;
+                if (supersetName) {
+                    if (!supersets[supersetName]) {
+                        supersets[supersetName] = [];
+                    }
+                    supersets[supersetName].push({
+                        ...exercise,
+                        sets: remainingSets,
+                    });
+                } else {
+                    standaloneExercises.push({
+                        ...exercise,
+                        sets: remainingSets,
+                    });
                 }
-                supersets[superset].push(exercise);
-            } else {
-                standaloneExercises.push(exercise);
             }
         });
 
         return { supersets, standaloneExercises };
-    }, [remainingWorkoutData]);
+    }, [orderedExercises, completedWorkoutData]);
 
     return (
         <ThemedModal
@@ -89,15 +104,12 @@ const CurrentWorkoutProgressModal: React.FC<PreviousSetDataModalProps> = ({
                         {completedWorkoutData.length > 0 && (
                             <>
                                 <Text style={styles.subTitle}>{t('completed_sets')}</Text>
-                                {/* Supersets */}
                                 {Object.keys(groupedCompletedData.supersets).map((supersetName) => (
                                     <View key={`completed-superset-${supersetName}`} style={styles.supersetContainer}>
                                         <Text style={styles.supersetHeader}>{`${t('superset')}: ${supersetName}`}</Text>
                                         {(() => {
                                             const exercisesInSuperset = groupedCompletedData.supersets[supersetName];
-                                            const groupedByExercise: {
-                                                [exerciseName: string]: CurrentWorkoutProgressType[]
-                                            } = {};
+                                            const groupedByExercise: { [exerciseName: string]: CurrentWorkoutProgressType[] } = {};
 
                                             exercisesInSuperset.forEach((set) => {
                                                 if (!groupedByExercise[set.name]) {
@@ -107,9 +119,7 @@ const CurrentWorkoutProgressModal: React.FC<PreviousSetDataModalProps> = ({
                                             });
 
                                             return Object.keys(groupedByExercise).map((exerciseName) => (
-                                                <View
-                                                    key={`completed-superset-${supersetName}-exercise-${exerciseName}`}
-                                                    style={styles.exerciseContainer}>
+                                                <View key={`completed-superset-${supersetName}-exercise-${exerciseName}`} style={styles.exerciseContainer}>
                                                     <Text style={styles.exerciseName}>{exerciseName}</Text>
                                                     {groupedByExercise[exerciseName].map((set, index) => (
                                                         <View key={index} style={styles.setData}>
@@ -153,15 +163,14 @@ const CurrentWorkoutProgressModal: React.FC<PreviousSetDataModalProps> = ({
                                 ))}
                             </>
                         )}
-                        {remainingWorkoutData.length > 0 && (
+                        {orderedExercises.length > 0 && (
                             <>
                                 <Text style={styles.subTitle}>{t('remaining_sets')}</Text>
                                 {Object.keys(groupedRemainingData.supersets).map((supersetName) => (
                                     <View key={`remaining-superset-${supersetName}`} style={styles.supersetContainer}>
                                         <Text style={styles.supersetHeader}>{`${t('superset')}: ${supersetName}`}</Text>
                                         {groupedRemainingData.supersets[supersetName].map((exercise) => (
-                                            <View key={`remaining-superset-${supersetName}-exercise-${exercise.id}`}
-                                                style={styles.exerciseContainer}>
+                                            <View key={`remaining-superset-${supersetName}-exercise-${exercise.id}`} style={styles.exerciseContainer}>
                                                 <Text style={styles.exerciseName}>{exercise.name}</Text>
                                                 {exercise.sets.map((set, index) => (
                                                     <View key={index} style={styles.setData}>
@@ -206,7 +215,7 @@ const CurrentWorkoutProgressModal: React.FC<PreviousSetDataModalProps> = ({
                         )}
                     </>
                 )}
-                <View style={{ marginVertical: 10 }}/>
+                <View style={{ marginVertical: 10 }} />
             </ScrollView>
         </ThemedModal>
     );

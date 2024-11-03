@@ -114,7 +114,7 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
 
                     const orderedExercises: { exercise: ExerciseReturnType; sets: SetReturnType[] }[] = [];
 
-                    // Process each superset to interleave sets from its exercises
+                    // Process Supersets: Interleave sets from exercises within the same superset
                     for (const supersetName of Object.keys(supersetsMap)) {
                         const exercisesInSuperset = supersetsMap[supersetName];
                         const exerciseIds = Object.keys(exercisesInSuperset).map((id) => parseInt(id, 10));
@@ -159,9 +159,12 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
                         }
                     }
 
-                    // Process standalone exercises (not part of any superset)
-                    const standaloneExerciseIds = Object.keys(standaloneSetsMap).map((id) => parseInt(id, 10));
+                    // Process Standalone Exercises: Add their sets sequentially
+                    const standaloneExerciseIds = Object.keys(standaloneSetsMap).map((id) =>
+                        parseInt(id, 10)
+                    );
 
+                    // Fetch standalone exercises sorted by the earliest setOrder to maintain order
                     const standaloneExercisesData = await Promise.all(
                         standaloneExerciseIds.map(async (id) => {
                             const ex = await getExerciseById(id);
@@ -177,11 +180,20 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
                         (ex): ex is ExerciseReturnType => ex !== null && ex !== undefined
                     );
 
-                    // Sort sets for each standalone exercise by setOrder
-                    const sortedStandaloneExercises = validStandaloneExercises.map((exercise) => ({
-                        exercise,
-                        sets: standaloneSetsMap[exercise.id].sort((a, b) => a.setOrder - b.setOrder),
-                    }));
+                    // Sort standalone exercises by the setOrder of their first set to maintain intended order
+                    const sortedStandaloneExercises = validStandaloneExercises
+                        .map((exercise) => ({
+                            exercise,
+                            sets: standaloneSetsMap[exercise.id].sort(
+                                (a, b) => a.setOrder - b.setOrder
+                            ),
+                            firstSetOrder: standaloneSetsMap[exercise.id][0]?.setOrder || 0,
+                        }))
+                        .sort((a, b) => a.firstSetOrder - b.firstSetOrder)
+                        .map(({ exercise, sets }) => ({
+                            exercise,
+                            sets,
+                        }));
 
                     // Append standalone exercises to the ordered list
                     orderedExercises.push(...sortedStandaloneExercises);
@@ -191,8 +203,21 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
 
                     // Determine the current exercise index from AsyncStorage
                     if (orderedExercises.length > 0) {
-                        const storedCurrentIndex = await AsyncStorage.getItem(CURRENT_EXERCISE_INDEX);
-                        const currentIndex = storedCurrentIndex ? parseInt(storedCurrentIndex, 10) : 0;
+                        const storedCurrentIndex = await AsyncStorage.getItem(
+                            CURRENT_EXERCISE_INDEX
+                        );
+                        let currentIndex = storedCurrentIndex
+                            ? parseInt(storedCurrentIndex, 10)
+                            : 0;
+
+                        // Validate currentIndex to prevent out-of-bounds errors
+                        if (currentIndex >= orderedExercises.length) {
+                            currentIndex = orderedExercises.length - 1;
+                        }
+
+                        if (currentIndex < 0) {
+                            currentIndex = 0;
+                        }
 
                         setCurrentExerciseIndex(currentIndex);
                         const currentExercise = orderedExercises[currentIndex];
@@ -477,6 +502,7 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
                 startTime={startTime}
                 workoutDuration={workoutDuration}
                 workoutId={workout?.id}
+                orderedExercises={exercises}
             />
         );
     }

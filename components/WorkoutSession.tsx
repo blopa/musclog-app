@@ -49,6 +49,7 @@ type WorkoutSessionProps = {
     startTime: null | number;
     workoutDuration?: number;
     workoutId: number | undefined;
+    orderedExercises: { exercise: ExerciseReturnType; sets: SetReturnType[] }[];
 };
 
 const WorkoutSession = ({
@@ -61,6 +62,7 @@ const WorkoutSession = ({
     startTime,
     workoutDuration,
     workoutId,
+    orderedExercises,
 }: WorkoutSessionProps) => {
     const { t } = useTranslation();
     const { colors, dark } = useTheme<CustomThemeType>();
@@ -501,6 +503,7 @@ const WorkoutSession = ({
                 isVisible={isInfoModalVisible}
                 onClose={() => setIsInfoModalVisible(false)}
                 remainingWorkoutData={remainingWorkoutData}
+                orderedExercises={orderedExercises}
             />
             {isResting ? (
                 <RestTimer
