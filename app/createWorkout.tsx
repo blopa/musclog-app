@@ -339,12 +339,13 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                     exercise.sets.map((set) => set.id)
                 );
 
+                let setOrder = 0;
                 for (const workoutWithExercisesAndSets of workout) {
                     for (const set of workoutWithExercisesAndSets.sets) {
                         const setData: SetInsertType = {
                             workoutId,
                             exerciseId: workoutWithExercisesAndSets.exercise.id,
-                            setOrder: set.setOrder || 0,
+                            setOrder: setOrder++,
                             supersetName: workoutWithExercisesAndSets.supersetName || '',
                             reps: set.reps,
                             weight: set.weight,
