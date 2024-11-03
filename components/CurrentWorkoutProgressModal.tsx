@@ -5,7 +5,7 @@ import { CurrentWorkoutProgressType, ExerciseWithSetsType } from '@/utils/types'
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Dimensions, ScrollView, StyleSheet, View } from 'react-native';
-import { Text, useTheme, List } from 'react-native-paper';
+import { Text, useTheme } from 'react-native-paper';
 
 interface PreviousSetDataModalProps {
     completedWorkoutData: CurrentWorkoutProgressType[];
@@ -32,8 +32,8 @@ const CurrentWorkoutProgressModal: React.FC<PreviousSetDataModalProps> = ({
         const standaloneExercises: { [exerciseName: string]: CurrentWorkoutProgressType[] } = {};
 
         completedWorkoutData.forEach((set) => {
-            const superset = set.supersetName || 'No Superset';
-            if (superset !== 'No Superset') {
+            const superset = set.supersetName || null;
+            if (superset) {
                 if (!supersets[superset]) {
                     supersets[superset] = [];
                 }
@@ -83,22 +83,21 @@ const CurrentWorkoutProgressModal: React.FC<PreviousSetDataModalProps> = ({
                 style={{ maxHeight: windowHeight * 0.7 }}
             >
                 {completedWorkoutData.length === 0 && remainingWorkoutData.length === 0 ? (
-                    <Text>{t('no_data')}</Text>
+                    <Text style={styles.noDataText}>{t('no_data')}</Text>
                 ) : (
                     <>
                         {completedWorkoutData.length > 0 && (
                             <>
                                 <Text style={styles.subTitle}>{t('completed_sets')}</Text>
+                                {/* Supersets */}
                                 {Object.keys(groupedCompletedData.supersets).map((supersetName) => (
-                                    <List.Accordion
-                                        key={`completed-superset-${supersetName}`}
-                                        title={`${t('superset')}: ${supersetName}`}
-                                        left={(props) => <List.Icon {...props} icon="format-list-bulleted" />}
-                                        titleStyle={styles.supersetTitle}
-                                    >
+                                    <View key={`completed-superset-${supersetName}`} style={styles.supersetContainer}>
+                                        <Text style={styles.supersetHeader}>{`${t('superset')}: ${supersetName}`}</Text>
                                         {(() => {
                                             const exercisesInSuperset = groupedCompletedData.supersets[supersetName];
-                                            const groupedByExercise: { [exerciseName: string]: CurrentWorkoutProgressType[] } = {};
+                                            const groupedByExercise: {
+                                                [exerciseName: string]: CurrentWorkoutProgressType[]
+                                            } = {};
 
                                             exercisesInSuperset.forEach((set) => {
                                                 if (!groupedByExercise[set.name]) {
@@ -108,7 +107,9 @@ const CurrentWorkoutProgressModal: React.FC<PreviousSetDataModalProps> = ({
                                             });
 
                                             return Object.keys(groupedByExercise).map((exerciseName) => (
-                                                <View key={`completed-superset-${supersetName}-exercise-${exerciseName}`} style={styles.exerciseContainer}>
+                                                <View
+                                                    key={`completed-superset-${supersetName}-exercise-${exerciseName}`}
+                                                    style={styles.exerciseContainer}>
                                                     <Text style={styles.exerciseName}>{exerciseName}</Text>
                                                     {groupedByExercise[exerciseName].map((set, index) => (
                                                         <View key={index} style={styles.setData}>
@@ -128,7 +129,7 @@ const CurrentWorkoutProgressModal: React.FC<PreviousSetDataModalProps> = ({
                                                 </View>
                                             ));
                                         })()}
-                                    </List.Accordion>
+                                    </View>
                                 ))}
                                 {Object.keys(groupedCompletedData.standaloneExercises).map((exerciseName) => (
                                     <View key={`completed-standalone-${exerciseName}`} style={styles.exerciseContainer}>
@@ -156,14 +157,11 @@ const CurrentWorkoutProgressModal: React.FC<PreviousSetDataModalProps> = ({
                             <>
                                 <Text style={styles.subTitle}>{t('remaining_sets')}</Text>
                                 {Object.keys(groupedRemainingData.supersets).map((supersetName) => (
-                                    <List.Accordion
-                                        key={`remaining-superset-${supersetName}`}
-                                        title={`${t('superset')}: ${supersetName}`}
-                                        left={(props) => <List.Icon {...props} icon="format-list-bulleted" />}
-                                        titleStyle={styles.supersetTitle}
-                                    >
+                                    <View key={`remaining-superset-${supersetName}`} style={styles.supersetContainer}>
+                                        <Text style={styles.supersetHeader}>{`${t('superset')}: ${supersetName}`}</Text>
                                         {groupedRemainingData.supersets[supersetName].map((exercise) => (
-                                            <View key={`remaining-superset-${supersetName}-exercise-${exercise.id}`} style={styles.exerciseContainer}>
+                                            <View key={`remaining-superset-${supersetName}-exercise-${exercise.id}`}
+                                                style={styles.exerciseContainer}>
                                                 <Text style={styles.exerciseName}>{exercise.name}</Text>
                                                 {exercise.sets.map((set, index) => (
                                                     <View key={index} style={styles.setData}>
@@ -182,7 +180,7 @@ const CurrentWorkoutProgressModal: React.FC<PreviousSetDataModalProps> = ({
                                                 ))}
                                             </View>
                                         ))}
-                                    </List.Accordion>
+                                    </View>
                                 ))}
                                 {groupedRemainingData.standaloneExercises.map((exercise) => (
                                     <View key={`remaining-standalone-${exercise.id}`} style={styles.exerciseContainer}>
@@ -208,7 +206,7 @@ const CurrentWorkoutProgressModal: React.FC<PreviousSetDataModalProps> = ({
                         )}
                     </>
                 )}
-                <View style={{ marginVertical: 10 }} />
+                <View style={{ marginVertical: 10 }}/>
             </ScrollView>
         </ThemedModal>
     );
@@ -216,30 +214,40 @@ const CurrentWorkoutProgressModal: React.FC<PreviousSetDataModalProps> = ({
 
 const makeStyles = (colors: CustomThemeColorsType) => StyleSheet.create({
     exerciseContainer: {
-        backgroundColor: colors.surface,
-        borderRadius: 8,
-        marginBottom: 16,
+        backgroundColor: colors.background,
+        borderColor: colors.onSurface,
+        borderRadius: 6,
+        borderWidth: 1,
+        marginBottom: 12,
         padding: 8,
     },
     exerciseName: {
-        color: colors.primary,
-        fontSize: 16,
-        fontWeight: 'bold',
-        marginBottom: 8,
+        color: colors.onBackground,
+        fontSize: 14,
+        fontWeight: '600',
+        marginBottom: 6,
     },
     modalContent: {
         padding: 16,
     },
+    noDataText: {
+        color: colors.onBackground,
+        fontSize: 16,
+        marginTop: 20,
+        textAlign: 'center',
+    },
     setData: {
-        marginBottom: 8,
-        paddingLeft: 8,
+        alignItems: 'center',
+        flexDirection: 'row',
+        marginBottom: 4,
     },
     setDetails: {
         flexDirection: 'row',
     },
     setText: {
         color: colors.onBackground,
-        marginHorizontal: 10,
+        fontSize: 12,
+        marginRight: 10,
     },
     subTitle: {
         color: colors.primary,
@@ -247,10 +255,19 @@ const makeStyles = (colors: CustomThemeColorsType) => StyleSheet.create({
         fontWeight: 'bold',
         marginVertical: 16,
     },
-    supersetTitle: {
+    supersetContainer: {
+        backgroundColor: colors.surfaceVariant,
+        borderColor: colors.primary,
+        borderRadius: 8,
+        borderWidth: 1,
+        marginBottom: 16,
+        padding: 8,
+    },
+    supersetHeader: {
         color: colors.primary,
         fontSize: 16,
         fontWeight: 'bold',
+        marginBottom: 8,
     },
 });
 
