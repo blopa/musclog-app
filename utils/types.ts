@@ -44,6 +44,11 @@ export type SetInsertType = {
 };
 
 export type CurrentWorkoutProgressType = {
+    completed: ExerciseProgressType[];
+    skipped?: ExerciseProgressType[];
+};
+
+export type ExerciseProgressType = {
     difficultyLevel: number;
     exerciseId?: number;
     name: string;
@@ -57,6 +62,7 @@ export type CurrentWorkoutProgressType = {
     weight: number;
     workoutDuration: number;
     supersetName?: string;
+    isDropSet?: boolean;
 };
 
 export type SetReturnType = {
@@ -409,7 +415,7 @@ export type ParsedExerciseTypeWithSets = {
     type: ExerciseTypesType;
 };
 
-export type ExerciseWithSetsType = ({ 
+export type ExerciseWithSetsType = ({
     sets: SetReturnType[];
 } & ExerciseReturnType);
 

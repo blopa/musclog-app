@@ -1,14 +1,14 @@
 import ThemedModal from '@/components/ThemedModal';
 import useUnit from '@/hooks/useUnit';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
-import { CurrentWorkoutProgressType, ExerciseReturnType, ExerciseWithSetsType, SetReturnType } from '@/utils/types';
+import { ExerciseProgressType, ExerciseReturnType, ExerciseWithSetsType, SetReturnType } from '@/utils/types';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Dimensions, ScrollView, StyleSheet, View } from 'react-native';
 import { Text, useTheme } from 'react-native-paper';
 
 interface PreviousSetDataModalProps {
-    completedWorkoutData: CurrentWorkoutProgressType[];
+    completedWorkoutData: ExerciseProgressType[];
     isVisible: boolean;
     onClose: () => void;
     remainingWorkoutData: ExerciseWithSetsType[];
@@ -30,8 +30,8 @@ const CurrentWorkoutProgressModal: React.FC<PreviousSetDataModalProps> = ({
 
     // Group completedWorkoutData by supersetName and then by exerciseName
     const groupedCompletedData = useMemo(() => {
-        const supersets: { [supersetName: string]: CurrentWorkoutProgressType[] } = {};
-        const standaloneExercises: { [exerciseName: string]: CurrentWorkoutProgressType[] } = {};
+        const supersets: { [supersetName: string]: ExerciseProgressType[] } = {};
+        const standaloneExercises: { [exerciseName: string]: ExerciseProgressType[] } = {};
 
         completedWorkoutData.forEach((set) => {
             const supersetName = set.supersetName || null;
@@ -109,7 +109,7 @@ const CurrentWorkoutProgressModal: React.FC<PreviousSetDataModalProps> = ({
                                         <Text style={styles.supersetHeader}>{`${t('superset')}: ${supersetName}`}</Text>
                                         {(() => {
                                             const exercisesInSuperset = groupedCompletedData.supersets[supersetName];
-                                            const groupedByExercise: { [exerciseName: string]: CurrentWorkoutProgressType[] } = {};
+                                            const groupedByExercise: { [exerciseName: string]: ExerciseProgressType[] } = {};
 
                                             exercisesInSuperset.forEach((set) => {
                                                 if (!groupedByExercise[set.name]) {

@@ -34,6 +34,7 @@ import {
 } from '@/utils/database';
 import { generateHash } from '@/utils/string';
 import {
+    CurrentWorkoutProgressType,
     ExerciseReturnType,
     ExerciseVolumeType,
     SetReturnType,
@@ -283,9 +284,9 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
                 // const workoutId = await AsyncStorage.getItem(CURRENT_WORKOUT_ID);
                 if (workout) {
                     const existingProgress = await AsyncStorage.getItem(CURRENT_WORKOUT_PROGRESS);
-                    const progressArray = JSON.parse(existingProgress || '[]');
+                    const { completed: completedProgress = [], skipped = [] } = JSON.parse(existingProgress || '{}') as CurrentWorkoutProgressType;
 
-                    for (const progress of progressArray) {
+                    for (const progress of completedProgress) {
                         if (progress.setId) {
                             const set = await getSetById(progress.setId);
 
@@ -301,12 +302,12 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
                     }
 
                     const exerciseData: ExerciseVolumeType[] = [];
-                    for (const item of progressArray) {
+                    for (const item of completedProgress) {
                         let exercise = exerciseData.find((ex) => ex.exerciseId === item.exerciseId);
 
                         if (!exercise) {
                             exercise = {
-                                exerciseId: item.exerciseId,
+                                exerciseId: item.exerciseId!,
                                 sets: []
                             };
 
@@ -315,7 +316,7 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
 
                         const set = {
                             difficultyLevel: item.difficultyLevel,
-                            exerciseId: item.exerciseId,
+                            exerciseId: item.exerciseId!,
                             id: item.setId,
                             isDropSet: item.isDropSet,
                             reps: item.reps,

@@ -24,6 +24,7 @@ import { getWorkoutWithExercisesRepsAndSetsDetails } from '@/utils/database';
 import { formatTime } from '@/utils/date';
 import {
     CurrentWorkoutProgressType,
+    ExerciseProgressType,
     ExerciseReturnType,
     ExerciseWithSetsType,
     SetReturnType,
@@ -113,7 +114,7 @@ const WorkoutSession = ({
     const isResting = restTime > 0;
 
     const [isInfoModalVisible, setIsInfoModalVisible] = useState(false);
-    const [completedWorkoutData, setCompletedWorkoutData] = useState<CurrentWorkoutProgressType[]>([]);
+    const [completedWorkoutData, setCompletedWorkoutData] = useState<ExerciseProgressType[]>([]);
 
     useEffect(() => {
         clearInterval(intervalTimer);
@@ -160,11 +161,11 @@ const WorkoutSession = ({
     useEffect(() => {
         const checkCurrentWorkoutProgress = async () => {
             const existingProgress = await AsyncStorage.getItem(CURRENT_WORKOUT_PROGRESS);
-            const progressArray = JSON.parse(existingProgress || '[]') as CurrentWorkoutProgressType[];
+            const { completed: completedProgress = [], skipped = [] } = JSON.parse(existingProgress || '{}') as CurrentWorkoutProgressType;
             let currentSetIndex = 0;
 
-            if (progressArray.length) {
-                const set = progressArray.pop();
+            if (completedProgress.length) {
+                const set = completedProgress.pop();
                 if (set && set.exerciseId === exercise?.id) {
                     currentSetIndex = set.setIndex;
                 }
@@ -194,9 +195,9 @@ const WorkoutSession = ({
         const getRemainingExercises = async () => {
             if (workoutDetails) {
                 const existingProgress = await AsyncStorage.getItem(CURRENT_WORKOUT_PROGRESS);
-                const progressArray = JSON.parse(existingProgress || '[]') as CurrentWorkoutProgressType[];
+                const { completed: completedProgress = [], skipped = [] } = JSON.parse(existingProgress || '{}') as CurrentWorkoutProgressType;
 
-                const completedSetIds = new Set(progressArray.map((set) => set.setId));
+                const completedSetIds = new Set(completedProgress.map((set) => set.setId));
                 const remainingExercises = workoutDetails.exercises.map((exercise) => ({
                     ...exercise,
                     sets: exercise.sets.filter((set) => !completedSetIds.has(set.id) && !skippedSets.includes(set.id)),
@@ -284,18 +285,21 @@ const WorkoutSession = ({
             workoutDuration,
             setOrder: currentSet.setOrder,
             supersetName: currentSet.supersetName,
-        } as CurrentWorkoutProgressType;
+        } as ExerciseProgressType;
 
         try {
             const existingProgress = await AsyncStorage.getItem(CURRENT_WORKOUT_PROGRESS);
-            const progressArray = JSON.parse(existingProgress || '[]') as CurrentWorkoutProgressType[];
+            const { completed: completedProgress = [], skipped = [] } = JSON.parse(existingProgress || '{}') as CurrentWorkoutProgressType;
 
-            if (!progressArray.some(
-                (entry: CurrentWorkoutProgressType) => entry.setIndex === setData.setIndex && entry.setId === setData.setId && entry.exerciseId === setData.exerciseId)
+            if (!completedProgress.some(
+                (entry: ExerciseProgressType) => entry.setIndex === setData.setIndex && entry.setId === setData.setId && entry.exerciseId === setData.exerciseId)
             ) {
-                progressArray.push(setData);
+                completedProgress.push(setData);
 
-                await AsyncStorage.setItem(CURRENT_WORKOUT_PROGRESS, JSON.stringify(progressArray));
+                await AsyncStorage.setItem(CURRENT_WORKOUT_PROGRESS, JSON.stringify({
+                    completed: completedProgress,
+                    skipped,
+                }));
             }
         } catch (error) {
             console.error('Failed to save set data:', error);
@@ -424,9 +428,9 @@ const WorkoutSession = ({
 
     const handleOpenInfoModal = useCallback(async () => {
         const existingProgress = await AsyncStorage.getItem(CURRENT_WORKOUT_PROGRESS);
-        const progressArray = JSON.parse(existingProgress || '[]') as CurrentWorkoutProgressType[];
+        const { completed: completedProgress = [], skipped = [] } = JSON.parse(existingProgress || '{}') as CurrentWorkoutProgressType;
 
-        setCompletedWorkoutData(progressArray);
+        setCompletedWorkoutData(completedProgress);
         setIsInfoModalVisible(true);
     }, []);
 
