@@ -84,57 +84,121 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
                 setWorkout(workout);
 
                 if (workout) {
-                    // Fetch all sets for this workout
+                    // Fetch all sets associated with this workout
                     const sets = await getSetsByWorkoutId(workoutId);
 
-                    // Group sets by exerciseId
-                    const exerciseSetsMap: { [exerciseId: number]: SetReturnType[] } = {};
+                    // Initialize maps to group sets by supersetName and exerciseId
+                    const supersetsMap: { [supersetName: string]: { [exerciseId: number]: SetReturnType[] } } = {};
+                    const standaloneSetsMap: { [exerciseId: number]: SetReturnType[] } = {};
+
+                    // Group sets into supersets and standalone exercises
                     sets.forEach((set) => {
-                        if (!exerciseSetsMap[set.exerciseId]) {
-                            exerciseSetsMap[set.exerciseId] = [];
+                        const supersetName = set.supersetName || null;
+                        if (supersetName) {
+                            if (!supersetsMap[supersetName]) {
+                                supersetsMap[supersetName] = {};
+                            }
+
+                            if (!supersetsMap[supersetName][set.exerciseId]) {
+                                supersetsMap[supersetName][set.exerciseId] = [];
+                            }
+                            supersetsMap[supersetName][set.exerciseId].push(set);
+                        } else {
+                            if (!standaloneSetsMap[set.exerciseId]) {
+                                standaloneSetsMap[set.exerciseId] = [];
+                            }
+
+                            standaloneSetsMap[set.exerciseId].push(set);
                         }
-                        exerciseSetsMap[set.exerciseId].push(set);
                     });
 
-                    // Compute the minimum setOrder for each exercise and sort exercises accordingly
-                    const exerciseOrderArray = Object.entries(exerciseSetsMap).map(
-                        ([exerciseId, sets]) => {
-                            const minSetOrder = Math.min(...sets.map((set) => set.setOrder));
-                            return { exerciseId: parseInt(exerciseId, 10), minSetOrder, sets };
+                    const orderedExercises: { exercise: ExerciseReturnType; sets: SetReturnType[] }[] = [];
+
+                    // Process each superset to interleave sets from its exercises
+                    for (const supersetName of Object.keys(supersetsMap)) {
+                        const exercisesInSuperset = supersetsMap[supersetName];
+                        const exerciseIds = Object.keys(exercisesInSuperset).map((id) => parseInt(id, 10));
+
+                        // Fetch all exercises within the current superset
+                        const exercisesData = await Promise.all(
+                            exerciseIds.map(async (id) => {
+                                const ex = await getExerciseById(id);
+                                if (!ex) {
+                                    console.warn(`Exercise with id ${id} not found.`);
+                                }
+
+                                return ex;
+                            })
+                        );
+
+                        // Filter out any null or undefined exercises
+                        const validExercises = exercisesData.filter(
+                            (ex): ex is ExerciseReturnType => ex !== null && ex !== undefined
+                        );
+
+                        // Sort sets for each exercise by setOrder
+                        const sortedExerciseSets = validExercises.map((exercise) => ({
+                            exercise,
+                            sets: exercisesInSuperset[exercise.id].sort((a, b) => a.setOrder - b.setOrder),
+                        }));
+
+                        // Determine the maximum number of sets among the exercises in the superset
+                        const maxSets = Math.max(...sortedExerciseSets.map((ex) => ex.sets.length));
+
+                        // Interleave sets from each exercise within the superset
+                        for (let i = 0; i < maxSets; i++) {
+                            sortedExerciseSets.forEach((ex) => {
+                                if (i < ex.sets.length) {
+                                    orderedExercises.push({
+                                        exercise: ex.exercise,
+                                        // Each entry has a single set for interleaving
+                                        sets: [ex.sets[i]],
+                                    });
+                                }
+                            });
                         }
-                    );
+                    }
 
-                    // Sort exercises by their minimum setOrder
-                    exerciseOrderArray.sort((a, b) => a.minSetOrder - b.minSetOrder);
+                    // Process standalone exercises (not part of any superset)
+                    const standaloneExerciseIds = Object.keys(standaloneSetsMap).map((id) => parseInt(id, 10));
 
-                    // Fetch exercises in the sorted order
-                    const exercisesData = await Promise.all(
-                        exerciseOrderArray.map(async ({ exerciseId }) => {
-                            const exercise = await getExerciseById(exerciseId);
-                            return exercise!;
+                    const standaloneExercisesData = await Promise.all(
+                        standaloneExerciseIds.map(async (id) => {
+                            const ex = await getExerciseById(id);
+                            if (!ex) {
+                                console.warn(`Exercise with id ${id} not found.`);
+                            }
+                            return ex;
                         })
                     );
 
-                    // Combine exercises and their sorted sets
-                    const exerciseDetails = exercisesData.map((exercise, index) => ({
+                    // Filter out any null or undefined exercises
+                    const validStandaloneExercises = standaloneExercisesData.filter(
+                        (ex): ex is ExerciseReturnType => ex !== null && ex !== undefined
+                    );
+
+                    // Sort sets for each standalone exercise by setOrder
+                    const sortedStandaloneExercises = validStandaloneExercises.map((exercise) => ({
                         exercise,
-                        sets: exerciseOrderArray[index].sets.sort(
-                            (a, b) => a.setOrder - b.setOrder
-                        ),
+                        sets: standaloneSetsMap[exercise.id].sort((a, b) => a.setOrder - b.setOrder),
                     }));
 
-                    setExercises(exerciseDetails);
+                    // Append standalone exercises to the ordered list
+                    orderedExercises.push(...sortedStandaloneExercises);
 
-                    if (exerciseDetails.length > 0) {
-                        const currentIndex = parseInt(
-                            (await AsyncStorage.getItem(CURRENT_EXERCISE_INDEX)) || '0',
-                            10
-                        );
+                    // Update the exercises state with the ordered list
+                    setExercises(orderedExercises);
+
+                    // Determine the current exercise index from AsyncStorage
+                    if (orderedExercises.length > 0) {
+                        const storedCurrentIndex = await AsyncStorage.getItem(CURRENT_EXERCISE_INDEX);
+                        const currentIndex = storedCurrentIndex ? parseInt(storedCurrentIndex, 10) : 0;
 
                         setCurrentExerciseIndex(currentIndex);
-                        const currentExercise = exerciseDetails[currentIndex];
-
+                        const currentExercise = orderedExercises[currentIndex];
                         setExercise(currentExercise.exercise);
+
+                        // Persist the current exercise index
                         await AsyncStorage.setItem(
                             CURRENT_EXERCISE_INDEX,
                             currentIndex.toString()
