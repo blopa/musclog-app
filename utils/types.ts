@@ -55,6 +55,7 @@ export type CurrentWorkoutProgressType = {
     targetWeight: number;
     weight: number;
     workoutDuration: number;
+    supersetName?: string;
 };
 
 export type SetReturnType = {
