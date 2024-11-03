@@ -2632,14 +2632,14 @@ export const createNewWorkoutTables = async (): Promise<void> => {
             const workoutData = workouts.map((workout) => {
                 const exercises = workoutExercises
                     .filter((we) => we.workoutId === workout.id)
-                    .map((we) => {
+                    .map((we, exerciseIndex) => {
                         const exerciseSets = sets
                             .filter((set) => we.setIds.includes(set.id))
-                            .map((set, index) => ({
+                            .map((set, setIndex) => ({
                                 ...set,
                                 workoutId: workout.id,
-                                setOrder: index,
-                                supersetName: '', // Adjust if you need to set specific superset names
+                                setOrder: exerciseIndex + setIndex,
+                                supersetName: '',
                             }));
                         return { ...we, sets: exerciseSets };
                     });
@@ -2711,7 +2711,8 @@ export const createNewWorkoutTables = async (): Promise<void> => {
             await database.runSync('DELETE FROM "Workout";');
             console.log("Cleared existing data from 'Set' and 'Workout' tables.");
 
-            // 4. Insert data back with the new structure
+            // 4. Insert data back with the new structure and keep track of new workout IDs
+            const workoutIdMapping: Record<number, number> = {}; // Map old workoutId -> new workoutId
             for (const workout of workoutData) {
                 const workoutResult = await database.runSync(
                     'INSERT INTO "Workout" ("id", "title", "description", "volumeCalculationType", "recurringOnWeek", "createdAt", "deletedAt") VALUES (?, ?, ?, ?, ?, ?, ?)',
@@ -2724,9 +2725,11 @@ export const createNewWorkoutTables = async (): Promise<void> => {
                     workout.deletedAt || '',
                 );
 
+                // Map old workoutId to new workoutId
+                workoutIdMapping[workout.id] = workoutResult.lastInsertRowId;
+
                 let setOrder = 0;
                 for (const exercise of workout.exercises) {
-
                     setOrder += 1;
                     for (const set of exercise.sets) {
                         await database.runSync(
@@ -2749,7 +2752,24 @@ export const createNewWorkoutTables = async (): Promise<void> => {
             }
             console.log("Reinserted data into 'Workout' and 'Set' tables with the new structure.");
 
-            // 5. Update the versioning table
+            // 5. Update `WorkoutEvent` table to reflect new `workoutId`
+            const workoutEvents = await database.getAllSync(`
+                SELECT * FROM "WorkoutEvent" WHERE "deletedAt" IS NULL
+            `) as WorkoutEventReturnType[];
+
+            for (const event of workoutEvents) {
+                const newWorkoutId = workoutIdMapping[event.workoutId];
+                if (newWorkoutId) {
+                    await database.runSync(
+                        'UPDATE "WorkoutEvent" SET "workoutId" = ? WHERE "id" = ?',
+                        newWorkoutId,
+                        event.id
+                    );
+                }
+            }
+            console.log('Updated "WorkoutEvent" table with new workout IDs.');
+
+            // 6. Update the versioning table
             await addVersioning(packageJson.version);
             console.log(`Database schema updated to version ${packageJson.version}.`);
 
