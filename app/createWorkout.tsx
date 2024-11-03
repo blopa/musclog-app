@@ -617,6 +617,13 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
 
     function renderExercise(workoutWithExercisesAndSets: WorkoutWithExercisesAndSets, exerciseIndex: number) {
         const isSuperset = !!workoutWithExercisesAndSets.supersetName;
+        const canMoveUp = isSuperset
+            ? workout[exerciseIndex - 1]?.supersetName === workoutWithExercisesAndSets.supersetName
+            : exerciseIndex !== 0;
+
+        const canMoveDown = isSuperset
+            ?  workout[exerciseIndex + 1]?.supersetName === workoutWithExercisesAndSets.supersetName
+            : exerciseIndex !== workout.length - 1;
 
         return (
             <View key={exerciseIndex} style={styles.exerciseContainer}>
@@ -629,22 +636,12 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                     <IconButton
                         icon="arrow-up"
                         onPress={() => moveExercise(exerciseIndex, 'up')}
-                        disabled={
-                            isSuperset
-                                ? exerciseIndex === workout.findIndex(
-                                    (ex) => ex.supersetName === workoutWithExercisesAndSets.supersetName
-                                ) : exerciseIndex === 0
-                        }
+                        disabled={!canMoveUp}
                     />
                     <IconButton
                         icon="arrow-down"
                         onPress={() => moveExercise(exerciseIndex, 'down')}
-                        disabled={
-                            isSuperset
-                                ? exerciseIndex >= workout.length - workout.filter(
-                                    (ex) => ex.supersetName === workoutWithExercisesAndSets.supersetName
-                                ).length : exerciseIndex === workout.length - 1
-                        }
+                        disabled={!canMoveDown}
                     />
                 </View>
                 <List.Accordion
