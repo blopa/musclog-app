@@ -620,17 +620,37 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
 
         return (
             <View key={exerciseIndex} style={styles.exerciseContainer}>
+                <View style={styles.moveButtonsContainer}>
+                    <IconButton
+                        icon="delete"
+                        size={20}
+                        onPress={() => removeExercise(exerciseIndex)}
+                    />
+                    <IconButton
+                        icon="arrow-up"
+                        onPress={() => moveExercise(exerciseIndex, 'up')}
+                        disabled={
+                            isSuperset
+                                ? exerciseIndex === workout.findIndex(
+                                    (ex) => ex.supersetName === workoutWithExercisesAndSets.supersetName
+                                ) : exerciseIndex === 0
+                        }
+                    />
+                    <IconButton
+                        icon="arrow-down"
+                        onPress={() => moveExercise(exerciseIndex, 'down')}
+                        disabled={
+                            isSuperset
+                                ? exerciseIndex >= workout.length - workout.filter(
+                                    (ex) => ex.supersetName === workoutWithExercisesAndSets.supersetName
+                                ).length : exerciseIndex === workout.length - 1
+                        }
+                    />
+                </View>
                 <List.Accordion
                     title={workoutWithExercisesAndSets.exercise.name}
                     description={workoutWithExercisesAndSets.exercise.description}
                     left={(props) => <List.Icon {...props} icon="dumbbell" />}
-                    right={() => (
-                        <IconButton
-                            icon="delete"
-                            size={20}
-                            onPress={() => removeExercise(exerciseIndex)}
-                        />
-                    )}
                 >
                     {workoutWithExercisesAndSets.sets.map((set, setIndex) => (
                         <View key={setIndex} style={styles.setContainer}>
@@ -688,26 +708,6 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                         {t('add_set')}
                     </Button>
                 </List.Accordion>
-                <View style={styles.moveButtonsContainer}>
-                    <IconButton
-                        icon="arrow-up"
-                        onPress={() => moveExercise(exerciseIndex, 'up')}
-                        disabled={
-                            isSuperset
-                                ? exerciseIndex === workout.findIndex((ex) => ex.supersetName === workoutWithExercisesAndSets.supersetName)
-                                : exerciseIndex === 0
-                        }
-                    />
-                    <IconButton
-                        icon="arrow-down"
-                        onPress={() => moveExercise(exerciseIndex, 'down')}
-                        disabled={
-                            isSuperset
-                                ? exerciseIndex >= workout.length - workout.filter((ex) => ex.supersetName === workoutWithExercisesAndSets.supersetName).length
-                                : exerciseIndex === workout.length - 1
-                        }
-                    />
-                </View>
             </View>
         );
     }

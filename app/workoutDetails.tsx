@@ -35,6 +35,7 @@ import { formatDate } from '@/utils/date';
 import { exportWorkout } from '@/utils/file';
 import {
     ExerciseReturnType,
+    ExtendedLineChartDataType,
     LineChartDataType,
     SetReturnType,
     WorkoutEventReturnType,
@@ -60,10 +61,18 @@ interface WorkoutDetailsProps {
 
 const WHOLE_WORKOUT = 'wholeWorkout';
 
+interface ExerciseGroup {
+    supersetName?: string;
+    exercises: {
+        exercise: ExerciseReturnType;
+        sets: SetReturnType[];
+    }[];
+}
+
 const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
     const { t } = useTranslation();
     const [workout, setWorkout] = useState<WorkoutReturnType | undefined>();
-    const [workoutExercises, setWorkoutExercises] = useState<{ exerciseId: number; sets: SetReturnType[] }[]>([]);
+    const [exerciseGroups, setExerciseGroups] = useState<ExerciseGroup[]>([]);
     const [exercisesMap, setExercisesMap] = useState<Map<number, ExerciseReturnType>>(new Map());
     const [recentWorkouts, setRecentWorkouts] = useState<WorkoutEventReturnType[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
@@ -114,63 +123,86 @@ const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
             const workoutDetails = await getWorkoutById(Number(id));
             setWorkout(workoutDetails);
 
-            const recentWorkouts = await getRecentWorkoutsByWorkoutId(Number(id));
+            const recentWorkoutsData = await getRecentWorkoutsByWorkoutId(Number(id));
             setRecentWorkouts(
-                recentWorkouts.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                recentWorkoutsData.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
             );
 
-            // Fetch all sets for this workout
+            // Fetch all sets for this workout, ordered by setOrder
             const sets = await getSetsByWorkoutId(Number(id));
+            const orderedSets = sets.sort((a, b) => a.setOrder - b.setOrder);
+
+            // Fetch all exercises involved in these sets
+            const exerciseIds = Array.from(new Set(sets.map((set) => set.exerciseId)));
+            const exercisesPromises = exerciseIds.map((exerciseId) => getExerciseById(exerciseId));
+            const exercisesData = await Promise.all(exercisesPromises);
+
+            const newExercisesMap = new Map<number, ExerciseReturnType>();
+            exercisesData.forEach((exercise) => {
+                if (exercise) {
+                    newExercisesMap.set(exercise.id!, exercise);
+                }
+            });
+
+            setExercisesMap(newExercisesMap);
 
             // Group sets by exerciseId
             const exerciseSetsMap: { [exerciseId: number]: SetReturnType[] } = {};
-            sets.forEach((set) => {
+            orderedSets.forEach((set) => {
                 if (!exerciseSetsMap[set.exerciseId]) {
                     exerciseSetsMap[set.exerciseId] = [];
                 }
                 exerciseSetsMap[set.exerciseId].push(set);
             });
 
-            // Get unique exerciseIds from sets and sort them
-            const exerciseIds = Object.keys(exerciseSetsMap).map((id) => parseInt(id, 10));
-
-            // Fetch exercises
-            const exercisesPromises = exerciseIds.map((exerciseId) => getExerciseById(exerciseId));
-            const exercisesData = await Promise.all(exercisesPromises);
-
-            // Map exerciseId to exercise data
-            const exercisesMap = new Map<number, ExerciseReturnType>();
-            exercisesData.forEach((exercise) => {
-                if (exercise) {
-                    exercisesMap.set(exercise.id!, exercise);
-                }
-            });
-            setExercisesMap(exercisesMap);
-
-            // Create an array of exercises with sets, sorted as needed
-            const exercisesWithSets = exerciseIds.map((exerciseId) => ({
-                exerciseId,
-                sets: exerciseSetsMap[exerciseId],
+            // Create a list of exercises with their sets and earliest setOrder
+            const exercisesWithSets = Array.from(newExercisesMap.entries()).map(([exerciseId, exercise]) => ({
+                exercise,
+                sets: exerciseSetsMap[exerciseId] || [],
+                earliestSetOrder: Math.min(...(exerciseSetsMap[exerciseId]?.map((set) => set.setOrder) || [Infinity])),
             }));
 
-            // Sort exercises by exercise name
-            exercisesWithSets.sort((a, b) => {
-                const exerciseA = exercisesMap.get(a.exerciseId);
-                const exerciseB = exercisesMap.get(b.exerciseId);
-                if (exerciseA && exerciseB) {
-                    return exerciseA.name.localeCompare(exerciseB.name);
+            // Sort exercises by earliestSetOrder
+            exercisesWithSets.sort((a, b) => a.earliestSetOrder - b.earliestSetOrder);
+
+            // Group exercises into supersets based on supersetName
+            const groupedExercises: ExerciseGroup[] = [];
+            let currentSupersetName: string | undefined = undefined;
+            let currentGroup: ExerciseGroup | null = null;
+
+            exercisesWithSets.forEach(({ exercise, sets }) => {
+                const supersetNames = Array.from(new Set(sets.map((set) => set.supersetName).filter(Boolean))) as string[];
+
+                if (supersetNames.length > 0) {
+                    // Assuming all sets of an exercise have the same supersetName
+                    const supersetName = supersetNames[0];
+                    if (currentSupersetName !== supersetName) {
+                        // Start a new superset group
+                        currentGroup = {
+                            supersetName,
+                            exercises: [],
+                        };
+                        groupedExercises.push(currentGroup);
+                        currentSupersetName = supersetName;
+                    }
+                    currentGroup?.exercises.push({ exercise, sets });
                 } else {
-                    return a.exerciseId - b.exerciseId;
+                    // Standalone exercise
+                    groupedExercises.push({
+                        exercises: [{ exercise, sets }],
+                    });
+                    currentSupersetName = undefined;
                 }
             });
 
-            setWorkoutExercises(exercisesWithSets);
+            setExerciseGroups(groupedExercises);
         } catch (error) {
             console.error(t('failed_to_load_workout_details'), error);
+            showSnackbar(t('failed_to_load_workout_details'), t('retry'), fetchWorkoutDetails);
         } finally {
             setLoading(false);
         }
-    }, [id, t]);
+    }, [id, t, showSnackbar]);
 
     const resetScreenData = useCallback(() => {
         setRecentWorkouts([]);
@@ -178,7 +210,7 @@ const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
         setConfirmationModalVisible(false);
         setLoading(false);
         setWorkout(undefined);
-        setWorkoutExercises([]);
+        setExerciseGroups([]);
         setExercisesMap(new Map());
         setShowWeeklyAverages(false);
         setTimeRange('30');
@@ -219,7 +251,7 @@ const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
     useEffect(() => {
         const getChartData = async () => {
             const filteredWorkouts = recentWorkouts.slice(-parseInt(timeRange));
-            const data = [];
+            const data: ExtendedLineChartDataType[] = [];
 
             for (const [index, recentWorkout] of filteredWorkouts.entries()) {
                 const exerciseData = JSON.parse(recentWorkout?.exerciseData || '[]') as { exerciseId: number, sets: SetReturnType[] }[];
@@ -233,8 +265,9 @@ const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
                         )) ||
                         0;
                 } else {
+                    const selectedExerciseId = parseInt(selectedChartData, 10);
                     const selectedExerciseData = exerciseData.find(
-                        (ex) => ex.exerciseId.toString() === selectedChartData
+                        (ex) => ex.exerciseId === selectedExerciseId
                     );
 
                     if (selectedExerciseData) {
@@ -282,11 +315,12 @@ const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
                 navigation.navigate('index', { screen: 'workout' });
             } catch (error) {
                 console.error(t('failed_save_current_workout'), error);
+                showSnackbar(t('failed_save_current_workout'), t('ok'));
             } finally {
                 setModalVisible(false);
             }
         }
-    }, [navigation, workout, t]);
+    }, [navigation, workout, t, showSnackbar]);
 
     const handleConfirmStartNewWorkout = useCallback(async () => {
         if (workout) {
@@ -297,12 +331,13 @@ const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
                 navigation.navigate('index', { screen: 'workout' });
             } catch (error) {
                 console.error(t('failed_save_current_workout'), error);
+                showSnackbar(t('failed_save_current_workout'), t('ok'));
             } finally {
                 setConfirmationModalVisible(false);
                 setModalVisible(false);
             }
         }
-    }, [navigation, workout, t]);
+    }, [navigation, workout, t, showSnackbar]);
 
     const openStartWorkoutConfirmationModal = useCallback(() => {
         setModalVisible(true);
@@ -408,35 +443,6 @@ const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
         t,
     ]);
 
-    // Group workoutExercises by supersetName
-    const groupedExercises = useMemo(() => {
-        const supersets: { [supersetName: string]: { exerciseId: number; sets: SetReturnType[] }[] } = {};
-        const standaloneExercises: { exerciseId: number; sets: SetReturnType[] }[] = [];
-
-        workoutExercises.forEach((we) => {
-            const supersetNames = Array.from(new Set(we.sets.map((set) => set.supersetName).filter(Boolean))) as string[];
-
-            if (supersetNames.length > 0) {
-                supersetNames.forEach((supersetName) => {
-                    if (!supersets[supersetName]) {
-                        supersets[supersetName] = [];
-                    }
-                    const setsInSuperset = we.sets.filter((set) => set.supersetName === supersetName);
-                    if (setsInSuperset.length > 0) {
-                        supersets[supersetName].push({
-                            exerciseId: we.exerciseId,
-                            sets: setsInSuperset,
-                        });
-                    }
-                });
-            } else {
-                standaloneExercises.push(we);
-            }
-        });
-
-        return { supersets, standaloneExercises };
-    }, [workoutExercises]);
-
     return (
         <FABWrapper actions={fabActions} icon="cog" visible>
             <View style={styles.container}>
@@ -480,47 +486,29 @@ const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
                             <Text style={styles.exercisesTitle}>
                                 {t('exercises')}
                             </Text>
-                            {Object.keys(groupedExercises.supersets).map((supersetName) => (
-                                <View key={`superset-${supersetName}`} style={styles.supersetContainer}>
-                                    <Text style={styles.supersetHeader}>{`${t('superset')}: ${supersetName}`}</Text>
-                                    {groupedExercises.supersets[supersetName].map((we, index) => (
+                            {exerciseGroups.map((group, groupIndex) => (
+                                <View key={`group-${groupIndex}`} style={group.supersetName ? styles.supersetContainer : styles.groupContainer}>
+                                    {group.supersetName && (
+                                        <Text style={styles.supersetHeader}>{`${t('superset')}: ${group.supersetName}`}</Text>
+                                    )}
+                                    {group.exercises.map((we, exerciseIndex) => (
                                         <WorkoutExerciseDetail
-                                            exercise={exercisesMap.get(we.exerciseId)}
+                                            exercise={we.exercise}
                                             exerciseVolume={{
-                                                exerciseId: we.exerciseId,
+                                                exerciseId: we.exercise.id!,
                                                 sets: we.sets.map((set) => ({
                                                     ...set,
                                                     setId: set.id ?? 0,
                                                     weight: getDisplayFormattedWeight(Number(set.weight), KILOGRAMS, isImperial),
                                                 })),
                                             }}
-                                            key={`superset-${supersetName}-exercise-${we.exerciseId}-${index}`}
-                                            // onDeleteSet={handleDeleteSet(we.exerciseId)}
-                                            // onEditSet={handleEditSet(we.exerciseId)}
+                                            key={`group-${groupIndex}-exercise-${we.exercise.id}-${exerciseIndex}`}
+                                            // onDeleteSet={handleDeleteSet(we.exercise.id!)}
+                                            // onEditSet={handleEditSet(we.exercise.id!)}
                                         />
                                     ))}
                                 </View>
                             ))}
-                            {groupedExercises.standaloneExercises.length > 0 && (
-                                <View>
-                                    {groupedExercises.standaloneExercises.map((we, index) => (
-                                        <WorkoutExerciseDetail
-                                            exercise={exercisesMap.get(we.exerciseId)}
-                                            exerciseVolume={{
-                                                exerciseId: we.exerciseId,
-                                                sets: we.sets.map((set) => ({
-                                                    ...set,
-                                                    setId: set.id ?? 0,
-                                                    weight: getDisplayFormattedWeight(Number(set.weight), KILOGRAMS, isImperial),
-                                                })),
-                                            }}
-                                            key={`standalone-exercise-${we.exerciseId}-${index}`}
-                                            // onDeleteSet={handleDeleteSet(we.exerciseId)}
-                                            // onEditSet={handleEditSet(we.exerciseId)}
-                                        />
-                                    ))}
-                                </View>
-                            )}
                         </ThemedCard>
                     ) : (
                         <Text style={styles.noDataText}>{t('no_workout_details')}</Text>
@@ -641,6 +629,9 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         fontSize: 18,
         fontWeight: 'bold',
         marginBottom: 8,
+    },
+    groupContainer: {
+        marginBottom: 16,
     },
     noDataText: {
         color: colors.onBackground,
