@@ -1505,6 +1505,7 @@ export const getWorkoutDetails = async (
         }
 
         const exercisesWithSets = await getExercisesWithSetsByWorkoutId(workoutId);
+
         return {
             workout,
             exercisesWithSets,
@@ -1530,6 +1531,7 @@ export const getExercisesWithSetsByWorkoutId = async (
             if (!exerciseSetsMap[set.exerciseId]) {
                 exerciseSetsMap[set.exerciseId] = [];
             }
+
             exerciseSetsMap[set.exerciseId].push(set);
         }
 
@@ -2584,7 +2586,7 @@ const tableExists = async (tableName: string): Promise<boolean> => {
 
 export const addUserMeasurementsTable = async (): Promise<void> => {
     const currentVersion = await getLatestVersion();
-    if (currentVersion && currentVersion <= packageJson.version) {
+    if (currentVersion && currentVersion < packageJson.version) {
         if (!(await tableExists('UserMeasurements'))) {
             await database.execAsync(`
                 CREATE TABLE "UserMeasurements" (
@@ -2608,7 +2610,7 @@ export const createNewWorkoutTables = async (): Promise<void> => {
     const currentVersion = await getLatestVersion();
 
     // Check if migration is needed
-    if (currentVersion && currentVersion <= packageJson.version) {
+    if (currentVersion && currentVersion < packageJson.version) {
         try {
             // 1. Add 'workoutId' column to 'Set' table if it doesn't exist
             const hasWorkoutId = await columnExists('Set', 'workoutId');
@@ -2697,7 +2699,7 @@ export const createNewWorkoutTables = async (): Promise<void> => {
 
 export const addAlcoholMacroToUserNutritionTable = async (): Promise<void> => {
     const currentVersion = await getLatestVersion();
-    if (currentVersion && currentVersion <= packageJson.version) {
+    if (currentVersion && currentVersion < packageJson.version) {
         if (!(await columnExists('UserNutrition', 'alcohol'))) {
             await database.execAsync('ALTER TABLE "UserNutrition" ADD COLUMN "alcohol" TEXT');
         }
@@ -2708,7 +2710,7 @@ export const addAlcoholMacroToUserNutritionTable = async (): Promise<void> => {
 
 export const addAlcoholAndFiberMacroToWorkoutEventTable = async (): Promise<void> => {
     const currentVersion = await getLatestVersion();
-    if (currentVersion && currentVersion <= packageJson.version) {
+    if (currentVersion && currentVersion < packageJson.version) {
         if (!(await columnExists('WorkoutEvent', 'alcohol'))) {
             await database.execAsync('ALTER TABLE "WorkoutEvent" ADD COLUMN "alcohol" REAL DEFAULT 0');
         }
@@ -2723,7 +2725,7 @@ export const addAlcoholAndFiberMacroToWorkoutEventTable = async (): Promise<void
 
 export const addMacrosToWorkoutEventTable = async (): Promise<void> => {
     const currentVersion = await getLatestVersion();
-    if (currentVersion && currentVersion <= packageJson.version) {
+    if (currentVersion && currentVersion < packageJson.version) {
         if (!(await columnExists('WorkoutEvent', 'protein'))) {
             await database.execAsync('ALTER TABLE "WorkoutEvent" ADD COLUMN "protein" REAL DEFAULT 0');
         }
