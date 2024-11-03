@@ -14,7 +14,8 @@ import {
     ChatInsertType,
     ChatReturnType,
     ExerciseInsertType,
-    ExerciseReturnType, ExerciseWithSetsType,
+    ExerciseReturnType,
+    ExerciseWithSetsType,
     MetricsForUserType,
     OneRepMaxReturnType,
     SetInsertType,
@@ -452,8 +453,8 @@ export const addExercise = async (exercise: ExerciseInsertType): Promise<number>
 export const addSet = async (set: SetInsertType): Promise<number> => {
     const createdAt = set.createdAt || getCurrentTimestamp();
     const result = database.runSync(
-        'INSERT INTO "Set" ("reps", "weight", "restTime", "exerciseId", "isDropSet", "difficultyLevel", "createdAt") VALUES (?, ?, ?, ?, ?, ?, ?)',
-        [set.reps, set.weight, set.restTime, set.exerciseId, set.isDropSet ? 1 : 0, set.difficultyLevel || 5, createdAt]
+        'INSERT INTO "Set" ("reps", "weight", "restTime", "exerciseId", "isDropSet", "difficultyLevel", "workoutId", "setOrder", "supersetName", "createdAt") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [set.reps, set.weight, set.restTime, set.exerciseId, set.isDropSet ? 1 : 0, set.difficultyLevel || 5, set.workoutId, set.setOrder, set.supersetName || '', createdAt]
     );
 
     return result.lastInsertRowId;
@@ -462,7 +463,7 @@ export const addSet = async (set: SetInsertType): Promise<number> => {
 export const addOrUpdateUser = async (user: UserInsertType, userMetrics?: UserMetricsInsertType): Promise<number> => {
     const existingUser = await getUser();
     if (existingUser) {
-        const result = await updateUser(existingUser.id, {
+        await updateUser(existingUser.id, {
             ...existingUser,
             ...user,
         });
@@ -1915,7 +1916,7 @@ export const updateSet = async (id: number, set: SetInsertType): Promise<number>
     const existingSet = await getSetById(id);
 
     database.runSync(
-        'UPDATE "Set" SET "reps" = ?, "weight" = ?, "restTime" = ?, "exerciseId" = ?, "isDropSet" = ?, "difficultyLevel" = ? WHERE "id" = ?',
+        'UPDATE "Set" SET "reps" = ?, "weight" = ?, "restTime" = ?, "exerciseId" = ?, "isDropSet" = ?, "difficultyLevel" = ?, "workoutId" = ?, "setOrder" = ?, "supersetName" = ? WHERE "id" = ?',
         [
             set.reps || existingSet?.reps || 0,
             set.weight || existingSet?.weight || 0,
@@ -1923,6 +1924,9 @@ export const updateSet = async (id: number, set: SetInsertType): Promise<number>
             set.exerciseId || existingSet?.exerciseId || 0,
             set.isDropSet ? 1 : (existingSet?.isDropSet ? 1 : 0),
             set.difficultyLevel || existingSet?.difficultyLevel || 5,
+            set.workoutId || existingSet?.workoutId || 0,
+            set.setOrder || existingSet?.setOrder || 0,
+            set.supersetName || existingSet?.supersetName || '',
             id
         ]
     );
