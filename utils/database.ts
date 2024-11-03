@@ -36,6 +36,7 @@ import {
     VersioningReturnType,
     WorkoutEventInsertType,
     WorkoutEventReturnType,
+    WorkoutExerciseReturnType,
     WorkoutInsertType,
     WorkoutPlan,
     WorkoutReturnType,
@@ -2612,28 +2613,65 @@ export const createNewWorkoutTables = async (): Promise<void> => {
     // Check if migration is needed
     if (currentVersion && currentVersion < packageJson.version) {
         try {
-            // 1. Add 'workoutId' column to 'Set' table if it doesn't exist
+            console.log('Starting migration for workout tables.');
+
+            // 1. Read all current workout data with exercises and sets
+            const workouts = await database.getAllSync(`
+                SELECT * FROM "Workout" WHERE "deletedAt" IS NULL
+            `) as WorkoutReturnType[];
+
+            const workoutExercises = await database.getAllSync(`
+                SELECT * FROM "WorkoutExercise" WHERE "deletedAt" IS NULL
+            `) as WorkoutExerciseReturnType[];
+
+            const sets = await database.getAllSync(`
+                SELECT * FROM "Set" WHERE "deletedAt" IS NULL
+            `) as SetReturnType[];
+
+            // Map sets to their respective exercises and workouts
+            const workoutData = workouts.map((workout) => {
+                const exercises = workoutExercises
+                    .filter((we) => we.workoutId === workout.id)
+                    .map((we) => {
+                        const exerciseSets = sets
+                            .filter((set) => we.setIds.includes(set.id))
+                            .map((set, index) => ({
+                                ...set,
+                                workoutId: workout.id,
+                                setOrder: index,
+                                supersetName: '', // Adjust if you need to set specific superset names
+                            }));
+                        return { ...we, sets: exerciseSets };
+                    });
+                return { ...workout, exercises };
+            });
+
+            console.log('Retrieved existing workout data for migration.');
+
+            // 2. Apply schema changes
+
+            // a. Add 'workoutId' column to 'Set' table if it doesn't exist
             const hasWorkoutId = await columnExists('Set', 'workoutId');
             if (!hasWorkoutId) {
                 await database.runSync('ALTER TABLE "Set" ADD COLUMN "workoutId" INTEGER DEFAULT 0;');
                 console.log('Added "workoutId" column to "Set" table.');
             }
 
-            // 2. Add 'setOrder' column to 'Set' table if it doesn't exist
+            // b. Add 'setOrder' column to 'Set' table if it doesn't exist
             const hasSetOrder = await columnExists('Set', 'setOrder');
             if (!hasSetOrder) {
                 await database.runSync('ALTER TABLE "Set" ADD COLUMN "setOrder" INTEGER DEFAULT 0;');
                 console.log('Added "setOrder" column to "Set" table.');
             }
 
-            // 3. Add 'supersetName' column to 'Set' table if it doesn't exist
+            // c. Add 'supersetName' column to 'Set' table if it doesn't exist
             const hasSupersetName = await columnExists('Set', 'supersetName');
             if (!hasSupersetName) {
                 await database.runSync('ALTER TABLE "Set" ADD COLUMN "supersetName" TEXT DEFAULT "";');
                 console.log('Added "supersetName" column to "Set" table.');
             }
 
-            // 4. Remove 'workoutExerciseIds' column from 'Workout' table if it exists
+            // d. Remove 'workoutExerciseIds' column from 'Workout' table if it exists
             const hasWorkoutExerciseIds = await columnExists('Workout', 'workoutExerciseIds');
             if (hasWorkoutExerciseIds) {
                 // SQLite does not support DROP COLUMN directly. Perform the following steps:
@@ -2668,32 +2706,59 @@ export const createNewWorkoutTables = async (): Promise<void> => {
                 console.log('Renamed "Workout_temp" to "Workout".');
             }
 
-            // 5. Set 'deletedAt' for all existing records in 'Workout' and 'Set' tables
-            const currentTimestamp = getCurrentTimestamp();
+            // 3. Clear existing data in the Set and Workout tables
+            await database.runSync('DELETE FROM "Set";');
+            await database.runSync('DELETE FROM "Workout";');
+            console.log("Cleared existing data from 'Set' and 'Workout' tables.");
 
-            // Update 'Workout' table
-            const updateWorkoutResult = await database.runSync(
-                'UPDATE "Workout" SET "deletedAt" = ? WHERE "deletedAt" IS NULL;',
-                [currentTimestamp]
-            );
-            console.log(`Set "deletedAt" for ${updateWorkoutResult.changes} existing records in "Workout" table.`);
+            // 4. Insert data back with the new structure
+            for (const workout of workoutData) {
+                const workoutResult = await database.runSync(
+                    'INSERT INTO "Workout" ("id", "title", "description", "volumeCalculationType", "recurringOnWeek", "createdAt", "deletedAt") VALUES (?, ?, ?, ?, ?, ?, ?)',
+                    workout.id,
+                    workout.title,
+                    workout.description || '',
+                    workout.volumeCalculationType,
+                    workout.recurringOnWeek || '',
+                    workout.createdAt || getCurrentTimestamp(),
+                    workout.deletedAt || '',
+                );
 
-            // Update 'Set' table
-            const updateSetResult = await database.runSync(
-                'UPDATE "Set" SET "deletedAt" = ? WHERE "deletedAt" IS NULL;',
-                [currentTimestamp]
-            );
-            console.log(`Set "deletedAt" for ${updateSetResult.changes} existing records in "Set" table.`);
+                let setOrder = 0;
+                for (const exercise of workout.exercises) {
 
-            // 6. Update versioning table to reflect the new version
+                    setOrder += 1;
+                    for (const set of exercise.sets) {
+                        await database.runSync(
+                            'INSERT INTO "Set" ("id", "reps", "weight", "restTime", "exerciseId", "difficultyLevel", "isDropSet", "createdAt", "deletedAt", "workoutId", "setOrder", "supersetName") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                            set.id,
+                            set.reps,
+                            set.weight,
+                            set.restTime,
+                            set.exerciseId,
+                            set.difficultyLevel || 5,
+                            set.isDropSet || false,
+                            set.createdAt || getCurrentTimestamp(),
+                            set.deletedAt || null,
+                            workoutResult.lastInsertRowId,
+                            setOrder++,
+                            set.supersetName,
+                        );
+                    }
+                }
+            }
+            console.log("Reinserted data into 'Workout' and 'Set' tables with the new structure.");
+
+            // 5. Update the versioning table
             await addVersioning(packageJson.version);
             console.log(`Database schema updated to version ${packageJson.version}.`);
+
         } catch (error) {
-            console.error('Error in createNewWorkoutTables:', error);
+            console.error('Error in migrateWorkoutTables:', error);
             throw error;
         }
     } else {
-        console.log('No migration needed for createNewWorkoutTables.');
+        console.log('No migration needed for workout tables.');
     }
 };
 
