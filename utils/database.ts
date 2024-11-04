@@ -2629,6 +2629,13 @@ export const createNewWorkoutTables = async (): Promise<void> => {
                 SELECT * FROM "Set" WHERE "deletedAt" IS NULL
             `) as SetReturnType[];
 
+            // Check for duplicate set IDs
+            const setIds = sets.map((set) => set.id);
+            const uniqueSetIds = new Set(setIds);
+            if (uniqueSetIds.size !== setIds.length) {
+                throw new Error('Duplicate set.id values detected.');
+            }
+
             // Map sets to their respective exercises and workouts
             const workoutData = workouts.map((workout) => {
                 const exercises = workoutExercises
@@ -2742,6 +2749,7 @@ export const createNewWorkoutTables = async (): Promise<void> => {
                 for (const exercise of workout.exercises) {
                     setOrder += 1;
                     for (const set of exercise.sets) {
+                        console.log(`Inserting Set with id: ${set.id}`);
                         const setResult = await database.runSync(
                             'INSERT INTO "Set" ("id", "reps", "weight", "restTime", "exerciseId", "difficultyLevel", "isDropSet", "createdAt", "deletedAt", "workoutId", "setOrder", "supersetName") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
                             set.id,
