@@ -2751,7 +2751,32 @@ export const createNewWorkoutTables = async (): Promise<void> => {
                     for (const set of exercise.sets) {
                         console.log(`Inserting Set with id: ${set.id}`);
                         const setResult = await database.runSync(
-                            'INSERT INTO "Set" ("id", "reps", "weight", "restTime", "exerciseId", "difficultyLevel", "isDropSet", "createdAt", "deletedAt", "workoutId", "setOrder", "supersetName") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                            `INSERT INTO "Set" (
+                                "id", 
+                                "reps", 
+                                "weight", 
+                                "restTime", 
+                                "exerciseId", 
+                                "difficultyLevel", 
+                                "isDropSet", 
+                                "createdAt", 
+                                "deletedAt", 
+                                "workoutId", 
+                                "setOrder", 
+                                "supersetName"
+                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                            ON CONFLICT(id) DO UPDATE SET 
+                                "reps"=excluded."reps",
+                                "weight"=excluded."weight",
+                                "restTime"=excluded."restTime",
+                                "exerciseId"=excluded."exerciseId",
+                                "difficultyLevel"=excluded."difficultyLevel",
+                                "isDropSet"=excluded."isDropSet",
+                                "createdAt"=excluded."createdAt",
+                                "deletedAt"=excluded."deletedAt",
+                                "workoutId"=excluded."workoutId",
+                                "setOrder"=excluded."setOrder",
+                                "supersetName"=excluded."supersetName";`,
                             set.id,
                             set.reps,
                             set.weight,
