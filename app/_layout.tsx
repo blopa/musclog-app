@@ -203,6 +203,7 @@ function RootLayout() {
                     // await i18n.changeLanguage(lang?.value || EN_US);
 
                     increaseUnreadMessages(1);
+                    // set version for the first time
                     await addVersioning(packageJson.version);
 
                     const user = await getUser();
@@ -228,11 +229,16 @@ function RootLayout() {
 
             // TODO: migrations only work if user update on every version
             // every time it's out, which is not ideal
+            // await addVersioning('0.0.1'); // for debugging
             await addMacrosToWorkoutEventTable();
             await addUserMeasurementsTable();
             await addAlcoholAndFiberMacroToWorkoutEventTable();
             await addAlcoholMacroToUserNutritionTable();
             await createNewWorkoutTables();
+
+            // update to latest version
+            await addVersioning(packageJson.version);
+            console.log(`Database schema updated to version ${packageJson.version}.`);
 
             await AsyncStorage.setItem(LAST_TIME_APP_USED, getCurrentTimestamp().toString());
         };

@@ -2603,16 +2603,16 @@ export const addUserMeasurementsTable = async (): Promise<void> => {
                 );
             `);
         }
-
-        await addVersioning(packageJson.version);
     }
 };
 
 export const createNewWorkoutTables = async (): Promise<void> => {
     const currentVersion = await getLatestVersion();
+    console.log('GOT HERE 1');
 
     // Check if migration is needed
     if (currentVersion && currentVersion < packageJson.version) {
+        console.log('GOT HERE 2');
         try {
             console.log('Starting migration for workout tables.');
 
@@ -2710,6 +2710,13 @@ export const createNewWorkoutTables = async (): Promise<void> => {
             // 3. Clear existing data in the Set and Workout tables
             await database.runSync('DELETE FROM "Set";');
             await database.runSync('DELETE FROM "Workout";');
+
+            // a. Reset autoincrement for 'Set' table
+            await database.runSync('DELETE FROM sqlite_sequence WHERE name="Set";');
+
+            // b. Reset autoincrement for 'Workout' table
+            await database.runSync('DELETE FROM sqlite_sequence WHERE name="Workout";');
+
             console.log("Cleared existing data from 'Set' and 'Workout' tables.");
 
             // 4. Insert data back with the new structure and keep track of new workout and set IDs
@@ -2794,11 +2801,9 @@ export const createNewWorkoutTables = async (): Promise<void> => {
             }
             console.log('Updated "WorkoutEvent" table with new workout IDs and updated exerciseData.');
 
-            // 6. Update the versioning table
-            await addVersioning(packageJson.version);
-            console.log(`Database schema updated to version ${packageJson.version}.`);
-
+            console.log('GOT HERE 3');
         } catch (error) {
+            console.log('GOT HERE 4', error);
             console.error('Error in migrateWorkoutTables:', error);
             throw error;
         }
@@ -2813,8 +2818,6 @@ export const addAlcoholMacroToUserNutritionTable = async (): Promise<void> => {
         if (!(await columnExists('UserNutrition', 'alcohol'))) {
             await database.execAsync('ALTER TABLE "UserNutrition" ADD COLUMN "alcohol" TEXT');
         }
-
-        await addVersioning(packageJson.version);
     }
 };
 
@@ -2828,8 +2831,6 @@ export const addAlcoholAndFiberMacroToWorkoutEventTable = async (): Promise<void
         if (!(await columnExists('WorkoutEvent', 'fiber'))) {
             await database.execAsync('ALTER TABLE "WorkoutEvent" ADD COLUMN "fiber" REAL DEFAULT 0');
         }
-
-        await addVersioning(packageJson.version);
     }
 };
 
@@ -2851,8 +2852,6 @@ export const addMacrosToWorkoutEventTable = async (): Promise<void> => {
         if (!(await columnExists('WorkoutEvent', 'calories'))) {
             await database.execAsync('ALTER TABLE "WorkoutEvent" ADD COLUMN "calories" REAL DEFAULT 0');
         }
-
-        await addVersioning(packageJson.version);
     }
 };
 

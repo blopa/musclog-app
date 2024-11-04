@@ -1871,8 +1871,6 @@ export const addUserMeasurementsTable = async (): Promise<void> => {
         if (!database.isOpen()) {
             database.open();
         }
-
-        await addVersioning(packageJson.version);
     }
 };
 
@@ -1932,9 +1930,7 @@ export const createNewWorkoutTables = async (): Promise<void> => {
                 .modify({ deletedAt: currentTimestamp });
         });
 
-        // Update versioning information to reflect the new version
-        await addVersioning(packageJson.version);
-        console.log(`Database updated to version ${packageJson.version} with 'deletedAt' timestamps set on existing records.`);
+        console.log('Done with migration');
     }
 };
 
@@ -1974,8 +1970,6 @@ export const addAlcoholMacroToUserNutritionTable = async (): Promise<void> => {
         if (!database.isOpen()) {
             database.open();
         }
-
-        await addVersioning(packageJson.version);
     }
 };
 
@@ -2018,8 +2012,6 @@ export const addAlcoholAndFiberMacroToWorkoutEventTable = async (): Promise<void
         if (!database.isOpen()) {
             database.open();
         }
-
-        await addVersioning(packageJson.version);
     }
 };
 
@@ -2060,8 +2052,6 @@ export const addMacrosToWorkoutEventTable = async (): Promise<void> => {
         if (!database.isOpen()) {
             database.open();
         }
-
-        await addVersioning(packageJson.version);
     }
 };
 
