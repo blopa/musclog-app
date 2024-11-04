@@ -112,9 +112,7 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
     const loadWorkout = useCallback(async () => {
         try {
             const workoutData = await getWorkoutDetails(Number(id));
-            console.log('OK 1', workoutData);
             if (workoutData) {
-                console.log('OK 2');
                 setWorkoutDetails(workoutData);
 
                 const { workout, exercisesWithSets } = workoutData;

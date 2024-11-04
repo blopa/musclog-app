@@ -1098,7 +1098,7 @@ export const getAllUserNutrition = async (): Promise<UserNutritionDecryptedRetur
 export const getUserMetricsByDataId = async (dataId: string): Promise<UserMetricsDecryptedReturnType | undefined> => {
     try {
         const result = database.getFirstSync<UserMetricsEncryptedReturnType>(
-            'SELECT * FROM "UserMetrics" WHERE "dataId" = ? AND ("deletedAt" IS NULL)',
+            'SELECT * FROM "UserMetrics" WHERE "dataId" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')',
             [dataId]
         );
 
@@ -1242,7 +1242,7 @@ export const getWorkouts = async (): Promise<WorkoutReturnType[] | undefined> =>
 
 export const getWorkoutById = async (id: number): Promise<WorkoutReturnType | undefined> => {
     try {
-        const result = database.getFirstSync<WorkoutReturnType>('SELECT * FROM "Workout" WHERE "id" = ? AND ("deletedAt" IS NULL)', [id]) ?? undefined;
+        const result = database.getFirstSync<WorkoutReturnType>('SELECT * FROM "Workout" WHERE "id" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')', [id]) ?? undefined;
 
         return {
             ...result,
@@ -1302,7 +1302,7 @@ export const getSetsByIdsAndExerciseId = async (setIds: number[], exerciseId: nu
         sets = database.getAllSync<SetReturnType>(`
             SELECT * FROM "Set"
             WHERE "id" IN (${setIds.join(',')})
-            AND ("deletedAt" IS NULL)
+            AND ("deletedAt" IS NULL OR "deletedAt" = '')
         `);
     } catch (error) {
         throw error;
@@ -1384,7 +1384,7 @@ export const getUpcomingWorkouts = async (): Promise<WorkoutEventReturnType[]> =
             SELECT * FROM "WorkoutEvent"
             WHERE "status" = ?
             AND "date" > ?
-            AND ("deletedAt" IS NULL)
+            AND ("deletedAt" IS NULL OR "deletedAt" = '')
         `, [SCHEDULED_STATUS, todayDate]);
     } catch (error) {
         throw error;
@@ -1395,7 +1395,7 @@ export const getTotalUpcomingWorkoutsCount = async (): Promise<number> => {
     const todayDate = new Date().toISOString();
     try {
         const result = database.getFirstSync<{ count: number }>(
-            'SELECT COUNT(*) as count FROM "WorkoutEvent" WHERE "status" = ? AND "date" > ? AND ("deletedAt" IS NULL)',
+            'SELECT COUNT(*) as count FROM "WorkoutEvent" WHERE "status" = ? AND "date" > ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')',
             [SCHEDULED_STATUS, todayDate]
         );
         return result?.count ?? 0;
@@ -1424,7 +1424,7 @@ export const getRecentWorkouts = async (): Promise<WorkoutEventReturnType[]> => 
         return database.getAllSync<WorkoutEventReturnType>(`
             SELECT * FROM "WorkoutEvent"
             WHERE "status" = ?
-            AND ("deletedAt" IS NULL)
+            AND ("deletedAt" IS NULL OR "deletedAt" = '')
         `, [COMPLETED_STATUS]);
     } catch (error) {
         throw error;
@@ -1433,7 +1433,7 @@ export const getRecentWorkouts = async (): Promise<WorkoutEventReturnType[]> => 
 
 export const getRecentWorkoutById = async (id: number): Promise<WorkoutEventReturnType | undefined> => {
     try {
-        return database.getFirstSync<WorkoutEventReturnType>('SELECT * FROM "WorkoutEvent" WHERE "id" = ? AND ("deletedAt" IS NULL)', [id]) ?? undefined;
+        return database.getFirstSync<WorkoutEventReturnType>('SELECT * FROM "WorkoutEvent" WHERE "id" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')', [id]) ?? undefined;
     } catch (error) {
         throw error;
     }
@@ -1454,7 +1454,7 @@ export const getRecentWorkoutsBetweenDates = async (startDate: string, endDate: 
             SELECT * FROM "WorkoutEvent"
             WHERE "status" = ?
             AND "date" BETWEEN ? AND ?
-            AND ("deletedAt" IS NULL)
+            AND ("deletedAt" IS NULL OR "deletedAt" = '')
         `, [COMPLETED_STATUS, startDate, endDate]);
     } catch (error) {
         throw error;
@@ -1467,7 +1467,7 @@ export const getRecentWorkoutsFromDate = async (startDate: string): Promise<Work
             SELECT * FROM "WorkoutEvent"
             WHERE "status" = ?
             AND "date" >= ?
-            AND ("deletedAt" IS NULL)
+            AND ("deletedAt" IS NULL OR "deletedAt" = '')
         `, [COMPLETED_STATUS, startDate]);
     } catch (error) {
         throw error;
@@ -1501,7 +1501,7 @@ export const getWorkoutDetails = async (
     workoutId: number
 ): Promise<{ workout: WorkoutReturnType; exercisesWithSets: ExerciseWithSetsType[] } | undefined> => {
     try {
-        const workout = database.getFirstSync<WorkoutReturnType>('SELECT * FROM "Workout" WHERE "id" = ? AND ("deletedAt" IS NULL)', [workoutId]);
+        const workout = database.getFirstSync<WorkoutReturnType>('SELECT * FROM "Workout" WHERE "id" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')', [workoutId]);
         if (!workout) {
             return undefined;
         }
@@ -1563,7 +1563,7 @@ export const getExercisesWithSetsByWorkoutId = async (
 };
 
 export const getWorkoutWithExercisesRepsAndSetsDetails = async (workoutId: number): Promise<WorkoutWithExercisesRepsAndSetsDetailsReturnType | undefined> => {
-    const workout = database.getFirstSync<WorkoutReturnType>('SELECT * FROM "Workout" WHERE "id" = ? AND ("deletedAt" IS NULL)', [workoutId]);
+    const workout = database.getFirstSync<WorkoutReturnType>('SELECT * FROM "Workout" WHERE "id" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')', [workoutId]);
 
     if (!workout) {
         return undefined;
@@ -2608,11 +2608,8 @@ export const addUserMeasurementsTable = async (): Promise<void> => {
 
 export const createNewWorkoutTables = async (): Promise<void> => {
     const currentVersion = await getLatestVersion();
-    console.log('GOT HERE 1');
-
     // Check if migration is needed
     if (currentVersion && currentVersion < packageJson.version) {
-        console.log('GOT HERE 2');
         try {
             console.log('Starting migration for workout tables.');
 
@@ -2749,7 +2746,6 @@ export const createNewWorkoutTables = async (): Promise<void> => {
                 for (const exercise of workout.exercises) {
                     setOrder += 1;
                     for (const set of exercise.sets) {
-                        console.log(`Inserting Set with id: ${set.id}`);
                         const setResult = await database.runSync(
                             `INSERT INTO "Set" (
                                 "id", 
@@ -2833,10 +2829,7 @@ export const createNewWorkoutTables = async (): Promise<void> => {
                 }
             }
             console.log('Updated "WorkoutEvent" table with new workout IDs and updated exerciseData.');
-
-            console.log('GOT HERE 3');
         } catch (error) {
-            console.log('GOT HERE 4', error);
             console.error('Error in migrateWorkoutTables:', error);
             throw error;
         }
