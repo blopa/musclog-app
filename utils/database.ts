@@ -2710,14 +2710,14 @@ export const createNewWorkoutTables = async (): Promise<void> => {
             // 3. Clear existing data in the Set and Workout tables
             await database.runSync('DELETE FROM "Set";');
             await database.runSync('DELETE FROM "Workout";');
+            console.log("Cleared existing data from 'Set' and 'Workout' tables.");
 
             // a. Reset autoincrement for 'Set' table
             await database.runSync('DELETE FROM sqlite_sequence WHERE name="Set";');
 
             // b. Reset autoincrement for 'Workout' table
             await database.runSync('DELETE FROM sqlite_sequence WHERE name="Workout";');
-
-            console.log("Cleared existing data from 'Set' and 'Workout' tables.");
+            console.log('Reset autoincrement for "Set" and "Workout" tables.');
 
             // 4. Insert data back with the new structure and keep track of new workout and set IDs
             const workoutIdMapping: Record<number, number> = {}; // Map old workoutId -> new workoutId
