@@ -264,7 +264,7 @@ async function calculateNewSets(
                     }
                 }
             }
-        } else if (eatingPhase === EATING_PHASES.MAINTENANCE) {
+        } else if (eatingPhase === EATING_PHASES.MAINTENANCE || !eatingPhase) {
             const checkWorkouts =
                 liftingExperience === EXPERIENCE_LEVELS.BEGINNER
                     ? 2

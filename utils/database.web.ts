@@ -183,7 +183,9 @@ export class WorkoutLoggerDatabase extends Dexie implements IDatabase {
                 'restTime',
                 'isDropSet',
                 'difficultyLevel',
-                'exerciseId',
+                'workoutId',
+                'setOrder',
+                'supersetName',
                 'createdAt',
                 'deletedAt',
             ].join(', '),
@@ -294,7 +296,6 @@ export class WorkoutLoggerDatabase extends Dexie implements IDatabase {
                 '++id',
                 'title',
                 'description',
-                'workoutExerciseIds',
                 'recurringOnWeek',
                 'volumeCalculationType',
                 'createdAt',
@@ -991,7 +992,7 @@ export const getSetsByWorkoutId = async (workoutId: number): Promise<SetReturnTy
         .where('workoutId')
         .equals(workoutId)
         .filter((set) => set.deletedAt === null || set.deletedAt === undefined)
-        .sortBy('order');
+        .sortBy('setOrder');
 
     return sets;
 };
@@ -1179,7 +1180,7 @@ export const getExercisesWithSetsByWorkoutId = async (
         .where('workoutId')
         .equals(workoutId)
         .filter((set) => set.deletedAt === null || set.deletedAt === undefined)
-        .sortBy('order');
+        .sortBy('setOrder');
 
     // Group sets by exerciseId while preserving order
     const exercisesMap = new Map<number, { sets: SetReturnType[]; supersetName?: string | null }>();
@@ -1503,7 +1504,8 @@ export const updateWorkout = async (id: number, workout: WorkoutInsertType): Pro
     const updatedWorkout = {
         description: workout.description || existingWorkout?.description || '',
         recurringOnWeek: workout.recurringOnWeek || existingWorkout?.recurringOnWeek || '' as WorkoutReturnType['recurringOnWeek'],
-        title: workout.title || existingWorkout?.title || ''
+        title: workout.title || existingWorkout?.title || '',
+        volumeCalculationType: workout.volumeCalculationType || existingWorkout?.volumeCalculationType || '' as WorkoutReturnType['volumeCalculationType'],
     };
 
     return database.workouts.update(id, {
@@ -1888,7 +1890,6 @@ export const createNewWorkoutTables = async (): Promise<void> => {
                 '++id',
                 'title',
                 'description',
-                // 'workoutExerciseIds', // remove this one in the workout table
                 'recurringOnWeek',
                 'volumeCalculationType',
                 'createdAt',

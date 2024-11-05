@@ -65,7 +65,9 @@ const createTables = (database: SQLiteDatabase) => {
             "'reps' INTEGER",
             "'weight' INTEGER",
             "'restTime' INTEGER",
-            "'exerciseId' INTEGER",
+            "'workoutId' INTEGER",
+            "'setOrder' INTEGER",
+            "'supersetName' TEXT",
             "'difficultyLevel' INTEGER",
             "'isDropSet' INTEGER",
             "'createdAt' TEXT DEFAULT CURRENT_TIMESTAMP",
@@ -77,7 +79,6 @@ const createTables = (database: SQLiteDatabase) => {
         columns: [
             "'id' INTEGER PRIMARY KEY AUTOINCREMENT",
             "'title' TEXT",
-            "'workoutExerciseIds' TEXT",
             "'description' TEXT",
             "'volumeCalculationType' TEXT",
             "'recurringOnWeek' TEXT",
