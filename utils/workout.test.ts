@@ -30,7 +30,7 @@ jest.mock('@/utils/database', () => ({
     getLatestUserMetrics: jest.fn(),
     getSetById: jest.fn(),
     getSetsByIdsAndExerciseId: jest.fn(),
-    getSetsByWorkoutId: jest.fn(), // Mocked this function
+    getSetsByWorkoutId: jest.fn(),
     getUser: jest.fn(),
     updateSet: jest.fn(),
 }));
@@ -178,7 +178,7 @@ describe('Workout Utils Functions', () => {
 
         beforeEach(() => {
             (getUser as jest.Mock).mockResolvedValue({ ...user, metrics: userMetrics });
-            (getSetsByWorkoutId as jest.Mock).mockResolvedValue(sets); // Mocked this function
+            (getSetsByWorkoutId as jest.Mock).mockResolvedValue(sets);
             (getSetById as jest.Mock).mockResolvedValue(sets[0]);
         });
 
