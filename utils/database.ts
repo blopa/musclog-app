@@ -2442,6 +2442,7 @@ export const dumpDatabase = async (encryptionPhrase?: string): Promise<string> =
 };
 
 export const restoreDatabase = async (dump: string, decryptionPhrase?: string): Promise<void> => {
+    console.log('Restoring database...');
     try {
         if (decryptionPhrase) {
             dump = await decrypt(dump, decryptionPhrase);
@@ -2548,6 +2549,7 @@ export const restoreDatabase = async (dump: string, decryptionPhrase?: string): 
 
                 const query = `INSERT INTO "${tableName}" (${columns}) VALUES (${values})`;
                 // console.log(`Running query: ${query}`);
+                // console.log(`Inserting row into table ${tableName}`);
                 database.runSync(query);
             }
         }
@@ -2557,6 +2559,8 @@ export const restoreDatabase = async (dump: string, decryptionPhrase?: string): 
         console.error('Error restoring database:', error);
         throw error;
     }
+
+    console.log('Database restored successfully.');
 };
 
 // Migrations
