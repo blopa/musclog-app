@@ -16,6 +16,8 @@
 - https://chatgpt.com/c/80cd7d56-0921-4909-aa63-6ac7a6274b87 <- calculate ideal body weight
 - https://chatgpt.com/c/66e89ae5-5200-800f-8a59-23c1fc601a1b <- integration with Spotify
 - Menstruation: https://v0.dev/chat/dQ4ZSQUjqn1 / https://chatgpt.com/c/66e89f27-2074-800f-bbca-2421ac307359
+- Form https://docs.google.com/forms/d/1aHENPk6R2-WkT9SbVDL_cDRGhHp9V66GYnX20bTz3lk/edit
+- Spreadsheet https://docs.google.com/spreadsheets/d/1yW8r-X05Isjhwl9v5Lh6fgcR5_uwVbqOSjvC3Zd_LdQ/edit?usp=sharing
 
 ## Notifications
 - https://medium.com/@uncledev/local-push-notifications-in-react-native-using-expo-without-a-backend-c14114faed0f

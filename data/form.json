@@ -1,0 +1,68 @@
+{
+  "fvv": 1,
+  "pageHistory": 0,
+  "fbzx": "-4545316799075287800",
+  "action": "e/1FAIpQLSdzDj1kfBN8RA4syj0T8Q2SwecQZSUObZJ_hHRzRRo-f6njZA",
+  "title": "food-data",
+  "description": null,
+  "fields": [
+    {
+      "label": "calories",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "1848808507",
+      "required": true
+    },
+    {
+      "label": "total_carbohydrate",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "919411420",
+      "required": true
+    },
+    {
+      "label": "total_fat",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "2114676271",
+      "required": true
+    },
+    {
+      "label": "protein",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "1811363356",
+      "required": true
+    },
+    {
+      "label": "alcohol",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "1665963898",
+      "required": true
+    },
+    {
+      "label": "fiber",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "1039537292",
+      "required": true
+    },
+    {
+      "label": "sugar",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "231759517",
+      "required": true
+    }
+  ],
+  "fieldsOrder": {
+    "231759517": 6,
+    "919411420": 1,
+    "1039537292": 5,
+    "1665963898": 4,
+    "1811363356": 3,
+    "1848808507": 0,
+    "2114676271": 2
+  }
+}
