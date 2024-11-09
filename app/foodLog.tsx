@@ -103,7 +103,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                                     /* Handle add meal item */
                                 }}
                                 size={ICON_SIZE}
-                                style={styles.iconButton}
+                                style={styles.plusButton}
                             />
                         </View>
                     </View>
@@ -190,7 +190,9 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         fontSize: Platform.OS === 'web' ? 20 : 26,
     },
     cardActions: {
-        justifyContent: 'center',
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        marginTop: -24,
     },
     cardContent: {
         padding: 16,
@@ -231,6 +233,9 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     noItemsText: {
         color: colors.onSurface,
         fontSize: 14,
+    },
+    plusButton: {
+        marginLeft: 4,
     },
     progressBar: {
         backgroundColor: colors.primary,
