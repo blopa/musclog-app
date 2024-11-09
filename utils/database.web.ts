@@ -1235,10 +1235,12 @@ export const getTotalWorkoutsCount = async (): Promise<number> => {
         .count();
 };
 
-export const getWorkoutsPaginated = async (offset: number, limit: number): Promise<WorkoutReturnType[]> => {
+export const getWorkoutsPaginated = async (offset: number, limit: number, loadDeleted = true): Promise<WorkoutReturnType[]> => {
     const workouts = await database.workouts
         .orderBy('createdAt')
-        .filter((workout) => workout.deletedAt === null || workout.deletedAt === undefined)
+        .filter((workout) => {
+            return loadDeleted || (workout.deletedAt === null || workout.deletedAt === undefined)
+        })
         .offset(offset)
         .limit(limit)
         .toArray();

@@ -644,7 +644,7 @@ export const addUserNutrition = async (userNutrition: UserNutritionInsertType): 
 export const getUserMeasurements = async (id: number): Promise<{ measurements: string } & UserMeasurementsReturnType | undefined> => {
     try {
         const result = database.getFirstSync<{ measurements: string } & UserMeasurementsReturnType>(
-            'SELECT * FROM "UserMeasurements" WHERE "id" = ? AND "deletedAt" IS NULL',
+            'SELECT * FROM "UserMeasurements" WHERE "id" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')',
             [id]
         );
 
@@ -664,7 +664,7 @@ export const getUserMeasurements = async (id: number): Promise<{ measurements: s
 export const getUserMeasurementsBetweenDates = async (startDate: string, endDate: string): Promise<({ measurements: string } & UserMeasurementsReturnType)[]> => {
     try {
         const results = database.getAllSync<{ measurements: string } & UserMeasurementsReturnType>(
-            'SELECT * FROM "UserMeasurements" WHERE "date" BETWEEN ? AND ? AND "deletedAt" IS NULL',
+            'SELECT * FROM "UserMeasurements" WHERE "date" BETWEEN ? AND ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')',
             [startDate, endDate]
         );
 
@@ -680,7 +680,7 @@ export const getUserMeasurementsBetweenDates = async (startDate: string, endDate
 export const getUserMeasurementsFromDate = async (startDate: string): Promise<({ measurements: string } & UserMeasurementsReturnType)[]> => {
     try {
         const results = database.getAllSync<{ measurements: string } & UserMeasurementsReturnType>(
-            'SELECT * FROM "UserMeasurements" WHERE "date" >= ? AND "deletedAt" IS NULL',
+            'SELECT * FROM "UserMeasurements" WHERE "date" >= ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')',
             [startDate]
         );
 
@@ -696,7 +696,7 @@ export const getUserMeasurementsFromDate = async (startDate: string): Promise<({
 export const getUserMeasurementsPaginated = async (offset = 0, limit = 20): Promise<({ measurements: string } & UserMeasurementsReturnType)[]> => {
     try {
         const results = database.getAllSync<{ measurements: string } & UserMeasurementsReturnType>(
-            'SELECT * FROM "UserMeasurements" WHERE "deletedAt" IS NULL ORDER BY "id" DESC LIMIT ? OFFSET ?',
+            'SELECT * FROM "UserMeasurements" WHERE ("deletedAt" IS NULL OR "deletedAt" = \'\') ORDER BY "id" DESC LIMIT ? OFFSET ?',
             [limit, limit * offset]
         );
 
@@ -712,7 +712,7 @@ export const getUserMeasurementsPaginated = async (offset = 0, limit = 20): Prom
 export const getTotalUserMeasurementsCount = async (): Promise<number> => {
     try {
         const result = database.getFirstSync<{ count: number }>(
-            'SELECT COUNT(*) as count FROM "UserMeasurements" WHERE "deletedAt" IS NULL'
+            'SELECT COUNT(*) as count FROM "UserMeasurements" WHERE ("deletedAt" IS NULL OR "deletedAt" = \'\')'
         );
 
         return result?.count || 0;
@@ -742,7 +742,7 @@ export const getVersioningByVersion = async (version: string): Promise<Versionin
 export const getOneRepMax = async (exerciseId: number): Promise<OneRepMaxReturnType | undefined> => {
     try {
         const result = database.getFirstSync<OneRepMaxReturnType>(
-            'SELECT * FROM "OneRepMax" WHERE "exerciseId" = ? AND "deletedAt" IS NULL',
+            'SELECT * FROM "OneRepMax" WHERE "exerciseId" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')',
             [exerciseId]
         );
         return result ?? undefined;
@@ -754,7 +754,7 @@ export const getOneRepMax = async (exerciseId: number): Promise<OneRepMaxReturnT
 export const getBio = async (id: number): Promise<BioReturnType | undefined> => {
     try {
         const result = database.getFirstSync<BioReturnType>(
-            'SELECT * FROM "Bio" WHERE "id" = ? AND "deletedAt" IS NULL',
+            'SELECT * FROM "Bio" WHERE "id" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')',
             [id]
         );
         return result ?? undefined;
@@ -765,7 +765,7 @@ export const getBio = async (id: number): Promise<BioReturnType | undefined> => 
 
 export const getAllBio = async (): Promise<BioReturnType[]> => {
     try {
-        return database.getAllSync<BioReturnType>('SELECT * FROM "Bio" WHERE "deletedAt" IS NULL');
+        return database.getAllSync<BioReturnType>('SELECT * FROM "Bio" WHERE ("deletedAt" IS NULL OR "deletedAt" = \'\')');
     } catch (error) {
         throw error;
     }
@@ -774,7 +774,7 @@ export const getAllBio = async (): Promise<BioReturnType[]> => {
 export const getSetting = async (type: string): Promise<SettingsReturnType | undefined> => {
     try {
         const result = database.getFirstSync<SettingsReturnType>(
-            'SELECT * FROM "Setting" WHERE "type" = ? AND "deletedAt" IS NULL',
+            'SELECT * FROM "Setting" WHERE "type" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')',
             [type]
         );
 
@@ -786,7 +786,7 @@ export const getSetting = async (type: string): Promise<SettingsReturnType | und
 
 export const getAllSettings = async (): Promise<SettingsReturnType[]> => {
     try {
-        return database.getAllSync<SettingsReturnType>('SELECT * FROM "Setting" WHERE "deletedAt" IS NULL');
+        return database.getAllSync<SettingsReturnType>('SELECT * FROM "Setting" WHERE ("deletedAt" IS NULL OR "deletedAt" = \'\')');
     } catch (error) {
         throw error;
     }
@@ -794,7 +794,7 @@ export const getAllSettings = async (): Promise<SettingsReturnType[]> => {
 
 export const getAllChats = async (): Promise<ChatReturnType[]> => {
     try {
-        return database.getAllSync<ChatReturnType>('SELECT * FROM "Chat" WHERE "deletedAt" IS NULL');
+        return database.getAllSync<ChatReturnType>('SELECT * FROM "Chat" WHERE ("deletedAt" IS NULL OR "deletedAt" = \'\')');
     } catch (error) {
         throw error;
     }
@@ -804,7 +804,7 @@ export const getChatsPaginated = async (offset = 0, limit = 20): Promise<ChatRet
     try {
         return database.getAllSync<ChatReturnType>(`
             SELECT * FROM "Chat"
-            WHERE "deletedAt" IS NULL
+            WHERE ("deletedAt" IS NULL OR "deletedAt" = \'\')
             ORDER BY "id" DESC
             LIMIT ?
             OFFSET ?
@@ -820,7 +820,7 @@ export const getUser = async (id?: number): Promise<UserWithMetricsType | undefi
     }
 
     try {
-        const user = database.getFirstSync<UserReturnType>('SELECT * FROM "User" WHERE "id" = ? AND "deletedAt" IS NULL', [id]) ?? undefined;
+        const user = database.getFirstSync<UserReturnType>('SELECT * FROM "User" WHERE "id" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')', [id]) ?? undefined;
 
         if (user) {
             const metrics = await getAllLatestMetricsForUser(user.id!) || {};
@@ -835,7 +835,7 @@ export const getUser = async (id?: number): Promise<UserWithMetricsType | undefi
 
 export const getAllUsers = async (): Promise<UserReturnType[]> => {
     try {
-        return database.getAllSync<UserReturnType>('SELECT * FROM "User" WHERE "deletedAt" IS NULL');
+        return database.getAllSync<UserReturnType>('SELECT * FROM "User" WHERE ("deletedAt" IS NULL OR "deletedAt" = \'\')');
     } catch (error) {
         throw error;
     }
@@ -854,10 +854,10 @@ export const getAllLatestMetricsForUser = async (userId: number): Promise<Metric
         };
 
         const queries = [
-            'SELECT "id", "fatPercentage" FROM "UserMetrics" WHERE "userId" = ? AND "fatPercentage" IS NOT NULL AND "fatPercentage" <> \'\' AND "deletedAt" IS NULL ORDER BY "date" DESC LIMIT 1',
-            'SELECT "id", "height" FROM "UserMetrics" WHERE "userId" = ? AND "height" IS NOT NULL AND "height" <> \'\' AND "deletedAt" IS NULL ORDER BY "date" DESC LIMIT 1',
-            'SELECT "id", "weight" FROM "UserMetrics" WHERE "userId" = ? AND "weight" IS NOT NULL AND "weight" <> \'\' AND "deletedAt" IS NULL ORDER BY "date" DESC LIMIT 1',
-            'SELECT "id", "eatingPhase" FROM "UserMetrics" WHERE "userId" = ? AND "eatingPhase" IS NOT NULL AND "eatingPhase" <> \'\' AND "deletedAt" IS NULL ORDER BY "date" DESC LIMIT 1',
+            'SELECT "id", "fatPercentage" FROM "UserMetrics" WHERE "userId" = ? AND "fatPercentage" IS NOT NULL AND "fatPercentage" <> \'\' AND ("deletedAt" IS NULL OR "deletedAt" = \'\') ORDER BY "date" DESC LIMIT 1',
+            'SELECT "id", "height" FROM "UserMetrics" WHERE "userId" = ? AND "height" IS NOT NULL AND "height" <> \'\' AND ("deletedAt" IS NULL OR "deletedAt" = \'\') ORDER BY "date" DESC LIMIT 1',
+            'SELECT "id", "weight" FROM "UserMetrics" WHERE "userId" = ? AND "weight" IS NOT NULL AND "weight" <> \'\' AND ("deletedAt" IS NULL OR "deletedAt" = \'\') ORDER BY "date" DESC LIMIT 1',
+            'SELECT "id", "eatingPhase" FROM "UserMetrics" WHERE "userId" = ? AND "eatingPhase" IS NOT NULL AND "eatingPhase" <> \'\' AND ("deletedAt" IS NULL OR "deletedAt" = \'\') ORDER BY "date" DESC LIMIT 1',
         ];
 
         const ids: number[] = [];
@@ -907,7 +907,7 @@ export const getAllLatestMetricsForUser = async (userId: number): Promise<Metric
 export const getAllUserMetricsByUserId = async (userId: number): Promise<UserMetricsDecryptedReturnType[]> => {
     try {
         const results = database.getAllSync<UserMetricsEncryptedReturnType>(
-            'SELECT * FROM "UserMetrics" WHERE "userId" = ? AND "deletedAt" IS NULL',
+            'SELECT * FROM "UserMetrics" WHERE "userId" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')',
             [userId]
         );
 
@@ -933,7 +933,7 @@ export const getAllUserMetricsByUserId = async (userId: number): Promise<UserMet
 export const getUserMetrics = async (id: number): Promise<UserMetricsDecryptedReturnType | undefined> => {
     try {
         const result = database.getFirstSync<UserMetricsEncryptedReturnType>(
-            'SELECT * FROM "UserMetrics" WHERE "id" = ? AND "deletedAt" IS NULL',
+            'SELECT * FROM "UserMetrics" WHERE "id" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')',
             [id]
         );
 
@@ -956,7 +956,7 @@ export const getUserMetricsPaginated = async (offset = 0, limit = 20): Promise<U
     try {
         const results = database.getAllSync<UserMetricsEncryptedReturnType>(`
             SELECT * FROM "UserMetrics"
-            WHERE "deletedAt" IS NULL
+            WHERE ("deletedAt" IS NULL OR "deletedAt" = \'\')
             ORDER BY "date" DESC
             LIMIT ? OFFSET ?
         `, [limit, offset]);
@@ -984,7 +984,7 @@ export const getUserMetricsBetweenDates = async (startDate: string, endDate: str
     try {
         const results = database.getAllSync<UserMetricsEncryptedReturnType>(`
             SELECT * FROM "UserMetrics"
-            WHERE "deletedAt" IS NULL AND "date" BETWEEN ? AND ?
+            WHERE ("deletedAt" IS NULL OR "deletedAt" = \'\') AND "date" BETWEEN ? AND ?
             ORDER BY "date" DESC
         `, [startDate, endDate]);
 
@@ -1013,7 +1013,7 @@ export const getUserMetricsFromDate = async (startDate: string): Promise<UserMet
 
         const results = database.getAllSync<UserMetricsEncryptedReturnType>(`
             SELECT * FROM "UserMetrics"
-            WHERE "deletedAt" IS NULL AND "date" BETWEEN ? AND ?
+            WHERE ("deletedAt" IS NULL OR "deletedAt" = \'\') AND "date" BETWEEN ? AND ?
             ORDER BY "date" DESC
         `, [startDate, todayDate]);
 
@@ -1040,7 +1040,7 @@ export const getTotalUserMetricsCount = async (): Promise<number> => {
     try {
         const result = database.getFirstSync<{ count: number }>(`
             SELECT COUNT(*) as count FROM "UserMetrics"
-            WHERE "deletedAt" IS NULL
+            WHERE ("deletedAt" IS NULL OR "deletedAt" = \'\')
         `);
         return result?.count ?? 0;
     } catch (error) {
@@ -1051,7 +1051,7 @@ export const getTotalUserMetricsCount = async (): Promise<number> => {
 export const getAllUserMetrics = async (): Promise<UserMetricsDecryptedReturnType[]> => {
     try {
         const results = database.getAllSync<UserMetricsEncryptedReturnType>(
-            'SELECT * FROM "UserMetrics" WHERE "deletedAt" IS NULL'
+            'SELECT * FROM "UserMetrics" WHERE ("deletedAt" IS NULL OR "deletedAt" = \'\')'
         );
 
         return await Promise.all(results.map(async (row) => {
@@ -1070,7 +1070,7 @@ export const getAllUserMetrics = async (): Promise<UserMetricsDecryptedReturnTyp
 export const getAllUserNutrition = async (): Promise<UserNutritionDecryptedReturnType[]> => {
     try {
         const results = database.getAllSync<UserNutritionEncryptedReturnType>(
-            'SELECT * FROM "UserNutrition" WHERE "deletedAt" IS NULL'
+            'SELECT * FROM "UserNutrition" WHERE ("deletedAt" IS NULL OR "deletedAt" = \'\')'
         );
 
         return await Promise.all(results.map(async (row) => {
@@ -1126,7 +1126,7 @@ export const getUserMetricsByDataId = async (dataId: string): Promise<UserMetric
 
 export const getLatestUserMetrics = async (): Promise<UserMetricsDecryptedReturnType | undefined> => {
     try {
-        const result = database.getFirstSync<UserMetricsEncryptedReturnType>('SELECT * FROM "UserMetrics" WHERE "deletedAt" IS NULL ORDER BY "id" DESC LIMIT 1');
+        const result = database.getFirstSync<UserMetricsEncryptedReturnType>('SELECT * FROM "UserMetrics" WHERE ("deletedAt" IS NULL OR "deletedAt" = \'\') ORDER BY "id" DESC LIMIT 1');
 
         if (result) {
             return {
@@ -1143,7 +1143,7 @@ export const getLatestUserMetrics = async (): Promise<UserMetricsDecryptedReturn
 
 export const getLatestUser = async (): Promise<UserWithMetricsType | undefined> => {
     try {
-        const user = database.getFirstSync<UserReturnType>('SELECT * FROM "User" WHERE "deletedAt" IS NULL ORDER BY "id" DESC LIMIT 1') ?? undefined;
+        const user = database.getFirstSync<UserReturnType>('SELECT * FROM "User" WHERE ("deletedAt" IS NULL OR "deletedAt" = \'\') ORDER BY "id" DESC LIMIT 1') ?? undefined;
 
         if (user) {
             const metrics = await getAllLatestMetricsForUser(user.id!) || {};
@@ -1158,7 +1158,7 @@ export const getLatestUser = async (): Promise<UserWithMetricsType | undefined> 
 
 export const getAllExercises = async (): Promise<ExerciseReturnType[]> => {
     try {
-        return database.getAllSync<ExerciseReturnType>('SELECT * FROM "Exercise" WHERE "deletedAt" IS NULL');
+        return database.getAllSync<ExerciseReturnType>('SELECT * FROM "Exercise" WHERE ("deletedAt" IS NULL OR "deletedAt" = \'\')');
     } catch (error) {
         throw error;
     }
@@ -1168,7 +1168,7 @@ export const getExercisesPaginated = async (offset = 0, limit = 20): Promise<Exe
     try {
         return database.getAllSync<ExerciseReturnType>(`
             SELECT * FROM "Exercise"
-            WHERE "deletedAt" IS NULL
+            WHERE ("deletedAt" IS NULL OR "deletedAt" = \'\')
             ORDER BY "id" DESC
             LIMIT ? OFFSET ?
         `, [limit, offset]);
@@ -1181,7 +1181,7 @@ export const getTotalExercisesCount = async (): Promise<number> => {
     try {
         const result = database.getFirstSync<{ count: number }>(`
             SELECT COUNT(*) as count FROM "Exercise"
-            WHERE "deletedAt" IS NULL
+            WHERE ("deletedAt" IS NULL OR "deletedAt" = \'\')
         `);
         return result?.count ?? 0;
     } catch (error) {
@@ -1191,7 +1191,7 @@ export const getTotalExercisesCount = async (): Promise<number> => {
 
 export const getAllWorkouts = async (): Promise<WorkoutReturnType[]> => {
     try {
-        const result = database.getAllSync<WorkoutReturnType>('SELECT * FROM "Workout" WHERE "deletedAt" IS NULL');
+        const result = database.getAllSync<WorkoutReturnType>('SELECT * FROM "Workout" WHERE ("deletedAt" IS NULL OR "deletedAt" = \'\')');
 
         return result.map((workout) => ({
             ...workout,
@@ -1216,7 +1216,7 @@ export const getAllWorkoutsWithTrashed = async (): Promise<WorkoutReturnType[]> 
 export const getRecurringWorkouts = async (): Promise<WorkoutReturnType[] | undefined> => {
     try {
         const result = database.getAllSync<WorkoutReturnType>(
-            'SELECT * FROM "Workout" WHERE "recurringOnWeek" IS NOT NULL AND "deletedAt" IS NULL ORDER BY "date" ASC'
+            'SELECT * FROM "Workout" WHERE "recurringOnWeek" IS NOT NULL AND ("deletedAt" IS NULL OR "deletedAt" = \'\') ORDER BY "date" ASC'
         );
 
         return result.map((workout) => ({
@@ -1230,7 +1230,7 @@ export const getRecurringWorkouts = async (): Promise<WorkoutReturnType[] | unde
 export const getWorkouts = async (): Promise<WorkoutReturnType[] | undefined> => {
     try {
         const result = database.getAllSync<WorkoutReturnType>(
-            'SELECT * FROM "Workout" WHERE "deletedAt" IS NULL'
+            'SELECT * FROM "Workout" WHERE ("deletedAt" IS NULL OR "deletedAt" = \'\')'
         );
 
         return result.map((workout) => ({
@@ -1255,7 +1255,7 @@ export const getWorkoutById = async (id: number): Promise<WorkoutReturnType | un
 
 export const getSetsByExerciseId = async (exerciseId: number): Promise<SetReturnType[]> => {
     try {
-        return database.getAllSync<SetReturnType>('SELECT * FROM "Set" WHERE "exerciseId" = ? AND "deletedAt" IS NULL', [exerciseId]);
+        return database.getAllSync<SetReturnType>('SELECT * FROM "Set" WHERE "exerciseId" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')', [exerciseId]);
     } catch (error) {
         throw error;
     }
@@ -1264,7 +1264,7 @@ export const getSetsByExerciseId = async (exerciseId: number): Promise<SetReturn
 export const getSetById = async (setId: number): Promise<SetReturnType | null | undefined> => {
     try {
         return database.getFirstSync<SetReturnType>(
-            'SELECT * FROM "Set" WHERE "id" = ? AND "deletedAt" IS NULL',
+            'SELECT * FROM "Set" WHERE "id" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')',
             [setId]
         );
     } catch (error) {
@@ -1277,7 +1277,7 @@ export const getSetsByIds = async (setIds: number[]): Promise<SetReturnType[]> =
         return database.getAllSync<SetReturnType>(`
             SELECT * FROM "Set"
             WHERE "id" IN (${setIds.join(',')})
-            AND "deletedAt" IS NULL
+            AND ("deletedAt" IS NULL OR "deletedAt" = \'\')
         `);
     } catch (error) {
         throw error;
@@ -1287,7 +1287,7 @@ export const getSetsByIds = async (setIds: number[]): Promise<SetReturnType[]> =
 export const getSetsByWorkoutId = async (workoutId: number): Promise<SetReturnType[]> => {
     try {
         const sets = database.getAllSync<SetReturnType>(
-            'SELECT * FROM "Set" WHERE "workoutId" = ? AND "deletedAt" IS NULL ORDER BY "setOrder" ASC',
+            'SELECT * FROM "Set" WHERE "workoutId" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\') ORDER BY "setOrder" ASC',
             [workoutId]
         );
         return sets;
@@ -1313,7 +1313,7 @@ export const getSetsByIdsAndExerciseId = async (setIds: number[], exerciseId: nu
 
 export const getExerciseById = async (id: number): Promise<ExerciseReturnType | undefined> => {
     try {
-        return database.getFirstSync<ExerciseReturnType>('SELECT * FROM "Exercise" WHERE "id" = ? AND "deletedAt" IS NULL', [id]) ?? undefined;
+        return database.getFirstSync<ExerciseReturnType>('SELECT * FROM "Exercise" WHERE "id" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')', [id]) ?? undefined;
     } catch (error) {
         throw error;
     }
@@ -1321,7 +1321,7 @@ export const getExerciseById = async (id: number): Promise<ExerciseReturnType | 
 
 export const getWorkoutEvent = async (id: number): Promise<WorkoutEventReturnType | undefined> => {
     try {
-        const result = database.getFirstSync<WorkoutEventReturnType>('SELECT * FROM "WorkoutEvent" WHERE "id" = ? AND "deletedAt" IS NULL', [id]);
+        const result = database.getFirstSync<WorkoutEventReturnType>('SELECT * FROM "WorkoutEvent" WHERE "id" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')', [id]);
 
         return result ?? undefined;
     } catch (error) {
@@ -1331,7 +1331,7 @@ export const getWorkoutEvent = async (id: number): Promise<WorkoutEventReturnTyp
 
 export const getWorkoutEvents = async (): Promise<WorkoutEventReturnType[]> => {
     try {
-        return database.getAllSync<WorkoutEventReturnType>('SELECT * FROM "WorkoutEvent" WHERE "deletedAt" IS NULL');
+        return database.getAllSync<WorkoutEventReturnType>('SELECT * FROM "WorkoutEvent" WHERE ("deletedAt" IS NULL OR "deletedAt" = \'\')');
     } catch (error) {
         throw error;
     }
@@ -1342,7 +1342,7 @@ export const getWorkoutEventsByWorkoutId = async (workoutId: number): Promise<Wo
         return database.getAllSync<WorkoutEventReturnType>(`
             SELECT * FROM "WorkoutEvent"
             WHERE "workoutId" = ?
-            AND "deletedAt" IS NULL
+            AND ("deletedAt" IS NULL OR "deletedAt" = \'\')
         `, [workoutId]);
     } catch (error) {
         throw error;
@@ -1354,7 +1354,7 @@ export const getRecentWorkoutsByWorkoutId = async (workoutId: number): Promise<W
         return database.getAllSync<WorkoutEventReturnType>(`
             SELECT *
             FROM "WorkoutEvent"
-            WHERE "deletedAt" IS NULL
+            WHERE ("deletedAt" IS NULL OR "deletedAt" = \'\')
             AND "workoutId" = ?
             AND "status" = ?
         `, [workoutId, COMPLETED_STATUS]);
@@ -1371,7 +1371,7 @@ export const getUpcomingWorkoutsByWorkoutId = async (workoutId: number): Promise
             WHERE "workoutId" = ?
             AND "status" = ?
             AND "date" > ?
-            AND "deletedAt" IS NULL
+            AND ("deletedAt" IS NULL OR "deletedAt" = \'\')
         `, [workoutId, SCHEDULED_STATUS, todayDate]);
     } catch (error) {
         throw error;
@@ -1442,7 +1442,7 @@ export const getRecentWorkoutById = async (id: number): Promise<WorkoutEventRetu
 
 export const getTotalRecentWorkoutsCount = async (): Promise<number> => {
     try {
-        const result = database.getFirstSync<{ count: number }>('SELECT COUNT(*) as count FROM "WorkoutEvent" WHERE "deletedAt" IS NULL AND "status" = "completed"');
+        const result = database.getFirstSync<{ count: number }>('SELECT COUNT(*) as count FROM "WorkoutEvent" WHERE ("deletedAt" IS NULL OR "deletedAt" = \'\') AND "status" = "completed"');
         return result?.count ?? 0;
     } catch (error) {
         throw error;
@@ -1478,7 +1478,7 @@ export const getRecentWorkoutsFromDate = async (startDate: string): Promise<Work
 export const getRecentWorkoutsPaginated = async (offset: number, limit: number): Promise<WorkoutEventReturnType[]> => {
     try {
         return database.getAllSync<WorkoutEventReturnType>(
-            'SELECT * FROM "WorkoutEvent" WHERE "deletedAt" IS NULL AND "status" = "completed" ORDER BY "date" DESC LIMIT ? OFFSET ?',
+            'SELECT * FROM "WorkoutEvent" WHERE ("deletedAt" IS NULL OR "deletedAt" = \'\') AND "status" = "completed" ORDER BY "date" DESC LIMIT ? OFFSET ?',
             [limit, offset]
         );
     } catch (error) {
@@ -1524,7 +1524,7 @@ export const getExercisesWithSetsByWorkoutId = async (
     try {
         // Step 1: Get all sets associated with the workout
         const sets = database.getAllSync<SetReturnType>(
-            'SELECT * FROM "Set" WHERE "workoutId" = ? AND "deletedAt" IS NULL ORDER BY "setOrder" ASC',
+            'SELECT * FROM "Set" WHERE "workoutId" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\') ORDER BY "setOrder" ASC',
             [workoutId]
         );
 
@@ -1547,7 +1547,7 @@ export const getExercisesWithSetsByWorkoutId = async (
 
         // Step 4: Fetch the exercises using the exercise IDs
         const exercises = database.getAllSync<ExerciseReturnType>(
-            `SELECT * FROM "Exercise" WHERE "id" IN (${exerciseIds.join(',')}) AND "deletedAt" IS NULL`
+            `SELECT * FROM "Exercise" WHERE "id" IN (${exerciseIds.join(',')}) AND ("deletedAt" IS NULL OR "deletedAt" = \'\')`
         );
 
         // Step 5: Combine exercises with their sets
@@ -1582,7 +1582,7 @@ export const getWorkoutWithExercisesRepsAndSetsDetails = async (workoutId: numbe
 export const getTotalWorkoutsCount = async (): Promise<number> => {
     try {
         const result = database.getFirstSync<{ count: number }>(
-            'SELECT COUNT(*) as count FROM "Workout" WHERE "deletedAt" IS NULL'
+            'SELECT COUNT(*) as count FROM "Workout" WHERE ("deletedAt" IS NULL OR "deletedAt" = \'\')'
         );
 
         return result?.count ?? 0;
@@ -1591,10 +1591,10 @@ export const getTotalWorkoutsCount = async (): Promise<number> => {
     }
 };
 
-export const getWorkoutsPaginated = async (offset: number, limit: number): Promise<WorkoutReturnType[]> => {
+export const getWorkoutsPaginated = async (offset: number, limit: number, loadDeleted = true): Promise<WorkoutReturnType[]> => {
     try {
         const result = database.getAllSync<WorkoutReturnType>(
-            'SELECT * FROM "Workout" ORDER BY "id" DESC LIMIT ? OFFSET ?',
+            `SELECT * FROM "Workout" ORDER BY "id" DESC LIMIT ? OFFSET ? ${!loadDeleted ? 'AND ("deletedAt" IS NULL OR "deletedAt" = \'\')' : ''}`,
             [limit, offset]
         );
 
@@ -1609,7 +1609,7 @@ export const getWorkoutsPaginated = async (offset: number, limit: number): Promi
 export const getUserNutrition = async (id: number): Promise<UserNutritionDecryptedReturnType | undefined> => {
     try {
         const result = database.getFirstSync<UserNutritionEncryptedReturnType>(
-            'SELECT * FROM "UserNutrition" WHERE "id" = ? AND "deletedAt" IS NULL',
+            'SELECT * FROM "UserNutrition" WHERE "id" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')',
             [id]
         );
 
@@ -1642,7 +1642,7 @@ export const getUserNutrition = async (id: number): Promise<UserNutritionDecrypt
 export const getLatestUserNutritionByUserId = async (userId: number): Promise<UserNutritionDecryptedReturnType | undefined> => {
     try {
         const result = database.getFirstSync<UserNutritionEncryptedReturnType>(
-            'SELECT * FROM "UserNutrition" WHERE "userId" = ? AND "deletedAt" IS NULL ORDER BY "id" DESC LIMIT 1',
+            'SELECT * FROM "UserNutrition" WHERE "userId" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\') ORDER BY "id" DESC LIMIT 1',
             [userId]
         );
 
@@ -1674,7 +1674,7 @@ export const getLatestUserNutritionByUserId = async (userId: number): Promise<Us
 export const getAllUserNutritionByUserId = async (userId: number): Promise<UserNutritionDecryptedReturnType[]> => {
     try {
         const results = database.getAllSync<UserNutritionEncryptedReturnType>(
-            'SELECT * FROM "UserNutrition" WHERE "userId" = ? AND "deletedAt" IS NULL',
+            'SELECT * FROM "UserNutrition" WHERE "userId" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')',
             [userId]
         );
 
@@ -1710,7 +1710,7 @@ export const getAllUserNutritionByUserId = async (userId: number): Promise<UserN
 export const getUserNutritionByDataId = async (dataId: string): Promise<UserNutritionDecryptedReturnType | undefined> => {
     try {
         const result = database.getFirstSync<UserNutritionEncryptedReturnType>(
-            'SELECT * FROM "UserNutrition" WHERE "dataId" = ? AND "deletedAt" IS NULL',
+            'SELECT * FROM "UserNutrition" WHERE "dataId" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')',
             [dataId]
         );
 
@@ -1749,7 +1749,7 @@ export const getUserNutritionPaginated = async (offset = 0, limit = 20, order: '
     try {
         const results = database.getAllSync<UserNutritionEncryptedReturnType>(`
             SELECT * FROM "UserNutrition"
-            WHERE "deletedAt" IS NULL
+            WHERE ("deletedAt" IS NULL OR "deletedAt" = \'\')
             ORDER BY "date" ${order}
             LIMIT ? OFFSET ?
         `, [limit, offset]);
@@ -1787,7 +1787,7 @@ export const getUserNutritionBetweenDates = async (startDate: string, endDate: s
     try {
         const results = database.getAllSync<UserNutritionEncryptedReturnType>(`
             SELECT * FROM "UserNutrition"
-            WHERE "deletedAt" IS NULL
+            WHERE ("deletedAt" IS NULL OR "deletedAt" = \'\')
             AND "date" BETWEEN ? AND ?
             ORDER BY "date" ASC
         `, [startDate, endDate]);
@@ -1827,7 +1827,7 @@ export const getUserNutritionFromDate = async (startDate: string): Promise<UserN
 
         const results = database.getAllSync<UserNutritionEncryptedReturnType>(`
             SELECT * FROM "UserNutrition"
-            WHERE "deletedAt" IS NULL
+            WHERE ("deletedAt" IS NULL OR "deletedAt" = \'\')
             AND "date" BETWEEN ? AND ?
             ORDER BY "date" ASC
         `, [startDate, todayDate]);
@@ -1865,7 +1865,7 @@ export const getTotalUserNutritionCount = async (): Promise<number> => {
     try {
         const result = database.getFirstSync<{ count: number }>(`
             SELECT COUNT(*) as count FROM "UserNutrition"
-            WHERE "deletedAt" IS NULL
+            WHERE ("deletedAt" IS NULL OR "deletedAt" = \'\')
         `);
         return result?.count ?? 0;
     } catch (error) {
@@ -2620,15 +2620,15 @@ export const createNewWorkoutTables = async (): Promise<void> => {
 
             // 1. Read all current workout data with exercises and sets
             const workouts = await database.getAllSync(`
-                SELECT * FROM "Workout" WHERE "deletedAt" IS NULL
+                SELECT * FROM "Workout" WHERE ("deletedAt" IS NULL OR "deletedAt" = \'\')
             `) as WorkoutReturnType[];
 
             const workoutExercises = await database.getAllSync(`
-                SELECT * FROM "WorkoutExercise" WHERE "deletedAt" IS NULL
+                SELECT * FROM "WorkoutExercise" WHERE ("deletedAt" IS NULL OR "deletedAt" = \'\')
             `) as WorkoutExerciseReturnType[];
 
             const sets = await database.getAllSync(`
-                SELECT * FROM "Set" WHERE "deletedAt" IS NULL
+                SELECT * FROM "Set" WHERE ("deletedAt" IS NULL OR "deletedAt" = \'\')
             `) as SetReturnType[];
 
             // Check for duplicate set IDs
@@ -2800,7 +2800,7 @@ export const createNewWorkoutTables = async (): Promise<void> => {
 
             // 5. Update `WorkoutEvent` table to reflect new `workoutId` and update `exerciseData`
             const workoutEvents = await database.getAllSync(`
-                SELECT * FROM "WorkoutEvent" WHERE "deletedAt" IS NULL
+                SELECT * FROM "WorkoutEvent" WHERE ("deletedAt" IS NULL OR "deletedAt" = \'\')
             `) as WorkoutEventReturnType[];
 
             for (const event of workoutEvents) {
