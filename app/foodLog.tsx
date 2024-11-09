@@ -1,4 +1,5 @@
 import ThemedCard from '@/components/ThemedCard';
+import { ICON_SIZE } from '@/constants/ui';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { NavigationProp } from '@react-navigation/native';
@@ -8,8 +9,6 @@ import { useTranslation } from 'react-i18next';
 import { View, StyleSheet, Platform, Dimensions } from 'react-native';
 import { Appbar, TextInput, Button, Text, useTheme } from 'react-native-paper';
 import { TabView, TabBar } from 'react-native-tab-view';
-
-const ICON_SIZE = 24; // Adjust as per your constants
 
 const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const { t } = useTranslation();
@@ -49,26 +48,39 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         return Math.min(Math.round((consumedAmount / goalAmount) * 100), 100);
     };
 
-    const OverviewRoute = () => (
-        <ThemedCard>
-            <View style={styles.cardContent}>
-                <Text style={styles.cardTitle}>{t('todays_progress')}</Text>
-                <Text style={styles.metricDetail}>
-                    {consumed.calories} / {dailyGoal.calories} kcal | P: {consumed.proteins}g / {dailyGoal.proteins}g | C: {consumed.carbs}g / {dailyGoal.carbs}g | F: {consumed.fats}g / {dailyGoal.fats}g
-                </Text>
-                <View style={styles.progressBarContainer}>
-                    <View
-                        style={[
-                            styles.progressBar,
-                            {
-                                width: `${calculatePercentage(consumed.calories, dailyGoal.calories)}%`,
-                            },
-                        ]}
-                    />
+    const OverviewRoute = () => {
+        const macros = [
+            { name: t('calories'), consumed: consumed.calories, goal: dailyGoal.calories, unit: 'kcal' },
+            { name: t('proteins'), consumed: consumed.proteins, goal: dailyGoal.proteins, unit: 'g' },
+            { name: t('carbs'), consumed: consumed.carbs, goal: dailyGoal.carbs, unit: 'g' },
+            { name: t('fats'), consumed: consumed.fats, goal: dailyGoal.fats, unit: 'g' },
+        ];
+
+        return (
+            <ThemedCard>
+                <View style={styles.cardContent}>
+                    <Text style={styles.cardTitle}>{t('todays_progress')}</Text>
+                    {macros.map((macro) => (
+                        <View key={macro.name} style={styles.macroContainer}>
+                            <Text style={styles.metricDetail}>
+                                {macro.name}: {macro.consumed} / {macro.goal} {macro.unit}
+                            </Text>
+                            <View style={styles.progressBarContainer}>
+                                <View
+                                    style={[
+                                        styles.progressBar,
+                                        {
+                                            width: `${calculatePercentage(macro.consumed, macro.goal)}%`,
+                                        },
+                                    ]}
+                                />
+                            </View>
+                        </View>
+                    ))}
                 </View>
-            </View>
-        </ThemedCard>
-    );
+            </ThemedCard>
+        );
+    };
 
     const MealsRoute = () => (
         <FlashList
@@ -208,6 +220,9 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         paddingBottom: 16,
         paddingHorizontal: 16,
     },
+    macroContainer: {
+        marginBottom: 12,
+    },
     metricDetail: {
         color: colors.onSurface,
         fontSize: 14,
@@ -225,7 +240,6 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         backgroundColor: colors.surfaceVariant,
         borderRadius: 4,
         height: 10,
-        marginTop: 8,
         overflow: 'hidden',
     },
     searchContainer: {

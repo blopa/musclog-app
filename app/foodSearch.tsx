@@ -1,5 +1,6 @@
 import AnimatedSearchBar from '@/components/AnimatedSearch';
 import ThemedCard from '@/components/ThemedCard';
+import { ICON_SIZE } from '@/constants/ui';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { NavigationProp } from '@react-navigation/native';
@@ -20,8 +21,6 @@ const foodDatabase = [
     { name: 'Greek Yogurt', calories: 59, proteins: 10, carbs: 3.6, fats: 0.4 },
     { name: 'Almonds', calories: 164, proteins: 6, carbs: 6, fats: 14 },
 ];
-
-const ICON_SIZE = 24; // Adjust as per your constants
 
 const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const { t } = useTranslation();
