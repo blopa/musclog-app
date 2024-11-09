@@ -1,21 +1,14 @@
+import ThemedCard from '@/components/ThemedCard';
 import { GRAMS, OUNCES, IMPERIAL_SYSTEM, METRIC_SYSTEM } from '@/constants/storage';
 import useUnit from '@/hooks/useUnit';
-import { CustomThemeType } from '@/utils/colors';
+import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
 import { NavigationProp } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View, StyleSheet, Platform } from 'react-native';
-import {
-    Appbar,
-    Button,
-    TextInput,
-    Card,
-    Text,
-    useTheme,
-    HelperText,
-} from 'react-native-paper';
+import { Appbar, TextInput, Button, Text, useTheme, HelperText } from 'react-native-paper';
 
 const FoodDetails = ({
     navigation,
@@ -31,7 +24,6 @@ const FoodDetails = ({
     const isImperial = unitSystem === IMPERIAL_SYSTEM;
     const macroUnit = unitSystem === METRIC_SYSTEM ? GRAMS : OUNCES;
 
-    // This would typically come from the previous screen or API
     const selectedFood = route.params?.food || {
         name: 'Chicken Breast',
         calories: 165,
@@ -41,12 +33,7 @@ const FoodDetails = ({
         servingSize: 100,
     };
 
-    const mealCategories = [
-        t('breakfast'),
-        t('lunch'),
-        t('dinner'),
-        t('snacks'),
-    ];
+    const mealCategories = [t('breakfast'), t('lunch'), t('dinner'), t('snacks')];
     const units = [GRAMS, OUNCES];
 
     const [amount, setAmount] = useState('100');
@@ -54,9 +41,8 @@ const FoodDetails = ({
     const [category, setCategory] = useState('');
     const [errors, setErrors] = useState<{ amount?: string; category?: string }>({});
 
-    const conversionFactor = unit === OUNCES ? 28.35 : 1; // 1 oz = 28.35 grams
-    const multiplier =
-        (parseFloat(amount) * conversionFactor) / selectedFood.servingSize;
+    const conversionFactor = unit === OUNCES ? 28.35 : 1;
+    const multiplier = (parseFloat(amount) * conversionFactor) / selectedFood.servingSize;
 
     const calculatedNutrition = {
         calories: Math.round(selectedFood.calories * multiplier),
@@ -81,26 +67,12 @@ const FoodDetails = ({
             return;
         }
 
-        // Here you would typically dispatch an action or call a function to add the food to the tracker
-        console.log('Adding food:', {
-            ...selectedFood,
-            ...calculatedNutrition,
-            amount: parseFloat(amount),
-            unit,
-            category,
-        });
-
-        // Then navigate back or show a success message
         navigation.goBack();
     };
 
     return (
         <View style={styles.container}>
-            <Appbar.Header
-                mode="small"
-                statusBarHeight={0}
-                style={styles.appbarHeader}
-            >
+            <Appbar.Header mode="small" statusBarHeight={0} style={styles.appbarHeader}>
                 <Appbar.Action
                     icon={() => (
                         <FontAwesome5 name="arrow-left" size={24} color={colors.onPrimary} />
@@ -110,35 +82,23 @@ const FoodDetails = ({
                 <Appbar.Content title={t('add_food')} titleStyle={styles.appbarTitle} />
             </Appbar.Header>
             <View style={styles.content}>
-                <Card style={styles.card}>
-                    <Card.Title title={selectedFood.name} titleStyle={styles.cardTitle} />
-                    <Card.Content>
-                        <View style={styles.nutritionRow}>
-                            <Text style={styles.nutritionLabel}>{t('calories')}</Text>
-                            <Text style={styles.nutritionValue}>
-                                {calculatedNutrition.calories}
-                            </Text>
+                <ThemedCard>
+                    <View style={styles.cardContent}>
+                        <Text style={styles.cardTitle}>{selectedFood.name}</Text>
+                        <View style={styles.metricRow}>
+                            <Text style={styles.metricDetail}>{t('calories')}: {calculatedNutrition.calories}</Text>
                         </View>
-                        <View style={styles.nutritionRow}>
-                            <Text style={styles.nutritionLabel}>{t('proteins')}</Text>
-                            <Text style={styles.nutritionValue}>
-                                {calculatedNutrition.proteins}g
-                            </Text>
+                        <View style={styles.metricRow}>
+                            <Text style={styles.metricDetail}>{t('proteins')}: {calculatedNutrition.proteins}g</Text>
                         </View>
-                        <View style={styles.nutritionRow}>
-                            <Text style={styles.nutritionLabel}>{t('carbs')}</Text>
-                            <Text style={styles.nutritionValue}>
-                                {calculatedNutrition.carbs}g
-                            </Text>
+                        <View style={styles.metricRow}>
+                            <Text style={styles.metricDetail}>{t('carbs')}: {calculatedNutrition.carbs}g</Text>
                         </View>
-                        <View style={styles.nutritionRow}>
-                            <Text style={styles.nutritionLabel}>{t('fats')}</Text>
-                            <Text style={styles.nutritionValue}>
-                                {calculatedNutrition.fats}g
-                            </Text>
+                        <View style={styles.metricRow}>
+                            <Text style={styles.metricDetail}>{t('fats')}: {calculatedNutrition.fats}g</Text>
                         </View>
-                    </Card.Content>
-                </Card>
+                    </View>
+                </ThemedCard>
 
                 <View style={styles.form}>
                     <View style={styles.inputGroup}>
@@ -151,9 +111,7 @@ const FoodDetails = ({
                             style={styles.input}
                             error={!!errors.amount}
                         />
-                        {errors.amount && (
-                            <HelperText type="error">{errors.amount}</HelperText>
-                        )}
+                        {errors.amount && <HelperText type="error">{errors.amount}</HelperText>}
                     </View>
 
                     <View style={styles.inputGroup}>
@@ -185,9 +143,7 @@ const FoodDetails = ({
                                 ))}
                             </Picker>
                         </View>
-                        {errors.category && (
-                            <HelperText type="error">{errors.category}</HelperText>
-                        )}
+                        {errors.category && <HelperText type="error">{errors.category}</HelperText>}
                     </View>
 
                     <Button mode="contained" onPress={handleFoodDetails} style={styles.addButton}>
@@ -199,74 +155,72 @@ const FoodDetails = ({
     );
 };
 
-const makeStyles = (colors: CustomThemeType['colors'], dark: boolean) =>
-    StyleSheet.create({
-        addButton: {
-            marginTop: 16,
-        },
-        appbarHeader: {
-            backgroundColor: colors.primary,
-            justifyContent: 'center',
-            paddingHorizontal: 16,
-        },
-        appbarTitle: {
-            color: colors.onPrimary,
-            fontSize: Platform.OS === 'web' ? 20 : 26,
-        },
-        card: {
-            marginBottom: 16,
-        },
-        cardTitle: {
-            color: colors.onSurface,
-            fontSize: 24,
-            fontWeight: 'bold',
-        },
-        container: {
-            backgroundColor: colors.background,
-            flex: 1,
-        },
-        content: {
-            flex: 1,
-            padding: 16,
-        },
-        form: {
-            flex: 1,
-        },
-        input: {
-            backgroundColor: colors.surface,
-        },
-        inputGroup: {
-            marginBottom: 16,
-        },
-        label: {
-            color: colors.onSurface,
-            fontSize: 16,
-            marginBottom: 4,
-        },
-        nutritionLabel: {
-            color: colors.onSurface,
-            fontSize: 16,
-        },
-        nutritionRow: {
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            marginVertical: 4,
-        },
-        nutritionValue: {
-            color: colors.onSurface,
-            fontSize: 16,
-            fontWeight: 'bold',
-        },
-        picker: {
-            height: 50,
-            width: '100%',
-        },
-        pickerContainer: {
-            backgroundColor: colors.surface,
-            borderColor: colors.shadow,
-            borderRadius: 4,
-            borderWidth: 1,
-        },
-    });
+const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
+    addButton: {
+        backgroundColor: colors.primary,
+        marginTop: 16,
+    },
+    appbarHeader: {
+        backgroundColor: colors.primary,
+        justifyContent: 'center',
+        paddingHorizontal: 16,
+    },
+    appbarTitle: {
+        color: colors.onPrimary,
+        fontSize: Platform.OS === 'web' ? 20 : 26,
+    },
+    cardContent: {
+        padding: 16,
+    },
+    cardTitle: {
+        color: colors.onSurface,
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 8,
+    },
+    container: {
+        backgroundColor: colors.background,
+        flex: 1,
+    },
+    content: {
+        flex: 1,
+        padding: 16,
+    },
+    form: {
+        flex: 1,
+        padding: 16,
+    },
+    input: {
+        backgroundColor: colors.surface,
+    },
+    inputGroup: {
+        marginBottom: 16,
+    },
+    label: {
+        color: colors.onSurface,
+        fontSize: 16,
+        marginBottom: 4,
+    },
+    metricDetail: {
+        color: colors.onSurface,
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    metricRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginVertical: 4,
+    },
+    picker: {
+        height: 50,
+        width: '100%',
+    },
+    pickerContainer: {
+        backgroundColor: colors.surface,
+        borderColor: colors.shadow,
+        borderRadius: 4,
+        borderWidth: 1,
+    },
+});
 
 export default FoodDetails;

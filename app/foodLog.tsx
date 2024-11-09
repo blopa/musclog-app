@@ -1,11 +1,15 @@
+import ThemedCard from '@/components/ThemedCard';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { NavigationProp } from '@react-navigation/native';
+import { FlashList } from '@shopify/flash-list';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { View, ScrollView, StyleSheet, Platform, Dimensions } from 'react-native';
-import { Appbar, Button, TextInput, Card, ProgressBar, useTheme, Text } from 'react-native-paper';
+import { View, StyleSheet, Platform, Dimensions } from 'react-native';
+import { Appbar, TextInput, Button, Text, useTheme } from 'react-native-paper';
 import { TabView, TabBar } from 'react-native-tab-view';
+
+const ICON_SIZE = 24; // Adjust as per your constants
 
 const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const { t } = useTranslation();
@@ -13,6 +17,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const styles = makeStyles(colors, dark);
 
     const [index, setIndex] = useState(0);
+    const [searchQuery, setSearchQuery] = useState('');
     const [routes] = useState([
         { key: 'overview', title: t('overview') },
         { key: 'meals', title: t('meals') },
@@ -45,60 +50,56 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     };
 
     const OverviewRoute = () => (
-        <ScrollView contentContainerStyle={styles.tabContent}>
-            <Card style={styles.card}>
-                <Card.Title title={t('todays_progress')} />
-                <Card.Content>
-                    {Object.entries(consumed).map(([macro, amount]) => (
-                        <View key={macro} style={styles.macroContainer}>
-                            <View style={styles.macroRow}>
-                                <Text style={styles.macroLabel}>{t(macro)}</Text>
-                                <Text style={styles.macroAmount}>
-                                    {amount} / {dailyGoal[macro as keyof typeof dailyGoal]}{' '}
-                                    {macro === 'calories' ? 'kcal' : 'g'}
-                                </Text>
-                            </View>
-                            <ProgressBar
-                                progress={
-                                    calculatePercentage(
-                                        amount,
-                                        dailyGoal[macro as keyof typeof dailyGoal]
-                                    ) / 100
-                                }
-                                color={colors.primary}
-                                style={styles.progressBar}
-                            />
-                        </View>
-                    ))}
-                </Card.Content>
-            </Card>
-        </ScrollView>
+        <ThemedCard>
+            <View style={styles.cardContent}>
+                <Text style={styles.cardTitle}>{t('todays_progress')}</Text>
+                <Text style={styles.metricDetail}>
+                    {consumed.calories} / {dailyGoal.calories} kcal | P: {consumed.proteins}g / {dailyGoal.proteins}g | C: {consumed.carbs}g / {dailyGoal.carbs}g | F: {consumed.fats}g / {dailyGoal.fats}g
+                </Text>
+                <View style={styles.progressBarContainer}>
+                    <View
+                        style={[
+                            styles.progressBar,
+                            {
+                                width: `${calculatePercentage(consumed.calories, dailyGoal.calories)}%`,
+                            },
+                        ]}
+                    />
+                </View>
+            </View>
+        </ThemedCard>
     );
 
     const MealsRoute = () => (
-        <ScrollView contentContainerStyle={styles.tabContent}>
-            {mealCategories.map((category) => (
-                <Card key={category.name} style={styles.card}>
-                    <Card.Title
-                        title={`${category.icon} ${category.name}`}
-                        right={(props) => (
-                            <Button
-                                {...props}
-                                mode="text"
+        <FlashList
+            data={mealCategories}
+            keyExtractor={(item) => item.name}
+            renderItem={({ item: category }) => (
+                <ThemedCard>
+                    <View style={styles.cardContent}>
+                        <View style={styles.cardHeader}>
+                            <Text style={styles.cardTitle}>
+                                {category.icon} {category.name}
+                            </Text>
+                            <Text style={styles.noItemsText}>{t('no_items_added_yet')}</Text>
+                        </View>
+                        <View style={styles.cardActions}>
+                            <FontAwesome5
+                                color={colors.primary}
+                                name="plus"
                                 onPress={() => {
                                     /* Handle add meal item */
                                 }}
-                            >
-                                <FontAwesome5 name="plus" size={16} color={colors.primary} />
-                            </Button>
-                        )}
-                    />
-                    <Card.Content>
-                        <Text style={styles.noItemsText}>{t('no_items_added_yet')}</Text>
-                    </Card.Content>
-                </Card>
-            ))}
-        </ScrollView>
+                                size={ICON_SIZE}
+                                style={styles.iconButton}
+                            />
+                        </View>
+                    </View>
+                </ThemedCard>
+            )}
+            estimatedItemSize={115}
+            contentContainerStyle={styles.listContent}
+        />
     );
 
     const renderScene = ({ route }: { route: { key: string } }) => {
@@ -116,34 +117,22 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         <TabBar
             {...props}
             indicatorStyle={{ backgroundColor: colors.primary }}
-            style={{ backgroundColor: colors.background }}
+            style={{ backgroundColor: colors.surface }}
             labelStyle={{ color: colors.onSurface }}
         />
     );
 
     return (
         <View style={styles.container}>
-            <Appbar.Header
-                mode="small"
-                statusBarHeight={0}
-                style={styles.appbarHeader}
-            >
-                <Appbar.Content
-                    title={t('macro_tracker')}
-                    titleStyle={styles.appbarTitle}
-                />
-                <Button
-                    mode="outlined"
-                    onPress={() => navigation.goBack()}
-                    textColor={colors.onPrimary}
-                >
-                    {t('back')}
-                </Button>
+            <Appbar.Header mode="small" statusBarHeight={0} style={styles.appbarHeader}>
+                <Appbar.Content title={t('macro_tracker')} titleStyle={styles.appbarTitle} />
             </Appbar.Header>
             <View style={styles.content}>
                 <View style={styles.searchContainer}>
                     <TextInput
                         placeholder={t('search_food')}
+                        value={searchQuery}
+                        onChangeText={setSearchQuery}
                         style={styles.searchInput}
                         mode="outlined"
                     />
@@ -188,8 +177,20 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         color: colors.onPrimary,
         fontSize: Platform.OS === 'web' ? 20 : 26,
     },
-    card: {
-        marginBottom: 16,
+    cardActions: {
+        justifyContent: 'center',
+    },
+    cardContent: {
+        padding: 16,
+    },
+    cardHeader: {
+        flex: 1,
+    },
+    cardTitle: {
+        color: colors.onSurface,
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 8,
     },
     container: {
         backgroundColor: colors.background,
@@ -202,29 +203,30 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     iconButton: {
         marginLeft: 4,
     },
-    macroAmount: {
+    listContent: {
+        backgroundColor: colors.background,
+        paddingBottom: 16,
+        paddingHorizontal: 16,
+    },
+    metricDetail: {
         color: colors.onSurface,
-        fontSize: 16,
-    },
-    macroContainer: {
-        marginBottom: 12,
-    },
-    macroLabel: {
-        color: colors.onSurface,
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
-    macroRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
+        fontSize: 14,
         marginBottom: 4,
     },
     noItemsText: {
         color: colors.onSurface,
+        fontSize: 14,
     },
     progressBar: {
+        backgroundColor: colors.primary,
+        height: '100%',
+    },
+    progressBarContainer: {
+        backgroundColor: colors.surfaceVariant,
         borderRadius: 4,
-        height: 8,
+        height: 10,
+        marginTop: 8,
+        overflow: 'hidden',
     },
     searchContainer: {
         alignItems: 'center',
@@ -232,11 +234,9 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         marginBottom: 16,
     },
     searchInput: {
+        backgroundColor: colors.surface,
         flex: 1,
         marginRight: 8,
-    },
-    tabContent: {
-        paddingVertical: 16,
     },
 });
 
