@@ -38,9 +38,17 @@ export type SetInsertType = {
     reps: number;
     restTime: number;
     weight: number;
+    workoutId: number;
+    setOrder: number;
+    supersetName?: string;
 };
 
 export type CurrentWorkoutProgressType = {
+    completed: ExerciseProgressType[];
+    skipped?: ExerciseProgressType[];
+};
+
+export type ExerciseProgressType = {
     difficultyLevel: number;
     exerciseId?: number;
     name: string;
@@ -48,10 +56,13 @@ export type CurrentWorkoutProgressType = {
     restTime: number;
     setId: number;
     setIndex: number;
+    setOrder: number;
     targetReps: number;
     targetWeight: number;
     weight: number;
     workoutDuration: number;
+    supersetName?: string;
+    isDropSet?: boolean;
 };
 
 export type SetReturnType = {
@@ -89,7 +100,6 @@ export type WorkoutInsertType = {
         | typeof WEDNESDAY;
     title: string;
     volumeCalculationType: VolumeCalculationTypeType;
-    workoutExerciseIds: number[];
 };
 
 export type VersioningInsertType = {
@@ -222,9 +232,7 @@ export type ChatReturnType = {
     id: number;
 } & Omit<ChatInsertType, 'id'>;
 
-type WorkoutTypeWithOptionalExerciseIds = {
-    workoutExerciseIds?: number[]; // TODO maybe remove it
-} & Omit<WorkoutReturnType, 'volumeCalculationType' | 'workoutExerciseIds'>;
+type WorkoutTypeWithOptionalExerciseIds = {} & Omit<WorkoutReturnType, 'volumeCalculationType'>;
 
 export type WorkoutEventInsertType = {
     alcohol?: number;
@@ -407,7 +415,7 @@ export type ParsedExerciseTypeWithSets = {
     type: ExerciseTypesType;
 };
 
-export type ExerciseWithSetsType = ({ 
+export type ExerciseWithSetsType = ({
     sets: SetReturnType[];
 } & ExerciseReturnType);
 

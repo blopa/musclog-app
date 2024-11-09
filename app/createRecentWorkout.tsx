@@ -35,6 +35,8 @@ type LocalStateSetType = {
     reps: string;
     restTime: string;
     weight: string;
+    setOrder: number;
+    supersetName: string | null;
 };
 
 export default function CreateRecentWorkout({ navigation }: { navigation: NavigationProp<any> }) {
@@ -118,8 +120,8 @@ export default function CreateRecentWorkout({ navigation }: { navigation: Naviga
             // Load the associated Workout and its exercises/sets
             const workoutDetails = await getWorkoutWithExercisesRepsAndSetsDetails(workoutEvent.workoutId);
             if (workoutDetails) {
-                const updatedSets = workoutDetails.exercises.flatMap((exercise) =>
-                    exercise.sets.map((set) => {
+                const updatedSets = workoutDetails.exercises.flatMap((exercise, exerciseIndex) =>
+                    exercise.sets.map((set, index) => {
                         const exerciseData: ExerciseVolumeType[] = workoutEvent.exerciseData ? JSON.parse(workoutEvent.exerciseData) : [];
                         const matchingExercise = exerciseData.find((e) => e.exerciseId === exercise.id);
                         const matchingVolumeSet = matchingExercise?.sets.find((s) => s.setId === set.id);
@@ -132,6 +134,8 @@ export default function CreateRecentWorkout({ navigation }: { navigation: Naviga
                             reps: matchingVolumeSet ? matchingVolumeSet.reps.toString() : set.reps.toString(),
                             restTime: matchingVolumeSet ? matchingVolumeSet.restTime.toString() : set.restTime.toString(),
                             weight: matchingVolumeSet ? matchingVolumeSet.weight.toString() : set.weight.toString(),
+                            setOrder: exerciseIndex + index + 1,
+                            supersetName: set.supersetName || null,
                         };
                     })
                 );
@@ -172,8 +176,8 @@ export default function CreateRecentWorkout({ navigation }: { navigation: Naviga
                 setWorkoutId(workoutDetails.id);
                 setWorkoutTitle(workoutDetails.title);
                 setWorkoutDescription(workoutDetails.description || '');
-                setSets(workoutDetails.exercises.flatMap((exercise) =>
-                    exercise.sets.map((set) => ({
+                setSets(workoutDetails.exercises.flatMap((exercise, exerciseIndex) =>
+                    exercise.sets.map((set, setIndex) => ({
                         exerciseId: exercise.id,
                         exerciseName: exercise.name,
                         id: set.id,
@@ -181,6 +185,8 @@ export default function CreateRecentWorkout({ navigation }: { navigation: Naviga
                         reps: set.reps.toString(),
                         restTime: set.restTime.toString(),
                         weight: set.weight.toString(),
+                        setOrder: exerciseIndex + setIndex + 1,
+                        supersetName: set.supersetName || null,
                     }))
                 ));
             }
@@ -213,6 +219,12 @@ export default function CreateRecentWorkout({ navigation }: { navigation: Naviga
                 prevSets.map((s) => (s === set ? { ...s, [key]: formattedText } : s))
             );
         }
+    }, []);
+
+    const handleSupersetNameChange = useCallback((set: LocalStateSetType, text: string) => {
+        setSets((prevSets) =>
+            prevSets.map((s) => (s === set ? { ...s, supersetName: text } : s))
+        );
     }, []);
 
     const handleFormatDurationText = useCallback((text: string) => {
@@ -251,7 +263,10 @@ export default function CreateRecentWorkout({ navigation }: { navigation: Naviga
                     reps: Number(set.reps),
                     restTime: Number(set.restTime),
                     setId: set.id,
-                    weight: Number(set.weight)
+                    weight: Number(set.weight),
+                    workoutId: workoutId!,
+                    setOrder: set.setOrder,
+                    supersetName: set.supersetName || '',
                 };
 
                 if (exerciseIndex >= 0) {
@@ -382,6 +397,7 @@ export default function CreateRecentWorkout({ navigation }: { navigation: Naviga
                 {sets.map((set, index) => (
                     <View key={index} style={styles.setForm}>
                         <Text style={styles.exerciseLabel}>{t('exercise')}: {set.exerciseName}</Text>
+                        {/*<Text style={styles.exerciseLabel}>{t('set_order')}: {set.setOrder}</Text>*/}
                         <View style={styles.row}>
                             <CustomTextInput
                                 keyboardType="numeric"
@@ -410,6 +426,13 @@ export default function CreateRecentWorkout({ navigation }: { navigation: Naviga
                                 wrapperStyle={styles.input}
                             />
                         </View>
+                        <CustomTextInput
+                            label={t('superset_name')}
+                            onChangeText={(text) => handleSupersetNameChange(set, text)}
+                            placeholder={t('enter_superset_name')}
+                            value={set.supersetName || ''}
+                            wrapperStyle={styles.input}
+                        />
                         <View style={[styles.row, styles.alignCenter]}>
                             <Text style={styles.labelToggleSwitch}>{t('is_drop_set')}</Text>
                             <Switch

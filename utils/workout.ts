@@ -12,26 +12,20 @@ import {
 } from '@/constants/storage';
 import i18n from '@/lang/lang';
 import {
-    addSet,
     addWorkoutEvent,
     getAllWorkouts,
     getExerciseById,
     getLatestUserMetrics,
-    getSetById,
-    getSetsByIdsAndExerciseId,
+    getSetsByWorkoutId,
     getUpcomingWorkoutsByWorkoutId,
     getUser,
-    getWorkoutExercisesByWorkoutId,
     updateSet,
-    updateWorkoutExercise,
 } from '@/utils/database';
 import { formatDate, getNextDayOfWeekDate } from '@/utils/date';
 import {
     ExerciseVolumeType,
-    SetInsertType,
     SetReturnType,
     WorkoutEventReturnType,
-    WorkoutExerciseReturnType,
     WorkoutReturnType,
 } from '@/utils/types';
 import { getDisplayFormattedWeight } from '@/utils/unit';
@@ -212,17 +206,18 @@ async function getExerciseVolumeText(exerciseVolumeData: ExerciseVolumeType[]) {
     }
 }
 
-async function getPastSetsForExercise(sortedWorkouts: WorkoutEventReturnType[], exerciseId: number): Promise<SetReturnType[]> {
+async function getPastSetsForExercise(
+    sortedWorkouts: WorkoutEventReturnType[],
+    exerciseId: number
+): Promise<SetReturnType[]> {
     try {
         const pastSets: SetReturnType[] = [];
         for (const workoutEvent of sortedWorkouts) {
-            const workoutExercises = await getWorkoutExercisesByWorkoutId(workoutEvent.workoutId);
-            const workoutExercise = workoutExercises.find((we) => we.exerciseId === exerciseId);
-
-            if (workoutExercise) {
-                const sets = await getSetsByIdsAndExerciseId(workoutExercise.setIds, exerciseId);
-                pastSets.push(...sets);
-            }
+            // Get all sets for the workout event
+            const sets = await getSetsByWorkoutId(workoutEvent.workoutId);
+            // Filter sets by the specific exerciseId
+            const exerciseSets = sets.filter((set) => set.exerciseId === exerciseId);
+            pastSets.push(...exerciseSets);
         }
         return pastSets;
     } catch (error) {
@@ -231,17 +226,19 @@ async function getPastSetsForExercise(sortedWorkouts: WorkoutEventReturnType[], 
     }
 }
 
-async function calculateNewSets(sortedWorkouts: WorkoutEventReturnType[], exercise: WorkoutExerciseReturnType): Promise<[SetInsertType[], boolean]> {
+async function calculateNewSets(
+    sortedWorkouts: WorkoutEventReturnType[],
+    exerciseId: number,
+    sets: SetReturnType[]
+): Promise<[SetReturnType[], boolean]> {
     let didUpdate = false;
     try {
         const user = await getUser();
-
         const { liftingExperience, metrics } = user!;
         const { eatingPhase } = metrics;
 
-        const pastSets = await getPastSetsForExercise(sortedWorkouts, exercise.exerciseId);
-
-        const sets = await getSetsByIdsAndExerciseId(exercise.setIds, exercise.exerciseId);
+        // Get past sets for the exercise from sorted workouts
+        const pastSets = await getPastSetsForExercise(sortedWorkouts, exerciseId);
 
         if (eatingPhase === EATING_PHASES.BULKING) {
             if (liftingExperience === EXPERIENCE_LEVELS.BEGINNER) {
@@ -249,11 +246,17 @@ async function calculateNewSets(sortedWorkouts: WorkoutEventReturnType[], exerci
                     sets[i].reps += 1;
                     didUpdate = true;
                 }
-            } else if (liftingExperience === EXPERIENCE_LEVELS.INTERMEDIATE || liftingExperience === EXPERIENCE_LEVELS.ADVANCED) {
-                const checkWorkouts = liftingExperience === EXPERIENCE_LEVELS.INTERMEDIATE ? 2 : 4;
+            } else if (
+                liftingExperience === EXPERIENCE_LEVELS.INTERMEDIATE ||
+                liftingExperience === EXPERIENCE_LEVELS.ADVANCED
+            ) {
+                const checkWorkouts =
+                    liftingExperience === EXPERIENCE_LEVELS.INTERMEDIATE ? 2 : 4;
 
                 for (let i = 0; i < sets.length; i++) {
-                    const pastSetReps = pastSets.slice(-checkWorkouts).map((set) => set.reps);
+                    const pastSetReps = pastSets
+                        .slice(-checkWorkouts)
+                        .map((set) => set.reps);
 
                     if (pastSetReps.every((reps) => reps <= sets[i].reps)) {
                         sets[i].reps += 1;
@@ -261,11 +264,18 @@ async function calculateNewSets(sortedWorkouts: WorkoutEventReturnType[], exerci
                     }
                 }
             }
-        } else if (eatingPhase === EATING_PHASES.MAINTENANCE) {
-            const checkWorkouts = liftingExperience === EXPERIENCE_LEVELS.BEGINNER ? 2 : liftingExperience === EXPERIENCE_LEVELS.INTERMEDIATE ? 3 : 4;
+        } else if (eatingPhase === EATING_PHASES.MAINTENANCE || !eatingPhase) {
+            const checkWorkouts =
+                liftingExperience === EXPERIENCE_LEVELS.BEGINNER
+                    ? 2
+                    : liftingExperience === EXPERIENCE_LEVELS.INTERMEDIATE
+                        ? 3
+                        : 4;
 
             for (let i = 0; i < sets.length; i++) {
-                const pastSetReps = pastSets.slice(-checkWorkouts).map((set) => set.reps);
+                const pastSetReps = pastSets
+                    .slice(-checkWorkouts)
+                    .map((set) => set.reps);
 
                 if (pastSetReps.every((reps) => reps <= sets[i].reps)) {
                     sets[i].reps += 1;
@@ -274,11 +284,7 @@ async function calculateNewSets(sortedWorkouts: WorkoutEventReturnType[], exerci
             }
         }
 
-        return [sets.map((set) => ({
-            ...set,
-            createdAt: new Date().toISOString(),
-            deletedAt: undefined
-        })), didUpdate];
+        return [sets, didUpdate];
     } catch (error) {
         console.error('Error calculating new sets:', error);
         throw error;
@@ -290,47 +296,33 @@ export async function calculateNextWorkoutRepsAndSets(
     pastWorkouts: WorkoutEventReturnType[]
 ): Promise<WorkoutReturnType> {
     try {
-        const sortedWorkouts = pastWorkouts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 5);
-        const workoutExercises = await getWorkoutExercisesByWorkoutId(workout.id);
+        // Sort past workouts by date and take the most recent 5
+        const sortedWorkouts = pastWorkouts
+            .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+            .slice(0, 5);
 
-        for (const exercise of workoutExercises) {
-            const [newSets, didUpdate] = await calculateNewSets(sortedWorkouts, exercise);
+        // Get all sets for the current workout
+        const sets = await getSetsByWorkoutId(workout.id!);
+
+        // Get unique exercise IDs from the sets
+        const exerciseIds = Array.from(new Set(sets.map((set) => set.exerciseId)));
+
+        for (const exerciseId of exerciseIds) {
+            // Get sets for the specific exercise
+            const exerciseSets = sets.filter((set) => set.exerciseId === exerciseId);
+
+            // Calculate new sets based on past performance
+            const [newSets, didUpdate] = await calculateNewSets(
+                sortedWorkouts,
+                exerciseId,
+                exerciseSets
+            );
 
             if (didUpdate) {
-                const processedSetIds = new Set<number>();
-
+                // Update each set in the database
                 for (const set of newSets) {
-                    const originalSet = await getSetById(set.id!);
-
-                    if (originalSet && !processedSetIds.has(set.id!)) {
-                        const updatedSet: SetInsertType = {
-                            exerciseId: originalSet.exerciseId,
-                            isDropSet: set.isDropSet !== undefined ? set.isDropSet : originalSet.isDropSet,
-                            reps: set.reps || originalSet.reps,
-                            restTime: set.restTime || originalSet.restTime,
-                            weight: set.weight || originalSet.weight,
-                        };
-
-                        await updateSet(set.id!, updatedSet);
-                        processedSetIds.add(set.id!);
-                    } else {
-                        const newSet: SetInsertType = {
-                            exerciseId: exercise.exerciseId,
-                            isDropSet: set.isDropSet || false,
-                            reps: set.reps,
-                            restTime: set.restTime || 0,
-                            weight: set.weight,
-                        };
-
-                        const newSetId = await addSet(newSet);
-                        exercise.setIds.push(newSetId);
-                    }
+                    await updateSet(set.id!, set);
                 }
-
-                await updateWorkoutExercise(exercise.id!, {
-                    ...exercise,
-                    setIds: exercise.setIds
-                });
             }
         }
 

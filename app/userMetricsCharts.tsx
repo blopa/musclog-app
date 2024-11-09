@@ -558,7 +558,7 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
                 ) || 0;
 
                 recentWorkoutsChartData.push({
-                    date: formatDate(workout.date, DATE_FORMAT),
+                    date: showWeeklyAverages ? workout.date : formatDate(workout.date, DATE_FORMAT),
                     marker: t('value_weight', { value: getDisplayFormattedWeight(workoutVolume, KILOGRAMS, isImperial), weightUnit }),
                     x: index,
                     y: getDisplayFormattedWeight(workoutVolume, KILOGRAMS, isImperial),

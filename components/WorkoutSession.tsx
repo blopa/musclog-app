@@ -24,6 +24,7 @@ import { getWorkoutWithExercisesRepsAndSetsDetails } from '@/utils/database';
 import { formatTime } from '@/utils/date';
 import {
     CurrentWorkoutProgressType,
+    ExerciseProgressType,
     ExerciseReturnType,
     ExerciseWithSetsType,
     SetReturnType,
@@ -49,6 +50,7 @@ type WorkoutSessionProps = {
     startTime: null | number;
     workoutDuration?: number;
     workoutId: number | undefined;
+    orderedExercises: { exercise: ExerciseReturnType; sets: SetReturnType[] }[];
 };
 
 const WorkoutSession = ({
@@ -61,6 +63,7 @@ const WorkoutSession = ({
     startTime,
     workoutDuration,
     workoutId,
+    orderedExercises,
 }: WorkoutSessionProps) => {
     const { t } = useTranslation();
     const { colors, dark } = useTheme<CustomThemeType>();
@@ -111,7 +114,7 @@ const WorkoutSession = ({
     const isResting = restTime > 0;
 
     const [isInfoModalVisible, setIsInfoModalVisible] = useState(false);
-    const [completedWorkoutData, setCompletedWorkoutData] = useState<CurrentWorkoutProgressType[]>([]);
+    const [completedWorkoutData, setCompletedWorkoutData] = useState<ExerciseProgressType[]>([]);
 
     useEffect(() => {
         clearInterval(intervalTimer);
@@ -158,11 +161,11 @@ const WorkoutSession = ({
     useEffect(() => {
         const checkCurrentWorkoutProgress = async () => {
             const existingProgress = await AsyncStorage.getItem(CURRENT_WORKOUT_PROGRESS);
-            const progressArray = JSON.parse(existingProgress || '[]') as CurrentWorkoutProgressType[];
+            const { completed: completedProgress = [], skipped = [] } = JSON.parse(existingProgress || '{}') as CurrentWorkoutProgressType;
             let currentSetIndex = 0;
 
-            if (progressArray.length) {
-                const set = progressArray.pop();
+            if (completedProgress.length) {
+                const set = completedProgress.pop();
                 if (set && set.exerciseId === exercise?.id) {
                     currentSetIndex = set.setIndex;
                 }
@@ -192,9 +195,9 @@ const WorkoutSession = ({
         const getRemainingExercises = async () => {
             if (workoutDetails) {
                 const existingProgress = await AsyncStorage.getItem(CURRENT_WORKOUT_PROGRESS);
-                const progressArray = JSON.parse(existingProgress || '[]') as CurrentWorkoutProgressType[];
+                const { completed: completedProgress = [], skipped = [] } = JSON.parse(existingProgress || '{}') as CurrentWorkoutProgressType;
 
-                const completedSetIds = new Set(progressArray.map((set) => set.setId));
+                const completedSetIds = new Set(completedProgress.map((set) => set.setId));
                 const remainingExercises = workoutDetails.exercises.map((exercise) => ({
                     ...exercise,
                     sets: exercise.sets.filter((set) => !completedSetIds.has(set.id) && !skippedSets.includes(set.id)),
@@ -280,18 +283,23 @@ const WorkoutSession = ({
             targetWeight: currentSet.weight,
             weight: getSaveFormattedWeight(Number(weightLifted), POUNDS, isImperial),
             workoutDuration,
-        } as CurrentWorkoutProgressType;
+            setOrder: currentSet.setOrder,
+            supersetName: currentSet.supersetName,
+        } as ExerciseProgressType;
 
         try {
             const existingProgress = await AsyncStorage.getItem(CURRENT_WORKOUT_PROGRESS);
-            const progressArray = JSON.parse(existingProgress || '[]') as CurrentWorkoutProgressType[];
+            const { completed: completedProgress = [], skipped = [] } = JSON.parse(existingProgress || '{}') as CurrentWorkoutProgressType;
 
-            if (!progressArray.some(
-                (entry: CurrentWorkoutProgressType) => entry.setIndex === setData.setIndex && entry.setId === setData.setId && entry.exerciseId === setData.exerciseId)
+            if (!completedProgress.some(
+                (entry: ExerciseProgressType) => entry.setIndex === setData.setIndex && entry.setId === setData.setId && entry.exerciseId === setData.exerciseId)
             ) {
-                progressArray.push(setData);
+                completedProgress.push(setData);
 
-                await AsyncStorage.setItem(CURRENT_WORKOUT_PROGRESS, JSON.stringify(progressArray));
+                await AsyncStorage.setItem(CURRENT_WORKOUT_PROGRESS, JSON.stringify({
+                    completed: completedProgress,
+                    skipped,
+                }));
             }
         } catch (error) {
             console.error('Failed to save set data:', error);
@@ -408,7 +416,7 @@ const WorkoutSession = ({
             await handleStartCountdown(Math.min(currentSetIndex + 1, sets.length - 1));
         } else {
             await handleStartCountdown(0);
-            handleFinishExercise();
+            await handleFinishExercise();
         }
 
         setLoading(false);
@@ -420,9 +428,9 @@ const WorkoutSession = ({
 
     const handleOpenInfoModal = useCallback(async () => {
         const existingProgress = await AsyncStorage.getItem(CURRENT_WORKOUT_PROGRESS);
-        const progressArray = JSON.parse(existingProgress || '[]') as CurrentWorkoutProgressType[];
+        const { completed: completedProgress = [], skipped = [] } = JSON.parse(existingProgress || '{}') as CurrentWorkoutProgressType;
 
-        setCompletedWorkoutData(progressArray);
+        setCompletedWorkoutData(completedProgress);
         setIsInfoModalVisible(true);
     }, []);
 
@@ -501,6 +509,7 @@ const WorkoutSession = ({
                 isVisible={isInfoModalVisible}
                 onClose={() => setIsInfoModalVisible(false)}
                 remainingWorkoutData={remainingWorkoutData}
+                orderedExercises={orderedExercises}
             />
             {isResting ? (
                 <RestTimer

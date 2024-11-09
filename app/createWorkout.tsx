@@ -2,143 +2,153 @@ import CompletionModal from '@/components/CompletionModal';
 import CustomPicker from '@/components/CustomPicker';
 import CustomTextArea from '@/components/CustomTextArea';
 import CustomTextInput from '@/components/CustomTextInput';
-import SearchablePicker from '@/components/SearchablePicker';
-import ThemedModal from '@/components/ThemedModal';
 import { VOLUME_CALCULATION_TYPES, VOLUME_CALCULATION_TYPES_VALUES } from '@/constants/exercises';
-import {
-    FRIDAY,
-    IMPERIAL_SYSTEM,
-    MONDAY,
-    POUNDS,
-    SATURDAY,
-    SUNDAY,
-    THURSDAY,
-    TUESDAY,
-    WEDNESDAY,
-} from '@/constants/storage';
+import { IMPERIAL_SYSTEM } from '@/constants/storage';
 import useUnit from '@/hooks/useUnit';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import {
     addSet,
-    addWorkoutWithExercises,
+    addWorkout,
     getAllExercises,
-    getExerciseById,
-    getSetsByIds,
-    getWorkoutById,
-    getWorkoutExercisesByWorkoutId,
-    updateWorkoutExerciseOrder,
+    getWorkoutDetails,
+    updateSet,
+    updateWorkout,
+    deleteWorkout,
+    deleteSet,
 } from '@/utils/database';
-import { formatFloatNumericInputText, formatIntegerNumericInputText } from '@/utils/string';
 import {
-    ExerciseReturnType,
-    SetReturnType,
+    ExerciseReturnType, ExerciseWithSetsType,
+    SetInsertType,
     VolumeCalculationTypeType,
-    WorkoutExerciseInsertType,
     WorkoutInsertType,
-    WorkoutReturnType,
+    WorkoutReturnType
 } from '@/utils/types';
-import { getSaveFormattedWeight } from '@/utils/unit';
-import { NavigationProp, useRoute } from '@react-navigation/native';
-import { useFocusEffect } from 'expo-router';
-import React, { useCallback, useRef, useState } from 'react';
+import { NavigationProp, useFocusEffect, useRoute } from '@react-navigation/native';
+import React, { useState, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Animated, BackHandler, Platform, ScrollView, StyleSheet, View } from 'react-native';
-import { Appbar, Button, IconButton, Switch, Text, useTheme } from 'react-native-paper';
+import {
+    View,
+    ScrollView,
+    StyleSheet,
+    Platform,
+    Alert,
+    BackHandler,
+    TextInput as RNTextInput,
+} from 'react-native';
+import {
+    ActivityIndicator,
+    Appbar,
+    Button,
+    Dialog,
+    Portal,
+    Checkbox,
+    IconButton,
+    useTheme,
+    Text,
+    Switch,
+    List,
+} from 'react-native-paper';
+
+type SetLocalType = {
+    id?: number;
+    reps: number;
+    weight: number;
+    restTime: number;
+    isDropSet?: boolean;
+    exerciseId: number;
+    setOrder?: number;
+    supersetName?: string | null;
+    isNew?: boolean;
+};
+
+type WorkoutWithExercisesAndSets = {
+    exercise: ExerciseReturnType;
+    sets: SetLocalType[];
+    supersetName: string | null;
+    description?: string;
+};
 
 const daysOfWeek = [
-    { label: 'Monday', value: MONDAY },
-    { label: 'Tuesday', value: TUESDAY },
-    { label: 'Wednesday', value: WEDNESDAY },
-    { label: 'Thursday', value: THURSDAY },
-    { label: 'Friday', value: FRIDAY },
-    { label: 'Saturday', value: SATURDAY },
-    { label: 'Sunday', value: SUNDAY },
+    { label: 'Monday', value: 'Monday' },
+    { label: 'Tuesday', value: 'Tuesday' },
+    { label: 'Wednesday', value: 'Wednesday' },
+    { label: 'Thursday', value: 'Thursday' },
+    { label: 'Friday', value: 'Friday' },
+    { label: 'Saturday', value: 'Saturday' },
+    { label: 'Sunday', value: 'Sunday' },
 ];
 
 type RouteParams = {
     id?: string;
 };
 
-type LocalStateSetType = {
-    exerciseId: null | number;
-    isDropSet: boolean | undefined;
-    reps: string;
-    restTime: string;
-    weight: string;
-};
-
 export default function CreateWorkout({ navigation }: { navigation: NavigationProp<any> }) {
     const route = useRoute();
     const { id } = (route.params as RouteParams) || {};
     const { t } = useTranslation();
-
-    const [allExercises, setAllExercises] = useState<ExerciseReturnType[]>([]);
-    const [workoutTitle, setWorkoutTitle] = useState('');
-    const [workoutDescription, setWorkoutDescription] = useState('');
-    const [recurringOnWeek, setRecurringOnWeek] = useState<WorkoutReturnType['recurringOnWeek'] | undefined>(undefined);
-    const [repeatWeekly, setRepeatWeekly] = useState(false);
-    const [sets, setSets] = useState<LocalStateSetType[]>([]);
-    const [isSaveModalVisible, setIsSaveModalVisible] = useState(false);
-    const [isSaving, setIsSaving] = useState(false);
-    const [recentlyCreatedWorkoutId, setRecentlyCreatedWorkoutId] = useState<null | number>(null);
-    const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
-    const [setToDeleteIndex, setSetToDeleteIndex] = useState<null | number>(null);
-    const [volumeCalculationType, setVolumeCalculationType] = useState<VolumeCalculationTypeType | null>(null);
-    const fadeAnim = useRef(new Animated.Value(0)).current;
-    const slideAnim = useRef(new Animated.Value(300)).current;
-
     const { colors, dark } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors, dark);
+
+    const [workoutTitle, setWorkoutTitle] = useState('');
+    const [workoutDescription, setWorkoutDescription] = useState('');
+    const [recurringOnWeek, setRecurringOnWeek] = useState('');
+    const [volumeCalculationType, setVolumeCalculationType] = useState<VolumeCalculationTypeType>('');
+
+    const [workout, setWorkout] = useState<WorkoutWithExercisesAndSets[]>([]);
+    const [workoutDetails, setWorkoutDetails] = useState<{ workout: WorkoutReturnType; exercisesWithSets: ExerciseWithSetsType[] } | null>(null);
+    const [supersetName, setSupersetName] = useState('');
+    const [selectedExercises, setSelectedExercises] = useState<number[]>([]);
+    const [selectedMuscleGroup, setSelectedMuscleGroup] = useState<string | null>(null);
+    const [isExerciseModalOpen, setIsExerciseModalOpen] = useState(false);
+    const [isSupersetModalOpen, setIsSupersetModalOpen] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isModalVisible, setIsModalVisible] = useState(false);
+
+    const [allExercises, setAllExercises] = useState<ExerciseReturnType[]>([]);
     const { unitSystem, weightUnit } = useUnit();
     const isImperial = unitSystem === IMPERIAL_SYSTEM;
 
     const loadWorkout = useCallback(async () => {
         try {
-            const workout = await getWorkoutById(Number(id));
-            if (workout) {
-                setWorkoutTitle(workout.title);
+            const workoutData = await getWorkoutDetails(Number(id));
+            if (workoutData) {
+                setWorkoutDetails(workoutData);
+
+                const { workout, exercisesWithSets } = workoutData;
+                setWorkoutTitle(workout.title || '');
                 setWorkoutDescription(workout.description || '');
-                if (workout.recurringOnWeek) {
-                    setRepeatWeekly(true);
-                    setRecurringOnWeek(workout.recurringOnWeek);
-                }
+                setRecurringOnWeek(workout.recurringOnWeek || '');
+                setVolumeCalculationType(workout.volumeCalculationType || '');
 
-                const workoutExercises = await getWorkoutExercisesByWorkoutId(Number(id));
-                workoutExercises.sort((a, b) => a.order - b.order);
+                const workoutExercises = exercisesWithSets.map((exercise) => ({
+                    exercise: {
+                        id: exercise.id,
+                        name: exercise.name,
+                        muscleGroup: exercise.muscleGroup,
+                        description: exercise.description,
+                    },
+                    sets: exercise.sets.map((set) => ({
+                        reps: set.reps,
+                        weight: set.weight,
+                        restTime: set.restTime,
+                        isDropSet: set.isDropSet,
+                        exerciseId: exercise.id,
+                        setOrder: set.setOrder,
+                        supersetName: set.supersetName,
+                        id: set.id,
+                    })),
+                    supersetName: exercise.sets.find((set) => set.supersetName)?.supersetName || null,
+                    description: exercise.description || '',
+                }));
 
-                const loadedExercises = await Promise.all(
-                    workoutExercises.map(async (we) => {
-                        const exercise = await getExerciseById(we.exerciseId);
-                        const sets = await getSetsByIds(we.setIds);
-                        return {
-                            id: we.exerciseId,
-                            name: exercise?.name || '',
-                            sets: sets.filter((set) => set !== undefined) as SetReturnType[],
-                        };
-                    })
-                );
-
-                const setsForEdit = workoutExercises.flatMap((we, weIndex) =>
-                    we.setIds.map((setId, setIndex) => {
-                        const exerciseSet = loadedExercises.find((ex) => ex.id === we.exerciseId)?.sets.find((s) => s.id === setId);
-                        if (exerciseSet) {
-                            return {
-                                exerciseId: we.exerciseId,
-                                isDropSet: exerciseSet.isDropSet,
-                                order: weIndex,
-                                reps: exerciseSet.reps.toString(),
-                                restTime: exerciseSet.restTime.toString(),
-                                weight: exerciseSet.weight.toString(),
-                            };
-                        }
-                        return null;
-                    })
-                ).filter((set) => set !== null) as LocalStateSetType[];
-
-                setSets(setsForEdit);
+                setWorkout(workoutExercises);
             }
         } catch (error) {
             console.error(t('failed_to_load_workout'), error);
+            Alert.alert(t('error'), t('failed_to_load_workout'));
+        } finally {
+            setIsLoading(false);
         }
     }, [id, t]);
 
@@ -150,25 +160,29 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
         }, [id, loadWorkout])
     );
 
-    const loadExercises = useCallback(async () => {
-        try {
-            const loadedExercises = await getAllExercises();
-            setAllExercises(loadedExercises);
-        } catch (error) {
-            console.error(t('failed_to_load_exercises'), error);
-        }
-    }, [t]);
+    const resetScreenData = useCallback(() => {
+        setWorkout([]);
+        setSupersetName('');
+        setSelectedExercises([]);
+        setSelectedMuscleGroup(null);
+        setWorkoutTitle('');
+        setWorkoutDescription('');
+        setRecurringOnWeek('');
+        setVolumeCalculationType('');
+    }, []);
 
     useFocusEffect(
         useCallback(() => {
-            loadExercises();
-        }, [loadExercises])
+            return () => {
+                resetScreenData();
+            };
+        }, [resetScreenData])
     );
 
     useFocusEffect(
         useCallback(() => {
             const onBackPress = () => {
-                navigation.navigate('listWorkouts');
+                navigation.goBack();
                 return true;
             };
 
@@ -179,65 +193,109 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
         }, [navigation])
     );
 
-    const resetScreenData = useCallback(() => {
-        setWorkoutTitle('');
-        setWorkoutDescription('');
-        setRepeatWeekly(false);
-        setRecurringOnWeek(undefined);
-        setSets([]);
-    }, []);
+    useFocusEffect(
+        useCallback(() => {
+            const loadExercises = async () => {
+                try {
+                    setIsLoading(true);
+                    const exercises = await getAllExercises();
+                    setAllExercises(exercises);
+                } catch (error) {
+                    console.error(t('failed_to_load_exercises'), error);
+                    Alert.alert(t('error'), t('failed_to_load_exercises'));
+                } finally {
+                    setIsLoading(false);
+                }
+            };
 
-    const handleRepeatWeekly = useCallback((value: boolean) => {
-        setRepeatWeekly(value);
+            loadExercises();
+        }, [t])
+    );
 
-        if (!value) {
-            setRecurringOnWeek(undefined);
+    const muscleGroups = Array.from(
+        new Set(allExercises.map((ex) => ex.muscleGroup))
+    ) as string[];
+
+    const addExerciseToWorkout = (exerciseId: number) => {
+        const exercise = allExercises.find((ex) => ex.id === exerciseId);
+        if (exercise) {
+            setWorkout((prevWorkout) => [
+                ...prevWorkout,
+                { exercise, sets: [], supersetName: null },
+            ]);
         }
-    }, [])
+        setIsExerciseModalOpen(false);
+        setSelectedMuscleGroup(null);
+    };
 
-    const handleAddExercise = useCallback(() => {
-        const newSet = {
-            exerciseId: null,
-            isDropSet: false,
-            reps: '',
-            restTime: '60',
-            weight: '',
-        };
-        setSets((prevSets) => {
-            const newSets = [...prevSets];
-            newSets.push(newSet);
-            return newSets;
+    const addSetToExercise = (exerciseIndex: number) => {
+        setWorkout((prevWorkout) => {
+            const newWorkout = [...prevWorkout];
+            const updatedExercise = { ...newWorkout[exerciseIndex] };
+            updatedExercise.sets = [
+                ...updatedExercise.sets,
+                {
+                    reps: 0,
+                    weight: 0,
+                    restTime: 60,
+                    isDropSet: false,
+                    exerciseId: updatedExercise.exercise.id,
+                    isNew: true,
+                },
+            ];
+            newWorkout[exerciseIndex] = updatedExercise;
+            return newWorkout;
         });
-    }, []);
+    };
 
-    const confirmDeleteSet = useCallback((setIndex: number) => {
-        setSetToDeleteIndex(setIndex);
-        setIsDeleteModalVisible(true);
-    }, []);
+    const toggleExerciseSelection = (index: number) => {
+        setSelectedExercises((prev) =>
+            prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
+        );
+    };
 
-    const handleDeleteSet = useCallback(() => {
-        if (setToDeleteIndex !== null) {
-            setSets((prevSets) => prevSets.filter((_, index) => index !== setToDeleteIndex));
-            setIsDeleteModalVisible(false);
-            setSetToDeleteIndex(null);
+    const createSuperset = () => {
+        if (selectedExercises.length < 2 || !supersetName) {
+            Alert.alert(t('validation_error'), t('superset_requires_min_exercises'));
+            return;
         }
-    }, [setToDeleteIndex]);
 
-    const showModal = useCallback(() => {
-        setIsSaveModalVisible(true);
-        Animated.parallel([
-            Animated.timing(fadeAnim, {
-                duration: 300,
-                toValue: 1,
-                useNativeDriver: true,
-            }),
-            Animated.timing(slideAnim, {
-                duration: 300,
-                toValue: 0,
-                useNativeDriver: true,
-            }),
-        ]).start();
-    }, [fadeAnim, slideAnim]);
+        const existingSupersetNames = workout
+            .filter((ex) => ex.supersetName)
+            .map((ex) => ex.supersetName?.toLowerCase());
+
+        if (existingSupersetNames.includes(supersetName.toLowerCase())) {
+            Alert.alert(t('validation_error'), t('superset_name_exists'));
+            return;
+        }
+
+        setWorkout((prevWorkout) => {
+            const newWorkout = [...prevWorkout];
+            const supersetExercises = selectedExercises.map(
+                (index) => newWorkout[index]
+            );
+
+            selectedExercises
+                .sort((a, b) => b - a)
+                .forEach((index) => {
+                    newWorkout.splice(index, 1);
+                });
+
+            const insertIndex = Math.min(...selectedExercises);
+            supersetExercises.forEach((exercise, index) => {
+                newWorkout.splice(insertIndex + index, 0, {
+                    ...exercise,
+                    supersetName,
+                });
+            });
+
+            return newWorkout;
+        });
+
+        setSupersetName('');
+        setSelectedExercises([]);
+        setIsSupersetModalOpen(false);
+    };
 
     const handleSaveWorkout = useCallback(async () => {
         if (!workoutTitle.trim()) {
@@ -245,373 +303,501 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
             return;
         }
 
-        if (sets.length === 0 || sets.some((set) => !set.exerciseId)) {
-            Alert.alert(t('validation_error'), t('at_least_one_exercise_required'));
+        if (workout.length === 0) {
+            Alert.alert(t('validation_error'), t('workout_must_have_exercises'));
+            return;
+        }
+
+        const exercisesWithoutSets = workout.filter((ex) => ex.sets.length === 0);
+        if (exercisesWithoutSets.length > 0) {
+            Alert.alert(
+                t('validation_error'),
+                t('all_exercises_must_have_at_least_one_set')
+            );
+
             return;
         }
 
         setIsSaving(true);
 
-        const workoutData: WorkoutInsertType = {
-            description: workoutDescription,
-            recurringOnWeek: recurringOnWeek || undefined,
-            title: workoutTitle,
-            volumeCalculationType: volumeCalculationType || VOLUME_CALCULATION_TYPES.NONE,
-            workoutExerciseIds: [],
-        };
-
         try {
-            const workoutExercises: WorkoutExerciseInsertType[] = [];
-            const exercisesMap = new Map<number, { id: number; name: string; sets: SetReturnType[] }>();
+            const workoutData: WorkoutInsertType = {
+                title: workoutTitle,
+                description: workoutDescription,
+                recurringOnWeek: (recurringOnWeek || undefined) as WorkoutReturnType['recurringOnWeek'],
+                volumeCalculationType: volumeCalculationType || VOLUME_CALCULATION_TYPES.NONE,
+            };
 
-            for (const set of sets) {
-                if (!set.exerciseId) {
-                    continue;
-                }
+            let workoutId: number;
 
-                let exercise = exercisesMap.get(set.exerciseId);
-                if (!exercise) {
-                    const exerciseData = await getExerciseById(set.exerciseId);
-                    exercise = {
-                        id: set.exerciseId,
-                        name: exerciseData?.name || '',
-                        sets: [],
-                    };
-                    exercisesMap.set(set.exerciseId, exercise);
-                }
-
-                const newSet = {
-                    exerciseId: set.exerciseId,
-                    isDropSet: set.isDropSet,
-                    reps: Number(set.reps),
-                    restTime: Number(set.restTime),
-                    weight: getSaveFormattedWeight(Number(set.weight), POUNDS, isImperial),
-                };
-
-                const setId = await addSet(newSet);
-
-                exercise.sets.push({ id: setId, ...newSet } as SetReturnType);
-            }
-
-            let order = 0;
-            for (const [exerciseId, exercise] of exercisesMap.entries()) {
-                const setIds = exercise.sets.map((set) => set.id);
-                workoutExercises.push({
-                    exerciseId,
-                    order: order++,
-                    setIds,
-                    workoutId: id ? Number(id) : 0,
-                });
-            }
-
-            let workoutId;
             if (id) {
-                await addWorkoutWithExercises(workoutData, workoutExercises, Number(id));
                 workoutId = Number(id);
+                await updateWorkout(workoutId, workoutData);
+
+                const { exercisesWithSets = [] } = workoutDetails || {};
+                const originalSetIds = exercisesWithSets.flatMap((exercise) =>
+                    exercise.sets.map((set) => set.id)
+                );
+
+                let setOrder = 0;
+                for (const workoutWithExercisesAndSets of workout) {
+                    for (const set of workoutWithExercisesAndSets.sets) {
+                        const setData: SetInsertType = {
+                            workoutId,
+                            exerciseId: workoutWithExercisesAndSets.exercise.id,
+                            setOrder: setOrder++,
+                            supersetName: workoutWithExercisesAndSets.supersetName || '',
+                            reps: set.reps,
+                            weight: set.weight,
+                            restTime: set.restTime,
+                            isDropSet: set.isDropSet,
+                        };
+
+                        if (set.isNew) {
+                            await addSet(setData);
+                        } else {
+                            await updateSet(set.id!, setData);
+                        }
+                    }
+                }
+
+                // Identify sets to delete
+                const currentSetIds = workout.flatMap((exercise) =>
+                    exercise.sets.map((set) => set.id)
+                );
+
+                const setsToDelete = originalSetIds.filter(
+                    (originalId) => !currentSetIds.includes(originalId)
+                );
+
+                for (const setId of setsToDelete) {
+                    await deleteSet(setId);
+                }
             } else {
-                workoutId = await addWorkoutWithExercises(workoutData, workoutExercises);
-                setRecentlyCreatedWorkoutId(workoutId);
+                workoutId = await addWorkout(workoutData);
+
+                let setOrder = 0;
+                for (const workoutWithExercisesAndSets of workout) {
+                    for (const set of workoutWithExercisesAndSets.sets) {
+                        const setData: SetInsertType = {
+                            workoutId,
+                            exerciseId: workoutWithExercisesAndSets.exercise.id,
+                            setOrder: setOrder++,
+                            supersetName: workoutWithExercisesAndSets.supersetName || '',
+                            reps: set.reps,
+                            weight: set.weight,
+                            restTime: set.restTime,
+                            isDropSet: set.isDropSet,
+                        };
+
+                        await addSet(setData);
+                    }
+                }
             }
 
-            await updateWorkoutExerciseOrder(workoutId, workoutExercises);
-
-            // if (recurringOnWeek) {
-            //     const nextWorkoutDate = getNextDayOfWeekDate(recurringOnWeek);
-            //     const newWorkoutEvent: WorkoutEventInsertType = {
-            //         date: nextWorkoutDate.toISOString(),
-            //         description: workoutDescription,
-            //         duration: 0,
-            //         exerciseData: '[]',
-            //         recurringOnWeek,
-            //         status: SCHEDULED_STATUS,
-            //         title: workoutTitle,
-            //         workoutId: workoutId,
-            //     };
-            //
-            //     await addWorkoutEvent(newWorkoutEvent);
-            // }
-
-            showModal();
+            setIsModalVisible(true);
         } catch (error) {
             console.error(t('failed_to_save_workout'), error);
+            Alert.alert(t('error'), t('failed_to_save_workout'));
         } finally {
             setIsSaving(false);
         }
-    }, [id, recurringOnWeek, sets, showModal, workoutTitle, workoutDescription, t, isImperial, volumeCalculationType]);
+    }, [workoutDetails, workoutTitle, workout, t, workoutDescription, recurringOnWeek, volumeCalculationType, id]);
+
+    const handleDeleteWorkout = useCallback(async () => {
+        if (id) {
+            try {
+                await deleteWorkout(Number(id));
+                navigation.navigate('listWorkouts');
+            } catch (error) {
+                console.error(t('failed_to_delete_workout'), error);
+                Alert.alert(t('error'), t('failed_to_delete_workout'));
+            }
+        }
+    }, [id, t, navigation]);
 
     const handleModalClose = useCallback(() => {
-        Animated.parallel([
-            Animated.timing(fadeAnim, {
-                duration: 300,
-                toValue: 0,
-                useNativeDriver: true,
-            }),
-            Animated.timing(slideAnim, {
-                duration: 300,
-                toValue: 300,
-                useNativeDriver: true,
-            }),
-        ]).start(() => {
-            setIsSaveModalVisible(false);
-            resetScreenData();
+        setIsModalVisible(false);
+        resetScreenData();
+        navigation.navigate('listWorkouts');
+    }, [navigation, resetScreenData]);
 
-            const workoutId = recentlyCreatedWorkoutId || id;
-            if (workoutId) {
-                navigation.navigate('workoutDetails', { id: workoutId });
-            } else {
-                navigation.navigate('listWorkouts');
-            }
-        });
-    }, [fadeAnim, id, navigation, recentlyCreatedWorkoutId, resetScreenData, slideAnim]);
+    const moveExercise = (fromIndex: number, direction: 'up' | 'down') => {
+        setWorkout((prevWorkout) => {
+            const newWorkout = [...prevWorkout];
+            const movedExercise = newWorkout[fromIndex];
+            const isSupersetExercise = !!movedExercise.supersetName;
 
-    useFocusEffect(
-        useCallback(() => {
-            return () => {
-                resetScreenData();
-            };
-        }, [resetScreenData])
-    );
+            const findSupersetBounds = (index: number) => {
+                let start = index;
+                let end = index;
+                const supersetName = newWorkout[index].supersetName;
 
-    const moveSet = useCallback((index: number, direction: number) => {
-        setSets((prevSets) => {
-            const newSets = [...prevSets];
-            const targetIndex = index + direction;
-
-            if (
-                targetIndex < 0 ||
-                targetIndex >= newSets.length ||
-                newSets[targetIndex].exerciseId !== newSets[index].exerciseId
-            ) {
-                return prevSets;
-            }
-
-            const [movedSet] = newSets.splice(index, 1);
-            newSets.splice(targetIndex, 0, movedSet);
-
-            return newSets;
-        });
-    }, []);
-
-    const groupContiguousSets = useCallback((sets: LocalStateSetType[]) => {
-        const groupedSets: LocalStateSetType[][] = [];
-        let currentGroup: LocalStateSetType[] = [];
-
-        for (let i = 0; i < sets.length; i++) {
-            if (i === 0 || sets[i].exerciseId === sets[i - 1].exerciseId) {
-                currentGroup.push(sets[i]);
-            } else {
-                groupedSets.push(currentGroup);
-                currentGroup = [sets[i]];
-            }
-        }
-
-        if (currentGroup.length > 0) {
-            groupedSets.push(currentGroup);
-        }
-
-        return groupedSets;
-    }, []);
-
-    const moveGroup = useCallback((groupIndex: number, direction: number) => {
-        setSets((prevSets) => {
-            const groupedSets = groupContiguousSets(prevSets);
-            const targetIndex = groupIndex + direction;
-
-            if (targetIndex < 0 || targetIndex >= groupedSets.length) {
-                return prevSets;
-            }
-
-            const newGroupedSets = [...groupedSets];
-            const [movedGroup] = newGroupedSets.splice(groupIndex, 1);
-            newGroupedSets.splice(targetIndex, 0, movedGroup);
-
-            return newGroupedSets.flat();
-        });
-    }, [groupContiguousSets]);
-
-    const updateGroupExercise = useCallback((groupIndex: number, exerciseId: number) => {
-        setSets((prevSets) => {
-            const groupedSets = groupContiguousSets(prevSets);
-            const newGroupedSets = groupedSets.map((group, index) => {
-                if (index === groupIndex) {
-                    return group.map((set) => ({ ...set, exerciseId }));
+                if (supersetName) {
+                    while (start > 0 && newWorkout[start - 1].supersetName === supersetName) {
+                        start--;
+                    }
+                    while (end < newWorkout.length - 1 && newWorkout[end + 1].supersetName === supersetName) {
+                        end++;
+                    }
                 }
-                return group;
-            });
-            return newGroupedSets.flat();
+
+                return { start, end };
+            };
+
+            if (isSupersetExercise) {
+                const { start, end } = findSupersetBounds(fromIndex);
+
+                // If moving up within the superset
+                if (direction === 'up' && fromIndex > start) {
+                    const targetIndex = fromIndex - 1;
+                    [newWorkout[fromIndex], newWorkout[targetIndex]] = [newWorkout[targetIndex], newWorkout[fromIndex]];
+                }
+                // If moving down within the superset
+                else if (direction === 'down' && fromIndex < end) {
+                    const targetIndex = fromIndex + 1;
+                    [newWorkout[fromIndex], newWorkout[targetIndex]] = [newWorkout[targetIndex], newWorkout[fromIndex]];
+                }
+            } else {
+                // For exercises not in a superset, follow the existing movement logic
+                const targetIndex = direction === 'up' ? fromIndex - 1 : fromIndex + 1;
+
+                // Ensure we're not going out of bounds
+                if (targetIndex >= 0 && targetIndex < newWorkout.length) {
+                    const nextItem = newWorkout[targetIndex];
+
+                    if (nextItem && nextItem.supersetName) {
+                        // Move past the entire superset if the target is within one
+                        const { start, end } = findSupersetBounds(targetIndex);
+                        let newIndex = direction === 'up' ? start : end + 1;
+
+                        // Remove the exercise
+                        newWorkout.splice(fromIndex, 1);
+
+                        // Adjust newIndex if necessary
+                        if (newIndex > fromIndex) {
+                            newIndex -= 1;
+                        }
+
+                        // Insert the exercise at the new index
+                        newWorkout.splice(newIndex, 0, movedExercise);
+                    } else {
+                        // Normal movement
+                        newWorkout.splice(fromIndex, 1);
+
+                        // Adjust targetIndex if necessary
+                        let adjustedTargetIndex = targetIndex;
+                        if (targetIndex > fromIndex) {
+                            adjustedTargetIndex -= 1;
+                        }
+
+                        newWorkout.splice(adjustedTargetIndex, 0, movedExercise);
+                    }
+                }
+            }
+
+            return newWorkout;
         });
-    }, [groupContiguousSets]);
+    };
 
-    const handleFormatNumericText = useCallback((set: LocalStateSetType, text: string, key: 'reps' | 'restTime' | 'weight') => {
-        const formattedText =
-            key === 'weight'
-                ? formatFloatNumericInputText(text)
-                : formatIntegerNumericInputText(text);
+    const moveSuperset = (fromIndex: number, direction: 'up' | 'down') => {
+        setWorkout((prevWorkout) => {
+            const newWorkout = [...prevWorkout];
+            const supersetName = newWorkout[fromIndex].supersetName;
+            if (!supersetName) {
+                return newWorkout;
+            }
 
-        if (formattedText || !text) {
-            setSets((prevSets) =>
-                prevSets.map((s) => (s === set ? { ...s, [key]: formattedText } : s))
+            const supersetExercises = newWorkout.filter(
+                (ex) => ex.supersetName === supersetName
             );
-        }
-    }, []);
+            const firstIndex = newWorkout.findIndex(
+                (ex) => ex.supersetName === supersetName
+            );
+            const lastIndex = firstIndex + supersetExercises.length - 1;
 
-    const renderGroupedSets = useCallback(() => {
-        const groupedSets = groupContiguousSets(sets);
+            if (direction === 'up' && firstIndex > 0) {
+                const targetIndex = Math.max(0, firstIndex - 1);
+                const moveLength = lastIndex - firstIndex + 1;
+                const itemAbove = newWorkout[targetIndex - 1];
 
-        return groupedSets.map((group, groupIndex) => (
-            <View key={groupIndex} style={styles.setGroup}>
-                <View style={styles.groupHeader}>
-                    <SearchablePicker
-                        items={allExercises.map((exercise) => ({
-                            label: exercise.name,
-                            value: exercise.id.toString(),
-                        }))}
-                        label={t('exercise')}
-                        onValueChange={(itemValue) => updateGroupExercise(groupIndex, Number(itemValue))}
-                        selectedValue={group[0].exerciseId ? group[0].exerciseId.toString() : ''}
-                        wrapperStyle={styles.exercisePicker}
+                if (itemAbove && itemAbove.supersetName && itemAbove.supersetName !== supersetName) {
+                    // Check entire superset length above and adjust
+                    const aboveSupersetStart = newWorkout.findIndex(
+                        (ex) => ex.supersetName === itemAbove.supersetName
+                    );
+
+                    newWorkout.splice(firstIndex, moveLength);
+                    newWorkout.splice(aboveSupersetStart, 0, ...supersetExercises);
+                } else {
+                    // Normal move up
+                    newWorkout.splice(firstIndex, moveLength);
+                    newWorkout.splice(targetIndex, 0, ...supersetExercises);
+                }
+            } else if (direction === 'down' && lastIndex < newWorkout.length - 1) {
+                const targetIndex = Math.min(newWorkout.length - 1, lastIndex + 1);
+                const moveLength = lastIndex - firstIndex + 1;
+                const itemBelow = newWorkout[targetIndex + 1];
+
+                if (itemBelow && itemBelow.supersetName && itemBelow.supersetName !== supersetName) {
+                    // Check entire superset length below and adjust
+                    const belowSupersetEnd = newWorkout.lastIndexOf(
+                        newWorkout.findLast((ex) => ex.supersetName === itemBelow.supersetName) ?? {} as WorkoutWithExercisesAndSets
+                    );
+                    const belowSupersetCount = newWorkout.filter(
+                        (ex) => ex.supersetName === itemBelow.supersetName
+                    ).length;
+
+                    newWorkout.splice(firstIndex, moveLength);
+                    newWorkout.splice(belowSupersetEnd + 1 - belowSupersetCount, 0, ...supersetExercises);
+                } else {
+                    // Normal move down
+                    newWorkout.splice(firstIndex, moveLength);
+                    newWorkout.splice(targetIndex - moveLength + 1, 0, ...supersetExercises);
+                }
+            }
+
+            return newWorkout;
+        });
+    };
+
+    const renderWorkoutWithExercisesAndSetss = () => {
+        return workout.reduce(
+            (acc: any[], workoutWithExercisesAndSets: WorkoutWithExercisesAndSets, exerciseIndex: number) => {
+                const isSuperset = !!workoutWithExercisesAndSets.supersetName;
+                const isFirstInSuperset =
+                    isSuperset &&
+                    (exerciseIndex === 0 ||
+                        workout[exerciseIndex - 1].supersetName !==
+                        workoutWithExercisesAndSets.supersetName);
+
+                if (isFirstInSuperset) {
+                    acc.push(
+                        <View key={`superset-${exerciseIndex}`} style={styles.supersetContainer}>
+                            <View style={styles.supersetHeader}>
+                                <View>
+                                    <Text style={styles.supersetTitle}>
+                                        {t('superset')}: {workoutWithExercisesAndSets.supersetName || ''}
+                                    </Text>
+                                </View>
+                                <View style={styles.supersetButtons}>
+                                    <IconButton
+                                        icon="arrow-up"
+                                        onPress={() => moveSuperset(exerciseIndex, 'up')}
+                                        disabled={exerciseIndex === 0}
+                                    />
+                                    <IconButton
+                                        icon="arrow-down"
+                                        onPress={() => moveSuperset(exerciseIndex, 'down')}
+                                        disabled={
+                                            exerciseIndex >=
+                                            workout.length - workout.filter((ex) => ex.supersetName === workoutWithExercisesAndSets.supersetName).length
+                                        }
+                                    />
+                                </View>
+                            </View>
+                            {renderExercise(workoutWithExercisesAndSets, exerciseIndex)}
+                        </View>
+                    );
+                } else if (isSuperset) {
+                    const lastSuperset = acc[acc.length - 1];
+                    acc[acc.length - 1] = React.cloneElement(
+                        lastSuperset,
+                        {},
+                        [...lastSuperset.props.children, renderExercise(workoutWithExercisesAndSets, exerciseIndex)]
+                    );
+                } else {
+                    acc.push(renderExercise(workoutWithExercisesAndSets, exerciseIndex));
+                }
+                return acc;
+            },
+            []
+        );
+    };
+
+    function renderExercise(workoutWithExercisesAndSets: WorkoutWithExercisesAndSets, exerciseIndex: number) {
+        const isSuperset = !!workoutWithExercisesAndSets.supersetName;
+        const canMoveUp = isSuperset
+            ? workout[exerciseIndex - 1]?.supersetName === workoutWithExercisesAndSets.supersetName
+            : exerciseIndex !== 0;
+
+        const canMoveDown = isSuperset
+            ?  workout[exerciseIndex + 1]?.supersetName === workoutWithExercisesAndSets.supersetName
+            : exerciseIndex !== workout.length - 1;
+
+        return (
+            <View key={exerciseIndex} style={styles.exerciseContainer}>
+                <View style={styles.moveButtonsContainer}>
+                    <IconButton
+                        icon="delete"
+                        size={20}
+                        onPress={() => removeExercise(exerciseIndex)}
                     />
-                    <View style={styles.groupMoveButtons}>
-                        <IconButton
-                            disabled={groupIndex === 0}
-                            icon="arrow-up"
-                            onPress={() => moveGroup(groupIndex, -1)}
-                        />
-                        <IconButton
-                            disabled={groupIndex === groupedSets.length - 1}
-                            icon="arrow-down"
-                            onPress={() => moveGroup(groupIndex, 1)}
-                        />
-                    </View>
+                    <IconButton
+                        icon="arrow-up"
+                        onPress={() => moveExercise(exerciseIndex, 'up')}
+                        disabled={!canMoveUp}
+                    />
+                    <IconButton
+                        icon="arrow-down"
+                        onPress={() => moveExercise(exerciseIndex, 'down')}
+                        disabled={!canMoveDown}
+                    />
                 </View>
-                {group.map((set, index) => (
-                    <View key={index} style={styles.setForm}>
-                        <View style={styles.row}>
-                            <CustomTextInput
-                                keyboardType="numeric"
-                                label={t('weight', { weightUnit })}
-                                onChangeText={(text) => handleFormatNumericText(set, text, 'weight')}
-                                placeholder={t('enter_weight')}
-                                value={set.weight}
-                                wrapperStyle={styles.input}
-                            />
-                            <CustomTextInput
-                                keyboardType="numeric"
-                                label={t('reps')}
-                                onChangeText={(text) => handleFormatNumericText(set, text, 'reps')}
-                                placeholder={t('enter_reps')}
-                                value={set.reps}
-                                wrapperStyle={styles.input}
-                            />
-                        </View>
-                        <View style={styles.row}>
-                            <CustomTextInput
-                                keyboardType="numeric"
-                                label={t('rest_time_sec')}
-                                onChangeText={(text) => handleFormatNumericText(set, text, 'restTime')}
-                                placeholder={t('enter_rest_time')}
-                                value={set.restTime}
-                                wrapperStyle={styles.input}
-                            />
-                        </View>
-                        <View style={[styles.row, styles.alignCenter]}>
-                            <Text style={styles.labelToggleSwitch}>{t('is_drop_set')}</Text>
-                            <Switch
-                                onValueChange={(value) => {
-                                    setSets((prevSets) =>
-                                        prevSets.map((s, i) => (i === sets.indexOf(set) ? { ...s, isDropSet: value } : s))
-                                    );
-                                }}
-                                style={styles.toggleSwitch}
-                                value={set.isDropSet}
-                            />
-                        </View>
-                        <View style={styles.row}>
-                            <IconButton
-                                disabled={sets.indexOf(set) === 0 || sets[sets.indexOf(set) - 1].exerciseId !== set.exerciseId}
-                                icon="arrow-up"
-                                onPress={() => moveSet(sets.indexOf(set), -1)}
-                            />
-                            <IconButton
-                                disabled={sets.indexOf(set) === sets.length - 1 || sets[sets.indexOf(set) + 1].exerciseId !== set.exerciseId}
-                                icon="arrow-down"
-                                onPress={() => moveSet(sets.indexOf(set), 1)}
-                            />
-                        </View>
-                        <Button
-                            mode="outlined"
-                            onPress={() => confirmDeleteSet(sets.indexOf(set))}
-                            style={styles.deleteButton}
-                        >
-                            {t('delete_set')}
-                        </Button>
-                    </View>
-                ))}
-                <Button
-                    mode="outlined"
-                    onPress={() => {
-                        const newSet = {
-                            exerciseId: group[0].exerciseId,
-                            isDropSet: false,
-                            reps: '',
-                            restTime: '60',
-                            weight: '',
-                        };
-                        setSets((prevSets) => {
-                            const newSets = [...prevSets];
-                            newSets.splice(sets.indexOf(group[group.length - 1]) + 1, 0, newSet);
-                            return newSets;
-                        });
-                    }}
-                    style={styles.addButton}
+                <List.Accordion
+                    title={workoutWithExercisesAndSets.exercise.name}
+                    description={workoutWithExercisesAndSets.exercise.description}
+                    left={(props) => <List.Icon {...props} icon="dumbbell" />}
                 >
-                    {t('add_set')}
-                </Button>
+                    {workoutWithExercisesAndSets.sets.map((set, setIndex) => (
+                        <View key={setIndex} style={styles.setContainer}>
+                            <Text style={styles.setText}>
+                                {t('set')} {setIndex + 1}:
+                            </Text>
+                            <RNTextInput
+                                style={styles.smallInput}
+                                keyboardType="numeric"
+                                value={set.reps.toString()}
+                                onChangeText={(text) =>
+                                    updateLocalSet(exerciseIndex, setIndex, 'reps', parseInt(text))
+                                }
+                                placeholder={t('reps')}
+                            />
+                            <RNTextInput
+                                style={styles.smallInput}
+                                keyboardType="numeric"
+                                value={set.weight.toString()}
+                                onChangeText={(text) =>
+                                    updateLocalSet(exerciseIndex, setIndex, 'weight', parseFloat(text))
+                                }
+                                placeholder={t('weight')}
+                            />
+                            <RNTextInput
+                                style={styles.smallInput}
+                                keyboardType="numeric"
+                                value={set.restTime.toString()}
+                                onChangeText={(text) =>
+                                    updateLocalSet(exerciseIndex, setIndex, 'restTime', parseInt(text))
+                                }
+                                placeholder={t('rest_time_sec')}
+                            />
+                            <View style={styles.row}>
+                                <Text style={styles.labelToggleSwitch}>{t('is_drop_set')}</Text>
+                                <Switch
+                                    onValueChange={(value) =>
+                                        updateLocalSet(exerciseIndex, setIndex, 'isDropSet', value)
+                                    }
+                                    value={!!set.isDropSet}
+                                />
+                            </View>
+                            <IconButton
+                                icon="delete"
+                                size={20}
+                                onPress={() => removeSet(exerciseIndex, setIndex)}
+                            />
+                        </View>
+                    ))}
+                    <Button
+                        mode="text"
+                        onPress={() => addSetToExercise(exerciseIndex)}
+                        style={styles.addSetButton}
+                    >
+                        {t('add_set')}
+                    </Button>
+                </List.Accordion>
             </View>
-        ));
-    }, [
-        groupContiguousSets,
-        sets,
-        styles.setGroup,
-        styles.groupHeader,
-        styles.groupMoveButtons,
-        styles.addButton,
-        styles.setForm,
-        styles.row,
-        styles.exercisePicker,
-        styles.input,
-        styles.alignCenter,
-        styles.labelToggleSwitch,
-        styles.toggleSwitch,
-        styles.deleteButton,
-        allExercises,
-        t,
-        moveGroup,
-        weightUnit,
-        moveSet,
-        confirmDeleteSet,
-        updateGroupExercise,
-        handleFormatNumericText,
-    ]);
+        );
+    }
+
+    function updateLocalSet(
+        exerciseIndex: number,
+        setIndex: number,
+        field: keyof SetLocalType,
+        value: any
+    ) {
+        setWorkout((prevWorkout) => {
+            const newWorkout = [...prevWorkout];
+            const updatedExercise = { ...newWorkout[exerciseIndex] };
+            const updatedSets = [...updatedExercise.sets];
+            updatedSets[setIndex] = {
+                ...updatedSets[setIndex],
+                [field]: field === 'isDropSet' ? value : isNaN(value) ? 0 : value,
+            };
+            updatedExercise.sets = updatedSets;
+            newWorkout[exerciseIndex] = updatedExercise;
+            return newWorkout;
+        });
+    }
+
+    function removeSet(exerciseIndex: number, setIndex: number) {
+        setWorkout((prevWorkout) => {
+            const newWorkout = [...prevWorkout];
+            const updatedExercise = { ...newWorkout[exerciseIndex] };
+            updatedExercise.sets = updatedExercise.sets.filter(
+                (_, idx) => idx !== setIndex
+            );
+            newWorkout[exerciseIndex] = updatedExercise;
+            return newWorkout;
+        });
+    }
+
+    function removeExercise(exerciseIndex: number) {
+        setWorkout((prevWorkout) => {
+            let newWorkout = prevWorkout.filter((_, idx) => idx !== exerciseIndex);
+            const removedExercise = prevWorkout[exerciseIndex];
+
+            if (removedExercise.supersetName) {
+                const remainingSupersetExercises = newWorkout.filter(
+                    (ex) => ex.supersetName === removedExercise.supersetName
+                );
+                if (remainingSupersetExercises.length < 2) {
+                    newWorkout = newWorkout.map((ex) =>
+                        ex.supersetName === removedExercise.supersetName
+                            ? { ...ex, supersetName: null }
+                            : ex
+                    );
+                }
+            }
+
+            return newWorkout;
+        });
+    }
+
+    const canSaveWorkout = useMemo(() => {
+        if (!workoutTitle.trim()) {
+            return false;
+        }
+
+        if (workout.length === 0) {
+            return false;
+        }
+
+        for (const ex of workout) {
+            if (ex.sets.length === 0) {
+                return false;
+            }
+        }
+
+        return true;
+    }, [workoutTitle, workout]);
 
     return (
-        <ScrollView keyboardShouldPersistTaps="handled" style={styles.container}>
+        <View style={styles.container}>
             <CompletionModal
                 buttonText={t('ok')}
-                isModalVisible={isSaveModalVisible}
+                isModalVisible={isModalVisible}
                 onClose={handleModalClose}
-                title={t(`workout_${id ? 'updated' : 'created'}_successfully`)}
+                title={t('workout_saved_successfully')}
             />
-            <ThemedModal
-                cancelText={t('no')}
-                confirmText={t('yes')}
-                onClose={() => setIsDeleteModalVisible(false)}
-                onConfirm={handleDeleteSet}
-                title={t('delete_set_confirmation')}
-                visible={isDeleteModalVisible}
-            />
-            <Appbar.Header mode="small" statusBarHeight={0} style={styles.appbarHeader}>
-                <Appbar.Content title={t(id ? 'edit_workout' : 'create_workout')} titleStyle={styles.appbarTitle} />
+            <Appbar.Header
+                mode="small"
+                statusBarHeight={0}
+                style={styles.appbarHeader}
+            >
+                <Appbar.Content
+                    title={t('create_workout')}
+                    titleStyle={styles.appbarTitle}
+                />
                 <Button
                     mode="outlined"
                     onPress={() => {
@@ -623,34 +809,131 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                     {t('cancel')}
                 </Button>
             </Appbar.Header>
-            <View style={styles.content}>
-                <CustomTextInput
-                    label={t('workout_title')}
-                    onChangeText={setWorkoutTitle}
-                    placeholder={t('enter_workout_title')}
-                    value={workoutTitle}
-                />
-                <CustomTextArea
-                    label={t('workout_description')}
-                    onChangeText={setWorkoutDescription}
-                    placeholder={t('enter_workout_description')}
-                    value={workoutDescription}
-                />
-                <CustomPicker
-                    items={VOLUME_CALCULATION_TYPES_VALUES.map((level) => ({ label: t(level), value: level }))}
-                    label={t('volume_calculation_type')}
-                    onValueChange={(value) => setVolumeCalculationType(value as VolumeCalculationTypeType)}
-                    selectedValue={volumeCalculationType || ''}
-                />
-                <View style={[styles.row, styles.formGroupToggleSwitch]}>
-                    <Text style={styles.labelToggleSwitch}>{t('repeat_weekly')}</Text>
-                    <Switch
-                        onValueChange={handleRepeatWeekly}
-                        style={styles.toggleSwitch}
-                        value={repeatWeekly}
+
+            <Portal>
+                <Dialog
+                    visible={isExerciseModalOpen}
+                    onDismiss={() => setIsExerciseModalOpen(false)}
+                >
+                    <Dialog.Title>{t('add_exercise')}</Dialog.Title>
+                    <Dialog.Content>
+                        <CustomPicker
+                            items={[
+                                {
+                                    label: t('select_muscle_group'),
+                                    value: ''
+                                },
+                                ...muscleGroups.map((group) => ({
+                                    label: t(`muscle_groups.${group}`),
+                                    value: group,
+                                })),
+                            ]}
+                            label={t('muscle_group')}
+                            onValueChange={(value) => setSelectedMuscleGroup(value)}
+                            selectedValue={selectedMuscleGroup || ''}
+                        />
+                        {selectedMuscleGroup ? (
+                            <CustomPicker
+                                items={[
+                                    { label: t('select_exercise'), value: '' },
+                                    ...allExercises
+                                        .filter(
+                                            (ex) => ex.muscleGroup === selectedMuscleGroup
+                                        )
+                                        .map((exercise) => ({
+                                            label: exercise.name,
+                                            value: exercise.id.toString(),
+                                        })),
+                                ]}
+                                label={t('exercise')}
+                                onValueChange={(value) => {
+                                    const exerciseId = Number(value);
+                                    addExerciseToWorkout(exerciseId);
+                                }}
+                                selectedValue=""
+                            />
+                        ) : null}
+                    </Dialog.Content>
+                    <Dialog.Actions>
+                        <Button onPress={() => setIsExerciseModalOpen(false)}>
+                            {t('cancel')}
+                        </Button>
+                    </Dialog.Actions>
+                </Dialog>
+                <Dialog
+                    visible={isSupersetModalOpen}
+                    onDismiss={() => setIsSupersetModalOpen(false)}
+                >
+                    <Dialog.Title>{t('create_superset')}</Dialog.Title>
+                    <Dialog.Content>
+                        <CustomTextInput
+                            label={t('superset_name')}
+                            placeholder={t('enter_superset_name')}
+                            value={supersetName}
+                            onChangeText={setSupersetName}
+                        />
+                        <Text style={styles.label}>{t('select_exercises')}</Text>
+                        {workout.map((exercise, index) => (
+                            <View key={index} style={styles.checkboxContainer}>
+                                <Checkbox
+                                    status={
+                                        selectedExercises.includes(index)
+                                            ? 'checked'
+                                            : 'unchecked'
+                                    }
+                                    onPress={() => toggleExerciseSelection(index)}
+                                />
+                                <Text>{exercise.exercise.name}</Text>
+                            </View>
+                        ))}
+                    </Dialog.Content>
+                    <Dialog.Actions>
+                        <Button
+                            onPress={() => {
+                                setSupersetName('');
+                                setSelectedExercises([]);
+                                setIsSupersetModalOpen(false);
+                            }}
+                        >
+                            {t('cancel')}
+                        </Button>
+                        <Button
+                            onPress={createSuperset}
+                            disabled={selectedExercises.length < 2 || !supersetName}
+                        >
+                            {t('create_superset')}
+                        </Button>
+                    </Dialog.Actions>
+                </Dialog>
+            </Portal>
+            <ScrollView contentContainerStyle={styles.content}>
+                <List.Accordion
+                    title={t('workout_details')}
+                    left={(props) => <List.Icon {...props} icon="information-outline" />}
+                >
+                    <CustomTextInput
+                        label={t('workout_title')}
+                        onChangeText={setWorkoutTitle}
+                        placeholder={t('enter_workout_title')}
+                        value={workoutTitle}
                     />
-                </View>
-                {repeatWeekly && (
+                    <CustomTextArea
+                        label={t('workout_description')}
+                        onChangeText={setWorkoutDescription}
+                        placeholder={t('enter_workout_description')}
+                        value={workoutDescription}
+                    />
+                    <CustomPicker
+                        items={VOLUME_CALCULATION_TYPES_VALUES.map((value) => ({
+                            label: t(value),
+                            value,
+                        }))}
+                        label={t('volume_calculation_type')}
+                        onValueChange={(value) =>
+                            setVolumeCalculationType(value as VolumeCalculationTypeType)
+                        }
+                        selectedValue={volumeCalculationType}
+                    />
                     <CustomPicker
                         items={[
                             { label: t('none'), value: '' },
@@ -660,35 +943,62 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                             })),
                         ]}
                         label={t('repeat_on_day_of_week')}
-                        onValueChange={(itemValue) =>
-                            setRecurringOnWeek((itemValue || undefined) as WorkoutReturnType['recurringOnWeek'])
-                        }
-                        selectedValue={recurringOnWeek || ''}
+                        onValueChange={(value) => setRecurringOnWeek(value)}
+                        selectedValue={recurringOnWeek}
                     />
-                )}
-                <View style={styles.divider} />
-                {renderGroupedSets()}
-                <Button mode="outlined" onPress={handleAddExercise} style={styles.addButton}>
+                </List.Accordion>
+                <Button
+                    mode="contained"
+                    onPress={() => setIsExerciseModalOpen(true)}
+                    style={styles.button}
+                >
                     {t('add_exercise')}
                 </Button>
-            </View>
-            {sets.length > 0 && (
                 <Button
-                    disabled={isSaving}
+                    mode="contained"
+                    onPress={() => setIsSupersetModalOpen(true)}
+                    style={styles.button}
+                    disabled={workout.length < 2}
+                >
+                    {t('create_superset')}
+                </Button>
+                <View style={styles.workoutContainer}>{renderWorkoutWithExercisesAndSetss()}</View>
+            </ScrollView>
+            <View style={styles.footer}>
+                <Button
+                    disabled={isSaving || isLoading || !canSaveWorkout}
                     mode="contained"
                     onPress={handleSaveWorkout}
-                    style={[styles.button, styles.saveButton]}
+                    style={styles.button}
                 >
-                    {t('save_workout')}
+                    {isSaving ? t('saving') : t('save_workout')}
                 </Button>
+                {id ? (
+                    <Button
+                        mode="contained"
+                        onPress={handleDeleteWorkout}
+                        style={styles.button}
+                    >
+                        {t('delete_workout')}
+                    </Button>
+                ) : null}
+            </View>
+            {(isSaving || isLoading) && (
+                <View style={styles.overlay}>
+                    <ActivityIndicator color={colors.primary} size="large" />
+                </View>
             )}
-        </ScrollView>
+        </View>
     );
-}
+};
 
 const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
     addButton: {
         marginTop: 16,
+    },
+    addSetButton: {
+        marginBottom: 8,
+        marginTop: 12,
     },
     alignCenter: {
         alignItems: 'center',
@@ -705,80 +1015,124 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     button: {
         marginVertical: 10,
     },
+    checkboxContainer: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        marginVertical: 8,
+    },
     container: {
         backgroundColor: colors.background,
-        flexGrow: 1,
+        flex: 1,
     },
     content: {
         padding: 16,
     },
-    deleteButton: {
-        backgroundColor: colors.tertiary,
-        flex: 1,
-        marginTop: 8,
-    },
-    divider: {
-        borderBottomColor: colors.shadow,
-        borderBottomWidth: 1,
+    exerciseContainer: {
+        backgroundColor: colors.surface,
+        borderColor: colors.primary,
+        borderRadius: 8,
+        borderWidth: 1,
         marginBottom: 16,
+        padding: 16,
     },
-    exercisePicker: {
-        flex: 1,
-        marginLeft: 8,
+    exerciseDescription: {
+        color: colors.onSurface,
+        marginBottom: 8,
     },
-    formGroupToggleSwitch: {
-        alignItems: 'center',
-        display: 'flex',
-        flexDirection: 'row',
-        marginBottom: 16,
-        padding: 8,
-    },
-    groupHeader: {
-        alignItems: 'center',
-        borderBottomColor: colors.onSurface,
-        borderBottomWidth: 1,
+    exerciseHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        paddingBottom: 8,
+        marginBottom: 8,
     },
-    groupMoveButtons: {
-        flexDirection: 'row',
+    exerciseTitle: {
+        color: colors.primary,
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    footer: {
+        alignItems: 'center',
+        borderTopColor: colors.shadow,
+        borderTopWidth: 1,
+        padding: 16,
     },
     input: {
         flex: 1,
         marginLeft: 8,
+    },
+    label: {
+        fontSize: 16,
+        fontWeight: '600',
+        marginBottom: 8,
     },
     labelToggleSwitch: {
         color: colors.onSurface,
         fontSize: 16,
         fontWeight: '600',
     },
+    moveButtonsContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 8,
+    },
+    overlay: {
+        ...StyleSheet.absoluteFillObject,
+        alignItems: 'center',
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        flex: 1,
+        justifyContent: 'center',
+    },
     row: {
         alignItems: 'center',
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        marginVertical: 8,
+    },
+    setContainer: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
         marginBottom: 8,
     },
-    saveButton: {
-        marginHorizontal: 'auto',
-        width: '80%',
+    setText: {
+        color: colors.onSurface,
+        marginRight: 8,
     },
-    setForm: {
+    smallInput: {
+        backgroundColor: colors.surface,
         borderColor: colors.onSurface,
-        borderRadius: 8,
+        borderRadius: 4,
         borderWidth: 1,
-        marginBottom: 16,
-        padding: 16,
+        color: colors.onSurface,
+        marginHorizontal: 4,
+        marginVertical: 4,
+        padding: 4,
+        textAlign: 'center',
+        width: 60,
     },
-    setGroup: {
-        backgroundColor: colors.background,
-        borderColor: colors.onSurface,
+    supersetButtons: {
+        flexDirection: 'row',
+    },
+    supersetContainer: {
+        borderColor: colors.primary,
         borderRadius: 8,
         borderWidth: 1,
         marginBottom: 16,
         padding: 8,
     },
+    supersetHeader: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 8,
+    },
+    supersetTitle: {
+        color: colors.onSurface,
+        fontSize: 16,
+        fontWeight: '600',
+    },
     toggleSwitch: {
         marginLeft: 8,
+    },
+    workoutContainer: {
+        paddingBottom: 32,
     },
 });

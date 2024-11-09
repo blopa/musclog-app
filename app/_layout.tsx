@@ -5,6 +5,9 @@ import CreateUserMeasurements from '@/app/createUserMeasurements';
 import CreateUserMetrics from '@/app/createUserMetrics';
 import CreateUserNutrition from '@/app/createUserNutrition';
 import CreateWorkout from '@/app/createWorkout';
+import FoodDetails from '@/app/foodDetails';
+import FoodLog from '@/app/foodLog';
+import FoodSearch from '@/app/foodSearch';
 import Index from '@/app/index';
 import ListExercises from '@/app/listExercises';
 import ListUserMeasurements from '@/app/listUserMeasurements';
@@ -59,6 +62,7 @@ import {
     countExercises,
     getLatestUser,
     getUser,
+    createNewWorkoutTables,
 } from '@/utils/database';
 import { getCurrentTimestamp } from '@/utils/date';
 import { getEncryptionKey } from '@/utils/encryption';
@@ -78,10 +82,10 @@ import * as Sentry from '@sentry/react-native';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import 'react-native-reanimated';
 import { I18nextProvider, useTranslation } from 'react-i18next';
 import { StatusBar, StyleSheet, Text, View } from 'react-native';
 import { ActivityIndicator, PaperProvider, useTheme } from 'react-native-paper';
-import 'react-native-reanimated';
 
 import packageJson from '../package.json';
 
@@ -202,6 +206,7 @@ function RootLayout() {
                     // await i18n.changeLanguage(lang?.value || EN_US);
 
                     increaseUnreadMessages(1);
+                    // set version for the first time
                     await addVersioning(packageJson.version);
 
                     const user = await getUser();
@@ -225,10 +230,18 @@ function RootLayout() {
                 await getLatestHealthConnectData();
             }
 
+            // TODO: migrations only work if user update on every version
+            // every time it's out, which is not ideal
+            // await addVersioning('0.0.1'); // for debugging
             await addMacrosToWorkoutEventTable();
             await addUserMeasurementsTable();
             await addAlcoholAndFiberMacroToWorkoutEventTable();
             await addAlcoholMacroToUserNutritionTable();
+            await createNewWorkoutTables();
+
+            // update to latest version
+            await addVersioning(packageJson.version);
+            console.log(`Database schema updated to version ${packageJson.version}.`);
 
             await AsyncStorage.setItem(LAST_TIME_APP_USED, getCurrentTimestamp().toString());
         };
@@ -290,6 +303,7 @@ function RootLayoutNav() {
             { component: ListExercises, label: 'exercises', name: 'listExercises' },
             { component: ListWorkouts, label: 'workouts', name: 'listWorkouts' },
             { component: UserMetricsCharts, hidden: !showUserMetrics, label: 'user_metrics_charts', name: 'userMetricsCharts' },
+            { component: FoodLog, hidden: true, label: 'food_log', name: 'foodLog' },
             { component: Profile, label: 'profile', name: 'profile' },
             { component: Settings, label: 'settings', name: 'settings' },
 
@@ -309,6 +323,8 @@ function RootLayoutNav() {
             { component: CreateUserNutrition, hidden: true, label: 'create_user_nutrition', name: 'createUserNutrition' },
             { component: CreateRecentWorkout, hidden: true, label: 'create_recent_workout', name: 'createRecentWorkout' },
             { component: RecentWorkoutDetails, hidden: true, label: 'recent_workout_details', name: 'recentWorkoutDetails' },
+            { component: FoodSearch, hidden: true, label: 'food_search', name: 'foodSearch' },
+            { component: FoodDetails, hidden: true, label: 'food_details', name: 'foodDetails' },
         ];
 
         return routes;

@@ -47,7 +47,7 @@ const WeightLineChart = ({
     const [idealWeightChangeRateMessage, currentWeightChangeRateMessage, totalBodyFatWeightMessage, bodyFatExamplesMessage, muscleFatChangeMessage] = useMemo(() => {
         if (metricsAverages) {
             const { averageFatPercentage, averageFatPercentageDifference, averageWeight, averageWeightDifference, fatPercentageDataPointsCount, weightDataPointsCount } = metricsAverages || {};
-            const isMaintenance = eatingPhase === EATING_PHASES.MAINTENANCE;
+            const isMaintenance = eatingPhase === EATING_PHASES.MAINTENANCE || !eatingPhase;
             const isGainingWeight = averageWeightDifference > 0;
             const [min, max] = isGainingWeight ? BULKING_GAIN_WEIGHT_RATIO : CUTTING_LOSS_WEIGHT_RATIO;
 

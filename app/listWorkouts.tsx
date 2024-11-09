@@ -17,14 +17,14 @@ import { generateWorkoutPlan, getAiApiVendor } from '@/utils/ai';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import {
     deleteWorkout,
-    getExerciseById,
-    getSetById,
-    getSetsByIds,
     getTotalWorkoutsCount,
     getWorkoutDetails,
     getWorkoutsPaginated,
 } from '@/utils/database';
-import { ExerciseReturnType, SetReturnType, WorkoutExerciseReturnType, WorkoutReturnType } from '@/utils/types';
+import {
+    ExerciseWithSetsType,
+    WorkoutReturnType,
+} from '@/utils/types';
 import { getDisplayFormattedWeight } from '@/utils/unit';
 import { resetWorkoutStorageData } from '@/utils/workout';
 import { FontAwesome5 } from '@expo/vector-icons';
@@ -35,7 +35,13 @@ import { useFocusEffect } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BackHandler, Platform, StyleSheet, View } from 'react-native';
-import { ActivityIndicator, Appbar, Card, Text, useTheme } from 'react-native-paper';
+import {
+    ActivityIndicator,
+    Appbar,
+    Card,
+    Text,
+    useTheme,
+} from 'react-native-paper';
 
 export default function ListWorkouts({ navigation }: { navigation: NavigationProp<any> }) {
     const { t } = useTranslation();
@@ -43,9 +49,12 @@ export default function ListWorkouts({ navigation }: { navigation: NavigationPro
     const styles = makeStyles(colors, dark);
 
     const [workouts, setWorkouts] = useState<WorkoutReturnType[]>([]);
-    const [workoutDetails, setWorkoutDetails] = useState<{ [key: number]: { workout: WorkoutReturnType, workoutExercises: WorkoutExerciseReturnType[] } }>({});
-    const [exerciseDetails, setExerciseDetails] = useState<{ [key: number]: ExerciseReturnType }>({});
-    const [exerciseSets, setExerciseSets] = useState<{ [workoutId: number]: { [exerciseId: number]: SetReturnType[] } }>({});
+    const [workoutDetails, setWorkoutDetails] = useState<{
+        [key: number]: {
+            workout: WorkoutReturnType;
+            exercisesWithSets: ExerciseWithSetsType[];
+        };
+    }>({});
     const [modalVisible, setModalVisible] = useState(false);
     const [confirmationModalVisible, setConfirmationModalVisible] = useState(false);
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
@@ -72,61 +81,57 @@ export default function ListWorkouts({ navigation }: { navigation: NavigationPro
     const loadWorkouts = useCallback(async (offset = 0, limit = 20) => {
         try {
             const loadedWorkouts = await getWorkoutsPaginated(offset, limit);
-            const sortedWorkouts = loadedWorkouts.sort((a, b) => b.id! - a.id!);
+            const sortedWorkouts = loadedWorkouts.sort(
+                (a, b) => b.id! - a.id!
+            );
 
             setWorkouts((prevState) => {
                 const uniqueWorkouts = sortedWorkouts.filter(
-                    (workout) => !prevState.some((prevWorkout) => prevWorkout.id === workout.id)
+                    (workout) =>
+                        !prevState.some(
+                            (prevWorkout) => prevWorkout.id === workout.id
+                        )
                 );
 
                 return [...prevState, ...uniqueWorkouts];
             });
 
-            const workoutDetailsMap: { [key: number]: { workout: WorkoutReturnType, workoutExercises: WorkoutExerciseReturnType[] } } = {};
-            const exerciseDetailsMap: { [key: number]: ExerciseReturnType } = {};
-            const allExerciseSets: { [workoutId: number]: { [workoutExerciseId: number]: SetReturnType[] } } = {};
+            const workoutDetailsMap: {
+                    [key: number]: {
+                        workout: WorkoutReturnType;
+                        exercisesWithSets: ExerciseWithSetsType[];
+                    };
+                } = {};
 
             for (const workout of sortedWorkouts) {
                 const details = await getWorkoutDetails(workout.id!);
                 if (details) {
-                    workoutDetailsMap[workout.id!] = details;
-
-                    for (const workoutExercise of details.workoutExercises) {
-                        if (!exerciseDetailsMap[workoutExercise.exerciseId]) {
-                            const exercise = await getExerciseById(workoutExercise.exerciseId);
-                            if (exercise) {
-                                exerciseDetailsMap[workoutExercise.exerciseId] = exercise;
-                            }
-                        }
-
-                        const validSetIds = [];
-                        for (const setId of workoutExercise.setIds) {
-                            const set = await getSetById(setId);
-                            if (set) {
-                                validSetIds.push(setId);
-                            }
-                        }
-
-                        if (!allExerciseSets[workout.id!]) {
-                            allExerciseSets[workout.id!] = {};
-                        }
-
-                        const sets = await getSetsByIds(validSetIds);
-                        allExerciseSets[workout.id!][workoutExercise.id!] = sets.map((set) => ({
-                            ...set,
-                            weight: getDisplayFormattedWeight(set.weight, KILOGRAMS, isImperial),
-                        }));
-                    }
+                    workoutDetailsMap[workout.id!] = {
+                        ...details,
+                        exercisesWithSets: details.exercisesWithSets.map(
+                            (exercise) => ({
+                                ...exercise,
+                                sets: exercise.sets.map((set) => ({
+                                    ...set,
+                                    weight: getDisplayFormattedWeight(
+                                        set.weight,
+                                        KILOGRAMS,
+                                        isImperial
+                                    ),
+                                })),
+                            })
+                        ),
+                    };
                 }
             }
 
             setWorkoutDetails(workoutDetailsMap);
-            setExerciseDetails(exerciseDetailsMap);
-            setExerciseSets(allExerciseSets);
         } catch (error) {
             console.error(t('failed_load_workouts'), error);
         }
-    }, [isImperial, t]);
+    },
+    [isImperial, t]
+    );
 
     const loadMoreWorkouts = useCallback(() => {
         if (workouts.length >= totalWorkoutsCount) {
@@ -148,8 +153,6 @@ export default function ListWorkouts({ navigation }: { navigation: NavigationPro
         setSearchQuery('');
         setWorkouts([]);
         setWorkoutDetails({});
-        setExerciseDetails({});
-        setExerciseSets({});
         setGenerateModalVisible(false);
         setInputValue('');
         setIsLoading(false);
@@ -184,14 +187,19 @@ export default function ListWorkouts({ navigation }: { navigation: NavigationPro
     const handleStartWorkout = useCallback(async () => {
         if (selectedWorkout) {
             try {
-                const ongoingWorkout = await AsyncStorage.getItem(CURRENT_WORKOUT_ID);
+                const ongoingWorkout = await AsyncStorage.getItem(
+                    CURRENT_WORKOUT_ID
+                );
                 if (ongoingWorkout) {
                     setConfirmationModalVisible(true);
                     return;
                 }
 
                 await resetWorkoutStorageData();
-                await AsyncStorage.setItem(CURRENT_WORKOUT_ID, JSON.stringify(selectedWorkout.id));
+                await AsyncStorage.setItem(
+                    CURRENT_WORKOUT_ID,
+                    JSON.stringify(selectedWorkout.id)
+                );
 
                 navigation.navigate('index', { screen: 'workout' });
             } catch (error) {
@@ -206,7 +214,10 @@ export default function ListWorkouts({ navigation }: { navigation: NavigationPro
         if (selectedWorkout) {
             try {
                 await resetWorkoutStorageData();
-                await AsyncStorage.setItem(CURRENT_WORKOUT_ID, JSON.stringify(selectedWorkout.id));
+                await AsyncStorage.setItem(
+                    CURRENT_WORKOUT_ID,
+                    JSON.stringify(selectedWorkout.id)
+                );
 
                 navigation.navigate('index', { screen: 'workout' });
             } catch (error) {
@@ -269,12 +280,13 @@ export default function ListWorkouts({ navigation }: { navigation: NavigationPro
             setIsLoading(false);
         } catch (error) {
             console.error(t('failed_generate_workout_plan'), error);
+            setIsLoading(false);
         }
     }, [inputValue, loadWorkouts, t]);
 
     const filteredWorkouts = useMemo(() => {
-        return workouts.filter(
-            (workout) => workout.title.toLowerCase().includes(searchQuery.toLowerCase())
+        return workouts.filter((workout) =>
+            workout.title.toLowerCase().includes(searchQuery.toLowerCase())
         );
     }, [searchQuery, workouts]);
 
@@ -307,16 +319,28 @@ export default function ListWorkouts({ navigation }: { navigation: NavigationPro
                     statusBarHeight={0}
                     style={styles.appbarHeader}
                 >
-                    <Appbar.Content title={t('workouts')} titleStyle={styles.appbarTitle} />
-                    <AnimatedSearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+                    <Appbar.Content
+                        title={t('workouts')}
+                        titleStyle={styles.appbarTitle}
+                    />
+                    <AnimatedSearchBar
+                        searchQuery={searchQuery}
+                        setSearchQuery={setSearchQuery}
+                    />
                 </Appbar.Header>
                 {filteredWorkouts.length > 0 ? (
                     <FlashList
-                        ListFooterComponent={workouts.length < totalWorkoutsCount ? <ActivityIndicator /> : null}
+                        ListFooterComponent={
+                            workouts.length < totalWorkoutsCount ? (
+                                <ActivityIndicator />
+                            ) : null
+                        }
                         contentContainerStyle={styles.scrollViewContent}
                         data={filteredWorkouts}
                         estimatedItemSize={135}
-                        keyExtractor={(item) => item?.id ? item.id.toString() : 'default'}
+                        keyExtractor={(item) =>
+                            item?.id ? item.id.toString() : 'default'
+                        }
                         onEndReached={loadMoreWorkouts}
                         onEndReachedThreshold={0.5}
                         renderItem={({ item: workout }) => (
@@ -327,8 +351,6 @@ export default function ListWorkouts({ navigation }: { navigation: NavigationPro
                                             {workout.title}
                                         </Text>
                                         <WorkoutItem
-                                            exerciseDetails={exerciseDetails}
-                                            exerciseSets={exerciseSets}
                                             workoutDetails={workoutDetails}
                                             workoutId={workout.id!}
                                         />
@@ -337,7 +359,11 @@ export default function ListWorkouts({ navigation }: { navigation: NavigationPro
                                         <FontAwesome5
                                             color={colors.primary}
                                             name="play"
-                                            onPress={() => openStartWorkoutConfirmationModal(workout)}
+                                            onPress={() =>
+                                                openStartWorkoutConfirmationModal(
+                                                    workout
+                                                )
+                                            }
                                             size={ICON_SIZE}
                                             style={styles.iconButton}
                                         />
@@ -358,7 +384,11 @@ export default function ListWorkouts({ navigation }: { navigation: NavigationPro
                                         <FontAwesome5
                                             color={colors.primary}
                                             name="trash"
-                                            onPress={() => openDeleteWorkoutConfirmationModal(workout)}
+                                            onPress={() =>
+                                                openDeleteWorkoutConfirmationModal(
+                                                    workout
+                                                )
+                                            }
                                             size={ICON_SIZE}
                                             style={styles.iconButton}
                                         />
@@ -368,9 +398,7 @@ export default function ListWorkouts({ navigation }: { navigation: NavigationPro
                         )}
                     />
                 ) : (
-                    <Text style={styles.noDataText}>
-                        {t('no_workouts')}
-                    </Text>
+                    <Text style={styles.noDataText}>{t('no_workouts')}</Text>
                 )}
                 <ThemedModal
                     cancelText={t('no')}
@@ -412,7 +440,10 @@ export default function ListWorkouts({ navigation }: { navigation: NavigationPro
                             value={inputValue}
                         />
                         {isLoading && (
-                            <ActivityIndicator color={colors.primary} size="large" />
+                            <ActivityIndicator
+                                color={colors.primary}
+                                size="large"
+                            />
                         )}
                     </View>
                 </ThemedModal>

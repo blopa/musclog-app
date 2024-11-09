@@ -7,7 +7,7 @@ import {
 } from '@/constants/storage';
 import useUnit from '@/hooks/useUnit';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
-import { getAllExercises, getAllWorkouts, getSetsByIds, getWorkoutDetails } from '@/utils/database';
+import { getAllExercises, getAllWorkouts, getWorkoutDetails } from '@/utils/database';
 import { ExerciseReturnType, SetReturnType, WorkoutReturnType } from '@/utils/types';
 import { getDisplayFormattedWeight } from '@/utils/unit';
 import { resetWorkoutStorageData } from '@/utils/workout';
@@ -78,12 +78,23 @@ const WorkoutModal = ({ onClose, visible }: WorkoutModalProps) => {
             return;
         }
 
-        const setsByExercise: { exerciseId: number; sets: SetReturnType[] }[] = [];
-        for (const workoutExercise of workoutDetails.workoutExercises) {
-            const { exerciseId, setIds } = workoutExercise;
-            const sets = await getSetsByIds(setIds);
-            setsByExercise.push({ exerciseId, sets });
-        }
+        // Compute the minimum setOrder for each exercise and sort exercises accordingly
+        const exerciseOrderArray = workoutDetails.exercisesWithSets.map(
+            (exerciseWithSets) => {
+                const { id: exerciseId, sets } = exerciseWithSets;
+                const minSetOrder = Math.min(...sets.map((set) => set.setOrder));
+                return { exerciseId: exerciseId!, sets, minSetOrder };
+            }
+        );
+
+        // Sort exercises by their minimum setOrder
+        exerciseOrderArray.sort((a, b) => a.minSetOrder - b.minSetOrder);
+
+        // Prepare the setsByExercise array
+        const setsByExercise = exerciseOrderArray.map(({ exerciseId, sets }) => ({
+            exerciseId,
+            sets: sets.sort((a, b) => a.setOrder - b.setOrder),
+        }));
 
         setExerciseSets(setsByExercise);
     }, []);
