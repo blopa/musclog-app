@@ -303,8 +303,8 @@ function RootLayoutNav() {
             { component: ListExercises, label: 'exercises', name: 'listExercises' },
             { component: ListWorkouts, label: 'workouts', name: 'listWorkouts' },
             { component: UserMetricsCharts, hidden: !showUserMetrics, label: 'user_metrics_charts', name: 'userMetricsCharts' },
+            { component: FoodLog, hidden: true, label: 'food_log', name: 'foodLog' },
             { component: Profile, label: 'profile', name: 'profile' },
-            { component: FoodLog, label: 'food_log', name: 'foodLog' },
             { component: Settings, label: 'settings', name: 'settings' },
 
             // Hidden routes
