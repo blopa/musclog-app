@@ -5,6 +5,9 @@ import CreateUserMeasurements from '@/app/createUserMeasurements';
 import CreateUserMetrics from '@/app/createUserMetrics';
 import CreateUserNutrition from '@/app/createUserNutrition';
 import CreateWorkout from '@/app/createWorkout';
+import FoodDetails from '@/app/foodDetails';
+import FoodLog from '@/app/foodLog';
+import FoodSearch from '@/app/foodSearch';
 import Index from '@/app/index';
 import ListExercises from '@/app/listExercises';
 import ListUserMeasurements from '@/app/listUserMeasurements';
@@ -79,10 +82,10 @@ import * as Sentry from '@sentry/react-native';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import 'react-native-reanimated';
 import { I18nextProvider, useTranslation } from 'react-i18next';
 import { StatusBar, StyleSheet, Text, View } from 'react-native';
 import { ActivityIndicator, PaperProvider, useTheme } from 'react-native-paper';
-import 'react-native-reanimated';
 
 import packageJson from '../package.json';
 
@@ -301,6 +304,7 @@ function RootLayoutNav() {
             { component: ListWorkouts, label: 'workouts', name: 'listWorkouts' },
             { component: UserMetricsCharts, hidden: !showUserMetrics, label: 'user_metrics_charts', name: 'userMetricsCharts' },
             { component: Profile, label: 'profile', name: 'profile' },
+            { component: FoodLog, label: 'food_log', name: 'foodLog' },
             { component: Settings, label: 'settings', name: 'settings' },
 
             // Hidden routes
@@ -319,6 +323,8 @@ function RootLayoutNav() {
             { component: CreateUserNutrition, hidden: true, label: 'create_user_nutrition', name: 'createUserNutrition' },
             { component: CreateRecentWorkout, hidden: true, label: 'create_recent_workout', name: 'createRecentWorkout' },
             { component: RecentWorkoutDetails, hidden: true, label: 'recent_workout_details', name: 'recentWorkoutDetails' },
+            { component: FoodSearch, hidden: true, label: 'food_search', name: 'foodSearch' },
+            { component: FoodDetails, hidden: true, label: 'food_details', name: 'foodDetails' },
         ];
 
         return routes;
