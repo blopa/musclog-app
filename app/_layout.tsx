@@ -64,6 +64,7 @@ import {
     getLatestUser,
     getUser,
     createNewWorkoutTables,
+    createFoodTable,
 } from '@/utils/database';
 import { getCurrentTimestamp } from '@/utils/date';
 import { getEncryptionKey } from '@/utils/encryption';
@@ -239,6 +240,7 @@ function RootLayout() {
             await addAlcoholAndFiberMacroToWorkoutEventTable();
             await addAlcoholMacroToUserNutritionTable();
             await createNewWorkoutTables();
+            await createFoodTable();
 
             // update to latest version
             await addVersioning(packageJson.version);

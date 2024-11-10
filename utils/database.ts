@@ -2972,6 +2972,30 @@ export const addMacrosToWorkoutEventTable = async (): Promise<void> => {
     }
 };
 
+export const createFoodTable = async (): Promise<void> => {
+    const currentVersion = await getLatestVersion();
+    if (currentVersion && currentVersion < packageJson.version) {
+        if (!(await tableExists('Food'))) {
+            await database.execAsync(`
+                CREATE TABLE "Food" (
+                    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+                    "dataId" TEXT,
+                    "name" TEXT,
+                    "calories" REAL,
+                    "protein" REAL,
+                    "alcohol" REAL,
+                    "totalCarbohydrate" REAL,
+                    "sugar" REAL,
+                    "fiber" REAL,
+                    "totalFat" REAL,
+                    "createdAt" TEXT DEFAULT CURRENT_TIMESTAMP,
+                    "deletedAt" TEXT
+                );
+            `);
+        }
+    }
+};
+
 // Functions that are exactly the same
 
 const commonFunctions = getCommonFunctions({
