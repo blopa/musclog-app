@@ -3,6 +3,7 @@ import CustomTextInput from '@/components/CustomTextInput';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { formatFloatNumericInputText } from '@/utils/string';
 import { NavigationProp } from '@react-navigation/native';
+import fetch from 'isomorphic-fetch';
 import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View, ScrollView, StyleSheet, Platform, Alert } from 'react-native';
@@ -59,7 +60,7 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
         });
 
         try {
-            const response = await fetch(
+            fetch(
                 `${GOOGLE_FORMS_URL}/${form.action}/formResponse?${urlParams.toString()}`,
                 {
                     method: 'GET',
@@ -68,14 +69,11 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
                     },
                     ...Platform.OS === 'web' ? { mode: 'no-cors' } : {},
                 }
-            );
+            ).then(() => {
+                console.log('Request done');
+            });
 
-            const wasSuccessful = response.status >= 200 && response.status < 300;
-            if (wasSuccessful || Platform.OS === 'web') {
-                setIsModalVisible(true);
-            } else {
-                Alert.alert(t('error'), t('failed_to_submit_form'));
-            }
+            setIsModalVisible(true);
         } catch (error) {
             console.error('Failed to submit to Google Forms', error);
             Alert.alert(t('error'), t('failed_to_submit_form'));
