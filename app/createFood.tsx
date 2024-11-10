@@ -6,7 +6,11 @@ import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { formatFloatNumericInputText } from '@/utils/string';
 import { NavigationProp } from '@react-navigation/native';
 import React, { useCallback, useState } from 'react';
-import { useShortAnswerInput , useGoogleForm, GoogleFormProvider } from 'react-google-forms-hooks';
+import {
+    useShortAnswerInput,
+    useGoogleForm,
+    GoogleFormProvider,
+} from 'react-google-forms-hooks';
 import { useTranslation } from 'react-i18next';
 import { View, ScrollView, StyleSheet, Platform, Alert } from 'react-native';
 import { Appbar, Button, Text, useTheme } from 'react-native-paper';
