@@ -328,7 +328,7 @@ function RootLayoutNav() {
             { component: RecentWorkoutDetails, hidden: true, label: 'recent_workout_details', name: 'recentWorkoutDetails' },
             { component: FoodSearch, hidden: true, label: 'food_search', name: 'foodSearch' },
             { component: FoodDetails, hidden: true, label: 'food_details', name: 'foodDetails' },
-            { component: CreateFood, hidden: false, label: 'create_food', name: 'createFood' },
+            { component: CreateFood, hidden: true, label: 'create_food', name: 'createFood' },
         ];
 
         return routes;

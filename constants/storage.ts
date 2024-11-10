@@ -4,6 +4,8 @@ export const CURRENT_WORKOUT_PROGRESS = 'currentWorkoutProgress';
 export const WORKOUT_START_TIME = 'workoutStartTime';
 export const COUNTDOWN_START_TIME = 'countdownStartTime';
 
+export const RECENT_FOOD = 'recentFood';
+
 export const CHAT_INTENTION = 'chatIntention';
 
 export const ENCRYPTION_KEY = 'encryptionKey';

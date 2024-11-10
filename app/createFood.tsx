@@ -1,7 +1,10 @@
 import CompletionModal from '@/components/CompletionModal';
 import CustomTextInput from '@/components/CustomTextInput';
+import { RECENT_FOOD } from '@/constants/storage';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
-import { formatFloatNumericInputText } from '@/utils/string';
+import { addFood } from '@/utils/database';
+import { formatFloatNumericInputText, generateHash } from '@/utils/string';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationProp } from '@react-navigation/native';
 import fetch from 'isomorphic-fetch';
 import React, { useCallback, useState } from 'react';
@@ -60,6 +63,37 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 urlParams.append(formatQuestionName(key), formData[key]);
             }
         });
+
+        HIDDEN_FIELDS.forEach((field) => {
+            const id = form.fields.find((f) => f.label === field)?.id;
+
+            if (id) {
+                if (field === 'data_id') {
+                    urlParams.append(formatQuestionName(id), generateHash());
+                } else if (field === 'created_at') {
+                    urlParams.append(formatQuestionName(id), new Date().toISOString());
+                }
+            }
+        });
+
+        const food = {
+            protein: parseInt(urlParams.get('entry.1811363356') || '0', 10),
+            totalFat: parseInt(urlParams.get('entry.2114676271') || '0', 10),
+            totalCarbohydrate: parseInt(urlParams.get('entry.919411420') || '0', 10),
+            calories: parseInt(urlParams.get('entry.1848808507') || '0', 10),
+            sugar: parseInt(urlParams.get('entry.231759517') || '0', 10),
+            fiber: parseInt(urlParams.get('entry.1039537292') || '0', 10),
+            alcohol: parseInt(urlParams.get('entry.1665963898') || '0', 10),
+            name: urlParams.get('entry.1515281433') || t('unnamed'),
+            dataId: urlParams.get('entry.1025747995') || generateHash(),
+            createdAt: urlParams.get('entry.1917240265') || new Date().toISOString(),
+        };
+
+        const foodId = await addFood(food);
+
+        const recentFood: number[] = JSON.parse(await AsyncStorage.getItem(RECENT_FOOD) || '[]');
+        recentFood.push(foodId);
+        await AsyncStorage.setItem(RECENT_FOOD, JSON.stringify(recentFood));
 
         try {
             fetch(
@@ -131,7 +165,7 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
                         return (
                             <View key={field.id} style={styles.formGroup}>
                                 <Text style={styles.label}>
-                                    {t(field.label)} {field.required ? <Text style={styles.required}>*</Text> : null}
+                                    {t(`google_form.${field.label}`)} {field.required ? <Text style={styles.required}>*</Text> : null}
                                 </Text>
                                 <CustomTextInput
                                     keyboardType={isNumericField ? 'numeric' : 'default'}
@@ -141,7 +175,7 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
                                             handleInputChange(field.id, formattedText);
                                         }
                                     }}
-                                    placeholder={t(field.label)}
+                                    placeholder={t(`google_form.${field.label}`)}
                                     value={formData[field.id]}
                                 />
                             </View>
