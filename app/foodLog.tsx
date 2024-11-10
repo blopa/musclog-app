@@ -1,10 +1,13 @@
 import ThemedCard from '@/components/ThemedCard';
 import { ICON_SIZE } from '@/constants/ui';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
+import { getUserNutritionBetweenDates } from '@/utils/database';
+import { safeToFixed } from '@/utils/string';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { NavigationProp } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
-import React, { useState } from 'react';
+import { useFocusEffect } from 'expo-router';
+import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View, StyleSheet, Platform, Dimensions } from 'react-native';
 import { Appbar, TextInput, Button, Text, useTheme } from 'react-native-paper';
@@ -17,6 +20,12 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
     const [index, setIndex] = useState(0);
     const [searchQuery, setSearchQuery] = useState('');
+    const [consumed, setConsumed] = useState({
+        calories: 0,
+        protein: 0,
+        carbohydrate: 0,
+        fat: 0,
+    });
     const [routes] = useState([
         { key: 'overview', title: t('overview') },
         { key: 'meals', title: t('meals') },
@@ -25,16 +34,9 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     // Mock data for demonstration
     const dailyGoal = {
         calories: 2500,
-        proteins: 150,
-        carbs: 300,
-        fats: 80,
-    };
-
-    const consumed = {
-        calories: 1500,
-        proteins: 90,
-        carbs: 180,
-        fats: 50,
+        protein: 150,
+        carbohydrate: 300,
+        fat: 80,
     };
 
     const mealCategories = [
@@ -48,12 +50,56 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         return Math.min(Math.round((consumedAmount / goalAmount) * 100), 100);
     };
 
+    const loadConsumed = useCallback(async () => {
+        const startDate = new Date();
+        startDate.setHours(0, 0, 0, 0);
+
+        const endDate = new Date();
+        endDate.setHours(23, 59, 59, 999);
+
+        try {
+            const consumedData = await getUserNutritionBetweenDates(
+                startDate.toISOString(),
+                endDate.toISOString()
+            );
+
+            const consumed = consumedData.reduce(
+                (acc, item) => {
+                    acc.calories += item.calories || 0;
+                    acc.protein += item.protein || 0;
+                    acc.carbohydrate += item.carbohydrate || 0;
+                    acc.fat += item.fat || 0;
+                    return acc;
+                },
+                { calories: 0, protein: 0, carbohydrate: 0, fat: 0 }
+            );
+
+            setConsumed(consumed);
+        } catch (error) {
+            console.error('Error loading consumed data:', error);
+        }
+    }, []);
+
+    const resetScreenData = useCallback(() => {
+        setSearchQuery('');
+    }, []);
+
+    useFocusEffect(
+        useCallback(() => {
+            loadConsumed();
+
+            return () => {
+                resetScreenData();
+            };
+        }, [loadConsumed, resetScreenData])
+    );
+
     const OverviewRoute = () => {
         const macros = [
-            { name: t('calories'), consumed: consumed.calories, goal: dailyGoal.calories, unit: 'kcal' },
-            { name: t('proteins'), consumed: consumed.proteins, goal: dailyGoal.proteins, unit: 'g' },
-            { name: t('carbs'), consumed: consumed.carbs, goal: dailyGoal.carbs, unit: 'g' },
-            { name: t('fats'), consumed: consumed.fats, goal: dailyGoal.fats, unit: 'g' },
+            { name: t('calories'), consumed: safeToFixed(consumed.calories), goal: dailyGoal.calories, unit: 'kcal' },
+            { name: t('proteins'), consumed: safeToFixed(consumed.protein), goal: dailyGoal.protein, unit: 'g' },
+            { name: t('carbs'), consumed: safeToFixed(consumed.carbohydrate), goal: dailyGoal.carbohydrate, unit: 'g' },
+            { name: t('fats'), consumed: safeToFixed(consumed.fat), goal: dailyGoal.fat, unit: 'g' },
         ];
 
         return (
@@ -70,7 +116,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                                     style={[
                                         styles.progressBar,
                                         {
-                                            width: `${calculatePercentage(macro.consumed, macro.goal)}%`,
+                                            width: `${calculatePercentage(parseFloat(macro.consumed), macro.goal)}%`,
                                         },
                                     ]}
                                 />
