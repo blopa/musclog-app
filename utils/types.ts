@@ -232,6 +232,25 @@ export type ChatReturnType = {
     id: number;
 } & Omit<ChatInsertType, 'id'>;
 
+export type FoodInsertType = {
+    createdAt?: string;
+    deletedAt?: string;
+    id?: number;
+    dataId?: string;
+    calories: number;
+    totalCarbohydrate: number;
+    totalFat: number;
+    protein: number;
+    alcohol?: number;
+    fiber?: number;
+    sugar?: number;
+    name: string;
+};
+
+export type FoodReturnType = {
+    id: number;
+} & Omit<FoodInsertType, 'id'>;
+
 type WorkoutTypeWithOptionalExerciseIds = {} & Omit<WorkoutReturnType, 'volumeCalculationType'>;
 
 export type WorkoutEventInsertType = {

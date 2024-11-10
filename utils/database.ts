@@ -17,6 +17,8 @@ import {
     ExerciseReturnType,
     ExerciseVolumeType,
     ExerciseWithSetsType,
+    FoodInsertType,
+    FoodReturnType,
     MetricsForUserType,
     OneRepMaxReturnType,
     SetInsertType,
@@ -58,6 +60,22 @@ const createTables = (database: SQLiteDatabase) => {
             "'deletedAt' TEXT",
         ],
         name: 'Exercise'
+    },{
+        columns: [
+            "'id' INTEGER PRIMARY KEY AUTOINCREMENT",
+            "'dataId' TEXT",
+            "'name' TEXT",
+            "'createdAt' TEXT DEFAULT CURRENT_TIMESTAMP",
+            "'deletedAt' TEXT",
+            "'alcohol' REAL",
+            "'protein' REAL",
+            "'totalCarbohydrate' REAL",
+            "'totalFat' REAL",
+            "'fiber' REAL",
+            "'calories' REAL",
+            "'sugar' REAL",
+        ],
+        name: 'Food'
     },
     {
         columns: [
@@ -631,6 +649,31 @@ export const addUserNutrition = async (userNutrition: UserNutritionInsertType): 
             userNutrition.type,
             userNutrition.source || USER_METRICS_SOURCES.USER_INPUT,
         ]
+        );
+
+        return result.lastInsertRowId;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const addFood = async (food: FoodInsertType): Promise<number> => {
+    const createdAt = food.createdAt || getCurrentTimestamp();
+    try {
+        const result = database.runSync(`
+            INSERT INTO "Food" ("dataId", "name", "calories", "totalCarbohydrate", "totalFat", "protein", "alcohol", "fiber", "sugar", "createdAt")
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            `,
+        food.dataId || generateHash(),
+        food.name,
+        food.calories,
+        food.totalCarbohydrate,
+        food.totalFat,
+        food.protein,
+        food.alcohol || 0,
+        food.fiber || 0,
+        food.sugar || 0,
+        createdAt,
         );
 
         return result.lastInsertRowId;
@@ -1873,6 +1916,14 @@ export const getTotalUserNutritionCount = async (): Promise<number> => {
     }
 };
 
+export const getFood = async (id: number): Promise<FoodReturnType | undefined> => {
+    try {
+        return database.getFirstSync<FoodReturnType>('SELECT * FROM "Food" WHERE "id" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')', [id]) ?? undefined;
+    } catch (error) {
+        throw error;
+    }
+};
+
 // Update functions
 
 export const updateUserMeasurements = async (id: number, userMeasurements: UserMeasurementsInsertType): Promise<number> => {
@@ -2119,6 +2170,34 @@ export const updateWorkoutEvent = async (
     }
 };
 
+export const updateFood = async (id: number, food: FoodInsertType): Promise<number> => {
+    const existingFood = await getFood(id);
+
+    try {
+        database.runSync(
+            'UPDATE "Food" SET "name" = ?, "calories" = ?, "protein" = ?, "alcohol" = ?, "totalCarbohydrate" = ?, "sugar" = ?, "fiber" = ?, "totalFat" = ?, "createdAt" = ?, "deletedAt" = ?, "dataId" = ? WHERE "id" = ?',
+            [
+                food.name || existingFood?.name || '',
+                food.calories || existingFood?.calories || 0,
+                food.protein || existingFood?.protein || 0,
+                food.alcohol || existingFood?.alcohol || 0,
+                food.totalCarbohydrate || existingFood?.totalCarbohydrate || 0,
+                food.sugar || existingFood?.sugar || 0,
+                food.fiber || existingFood?.fiber || 0,
+                food.totalFat || existingFood?.totalFat || 0,
+                food.createdAt || existingFood?.createdAt || 0,
+                food.deletedAt || existingFood?.deletedAt || 0,
+                food.dataId || existingFood?.dataId || generateHash(),
+                id
+            ]
+        );
+
+        return id;
+    } catch (error) {
+        throw error;
+    }
+};
+
 // Delete functions
 
 export const deleteUserMeasurements = async (id: number): Promise<void> => {
@@ -2176,7 +2255,6 @@ export const deleteHealthConnectUserMetricsBetweenDates = async (startDate: stri
     }
 };
 
-
 export const deleteSetting = async (type: string): Promise<void> => {
     try {
         database.runSync('DELETE FROM "Setting" WHERE "type" = ?', [type]);
@@ -2232,6 +2310,14 @@ export const deleteAllUserNutritionFromHealthConnect = async (): Promise<void> =
 export const deleteChatById = async (id: number): Promise<void> => {
     try {
         database.runSync('DELETE FROM "Chat" WHERE "id" = ?', [id]);
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const deleteFood = async (id: number): Promise<void> => {
+    try {
+        database.runSync('DELETE FROM "Food" WHERE "id" = ?', [id]);
     } catch (error) {
         throw error;
     }

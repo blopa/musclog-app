@@ -16,6 +16,8 @@ import {
     ExerciseReturnType,
     ExerciseWithSetsType,
     ExperienceLevelType,
+    FoodInsertType,
+    FoodReturnType,
     MetricsForUserType,
     OneRepMaxInsertType,
     OneRepMaxReturnType,
@@ -117,6 +119,7 @@ interface IDatabase {
         // toArray: () => Promise<WorkoutReturnType[]>;
         // update: (id: number, workout: WorkoutInsertType) => Promise<number>;
     };
+    food: {},
 }
 
 type WorkoutExerciseInsertTypeWithStrValues = { setIds: string } & Omit<WorkoutExerciseInsertType, 'setIds'>;
@@ -129,6 +132,7 @@ export class WorkoutLoggerDatabase extends Dexie implements IDatabase {
     bio!: Dexie.Table<BioReturnType, number, BioInsertType>;
     chats!: Dexie.Table<ChatReturnType, number, ChatInsertType>;
     exercises!: Dexie.Table<ExerciseReturnType, number, ExerciseInsertType>;
+    food!: Dexie.Table<FoodReturnType, number, FoodInsertType>;
     oneRepMaxes!: Dexie.Table<OneRepMaxReturnType, number, OneRepMaxInsertType>;
     sets!: Dexie.Table<SetReturnType, number, SetInsertType>;
     settings!: Dexie.Table<SettingsReturnType, number, SettingsInsertType>;
@@ -298,6 +302,20 @@ export class WorkoutLoggerDatabase extends Dexie implements IDatabase {
                 'description',
                 'recurringOnWeek',
                 'volumeCalculationType',
+                'createdAt',
+                'deletedAt',
+            ].join(', '),
+            food: [
+                '++id',
+                'name',
+                'calories',
+                'protein',
+                'totalCarbohydrate',
+                'sugar',
+                'alcohol',
+                'fiber',
+                'totalFat',
+                'dataId',
                 'createdAt',
                 'deletedAt',
             ].join(', '),
@@ -509,6 +527,14 @@ export const addUserNutrition = async (userNutrition: UserNutritionInsertType): 
 
     return database.userNutrition.add({
         ...userNutrition,
+        createdAt,
+    });
+};
+
+export const addFood = async (food: FoodInsertType): Promise<number> => {
+    const createdAt = food.createdAt || getCurrentTimestamp();
+    return database.food.add({
+        ...food,
         createdAt,
     });
 };
@@ -1423,6 +1449,13 @@ export const getTotalUserNutritionCount = async (): Promise<number> => {
     return database.userNutrition.count();
 };
 
+export const getFood = async (id: number): Promise<FoodReturnType | undefined> => {
+    return database.food
+        .where({ id })
+        .filter((food) => food.deletedAt === null || food.deletedAt === undefined)
+        .first();
+};
+
 // Update functions
 
 export const updateUserMeasurements = async (id: number, userMeasurements: UserMeasurementsInsertType): Promise<number> => {
@@ -1577,6 +1610,26 @@ export const updateWorkoutEvent = async (id: number, workoutEvent: WorkoutEventI
     } as unknown as WorkoutEventInsertType;
 
     return database.workoutEvents.update(id, updatedWorkoutEvent);
+};
+
+export const updateFood = async (id: number, food: FoodInsertType): Promise<number> => {
+    const existingFood = await getFood(id);
+
+    const updatedFood = {
+        calories: food.calories || existingFood?.calories || 0,
+        totalCarbohydrate: food.totalCarbohydrate || existingFood?.totalCarbohydrate || 0,
+        totalFat: food.totalFat || existingFood?.totalFat || 0,
+        fiber: food.fiber || existingFood?.fiber || 0,
+        name: food.name || existingFood?.name || '',
+        protein: food.protein || existingFood?.protein || 0,
+        createdAt: food.createdAt || existingFood?.createdAt || getCurrentTimestamp(),
+        deletedAt: food.deletedAt || existingFood?.deletedAt || '',
+        dataId: food.dataId || existingFood?.dataId || generateHash(),
+        sugar: food.sugar || existingFood?.sugar || 0,
+        alcohol: food.alcohol || existingFood?.alcohol || 0,
+    };
+
+    return database.food.update(id, updatedFood);
 };
 
 // Delete functions
