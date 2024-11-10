@@ -20,6 +20,8 @@ import {
     FoodInsertType,
     FoodReturnType,
     MetricsForUserType,
+    NutritionGoalsInsertType,
+    NutritionGoalsReturnType,
     OneRepMaxReturnType,
     SetInsertType,
     SetReturnType,
@@ -60,7 +62,8 @@ const createTables = (database: SQLiteDatabase) => {
             "'deletedAt' TEXT",
         ],
         name: 'Exercise'
-    },{
+    },
+    {
         columns: [
             "'id' INTEGER PRIMARY KEY AUTOINCREMENT",
             "'dataId' TEXT",
@@ -76,6 +79,21 @@ const createTables = (database: SQLiteDatabase) => {
             "'sugar' REAL",
         ],
         name: 'Food'
+    },
+    {
+        columns: [
+            "'id' INTEGER PRIMARY KEY AUTOINCREMENT",
+            "'createdAt' TEXT DEFAULT CURRENT_TIMESTAMP",
+            "'deletedAt' TEXT",
+            "'alcohol' REAL",
+            "'protein' REAL",
+            "'totalCarbohydrate' REAL",
+            "'totalFat' REAL",
+            "'fiber' REAL",
+            "'calories' REAL",
+            "'sugar' REAL",
+        ],
+        name: 'NutritionGoals'
     },
     {
         columns: [
@@ -672,6 +690,29 @@ export const addFood = async (food: FoodInsertType): Promise<number> => {
         food.protein,
         food.alcohol || 0,
         food.fiber || 0,
+        food.sugar || 0,
+        createdAt,
+        );
+
+        return result.lastInsertRowId;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const addNutritionGoals = async (food: NutritionGoalsInsertType): Promise<number> => {
+    const createdAt = food.createdAt || getCurrentTimestamp();
+    try {
+        const result = database.runSync(`
+            INSERT INTO "NutritionGoals" ("alcohol", "protein", "totalCarbohydrate", "totalFat", "fiber", "calories", "sugar", "createdAt")
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            `,
+        food.alcohol || 0,
+        food.protein,
+        food.totalCarbohydrate,
+        food.totalFat,
+        food.fiber || 0,
+        food.calories,
         food.sugar || 0,
         createdAt,
         );
@@ -1924,6 +1965,14 @@ export const getFood = async (id: number): Promise<FoodReturnType | undefined> =
     }
 };
 
+export const getNutritionGoals = async (id: number): Promise<NutritionGoalsReturnType | undefined> => {
+    try {
+        return database.getFirstSync<NutritionGoalsReturnType>('SELECT * FROM "NutritionGoals" WHERE "id" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')', [id]) ?? undefined;
+    } catch (error) {
+        throw error;
+    }
+};
+
 // Update functions
 
 export const updateUserMeasurements = async (id: number, userMeasurements: UserMeasurementsInsertType): Promise<number> => {
@@ -2198,6 +2247,29 @@ export const updateFood = async (id: number, food: FoodInsertType): Promise<numb
     }
 };
 
+export const updateNutritionGoals = async (id: number, nutritionGoals: NutritionGoalsInsertType): Promise<number> => {
+    const existingNutritionGoals = await getNutritionGoals(id);
+
+    try {
+        database.runSync(
+            'UPDATE "NutritionGoals" SET "calories" = ?, "protein" = ?, "alcohol" = ?, "totalCarbohydrate" = ?, "sugar" = ?, "fiber" = ?, "totalFat" = ?, "createdAt" = ? WHERE "id" = ?',
+            [
+                nutritionGoals.calories || existingNutritionGoals?.calories || 0,
+                nutritionGoals.protein || existingNutritionGoals?.protein || 0,
+                nutritionGoals.alcohol || existingNutritionGoals?.alcohol || 0,
+                nutritionGoals.totalCarbohydrate || existingNutritionGoals?.totalCarbohydrate || 0,
+                nutritionGoals.sugar || existingNutritionGoals?.sugar || 0,
+                nutritionGoals.fiber || existingNutritionGoals?.fiber || 0,
+                nutritionGoals.totalFat || existingNutritionGoals?.totalFat || 0,
+                nutritionGoals.createdAt || existingNutritionGoals?.createdAt || getCurrentTimestamp(),
+            ]);
+
+        return id;
+    } catch (error) {
+        throw error;
+    }
+};
+
 // Delete functions
 
 export const deleteUserMeasurements = async (id: number): Promise<void> => {
@@ -2318,6 +2390,14 @@ export const deleteChatById = async (id: number): Promise<void> => {
 export const deleteFood = async (id: number): Promise<void> => {
     try {
         database.runSync('DELETE FROM "Food" WHERE "id" = ?', [id]);
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const deleteNutritionGoals = async (id: number): Promise<void> => {
+    try {
+        database.runSync('DELETE FROM "NutritionGoals" WHERE "id" = ?', [id]);
     } catch (error) {
         throw error;
     }
@@ -2981,6 +3061,28 @@ export const createFoodTable = async (): Promise<void> => {
                     "id" INTEGER PRIMARY KEY AUTOINCREMENT,
                     "dataId" TEXT,
                     "name" TEXT,
+                    "calories" REAL,
+                    "protein" REAL,
+                    "alcohol" REAL,
+                    "totalCarbohydrate" REAL,
+                    "sugar" REAL,
+                    "fiber" REAL,
+                    "totalFat" REAL,
+                    "createdAt" TEXT DEFAULT CURRENT_TIMESTAMP,
+                    "deletedAt" TEXT
+                );
+            `);
+        }
+    }
+};
+
+export const createNutritionGoalsTable = async (): Promise<void> => {
+    const currentVersion = await getLatestVersion();
+    if (currentVersion && currentVersion < packageJson.version) {
+        if (!(await tableExists('NutritionGoals'))) {
+            await database.execAsync(`
+                CREATE TABLE "NutritionGoals" (
+                    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
                     "calories" REAL,
                     "protein" REAL,
                     "alcohol" REAL,

@@ -19,6 +19,8 @@ import {
     FoodInsertType,
     FoodReturnType,
     MetricsForUserType,
+    NutritionGoalsInsertType,
+    NutritionGoalsReturnType,
     OneRepMaxInsertType,
     OneRepMaxReturnType,
     SetInsertType,
@@ -120,6 +122,7 @@ interface IDatabase {
         // update: (id: number, workout: WorkoutInsertType) => Promise<number>;
     };
     food: {},
+    nutritionGoals: {},
 }
 
 type WorkoutExerciseInsertTypeWithStrValues = { setIds: string } & Omit<WorkoutExerciseInsertType, 'setIds'>;
@@ -133,6 +136,7 @@ export class WorkoutLoggerDatabase extends Dexie implements IDatabase {
     chats!: Dexie.Table<ChatReturnType, number, ChatInsertType>;
     exercises!: Dexie.Table<ExerciseReturnType, number, ExerciseInsertType>;
     food!: Dexie.Table<FoodReturnType, number, FoodInsertType>;
+    nutritionGoals!: Dexie.Table<NutritionGoalsReturnType, number, NutritionGoalsInsertType>;
     oneRepMaxes!: Dexie.Table<OneRepMaxReturnType, number, OneRepMaxInsertType>;
     sets!: Dexie.Table<SetReturnType, number, SetInsertType>;
     settings!: Dexie.Table<SettingsReturnType, number, SettingsInsertType>;
@@ -316,6 +320,18 @@ export class WorkoutLoggerDatabase extends Dexie implements IDatabase {
                 'fiber',
                 'totalFat',
                 'dataId',
+                'createdAt',
+                'deletedAt',
+            ].join(', '),
+            nutritionGoals: [
+                '++id',
+                'calories',
+                'protein',
+                'totalCarbohydrate',
+                'sugar',
+                'alcohol',
+                'fiber',
+                'totalFat',
                 'createdAt',
                 'deletedAt',
             ].join(', '),
@@ -535,6 +551,14 @@ export const addFood = async (food: FoodInsertType): Promise<number> => {
     const createdAt = food.createdAt || getCurrentTimestamp();
     return database.food.add({
         ...food,
+        createdAt,
+    });
+};
+
+export const addNutritionGoals = async (nutritionGoals: NutritionGoalsInsertType): Promise<number> => {
+    const createdAt = nutritionGoals.createdAt || getCurrentTimestamp();
+    return database.nutritionGoals.add({
+        ...nutritionGoals,
         createdAt,
     });
 };
@@ -1456,6 +1480,13 @@ export const getFood = async (id: number): Promise<FoodReturnType | undefined> =
         .first();
 };
 
+export const getNutritionGoals = async (id: number): Promise<NutritionGoalsReturnType | undefined> => {
+    return database.nutritionGoals
+        .where({ id })
+        .filter((nutritionGoals) => nutritionGoals.deletedAt === null || nutritionGoals.deletedAt === undefined)
+        .first();
+};
+
 // Update functions
 
 export const updateUserMeasurements = async (id: number, userMeasurements: UserMeasurementsInsertType): Promise<number> => {
@@ -1632,6 +1663,24 @@ export const updateFood = async (id: number, food: FoodInsertType): Promise<numb
     return database.food.update(id, updatedFood);
 };
 
+export const updateNutritionGoals = async (id: number, nutritionGoals: NutritionGoalsInsertType): Promise<number> => {
+    const existingNutritionGoals = await getNutritionGoals(id);
+
+    const updatedNutritionGoals = {
+        calories: nutritionGoals.calories || existingNutritionGoals?.calories || 0,
+        carbohydrate: nutritionGoals.totalCarbohydrate || existingNutritionGoals?.totalCarbohydrate || 0,
+        fat: nutritionGoals.totalFat || existingNutritionGoals?.totalFat || 0,
+        fiber: nutritionGoals.fiber || existingNutritionGoals?.fiber || 0,
+        protein: nutritionGoals.protein || existingNutritionGoals?.protein || 0,
+        sugar: nutritionGoals.sugar || existingNutritionGoals?.sugar || 0,
+        alcohol: nutritionGoals.alcohol || existingNutritionGoals?.alcohol || 0,
+        createdAt: nutritionGoals.createdAt || existingNutritionGoals?.createdAt || getCurrentTimestamp(),
+        deletedAt: nutritionGoals.deletedAt || existingNutritionGoals?.deletedAt || '',
+    };
+
+    return database.nutritionGoals.update(id, updatedNutritionGoals);
+};
+
 // Delete functions
 
 export const deleteUserMeasurements = async (id: number): Promise<void> => {
@@ -1696,6 +1745,10 @@ export const deleteAllUserNutritionFromHealthConnect = async (): Promise<void> =
 
 export const deleteChatById = async (id: number): Promise<void> => {
     await database.chats.delete(id);
+};
+
+export const deleteNutritionGoals = async (id: number): Promise<void> => {
+    await database.nutritionGoals.delete(id);
 };
 
 // Misc functions
