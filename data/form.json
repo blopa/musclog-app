@@ -1,9 +1,9 @@
 {
   "fvv": 1,
   "pageHistory": 0,
-  "fbzx": "8595470598239873551",
+  "fbzx": "1379577177772632435",
   "action": "e/1FAIpQLSdzDj1kfBN8RA4syj0T8Q2SwecQZSUObZJ_hHRzRRo-f6njZA",
-  "title": "food-data",
+  "title": "musclog-food-data",
   "description": null,
   "fields": [
     {
@@ -61,16 +61,40 @@
       "type": "SHORT_ANSWER",
       "id": "1515281433",
       "required": true
+    },
+    {
+      "label": "data_id",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "1025747995",
+      "required": true
+    },
+    {
+      "label": "created_at",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "1917240265",
+      "required": true
+    },
+    {
+      "label": "deleted_at",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "2012610317",
+      "required": false
     }
   ],
   "fieldsOrder": {
     "231759517": 6,
     "919411420": 1,
+    "1025747995": 8,
     "1039537292": 5,
     "1515281433": 7,
     "1665963898": 4,
     "1811363356": 3,
     "1848808507": 0,
+    "1917240265": 9,
+    "2012610317": 10,
     "2114676271": 2
   }
 }

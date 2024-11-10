@@ -13,6 +13,8 @@ import form from '../data/form.json';
 
 const GOOGLE_FORMS_URL = 'https://docs.google.com/forms/d';
 
+const HIDDEN_FIELDS = ['data_id', 'created_at', 'deleted_at'];
+
 const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const { t } = useTranslation();
     const { colors, dark } = useTheme<CustomThemeType>();
@@ -121,28 +123,30 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 </Button>
             </Appbar.Header>
             <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-                {form.fields.map((field) => {
-                    const isNumericField = numericFields.includes(field.label);
+                {form.fields
+                    .filter((field) => !HIDDEN_FIELDS.includes(field.label))
+                    .map((field) => {
+                        const isNumericField = numericFields.includes(field.label);
 
-                    return (
-                        <View key={field.id} style={styles.formGroup}>
-                            <Text style={styles.label}>
-                                {t(field.label)} {field.required ? <Text style={styles.required}>*</Text> : null}
-                            </Text>
-                            <CustomTextInput
-                                keyboardType={isNumericField ? 'numeric' : 'default'}
-                                onChangeText={(text) => {
-                                    const formattedText = isNumericField ? formatFloatNumericInputText(text) : text;
-                                    if (formattedText) {
-                                        handleInputChange(field.id, formattedText);
-                                    }
-                                }}
-                                placeholder={t(field.label)}
-                                value={formData[field.id]}
-                            />
-                        </View>
-                    );
-                })}
+                        return (
+                            <View key={field.id} style={styles.formGroup}>
+                                <Text style={styles.label}>
+                                    {t(field.label)} {field.required ? <Text style={styles.required}>*</Text> : null}
+                                </Text>
+                                <CustomTextInput
+                                    keyboardType={isNumericField ? 'numeric' : 'default'}
+                                    onChangeText={(text) => {
+                                        const formattedText = isNumericField ? formatFloatNumericInputText(text) : text;
+                                        if (formattedText) {
+                                            handleInputChange(field.id, formattedText);
+                                        }
+                                    }}
+                                    placeholder={t(field.label)}
+                                    value={formData[field.id]}
+                                />
+                            </View>
+                        );
+                    })}
             </ScrollView>
             <View style={styles.footer}>
                 <Button
