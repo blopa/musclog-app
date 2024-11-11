@@ -63,38 +63,38 @@ const createTables = (database: SQLiteDatabase) => {
         ],
         name: 'Exercise'
     },
-    // {
-    //     columns: [
-    //         "'id' INTEGER PRIMARY KEY AUTOINCREMENT",
-    //         "'dataId' TEXT",
-    //         "'name' TEXT",
-    //         "'createdAt' TEXT DEFAULT CURRENT_TIMESTAMP",
-    //         "'deletedAt' TEXT",
-    //         "'alcohol' REAL",
-    //         "'protein' REAL",
-    //         "'totalCarbohydrate' REAL",
-    //         "'totalFat' REAL",
-    //         "'fiber' REAL",
-    //         "'calories' REAL",
-    //         "'sugar' REAL",
-    //     ],
-    //     name: 'Food'
-    // },
-    // {
-    //     columns: [
-    //         "'id' INTEGER PRIMARY KEY AUTOINCREMENT",
-    //         "'createdAt' TEXT DEFAULT CURRENT_TIMESTAMP",
-    //         "'deletedAt' TEXT",
-    //         "'alcohol' REAL",
-    //         "'protein' REAL",
-    //         "'totalCarbohydrate' REAL",
-    //         "'totalFat' REAL",
-    //         "'fiber' REAL",
-    //         "'calories' REAL",
-    //         "'sugar' REAL",
-    //     ],
-    //     name: 'NutritionGoals'
-    // },
+    {
+        columns: [
+            "'id' INTEGER PRIMARY KEY AUTOINCREMENT",
+            "'dataId' TEXT",
+            "'name' TEXT",
+            "'createdAt' TEXT DEFAULT CURRENT_TIMESTAMP",
+            "'deletedAt' TEXT",
+            "'alcohol' REAL",
+            "'protein' REAL",
+            "'totalCarbohydrate' REAL",
+            "'totalFat' REAL",
+            "'fiber' REAL",
+            "'calories' REAL",
+            "'sugar' REAL",
+        ],
+        name: 'Food'
+    },
+    {
+        columns: [
+            "'id' INTEGER PRIMARY KEY AUTOINCREMENT",
+            "'createdAt' TEXT DEFAULT CURRENT_TIMESTAMP",
+            "'deletedAt' TEXT",
+            "'alcohol' REAL",
+            "'protein' REAL",
+            "'totalCarbohydrate' REAL",
+            "'totalFat' REAL",
+            "'fiber' REAL",
+            "'calories' REAL",
+            "'sugar' REAL",
+        ],
+        name: 'NutritionGoals'
+    },
     {
         columns: [
             "'id' INTEGER PRIMARY KEY AUTOINCREMENT",
