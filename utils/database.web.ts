@@ -16,7 +16,11 @@ import {
     ExerciseReturnType,
     ExerciseWithSetsType,
     ExperienceLevelType,
+    FoodInsertType,
+    FoodReturnType,
     MetricsForUserType,
+    NutritionGoalsInsertType,
+    NutritionGoalsReturnType,
     OneRepMaxInsertType,
     OneRepMaxReturnType,
     SetInsertType,
@@ -117,6 +121,8 @@ interface IDatabase {
         // toArray: () => Promise<WorkoutReturnType[]>;
         // update: (id: number, workout: WorkoutInsertType) => Promise<number>;
     };
+    food: {},
+    nutritionGoals: {},
 }
 
 type WorkoutExerciseInsertTypeWithStrValues = { setIds: string } & Omit<WorkoutExerciseInsertType, 'setIds'>;
@@ -129,6 +135,8 @@ export class WorkoutLoggerDatabase extends Dexie implements IDatabase {
     bio!: Dexie.Table<BioReturnType, number, BioInsertType>;
     chats!: Dexie.Table<ChatReturnType, number, ChatInsertType>;
     exercises!: Dexie.Table<ExerciseReturnType, number, ExerciseInsertType>;
+    food!: Dexie.Table<FoodReturnType, number, FoodInsertType>;
+    nutritionGoals!: Dexie.Table<NutritionGoalsReturnType, number, NutritionGoalsInsertType>;
     oneRepMaxes!: Dexie.Table<OneRepMaxReturnType, number, OneRepMaxInsertType>;
     sets!: Dexie.Table<SetReturnType, number, SetInsertType>;
     settings!: Dexie.Table<SettingsReturnType, number, SettingsInsertType>;
@@ -298,6 +306,32 @@ export class WorkoutLoggerDatabase extends Dexie implements IDatabase {
                 'description',
                 'recurringOnWeek',
                 'volumeCalculationType',
+                'createdAt',
+                'deletedAt',
+            ].join(', '),
+            food: [
+                '++id',
+                'name',
+                'calories',
+                'protein',
+                'totalCarbohydrate',
+                'sugar',
+                'alcohol',
+                'fiber',
+                'totalFat',
+                'dataId',
+                'createdAt',
+                'deletedAt',
+            ].join(', '),
+            nutritionGoals: [
+                '++id',
+                'calories',
+                'protein',
+                'totalCarbohydrate',
+                'sugar',
+                'alcohol',
+                'fiber',
+                'totalFat',
                 'createdAt',
                 'deletedAt',
             ].join(', '),
@@ -509,6 +543,22 @@ export const addUserNutrition = async (userNutrition: UserNutritionInsertType): 
 
     return database.userNutrition.add({
         ...userNutrition,
+        createdAt,
+    });
+};
+
+export const addFood = async (food: FoodInsertType): Promise<number> => {
+    const createdAt = food.createdAt || getCurrentTimestamp();
+    return database.food.add({
+        ...food,
+        createdAt,
+    });
+};
+
+export const addNutritionGoals = async (nutritionGoals: NutritionGoalsInsertType): Promise<number> => {
+    const createdAt = nutritionGoals.createdAt || getCurrentTimestamp();
+    return database.nutritionGoals.add({
+        ...nutritionGoals,
         createdAt,
     });
 };
@@ -1235,10 +1285,12 @@ export const getTotalWorkoutsCount = async (): Promise<number> => {
         .count();
 };
 
-export const getWorkoutsPaginated = async (offset: number, limit: number): Promise<WorkoutReturnType[]> => {
+export const getWorkoutsPaginated = async (offset: number, limit: number, loadDeleted = true): Promise<WorkoutReturnType[]> => {
     const workouts = await database.workouts
         .orderBy('createdAt')
-        .filter((workout) => workout.deletedAt === null || workout.deletedAt === undefined)
+        .filter((workout) => {
+            return loadDeleted || (workout.deletedAt === null || workout.deletedAt === undefined)
+        })
         .offset(offset)
         .limit(limit)
         .toArray();
@@ -1421,6 +1473,20 @@ export const getTotalUserNutritionCount = async (): Promise<number> => {
     return database.userNutrition.count();
 };
 
+export const getFood = async (id: number): Promise<FoodReturnType | undefined> => {
+    return database.food
+        .where({ id })
+        .filter((food) => food.deletedAt === null || food.deletedAt === undefined)
+        .first();
+};
+
+export const getNutritionGoals = async (id: number): Promise<NutritionGoalsReturnType | undefined> => {
+    return database.nutritionGoals
+        .where({ id })
+        .filter((nutritionGoals) => nutritionGoals.deletedAt === null || nutritionGoals.deletedAt === undefined)
+        .first();
+};
+
 // Update functions
 
 export const updateUserMeasurements = async (id: number, userMeasurements: UserMeasurementsInsertType): Promise<number> => {
@@ -1577,6 +1643,44 @@ export const updateWorkoutEvent = async (id: number, workoutEvent: WorkoutEventI
     return database.workoutEvents.update(id, updatedWorkoutEvent);
 };
 
+export const updateFood = async (id: number, food: FoodInsertType): Promise<number> => {
+    const existingFood = await getFood(id);
+
+    const updatedFood = {
+        calories: food.calories || existingFood?.calories || 0,
+        totalCarbohydrate: food.totalCarbohydrate || existingFood?.totalCarbohydrate || 0,
+        totalFat: food.totalFat || existingFood?.totalFat || 0,
+        fiber: food.fiber || existingFood?.fiber || 0,
+        name: food.name || existingFood?.name || '',
+        protein: food.protein || existingFood?.protein || 0,
+        createdAt: food.createdAt || existingFood?.createdAt || getCurrentTimestamp(),
+        deletedAt: food.deletedAt || existingFood?.deletedAt || '',
+        dataId: food.dataId || existingFood?.dataId || generateHash(),
+        sugar: food.sugar || existingFood?.sugar || 0,
+        alcohol: food.alcohol || existingFood?.alcohol || 0,
+    };
+
+    return database.food.update(id, updatedFood);
+};
+
+export const updateNutritionGoals = async (id: number, nutritionGoals: NutritionGoalsInsertType): Promise<number> => {
+    const existingNutritionGoals = await getNutritionGoals(id);
+
+    const updatedNutritionGoals = {
+        calories: nutritionGoals.calories || existingNutritionGoals?.calories || 0,
+        carbohydrate: nutritionGoals.totalCarbohydrate || existingNutritionGoals?.totalCarbohydrate || 0,
+        fat: nutritionGoals.totalFat || existingNutritionGoals?.totalFat || 0,
+        fiber: nutritionGoals.fiber || existingNutritionGoals?.fiber || 0,
+        protein: nutritionGoals.protein || existingNutritionGoals?.protein || 0,
+        sugar: nutritionGoals.sugar || existingNutritionGoals?.sugar || 0,
+        alcohol: nutritionGoals.alcohol || existingNutritionGoals?.alcohol || 0,
+        createdAt: nutritionGoals.createdAt || existingNutritionGoals?.createdAt || getCurrentTimestamp(),
+        deletedAt: nutritionGoals.deletedAt || existingNutritionGoals?.deletedAt || '',
+    };
+
+    return database.nutritionGoals.update(id, updatedNutritionGoals);
+};
+
 // Delete functions
 
 export const deleteUserMeasurements = async (id: number): Promise<void> => {
@@ -1641,6 +1745,10 @@ export const deleteAllUserNutritionFromHealthConnect = async (): Promise<void> =
 
 export const deleteChatById = async (id: number): Promise<void> => {
     await database.chats.delete(id);
+};
+
+export const deleteNutritionGoals = async (id: number): Promise<void> => {
+    await database.nutritionGoals.delete(id);
 };
 
 // Misc functions
@@ -2047,6 +2155,36 @@ export const addMacrosToWorkoutEventTable = async (): Promise<void> => {
                 'carbohydrate',
                 'fat',
                 'calories',
+            ].join(', '),
+        });
+
+        if (!database.isOpen()) {
+            database.open();
+        }
+    }
+};
+
+export const createFoodTable = async (): Promise<void> => {
+    const currentVersion = await getLatestVersion();
+    if (currentVersion && currentVersion < packageJson.version) {
+        if (database.isOpen()) {
+            database.close();
+        }
+
+        database.version(7).stores({
+            food: [
+                '++id',
+                'name',
+                'calories',
+                'protein',
+                'totalCarbohydrate',
+                'sugar',
+                'alcohol',
+                'fiber',
+                'totalFat',
+                'dataId',
+                'createdAt',
+                'deletedAt',
             ].join(', '),
         });
 

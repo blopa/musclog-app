@@ -1,0 +1,100 @@
+{
+  "fvv": 1,
+  "pageHistory": 0,
+  "fbzx": "-2343177716689721279",
+  "action": "e/1FAIpQLSdzDj1kfBN8RA4syj0T8Q2SwecQZSUObZJ_hHRzRRo-f6njZA",
+  "title": "musclog-food-data",
+  "description": null,
+  "fields": [
+    {
+      "label": "name",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "1515281433",
+      "required": true
+    },
+    {
+      "label": "calories",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "1848808507",
+      "required": true
+    },
+    {
+      "label": "total_carbohydrate",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "919411420",
+      "required": true
+    },
+    {
+      "label": "total_fat",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "2114676271",
+      "required": true
+    },
+    {
+      "label": "protein",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "1811363356",
+      "required": true
+    },
+    {
+      "label": "alcohol",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "1665963898",
+      "required": false
+    },
+    {
+      "label": "fiber",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "1039537292",
+      "required": false
+    },
+    {
+      "label": "sugar",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "231759517",
+      "required": false
+    },
+    {
+      "label": "data_id",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "1025747995",
+      "required": true
+    },
+    {
+      "label": "created_at",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "1917240265",
+      "required": true
+    },
+    {
+      "label": "deleted_at",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "2012610317",
+      "required": false
+    }
+  ],
+  "fieldsOrder": {
+    "231759517": 7,
+    "919411420": 2,
+    "1025747995": 8,
+    "1039537292": 6,
+    "1515281433": 0,
+    "1665963898": 5,
+    "1811363356": 4,
+    "1848808507": 1,
+    "1917240265": 9,
+    "2012610317": 10,
+    "2114676271": 3
+  }
+}

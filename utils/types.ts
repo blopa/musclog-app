@@ -232,6 +232,42 @@ export type ChatReturnType = {
     id: number;
 } & Omit<ChatInsertType, 'id'>;
 
+export type NutritionGoalsInsertType = {
+    createdAt?: string;
+    deletedAt?: string;
+    id?: number;
+    calories: number;
+    totalCarbohydrate: number;
+    totalFat: number;
+    protein: number;
+    alcohol?: number;
+    fiber?: number;
+    sugar?: number;
+};
+
+export type NutritionGoalsReturnType = {
+    id: number;
+} & Omit<NutritionGoalsInsertType, 'id'>;
+
+export type FoodInsertType = {
+    createdAt?: string;
+    deletedAt?: string;
+    id?: number;
+    dataId?: string;
+    calories: number;
+    totalCarbohydrate: number;
+    totalFat: number;
+    protein: number;
+    alcohol?: number;
+    fiber?: number;
+    sugar?: number;
+    name: string;
+};
+
+export type FoodReturnType = {
+    id: number;
+} & Omit<FoodInsertType, 'id'>;
+
 type WorkoutTypeWithOptionalExerciseIds = {} & Omit<WorkoutReturnType, 'volumeCalculationType'>;
 
 export type WorkoutEventInsertType = {

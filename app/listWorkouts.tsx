@@ -41,6 +41,7 @@ import {
     Card,
     Text,
     useTheme,
+    Switch,
 } from 'react-native-paper';
 
 export default function ListWorkouts({ navigation }: { navigation: NavigationProp<any> }) {
@@ -49,6 +50,7 @@ export default function ListWorkouts({ navigation }: { navigation: NavigationPro
     const styles = makeStyles(colors, dark);
 
     const [workouts, setWorkouts] = useState<WorkoutReturnType[]>([]);
+    const [showDeletedWorkouts, setShowDeletedWorkouts] = useState(false);
     const [workoutDetails, setWorkoutDetails] = useState<{
         [key: number]: {
             workout: WorkoutReturnType;
@@ -80,7 +82,7 @@ export default function ListWorkouts({ navigation }: { navigation: NavigationPro
 
     const loadWorkouts = useCallback(async (offset = 0, limit = 20) => {
         try {
-            const loadedWorkouts = await getWorkoutsPaginated(offset, limit);
+            const loadedWorkouts = await getWorkoutsPaginated(offset, limit, showDeletedWorkouts);
             const sortedWorkouts = loadedWorkouts.sort(
                 (a, b) => b.id! - a.id!
             );
@@ -129,9 +131,7 @@ export default function ListWorkouts({ navigation }: { navigation: NavigationPro
         } catch (error) {
             console.error(t('failed_load_workouts'), error);
         }
-    },
-    [isImperial, t]
-    );
+    }, [isImperial, t, showDeletedWorkouts]);
 
     const loadMoreWorkouts = useCallback(() => {
         if (workouts.length >= totalWorkoutsCount) {
@@ -310,6 +310,9 @@ export default function ListWorkouts({ navigation }: { navigation: NavigationPro
         return actions;
     }, [colors.primary, colors.surface, isAiEnabled, handleGenerateWorkoutPlan, navigation, t]);
 
+    const handleShowDeletedWorkouts = useCallback(() => {
+        setShowDeletedWorkouts((prev) => !prev);
+    }, []);
 
     return (
         <FABWrapper actions={fabActions} visible>
@@ -328,6 +331,13 @@ export default function ListWorkouts({ navigation }: { navigation: NavigationPro
                         setSearchQuery={setSearchQuery}
                     />
                 </Appbar.Header>
+                <View style={styles.toggleContainer}>
+                    <Text style={styles.toggleLabel}>{t('show_deleted_workouts')}</Text>
+                    <Switch
+                        value={showDeletedWorkouts}
+                        onValueChange={handleShowDeletedWorkouts}
+                    />
+                </View>
                 {filteredWorkouts.length > 0 ? (
                     <FlashList
                         ListFooterComponent={
@@ -545,5 +555,17 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     startWorkoutButton: {
         backgroundColor: colors.primary,
         color: colors.onBackground,
+    },
+    toggleContainer: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 16,
+        marginVertical: 8,
+        paddingHorizontal: 16,
+    },
+    toggleLabel: {
+        color: colors.onBackground,
+        fontSize: 16,
     },
 });
