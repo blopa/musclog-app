@@ -57,9 +57,9 @@ const createTables = (database: SQLiteDatabase) => {
             "'muscleGroup' TEXT",
             "'type' TEXT",
             "'description' TEXT",
-            "'image' TEXT",
+            "'image' TEXT NULLABLE",
             "'createdAt' TEXT DEFAULT CURRENT_TIMESTAMP",
-            "'deletedAt' TEXT",
+            "'deletedAt' TEXT NULLABLE",
         ],
         name: 'Exercise'
     },
@@ -69,7 +69,7 @@ const createTables = (database: SQLiteDatabase) => {
     //         "'dataId' TEXT",
     //         "'name' TEXT",
     //         "'createdAt' TEXT DEFAULT CURRENT_TIMESTAMP",
-    //         "'deletedAt' TEXT",
+    //         "'deletedAt' TEXT NULLABLE",
     //         "'alcohol' REAL",
     //         "'protein' REAL",
     //         "'totalCarbohydrate' REAL",
@@ -84,7 +84,7 @@ const createTables = (database: SQLiteDatabase) => {
     //     columns: [
     //         "'id' INTEGER PRIMARY KEY AUTOINCREMENT",
     //         "'createdAt' TEXT DEFAULT CURRENT_TIMESTAMP",
-    //         "'deletedAt' TEXT",
+    //         "'deletedAt' TEXT NULLABLE",
     //         "'alcohol' REAL",
     //         "'protein' REAL",
     //         "'totalCarbohydrate' REAL",
@@ -108,7 +108,7 @@ const createTables = (database: SQLiteDatabase) => {
             "'difficultyLevel' INTEGER",
             "'isDropSet' INTEGER",
             "'createdAt' TEXT DEFAULT CURRENT_TIMESTAMP",
-            "'deletedAt' TEXT",
+            "'deletedAt' TEXT NULLABLE",
         ],
         name: 'Set'
     },
@@ -120,7 +120,7 @@ const createTables = (database: SQLiteDatabase) => {
             "'volumeCalculationType' TEXT",
             "'recurringOnWeek' TEXT",
             "'createdAt' TEXT DEFAULT CURRENT_TIMESTAMP",
-            "'deletedAt' TEXT",
+            "'deletedAt' TEXT NULLABLE",
         ],
         name: 'Workout'
     },
@@ -134,7 +134,7 @@ const createTables = (database: SQLiteDatabase) => {
             "'liftingExperience' TEXT",
             "'gender' TEXT",
             "'createdAt' TEXT DEFAULT CURRENT_TIMESTAMP",
-            "'deletedAt' TEXT",
+            "'deletedAt' TEXT NULLABLE",
         ],
         name: 'User'
     },
@@ -146,7 +146,7 @@ const createTables = (database: SQLiteDatabase) => {
             "'misc' TEXT",
             "'type' TEXT",
             "'createdAt' TEXT DEFAULT CURRENT_TIMESTAMP",
-            "'deletedAt' TEXT",
+            "'deletedAt' TEXT NULLABLE",
         ],
         name: 'Chat'
     },
@@ -160,7 +160,7 @@ const createTables = (database: SQLiteDatabase) => {
             "'workoutScore' INTEGER",
             "'workoutVolume' TEXT",
             "'fatPercentage' TEXT",
-            "'eatingPhase' TEXT",
+            "'eatingPhase' TEXT NULLABLE",
             "'workoutId' INTEGER",
             "'title' TEXT",
             "'status' TEXT",
@@ -168,7 +168,7 @@ const createTables = (database: SQLiteDatabase) => {
             "'recurringOnWeek' TEXT",
             "'description' TEXT",
             "'createdAt' TEXT DEFAULT CURRENT_TIMESTAMP",
-            "'deletedAt' TEXT",
+            "'deletedAt' TEXT NULLABLE",
             "'alcohol' REAL",
             "'protein' REAL",
             "'carbohydrate' REAL",
@@ -186,7 +186,7 @@ const createTables = (database: SQLiteDatabase) => {
             "'setIds' TEXT",
             "'order' INTEGER",
             "'createdAt' TEXT DEFAULT CURRENT_TIMESTAMP",
-            "'deletedAt' TEXT",
+            "'deletedAt' TEXT NULLABLE",
         ],
         name: 'WorkoutExercise'
     },
@@ -196,7 +196,7 @@ const createTables = (database: SQLiteDatabase) => {
             "'type' TEXT",
             "'value' TEXT",
             "'createdAt' TEXT DEFAULT CURRENT_TIMESTAMP",
-            "'deletedAt' TEXT",
+            "'deletedAt' TEXT NULLABLE",
         ],
         name: 'Setting'
     },
@@ -205,7 +205,7 @@ const createTables = (database: SQLiteDatabase) => {
             "'id' INTEGER PRIMARY KEY AUTOINCREMENT",
             "'value' TEXT",
             "'createdAt' TEXT DEFAULT CURRENT_TIMESTAMP",
-            "'deletedAt' TEXT",
+            "'deletedAt' TEXT NULLABLE",
         ],
         name: 'Bio'
     },
@@ -223,9 +223,9 @@ const createTables = (database: SQLiteDatabase) => {
             "'measurements' TEXT",
             "'userId' INTEGER",
             "'date' TEXT",
-            "'source' TEXT",
+            "'source' TEXT NULLABLE",
             "'createdAt' TEXT DEFAULT CURRENT_TIMESTAMP",
-            "'deletedAt' TEXT",
+            "'deletedAt' TEXT NULLABLE",
         ],
         name: 'UserMeasurements'
     },
@@ -235,7 +235,7 @@ const createTables = (database: SQLiteDatabase) => {
             "'exerciseId' INTEGER",
             "'weight' INTEGER",
             "'createdAt' TEXT DEFAULT CURRENT_TIMESTAMP",
-            "'deletedAt' TEXT",
+            "'deletedAt' TEXT NULLABLE",
         ],
         name: 'OneRepMax'
     },
@@ -243,15 +243,15 @@ const createTables = (database: SQLiteDatabase) => {
         columns: [
             "'id' INTEGER PRIMARY KEY AUTOINCREMENT",
             "'userId' INTEGER",
-            "'weight' TEXT",
-            "'height' TEXT",
-            "'fatPercentage' TEXT",
-            "'eatingPhase' TEXT",
+            "'weight' TEXT NULLABLE",
+            "'height' TEXT NULLABLE",
+            "'fatPercentage' TEXT NULLABLE",
+            "'eatingPhase' TEXT NULLABLE",
             "'dataId' TEXT",
             "'date' TEXT",
-            "'source' TEXT",
+            "'source' TEXT NULLABLE",
             "'createdAt' TEXT DEFAULT CURRENT_TIMESTAMP",
-            "'deletedAt' TEXT",
+            "'deletedAt' TEXT NULLABLE",
         ],
         name: 'UserMetrics'
     },
@@ -277,7 +277,7 @@ const createTables = (database: SQLiteDatabase) => {
             "'source' TEXT",
             "'date' TEXT",
             "'createdAt' TEXT DEFAULT CURRENT_TIMESTAMP",
-            "'deletedAt' TEXT",
+            "'deletedAt' TEXT NULLABLE",
         ],
         name: 'UserNutrition'
     }];
@@ -2615,12 +2615,12 @@ export const restoreDatabase = async (dump: string, decryptionPhrase?: string): 
             dump = await decrypt(dump, decryptionPhrase);
         }
 
-        const dbData = JSON.parse(dump);
+        const dbData: Record<string, Record<string, string | number | null>[]> = JSON.parse(dump);
         database.runSync('PRAGMA foreign_keys = OFF;');
 
         for (const tableName of Object.keys(dbData)) {
-            const tableData = dbData[tableName];
-            if (tableData === 'Versioning') {
+            const tableData: Record<string, string | number | null>[] = dbData[tableName];
+            if (tableName === 'Versioning') {
                 continue;
             }
 
@@ -2628,7 +2628,7 @@ export const restoreDatabase = async (dump: string, decryptionPhrase?: string): 
 
             for (const row of tableData) {
                 // console.log('THE ROW:', row);
-                const columns = Object.keys(row).map((element) => `"${element}"`).join(', ');
+                const columns = Object.keys(row).map((column) => `"${column}"`).join(', ');
                 if (!columns) {
                     console.error(`No columns found for table ${tableName}`);
                     continue;
@@ -2702,7 +2702,7 @@ export const restoreDatabase = async (dump: string, decryptionPhrase?: string): 
                     }
                 }
 
-                const values = Object.values(row).map((value: any) => {
+                const values = Object.values(row).map((value: string | number | null | undefined) => {
                     if (typeof value === 'string') {
                         return `'${value.replace(/'/g, "''")}'`;
                     } else if (value === null || value === undefined) {
