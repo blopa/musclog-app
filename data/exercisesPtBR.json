@@ -102,5 +102,6 @@
   { "name": "Posição de Corpo Oco", "muscleGroup": "core", "type": "bodyweight", "description": "Um exercício de core onde você mantém uma posição oca, com as costas baixas pressionadas no chão e os braços e pernas estendidos." },
   { "name": "Abdominal Reverso", "muscleGroup": "abdomen", "type": "bodyweight", "description": "Um exercício abdominal onde você flexiona os quadris em direção ao peito, focando nos abdominais inferiores." },
   { "name": "Rolo Abdominal", "muscleGroup": "core", "type": "bodyweight", "description": "Um exercício de core que envolve rolar um rolo abdominal para longe do corpo enquanto mantém o core estável." },
-  { "name": "Flexão Pike", "muscleGroup": "shoulders", "type": "bodyweight", "description": "Um exercício de ombros onde você realiza uma flexão na posição pike, enfatizando os ombros." }
+  { "name": "Flexão Pike", "muscleGroup": "shoulders", "type": "bodyweight", "description": "Um exercício de ombros onde você realiza uma flexão na posição pike, enfatizando os ombros." },
+  { "name": "Crunch no Cabo", "muscleGroup": "abdomen", "type": "bodyweight", "description": "Um exercício abdominal onde você faz um movimento de crunch com um cabo para adicionar resistência." }
 ]

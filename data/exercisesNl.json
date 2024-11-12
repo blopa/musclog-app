@@ -102,5 +102,6 @@
   { "name": "Holle Lichaamshouding", "muscleGroup": "core", "type": "bodyweight", "description": "Een core-oefening waarbij je een holle positie aanneemt, met je onderrug tegen de vloer gedrukt en je armen en benen uitgestrekt." },
   { "name": "Omgekeerde Crunch", "muscleGroup": "abdomen", "type": "bodyweight", "description": "Een buikspieroefening waarbij je je heupen naar je borst buigt, gericht op de onderste buikspieren." },
   { "name": "Ab Wheel Rollout", "muscleGroup": "core", "type": "bodyweight", "description": "Een core-oefening waarbij je een ab wheel van je lichaam afrolt terwijl je je core stabiel houdt." },
-  { "name": "Pike Push-Up", "muscleGroup": "shoulders", "type": "bodyweight", "description": "Een schouderoefening waarbij je een push-up uitvoert in een pike-positie, gericht op de schouders." }
+  { "name": "Pike Push-Up", "muscleGroup": "shoulders", "type": "bodyweight", "description": "Een schouderoefening waarbij je een push-up uitvoert in een pike-positie, gericht op de schouders." },
+  { "name": "Cable Crunch", "muscleGroup": "abdomen", "type": "bodyweight", "description": "Een buikspieroefening waarbij je een crunch-beweging maakt met een kabel voor extra weerstand." }
 ]

@@ -102,5 +102,6 @@
   { "name": "Hollow Body Hold", "muscleGroup": "core", "type": "bodyweight", "description": "A core exercise where you hold a hollow position, with your lower back pressed to the floor and your arms and legs extended." },
   { "name": "Reverse Crunch", "muscleGroup": "abdomen", "type": "bodyweight", "description": "An abdominal exercise where you curl your hips towards your chest, focusing on the lower abs." },
   { "name": "Ab Wheel Rollout", "muscleGroup": "core", "type": "bodyweight", "description": "A core exercise that involves rolling an ab wheel away from your body while maintaining a stable core." },
-  { "name": "Pike Push-Up", "muscleGroup": "shoulders", "type": "bodyweight", "description": "A shoulder exercise where you perform a push-up in a pike position, emphasizing the shoulders." }
+  { "name": "Pike Push-Up", "muscleGroup": "shoulders", "type": "bodyweight", "description": "A shoulder exercise where you perform a push-up in a pike position, emphasizing the shoulders." },
+  { "name": "Cable Crunch", "muscleGroup": "abdomen", "type": "bodyweight", "description": "An abdominal exercise where you perform a crunch motion with a cable attachment for added resistance." }
 ]

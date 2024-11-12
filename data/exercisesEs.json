@@ -102,5 +102,6 @@
   { "name": "Posición de Cuerpo Hueco", "muscleGroup": "core", "type": "bodyweight", "description": "Un ejercicio de core donde mantienes una posición hueca, con la parte baja de la espalda presionada contra el suelo y los brazos y piernas extendidos." },
   { "name": "Crunch Inverso", "muscleGroup": "abdomen", "type": "bodyweight", "description": "Un ejercicio abdominal en el que flexionas las caderas hacia el pecho, enfocándote en los abdominales inferiores." },
   { "name": "Rueda Abdominal", "muscleGroup": "core", "type": "bodyweight", "description": "Un ejercicio de core que implica rodar una rueda abdominal lejos del cuerpo mientras mantienes el core estable." },
-  { "name": "Flexiones Pike", "muscleGroup": "shoulders", "type": "bodyweight", "description": "Un ejercicio de hombros en el que realizas una flexión en posición pike, enfatizando los hombros." }
+  { "name": "Flexiones Pike", "muscleGroup": "shoulders", "type": "bodyweight", "description": "Un ejercicio de hombros en el que realizas una flexión en posición pike, enfatizando los hombros." },
+  { "name": "Crunch en Cable", "muscleGroup": "abdomen", "type": "bodyweight", "description": "Un ejercicio abdominal en el que realizas un movimiento de crunch con una polea para añadir resistencia." }
 ]
