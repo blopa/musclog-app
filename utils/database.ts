@@ -2610,6 +2610,11 @@ export const restoreDatabase = async (dump: string, decryptionPhrase?: string): 
             if (tableName === 'Versioning') {
                 continue;
             }
+            
+            if (!(await tableExists(tableName))) {
+                console.log(`Table ${tableName} does not exist, creating it...`);
+                continue;
+            }
 
             database.runSync(`DELETE FROM "${tableName}";`);
 
@@ -2705,7 +2710,10 @@ export const restoreDatabase = async (dump: string, decryptionPhrase?: string): 
                 }
 
                 const query = `INSERT INTO "${tableName}" (${columns}) VALUES (${values})`;
-                console.log(`Running query: ${query}`);
+                
+                // if (tableName === 'Set') {
+                //     console.log(`Running query: ${query}`);
+                // }
                 // console.log(`Inserting row into table ${tableName}`);
                 database.runSync(query);
             }
