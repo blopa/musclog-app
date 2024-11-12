@@ -41,7 +41,6 @@ import {
     VersioningReturnType,
     WorkoutEventInsertType,
     WorkoutEventReturnType,
-    WorkoutExerciseReturnType,
     WorkoutInsertType,
     WorkoutPlan,
     WorkoutReturnType,
@@ -177,18 +176,6 @@ const createTables = (database: SQLiteDatabase) => {
             "'calories' REAL",
         ],
         name: 'WorkoutEvent'
-    },
-    {
-        columns: [
-            "'id' INTEGER PRIMARY KEY AUTOINCREMENT",
-            "'workoutId' INTEGER",
-            "'exerciseId' INTEGER",
-            "'setIds' TEXT",
-            "'order' INTEGER",
-            "'createdAt' TEXT DEFAULT CURRENT_TIMESTAMP",
-            "'deletedAt' TEXT NULLABLE",
-        ],
-        name: 'WorkoutExercise'
     },
     {
         columns: [
@@ -2795,7 +2782,15 @@ export const createNewWorkoutTables = async (): Promise<void> => {
 
             const workoutExercises = await database.getAllSync(`
                 SELECT * FROM "WorkoutExercise" WHERE ("deletedAt" IS NULL OR "deletedAt" = \'\')
-            `) as WorkoutExerciseReturnType[];
+            `) as {
+                createdAt?: string;
+                deletedAt?: string;
+                exerciseId: number;
+                id: number;
+                order: number;
+                setIds: number[];
+                workoutId: number;
+            }[];
 
             const sets = await database.getAllSync(`
                 SELECT * FROM "Set" WHERE ("deletedAt" IS NULL OR "deletedAt" = \'\')
@@ -2881,7 +2876,11 @@ export const createNewWorkoutTables = async (): Promise<void> => {
                 await database.runSync('DROP TABLE "Workout";');
                 console.log('Dropped original "Workout" table.');
 
-                // d. Rename the temporary table to 'Workout'.
+                // d. Drop the original 'WorkoutExercise' table.
+                await database.runSync('DROP TABLE "WorkoutExercise";');
+                console.log('Dropped original "WorkoutExercise" table.');
+
+                // e. Rename the temporary table to 'Workout'.
                 await database.runSync('ALTER TABLE "Workout_temp" RENAME TO "Workout";');
                 console.log('Renamed "Workout_temp" to "Workout".');
             }
