@@ -2620,6 +2620,9 @@ export const restoreDatabase = async (dump: string, decryptionPhrase?: string): 
 
         for (const tableName of Object.keys(dbData)) {
             const tableData = dbData[tableName];
+            if (tableData === 'Versioning') {
+                continue;
+            }
 
             database.runSync(`DELETE FROM "${tableName}";`);
 
@@ -2715,7 +2718,7 @@ export const restoreDatabase = async (dump: string, decryptionPhrase?: string): 
                 }
 
                 const query = `INSERT INTO "${tableName}" (${columns}) VALUES (${values})`;
-                // console.log(`Running query: ${query}`);
+                console.log(`Running query: ${query}`);
                 // console.log(`Inserting row into table ${tableName}`);
                 database.runSync(query);
             }

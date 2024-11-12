@@ -568,7 +568,7 @@ export const addNutritionGoals = async (nutritionGoals: NutritionGoalsInsertType
 export const getUserMeasurements = async (id: number): Promise<UserMeasurementsReturnType | undefined> => {
     const result = await database.userMeasurements
         .where({ id })
-        .filter((userMeasurements) => userMeasurements.deletedAt === null || userMeasurements.deletedAt === undefined)
+        .filter((userMeasurements) => !userMeasurements.deletedAt)
         .first();
 
     if (result) {
@@ -585,7 +585,7 @@ export const getUserMeasurementsBetweenDates = async (startDate: string, endDate
     const result = await database.userMeasurements
         .where('date')
         .between(startDate, endDate, true, true)
-        .filter((userMeasurements) => userMeasurements.deletedAt === null || userMeasurements.deletedAt === undefined)
+        .filter((userMeasurements) => !userMeasurements.deletedAt)
         .toArray();
 
     return result.map((userMeasurements) => ({
@@ -600,7 +600,7 @@ export const getUserMeasurementsFromDate = async (startDate: string): Promise<({
     const result = await database.userMeasurements
         .where('date')
         .between(startDate, todayDate, true, true)
-        .filter((userMeasurements) => userMeasurements.deletedAt === null || userMeasurements.deletedAt === undefined)
+        .filter((userMeasurements) => !userMeasurements.deletedAt)
         .toArray();
 
     return result.map((userMeasurements) => ({
@@ -612,7 +612,7 @@ export const getUserMeasurementsFromDate = async (startDate: string): Promise<({
 export const getUserMeasurementsPaginated = async (offset = 0, limit = 20): Promise<UserMeasurementsReturnType[]> => {
     const result = await database.userMeasurements
         .orderBy('id')
-        .filter((userMeasurements) => userMeasurements.deletedAt === null || userMeasurements.deletedAt === undefined)
+        .filter((userMeasurements) => !userMeasurements.deletedAt)
         .offset(limit * offset)
         .limit(limit)
         .toArray();
@@ -644,46 +644,46 @@ export const getVersioningByVersion = async (version: string): Promise<Versionin
 export const getOneRepMax = async (exerciseId: number): Promise<OneRepMaxReturnType | undefined> => {
     return database.oneRepMaxes
         .where({ exerciseId })
-        .filter((oneRepMax) => oneRepMax.deletedAt === null || oneRepMax.deletedAt === undefined)
+        .filter((oneRepMax) => !oneRepMax.deletedAt)
         .first();
 };
 
 export const getBio = async (id: number): Promise<BioReturnType | undefined> => {
     return database.bio
         .where({ id })
-        .filter((bio) => bio.deletedAt === null || bio.deletedAt === undefined)
+        .filter((bio) => !bio.deletedAt)
         .first();
 };
 
 export const getAllBio = async (): Promise<BioReturnType[]> => {
     return database.bio
-        .filter((bio) => bio.deletedAt === null || bio.deletedAt === undefined)
+        .filter((bio) => !bio.deletedAt)
         .toArray();
 };
 
 export const getSetting = async (type: string): Promise<SettingsReturnType | undefined> => {
     return database.settings
         .where({ type })
-        .filter((setting) => setting.deletedAt === null || setting.deletedAt === undefined)
+        .filter((setting) => !setting.deletedAt)
         .first();
 };
 
 export const getAllSettings = async (): Promise<SettingsReturnType[]> => {
     return database.settings
-        .filter((setting) => setting.deletedAt === null || setting.deletedAt === undefined)
+        .filter((setting) => !setting.deletedAt)
         .toArray();
 };
 
 export const getAllChats = async (): Promise<ChatReturnType[]> => {
     return database.chats
-        .filter((chat) => chat.deletedAt === null || chat.deletedAt === undefined)
+        .filter((chat) => !chat.deletedAt)
         .toArray();
 };
 
 export const getChatsPaginated = async (offset = 0, limit = 20): Promise<ChatReturnType[]> => {
     return database.chats
         .orderBy('id')
-        .filter((chat) => chat.deletedAt === null || chat.deletedAt === undefined)
+        .filter((chat) => !chat.deletedAt)
         .reverse()
         .offset(limit * offset)
         .limit(limit)
@@ -697,7 +697,7 @@ export const getUser = async (id?: number): Promise<UserWithMetricsType | undefi
 
     const user = await database.users
         .where({ id })
-        .filter((user) => user.deletedAt === null || user.deletedAt === undefined)
+        .filter((user) => !user.deletedAt)
         .first();
 
     if (user) {
@@ -710,14 +710,14 @@ export const getUser = async (id?: number): Promise<UserWithMetricsType | undefi
 
 export const getAllUsers = async (): Promise<UserReturnType[]> => {
     return database.users
-        .filter((user) => user.deletedAt === null || user.deletedAt === undefined)
+        .filter((user) => !user.deletedAt)
         .toArray();
 };
 
 export const getAllLatestMetricsForUser = async (userId: number): Promise<MetricsForUserType | undefined> => {
     const metrics = await database.userMetrics
         .orderBy('date')
-        .filter((userMetrics) => (userMetrics.deletedAt === null || userMetrics.deletedAt === undefined) && userMetrics.userId === userId)
+        .filter((userMetrics) => (!userMetrics.deletedAt) && userMetrics.userId === userId)
         .toArray();
 
     if (metrics.length === 0) {
@@ -783,7 +783,7 @@ export const getAllLatestMetricsForUser = async (userId: number): Promise<Metric
 export const getAllUserMetricsByUserId = async (userId: number): Promise<UserMetricsDecryptedReturnType[]> => {
     const results = await database.userMetrics
         .where({ userId })
-        .filter((userMetrics) => userMetrics.deletedAt === null || userMetrics.deletedAt === undefined)
+        .filter((userMetrics) => !userMetrics.deletedAt)
         .toArray();
 
     return results.map((userMetrics) => ({
@@ -797,7 +797,7 @@ export const getAllUserMetricsByUserId = async (userId: number): Promise<UserMet
 export const getUserMetrics = async (id: number): Promise<UserMetricsDecryptedReturnType | undefined> => {
     const userMetrics = await database.userMetrics
         .where({ id })
-        .filter((userMetrics) => userMetrics.deletedAt === null || userMetrics.deletedAt === undefined)
+        .filter((userMetrics) => !userMetrics.deletedAt)
         .first();
 
     if (userMetrics) {
@@ -815,7 +815,7 @@ export const getUserMetricsPaginated = async (offset = 0, limit = 20): Promise<U
     const results = await database.userMetrics
         .orderBy('date')
         .reverse()
-        .filter((userMetrics) => userMetrics.deletedAt === null || userMetrics.deletedAt === undefined)
+        .filter((userMetrics) => !userMetrics.deletedAt)
         .offset(offset)
         .limit(limit)
         .toArray();
@@ -832,7 +832,7 @@ export const getUserMetricsBetweenDates = async (startDate: string, endDate: str
     const results = await database.userMetrics
         .where('date')
         .between(startDate, endDate, true, true)
-        .filter((userMetrics) => userMetrics.deletedAt === null || userMetrics.deletedAt === undefined)
+        .filter((userMetrics) => !userMetrics.deletedAt)
         .toArray();
 
     return results.map((userMetrics) => ({
@@ -849,7 +849,7 @@ export const getUserMetricsFromDate = async (startDate: string): Promise<UserMet
     const results = await database.userMetrics
         .where('date')
         .between(startDate, todayDate, true, true)
-        .and((userMetrics) => userMetrics.deletedAt === null || userMetrics.deletedAt === undefined)
+        .and((userMetrics) => !userMetrics.deletedAt)
         // .reverse()
         .toArray();
 
@@ -867,7 +867,7 @@ export const getTotalUserMetricsCount = async (): Promise<number> => {
 
 export const getAllUserMetrics = async (): Promise<UserMetricsDecryptedReturnType[]> => {
     const results = await database.userMetrics
-        .filter((userMetrics) => userMetrics.deletedAt === null || userMetrics.deletedAt === undefined)
+        .filter((userMetrics) => !userMetrics.deletedAt)
         .toArray();
 
     return results.map((userMetrics) => ({
@@ -880,7 +880,7 @@ export const getAllUserMetrics = async (): Promise<UserMetricsDecryptedReturnTyp
 
 export const getAllUserNutrition = async (): Promise<UserNutritionDecryptedReturnType[]> => {
     const results = await database.userNutrition
-        .filter((userNutrition) => userNutrition.deletedAt === null || userNutrition.deletedAt === undefined)
+        .filter((userNutrition) => !userNutrition.deletedAt)
         .toArray();
 
     return results.map((userNutrition) => ({
@@ -902,7 +902,7 @@ export const getAllUserNutrition = async (): Promise<UserNutritionDecryptedRetur
 export const getUserMetricsByDataId = async (dataId: string): Promise<UserMetricsDecryptedReturnType | undefined> => {
     const userMetrics = await database.userMetrics
         .where({ dataId })
-        .filter((userMetrics) => userMetrics.deletedAt === null || userMetrics.deletedAt === undefined)
+        .filter((userMetrics) => !userMetrics.deletedAt)
         .first();
 
     if (userMetrics) {
@@ -919,7 +919,7 @@ export const getUserMetricsByDataId = async (dataId: string): Promise<UserMetric
 export const getLatestUserMetrics = async (): Promise<UserMetricsDecryptedReturnType | undefined> => {
     const userMetrics = await database.userMetrics
         .orderBy('id')
-        .filter((userMetrics) => userMetrics.deletedAt === null || userMetrics.deletedAt === undefined)
+        .filter((userMetrics) => !userMetrics.deletedAt)
         .last();
 
     if (userMetrics) {
@@ -936,7 +936,7 @@ export const getLatestUserMetrics = async (): Promise<UserMetricsDecryptedReturn
 export const getLatestUser = async (): Promise<UserWithMetricsType | undefined> => {
     const user = await database.users
         .orderBy('id')
-        .filter((user) => user.deletedAt === null || user.deletedAt === undefined)
+        .filter((user) => !user.deletedAt)
         .last();
 
     if (user) {
@@ -949,7 +949,7 @@ export const getLatestUser = async (): Promise<UserWithMetricsType | undefined> 
 
 export const getAllExercises = async (): Promise<ExerciseReturnType[]> => {
     return database.exercises
-        .filter((exercise) => exercise.deletedAt === null || exercise.deletedAt === undefined)
+        .filter((exercise) => !exercise.deletedAt)
         .toArray();
 };
 
@@ -957,7 +957,7 @@ export const getExercisesPaginated = async (offset = 0, limit = 20): Promise<Exe
     return database.exercises
         .orderBy('id')
         .reverse()
-        .filter((exercise) => exercise.deletedAt === null || exercise.deletedAt === undefined)
+        .filter((exercise) => !exercise.deletedAt)
         .offset(offset)
         .limit(limit)
         .toArray();
@@ -969,7 +969,7 @@ export const getTotalExercisesCount = async (): Promise<number> => {
 
 export const getAllWorkouts = async (): Promise<WorkoutReturnType[]> => {
     const result = await database.workouts
-        .filter((workout) => workout.deletedAt === null || workout.deletedAt === undefined)
+        .filter((workout) => !workout.deletedAt)
         .toArray();
 
     return result.map((workout) => ({
@@ -995,7 +995,7 @@ export const getRecurringWorkouts = async (): Promise<WorkoutReturnType[] | unde
 
 export const getWorkouts = async (): Promise<WorkoutReturnType[] | undefined> => {
     const result = await database.workouts
-        .filter((workout) => workout.deletedAt === null || workout.deletedAt === undefined)
+        .filter((workout) => !workout.deletedAt)
         .toArray();
 
     return result.map((workout) => ({
@@ -1006,7 +1006,7 @@ export const getWorkouts = async (): Promise<WorkoutReturnType[] | undefined> =>
 export const getWorkoutById = async (id: number): Promise<WorkoutReturnType | undefined> => {
     const result = await database.workouts
         .where({ id })
-        .filter((workout) => workout.deletedAt === null || workout.deletedAt === undefined)
+        .filter((workout) => !workout.deletedAt)
         .first();
 
     return {
@@ -1041,7 +1041,7 @@ export const getSetsByWorkoutId = async (workoutId: number): Promise<SetReturnTy
     const sets = await database.sets
         .where('workoutId')
         .equals(workoutId)
-        .filter((set) => set.deletedAt === null || set.deletedAt === undefined)
+        .filter((set) => !set.deletedAt)
         .sortBy('setOrder');
 
     return sets;
@@ -1059,20 +1059,20 @@ export const getSetsByIdsAndExerciseId = async (setIds: number[], exerciseId: nu
 export const getExerciseById = async (id: number): Promise<ExerciseReturnType | undefined> => {
     return database.exercises
         .where({ id })
-        .filter((exercise) => exercise.deletedAt === null || exercise.deletedAt === undefined)
+        .filter((exercise) => !exercise.deletedAt)
         .first();
 };
 
 export const getWorkoutEvent = async (id: number): Promise<WorkoutEventReturnType | undefined> => {
     return database.workoutEvents
         .where({ id })
-        .filter((workoutEvent) => workoutEvent.deletedAt === null || workoutEvent.deletedAt === undefined)
+        .filter((workoutEvent) => !workoutEvent.deletedAt)
         .first();
 };
 
 export const getWorkoutEvents = async (): Promise<WorkoutEventReturnType[]> => {
     return database.workoutEvents
-        .filter((workoutEvent) => workoutEvent.deletedAt === null || workoutEvent.deletedAt === undefined)
+        .filter((workoutEvent) => !workoutEvent.deletedAt)
         .toArray();
 };
 
@@ -1080,7 +1080,7 @@ export const getWorkoutEventsByWorkoutId = async (workoutId: number): Promise<Wo
     return database.workoutEvents
         .where('workoutId')
         .equals(workoutId)
-        .filter((workoutEvent) => workoutEvent.deletedAt === null || workoutEvent.deletedAt === undefined)
+        .filter((workoutEvent) => !workoutEvent.deletedAt)
         .toArray();
 };
 
@@ -1088,7 +1088,7 @@ export const getRecentWorkoutsByWorkoutId = async (workoutId: number): Promise<W
     return database.workoutEvents
         .where('workoutId')
         .anyOf(workoutId)
-        .filter((workoutEvent) => workoutEvent.status === COMPLETED_STATUS && (workoutEvent.deletedAt === null || workoutEvent.deletedAt === undefined))
+        .filter((workoutEvent) => workoutEvent.status === COMPLETED_STATUS && (!workoutEvent.deletedAt))
         .toArray();
 };
 
@@ -1098,7 +1098,7 @@ export const getUpcomingWorkoutsByWorkoutId = async (workoutId: number): Promise
         .where('workoutId')
         .anyOf(workoutId)
         .filter((workoutEvent) =>
-            workoutEvent.status === SCHEDULED_STATUS && (workoutEvent.deletedAt === null || workoutEvent.deletedAt === undefined) && workoutEvent.date > todayDate
+            workoutEvent.status === SCHEDULED_STATUS && (!workoutEvent.deletedAt) && workoutEvent.date > todayDate
         )
         .toArray();
 };
@@ -1109,7 +1109,7 @@ export const getUpcomingWorkouts = async (): Promise<WorkoutEventReturnType[]> =
         .where('status')
         .equals(SCHEDULED_STATUS)
         .filter((workoutEvent) =>
-            (workoutEvent.deletedAt === null || workoutEvent.deletedAt === undefined) && workoutEvent.date > todayDate
+            (!workoutEvent.deletedAt) && workoutEvent.date > todayDate
         )
         .toArray();
 };
@@ -1120,7 +1120,7 @@ export const getTotalUpcomingWorkoutsCount = async (): Promise<number> => {
         .where('status')
         .equals(SCHEDULED_STATUS)
         .filter((workoutEvent) =>
-            (workoutEvent.deletedAt === null || workoutEvent.deletedAt === undefined) && workoutEvent.date > todayDate
+            (!workoutEvent.deletedAt) && workoutEvent.date > todayDate
         )
         .count();
 };
@@ -1134,7 +1134,7 @@ export const getUpcomingWorkoutsPaginated = async (offset: number, limit: number
         .filter((workoutEvent) => {
             const workoutEventDate = workoutEvent.date.split('T')[0];
             return (
-                (workoutEvent.deletedAt === null || workoutEvent.deletedAt === undefined)
+                (!workoutEvent.deletedAt)
                 && workoutEventDate >= todayDate
             );
         })
@@ -1146,14 +1146,14 @@ export const getUpcomingWorkoutsPaginated = async (offset: number, limit: number
 export const getRecentWorkouts = async (): Promise<WorkoutEventReturnType[]> => {
     return database.workoutEvents
         .where('status').equals(COMPLETED_STATUS)
-        .filter((workoutEvent) => workoutEvent.deletedAt === null || workoutEvent.deletedAt === undefined)
+        .filter((workoutEvent) => !workoutEvent.deletedAt)
         .toArray();
 };
 
 export const getRecentWorkoutById = async (id: number): Promise<WorkoutEventReturnType | undefined> => {
     return database.workoutEvents
         .where({ id })
-        .filter((workoutEvent) => workoutEvent.deletedAt === null || workoutEvent.deletedAt === undefined)
+        .filter((workoutEvent) => !workoutEvent.deletedAt)
         .first();
 };
 
@@ -1168,7 +1168,7 @@ export const getRecentWorkoutsBetweenDates = async (startDate: string, endDate: 
     return database.workoutEvents
         .where('date')
         .between(startDate, endDate, true, true)
-        .filter((workoutEvent) => workoutEvent.deletedAt === null || workoutEvent.deletedAt === undefined)
+        .filter((workoutEvent) => !workoutEvent.deletedAt)
         .toArray();
 };
 
@@ -1178,7 +1178,7 @@ export const getRecentWorkoutsFromDate = async (startDate: string): Promise<Work
     return database.workoutEvents
         .where('date')
         .between(startDate, todayDate, true, true)
-        .filter((workoutEvent) => workoutEvent.deletedAt === null || workoutEvent.deletedAt === undefined)
+        .filter((workoutEvent) => !workoutEvent.deletedAt)
         .toArray();
 };
 
@@ -1186,7 +1186,7 @@ export const getRecentWorkoutsPaginated = async (offset: number, limit: number):
     const allWorkouts = await database.workoutEvents
         .where('status')
         .equals(COMPLETED_STATUS)
-        .filter((workoutEvent) => workoutEvent.deletedAt === null || workoutEvent.deletedAt === undefined)
+        .filter((workoutEvent) => !workoutEvent.deletedAt)
         .toArray();
 
     allWorkouts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
@@ -1208,7 +1208,7 @@ export const getWorkoutDetails = async (
     const workout = await database.workouts
         .where('id')
         .equals(workoutId)
-        .filter((workout) => workout.deletedAt === null || workout.deletedAt === undefined)
+        .filter((workout) => !workout.deletedAt)
         .first();
 
     if (!workout) {
@@ -1229,7 +1229,7 @@ export const getExercisesWithSetsByWorkoutId = async (
     const sets = await database.sets
         .where('workoutId')
         .equals(workoutId)
-        .filter((set) => set.deletedAt === null || set.deletedAt === undefined)
+        .filter((set) => !set.deletedAt)
         .sortBy('setOrder');
 
     // Group sets by exerciseId while preserving order
@@ -1263,7 +1263,7 @@ export const getWorkoutWithExercisesRepsAndSetsDetails = async (
     const workout = await database.workouts
         .where('id')
         .equals(workoutId)
-        .filter((workout) => workout.deletedAt === null || workout.deletedAt === undefined)
+        .filter((workout) => !workout.deletedAt)
         .first();
 
     if (!workout) {
@@ -1281,7 +1281,7 @@ export const getWorkoutWithExercisesRepsAndSetsDetails = async (
 
 export const getTotalWorkoutsCount = async (): Promise<number> => {
     return database.workouts
-        .filter((workout) => workout.deletedAt === null || workout.deletedAt === undefined)
+        .filter((workout) => !workout.deletedAt)
         .count();
 };
 
@@ -1289,7 +1289,7 @@ export const getWorkoutsPaginated = async (offset: number, limit: number, loadDe
     const workouts = await database.workouts
         .orderBy('createdAt')
         .filter((workout) => {
-            return loadDeleted || (workout.deletedAt === null || workout.deletedAt === undefined)
+            return loadDeleted || (!workout.deletedAt)
         })
         .offset(offset)
         .limit(limit)
@@ -1301,7 +1301,7 @@ export const getWorkoutsPaginated = async (offset: number, limit: number, loadDe
 export const getUserNutrition = async (id: number): Promise<UserNutritionDecryptedReturnType | undefined> => {
     const userNutrition = await database.userNutrition
         .where({ id })
-        .filter((userNutrition) => userNutrition.deletedAt === null || userNutrition.deletedAt === undefined)
+        .filter((userNutrition) => !userNutrition.deletedAt)
         .first();
 
     if (userNutrition) {
@@ -1326,7 +1326,7 @@ export const getUserNutrition = async (id: number): Promise<UserNutritionDecrypt
 export const getLatestUserNutritionByUserId = async (userId: number): Promise<UserNutritionDecryptedReturnType | undefined> => {
     const userNutrition = await database.userNutrition
         .where({ userId })
-        .filter((userNutrition) => userNutrition.deletedAt === null || userNutrition.deletedAt === undefined)
+        .filter((userNutrition) => !userNutrition.deletedAt)
         .first();
 
     if (userNutrition) {
@@ -1351,7 +1351,7 @@ export const getLatestUserNutritionByUserId = async (userId: number): Promise<Us
 export const getAllUserNutritionByUserId = async (userId: number): Promise<UserNutritionDecryptedReturnType[]> => {
     const results = await database.userNutrition
         .where({ userId })
-        .filter((userNutrition) => userNutrition.deletedAt === null || userNutrition.deletedAt === undefined)
+        .filter((userNutrition) => !userNutrition.deletedAt)
         .toArray();
 
     return results.map((userNutrition) => ({
@@ -1373,7 +1373,7 @@ export const getAllUserNutritionByUserId = async (userId: number): Promise<UserN
 export const getUserNutritionByDataId = async (dataId: string): Promise<UserNutritionDecryptedReturnType | undefined> => {
     const userNutrition = await database.userNutrition
         .where({ dataId })
-        .filter((userNutrition) => userNutrition.deletedAt === null || userNutrition.deletedAt === undefined)
+        .filter((userNutrition) => !userNutrition.deletedAt)
         .first();
 
     if (userNutrition) {
@@ -1399,7 +1399,7 @@ export const getUserNutritionPaginated = async (offset = 0, limit = 20, order: '
     const results = await database.userNutrition
         .orderBy('date')
         .reverse()
-        .filter((userNutrition) => userNutrition.deletedAt === null || userNutrition.deletedAt === undefined)
+        .filter((userNutrition) => !userNutrition.deletedAt)
         .offset(offset)
         .limit(limit)
         .toArray();
@@ -1424,7 +1424,7 @@ export const getUserNutritionBetweenDates = async (startDate: string, endDate: s
     const results = await database.userNutrition
         .where('date')
         .between(startDate, endDate, true, true)
-        .and((userNutrition) => userNutrition.deletedAt === null || userNutrition.deletedAt === undefined)
+        .and((userNutrition) => !userNutrition.deletedAt)
         .toArray();
 
     return results.map((userNutrition) => ({
@@ -1449,7 +1449,7 @@ export const getUserNutritionFromDate = async (startDate: string): Promise<UserN
     const results = await database.userNutrition
         .where('date')
         .between(startDate, todayDate, true, true)
-        .and((userNutrition) => userNutrition.deletedAt === null || userNutrition.deletedAt === undefined)
+        .and((userNutrition) => !userNutrition.deletedAt)
         // .reverse()
         .toArray();
 
@@ -1476,14 +1476,14 @@ export const getTotalUserNutritionCount = async (): Promise<number> => {
 export const getFood = async (id: number): Promise<FoodReturnType | undefined> => {
     return database.food
         .where({ id })
-        .filter((food) => food.deletedAt === null || food.deletedAt === undefined)
+        .filter((food) => !food.deletedAt)
         .first();
 };
 
 export const getNutritionGoals = async (id: number): Promise<NutritionGoalsReturnType | undefined> => {
     return database.nutritionGoals
         .where({ id })
-        .filter((nutritionGoals) => nutritionGoals.deletedAt === null || nutritionGoals.deletedAt === undefined)
+        .filter((nutritionGoals) => !nutritionGoals.deletedAt)
         .first();
 };
 
@@ -1625,7 +1625,7 @@ export const updateWorkoutEvent = async (id: number, workoutEvent: WorkoutEventI
         bodyWeight: workoutEvent.bodyWeight || existingWorkoutEvent?.bodyWeight || 0,
         createdAt: workoutEvent.createdAt || existingWorkoutEvent?.createdAt || new Date().toISOString(),
         date: workoutEvent.date,
-        deletedAt: workoutEvent.deletedAt || existingWorkoutEvent?.deletedAt || null,
+        deletedAt: workoutEvent.deletedAt || existingWorkoutEvent?.deletedAt || '',
         description: workoutEvent.description || existingWorkoutEvent?.description || '',
         duration: workoutEvent.duration || existingWorkoutEvent?.duration || 0,
         eatingPhase: workoutEvent.eatingPhase || existingWorkoutEvent?.eatingPhase || '',
@@ -1935,15 +1935,15 @@ export const restoreDatabase = async (dump: string, decryptionPhrase?: string): 
                 const tableData = dbData[tableName];
 
                 const sanitizedTableName = getRestoreTableName(tableName);
-                console.log(`Restoring table: ${sanitizedTableName}`);
-                // Uncomment this for debugging
-                // if (sanitizedTableName === 'Exercise' || sanitizedTableName === 'exercises') {
-                //     continue;
-                // }
+                if (sanitizedTableName === 'Versioning' || sanitizedTableName === 'versioning') {
+                    continue;
+                }
 
+                console.log(`Restoring table: ${sanitizedTableName}`);
                 await database.table(sanitizedTableName).clear();
 
                 for (const row of tableData) {
+                    console.log(`Inserting ${JSON.stringify(row)} into table: ${sanitizedTableName}`);
                     await database.table(sanitizedTableName).add(row);
                 }
             }
@@ -2030,12 +2030,12 @@ export const createNewWorkoutTables = async (): Promise<void> => {
         await database.transaction('rw', database.workouts, database.sets, async () => {
             // Update all workouts without a 'deletedAt' timestamp
             await database.workouts
-                .filter((set) => set.deletedAt === null || set.deletedAt === undefined)
+                .filter((set) => !set.deletedAt)
                 .modify({ deletedAt: currentTimestamp });
 
             // Update all sets without a 'deletedAt' timestamp
             await database.sets
-                .filter((set) => set.deletedAt === null || set.deletedAt === undefined)
+                .filter((set) => !set.deletedAt)
                 .modify({ deletedAt: currentTimestamp });
         });
 
