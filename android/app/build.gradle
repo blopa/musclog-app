@@ -116,8 +116,8 @@ android {
         applicationId 'com.werules.logger'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 57
-        versionName "1.1.10"
+        versionCode 58
+        versionName "1.2.0"
         manifestPlaceholders = [appAuthRedirectScheme: "musclog"]
     }
     signingConfigs {
