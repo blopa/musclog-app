@@ -82,6 +82,13 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
     const resetScreenData = useCallback(() => {
         setSearchQuery('');
+        setIndex(0);
+        setConsumed({
+            calories: 0,
+            protein: 0,
+            carbohydrate: 0,
+            fat: 0,
+        });
     }, []);
 
     useFocusEffect(
