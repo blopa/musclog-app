@@ -2924,8 +2924,10 @@ export const createNewWorkoutTables = async (): Promise<void> => {
                 console.log('Dropped original "Workout" table.');
 
                 // d. Drop the original 'WorkoutExercise' table.
-                await database.runSync('DROP TABLE "WorkoutExercise";');
-                console.log('Dropped original "WorkoutExercise" table.');
+                if (await tableExists('WorkoutExercise')) {
+                    await database.runSync('DROP TABLE "WorkoutExercise";');
+                    console.log('Dropped original "WorkoutExercise" table.');
+                }
 
                 // e. Rename the temporary table to 'Workout'.
                 await database.runSync('ALTER TABLE "Workout_temp" RENAME TO "Workout";');

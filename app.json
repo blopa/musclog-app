@@ -74,12 +74,20 @@
           "project": "workout"
         }
       ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
+          "recordAudioAndroid": false
+        }
+      ],
+      "expo-localization",
+      "react-native-ble-plx",
       "./withCustomManifest.js",
       "./withCustomGradleConfig.js",
       "./withNotifeeAndroidFix.js",
-      "./withAuthAndroidFix.js",
-      "expo-localization",
-      "react-native-ble-plx"
+      "./withAuthAndroidFix.js"
     ],
     "experiments": {
       "typedRoutes": true

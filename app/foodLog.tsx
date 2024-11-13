@@ -1,3 +1,5 @@
+import type { BarcodeScanningResult } from 'expo-camera';
+
 import ThemedCard from '@/components/ThemedCard';
 import { ICON_SIZE } from '@/constants/ui';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
@@ -6,6 +8,7 @@ import { safeToFixed } from '@/utils/string';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { NavigationProp } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
+import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useFocusEffect } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -30,6 +33,11 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         { key: 'overview', title: t('overview') },
         { key: 'meals', title: t('meals') },
     ]);
+
+    // New state variables for camera permission and barcode scanning
+    const [permission, requestPermission] = useCameraPermissions();
+    const [scanned, setScanned] = useState(false);
+    const [showCamera, setShowCamera] = useState(false);
 
     // Mock data for demonstration
     const dailyGoal = {
@@ -187,6 +195,28 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         />
     );
 
+    // Handler for barcode scanning
+    const handleBarCodeScanned = ({ type, data }: BarcodeScanningResult) => {
+        setScanned(true);
+        setShowCamera(false);
+        // Handle the scanned data (e.g., search for the food item)
+        alert(`${t('barcode_scanned')}: ${data}`);
+        // Reset the scanned state for future scans
+        setScanned(false);
+    };
+
+    // Function to request camera permissions and show the camera
+    const openCamera = async () => {
+        if (!permission?.granted) {
+            const { granted } = await requestPermission();
+            if (!granted) {
+                alert(t('camera_permission_denied'));
+                return;
+            }
+        }
+        setShowCamera(true);
+    };
+
     return (
         <View style={styles.container}>
             <Appbar.Header mode="small" statusBarHeight={0} style={styles.appbarHeader}>
@@ -212,9 +242,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                     </Button>
                     <Button
                         mode="outlined"
-                        onPress={() => {
-                            /* Handle barcode scan */
-                        }}
+                        onPress={openCamera}
                         style={styles.iconButton}
                     >
                         <FontAwesome5 name="barcode" size={20} color={colors.primary} />
@@ -228,6 +256,25 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                     initialLayout={{ width: Dimensions.get('window').width }}
                 />
             </View>
+            {showCamera && (
+                <View style={styles.cameraContainer}>
+                    <CameraView
+                        style={styles.camera}
+                        onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
+                        ratio="16:9"
+                    >
+                        <View style={styles.cameraOverlay}>
+                            <Button
+                                mode="contained"
+                                onPress={() => setShowCamera(false)}
+                                style={styles.closeButton}
+                            >
+                                {t('close')}
+                            </Button>
+                        </View>
+                    </CameraView>
+                </View>
+            )}
         </View>
     );
 };
@@ -241,6 +288,20 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     appbarTitle: {
         color: colors.onPrimary,
         fontSize: Platform.OS === 'web' ? 20 : 26,
+    },
+    camera: {
+        flex: 1,
+    },
+    cameraContainer: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'black',
+        justifyContent: 'center',
+    },
+    cameraOverlay: {
+        backgroundColor: 'transparent',
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'center',
     },
     cardActions: {
         flexDirection: 'row',
@@ -258,6 +319,12 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         fontSize: 18,
         fontWeight: 'bold',
         marginBottom: 8,
+    },
+    closeButton: {
+        alignSelf: 'center',
+        backgroundColor: colors.primary,
+        bottom: 40,
+        position: 'absolute',
     },
     container: {
         backgroundColor: colors.background,
