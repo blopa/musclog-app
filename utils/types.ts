@@ -587,8 +587,8 @@ export type LineChartDataType = {
 };
 
 export type ApiFoodInfoType = {
-    ean: string;
-    brand: string;
+    ean?: string;
+    brand?: string;
     productTitle: string;
     productImage?: string;
     basis?: string;
