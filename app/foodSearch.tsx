@@ -43,6 +43,7 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
                         const response = await fetch(
                             `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(initialSearchQuery)}&search_simple=1&json=1`
                         );
+
                         if (response.ok) {
                             const data = await response.json();
                             setSearchResults(data.products.map((f: PaginatedOpenFoodFactsApiFoodProductInfoType) => ({
