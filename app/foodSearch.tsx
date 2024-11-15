@@ -1,14 +1,13 @@
 import ThemedCard from '@/components/ThemedCard';
 import { ICON_SIZE } from '@/constants/ui';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
-import { normalizeText } from '@/utils/string';
-import { MusclogApiFoodInfoType } from '@/utils/types';
+import { MusclogApiFoodInfoType, PaginatedOpenFoodFactsApiFoodProductInfoType } from '@/utils/types';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { NavigationProp, useFocusEffect, useRoute } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { View, StyleSheet, Platform } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import { Appbar, Text, useTheme } from 'react-native-paper';
 
 type RouteParams = {
@@ -26,38 +25,33 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const [searchResults, setSearchResults] = useState([] as MusclogApiFoodInfoType[]);
 
     useEffect(() => {
-        const results = searchResults.filter((food) =>
-            food.productTitle.toLowerCase().includes(searchQuery.toLowerCase())
+        setSearchResults((prevSearchResults) => {
+            return prevSearchResults.filter((food) =>
+                food.productTitle.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+        }
         );
-
-        setSearchResults(results);
-    }, [searchQuery, searchResults]);
+    }, [searchQuery]);
 
     useFocusEffect(
         useCallback(() => {
-            const doStuff = async () => {
+            const fetchFoodData = async () => {
                 if (initialSearchQuery.length > 0) {
-                    const normalizedQuery = normalizeText(searchQuery.slice(0, 10));
-
-                    const apiPath = [...normalizedQuery].reduce((acc, char) => {
-                        return `${acc}/${char}`;
-                    }, '');
-
                     setSearchQuery(initialSearchQuery);
 
                     try {
-                        const response = await fetch(`https://raw.githubusercontent.com/blopa/musclog-api/refs/heads/gh-pages/title/${apiPath}/index.json`);
+                        const response = await fetch(
+                            `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(initialSearchQuery)}&search_simple=1&json=1`
+                        );
                         if (response.ok) {
                             const data = await response.json();
-                            setSearchResults(data.map((f: MusclogApiFoodInfoType) => {
-                                return {
-                                    productTitle: f.productTitle,
-                                    kcal: f.kcal,
-                                    protein: f.protein,
-                                    carbs: f.carbs,
-                                    fat: f.fat,
-                                };
-                            }));
+                            setSearchResults(data.products.map((f: PaginatedOpenFoodFactsApiFoodProductInfoType) => ({
+                                productTitle: f.product_name,
+                                kcal: f.nutriments['energy-kcal'],
+                                protein: f.nutriments['proteins'],
+                                carbs: f.nutriments['carbohydrates'],
+                                fat: f.nutriments['fat'],
+                            })));
                         } else {
                             console.error('Failed to fetch food items:', response.statusText);
                         }
@@ -67,13 +61,12 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 }
             };
 
-            doStuff();
+            fetchFoodData();
         }, [initialSearchQuery, searchQuery])
     );
 
     const handleAddFood = (food: any) => {
         // Handle adding food to the user's nutrition log
-        // You might navigate to a new screen or update state accordingly
     };
 
     return (
