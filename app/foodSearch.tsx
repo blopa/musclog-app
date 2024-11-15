@@ -3,12 +3,12 @@ import { ICON_SIZE } from '@/constants/ui';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { MusclogApiFoodInfoType, PaginatedOpenFoodFactsApiFoodProductInfoType } from '@/utils/types';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { NavigationProp, useFocusEffect, useRoute } from '@react-navigation/native';
+import { NavigationProp, useRoute } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, StyleSheet, View } from 'react-native';
-import { Appbar, Text, useTheme } from 'react-native-paper';
+import { Appbar, Button, Text, TextInput, useTheme } from 'react-native-paper';
 
 type RouteParams = {
     initialSearchQuery?: string;
@@ -22,51 +22,32 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const styles = makeStyles(colors, dark);
 
     const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
-    const [searchResults, setSearchResults] = useState([] as MusclogApiFoodInfoType[]);
+    const [searchResults, setSearchResults] = useState<MusclogApiFoodInfoType[]>([]);
 
-    useEffect(() => {
-        setSearchResults((prevSearchResults) => {
-            return prevSearchResults.filter((food) =>
-                food.productTitle.toLowerCase().includes(searchQuery.toLowerCase())
+    const handleSearch = useCallback(async () => {
+        try {
+            const response = await fetch(
+                `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(searchQuery)}&search_simple=1&json=1`
             );
+
+            if (response.ok) {
+                const data = await response.json();
+                setSearchResults(data.products.map((f: PaginatedOpenFoodFactsApiFoodProductInfoType) => ({
+                    productTitle: f.product_name,
+                    kcal: f.nutriments['energy-kcal'],
+                    protein: f.nutriments['proteins'],
+                    carbs: f.nutriments['carbohydrates'],
+                    fat: f.nutriments['fat'],
+                })));
+            } else {
+                console.error('Failed to fetch food items:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Error fetching food items:', error);
         }
-        );
     }, [searchQuery]);
 
-    useFocusEffect(
-        useCallback(() => {
-            const fetchFoodData = async () => {
-                if (initialSearchQuery.length > 0) {
-                    setSearchQuery(initialSearchQuery);
-
-                    try {
-                        const response = await fetch(
-                            `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(initialSearchQuery)}&search_simple=1&json=1`
-                        );
-
-                        if (response.ok) {
-                            const data = await response.json();
-                            setSearchResults(data.products.map((f: PaginatedOpenFoodFactsApiFoodProductInfoType) => ({
-                                productTitle: f.product_name,
-                                kcal: f.nutriments['energy-kcal'],
-                                protein: f.nutriments['proteins'],
-                                carbs: f.nutriments['carbohydrates'],
-                                fat: f.nutriments['fat'],
-                            })));
-                        } else {
-                            console.error('Failed to fetch food items:', response.statusText);
-                        }
-                    } catch (error) {
-                        console.error('Error fetching food items:', error);
-                    }
-                }
-            };
-
-            fetchFoodData();
-        }, [initialSearchQuery, searchQuery])
-    );
-
-    const handleAddFood = (food: any) => {
+    const handleAddFood = (food: MusclogApiFoodInfoType) => {
         // Handle adding food to the user's nutrition log
     };
 
@@ -81,6 +62,22 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 />
                 <Appbar.Content title={t('search_food')} titleStyle={styles.appbarTitle} />
             </Appbar.Header>
+            <View style={styles.searchContainer}>
+                <TextInput
+                    placeholder={t('search_food')}
+                    value={searchQuery}
+                    onChangeText={setSearchQuery}
+                    style={styles.searchInput}
+                    mode="outlined"
+                />
+                <Button
+                    mode="outlined"
+                    onPress={handleSearch}
+                    style={styles.iconButton}
+                >
+                    <FontAwesome5 name="search" size={20} color={colors.primary} />
+                </Button>
+            </View>
             {searchResults.length === 0 ? (
                 <Text style={styles.noResultsText}>{t('no_results_found')}</Text>
             ) : (
@@ -164,7 +161,7 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         flex: 1,
     },
     iconButton: {
-        marginHorizontal: 8,
+        marginLeft: 8,
     },
     listContent: {
         backgroundColor: colors.background,
@@ -185,6 +182,17 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         fontSize: 16,
         marginTop: 20,
         textAlign: 'center',
+    },
+    searchContainer: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        marginBottom: 16,
+        marginTop: 12,
+        paddingHorizontal: 16,
+    },
+    searchInput: {
+        backgroundColor: colors.surface,
+        flex: 1,
     },
 });
 
