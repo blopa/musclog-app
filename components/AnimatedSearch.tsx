@@ -6,14 +6,14 @@ import { Keyboard, StyleSheet, TextInput, TouchableOpacity, TouchableWithoutFeed
 import { useTheme } from 'react-native-paper';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
-export default function AnimatedSearchBar({ searchQuery, setSearchQuery }: { searchQuery: string; setSearchQuery: (query: string) => void }) {
+export default function AnimatedSearchBar({ searchQuery, setSearchQuery, isOpen: forceOpen = false }: { isOpen?: boolean, searchQuery: string; setSearchQuery: (query: string) => void }) {
     const { t } = useTranslation();
     const inputWidth = useSharedValue(0);
     const iconOpacity = useSharedValue(1);
     const inputRef = useRef<TextInput>(null);
     const { colors, dark } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors, dark);
-    const [isOpened, setIsOpened] = useState(false);
+    const [isOpened, setIsOpened] = useState(forceOpen);
 
     const inputStyle = useAnimatedStyle(() => {
         return {

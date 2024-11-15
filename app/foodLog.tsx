@@ -250,6 +250,10 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         }
     };
 
+    const handleFoodSearch = useCallback(() => {
+        navigation.navigate('foodSearch', { initialSearchQuery: searchQuery });
+    }, [navigation, searchQuery]);
+
     return (
         <View style={styles.container}>
             <Appbar.Header mode="small" statusBarHeight={0} style={styles.appbarHeader}>
@@ -266,12 +270,10 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                         onFocus={() => setIsSearchFocused(true)}
                         onBlur={() => setIsSearchFocused(false)}
                     />
-                    {isSearchFocused ? (
+                    {searchQuery ? (
                         <Button
                             mode="outlined"
-                            onPress={() => {
-                                /* Handle search */
-                            }}
+                            onPress={handleFoodSearch}
                             style={styles.iconButton}
                         >
                             <FontAwesome5 name="search" size={20} color={colors.primary} />

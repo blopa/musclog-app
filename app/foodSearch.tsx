@@ -2,15 +2,16 @@ import AnimatedSearchBar from '@/components/AnimatedSearch';
 import ThemedCard from '@/components/ThemedCard';
 import { ICON_SIZE } from '@/constants/ui';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
+import { normalizeText } from '@/utils/string';
+import { ApiFoodInfoType } from '@/utils/types';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { NavigationProp } from '@react-navigation/native';
+import { NavigationProp, useRoute } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View, StyleSheet, Platform } from 'react-native';
 import { Appbar, Text, useTheme } from 'react-native-paper';
 
-// Mock food data
 const foodDatabase = [
     { name: 'Apple', calories: 95, proteins: 0.5, carbs: 25, fats: 0.3 },
     { name: 'Banana', calories: 105, proteins: 1.3, carbs: 27, fats: 0.4 },
@@ -22,12 +23,18 @@ const foodDatabase = [
     { name: 'Almonds', calories: 164, proteins: 6, carbs: 6, fats: 14 },
 ];
 
+type RouteParams = {
+    initialSearchQuery?: string;
+};
+
 const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
+    const route = useRoute();
+    const { initialSearchQuery = '' } = (route.params as RouteParams) || {};
     const { t } = useTranslation();
     const { colors, dark } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors, dark);
 
-    const [searchQuery, setSearchQuery] = useState('');
+    const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
     const [searchResults, setSearchResults] = useState(foodDatabase);
 
     useEffect(() => {
@@ -42,6 +49,34 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
         // You might navigate to a new screen or update state accordingly
     };
 
+    const handleFoodSearch = useCallback(() => {
+        const debounceTimeout = setTimeout(async () => {
+            if (searchQuery.length > 0) {
+                const normalizedQuery = normalizeText(searchQuery.slice(0, 10));
+
+                const apiPath = [...normalizedQuery].reduce((acc, char) => {
+                    return `${acc}/${char}`;
+                }, '');
+
+                try {
+                    const response = await fetch(`https://raw.githubusercontent.com/blopa/musclog-api/refs/heads/gh-pages/title/${apiPath}/index.json`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        data.forEach((food: ApiFoodInfoType) => {
+                            // TODO
+                        });
+                    } else {
+                        console.error('Failed to fetch food items:', response.statusText);
+                    }
+                } catch (error) {
+                    console.error('Error fetching food items:', error);
+                }
+            }
+        }, 300);
+
+        return () => clearTimeout(debounceTimeout);
+    }, [searchQuery]);
+
     return (
         <View style={styles.container}>
             <Appbar.Header mode="small" statusBarHeight={0} style={styles.appbarHeader}>
@@ -52,7 +87,7 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
                     onPress={() => navigation.goBack()}
                 />
                 <Appbar.Content title={t('search_food')} titleStyle={styles.appbarTitle} />
-                <AnimatedSearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+                <AnimatedSearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} isOpen={!!initialSearchQuery} />
             </Appbar.Header>
             {searchResults.length === 0 ? (
                 <Text style={styles.noResultsText}>{t('no_results_found')}</Text>

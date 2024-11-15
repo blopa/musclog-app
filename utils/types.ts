@@ -585,3 +585,23 @@ export type LineChartDataType = {
     x: number;
     y: number;
 };
+
+export type ApiFoodInfoType = {
+    ean: string;
+    brand: string;
+    productTitle: string;
+    productImage?: string;
+    basis?: string;
+    kj?: string;
+    kcal: string;
+    fat?: string;
+    carbs?: string;
+    protein?: string;
+    sugars?: string;
+    fiber?: string;
+    salt?: string;
+    saturatedFat?: string;
+    unsaturatedFat?: string;
+    polyUnsaturatedFat?: string;
+    monoUnsaturatedFat?: string;
+};
