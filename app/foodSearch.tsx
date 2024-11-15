@@ -2,7 +2,7 @@ import ThemedCard from '@/components/ThemedCard';
 import { ICON_SIZE } from '@/constants/ui';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { normalizeText } from '@/utils/string';
-import { ApiFoodInfoType } from '@/utils/types';
+import { MusclogApiFoodInfoType } from '@/utils/types';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { NavigationProp, useFocusEffect, useRoute } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
@@ -23,7 +23,7 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const styles = makeStyles(colors, dark);
 
     const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
-    const [searchResults, setSearchResults] = useState([] as ApiFoodInfoType[]);
+    const [searchResults, setSearchResults] = useState([] as MusclogApiFoodInfoType[]);
 
     useEffect(() => {
         const results = searchResults.filter((food) =>
@@ -49,7 +49,7 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
                         const response = await fetch(`https://raw.githubusercontent.com/blopa/musclog-api/refs/heads/gh-pages/title/${apiPath}/index.json`);
                         if (response.ok) {
                             const data = await response.json();
-                            setSearchResults(data.map((f: ApiFoodInfoType) => {
+                            setSearchResults(data.map((f: MusclogApiFoodInfoType) => {
                                 return {
                                     productTitle: f.productTitle,
                                     kcal: f.kcal,
