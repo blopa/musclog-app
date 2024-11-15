@@ -262,6 +262,45 @@ export type FoodInsertType = {
     fiber?: number;
     sugar?: number;
     name: string;
+    brand?: string;
+    productCode?: string;
+    servingSize?: number;
+    // these are not used yet
+    zinc?: number;
+    vitaminK?: number;
+    vitaminC?: number;
+    vitaminB12?: number;
+    vitaminA?: number;
+    unsaturatedFat?: number;
+    vitaminE?: number;
+    thiamin?: number;
+    selenium?: number;
+    polyunsaturatedFat?: number;
+    vitaminB6?: number;
+    pantothenicAcid?: number;
+    niacin?: number;
+    monounsaturatedFat?: number;
+    calcium?: number;
+    iodine?: number;
+    molybdenum?: number;
+    vitaminD?: number;
+    manganese?: number;
+    magnesium?: number;
+    transFat?: number;
+    folicAcid?: number;
+    copper?: number;
+    iron?: number;
+    saturatedFat?: number;
+    chromium?: number;
+    caffeine?: number;
+    cholesterol?: number;
+    phosphorus?: number;
+    chloride?: number;
+    folate?: number;
+    biotin?: number;
+    sodium?: number;
+    riboflavin?: number;
+    potassium?: number;
 };
 
 export type FoodReturnType = {

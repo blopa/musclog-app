@@ -1,3 +1,5 @@
+import type { BarcodeScanningResult } from 'expo-camera';
+
 import ThemedCard from '@/components/ThemedCard';
 import { ICON_SIZE } from '@/constants/ui';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
@@ -6,10 +8,11 @@ import { safeToFixed } from '@/utils/string';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { NavigationProp } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
+import { CameraView, useCameraPermissions  } from 'expo-camera';
 import { useFocusEffect } from 'expo-router';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { View, StyleSheet, Platform, Dimensions } from 'react-native';
+import { View, StyleSheet, Platform, Dimensions, TouchableOpacity } from 'react-native';
 import { Appbar, TextInput, Button, Text, useTheme } from 'react-native-paper';
 import { TabView, TabBar } from 'react-native-tab-view';
 
@@ -30,6 +33,16 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         { key: 'overview', title: t('overview') },
         { key: 'meals', title: t('meals') },
     ]);
+
+    // New state variables for camera permission and barcode scanning
+    const [permission, requestPermission] = useCameraPermissions();
+    const [scanned, setScanned] = useState(false);
+    const [showBarcodeCamera, setShowBarcodeCamera] = useState(false);
+    const [showPhotoCamera, setShowPhotoCamera] = useState(false);
+    const [isSearchFocused, setIsSearchFocused] = useState(false);
+
+    // Reference to the photo camera
+    const photoCameraRef = useRef(null);
 
     // Mock data for demonstration
     const dailyGoal = {
@@ -82,6 +95,14 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
     const resetScreenData = useCallback(() => {
         setSearchQuery('');
+        setIndex(0);
+        setConsumed({
+            calories: 0,
+            protein: 0,
+            carbohydrate: 0,
+            fat: 0,
+        });
+        setIsSearchFocused(false);
     }, []);
 
     useFocusEffect(
@@ -180,6 +201,55 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         />
     );
 
+    // Handler for barcode scanning
+    const handleBarCodeScanned = ({ type, data }: BarcodeScanningResult) => {
+        setScanned(true);
+        setShowBarcodeCamera(false);
+        // Handle the scanned data (e.g., search for the food item)
+        alert(`${t('barcode_scanned')}: ${data}`);
+        // Reset the scanned state for future scans
+        setScanned(false);
+    };
+
+    // Function to request camera permissions and show the barcode scanner
+    const openBarcodeCamera = async () => {
+        if (!permission?.granted) {
+            const { granted } = await requestPermission();
+            if (!granted) {
+                alert(t('camera_permission_denied'));
+                return;
+            }
+        }
+        setShowBarcodeCamera(true);
+    };
+
+    // Function to request camera permissions and show the photo camera
+    const openPhotoCamera = async () => {
+        if (!permission?.granted) {
+            const { granted } = await requestPermission();
+            if (!granted) {
+                alert(t('camera_permission_denied'));
+                return;
+            }
+        }
+        setShowPhotoCamera(true);
+    };
+
+    // Handler for taking a photo
+    const handleTakePhoto = async () => {
+        if (photoCameraRef.current) {
+            try {
+                // @ts-ignore
+                const photo = await (photoCameraRef.current as typeof CameraView).takePictureAsync();
+                console.log('Photo taken:', photo.uri);
+                // Here you can send the photo to AI for processing
+                setShowPhotoCamera(false);
+            } catch (error) {
+                console.error('Error taking photo:', error);
+            }
+        }
+    };
+
     return (
         <View style={styles.container}>
             <Appbar.Header mode="small" statusBarHeight={0} style={styles.appbarHeader}>
@@ -193,25 +263,37 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                         onChangeText={setSearchQuery}
                         style={styles.searchInput}
                         mode="outlined"
+                        onFocus={() => setIsSearchFocused(true)}
+                        onBlur={() => setIsSearchFocused(false)}
                     />
-                    <Button
-                        mode="outlined"
-                        onPress={() => {
-                            /* Handle search */
-                        }}
-                        style={styles.iconButton}
-                    >
-                        <FontAwesome5 name="search" size={20} color={colors.primary} />
-                    </Button>
-                    <Button
-                        mode="outlined"
-                        onPress={() => {
-                            /* Handle barcode scan */
-                        }}
-                        style={styles.iconButton}
-                    >
-                        <FontAwesome5 name="barcode" size={20} color={colors.primary} />
-                    </Button>
+                    {isSearchFocused ? (
+                        <Button
+                            mode="outlined"
+                            onPress={() => {
+                                /* Handle search */
+                            }}
+                            style={styles.iconButton}
+                        >
+                            <FontAwesome5 name="search" size={20} color={colors.primary} />
+                        </Button>
+                    ) : (
+                        <>
+                            <Button
+                                mode="outlined"
+                                onPress={openBarcodeCamera}
+                                style={styles.iconButton}
+                            >
+                                <FontAwesome5 name="barcode" size={20} color={colors.primary} />
+                            </Button>
+                            <Button
+                                mode="outlined"
+                                onPress={openPhotoCamera}
+                                style={styles.iconButton}
+                            >
+                                <FontAwesome5 name="camera" size={20} color={colors.primary} />
+                            </Button>
+                        </>
+                    )}
                 </View>
                 <TabView
                     navigationState={{ index, routes }}
@@ -221,6 +303,42 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                     initialLayout={{ width: Dimensions.get('window').width }}
                 />
             </View>
+            {showBarcodeCamera && (
+                <View style={styles.cameraContainer}>
+                    <CameraView
+                        style={styles.camera}
+                        onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
+                        ratio="16:9"
+                    >
+                        <View style={styles.cameraOverlay}>
+                            <Button
+                                mode="contained"
+                                onPress={() => setShowBarcodeCamera(false)}
+                                style={styles.closeButton}
+                            >
+                                {t('close')}
+                            </Button>
+                        </View>
+                    </CameraView>
+                </View>
+            )}
+            {showPhotoCamera && (
+                <View style={styles.cameraContainer}>
+                    <CameraView
+                        style={styles.camera}
+                        ref={photoCameraRef}
+                    >
+                        <View style={styles.photoCameraOverlay}>
+                            <TouchableOpacity onPress={() => setShowPhotoCamera(false)} style={styles.photoCloseButton}>
+                                <Text style={styles.photoCloseText}>{t('close')}</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={handleTakePhoto} style={styles.captureButton}>
+                                <FontAwesome5 name="camera" size={30} color={colors.primary} />
+                            </TouchableOpacity>
+                        </View>
+                    </CameraView>
+                </View>
+            )}
         </View>
     );
 };
@@ -234,6 +352,25 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     appbarTitle: {
         color: colors.onPrimary,
         fontSize: Platform.OS === 'web' ? 20 : 26,
+    },
+    camera: {
+        flex: 1,
+    },
+    cameraContainer: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'black',
+        justifyContent: 'center',
+    },
+    cameraOverlay: {
+        alignItems: 'flex-end',
+        backgroundColor: 'transparent',
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        paddingBottom: 40,
+    },
+    captureButton: {
+        backgroundColor: 'transparent',
     },
     cardActions: {
         flexDirection: 'row',
@@ -251,6 +388,10 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         fontSize: 18,
         fontWeight: 'bold',
         marginBottom: 8,
+    },
+    closeButton: {
+        backgroundColor: colors.primary,
+        padding: 8,
     },
     container: {
         backgroundColor: colors.background,
@@ -279,6 +420,25 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     noItemsText: {
         color: colors.onSurface,
         fontSize: 14,
+    },
+    photoCameraOverlay: {
+        alignItems: 'center',
+        bottom: 40,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        left: 0,
+        paddingHorizontal: 20,
+        position: 'absolute',
+        right: 0,
+    },
+    photoCloseButton: {
+        backgroundColor: colors.primary,
+        borderRadius: 5,
+        padding: 10,
+    },
+    photoCloseText: {
+        color: colors.onPrimary,
+        fontSize: 16,
     },
     plusButton: {
         marginLeft: 4,

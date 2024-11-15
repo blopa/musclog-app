@@ -55,3 +55,8 @@
 
 ## Resources
 - https://thenounproject.com/icon/avatar-6860572/
+
+
+## Rest API
+https://openfoodfacts.github.io/openfoodfacts-server/api/ref-v2/#get-/api/v2/search
+https://github.com/blopa/musclog-api

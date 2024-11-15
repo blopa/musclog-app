@@ -7,7 +7,6 @@ import { EATING_PHASES, NUTRITION_TYPES } from '@/constants/nutrition';
 import {
     ADVANCED_SETTINGS_TYPE,
     AI_SETTINGS_TYPE,
-    CAN_USE_GEMINI,
     CSV_IMPORT_TYPE,
     EXERCISE_IMAGE_GENERATION_TYPE,
     GEMINI_API_KEY_TYPE,
@@ -32,7 +31,6 @@ import { exportDatabase, importDatabase } from '@/utils/file';
 import { aggregateUserNutritionMetricsDataByDate } from '@/utils/healthConnect';
 import { generateHash } from '@/utils/string';
 import { ThemeType } from '@/utils/types';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationProp } from '@react-navigation/native';
 import { useFocusEffect } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -78,7 +76,6 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
     const [csvImportEnabled, setCsvImportEnabled] = useState<boolean>(false);
     const [tempCsvImportEnabled, setTempCsvImportEnabled] = useState<boolean>(false);
     const [csvImportModalVisible, setCsvImportModalVisible] = useState(false);
-    const [canUseGemini, setCanUseGemini] = useState(false);
     const [loading, setLoading] = useState(false);
     const [appInfoModalVisible, setAppInfoModalVisible] = useState(false);
     const [encryptionPhrase, setEncryptionPhrase] = useState('');
@@ -163,9 +160,6 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
             const value = useFatPercentageTDEEFromDb.value === 'true';
             setUseFatPercentageTDEE(value);
         }
-
-        const canUseGemini = await AsyncStorage.getItem(CAN_USE_GEMINI);
-        setCanUseGemini(canUseGemini === 'true');
     }, [i18n, getSettingByType]);
 
     useFocusEffect(useCallback(() => {
@@ -573,22 +567,20 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
                                 )}
                                 title={t('openai_key')}
                             />
-                            {canUseGemini ? (
-                                <List.Item
-                                    description={t('google_gemini_key_description')}
-                                    onPress={() => {
-                                        setGoogleGeminiKeyInput(googleGeminiApiKey || '');
-                                        setOpenGeminiVisible(true);
-                                    }}
-                                    right={() => (
-                                        <View style={styles.rightContainer}>
-                                            <Text>{googleGeminiApiKey ? '**********' : t('not_set')}</Text>
-                                            <List.Icon icon="chevron-right" />
-                                        </View>
-                                    )}
-                                    title={t('google_gemini_key')}
-                                />
-                            ) : null}
+                            <List.Item
+                                description={t('google_gemini_key_description')}
+                                onPress={() => {
+                                    setGoogleGeminiKeyInput(googleGeminiApiKey || '');
+                                    setOpenGeminiVisible(true);
+                                }}
+                                right={() => (
+                                    <View style={styles.rightContainer}>
+                                        <Text>{googleGeminiApiKey ? '**********' : t('not_set')}</Text>
+                                        <List.Icon icon="chevron-right" />
+                                    </View>
+                                )}
+                                title={t('google_gemini_key')}
+                            />
                             <List.Item
                                 description={t('exercise_image_generation_description')}
                                 onPress={() => setExerciseImageModalVisible(true)}
