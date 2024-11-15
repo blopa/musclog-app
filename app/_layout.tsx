@@ -27,7 +27,6 @@ import Onboarding from '@/components/Onboarding';
 import { DARK, SYSTEM_DEFAULT } from '@/constants/colors';
 import {
     AI_SETTINGS_TYPE,
-    CAN_USE_GEMINI,
     FIRST_BOOT,
     GEMINI_API_KEY_TYPE,
     HAS_COMPLETED_ONBOARDING,
@@ -163,7 +162,6 @@ function RootLayout() {
 
                     const encryptedKey = process.env.EXPO_PUBLIC_ENCRYPTED_GEMINI_API_KEY;
                     try {
-                        await AsyncStorage.setItem(CAN_USE_GEMINI, 'true');
                         if (encryptedKey) {
                             const decrypter = getDecrypter();
                             const key = decrypter(encryptedKey);
@@ -174,7 +172,6 @@ function RootLayout() {
                                     value: key,
                                 });
                             } else {
-                                await AsyncStorage.setItem(CAN_USE_GEMINI, 'false');
                                 Sentry.captureMessage('Country not allowed!');
                             }
                         } else {

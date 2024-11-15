@@ -31,7 +31,7 @@ import {
     getWorkoutVolumeInsightsPrompt
 } from './prompts';
 
-const GEMINI_MODEL = 'gemini-1.5-pro-latest';
+const GEMINI_MODEL = 'gemini-1.5-flash'; // or gemini-1.5-pro-latest
 
 export const getApiKey = async () =>
     (await getSetting(GEMINI_API_KEY_TYPE))?.value || process.env.EXPO_PUBLIC_FORCE_GEMINI_API_KEY;

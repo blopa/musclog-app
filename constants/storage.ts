@@ -27,7 +27,6 @@ export const SUNDAY = 'sunday';
 
 export const FIRST_BOOT = 'firstBoot';
 export const LAST_TIME_APP_USED = 'lastTimeAppUsed';
-export const CAN_USE_GEMINI = 'canUseGemini';
 
 export const OPENAI_API_KEY_TYPE = 'openai_api_key';
 export const GEMINI_API_KEY_TYPE = 'gemini_api_key';
