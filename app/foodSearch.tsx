@@ -1,4 +1,5 @@
 import ThemedCard from '@/components/ThemedCard';
+import ThemedModal from '@/components/ThemedModal';
 import { ICON_SIZE } from '@/constants/ui';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { MusclogApiFoodInfoType, PaginatedOpenFoodFactsApiFoodInfoType, PaginatedOpenFoodFactsApiFoodProductInfoType } from '@/utils/types';
@@ -27,6 +28,8 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const [totalPages, setTotalPages] = useState(1);
     const [isLoading, setIsLoading] = useState(false);
     const [loadMoreError, setLoadMoreError] = useState(false);
+    const [selectedFood, setSelectedFood] = useState<MusclogApiFoodInfoType | null>(null);
+    const [isModalVisible, setIsModalVisible] = useState(false);
 
     const fetchFoodData = async (query: string, page: number) => {
         try {
@@ -39,10 +42,11 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 return {
                     products: data.products.map((f: PaginatedOpenFoodFactsApiFoodProductInfoType) => ({
                         productTitle: f.product_name,
-                        kcal: f.nutriments['energy-kcal'] || 0,
-                        protein: f.nutriments['proteins'] || 0,
-                        carbs: f.nutriments['carbohydrates'] || 0,
-                        fat: f.nutriments['fat'] || 0,
+                        kcal: f.nutriments['energy-kcal_100g'] || 0,
+                        protein: f.nutriments['proteins_100g'] || 0,
+                        carbs: f.nutriments['carbohydrates_100g'] || 0,
+                        fat: f.nutriments['fat_100g'] || 0,
+                        ean: f.code,
                     })),
                     pageCount: data.page_count,
                 };
@@ -89,7 +93,13 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
     }, [searchQuery, currentPage, totalPages, isLoading]);
 
     const handleAddFood = (food: MusclogApiFoodInfoType) => {
-        // Handle adding food to the user's nutrition log
+        setSelectedFood(food);
+        setIsModalVisible(true);
+    };
+
+    const closeModal = () => {
+        setIsModalVisible(false);
+        setSelectedFood(null);
     };
 
     return (
@@ -124,13 +134,16 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
             ) : (
                 <FlashList
                     data={searchResults}
-                    keyExtractor={(item, index) => (item.ean || item.productTitle || index).toString()}
+                    keyExtractor={(item, index) => (item.productTitle || index).toString()}
                     renderItem={({ item }) => (
                         <ThemedCard key={item.productTitle}>
                             <View style={styles.cardContent}>
                                 <View style={styles.cardHeader}>
                                     <Text style={styles.cardTitle}>
                                         {item.productTitle}
+                                    </Text>
+                                    <Text style={styles.metricDetail}>
+                                        {item.ean}
                                     </Text>
                                     <View style={styles.metricRow}>
                                         <Text style={styles.metricDetail}>
@@ -176,6 +189,23 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
                     }
                 />
             )}
+            <ThemedModal
+                visible={isModalVisible}
+                onClose={closeModal}
+                title={selectedFood?.productTitle || ''}
+                confirmText={t('ok')}
+                cancelText={t('cancel')}
+            >
+                {selectedFood && (
+                    <View>
+                        <Text>{t('ean')}: {selectedFood.ean}</Text>
+                        <Text>{t('calories')}: {selectedFood.kcal} kcal</Text>
+                        <Text>{t('proteins')}: {selectedFood.protein} g</Text>
+                        <Text>{t('carbs')}: {selectedFood.carbs} g</Text>
+                        <Text>{t('fats')}: {selectedFood.fat} g</Text>
+                    </View>
+                )}
+            </ThemedModal>
         </View>
     );
 };
