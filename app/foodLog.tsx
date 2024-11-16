@@ -13,7 +13,7 @@ import { useFocusEffect } from 'expo-router';
 import React, { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View, StyleSheet, Platform, Dimensions, TouchableOpacity, ScrollView } from 'react-native';
-import { Appbar, TextInput, Button, Text, useTheme } from 'react-native-paper';
+import { Appbar, TextInput, Button, Text, useTheme, Card } from 'react-native-paper';
 import { TabView, TabBar } from 'react-native-tab-view';
 
 const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
@@ -180,13 +180,21 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                                     </Text>
                                 </View>
                                 {foods.map((food, index) => (
-                                    <View key={index} style={styles.foodItem}>
-                                        <Text style={styles.foodName}>{food.name || t('unknown_food')}</Text>
-                                        {/*TODO: make this prettier*/}
-                                        <Text style={styles.foodDetails}>
-                                            {safeToFixed(food.calories)} kcal, {safeToFixed(food.protein)}g {t('proteins')}, {safeToFixed(food.carbohydrate)}g {t('carbs')}, {safeToFixed(food.fat)}g {t('fats')}
-                                        </Text>
-                                    </View>
+                                    <ThemedCard key={index}>
+                                        <Card.Content style={styles.cardContent}>
+                                            <View style={styles.cardHeader}>
+                                                <Text style={styles.cardTitle}>{food.name || t('unknown_food')}</Text>
+                                                <View style={styles.metricRow}>
+                                                    <Text style={styles.metricDetail}>{t('calories')}: {safeToFixed(food.calories)}kcal</Text>
+                                                    <Text style={styles.metricDetail}>{t('carbs')}: {safeToFixed(food.carbohydrate)}g</Text>
+                                                </View>
+                                                <View style={styles.metricRow}>
+                                                    <Text style={styles.metricDetail}>{t('fats')}: {safeToFixed(food.fat)}g</Text>
+                                                    <Text style={styles.metricDetail}>{t('proteins')}: {safeToFixed(food.protein)}g</Text>
+                                                </View>
+                                            </View>
+                                        </Card.Content>
+                                    </ThemedCard>
                                 ))}
                             </View>
                         );
@@ -437,6 +445,9 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     cardContent: {
         padding: 16,
     },
+    cardHeader: {
+        flex: 1,
+    },
     cardTitle: {
         color: colors.onSurface,
         fontSize: 18,
@@ -503,6 +514,10 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         color: colors.onSurface,
         fontSize: 14,
         marginBottom: 4,
+    },
+    metricRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
     },
     photoCameraOverlay: {
         alignItems: 'center',
