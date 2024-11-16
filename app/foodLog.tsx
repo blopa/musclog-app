@@ -212,7 +212,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 if (data.status === 1) {
                     const product = data.product;
                     const foodInfo: MusclogApiFoodInfoType = {
-                        productTitle: product.product_name || t('unknown_product'),
+                        productTitle: product.product_name || t('unknown_food'),
                         kcal: product.nutriments['energy-kcal_100g'] || 0,
                         protein: product.nutriments['proteins_100g'] || 0,
                         carbs: product.nutriments['carbohydrates_100g'] || 0,
@@ -221,16 +221,16 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                     };
                     return foodInfo;
                 } else {
-                    alert(t('product_not_found'));
+                    alert(t('food_not_found'));
                     return null;
                 }
             } else {
-                alert(t('error_fetching_product'));
+                alert(t('error_fetching_food'));
                 return null;
             }
         } catch (error) {
             console.error('Error fetching product:', error);
-            alert(t('error_fetching_product'));
+            alert(t('error_fetching_food'));
             return null;
         }
     };

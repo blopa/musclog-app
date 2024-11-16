@@ -6,7 +6,7 @@ import { MusclogApiFoodInfoType, PaginatedOpenFoodFactsApiFoodInfoType, Paginate
 import { FontAwesome5 } from '@expo/vector-icons';
 import { NavigationProp, useRoute } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, StyleSheet, View, ActivityIndicator } from 'react-native';
 import { Appbar, Button, Text, TextInput, useTheme } from 'react-native-paper';
@@ -31,7 +31,7 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const [selectedFood, setSelectedFood] = useState<MusclogApiFoodInfoType | null>(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
 
-    const fetchFoodData = async (query: string, page: number) => {
+    const fetchFoodData = useCallback(async (query: string, page: number) => {
         try {
             const response = await fetch(
                 `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&page=${page}&search_simple=1&json=1`
@@ -58,7 +58,23 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
             console.error('Error fetching food items:', error);
             return { products: [], pageCount: 1 };
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        const loadInitialData = async () => {
+            setIsLoading(true);
+
+            const { products, pageCount } = await fetchFoodData(initialSearchQuery, 1);
+            setSearchResults(products);
+            setTotalPages(pageCount);
+
+            setIsLoading(false);
+        };
+
+        if (initialSearchQuery) {
+            loadInitialData();
+        }
+    }, [initialSearchQuery, fetchFoodData]);
 
     const handleSearch = useCallback(async () => {
         setIsLoading(true);
@@ -68,8 +84,9 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
         const { products, pageCount } = await fetchFoodData(searchQuery, 1);
         setSearchResults(products);
         setTotalPages(pageCount);
+
         setIsLoading(false);
-    }, [searchQuery]);
+    }, [fetchFoodData, searchQuery]);
 
     const loadMoreResults = useCallback(async () => {
         if (currentPage >= totalPages || isLoading) {
@@ -90,17 +107,17 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
         } finally {
             setIsLoading(false);
         }
-    }, [searchQuery, currentPage, totalPages, isLoading]);
+    }, [currentPage, totalPages, isLoading, fetchFoodData, searchQuery]);
 
-    const handleAddFood = (food: MusclogApiFoodInfoType) => {
+    const handleAddFood = useCallback((food: MusclogApiFoodInfoType) => {
         setSelectedFood(food);
         setIsModalVisible(true);
-    };
+    }, []);
 
-    const closeModal = () => {
+    const closeModal = useCallback(() => {
         setIsModalVisible(false);
         setSelectedFood(null);
-    };
+    }, []);
 
     return (
         <View style={styles.container}>
