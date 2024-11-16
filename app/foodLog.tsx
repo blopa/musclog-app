@@ -161,6 +161,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
             protein: userNutrition.protein,
             carbs: userNutrition.carbohydrate,
             fat: userNutrition.fat,
+            grams: userNutrition.grams,
         });
         setIsNutritionModalVisible(true);
     };

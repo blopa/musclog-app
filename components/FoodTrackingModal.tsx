@@ -4,8 +4,9 @@ import ThemedModal from '@/components/ThemedModal';
 import { USER_METRICS_SOURCES } from '@/constants/healthConnect';
 import { MEAL_TYPE, NUTRITION_TYPES } from '@/constants/nutrition';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
-import { addUserNutrition } from '@/utils/database';
+import { addUserNutrition, updateUserNutrition } from '@/utils/database';
 import { generateHash } from '@/utils/string';
+import { UserNutritionInsertType } from '@/utils/types';
 import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View, StyleSheet } from 'react-native';
@@ -45,6 +46,12 @@ const FoodTrackingModal = ({
         fat: 0,
     });
 
+    useEffect(() => {
+        if (userNutritionId && food?.grams) {
+            setGrams(food.grams.toString());
+        }
+    }, [food?.grams, userNutritionId]);
+
     const updateCalculatedValues = useCallback((gramsValue: number) => {
         if (food) {
             const factor = gramsValue / 100;
@@ -72,25 +79,27 @@ const FoodTrackingModal = ({
     };
 
     const handleTrackFood = useCallback(async () => {
+        const userNutrition = {
+            date: new Date().toISOString(),
+            calories: calculatedValues.kcal,
+            protein: calculatedValues.protein,
+            carbohydrate: calculatedValues.carbs,
+            fat: calculatedValues.fat,
+            dataId: generateHash(),
+            name: food?.productTitle || t('unknown_food'),
+            source: USER_METRICS_SOURCES.USER_INPUT,
+            type: NUTRITION_TYPES.MEAL,
+            mealType,
+            grams: parseFloat(grams),
+        } as UserNutritionInsertType;
+
         if (userNutritionId) {
-            // TODO: update existing user nutrition
+            await updateUserNutrition(userNutritionId, userNutrition);
         } else {
-            await addUserNutrition({
-                date: new Date().toISOString(),
-                calories: calculatedValues.kcal,
-                protein: calculatedValues.protein,
-                carbohydrate: calculatedValues.carbs,
-                fat: calculatedValues.fat,
-                dataId: generateHash(),
-                name: food?.productTitle || t('unknown_food'),
-                source: USER_METRICS_SOURCES.USER_INPUT,
-                type: NUTRITION_TYPES.MEAL,
-                mealType,
-                grams: parseFloat(grams),
-            });
+            await addUserNutrition(userNutrition);
         }
         onClose();
-    }, [userNutritionId, onClose, calculatedValues.kcal, calculatedValues.protein, calculatedValues.carbs, calculatedValues.fat, food?.productTitle, t, mealType]);
+    }, [calculatedValues.kcal, calculatedValues.protein, calculatedValues.carbs, calculatedValues.fat, food?.productTitle, t, mealType, grams, userNutritionId, onClose]);
 
     return (
         <ThemedModal
