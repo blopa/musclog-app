@@ -2083,6 +2083,46 @@ export const createNewWorkoutTables = async (): Promise<void> => {
     }
 };
 
+export const addMealTypeToUserNutritionTable = async (): Promise<void> => {
+    const currentVersion = await getLatestVersion();
+    if (currentVersion && currentVersion < packageJson.version) {
+        if (database.isOpen()) {
+            database.close();
+        }
+
+        database.version(8).stores({
+            userNutrition: [
+                '++id',
+                'userId',
+                'dataId',
+                'name',
+                'calories',
+                'protein',
+                'carbohydrate',
+                'sugar',
+                'alcohol',
+                'fiber',
+                'fat',
+                'monounsaturatedFat',
+                'polyunsaturatedFat',
+                'saturatedFat',
+                'transFat',
+                'unsaturatedFat',
+                'date',
+                'type',
+                'source',
+                'mealType',
+                'createdAt',
+                'deletedAt',
+            ].join(', '),
+        });
+
+        if (!database.isOpen()) {
+            database.open();
+        }
+    }
+};
+
 export const addAlcoholMacroToUserNutritionTable = async (): Promise<void> => {
     const currentVersion = await getLatestVersion();
     if (currentVersion && currentVersion < packageJson.version) {

@@ -300,6 +300,7 @@ const createTables = (database: SQLiteDatabase) => {
             "'unsaturatedFat' TEXT",
             "'dataId' TEXT",
             "'type' TEXT",
+            "'mealType' TEXT",
             "'source' TEXT",
             "'date' TEXT",
             "'createdAt' TEXT DEFAULT CURRENT_TIMESTAMP",
@@ -3058,6 +3059,15 @@ export const createNewWorkoutTables = async (): Promise<void> => {
         }
     } else {
         console.log('No migration needed for workout tables.');
+    }
+};
+
+export const addMealTypeToUserNutritionTable = async (): Promise<void> => {
+    const currentVersion = await getLatestVersion();
+    if (currentVersion && currentVersion < packageJson.version) {
+        if (!(await columnExists('UserNutrition', 'mealType'))) {
+            await database.execAsync('ALTER TABLE "UserNutrition" ADD COLUMN "mealType" TEXT');
+        }
     }
 };
 
