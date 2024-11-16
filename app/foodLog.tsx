@@ -1,10 +1,12 @@
 import type { BarcodeScanningResult } from 'expo-camera';
 
+import FoodTrackingModal from '@/components/FoodTrackingModal';
 import ThemedCard from '@/components/ThemedCard';
 import { ICON_SIZE } from '@/constants/ui';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { getUserNutritionBetweenDates } from '@/utils/database';
 import { safeToFixed } from '@/utils/string';
+import { MusclogApiFoodInfoType } from '@/utils/types';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { NavigationProp } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
@@ -39,10 +41,12 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const [scanned, setScanned] = useState(false);
     const [showBarcodeCamera, setShowBarcodeCamera] = useState(false);
     const [showPhotoCamera, setShowPhotoCamera] = useState(false);
-    const [isSearchFocused, setIsSearchFocused] = useState(false);
 
     // Reference to the photo camera
     const photoCameraRef = useRef(null);
+
+    const [selectedFood, setSelectedFood] = useState<MusclogApiFoodInfoType | null>(null);
+    const [isModalVisible, setIsModalVisible] = useState(false);
 
     // Mock data for demonstration
     const dailyGoal = {
@@ -102,7 +106,6 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
             carbohydrate: 0,
             fat: 0,
         });
-        setIsSearchFocused(false);
     }, []);
 
     useFocusEffect(
@@ -201,13 +204,48 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         />
     );
 
-    // Handler for barcode scanning
-    const handleBarCodeScanned = ({ type, data }: BarcodeScanningResult) => {
+    const fetchProductByEAN = async (ean: string) => {
+        try {
+            const response = await fetch(`https://world.openfoodfacts.org/api/v0/product/${ean}.json`);
+            if (response.ok) {
+                const data = await response.json();
+                if (data.status === 1) {
+                    const product = data.product;
+                    const foodInfo: MusclogApiFoodInfoType = {
+                        productTitle: product.product_name || t('unknown_product'),
+                        kcal: product.nutriments['energy-kcal_100g'] || 0,
+                        protein: product.nutriments['proteins_100g'] || 0,
+                        carbs: product.nutriments['carbohydrates_100g'] || 0,
+                        fat: product.nutriments['fat_100g'] || 0,
+                        ean: product.code,
+                    };
+                    return foodInfo;
+                } else {
+                    alert(t('product_not_found'));
+                    return null;
+                }
+            } else {
+                alert(t('error_fetching_product'));
+                return null;
+            }
+        } catch (error) {
+            console.error('Error fetching product:', error);
+            alert(t('error_fetching_product'));
+            return null;
+        }
+    };
+
+    const handleBarCodeScanned = async ({ type, data }: BarcodeScanningResult) => {
         setScanned(true);
         setShowBarcodeCamera(false);
-        // Handle the scanned data (e.g., search for the food item)
-        alert(`${t('barcode_scanned')}: ${data}`);
-        // Reset the scanned state for future scans
+
+        const foodInfo = await fetchProductByEAN(data);
+
+        if (foodInfo) {
+            setSelectedFood(foodInfo);
+            setIsModalVisible(true);
+        }
+
         setScanned(false);
     };
 
@@ -267,8 +305,6 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                         onChangeText={setSearchQuery}
                         style={styles.searchInput}
                         mode="outlined"
-                        onFocus={() => setIsSearchFocused(true)}
-                        onBlur={() => setIsSearchFocused(false)}
                     />
                     {searchQuery ? (
                         <Button
@@ -341,6 +377,15 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                     </CameraView>
                 </View>
             )}
+            <FoodTrackingModal
+                visible={isModalVisible}
+                onClose={() => {
+                    setIsModalVisible(false);
+                    setSelectedFood(null);
+                }}
+                food={selectedFood}
+                themeColors={colors}
+            />
         </View>
     );
 };
