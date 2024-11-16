@@ -5,9 +5,9 @@ import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { addFood } from '@/utils/database';
 import { formatFloatNumericInputText, generateHash } from '@/utils/string';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { NavigationProp } from '@react-navigation/native';
+import { NavigationProp, useRoute } from '@react-navigation/native';
 import fetch from 'isomorphic-fetch';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View, ScrollView, StyleSheet, Platform, Alert } from 'react-native';
 import { Appbar, Button, Text, useTheme } from 'react-native-paper';
@@ -18,7 +18,13 @@ const GOOGLE_FORMS_URL = 'https://docs.google.com/forms/d';
 
 const HIDDEN_FIELDS = ['data_id', 'created_at', 'deleted_at'];
 
+type RouteParams = {
+    foodName?: string;
+};
+
 const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
+    const route = useRoute();
+    const { foodName = '' } = (route.params as RouteParams) || {};
     const { t } = useTranslation();
     const { colors, dark } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors, dark);
@@ -38,6 +44,15 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
         setIsModalVisible(false);
         navigation.navigate('listExercises');
     }, [navigation]);
+
+    useEffect(() => {
+        if (foodName) {
+            setFormData((prevData) => ({
+                ...prevData,
+                [form.fields.find((f) => f.label === 'name')?.id || '']: foodName,
+            }));
+        }
+    }, [foodName]);
 
     // Update the form data on text input change
     const handleInputChange = (id: string, value: string) => {

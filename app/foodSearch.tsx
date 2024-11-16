@@ -119,6 +119,22 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
         setSelectedFood(null);
     }, []);
 
+    const resetScreenData = useCallback(() => {
+        setIsModalVisible(false);
+        setSelectedFood(null);
+        setSearchQuery('');
+        setSearchResults([]);
+        setCurrentPage(1);
+        setTotalPages(1);
+        setIsLoading(false);
+        setLoadMoreError(false);
+    }, []);
+
+    const openAddNewFoodModal = useCallback(() => {
+        resetScreenData();
+        navigation.navigate('createFood', { foodName: searchQuery });
+    }, [navigation, resetScreenData, searchQuery]);
+
     return (
         <View style={styles.container}>
             <Appbar.Header mode="small" statusBarHeight={0} style={styles.appbarHeader}>
@@ -147,7 +163,12 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 </Button>
             </View>
             {searchResults.length === 0 && !isLoading ? (
-                <Text style={styles.noResultsText}>{t('no_results_found')}</Text>
+                <View style={styles.noResultsContainer}>
+                    <Text style={styles.noResultsText}>{t('no_results_found')}</Text>
+                    <Button mode="contained" onPress={openAddNewFoodModal} style={styles.addButton}>
+                        {t('add_new_food')}
+                    </Button>
+                </View>
             ) : (
                 <FlashList
                     data={searchResults}
@@ -217,6 +238,10 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
 };
 
 const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
+    addButton: {
+        alignSelf: 'center',
+        marginTop: 16,
+    },
     appbarHeader: {
         backgroundColor: colors.primary,
         justifyContent: 'center',
@@ -274,11 +299,13 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         justifyContent: 'space-between',
         marginBottom: 4,
     },
+    noResultsContainer: {
+        alignItems: 'center',
+        marginTop: 20,
+    },
     noResultsText: {
         color: colors.onSurface,
         fontSize: 16,
-        marginTop: 20,
-        textAlign: 'center',
     },
     searchContainer: {
         alignItems: 'center',
