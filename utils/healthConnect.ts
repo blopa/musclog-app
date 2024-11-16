@@ -1,6 +1,6 @@
 import { USER_METRICS_SOURCES } from '@/constants/healthConnect';
 import { EATING_PHASES, NUTRITION_TYPES } from '@/constants/nutrition';
-import { HEALTH_CONNECT_TYPE, LAST_TIME_APP_USED } from '@/constants/storage';
+import { READ_HEALTH_CONNECT_TYPE, LAST_TIME_APP_USED } from '@/constants/storage';
 import { LAST_RUN_KEY } from '@/constants/tasks';
 import { checkIsHealthConnectedPermitted, getHealthConnectData } from '@/storage/HealthConnectProvider';
 import { addOrUpdateSetting, addUserMetrics, addUserNutrition, getUser } from '@/utils/database';
@@ -92,7 +92,7 @@ export const getLatestHealthConnectData = async () => {
         if (!isPermitted) {
             await AsyncStorage.setItem(LAST_RUN_KEY, today);
             await addOrUpdateSetting({
-                type: HEALTH_CONNECT_TYPE,
+                type: READ_HEALTH_CONNECT_TYPE,
                 value: 'false',
             });
 

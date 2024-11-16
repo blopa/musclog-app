@@ -10,7 +10,7 @@ import {
     CSV_IMPORT_TYPE,
     EXERCISE_IMAGE_GENERATION_TYPE,
     GEMINI_API_KEY_TYPE,
-    HEALTH_CONNECT_TYPE,
+    READ_HEALTH_CONNECT_TYPE,
     IMPERIAL_SYSTEM,
     JSON_IMPORT_TYPE,
     LANGUAGE_CHOICE_TYPE,
@@ -62,9 +62,14 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
     const [exerciseImageGeneration, setExerciseImageGeneration] = useState<boolean>(false);
     const [tempExerciseImageGeneration, setTempExerciseImageGeneration] = useState<boolean>(false);
     const [exerciseImageModalVisible, setExerciseImageModalVisible] = useState(false);
-    const [healthConnectEnabled, setHealthConnectEnabled] = useState<boolean>(false);
-    const [tempHealthConnectEnabled, setTempHealthConnectEnabled] = useState<boolean>(false);
-    const [healthConnectModalVisible, setHealthConnectModalVisible] = useState(false);
+
+    const [readHealthConnectEnabled, setReadHealthConnectEnabled] = useState<boolean>(false);
+    const [tempReadHealthConnectEnabled, setTempReadHealthConnectEnabled] = useState<boolean>(false);
+    const [readHealthConnectModalVisible, setReadHealthConnectModalVisible] = useState<boolean>(false);
+    const [writeHealthConnectEnabled, setWriteHealthConnectEnabled] = useState<boolean>(false);
+    const [tempWriteHealthConnectEnabled, setTempWriteHealthConnectEnabled] = useState<boolean>(false);
+    const [writeHealthConnectModalVisible, setWriteHealthConnectModalVisible] = useState<boolean>(false);
+
     const [showCheckPermissionButton, setShowCheckPermissionButton] = useState(false);
     const [advancedSettingsEnabled, setAdvancedSettingsEnabled] = useState<boolean | undefined>(undefined);
     const [aiSettingsEnabled, setAiSettingsEnabled] = useState<boolean | undefined>(undefined);
@@ -122,11 +127,11 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
             setTempExerciseImageGeneration(value);
         }
 
-        const healthConnectFromDb = await getSettingByType(HEALTH_CONNECT_TYPE);
-        if (healthConnectFromDb) {
-            const value = healthConnectFromDb.value === 'true';
-            setHealthConnectEnabled(value);
-            setTempHealthConnectEnabled(value);
+        const readHealthConnectFromDb = await getSettingByType(READ_HEALTH_CONNECT_TYPE);
+        if (readHealthConnectFromDb) {
+            const value = readHealthConnectFromDb.value === 'true';
+            setReadHealthConnectEnabled(value);
+            setTempReadHealthConnectEnabled(value);
         }
 
         const advancedSettingsFromDb = await getSettingByType(ADVANCED_SETTINGS_TYPE);
@@ -336,18 +341,18 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
 
     const handleConfirmHealthConnectChange = useCallback(async () => {
         setLoading(true);
-        await updateSettingWithLoadingState(HEALTH_CONNECT_TYPE, tempHealthConnectEnabled.toString());
+        await updateSettingWithLoadingState(READ_HEALTH_CONNECT_TYPE, tempReadHealthConnectEnabled.toString());
 
-        setHealthConnectEnabled(tempHealthConnectEnabled);
-        setHealthConnectModalVisible(false);
+        setReadHealthConnectEnabled(tempReadHealthConnectEnabled);
+        setReadHealthConnectModalVisible(false);
         await getHealthConnectData();
         setLoading(false);
-    }, [updateSettingWithLoadingState, tempHealthConnectEnabled, getHealthConnectData]);
+    }, [updateSettingWithLoadingState, tempReadHealthConnectEnabled, getHealthConnectData]);
 
     const handleEnableHealthConnect = useCallback(async () => {
         const isPermitted = await checkIsPermitted();
         if (isPermitted) {
-            setTempHealthConnectEnabled(true);
+            setTempReadHealthConnectEnabled(true);
             setShowCheckPermissionButton(false);
             await getHealthConnectData();
         } else {
@@ -359,10 +364,10 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
     const handleCheckPermissions = useCallback(async () => {
         const isPermitted = await checkIsPermitted();
         if (isPermitted) {
-            setTempHealthConnectEnabled(true);
+            setTempReadHealthConnectEnabled(true);
             setShowCheckPermissionButton(false);
         } else {
-            setTempHealthConnectEnabled(false);
+            setTempReadHealthConnectEnabled(false);
             setShowCheckPermissionButton(false);
         }
     }, [checkIsPermitted]);
@@ -469,7 +474,7 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
         setLanguageModalVisible(false);
         setUnitModalVisible(false);
         setExerciseImageModalVisible(false);
-        setHealthConnectModalVisible(false);
+        setReadHealthConnectModalVisible(false);
         setShowCheckPermissionButton(false);
         setExportModalVisible(false);
         setImportModalVisible(false);
@@ -530,15 +535,15 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
                         title={t('unit_system')}
                     />
                     <List.Item
-                        description={t('health_connect_description')}
-                        onPress={() => setHealthConnectModalVisible(true)}
+                        description={t('health_connect_read_description')}
+                        onPress={() => setReadHealthConnectModalVisible(true)}
                         right={() => (
                             <View style={styles.rightContainer}>
-                                <Text>{healthConnectEnabled ? t('enabled') : t('disabled')}</Text>
+                                <Text>{readHealthConnectEnabled ? t('enabled') : t('disabled')}</Text>
                                 <List.Icon icon="chevron-right" />
                             </View>
                         )}
-                        title={t('health_connect')}
+                        title={t('health_connect_read')}
                     />
                     <List.Item
                         description={t('ai_settings_description')}
@@ -831,21 +836,21 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
             <ThemedModal
                 cancelText={t('cancel')}
                 confirmText={showCheckPermissionButton ? undefined : (loading ? undefined : t('confirm'))}
-                onClose={() => setHealthConnectModalVisible(false)}
+                onClose={() => setReadHealthConnectModalVisible(false)}
                 onConfirm={showCheckPermissionButton ? undefined : (loading ? undefined : handleConfirmHealthConnectChange)}
                 title={t('health_connect')}
-                visible={healthConnectModalVisible}
+                visible={readHealthConnectModalVisible}
             >
                 <View style={styles.radioContainer}>
                     {!showCheckPermissionButton ? (
                         <>
                             <TouchableOpacity onPress={() => handleEnableHealthConnect()} style={styles.radio}>
                                 <Text style={styles.radioText}>{t('enabled')}</Text>
-                                <Text style={styles.radioText}>{tempHealthConnectEnabled ? '✔' : ''}</Text>
+                                <Text style={styles.radioText}>{tempReadHealthConnectEnabled ? '✔' : ''}</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity onPress={() => setTempHealthConnectEnabled(false)} style={styles.radio}>
+                            <TouchableOpacity onPress={() => setTempReadHealthConnectEnabled(false)} style={styles.radio}>
                                 <Text style={styles.radioText}>{t('disabled')}</Text>
-                                <Text style={styles.radioText}>{!tempHealthConnectEnabled ? '✔' : ''}</Text>
+                                <Text style={styles.radioText}>{!tempReadHealthConnectEnabled ? '✔' : ''}</Text>
                             </TouchableOpacity>
                             {loading ? <ActivityIndicator color={colors.surface} /> : null}
                         </>

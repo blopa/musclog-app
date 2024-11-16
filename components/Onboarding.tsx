@@ -7,7 +7,7 @@ import { EATING_PHASES, NUTRITION_TYPES } from '@/constants/nutrition';
 import {
     FEET,
     HAS_COMPLETED_ONBOARDING,
-    HEALTH_CONNECT_TYPE,
+    READ_HEALTH_CONNECT_TYPE,
     IMPERIAL_SYSTEM,
     KILOGRAMS,
     METERS,
@@ -151,7 +151,7 @@ const Onboarding = ({ onFinish }: OnboardingProps) => {
         const isPermitted = await checkIsPermitted();
         if (isPermitted) {
             await addOrUpdateSetting({
-                type: HEALTH_CONNECT_TYPE,
+                type: READ_HEALTH_CONNECT_TYPE,
                 value: 'true',
             });
 
