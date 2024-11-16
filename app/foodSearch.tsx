@@ -231,7 +231,6 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 visible={isModalVisible}
                 onClose={closeModal}
                 food={selectedFood}
-                themeColors={colors}
             />
         </View>
     );

@@ -301,6 +301,7 @@ const createTables = (database: SQLiteDatabase) => {
             "'dataId' TEXT",
             "'type' TEXT",
             "'mealType' TEXT",
+            "'grams' TEXT",
             "'source' TEXT",
             "'date' TEXT",
             "'createdAt' TEXT DEFAULT CURRENT_TIMESTAMP",
@@ -671,8 +672,8 @@ export const addUserNutrition = async (userNutrition: UserNutritionInsertType): 
 
     try {
         const result = database.runSync(`
-            INSERT INTO "UserNutrition" ("userId", "name", "calories", "carbohydrate", "sugar", "fiber", "fat", "monounsaturatedFat", "polyunsaturatedFat", "saturatedFat", "transFat", "unsaturatedFat", "protein", "alcohol", "dataId", "date", "createdAt", "type", "source")
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO "UserNutrition" ("userId", "name", "calories", "carbohydrate", "sugar", "fiber", "fat", "monounsaturatedFat", "polyunsaturatedFat", "saturatedFat", "transFat", "unsaturatedFat", "protein", "alcohol", "grams", "mealType", "dataId", "date", "createdAt", "type", "source")
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `,
         [
             userNutrition.userId,
@@ -689,6 +690,8 @@ export const addUserNutrition = async (userNutrition: UserNutritionInsertType): 
             await encryptDatabaseValue(userNutrition.unsaturatedFat?.toString() || ''),
             await encryptDatabaseValue(userNutrition.protein?.toString() || ''),
             await encryptDatabaseValue(userNutrition.alcohol?.toString() || ''),
+            await encryptDatabaseValue(userNutrition.grams?.toString() || ''),
+            await encryptDatabaseValue(userNutrition.mealType?.toString() || ''),
             userNutrition.dataId,
             userNutrition.date || createdAt,
             createdAt,
@@ -1193,6 +1196,8 @@ export const getAllUserNutrition = async (): Promise<UserNutritionDecryptedRetur
                 fat: parseFloat(await decryptDatabaseValue(row.fat)) || 0,
                 fiber: parseFloat(await decryptDatabaseValue(row.fiber)) || 0,
                 alcohol: parseFloat(await decryptDatabaseValue(row.alcohol)) || 0,
+                grams: parseFloat(await decryptDatabaseValue(row.grams)) || 0,
+                mealType: await decryptDatabaseValue(row.mealType),
                 monounsaturatedFat: parseFloat(await decryptDatabaseValue(row.monounsaturatedFat)) || 0,
                 name: await decryptDatabaseValue(row.name),
                 polyunsaturatedFat: parseFloat(await decryptDatabaseValue(row.polyunsaturatedFat)) || 0,
@@ -1734,6 +1739,8 @@ export const getUserNutrition = async (id: number): Promise<UserNutritionDecrypt
                 fat: parseFloat(await decryptDatabaseValue(result.fat)) || 0,
                 fiber: parseFloat(await decryptDatabaseValue(result.fiber)) || 0,
                 alcohol: parseFloat(await decryptDatabaseValue(result.alcohol)) || 0,
+                grams: parseFloat(await decryptDatabaseValue(result.grams)) || 0,
+                mealType: await decryptDatabaseValue(result.mealType) || '',
                 monounsaturatedFat: parseFloat(await decryptDatabaseValue(result.monounsaturatedFat)) || 0,
                 name: await decryptDatabaseValue(result.name) || '',
                 polyunsaturatedFat: parseFloat(await decryptDatabaseValue(result.polyunsaturatedFat)) || 0,
@@ -1771,6 +1778,8 @@ export const getLatestUserNutritionByUserId = async (userId: number): Promise<Us
             alcohol: parseFloat(await decryptDatabaseValue(result.alcohol)) || 0,
             monounsaturatedFat: parseFloat(await decryptDatabaseValue(result.monounsaturatedFat)) || 0,
             name: await decryptDatabaseValue(result.name),
+            mealType: await decryptDatabaseValue(result.mealType),
+            grams: parseFloat(await decryptDatabaseValue(result.grams)) || 0,
             polyunsaturatedFat: parseFloat(await decryptDatabaseValue(result.polyunsaturatedFat)) || 0,
             protein: parseFloat(await decryptDatabaseValue(result.protein)) || 0,
             saturatedFat: parseFloat(await decryptDatabaseValue(result.saturatedFat)) || 0,
@@ -1801,6 +1810,8 @@ export const getAllUserNutritionByUserId = async (userId: number): Promise<UserN
                     alcohol: parseFloat(await decryptDatabaseValue(row.alcohol)) || 0,
                     monounsaturatedFat: parseFloat(await decryptDatabaseValue(row.monounsaturatedFat)) || 0,
                     name: await decryptDatabaseValue(row.name) || '',
+                    mealType: await decryptDatabaseValue(row.mealType) || '',
+                    grams: parseFloat(await decryptDatabaseValue(row.grams)) || 0,
                     polyunsaturatedFat: parseFloat(await decryptDatabaseValue(row.polyunsaturatedFat)) || 0,
                     protein: parseFloat(await decryptDatabaseValue(row.protein)) || 0,
                     saturatedFat: parseFloat(await decryptDatabaseValue(row.saturatedFat)) || 0,
@@ -1840,6 +1851,8 @@ export const getUserNutritionByDataId = async (dataId: string): Promise<UserNutr
                 fiber: parseFloat(await decryptDatabaseValue(result.fiber)) || 0,
                 monounsaturatedFat: parseFloat(await decryptDatabaseValue(result.monounsaturatedFat)) || 0,
                 name: await decryptDatabaseValue(result.name) || '',
+                mealType: await decryptDatabaseValue(result.mealType) || '',
+                grams: parseFloat(await decryptDatabaseValue(result.grams)) || 0,
                 polyunsaturatedFat: parseFloat(await decryptDatabaseValue(result.polyunsaturatedFat)) || 0,
                 protein: parseFloat(await decryptDatabaseValue(result.protein)) || 0,
                 saturatedFat: parseFloat(await decryptDatabaseValue(result.saturatedFat)) || 0,
@@ -1877,6 +1890,8 @@ export const getUserNutritionPaginated = async (offset = 0, limit = 20, order: '
                     fiber: parseFloat(await decryptDatabaseValue(row.fiber)) || 0,
                     monounsaturatedFat: parseFloat(await decryptDatabaseValue(row.monounsaturatedFat)) || 0,
                     name: await decryptDatabaseValue(row.name) || '',
+                    mealType: await decryptDatabaseValue(row.mealType) || '',
+                    grams: parseFloat(await decryptDatabaseValue(row.grams)) || 0,
                     polyunsaturatedFat: parseFloat(await decryptDatabaseValue(row.polyunsaturatedFat)) || 0,
                     protein: parseFloat(await decryptDatabaseValue(row.protein)) || 0,
                     saturatedFat: parseFloat(await decryptDatabaseValue(row.saturatedFat)) || 0,
@@ -1915,6 +1930,8 @@ export const getUserNutritionBetweenDates = async (startDate: string, endDate: s
                     alcohol: parseFloat(await decryptDatabaseValue(row.alcohol)) || 0,
                     monounsaturatedFat: parseFloat(await decryptDatabaseValue(row.monounsaturatedFat)) || 0,
                     name: await decryptDatabaseValue(row.name) || '',
+                    mealType: await decryptDatabaseValue(row.mealType) || '',
+                    grams: parseFloat(await decryptDatabaseValue(row.grams)) || 0,
                     polyunsaturatedFat: parseFloat(await decryptDatabaseValue(row.polyunsaturatedFat)) || 0,
                     protein: parseFloat(await decryptDatabaseValue(row.protein)) || 0,
                     saturatedFat: parseFloat(await decryptDatabaseValue(row.saturatedFat)) || 0,
@@ -1955,6 +1972,8 @@ export const getUserNutritionFromDate = async (startDate: string): Promise<UserN
                     fiber: parseFloat(await decryptDatabaseValue(row.fiber)) || 0,
                     monounsaturatedFat: parseFloat(await decryptDatabaseValue(row.monounsaturatedFat)) || 0,
                     name: await decryptDatabaseValue(row.name) || '',
+                    mealType: await decryptDatabaseValue(row.mealType) || '',
+                    grams: parseFloat(await decryptDatabaseValue(row.grams)) || 0,
                     polyunsaturatedFat: parseFloat(await decryptDatabaseValue(row.polyunsaturatedFat)) || 0,
                     protein: parseFloat(await decryptDatabaseValue(row.protein)) || 0,
                     saturatedFat: parseFloat(await decryptDatabaseValue(row.saturatedFat)) || 0,
@@ -2169,9 +2188,10 @@ export const updateUserNutrition = async (id: number, userNutrition: UserNutriti
 
     try {
         database.runSync(
-            'UPDATE "UserNutrition" SET "name" = ?, "calories" = ?, "protein" = ?, "alcohol" = ?, "carbohydrate" = ?, "sugar" = ?, "fiber" = ?, "fat" = ?, "monounsaturatedFat" = ?, "polyunsaturatedFat" = ?, "saturatedFat" = ?, "transFat" = ?, "unsaturatedFat" = ?, "userId" = ?, "date" = ?, "type" = ?, "source" = ? WHERE "id" = ?',
+            'UPDATE "UserNutrition" SET "name" = ?, "mealType" = ?, "calories" = ?, "protein" = ?, "alcohol" = ?, "carbohydrate" = ?, "sugar" = ?, "fiber" = ?, "fat" = ?, "monounsaturatedFat" = ?, "polyunsaturatedFat" = ?, "saturatedFat" = ?, "transFat" = ?, "unsaturatedFat" = ?, "grams" = ?, "userId" = ?, "date" = ?, "type" = ?, "source" = ? WHERE "id" = ?',
             [
                 await encryptDatabaseValue(userNutrition.name || existingUserNutrition?.name || ''),
+                await encryptDatabaseValue(userNutrition.mealType || existingUserNutrition?.mealType || ''),
                 await encryptDatabaseValue(userNutrition.calories?.toString() || existingUserNutrition?.calories?.toString() || ''),
                 await encryptDatabaseValue(userNutrition.protein?.toString() || existingUserNutrition?.protein?.toString() || ''),
                 await encryptDatabaseValue(userNutrition.alcohol?.toString() || existingUserNutrition?.alcohol?.toString() || ''),
@@ -2184,6 +2204,7 @@ export const updateUserNutrition = async (id: number, userNutrition: UserNutriti
                 await encryptDatabaseValue(userNutrition.saturatedFat?.toString() || existingUserNutrition?.saturatedFat?.toString() || ''),
                 await encryptDatabaseValue(userNutrition.transFat?.toString() || existingUserNutrition?.transFat?.toString() || ''),
                 await encryptDatabaseValue(userNutrition.unsaturatedFat?.toString() || existingUserNutrition?.unsaturatedFat?.toString() || ''),
+                await encryptDatabaseValue(userNutrition.grams?.toString() || existingUserNutrition?.grams?.toString() || ''),
                 userNutrition.userId,
                 userNutrition.date || existingUserNutrition?.date || getCurrentTimestamp(),
                 userNutrition.type || existingUserNutrition?.type || NUTRITION_TYPES.MEAL,
@@ -2614,6 +2635,8 @@ export const dumpDatabase = async (encryptionPhrase?: string): Promise<string> =
                         (row as UserNutritionDecryptedReturnType).transFat = parseFloat(await decryptDatabaseValue((row as UserNutritionEncryptedReturnType).transFat));
                         (row as UserNutritionDecryptedReturnType).unsaturatedFat = parseFloat(await decryptDatabaseValue((row as UserNutritionEncryptedReturnType).unsaturatedFat));
                         (row as UserNutritionDecryptedReturnType).name = await decryptDatabaseValue((row as UserNutritionEncryptedReturnType).name);
+                        (row as UserNutritionDecryptedReturnType).mealType = await decryptDatabaseValue((row as UserNutritionEncryptedReturnType).mealType);
+                        (row as UserNutritionDecryptedReturnType).grams = parseFloat(await decryptDatabaseValue((row as UserNutritionEncryptedReturnType).grams));
                     }
 
                     return row;
@@ -2730,6 +2753,14 @@ export const restoreDatabase = async (dump: string, decryptionPhrase?: string): 
 
                         if (row.name) {
                             row.name = await encryptDatabaseValue(row.name?.toString() || '');
+                        }
+
+                        if (row.mealType) {
+                            row.mealType = await encryptDatabaseValue(row.mealType?.toString() || '');
+                        }
+
+                        if (row.grams) {
+                            row.grams = await encryptDatabaseValue(row.grams?.toString() || '');
                         }
                     }
                 }
@@ -3062,11 +3093,15 @@ export const createNewWorkoutTables = async (): Promise<void> => {
     }
 };
 
-export const addMealTypeToUserNutritionTable = async (): Promise<void> => {
+export const addMealTypeGramsToUserNutritionTable = async (): Promise<void> => {
     const currentVersion = await getLatestVersion();
     if (currentVersion && currentVersion < packageJson.version) {
         if (!(await columnExists('UserNutrition', 'mealType'))) {
             await database.execAsync('ALTER TABLE "UserNutrition" ADD COLUMN "mealType" TEXT');
+        }
+
+        if (!(await columnExists('UserNutrition', 'grams'))) {
+            await database.execAsync('ALTER TABLE "UserNutrition" ADD COLUMN "grams" TEXT');
         }
     }
 };

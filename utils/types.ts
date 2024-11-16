@@ -357,6 +357,7 @@ export type UserNutritionInsertType = {
     date: string;
     deletedAt?: string;
     fat: number;
+    grams?: number;
     fiber?: number;
     id?: number;
     monounsaturatedFat?: number;
@@ -379,6 +380,8 @@ export type UserNutritionEncryptedReturnType = {
     carbohydrate: string;
     fat: string;
     fiber?: string;
+    grams?: string;
+    mealType?: string;
     id: number;
     monounsaturatedFat?: string;
     polyunsaturatedFat?: string;

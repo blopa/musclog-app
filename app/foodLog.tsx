@@ -1,6 +1,6 @@
 import type { BarcodeScanningResult } from 'expo-camera';
 
-import FoodTrackingModal from '@/components/FoodTrackingModal';
+import FoodTrackingModal, { FoodTrackingType } from '@/components/FoodTrackingModal';
 import ThemedCard from '@/components/ThemedCard';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { getUserNutritionBetweenDates } from '@/utils/database';
@@ -45,8 +45,8 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     // Reference to the photo camera
     const photoCameraRef = useRef(null);
 
-    const [selectedFood, setSelectedFood] = useState<MusclogApiFoodInfoType | null>(null);
-    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [selectedFood, setSelectedFood] = useState<FoodTrackingType | null>(null);
+    const [isNutritionModalVisible, setIsNutritionModalVisible] = useState<boolean>(false);
 
     // Mock data for demonstration
     const dailyGoal = {
@@ -154,7 +154,22 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         );
     };
 
-    const TodaysTrackedFood = () => {
+    const handleEditNutrition = (userNutrition: UserNutritionDecryptedReturnType) => {
+        setSelectedFood({
+            productTitle: userNutrition.name,
+            kcal: userNutrition.calories,
+            protein: userNutrition.protein,
+            carbs: userNutrition.carbohydrate,
+            fat: userNutrition.fat,
+        });
+        setIsNutritionModalVisible(true);
+    };
+
+    const handleDeleteNutrition = (userNutrition: UserNutritionDecryptedReturnType) => {
+        // TODO
+    };
+
+    const MealsRoute = () => {
         const mealGroups = consumedFoods.reduce((groups, food) => {
             const mealType = food.mealType || 'snacks';
             if (!groups[mealType]) {
@@ -170,8 +185,8 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         return (
             <ScrollView contentContainerStyle={styles.mealsContent}>
                 {mealTypesInOrder.map((mealType) => {
-                    const foods = mealGroups[mealType];
-                    if (foods && foods.length > 0) {
+                    const userNutritions = mealGroups[mealType];
+                    if (userNutritions && userNutritions.length > 0) {
                         return (
                             <View key={mealType} style={styles.mealContainer}>
                                 <View style={styles.mealHeader}>
@@ -179,20 +194,29 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                                         {mealCategories.find((m) => m.name === mealType)?.icon} {t(mealType)}
                                     </Text>
                                 </View>
-                                {foods.map((food, index) => (
-                                    // TODO: add option to edit or delete previously tracked food
-                                    <ThemedCard key={index}>
+                                {userNutritions.map((userNutrition, index) => (
+                                    <ThemedCard key={index} style={styles.foodItem}>
                                         <Card.Content style={styles.cardContent}>
                                             <View style={styles.cardHeader}>
-                                                <Text style={styles.cardTitle}>{food.name || t('unknown_food')}</Text>
-                                                <View style={styles.metricRow}>
-                                                    <Text style={styles.metricDetail}>{t('calories')}: {safeToFixed(food.calories)}kcal</Text>
-                                                    <Text style={styles.metricDetail}>{t('carbs')}: {safeToFixed(food.carbohydrate)}g</Text>
+                                                <Text style={styles.cardTitle}>
+                                                    {userNutrition.name || t('unknown_food')}
+                                                </Text>
+                                                <View style={styles.iconContainer}>
+                                                    <TouchableOpacity onPress={() => handleEditNutrition(userNutrition)}>
+                                                        <FontAwesome5 name="edit" size={20} color={colors.primary} />
+                                                    </TouchableOpacity>
+                                                    <TouchableOpacity onPress={() => handleDeleteNutrition(userNutrition)}>
+                                                        <FontAwesome5 name="trash" size={20} color={colors.primary} />
+                                                    </TouchableOpacity>
                                                 </View>
-                                                <View style={styles.metricRow}>
-                                                    <Text style={styles.metricDetail}>{t('fats')}: {safeToFixed(food.fat)}g</Text>
-                                                    <Text style={styles.metricDetail}>{t('proteins')}: {safeToFixed(food.protein)}g</Text>
-                                                </View>
+                                            </View>
+                                            <View style={styles.metricRow}>
+                                                <Text style={styles.metricDetail}>{t('calories')}: {safeToFixed(userNutrition.calories)}kcal</Text>
+                                                <Text style={styles.metricDetail}>{t('carbs')}: {safeToFixed(userNutrition.carbohydrate)}g</Text>
+                                            </View>
+                                            <View style={styles.metricRow}>
+                                                <Text style={styles.metricDetail}>{t('fats')}: {safeToFixed(userNutrition.fat)}g</Text>
+                                                <Text style={styles.metricDetail}>{t('proteins')}: {safeToFixed(userNutrition.protein)}g</Text>
                                             </View>
                                         </Card.Content>
                                     </ThemedCard>
@@ -212,7 +236,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
             case 'overview':
                 return <OverviewRoute />;
             case 'meals':
-                return <TodaysTrackedFood />;
+                return <MealsRoute />;
             default:
                 return null;
         }
@@ -267,7 +291,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
         if (foodInfo) {
             setSelectedFood(foodInfo);
-            setIsModalVisible(true);
+            setIsNutritionModalVisible(true);
         }
 
         setScanned(false);
@@ -402,13 +426,12 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 </View>
             )}
             <FoodTrackingModal
-                visible={isModalVisible}
+                visible={isNutritionModalVisible}
                 onClose={() => {
-                    setIsModalVisible(false);
+                    setIsNutritionModalVisible(false);
                     setSelectedFood(null);
                 }}
                 food={selectedFood}
-                themeColors={colors}
             />
         </View>
     );
@@ -447,7 +470,9 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         padding: 16,
     },
     cardHeader: {
-        flex: 1,
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
     },
     cardTitle: {
         color: colors.onSurface,
@@ -486,6 +511,10 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     },
     iconButton: {
         marginLeft: 4,
+    },
+    iconContainer: {
+        flexDirection: 'row',
+        gap: 8,
     },
     macroContainer: {
         marginBottom: 12,
@@ -559,6 +588,7 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         flex: 1,
         marginRight: 8,
     },
+
 });
 
 export default FoodLog;

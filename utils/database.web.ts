@@ -247,6 +247,8 @@ export class WorkoutLoggerDatabase extends Dexie implements IDatabase {
                 'date',
                 'type',
                 'source',
+                'mealType',
+                'grams',
                 'createdAt',
                 'deletedAt',
             ].join(', '),
@@ -2083,7 +2085,7 @@ export const createNewWorkoutTables = async (): Promise<void> => {
     }
 };
 
-export const addMealTypeToUserNutritionTable = async (): Promise<void> => {
+export const addMealTypeGramsToUserNutritionTable = async (): Promise<void> => {
     const currentVersion = await getLatestVersion();
     if (currentVersion && currentVersion < packageJson.version) {
         if (database.isOpen()) {
@@ -2112,6 +2114,7 @@ export const addMealTypeToUserNutritionTable = async (): Promise<void> => {
                 'type',
                 'source',
                 'mealType',
+                'grams',
                 'createdAt',
                 'deletedAt',
             ].join(', '),

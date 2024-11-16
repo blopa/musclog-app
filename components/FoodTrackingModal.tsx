@@ -6,20 +6,33 @@ import { MEAL_TYPE, NUTRITION_TYPES } from '@/constants/nutrition';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { addUserNutrition } from '@/utils/database';
 import { generateHash } from '@/utils/string';
-import { MusclogApiFoodInfoType } from '@/utils/types';
 import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View, StyleSheet } from 'react-native';
 import { useTheme, Text } from 'react-native-paper';
 
+export type FoodTrackingType = {
+    productTitle: string;
+    fat: number;
+    carbs: number;
+    protein: number;
+    kcal: number;
+    grams?: number;
+};
+
 type FoodTrackingModalProps = {
     visible: boolean;
     onClose: () => void;
-    food: MusclogApiFoodInfoType | null;
-    themeColors: CustomThemeColorsType;
+    food: FoodTrackingType | null;
+    userNutritionId?: number;
 };
 
-const FoodTrackingModal = ({ visible, onClose, food, themeColors }: FoodTrackingModalProps) => {
+const FoodTrackingModal = ({
+    visible,
+    onClose,
+    food,
+    userNutritionId,
+}: FoodTrackingModalProps) => {
     const { t } = useTranslation();
     const { colors, dark } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors, dark);
@@ -59,19 +72,25 @@ const FoodTrackingModal = ({ visible, onClose, food, themeColors }: FoodTracking
     };
 
     const handleTrackFood = useCallback(async () => {
-        await addUserNutrition({
-            date: new Date().toISOString(),
-            calories: calculatedValues.kcal,
-            protein: calculatedValues.protein,
-            carbohydrate: calculatedValues.carbs,
-            fat: calculatedValues.fat,
-            dataId: generateHash(),
-            name: food?.productTitle || t('unknown_food'),
-            source: USER_METRICS_SOURCES.USER_INPUT,
-            type: NUTRITION_TYPES.MEAL,
-            mealType,
-        });
-    }, [calculatedValues, food?.productTitle, t, mealType]);
+        if (userNutritionId) {
+            // TODO: update existing user nutrition
+        } else {
+            await addUserNutrition({
+                date: new Date().toISOString(),
+                calories: calculatedValues.kcal,
+                protein: calculatedValues.protein,
+                carbohydrate: calculatedValues.carbs,
+                fat: calculatedValues.fat,
+                dataId: generateHash(),
+                name: food?.productTitle || t('unknown_food'),
+                source: USER_METRICS_SOURCES.USER_INPUT,
+                type: NUTRITION_TYPES.MEAL,
+                mealType,
+                grams: parseFloat(grams),
+            });
+        }
+        onClose();
+    }, [userNutritionId, onClose, calculatedValues.kcal, calculatedValues.protein, calculatedValues.carbs, calculatedValues.fat, food?.productTitle, t, mealType]);
 
     return (
         <ThemedModal
