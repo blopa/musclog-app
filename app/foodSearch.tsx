@@ -1,13 +1,13 @@
 import ThemedCard from '@/components/ThemedCard';
 import { ICON_SIZE } from '@/constants/ui';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
-import { MusclogApiFoodInfoType, PaginatedOpenFoodFactsApiFoodProductInfoType } from '@/utils/types';
+import { MusclogApiFoodInfoType, PaginatedOpenFoodFactsApiFoodInfoType, PaginatedOpenFoodFactsApiFoodProductInfoType } from '@/utils/types';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { NavigationProp, useRoute } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
 import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View, ActivityIndicator } from 'react-native';
 import { Appbar, Button, Text, TextInput, useTheme } from 'react-native-paper';
 
 type RouteParams = {
@@ -23,29 +23,61 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
     const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
     const [searchResults, setSearchResults] = useState<MusclogApiFoodInfoType[]>([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [isLoading, setIsLoading] = useState(false);
 
-    const handleSearch = useCallback(async () => {
+    const fetchFoodData = async (query: string, page: number) => {
         try {
             const response = await fetch(
-                `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(searchQuery)}&search_simple=1&json=1`
+                `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&page=${page}&search_simple=1&json=1`
             );
 
             if (response.ok) {
-                const data = await response.json();
-                setSearchResults(data.products.map((f: PaginatedOpenFoodFactsApiFoodProductInfoType) => ({
-                    productTitle: f.product_name,
-                    kcal: f.nutriments['energy-kcal'],
-                    protein: f.nutriments['proteins'],
-                    carbs: f.nutriments['carbohydrates'],
-                    fat: f.nutriments['fat'],
-                })));
+                const data: PaginatedOpenFoodFactsApiFoodInfoType = await response.json();
+                return {
+                    products: data.products.map((f: PaginatedOpenFoodFactsApiFoodProductInfoType) => ({
+                        productTitle: f.product_name,
+                        kcal: f.nutriments['energy-kcal'] || 0,
+                        protein: f.nutriments['proteins'] || 0,
+                        carbs: f.nutriments['carbohydrates'] || 0,
+                        fat: f.nutriments['fat'] || 0,
+                    })),
+                    pageCount: data.page_count,
+                };
             } else {
                 console.error('Failed to fetch food items:', response.statusText);
+                return { products: [], pageCount: 1 };
             }
         } catch (error) {
             console.error('Error fetching food items:', error);
+            return { products: [], pageCount: 1 };
         }
+    };
+
+    const handleSearch = useCallback(async () => {
+        setIsLoading(true);
+        setCurrentPage(1);
+
+        const { products, pageCount } = await fetchFoodData(searchQuery, 1);
+        setSearchResults(products);
+        setTotalPages(pageCount);
+        setIsLoading(false);
     }, [searchQuery]);
+
+    const loadMoreResults = useCallback(async () => {
+        if (currentPage >= totalPages || isLoading) {
+            return;
+        }
+
+        setIsLoading(true);
+        const nextPage = currentPage + 1;
+
+        const { products } = await fetchFoodData(searchQuery, nextPage);
+        setSearchResults((prevResults) => [...prevResults, ...products]);
+        setCurrentPage(nextPage);
+        setIsLoading(false);
+    }, [searchQuery, currentPage, totalPages, isLoading]);
 
     const handleAddFood = (food: MusclogApiFoodInfoType) => {
         // Handle adding food to the user's nutrition log
@@ -78,31 +110,33 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
                     <FontAwesome5 name="search" size={20} color={colors.primary} />
                 </Button>
             </View>
-            {searchResults.length === 0 ? (
+            {searchResults.length === 0 && !isLoading ? (
                 <Text style={styles.noResultsText}>{t('no_results_found')}</Text>
             ) : (
                 <FlashList
                     data={searchResults}
-                    keyExtractor={(item) => item.productTitle}
+                    keyExtractor={(item, index) => (item.productTitle ? item.productTitle.toString() : index.toString())}
                     renderItem={({ item }) => (
                         <ThemedCard key={item.productTitle}>
                             <View style={styles.cardContent}>
                                 <View style={styles.cardHeader}>
-                                    <Text style={styles.cardTitle}>{item.productTitle}</Text>
+                                    <Text style={styles.cardTitle}>
+                                        {item.productTitle}
+                                    </Text>
                                     <View style={styles.metricRow}>
                                         <Text style={styles.metricDetail}>
-                                            {t('calories')}: {item.kcal} kcal
+                                            {t('calories')}: {item.kcal.toString()} kcal
                                         </Text>
                                         <Text style={styles.metricDetail}>
-                                            {t('carbs')}: {item.carbs} g
+                                            {t('carbs')}: {(item.carbs || 0).toString()} g
                                         </Text>
                                     </View>
                                     <View style={styles.metricRow}>
                                         <Text style={styles.metricDetail}>
-                                            {t('proteins')}: {item.protein} g
+                                            {t('proteins')}: {(item.protein || 0).toString()} g
                                         </Text>
                                         <Text style={styles.metricDetail}>
-                                            {t('fats')}: {item.fat} g
+                                            {t('fats')}: {(item.fat || 0).toString()} g
                                         </Text>
                                     </View>
                                 </View>
@@ -120,6 +154,9 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
                     )}
                     estimatedItemSize={115}
                     contentContainerStyle={styles.listContent}
+                    onEndReached={loadMoreResults}
+                    onEndReachedThreshold={0.5}
+                    ListFooterComponent={isLoading ? <ActivityIndicator size="large" color={colors.primary} /> : null}
                 />
             )}
         </View>
