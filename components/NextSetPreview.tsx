@@ -2,8 +2,8 @@ import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { ExerciseReturnType, SetReturnType } from '@/utils/types';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, Text, View, ViewStyle } from 'react-native';
-import { useTheme } from 'react-native-paper';
+import { StyleSheet, View, ViewStyle } from 'react-native';
+import { useTheme, Text } from 'react-native-paper';
 
 type NextSetPreviewProps = {
     exercise: ExerciseReturnType | undefined;

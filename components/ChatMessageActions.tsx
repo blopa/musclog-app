@@ -1,8 +1,8 @@
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useTheme } from 'react-native-paper';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { useTheme, Text } from 'react-native-paper';
 
 interface ChatMessageActionsProps {
     onCancel: () => void;

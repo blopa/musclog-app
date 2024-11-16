@@ -12,8 +12,8 @@ import {
 } from 'chart.js';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
-import { Dimensions, StyleSheet, Text, View } from 'react-native';
-import { IconButton, Switch, useTheme } from 'react-native-paper';
+import { Dimensions, StyleSheet, View } from 'react-native';
+import { IconButton, Switch, useTheme, Text } from 'react-native-paper';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 

@@ -1,6 +1,5 @@
-import CustomTextInput from '@/components/CustomTextInput';
+import FoodTrackingModal from '@/components/FoodTrackingModal';
 import ThemedCard from '@/components/ThemedCard';
-import ThemedModal from '@/components/ThemedModal';
 import { ICON_SIZE } from '@/constants/ui';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { MusclogApiFoodInfoType, PaginatedOpenFoodFactsApiFoodInfoType, PaginatedOpenFoodFactsApiFoodProductInfoType } from '@/utils/types';
@@ -31,13 +30,6 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const [loadMoreError, setLoadMoreError] = useState(false);
     const [selectedFood, setSelectedFood] = useState<MusclogApiFoodInfoType | null>(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const [grams, setGrams] = useState('100');
-    const [calculatedValues, setCalculatedValues] = useState({
-        kcal: 0,
-        protein: 0,
-        carbs: 0,
-        fat: 0,
-    });
 
     const fetchFoodData = async (query: string, page: number) => {
         try {
@@ -102,34 +94,12 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
     const handleAddFood = (food: MusclogApiFoodInfoType) => {
         setSelectedFood(food);
-        setGrams('100');
         setIsModalVisible(true);
-        updateCalculatedValues(100, food);
     };
 
     const closeModal = () => {
         setIsModalVisible(false);
         setSelectedFood(null);
-    };
-
-    const updateCalculatedValues = (grams: number, food: MusclogApiFoodInfoType) => {
-        const factor = grams / 100;
-        setCalculatedValues({
-            kcal: factor * food.kcal,
-            protein: factor * food.protein,
-            carbs: factor * food.carbs,
-            fat: factor * food.fat,
-        });
-    };
-
-    const handleGramsChange = (text: string) => {
-        const formattedText = text.replace(/\D/g, '');
-        setGrams(formattedText);
-
-        const gramsValue = parseFloat(formattedText) || 0;
-        if (selectedFood) {
-            updateCalculatedValues(gramsValue, selectedFood);
-        }
     };
 
     return (
@@ -219,29 +189,12 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
                     }
                 />
             )}
-            <ThemedModal
+            <FoodTrackingModal
                 visible={isModalVisible}
                 onClose={closeModal}
-                title={selectedFood?.productTitle || ''}
-                confirmText={t('ok')}
-                cancelText={t('cancel')}
-            >
-                {selectedFood && (
-                    <View style={styles.foodTrackingForm}>
-                        <CustomTextInput
-                            keyboardType="numeric"
-                            label={t('grams')}
-                            value={grams}
-                            onChangeText={handleGramsChange}
-                            placeholder={t('quantity')}
-                        />
-                        <Text>{t('calories')}: {calculatedValues.kcal.toFixed(2)} kcal</Text>
-                        <Text>{t('proteins')}: {calculatedValues.protein.toFixed(2)} g</Text>
-                        <Text>{t('carbs')}: {calculatedValues.carbs.toFixed(2)} g</Text>
-                        <Text>{t('fats')}: {calculatedValues.fat.toFixed(2)} g</Text>
-                    </View>
-                )}
-            </ThemedModal>
+                food={selectedFood}
+                themeColors={colors}
+            />
         </View>
     );
 };

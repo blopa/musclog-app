@@ -5,8 +5,8 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { ArcElement, Chart as ChartJS, Legend, Tooltip } from 'chart.js';
 import React, { useCallback } from 'react';
 import { Pie } from 'react-chartjs-2';
-import { Dimensions, StyleSheet, Text, View } from 'react-native';
-import { IconButton, useTheme } from 'react-native-paper';
+import { Dimensions, StyleSheet, View } from 'react-native';
+import { IconButton, useTheme, Text } from 'react-native-paper';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
