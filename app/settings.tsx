@@ -11,6 +11,7 @@ import {
     EXERCISE_IMAGE_GENERATION_TYPE,
     GEMINI_API_KEY_TYPE,
     READ_HEALTH_CONNECT_TYPE,
+    WRITE_HEALTH_CONNECT_TYPE,
     IMPERIAL_SYSTEM,
     JSON_IMPORT_TYPE,
     LANGUAGE_CHOICE_TYPE,
@@ -71,6 +72,8 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
     const [writeHealthConnectModalVisible, setWriteHealthConnectModalVisible] = useState<boolean>(false);
 
     const [showCheckPermissionButton, setShowCheckPermissionButton] = useState(false);
+    const [showCheckWritePermissionButton, setShowCheckWritePermissionButton] = useState(false);
+
     const [advancedSettingsEnabled, setAdvancedSettingsEnabled] = useState<boolean | undefined>(undefined);
     const [aiSettingsEnabled, setAiSettingsEnabled] = useState<boolean | undefined>(undefined);
     const [exportModalVisible, setExportModalVisible] = useState(false);
@@ -132,6 +135,13 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
             const value = readHealthConnectFromDb.value === 'true';
             setReadHealthConnectEnabled(value);
             setTempReadHealthConnectEnabled(value);
+        }
+
+        const writeHealthConnectFromDb = await getSettingByType(WRITE_HEALTH_CONNECT_TYPE);
+        if (writeHealthConnectFromDb) {
+            const value = writeHealthConnectFromDb.value === 'true';
+            setWriteHealthConnectEnabled(value);
+            setTempWriteHealthConnectEnabled(value);
         }
 
         const advancedSettingsFromDb = await getSettingByType(ADVANCED_SETTINGS_TYPE);
@@ -366,9 +376,41 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
         if (isPermitted) {
             setTempReadHealthConnectEnabled(true);
             setShowCheckPermissionButton(false);
+            await getHealthConnectData();
         } else {
             setTempReadHealthConnectEnabled(false);
             setShowCheckPermissionButton(false);
+        }
+    }, [checkIsPermitted, getHealthConnectData]);
+
+    const handleConfirmHealthConnectWriteChange = useCallback(async () => {
+        setLoading(true);
+        await updateSettingWithLoadingState(WRITE_HEALTH_CONNECT_TYPE, tempWriteHealthConnectEnabled.toString());
+
+        setWriteHealthConnectEnabled(tempWriteHealthConnectEnabled);
+        setWriteHealthConnectModalVisible(false);
+        setLoading(false);
+    }, [updateSettingWithLoadingState, tempWriteHealthConnectEnabled]);
+
+    const handleEnableHealthConnectWrite = useCallback(async () => {
+        const isPermitted = await checkIsPermitted();
+        if (isPermitted) {
+            setTempWriteHealthConnectEnabled(true);
+            setShowCheckWritePermissionButton(false);
+        } else {
+            requestPermissions();
+            setShowCheckWritePermissionButton(true);
+        }
+    }, [checkIsPermitted, requestPermissions]);
+
+    const handleCheckWritePermissions = useCallback(async () => {
+        const isPermitted = await checkIsPermitted();
+        if (isPermitted) {
+            setTempWriteHealthConnectEnabled(true);
+            setShowCheckWritePermissionButton(false);
+        } else {
+            setTempWriteHealthConnectEnabled(false);
+            setShowCheckWritePermissionButton(false);
         }
     }, [checkIsPermitted]);
 
@@ -396,7 +438,7 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
                 const newValue = advancedSettingsEnabled.toString();
                 await updateSettingWithLoadingState(ADVANCED_SETTINGS_TYPE, newValue);
             }
-        }
+        };
 
         saveAdvancedSettings();
     }, [advancedSettingsEnabled, updateSettingWithLoadingState, updateSettingValue]);
@@ -407,7 +449,7 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
                 const newValue = aiSettingsEnabled.toString();
                 await updateSettingWithLoadingState(AI_SETTINGS_TYPE, newValue);
             }
-        }
+        };
 
         saveAISettings();
     }, [aiSettingsEnabled, updateSettingValue, updateSettingWithLoadingState]);
@@ -418,7 +460,7 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
                 const newValue = useFatPercentageTDEE.toString();
                 await updateSettingWithLoadingState(USE_FAT_PERCENTAGE_TDEE_TYPE, newValue);
             }
-        }
+        };
 
         saveUseFatPercentageTDEE();
     }, [useFatPercentageTDEE, updateSettingValue, updateSettingWithLoadingState]);
@@ -475,7 +517,9 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
         setUnitModalVisible(false);
         setExerciseImageModalVisible(false);
         setReadHealthConnectModalVisible(false);
+        setWriteHealthConnectModalVisible(false);
         setShowCheckPermissionButton(false);
+        setShowCheckWritePermissionButton(false);
         setExportModalVisible(false);
         setImportModalVisible(false);
         setJsonImportModalVisible(false);
@@ -544,6 +588,17 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
                             </View>
                         )}
                         title={t('health_connect_read')}
+                    />
+                    <List.Item
+                        description={t('health_connect_write_description')}
+                        onPress={() => setWriteHealthConnectModalVisible(true)}
+                        right={() => (
+                            <View style={styles.rightContainer}>
+                                <Text>{writeHealthConnectEnabled ? t('enabled') : t('disabled')}</Text>
+                                <List.Icon icon="chevron-right" />
+                            </View>
+                        )}
+                        title={t('health_connect_write')}
                     />
                     <List.Item
                         description={t('ai_settings_description')}
@@ -838,7 +893,7 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
                 confirmText={showCheckPermissionButton ? undefined : (loading ? undefined : t('confirm'))}
                 onClose={() => setReadHealthConnectModalVisible(false)}
                 onConfirm={showCheckPermissionButton ? undefined : (loading ? undefined : handleConfirmHealthConnectChange)}
-                title={t('health_connect')}
+                title={t('health_connect_read')}
                 visible={readHealthConnectModalVisible}
             >
                 <View style={styles.radioContainer}>
@@ -861,6 +916,42 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
                                 disabled={loading}
                                 mode="contained"
                                 onPress={loading ? undefined : handleCheckPermissions}
+                                style={styles.validateButton}
+                            >
+                                {loading ? <ActivityIndicator color={colors.surface} /> : t('validate_permissions')}
+                            </Button>
+                        </View>
+                    ) : null}
+                </View>
+            </ThemedModal>
+            <ThemedModal
+                cancelText={t('cancel')}
+                confirmText={showCheckWritePermissionButton ? undefined : (loading ? undefined : t('confirm'))}
+                onClose={() => setWriteHealthConnectModalVisible(false)}
+                onConfirm={showCheckWritePermissionButton ? undefined : (loading ? undefined : handleConfirmHealthConnectWriteChange)}
+                title={t('health_connect_write')}
+                visible={writeHealthConnectModalVisible}
+            >
+                <View style={styles.radioContainer}>
+                    {!showCheckWritePermissionButton ? (
+                        <>
+                            <TouchableOpacity onPress={() => handleEnableHealthConnectWrite()} style={styles.radio}>
+                                <Text style={styles.radioText}>{t('enabled')}</Text>
+                                <Text style={styles.radioText}>{tempWriteHealthConnectEnabled ? '✔' : ''}</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => setTempWriteHealthConnectEnabled(false)} style={styles.radio}>
+                                <Text style={styles.radioText}>{t('disabled')}</Text>
+                                <Text style={styles.radioText}>{!tempWriteHealthConnectEnabled ? '✔' : ''}</Text>
+                            </TouchableOpacity>
+                            {loading ? <ActivityIndicator color={colors.surface} /> : null}
+                        </>
+                    ) : null}
+                    {showCheckWritePermissionButton ? (
+                        <View style={styles.validateButtonWrapper}>
+                            <Button
+                                disabled={loading}
+                                mode="contained"
+                                onPress={loading ? undefined : handleCheckWritePermissions}
                                 style={styles.validateButton}
                             >
                                 {loading ? <ActivityIndicator color={colors.surface} /> : t('validate_permissions')}

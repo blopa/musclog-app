@@ -22,6 +22,7 @@
     "unit_description": "Escolha entre unidades imperial e métrica.",
     "health_connect_not_permitted": "Health Connect não permitido",
     "health_connect_read_description": "Sincronize com Health Connect para acessar seus dados de saúde.",
+    "health_connect_write_description": "Sincronize com Health Connect para acessar e gravar seus dados de saúde.",
     "openai_key_description": "Digite sua chave da API da OpenAI para gerar treinos e muito mais.",
     "google_gemini_key_description": "Digite sua chave da API do Google Gemini para gerar treinos e muito mais.",
     "exercise_image_generation_description": "Ative ou desative a geração de imagens de exercícios.",
