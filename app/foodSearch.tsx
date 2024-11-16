@@ -26,6 +26,7 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [isLoading, setIsLoading] = useState(false);
+    const [loadMoreError, setLoadMoreError] = useState(false);
 
     const fetchFoodData = async (query: string, page: number) => {
         try {
@@ -58,6 +59,7 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const handleSearch = useCallback(async () => {
         setIsLoading(true);
         setCurrentPage(1);
+        setLoadMoreError(false);
 
         const { products, pageCount } = await fetchFoodData(searchQuery, 1);
         setSearchResults(products);
@@ -71,12 +73,19 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
         }
 
         setIsLoading(true);
+        setLoadMoreError(false);
         const nextPage = currentPage + 1;
 
-        const { products } = await fetchFoodData(searchQuery, nextPage);
-        setSearchResults((prevResults) => [...prevResults, ...products]);
-        setCurrentPage(nextPage);
-        setIsLoading(false);
+        try {
+            const { products } = await fetchFoodData(searchQuery, nextPage);
+            setSearchResults((prevResults) => [...prevResults, ...products]);
+            setCurrentPage(nextPage);
+        } catch (error) {
+            console.error('Error loading more results:', error);
+            setLoadMoreError(true);
+        } finally {
+            setIsLoading(false);
+        }
     }, [searchQuery, currentPage, totalPages, isLoading]);
 
     const handleAddFood = (food: MusclogApiFoodInfoType) => {
@@ -115,7 +124,7 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
             ) : (
                 <FlashList
                     data={searchResults}
-                    keyExtractor={(item, index) => (item.productTitle ? item.productTitle.toString() : index.toString())}
+                    keyExtractor={(item, index) => (item.ean || item.productTitle || index).toString()}
                     renderItem={({ item }) => (
                         <ThemedCard key={item.productTitle}>
                             <View style={styles.cardContent}>
@@ -156,7 +165,15 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
                     contentContainerStyle={styles.listContent}
                     onEndReached={loadMoreResults}
                     onEndReachedThreshold={0.5}
-                    ListFooterComponent={isLoading ? <ActivityIndicator size="large" color={colors.primary} /> : null}
+                    ListFooterComponent={
+                        isLoading ? (
+                            <ActivityIndicator size="large" color={colors.primary} />
+                        ) : loadMoreError ? (
+                            <Button onPress={loadMoreResults} mode="outlined" style={styles.loadMoreButton}>
+                                {t('load_more')}
+                            </Button>
+                        ) : null
+                    }
                 />
             )}
         </View>
@@ -204,6 +221,10 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         backgroundColor: colors.background,
         paddingBottom: 16,
         paddingHorizontal: 16,
+    },
+    loadMoreButton: {
+        alignSelf: 'center',
+        marginVertical: 10,
     },
     metricDetail: {
         color: colors.onSurface,
