@@ -1,7 +1,8 @@
+import CustomPicker from '@/components/CustomPicker'; // Import CustomPicker
 import CustomTextInput from '@/components/CustomTextInput';
 import ThemedModal from '@/components/ThemedModal';
 import { USER_METRICS_SOURCES } from '@/constants/healthConnect';
-import { NUTRITION_TYPES } from '@/constants/nutrition';
+import { MEAL_TYPE, NUTRITION_TYPES } from '@/constants/nutrition';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { addUserNutrition } from '@/utils/database';
 import { generateHash } from '@/utils/string';
@@ -23,6 +24,7 @@ const FoodTrackingModal = ({ visible, onClose, food, themeColors }: FoodTracking
     const { colors, dark } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors, dark);
     const [grams, setGrams] = useState('100');
+    const [mealType, setMealType] = useState('');
     const [calculatedValues, setCalculatedValues] = useState({
         kcal: 0,
         protein: 0,
@@ -67,8 +69,9 @@ const FoodTrackingModal = ({ visible, onClose, food, themeColors }: FoodTracking
             name: food?.productTitle || t('unknown_food'),
             source: USER_METRICS_SOURCES.USER_INPUT,
             type: NUTRITION_TYPES.MEAL,
+            mealType,
         });
-    }, [calculatedValues.carbs, calculatedValues.fat, calculatedValues.kcal, calculatedValues.protein, food?.productTitle, t]);
+    }, [calculatedValues, food?.productTitle, t, mealType]);
 
     return (
         <ThemedModal
@@ -87,6 +90,15 @@ const FoodTrackingModal = ({ visible, onClose, food, themeColors }: FoodTracking
                         value={grams}
                         onChangeText={handleGramsChange}
                         placeholder={t('quantity')}
+                    />
+                    <CustomPicker
+                        items={[
+                            { label: t('none'), value: '' },
+                            ...Object.values(MEAL_TYPE).map((phase) => ({ label: t(phase), value: phase }))
+                        ]}
+                        label={t('meal_type')}
+                        selectedValue={mealType}
+                        onValueChange={(value) => setMealType(value)}
                     />
                     <Text>{t('calories')}: {calculatedValues.kcal.toFixed(2)} kcal</Text>
                     <Text>{t('proteins')}: {calculatedValues.protein.toFixed(2)} g</Text>

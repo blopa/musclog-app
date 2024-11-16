@@ -8,3 +8,10 @@ export const EATING_PHASES = {
     CUTTING: 'cutting',
     MAINTENANCE: 'maintenance',
 } as const;
+
+export const MEAL_TYPE = {
+    LUNCH: 'lunch',
+    BREAKFAST: 'breakfast',
+    DINNER: 'dinner',
+    SNACKS: 'snacks',
+} as const;
