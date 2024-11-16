@@ -591,19 +591,19 @@ export type MusclogApiFoodInfoType = {
     brand?: string;
     productTitle: string;
     productImage?: string;
-    basis?: string | number;
-    kj?: string | number;
-    kcal: string | number;
-    fat?: string | number;
-    carbs?: string | number;
-    protein?: string | number;
-    sugars?: string | number;
-    fiber?: string | number;
-    salt?: string | number;
-    saturatedFat?: string | number;
-    unsaturatedFat?: string | number;
-    polyUnsaturatedFat?: string | number;
-    monoUnsaturatedFat?: string | number;
+    basis?: number;
+    kj?: number;
+    kcal: number;
+    fat: number;
+    carbs: number;
+    protein: number;
+    sugars?: number;
+    fiber?: number;
+    salt?: number;
+    saturatedFat?: number;
+    unsaturatedFat?: number;
+    polyUnsaturatedFat?: number;
+    monoUnsaturatedFat?: number;
 };
 
 export type OpenFoodFactsApiNutritionType = {

@@ -1,3 +1,4 @@
+import CustomTextInput from '@/components/CustomTextInput';
 import ThemedCard from '@/components/ThemedCard';
 import ThemedModal from '@/components/ThemedModal';
 import { ICON_SIZE } from '@/constants/ui';
@@ -30,6 +31,13 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const [loadMoreError, setLoadMoreError] = useState(false);
     const [selectedFood, setSelectedFood] = useState<MusclogApiFoodInfoType | null>(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const [grams, setGrams] = useState('100');
+    const [calculatedValues, setCalculatedValues] = useState({
+        kcal: 0,
+        protein: 0,
+        carbs: 0,
+        fat: 0,
+    });
 
     const fetchFoodData = async (query: string, page: number) => {
         try {
@@ -94,12 +102,34 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
     const handleAddFood = (food: MusclogApiFoodInfoType) => {
         setSelectedFood(food);
+        setGrams('100');
         setIsModalVisible(true);
+        updateCalculatedValues(100, food);
     };
 
     const closeModal = () => {
         setIsModalVisible(false);
         setSelectedFood(null);
+    };
+
+    const updateCalculatedValues = (grams: number, food: MusclogApiFoodInfoType) => {
+        const factor = grams / 100;
+        setCalculatedValues({
+            kcal: factor * food.kcal,
+            protein: factor * food.protein,
+            carbs: factor * food.carbs,
+            fat: factor * food.fat,
+        });
+    };
+
+    const handleGramsChange = (text: string) => {
+        const formattedText = text.replace(/\D/g, '');
+        setGrams(formattedText);
+
+        const gramsValue = parseFloat(formattedText) || 0;
+        if (selectedFood) {
+            updateCalculatedValues(gramsValue, selectedFood);
+        }
     };
 
     return (
@@ -197,12 +227,18 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 cancelText={t('cancel')}
             >
                 {selectedFood && (
-                    <View>
-                        <Text>{t('ean')}: {selectedFood.ean}</Text>
-                        <Text>{t('calories')}: {selectedFood.kcal} kcal</Text>
-                        <Text>{t('proteins')}: {selectedFood.protein} g</Text>
-                        <Text>{t('carbs')}: {selectedFood.carbs} g</Text>
-                        <Text>{t('fats')}: {selectedFood.fat} g</Text>
+                    <View style={styles.foodTrackingForm}>
+                        <CustomTextInput
+                            keyboardType="numeric"
+                            label={t('grams')}
+                            value={grams}
+                            onChangeText={handleGramsChange}
+                            placeholder={t('quantity')}
+                        />
+                        <Text>{t('calories')}: {calculatedValues.kcal.toFixed(2)} kcal</Text>
+                        <Text>{t('proteins')}: {calculatedValues.protein.toFixed(2)} g</Text>
+                        <Text>{t('carbs')}: {calculatedValues.carbs.toFixed(2)} g</Text>
+                        <Text>{t('fats')}: {calculatedValues.fat.toFixed(2)} g</Text>
                     </View>
                 )}
             </ThemedModal>
@@ -243,6 +279,9 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     container: {
         backgroundColor: colors.background,
         flex: 1,
+    },
+    foodTrackingForm: {
+        paddingBottom: 16,
     },
     iconButton: {
         marginLeft: 8,
