@@ -154,7 +154,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         );
     };
 
-    const MealsRoute = () => {
+    const TodaysTrackedFood = () => {
         const mealGroups = consumedFoods.reduce((groups, food) => {
             const mealType = food.mealType || 'snacks';
             if (!groups[mealType]) {
@@ -180,6 +180,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                                     </Text>
                                 </View>
                                 {foods.map((food, index) => (
+                                    // TODO: add option to edit or delete previously tracked food
                                     <ThemedCard key={index}>
                                         <Card.Content style={styles.cardContent}>
                                             <View style={styles.cardHeader}>
@@ -211,7 +212,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
             case 'overview':
                 return <OverviewRoute />;
             case 'meals':
-                return <MealsRoute />;
+                return <TodaysTrackedFood />;
             default:
                 return null;
         }
