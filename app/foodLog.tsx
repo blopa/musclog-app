@@ -2,19 +2,17 @@ import type { BarcodeScanningResult } from 'expo-camera';
 
 import FoodTrackingModal from '@/components/FoodTrackingModal';
 import ThemedCard from '@/components/ThemedCard';
-import { ICON_SIZE } from '@/constants/ui';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { getUserNutritionBetweenDates } from '@/utils/database';
 import { safeToFixed } from '@/utils/string';
-import { MusclogApiFoodInfoType } from '@/utils/types';
+import { MusclogApiFoodInfoType, UserNutritionDecryptedReturnType } from '@/utils/types';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { NavigationProp } from '@react-navigation/native';
-import { FlashList } from '@shopify/flash-list';
-import { CameraView, useCameraPermissions  } from 'expo-camera';
+import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useFocusEffect } from 'expo-router';
 import React, { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { View, StyleSheet, Platform, Dimensions, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Platform, Dimensions, TouchableOpacity, ScrollView } from 'react-native';
 import { Appbar, TextInput, Button, Text, useTheme } from 'react-native-paper';
 import { TabView, TabBar } from 'react-native-tab-view';
 
@@ -31,6 +29,8 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         carbohydrate: 0,
         fat: 0,
     });
+    const [consumedFoods, setConsumedFoods] = useState<UserNutritionDecryptedReturnType[]>([]);
+
     const [routes] = useState([
         { key: 'overview', title: t('overview') },
         { key: 'meals', title: t('meals') },
@@ -92,6 +92,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
             );
 
             setConsumed(consumed);
+            setConsumedFoods(consumedData);
         } catch (error) {
             console.error('Error loading consumed data:', error);
         }
@@ -106,6 +107,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
             carbohydrate: 0,
             fat: 0,
         });
+        setConsumedFoods([]);
     }, []);
 
     useFocusEffect(
@@ -152,37 +154,49 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         );
     };
 
-    const MealsRoute = () => (
-        <FlashList
-            data={mealCategories}
-            keyExtractor={(item) => item.name}
-            renderItem={({ item: category }) => (
-                <ThemedCard>
-                    <View style={styles.cardContent}>
-                        <View style={styles.cardHeader}>
-                            <Text style={styles.cardTitle}>
-                                {category.icon} {category.name}
-                            </Text>
-                            <Text style={styles.noItemsText}>{t('no_items_added_yet')}</Text>
-                        </View>
-                        <View style={styles.cardActions}>
-                            <FontAwesome5
-                                color={colors.primary}
-                                name="plus"
-                                onPress={() => {
-                                    /* Handle add meal item */
-                                }}
-                                size={ICON_SIZE}
-                                style={styles.plusButton}
-                            />
-                        </View>
-                    </View>
-                </ThemedCard>
-            )}
-            estimatedItemSize={115}
-            contentContainerStyle={styles.listContent}
-        />
-    );
+    const MealsRoute = () => {
+        const mealGroups = consumedFoods.reduce((groups, food) => {
+            const mealType = food.mealType || 'snacks';
+            if (!groups[mealType]) {
+                groups[mealType] = [];
+            }
+
+            groups[mealType].push(food);
+            return groups;
+        }, {} as { [key: string]: UserNutritionDecryptedReturnType[] });
+
+        const mealTypesInOrder = ['breakfast', 'lunch', 'dinner', 'snacks'];
+
+        return (
+            <ScrollView contentContainerStyle={styles.mealsContent}>
+                {mealTypesInOrder.map((mealType) => {
+                    const foods = mealGroups[mealType];
+                    if (foods && foods.length > 0) {
+                        return (
+                            <View key={mealType} style={styles.mealContainer}>
+                                <View style={styles.mealHeader}>
+                                    <Text style={styles.mealTitle}>
+                                        {mealCategories.find((m) => m.name === mealType)?.icon} {t(mealType)}
+                                    </Text>
+                                </View>
+                                {foods.map((food, index) => (
+                                    <View key={index} style={styles.foodItem}>
+                                        <Text style={styles.foodName}>{food.name || t('unknown_food')}</Text>
+                                        {/*TODO: make this prettier*/}
+                                        <Text style={styles.foodDetails}>
+                                            {safeToFixed(food.calories)} kcal, {safeToFixed(food.protein)}g {t('proteins')}, {safeToFixed(food.carbohydrate)}g {t('carbs')}, {safeToFixed(food.fat)}g {t('fats')}
+                                        </Text>
+                                    </View>
+                                ))}
+                            </View>
+                        );
+                    } else {
+                        return null;
+                    }
+                })}
+            </ScrollView>
+        );
+    };
 
     const renderScene = ({ route }: { route: { key: string } }) => {
         switch (route.key) {
@@ -219,6 +233,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                         fat: product.nutriments['fat_100g'] || 0,
                         ean: product.code,
                     };
+
                     return foodInfo;
                 } else {
                     alert(t('food_not_found'));
@@ -419,16 +434,8 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     captureButton: {
         backgroundColor: 'transparent',
     },
-    cardActions: {
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
-        marginTop: -24,
-    },
     cardContent: {
         padding: 16,
-    },
-    cardHeader: {
-        flex: 1,
     },
     cardTitle: {
         color: colors.onSurface,
@@ -448,25 +455,54 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         flex: 1,
         padding: 16,
     },
+    foodDetails: {
+        color: colors.onSurfaceVariant,
+        fontSize: 12,
+    },
+    foodItem: {
+        backgroundColor: colors.surface,
+        borderColor: colors.primary,
+        borderRadius: 8,
+        borderWidth: 1,
+        marginBottom: 8,
+        padding: 8,
+    },
+    foodName: {
+        color: colors.onSurface,
+        fontSize: 14,
+        fontWeight: 'bold',
+    },
     iconButton: {
         marginLeft: 4,
     },
-    listContent: {
-        backgroundColor: colors.background,
-        paddingBottom: 16,
-        paddingHorizontal: 16,
-    },
     macroContainer: {
         marginBottom: 12,
+    },
+    mealContainer: {
+        borderColor: colors.primary,
+        borderRadius: 8,
+        borderWidth: 1,
+        marginBottom: 16,
+        padding: 8,
+    },
+    mealHeader: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 8,
+    },
+    mealTitle: {
+        color: colors.onSurface,
+        fontSize: 16,
+        fontWeight: '600',
+    },
+    mealsContent: {
+        padding: 16,
     },
     metricDetail: {
         color: colors.onSurface,
         fontSize: 14,
         marginBottom: 4,
-    },
-    noItemsText: {
-        color: colors.onSurface,
-        fontSize: 14,
     },
     photoCameraOverlay: {
         alignItems: 'center',
@@ -486,9 +522,6 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     photoCloseText: {
         color: colors.onPrimary,
         fontSize: 16,
-    },
-    plusButton: {
-        marginLeft: 4,
     },
     progressBar: {
         backgroundColor: colors.primary,
