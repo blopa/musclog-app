@@ -1414,6 +1414,28 @@ export const getAllUserNutritionByUserId = async (userId: number): Promise<UserN
     }));
 };
 
+export const getAllUserNutritionBySource = async (source: string): Promise<UserNutritionDecryptedReturnType[]> => {
+    const results = await database.userNutrition
+        .where({ source })
+        .filter((userNutrition) => !userNutrition.deletedAt)
+        .toArray();
+
+    return results.map((userNutrition) => ({
+        ...userNutrition,
+        calories: parseFloat(String(userNutrition.calories)),
+        carbohydrate: parseFloat(String(userNutrition.carbohydrate)),
+        fat: parseFloat(String(userNutrition.fat)),
+        fiber: parseFloat(String(userNutrition.fiber)),
+        monounsaturatedFat: parseFloat(String(userNutrition.monounsaturatedFat)),
+        polyunsaturatedFat: parseFloat(String(userNutrition.polyunsaturatedFat)),
+        protein: parseFloat(String(userNutrition.protein)),
+        saturatedFat: parseFloat(String(userNutrition.saturatedFat)),
+        sugar: parseFloat(String(userNutrition.sugar)),
+        transFat: parseFloat(String(userNutrition.transFat)),
+        unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat))
+    }));
+};
+
 export const getUserNutritionByDataId = async (dataId: string): Promise<UserNutritionDecryptedReturnType | undefined> => {
     const userNutrition = await database.userNutrition
         .where({ dataId })

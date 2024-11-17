@@ -122,7 +122,7 @@ const FoodTrackingModal = ({
                     <CustomPicker
                         items={[
                             { label: t('none'), value: '' },
-                            ...Object.values(MEAL_TYPE).map((phase) => ({ label: t(phase), value: phase }))
+                            ...Object.entries(MEAL_TYPE).map(([key, phase]) => ({ label: t(key.toLowerCase()), value: phase.toString() }))
                         ]}
                         label={t('meal_type')}
                         selectedValue={mealType}

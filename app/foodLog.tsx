@@ -2,6 +2,7 @@ import type { BarcodeScanningResult } from 'expo-camera';
 
 import FoodTrackingModal, { FoodTrackingType } from '@/components/FoodTrackingModal';
 import ThemedCard from '@/components/ThemedCard';
+import { MEAL_TYPE } from '@/constants/nutrition';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { getUserNutritionBetweenDates } from '@/utils/database';
 import { safeToFixed } from '@/utils/string';
@@ -184,18 +185,16 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
             return groups;
         }, {} as { [key: string]: UserNutritionDecryptedReturnType[] });
 
-        const mealTypesInOrder = ['breakfast', 'lunch', 'dinner', 'snacks'];
-
         return (
             <ScrollView contentContainerStyle={styles.mealsContent}>
-                {mealTypesInOrder.map((mealType) => {
+                {Object.entries(MEAL_TYPE).map(([mealTypeName, mealType]) => {
                     const userNutritions = mealGroups[mealType];
                     if (userNutritions && userNutritions.length > 0) {
                         return (
-                            <View key={mealType} style={styles.mealContainer}>
+                            <View key={mealTypeName} style={styles.mealContainer}>
                                 <View style={styles.mealHeader}>
                                     <Text style={styles.mealTitle}>
-                                        {mealCategories.find((m) => m.name === mealType)?.icon} {t(mealType)}
+                                        {mealCategories.find((m) => m.name === mealTypeName)?.icon} {t(mealTypeName)}
                                     </Text>
                                 </View>
                                 {userNutritions.map((userNutrition, index) => (

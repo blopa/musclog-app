@@ -1,3 +1,5 @@
+import type { NutritionRecord } from 'react-native-health-connect/src/types/records.types';
+
 import LineChart from '@/components/Charts/LineChart';
 import NutritionDetailedChart from '@/components/Charts/NutritionDetailedChart';
 import WeightLineChart from '@/components/Charts/WeightLineChart';
@@ -10,7 +12,7 @@ import {
     CALORIES_IN_PROTEIN,
     USER_METRICS_SOURCES,
 } from '@/constants/healthConnect';
-import { EATING_PHASES, NUTRITION_TYPES } from '@/constants/nutrition';
+import { EATING_PHASES, MEAL_TYPE, NUTRITION_TYPES } from '@/constants/nutrition';
 import {
     AI_SETTINGS_TYPE,
     GRAMS,
@@ -44,6 +46,7 @@ import {
     addUserNutrition,
     deleteHealthConnectUserMetricsBetweenDates,
     deleteHealthConnectUserNutritionBetweenDates,
+    getAllUserNutritionBySource,
     getRecentWorkoutsBetweenDates,
     getRecentWorkoutsFromDate,
     getUser,
@@ -53,6 +56,7 @@ import {
     getUserMetricsFromDate,
     getUserNutritionBetweenDates,
     getUserNutritionFromDate,
+    updateUserNutrition,
 } from '@/utils/database';
 import { formatDate } from '@/utils/date';
 import { combineHeightAndWeightHealthData } from '@/utils/healthConnect';
@@ -131,7 +135,7 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
     } | undefined>(undefined);
 
     const { increaseUnreadMessages } = useUnreadMessages();
-    const { checkReadIsPermitted, getHealthData } = useHealthConnect();
+    const { insertHealthData, checkWriteIsPermitted, checkReadIsPermitted, getHealthData } = useHealthConnect();
     const { addNewChat } = useChatData();
     const { getSettingByType } = useSettings();
 
@@ -889,9 +893,8 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
 
     const handleSyncHealthConnect = useCallback(async () => {
         setIsLoading(true);
-        const isPermitted = await checkReadIsPermitted(['BodyFat', 'Weight', 'Nutrition']);
-
-        if (isPermitted) {
+        const isReadPermitted = await checkReadIsPermitted(['BodyFat', 'Weight', 'Nutrition']);
+        if (isReadPermitted) {
             const dataPointsCount = 1000;
             const healthData = await getHealthData(dataPointsCount, ['BodyFat', 'Weight', 'Nutrition']);
 
@@ -962,8 +965,55 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
             loadUserMetricsAndNutrition();
         }
 
+        const isWritePermitted = await checkWriteIsPermitted(['Nutrition']);
+        if (isWritePermitted) {
+            const userNutris = await getAllUserNutritionBySource(USER_METRICS_SOURCES.USER_INPUT);
+
+            // console.log(`Adding ${userNutris.length} userNutris to Health Connect`);
+            for (const userNutri of userNutris) {
+                const nutritionRecord: NutritionRecord = {
+                    startTime: userNutri.date || new Date().toISOString(),
+                    endTime: new Date((new Date()).getTime() + 10000).toISOString(),
+                    mealType: parseInt(userNutri?.mealType || '') || MEAL_TYPE.UNKNOWN,
+                    energy: {
+                        value: userNutri.calories || 0,
+                        unit: 'kilocalories',
+                    },
+                    protein: {
+                        value: userNutri.protein || 0,
+                        unit: 'grams',
+                    },
+                    totalCarbohydrate: {
+                        value: userNutri.carbohydrate || 0,
+                        unit: 'grams',
+                    },
+                    totalFat: {
+                        value: userNutri.fat || 0,
+                        unit: 'grams',
+                    },
+                    dietaryFiber: {
+                        value: userNutri.fiber || 0,
+                        unit: 'grams',
+                    },
+                    sugar: {
+                        value: userNutri.sugar || 0,
+                        unit: 'grams',
+                    },
+                    name: userNutri.name,
+                    recordType: 'Nutrition',
+                };
+
+                const results = await insertHealthData([nutritionRecord]);
+                await updateUserNutrition(userNutri.id, {
+                    ...userNutri,
+                    source: USER_METRICS_SOURCES.HEALTH_CONNECT,
+                    dataId: results[0],
+                });
+            }
+        }
+
         setIsLoading(false);
-    }, [eatingPhase, checkReadIsPermitted, getHealthData, loadUserMetricsAndNutrition]);
+    }, [checkReadIsPermitted, checkWriteIsPermitted, getHealthData, loadUserMetricsAndNutrition, eatingPhase, insertHealthData]);
 
     const foodLabels = [t('carbs'), t('fats'), t('proteins'), t('fibers')];
     const yAxisFood = useMemo(() => {

@@ -243,7 +243,7 @@ export const HealthConnectProvider = ({ children }: HealthConnectProviderProps) 
     }, []);
 
     const checkWriteIsPermitted = useCallback(async (recordTypes?: string[]) => {
-        return false;
+        return await checkIsHealthConnectedPermitted('write', recordTypes);
     }, []);
 
     const insertHealthData = useCallback(async (data: HealthConnectRecord[]): Promise<string[]> => {

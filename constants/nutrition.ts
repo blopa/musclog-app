@@ -10,8 +10,9 @@ export const EATING_PHASES = {
 } as const;
 
 export const MEAL_TYPE = {
-    LUNCH: 'lunch',
-    BREAKFAST: 'breakfast',
-    DINNER: 'dinner',
-    SNACKS: 'snacks',
+    BREAKFAST: 1,
+    DINNER: 3,
+    LUNCH: 2,
+    SNACK: 4,
+    UNKNOWN: 0,
 } as const;

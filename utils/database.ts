@@ -1838,6 +1838,44 @@ export const getAllUserNutritionByUserId = async (userId: number): Promise<UserN
     }
 };
 
+export const getAllUserNutritionBySource = async (source: string): Promise<UserNutritionDecryptedReturnType[]> => {
+    try {
+        const results = database.getAllSync<UserNutritionEncryptedReturnType>(
+            'SELECT * FROM "UserNutrition" WHERE "source" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')',
+            [source]
+        );
+
+        return (await Promise.all(results.map(async (row) => {
+            try {
+                return {
+                    ...row,
+                    calories: parseFloat(await decryptDatabaseValue(row.calories)) || 0,
+                    carbohydrate: parseFloat(await decryptDatabaseValue(row.carbohydrate)) || 0,
+                    fat: parseFloat(await decryptDatabaseValue(row.fat)) || 0,
+                    fiber: parseFloat(await decryptDatabaseValue(row.fiber)) || 0,
+                    alcohol: parseFloat(await decryptDatabaseValue(row.alcohol)) || 0,
+                    monounsaturatedFat: parseFloat(await decryptDatabaseValue(row.monounsaturatedFat)) || 0,
+                    name: await decryptDatabaseValue(row.name) || '',
+                    mealType: await decryptDatabaseValue(row.mealType) || '',
+                    grams: parseFloat(await decryptDatabaseValue(row.grams)) || 0,
+                    polyunsaturatedFat: parseFloat(await decryptDatabaseValue(row.polyunsaturatedFat)) || 0,
+                    protein: parseFloat(await decryptDatabaseValue(row.protein)) || 0,
+                    saturatedFat: parseFloat(await decryptDatabaseValue(row.saturatedFat)) || 0,
+                    sugar: parseFloat(await decryptDatabaseValue(row.sugar)) || 0,
+                    transFat: parseFloat(await decryptDatabaseValue(row.transFat)) || 0,
+                    unsaturatedFat: parseFloat(await decryptDatabaseValue(row.unsaturatedFat)) || 0,
+                } as unknown as UserNutritionDecryptedReturnType;
+            } catch (decryptionError) {
+                await deleteUserNutrition(row.id!);
+                console.error('Error decrypting data for row:', row, decryptionError);
+                return undefined;
+            }
+        }))).filter((row) => row !== undefined) as UserNutritionDecryptedReturnType[];
+    } catch (error) {
+        throw error;
+    }
+};
+
 export const getUserNutritionByDataId = async (dataId: string): Promise<UserNutritionDecryptedReturnType | undefined> => {
     try {
         const result = database.getFirstSync<UserNutritionEncryptedReturnType>(
