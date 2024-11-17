@@ -1,4 +1,3 @@
-import AnimatedSearchBar from '@/components/AnimatedSearch';
 import FABWrapper from '@/components/FABWrapper';
 import ThemedCard from '@/components/ThemedCard';
 import ThemedModal from '@/components/ThemedModal';
@@ -16,7 +15,7 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import { NavigationProp } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
 import { useFocusEffect } from 'expo-router';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BackHandler, Platform, StyleSheet, View } from 'react-native';
 import { ActivityIndicator, Appbar, Card, Text, useTheme } from 'react-native-paper';
@@ -30,7 +29,6 @@ export default function ListFitnessGoals({ navigation }: { navigation: Navigatio
 
     const { colors, dark } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors, dark);
-    const [searchQuery, setSearchQuery] = useState('');
     const { showSnackbar } = useSnackbar();
 
     const loadFitnessGoals = useCallback(async (offset = 0, limit = 20) => {
@@ -73,7 +71,6 @@ export default function ListFitnessGoals({ navigation }: { navigation: Navigatio
     }, []);
 
     const resetScreenData = useCallback(() => {
-        setSearchQuery('');
         setFitnessGoals([]);
         setIsDeleteModalVisible(false);
         setGoalToDelete(null);
@@ -130,32 +127,14 @@ export default function ListFitnessGoals({ navigation }: { navigation: Navigatio
         setGoalToDelete(null);
     }, []);
 
-    const filteredFitnessGoals = useMemo(
-        () =>
-            fitnessGoals.filter((goal) => {
-                const searchLower = searchQuery.toLowerCase();
-                return (
-                    goal.calories?.toString().toLowerCase().includes(searchLower) ||
-                    goal.totalCarbohydrate?.toString().toLowerCase().includes(searchLower) ||
-                    goal.totalFat?.toString().toLowerCase().includes(searchLower) ||
-                    goal.protein?.toString().toLowerCase().includes(searchLower) ||
-                    goal.createdAt?.toLowerCase().includes(searchLower)
-                );
-            }),
-        [fitnessGoals, searchQuery]
-    );
-
-    const fabActions = useMemo(
-        () => [
-            {
-                icon: () => <FontAwesome5 color={colors.primary} name="plus" size={FAB_ICON_SIZE} />,
-                label: t('create_fitness_goal'),
-                onPress: () => navigation.navigate('createFitnessGoal'),
-                style: { backgroundColor: colors.surface },
-            },
-        ],
-        [t, colors.surface, colors.primary, navigation]
-    );
+    const fabActions = [
+        {
+            icon: () => <FontAwesome5 color={colors.primary} name="plus" size={FAB_ICON_SIZE} />,
+            label: t('create_fitness_goal'),
+            onPress: () => navigation.navigate('createFitnessGoal'),
+            style: { backgroundColor: colors.surface },
+        },
+    ];
 
     return (
         <FABWrapper actions={fabActions} icon="cog" visible>
@@ -166,7 +145,6 @@ export default function ListFitnessGoals({ navigation }: { navigation: Navigatio
                     style={styles.appbarHeader}
                 >
                     <Appbar.Content title={t('fitness_goals')} titleStyle={styles.appbarTitle} />
-                    <AnimatedSearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
                 </Appbar.Header>
                 <FlashList
                     ListFooterComponent={
@@ -175,7 +153,7 @@ export default function ListFitnessGoals({ navigation }: { navigation: Navigatio
                         ) : null
                     }
                     contentContainerStyle={styles.scrollViewContent}
-                    data={filteredFitnessGoals}
+                    data={fitnessGoals}
                     estimatedItemSize={95}
                     keyExtractor={(item) => (item?.id ? item.id.toString() : 'default')}
                     onEndReached={loadMoreFitnessGoals}

@@ -1,5 +1,6 @@
 import Chat from '@/app/chat';
 import CreateExercise from '@/app/createExercise';
+import CreateFitnessGoals from '@/app/CreateFitnessGoals';
 import CreateFood from '@/app/createFood';
 import CreateRecentWorkout from '@/app/createRecentWorkout';
 import CreateUserMeasurements from '@/app/createUserMeasurements';
@@ -80,8 +81,8 @@ import {
     createDrawerNavigator,
 } from '@react-navigation/drawer';
 import * as Sentry from '@sentry/react-native';
-import { useFonts } from 'expo-font';
 import 'react-native-reanimated';
+import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { I18nextProvider, useTranslation } from 'react-i18next';
@@ -326,6 +327,7 @@ function RootLayoutNav() {
             { component: FoodSearch, hidden: true, label: 'food_search', name: 'foodSearch' },
             { component: FoodDetails, hidden: true, label: 'food_details', name: 'foodDetails' },
             { component: CreateFood, hidden: true, label: 'create_food', name: 'createFood' },
+            { component: CreateFitnessGoals, hidden: true, label: 'create_fitness_goals', name: 'createFitnessGoals' },
         ];
 
         return routes;
