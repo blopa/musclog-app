@@ -1,3 +1,6 @@
+import type { RecordResult } from 'react-native-health-connect/lib/typescript/types';
+import type { NutritionRecord } from 'react-native-health-connect/src/types/records.types';
+
 import { DARK, LIGHT, SYSTEM_DEFAULT } from '@/constants/colors';
 import {
     ACTIVITY_LEVELS,
@@ -9,7 +12,6 @@ import {
 import { USER_METRICS_SOURCES } from '@/constants/healthConnect';
 import { EATING_PHASES, NUTRITION_TYPES } from '@/constants/nutrition';
 import { FRIDAY, MONDAY, SATURDAY, SUNDAY, THURSDAY, TUESDAY, WEDNESDAY } from '@/constants/storage';
-import { RecordResult } from 'react-native-health-connect/lib/typescript/types';
 
 export type ThemeType = typeof DARK | typeof LIGHT | typeof SYSTEM_DEFAULT;
 
@@ -144,7 +146,7 @@ export type HealthDataType = {
     bodyFatRecords?: HealthConnectBodyFatRecordData[];
     heightRecords?: any[];
     latest: LatestHealthDataType;
-    nutritionRecords?: NutritionType[];
+    nutritionRecords?: NutritionReturnType[];
     totalCaloriesBurnedRecords?: any[];
     weightRecords?: HealthConnectWeightRecord[];
 };
@@ -508,7 +510,9 @@ export type WorkoutWithExercisesRepsAndSetsDetailsReturnType = {
     id: number;
 } & Omit<WorkoutWithExercisesRepsAndSetsDetailsInsertType, 'id'>;
 
-export type NutritionType = RecordResult<'Nutrition'>;
+export type NutritionReturnType = RecordResult<'Nutrition'>;
+
+export type NutritionInsertType = NutritionRecord;
 
 export type ExerciseTypesType = typeof EXERCISE_TYPES[keyof typeof EXERCISE_TYPES];
 

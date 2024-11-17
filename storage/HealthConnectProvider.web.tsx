@@ -1,3 +1,5 @@
+import type { HealthConnectRecord } from 'react-native-health-connect/src/types';
+
 import { HealthDataType } from '@/utils/types';
 import React, { ReactNode, createContext, useContext } from 'react';
 
@@ -11,6 +13,7 @@ interface HealthConnectContextValue {
     checkReadIsPermitted: (recordTypes?: string[]) => Promise<boolean>;
     checkWriteIsPermitted: (recordTypes?: string[]) => Promise<boolean>;
     getHealthData: (pageSize?: number, recordTypes?: string[]) => Promise<HealthDataType>;
+    insertHealthData: (data: HealthConnectRecord[]) => Promise<void>;
     healthData: HealthDataType;
     requestPermissions: () => Promise<void>;
 }
@@ -27,6 +30,7 @@ const HealthConnectContext = createContext<HealthConnectContextValue>({
     checkReadIsPermitted: async (recordTypes?: string[]) => IS_PERMITTED,
     checkWriteIsPermitted: async (recordTypes?: string[]) => IS_PERMITTED,
     getHealthData: async (pageSize?: number, recordTypes?: string[]) => (IS_PERMITTED ? data : []) as unknown as HealthDataType,
+    insertHealthData: async (data: HealthConnectRecord[]) => {},
     healthData: (IS_PERMITTED ? data : []) as unknown as HealthDataType,
     requestPermissions: async () => {},
 });
@@ -46,6 +50,7 @@ export const HealthConnectProvider = ({ children }: HealthConnectProviderProps) 
                 getHealthData: async () => (IS_PERMITTED ? data : []) as unknown as HealthDataType,
                 healthData: (IS_PERMITTED ? data : []) as unknown as HealthDataType,
                 requestPermissions: async () => {},
+                insertHealthData: async (data: HealthConnectRecord[]) => {},
             }}
         >
             {children}

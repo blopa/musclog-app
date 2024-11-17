@@ -1,3 +1,5 @@
+import type { HealthConnectRecord } from 'react-native-health-connect/src/types';
+
 import { MANDATORY_PERMISSIONS, NEEDED_PERMISSIONS } from '@/constants/healthConnect';
 import { METRIC_SYSTEM } from '@/constants/storage';
 import {
@@ -13,6 +15,7 @@ import {
     getGrantedPermissions,
     initialize,
     readRecords,
+    insertRecords,
     requestPermission,
 } from 'react-native-health-connect';
 import { Permission } from 'react-native-health-connect/lib/typescript/types';
@@ -25,6 +28,7 @@ interface HealthConnectContextValue {
     checkReadIsPermitted: (recordTypes?: string[]) => Promise<boolean>;
     checkWriteIsPermitted: (recordTypes?: string[]) => Promise<boolean>;
     getHealthData: (pageSize?: number, recordTypes?: string[]) => Promise<HealthDataType>;
+    insertHealthData: (data: HealthConnectRecord[]) => Promise<void>;
     healthData: HealthDataType;
     requestPermissions: () => Promise<void>;
 }
@@ -199,6 +203,7 @@ const HealthConnectContext = createContext<HealthConnectContextValue>({
     checkReadIsPermitted: async (recordTypes?: string[]) => false,
     checkWriteIsPermitted: async (recordTypes?: string[]) => false,
     getHealthData: async (pageSize?: number, recordTypes?: string[]) => data,
+    insertHealthData: async (data: HealthConnectRecord[]) => {},
     healthData: data,
     requestPermissions: async () => {},
 });
@@ -241,6 +246,10 @@ export const HealthConnectProvider = ({ children }: HealthConnectProviderProps) 
         return false;
     }, []);
 
+    const insertHealthData = useCallback(async (data: HealthConnectRecord[]) => {
+        await insertRecords(data);
+    }, []);
+
     const getHealthData = useCallback(
         async (pageSize: number = 1000, recordTypes?: string[]): Promise<HealthDataType> => {
             try {
@@ -280,6 +289,7 @@ export const HealthConnectProvider = ({ children }: HealthConnectProviderProps) 
                 getHealthData,
                 healthData,
                 requestPermissions,
+                insertHealthData,
             }}
         >
             {children}
