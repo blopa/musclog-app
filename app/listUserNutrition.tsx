@@ -3,6 +3,7 @@ import CustomTextArea from '@/components/CustomTextArea';
 import FABWrapper from '@/components/FABWrapper';
 import ThemedCard from '@/components/ThemedCard';
 import ThemedModal from '@/components/ThemedModal';
+import { USER_METRICS_SOURCES } from '@/constants/healthConnect';
 import {
     AI_SETTINGS_TYPE,
     CSV_IMPORT_TYPE,
@@ -14,6 +15,7 @@ import {
 } from '@/constants/storage';
 import { FAB_ICON_SIZE, ICON_SIZE } from '@/constants/ui';
 import useUnit from '@/hooks/useUnit';
+import { useHealthConnect } from '@/storage/HealthConnectProvider';
 import { useSettings } from '@/storage/SettingsContext';
 import { useSnackbar } from '@/storage/SnackbarProvider';
 import { getAiApiVendor, parsePastNutrition } from '@/utils/ai';
@@ -70,6 +72,8 @@ export default function ListUserNutrition({ navigation }: { navigation: Navigati
     const [totalUserNutritionCount, setTotalUserNutritionCount] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
     const [importAsFullDayOfEating, setImportAsFullDayOfEating] = useState(false);
+
+    const { deleteHealthData, checkWriteIsPermitted } = useHealthConnect();
 
     const { showSnackbar } = useSnackbar();
     const { getSettingByType } = useSettings();
@@ -182,6 +186,15 @@ export default function ListUserNutrition({ navigation }: { navigation: Navigati
         if (nutritionToDelete) {
             try {
                 await deleteUserNutrition(nutritionToDelete);
+
+                const isWritePermitted = await checkWriteIsPermitted(['Nutrition']);
+                if (isWritePermitted) {
+                    const userNutrition = userNutritions.find((nutrition) => nutrition.id === nutritionToDelete);
+                    if (userNutrition?.source === USER_METRICS_SOURCES.HEALTH_CONNECT && userNutrition.dataId) {
+                        await deleteHealthData('Nutrition', [userNutrition.dataId]);
+                    }
+                }
+
                 const updatedUserNutrition = userNutritions.filter((nutrition) => nutrition.id !== nutritionToDelete);
                 setUserNutritions(updatedUserNutrition);
                 setIsDeleteModalVisible(false);

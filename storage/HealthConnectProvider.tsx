@@ -1,4 +1,4 @@
-import type { HealthConnectRecord } from 'react-native-health-connect/src/types';
+import type { HealthConnectRecord, RecordType } from 'react-native-health-connect/src/types';
 
 import { MANDATORY_PERMISSIONS, NEEDED_PERMISSIONS } from '@/constants/healthConnect';
 import { METRIC_SYSTEM } from '@/constants/storage';
@@ -17,6 +17,7 @@ import {
     readRecords,
     insertRecords,
     requestPermission,
+    deleteRecordsByUuids,
 } from 'react-native-health-connect';
 import { Permission } from 'react-native-health-connect/lib/typescript/types';
 
@@ -25,10 +26,11 @@ const packageName = DeviceInfo.getBundleId();
 type HealthConnectAccessType = 'read' | 'write';
 
 interface HealthConnectContextValue {
-    checkReadIsPermitted: (recordTypes?: string[]) => Promise<boolean>;
-    checkWriteIsPermitted: (recordTypes?: string[]) => Promise<boolean>;
-    getHealthData: (pageSize?: number, recordTypes?: string[]) => Promise<HealthDataType>;
+    checkReadIsPermitted: (recordTypes?: RecordType[]) => Promise<boolean>;
+    checkWriteIsPermitted: (recordTypes?: RecordType[]) => Promise<boolean>;
+    getHealthData: (pageSize?: number, recordTypes?: RecordType[]) => Promise<HealthDataType>;
     insertHealthData: (data: HealthConnectRecord[]) => Promise<string[]>;
+    deleteHealthData: (recordType: RecordType, dataIds: string[]) => Promise<void>;
     healthData: HealthDataType;
     requestPermissions: () => Promise<void>;
 }
@@ -85,7 +87,7 @@ function areMandatoryPermissionsGranted(permissions: Permission[], accessType: H
     return arePermissionsGranted(MANDATORY_PERMISSIONS, permissions, accessType);
 }
 
-export const checkIsHealthConnectedPermitted = async (accessType: HealthConnectAccessType, recordTypes?: string[]) => {
+export const checkIsHealthConnectedPermitted = async (accessType: HealthConnectAccessType, recordTypes?: RecordType[]) => {
     try {
         const isInitialized = await initialize();
         if (!isInitialized) {
@@ -200,10 +202,11 @@ export const getHealthConnectData = async (pageSize: number = 1000): Promise<Hea
 };
 
 const HealthConnectContext = createContext<HealthConnectContextValue>({
-    checkReadIsPermitted: async (recordTypes?: string[]) => false,
-    checkWriteIsPermitted: async (recordTypes?: string[]) => false,
-    getHealthData: async (pageSize?: number, recordTypes?: string[]) => data,
+    checkReadIsPermitted: async (recordTypes?: RecordType[]) => false,
+    checkWriteIsPermitted: async (recordTypes?: RecordType[]) => false,
+    getHealthData: async (pageSize?: number, recordTypes?: RecordType[]) => data,
     insertHealthData: async (data: HealthConnectRecord[]): Promise<string[]> => Promise.resolve([]),
+    deleteHealthData: async (recordType: RecordType, dataIds: string[]): Promise<void> => {},
     healthData: data,
     requestPermissions: async () => {},
 });
@@ -238,11 +241,11 @@ export const HealthConnectProvider = ({ children }: HealthConnectProviderProps) 
         }
     }, []);
 
-    const checkReadIsPermitted = useCallback(async (recordTypes?: string[]) => {
+    const checkReadIsPermitted = useCallback(async (recordTypes?: RecordType[]) => {
         return await checkIsHealthConnectedPermitted('read', recordTypes);
     }, []);
 
-    const checkWriteIsPermitted = useCallback(async (recordTypes?: string[]) => {
+    const checkWriteIsPermitted = useCallback(async (recordTypes?: RecordType[]) => {
         return await checkIsHealthConnectedPermitted('write', recordTypes);
     }, []);
 
@@ -250,8 +253,12 @@ export const HealthConnectProvider = ({ children }: HealthConnectProviderProps) 
         return await insertRecords(data);
     }, []);
 
+    const deleteHealthData = useCallback(async (recordType: RecordType, dataIds: string[]): Promise<void> => {
+        return await deleteRecordsByUuids(recordType, dataIds, []);
+    }, []);
+
     const getHealthData = useCallback(
-        async (pageSize: number = 1000, recordTypes?: string[]): Promise<HealthDataType> => {
+        async (pageSize: number = 1000, recordTypes?: RecordType[]): Promise<HealthDataType> => {
             try {
                 const isInitialized = await initialize();
                 if (!isInitialized) {
@@ -290,6 +297,7 @@ export const HealthConnectProvider = ({ children }: HealthConnectProviderProps) 
                 healthData,
                 requestPermissions,
                 insertHealthData,
+                deleteHealthData,
             }}
         >
             {children}
