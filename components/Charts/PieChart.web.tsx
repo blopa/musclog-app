@@ -19,7 +19,7 @@ interface PieChartProps {
     }[];
     shareButtonPosition?: 'bottom' | 'top';
     showShareImageButton?: boolean;
-    title: string;
+    title?: string;
     size?: number;
     showLabels?: boolean;
     showLegend?: boolean;
@@ -42,7 +42,7 @@ const PieChart: React.FC<PieChartProps> = ({
             {
                 backgroundColor: data.map((item) => item.color || colors.primary),
                 data: data.map((item) => item.value),
-                label: title,
+                label: title || '',
             },
         ],
         labels: showLabels ? data.map((item) => item.label) : [],
@@ -78,7 +78,11 @@ const PieChart: React.FC<PieChartProps> = ({
 
     return (
         <View style={styles.chartContainer}>
-            <Text style={styles.chartTitle}>{title}</Text>
+            {title ? (
+                <Text style={styles.chartTitle}>
+                    {title}
+                </Text>
+            ) : null}
             <View style={styles.chartWrapper}>
                 <Pie
                     data={chartData}
