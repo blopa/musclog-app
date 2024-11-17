@@ -199,7 +199,6 @@ export default function ListFitnessGoals({ navigation }: { navigation: Navigatio
                                         { label: 'Carbohydrates', value: latestFitnessGoal.totalCarbohydrate, color: '#2196F3' },
                                         { label: 'Fat', value: latestFitnessGoal.totalFat, color: '#FF9800' },
                                     ]}
-                                    title={t('macros_distribution')}
                                     showShareImageButton={false}
                                     shareButtonPosition="bottom"
                                     size={130}
