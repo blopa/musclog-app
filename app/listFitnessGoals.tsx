@@ -174,7 +174,7 @@ export default function ListFitnessGoals({ navigation }: { navigation: Navigatio
                     <ThemedCard style={styles.latestGoalCard}>
                         <Card.Content style={styles.latestGoalContent}>
                             <View style={styles.latestGoalText}>
-                                <Text style={styles.cardTitle}>{t('current_fitness_goal')}</Text>
+                                <Text style={styles.cardTitle}>{t('current_fitness_goals')}</Text>
                                 <View style={styles.metricRow}>
                                     <Text style={styles.metricDetailText}>
                                         {t('calories')}: {latestFitnessGoal.calories}
@@ -202,7 +202,9 @@ export default function ListFitnessGoals({ navigation }: { navigation: Navigatio
                                     title={t('macros_distribution')}
                                     showShareImageButton={false}
                                     shareButtonPosition="bottom"
-                                    size={150}
+                                    size={130}
+                                    showLabels={false}
+                                    showLegend={false}
                                 />
                             </View>
                         </Card.Content>

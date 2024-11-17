@@ -19,8 +19,9 @@ interface PieChartProps {
     shareButtonPosition?: 'bottom' | 'top';
     showShareImageButton?: boolean;
     title: string;
-    size?: number
+    size?: number;
     showLabels?: boolean;
+    showLegend?: boolean;
 }
 
 const PieChart: React.FC<PieChartProps> = ({
@@ -30,6 +31,7 @@ const PieChart: React.FC<PieChartProps> = ({
     title,
     size = 300,
     showLabels = true,
+    showLegend = true,
 }) => {
     const { colors } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors, size);
@@ -73,10 +75,10 @@ const PieChart: React.FC<PieChartProps> = ({
                 <OriginalPieChart
                     chartDescription={{ text: '' }}
                     data={chartData}
-                    entryLabelColor={processColor(colors.inverseOnSurface)}
-                    entryLabelTextSize={Math.round(size * 0.03)}
+                    entryLabelColor={showLabels ? processColor(colors.inverseOnSurface) : processColor('transparent')}
+                    entryLabelTextSize={showLabels ? Math.round(size * 0.03) : 0}
                     legend={{
-                        enabled: true,
+                        enabled: showLegend,
                         form: 'CIRCLE',
                         horizontalAlignment: 'CENTER',
                         orientation: 'HORIZONTAL',

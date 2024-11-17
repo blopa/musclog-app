@@ -21,6 +21,8 @@ interface PieChartProps {
     showShareImageButton?: boolean;
     title: string;
     size?: number;
+    showLabels?: boolean;
+    showLegend?: boolean;
 }
 
 const PieChart: React.FC<PieChartProps> = ({
@@ -29,6 +31,8 @@ const PieChart: React.FC<PieChartProps> = ({
     showShareImageButton = true,
     title,
     size = 300,
+    showLabels = true,
+    showLegend = true,
 }) => {
     const { colors } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors, size);
@@ -41,14 +45,14 @@ const PieChart: React.FC<PieChartProps> = ({
                 label: title,
             },
         ],
-        labels: data.map((item) => item.label),
+        labels: showLabels ? data.map((item) => item.label) : [],
     };
 
     const chartOptions = {
         maintainAspectRatio: false,
         plugins: {
             legend: {
-                display: true,
+                display: showLegend,
                 labels: {
                     color: colors.onSurface,
                     font: {
