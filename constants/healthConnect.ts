@@ -7,6 +7,7 @@ export const NEEDED_PERMISSIONS = [
     { accessType: 'read', recordType: 'Height' },
     { accessType: 'read', recordType: 'LeanBodyMass' },
     { accessType: 'read', recordType: 'Nutrition' },
+    { accessType: 'write', recordType: 'Nutrition' },
     { accessType: 'read', recordType: 'StepsCadence' },
     { accessType: 'read', recordType: 'Steps' },
     { accessType: 'read', recordType: 'TotalCaloriesBurned' },
