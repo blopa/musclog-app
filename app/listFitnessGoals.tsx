@@ -130,7 +130,7 @@ export default function ListFitnessGoals({ navigation }: { navigation: Navigatio
     const fabActions = [
         {
             icon: () => <FontAwesome5 color={colors.primary} name="plus" size={FAB_ICON_SIZE} />,
-            label: t('create_fitness_goal'),
+            label: t('create_fitness_goals'),
             onPress: () => navigation.navigate('createFitnessGoal'),
             style: { backgroundColor: colors.surface },
         },

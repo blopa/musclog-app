@@ -10,8 +10,9 @@ import { NavigationProp, useRoute } from '@react-navigation/native';
 import { useFocusEffect } from 'expo-router';
 import React, { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Animated, BackHandler, Platform, ScrollView, StyleSheet, View } from 'react-native';
+import { Alert, Animated, BackHandler, Dimensions, Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { Appbar, Button, useTheme } from 'react-native-paper';
+import { TabView, TabBar } from 'react-native-tab-view';
 
 type RouteParams = {
     id?: string;
@@ -22,6 +23,22 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
     const { id } = (route.params as RouteParams) || {};
 
     const { t } = useTranslation();
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
+
+    const fadeAnim = useRef(new Animated.Value(0)).current;
+    const slideAnim = useRef(new Animated.Value(300)).current;
+    const { colors, dark } = useTheme<CustomThemeType>();
+    const styles = makeStyles(colors, dark);
+
+    // State variables for tabs and input fields
+    const [index, setIndex] = useState(0);
+    const [routes] = useState([
+        { key: 'dailyIntake', title: t('daily_intake') },
+        { key: 'longTerm', title: t('long_term') },
+    ]);
+
+    // Daily Intake Goals
     const [calories, setCalories] = useState<string>('');
     const [protein, setProtein] = useState<string>('');
     const [totalCarbohydrate, setTotalCarbohydrate] = useState<string>('');
@@ -29,19 +46,14 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
     const [alcohol, setAlcohol] = useState<string>('');
     const [fiber, setFiber] = useState<string>('');
     const [sugar, setSugar] = useState<string>('');
+
+    // Long-Term Goals
     const [weight, setWeight] = useState<string>('');
     const [bodyFat, setBodyFat] = useState<string>('');
     const [bmi, setBmi] = useState<string>('');
     const [ffmi, setFfmi] = useState<string>('');
-    const [isModalVisible, setIsModalVisible] = useState(false);
-    const [isSaving, setIsSaving] = useState(false);
 
     const { weightUnit } = useUnit();
-
-    const fadeAnim = useRef(new Animated.Value(0)).current;
-    const slideAnim = useRef(new Animated.Value(300)).current;
-    const { colors, dark } = useTheme<CustomThemeType>();
-    const styles = makeStyles(colors, dark);
 
     const loadFitnessGoal = useCallback(async () => {
         try {
@@ -138,7 +150,22 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
         } finally {
             setIsSaving(false);
         }
-    }, [calories, protein, totalCarbohydrate, totalFat, alcohol, fiber, sugar, weight, bodyFat, bmi, ffmi, id, showModal, t]);
+    }, [
+        calories,
+        protein,
+        totalCarbohydrate,
+        totalFat,
+        alcohol,
+        fiber,
+        sugar,
+        weight,
+        bodyFat,
+        bmi,
+        ffmi,
+        id,
+        showModal,
+        t,
+    ]);
 
     const resetScreenData = useCallback(() => {
         setCalories('');
@@ -188,6 +215,115 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
         }
     }, []);
 
+    // Render functions for each tab
+    const renderDailyIntakeTab = () => (
+        <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+            <CustomTextInput
+                keyboardType="numeric"
+                label={t('calories')}
+                onChangeText={(text) => handleFormatNumericText(text, setCalories)}
+                placeholder={t('enter_calories')}
+                value={calories}
+            />
+            <CustomTextInput
+                keyboardType="numeric"
+                label={t('protein')}
+                onChangeText={(text) => handleFormatNumericText(text, setProtein)}
+                placeholder={t('enter_protein')}
+                value={protein}
+            />
+            <CustomTextInput
+                keyboardType="numeric"
+                label={t('carbohydrates')}
+                onChangeText={(text) => handleFormatNumericText(text, setTotalCarbohydrate)}
+                placeholder={t('enter_carbohydrates')}
+                value={totalCarbohydrate}
+            />
+            <CustomTextInput
+                keyboardType="numeric"
+                label={t('fat')}
+                onChangeText={(text) => handleFormatNumericText(text, setTotalFat)}
+                placeholder={t('enter_fat')}
+                value={totalFat}
+            />
+            {/* Optional Fields */}
+            <CustomTextInput
+                keyboardType="numeric"
+                label={t('alcohol')}
+                onChangeText={(text) => handleFormatNumericText(text, setAlcohol)}
+                placeholder={t('enter_alcohol')}
+                value={alcohol}
+            />
+            <CustomTextInput
+                keyboardType="numeric"
+                label={t('fiber')}
+                onChangeText={(text) => handleFormatNumericText(text, setFiber)}
+                placeholder={t('enter_fiber')}
+                value={fiber}
+            />
+            <CustomTextInput
+                keyboardType="numeric"
+                label={t('sugar')}
+                onChangeText={(text) => handleFormatNumericText(text, setSugar)}
+                placeholder={t('enter_sugar')}
+                value={sugar}
+            />
+        </ScrollView>
+    );
+
+    const renderLongTermTab = () => (
+        <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+            <CustomTextInput
+                keyboardType="numeric"
+                label={t('weight', { weightUnit })}
+                onChangeText={(text) => handleFormatNumericText(text, setWeight)}
+                placeholder={t('enter_weight')}
+                value={weight}
+            />
+            <CustomTextInput
+                keyboardType="numeric"
+                label={t('body_fat')}
+                onChangeText={(text) => handleFormatNumericText(text, setBodyFat)}
+                placeholder={t('enter_body_fat')}
+                value={bodyFat}
+            />
+            <CustomTextInput
+                keyboardType="numeric"
+                label={t('bmi')}
+                onChangeText={(text) => handleFormatNumericText(text, setBmi)}
+                placeholder={t('enter_bmi')}
+                value={bmi}
+            />
+            <CustomTextInput
+                keyboardType="numeric"
+                label={t('ffmi')}
+                onChangeText={(text) => handleFormatNumericText(text, setFfmi)}
+                placeholder={t('enter_ffmi')}
+                value={ffmi}
+            />
+        </ScrollView>
+    );
+
+    const renderScene = ({ route }: { route: { key: string } }) => {
+        switch (route.key) {
+            case 'dailyIntake':
+                return renderDailyIntakeTab();
+            case 'longTerm':
+                return renderLongTermTab();
+            default:
+                return null;
+        }
+    };
+
+    const renderTabBar = (props: any) => (
+        <TabBar
+            {...props}
+            indicatorStyle={{ backgroundColor: colors.primary }}
+            style={{ backgroundColor: colors.surface }}
+            labelStyle={{ color: colors.onSurface }}
+        />
+    );
+
     return (
         <View style={styles.container}>
             <CompletionModal
@@ -196,13 +332,9 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
                 onClose={handleModalClose}
                 title={t(id ? 'fitness_goal_updated_successfully' : 'fitness_goal_created_successfully')}
             />
-            <Appbar.Header
-                mode="small"
-                statusBarHeight={0}
-                style={styles.appbarHeader}
-            >
+            <Appbar.Header mode="small" statusBarHeight={0} style={styles.appbarHeader}>
                 <Appbar.Content
-                    title={t(id ? 'edit_fitness_goal' : 'create_fitness_goal')}
+                    title={t(id ? 'edit_fitness_goals' : 'create_fitness_goals')}
                     titleStyle={styles.appbarTitle}
                 />
                 <Button
@@ -216,93 +348,15 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
                     {t('cancel')}
                 </Button>
             </Appbar.Header>
-            <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-                <CustomTextInput
-                    keyboardType="numeric"
-                    label={t('calories')}
-                    onChangeText={(text) => handleFormatNumericText(text, setCalories)}
-                    placeholder={t('enter_calories')}
-                    value={calories}
-                />
-                <CustomTextInput
-                    keyboardType="numeric"
-                    label={t('protein')}
-                    onChangeText={(text) => handleFormatNumericText(text, setProtein)}
-                    placeholder={t('enter_protein')}
-                    value={protein}
-                />
-                <CustomTextInput
-                    keyboardType="numeric"
-                    label={t('carbohydrates')}
-                    onChangeText={(text) => handleFormatNumericText(text, setTotalCarbohydrate)}
-                    placeholder={t('enter_carbohydrates')}
-                    value={totalCarbohydrate}
-                />
-                <CustomTextInput
-                    keyboardType="numeric"
-                    label={t('fat')}
-                    onChangeText={(text) => handleFormatNumericText(text, setTotalFat)}
-                    placeholder={t('enter_fat')}
-                    value={totalFat}
-                />
-                {/* Optional Fields */}
-                <CustomTextInput
-                    keyboardType="numeric"
-                    label={t('alcohol')}
-                    onChangeText={(text) => handleFormatNumericText(text, setAlcohol)}
-                    placeholder={t('enter_alcohol')}
-                    value={alcohol}
-                />
-                <CustomTextInput
-                    keyboardType="numeric"
-                    label={t('fiber')}
-                    onChangeText={(text) => handleFormatNumericText(text, setFiber)}
-                    placeholder={t('enter_fiber')}
-                    value={fiber}
-                />
-                <CustomTextInput
-                    keyboardType="numeric"
-                    label={t('sugar')}
-                    onChangeText={(text) => handleFormatNumericText(text, setSugar)}
-                    placeholder={t('enter_sugar')}
-                    value={sugar}
-                />
-                <CustomTextInput
-                    keyboardType="numeric"
-                    label={t('weight', { weightUnit })}
-                    onChangeText={(text) => handleFormatNumericText(text, setWeight)}
-                    placeholder={t('enter_weight')}
-                    value={weight}
-                />
-                <CustomTextInput
-                    keyboardType="numeric"
-                    label={t('body_fat')}
-                    onChangeText={(text) => handleFormatNumericText(text, setBodyFat)}
-                    placeholder={t('enter_body_fat')}
-                    value={bodyFat}
-                />
-                <CustomTextInput
-                    keyboardType="numeric"
-                    label={t('bmi')}
-                    onChangeText={(text) => handleFormatNumericText(text, setBmi)}
-                    placeholder={t('enter_bmi')}
-                    value={bmi}
-                />
-                <CustomTextInput
-                    keyboardType="numeric"
-                    label={t('ffmi')}
-                    onChangeText={(text) => handleFormatNumericText(text, setFfmi)}
-                    placeholder={t('enter_ffmi')}
-                    value={ffmi}
-                />
-            </ScrollView>
+            <TabView
+                navigationState={{ index, routes }}
+                renderScene={renderScene}
+                renderTabBar={renderTabBar}
+                onIndexChange={setIndex}
+                initialLayout={{ width: Dimensions.get('window').width }}
+            />
             <View style={styles.footer}>
-                <Button
-                    disabled={isSaving}
-                    mode="contained"
-                    onPress={handleSaveFitnessGoal}
-                    style={styles.button}
-                >
+                <Button disabled={isSaving} mode="contained" onPress={handleSaveFitnessGoal} style={styles.button}>
                     {t('save')}
                 </Button>
             </View>
