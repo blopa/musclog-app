@@ -1,5 +1,6 @@
 import CompletionModal from '@/components/CompletionModal';
 import CustomTextInput from '@/components/CustomTextInput';
+import useUnit from '@/hooks/useUnit';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { addFitnessGoals, getFitnessGoals, updateFitnessGoals } from '@/utils/database';
 import { getCurrentTimestamp } from '@/utils/date';
@@ -34,6 +35,8 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
     const [ffmi, setFfmi] = useState<string>('');
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
+
+    const { weightUnit } = useUnit();
 
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const slideAnim = useRef(new Animated.Value(300)).current;
@@ -266,7 +269,7 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
                 />
                 <CustomTextInput
                     keyboardType="numeric"
-                    label={t('weight')}
+                    label={t('weight', { weightUnit })}
                     onChangeText={(text) => handleFormatNumericText(text, setWeight)}
                     placeholder={t('enter_weight')}
                     value={weight}
