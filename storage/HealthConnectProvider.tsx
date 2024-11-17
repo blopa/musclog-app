@@ -60,13 +60,13 @@ function calculateTotals(data: any[]): TotalMacrosType {
     return totals;
 }
 
-function isPermissionGranted(recordType: string, permissions: Permission[]) {
+function isReadPermissionGranted(recordType: string, permissions: Permission[]) {
     return permissions.some(
         (permission) => permission.recordType === recordType && permission.accessType === 'read'
     );
 }
 
-function arePermissionsGranted(recordTypes: string[], permissions: Permission[]) {
+function areReadPermissionsGranted(recordTypes: string[], permissions: Permission[]) {
     return recordTypes.every((recordType) =>
         permissions.some(
             (permission) => permission.recordType === recordType && permission.accessType === 'read'
@@ -75,7 +75,7 @@ function arePermissionsGranted(recordTypes: string[], permissions: Permission[])
 }
 
 function areMandatoryPermissionsGranted(permissions: Permission[]) {
-    return arePermissionsGranted(MANDATORY_PERMISSIONS, permissions);
+    return areReadPermissionsGranted(MANDATORY_PERMISSIONS, permissions);
 }
 
 export const checkIsHealthConnectedPermitted = async (recordTypes?: string[]) => {
@@ -89,7 +89,7 @@ export const checkIsHealthConnectedPermitted = async (recordTypes?: string[]) =>
         const permissions = await getGrantedPermissions();
 
         if (recordTypes && recordTypes.length > 0) {
-            return arePermissionsGranted(recordTypes, permissions);
+            return areReadPermissionsGranted(recordTypes, permissions);
         } else {
             return areMandatoryPermissionsGranted(permissions);
         }
@@ -107,7 +107,7 @@ export const getHealthConnectData = async (pageSize: number = 1000): Promise<Hea
 
     const grantedPermissions = await getGrantedPermissions();
 
-    const heightRecords = isPermissionGranted('Height', grantedPermissions)
+    const heightRecords = isReadPermissionGranted('Height', grantedPermissions)
         ? (
             await readRecords('Height', {
                 ascendingOrder: false,
@@ -117,7 +117,7 @@ export const getHealthConnectData = async (pageSize: number = 1000): Promise<Hea
         ).records
         : [];
 
-    const weightRecords = isPermissionGranted('Weight', grantedPermissions)
+    const weightRecords = isReadPermissionGranted('Weight', grantedPermissions)
         ? (
             await readRecords('Weight', {
                 ascendingOrder: false,
@@ -127,7 +127,7 @@ export const getHealthConnectData = async (pageSize: number = 1000): Promise<Hea
         ).records
         : [];
 
-    const bodyFatRecords = isPermissionGranted('BodyFat', grantedPermissions)
+    const bodyFatRecords = isReadPermissionGranted('BodyFat', grantedPermissions)
         ? (
             await readRecords('BodyFat', {
                 ascendingOrder: false,
@@ -137,7 +137,7 @@ export const getHealthConnectData = async (pageSize: number = 1000): Promise<Hea
         ).records
         : [];
 
-    const nutritionRecords = isPermissionGranted('Nutrition', grantedPermissions)
+    const nutritionRecords = isReadPermissionGranted('Nutrition', grantedPermissions)
         ? (
             await readRecords('Nutrition', {
                 ascendingOrder: true,
@@ -147,7 +147,7 @@ export const getHealthConnectData = async (pageSize: number = 1000): Promise<Hea
         ).records
         : [];
 
-    const totalCaloriesBurnedRecords = isPermissionGranted('TotalCaloriesBurned', grantedPermissions)
+    const totalCaloriesBurnedRecords = isReadPermissionGranted('TotalCaloriesBurned', grantedPermissions)
         ? (
             await readRecords('TotalCaloriesBurned', {
                 ascendingOrder: false,
@@ -244,7 +244,7 @@ export const HealthConnectProvider = ({ children }: HealthConnectProviderProps) 
 
                 const permissions = await getGrantedPermissions();
                 if (recordTypes && recordTypes.length > 0) {
-                    if (!arePermissionsGranted(recordTypes, permissions)) {
+                    if (!areReadPermissionsGranted(recordTypes, permissions)) {
                         return healthData;
                     }
                 } else if (!areMandatoryPermissionsGranted(permissions)) {
