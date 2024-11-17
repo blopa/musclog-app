@@ -191,7 +191,9 @@ export default function ListUserNutrition({ navigation }: { navigation: Navigati
                 if (isWritePermitted) {
                     const userNutrition = userNutritions.find((nutrition) => nutrition.id === nutritionToDelete);
                     if (userNutrition?.source === USER_METRICS_SOURCES.HEALTH_CONNECT && userNutrition.dataId) {
-                        await deleteHealthData('Nutrition', [userNutrition.dataId]);
+                        // don't wait because it never resolves https://github.com/matinzd/react-native-health-connect/issues/161
+                        deleteHealthData('Nutrition', [userNutrition.dataId]);
+                        console.log(`Deleted health connect data with dataId: ${userNutrition.dataId}`);
                     }
                 }
 
