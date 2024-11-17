@@ -7,6 +7,7 @@ const IS_PERMITTED = true;
 
 interface HealthConnectContextValue {
     checkReadIsPermitted: (recordTypes?: string[]) => Promise<boolean>;
+    checkWriteIsPermitted: (recordTypes?: string[]) => Promise<boolean>;
     getHealthData: (pageSize?: number, recordTypes?: string[]) => Promise<HealthDataType>;
     healthData: HealthDataType;
     requestPermissions: () => Promise<void>;
@@ -22,6 +23,7 @@ export const getHealthConnectData = async (pageSize?: number): Promise<HealthDat
 
 const HealthConnectContext = createContext<HealthConnectContextValue>({
     checkReadIsPermitted: async (recordTypes?: string[]) => IS_PERMITTED,
+    checkWriteIsPermitted: async (recordTypes?: string[]) => IS_PERMITTED,
     getHealthData: async (pageSize?: number, recordTypes?: string[]) => (IS_PERMITTED ? data : []) as unknown as HealthDataType,
     healthData: (IS_PERMITTED ? data : []) as unknown as HealthDataType,
     requestPermissions: async () => {},
@@ -38,6 +40,7 @@ export const HealthConnectProvider = ({ children }: HealthConnectProviderProps) 
         <HealthConnectContext.Provider
             value={{
                 checkReadIsPermitted: async () => IS_PERMITTED,
+                checkWriteIsPermitted: async () => IS_PERMITTED,
                 getHealthData: async () => (IS_PERMITTED ? data : []) as unknown as HealthDataType,
                 healthData: (IS_PERMITTED ? data : []) as unknown as HealthDataType,
                 requestPermissions: async () => {},

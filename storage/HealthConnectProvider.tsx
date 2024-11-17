@@ -21,6 +21,7 @@ const packageName = DeviceInfo.getBundleId();
 
 interface HealthConnectContextValue {
     checkReadIsPermitted: (recordTypes?: string[]) => Promise<boolean>;
+    checkWriteIsPermitted: (recordTypes?: string[]) => Promise<boolean>;
     getHealthData: (pageSize?: number, recordTypes?: string[]) => Promise<HealthDataType>;
     healthData: HealthDataType;
     requestPermissions: () => Promise<void>;
@@ -194,6 +195,7 @@ export const getHealthConnectData = async (pageSize: number = 1000): Promise<Hea
 
 const HealthConnectContext = createContext<HealthConnectContextValue>({
     checkReadIsPermitted: async (recordTypes?: string[]) => false,
+    checkWriteIsPermitted: async (recordTypes?: string[]) => false,
     getHealthData: async (pageSize?: number, recordTypes?: string[]) => data,
     healthData: data,
     requestPermissions: async () => {},
@@ -233,6 +235,10 @@ export const HealthConnectProvider = ({ children }: HealthConnectProviderProps) 
         return await checkIsReadHealthConnectedPermitted(recordTypes);
     }, []);
 
+    const checkWriteIsPermitted = useCallback(async (recordTypes?: string[]) => {
+        return false;
+    }, []);
+
     const getHealthData = useCallback(
         async (pageSize: number = 1000, recordTypes?: string[]): Promise<HealthDataType> => {
             try {
@@ -268,6 +274,7 @@ export const HealthConnectProvider = ({ children }: HealthConnectProviderProps) 
         <HealthConnectContext.Provider
             value={{
                 checkReadIsPermitted,
+                checkWriteIsPermitted,
                 getHealthData,
                 healthData,
                 requestPermissions,
