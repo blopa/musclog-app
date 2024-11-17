@@ -5,6 +5,8 @@ import data from '../data/healthDataExample.json';
 
 const IS_PERMITTED = true;
 
+type HealthConnectAccessType = 'read' | 'write';
+
 interface HealthConnectContextValue {
     checkReadIsPermitted: (recordTypes?: string[]) => Promise<boolean>;
     checkWriteIsPermitted: (recordTypes?: string[]) => Promise<boolean>;
@@ -13,7 +15,7 @@ interface HealthConnectContextValue {
     requestPermissions: () => Promise<void>;
 }
 
-export const checkIsHealthConnectedPermitted = async (accessType: 'read' | 'write', recordTypes?: string[]) => {
+export const checkIsHealthConnectedPermitted = async (accessType: HealthConnectAccessType, recordTypes?: string[]) => {
     return IS_PERMITTED;
 }
 

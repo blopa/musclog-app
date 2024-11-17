@@ -19,6 +19,8 @@ import { Permission } from 'react-native-health-connect/lib/typescript/types';
 
 const packageName = DeviceInfo.getBundleId();
 
+type HealthConnectAccessType = 'read' | 'write';
+
 interface HealthConnectContextValue {
     checkReadIsPermitted: (recordTypes?: string[]) => Promise<boolean>;
     checkWriteIsPermitted: (recordTypes?: string[]) => Promise<boolean>;
@@ -67,7 +69,7 @@ function isReadPermissionGranted(recordType: string, permissions: Permission[]) 
     );
 }
 
-function arePermissionsGranted(recordTypes: string[], permissions: Permission[], accessType: 'read' | 'write') {
+function arePermissionsGranted(recordTypes: string[], permissions: Permission[], accessType: HealthConnectAccessType) {
     return recordTypes.every((recordType) =>
         permissions.some(
             (permission) => permission.recordType === recordType && permission.accessType === accessType
@@ -75,11 +77,11 @@ function arePermissionsGranted(recordTypes: string[], permissions: Permission[],
     );
 }
 
-function areMandatoryPermissionsGranted(permissions: Permission[], accessType: 'read' | 'write') {
+function areMandatoryPermissionsGranted(permissions: Permission[], accessType: HealthConnectAccessType) {
     return arePermissionsGranted(MANDATORY_PERMISSIONS, permissions, accessType);
 }
 
-export const checkIsHealthConnectedPermitted = async (accessType: 'read' | 'write', recordTypes?: string[]) => {
+export const checkIsHealthConnectedPermitted = async (accessType: HealthConnectAccessType, recordTypes?: string[]) => {
     try {
         const isInitialized = await initialize();
         if (!isInitialized) {
