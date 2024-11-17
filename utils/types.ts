@@ -234,7 +234,7 @@ export type ChatReturnType = {
     id: number;
 } & Omit<ChatInsertType, 'id'>;
 
-export type NutritionGoalsInsertType = {
+export type FitnessGoalsInsertType = {
     createdAt?: string;
     deletedAt?: string;
     id?: number;
@@ -245,11 +245,15 @@ export type NutritionGoalsInsertType = {
     alcohol?: number;
     fiber?: number;
     sugar?: number;
+    weight?: number;
+    bodyFat?: number;
+    bmi?: number;
+    ffmi?: number;
 };
 
-export type NutritionGoalsReturnType = {
+export type FitnessGoalsReturnType = {
     id: number;
-} & Omit<NutritionGoalsInsertType, 'id'>;
+} & Omit<FitnessGoalsInsertType, 'id'>;
 
 export type FoodInsertType = {
     createdAt?: string;

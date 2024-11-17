@@ -20,8 +20,8 @@ import {
     FoodInsertType,
     FoodReturnType,
     MetricsForUserType,
-    NutritionGoalsInsertType,
-    NutritionGoalsReturnType,
+    FitnessGoalsInsertType,
+    FitnessGoalsReturnType,
     OneRepMaxReturnType,
     SetInsertType,
     SetReturnType,
@@ -128,10 +128,14 @@ const createTables = (database: SQLiteDatabase) => {
             "'sugar' REAL",
             "'fiber' REAL",
             "'totalFat' REAL",
+            "'weight' REAL",
+            "'bodyFat' REAL",
+            "'bmi' REAL",
+            "'ffmi' REAL",
             "'createdAt' TEXT DEFAULT CURRENT_TIMESTAMP",
             "'deletedAt' TEXT NULLABLE",
         ],
-        name: 'NutritionGoals'
+        name: 'FitnessGoals'
     },
     {
         columns: [
@@ -731,20 +735,24 @@ export const addFood = async (food: FoodInsertType): Promise<number> => {
     }
 };
 
-export const addNutritionGoals = async (food: NutritionGoalsInsertType): Promise<number> => {
-    const createdAt = food.createdAt || getCurrentTimestamp();
+export const addFitnessGoals = async (fitnessGoals: FitnessGoalsInsertType): Promise<number> => {
+    const createdAt = fitnessGoals.createdAt || getCurrentTimestamp();
     try {
         const result = database.runSync(`
-            INSERT INTO "NutritionGoals" ("alcohol", "protein", "totalCarbohydrate", "totalFat", "fiber", "calories", "sugar", "createdAt")
+            INSERT INTO "FitnessGoals" ("alcohol", "protein", "totalCarbohydrate", "totalFat", "fiber", "calories", "sugar", "weight", "bodyFat", "bmi", "ffmi", "createdAt")
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             `,
-        food.alcohol || 0,
-        food.protein,
-        food.totalCarbohydrate,
-        food.totalFat,
-        food.fiber || 0,
-        food.calories,
-        food.sugar || 0,
+        fitnessGoals.alcohol || 0,
+        fitnessGoals.protein,
+        fitnessGoals.totalCarbohydrate,
+        fitnessGoals.totalFat,
+        fitnessGoals.fiber || 0,
+        fitnessGoals.calories,
+        fitnessGoals.sugar || 0,
+        fitnessGoals.weight || 0,
+        fitnessGoals.bodyFat || 0,
+        fitnessGoals.bmi || 0,
+        fitnessGoals.ffmi || 0,
         createdAt,
         );
 
@@ -2012,9 +2020,9 @@ export const getFood = async (id: number): Promise<FoodReturnType | undefined> =
     }
 };
 
-export const getNutritionGoals = async (id: number): Promise<NutritionGoalsReturnType | undefined> => {
+export const getFitnessGoals = async (id: number): Promise<FitnessGoalsReturnType | undefined> => {
     try {
-        return database.getFirstSync<NutritionGoalsReturnType>('SELECT * FROM "NutritionGoals" WHERE "id" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')', [id]) ?? undefined;
+        return database.getFirstSync<FitnessGoalsReturnType>('SELECT * FROM "FitnessGoals" WHERE "id" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')', [id]) ?? undefined;
     } catch (error) {
         throw error;
     }
@@ -2296,21 +2304,25 @@ export const updateFood = async (id: number, food: FoodInsertType): Promise<numb
     }
 };
 
-export const updateNutritionGoals = async (id: number, nutritionGoals: NutritionGoalsInsertType): Promise<number> => {
-    const existingNutritionGoals = await getNutritionGoals(id);
+export const updateFitnessGoals = async (id: number, fitnessGoals: FitnessGoalsInsertType): Promise<number> => {
+    const existingFitnessGoals = await getFitnessGoals(id);
 
     try {
         database.runSync(
-            'UPDATE "NutritionGoals" SET "calories" = ?, "protein" = ?, "alcohol" = ?, "totalCarbohydrate" = ?, "sugar" = ?, "fiber" = ?, "totalFat" = ?, "createdAt" = ? WHERE "id" = ?',
+            'UPDATE "FitnessGoals" SET "calories" = ?, "protein" = ?, "alcohol" = ?, "totalCarbohydrate" = ?, "sugar" = ?, "fiber" = ?, "totalFat" = ?, "weight" = ?, "bodyFat" = ?, "bmi" = ?, "ffmi" = ?, "createdAt" = ? WHERE "id" = ?',
             [
-                nutritionGoals.calories || existingNutritionGoals?.calories || 0,
-                nutritionGoals.protein || existingNutritionGoals?.protein || 0,
-                nutritionGoals.alcohol || existingNutritionGoals?.alcohol || 0,
-                nutritionGoals.totalCarbohydrate || existingNutritionGoals?.totalCarbohydrate || 0,
-                nutritionGoals.sugar || existingNutritionGoals?.sugar || 0,
-                nutritionGoals.fiber || existingNutritionGoals?.fiber || 0,
-                nutritionGoals.totalFat || existingNutritionGoals?.totalFat || 0,
-                nutritionGoals.createdAt || existingNutritionGoals?.createdAt || getCurrentTimestamp(),
+                fitnessGoals.calories || existingFitnessGoals?.calories || 0,
+                fitnessGoals.protein || existingFitnessGoals?.protein || 0,
+                fitnessGoals.alcohol || existingFitnessGoals?.alcohol || 0,
+                fitnessGoals.totalCarbohydrate || existingFitnessGoals?.totalCarbohydrate || 0,
+                fitnessGoals.sugar || existingFitnessGoals?.sugar || 0,
+                fitnessGoals.fiber || existingFitnessGoals?.fiber || 0,
+                fitnessGoals.totalFat || existingFitnessGoals?.totalFat || 0,
+                fitnessGoals.weight || existingFitnessGoals?.weight || 0,
+                fitnessGoals.bodyFat || existingFitnessGoals?.bodyFat || 0,
+                fitnessGoals.bmi || existingFitnessGoals?.bmi || 0,
+                fitnessGoals.ffmi || existingFitnessGoals?.ffmi || 0,
+                fitnessGoals.createdAt || existingFitnessGoals?.createdAt || getCurrentTimestamp(),
             ]);
 
         return id;
@@ -2444,9 +2456,9 @@ export const deleteFood = async (id: number): Promise<void> => {
     }
 };
 
-export const deleteNutritionGoals = async (id: number): Promise<void> => {
+export const deleteFitnessGoals = async (id: number): Promise<void> => {
     try {
-        database.runSync('DELETE FROM "NutritionGoals" WHERE "id" = ?', [id]);
+        database.runSync('DELETE FROM "FitnessGoals" WHERE "id" = ?', [id]);
     } catch (error) {
         throw error;
     }
@@ -3211,12 +3223,12 @@ export const createFoodTable = async (): Promise<void> => {
     }
 };
 
-export const createNutritionGoalsTable = async (): Promise<void> => {
+export const createFitnessGoalsTable = async (): Promise<void> => {
     const currentVersion = await getLatestVersion();
     if (currentVersion && currentVersion < packageJson.version) {
-        if (!(await tableExists('NutritionGoals'))) {
+        if (!(await tableExists('FitnessGoals'))) {
             await database.execAsync(`
-                CREATE TABLE "NutritionGoals" (
+                CREATE TABLE "FitnessGoals" (
                     "id" INTEGER PRIMARY KEY AUTOINCREMENT,
                     "calories" REAL,
                     "protein" REAL,
@@ -3225,6 +3237,10 @@ export const createNutritionGoalsTable = async (): Promise<void> => {
                     "sugar" REAL,
                     "fiber" REAL,
                     "totalFat" REAL,
+                    "weight" REAL,
+                    "bodyFat" REAL,
+                    "bmi" REAL,
+                    "ffmi" REAL,
                     "createdAt" TEXT DEFAULT CURRENT_TIMESTAMP,
                     "deletedAt" TEXT
                 );
