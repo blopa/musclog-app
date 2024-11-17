@@ -1553,6 +1553,20 @@ export const getFitnessGoals = async (id: number): Promise<FitnessGoalsReturnTyp
         .first();
 };
 
+export const getFitnessGoalsPaginated = async (offset: number, limit: number): Promise<FitnessGoalsReturnType[]> => {
+    return database.fitnessGoals
+        .orderBy('id')
+        .filter((fitnessGoal) => !fitnessGoal.deletedAt)
+        .reverse()
+        .offset(limit * offset)
+        .limit(limit)
+        .toArray();
+};
+
+export const getTotalFitnessGoalsCount = async (): Promise<number> => {
+    return database.fitnessGoals.count();
+};
+
 // Update functions
 
 export const updateUserMeasurements = async (id: number, userMeasurements: UserMeasurementsInsertType): Promise<number> => {

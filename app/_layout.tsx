@@ -11,6 +11,7 @@ import FoodLog from '@/app/foodLog';
 import FoodSearch from '@/app/foodSearch';
 import Index from '@/app/index';
 import ListExercises from '@/app/listExercises';
+import ListFitnessGoals from '@/app/listFitnessGoals';
 import ListUserMeasurements from '@/app/listUserMeasurements';
 import ListUserMetrics from '@/app/listUserMetrics';
 import ListUserNutrition from '@/app/listUserNutrition';
@@ -80,8 +81,8 @@ import {
 } from '@react-navigation/drawer';
 import * as Sentry from '@sentry/react-native';
 import { useFonts } from 'expo-font';
-import * as SplashScreen from 'expo-splash-screen';
 import 'react-native-reanimated';
+import * as SplashScreen from 'expo-splash-screen';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { I18nextProvider, useTranslation } from 'react-i18next';
 import { StatusBar, StyleSheet, Text, View } from 'react-native';
@@ -300,6 +301,7 @@ function RootLayoutNav() {
             { component: RecentWorkouts, label: 'recent_workouts', name: 'recentWorkouts' },
             { component: ListExercises, label: 'exercises', name: 'listExercises' },
             { component: ListWorkouts, label: 'workouts', name: 'listWorkouts' },
+            { component: ListFitnessGoals, label: 'fitness_goals', name: 'listFitnessGoals' },
             { component: UserMetricsCharts, hidden: !showUserMetrics, label: 'user_metrics_charts', name: 'userMetricsCharts' },
             { component: FoodLog, label: 'food_log', name: 'foodLog' },
             { component: Profile, label: 'profile', name: 'profile' },

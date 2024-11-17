@@ -2066,6 +2066,29 @@ export const getFitnessGoals = async (id: number): Promise<FitnessGoalsReturnTyp
     }
 };
 
+export const getFitnessGoalsPaginated = async (offset: number, limit: number): Promise<FitnessGoalsReturnType[]> => {
+    try {
+        return database.getAllSync<FitnessGoalsReturnType>(
+            'SELECT * FROM "FitnessGoals" WHERE ("deletedAt" IS NULL OR "deletedAt" = \'\') ORDER BY "id" DESC LIMIT ? OFFSET ?',
+            [limit, offset]
+        );
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const getTotalFitnessGoalsCount = async (): Promise<number> => {
+    try {
+        const result = database.getFirstSync<{ count: number }>(
+            'SELECT COUNT(*) as count FROM "FitnessGoals" WHERE ("deletedAt" IS NULL OR "deletedAt" = \'\')'
+        );
+
+        return result?.count ?? 0;
+    } catch (error) {
+        throw error;
+    }
+};
+
 // Update functions
 
 export const updateUserMeasurements = async (id: number, userMeasurements: UserMeasurementsInsertType): Promise<number> => {
