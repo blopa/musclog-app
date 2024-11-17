@@ -78,7 +78,7 @@ function areMandatoryPermissionsGranted(permissions: Permission[]) {
     return areReadPermissionsGranted(MANDATORY_PERMISSIONS, permissions);
 }
 
-export const checkIsHealthConnectedPermitted = async (recordTypes?: string[]) => {
+export const checkIsReadHealthConnectedPermitted = async (recordTypes?: string[]) => {
     try {
         const isInitialized = await initialize();
         if (!isInitialized) {
@@ -230,7 +230,7 @@ export const HealthConnectProvider = ({ children }: HealthConnectProviderProps) 
     }, []);
 
     const checkReadIsPermitted = useCallback(async (recordTypes?: string[]) => {
-        return await checkIsHealthConnectedPermitted(recordTypes);
+        return await checkIsReadHealthConnectedPermitted(recordTypes);
     }, []);
 
     const getHealthData = useCallback(

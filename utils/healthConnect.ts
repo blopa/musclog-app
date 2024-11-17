@@ -2,7 +2,7 @@ import { USER_METRICS_SOURCES } from '@/constants/healthConnect';
 import { EATING_PHASES, NUTRITION_TYPES } from '@/constants/nutrition';
 import { READ_HEALTH_CONNECT_TYPE, LAST_TIME_APP_USED } from '@/constants/storage';
 import { LAST_RUN_KEY } from '@/constants/tasks';
-import { checkIsHealthConnectedPermitted, getHealthConnectData } from '@/storage/HealthConnectProvider';
+import { checkIsReadHealthConnectedPermitted, getHealthConnectData } from '@/storage/HealthConnectProvider';
 import { addOrUpdateSetting, addUserMetrics, addUserNutrition, getUser } from '@/utils/database';
 import { isValidDateParam } from '@/utils/date';
 import { generateHash } from '@/utils/string';
@@ -88,7 +88,7 @@ export const getLatestHealthConnectData = async () => {
     if (hours >= 5 && (!lastRunDate || lastRunDate !== today)) {
         // await scheduleNextWorkout();
 
-        const isPermitted = await checkIsHealthConnectedPermitted();
+        const isPermitted = await checkIsReadHealthConnectedPermitted();
         if (!isPermitted) {
             await AsyncStorage.setItem(LAST_RUN_KEY, today);
             await addOrUpdateSetting({

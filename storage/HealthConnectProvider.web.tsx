@@ -6,13 +6,13 @@ import data from '../data/healthDataExample.json';
 const IS_PERMITTED = true;
 
 interface HealthConnectContextValue {
-    checkIsPermitted: () => Promise<boolean>;
-    getHealthData: () => Promise<HealthDataType>;
+    checkReadIsPermitted: (recordTypes?: string[]) => Promise<boolean>;
+    getHealthData: (pageSize?: number, recordTypes?: string[]) => Promise<HealthDataType>;
     healthData: HealthDataType;
     requestPermissions: () => Promise<void>;
 }
 
-export const checkIsHealthConnectedPermitted = async () => {
+export const checkIsReadHealthConnectedPermitted = async () => {
     return IS_PERMITTED;
 }
 
@@ -21,8 +21,8 @@ export const getHealthConnectData = async (pageSize?: number): Promise<HealthDat
 }
 
 const HealthConnectContext = createContext<HealthConnectContextValue>({
-    checkIsPermitted: async () => IS_PERMITTED,
-    getHealthData: async () => (IS_PERMITTED ? data : []) as unknown as HealthDataType,
+    checkReadIsPermitted: async (recordTypes?: string[]) => IS_PERMITTED,
+    getHealthData: async (pageSize?: number, recordTypes?: string[]) => (IS_PERMITTED ? data : []) as unknown as HealthDataType,
     healthData: (IS_PERMITTED ? data : []) as unknown as HealthDataType,
     requestPermissions: async () => {},
 });
@@ -35,12 +35,14 @@ interface HealthConnectProviderProps {
 
 export const HealthConnectProvider = ({ children }: HealthConnectProviderProps) => {
     return (
-        <HealthConnectContext.Provider value={{
-            checkIsPermitted: async () => IS_PERMITTED,
-            getHealthData: async () => (IS_PERMITTED ? data : []) as unknown as HealthDataType,
-            healthData: (IS_PERMITTED ? data : []) as unknown as HealthDataType,
-            requestPermissions: async () => {},
-        }}>
+        <HealthConnectContext.Provider
+            value={{
+                checkReadIsPermitted: async () => IS_PERMITTED,
+                getHealthData: async () => (IS_PERMITTED ? data : []) as unknown as HealthDataType,
+                healthData: (IS_PERMITTED ? data : []) as unknown as HealthDataType,
+                requestPermissions: async () => {},
+            }}
+        >
             {children}
         </HealthConnectContext.Provider>
     );
