@@ -1553,6 +1553,15 @@ export const getFitnessGoals = async (id: number): Promise<FitnessGoalsReturnTyp
         .first();
 };
 
+export const getLatestFitnessGoals = async (): Promise<FitnessGoalsReturnType | null> => {
+    const fitnessGoals = await database.fitnessGoals
+        .orderBy('id')
+        .filter((userMetrics) => !userMetrics.deletedAt)
+        .last();
+
+    return fitnessGoals || null;
+};
+
 export const getFitnessGoalsPaginated = async (offset: number, limit: number): Promise<FitnessGoalsReturnType[]> => {
     return database.fitnessGoals
         .orderBy('id')

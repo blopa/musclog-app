@@ -2066,6 +2066,16 @@ export const getFitnessGoals = async (id: number): Promise<FitnessGoalsReturnTyp
     }
 };
 
+export const getLatestFitnessGoals = async (): Promise<FitnessGoalsReturnType | null> => {
+    try {
+        return database.getFirstSync<FitnessGoalsReturnType>(
+            'SELECT * FROM "FitnessGoals" WHERE ("deletedAt" IS NULL OR "deletedAt" = \'\') ORDER BY "id" DESC LIMIT 1'
+        );
+    } catch (error) {
+        throw error;
+    }
+};
+
 export const getFitnessGoalsPaginated = async (offset: number, limit: number): Promise<FitnessGoalsReturnType[]> => {
     try {
         return database.getAllSync<FitnessGoalsReturnType>(

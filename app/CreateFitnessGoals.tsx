@@ -4,10 +4,10 @@ import CustomTextInput from '@/components/CustomTextInput';
 import SliderWithButtons from '@/components/SliderWithButtons';
 import useUnit from '@/hooks/useUnit';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
-import { addFitnessGoals, getFitnessGoals, updateFitnessGoals } from '@/utils/database';
+import { addFitnessGoals, getFitnessGoals, getLatestFitnessGoals, updateFitnessGoals } from '@/utils/database';
 import { getCurrentTimestamp } from '@/utils/date';
 import { formatFloatNumericInputText } from '@/utils/string';
-import { FitnessGoalsInsertType } from '@/utils/types';
+import { FitnessGoalsInsertType, FitnessGoalsReturnType } from '@/utils/types';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { NavigationProp, useRoute } from '@react-navigation/native';
 import { useFocusEffect } from 'expo-router';
@@ -37,6 +37,7 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
     const { t } = useTranslation();
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
+    const [latestFitnessGoals, setLatestFitnessGoals] = useState<FitnessGoalsReturnType | null>(null);
 
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const slideAnim = useRef(new Animated.Value(300)).current;
@@ -120,11 +121,6 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
         return 0;
     };
 
-    const getSliderStep = () => {
-        if (activeMacro === 'calories') return 50;
-        return 1;
-    };
-
     const loadFitnessGoal = useCallback(async () => {
         try {
             const goal = await getFitnessGoals(Number(id));
@@ -146,6 +142,17 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
             console.error(t('failed_to_load_fitness_goal'), error);
         }
     }, [id, t]);
+
+    useFocusEffect(
+        useCallback(() => {
+            const loadLatest = async () => {
+                const fitnessGoals = await getLatestFitnessGoals();
+                setLatestFitnessGoals(fitnessGoals);
+            };
+
+            loadLatest();
+        }, [])
+    );
 
     useFocusEffect(
         useCallback(() => {
