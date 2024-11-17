@@ -482,6 +482,7 @@
     "failed_to_load_user_measurements": "Failed to load user measurements",
     "failed_to_load_user_metric": "Failed to load user metric",
     "generic_created_successfully": "Created successfully!",
+    "generic_updated_successfully": "Updated successfully!",
     "user_metrics_charts": "User Metrics Charts",
     "show_last_n_data_points": "Show last N data points",
     "sync_health_connect": "Sync Health Connect",

@@ -7,7 +7,7 @@ import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { addFitnessGoals, getFitnessGoals, getLatestFitnessGoals, updateFitnessGoals } from '@/utils/database';
 import { getCurrentTimestamp } from '@/utils/date';
 import { formatFloatNumericInputText } from '@/utils/string';
-import { FitnessGoalsInsertType, FitnessGoalsReturnType } from '@/utils/types';
+import { FitnessGoalsInsertType } from '@/utils/types';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { NavigationProp, useRoute } from '@react-navigation/native';
 import { useFocusEffect } from 'expo-router';
@@ -26,6 +26,13 @@ import {
 import { Appbar, Button, useTheme, Text } from 'react-native-paper';
 import { TabView, TabBar } from 'react-native-tab-view';
 
+const DEFAULT_MACROS = {
+    CALORIES: 2000,
+    PROTEIN: 25,
+    TOTAL_CARBOHYDRATE: 50,
+    TOTAL_FAT: 25,
+};
+
 type RouteParams = {
     id?: string;
 };
@@ -37,7 +44,6 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
     const { t } = useTranslation();
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
-    const [latestFitnessGoals, setLatestFitnessGoals] = useState<FitnessGoalsReturnType | null>(null);
 
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const slideAnim = useRef(new Animated.Value(300)).current;
@@ -52,10 +58,10 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
     ]);
 
     // Daily Intake Goals
-    const [calories, setCalories] = useState<number>(2000);
-    const [protein, setProtein] = useState<number>(25);
-    const [totalCarbohydrate, setTotalCarbohydrate] = useState<number>(50);
-    const [totalFat, setTotalFat] = useState<number>(25);
+    const [calories, setCalories] = useState<number>(DEFAULT_MACROS.CALORIES);
+    const [protein, setProtein] = useState<number>(DEFAULT_MACROS.PROTEIN);
+    const [totalCarbohydrate, setTotalCarbohydrate] = useState<number>(DEFAULT_MACROS.TOTAL_CARBOHYDRATE);
+    const [totalFat, setTotalFat] = useState<number>(DEFAULT_MACROS.TOTAL_FAT);
     const [alcohol, setAlcohol] = useState<string>('');
     const [fiber, setFiber] = useState<string>('');
     const [sugar, setSugar] = useState<string>('');
@@ -113,8 +119,11 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
     };
 
     const getSliderMax = () => {
-        if (activeMacro === 'calories') return 5000;
-        return 100; // for protein, carbs, fats
+        if (activeMacro === 'calories') {
+            return 8000;
+        }
+
+        return 400;
     };
 
     const getSliderMin = () => {
@@ -126,10 +135,10 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
             const goal = await getFitnessGoals(Number(id));
 
             if (goal) {
-                setCalories(goal.calories ?? 2000);
-                setProtein(goal.protein ?? 25);
-                setTotalCarbohydrate(goal.totalCarbohydrate ?? 50);
-                setTotalFat(goal.totalFat ?? 25);
+                setCalories(goal.calories ?? DEFAULT_MACROS.CALORIES);
+                setProtein(goal.protein ?? DEFAULT_MACROS.PROTEIN);
+                setTotalCarbohydrate(goal.totalCarbohydrate ?? DEFAULT_MACROS.TOTAL_CARBOHYDRATE);
+                setTotalFat(goal.totalFat ?? DEFAULT_MACROS.TOTAL_FAT);
                 setAlcohol(goal.alcohol?.toString() || '');
                 setFiber(goal.fiber?.toString() || '');
                 setSugar(goal.sugar?.toString() || '');
@@ -147,7 +156,17 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
         useCallback(() => {
             const loadLatest = async () => {
                 const fitnessGoals = await getLatestFitnessGoals();
-                setLatestFitnessGoals(fitnessGoals);
+                setCalories(fitnessGoals?.calories ?? DEFAULT_MACROS.CALORIES);
+                setProtein(fitnessGoals?.protein ?? DEFAULT_MACROS.PROTEIN);
+                setTotalCarbohydrate(fitnessGoals?.totalCarbohydrate ?? DEFAULT_MACROS.TOTAL_CARBOHYDRATE);
+                setTotalFat(fitnessGoals?.totalFat ?? DEFAULT_MACROS.TOTAL_FAT);
+                setAlcohol(fitnessGoals?.alcohol?.toString() || '');
+                setFiber(fitnessGoals?.fiber?.toString() || '');
+                setSugar(fitnessGoals?.sugar?.toString() || '');
+                setWeight(fitnessGoals?.weight?.toString() || '');
+                setBodyFat(fitnessGoals?.bodyFat?.toString() || '');
+                setBmi(fitnessGoals?.bmi?.toString() || '');
+                setFfmi(fitnessGoals?.ffmi?.toString() || '');
             };
 
             loadLatest();
@@ -250,10 +269,10 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
     ]);
 
     const resetScreenData = useCallback(() => {
-        setCalories(2000);
-        setProtein(25);
-        setTotalCarbohydrate(50);
-        setTotalFat(25);
+        setCalories(DEFAULT_MACROS.CALORIES);
+        setProtein(DEFAULT_MACROS.PROTEIN);
+        setTotalCarbohydrate(DEFAULT_MACROS.TOTAL_CARBOHYDRATE);
+        setTotalFat(DEFAULT_MACROS.TOTAL_FAT);
         setAlcohol('');
         setFiber('');
         setSugar('');
@@ -451,7 +470,7 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
                 buttonText={t('ok')}
                 isModalVisible={isModalVisible}
                 onClose={handleModalClose}
-                title={t(id ? 'fitness_goal_updated_successfully' : 'fitness_goal_created_successfully')}
+                title={t(id ? 'generic_updated_successfully' : 'generic_created_successfully')}
             />
             <Appbar.Header mode="small" statusBarHeight={0} style={styles.appbarHeader}>
                 <Appbar.Content

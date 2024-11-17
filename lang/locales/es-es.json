@@ -482,6 +482,7 @@
     "failed_to_load_user_measurements": "Error al cargar las medidas del usuario",
     "failed_to_load_user_metric": "Failed to load user metric",
     "generic_created_successfully": "¡Creado con éxito!",
+    "generic_updated_successfully": "¡Actualizado con éxito!",
     "user_metrics_charts": "Gráficos de Métricas del Usuario",
     "show_last_n_data_points": "Mostrar últimos N puntos de datos",
     "sync_health_connect": "Sincronizar Health Connect",

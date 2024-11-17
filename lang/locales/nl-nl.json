@@ -482,6 +482,7 @@
     "failed_to_load_user_measurements": "Kon gebruikersmetingen niet laden",
     "failed_to_load_user_metric": "Kon gebruikersstatistiek niet laden",
     "generic_created_successfully": "Succesvol gemaakt!",
+    "generic_updated_successfully": "Succesvol bijgewerkt!",
     "user_metrics_charts": "Gebruikersstatistieken grafieken",
     "show_last_n_data_points": "Laat de laatste N datapunten zien",
     "sync_health_connect": "Synchroniseer Health Connect",
