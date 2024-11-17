@@ -46,6 +46,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const photoCameraRef = useRef(null);
 
     const [selectedFood, setSelectedFood] = useState<FoodTrackingType | null>(null);
+    const [userNutritionId, setUserNutritionId] = useState<number | null>(null);
     const [isNutritionModalVisible, setIsNutritionModalVisible] = useState<boolean>(false);
 
     // Mock data for demonstration
@@ -163,6 +164,8 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
             fat: userNutrition.fat,
             grams: userNutrition.grams,
         });
+
+        setUserNutritionId(userNutrition.id);
         setIsNutritionModalVisible(true);
     };
 
@@ -433,6 +436,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                     setSelectedFood(null);
                 }}
                 food={selectedFood}
+                userNutritionId={userNutritionId}
             />
         </View>
     );

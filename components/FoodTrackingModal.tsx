@@ -25,7 +25,7 @@ type FoodTrackingModalProps = {
     visible: boolean;
     onClose: () => void;
     food: FoodTrackingType | null;
-    userNutritionId?: number;
+    userNutritionId?: number | null;
 };
 
 const FoodTrackingModal = ({
@@ -106,7 +106,7 @@ const FoodTrackingModal = ({
             visible={visible}
             onClose={onClose}
             title={food?.productTitle || ''}
-            confirmText={t('track')}
+            confirmText={userNutritionId ? t('update') : t('track')}
             cancelText={t('cancel')}
             onConfirm={handleTrackFood}
         >
