@@ -1,3 +1,4 @@
+import PieChart from '@/components/Charts/PieChart';
 import FABWrapper from '@/components/FABWrapper';
 import ThemedCard from '@/components/ThemedCard';
 import ThemedModal from '@/components/ThemedModal';
@@ -23,7 +24,7 @@ import { ActivityIndicator, Appbar, Card, Text, useTheme } from 'react-native-pa
 
 export default function ListFitnessGoals({ navigation }: { navigation: NavigationProp<any> }) {
     const { t } = useTranslation();
-    const [latestFitnessGoal, setLatestFitnessGoal] = useState<FitnessGoalsInsertType | null>(null); // Added state
+    const [latestFitnessGoal, setLatestFitnessGoal] = useState<FitnessGoalsInsertType | null>(null);
     const [fitnessGoals, setFitnessGoals] = useState<FitnessGoalsInsertType[]>([]);
     const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
     const [goalToDelete, setGoalToDelete] = useState<null | number>(null);
@@ -33,6 +34,7 @@ export default function ListFitnessGoals({ navigation }: { navigation: Navigatio
     const styles = makeStyles(colors, dark);
     const { showSnackbar } = useSnackbar();
 
+    // Function to load the latest fitness goal
     const loadLatestFitnessGoal = useCallback(async () => {
         try {
             const latestGoal = await getLatestFitnessGoals();
@@ -77,8 +79,12 @@ export default function ListFitnessGoals({ navigation }: { navigation: Navigatio
     }, [fitnessGoals.length, totalFitnessGoalsCount, loadFitnessGoals]);
 
     const fetchTotalFitnessGoalsCount = useCallback(async () => {
-        const totalCount = await getTotalFitnessGoalsCount();
-        setTotalFitnessGoalsCount(totalCount);
+        try {
+            const totalCount = await getTotalFitnessGoalsCount();
+            setTotalFitnessGoalsCount(totalCount);
+        } catch (error) {
+            console.error('Failed to fetch total fitness goals count:', error);
+        }
     }, []);
 
     const resetScreenData = useCallback(() => {
@@ -129,6 +135,8 @@ export default function ListFitnessGoals({ navigation }: { navigation: Navigatio
                 setGoalToDelete(null);
                 setTotalFitnessGoalsCount((prevState) => prevState - 1);
                 showSnackbar(t('fitness_goal_deleted'), t('ok'), () => {});
+
+                // If the deleted goal was the latest, reload the latest fitness goal
                 if (latestFitnessGoal && latestFitnessGoal.id === goalToDelete) {
                     loadLatestFitnessGoal();
                 }
@@ -164,23 +172,38 @@ export default function ListFitnessGoals({ navigation }: { navigation: Navigatio
                 </Appbar.Header>
                 {latestFitnessGoal && (
                     <ThemedCard style={styles.latestGoalCard}>
-                        <Card.Content>
-                            <Text style={styles.cardTitle}>{t('current_fitness_goal')}</Text>
-                            <View style={styles.metricRow}>
-                                <Text style={styles.metricDetailText}>
-                                    {t('calories')}: {latestFitnessGoal.calories}
-                                </Text>
-                                <Text style={styles.metricDetailText}>
-                                    {t('protein')}: {latestFitnessGoal.protein}g
-                                </Text>
+                        <Card.Content style={styles.latestGoalContent}>
+                            <View style={styles.latestGoalText}>
+                                <Text style={styles.cardTitle}>{t('current_fitness_goal')}</Text>
+                                <View style={styles.metricRow}>
+                                    <Text style={styles.metricDetailText}>
+                                        {t('calories')}: {latestFitnessGoal.calories}
+                                    </Text>
+                                    <Text style={styles.metricDetailText}>
+                                        {t('protein')}: {latestFitnessGoal.protein}g
+                                    </Text>
+                                </View>
+                                <View style={styles.metricRow}>
+                                    <Text style={styles.metricDetailText}>
+                                        {t('carbohydrates')}: {latestFitnessGoal.totalCarbohydrate}g
+                                    </Text>
+                                    <Text style={styles.metricDetailText}>
+                                        {t('fat')}: {latestFitnessGoal.totalFat}g
+                                    </Text>
+                                </View>
                             </View>
-                            <View style={styles.metricRow}>
-                                <Text style={styles.metricDetailText}>
-                                    {t('carbohydrates')}: {latestFitnessGoal.totalCarbohydrate}g
-                                </Text>
-                                <Text style={styles.metricDetailText}>
-                                    {t('fat')}: {latestFitnessGoal.totalFat}g
-                                </Text>
+                            <View style={styles.pieChartContainer}>
+                                <PieChart
+                                    data={[
+                                        { label: 'Protein', value: latestFitnessGoal.protein, color: '#4CAF50' },
+                                        { label: 'Carbohydrates', value: latestFitnessGoal.totalCarbohydrate, color: '#2196F3' },
+                                        { label: 'Fat', value: latestFitnessGoal.totalFat, color: '#FF9800' },
+                                    ]}
+                                    title={t('macros_distribution')}
+                                    showShareImageButton={false}
+                                    shareButtonPosition="bottom"
+                                    size={150}
+                                />
                             </View>
                         </Card.Content>
                     </ThemedCard>
@@ -274,7 +297,6 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         marginTop: 8,
     },
     cardContent: {
-        alignItems: 'center',
         flexDirection: 'row',
         justifyContent: 'space-between',
     },
@@ -298,6 +320,14 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         marginHorizontal: 16,
         marginTop: 16,
     },
+    latestGoalContent: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    latestGoalText: {
+        flex: 2,
+    },
     metricDetailText: {
         color: colors.onSurface,
         fontSize: 14,
@@ -306,6 +336,11 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     metricRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
+    },
+    pieChartContainer: {
+        alignItems: 'center',
+        flex: 1,
+        justifyContent: 'center',
     },
     scrollViewContent: {
         backgroundColor: colors.background,
