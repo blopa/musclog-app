@@ -20,8 +20,8 @@ import { Permission } from 'react-native-health-connect/lib/typescript/types';
 const packageName = DeviceInfo.getBundleId();
 
 interface HealthConnectContextValue {
-    checkIsPermitted: (recordType?: string) => Promise<boolean>;
-    getHealthData: (pageSize?: number) => Promise<HealthDataType>;
+    checkIsPermitted: (recordTypes?: string[]) => Promise<boolean>;
+    getHealthData: (pageSize?: number, recordTypes?: string[]) => Promise<HealthDataType>;
     healthData: HealthDataType;
     requestPermissions: () => Promise<void>;
 }
@@ -66,12 +66,19 @@ function isPermissionGranted(recordType: string, permissions: Permission[]) {
     );
 }
 
-function areMandatoryPermissionsGranted(permissions: Permission[]) {
-    const recordTypes = permissions.map(({ recordType }) => recordType) as string[];
-    return MANDATORY_PERMISSIONS.every((recordType) => recordTypes.includes(recordType));
+function arePermissionsGranted(recordTypes: string[], permissions: Permission[]) {
+    return recordTypes.every((recordType) =>
+        permissions.some(
+            (permission) => permission.recordType === recordType && permission.accessType === 'read'
+        )
+    );
 }
 
-export const checkIsHealthConnectedPermitted = async (recordType?: string) => {
+function areMandatoryPermissionsGranted(permissions: Permission[]) {
+    return arePermissionsGranted(MANDATORY_PERMISSIONS, permissions);
+}
+
+export const checkIsHealthConnectedPermitted = async (recordTypes?: string[]) => {
     try {
         const isInitialized = await initialize();
         if (!isInitialized) {
@@ -81,8 +88,8 @@ export const checkIsHealthConnectedPermitted = async (recordType?: string) => {
 
         const permissions = await getGrantedPermissions();
 
-        if (recordType) {
-            return isPermissionGranted(recordType, permissions);
+        if (recordTypes && recordTypes.length > 0) {
+            return arePermissionsGranted(recordTypes, permissions);
         } else {
             return areMandatoryPermissionsGranted(permissions);
         }
@@ -101,46 +108,56 @@ export const getHealthConnectData = async (pageSize?: number): Promise<HealthDat
     const grantedPermissions = await getGrantedPermissions();
 
     const heightRecords = isPermissionGranted('Height', grantedPermissions)
-        ? (await readRecords('Height', {
-            ascendingOrder: false,
-            pageSize: 1,
-            timeRangeFilter,
-        })).records
+        ? (
+            await readRecords('Height', {
+                ascendingOrder: false,
+                pageSize: 1,
+                timeRangeFilter,
+            })
+        ).records
         : [];
 
     const weightRecords = isPermissionGranted('Weight', grantedPermissions)
-        ? (await readRecords('Weight', {
-            ascendingOrder: false,
-            pageSize,
-            timeRangeFilter,
-        })).records
+        ? (
+            await readRecords('Weight', {
+                ascendingOrder: false,
+                pageSize,
+                timeRangeFilter,
+            })
+        ).records
         : [];
 
     const bodyFatRecords = isPermissionGranted('BodyFat', grantedPermissions)
-        ? (await readRecords('BodyFat', {
-            ascendingOrder: false,
-            pageSize,
-            timeRangeFilter,
-        })).records
+        ? (
+            await readRecords('BodyFat', {
+                ascendingOrder: false,
+                pageSize,
+                timeRangeFilter,
+            })
+        ).records
         : [];
 
     const nutritionRecords = isPermissionGranted('Nutrition', grantedPermissions)
-        ? (await readRecords('Nutrition', {
-            ascendingOrder: true,
-            pageSize,
-            timeRangeFilter,
-        })).records
+        ? (
+            await readRecords('Nutrition', {
+                ascendingOrder: true,
+                pageSize,
+                timeRangeFilter,
+            })
+        ).records
         : [];
 
     const totalCaloriesBurnedRecords = isPermissionGranted('TotalCaloriesBurned', grantedPermissions)
-        ? (await readRecords('TotalCaloriesBurned', {
-            ascendingOrder: false,
-            pageSize: 1,
-            timeRangeFilter: {
-                ...timeRangeFilter,
-                startTime: new Date().toISOString().split('T')[0] + 'T00:00:00.000Z',
-            },
-        })).records
+        ? (
+            await readRecords('TotalCaloriesBurned', {
+                ascendingOrder: false,
+                pageSize: 1,
+                timeRangeFilter: {
+                    ...timeRangeFilter,
+                    startTime: new Date().toISOString().split('T')[0] + 'T00:00:00.000Z',
+                },
+            })
+        ).records
         : [];
 
     const latestHeight = heightRecords[0]?.height?.inMeters;
@@ -176,8 +193,8 @@ export const getHealthConnectData = async (pageSize?: number): Promise<HealthDat
 };
 
 const HealthConnectContext = createContext<HealthConnectContextValue>({
-    checkIsPermitted: async (recordType?: string) => false,
-    getHealthData: async (pageSize?: number) => data,
+    checkIsPermitted: async (recordTypes?: string[]) => false,
+    getHealthData: async (pageSize?: number, recordTypes?: string[]) => data,
     healthData: data,
     requestPermissions: async () => {},
 });
@@ -212,12 +229,12 @@ export const HealthConnectProvider = ({ children }: HealthConnectProviderProps) 
         }
     }, []);
 
-    const checkIsPermitted = useCallback(async (recordType?: string) => {
-        return await checkIsHealthConnectedPermitted(recordType);
+    const checkIsPermitted = useCallback(async (recordTypes?: string[]) => {
+        return await checkIsHealthConnectedPermitted(recordTypes);
     }, []);
 
     const getHealthData = useCallback(
-        async (pageSize?: number, recordType?: string): Promise<HealthDataType> => {
+        async (pageSize?: number, recordTypes?: string[]): Promise<HealthDataType> => {
             try {
                 const isInitialized = await initialize();
                 if (!isInitialized) {
@@ -226,8 +243,8 @@ export const HealthConnectProvider = ({ children }: HealthConnectProviderProps) 
                 }
 
                 const permissions = await getGrantedPermissions();
-                if (recordType) {
-                    if (!isPermissionGranted(recordType, permissions)) {
+                if (recordTypes && recordTypes.length > 0) {
+                    if (!arePermissionsGranted(recordTypes, permissions)) {
                         return healthData;
                     }
                 } else if (!areMandatoryPermissionsGranted(permissions)) {
