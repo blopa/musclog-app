@@ -28,7 +28,7 @@ interface HealthConnectContextValue {
     checkReadIsPermitted: (recordTypes?: string[]) => Promise<boolean>;
     checkWriteIsPermitted: (recordTypes?: string[]) => Promise<boolean>;
     getHealthData: (pageSize?: number, recordTypes?: string[]) => Promise<HealthDataType>;
-    insertHealthData: (data: HealthConnectRecord[]) => Promise<void>;
+    insertHealthData: (data: HealthConnectRecord[]) => Promise<string[]>;
     healthData: HealthDataType;
     requestPermissions: () => Promise<void>;
 }
@@ -203,7 +203,7 @@ const HealthConnectContext = createContext<HealthConnectContextValue>({
     checkReadIsPermitted: async (recordTypes?: string[]) => false,
     checkWriteIsPermitted: async (recordTypes?: string[]) => false,
     getHealthData: async (pageSize?: number, recordTypes?: string[]) => data,
-    insertHealthData: async (data: HealthConnectRecord[]) => {},
+    insertHealthData: async (data: HealthConnectRecord[]): Promise<string[]> => Promise.resolve([]),
     healthData: data,
     requestPermissions: async () => {},
 });
@@ -246,8 +246,8 @@ export const HealthConnectProvider = ({ children }: HealthConnectProviderProps) 
         return false;
     }, []);
 
-    const insertHealthData = useCallback(async (data: HealthConnectRecord[]) => {
-        await insertRecords(data);
+    const insertHealthData = useCallback(async (data: HealthConnectRecord[]): Promise<string[]> => {
+        return await insertRecords(data);
     }, []);
 
     const getHealthData = useCallback(
