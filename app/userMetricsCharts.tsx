@@ -967,53 +967,53 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
 
         const isWritePermitted = await checkWriteIsPermitted(['Nutrition']);
         if (isWritePermitted) {
-            const userNutris = await getAllUserNutritionBySource(USER_METRICS_SOURCES.USER_INPUT);
+            const userNutritions = await getAllUserNutritionBySource(USER_METRICS_SOURCES.USER_INPUT);
 
-            // console.log(`Adding ${userNutris.length} userNutris to Health Connect`);
-            for (const userNutri of userNutris) {
+            // console.log(`Adding ${userNutritions.length} userNutritions to Health Connect`);
+            for (const userNutrition of userNutritions) {
                 const nutritionRecord: NutritionRecord = {
-                    startTime: userNutri.date || new Date().toISOString(),
+                    startTime: userNutrition.date || new Date().toISOString(),
                     endTime: new Date((new Date()).getTime() + 10000).toISOString(),
-                    mealType: parseInt(userNutri?.mealType || '') || MEAL_TYPE.UNKNOWN,
+                    mealType: parseInt(userNutrition?.mealType || '') || MEAL_TYPE.UNKNOWN,
                     energy: {
-                        value: userNutri.calories || 0,
+                        value: userNutrition.calories || 0,
                         unit: 'kilocalories',
                     },
                     protein: {
-                        value: userNutri.protein || 0,
+                        value: userNutrition.protein || 0,
                         unit: 'grams',
                     },
                     totalCarbohydrate: {
-                        value: userNutri.carbohydrate || 0,
+                        value: userNutrition.carbohydrate || 0,
                         unit: 'grams',
                     },
                     totalFat: {
-                        value: userNutri.fat || 0,
+                        value: userNutrition.fat || 0,
                         unit: 'grams',
                     },
                     dietaryFiber: {
-                        value: userNutri.fiber || 0,
+                        value: userNutrition.fiber || 0,
                         unit: 'grams',
                     },
                     sugar: {
-                        value: userNutri.sugar || 0,
+                        value: userNutrition.sugar || 0,
                         unit: 'grams',
                     },
-                    name: userNutri.name,
+                    name: userNutrition.name,
                     recordType: 'Nutrition',
                 };
 
                 try {
                     const results = await insertHealthData([nutritionRecord]);
                     if (results[0]) {
-                        await updateUserNutrition(userNutri.id, {
-                            ...userNutri,
+                        await updateUserNutrition(userNutrition.id, {
+                            ...userNutrition,
                             source: USER_METRICS_SOURCES.HEALTH_CONNECT,
                             dataId: results[0],
                         });
                     }
                 } catch (error) {
-                    console.error(`Failed to insert health data for userNutri ID ${userNutri.id}:`, error);
+                    console.error(`Failed to insert health data for userNutri ID ${userNutrition.id}:`, error);
                 }
             }
         }
