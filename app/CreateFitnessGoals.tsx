@@ -1,17 +1,29 @@
+import PieChart from '@/components/Charts/PieChart';
 import CompletionModal from '@/components/CompletionModal';
 import CustomTextInput from '@/components/CustomTextInput';
+import SliderWithButtons from '@/components/SliderWithButtons';
 import useUnit from '@/hooks/useUnit';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { addFitnessGoals, getFitnessGoals, updateFitnessGoals } from '@/utils/database';
 import { getCurrentTimestamp } from '@/utils/date';
 import { formatFloatNumericInputText } from '@/utils/string';
 import { FitnessGoalsInsertType } from '@/utils/types';
+import { FontAwesome5 } from '@expo/vector-icons';
 import { NavigationProp, useRoute } from '@react-navigation/native';
 import { useFocusEffect } from 'expo-router';
 import React, { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Animated, BackHandler, Dimensions, Platform, ScrollView, StyleSheet, View } from 'react-native';
-import { Appbar, Button, useTheme } from 'react-native-paper';
+import {
+    Alert,
+    Animated,
+    BackHandler,
+    Dimensions,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    View,
+} from 'react-native';
+import { Appbar, Button, useTheme, Text } from 'react-native-paper';
 import { TabView, TabBar } from 'react-native-tab-view';
 
 type RouteParams = {
@@ -39,10 +51,10 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
     ]);
 
     // Daily Intake Goals
-    const [calories, setCalories] = useState<string>('');
-    const [protein, setProtein] = useState<string>('');
-    const [totalCarbohydrate, setTotalCarbohydrate] = useState<string>('');
-    const [totalFat, setTotalFat] = useState<string>('');
+    const [calories, setCalories] = useState<number>(2000);
+    const [protein, setProtein] = useState<number>(25);
+    const [totalCarbohydrate, setTotalCarbohydrate] = useState<number>(50);
+    const [totalFat, setTotalFat] = useState<number>(25);
     const [alcohol, setAlcohol] = useState<string>('');
     const [fiber, setFiber] = useState<string>('');
     const [sugar, setSugar] = useState<string>('');
@@ -55,15 +67,73 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
 
     const { weightUnit } = useUnit();
 
+    // New state variables for the dynamic daily goals tab
+    const [activeMacro, setActiveMacro] = useState<'protein' | 'carbs' | 'fats' | 'calories'>(
+        'protein'
+    );
+
+    const macroOrder: ('protein' | 'carbs' | 'fats' | 'calories')[] = [
+        'protein',
+        'carbs',
+        'fats',
+        'calories',
+    ];
+
+    const handleSliderChange = useCallback(
+        (value: number) => {
+            switch (activeMacro) {
+                case 'protein':
+                    setProtein(value);
+                    break;
+                case 'carbs':
+                    setTotalCarbohydrate(value);
+                    break;
+                case 'fats':
+                    setTotalFat(value);
+                    break;
+                case 'calories':
+                    setCalories(value);
+                    break;
+            }
+        },
+        [activeMacro]
+    );
+
+    const nextMacro = () => {
+        const currentIndex = macroOrder.indexOf(activeMacro);
+        setActiveMacro(macroOrder[(currentIndex + 1) % macroOrder.length]);
+    };
+
+    const prevMacro = () => {
+        const currentIndex = macroOrder.indexOf(activeMacro);
+        setActiveMacro(
+            macroOrder[(currentIndex - 1 + macroOrder.length) % macroOrder.length]
+        );
+    };
+
+    const getSliderMax = () => {
+        if (activeMacro === 'calories') return 5000;
+        return 100; // for protein, carbs, fats
+    };
+
+    const getSliderMin = () => {
+        return 0;
+    };
+
+    const getSliderStep = () => {
+        if (activeMacro === 'calories') return 50;
+        return 1;
+    };
+
     const loadFitnessGoal = useCallback(async () => {
         try {
             const goal = await getFitnessGoals(Number(id));
 
             if (goal) {
-                setCalories(goal.calories?.toString() || '');
-                setProtein(goal.protein?.toString() || '');
-                setTotalCarbohydrate(goal.totalCarbohydrate?.toString() || '');
-                setTotalFat(goal.totalFat?.toString() || '');
+                setCalories(goal.calories ?? 2000);
+                setProtein(goal.protein ?? 25);
+                setTotalCarbohydrate(goal.totalCarbohydrate ?? 50);
+                setTotalFat(goal.totalFat ?? 25);
                 setAlcohol(goal.alcohol?.toString() || '');
                 setFiber(goal.fiber?.toString() || '');
                 setSugar(goal.sugar?.toString() || '');
@@ -116,16 +186,21 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
     }, [fadeAnim, slideAnim]);
 
     const handleSaveFitnessGoal = useCallback(async () => {
-        if (!calories.trim() || !protein.trim() || !totalCarbohydrate.trim() || !totalFat.trim()) {
+        if (
+            calories === undefined ||
+            protein === undefined ||
+            totalCarbohydrate === undefined ||
+            totalFat === undefined
+        ) {
             Alert.alert(t('validation_error'), t('mandatory_fields_required'));
             return;
         }
 
         const goalData: FitnessGoalsInsertType = {
-            calories: Number(calories),
-            protein: Number(protein),
-            totalCarbohydrate: Number(totalCarbohydrate),
-            totalFat: Number(totalFat),
+            calories,
+            protein,
+            totalCarbohydrate,
+            totalFat,
             alcohol: alcohol ? Number(alcohol) : undefined,
             fiber: fiber ? Number(fiber) : undefined,
             sugar: sugar ? Number(sugar) : undefined,
@@ -168,10 +243,10 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
     ]);
 
     const resetScreenData = useCallback(() => {
-        setCalories('');
-        setProtein('');
-        setTotalCarbohydrate('');
-        setTotalFat('');
+        setCalories(2000);
+        setProtein(25);
+        setTotalCarbohydrate(50);
+        setTotalFat(25);
         setAlcohol('');
         setFiber('');
         setSugar('');
@@ -208,68 +283,107 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
         });
     }, [fadeAnim, navigation, resetScreenData, slideAnim]);
 
-    const handleFormatNumericText = useCallback((text: string, setter: React.Dispatch<React.SetStateAction<string>>) => {
-        const formattedText = formatFloatNumericInputText(text);
-        if (formattedText || !text) {
-            setter(formattedText || '');
-        }
-    }, []);
+    const handleFormatNumericText = useCallback(
+        (text: string, setter: React.Dispatch<React.SetStateAction<string>>) => {
+            const formattedText = formatFloatNumericInputText(text);
+            if (formattedText || !text) {
+                setter(formattedText || '');
+            }
+        },
+        []
+    );
 
     // Render functions for each tab
-    const renderDailyIntakeTab = () => (
-        <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-            <CustomTextInput
-                keyboardType="numeric"
-                label={t('calories')}
-                onChangeText={(text) => handleFormatNumericText(text, setCalories)}
-                placeholder={t('enter_calories')}
-                value={calories}
-            />
-            <CustomTextInput
-                keyboardType="numeric"
-                label={t('protein')}
-                onChangeText={(text) => handleFormatNumericText(text, setProtein)}
-                placeholder={t('enter_protein')}
-                value={protein}
-            />
-            <CustomTextInput
-                keyboardType="numeric"
-                label={t('carbohydrates')}
-                onChangeText={(text) => handleFormatNumericText(text, setTotalCarbohydrate)}
-                placeholder={t('enter_carbohydrates')}
-                value={totalCarbohydrate}
-            />
-            <CustomTextInput
-                keyboardType="numeric"
-                label={t('fat')}
-                onChangeText={(text) => handleFormatNumericText(text, setTotalFat)}
-                placeholder={t('enter_fat')}
-                value={totalFat}
-            />
-            {/* Optional Fields */}
-            <CustomTextInput
-                keyboardType="numeric"
-                label={t('alcohol')}
-                onChangeText={(text) => handleFormatNumericText(text, setAlcohol)}
-                placeholder={t('enter_alcohol')}
-                value={alcohol}
-            />
-            <CustomTextInput
-                keyboardType="numeric"
-                label={t('fiber')}
-                onChangeText={(text) => handleFormatNumericText(text, setFiber)}
-                placeholder={t('enter_fiber')}
-                value={fiber}
-            />
-            <CustomTextInput
-                keyboardType="numeric"
-                label={t('sugar')}
-                onChangeText={(text) => handleFormatNumericText(text, setSugar)}
-                placeholder={t('enter_sugar')}
-                value={sugar}
-            />
-        </ScrollView>
-    );
+    const renderDailyIntakeTab = () => {
+        const pieData = [
+            { label: t('protein'), value: protein || 0, color: '#FF6384' },
+            { label: t('carbohydrates'), value: totalCarbohydrate || 0, color: '#36A2EB' },
+            { label: t('fat'), value: totalFat || 0, color: '#FFCE56' },
+        ];
+
+        const activeMacroValue =
+            activeMacro === 'calories'
+                ? calories
+                : activeMacro === 'protein'
+                    ? protein
+                    : activeMacro === 'carbs'
+                        ? totalCarbohydrate
+                        : totalFat;
+
+        return (
+            <ScrollView contentContainerStyle={styles.flexContainer}>
+                <Text style={styles.title}>{t('adjust_your_macros')}</Text>
+                <View style={styles.macroAdjusterContainer}>
+                    <Button mode="outlined" onPress={prevMacro} style={styles.arrowButton}>
+                        <FontAwesome5 name="arrow-left" size={20} color={colors.primary} />
+                    </Button>
+                    <View style={styles.activeMacroContainer}>
+                        <Text style={styles.activeMacroTitle}>{t(activeMacro)}</Text>
+                        <Text style={styles.activeMacroValue}>
+                            {activeMacroValue}{' '}
+                            {activeMacro === 'calories' ? 'kcal' : 'g'}
+                        </Text>
+                    </View>
+                    <Button mode="outlined" onPress={nextMacro} style={styles.arrowButton}>
+                        <FontAwesome5 name="arrow-right" size={20} color={colors.primary} />
+                    </Button>
+                </View>
+                <SliderWithButtons
+                    label=""
+                    value={activeMacroValue}
+                    onValueChange={handleSliderChange}
+                    minimumValue={getSliderMin()}
+                    maximumValue={getSliderMax()}
+                />
+                <View style={styles.macrosSummary}>
+                    <View style={styles.macroSummaryItem}>
+                        <Text style={styles.macroSummaryTitle}>{t('protein')}</Text>
+                        <Text style={styles.macroSummaryValue}>{protein || 0}g</Text>
+                    </View>
+                    <View style={styles.macroSummaryItem}>
+                        <Text style={styles.macroSummaryTitle}>{t('carbohydrates')}</Text>
+                        <Text style={styles.macroSummaryValue}>{totalCarbohydrate || 0}g</Text>
+                    </View>
+                    <View style={styles.macroSummaryItem}>
+                        <Text style={styles.macroSummaryTitle}>{t('fat')}</Text>
+                        <Text style={styles.macroSummaryValue}>{totalFat || 0}g</Text>
+                    </View>
+                    <View style={styles.macroSummaryItem}>
+                        <Text style={styles.macroSummaryTitle}>{t('calories')}</Text>
+                        <Text style={styles.macroSummaryValue}>{calories || 0} kcal</Text>
+                    </View>
+                </View>
+                <PieChart
+                    data={pieData}
+                    title={t('macros_distribution')}
+                    showShareImageButton={false}
+                />
+                <View style={styles.optionalFields}>
+                    <CustomTextInput
+                        keyboardType="numeric"
+                        label={t('alcohol')}
+                        onChangeText={(text) => handleFormatNumericText(text, setAlcohol)}
+                        placeholder={t('enter_alcohol')}
+                        value={alcohol}
+                    />
+                    <CustomTextInput
+                        keyboardType="numeric"
+                        label={t('fiber')}
+                        onChangeText={(text) => handleFormatNumericText(text, setFiber)}
+                        placeholder={t('enter_fiber')}
+                        value={fiber}
+                    />
+                    <CustomTextInput
+                        keyboardType="numeric"
+                        label={t('sugar')}
+                        onChangeText={(text) => handleFormatNumericText(text, setSugar)}
+                        placeholder={t('enter_sugar')}
+                        value={sugar}
+                    />
+                </View>
+            </ScrollView>
+        );
+    };
 
     const renderLongTermTab = () => (
         <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
@@ -365,6 +479,20 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
 };
 
 const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
+    activeMacroContainer: {
+        alignItems: 'center',
+    },
+    activeMacroTitle: {
+        color: colors.onSurface,
+        fontSize: 20,
+        fontWeight: '600',
+        textTransform: 'capitalize',
+    },
+    activeMacroValue: {
+        color: colors.primary,
+        fontSize: 32,
+        fontWeight: 'bold',
+    },
     appbarHeader: {
         backgroundColor: colors.primary,
         justifyContent: 'center',
@@ -373,6 +501,9 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     appbarTitle: {
         color: colors.onPrimary,
         fontSize: Platform.OS === 'web' ? 20 : 26,
+    },
+    arrowButton: {
+        marginHorizontal: 8,
     },
     button: {
         marginVertical: 10,
@@ -384,11 +515,54 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     content: {
         padding: 16,
     },
+    flexContainer: {
+        alignItems: 'center',
+        padding: 16,
+    },
     footer: {
         alignItems: 'center',
         borderTopColor: colors.shadow,
         borderTopWidth: 1,
         padding: 16,
+    },
+    macroAdjusterContainer: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginVertical: 16,
+    },
+    macroSummaryItem: {
+        alignItems: 'center',
+        marginVertical: 8,
+        width: '45%',
+    },
+    macroSummaryTitle: {
+        color: colors.onSurface,
+        fontSize: 16,
+        fontWeight: '600',
+    },
+    macroSummaryValue: {
+        color: colors.primary,
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    macrosSummary: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-around',
+        marginTop: 16,
+        width: '100%',
+    },
+    optionalFields: {
+        paddingVertical: 16,
+        width: '100%',
+    },
+    title: {
+        color: colors.onSurface,
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 16,
+        textAlign: 'center',
     },
 });
 
