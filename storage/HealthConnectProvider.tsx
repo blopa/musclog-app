@@ -67,19 +67,19 @@ function isReadPermissionGranted(recordType: string, permissions: Permission[]) 
     );
 }
 
-function areReadPermissionsGranted(recordTypes: string[], permissions: Permission[]) {
+function arePermissionsGranted(recordTypes: string[], permissions: Permission[], accessType: 'read' | 'write') {
     return recordTypes.every((recordType) =>
         permissions.some(
-            (permission) => permission.recordType === recordType && permission.accessType === 'read'
+            (permission) => permission.recordType === recordType && permission.accessType === accessType
         )
     );
 }
 
-function areMandatoryPermissionsGranted(permissions: Permission[]) {
-    return areReadPermissionsGranted(MANDATORY_PERMISSIONS, permissions);
+function areMandatoryPermissionsGranted(permissions: Permission[], accessType: 'read' | 'write') {
+    return arePermissionsGranted(MANDATORY_PERMISSIONS, permissions, accessType);
 }
 
-export const checkIsReadHealthConnectedPermitted = async (recordTypes?: string[]) => {
+export const checkIsHealthConnectedPermitted = async (accessType: 'read' | 'write', recordTypes?: string[]) => {
     try {
         const isInitialized = await initialize();
         if (!isInitialized) {
@@ -90,9 +90,9 @@ export const checkIsReadHealthConnectedPermitted = async (recordTypes?: string[]
         const permissions = await getGrantedPermissions();
 
         if (recordTypes && recordTypes.length > 0) {
-            return areReadPermissionsGranted(recordTypes, permissions);
+            return arePermissionsGranted(recordTypes, permissions, accessType);
         } else {
-            return areMandatoryPermissionsGranted(permissions);
+            return areMandatoryPermissionsGranted(permissions, accessType);
         }
     } catch (error) {
         console.error('Error checking permissions:', error);
@@ -232,7 +232,7 @@ export const HealthConnectProvider = ({ children }: HealthConnectProviderProps) 
     }, []);
 
     const checkReadIsPermitted = useCallback(async (recordTypes?: string[]) => {
-        return await checkIsReadHealthConnectedPermitted(recordTypes);
+        return await checkIsHealthConnectedPermitted('read', recordTypes);
     }, []);
 
     const checkWriteIsPermitted = useCallback(async (recordTypes?: string[]) => {
@@ -250,10 +250,10 @@ export const HealthConnectProvider = ({ children }: HealthConnectProviderProps) 
 
                 const permissions = await getGrantedPermissions();
                 if (recordTypes && recordTypes.length > 0) {
-                    if (!areReadPermissionsGranted(recordTypes, permissions)) {
+                    if (!arePermissionsGranted(recordTypes, permissions, 'read')) {
                         return healthData;
                     }
-                } else if (!areMandatoryPermissionsGranted(permissions)) {
+                } else if (!areMandatoryPermissionsGranted(permissions, 'read')) {
                     return healthData;
                 }
 

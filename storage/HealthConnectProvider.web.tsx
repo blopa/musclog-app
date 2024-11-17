@@ -13,7 +13,7 @@ interface HealthConnectContextValue {
     requestPermissions: () => Promise<void>;
 }
 
-export const checkIsReadHealthConnectedPermitted = async () => {
+export const checkIsHealthConnectedPermitted = async (accessType: 'read' | 'write', recordTypes?: string[]) => {
     return IS_PERMITTED;
 }
 

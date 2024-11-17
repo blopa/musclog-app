@@ -12,7 +12,7 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
 }));
 
 jest.mock('@/storage/HealthConnectProvider', () => ({
-    checkIsReadHealthConnectedPermitted: jest.fn(),
+    checkIsHealthConnectedPermitted: jest.fn(),
     getHealthConnectData: jest.fn(),
 }));
 
