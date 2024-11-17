@@ -543,6 +543,7 @@
     "fitness_goal_deleted": "Fitness goal deleted successfully!",
     "create_fitness_goals": "Create Fitness Goals",
     "edit_fitness_goals": "Edit Fitness Goals",
+    "current_fitness_goals": "Current Fitness Goals",
     "adjust_your_macros": "Adjust Your Macros",
     "macros_distribution": "Macros Distribution",
     "enter_calories": "Enter calories",

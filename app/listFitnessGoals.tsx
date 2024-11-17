@@ -8,6 +8,7 @@ import {
     deleteFitnessGoals,
     getTotalFitnessGoalsCount,
     getFitnessGoalsPaginated,
+    getLatestFitnessGoals,
 } from '@/utils/database';
 import { formatDate } from '@/utils/date';
 import { FitnessGoalsInsertType } from '@/utils/types';
@@ -22,6 +23,7 @@ import { ActivityIndicator, Appbar, Card, Text, useTheme } from 'react-native-pa
 
 export default function ListFitnessGoals({ navigation }: { navigation: NavigationProp<any> }) {
     const { t } = useTranslation();
+    const [latestFitnessGoal, setLatestFitnessGoal] = useState<FitnessGoalsInsertType | null>(null); // Added state
     const [fitnessGoals, setFitnessGoals] = useState<FitnessGoalsInsertType[]>([]);
     const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
     const [goalToDelete, setGoalToDelete] = useState<null | number>(null);
@@ -30,6 +32,15 @@ export default function ListFitnessGoals({ navigation }: { navigation: Navigatio
     const { colors, dark } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors, dark);
     const { showSnackbar } = useSnackbar();
+
+    const loadLatestFitnessGoal = useCallback(async () => {
+        try {
+            const latestGoal = await getLatestFitnessGoals();
+            setLatestFitnessGoal(latestGoal);
+        } catch (error) {
+            console.error('Failed to load latest fitness goal:', error);
+        }
+    }, []);
 
     const loadFitnessGoals = useCallback(async (offset = 0, limit = 20) => {
         try {
@@ -72,6 +83,7 @@ export default function ListFitnessGoals({ navigation }: { navigation: Navigatio
 
     const resetScreenData = useCallback(() => {
         setFitnessGoals([]);
+        setLatestFitnessGoal(null);
         setIsDeleteModalVisible(false);
         setGoalToDelete(null);
     }, []);
@@ -79,12 +91,13 @@ export default function ListFitnessGoals({ navigation }: { navigation: Navigatio
     useFocusEffect(
         useCallback(() => {
             fetchTotalFitnessGoalsCount();
+            loadLatestFitnessGoal();
             loadFitnessGoals();
 
             return () => {
                 resetScreenData();
             };
-        }, [fetchTotalFitnessGoalsCount, loadFitnessGoals, resetScreenData])
+        }, [fetchTotalFitnessGoalsCount, loadLatestFitnessGoal, loadFitnessGoals, resetScreenData])
     );
 
     useFocusEffect(
@@ -116,11 +129,14 @@ export default function ListFitnessGoals({ navigation }: { navigation: Navigatio
                 setGoalToDelete(null);
                 setTotalFitnessGoalsCount((prevState) => prevState - 1);
                 showSnackbar(t('fitness_goal_deleted'), t('ok'), () => {});
+                if (latestFitnessGoal && latestFitnessGoal.id === goalToDelete) {
+                    loadLatestFitnessGoal();
+                }
             } catch (error) {
                 console.error('Failed to delete fitness goal:', error);
             }
         }
-    }, [goalToDelete, fitnessGoals, showSnackbar, t]);
+    }, [goalToDelete, fitnessGoals, showSnackbar, t, latestFitnessGoal, loadLatestFitnessGoal]);
 
     const handleDeleteCancel = useCallback(() => {
         setIsDeleteModalVisible(false);
@@ -146,6 +162,29 @@ export default function ListFitnessGoals({ navigation }: { navigation: Navigatio
                 >
                     <Appbar.Content title={t('fitness_goals')} titleStyle={styles.appbarTitle} />
                 </Appbar.Header>
+                {latestFitnessGoal && (
+                    <ThemedCard style={styles.latestGoalCard}>
+                        <Card.Content>
+                            <Text style={styles.cardTitle}>{t('current_fitness_goal')}</Text>
+                            <View style={styles.metricRow}>
+                                <Text style={styles.metricDetailText}>
+                                    {t('calories')}: {latestFitnessGoal.calories}
+                                </Text>
+                                <Text style={styles.metricDetailText}>
+                                    {t('protein')}: {latestFitnessGoal.protein}g
+                                </Text>
+                            </View>
+                            <View style={styles.metricRow}>
+                                <Text style={styles.metricDetailText}>
+                                    {t('carbohydrates')}: {latestFitnessGoal.totalCarbohydrate}g
+                                </Text>
+                                <Text style={styles.metricDetailText}>
+                                    {t('fat')}: {latestFitnessGoal.totalFat}g
+                                </Text>
+                            </View>
+                        </Card.Content>
+                    </ThemedCard>
+                )}
                 <FlashList
                     ListFooterComponent={
                         fitnessGoals.length < totalFitnessGoalsCount ? (
@@ -181,7 +220,6 @@ export default function ListFitnessGoals({ navigation }: { navigation: Navigatio
                                             {t('fat')}: {goal.totalFat}g
                                         </Text>
                                     </View>
-                                    {/* Add more details as needed */}
                                 </View>
                                 <View style={styles.cardActions}>
                                     <FontAwesome5
@@ -220,54 +258,58 @@ export default function ListFitnessGoals({ navigation }: { navigation: Navigatio
     );
 }
 
-const makeStyles = (colors: CustomThemeColorsType, dark: boolean) =>
-    StyleSheet.create({
-        appbarHeader: {
-            backgroundColor: colors.primary,
-            justifyContent: 'center',
-            paddingHorizontal: 16,
-        },
-        appbarTitle: {
-            color: colors.onPrimary,
-            fontSize: Platform.OS === 'web' ? 20 : 26,
-        },
-        cardActions: {
-            alignItems: 'center',
-            flexDirection: 'row',
-            marginTop: 8,
-        },
-        cardContent: {
-            alignItems: 'center',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-        },
-        cardHeader: {
-            flex: 1,
-        },
-        cardTitle: {
-            color: colors.onSurface,
-            fontSize: 18,
-            fontWeight: 'bold',
-        },
-        container: {
-            backgroundColor: colors.background,
-            flex: 1,
-        },
-        iconButton: {
-            marginHorizontal: 8,
-        },
-        metricDetailText: {
-            color: colors.onSurface,
-            fontSize: 14,
-            marginBottom: 4,
-        },
-        metricRow: {
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-        },
-        scrollViewContent: {
-            backgroundColor: colors.background,
-            paddingBottom: 16,
-            paddingHorizontal: 16,
-        },
-    });
+const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
+    appbarHeader: {
+        backgroundColor: colors.primary,
+        justifyContent: 'center',
+        paddingHorizontal: 16,
+    },
+    appbarTitle: {
+        color: colors.onPrimary,
+        fontSize: Platform.OS === 'web' ? 20 : 26,
+    },
+    cardActions: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        marginTop: 8,
+    },
+    cardContent: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    cardHeader: {
+        flex: 1,
+    },
+    cardTitle: {
+        color: colors.onSurface,
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    container: {
+        backgroundColor: colors.background,
+        flex: 1,
+    },
+    iconButton: {
+        marginHorizontal: 8,
+    },
+    latestGoalCard: {
+        marginBottom: 8,
+        marginHorizontal: 16,
+        marginTop: 16,
+    },
+    metricDetailText: {
+        color: colors.onSurface,
+        fontSize: 14,
+        marginBottom: 4,
+    },
+    metricRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    scrollViewContent: {
+        backgroundColor: colors.background,
+        paddingBottom: 16,
+        paddingHorizontal: 16,
+    },
+});
