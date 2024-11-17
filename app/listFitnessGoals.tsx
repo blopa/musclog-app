@@ -34,7 +34,6 @@ export default function ListFitnessGoals({ navigation }: { navigation: Navigatio
     const styles = makeStyles(colors, dark);
     const { showSnackbar } = useSnackbar();
 
-    // Function to load the latest fitness goal
     const loadLatestFitnessGoal = useCallback(async () => {
         try {
             const latestGoal = await getLatestFitnessGoals();
@@ -136,7 +135,6 @@ export default function ListFitnessGoals({ navigation }: { navigation: Navigatio
                 setTotalFitnessGoalsCount((prevState) => prevState - 1);
                 showSnackbar(t('fitness_goal_deleted'), t('ok'), () => {});
 
-                // If the deleted goal was the latest, reload the latest fitness goal
                 if (latestFitnessGoal && latestFitnessGoal.id === goalToDelete) {
                     loadLatestFitnessGoal();
                 }
@@ -155,7 +153,7 @@ export default function ListFitnessGoals({ navigation }: { navigation: Navigatio
         {
             icon: () => <FontAwesome5 color={colors.primary} name="plus" size={FAB_ICON_SIZE} />,
             label: t('create_fitness_goals'),
-            onPress: () => navigation.navigate('createFitnessGoal'),
+            onPress: () => navigation.navigate('createFitnessGoals'),
             style: { backgroundColor: colors.surface },
         },
     ];
@@ -172,25 +170,13 @@ export default function ListFitnessGoals({ navigation }: { navigation: Navigatio
                 </Appbar.Header>
                 {latestFitnessGoal && (
                     <ThemedCard style={styles.latestGoalCard}>
+                        <Text style={styles.cardTitle}>{t('current_fitness_goals').toUpperCase()}</Text>
                         <Card.Content style={styles.latestGoalContent}>
-                            <View style={styles.latestGoalText}>
-                                <Text style={styles.cardTitle}>{t('current_fitness_goals')}</Text>
-                                <View style={styles.metricRow}>
-                                    <Text style={styles.metricDetailText}>
-                                        {t('calories')}: {latestFitnessGoal.calories}
-                                    </Text>
-                                    <Text style={styles.metricDetailText}>
-                                        {t('protein')}: {latestFitnessGoal.protein}g
-                                    </Text>
-                                </View>
-                                <View style={styles.metricRow}>
-                                    <Text style={styles.metricDetailText}>
-                                        {t('carbohydrates')}: {latestFitnessGoal.totalCarbohydrate}g
-                                    </Text>
-                                    <Text style={styles.metricDetailText}>
-                                        {t('fat')}: {latestFitnessGoal.totalFat}g
-                                    </Text>
-                                </View>
+                            <View style={styles.goalTextContainer}>
+                                <Text style={styles.metricDetailText}>{t('calories')}: {latestFitnessGoal.calories}</Text>
+                                <Text style={styles.metricDetailText}>{t('protein')}: {latestFitnessGoal.protein}g</Text>
+                                <Text style={styles.metricDetailText}>{t('carbohydrates')}: {latestFitnessGoal.totalCarbohydrate}g</Text>
+                                <Text style={styles.metricDetailText}>{t('fat')}: {latestFitnessGoal.totalFat}g</Text>
                             </View>
                             <View style={styles.pieChartContainer}>
                                 <PieChart
@@ -222,8 +208,8 @@ export default function ListFitnessGoals({ navigation }: { navigation: Navigatio
                     onEndReached={loadMoreFitnessGoals}
                     onEndReachedThreshold={0.5}
                     renderItem={({ item: goal }) => (
-                        <ThemedCard key={goal.id}>
-                            <Card.Content style={styles.cardContent}>
+                        <ThemedCard key={goal.id} style={styles.flashListCard}>
+                            <Card.Content style={styles.flashListCardContent}>
                                 <View style={styles.cardHeader}>
                                     <Text style={styles.cardTitle}>
                                         {formatDate(goal.createdAt || '')}
@@ -297,10 +283,6 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         flexDirection: 'row',
         marginTop: 8,
     },
-    cardContent: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-    },
     cardHeader: {
         flex: 1,
     },
@@ -308,10 +290,25 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         color: colors.onSurface,
         fontSize: 18,
         fontWeight: 'bold',
+        marginBottom: 8,
+        marginTop: 8,
+        textAlign: 'center',
     },
     container: {
         backgroundColor: colors.background,
         flex: 1,
+    },
+    flashListCard: {
+        marginHorizontal: 16,
+        marginVertical: 8,
+    },
+    flashListCardContent: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    goalTextContainer: {
+        flex: 1,
+        marginRight: 16,
     },
     iconButton: {
         marginHorizontal: 8,
@@ -324,10 +321,6 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     latestGoalContent: {
         alignItems: 'center',
         flexDirection: 'row',
-        justifyContent: 'space-between',
-    },
-    latestGoalText: {
-        flex: 2,
     },
     metricDetailText: {
         color: colors.onSurface,
@@ -341,7 +334,6 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     pieChartContainer: {
         alignItems: 'center',
         flex: 1,
-        justifyContent: 'center',
     },
     scrollViewContent: {
         backgroundColor: colors.background,

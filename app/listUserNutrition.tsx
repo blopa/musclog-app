@@ -205,7 +205,7 @@ export default function ListUserNutrition({ navigation }: { navigation: Navigati
                 console.error('Failed to delete user nutrition:', error);
             }
         }
-    }, [nutritionToDelete, userNutritions]);
+    }, [checkWriteIsPermitted, deleteHealthData, nutritionToDelete, userNutritions]);
 
     const handleImportNutritionWithAi = useCallback(async () => {
         setIsModalLoading(true);
