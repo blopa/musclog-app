@@ -1003,12 +1003,18 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
                     recordType: 'Nutrition',
                 };
 
-                const results = await insertHealthData([nutritionRecord]);
-                await updateUserNutrition(userNutri.id, {
-                    ...userNutri,
-                    source: USER_METRICS_SOURCES.HEALTH_CONNECT,
-                    dataId: results[0],
-                });
+                try {
+                    const results = await insertHealthData([nutritionRecord]);
+                    if (results[0]) {
+                        await updateUserNutrition(userNutri.id, {
+                            ...userNutri,
+                            source: USER_METRICS_SOURCES.HEALTH_CONNECT,
+                            dataId: results[0],
+                        });
+                    }
+                } catch (error) {
+                    console.error(`Failed to insert health data for userNutri ID ${userNutri.id}:`, error);
+                }
             }
         }
 
