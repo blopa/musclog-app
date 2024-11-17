@@ -50,7 +50,7 @@ const Onboarding = ({ onFinish }: OnboardingProps) => {
     const { t } = useTranslation();
     const { colors, dark } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors, dark);
-    const { checkIsPermitted, getHealthData, requestPermissions } = useHealthConnect();
+    const { checkReadIsPermitted, getHealthData, requestPermissions } = useHealthConnect();
 
     const [currentStep, setCurrentStep] = useState(0);
     const [form, setForm] = useState<{
@@ -148,7 +148,7 @@ const Onboarding = ({ onFinish }: OnboardingProps) => {
 
     const handleCheckPermissions = useCallback(async () => {
         setIsLoading(true);
-        const isPermitted = await checkIsPermitted(['Height', 'Weight', 'BodyFat', 'Nutrition']);
+        const isPermitted = await checkReadIsPermitted(['Height', 'Weight', 'BodyFat', 'Nutrition']);
         if (isPermitted) {
             await addOrUpdateSetting({
                 type: READ_HEALTH_CONNECT_TYPE,
@@ -217,7 +217,7 @@ const Onboarding = ({ onFinish }: OnboardingProps) => {
         }
 
         setIsLoading(false);
-    }, [checkIsPermitted, currentStep, getHealthData, loadProfileData]);
+    }, [checkReadIsPermitted, currentStep, getHealthData, loadProfileData]);
 
     const handleFormSubmit = useCallback(async () => {
         setIsLoading(true);

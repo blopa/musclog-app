@@ -43,7 +43,7 @@ import packageJson from '../package.json';
 
 export default function Settings({ navigation }: { navigation: NavigationProp<any> }) {
     const { i18n, t } = useTranslation();
-    const { checkIsPermitted, getHealthData, requestPermissions } = useHealthConnect();
+    const { checkReadIsPermitted, getHealthData, requestPermissions } = useHealthConnect();
     const { addOrUpdateSettingValue, getSettingByType, updateSettingValue } = useSettings();
 
     const [apiKey, setApiKey] = useState<null | string>(null);
@@ -291,7 +291,7 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
     }, [updateSettingWithLoadingState, tempExerciseImageGeneration]);
 
     const getHealthConnectData = useCallback(async () => {
-        const isPermitted = await checkIsPermitted(['Height', 'Weight', 'BodyFat', 'Nutrition']);
+        const isPermitted = await checkReadIsPermitted(['Height', 'Weight', 'BodyFat', 'Nutrition']);
         if (isPermitted) {
             const healthData = await getHealthData(1000, ['Height', 'Weight', 'BodyFat', 'Nutrition']);
 
@@ -347,7 +347,7 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
                 }
             }
         }
-    }, [checkIsPermitted, getHealthData]);
+    }, [checkReadIsPermitted, getHealthData]);
 
     const handleConfirmHealthConnectChange = useCallback(async () => {
         setLoading(true);
@@ -360,7 +360,7 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
     }, [updateSettingWithLoadingState, tempReadHealthConnectEnabled, getHealthConnectData]);
 
     const handleEnableHealthConnect = useCallback(async () => {
-        const isPermitted = await checkIsPermitted();
+        const isPermitted = await checkReadIsPermitted();
         if (isPermitted) {
             setTempReadHealthConnectEnabled(true);
             setShowCheckPermissionButton(false);
@@ -369,10 +369,10 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
             requestPermissions();
             setShowCheckPermissionButton(true);
         }
-    }, [checkIsPermitted, getHealthConnectData, requestPermissions]);
+    }, [checkReadIsPermitted, getHealthConnectData, requestPermissions]);
 
     const handleCheckPermissions = useCallback(async () => {
-        const isPermitted = await checkIsPermitted();
+        const isPermitted = await checkReadIsPermitted();
         if (isPermitted) {
             setTempReadHealthConnectEnabled(true);
             setShowCheckPermissionButton(false);
@@ -381,7 +381,7 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
             setTempReadHealthConnectEnabled(false);
             setShowCheckPermissionButton(false);
         }
-    }, [checkIsPermitted, getHealthConnectData]);
+    }, [checkReadIsPermitted, getHealthConnectData]);
 
     const handleConfirmHealthConnectWriteChange = useCallback(async () => {
         setLoading(true);
@@ -393,7 +393,7 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
     }, [updateSettingWithLoadingState, tempWriteHealthConnectEnabled]);
 
     const handleEnableHealthConnectWrite = useCallback(async () => {
-        const isPermitted = await checkIsPermitted();
+        const isPermitted = await checkReadIsPermitted();
         if (isPermitted) {
             setTempWriteHealthConnectEnabled(true);
             setShowCheckWritePermissionButton(false);
@@ -401,10 +401,10 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
             requestPermissions();
             setShowCheckWritePermissionButton(true);
         }
-    }, [checkIsPermitted, requestPermissions]);
+    }, [checkReadIsPermitted, requestPermissions]);
 
     const handleCheckWritePermissions = useCallback(async () => {
-        const isPermitted = await checkIsPermitted();
+        const isPermitted = await checkReadIsPermitted();
         if (isPermitted) {
             setTempWriteHealthConnectEnabled(true);
             setShowCheckWritePermissionButton(false);
@@ -412,7 +412,7 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
             setTempWriteHealthConnectEnabled(false);
             setShowCheckWritePermissionButton(false);
         }
-    }, [checkIsPermitted]);
+    }, [checkReadIsPermitted]);
 
     const handleToggleAdvancedSettings = useCallback(async () => {
         setLoading(true);

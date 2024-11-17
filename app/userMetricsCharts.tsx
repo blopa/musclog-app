@@ -131,7 +131,7 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
     } | undefined>(undefined);
 
     const { increaseUnreadMessages } = useUnreadMessages();
-    const { checkIsPermitted, getHealthData } = useHealthConnect();
+    const { checkReadIsPermitted, getHealthData } = useHealthConnect();
     const { addNewChat } = useChatData();
     const { getSettingByType } = useSettings();
 
@@ -889,7 +889,7 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
 
     const handleSyncHealthConnect = useCallback(async () => {
         setIsLoading(true);
-        const isPermitted = await checkIsPermitted(['BodyFat', 'Weight', 'Nutrition']);
+        const isPermitted = await checkReadIsPermitted(['BodyFat', 'Weight', 'Nutrition']);
 
         if (isPermitted) {
             const dataPointsCount = 1000;
@@ -963,7 +963,7 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
         }
 
         setIsLoading(false);
-    }, [eatingPhase, checkIsPermitted, getHealthData, loadUserMetricsAndNutrition]);
+    }, [eatingPhase, checkReadIsPermitted, getHealthData, loadUserMetricsAndNutrition]);
 
     const foodLabels = [t('carbs'), t('fats'), t('proteins'), t('fibers')];
     const yAxisFood = useMemo(() => {

@@ -20,7 +20,7 @@ import { Permission } from 'react-native-health-connect/lib/typescript/types';
 const packageName = DeviceInfo.getBundleId();
 
 interface HealthConnectContextValue {
-    checkIsPermitted: (recordTypes?: string[]) => Promise<boolean>;
+    checkReadIsPermitted: (recordTypes?: string[]) => Promise<boolean>;
     getHealthData: (pageSize?: number, recordTypes?: string[]) => Promise<HealthDataType>;
     healthData: HealthDataType;
     requestPermissions: () => Promise<void>;
@@ -193,7 +193,7 @@ export const getHealthConnectData = async (pageSize: number = 1000): Promise<Hea
 };
 
 const HealthConnectContext = createContext<HealthConnectContextValue>({
-    checkIsPermitted: async (recordTypes?: string[]) => false,
+    checkReadIsPermitted: async (recordTypes?: string[]) => false,
     getHealthData: async (pageSize?: number, recordTypes?: string[]) => data,
     healthData: data,
     requestPermissions: async () => {},
@@ -229,7 +229,7 @@ export const HealthConnectProvider = ({ children }: HealthConnectProviderProps) 
         }
     }, []);
 
-    const checkIsPermitted = useCallback(async (recordTypes?: string[]) => {
+    const checkReadIsPermitted = useCallback(async (recordTypes?: string[]) => {
         return await checkIsHealthConnectedPermitted(recordTypes);
     }, []);
 
@@ -267,7 +267,7 @@ export const HealthConnectProvider = ({ children }: HealthConnectProviderProps) 
     return (
         <HealthConnectContext.Provider
             value={{
-                checkIsPermitted,
+                checkReadIsPermitted,
                 getHealthData,
                 healthData,
                 requestPermissions,

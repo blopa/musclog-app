@@ -70,7 +70,7 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
     const styles = makeStyles(colors, dark);
     const { unitSystem } = useUnit();
     const { getSettingByType } = useSettings();
-    const { checkIsPermitted, getHealthData } = useHealthConnect();
+    const { checkReadIsPermitted, getHealthData } = useHealthConnect();
 
     const isImperial = unitSystem === IMPERIAL_SYSTEM;
 
@@ -334,7 +334,7 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
                         exercise.sets.push(set);
                     }
 
-                    const isPermitted = await checkIsPermitted(['Nutrition']);
+                    const isPermitted = await checkReadIsPermitted(['Nutrition']);
                     if (isPermitted) {
                         const healthData = await getHealthData(1000, ['Nutrition']);
                         if (healthData) {
@@ -459,7 +459,7 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
         } catch (error) {
             console.error('Failed to finish exercise:', error);
         }
-    }, [startTime, currentExerciseIndex, exercises, workout, checkIsPermitted, t, isAiEnabled, isImperial, unitSystem, getHealthData, addNewChat, increaseUnreadMessages]);
+    }, [startTime, currentExerciseIndex, exercises, workout, checkReadIsPermitted, t, isAiEnabled, isImperial, unitSystem, getHealthData, addNewChat, increaseUnreadMessages]);
 
     useEffect(() => {
         const checkStartingTime = async () => {
