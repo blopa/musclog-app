@@ -889,11 +889,11 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
 
     const handleSyncHealthConnect = useCallback(async () => {
         setIsLoading(true);
-        const isPermitted = await checkIsPermitted();
+        const isPermitted = await checkIsPermitted(['BodyFat', 'Weight', 'Nutrition']);
 
         if (isPermitted) {
             const dataPointsCount = 1000;
-            const healthData = await getHealthData(dataPointsCount);
+            const healthData = await getHealthData(dataPointsCount, ['BodyFat', 'Weight', 'Nutrition']);
 
             const combinedData = await combineHeightAndWeightHealthData(
                 healthData.bodyFatRecords,

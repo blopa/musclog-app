@@ -334,9 +334,9 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
                         exercise.sets.push(set);
                     }
 
-                    const isPermitted = await checkIsPermitted();
+                    const isPermitted = await checkIsPermitted(['Nutrition']);
                     if (isPermitted) {
-                        const healthData = await getHealthData();
+                        const healthData = await getHealthData(1000, ['Nutrition']);
                         if (healthData) {
                             const todaysNutrition =
                                 healthData.nutritionRecords!.filter(

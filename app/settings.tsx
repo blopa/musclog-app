@@ -291,9 +291,9 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
     }, [updateSettingWithLoadingState, tempExerciseImageGeneration]);
 
     const getHealthConnectData = useCallback(async () => {
-        const isPermitted = await checkIsPermitted();
+        const isPermitted = await checkIsPermitted(['Height', 'Weight', 'BodyFat', 'Nutrition']);
         if (isPermitted) {
-            const healthData = await getHealthData();
+            const healthData = await getHealthData(1000, ['Height', 'Weight', 'BodyFat', 'Nutrition']);
 
             if (healthData) {
                 const latestHeight = healthData?.heightRecords?.[0];

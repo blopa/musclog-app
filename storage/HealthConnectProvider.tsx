@@ -99,7 +99,7 @@ export const checkIsHealthConnectedPermitted = async (recordTypes?: string[]) =>
     }
 };
 
-export const getHealthConnectData = async (pageSize?: number): Promise<HealthDataType> => {
+export const getHealthConnectData = async (pageSize: number = 1000): Promise<HealthDataType> => {
     const timeRangeFilter = {
         operator: 'after',
         startTime: '2000-01-01T00:00:00.000Z',
@@ -234,7 +234,7 @@ export const HealthConnectProvider = ({ children }: HealthConnectProviderProps) 
     }, []);
 
     const getHealthData = useCallback(
-        async (pageSize?: number, recordTypes?: string[]): Promise<HealthDataType> => {
+        async (pageSize: number = 1000, recordTypes?: string[]): Promise<HealthDataType> => {
             try {
                 const isInitialized = await initialize();
                 if (!isInitialized) {

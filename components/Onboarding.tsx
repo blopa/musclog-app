@@ -148,14 +148,14 @@ const Onboarding = ({ onFinish }: OnboardingProps) => {
 
     const handleCheckPermissions = useCallback(async () => {
         setIsLoading(true);
-        const isPermitted = await checkIsPermitted();
+        const isPermitted = await checkIsPermitted(['Height', 'Weight', 'BodyFat', 'Nutrition']);
         if (isPermitted) {
             await addOrUpdateSetting({
                 type: READ_HEALTH_CONNECT_TYPE,
                 value: 'true',
             });
 
-            const userHealthData = await getHealthData();
+            const userHealthData = await getHealthData(1000, ['Height', 'Weight', 'BodyFat', 'Nutrition']);
 
             if (userHealthData) {
                 await addOrUpdateUser({});
