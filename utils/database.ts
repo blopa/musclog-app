@@ -740,7 +740,7 @@ export const addFitnessGoals = async (fitnessGoals: FitnessGoalsInsertType): Pro
     try {
         const result = database.runSync(`
             INSERT INTO "FitnessGoals" ("alcohol", "protein", "totalCarbohydrate", "totalFat", "fiber", "calories", "sugar", "weight", "bodyFat", "bmi", "ffmi", "createdAt")
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             `,
         fitnessGoals.alcohol || 0,
         fitnessGoals.protein,
