@@ -20,7 +20,7 @@ import { Permission } from 'react-native-health-connect/lib/typescript/types';
 const packageName = DeviceInfo.getBundleId();
 
 interface HealthConnectContextValue {
-    checkIsPermitted: () => Promise<boolean>;
+    checkIsPermitted: (recordType?: string) => Promise<boolean>;
     getHealthData: (pageSize?: number) => Promise<HealthDataType>;
     healthData: HealthDataType;
     requestPermissions: () => Promise<void>;
@@ -60,13 +60,18 @@ function calculateTotals(data: any[]): TotalMacrosType {
     return totals;
 }
 
-// TODO improve this
+function isPermissionGranted(recordType: string, permissions: Permission[]) {
+    return permissions.some(
+        (permission) => permission.recordType === recordType && permission.accessType === 'read'
+    );
+}
+
 function areMandatoryPermissionsGranted(permissions: Permission[]) {
     const recordTypes = permissions.map(({ recordType }) => recordType) as string[];
     return MANDATORY_PERMISSIONS.every((recordType) => recordTypes.includes(recordType));
 }
 
-export const checkIsHealthConnectedPermitted = async () => {
+export const checkIsHealthConnectedPermitted = async (recordType?: string) => {
     try {
         const isInitialized = await initialize();
         if (!isInitialized) {
@@ -76,7 +81,11 @@ export const checkIsHealthConnectedPermitted = async () => {
 
         const permissions = await getGrantedPermissions();
 
-        return areMandatoryPermissionsGranted(permissions);
+        if (recordType) {
+            return isPermissionGranted(recordType, permissions);
+        } else {
+            return areMandatoryPermissionsGranted(permissions);
+        }
     } catch (error) {
         console.error('Error checking permissions:', error);
         return false;
@@ -89,41 +98,50 @@ export const getHealthConnectData = async (pageSize?: number): Promise<HealthDat
         startTime: '2000-01-01T00:00:00.000Z',
     } as const;
 
-    const { records: heightRecords } = await readRecords('Height', {
-        ascendingOrder: false,
-        pageSize: 1,
-        timeRangeFilter,
-    });
+    const grantedPermissions = await getGrantedPermissions();
 
-    const { records: weightRecords } = await readRecords('Weight', {
-        ascendingOrder: false,
-        pageSize,
-        timeRangeFilter,
-    });
+    const heightRecords = isPermissionGranted('Height', grantedPermissions)
+        ? (await readRecords('Height', {
+            ascendingOrder: false,
+            pageSize: 1,
+            timeRangeFilter,
+        })).records
+        : [];
 
-    const { records: bodyFatRecords } = await readRecords('BodyFat', {
-        ascendingOrder: false,
-        pageSize,
-        timeRangeFilter,
-    });
+    const weightRecords = isPermissionGranted('Weight', grantedPermissions)
+        ? (await readRecords('Weight', {
+            ascendingOrder: false,
+            pageSize,
+            timeRangeFilter,
+        })).records
+        : [];
 
-    const { records: nutritionRecords } = await readRecords('Nutrition', {
-        ascendingOrder: true,
-        pageSize,
-        timeRangeFilter: {
-            ...timeRangeFilter,
-            // startTime: new Date().toISOString().split('T')[0] + 'T00:00:00.000Z',
-        }
-    });
+    const bodyFatRecords = isPermissionGranted('BodyFat', grantedPermissions)
+        ? (await readRecords('BodyFat', {
+            ascendingOrder: false,
+            pageSize,
+            timeRangeFilter,
+        })).records
+        : [];
 
-    const { records: totalCaloriesBurnedRecords } = await readRecords('TotalCaloriesBurned', {
-        ascendingOrder: false,
-        pageSize: 1,
-        timeRangeFilter: {
-            ...timeRangeFilter,
-            startTime: new Date().toISOString().split('T')[0] + 'T00:00:00.000Z',
-        }
-    });
+    const nutritionRecords = isPermissionGranted('Nutrition', grantedPermissions)
+        ? (await readRecords('Nutrition', {
+            ascendingOrder: true,
+            pageSize,
+            timeRangeFilter,
+        })).records
+        : [];
+
+    const totalCaloriesBurnedRecords = isPermissionGranted('TotalCaloriesBurned', grantedPermissions)
+        ? (await readRecords('TotalCaloriesBurned', {
+            ascendingOrder: false,
+            pageSize: 1,
+            timeRangeFilter: {
+                ...timeRangeFilter,
+                startTime: new Date().toISOString().split('T')[0] + 'T00:00:00.000Z',
+            },
+        })).records
+        : [];
 
     const latestHeight = heightRecords[0]?.height?.inMeters;
     const latestWeight = weightRecords[0]?.weight?.inKilograms;
@@ -141,7 +159,8 @@ export const getHealthConnectData = async (pageSize?: number): Promise<HealthDat
         heightRecords,
         latest: {
             dataId,
-            date: weightRecords[0]?.time.split('T')[0]
+            date:
+                weightRecords[0]?.time.split('T')[0]
                 || heightRecords[0]?.time.split('T')[0]
                 || bodyFatRecords[0]?.time.split('T')[0],
             fatPercentage: latestBodyFat,
@@ -152,12 +171,12 @@ export const getHealthConnectData = async (pageSize?: number): Promise<HealthDat
         },
         nutritionRecords,
         totalCaloriesBurnedRecords,
-        weightRecords: weightRecords as HealthConnectWeightRecord[]
+        weightRecords: weightRecords as HealthConnectWeightRecord[],
     };
 };
 
 const HealthConnectContext = createContext<HealthConnectContextValue>({
-    checkIsPermitted: async () => false,
+    checkIsPermitted: async (recordType?: string) => false,
     getHealthData: async (pageSize?: number) => data,
     healthData: data,
     requestPermissions: async () => {},
@@ -183,50 +202,60 @@ export const HealthConnectProvider = ({ children }: HealthConnectProviderProps) 
             try {
                 await requestPermission(NEEDED_PERMISSIONS);
             } catch (error) {
-                IntentLauncher.startActivityAsync(IntentLauncher.ActivityAction.APPLICATION_DETAILS_SETTINGS, {
-                    data: 'package:' + packageName,
-                });
+                IntentLauncher.startActivityAsync(
+                    IntentLauncher.ActivityAction.APPLICATION_DETAILS_SETTINGS, {
+                        data: 'package:' + packageName,
+                    });
             }
         } catch (error) {
             console.error('Error requesting permissions:', error);
         }
     }, []);
-    
-    const checkIsPermitted = useCallback(async () => {
-        return await checkIsHealthConnectedPermitted();
+
+    const checkIsPermitted = useCallback(async (recordType?: string) => {
+        return await checkIsHealthConnectedPermitted(recordType);
     }, []);
 
-    const getHealthData = useCallback(async (pageSize?: number): Promise<HealthDataType> => {
-        try {
-            const isInitialized = await initialize();
-            if (!isInitialized) {
-                console.error('Failed to initialize Health Connect');
-                return healthData;
+    const getHealthData = useCallback(
+        async (pageSize?: number, recordType?: string): Promise<HealthDataType> => {
+            try {
+                const isInitialized = await initialize();
+                if (!isInitialized) {
+                    console.error('Failed to initialize Health Connect');
+                    return healthData;
+                }
+
+                const permissions = await getGrantedPermissions();
+                if (recordType) {
+                    if (!isPermissionGranted(recordType, permissions)) {
+                        return healthData;
+                    }
+                } else if (!areMandatoryPermissionsGranted(permissions)) {
+                    return healthData;
+                }
+
+                const newHealthData = await getHealthConnectData(pageSize);
+                setHealthData(newHealthData);
+
+                return newHealthData;
+            } catch (error) {
+                console.error('Error reading health data:', error);
             }
 
-            const permissions = await getGrantedPermissions();
-            if (!areMandatoryPermissionsGranted(permissions)) {
-                return healthData;
-            }
-            
-            const newHealthData = await getHealthConnectData(pageSize);
-            setHealthData(newHealthData);
-
-            return newHealthData;
-        } catch (error) {
-            console.error('Error reading health data:', error);
-        }
-
-        return healthData;
-    }, [healthData]);
+            return healthData;
+        },
+        [healthData]
+    );
 
     return (
-        <HealthConnectContext.Provider value={{
-            checkIsPermitted,
-            getHealthData,
-            healthData,
-            requestPermissions,
-        }}>
+        <HealthConnectContext.Provider
+            value={{
+                checkIsPermitted,
+                getHealthData,
+                healthData,
+                requestPermissions,
+            }}
+        >
             {children}
         </HealthConnectContext.Provider>
     );
