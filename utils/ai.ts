@@ -151,3 +151,15 @@ export const isAllowedLocation = async (key: string, vendor: string) => {
 
     return true;
 };
+
+export const estimateNutritionFromPhoto = async (photo: string) => {
+    const vendor = await getAiApiVendor();
+
+    if (vendor === OPENAI_API_KEY_TYPE) {
+        return openAiFunctions.estimateNutritionFromPhoto(photo);
+    } else if (vendor === GEMINI_API_KEY_TYPE) {
+        return geminiFunctions.estimateNutritionFromPhoto(photo);
+    }
+
+    return;
+};

@@ -4,6 +4,7 @@ import {
 } from '@/constants/storage';
 import i18n from '@/lang/lang';
 import { getSetting, processWorkoutPlan } from '@/utils/database';
+import { getBase64StringFromPhotoUri, resizeImage } from '@/utils/file';
 import { WorkoutPlan, WorkoutReturnType } from '@/utils/types';
 import OpenAI from 'openai';
 
@@ -340,4 +341,44 @@ export async function isValidApiKey(apiKey: string) {
     } catch (error) {
         return false;
     }
+}
+
+export async function estimateNutritionFromPhoto(photoUri: string) {
+    const apiKey = await getApiKey();
+
+    if (!apiKey) {
+        return Promise.resolve();
+    }
+
+    const openai = new OpenAI({
+        apiKey: apiKey,
+        dangerouslyAllowBrowser: true,
+    });
+
+    const base64Image = await getBase64StringFromPhotoUri(
+        await resizeImage(photoUri)
+    );
+
+    const result = await openai.chat.completions.create({
+        model: OPENAI_MODEL,
+        messages: [
+            {
+                role: 'user',
+                content: [
+                    {
+                        type: 'text',
+                        text: 'What’s in this image?',
+                    },
+                    {
+                        type: 'image_url',
+                        image_url: {
+                            url: `data:image/jpeg;base64,${base64Image}`,
+                        },
+                    },
+                ],
+            },
+        ],
+    });
+
+    return result?.choices?.[0].message.content;
 }

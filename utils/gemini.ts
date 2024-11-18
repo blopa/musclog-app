@@ -1,6 +1,7 @@
 import { EXERCISE_IMAGE_GENERATION_TYPE, GEMINI_API_KEY_TYPE } from '@/constants/storage';
 import i18n from '@/lang/lang';
 import { getSetting, processWorkoutPlan } from '@/utils/database';
+import { getBase64StringFromPhotoUri } from '@/utils/file';
 import { WorkoutPlan, WorkoutReturnType } from '@/utils/types';
 import {
     Content,
@@ -724,5 +725,52 @@ export async function isAllowedLocation(apiKey: string): Promise<boolean> {
         }
 
         return false;
+    }
+}
+
+export async function estimateNutritionFromPhoto(photoUri: string) {
+    const apiKey = await getApiKey();
+
+    if (!apiKey) {
+        return;
+    }
+
+    const genAI = new GoogleGenerativeAI(apiKey);
+
+    const model = genAI.getGenerativeModel({
+        model: GEMINI_MODEL,
+        safetySettings,
+    });
+
+    const generationConfig = {
+        // maxOutputTokens: 2048,
+        temperature: 0.9,
+        topK: 1,
+        topP: 1,
+    };
+
+    const base64Image = await getBase64StringFromPhotoUri(photoUri);
+
+    const conversationContent: Content[] = [{
+        parts: [{ text: 'Estimate the nutrition of the food in the image.' }],
+        role: 'user',
+    }];
+
+    try {
+        const result = await model.generateContent({
+            contents: conversationContent,
+            generationConfig,
+            files: [{ name: 'image.jpg', content: base64Image }],
+        } as GenerateContentRequest);
+
+        if (result.response.promptFeedback && result.response.promptFeedback.blockReason) {
+            console.log(`Blocked for ${result.response.promptFeedback.blockReason}`);
+            return;
+        }
+
+        return result.response.candidates?.[0]?.content?.parts[0]?.text;
+    } catch (e) {
+        console.error(e);
+        return;
     }
 }

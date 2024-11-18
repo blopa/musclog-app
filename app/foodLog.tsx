@@ -3,6 +3,7 @@ import type { BarcodeScanningResult } from 'expo-camera';
 import FoodTrackingModal, { FoodTrackingType } from '@/components/FoodTrackingModal';
 import ThemedCard from '@/components/ThemedCard';
 import { MEAL_TYPE } from '@/constants/nutrition';
+import { estimateNutritionFromPhoto } from '@/utils/ai';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { getUserNutritionBetweenDates } from '@/utils/database';
 import { fetchProductByEAN } from '@/utils/fetchFoodData';
@@ -299,8 +300,9 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
             try {
                 // @ts-ignore
                 const photo = await (photoCameraRef.current as typeof CameraView).takePictureAsync();
-                console.log('Photo taken:', photo.uri);
-                // Here you can send the photo to AI for processing
+                const macros = await estimateNutritionFromPhoto(photo.uri);
+
+                console.log(macros);
                 setShowPhotoCamera(false);
             } catch (error) {
                 console.error('Error taking photo:', error);
@@ -316,15 +318,13 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         <View style={styles.scannerOverlayContainer}>
             <View style={styles.scannerOverlayTop} />
             <View style={styles.scannerOverlayMiddle}>
-                <View style={styles.scannerOverlaySide} />
                 <View style={styles.scannerFocusArea}>
                     <View style={styles.focusBorder} />
                 </View>
-                <View style={styles.scannerOverlaySide} />
             </View>
             <View style={styles.scannerOverlayBottom} />
         </View>
-    ), [styles.focusBorder, styles.scannerFocusArea, styles.scannerOverlayBottom, styles.scannerOverlayContainer, styles.scannerOverlayMiddle, styles.scannerOverlaySide, styles.scannerOverlayTop]);
+    ), [styles.focusBorder, styles.scannerFocusArea, styles.scannerOverlayBottom, styles.scannerOverlayContainer, styles.scannerOverlayMiddle, styles.scannerOverlayTop]);
 
     return (
         <View style={styles.container}>
@@ -576,7 +576,7 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     scannerFocusArea: {
         backgroundColor: 'transparent',
         borderRadius: 8,
-        height: '100%',
+        height: '50%',
         overflow: 'hidden',
         width: Dimensions.get('window').width - 20,
     },
@@ -596,11 +596,6 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     scannerOverlayMiddle: {
         alignItems: 'center',
         flexDirection: 'row',
-    },
-    scannerOverlaySide: {
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        flex: 1,
-        height: 200,
     },
     scannerOverlayTop: {
         backgroundColor: 'rgba(0, 0, 0, 0.5)',

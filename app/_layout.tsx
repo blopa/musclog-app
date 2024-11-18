@@ -86,7 +86,7 @@ import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { I18nextProvider, useTranslation } from 'react-i18next';
-import { StatusBar, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { ActivityIndicator, PaperProvider, useTheme } from 'react-native-paper';
 
 import packageJson from '../package.json';
@@ -260,7 +260,9 @@ function RootLayout() {
                 <HealthConnectProvider>
                     <SnackbarProvider>
                         {/* TODO use SafeAreaView maybe */}
-                        <RootLayoutNav />
+                        <SafeAreaView style={{ flex: 1 }}>
+                            <RootLayoutNav />
+                        </SafeAreaView>
                     </SnackbarProvider>
                 </HealthConnectProvider>
             </I18nextProvider>

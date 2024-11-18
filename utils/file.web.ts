@@ -93,6 +93,14 @@ export async function importDatabase() {
     input.click();
 }
 
+export async function getBase64StringFromPhotoUri(photoUri: string) {
+    return photoUri.split(',')[1];
+}
+
+export async function resizeImage(photoUri: string, width: number = 512): Promise<string> {
+    return photoUri;
+}
+
 export async function importJson() {
     return {
         data: jsonData,
