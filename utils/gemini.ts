@@ -729,6 +729,7 @@ export async function isAllowedLocation(apiKey: string): Promise<boolean> {
 }
 
 export async function estimateNutritionFromPhoto(photoUri: string) {
+    // TODO: this is probably not the right way to do this, so fix it later
     const apiKey = await getApiKey();
 
     if (!apiKey) {

@@ -13,6 +13,7 @@ import {
     getCalculateNextWorkoutVolumeFunctions,
     getCalculateNextWorkoutVolumePrompt,
     getCreateWorkoutPlanFunctions,
+    getMacrosEstimationFunctions,
     getNutritionInsightsPrompt,
     getParsePastNutritionFunctions,
     getParsePastNutritionPrompt,
@@ -360,25 +361,40 @@ export async function estimateNutritionFromPhoto(photoUri: string) {
     );
 
     const result = await openai.chat.completions.create({
+        function_call: { name: 'estimateMacros' },
+        functions: getMacrosEstimationFunctions() as OpenAI.Chat.ChatCompletionCreateParams.Function[],
+        messages: [{
+            role: 'user',
+            content: [
+                {
+                    type: 'text',
+                    text: 'What’s in this image?',
+                },
+                {
+                    type: 'image_url',
+                    image_url: {
+                        url: `data:image/jpeg;base64,${base64Image}`,
+                    },
+                },
+            ],
+        }],
         model: OPENAI_MODEL,
-        messages: [
-            {
-                role: 'user',
-                content: [
-                    {
-                        type: 'text',
-                        text: 'What’s in this image?',
-                    },
-                    {
-                        type: 'image_url',
-                        image_url: {
-                            url: `data:image/jpeg;base64,${base64Image}`,
-                        },
-                    },
-                ],
-            },
-        ],
     });
 
-    return result?.choices?.[0].message.content;
+    let jsonResponse = {
+        protein: 0,
+        carbs: 0,
+        fat: 0,
+        calories: 0,
+        name: '',
+    };
+
+    try {
+        // @ts-expect-error
+        jsonResponse = JSON.parse(result?.choices?.[0]?.message?.function_call?.arguments);
+    } catch (error) {
+        console.log('Error parsing JSON response:', error);
+    }
+
+    return jsonResponse;
 }
