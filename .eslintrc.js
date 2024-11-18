@@ -6,6 +6,7 @@ module.exports = {
         'plugin:import/recommended',
         'plugin:regexp/recommended',
         'plugin:@typescript-eslint/recommended',
+        'prettier',
     ],
     overrides: [
         {
@@ -40,37 +41,71 @@ module.exports = {
         'regexp',
         'react-hooks',
         '@typescript-eslint',
+        'import-newlines',
     ],
     rules: {
+        'operator-linebreak': [
+            'error',
+            'before',
+            {
+                overrides: {
+                    '=': 'none', '&&': 'before', '||': 'before',
+                },
+            },
+        ],
         '@typescript-eslint/ban-ts-comment': 'off', // TODO maybe turn it on one day
         '@typescript-eslint/no-explicit-any': 'off', // TODO maybe turn it on one day
         '@typescript-eslint/no-non-null-asserted-optional-chain': 'off', // TODO maybe turn it on one day
-        '@typescript-eslint/no-unused-vars': ['warn', { args: 'after-used', argsIgnorePattern: '^_', vars: 'all', varsIgnorePattern: '^_' }],
+        '@typescript-eslint/no-unused-vars': [
+            'warn',
+            {
+                args: 'after-used',
+                argsIgnorePattern: '^_',
+                vars: 'all',
+                varsIgnorePattern: '^_',
+            },
+        ],
         semi: ['error', 'always'],
         'no-multi-spaces': 'error',
         curly: ['error', 'all'],
-        'consistent-return': 'error',
-        'prefer-destructuring': ['warn', { object: true, array: false }],
-        'no-confusing-arrow': ['warn', { allowParens: true }],
-        'max-len': ['warn', { code: 100, ignoreUrls: true }],
-        camelcase: ['error', { properties: 'always' }],
+        'consistent-return': 'off',
+        'prefer-destructuring': ['warn', {
+            object: true, array: false,
+        }],
+        'no-confusing-arrow': ['warn', {
+            allowParens: true,
+        }],
+        'max-len': 'off',
+        camelcase: ['error', {
+            properties: 'always',
+        }],
         'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'warn',
         eqeqeq: ['error', 'always'],
         'no-shadow': 'off',
         'array-bracket-spacing': ['warn', 'never'],
-        'key-spacing': ['warn', { beforeColon: false, afterColon: true }],
+        'key-spacing': ['warn', {
+            beforeColon: false, afterColon: true,
+        }],
         'no-useless-escape': 'warn',
         'no-nested-ternary': 'warn',
         'default-case': 'warn',
         'max-params': ['warn', 4],
         'react/jsx-first-prop-new-line': ['warn', 'multiline'],
-        'react/jsx-max-props-per-line': ['warn', { when: 'multiline' }],
-        'react/jsx-curly-spacing': ['warn', { when: 'never', children: true }],
+        'react/jsx-max-props-per-line': ['warn', {
+            when: 'multiline',
+        }],
+        'react/jsx-curly-spacing': ['warn', {
+            when: 'never', children: true,
+        }],
         'arrow-parens': ['warn', 'always'],
-        indent: ['warn', 4, { SwitchCase: 1 }],
+        indent: ['warn', 4, {
+            SwitchCase: 1,
+        }],
         'object-curly-spacing': ['warn', 'always'],
         'quote-props': ['warn', 'as-needed'],
-        quotes: ['warn', 'single', { avoidEscape: true }],
+        quotes: ['warn', 'single', {
+            avoidEscape: true,
+        }],
         'react/react-in-jsx-scope': 'off',
         'react-hooks/exhaustive-deps': 'warn',
         // 'react-hooks/exhaustive-deps': ['warn', { enableDangerousAutofixThisMayCauseInfiniteLoops: true }],
@@ -79,14 +114,44 @@ module.exports = {
         'react-native/no-raw-text': 'error',
         'react-native/no-unused-styles': 'off',
         'unused-imports/no-unused-imports': 'error',
-        'unused-imports/no-unused-vars': ['warn', { args: 'after-used', argsIgnorePattern: '^_', vars: 'all', varsIgnorePattern: '^_' }],
-        'perfectionist/sort-classes': ['warn', { type: 'alphabetical', order: 'asc', ignoreCase: true }],
-        'perfectionist/sort-imports': ['warn', { type: 'alphabetical', order: 'asc', ignoreCase: true }],
+        'unused-imports/no-unused-vars': [
+            'warn',
+            {
+                args: 'after-used',
+                argsIgnorePattern: '^_',
+                vars: 'all',
+                varsIgnorePattern: '^_',
+            },
+        ],
+        'perfectionist/sort-classes': [
+            'warn',
+            {
+                type: 'alphabetical', order: 'asc', ignoreCase: true,
+            },
+        ],
+        'perfectionist/sort-imports': [
+            'warn',
+            {
+                type: 'alphabetical', order: 'asc', ignoreCase: true,
+            },
+        ],
+        'import/newline-after-import': ['error', {
+            count: 1, 
+        }],
+        'import-newlines/enforce': [
+            'error',
+            {
+                items: 1,
+                'max-len': 80,
+                semi: true,
+            },
+        ],
+        'comma-dangle': ['error', 'always-multiline'],
     },
     settings: {
         'import/ignore': ['react-navigation', 'react-native'],
         react: {
-            version: 'detect'
-        }
+            version: 'detect',
+        },
     },
 };
