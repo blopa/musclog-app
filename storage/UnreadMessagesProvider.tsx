@@ -30,11 +30,13 @@ export const UnreadMessagesProvider: React.FC<UnreadMessagesProviderProps> = ({ 
     }, []);
 
     return (
-        <UnreadMessagesContext.Provider value={{
-            emptyUnreadMessages,
-            increaseUnreadMessages,
-            unreadMessages,
-        }}>
+        <UnreadMessagesContext.Provider
+            value={{
+                emptyUnreadMessages,
+                increaseUnreadMessages,
+                unreadMessages,
+            }}
+        >
             {children}
         </UnreadMessagesContext.Provider>
     );

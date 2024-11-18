@@ -303,7 +303,7 @@ export default function UpcomingWorkouts({ navigation }: { navigation: Navigatio
                     contentContainerStyle={styles.scrollViewContent}
                     data={filteredWorkouts}
                     estimatedItemSize={100}
-                    keyExtractor={(item) => item?.id ? item.id.toString() : 'default'}
+                    keyExtractor={(item) => (item?.id ? item.id.toString() : 'default')}
                     onEndReached={loadMoreWorkouts}
                     onEndReachedThreshold={0.5}
                     renderItem={({ item: workout }) => (

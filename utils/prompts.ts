@@ -212,7 +212,7 @@ const generateWorkoutSentences = async (workouts: WorkoutEventReturnType[]) => {
         return 'No workout data available.';
     }
 
-    const title = workouts[0].title;
+    const { title } = workouts[0];
     const sentences = [];
     const { weightUnit } = await getUnit();
 

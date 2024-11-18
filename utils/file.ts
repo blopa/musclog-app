@@ -93,7 +93,7 @@ export async function importDatabase(decryptionPhrase?: string) {
     try {
         const result = await DocumentPicker.getDocumentAsync({ type: 'application/json' });
         if (!result.canceled && result.assets.length > 0) {
-            const uri = result.assets[0].uri;
+            const { uri } = result.assets[0];
 
             const dbDump = await FileSystem.readAsStringAsync(uri);
             await restoreDatabase(dbDump, decryptionPhrase);
@@ -109,7 +109,7 @@ export async function importJson() {
     try {
         const result = await DocumentPicker.getDocumentAsync({ type: 'application/json' });
         if (!result.canceled && result.assets.length > 0) {
-            const uri = result.assets[0].uri;
+            const { uri } = result.assets[0];
 
             const dataString = await FileSystem.readAsStringAsync(uri);
             return {
@@ -134,7 +134,7 @@ export async function importCsv() {
     try {
         const result = await DocumentPicker.getDocumentAsync({ type: '*/*' });
         if (!result.canceled && result.assets.length > 0) {
-            const uri = result.assets[0].uri;
+            const { uri } = result.assets[0];
             const fileName = result.assets[0].name;
 
             if (fileName.endsWith('.csv')) {

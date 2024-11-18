@@ -64,7 +64,7 @@ const PieChart: React.FC<PieChartProps> = ({
             tooltip: {
                 callbacks: {
                     label: function (tooltipItem: { dataIndex: number; label: string; raw: number }): string {
-                        const marker = data[tooltipItem.dataIndex].marker;
+                        const { marker } = data[tooltipItem.dataIndex];
                         return `${tooltipItem.label}: ${safeToFixed(tooltipItem.raw, 2)}${marker ? ` (${marker})` : ''}`;
                     },
                 },

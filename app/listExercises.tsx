@@ -149,7 +149,7 @@ export default function ListExercises({ navigation }: { navigation: NavigationPr
                     contentContainerStyle={styles.scrollViewContent}
                     data={filteredExercises}
                     estimatedItemSize={95}
-                    keyExtractor={(item) => item?.id ? item.id.toString() : 'default'}
+                    keyExtractor={(item) => (item?.id ? item.id.toString() : 'default')}
                     onEndReached={loadMoreExercises}
                     onEndReachedThreshold={0.5}
                     renderItem={({ item: exercise }) => (

@@ -86,7 +86,7 @@ fs.readdir(localesDir, (err, files) => {
             const constantName = baseName.toUpperCase().replace(/-/g, '_');
 
             const langName = baseName.split('-').map(
-                (word, index) => index === 1 ? word.toUpperCase() : word
+                (word, index) => (index === 1 ? word.toUpperCase() : word)
             )
                 .join('-');
 

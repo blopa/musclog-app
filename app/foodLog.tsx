@@ -260,7 +260,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
             if (response.ok) {
                 const data = await response.json();
                 if (data.status === 1) {
-                    const product = data.product;
+                    const { product } = data;
                     const foodInfo: MusclogApiFoodInfoType = {
                         productTitle: product.product_name || t('unknown_food'),
                         kcal: product.nutriments['energy-kcal_100g'] || 0,

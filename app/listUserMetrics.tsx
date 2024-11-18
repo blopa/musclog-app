@@ -336,7 +336,7 @@ export default function ListUserMetrics({ navigation }: { navigation: Navigation
                     contentContainerStyle={styles.scrollViewContent}
                     data={filteredUserMetrics}
                     estimatedItemSize={95}
-                    keyExtractor={(item) => item?.id ? item.id.toString() : 'default'}
+                    keyExtractor={(item) => (item?.id ? item.id.toString() : 'default')}
                     onEndReached={loadMoreUserMetrics}
                     onEndReachedThreshold={0.5}
                     renderItem={({ item: metric }) => (

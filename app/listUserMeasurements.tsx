@@ -174,7 +174,7 @@ export default function ListUserMeasurements({ navigation }: { navigation: Navig
                     contentContainerStyle={styles.scrollViewContent}
                     data={filteredUserMeasurements}
                     estimatedItemSize={95}
-                    keyExtractor={(item) => item?.id ? item.id.toString() : 'default'}
+                    keyExtractor={(item) => (item?.id ? item.id.toString() : 'default')}
                     onEndReached={loadMoreUserMeasurements}
                     onEndReachedThreshold={0.5}
                     renderItem={({ item: measurement }) => (

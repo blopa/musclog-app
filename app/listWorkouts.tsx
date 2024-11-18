@@ -349,7 +349,7 @@ export default function ListWorkouts({ navigation }: { navigation: NavigationPro
                         data={filteredWorkouts}
                         estimatedItemSize={135}
                         keyExtractor={(item) =>
-                            item?.id ? item.id.toString() : 'default'
+                            (item?.id ? item.id.toString() : 'default')
                         }
                         onEndReached={loadMoreWorkouts}
                         onEndReachedThreshold={0.5}

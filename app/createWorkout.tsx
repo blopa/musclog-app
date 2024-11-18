@@ -250,7 +250,7 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
 
     const toggleExerciseSelection = (index: number) => {
         setSelectedExercises((prev) =>
-            prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
+            (prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index])
         );
     };
 
@@ -431,7 +431,7 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
             const findSupersetBounds = (index: number) => {
                 let start = index;
                 let end = index;
-                const supersetName = newWorkout[index].supersetName;
+                const { supersetName } = newWorkout[index];
 
                 if (supersetName) {
                     while (start > 0 && newWorkout[start - 1].supersetName === supersetName) {
@@ -503,7 +503,7 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
     const moveSuperset = (fromIndex: number, direction: 'up' | 'down') => {
         setWorkout((prevWorkout) => {
             const newWorkout = [...prevWorkout];
-            const supersetName = newWorkout[fromIndex].supersetName;
+            const { supersetName } = newWorkout[fromIndex];
             if (!supersetName) {
                 return newWorkout;
             }
@@ -751,9 +751,9 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                 );
                 if (remainingSupersetExercises.length < 2) {
                     newWorkout = newWorkout.map((ex) =>
-                        ex.supersetName === removedExercise.supersetName
+                        (ex.supersetName === removedExercise.supersetName
                             ? { ...ex, supersetName: null }
-                            : ex
+                            : ex)
                     );
                 }
             }

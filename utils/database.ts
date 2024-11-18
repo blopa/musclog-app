@@ -583,7 +583,7 @@ export const addUserMetrics = async (
     userMetrics: UserMetricsInsertType
 ): Promise<number> => {
     const createdAt = userMetrics.createdAt || getCurrentTimestamp();
-    let userId = userMetrics.userId;
+    let { userId } = userMetrics;
 
     try {
         if (userMetrics.dataId) {

@@ -384,7 +384,7 @@ const NutritionDetailedChart = ({
             ) : null}
             <PieChart
                 data={pieChartData}
-                shareButtonPosition={ isLastChart ? 'top' : 'bottom' }
+                shareButtonPosition={isLastChart ? 'top' : 'bottom'}
                 title={t('average_nutrition_distribution')}
             />
         </>

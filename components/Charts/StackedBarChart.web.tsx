@@ -89,7 +89,7 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
                 callbacks: {
                     label: function (context: any): string {
                         const { dataset, raw } = context;
-                        const marker = data[context.dataIndex].marker;
+                        const { marker } = data[context.dataIndex];
                         return `${dataset.label}: ${raw} (${Array.isArray(marker) ? marker.join(', ') : marker})`;
                     },
                 },

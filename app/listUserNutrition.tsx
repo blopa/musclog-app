@@ -410,7 +410,7 @@ export default function ListUserNutrition({ navigation }: { navigation: Navigati
                     contentContainerStyle={styles.scrollViewContent}
                     data={filteredUserNutrition}
                     estimatedItemSize={115}
-                    keyExtractor={(item) => item?.id ? item.id.toString() : 'default'}
+                    keyExtractor={(item) => (item?.id ? item.id.toString() : 'default')}
                     onEndReached={loadMoreUserNutrition}
                     onEndReachedThreshold={0.5}
                     renderItem={({ item: nutrition }) => (
