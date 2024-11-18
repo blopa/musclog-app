@@ -6,7 +6,6 @@ module.exports = {
         'plugin:import/recommended',
         'plugin:regexp/recommended',
         'plugin:@typescript-eslint/recommended',
-        'prettier',
     ],
     overrides: [
         {
