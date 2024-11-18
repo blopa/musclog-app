@@ -16,7 +16,7 @@ import { useFocusEffect } from 'expo-router';
 import React, { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View, StyleSheet, Platform, Dimensions, TouchableOpacity, ScrollView } from 'react-native';
-import { Appbar, TextInput, Button, Text, useTheme, Card } from 'react-native-paper';
+import { Appbar, TextInput, Button, Text, useTheme, Card, SegmentedButtons } from 'react-native-paper';
 import { TabView, TabBar } from 'react-native-tab-view';
 
 const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
@@ -51,6 +51,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const [selectedFood, setSelectedFood] = useState<FoodTrackingType | null>(null);
     const [userNutritionId, setUserNutritionId] = useState<number | null>(null);
     const [isNutritionModalVisible, setIsNutritionModalVisible] = useState<boolean>(false);
+    const [photoMode, setPhotoMode] = useState<string>('meal');
 
     // Mock data for demonstration
     const dailyGoal = {
@@ -295,20 +296,25 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     };
 
     // Handler for taking a photo
-    const handleTakePhoto = async () => {
+    const handleTakePhoto = useCallback(async () => {
         if (photoCameraRef.current) {
             try {
                 // @ts-ignore
                 const photo = await (photoCameraRef.current as typeof CameraView).takePictureAsync();
-                const macros = await estimateNutritionFromPhoto(photo.uri);
 
-                console.log(macros);
+                if (photoMode === 'meal') {
+                    const macros = await estimateNutritionFromPhoto(photo.uri);
+                    console.log(macros);
+                } else {
+                    // TODO: Implement food label recognition
+                }
+
                 setShowPhotoCamera(false);
             } catch (error) {
                 console.error('Error taking photo:', error);
             }
         }
-    };
+    }, [photoMode]);
 
     const handleFoodSearch = useCallback(() => {
         navigation.navigate('foodSearch', { initialSearchQuery: searchQuery });
@@ -325,6 +331,34 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
             <View style={styles.scannerOverlayBottom} />
         </View>
     ), [styles.focusBorder, styles.scannerFocusArea, styles.scannerOverlayBottom, styles.scannerOverlayContainer, styles.scannerOverlayMiddle, styles.scannerOverlayTop]);
+
+    const renderPhotoCameraOverlay = () => (
+        <View style={styles.photoCameraOverlay}>
+            <SegmentedButtons
+                value={photoMode}
+                onValueChange={setPhotoMode}
+                buttons={[{
+                    value: 'meal',
+                    label: t('meal'),
+                    style: { backgroundColor: photoMode === 'meal' ? colors.secondaryContainer : colors.surface },
+                },
+                {
+                    value: 'label',
+                    label: t('food_label'),
+                    style: { backgroundColor: photoMode === 'label' ? colors.secondaryContainer : colors.surface },
+                }]}
+                style={styles.segmentedButtons}
+            />
+            <View style={styles.bottomControls}>
+                <TouchableOpacity onPress={() => setShowPhotoCamera(false)} style={styles.photoCloseButton}>
+                    <Text style={styles.photoCloseText}>{t('close')}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={handleTakePhoto} style={styles.captureButton}>
+                    <FontAwesome5 name="camera" size={30} color={colors.primary} />
+                </TouchableOpacity>
+            </View>
+        </View>
+    );
 
     return (
         <View style={styles.container}>
@@ -401,14 +435,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                         style={styles.camera}
                         ref={photoCameraRef}
                     >
-                        <View style={styles.photoCameraOverlay}>
-                            <TouchableOpacity onPress={() => setShowPhotoCamera(false)} style={styles.photoCloseButton}>
-                                <Text style={styles.photoCloseText}>{t('close')}</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={handleTakePhoto} style={styles.captureButton}>
-                                <FontAwesome5 name="camera" size={30} color={colors.primary} />
-                            </TouchableOpacity>
-                        </View>
+                        {renderPhotoCameraOverlay()}
                     </CameraView>
                 </View>
             )}
@@ -434,6 +461,13 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     appbarTitle: {
         color: colors.onPrimary,
         fontSize: Platform.OS === 'web' ? 20 : 26,
+    },
+    bottomControls: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingBottom: 40,
+        paddingHorizontal: 20,
     },
     camera: {
         flex: 1,
@@ -545,14 +579,8 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         justifyContent: 'space-between',
     },
     photoCameraOverlay: {
-        alignItems: 'center',
-        bottom: 40,
-        flexDirection: 'row',
+        flex: 1,
         justifyContent: 'space-between',
-        left: 0,
-        paddingHorizontal: 20,
-        position: 'absolute',
-        right: 0,
     },
     photoCloseButton: {
         backgroundColor: colors.primary,
@@ -614,6 +642,14 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         backgroundColor: colors.surface,
         flex: 1,
         marginRight: 8,
+    },
+    segmentedButtons: {
+        alignSelf: 'center',
+        backgroundColor: 'transparent',
+        borderRadius: 8,
+        marginTop: 16,
+        paddingVertical: 8,
+        width: '90%',
     },
 });
 
