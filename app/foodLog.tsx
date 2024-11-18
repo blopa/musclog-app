@@ -312,6 +312,20 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         navigation.navigate('foodSearch', { initialSearchQuery: searchQuery });
     }, [navigation, searchQuery]);
 
+    const renderScannerOverlay = useCallback(() => (
+        <View style={styles.scannerOverlayContainer}>
+            <View style={styles.scannerOverlayTop} />
+            <View style={styles.scannerOverlayMiddle}>
+                <View style={styles.scannerOverlaySide} />
+                <View style={styles.scannerFocusArea}>
+                    <View style={styles.focusBorder} />
+                </View>
+                <View style={styles.scannerOverlaySide} />
+            </View>
+            <View style={styles.scannerOverlayBottom} />
+        </View>
+    ), [styles.focusBorder, styles.scannerFocusArea, styles.scannerOverlayBottom, styles.scannerOverlayContainer, styles.scannerOverlayMiddle, styles.scannerOverlaySide, styles.scannerOverlayTop]);
+
     return (
         <View style={styles.container}>
             <Appbar.Header mode="small" statusBarHeight={0} style={styles.appbarHeader}>
@@ -368,6 +382,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                         onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
                         ratio="16:9"
                     >
+                        {renderScannerOverlay()}
                         <View style={styles.cameraOverlay}>
                             <Button
                                 mode="contained"
@@ -465,6 +480,13 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         flex: 1,
         padding: 16,
     },
+    focusBorder: {
+        borderColor: colors.primary,
+        borderRadius: 8,
+        borderWidth: 2,
+        height: '100%',
+        width: '100%',
+    },
     foodDetails: {
         color: colors.onSurfaceVariant,
         fontSize: 12,
@@ -551,6 +573,43 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         height: 10,
         overflow: 'hidden',
     },
+    scannerFocusArea: {
+        backgroundColor: 'transparent',
+        borderRadius: 8,
+        height: '100%',
+        overflow: 'hidden',
+        width: Dimensions.get('window').width - 20,
+    },
+    scannerOverlayBottom: {
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        bottom: 0,
+        // height: (Dimensions.get('window').height / 2) - 135,
+        height: '35%',
+        position: 'absolute',
+        width: '100%',
+    },
+    scannerOverlayContainer: {
+        ...StyleSheet.absoluteFillObject,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    scannerOverlayMiddle: {
+        alignItems: 'center',
+        flexDirection: 'row',
+    },
+    scannerOverlaySide: {
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        flex: 1,
+        height: 200,
+    },
+    scannerOverlayTop: {
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        // height: (Dimensions.get('window').height / 2) - 135,
+        height: '35%',
+        position: 'absolute',
+        top: 0,
+        width: '100%',
+    },
     searchContainer: {
         alignItems: 'center',
         flexDirection: 'row',
@@ -561,7 +620,6 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         flex: 1,
         marginRight: 8,
     },
-
 });
 
 export default FoodLog;
