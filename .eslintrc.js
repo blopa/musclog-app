@@ -71,7 +71,7 @@ module.exports = {
         'prefer-destructuring': ['warn', { object: true, array: false }],
         'no-confusing-arrow': ['warn', { allowParens: true }],
         'max-len': 'off',
-        camelcase: ['error', { properties: 'always' }],
+        camelcase: 'off',
         'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'warn',
         eqeqeq: ['error', 'always'],
         'no-shadow': 'off',
