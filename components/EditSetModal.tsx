@@ -34,10 +34,9 @@ const EditSetModal = ({
     const { weightUnit } = useUnit();
 
     const handleFormatNumericText = (text: string, key: 'reps' | 'weight') => {
-        const formattedText =
-            key === 'weight'
-                ? formatFloatNumericInputText(text)
-                : formatIntegerNumericInputText(text);
+        const formattedText = key === 'weight'
+            ? formatFloatNumericInputText(text)
+            : formatIntegerNumericInputText(text);
 
         if (formattedText || !text) {
             if (key === 'weight') {

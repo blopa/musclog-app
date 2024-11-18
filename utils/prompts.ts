@@ -395,7 +395,7 @@ export const getCalculateNextWorkoutVolumePrompt = async (workout: WorkoutReturn
         }
 
         return [];
-    }
+    };
     
     return [
         {
@@ -502,7 +502,7 @@ export const getCalculateNextWorkoutVolumeFunctions = (): (FunctionDeclaration[]
 export const getParsePastWorkoutsPrompt = async (userMessage: string): Promise<OpenAI.Chat.ChatCompletionMessageParam[]> => {
     const unitSystem = await getSetting(UNIT_CHOICE_TYPE);
 
-    const weightUnit = (unitSystem || METRIC_SYSTEM) === METRIC_SYSTEM ? KILOGRAMS : POUNDS
+    const weightUnit = (unitSystem || METRIC_SYSTEM) === METRIC_SYSTEM ? KILOGRAMS : POUNDS;
 
     const existingExercises = await getAllExercises();
 

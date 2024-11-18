@@ -326,7 +326,7 @@ export const calculateNextWorkoutVolume = async (workout: WorkoutReturnType) => 
         console.error(e);
         return;
     }
-}
+};
 
 export const generateExerciseImage = async (exerciseName: string): Promise<string> => {
     const isImageGenerationEnabled = (await getSetting(EXERCISE_IMAGE_GENERATION_TYPE))?.value === 'true';
@@ -447,7 +447,7 @@ export const parsePastWorkouts = async (userMessage: string) => {
         console.error(e);
         return;
     }
-}
+};
 
 export const parsePastNutrition = async (userMessage: string) => {
     const apiKey = await getApiKey();
@@ -512,7 +512,7 @@ export const parsePastNutrition = async (userMessage: string) => {
         console.error(e);
         return;
     }
-}
+};
 
 export const getRecentWorkoutInsights = async (workoutEventId: number): Promise<string | undefined> => {
     const apiKey = await getApiKey();

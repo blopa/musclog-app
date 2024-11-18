@@ -140,7 +140,10 @@ export default function ListUserMeasurements({ navigation }: { navigation: Navig
         const searchLower = searchQuery.toLowerCase();
         return (
             measurement.date?.toLowerCase().includes(searchLower)
-            || Object.entries(measurement.measurements).map(([key, value]) => `${key}: ${value}`).join(', ').toLowerCase().includes(searchLower)
+            || Object.entries(measurement.measurements).map(([key, value]) => `${key}: ${value}`)
+                .join(', ')
+                .toLowerCase()
+                .includes(searchLower)
         );
     }), [userMeasurements, searchQuery]);
 

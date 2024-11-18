@@ -213,10 +213,10 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
 
     const handleSaveFitnessGoal = useCallback(async () => {
         if (
-            calories === undefined ||
-            protein === undefined ||
-            totalCarbohydrate === undefined ||
-            totalFat === undefined
+            calories === undefined
+            || protein === undefined
+            || totalCarbohydrate === undefined
+            || totalFat === undefined
         ) {
             Alert.alert(t('validation_error'), t('mandatory_fields_required'));
             return;

@@ -11,7 +11,7 @@ export const getAiApiVendor = async () => {
     }
 
     return null;
-}
+};
 
 export const sendChatMessage = async (messages: any[]) => {
     const vendor = await getAiApiVendor();
@@ -142,7 +142,7 @@ export const isValidApiKey = (key: string, vendor: string) => {
     }
 
     return false;
-}
+};
 
 export const isAllowedLocation = async (key: string, vendor: string) => {
     if (key && vendor === GEMINI_API_KEY_TYPE) {

@@ -37,7 +37,8 @@ interface HealthConnectContextValue {
 
 const data = {
     latest: {
-        date: new Date().toISOString().split('T')[0],
+        date: new Date().toISOString()
+            .split('T')[0],
         fatPercentage: undefined,
         height: undefined,
         macros: undefined,
@@ -163,7 +164,8 @@ export const getHealthConnectData = async (pageSize: number = 1000): Promise<Hea
                 pageSize: 1,
                 timeRangeFilter: {
                     ...timeRangeFilter,
-                    startTime: new Date().toISOString().split('T')[0] + 'T00:00:00.000Z',
+                    startTime: new Date().toISOString()
+                        .split('T')[0] + 'T00:00:00.000Z',
                 },
             })
         ).records
@@ -173,8 +175,7 @@ export const getHealthConnectData = async (pageSize: number = 1000): Promise<Hea
     const latestWeight = weightRecords[0]?.weight?.inKilograms;
     const latestBodyFat = bodyFatRecords[0]?.percentage;
     const latestTotalCaloriesBurned = totalCaloriesBurnedRecords[0]?.energy?.inKilocalories;
-    const dataId =
-        weightRecords[0]?.metadata?.id
+    const dataId = weightRecords[0]?.metadata?.id
         || heightRecords[0]?.metadata?.id
         || bodyFatRecords[0]?.metadata?.id
         || nutritionRecords[0]?.metadata?.id

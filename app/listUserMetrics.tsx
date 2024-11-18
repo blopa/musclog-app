@@ -180,14 +180,18 @@ export default function ListUserMetrics({ navigation }: { navigation: Navigation
     const filteredUserMetrics = useMemo(() => userMetrics.filter((metric) => {
         const searchLower = searchQuery.toLowerCase();
         return (
-            metric.eatingPhase?.toLowerCase().includes(searchLower) ||
-            metric.height?.toString().toLowerCase().includes(searchLower) ||
-            metric.weight?.toString().toLowerCase().includes(searchLower) ||
-            metric.fatPercentage?.toString().toLowerCase().includes(searchLower) ||
-            metric.date?.toLowerCase().includes(searchLower) ||
-            metric.dataId?.toLowerCase().includes(searchLower) ||
-            metric.deletedAt?.toLowerCase().includes(searchLower) ||
-            metric.userId?.toString().toLowerCase().includes(searchLower)
+            metric.eatingPhase?.toLowerCase().includes(searchLower)
+            || metric.height?.toString().toLowerCase()
+                .includes(searchLower)
+            || metric.weight?.toString().toLowerCase()
+                .includes(searchLower)
+            || metric.fatPercentage?.toString().toLowerCase()
+                .includes(searchLower)
+            || metric.date?.toLowerCase().includes(searchLower)
+            || metric.dataId?.toLowerCase().includes(searchLower)
+            || metric.deletedAt?.toLowerCase().includes(searchLower)
+            || metric.userId?.toString().toLowerCase()
+                .includes(searchLower)
         );
     }), [userMetrics, searchQuery]);
 

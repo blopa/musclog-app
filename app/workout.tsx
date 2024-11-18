@@ -397,7 +397,7 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
                     const recentWorkoutId = await addWorkoutEvent(recentWorkout);
 
                     const randomNum = Math.floor(Math.random() * 10) + 1;
-                    const genericMessageToUser = t(`great_job_on_workout_${randomNum}`)
+                    const genericMessageToUser = t(`great_job_on_workout_${randomNum}`);
 
                     if (isAiEnabled) {
                         await addNewChat({
@@ -540,7 +540,7 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
             ) : null}
         </ScrollView>
     );
-}
+};
 
 const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
     container: {

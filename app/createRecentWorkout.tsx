@@ -209,10 +209,9 @@ export default function CreateRecentWorkout({ navigation }: { navigation: Naviga
     }, [setToDeleteIndex]);
 
     const handleFormatNumericText = useCallback((set: LocalStateSetType, text: string, key: 'reps' | 'restTime' | 'weight') => {
-        const formattedText =
-            key === 'weight'
-                ? formatFloatNumericInputText(text)
-                : formatIntegerNumericInputText(text);
+        const formattedText = key === 'weight'
+            ? formatFloatNumericInputText(text)
+            : formatIntegerNumericInputText(text);
 
         if (formattedText || !text) {
             setSets((prevSets) =>

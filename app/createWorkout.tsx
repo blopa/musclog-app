@@ -565,11 +565,10 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
         return workout.reduce(
             (acc: any[], workoutWithExercisesAndSets: WorkoutWithExercisesAndSets, exerciseIndex: number) => {
                 const isSuperset = !!workoutWithExercisesAndSets.supersetName;
-                const isFirstInSuperset =
-                    isSuperset &&
-                    (exerciseIndex === 0 ||
-                        workout[exerciseIndex - 1].supersetName !==
-                        workoutWithExercisesAndSets.supersetName);
+                const isFirstInSuperset = isSuperset
+                    && (exerciseIndex === 0
+                        || workout[exerciseIndex - 1].supersetName
+                        !== workoutWithExercisesAndSets.supersetName);
 
                 if (isFirstInSuperset) {
                     acc.push(
@@ -590,8 +589,8 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                                         icon="arrow-down"
                                         onPress={() => moveSuperset(exerciseIndex, 'down')}
                                         disabled={
-                                            exerciseIndex >=
-                                            workout.length - workout.filter((ex) => ex.supersetName === workoutWithExercisesAndSets.supersetName).length
+                                            exerciseIndex
+                                            >= workout.length - workout.filter((ex) => ex.supersetName === workoutWithExercisesAndSets.supersetName).length
                                         }
                                     />
                                 </View>
@@ -622,7 +621,7 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
             : exerciseIndex !== 0;
 
         const canMoveDown = isSuperset
-            ?  workout[exerciseIndex + 1]?.supersetName === workoutWithExercisesAndSets.supersetName
+            ? workout[exerciseIndex + 1]?.supersetName === workoutWithExercisesAndSets.supersetName
             : exerciseIndex !== workout.length - 1;
 
         return (

@@ -83,7 +83,8 @@ export const getLatestHealthConnectData = async () => {
 
     const lastRunDate = await AsyncStorage.getItem(LAST_RUN_KEY);
     const lastTimeUsed = await AsyncStorage.getItem(LAST_TIME_APP_USED);
-    const today = new Date().toISOString().split('T')[0];
+    const today = new Date().toISOString()
+        .split('T')[0];
 
     if (hours >= 5 && (!lastRunDate || lastRunDate !== today)) {
         // await scheduleNextWorkout();

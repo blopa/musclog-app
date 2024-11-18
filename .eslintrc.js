@@ -46,6 +46,11 @@ module.exports = {
         '@typescript-eslint/no-explicit-any': 'off', // TODO maybe turn it on one day
         '@typescript-eslint/no-non-null-asserted-optional-chain': 'off', // TODO maybe turn it on one day
         '@typescript-eslint/no-unused-vars': ['warn', { args: 'after-used', argsIgnorePattern: '^_', vars: 'all', varsIgnorePattern: '^_' }],
+        semi: ['error', 'always'],
+        'no-multi-spaces': 'error',
+        curly: ['error', 'all'],
+        'multiline-ternary': ['off'],
+        'operator-linebreak': ['off'],
         'arrow-parens': ['warn', 'always'],
         indent: ['warn', 4, { SwitchCase: 1 }],
         'object-curly-spacing': ['warn', 'always'],

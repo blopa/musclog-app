@@ -15,7 +15,7 @@ const generateHash = (length = 32) => {
     }
 
     return result;
-}
+};
 
 const NUTRITION_TYPES = {
     FULL_DAY: 'full_day',

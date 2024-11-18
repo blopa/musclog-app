@@ -292,15 +292,20 @@ export default function ListUserNutrition({ navigation }: { navigation: Navigati
     const filteredUserNutrition = useMemo(() => userNutritions.reverse().filter((nutrition) => {
         const searchLower = searchQuery.toLowerCase();
         return (
-            nutrition.name?.toLowerCase().includes(searchLower) ||
-            nutrition.calories?.toString().toLowerCase().includes(searchLower) ||
-            nutrition.carbohydrate?.toString().toLowerCase().includes(searchLower) ||
-            nutrition.fat?.toString().toLowerCase().includes(searchLower) ||
-            nutrition.protein?.toString().toLowerCase().includes(searchLower) ||
-            nutrition.date?.toLowerCase().includes(searchLower) ||
-            nutrition.dataId?.toLowerCase().includes(searchLower) ||
-            nutrition.deletedAt?.toLowerCase().includes(searchLower) ||
-            nutrition.userId?.toString().toLowerCase().includes(searchLower)
+            nutrition.name?.toLowerCase().includes(searchLower)
+            || nutrition.calories?.toString().toLowerCase()
+                .includes(searchLower)
+            || nutrition.carbohydrate?.toString().toLowerCase()
+                .includes(searchLower)
+            || nutrition.fat?.toString().toLowerCase()
+                .includes(searchLower)
+            || nutrition.protein?.toString().toLowerCase()
+                .includes(searchLower)
+            || nutrition.date?.toLowerCase().includes(searchLower)
+            || nutrition.dataId?.toLowerCase().includes(searchLower)
+            || nutrition.deletedAt?.toLowerCase().includes(searchLower)
+            || nutrition.userId?.toString().toLowerCase()
+                .includes(searchLower)
         );
     }), [userNutritions, searchQuery]);
 

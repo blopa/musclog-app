@@ -69,7 +69,7 @@ export const getDisplayFormattedWeight = (
     }
 
     return Math.round(value * 100) / 100;
-}
+};
 
 export const getDisplayFormattedHeight = (
     value: number,
@@ -80,7 +80,7 @@ export const getDisplayFormattedHeight = (
     }
 
     return Math.round(value * 100) / 100;
-}
+};
 
 export const getSaveFormattedWeight = (
     value: number,
@@ -92,7 +92,7 @@ export const getSaveFormattedWeight = (
     }
 
     return Math.round(value * 100) / 100;
-}
+};
 
 export const getSaveFormattedHeight = (
     value: number,
@@ -103,4 +103,4 @@ export const getSaveFormattedHeight = (
     }
 
     return Math.round(value * 100) / 100;
-}
+};

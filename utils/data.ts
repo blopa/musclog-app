@@ -123,11 +123,11 @@ export const aggregateNutritionData = (data: UserNutritionDecryptedReturnType[])
             type?: string,
         }
     });
-}
+};
 
 export const isEmptyObject = (obj: any) => {
     return Object.keys(obj).length === 0;
-}
+};
 
 export const isTrendingUpwards = (data: { x: number, y: number }[]) => {
     let totalChange = 0;

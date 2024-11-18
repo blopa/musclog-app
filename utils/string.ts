@@ -34,7 +34,7 @@ export const generateHash = (length: number = 32) => {
     }
 
     return result;
-}
+};
 
 export const normalizeName = (name: string): string => {
     return name.replace(/[\s\-.]/g, '').replace(/[^a-z0-9]/gi, '').toLowerCase();
@@ -85,7 +85,7 @@ export const formatIntegerNumericInputText = (text: string) => {
 
 export const isString = (value: any): value is string => {
     return typeof value === 'string';
-}
+};
 
 export const normalizeText = (text: string): string => {
     return text

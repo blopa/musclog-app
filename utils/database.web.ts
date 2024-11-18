@@ -1170,7 +1170,9 @@ export const getTotalUpcomingWorkoutsCount = async (): Promise<number> => {
 };
 
 export const getUpcomingWorkoutsPaginated = async (offset: number, limit: number): Promise<WorkoutEventReturnType[]> => {
-    const todayDate = new Date().toISOString().split('T')[0];
+    const todayDate = new Date()
+        .toISOString()
+        .split('T')[0];
 
     return database.workoutEvents
         .where('status')
@@ -1333,7 +1335,7 @@ export const getWorkoutsPaginated = async (offset: number, limit: number, loadDe
     const workouts = await database.workouts
         .orderBy('createdAt')
         .filter((workout) => {
-            return loadDeleted || (!workout.deletedAt)
+            return loadDeleted || (!workout.deletedAt);
         })
         .offset(offset)
         .limit(limit)
@@ -1997,7 +1999,9 @@ export const dumpDatabase = async (encryptionPhrase?: string): Promise<string> =
 
             let tableData: any[];
             if (correctTableName === 'Setting') {
-                tableData = await database.table(originalTableName).where('type').noneOf(['OPENAI_API_KEY_TYPE', 'GEMINI_API_KEY_TYPE']).toArray();
+                tableData = await database.table(originalTableName).where('type')
+                    .noneOf(['OPENAI_API_KEY_TYPE', 'GEMINI_API_KEY_TYPE'])
+                    .toArray();
             } else {
                 tableData = await database.table(originalTableName).toArray();
             }

@@ -1,7 +1,9 @@
 import { MD3DarkTheme, MD3LightTheme } from 'react-native-paper';
 
 export const addTransparency = (color: string, opacity: number): string => {
-    const hexOpacity = Math.round(opacity * 255).toString(16).padStart(2, '0');
+    const hexOpacity = Math.round(opacity * 255)
+        .toString(16)
+        .padStart(2, '0');
     return `${color}${hexOpacity}`;
 };
 

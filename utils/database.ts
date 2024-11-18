@@ -1531,7 +1531,9 @@ export const getTotalUpcomingWorkoutsCount = async (): Promise<number> => {
 };
 
 export const getUpcomingWorkoutsPaginated = async (offset: number, limit: number): Promise<WorkoutEventReturnType[]> => {
-    const todayDate = new Date().toISOString().split('T')[0];
+    const todayDate = new Date()
+        .toISOString()
+        .split('T')[0];
     try {
         return database.getAllSync<WorkoutEventReturnType>(`
             SELECT * FROM "WorkoutEvent"
@@ -2766,7 +2768,10 @@ export const restoreDatabase = async (dump: string, decryptionPhrase?: string): 
 
             for (const row of tableData) {
                 // console.log('THE ROW:', row);
-                const columns = Object.keys(row).map((column) => `"${column}"`).join(', ');
+                const columns = Object.keys(row)
+                    .map((column) => `"${column}"`)
+                    .join(', ');
+
                 if (!columns) {
                     console.error(`No columns found for table ${tableName}`);
                     continue;
@@ -2856,7 +2861,8 @@ export const restoreDatabase = async (dump: string, decryptionPhrase?: string): 
                     } else {
                         return value;
                     }
-                }).join(', ');
+                })
+                    .join(', ');
 
                 if (!values) {
                     console.error(`No values found for table ${tableName}`);

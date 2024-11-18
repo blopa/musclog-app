@@ -21,11 +21,11 @@ interface HealthConnectContextValue {
 
 export const checkIsHealthConnectedPermitted = async (accessType: HealthConnectAccessType, recordTypes?: RecordType[]) => {
     return IS_PERMITTED;
-}
+};
 
 export const getHealthConnectData = async (pageSize?: number): Promise<HealthDataType> => {
     return (IS_PERMITTED ? data : []) as unknown as HealthDataType;
-}
+};
 
 const HealthConnectContext = createContext<HealthConnectContextValue>({
     checkReadIsPermitted: async (recordTypes?: RecordType[]) => IS_PERMITTED,
