@@ -362,21 +362,64 @@ export async function estimateNutritionFromPhoto(photoUri: string) {
 
     const result = await openai.chat.completions.create({
         function_call: { name: 'estimateMacros' },
-        functions: getMacrosEstimationFunctions() as OpenAI.Chat.ChatCompletionCreateParams.Function[],
+        functions: getMacrosEstimationFunctions('Estimates the macronutrients of the meal from the photo') as OpenAI.Chat.ChatCompletionCreateParams.Function[],
         messages: [{
             role: 'user',
-            content: [
-                {
-                    type: 'text',
-                    text: 'What’s in this image?',
+            content: [{
+                type: 'image_url',
+                image_url: {
+                    url: `data:image/jpeg;base64,${base64Image}`,
                 },
-                {
-                    type: 'image_url',
-                    image_url: {
-                        url: `data:image/jpeg;base64,${base64Image}`,
-                    },
+            }],
+        }],
+        model: OPENAI_MODEL,
+    });
+
+    let jsonResponse = {
+        protein: 0,
+        carbs: 0,
+        fat: 0,
+        calories: 0,
+        name: '',
+    };
+
+    try {
+        // @ts-expect-error
+        jsonResponse = JSON.parse(result?.choices?.[0]?.message?.function_call?.arguments);
+    } catch (error) {
+        console.log('Error parsing JSON response:', error);
+    }
+
+    return jsonResponse;
+}
+
+export async function extractMacrosFromLabelPhoto(photoUri: string) {
+    const apiKey = await getApiKey();
+
+    if (!apiKey) {
+        return Promise.resolve();
+    }
+
+    const openai = new OpenAI({
+        apiKey: apiKey,
+        dangerouslyAllowBrowser: true,
+    });
+
+    const base64Image = await getBase64StringFromPhotoUri(
+        await resizeImage(photoUri)
+    );
+
+    const result = await openai.chat.completions.create({
+        function_call: { name: 'estimateMacros' },
+        functions: getMacrosEstimationFunctions('Extract the macronutrients of the label from the photo') as OpenAI.Chat.ChatCompletionCreateParams.Function[],
+        messages: [{
+            role: 'user',
+            content: [{
+                type: 'image_url',
+                image_url: {
+                    url: `data:image/jpeg;base64,${base64Image}`,
                 },
-            ],
+            }],
         }],
         model: OPENAI_MODEL,
     });

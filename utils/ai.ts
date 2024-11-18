@@ -163,3 +163,15 @@ export const estimateNutritionFromPhoto = async (photo: string) => {
 
     return;
 };
+
+export const extractMacrosFromLabelPhoto = async (photo: string) => {
+    const vendor = await getAiApiVendor();
+
+    if (vendor === OPENAI_API_KEY_TYPE) {
+        return openAiFunctions.extractMacrosFromLabelPhoto(photo);
+    } else if (vendor === GEMINI_API_KEY_TYPE) {
+        return geminiFunctions.extractMacrosFromLabelPhoto(photo);
+    }
+
+    return;
+};

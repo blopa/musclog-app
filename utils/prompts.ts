@@ -606,9 +606,9 @@ export const getParsePastWorkoutsFunctions = (): (FunctionDeclaration[] | OpenAI
     }];
 };
 
-export const getMacrosEstimationFunctions = (): (FunctionDeclaration[] | OpenAI.Chat.ChatCompletionCreateParams.Function[]) => {
+export const getMacrosEstimationFunctions = (description: string): (FunctionDeclaration[] | OpenAI.Chat.ChatCompletionCreateParams.Function[]) => {
     return [{
-        description: 'Estimates the macronutrients of a meal from the photo',
+        description,
         name: 'estimateMacros',
         parameters: {
             properties: {

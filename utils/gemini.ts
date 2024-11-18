@@ -775,3 +775,8 @@ export async function estimateNutritionFromPhoto(photoUri: string) {
         return;
     }
 }
+
+export async function extractMacrosFromLabelPhoto(photoUri: string) {
+    // TODO
+    return '';
+}
