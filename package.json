@@ -46,7 +46,7 @@
         "@react-navigation/core": "7.0.3",
         "@react-navigation/drawer": "7.0.5",
         "@react-navigation/native": "7.0.3",
-        "@sentry/react-native": "5.35.0",
+        "@sentry/react-native": "6.2.0",
         "@shopify/flash-list": "1.7.2",
         "chart.js": "4.4.6",
         "crypto-js": "4.2.0",
