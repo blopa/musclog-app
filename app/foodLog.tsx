@@ -5,8 +5,9 @@ import ThemedCard from '@/components/ThemedCard';
 import { MEAL_TYPE } from '@/constants/nutrition';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { getUserNutritionBetweenDates } from '@/utils/database';
+import { fetchProductByEAN } from '@/utils/fetchFoodData';
 import { safeToFixed } from '@/utils/string';
-import { MusclogApiFoodInfoType, UserNutritionDecryptedReturnType } from '@/utils/types';
+import { UserNutritionDecryptedReturnType } from '@/utils/types';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { NavigationProp } from '@react-navigation/native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
@@ -253,38 +254,6 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
             labelStyle={{ color: colors.onSurface }}
         />
     );
-
-    const fetchProductByEAN = async (ean: string) => {
-        try {
-            const response = await fetch(`https://world.openfoodfacts.org/api/v0/product/${ean}.json`);
-            if (response.ok) {
-                const data = await response.json();
-                if (data.status === 1) {
-                    const { product } = data;
-                    const foodInfo: MusclogApiFoodInfoType = {
-                        productTitle: product.product_name || t('unknown_food'),
-                        kcal: product.nutriments['energy-kcal_100g'] || 0,
-                        protein: product.nutriments['proteins_100g'] || 0,
-                        carbs: product.nutriments['carbohydrates_100g'] || 0,
-                        fat: product.nutriments['fat_100g'] || 0,
-                        ean: product.code,
-                    };
-
-                    return foodInfo;
-                } else {
-                    alert(t('food_not_found'));
-                    return null;
-                }
-            } else {
-                alert(t('error_fetching_food'));
-                return null;
-            }
-        } catch (error) {
-            console.error('Error fetching product:', error);
-            alert(t('error_fetching_food'));
-            return null;
-        }
-    };
 
     const handleBarCodeScanned = async ({ type, data }: BarcodeScanningResult) => {
         setScanned(true);

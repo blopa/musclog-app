@@ -2,7 +2,8 @@ import FoodTrackingModal from '@/components/FoodTrackingModal';
 import ThemedCard from '@/components/ThemedCard';
 import { ICON_SIZE } from '@/constants/ui';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
-import { MusclogApiFoodInfoType, PaginatedOpenFoodFactsApiFoodInfoType, PaginatedOpenFoodFactsApiFoodProductInfoType } from '@/utils/types';
+import { fetchFoodData } from '@/utils/fetchFoodData';
+import { MusclogApiFoodInfoType } from '@/utils/types';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { NavigationProp, useRoute } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
@@ -31,35 +32,6 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const [selectedFood, setSelectedFood] = useState<MusclogApiFoodInfoType | null>(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
 
-    const fetchFoodData = useCallback(async (query: string, page: number) => {
-        try {
-            const response = await fetch(
-                `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&page=${page}&search_simple=1&json=1`
-            );
-
-            if (response.ok) {
-                const data: PaginatedOpenFoodFactsApiFoodInfoType = await response.json();
-                return {
-                    products: data.products.map((f: PaginatedOpenFoodFactsApiFoodProductInfoType) => ({
-                        productTitle: f.product_name,
-                        kcal: f.nutriments['energy-kcal_100g'] || 0,
-                        protein: f.nutriments['proteins_100g'] || 0,
-                        carbs: f.nutriments['carbohydrates_100g'] || 0,
-                        fat: f.nutriments['fat_100g'] || 0,
-                        ean: f.code,
-                    })),
-                    pageCount: data.page_count,
-                };
-            } else {
-                console.error('Failed to fetch food items:', response.statusText);
-                return { products: [], pageCount: 1 };
-            }
-        } catch (error) {
-            console.error('Error fetching food items:', error);
-            return { products: [], pageCount: 1 };
-        }
-    }, []);
-
     useEffect(() => {
         const loadInitialData = async () => {
             setIsLoading(true);
@@ -74,7 +46,7 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
         if (initialSearchQuery) {
             loadInitialData();
         }
-    }, [initialSearchQuery, fetchFoodData]);
+    }, [initialSearchQuery]);
 
     const handleSearch = useCallback(async () => {
         setIsLoading(true);
@@ -86,7 +58,7 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
         setTotalPages(pageCount);
 
         setIsLoading(false);
-    }, [fetchFoodData, searchQuery]);
+    }, [searchQuery]);
 
     const loadMoreResults = useCallback(async () => {
         if (currentPage >= totalPages || isLoading) {
@@ -107,7 +79,7 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
         } finally {
             setIsLoading(false);
         }
-    }, [currentPage, totalPages, isLoading, fetchFoodData, searchQuery]);
+    }, [currentPage, totalPages, isLoading, searchQuery]);
 
     const handleAddFood = useCallback((food: MusclogApiFoodInfoType) => {
         setSelectedFood(food);
