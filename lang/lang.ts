@@ -6,7 +6,7 @@ import {
     enUS as localeEnUS,
     es as localeEs,
     nl as localeNl,
-    ptBR as localePtBR
+    ptBR as localePtBR,
 } from 'date-fns/locale';
 import * as Localization from 'expo-localization';
 import i18n from 'i18next';

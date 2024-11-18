@@ -10,7 +10,7 @@ import {
     HealthConnectBodyFatRecordData,
     HealthConnectHeightRecord,
     HealthConnectWeightRecord,
-    UserMetricsInsertType
+    UserMetricsInsertType,
 } from '@/utils/types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';

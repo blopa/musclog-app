@@ -19,7 +19,7 @@ export const CustomLightTheme = {
             level2: '#EEEEEE',
             level3: '#E0E0E0',
             level4: '#BDBDBD',
-            level5: '#9E9E9E'
+            level5: '#9E9E9E',
         },
         error: '#D32F2F',
         errorContainer: '#FFCDD2',
@@ -55,7 +55,7 @@ export const CustomLightTheme = {
         surfaceVariant: '#E0E0E0',
         tertiary: '#FF7043',
         tertiaryContainer: '#FFCCBC',
-    }
+    },
 } as const;
 
 export const CustomDarkTheme = {
@@ -70,7 +70,7 @@ export const CustomDarkTheme = {
             level2: '#2C2C2C',
             level3: '#3A3A3A',
             level4: '#484848',
-            level5: '#565656'
+            level5: '#565656',
         },
         error: '#EF5350',
         errorContainer: '#FFEBEE',
@@ -106,7 +106,7 @@ export const CustomDarkTheme = {
         surfaceVariant: '#424242',
         tertiary: '#FF7043',
         tertiaryContainer: '#FFCCBC',
-    }
+    },
 } as const;
 
 type CustomLightThemeType = typeof CustomLightTheme;

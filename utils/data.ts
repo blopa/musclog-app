@@ -23,7 +23,7 @@ export const calculateTDEE = (
     initialWeight: number,
     finalWeight: number,
     initialFatPercentage?: number,
-    finalFatPercentage?: number,
+    finalFatPercentage?: number
 ) => {
     const weightDifference = finalWeight - initialWeight;
 
@@ -291,7 +291,7 @@ export function calculateUserMetricsNutritionWeeklyAverages(
 
         return {
             totalDays: sortedData.length,
-            weeklyAverages
+            weeklyAverages,
         };
     }
 
@@ -343,7 +343,7 @@ export function calculateUserMetricsNutritionWeeklyAverages(
 
     return {
         totalDays: sortedData.length,
-        weeklyAverages
+        weeklyAverages,
     };
 }
 

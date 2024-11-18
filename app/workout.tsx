@@ -30,7 +30,7 @@ import {
     getUserNutritionFromDate,
     getWorkoutById,
     updateSet,
-    updateWorkoutSetsVolume
+    updateWorkoutSetsVolume,
 } from '@/utils/database';
 import { generateHash } from '@/utils/string';
 import {
@@ -308,7 +308,7 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
                         if (!exercise) {
                             exercise = {
                                 exerciseId: item.exerciseId!,
-                                sets: []
+                                sets: [],
                             };
 
                             exerciseData.push(exercise);
@@ -338,10 +338,9 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
                     if (isPermitted) {
                         const healthData = await getHealthData(1000, ['Nutrition']);
                         if (healthData) {
-                            const todaysNutrition =
-                                healthData.nutritionRecords!.filter(
-                                    ({ startTime }) => startTime.startsWith(new Date().toISOString().split('T')[0])
-                                );
+                            const todaysNutrition = healthData.nutritionRecords!.filter(
+                                ({ startTime }) => startTime.startsWith(new Date().toISOString().split('T')[0])
+                            );
 
                             for (const nutrition of todaysNutrition) {
                                 await addUserNutrition({

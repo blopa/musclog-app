@@ -170,7 +170,7 @@ fs.readdir(localesDir, (err, files) => {
                 .replace('AVAILABLE_LANGUAGES.includes(locale.languageTag)', 'AVAILABLE_LANGUAGES.includes(locale.languageTag as LanguageKeys)'),
             '',
             'export default i18n;',
-            ''
+            '',
         ].join('\n');
 
         // Run ESLint on the generated output

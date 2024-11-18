@@ -3,7 +3,7 @@ import ThemedModal from '@/components/ThemedModal';
 import {
     CURRENT_WORKOUT_ID,
     IMPERIAL_SYSTEM,
-    KILOGRAMS
+    KILOGRAMS,
 } from '@/constants/storage';
 import useUnit from '@/hooks/useUnit';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';

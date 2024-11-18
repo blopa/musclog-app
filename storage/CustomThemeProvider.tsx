@@ -41,7 +41,7 @@ export const CustomThemeProvider: React.FC<CustomThemeProviderProps> = ({ childr
         <CustomThemeContext.Provider
             value={{
                 setTheme,
-                theme: effectiveTheme
+                theme: effectiveTheme,
                 // theme: DARK,
             }}
         >

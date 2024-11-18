@@ -36,7 +36,7 @@ export default function ListUserMeasurements({ navigation }: { navigation: Navig
                     ...prevState,
                     ...loadedUserMeasurements.filter(
                         (data) => !prevState.some((prevData) => prevData.id === data.id)
-                    )
+                    ),
                 ];
 
                 combinedData.sort((a, b) => {
@@ -216,7 +216,7 @@ export default function ListUserMeasurements({ navigation }: { navigation: Navig
                     onClose={handleDeleteCancel}
                     onConfirm={handleDeleteConfirmation}
                     title={t('delete_confirmation_generic', {
-                        title: userMeasurements.find((measurement) => measurement.id === measurementToDelete)?.userId
+                        title: userMeasurements.find((measurement) => measurement.id === measurementToDelete)?.userId,
                     })}
                     visible={isDeleteModalVisible}
                 />

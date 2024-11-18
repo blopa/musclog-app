@@ -60,7 +60,7 @@ const createTables = (database: SQLiteDatabase) => {
             "'createdAt' TEXT DEFAULT CURRENT_TIMESTAMP",
             "'deletedAt' TEXT NULLABLE",
         ],
-        name: 'Exercise'
+        name: 'Exercise',
     },
     {
         columns: [
@@ -116,7 +116,7 @@ const createTables = (database: SQLiteDatabase) => {
             "'riboflavin' REAL NULLABLE DEFAULT 0",
             "'potassium' REAL NULLABLE DEFAULT 0",
         ],
-        name: 'Food'
+        name: 'Food',
     },
     {
         columns: [
@@ -135,7 +135,7 @@ const createTables = (database: SQLiteDatabase) => {
             "'createdAt' TEXT DEFAULT CURRENT_TIMESTAMP",
             "'deletedAt' TEXT NULLABLE",
         ],
-        name: 'FitnessGoals'
+        name: 'FitnessGoals',
     },
     {
         columns: [
@@ -152,7 +152,7 @@ const createTables = (database: SQLiteDatabase) => {
             "'createdAt' TEXT DEFAULT CURRENT_TIMESTAMP",
             "'deletedAt' TEXT NULLABLE",
         ],
-        name: 'Set'
+        name: 'Set',
     },
     {
         columns: [
@@ -164,7 +164,7 @@ const createTables = (database: SQLiteDatabase) => {
             "'createdAt' TEXT DEFAULT CURRENT_TIMESTAMP",
             "'deletedAt' TEXT NULLABLE",
         ],
-        name: 'Workout'
+        name: 'Workout',
     },
     {
         columns: [
@@ -178,7 +178,7 @@ const createTables = (database: SQLiteDatabase) => {
             "'createdAt' TEXT DEFAULT CURRENT_TIMESTAMP",
             "'deletedAt' TEXT NULLABLE",
         ],
-        name: 'User'
+        name: 'User',
     },
     {
         columns: [
@@ -190,7 +190,7 @@ const createTables = (database: SQLiteDatabase) => {
             "'createdAt' TEXT DEFAULT CURRENT_TIMESTAMP",
             "'deletedAt' TEXT NULLABLE",
         ],
-        name: 'Chat'
+        name: 'Chat',
     },
     {
         columns: [
@@ -218,7 +218,7 @@ const createTables = (database: SQLiteDatabase) => {
             "'fiber' REAL",
             "'calories' REAL",
         ],
-        name: 'WorkoutEvent'
+        name: 'WorkoutEvent',
     },
     {
         columns: [
@@ -228,7 +228,7 @@ const createTables = (database: SQLiteDatabase) => {
             "'createdAt' TEXT DEFAULT CURRENT_TIMESTAMP",
             "'deletedAt' TEXT NULLABLE",
         ],
-        name: 'Setting'
+        name: 'Setting',
     },
     {
         columns: [
@@ -237,14 +237,14 @@ const createTables = (database: SQLiteDatabase) => {
             "'createdAt' TEXT DEFAULT CURRENT_TIMESTAMP",
             "'deletedAt' TEXT NULLABLE",
         ],
-        name: 'Bio'
+        name: 'Bio',
     },
     {
         columns: [
             "'id' INTEGER PRIMARY KEY AUTOINCREMENT",
             "'version' INTEGER",
         ],
-        name: 'Versioning'
+        name: 'Versioning',
     },
     {
         columns: [
@@ -257,7 +257,7 @@ const createTables = (database: SQLiteDatabase) => {
             "'createdAt' TEXT DEFAULT CURRENT_TIMESTAMP",
             "'deletedAt' TEXT NULLABLE",
         ],
-        name: 'UserMeasurements'
+        name: 'UserMeasurements',
     },
     {
         columns: [
@@ -267,7 +267,7 @@ const createTables = (database: SQLiteDatabase) => {
             "'createdAt' TEXT DEFAULT CURRENT_TIMESTAMP",
             "'deletedAt' TEXT NULLABLE",
         ],
-        name: 'OneRepMax'
+        name: 'OneRepMax',
     },
     {
         columns: [
@@ -283,7 +283,7 @@ const createTables = (database: SQLiteDatabase) => {
             "'createdAt' TEXT DEFAULT CURRENT_TIMESTAMP",
             "'deletedAt' TEXT NULLABLE",
         ],
-        name: 'UserMetrics'
+        name: 'UserMetrics',
     },
     {
         columns: [
@@ -311,7 +311,7 @@ const createTables = (database: SQLiteDatabase) => {
             "'createdAt' TEXT DEFAULT CURRENT_TIMESTAMP",
             "'deletedAt' TEXT NULLABLE",
         ],
-        name: 'UserNutrition'
+        name: 'UserNutrition',
     }];
 
     const createTableStatements = tables.map(
@@ -320,7 +320,7 @@ const createTables = (database: SQLiteDatabase) => {
 
     database.execSync([
         'PRAGMA journal_mode = WAL;',
-        createTableStatements
+        createTableStatements,
     ].join('\n'));
 };
 
@@ -726,7 +726,7 @@ export const addFood = async (food: FoodInsertType): Promise<number> => {
         food.alcohol || 0,
         food.fiber || 0,
         food.sugar || 0,
-        createdAt,
+        createdAt
         );
 
         return result.lastInsertRowId;
@@ -753,7 +753,7 @@ export const addFitnessGoals = async (fitnessGoals: FitnessGoalsInsertType): Pro
         fitnessGoals.bodyFat || 0,
         fitnessGoals.bmi || 0,
         fitnessGoals.ffmi || 0,
-        createdAt,
+        createdAt
         );
 
         return result.lastInsertRowId;
@@ -2117,7 +2117,7 @@ export const updateUserMeasurements = async (id: number, userMeasurements: UserM
                 JSON.stringify(userMeasurements.measurements || existingUserMeasurements?.measurements || {}),
                 userMeasurements.source || existingUserMeasurements?.source || USER_METRICS_SOURCES.USER_INPUT,
                 userMeasurements.userId || existingUserMeasurements?.userId || 1,
-                id
+                id,
             ]
         );
 
@@ -2138,7 +2138,7 @@ export const updateExercise = async (id: number, exercise: ExerciseInsertType): 
             exercise.type || existingExercise?.type || '',
             exercise.description || existingExercise?.description || '',
             exercise.image || existingExercise?.image || '',
-            id
+            id,
         ]
     );
 
@@ -2160,7 +2160,7 @@ export const updateSet = async (id: number, set: SetInsertType): Promise<number>
             set.workoutId || existingSet?.workoutId || 0,
             set.setOrder || existingSet?.setOrder || 0,
             set.supersetName || existingSet?.supersetName || '',
-            id
+            id,
         ]
     );
 
@@ -2198,7 +2198,7 @@ const updateUser = async (id: number, user: UserInsertType): Promise<number> => 
                 user.activityLevel || existingUser?.activityLevel || '',
                 user.gender || existingUser?.gender || '',
                 user.liftingExperience || existingUser?.liftingExperience || '',
-                id
+                id,
             ]
         );
 
@@ -2222,7 +2222,7 @@ export const updateUserMetrics = async (id: number, userMetrics: UserMetricsInse
                 userMetrics.dataId || existingUserMetrics?.dataId || generateHash(),
                 userMetrics.userId || existingUserMetrics?.userId || 0,
                 userMetrics.date || existingUserMetrics?.date || '',
-                id
+                id,
             ]
         );
 
@@ -2244,7 +2244,7 @@ export const updateWorkout = async (id: number, workout: WorkoutInsertType): Pro
                 workout.recurringOnWeek || '',
                 workout.volumeCalculationType || existingWorkout?.volumeCalculationType || '',
                 workout.description || existingWorkout?.description || '',
-                id
+                id,
             ]
         );
 
@@ -2290,7 +2290,7 @@ export const updateUserNutrition = async (id: number, userNutrition: UserNutriti
                 userNutrition.date || existingUserNutrition?.date || getCurrentTimestamp(),
                 userNutrition.type || existingUserNutrition?.type || NUTRITION_TYPES.MEAL,
                 userNutrition.source || existingUserNutrition?.source || USER_METRICS_SOURCES.USER_INPUT,
-                id
+                id,
             ]
         );
 
@@ -2338,7 +2338,7 @@ export const updateWorkoutEvent = async (
             workoutEvent.fiber || existingWorkoutEvent.fiber || 0,
             workoutEvent.createdAt || existingWorkoutEvent.createdAt || getCurrentTimestamp(),
             workoutEvent.deletedAt || existingWorkoutEvent.deletedAt || null,
-            id
+            id,
         ]
         );
 
@@ -2367,7 +2367,7 @@ export const updateFood = async (id: number, food: FoodInsertType): Promise<numb
                 food.createdAt || existingFood?.createdAt || 0,
                 food.deletedAt || existingFood?.deletedAt || 0,
                 food.dataId || existingFood?.dataId || generateHash(),
-                id
+                id,
             ]
         );
 
@@ -3080,7 +3080,7 @@ export const createNewWorkoutTables = async (): Promise<void> => {
                     workout.volumeCalculationType,
                     workout.recurringOnWeek || '',
                     workout.createdAt || getCurrentTimestamp(),
-                    workout.deletedAt || '',
+                    workout.deletedAt || ''
                 );
 
                 // Map old workoutId to new workoutId
@@ -3128,7 +3128,7 @@ export const createNewWorkoutTables = async (): Promise<void> => {
                             set.deletedAt || null,
                             workoutResult.lastInsertRowId,
                             setOrder++,
-                            set.supersetName,
+                            set.supersetName
                         );
 
                         setIdMapping[set.id] = setResult.lastInsertRowId;

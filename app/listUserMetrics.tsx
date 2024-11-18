@@ -65,7 +65,7 @@ export default function ListUserMetrics({ navigation }: { navigation: Navigation
                     ...prevState,
                     ...loadedUserMetrics.filter(
                         (data) => !prevState.some((prevData) => prevData.id === data.id)
-                    )
+                    ),
                 ];
 
                 combinedData.sort((a, b) => {
@@ -450,7 +450,7 @@ export default function ListUserMetrics({ navigation }: { navigation: Navigation
                     onClose={handleDeleteCancel}
                     onConfirm={handleDeleteConfirmation}
                     title={t('delete_confirmation_generic', {
-                        title: userMetrics.find((metric) => metric.id === metricToDelete)?.userId
+                        title: userMetrics.find((metric) => metric.id === metricToDelete)?.userId,
                     })}
                     visible={isDeleteModalVisible}
                 />

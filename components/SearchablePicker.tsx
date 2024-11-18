@@ -222,7 +222,7 @@ const makeStyles = (colors: CustomThemeColorsType) => StyleSheet.create({
         height: 55,
         marginBottom: 8,
         paddingHorizontal: 10,
-    }
+    },
 });
 
 export default SearchablePicker;

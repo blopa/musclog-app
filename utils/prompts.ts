@@ -5,7 +5,7 @@ import {
     METRIC_SYSTEM,
     OUNCES,
     POUNDS,
-    UNIT_CHOICE_TYPE
+    UNIT_CHOICE_TYPE,
 } from '@/constants/storage';
 import i18n, { EN_US } from '@/lang/lang';
 import { aggregateNutritionData } from '@/utils/data';
@@ -75,14 +75,14 @@ export const getSendChatMessageFunctions = (): (FunctionDeclaration[] | OpenAI.C
 };
 
 export const getUserDetailsPrompt = (user: UserWithMetricsType | undefined, weightUnit = KILOGRAMS) => {
-    return `The user ${user?.metrics.eatingPhase ? `is currently ${user.metrics.eatingPhase}` : 'is using this workout logger app'}` +
-        `${user?.birthday ? ` and their age is ${Math.floor((new Date().getTime() - new Date(user.birthday).getTime()) / 3.15576e+10)}` : ''}` +
-        `${user?.gender ? ` and their gender is ${user.gender}` : ''}.` +
-        `${user?.fitnessGoals ? ` and their fitness goal is "${user.fitnessGoals}"` : ''}` +
-        `${user?.activityLevel ? ` and their activity level is "${i18n.t(user.activityLevel)}"` : ''}` +
-        `${user?.liftingExperience ? ` and their lifting experience is "${i18n.t(user.liftingExperience)}"` : ''}` +
-        `${user?.metrics.weight ? ` and their weight is ${safeToFixed(user.metrics.weight)}${weightUnit}` : ''}.` +
-        `${user?.metrics.fatPercentage ? ` and their estimated fat percentage is ${safeToFixed(user.metrics.fatPercentage)}%` : ''}.`;
+    return `The user ${user?.metrics.eatingPhase ? `is currently ${user.metrics.eatingPhase}` : 'is using this workout logger app'}`
+        + `${user?.birthday ? ` and their age is ${Math.floor((new Date().getTime() - new Date(user.birthday).getTime()) / 3.15576e+10)}` : ''}`
+        + `${user?.gender ? ` and their gender is ${user.gender}` : ''}.`
+        + `${user?.fitnessGoals ? ` and their fitness goal is "${user.fitnessGoals}"` : ''}`
+        + `${user?.activityLevel ? ` and their activity level is "${i18n.t(user.activityLevel)}"` : ''}`
+        + `${user?.liftingExperience ? ` and their lifting experience is "${i18n.t(user.liftingExperience)}"` : ''}`
+        + `${user?.metrics.weight ? ` and their weight is ${safeToFixed(user.metrics.weight)}${weightUnit}` : ''}.`
+        + `${user?.metrics.fatPercentage ? ` and their estimated fat percentage is ${safeToFixed(user.metrics.fatPercentage)}%` : ''}.`;
 };
 
 const workoutEventsToCsvTable = async (workouts: WorkoutEventReturnType[]) => {
@@ -174,7 +174,7 @@ export const getWorkoutInsightsPrompt = async (workoutId: number): Promise<OpenA
         {
             content: [
                 `Please provide insights about my upcoming "${workoutWithDetails?.title}" workout:`,
-                '```json\n' + JSON.stringify(workoutWithDetails) + '\n```'
+                '```json\n' + JSON.stringify(workoutWithDetails) + '\n```',
             ].join('\n'),
             role: 'user',
         },
@@ -200,7 +200,7 @@ export const getWorkoutVolumeInsightsPrompt = async (workoutId: number): Promise
         {
             content: [
                 'Please provide insights about my past workouts:',
-                '```json\n' + JSON.stringify(sortedWorkouts) + '\n```'
+                '```json\n' + JSON.stringify(sortedWorkouts) + '\n```',
             ].join('\n'),
             role: 'user',
         },
@@ -230,12 +230,12 @@ const generateWorkoutSentences = async (workouts: WorkoutEventReturnType[]) => {
             exercises += `\n${exercise?.name || 'Unknown exercise'}: ${sets.join(', ')}`;
         }
 
-        const sentence = `on ${new Date(workout.date).toLocaleDateString()} it lasted ${workout.duration} minutes` +
-            ', with the following exercises: ' +
-            exercises +
-            `${workout.bodyWeight ? `, their body weight was ${workout.bodyWeight}${weightUnit}` : ''}` +
-            `${workout.fatPercentage ? `, their fat percentage was ${workout.fatPercentage}%` : ''}` +
-            `${workout.eatingPhase ? `, and they were in the ${workout.eatingPhase} phase` : ''}`.replace(/,\s*$/, '');
+        const sentence = `on ${new Date(workout.date).toLocaleDateString()} it lasted ${workout.duration} minutes`
+            + ', with the following exercises: '
+            + exercises
+            + `${workout.bodyWeight ? `, their body weight was ${workout.bodyWeight}${weightUnit}` : ''}`
+            + `${workout.fatPercentage ? `, their fat percentage was ${workout.fatPercentage}%` : ''}`
+            + `${workout.eatingPhase ? `, and they were in the ${workout.eatingPhase} phase` : ''}`.replace(/,\s*$/, '');
 
         sentences.push(sentence);
     }
@@ -390,7 +390,7 @@ export const getCalculateNextWorkoutVolumePrompt = async (workout: WorkoutReturn
                 '# Volume Calculation',
                 "- Please, calculate the volume for the next workout, this doesn't necessarily mean that reps and/or weights must be increased. Base it on past workouts to see if the volume should be increased or not.",
                 '- The `workoutVolume` is calculated using an average of Epley, Brzycki, Lander, Lombardi, Mayhew, OConner, and Wathan formulas.',
-                '\nAlso explain how and why the volume was calculated for the next workout.'
+                '\nAlso explain how and why the volume was calculated for the next workout.',
             ];
         }
 
@@ -435,7 +435,7 @@ export const getCalculateNextWorkoutVolumePrompt = async (workout: WorkoutReturn
                     };
                 })),
                 '```',
-                '\nAlso explain how the volume was calculated for the next workout.'
+                '\nAlso explain how the volume was calculated for the next workout.',
                 // 'If the user is bulking, increase the volume by at least 10%', // TODO: this is for debugging only
             ].join('\n'),
             role: 'system',

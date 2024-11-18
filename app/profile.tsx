@@ -292,7 +292,7 @@ const Profile = ({ navigation }: { navigation: NavigationProp<any> }) => {
                             <CustomPicker
                                 items={[
                                     { label: t('none'), value: '' },
-                                    ...Object.values(EATING_PHASES).map((phase) => ({ label: t(phase), value: phase }))
+                                    ...Object.values(EATING_PHASES).map((phase) => ({ label: t(phase), value: phase })),
                                 ]}
                                 label={t('eating_phase')}
                                 onValueChange={(value) => setEatingPhase(value as EatingPhaseType)}

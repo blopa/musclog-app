@@ -327,14 +327,13 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
             { label: t('fat'), value: totalFat || 0, color: '#FFCE56' },
         ];
 
-        const activeMacroValue =
-            activeMacro === 'calories'
-                ? calories
-                : activeMacro === 'protein'
-                    ? protein
-                    : activeMacro === 'carbs'
-                        ? totalCarbohydrate
-                        : totalFat;
+        const activeMacroValue = activeMacro === 'calories'
+            ? calories
+            : activeMacro === 'protein'
+                ? protein
+                : activeMacro === 'carbs'
+                    ? totalCarbohydrate
+                    : totalFat;
 
         return (
             <ScrollView contentContainerStyle={styles.flexContainer}>

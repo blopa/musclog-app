@@ -41,7 +41,7 @@ async function createCalendarEvent(workout: WorkoutEventReturnType, onSuccess: C
 
         createEvent({
             ...event,
-            start: [new Date(event.start).getFullYear(), new Date(event.start).getMonth() + 1, new Date(event.start).getDate()]
+            start: [new Date(event.start).getFullYear(), new Date(event.start).getMonth() + 1, new Date(event.start).getDate()],
         }, (error, value) => {
             if (error) {
                 console.error(error);
@@ -116,7 +116,7 @@ export default function UpcomingWorkouts({ navigation }: { navigation: Navigatio
                     ...prevState,
                     ...loadedWorkouts.filter(
                         (data) => !prevState.some((prevData) => prevData.id === data.id)
-                    )
+                    ),
                 ];
 
                 combinedData.sort((a, b) => {

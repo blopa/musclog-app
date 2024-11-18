@@ -12,7 +12,7 @@ import {
     getWorkoutEvent,
     getWorkoutWithExercisesRepsAndSetsDetails,
     getWorkoutsPaginated,
-    updateWorkoutEvent
+    updateWorkoutEvent,
 } from '@/utils/database';
 import { formatFloatNumericInputText, formatIntegerNumericInputText } from '@/utils/string';
 import { ExerciseVolumeSetType, ExerciseVolumeType, WorkoutEventInsertType, WorkoutReturnType } from '@/utils/types';
@@ -273,7 +273,7 @@ export default function CreateRecentWorkout({ navigation }: { navigation: Naviga
                 } else {
                     acc.push({
                         exerciseId: set.exerciseId,
-                        sets: [setObject]
+                        sets: [setObject],
                     });
                 }
 

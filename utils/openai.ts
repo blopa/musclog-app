@@ -20,7 +20,7 @@ import {
     getRecentWorkoutInsightsPrompt,
     getSendChatMessageFunctions,
     getWorkoutInsightsPrompt,
-    getWorkoutVolumeInsightsPrompt
+    getWorkoutVolumeInsightsPrompt,
 } from './prompts';
 
 const OPENAI_MODEL = 'gpt-4o-mini';

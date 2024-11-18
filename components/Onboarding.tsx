@@ -74,7 +74,7 @@ const Onboarding = ({ onFinish }: OnboardingProps) => {
         liftingExperience: '',
         name: '',
         unitSystem: METRIC_SYSTEM,
-        weight: ''
+        weight: '',
     });
     const [isDatePickerVisible, setDatePickerVisible] = useState(false);
     const [showCheckPermissionButton, setShowCheckPermissionButton] = useState(false);
@@ -332,7 +332,7 @@ const Onboarding = ({ onFinish }: OnboardingProps) => {
                     <CustomPicker
                         items={[
                             { label: t('none'), value: '' },
-                            ...Object.values(EATING_PHASES).map((phase) => ({ label: t(phase), value: phase }))
+                            ...Object.values(EATING_PHASES).map((phase) => ({ label: t(phase), value: phase })),
                         ]}
                         label={t('eating_phase')}
                         onValueChange={(itemValue) => setForm({ ...form, eatingPhase: itemValue as EatingPhaseType })}

@@ -28,7 +28,7 @@ import {
     getRecentWorkoutInsightsPrompt,
     getSendChatMessageFunctions,
     getWorkoutInsightsPrompt,
-    getWorkoutVolumeInsightsPrompt
+    getWorkoutVolumeInsightsPrompt,
 } from './prompts';
 
 const GEMINI_MODEL = 'gemini-1.5-flash'; // or gemini-1.5-pro-latest
@@ -40,7 +40,7 @@ const safetySettings = [
     { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
     { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
     { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
-    { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE }
+    { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
 ];
 
 export async function sendChatMessage(messages: any[]) {
@@ -82,13 +82,13 @@ export async function sendChatMessage(messages: any[]) {
             // responseMimeType: 'application/json',
             temperature: 0.9,
             topK: 1,
-            topP: 1
+            topP: 1,
         },
         model: GEMINI_MODEL,
         safetySettings,
         systemInstruction: {
             parts: systemParts,
-            role: 'system'
+            role: 'system',
         },
         toolConfig: {
             functionCallingConfig: {
@@ -153,7 +153,7 @@ async function createWorkoutPlan(messages: any[]) {
         safetySettings,
         systemInstruction: {
             parts: systemParts,
-            role: 'system'
+            role: 'system',
         },
         toolConfig: {
             functionCallingConfig: {
@@ -171,7 +171,7 @@ async function createWorkoutPlan(messages: any[]) {
                 // maxOutputTokens: 2048,
                 temperature: 0.9,
                 topK: 1,
-                topP: 1
+                topP: 1,
             },
         } as GenerateContentRequest);
 
@@ -210,15 +210,15 @@ export async function getNutritionInsights(startDate: string): Promise<string | 
         safetySettings,
         systemInstruction: {
             parts: systemParts,
-            role: 'system'
-        }
+            role: 'system',
+        },
     });
 
     const generationConfig = {
         // maxOutputTokens: 2048,
         temperature: 0.9,
         topK: 1,
-        topP: 1
+        topP: 1,
     };
 
     const conversationContent: Content[] = prompt
@@ -290,7 +290,7 @@ export const calculateNextWorkoutVolume = async (workout: WorkoutReturnType) => 
         safetySettings,
         systemInstruction: {
             parts: systemParts,
-            role: 'system'
+            role: 'system',
         },
         toolConfig: {
             functionCallingConfig: {
@@ -308,7 +308,7 @@ export const calculateNextWorkoutVolume = async (workout: WorkoutReturnType) => 
                 // maxOutputTokens: 2048,
                 temperature: 0.9,
                 topK: 1,
-                topP: 1
+                topP: 1,
             },
         } as GenerateContentRequest);
 
@@ -352,16 +352,16 @@ export const generateExerciseImage = async (exerciseName: string): Promise<strin
         responseMimeType: 'image/jpeg',
         temperature: 0.9,
         topK: 1,
-        topP: 1
+        topP: 1,
     };
 
     try {
         const result = await model.generateContent({
             contents: [{
                 parts: [{
-                    text: `Generate a flat design image, with only grayscale colors, showing a person performing the "${exerciseName}" exercise.`
+                    text: `Generate a flat design image, with only grayscale colors, showing a person performing the "${exerciseName}" exercise.`,
                 }],
-                role: 'user'
+                role: 'user',
             }],
             generationConfig,
         } as GenerateContentRequest);
@@ -412,7 +412,7 @@ export const parsePastWorkouts = async (userMessage: string) => {
         safetySettings,
         systemInstruction: {
             parts: systemParts,
-            role: 'system'
+            role: 'system',
         },
         toolConfig: {
             functionCallingConfig: {
@@ -430,7 +430,7 @@ export const parsePastWorkouts = async (userMessage: string) => {
                 // maxOutputTokens: 2048,
                 temperature: 0.9,
                 topK: 1,
-                topP: 1
+                topP: 1,
             },
         } as GenerateContentRequest);
 
@@ -477,7 +477,7 @@ export const parsePastNutrition = async (userMessage: string) => {
         safetySettings,
         systemInstruction: {
             parts: systemParts,
-            role: 'system'
+            role: 'system',
         },
         toolConfig: {
             functionCallingConfig: {
@@ -495,7 +495,7 @@ export const parsePastNutrition = async (userMessage: string) => {
                 // maxOutputTokens: 2048,
                 temperature: 0.9,
                 topK: 1,
-                topP: 1
+                topP: 1,
             },
         } as GenerateContentRequest);
 
@@ -533,15 +533,15 @@ export const getRecentWorkoutInsights = async (workoutEventId: number): Promise<
         safetySettings,
         systemInstruction: {
             parts: systemParts,
-            role: 'system'
-        }
+            role: 'system',
+        },
     });
 
     const generationConfig = {
         // maxOutputTokens: 2048,
         temperature: 0.9,
         topK: 1,
-        topP: 1
+        topP: 1,
     };
 
     const conversationContent: Content[] = prompt
@@ -588,15 +588,15 @@ export const getWorkoutInsights = async (workoutId: number): Promise<string | un
         safetySettings,
         systemInstruction: {
             parts: systemParts,
-            role: 'system'
-        }
+            role: 'system',
+        },
     });
 
     const generationConfig = {
         // maxOutputTokens: 2048,
         temperature: 0.9,
         topK: 1,
-        topP: 1
+        topP: 1,
     };
 
     const conversationContent: Content[] = prompt
@@ -643,15 +643,15 @@ export const getWorkoutVolumeInsights = async (workoutId: number): Promise<strin
         safetySettings,
         systemInstruction: {
             parts: systemParts,
-            role: 'system'
-        }
+            role: 'system',
+        },
     });
 
     const generationConfig = {
         // maxOutputTokens: 2048,
         temperature: 0.9,
         topK: 1,
-        topP: 1
+        topP: 1,
     };
 
     const conversationContent: Content[] = prompt
@@ -689,8 +689,8 @@ export async function isValidApiKey(apiKey: string): Promise<boolean> {
             contents: [{ parts: [{ text: 'hi' } as Part], role: 'user' }],
             generationConfig: {
                 maxOutputTokens: 1,
-                temperature: 0.5
-            }
+                temperature: 0.5,
+            },
         } as GenerateContentRequest);
 
         return true;
@@ -709,8 +709,8 @@ export async function isAllowedLocation(apiKey: string): Promise<boolean> {
             contents: [{ parts: [{ text: 'hi' } as Part], role: 'user' }],
             generationConfig: {
                 maxOutputTokens: 1,
-                temperature: 0.5
-            }
+                temperature: 0.5,
+            },
         } as GenerateContentRequest);
 
         return true;

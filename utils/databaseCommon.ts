@@ -334,7 +334,7 @@ export const getCommonFunctions = ({
 
     const processPastNutrition = async (
         parsedNutrition: ParsedPastNutrition[],
-        fullDay = true,
+        fullDay = true
     ) => {
         try {
             if (fullDay) {

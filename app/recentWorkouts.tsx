@@ -54,7 +54,7 @@ export default function RecentWorkouts() {
                     ...prevState,
                     ...loadedWorkouts.filter(
                         (data) => !prevState.some((prevData) => prevData.id === data.id)
-                    )
+                    ),
                 ];
             });
 
@@ -319,10 +319,10 @@ export default function RecentWorkouts() {
                                             restTime: 90,
                                             targetReps: 8,
                                             targetWeight: 110,
-                                            weight: 110
+                                            weight: 110,
                                         }],
-                                        type: 'compound'
-                                    }]
+                                        type: 'compound',
+                                    }],
                                 }], null, 1),
                             })}
                         </Text>

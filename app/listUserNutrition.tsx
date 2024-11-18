@@ -26,7 +26,7 @@ import {
     deleteUserNutrition,
     getTotalUserNutritionCount,
     getUserNutritionPaginated,
-    processPastNutrition
+    processPastNutrition,
 } from '@/utils/database';
 import { formatDate } from '@/utils/date';
 import { importCsv, importJson } from '@/utils/file';
@@ -47,7 +47,7 @@ import {
     Pressable,
     ScrollView,
     StyleSheet,
-    View
+    View,
 } from 'react-native';
 import { Appbar, Button, Card, Checkbox, Text, useTheme } from 'react-native-paper';
 
@@ -93,7 +93,7 @@ export default function ListUserNutrition({ navigation }: { navigation: Navigati
                     ...prevState,
                     ...loadedUserNutrition.filter(
                         (data) => !prevState.some((prevData) => prevData.id === data.id)
-                    )
+                    ),
                 ];
 
                 combinedData.sort((a, b) => {
@@ -563,7 +563,7 @@ export default function ListUserNutrition({ navigation }: { navigation: Navigati
                     onClose={handleDeleteCancel}
                     onConfirm={handleDeleteConfirmation}
                     title={t('delete_confirmation_generic', {
-                        title: userNutritions.find((nutrition) => nutrition.id === nutritionToDelete)?.name
+                        title: userNutritions.find((nutrition) => nutrition.id === nutritionToDelete)?.name,
                     })}
                     visible={isDeleteModalVisible}
                 />

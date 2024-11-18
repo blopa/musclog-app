@@ -41,7 +41,7 @@ export const getDayOfWeek = (date: Date): string => {
 export const formatDate = (date: string, formatStr = 'EEEE, MMMM do, yyyy'): string => {
     const language = i18n.language as keyof typeof LOCALE_MAP;
     return format(parseISO(date), formatStr, {
-        locale: LOCALE_MAP[language] as Locale
+        locale: LOCALE_MAP[language] as Locale,
     });
 };
 

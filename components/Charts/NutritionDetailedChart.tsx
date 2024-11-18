@@ -343,7 +343,7 @@ const NutritionDetailedChart = ({
                     </Text>
                     <Text style={styles.insightsValue}>
                         {t('value_kcal_day', {
-                            value: safeToFixed(averageCalories)
+                            value: safeToFixed(averageCalories),
                         })}
                     </Text>
                     <Text style={styles.eatingPhaseInsightTitle}>

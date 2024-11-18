@@ -137,7 +137,7 @@ const BarChart: React.FC<BarChartProps> = ({
                     onPress={shareChart}
                     style={[
                         styles.shareButton,
-                        shareButtonPosition === 'top' ? styles.sharePositionTop : styles.sharePositionBottom
+                        shareButtonPosition === 'top' ? styles.sharePositionTop : styles.sharePositionBottom,
                     ]}
                 />
             ) : null}

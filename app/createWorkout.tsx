@@ -21,7 +21,7 @@ import {
     SetInsertType,
     VolumeCalculationTypeType,
     WorkoutInsertType,
-    WorkoutReturnType
+    WorkoutReturnType,
 } from '@/utils/types';
 import { NavigationProp, useFocusEffect, useRoute } from '@react-navigation/native';
 import React, { useState, useCallback, useMemo } from 'react';
@@ -820,7 +820,7 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                             items={[
                                 {
                                     label: t('select_muscle_group'),
-                                    value: ''
+                                    value: '',
                                 },
                                 ...muscleGroups.map((group) => ({
                                     label: t(`muscle_groups.${group}`),

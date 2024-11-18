@@ -834,7 +834,7 @@ export const getAllUserMetricsByUserId = async (userId: number): Promise<UserMet
         ...userMetrics,
         fatPercentage: parseFloat(String(userMetrics.fatPercentage)),
         height: parseFloat(String(userMetrics.height)),
-        weight: parseFloat(String(userMetrics.weight))
+        weight: parseFloat(String(userMetrics.weight)),
     }));
 };
 
@@ -849,7 +849,7 @@ export const getUserMetrics = async (id: number): Promise<UserMetricsDecryptedRe
             ...userMetrics,
             fatPercentage: parseFloat(String(userMetrics.fatPercentage)),
             height: parseFloat(String(userMetrics.height)),
-            weight: parseFloat(String(userMetrics.weight))
+            weight: parseFloat(String(userMetrics.weight)),
         };
     }
     return undefined;
@@ -868,7 +868,7 @@ export const getUserMetricsPaginated = async (offset = 0, limit = 20): Promise<U
         ...userMetrics,
         fatPercentage: parseFloat(String(userMetrics.fatPercentage)),
         height: parseFloat(String(userMetrics.height)),
-        weight: parseFloat(String(userMetrics.weight))
+        weight: parseFloat(String(userMetrics.weight)),
     }));
 };
 
@@ -883,7 +883,7 @@ export const getUserMetricsBetweenDates = async (startDate: string, endDate: str
         ...userMetrics,
         fatPercentage: parseFloat(String(userMetrics.fatPercentage)),
         height: parseFloat(String(userMetrics.height)),
-        weight: parseFloat(String(userMetrics.weight))
+        weight: parseFloat(String(userMetrics.weight)),
     }));
 };
 
@@ -901,7 +901,7 @@ export const getUserMetricsFromDate = async (startDate: string): Promise<UserMet
         ...userMetrics,
         fatPercentage: parseFloat(String(userMetrics.fatPercentage)),
         height: parseFloat(String(userMetrics.height)),
-        weight: parseFloat(String(userMetrics.weight))
+        weight: parseFloat(String(userMetrics.weight)),
     }));
 };
 
@@ -918,7 +918,7 @@ export const getAllUserMetrics = async (): Promise<UserMetricsDecryptedReturnTyp
         ...userMetrics,
         fatPercentage: parseFloat(String(userMetrics.fatPercentage)),
         height: parseFloat(String(userMetrics.height)),
-        weight: parseFloat(String(userMetrics.weight))
+        weight: parseFloat(String(userMetrics.weight)),
     }));
 };
 
@@ -939,7 +939,7 @@ export const getAllUserNutrition = async (): Promise<UserNutritionDecryptedRetur
         saturatedFat: parseFloat(String(userNutrition.saturatedFat)),
         sugar: parseFloat(String(userNutrition.sugar)),
         transFat: parseFloat(String(userNutrition.transFat)),
-        unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat))
+        unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat)),
     }));
 };
 
@@ -954,7 +954,7 @@ export const getUserMetricsByDataId = async (dataId: string): Promise<UserMetric
             ...userMetrics,
             fatPercentage: parseFloat(String(userMetrics.fatPercentage)),
             height: parseFloat(String(userMetrics.height)),
-            weight: parseFloat(String(userMetrics.weight))
+            weight: parseFloat(String(userMetrics.weight)),
         };
     }
     return undefined;
@@ -971,7 +971,7 @@ export const getLatestUserMetrics = async (): Promise<UserMetricsDecryptedReturn
             ...userMetrics,
             fatPercentage: parseFloat(String(userMetrics.fatPercentage)),
             height: parseFloat(String(userMetrics.height)),
-            weight: parseFloat(String(userMetrics.weight))
+            weight: parseFloat(String(userMetrics.weight)),
         };
     }
     return undefined;
@@ -1363,7 +1363,7 @@ export const getUserNutrition = async (id: number): Promise<UserNutritionDecrypt
             saturatedFat: parseFloat(String(userNutrition.saturatedFat)),
             sugar: parseFloat(String(userNutrition.sugar)),
             transFat: parseFloat(String(userNutrition.transFat)),
-            unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat))
+            unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat)),
         };
     }
     return undefined;
@@ -1388,7 +1388,7 @@ export const getLatestUserNutritionByUserId = async (userId: number): Promise<Us
             saturatedFat: parseFloat(String(userNutrition.saturatedFat)),
             sugar: parseFloat(String(userNutrition.sugar)),
             transFat: parseFloat(String(userNutrition.transFat)),
-            unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat))
+            unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat)),
         };
     }
     return undefined;
@@ -1412,7 +1412,7 @@ export const getAllUserNutritionByUserId = async (userId: number): Promise<UserN
         saturatedFat: parseFloat(String(userNutrition.saturatedFat)),
         sugar: parseFloat(String(userNutrition.sugar)),
         transFat: parseFloat(String(userNutrition.transFat)),
-        unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat))
+        unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat)),
     }));
 };
 
@@ -1434,7 +1434,7 @@ export const getAllUserNutritionBySource = async (source: string): Promise<UserN
         saturatedFat: parseFloat(String(userNutrition.saturatedFat)),
         sugar: parseFloat(String(userNutrition.sugar)),
         transFat: parseFloat(String(userNutrition.transFat)),
-        unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat))
+        unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat)),
     }));
 };
 
@@ -1457,7 +1457,7 @@ export const getUserNutritionByDataId = async (dataId: string): Promise<UserNutr
             saturatedFat: parseFloat(String(userNutrition.saturatedFat)),
             sugar: parseFloat(String(userNutrition.sugar)),
             transFat: parseFloat(String(userNutrition.transFat)),
-            unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat))
+            unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat)),
         };
     }
     return undefined;
@@ -1484,7 +1484,7 @@ export const getUserNutritionPaginated = async (offset = 0, limit = 20, order: '
         saturatedFat: parseFloat(String(userNutrition.saturatedFat)),
         sugar: parseFloat(String(userNutrition.sugar)),
         transFat: parseFloat(String(userNutrition.transFat)),
-        unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat))
+        unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat)),
     }));
 };
 
@@ -1507,7 +1507,7 @@ export const getUserNutritionBetweenDates = async (startDate: string, endDate: s
         saturatedFat: parseFloat(String(userNutrition.saturatedFat)),
         sugar: parseFloat(String(userNutrition.sugar)),
         transFat: parseFloat(String(userNutrition.transFat)),
-        unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat))
+        unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat)),
     }));
 };
 
@@ -1533,7 +1533,7 @@ export const getUserNutritionFromDate = async (startDate: string): Promise<UserN
         saturatedFat: parseFloat(String(userNutrition.saturatedFat)),
         sugar: parseFloat(String(userNutrition.sugar)),
         transFat: parseFloat(String(userNutrition.transFat)),
-        unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat))
+        unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat)),
     }));
 };
 
@@ -1604,7 +1604,7 @@ export const updateExercise = async (id: number, exercise: ExerciseInsertType): 
         image: exercise.image || existingExercise?.image || '',
         muscleGroup: exercise.muscleGroup || existingExercise?.muscleGroup || '',
         name: exercise.name || existingExercise?.name || '',
-        type: exercise.type || existingExercise?.type || ''
+        type: exercise.type || existingExercise?.type || '',
     };
 
     return database.exercises.update(id, updatedExercise);
@@ -1632,7 +1632,7 @@ const updateUser = async (id: number, user: UserInsertType): Promise<number> => 
         fitnessGoals: user.fitnessGoals || existingUser?.fitnessGoals || '',
         gender: user.gender || existingUser?.gender || '',
         liftingExperience: (user.liftingExperience || existingUser?.liftingExperience || '') as ExperienceLevelType,
-        name: user.name || existingUser?.name || ''
+        name: user.name || existingUser?.name || '',
     };
 
     return database.users.update(id, updatedUser);
@@ -1649,7 +1649,7 @@ export const updateUserMetrics = async (id: number, userMetrics: UserMetricsInse
         height: (userMetrics.height?.toString() || existingUserMetrics?.height?.toString() || '0'),
         source: userMetrics.source || existingUserMetrics?.source || USER_METRICS_SOURCES.USER_INPUT,
         userId: userMetrics.userId || existingUserMetrics?.userId || 0,
-        weight: (userMetrics.weight?.toString() || existingUserMetrics?.weight?.toString() || '0')
+        weight: (userMetrics.weight?.toString() || existingUserMetrics?.weight?.toString() || '0'),
     } as unknown as UserMetricsInsertType;
 
     return database.userMetrics.update(id, updatedUserMetrics);
@@ -1728,7 +1728,7 @@ export const updateWorkoutEvent = async (id: number, workoutEvent: WorkoutEventI
         title: workoutEvent.title || existingWorkoutEvent?.title || '',
         workoutId: workoutEvent.workoutId,
         workoutScore: workoutEvent.workoutScore || existingWorkoutEvent?.workoutScore || 5,
-        workoutVolume: workoutEvent.workoutVolume || existingWorkoutEvent?.workoutVolume || ''
+        workoutVolume: workoutEvent.workoutVolume || existingWorkoutEvent?.workoutVolume || '',
     } as unknown as WorkoutEventInsertType;
 
     return database.workoutEvents.update(id, updatedWorkoutEvent);

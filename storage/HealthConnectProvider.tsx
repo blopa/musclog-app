@@ -6,7 +6,7 @@ import {
     HealthConnectBodyFatRecordData,
     HealthConnectWeightRecord,
     HealthDataType,
-    TotalMacrosType
+    TotalMacrosType,
 } from '@/utils/types';
 import * as IntentLauncher from 'expo-intent-launcher';
 import React, { ReactNode, createContext, useCallback, useContext, useState } from 'react';

@@ -186,7 +186,7 @@ export default function ListExercises({ navigation }: { navigation: NavigationPr
                     onClose={handleDeleteCancel}
                     onConfirm={handleDeleteConfirmation}
                     title={t('delete_exercise_confirmation', {
-                        title: exercises.find((exercise) => exercise.id === exerciseToDelete)?.name
+                        title: exercises.find((exercise) => exercise.id === exerciseToDelete)?.name,
                     })}
                     visible={isDeleteModalVisible}
                 />

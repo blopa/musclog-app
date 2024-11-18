@@ -330,10 +330,10 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
 
             if (calorieDifference !== 0) {
                 // Calculate the total "weight" of the macros based on their caloric contribution
-                const weightSum = (CALORIES_IN_CARBS * nutritionData.carbohydrate) +
-                    (CALORIES_IN_FAT * nutritionData.fat) +
-                    (CALORIES_IN_PROTEIN * nutritionData.protein) +
-                    (CALORIES_IN_FIBER * nutritionData.fiber);
+                const weightSum = (CALORIES_IN_CARBS * nutritionData.carbohydrate)
+                    + (CALORIES_IN_FAT * nutritionData.fat)
+                    + (CALORIES_IN_PROTEIN * nutritionData.protein)
+                    + (CALORIES_IN_FIBER * nutritionData.fiber);
 
                 // Distribute the calorie difference proportionally among macros
                 if (weightSum > 0) {
@@ -558,7 +558,7 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
                 const exerciseData = JSON.parse(workout?.exerciseData || '[]') as { exerciseId: number, sets: SetReturnType[] }[];
 
                 const workoutVolume = parseFloat(workout.workoutVolume || '0') || await calculateWorkoutVolume(
-                    exerciseData,
+                    exerciseData
                 ) || 0;
 
                 recentWorkoutsChartData.push({
@@ -569,8 +569,7 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
                 });
             }
 
-            const recentWorkoutsDataToShow =
-                showWeeklyAverages ? calculatePastWorkoutsWeeklyAverages(recentWorkoutsChartData) : recentWorkoutsChartData;
+            const recentWorkoutsDataToShow = showWeeklyAverages ? calculatePastWorkoutsWeeklyAverages(recentWorkoutsChartData) : recentWorkoutsChartData;
 
             const filteredRecentWorkoutsData = recentWorkoutsDataToShow.filter((workout) => workout.y);
 
@@ -781,7 +780,7 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
                 initialWeight,
                 finalWeight,
                 useFatPercentageTDEE ? initialFatPercentage : undefined,
-                useFatPercentageTDEE ? finalFatPercentage : undefined,
+                useFatPercentageTDEE ? finalFatPercentage : undefined
             );
 
             if (user?.metrics?.height) {
@@ -1120,7 +1119,7 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
                     message,
                     misc: '',
                     sender: 'assistant',
-                    type: 'text'
+                    type: 'text',
                 });
                 increaseUnreadMessages(1);
                 showSnackbar(t('your_trainer_answered'), t('see_message'), () => navigation.navigate('chat'));

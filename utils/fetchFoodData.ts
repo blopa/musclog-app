@@ -18,7 +18,7 @@ export const mapProductData = (product: PaginatedOpenFoodFactsApiFoodProductInfo
 export const fetchFoodData = async (query: string, page: number): Promise<{ products: MusclogApiFoodInfoType[], pageCount: number }> => {
     try {
         const response = await fetch(
-            `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&page=${page}&search_simple=1&json=1`,
+            `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&page=${page}&search_simple=1&json=1`
         );
 
         if (response.ok) {
@@ -44,7 +44,7 @@ export const fetchFoodData = async (query: string, page: number): Promise<{ prod
 export const fetchProductByEAN = async (ean: string): Promise<MusclogApiFoodInfoType | null> => {
     try {
         const response = await fetch(
-            `https://world.openfoodfacts.org/api/v0/product/${ean}.json`,
+            `https://world.openfoodfacts.org/api/v0/product/${ean}.json`
         );
         if (response.ok) {
             const data = await response.json();

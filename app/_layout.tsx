@@ -399,7 +399,7 @@ function RootLayoutNav() {
                     options={{
                         drawerItemStyle: route.hidden ? { display: 'none' } : undefined,
                         drawerLabel: t(route.label),
-                        headerTitle: ''
+                        headerTitle: '',
                     }}
                 />
             ))}

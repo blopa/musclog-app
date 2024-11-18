@@ -41,7 +41,6 @@ module.exports = {
         'regexp',
         'react-hooks',
         '@typescript-eslint',
-        'import-newlines',
     ],
     rules: {
         'operator-linebreak': [
@@ -69,43 +68,27 @@ module.exports = {
         'no-multi-spaces': 'error',
         curly: ['error', 'all'],
         'consistent-return': 'off',
-        'prefer-destructuring': ['warn', {
-            object: true, array: false,
-        }],
-        'no-confusing-arrow': ['warn', {
-            allowParens: true,
-        }],
+        'prefer-destructuring': ['warn', { object: true, array: false }],
+        'no-confusing-arrow': ['warn', { allowParens: true }],
         'max-len': 'off',
-        camelcase: ['error', {
-            properties: 'always',
-        }],
+        camelcase: ['error', { properties: 'always' }],
         'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'warn',
         eqeqeq: ['error', 'always'],
         'no-shadow': 'off',
         'array-bracket-spacing': ['warn', 'never'],
-        'key-spacing': ['warn', {
-            beforeColon: false, afterColon: true,
-        }],
+        'key-spacing': ['warn', { beforeColon: false, afterColon: true }],
         'no-useless-escape': 'warn',
         'no-nested-ternary': 'warn',
         'default-case': 'warn',
         'max-params': ['warn', 4],
         'react/jsx-first-prop-new-line': ['warn', 'multiline'],
-        'react/jsx-max-props-per-line': ['warn', {
-            when: 'multiline',
-        }],
-        'react/jsx-curly-spacing': ['warn', {
-            when: 'never', children: true,
-        }],
+        'react/jsx-max-props-per-line': ['warn', { when: 'multiline' }],
+        'react/jsx-curly-spacing': ['warn', { when: 'never', children: true }],
         'arrow-parens': ['warn', 'always'],
-        indent: ['warn', 4, {
-            SwitchCase: 1,
-        }],
+        indent: ['warn', 4, { SwitchCase: 1 }],
         'object-curly-spacing': ['warn', 'always'],
         'quote-props': ['warn', 'as-needed'],
-        quotes: ['warn', 'single', {
-            avoidEscape: true,
-        }],
+        quotes: ['warn', 'single', { avoidEscape: true }],
         'react/react-in-jsx-scope': 'off',
         'react-hooks/exhaustive-deps': 'warn',
         // 'react-hooks/exhaustive-deps': ['warn', { enableDangerousAutofixThisMayCauseInfiniteLoops: true }],
@@ -125,28 +108,22 @@ module.exports = {
         ],
         'perfectionist/sort-classes': [
             'warn',
-            {
-                type: 'alphabetical', order: 'asc', ignoreCase: true,
-            },
+            { type: 'alphabetical', order: 'asc', ignoreCase: true },
         ],
         'perfectionist/sort-imports': [
             'warn',
-            {
-                type: 'alphabetical', order: 'asc', ignoreCase: true,
-            },
+            { type: 'alphabetical', order: 'asc', ignoreCase: true },
         ],
-        'import/newline-after-import': ['error', {
-            count: 1, 
-        }],
-        'import-newlines/enforce': [
+        'comma-dangle': [
             'error',
             {
-                items: 1,
-                'max-len': 80,
-                semi: true,
+                arrays: 'always-multiline',
+                objects: 'always-multiline',
+                imports: 'always-multiline',
+                exports: 'always-multiline',
+                functions: 'never',
             },
         ],
-        'comma-dangle': ['error', 'always-multiline'],
     },
     settings: {
         'import/ignore': ['react-navigation', 'react-native'],

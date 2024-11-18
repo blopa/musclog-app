@@ -62,7 +62,7 @@ const convertToImperial = (value: number, inputUnit: string): number => {
 export const getDisplayFormattedWeight = (
     value: number,
     inputUnit: string,
-    isImperial: boolean,
+    isImperial: boolean
 ): number => {
     if (isImperial) {
         return convertToImperial(value, inputUnit);
@@ -73,7 +73,7 @@ export const getDisplayFormattedWeight = (
 
 export const getDisplayFormattedHeight = (
     value: number,
-    isImperial: boolean,
+    isImperial: boolean
 ): number => {
     if (isImperial) {
         return Math.round((convertToImperial(value * 100, CENTIMETERS) / 12) * 100) / 100;
@@ -85,7 +85,7 @@ export const getDisplayFormattedHeight = (
 export const getSaveFormattedWeight = (
     value: number,
     inputUnit: string,
-    isImperial: boolean,
+    isImperial: boolean
 ): number => {
     if (isImperial) {
         return convertToMetric(value, inputUnit);
@@ -96,7 +96,7 @@ export const getSaveFormattedWeight = (
 
 export const getSaveFormattedHeight = (
     value: number,
-    isImperial: boolean,
+    isImperial: boolean
 ): number => {
     if (isImperial) {
         return Math.round((convertToMetric(value, FEET) * 100)) / 100;

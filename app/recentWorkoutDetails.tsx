@@ -196,7 +196,7 @@ const RecentWorkoutDetails: React.FC<RecentWorkoutDetailsProps> = ({ navigation 
                     newSets[currentEdit.setIndex] = {
                         ...newSets[currentEdit.setIndex],
                         reps: Number(editReps),
-                        weight: Number(editWeight)
+                        weight: Number(editWeight),
                     };
                     return {
                         ...exercise,
@@ -229,7 +229,7 @@ const RecentWorkoutDetails: React.FC<RecentWorkoutDetailsProps> = ({ navigation 
                     message,
                     misc: '',
                     sender: 'assistant',
-                    type: 'text'
+                    type: 'text',
                 });
 
                 increaseUnreadMessages(1);

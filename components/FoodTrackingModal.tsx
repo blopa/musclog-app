@@ -126,7 +126,7 @@ const FoodTrackingModal = ({
                                 .map(([mealTypeName, mealType]) => ({
                                     label: t(mealTypeName.toLowerCase()),
                                     value: mealType.toString(),
-                                }))
+                                })),
                         ]}
                         label={t('meal_type')}
                         selectedValue={mealType}

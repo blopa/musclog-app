@@ -4,7 +4,7 @@ import {
     generateHash,
     isString,
     normalizeName,
-    safeToFixed
+    safeToFixed,
 } from './string';
 
 describe('Utils Functions', () => {

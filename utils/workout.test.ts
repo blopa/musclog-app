@@ -14,14 +14,14 @@ import {
     SetReturnType,
     UserReturnType,
     WorkoutEventReturnType,
-    WorkoutReturnType
+    WorkoutReturnType,
 } from '@/utils/types';
 
 import {
     calculate1RM,
     calculateAverage1RM,
     calculateNextWorkoutRepsAndSets,
-    calculateWorkoutVolume
+    calculateWorkoutVolume,
 } from './workout';
 
 jest.mock('@/utils/database', () => ({
@@ -111,7 +111,7 @@ describe('Workout Utils Functions', () => {
                 recurringOnWeek: undefined,
                 status: 'completed',
                 title: 'Test Workout 1',
-                workoutId: 1
+                workoutId: 1,
             },
             {
                 createdAt: '2023-01-15T00:00:00Z',
@@ -123,8 +123,8 @@ describe('Workout Utils Functions', () => {
                 recurringOnWeek: undefined,
                 status: 'completed',
                 title: 'Test Workout 2',
-                workoutId: 1
-            }
+                workoutId: 1,
+            },
         ];
 
         const sets: SetReturnType[] = [
@@ -151,7 +151,7 @@ describe('Workout Utils Functions', () => {
                 weight: 50,
                 workoutId: 1,
                 setOrder: 1,
-            }
+            },
         ];
 
         const user: UserReturnType = {
@@ -173,7 +173,7 @@ describe('Workout Utils Functions', () => {
             height: 175,
             latestId: 1,
             source: 'user',
-            weight: 70
+            weight: 70,
         };
 
         beforeEach(() => {

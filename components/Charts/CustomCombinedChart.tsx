@@ -183,7 +183,7 @@ const CustomCombinedChart: React.FC<CustomCombinedChartProps> = ({
                     onPress={shareChart}
                     style={[
                         styles.shareButton,
-                        shareButtonPosition === 'top' ? styles.sharePositionTop : styles.sharePositionBottom
+                        shareButtonPosition === 'top' ? styles.sharePositionTop : styles.sharePositionBottom,
                     ]}
                 />
             ) : null}
