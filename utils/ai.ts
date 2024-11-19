@@ -155,6 +155,15 @@ export const isAllowedLocation = async (key: string, vendor: string) => {
 export const estimateNutritionFromPhoto = async (photo: string) => {
     const vendor = await getAiApiVendor();
 
+    // return {
+    //     calories: 425,
+    //     carbs: 25,
+    //     fat: 25,
+    //     protein: 25,
+    //     grams: 250,
+    //     name: 'Some food idk',
+    // };
+
     if (vendor === OPENAI_API_KEY_TYPE) {
         return openAiFunctions.estimateNutritionFromPhoto(photo);
     } else if (vendor === GEMINI_API_KEY_TYPE) {
@@ -166,6 +175,15 @@ export const estimateNutritionFromPhoto = async (photo: string) => {
 
 export const extractMacrosFromLabelPhoto = async (photo: string) => {
     const vendor = await getAiApiVendor();
+
+    // return {
+    //     calories: 425,
+    //     carbs: 25,
+    //     fat: 25,
+    //     protein: 25,
+    //     grams: 250,
+    //     name: 'Some food idk',
+    // };
 
     if (vendor === OPENAI_API_KEY_TYPE) {
         return openAiFunctions.extractMacrosFromLabelPhoto(photo);

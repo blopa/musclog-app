@@ -3,7 +3,9 @@ import type { BarcodeScanningResult } from 'expo-camera';
 import FoodTrackingModal, { FoodTrackingType } from '@/components/FoodTrackingModal';
 import ThemedCard from '@/components/ThemedCard';
 import { MEAL_TYPE } from '@/constants/nutrition';
-import { estimateNutritionFromPhoto, extractMacrosFromLabelPhoto } from '@/utils/ai';
+import { AI_SETTINGS_TYPE } from '@/constants/storage';
+import { useSettings } from '@/storage/SettingsContext';
+import { estimateNutritionFromPhoto, extractMacrosFromLabelPhoto, getAiApiVendor } from '@/utils/ai';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { normalizeMacrosByGrams } from '@/utils/data';
 import { getLatestFitnessGoals, getUserNutritionBetweenDates } from '@/utils/database';
@@ -46,6 +48,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const [scanned, setScanned] = useState(false);
     const [showBarcodeCamera, setShowBarcodeCamera] = useState(false);
     const [showPhotoCamera, setShowPhotoCamera] = useState(false);
+    const [isAiEnabled, setIsAiEnabled] = useState<boolean>(false);
 
     // Reference to the photo camera
     const photoCameraRef = useRef(null);
@@ -60,6 +63,15 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         totalFat: 80,
         protein: 150,
     });
+
+    const { getSettingByType } = useSettings();
+    const checkApiKey = useCallback(async () => {
+        const vendor = await getAiApiVendor();
+        const isAiSettingsEnabled = await getSettingByType(AI_SETTINGS_TYPE);
+
+        const hasAiEnabled = Boolean(vendor) && isAiSettingsEnabled?.value === 'true';
+        setIsAiEnabled(hasAiEnabled);
+    }, [getSettingByType]);
 
     const loadLatestFitnessGoal = useCallback(async () => {
         try {
@@ -130,11 +142,12 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         useCallback(() => {
             loadConsumed();
             loadLatestFitnessGoal();
+            checkApiKey();
 
             return () => {
                 resetScreenData();
             };
-        }, [loadConsumed, loadLatestFitnessGoal, resetScreenData])
+        }, [checkApiKey, loadConsumed, loadLatestFitnessGoal, resetScreenData])
     );
 
     const OverviewRoute = () => {
@@ -428,13 +441,15 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                             >
                                 <FontAwesome5 name="barcode" size={20} color={colors.primary} />
                             </Button>
-                            <Button
-                                mode="outlined"
-                                onPress={openPhotoCamera}
-                                style={styles.iconButton}
-                            >
-                                <FontAwesome5 name="camera" size={20} color={colors.primary} />
-                            </Button>
+                            {isAiEnabled ? (
+                                <Button
+                                    mode="outlined"
+                                    onPress={openPhotoCamera}
+                                    style={styles.iconButton}
+                                >
+                                    <FontAwesome5 name="camera" size={20} color={colors.primary} />
+                                </Button>
+                            ) : null}
                         </>
                     )}
                 </View>
