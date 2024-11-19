@@ -68,6 +68,7 @@ import {
     addMealTypeGramsToUserNutritionTable,
     createFoodTable,
     createFitnessGoalsTable,
+    createMigrationsTable,
 } from '@/utils/database';
 import { getCurrentTimestamp } from '@/utils/date';
 import { getEncryptionKey } from '@/utils/encryption';
@@ -244,6 +245,7 @@ function RootLayout() {
             await addMealTypeGramsToUserNutritionTable();
             await createFoodTable();
             await createFitnessGoalsTable();
+            await createMigrationsTable();
 
             // update to latest version
             await addVersioning(packageJson.version);

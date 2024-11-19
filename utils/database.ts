@@ -45,6 +45,7 @@ import {
     WorkoutPlan,
     WorkoutReturnType,
     WorkoutWithExercisesRepsAndSetsDetailsReturnType,
+    MigrationReturnType,
 } from '@/utils/types';
 import { addDatabaseChangeListener, openDatabaseSync } from 'expo-sqlite';
 
@@ -763,6 +764,20 @@ export const addFitnessGoals = async (fitnessGoals: FitnessGoalsInsertType): Pro
         fitnessGoals.bmi || 0,
         fitnessGoals.ffmi || 0,
         createdAt
+        );
+
+        return result.lastInsertRowId;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const createMigration = async (migration: string): Promise<number> => {
+    const createdAt = getCurrentTimestamp();
+    try {
+        const result = database.runSync(
+            'INSERT INTO "Migrations" ("migration", "createdAt") VALUES (?, ?)',
+            [migration, createdAt]
         );
 
         return result.lastInsertRowId;
@@ -2110,6 +2125,35 @@ export const getTotalFitnessGoalsCount = async (): Promise<number> => {
     }
 };
 
+export const getMigration = async (id: number): Promise<MigrationReturnType | undefined> => {
+    try {
+        return database.getFirstSync<MigrationReturnType>('SELECT * FROM "Migration" WHERE "id" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')', [id]) ?? undefined;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const getAllMigrations = async (): Promise<MigrationReturnType[] | null> => {
+    try {
+        return database.getFirstSync<MigrationReturnType[]>('SELECT * FROM "Migration" WHERE ("deletedAt" IS NULL OR "deletedAt" = \'\')');
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const checkIfMigrationExists = async (migration: string): Promise<boolean> => {
+    try {
+        const result = database.getFirstSync<{ count: number }>(
+            'SELECT COUNT(*) as count FROM "Migration" WHERE "migration" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')',
+            [migration]
+        );
+
+        return !!result?.count;
+    } catch (error) {
+        throw error;
+    }
+};
+
 // Update functions
 
 export const updateUserMeasurements = async (id: number, userMeasurements: UserMeasurementsInsertType): Promise<number> => {
@@ -3353,6 +3397,8 @@ export const createMigrationsTable = async (): Promise<void> => {
                 );
             `);
         }
+
+        await createMigration('createMigrationsTable');
     }
 };
 

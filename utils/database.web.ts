@@ -617,6 +617,11 @@ export const addFitnessGoals = async (fitnessGoals: FitnessGoalsInsertType): Pro
     });
 };
 
+export const createMigration = async (migration: string): Promise<number> => {
+    const createdAt = getCurrentTimestamp();
+    return database.migrations.add({ migration, createdAt });
+};
+
 // Get functions
 
 export const getUserMeasurements = async (id: number): Promise<UserMeasurementsReturnType | undefined> => {
@@ -1588,6 +1593,27 @@ export const getTotalFitnessGoalsCount = async (): Promise<number> => {
     return database.fitnessGoals.count();
 };
 
+export const getMigration = async (id: number): Promise<MigrationReturnType | undefined> => {
+    return database.migrations
+        .where({ id })
+        .filter((migration) => !migration.deletedAt)
+        .first();
+};
+
+export const getAllMigrations = async (): Promise<MigrationReturnType[] | undefined> => {
+    return database.migrations
+        .filter((migration) => !migration.deletedAt)
+        .toArray();
+};
+
+export const checkIfMigrationExists = async (migration: string): Promise<boolean> => {
+    const existingMigration = await database.migrations
+        .where({ migration })
+        .first();
+
+    return Boolean(existingMigration);
+};
+
 // Update functions
 
 export const updateUserMeasurements = async (id: number, userMeasurements: UserMeasurementsInsertType): Promise<number> => {
@@ -2396,6 +2422,8 @@ export const createMigrationsTable = async (): Promise<void> => {
         if (!database.isOpen()) {
             database.open();
         }
+
+        await createMigration('createMigrationsTable');
     }
 };
 
