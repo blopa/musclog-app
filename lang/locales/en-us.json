@@ -611,6 +611,7 @@
     "failed_to_save_user_nutrition": "Failed to save user nutrition",
     "failed_to_load_workout_details": "Failed to load workout details",
     "delete_message": "Delete Message",
+    "delete_nutrition_confirmation": "Are you sure you want to delete this nutrition entry?",
     "delete_message_confirmation": "Are you sure you want to delete this message?",
     "langs": {
         "en-us": "English",

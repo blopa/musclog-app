@@ -2,13 +2,14 @@ import type { BarcodeScanningResult } from 'expo-camera';
 
 import FoodTrackingModal, { FoodTrackingType } from '@/components/FoodTrackingModal';
 import ThemedCard from '@/components/ThemedCard';
+import ThemedModal from '@/components/ThemedModal';
 import { MEAL_TYPE } from '@/constants/nutrition';
 import { AI_SETTINGS_TYPE } from '@/constants/storage';
 import { useSettings } from '@/storage/SettingsContext';
 import { estimateNutritionFromPhoto, extractMacrosFromLabelPhoto, getAiApiVendor } from '@/utils/ai';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { normalizeMacrosByGrams } from '@/utils/data';
-import { getLatestFitnessGoals, getUserNutritionBetweenDates } from '@/utils/database';
+import { deleteUserNutrition, getLatestFitnessGoals, getUserNutritionBetweenDates } from '@/utils/database';
 import { fetchProductByEAN } from '@/utils/fetchFoodData';
 import { safeToFixed } from '@/utils/string';
 import { FitnessGoalsReturnType, UserNutritionDecryptedReturnType } from '@/utils/types';
@@ -28,6 +29,9 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const styles = makeStyles(colors, dark);
 
     const [isLoading, setIsLoading] = useState(false);
+    const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+    const [selectedNutrition, setSelectedNutrition] = useState<UserNutritionDecryptedReturnType | null>(null);
+
     const [index, setIndex] = useState(0);
     const [searchQuery, setSearchQuery] = useState('');
     const [consumed, setConsumed] = useState({
@@ -198,9 +202,26 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         setIsNutritionModalVisible(true);
     };
 
-    const handleDeleteNutrition = (userNutrition: UserNutritionDecryptedReturnType) => {
-        // TODO
-    };
+    const handleDeleteNutrition = useCallback((userNutrition: UserNutritionDecryptedReturnType) => {
+        setSelectedNutrition(userNutrition);
+        setDeleteModalVisible(true);
+    }, []);
+
+    const handleConfirmDeleteNutrition = useCallback(async () => {
+        if (!selectedNutrition) {
+            return;
+        }
+
+        try {
+            await deleteUserNutrition(selectedNutrition.id);
+            await loadConsumed();
+        } catch (error) {
+            console.error(t('failed_delete_nutrition'), error);
+        } finally {
+            setDeleteModalVisible(false);
+            setSelectedNutrition(null);
+        }
+    }, [selectedNutrition, loadConsumed, t]);
 
     const MealsRoute = () => {
         const mealGroups = consumedFoods.reduce((groups, food) => {
@@ -496,11 +517,20 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 onClose={() => {
                     setIsNutritionModalVisible(false);
                     setSelectedFood(null);
+                    setUserNutritionId(null);
                     loadConsumed();
                 }}
                 food={selectedFood}
                 userNutritionId={userNutritionId}
                 isLoading={isLoading}
+            />
+            <ThemedModal
+                cancelText={t('no')}
+                confirmText={t('yes')}
+                onClose={() => setDeleteModalVisible(false)}
+                onConfirm={handleConfirmDeleteNutrition}
+                title={selectedNutrition ? t('delete_nutrition_confirmation', { title: selectedNutrition.name }) : t('delete_confirmation_generic')}
+                visible={deleteModalVisible}
             />
         </View>
     );

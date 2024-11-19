@@ -611,6 +611,7 @@
     "failed_to_save_user_nutrition": "Kon gebruikersvoeding niet opslaan",
     "failed_to_load_workout_details": "Kon trainingsdetails niet laden",
     "delete_message": "Bericht verwijderen",
+    "delete_nutrition_confirmation": "Weet u zeker dat u deze voeding wilt verwijderen?",
     "delete_message_confirmation": "Weet u zeker dat u dit bericht wilt verwijderen?",
     "langs": {
         "en-us": "English",

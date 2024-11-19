@@ -611,6 +611,7 @@
     "failed_to_save_user_nutrition": "Error al guardar la nutrición del usuario",
     "failed_to_load_workout_details": "Error al cargar los detalles del entrenamiento",
     "delete_message": "Eliminar Mensaje",
+    "delete_nutrition_confirmation": "¿Está seguro de que desea eliminar esta nutrición?",
     "delete_message_confirmation": "¿Está seguro de que desea eliminar este mensaje?",
     "langs": {
         "en-us": "English",
