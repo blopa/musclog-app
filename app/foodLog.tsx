@@ -6,10 +6,10 @@ import { MEAL_TYPE } from '@/constants/nutrition';
 import { estimateNutritionFromPhoto, extractMacrosFromLabelPhoto } from '@/utils/ai';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { normalizeMacrosByGrams } from '@/utils/data';
-import { getUserNutritionBetweenDates } from '@/utils/database';
+import { getLatestFitnessGoals, getUserNutritionBetweenDates } from '@/utils/database';
 import { fetchProductByEAN } from '@/utils/fetchFoodData';
 import { safeToFixed } from '@/utils/string';
-import { UserNutritionDecryptedReturnType } from '@/utils/types';
+import { FitnessGoalsReturnType, UserNutritionDecryptedReturnType } from '@/utils/types';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { NavigationProp } from '@react-navigation/native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
@@ -54,14 +54,23 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const [userNutritionId, setUserNutritionId] = useState<number | null>(null);
     const [isNutritionModalVisible, setIsNutritionModalVisible] = useState<boolean>(false);
     const [photoMode, setPhotoMode] = useState<string>('meal');
-
-    // Mock data for demonstration
-    const dailyGoal = {
+    const [dailyGoals, setDailyGoals] = useState<Omit<FitnessGoalsReturnType, 'id'>>({
         calories: 2500,
+        totalCarbohydrate: 300,
+        totalFat: 80,
         protein: 150,
-        carbohydrate: 300,
-        fat: 80,
-    };
+    });
+
+    const loadLatestFitnessGoal = useCallback(async () => {
+        try {
+            const latestGoal = await getLatestFitnessGoals();
+            if (latestGoal) {
+                setDailyGoals(latestGoal);
+            }
+        } catch (error) {
+            console.error('Failed to load latest fitness goal:', error);
+        }
+    }, []);
 
     const mealCategories = [
         { name: t('breakfast'), icon: '🍳' },
@@ -120,19 +129,20 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     useFocusEffect(
         useCallback(() => {
             loadConsumed();
+            loadLatestFitnessGoal();
 
             return () => {
                 resetScreenData();
             };
-        }, [loadConsumed, resetScreenData])
+        }, [loadConsumed, loadLatestFitnessGoal, resetScreenData])
     );
 
     const OverviewRoute = () => {
         const macros = [
-            { name: t('calories'), consumed: safeToFixed(consumed.calories), goal: dailyGoal.calories, unit: 'kcal' },
-            { name: t('proteins'), consumed: safeToFixed(consumed.protein), goal: dailyGoal.protein, unit: 'g' },
-            { name: t('carbs'), consumed: safeToFixed(consumed.carbohydrate), goal: dailyGoal.carbohydrate, unit: 'g' },
-            { name: t('fats'), consumed: safeToFixed(consumed.fat), goal: dailyGoal.fat, unit: 'g' },
+            { name: t('calories'), consumed: safeToFixed(consumed.calories), goal: dailyGoals.calories, unit: 'kcal' },
+            { name: t('proteins'), consumed: safeToFixed(consumed.protein), goal: dailyGoals.protein, unit: 'g' },
+            { name: t('carbs'), consumed: safeToFixed(consumed.carbohydrate), goal: dailyGoals.totalCarbohydrate, unit: 'g' },
+            { name: t('fats'), consumed: safeToFixed(consumed.fat), goal: dailyGoals.totalFat, unit: 'g' },
         ];
 
         return (
@@ -471,9 +481,11 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 onClose={() => {
                     setIsNutritionModalVisible(false);
                     setSelectedFood(null);
+                    loadConsumed();
                 }}
                 food={selectedFood}
                 userNutritionId={userNutritionId}
+                isLoading={isLoading}
             />
         </View>
     );

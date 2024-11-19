@@ -10,7 +10,7 @@ import { UserNutritionInsertType } from '@/utils/types';
 import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View, StyleSheet } from 'react-native';
-import { useTheme, Text } from 'react-native-paper';
+import { useTheme, Text, ActivityIndicator } from 'react-native-paper';
 
 export type FoodTrackingType = {
     productTitle: string;
@@ -26,6 +26,7 @@ type FoodTrackingModalProps = {
     onClose: () => void;
     food: FoodTrackingType | null;
     userNutritionId?: number | null;
+    isLoading?: boolean;
 };
 
 const FoodTrackingModal = ({
@@ -33,6 +34,7 @@ const FoodTrackingModal = ({
     onClose,
     food,
     userNutritionId,
+    isLoading = false,
 }: FoodTrackingModalProps) => {
     const { t } = useTranslation();
     const { colors, dark } = useTheme<CustomThemeType>();
@@ -110,7 +112,7 @@ const FoodTrackingModal = ({
             cancelText={t('cancel')}
             onConfirm={handleTrackFood}
         >
-            {food && (
+            {food && !isLoading && (
                 <View style={styles.foodTrackingForm}>
                     <CustomTextInput
                         keyboardType="numeric"
@@ -138,6 +140,7 @@ const FoodTrackingModal = ({
                     <Text>{t('fats')}: {calculatedValues.fat.toFixed(2)} g</Text>
                 </View>
             )}
+            {isLoading && <ActivityIndicator color={colors.primary} size="large" />}
         </ThemedModal>
     );
 };
