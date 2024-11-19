@@ -272,6 +272,15 @@ const createTables = (database: SQLiteDatabase) => {
     {
         columns: [
             "'id' INTEGER PRIMARY KEY AUTOINCREMENT",
+            "'migration' TEXT",
+            "'createdAt' TEXT DEFAULT CURRENT_TIMESTAMP",
+            "'deletedAt' TEXT NULLABLE",
+        ],
+        name: 'Migrations',
+    },
+    {
+        columns: [
+            "'id' INTEGER PRIMARY KEY AUTOINCREMENT",
             "'userId' INTEGER",
             "'weight' TEXT NULLABLE",
             "'height' TEXT NULLABLE",
@@ -3325,6 +3334,22 @@ export const createFitnessGoalsTable = async (): Promise<void> => {
                     "ffmi" REAL,
                     "createdAt" TEXT DEFAULT CURRENT_TIMESTAMP,
                     "deletedAt" TEXT
+                );
+            `);
+        }
+    }
+};
+
+export const createMigrationsTable = async (): Promise<void> => {
+    const currentVersion = await getLatestVersion();
+    if (currentVersion && currentVersion < packageJson.version) {
+        if (!(await tableExists('Migrations'))) {
+            await database.execAsync(`
+                CREATE TABLE "Migrations" (
+                    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+                    "migration" TEXT,
+                    "createdAt" TEXT DEFAULT CURRENT_TIMESTAMP,
+                    "deletedAt" TEXT NULLABLE
                 );
             `);
         }

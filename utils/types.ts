@@ -104,6 +104,17 @@ export type WorkoutInsertType = {
     volumeCalculationType: VolumeCalculationTypeType;
 };
 
+export type MigrationInsertType = {
+    id?: number;
+    migration: string;
+    createdAt?: string;
+    deletedAt?: string;
+};
+
+export type MigrationReturnType = {
+    id: number;
+} & Omit<MigrationInsertType, 'id'>;
+
 export type VersioningInsertType = {
     id?: number;
     version: string;

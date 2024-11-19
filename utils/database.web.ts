@@ -46,6 +46,8 @@ import {
     WorkoutPlan,
     WorkoutReturnType,
     WorkoutWithExercisesRepsAndSetsDetailsReturnType,
+    MigrationReturnType,
+    MigrationInsertType,
 } from '@/utils/types';
 import Dexie from 'dexie';
 
@@ -123,6 +125,7 @@ interface IDatabase {
     };
     food: {},
     fitnessGoals: {},
+    migrations: {},
 }
 
 type WorkoutExerciseInsertTypeWithStrValues = { setIds: string } & Omit<WorkoutExerciseInsertType, 'setIds'>;
@@ -137,6 +140,7 @@ export class WorkoutLoggerDatabase extends Dexie implements IDatabase {
     exercises!: Dexie.Table<ExerciseReturnType, number, ExerciseInsertType>;
     fitnessGoals!: Dexie.Table<FitnessGoalsReturnType, number, FitnessGoalsInsertType>;
     food!: Dexie.Table<FoodReturnType, number, FoodInsertType>;
+    migrations!: Dexie.Table<MigrationReturnType, number, MigrationInsertType>;
     oneRepMaxes!: Dexie.Table<OneRepMaxReturnType, number, OneRepMaxInsertType>;
     sets!: Dexie.Table<SetReturnType, number, SetInsertType>;
     settings!: Dexie.Table<SettingsReturnType, number, SettingsInsertType>;
@@ -266,6 +270,12 @@ export class WorkoutLoggerDatabase extends Dexie implements IDatabase {
             versioning: [
                 '++id',
                 'version',
+            ].join(', '),
+            migrations: [
+                '++id',
+                'migration',
+                'createdAt',
+                'deletedAt',
             ].join(', '),
             workoutEvents: [
                 '++id',
@@ -1975,6 +1985,7 @@ const TABLE_NAMES_MAP: { [key: string]: string } = {
     WorkoutExercise: 'workoutExercises',
     Food: 'food',
     FitnessGoals: 'fitnessGoals',
+    Migrations: 'migrations',
 };
 
 const getDumpTableName = (originalName: string) => {
@@ -2355,6 +2366,28 @@ export const createFitnessGoalsTable = async (): Promise<void> => {
                 'bodyFat',
                 'bmi',
                 'ffmi',
+                'createdAt',
+                'deletedAt',
+            ].join(', '),
+        });
+
+        if (!database.isOpen()) {
+            database.open();
+        }
+    }
+};
+
+export const createMigrationsTable = async (): Promise<void> => {
+    const currentVersion = await getLatestVersion();
+    if (currentVersion && currentVersion < packageJson.version) {
+        if (database.isOpen()) {
+            database.close();
+        }
+
+        database.version(10).stores({
+            migrations: [
+                '++id',
+                'migration',
                 'createdAt',
                 'deletedAt',
             ].join(', '),
