@@ -463,7 +463,7 @@ export const normalizeMacrosByGrams = (macros: any) => {
         carbs: macros.carbs * multiplier,
         fat: macros.fat * multiplier,
         protein: macros.protein * multiplier,
-        kcal: macros.calories * multiplier,
+        kcal: macros.kcal * multiplier,
         grams: 100,
     };
 };
