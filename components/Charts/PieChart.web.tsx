@@ -5,8 +5,8 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { ArcElement, Chart as ChartJS, Legend, Tooltip } from 'chart.js';
 import React, { useCallback } from 'react';
 import { Pie } from 'react-chartjs-2';
-import { Dimensions, StyleSheet, Text, View } from 'react-native';
-import { IconButton, useTheme } from 'react-native-paper';
+import { StyleSheet, View } from 'react-native';
+import { IconButton, useTheme, Text } from 'react-native-paper';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -19,7 +19,10 @@ interface PieChartProps {
     }[];
     shareButtonPosition?: 'bottom' | 'top';
     showShareImageButton?: boolean;
-    title: string;
+    title?: string;
+    size?: number;
+    showLabels?: boolean;
+    showLegend?: boolean;
 }
 
 const PieChart: React.FC<PieChartProps> = ({
@@ -27,35 +30,41 @@ const PieChart: React.FC<PieChartProps> = ({
     shareButtonPosition = 'bottom',
     showShareImageButton = true,
     title,
+    size = 300,
+    showLabels = true,
+    showLegend = true,
 }) => {
     const { colors } = useTheme<CustomThemeType>();
-    const styles = makeStyles(colors);
+    const styles = makeStyles(colors, size);
 
     const chartData = {
         datasets: [
             {
                 backgroundColor: data.map((item) => item.color || colors.primary),
                 data: data.map((item) => item.value),
-                label: title,
+                label: title || '',
             },
         ],
-        labels: data.map((item) => item.label),
+        labels: showLabels ? data.map((item) => item.label) : [],
     };
 
     const chartOptions = {
         maintainAspectRatio: false,
         plugins: {
             legend: {
-                display: true,
+                display: showLegend,
                 labels: {
                     color: colors.onSurface,
+                    font: {
+                        size: Math.round(size * 0.05),
+                    },
                 },
                 position: 'bottom' as const,
             },
             tooltip: {
                 callbacks: {
-                    label: function (tooltipItem: { dataIndex: number; label: string, raw: number }): string {
-                        const marker = data[tooltipItem.dataIndex].marker;
+                    label: function (tooltipItem: { dataIndex: number; label: string; raw: number }): string {
+                        const { marker } = data[tooltipItem.dataIndex];
                         return `${tooltipItem.label}: ${safeToFixed(tooltipItem.raw, 2)}${marker ? ` (${marker})` : ''}`;
                     },
                 },
@@ -69,7 +78,11 @@ const PieChart: React.FC<PieChartProps> = ({
 
     return (
         <View style={styles.chartContainer}>
-            <Text style={styles.chartTitle}>{title}</Text>
+            {title ? (
+                <Text style={styles.chartTitle}>
+                    {title}
+                </Text>
+            ) : null}
             <View style={styles.chartWrapper}>
                 <Pie
                     data={chartData}
@@ -83,7 +96,7 @@ const PieChart: React.FC<PieChartProps> = ({
                     onPress={shareChart}
                     style={[
                         styles.shareButton,
-                        shareButtonPosition === 'top' ? styles.sharePositionTop : styles.sharePositionBottom
+                        shareButtonPosition === 'top' ? styles.sharePositionTop : styles.sharePositionBottom,
                     ]}
                 />
             ) : null}
@@ -91,23 +104,23 @@ const PieChart: React.FC<PieChartProps> = ({
     );
 };
 
-const makeStyles = (colors: CustomThemeColorsType) => StyleSheet.create({
+const makeStyles = (colors: CustomThemeColorsType, size: number) => StyleSheet.create({
     chartContainer: {
         alignItems: 'center',
         backgroundColor: colors.surface,
-        borderRadius: 16,
-        marginVertical: 16,
-        padding: 16,
+        borderRadius: Math.round(size * 0.06),
+        marginVertical: Math.round(size * 0.03),
+        padding: Math.round(size * 0.03),
     },
     chartTitle: {
         color: colors.onSurface,
-        fontSize: 18,
+        fontSize: Math.round(size * 0.06),
         fontWeight: 'bold',
-        marginBottom: 8,
+        marginBottom: Math.round(size * 0.015),
     },
     chartWrapper: {
-        height: 300,
-        width: Dimensions.get('window').width - 64,
+        height: size,
+        width: size,
     },
     shareButton: {
         position: 'absolute',

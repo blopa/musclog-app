@@ -11,8 +11,7 @@ module.exports = function withCustomGradleConfig(config) {
         );
 
         if (existingJvmArgsIndex > -1 && config?.modResults?.[existingJvmArgsIndex]?.value) {
-            config.modResults[existingJvmArgsIndex].value =
-                config.modResults[existingJvmArgsIndex].value.replace('MaxMetaspaceSize=512m', 'MaxMetaspaceSize=2048m');
+            config.modResults[existingJvmArgsIndex].value = config.modResults[existingJvmArgsIndex].value.replace('MaxMetaspaceSize=512m', 'MaxMetaspaceSize=2048m');
         }
 
         return config;

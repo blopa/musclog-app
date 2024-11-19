@@ -91,7 +91,7 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({ children }) 
             if (event.tableName === 'settings') {
                 loadSettings();
             }
-        }
+        };
 
         listenToDatabaseChanges(listener);
     }, [loadSettings]);

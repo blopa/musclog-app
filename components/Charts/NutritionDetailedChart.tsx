@@ -343,7 +343,7 @@ const NutritionDetailedChart = ({
                     </Text>
                     <Text style={styles.insightsValue}>
                         {t('value_kcal_day', {
-                            value: safeToFixed(averageCalories)
+                            value: safeToFixed(averageCalories),
                         })}
                     </Text>
                     <Text style={styles.eatingPhaseInsightTitle}>
@@ -384,7 +384,7 @@ const NutritionDetailedChart = ({
             ) : null}
             <PieChart
                 data={pieChartData}
-                shareButtonPosition={ isLastChart ? 'top' : 'bottom' }
+                shareButtonPosition={isLastChart ? 'top' : 'bottom'}
                 title={t('average_nutrition_distribution')}
             />
         </>

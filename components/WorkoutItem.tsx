@@ -7,8 +7,8 @@ import {
 import { calculateWorkoutVolume } from '@/utils/workout';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, Text, View } from 'react-native';
-import { useTheme } from 'react-native-paper';
+import { StyleSheet, View } from 'react-native';
+import { useTheme, Text } from 'react-native-paper';
 
 interface WorkoutDetailsProps {
     workoutDetails: {

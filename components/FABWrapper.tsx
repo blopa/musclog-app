@@ -50,7 +50,7 @@ const FABWrapper: React.FC<FABWrapperProps> = ({
             )}
         </View>
     );
-}
+};
 
 const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
     container: {

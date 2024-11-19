@@ -14,8 +14,8 @@ import {
 } from 'chart.js';
 import React, { ReactNode, useCallback } from 'react';
 import { Chart } from 'react-chartjs-2';
-import { Dimensions, StyleSheet, Text, View } from 'react-native';
-import { IconButton, useTheme } from 'react-native-paper';
+import { Dimensions, StyleSheet, View } from 'react-native';
+import { IconButton, useTheme, Text } from 'react-native-paper';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, Title, Tooltip, Legend);
 
@@ -187,46 +187,45 @@ const CustomCombinedChart: React.FC<CustomCombinedChartProps> = ({
     );
 };
 
-const makeStyles = (colors: CustomThemeColorsType) =>
-    StyleSheet.create({
-        chartContainer: {
-            alignItems: 'center',
-            backgroundColor: colors.surface,
-            borderRadius: 16,
-            marginVertical: 16,
-            padding: 16,
-            width: Dimensions.get('window').width - 32,
-        },
-        chartTitle: {
-            color: colors.onSurface,
-            fontSize: 18,
-            fontWeight: 'bold',
-            marginBottom: 8,
-        },
-        chartWrapper: {
-            height: 200,
-            width: Dimensions.get('window').width - 64,
-        },
-        extraInfoWrapper: {
-            alignItems: 'center',
-            marginBottom: 16,
-        },
-        shareButton: {
-            position: 'absolute',
-            right: 10,
-        },
-        sharePositionBottom: { bottom: 6 },
-        sharePositionTop: { top: 10 },
-        xAxisLabel: {
-            color: colors.onBackground,
-            fontSize: 14,
-        },
-        yAxisLabel: {
-            color: colors.onBackground,
-            fontSize: 14,
-            position: 'absolute',
-            transform: [{ rotate: '-90deg' }],
-        },
-    });
+const makeStyles = (colors: CustomThemeColorsType) => StyleSheet.create({
+    chartContainer: {
+        alignItems: 'center',
+        backgroundColor: colors.surface,
+        borderRadius: 16,
+        marginVertical: 16,
+        padding: 16,
+        width: Dimensions.get('window').width - 32,
+    },
+    chartTitle: {
+        color: colors.onSurface,
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 8,
+    },
+    chartWrapper: {
+        height: 200,
+        width: Dimensions.get('window').width - 64,
+    },
+    extraInfoWrapper: {
+        alignItems: 'center',
+        marginBottom: 16,
+    },
+    shareButton: {
+        position: 'absolute',
+        right: 10,
+    },
+    sharePositionBottom: { bottom: 6 },
+    sharePositionTop: { top: 10 },
+    xAxisLabel: {
+        color: colors.onBackground,
+        fontSize: 14,
+    },
+    yAxisLabel: {
+        color: colors.onBackground,
+        fontSize: 14,
+        position: 'absolute',
+        transform: [{ rotate: '-90deg' }],
+    },
+});
 
 export default CustomCombinedChart;

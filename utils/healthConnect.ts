@@ -1,6 +1,6 @@
 import { USER_METRICS_SOURCES } from '@/constants/healthConnect';
 import { EATING_PHASES, NUTRITION_TYPES } from '@/constants/nutrition';
-import { HEALTH_CONNECT_TYPE, LAST_TIME_APP_USED } from '@/constants/storage';
+import { READ_HEALTH_CONNECT_TYPE, LAST_TIME_APP_USED } from '@/constants/storage';
 import { LAST_RUN_KEY } from '@/constants/tasks';
 import { checkIsHealthConnectedPermitted, getHealthConnectData } from '@/storage/HealthConnectProvider';
 import { addOrUpdateSetting, addUserMetrics, addUserNutrition, getUser } from '@/utils/database';
@@ -10,7 +10,7 @@ import {
     HealthConnectBodyFatRecordData,
     HealthConnectHeightRecord,
     HealthConnectWeightRecord,
-    UserMetricsInsertType
+    UserMetricsInsertType,
 } from '@/utils/types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
@@ -83,16 +83,17 @@ export const getLatestHealthConnectData = async () => {
 
     const lastRunDate = await AsyncStorage.getItem(LAST_RUN_KEY);
     const lastTimeUsed = await AsyncStorage.getItem(LAST_TIME_APP_USED);
-    const today = new Date().toISOString().split('T')[0];
+    const today = new Date().toISOString()
+        .split('T')[0];
 
     if (hours >= 5 && (!lastRunDate || lastRunDate !== today)) {
         // await scheduleNextWorkout();
 
-        const isPermitted = await checkIsHealthConnectedPermitted();
+        const isPermitted = await checkIsHealthConnectedPermitted('read');
         if (!isPermitted) {
             await AsyncStorage.setItem(LAST_RUN_KEY, today);
             await addOrUpdateSetting({
-                type: HEALTH_CONNECT_TYPE,
+                type: READ_HEALTH_CONNECT_TYPE,
                 value: 'false',
             });
 

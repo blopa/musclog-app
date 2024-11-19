@@ -3,24 +3,19 @@
     "name": "Musclog - Lift, Log, Repeat",
     "slug": "logger",
     "jsEngine": "hermes",
-    "version": "1.2.0",
+    "version": "1.2.3",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "musclog",
     "userInterfaceStyle": "automatic",
-    "splash": {
-      "image": "./assets/images/splash.png",
-      "resizeMode": "cover",
-      "backgroundColor": "#96beb5"
-    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.werules.logger",
-      "buildNumber": "58"
+      "buildNumber": "61"
     },
     "android": {
       "package": "com.werules.logger",
-      "versionCode": 58,
+      "versionCode": 61,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -46,7 +41,8 @@
         "android.permission.health.READ_BODY_FAT",
         "android.permission.health.READ_HEALTH_DATA_HISTORY",
         "android.permission.health.READ_BASAL_METABOLIC_RATE",
-        "android.permission.health.READ_NUTRITION"
+        "android.permission.health.READ_NUTRITION",
+        "android.permission.health.WRITE_NUTRITION"
       ]
     },
     "web": {
@@ -58,11 +54,20 @@
       "expo-router",
       "expo-health-connect",
       [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash-icon.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#96beb5",
+          "imageWidth": 250
+        }
+      ],
+      [
         "expo-build-properties",
         {
           "android": {
-            "compileSdkVersion": 34,
-            "targetSdkVersion": 34,
+            "compileSdkVersion": 35,
+            "targetSdkVersion": 35,
             "minSdkVersion": 26
           }
         }
@@ -74,12 +79,20 @@
           "project": "workout"
         }
       ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
+          "recordAudioAndroid": false
+        }
+      ],
+      "expo-localization",
+      "react-native-ble-plx",
       "./withCustomManifest.js",
       "./withCustomGradleConfig.js",
       "./withNotifeeAndroidFix.js",
-      "./withAuthAndroidFix.js",
-      "expo-localization",
-      "react-native-ble-plx"
+      "./withAuthAndroidFix.js"
     ],
     "experiments": {
       "typedRoutes": true

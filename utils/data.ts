@@ -23,7 +23,7 @@ export const calculateTDEE = (
     initialWeight: number,
     finalWeight: number,
     initialFatPercentage?: number,
-    finalFatPercentage?: number,
+    finalFatPercentage?: number
 ) => {
     const weightDifference = finalWeight - initialWeight;
 
@@ -123,11 +123,11 @@ export const aggregateNutritionData = (data: UserNutritionDecryptedReturnType[])
             type?: string,
         }
     });
-}
+};
 
 export const isEmptyObject = (obj: any) => {
     return Object.keys(obj).length === 0;
-}
+};
 
 export const isTrendingUpwards = (data: { x: number, y: number }[]) => {
     let totalChange = 0;
@@ -291,7 +291,7 @@ export function calculateUserMetricsNutritionWeeklyAverages(
 
         return {
             totalDays: sortedData.length,
-            weeklyAverages
+            weeklyAverages,
         };
     }
 
@@ -343,7 +343,7 @@ export function calculateUserMetricsNutritionWeeklyAverages(
 
     return {
         totalDays: sortedData.length,
-        weeklyAverages
+        weeklyAverages,
     };
 }
 
@@ -452,4 +452,18 @@ export const calculatePastWorkoutsWeeklyAverages = (data: ExtendedLineChartDataT
     });
 
     return weeklyAverages;
+};
+
+export const normalizeMacrosByGrams = (macros: any) => {
+    const servingSize = macros.grams || 100;
+    const multiplier = 100 / servingSize;
+
+    return {
+        ...macros,
+        carbs: macros.carbs * multiplier,
+        fat: macros.fat * multiplier,
+        protein: macros.protein * multiplier,
+        kcal: macros.kcal * multiplier,
+        grams: 100,
+    };
 };

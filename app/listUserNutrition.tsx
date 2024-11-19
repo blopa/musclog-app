@@ -3,6 +3,7 @@ import CustomTextArea from '@/components/CustomTextArea';
 import FABWrapper from '@/components/FABWrapper';
 import ThemedCard from '@/components/ThemedCard';
 import ThemedModal from '@/components/ThemedModal';
+import { USER_METRICS_SOURCES } from '@/constants/healthConnect';
 import {
     AI_SETTINGS_TYPE,
     CSV_IMPORT_TYPE,
@@ -14,6 +15,7 @@ import {
 } from '@/constants/storage';
 import { FAB_ICON_SIZE, ICON_SIZE } from '@/constants/ui';
 import useUnit from '@/hooks/useUnit';
+import { useHealthConnect } from '@/storage/HealthConnectProvider';
 import { useSettings } from '@/storage/SettingsContext';
 import { useSnackbar } from '@/storage/SnackbarProvider';
 import { getAiApiVendor, parsePastNutrition } from '@/utils/ai';
@@ -24,7 +26,7 @@ import {
     deleteUserNutrition,
     getTotalUserNutritionCount,
     getUserNutritionPaginated,
-    processPastNutrition
+    processPastNutrition,
 } from '@/utils/database';
 import { formatDate } from '@/utils/date';
 import { importCsv, importJson } from '@/utils/file';
@@ -45,7 +47,7 @@ import {
     Pressable,
     ScrollView,
     StyleSheet,
-    View
+    View,
 } from 'react-native';
 import { Appbar, Button, Card, Checkbox, Text, useTheme } from 'react-native-paper';
 
@@ -71,6 +73,8 @@ export default function ListUserNutrition({ navigation }: { navigation: Navigati
     const [isLoading, setIsLoading] = useState(false);
     const [importAsFullDayOfEating, setImportAsFullDayOfEating] = useState(false);
 
+    const { deleteHealthData, checkWriteIsPermitted } = useHealthConnect();
+
     const { showSnackbar } = useSnackbar();
     const { getSettingByType } = useSettings();
     const { colors, dark } = useTheme<CustomThemeType>();
@@ -89,7 +93,7 @@ export default function ListUserNutrition({ navigation }: { navigation: Navigati
                     ...prevState,
                     ...loadedUserNutrition.filter(
                         (data) => !prevState.some((prevData) => prevData.id === data.id)
-                    )
+                    ),
                 ];
 
                 combinedData.sort((a, b) => {
@@ -182,6 +186,17 @@ export default function ListUserNutrition({ navigation }: { navigation: Navigati
         if (nutritionToDelete) {
             try {
                 await deleteUserNutrition(nutritionToDelete);
+
+                const isWritePermitted = await checkWriteIsPermitted(['Nutrition']);
+                if (isWritePermitted) {
+                    const userNutrition = userNutritions.find((nutrition) => nutrition.id === nutritionToDelete);
+                    if (userNutrition?.source === USER_METRICS_SOURCES.HEALTH_CONNECT && userNutrition.dataId) {
+                        // don't wait because it never resolves https://github.com/matinzd/react-native-health-connect/issues/161
+                        deleteHealthData('Nutrition', [userNutrition.dataId]);
+                        console.log(`Deleted health connect data with dataId: ${userNutrition.dataId}`);
+                    }
+                }
+
                 const updatedUserNutrition = userNutritions.filter((nutrition) => nutrition.id !== nutritionToDelete);
                 setUserNutritions(updatedUserNutrition);
                 setIsDeleteModalVisible(false);
@@ -190,7 +205,7 @@ export default function ListUserNutrition({ navigation }: { navigation: Navigati
                 console.error('Failed to delete user nutrition:', error);
             }
         }
-    }, [nutritionToDelete, userNutritions]);
+    }, [checkWriteIsPermitted, deleteHealthData, nutritionToDelete, userNutritions]);
 
     const handleImportNutritionWithAi = useCallback(async () => {
         setIsModalLoading(true);
@@ -277,15 +292,20 @@ export default function ListUserNutrition({ navigation }: { navigation: Navigati
     const filteredUserNutrition = useMemo(() => userNutritions.reverse().filter((nutrition) => {
         const searchLower = searchQuery.toLowerCase();
         return (
-            nutrition.name?.toLowerCase().includes(searchLower) ||
-            nutrition.calories?.toString().toLowerCase().includes(searchLower) ||
-            nutrition.carbohydrate?.toString().toLowerCase().includes(searchLower) ||
-            nutrition.fat?.toString().toLowerCase().includes(searchLower) ||
-            nutrition.protein?.toString().toLowerCase().includes(searchLower) ||
-            nutrition.date?.toLowerCase().includes(searchLower) ||
-            nutrition.dataId?.toLowerCase().includes(searchLower) ||
-            nutrition.deletedAt?.toLowerCase().includes(searchLower) ||
-            nutrition.userId?.toString().toLowerCase().includes(searchLower)
+            nutrition.name?.toLowerCase().includes(searchLower)
+            || nutrition.calories?.toString().toLowerCase()
+                .includes(searchLower)
+            || nutrition.carbohydrate?.toString().toLowerCase()
+                .includes(searchLower)
+            || nutrition.fat?.toString().toLowerCase()
+                .includes(searchLower)
+            || nutrition.protein?.toString().toLowerCase()
+                .includes(searchLower)
+            || nutrition.date?.toLowerCase().includes(searchLower)
+            || nutrition.dataId?.toLowerCase().includes(searchLower)
+            || nutrition.deletedAt?.toLowerCase().includes(searchLower)
+            || nutrition.userId?.toString().toLowerCase()
+                .includes(searchLower)
         );
     }), [userNutritions, searchQuery]);
 
@@ -390,7 +410,7 @@ export default function ListUserNutrition({ navigation }: { navigation: Navigati
                     contentContainerStyle={styles.scrollViewContent}
                     data={filteredUserNutrition}
                     estimatedItemSize={115}
-                    keyExtractor={(item) => item?.id ? item.id.toString() : 'default'}
+                    keyExtractor={(item) => (item?.id ? item.id.toString() : 'default')}
                     onEndReached={loadMoreUserNutrition}
                     onEndReachedThreshold={0.5}
                     renderItem={({ item: nutrition }) => (
@@ -543,7 +563,7 @@ export default function ListUserNutrition({ navigation }: { navigation: Navigati
                     onClose={handleDeleteCancel}
                     onConfirm={handleDeleteConfirmation}
                     title={t('delete_confirmation_generic', {
-                        title: userNutritions.find((nutrition) => nutrition.id === nutritionToDelete)?.name
+                        title: userNutritions.find((nutrition) => nutrition.id === nutritionToDelete)?.name,
                     })}
                     visible={isDeleteModalVisible}
                 />

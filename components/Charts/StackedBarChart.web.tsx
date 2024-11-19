@@ -12,8 +12,8 @@ import {
 } from 'chart.js';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
-import { Dimensions, StyleSheet, Text, View } from 'react-native';
-import { IconButton, Switch, useTheme } from 'react-native-paper';
+import { Dimensions, StyleSheet, View } from 'react-native';
+import { IconButton, Switch, useTheme, Text } from 'react-native-paper';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -89,7 +89,7 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
                 callbacks: {
                     label: function (context: any): string {
                         const { dataset, raw } = context;
-                        const marker = data[context.dataIndex].marker;
+                        const { marker } = data[context.dataIndex];
                         return `${dataset.label}: ${raw} (${Array.isArray(marker) ? marker.join(', ') : marker})`;
                     },
                 },
@@ -148,7 +148,7 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
                     onPress={shareChart}
                     style={[
                         styles.shareButton,
-                        shareButtonPosition === 'top' ? styles.sharePositionTop : styles.sharePositionBottom
+                        shareButtonPosition === 'top' ? styles.sharePositionTop : styles.sharePositionBottom,
                     ]}
                 />
             ) : null}

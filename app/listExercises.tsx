@@ -149,7 +149,7 @@ export default function ListExercises({ navigation }: { navigation: NavigationPr
                     contentContainerStyle={styles.scrollViewContent}
                     data={filteredExercises}
                     estimatedItemSize={95}
-                    keyExtractor={(item) => item?.id ? item.id.toString() : 'default'}
+                    keyExtractor={(item) => (item?.id ? item.id.toString() : 'default')}
                     onEndReached={loadMoreExercises}
                     onEndReachedThreshold={0.5}
                     renderItem={({ item: exercise }) => (
@@ -186,7 +186,7 @@ export default function ListExercises({ navigation }: { navigation: NavigationPr
                     onClose={handleDeleteCancel}
                     onConfirm={handleDeleteConfirmation}
                     title={t('delete_exercise_confirmation', {
-                        title: exercises.find((exercise) => exercise.id === exerciseToDelete)?.name
+                        title: exercises.find((exercise) => exercise.id === exerciseToDelete)?.name,
                     })}
                     visible={isDeleteModalVisible}
                 />

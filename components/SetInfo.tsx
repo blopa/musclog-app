@@ -5,8 +5,8 @@ import { ExerciseReturnType } from '@/utils/types';
 import { FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image, StyleSheet, Text, View } from 'react-native';
-import { useTheme } from 'react-native-paper';
+import { Image, StyleSheet, View } from 'react-native';
+import { useTheme, Text } from 'react-native-paper';
 
 type SetInfoProps = {
     completedReps: string;

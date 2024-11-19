@@ -151,9 +151,9 @@ const CreateUserMeasurements = ({ navigation }: { navigation: NavigationProp<any
             if (currentMeasurement.index > -1) {
                 setMeasurements((prevMeasurements) =>
                     prevMeasurements.map((measurement, i) =>
-                        i === currentMeasurement.index
+                        (i === currentMeasurement.index
                             ? { name: currentMeasurement.name, value: currentMeasurement.value }
-                            : measurement
+                            : measurement)
                     )
                 );
             } else {

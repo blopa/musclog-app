@@ -7,7 +7,7 @@ import { EATING_PHASES, NUTRITION_TYPES } from '@/constants/nutrition';
 import {
     FEET,
     HAS_COMPLETED_ONBOARDING,
-    HEALTH_CONNECT_TYPE,
+    READ_HEALTH_CONNECT_TYPE,
     IMPERIAL_SYSTEM,
     KILOGRAMS,
     METERS,
@@ -50,7 +50,7 @@ const Onboarding = ({ onFinish }: OnboardingProps) => {
     const { t } = useTranslation();
     const { colors, dark } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors, dark);
-    const { checkIsPermitted, getHealthData, requestPermissions } = useHealthConnect();
+    const { checkReadIsPermitted, getHealthData, requestPermissions } = useHealthConnect();
 
     const [currentStep, setCurrentStep] = useState(0);
     const [form, setForm] = useState<{
@@ -74,7 +74,7 @@ const Onboarding = ({ onFinish }: OnboardingProps) => {
         liftingExperience: '',
         name: '',
         unitSystem: METRIC_SYSTEM,
-        weight: ''
+        weight: '',
     });
     const [isDatePickerVisible, setDatePickerVisible] = useState(false);
     const [showCheckPermissionButton, setShowCheckPermissionButton] = useState(false);
@@ -148,14 +148,14 @@ const Onboarding = ({ onFinish }: OnboardingProps) => {
 
     const handleCheckPermissions = useCallback(async () => {
         setIsLoading(true);
-        const isPermitted = await checkIsPermitted();
+        const isPermitted = await checkReadIsPermitted(['Height', 'Weight', 'BodyFat', 'Nutrition']);
         if (isPermitted) {
             await addOrUpdateSetting({
-                type: HEALTH_CONNECT_TYPE,
+                type: READ_HEALTH_CONNECT_TYPE,
                 value: 'true',
             });
 
-            const userHealthData = await getHealthData();
+            const userHealthData = await getHealthData(1000, ['Height', 'Weight', 'BodyFat', 'Nutrition']);
 
             if (userHealthData) {
                 await addOrUpdateUser({});
@@ -217,7 +217,7 @@ const Onboarding = ({ onFinish }: OnboardingProps) => {
         }
 
         setIsLoading(false);
-    }, [checkIsPermitted, currentStep, getHealthData, loadProfileData]);
+    }, [checkReadIsPermitted, currentStep, getHealthData, loadProfileData]);
 
     const handleFormSubmit = useCallback(async () => {
         setIsLoading(true);
@@ -332,7 +332,7 @@ const Onboarding = ({ onFinish }: OnboardingProps) => {
                     <CustomPicker
                         items={[
                             { label: t('none'), value: '' },
-                            ...Object.values(EATING_PHASES).map((phase) => ({ label: t(phase), value: phase }))
+                            ...Object.values(EATING_PHASES).map((phase) => ({ label: t(phase), value: phase })),
                         ]}
                         label={t('eating_phase')}
                         onValueChange={(itemValue) => setForm({ ...form, eatingPhase: itemValue as EatingPhaseType })}

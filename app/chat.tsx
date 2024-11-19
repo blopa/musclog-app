@@ -27,7 +27,7 @@ import { ActivityIndicator, Appbar, Button, IconButton, Text, useTheme } from 'r
 function invisibleMessagesLoadingFix() {
     if (Platform.OS === 'web') {
         const gcLoadingContaineEl = document.querySelectorAll(
-            '[data-testid="GC_LOADING_CONTAINER"]',
+            '[data-testid="GC_LOADING_CONTAINER"]'
         )[0] as HTMLElement;
 
         if (gcLoadingContaineEl) {
@@ -251,7 +251,7 @@ export default function Chat({ navigation }: { navigation: NavigationProp<any> }
                         content: msg.message,
                         role: msg.sender as 'assistant' | 'system' | 'user',
                     }))
-                    .reverse()
+                    .reverse(),
             ];
 
             if (storedIntentionValue === GENERATE_MY_WORKOUTS) {

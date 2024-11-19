@@ -7,6 +7,7 @@ import {
 import { getCurrentTimestamp } from '@/utils/date';
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
+import * as ImageManipulator from 'expo-image-manipulator';
 import * as Sharing from 'expo-sharing';
 import * as Updates from 'expo-updates';
 import Papa from 'papaparse';
@@ -93,7 +94,7 @@ export async function importDatabase(decryptionPhrase?: string) {
     try {
         const result = await DocumentPicker.getDocumentAsync({ type: 'application/json' });
         if (!result.canceled && result.assets.length > 0) {
-            const uri = result.assets[0].uri;
+            const { uri } = result.assets[0];
 
             const dbDump = await FileSystem.readAsStringAsync(uri);
             await restoreDatabase(dbDump, decryptionPhrase);
@@ -105,11 +106,32 @@ export async function importDatabase(decryptionPhrase?: string) {
     }
 }
 
+export async function getBase64StringFromPhotoUri(photoUri: string) {
+    try {
+        return await FileSystem.readAsStringAsync(photoUri, { encoding: FileSystem.EncodingType.Base64 });
+    } catch (error) {
+        console.error('Error getting base64 string from file URI:', error);
+        alert('An error occurred while getting the base64 string. Please try again.');
+    }
+
+    return '';
+}
+
+export async function resizeImage(photoUri: string, width: number = 512): Promise<string> {
+    const manipulatedImage = await ImageManipulator.manipulateAsync(
+        photoUri,
+        [{ resize: { width } }],
+        { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
+    );
+
+    return manipulatedImage.uri;
+}
+
 export async function importJson() {
     try {
         const result = await DocumentPicker.getDocumentAsync({ type: 'application/json' });
         if (!result.canceled && result.assets.length > 0) {
-            const uri = result.assets[0].uri;
+            const { uri } = result.assets[0];
 
             const dataString = await FileSystem.readAsStringAsync(uri);
             return {
@@ -134,7 +156,7 @@ export async function importCsv() {
     try {
         const result = await DocumentPicker.getDocumentAsync({ type: '*/*' });
         if (!result.canceled && result.assets.length > 0) {
-            const uri = result.assets[0].uri;
+            const { uri } = result.assets[0];
             const fileName = result.assets[0].name;
 
             if (fileName.endsWith('.csv')) {

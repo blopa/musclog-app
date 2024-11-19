@@ -51,7 +51,7 @@ const RecentWorkoutMessageCard = ({ recentWorkoutId }: { recentWorkoutId: number
         const getWorkoutVolume = async () => {
             const totalVolume = await calculateWorkoutVolume(
                 exerciseData,
-                recentWorkout?.bodyWeight || 0,
+                recentWorkout?.bodyWeight || 0
             );
 
             setWorkoutVolume(totalVolume);

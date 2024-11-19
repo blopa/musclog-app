@@ -11,7 +11,7 @@ export const getAiApiVendor = async () => {
     }
 
     return null;
-}
+};
 
 export const sendChatMessage = async (messages: any[]) => {
     const vendor = await getAiApiVendor();
@@ -142,7 +142,7 @@ export const isValidApiKey = (key: string, vendor: string) => {
     }
 
     return false;
-}
+};
 
 export const isAllowedLocation = async (key: string, vendor: string) => {
     if (key && vendor === GEMINI_API_KEY_TYPE) {
@@ -150,4 +150,46 @@ export const isAllowedLocation = async (key: string, vendor: string) => {
     }
 
     return true;
+};
+
+export const estimateNutritionFromPhoto = async (photo: string) => {
+    const vendor = await getAiApiVendor();
+
+    // return {
+    //     calories: 425,
+    //     carbs: 25,
+    //     fat: 25,
+    //     protein: 25,
+    //     grams: 250,
+    //     name: 'Some food idk',
+    // };
+
+    if (vendor === OPENAI_API_KEY_TYPE) {
+        return openAiFunctions.estimateNutritionFromPhoto(photo);
+    } else if (vendor === GEMINI_API_KEY_TYPE) {
+        return geminiFunctions.estimateNutritionFromPhoto(photo);
+    }
+
+    return null;
+};
+
+export const extractMacrosFromLabelPhoto = async (photo: string) => {
+    const vendor = await getAiApiVendor();
+
+    // return {
+    //     calories: 425,
+    //     carbs: 25,
+    //     fat: 25,
+    //     protein: 25,
+    //     grams: 250,
+    //     name: 'Some food idk',
+    // };
+
+    if (vendor === OPENAI_API_KEY_TYPE) {
+        return openAiFunctions.extractMacrosFromLabelPhoto(photo);
+    } else if (vendor === GEMINI_API_KEY_TYPE) {
+        return geminiFunctions.extractMacrosFromLabelPhoto(photo);
+    }
+
+    return null;
 };

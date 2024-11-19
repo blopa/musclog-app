@@ -37,7 +37,7 @@ for (const [locale, filePath] of Object.entries(translationFiles)) {
 
 // Get all JavaScript and TypeScript files in the src directory
 const files = glob.sync('./**/*.{js,ts,jsx,tsx}', {
-    ignore: './node_modules/**'
+    ignore: './node_modules/**',
 });
 
 // Extract keys from t('string') usages

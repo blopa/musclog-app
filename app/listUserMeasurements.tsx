@@ -36,7 +36,7 @@ export default function ListUserMeasurements({ navigation }: { navigation: Navig
                     ...prevState,
                     ...loadedUserMeasurements.filter(
                         (data) => !prevState.some((prevData) => prevData.id === data.id)
-                    )
+                    ),
                 ];
 
                 combinedData.sort((a, b) => {
@@ -140,7 +140,10 @@ export default function ListUserMeasurements({ navigation }: { navigation: Navig
         const searchLower = searchQuery.toLowerCase();
         return (
             measurement.date?.toLowerCase().includes(searchLower)
-            || Object.entries(measurement.measurements).map(([key, value]) => `${key}: ${value}`).join(', ').toLowerCase().includes(searchLower)
+            || Object.entries(measurement.measurements).map(([key, value]) => `${key}: ${value}`)
+                .join(', ')
+                .toLowerCase()
+                .includes(searchLower)
         );
     }), [userMeasurements, searchQuery]);
 
@@ -171,7 +174,7 @@ export default function ListUserMeasurements({ navigation }: { navigation: Navig
                     contentContainerStyle={styles.scrollViewContent}
                     data={filteredUserMeasurements}
                     estimatedItemSize={95}
-                    keyExtractor={(item) => item?.id ? item.id.toString() : 'default'}
+                    keyExtractor={(item) => (item?.id ? item.id.toString() : 'default')}
                     onEndReached={loadMoreUserMeasurements}
                     onEndReachedThreshold={0.5}
                     renderItem={({ item: measurement }) => (
@@ -213,7 +216,7 @@ export default function ListUserMeasurements({ navigation }: { navigation: Navig
                     onClose={handleDeleteCancel}
                     onConfirm={handleDeleteConfirmation}
                     title={t('delete_confirmation_generic', {
-                        title: userMeasurements.find((measurement) => measurement.id === measurementToDelete)?.userId
+                        title: userMeasurements.find((measurement) => measurement.id === measurementToDelete)?.userId,
                     })}
                     visible={isDeleteModalVisible}
                 />

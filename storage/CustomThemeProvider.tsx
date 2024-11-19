@@ -38,11 +38,13 @@ export const CustomThemeProvider: React.FC<CustomThemeProviderProps> = ({ childr
     const effectiveTheme = theme === SYSTEM_DEFAULT ? colorScheme : (theme ?? colorScheme);
 
     return (
-        <CustomThemeContext.Provider value={{
-            setTheme,
-            theme: effectiveTheme
-            // theme: DARK,
-        }}>
+        <CustomThemeContext.Provider
+            value={{
+                setTheme,
+                theme: effectiveTheme,
+                // theme: DARK,
+            }}
+        >
             {children}
         </CustomThemeContext.Provider>
     );

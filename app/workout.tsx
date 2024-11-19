@@ -30,7 +30,7 @@ import {
     getUserNutritionFromDate,
     getWorkoutById,
     updateSet,
-    updateWorkoutSetsVolume
+    updateWorkoutSetsVolume,
 } from '@/utils/database';
 import { generateHash } from '@/utils/string';
 import {
@@ -70,7 +70,7 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
     const styles = makeStyles(colors, dark);
     const { unitSystem } = useUnit();
     const { getSettingByType } = useSettings();
-    const { checkIsPermitted, getHealthData } = useHealthConnect();
+    const { checkReadIsPermitted, getHealthData } = useHealthConnect();
 
     const isImperial = unitSystem === IMPERIAL_SYSTEM;
 
@@ -308,7 +308,7 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
                         if (!exercise) {
                             exercise = {
                                 exerciseId: item.exerciseId!,
-                                sets: []
+                                sets: [],
                             };
 
                             exerciseData.push(exercise);
@@ -334,14 +334,13 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
                         exercise.sets.push(set);
                     }
 
-                    const isPermitted = await checkIsPermitted();
+                    const isPermitted = await checkReadIsPermitted(['Nutrition']);
                     if (isPermitted) {
-                        const healthData = await getHealthData();
+                        const healthData = await getHealthData(1000, ['Nutrition']);
                         if (healthData) {
-                            const todaysNutrition =
-                                healthData.nutritionRecords!.filter(
-                                    ({ startTime }) => startTime.startsWith(new Date().toISOString().split('T')[0])
-                                );
+                            const todaysNutrition = healthData.nutritionRecords!.filter(
+                                ({ startTime }) => startTime.startsWith(new Date().toISOString().split('T')[0])
+                            );
 
                             for (const nutrition of todaysNutrition) {
                                 await addUserNutrition({
@@ -397,7 +396,7 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
                     const recentWorkoutId = await addWorkoutEvent(recentWorkout);
 
                     const randomNum = Math.floor(Math.random() * 10) + 1;
-                    const genericMessageToUser = t(`great_job_on_workout_${randomNum}`)
+                    const genericMessageToUser = t(`great_job_on_workout_${randomNum}`);
 
                     if (isAiEnabled) {
                         await addNewChat({
@@ -459,7 +458,7 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
         } catch (error) {
             console.error('Failed to finish exercise:', error);
         }
-    }, [startTime, currentExerciseIndex, exercises, workout, checkIsPermitted, t, isAiEnabled, isImperial, unitSystem, getHealthData, addNewChat, increaseUnreadMessages]);
+    }, [startTime, currentExerciseIndex, exercises, workout, checkReadIsPermitted, t, isAiEnabled, isImperial, unitSystem, getHealthData, addNewChat, increaseUnreadMessages]);
 
     useEffect(() => {
         const checkStartingTime = async () => {
@@ -540,7 +539,7 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
             ) : null}
         </ScrollView>
     );
-}
+};
 
 const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
     container: {

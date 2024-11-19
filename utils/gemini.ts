@@ -1,6 +1,7 @@
 import { EXERCISE_IMAGE_GENERATION_TYPE, GEMINI_API_KEY_TYPE } from '@/constants/storage';
 import i18n from '@/lang/lang';
 import { getSetting, processWorkoutPlan } from '@/utils/database';
+import { getBase64StringFromPhotoUri } from '@/utils/file';
 import { WorkoutPlan, WorkoutReturnType } from '@/utils/types';
 import {
     Content,
@@ -28,10 +29,10 @@ import {
     getRecentWorkoutInsightsPrompt,
     getSendChatMessageFunctions,
     getWorkoutInsightsPrompt,
-    getWorkoutVolumeInsightsPrompt
+    getWorkoutVolumeInsightsPrompt,
 } from './prompts';
 
-const GEMINI_MODEL = 'gemini-1.5-pro-latest';
+const GEMINI_MODEL = 'gemini-1.5-flash'; // or gemini-1.5-pro-latest
 
 export const getApiKey = async () =>
     (await getSetting(GEMINI_API_KEY_TYPE))?.value || process.env.EXPO_PUBLIC_FORCE_GEMINI_API_KEY;
@@ -40,7 +41,7 @@ const safetySettings = [
     { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
     { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
     { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
-    { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE }
+    { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
 ];
 
 export async function sendChatMessage(messages: any[]) {
@@ -82,13 +83,13 @@ export async function sendChatMessage(messages: any[]) {
             // responseMimeType: 'application/json',
             temperature: 0.9,
             topK: 1,
-            topP: 1
+            topP: 1,
         },
         model: GEMINI_MODEL,
         safetySettings,
         systemInstruction: {
             parts: systemParts,
-            role: 'system'
+            role: 'system',
         },
         toolConfig: {
             functionCallingConfig: {
@@ -153,7 +154,7 @@ async function createWorkoutPlan(messages: any[]) {
         safetySettings,
         systemInstruction: {
             parts: systemParts,
-            role: 'system'
+            role: 'system',
         },
         toolConfig: {
             functionCallingConfig: {
@@ -171,7 +172,7 @@ async function createWorkoutPlan(messages: any[]) {
                 // maxOutputTokens: 2048,
                 temperature: 0.9,
                 topK: 1,
-                topP: 1
+                topP: 1,
             },
         } as GenerateContentRequest);
 
@@ -210,15 +211,15 @@ export async function getNutritionInsights(startDate: string): Promise<string | 
         safetySettings,
         systemInstruction: {
             parts: systemParts,
-            role: 'system'
-        }
+            role: 'system',
+        },
     });
 
     const generationConfig = {
         // maxOutputTokens: 2048,
         temperature: 0.9,
         topK: 1,
-        topP: 1
+        topP: 1,
     };
 
     const conversationContent: Content[] = prompt
@@ -290,7 +291,7 @@ export const calculateNextWorkoutVolume = async (workout: WorkoutReturnType) => 
         safetySettings,
         systemInstruction: {
             parts: systemParts,
-            role: 'system'
+            role: 'system',
         },
         toolConfig: {
             functionCallingConfig: {
@@ -308,7 +309,7 @@ export const calculateNextWorkoutVolume = async (workout: WorkoutReturnType) => 
                 // maxOutputTokens: 2048,
                 temperature: 0.9,
                 topK: 1,
-                topP: 1
+                topP: 1,
             },
         } as GenerateContentRequest);
 
@@ -326,7 +327,7 @@ export const calculateNextWorkoutVolume = async (workout: WorkoutReturnType) => 
         console.error(e);
         return;
     }
-}
+};
 
 export const generateExerciseImage = async (exerciseName: string): Promise<string> => {
     const isImageGenerationEnabled = (await getSetting(EXERCISE_IMAGE_GENERATION_TYPE))?.value === 'true';
@@ -352,16 +353,16 @@ export const generateExerciseImage = async (exerciseName: string): Promise<strin
         responseMimeType: 'image/jpeg',
         temperature: 0.9,
         topK: 1,
-        topP: 1
+        topP: 1,
     };
 
     try {
         const result = await model.generateContent({
             contents: [{
                 parts: [{
-                    text: `Generate a flat design image, with only grayscale colors, showing a person performing the "${exerciseName}" exercise.`
+                    text: `Generate a flat design image, with only grayscale colors, showing a person performing the "${exerciseName}" exercise.`,
                 }],
-                role: 'user'
+                role: 'user',
             }],
             generationConfig,
         } as GenerateContentRequest);
@@ -412,7 +413,7 @@ export const parsePastWorkouts = async (userMessage: string) => {
         safetySettings,
         systemInstruction: {
             parts: systemParts,
-            role: 'system'
+            role: 'system',
         },
         toolConfig: {
             functionCallingConfig: {
@@ -430,7 +431,7 @@ export const parsePastWorkouts = async (userMessage: string) => {
                 // maxOutputTokens: 2048,
                 temperature: 0.9,
                 topK: 1,
-                topP: 1
+                topP: 1,
             },
         } as GenerateContentRequest);
 
@@ -447,7 +448,7 @@ export const parsePastWorkouts = async (userMessage: string) => {
         console.error(e);
         return;
     }
-}
+};
 
 export const parsePastNutrition = async (userMessage: string) => {
     const apiKey = await getApiKey();
@@ -477,7 +478,7 @@ export const parsePastNutrition = async (userMessage: string) => {
         safetySettings,
         systemInstruction: {
             parts: systemParts,
-            role: 'system'
+            role: 'system',
         },
         toolConfig: {
             functionCallingConfig: {
@@ -495,7 +496,7 @@ export const parsePastNutrition = async (userMessage: string) => {
                 // maxOutputTokens: 2048,
                 temperature: 0.9,
                 topK: 1,
-                topP: 1
+                topP: 1,
             },
         } as GenerateContentRequest);
 
@@ -512,7 +513,7 @@ export const parsePastNutrition = async (userMessage: string) => {
         console.error(e);
         return;
     }
-}
+};
 
 export const getRecentWorkoutInsights = async (workoutEventId: number): Promise<string | undefined> => {
     const apiKey = await getApiKey();
@@ -533,15 +534,15 @@ export const getRecentWorkoutInsights = async (workoutEventId: number): Promise<
         safetySettings,
         systemInstruction: {
             parts: systemParts,
-            role: 'system'
-        }
+            role: 'system',
+        },
     });
 
     const generationConfig = {
         // maxOutputTokens: 2048,
         temperature: 0.9,
         topK: 1,
-        topP: 1
+        topP: 1,
     };
 
     const conversationContent: Content[] = prompt
@@ -588,15 +589,15 @@ export const getWorkoutInsights = async (workoutId: number): Promise<string | un
         safetySettings,
         systemInstruction: {
             parts: systemParts,
-            role: 'system'
-        }
+            role: 'system',
+        },
     });
 
     const generationConfig = {
         // maxOutputTokens: 2048,
         temperature: 0.9,
         topK: 1,
-        topP: 1
+        topP: 1,
     };
 
     const conversationContent: Content[] = prompt
@@ -643,15 +644,15 @@ export const getWorkoutVolumeInsights = async (workoutId: number): Promise<strin
         safetySettings,
         systemInstruction: {
             parts: systemParts,
-            role: 'system'
-        }
+            role: 'system',
+        },
     });
 
     const generationConfig = {
         // maxOutputTokens: 2048,
         temperature: 0.9,
         topK: 1,
-        topP: 1
+        topP: 1,
     };
 
     const conversationContent: Content[] = prompt
@@ -689,8 +690,8 @@ export async function isValidApiKey(apiKey: string): Promise<boolean> {
             contents: [{ parts: [{ text: 'hi' } as Part], role: 'user' }],
             generationConfig: {
                 maxOutputTokens: 1,
-                temperature: 0.5
-            }
+                temperature: 0.5,
+            },
         } as GenerateContentRequest);
 
         return true;
@@ -709,8 +710,8 @@ export async function isAllowedLocation(apiKey: string): Promise<boolean> {
             contents: [{ parts: [{ text: 'hi' } as Part], role: 'user' }],
             generationConfig: {
                 maxOutputTokens: 1,
-                temperature: 0.5
-            }
+                temperature: 0.5,
+            },
         } as GenerateContentRequest);
 
         return true;
@@ -725,4 +726,82 @@ export async function isAllowedLocation(apiKey: string): Promise<boolean> {
 
         return false;
     }
+}
+
+export async function estimateNutritionFromPhoto(photoUri: string) {
+    // TODO: this is probably not the right way to do this, so fix it later
+    const apiKey = await getApiKey();
+
+    if (!apiKey) {
+        return Promise.resolve(null);
+    }
+
+    const genAI = new GoogleGenerativeAI(apiKey);
+
+    const model = genAI.getGenerativeModel({
+        model: GEMINI_MODEL,
+        safetySettings,
+    });
+
+    const generationConfig = {
+        // maxOutputTokens: 2048,
+        temperature: 0.9,
+        topK: 1,
+        topP: 1,
+    };
+
+    const base64Image = await getBase64StringFromPhotoUri(photoUri);
+
+    const conversationContent: Content[] = [{
+        parts: [{ text: 'Estimate the nutrition of the food in the image.' }],
+        role: 'user',
+    }];
+
+    try {
+        const result = await model.generateContent({
+            contents: conversationContent,
+            generationConfig,
+            files: [{ name: 'image.jpg', content: base64Image }],
+        } as GenerateContentRequest);
+
+        if (result.response.promptFeedback && result.response.promptFeedback.blockReason) {
+            console.log(`Blocked for ${result.response.promptFeedback.blockReason}`);
+            return Promise.resolve(null);
+
+        }
+
+        // return result.response.candidates?.[0]?.content?.parts[0]?.text;
+
+        return {
+            calories: 0,
+            carbs: 0,
+            fat: 0,
+            protein: 0,
+            grams: 0,
+            name: '',
+        };
+    } catch (e) {
+        console.error(e);
+        return Promise.resolve(null);
+    }
+
+    return {
+        calories: 0,
+        carbs: 0,
+        fat: 0,
+        protein: 0,
+        grams: 0,
+        name: '',
+    };
+}
+
+export async function extractMacrosFromLabelPhoto(photoUri: string) {
+    return {
+        calories: 0,
+        carbs: 0,
+        fat: 0,
+        protein: 0,
+        grams: 0,
+        name: '',
+    };
 }

@@ -7,12 +7,12 @@ import {
     calculateTDEE,
     calculateUserMetricsNutritionWeeklyAverages,
     isEmptyObject,
-    isTrendingUpwards
+    isTrendingUpwards,
 } from '@/utils/data';
 import {
     AggregatedUserMetricsNutritionType,
     UserMetricsDecryptedReturnType,
-    UserNutritionDecryptedReturnType
+    UserNutritionDecryptedReturnType,
 } from '@/utils/types';
 
 jest.mock('@/utils/date', () => ({
@@ -63,7 +63,7 @@ describe('Nutrition and Metrics Functions', () => {
                 fiber: 0,
                 foods: ['Breakfast'],
                 protein: 30,
-            }
+            },
         });
     });
 
@@ -99,7 +99,7 @@ describe('Nutrition and Metrics Functions', () => {
                 fiber: 0,
                 foods: ['Breakfast', 'Lunch'],
                 protein: 60,
-            }
+            },
         });
     });
 
@@ -115,7 +115,7 @@ describe('Nutrition and Metrics Functions', () => {
         const data = [
             { x: 1, y: 2 },
             { x: 2, y: 3 },
-            { x: 3, y: 5 }
+            { x: 3, y: 5 },
         ];
         expect(isTrendingUpwards(data)).toBe(true);
     });
@@ -124,7 +124,7 @@ describe('Nutrition and Metrics Functions', () => {
         const data = [
             { x: 1, y: 5 },
             { x: 2, y: 3 },
-            { x: 3, y: 1 }
+            { x: 3, y: 1 },
         ];
         expect(isTrendingUpwards(data)).toBe(false);
     });
@@ -162,7 +162,7 @@ describe('Nutrition and Metrics Functions', () => {
                 totalFats: 70,
                 totalProteins: 100,
                 weight: 70,
-            }
+            },
         });
     });
 
@@ -222,7 +222,7 @@ describe('Nutrition and Metrics Functions', () => {
                 totalCarbs: 0,
                 totalFats: 0,
                 totalProteins: 0,
-                weight: 70
+                weight: 70,
             },
             '2024-09-10': {
                 dataId: '123',
@@ -231,8 +231,8 @@ describe('Nutrition and Metrics Functions', () => {
                 totalCalories: 2000,
                 totalCarbs: 250,
                 totalFats: 70,
-                totalProteins: 100
-            }
+                totalProteins: 100,
+            },
         });
     });
 
@@ -272,7 +272,7 @@ describe('Nutrition and Metrics Functions', () => {
                 totalFats: 70,
                 totalProteins: 100,
                 weight: 70,
-            }
+            },
         });
     });
 
@@ -354,7 +354,7 @@ describe('Nutrition and Metrics Functions', () => {
                 totalFats: 25,
                 totalProteins: 160,
                 weight: 76,
-            }
+            },
         };
 
         const result = calculateUserMetricsNutritionWeeklyAverages(aggregatedUserMetricsNutrition);
@@ -369,7 +369,7 @@ describe('Nutrition and Metrics Functions', () => {
                     averageProteins: 100,
                     averageWeight: 70,
                     weekEndDate: '2023-07-01',
-                    weekStartDate: '2023-07-01'
+                    weekStartDate: '2023-07-01',
                 },
                 {
                     averageCalories: 2100,
@@ -379,7 +379,7 @@ describe('Nutrition and Metrics Functions', () => {
                     averageProteins: 110,
                     averageWeight: 71,
                     weekEndDate: '2023-07-02',
-                    weekStartDate: '2023-07-02'
+                    weekStartDate: '2023-07-02',
                 },
                 {
                     averageCalories: 2200,
@@ -389,7 +389,7 @@ describe('Nutrition and Metrics Functions', () => {
                     averageProteins: 120,
                     averageWeight: 72,
                     weekEndDate: '2023-07-03',
-                    weekStartDate: '2023-07-03'
+                    weekStartDate: '2023-07-03',
                 },
                 {
                     averageCalories: 2300,
@@ -399,7 +399,7 @@ describe('Nutrition and Metrics Functions', () => {
                     averageProteins: 130,
                     averageWeight: 73,
                     weekEndDate: '2023-07-04',
-                    weekStartDate: '2023-07-04'
+                    weekStartDate: '2023-07-04',
                 },
                 {
                     averageCalories: 2400,
@@ -409,7 +409,7 @@ describe('Nutrition and Metrics Functions', () => {
                     averageProteins: 140,
                     averageWeight: 74,
                     weekEndDate: '2023-07-05',
-                    weekStartDate: '2023-07-05'
+                    weekStartDate: '2023-07-05',
                 },
                 {
                     averageCalories: 2500,
@@ -419,7 +419,7 @@ describe('Nutrition and Metrics Functions', () => {
                     averageProteins: 150,
                     averageWeight: 75,
                     weekEndDate: '2023-07-06',
-                    weekStartDate: '2023-07-06'
+                    weekStartDate: '2023-07-06',
                 },
                 {
                     averageCalories: 2600,
@@ -429,9 +429,9 @@ describe('Nutrition and Metrics Functions', () => {
                     averageProteins: 160,
                     averageWeight: 76,
                     weekEndDate: '2023-07-07',
-                    weekStartDate: '2023-07-07'
-                }
-            ]
+                    weekStartDate: '2023-07-07',
+                },
+            ],
         });
     });
 
@@ -460,7 +460,7 @@ describe('Nutrition and Metrics Functions', () => {
                 id: 3,
                 source: USER_METRICS_SOURCES.USER_INPUT,
                 weight: 72,
-            }
+            },
         ];
 
         const aggregatedData = aggregateDataByWeek(userMetrics);
@@ -508,7 +508,7 @@ describe('Nutrition and Metrics Functions', () => {
                 id: 3,
                 source: USER_METRICS_SOURCES.USER_INPUT,
                 weight: 72,
-            }
+            },
         ];
 
         const aggregatedData = aggregateDataByWeek(userMetrics);
@@ -542,7 +542,7 @@ describe('Nutrition and Metrics Functions', () => {
                 id: 3,
                 source: USER_METRICS_SOURCES.USER_INPUT,
                 weight: 72,
-            }
+            },
         ];
 
         const aggregatedData = aggregateDataByWeek(userMetrics);
@@ -561,7 +561,7 @@ describe('Nutrition and Metrics Functions', () => {
                 height: 175,
                 id: 1,
                 source: USER_METRICS_SOURCES.USER_INPUT,
-                weight: 70
+                weight: 70,
             },
             {
                 dataId: '102',
@@ -569,7 +569,7 @@ describe('Nutrition and Metrics Functions', () => {
                 height: 175,
                 id: 2,
                 source: USER_METRICS_SOURCES.USER_INPUT,
-                weight: 71
+                weight: 71,
             },
             {
                 dataId: '103',
@@ -577,7 +577,7 @@ describe('Nutrition and Metrics Functions', () => {
                 height: 175,
                 id: 3,
                 source: USER_METRICS_SOURCES.USER_INPUT,
-                weight: 72
+                weight: 72,
             },
             {
                 dataId: '104',
@@ -585,7 +585,7 @@ describe('Nutrition and Metrics Functions', () => {
                 height: 175,
                 id: 4,
                 source: USER_METRICS_SOURCES.USER_INPUT,
-                weight: 73
+                weight: 73,
             },
             {
                 dataId: '105',
@@ -593,7 +593,7 @@ describe('Nutrition and Metrics Functions', () => {
                 height: 175,
                 id: 5,
                 source: USER_METRICS_SOURCES.USER_INPUT,
-                weight: 74
+                weight: 74,
             },
             {
                 dataId: '106',
@@ -601,7 +601,7 @@ describe('Nutrition and Metrics Functions', () => {
                 height: 175,
                 id: 6,
                 source: USER_METRICS_SOURCES.USER_INPUT,
-                weight: 75
+                weight: 75,
             },
             {
                 dataId: '107',
@@ -609,7 +609,7 @@ describe('Nutrition and Metrics Functions', () => {
                 height: 175,
                 id: 7,
                 source: USER_METRICS_SOURCES.USER_INPUT,
-                weight: 76
+                weight: 76,
             },
             {
                 dataId: '108',
@@ -617,7 +617,7 @@ describe('Nutrition and Metrics Functions', () => {
                 height: 175,
                 id: 8,
                 source: USER_METRICS_SOURCES.USER_INPUT,
-                weight: 77
+                weight: 77,
             },
             {
                 dataId: '109',
@@ -625,7 +625,7 @@ describe('Nutrition and Metrics Functions', () => {
                 height: 175,
                 id: 9,
                 source: USER_METRICS_SOURCES.USER_INPUT,
-                weight: 78
+                weight: 78,
             },
             {
                 dataId: '110',
@@ -633,7 +633,7 @@ describe('Nutrition and Metrics Functions', () => {
                 height: 175,
                 id: 10,
                 source: USER_METRICS_SOURCES.USER_INPUT,
-                weight: 79
+                weight: 79,
             },
             {
                 dataId: '111',
@@ -641,7 +641,7 @@ describe('Nutrition and Metrics Functions', () => {
                 height: 175,
                 id: 11,
                 source: USER_METRICS_SOURCES.USER_INPUT,
-                weight: 80
+                weight: 80,
             },
             {
                 dataId: '112',
@@ -649,7 +649,7 @@ describe('Nutrition and Metrics Functions', () => {
                 height: 175,
                 id: 12,
                 source: USER_METRICS_SOURCES.USER_INPUT,
-                weight: 81
+                weight: 81,
             },
             {
                 dataId: '113',
@@ -657,7 +657,7 @@ describe('Nutrition and Metrics Functions', () => {
                 height: 175,
                 id: 13,
                 source: USER_METRICS_SOURCES.USER_INPUT,
-                weight: 82
+                weight: 82,
             },
             {
                 dataId: '114',
@@ -665,7 +665,7 @@ describe('Nutrition and Metrics Functions', () => {
                 height: 175,
                 id: 14,
                 source: USER_METRICS_SOURCES.USER_INPUT,
-                weight: 83
+                weight: 83,
             },
             {
                 dataId: '115',
@@ -673,7 +673,7 @@ describe('Nutrition and Metrics Functions', () => {
                 height: 175,
                 id: 15,
                 source: USER_METRICS_SOURCES.USER_INPUT,
-                weight: 84
+                weight: 84,
             },
             {
                 dataId: '116',
@@ -681,7 +681,7 @@ describe('Nutrition and Metrics Functions', () => {
                 height: 175,
                 id: 16,
                 source: USER_METRICS_SOURCES.USER_INPUT,
-                weight: 85
+                weight: 85,
             },
             {
                 dataId: '117',
@@ -689,7 +689,7 @@ describe('Nutrition and Metrics Functions', () => {
                 height: 175,
                 id: 17,
                 source: USER_METRICS_SOURCES.USER_INPUT,
-                weight: 86
+                weight: 86,
             },
         ];
 
@@ -704,52 +704,52 @@ describe('Nutrition and Metrics Functions', () => {
                 height: 175,
                 id: 1,
                 source: 'user_input',
-                weight: 70
+                weight: 70,
             }, {
                 dataId: '102',
                 date: '2024-05-21T09:00:00Z',
                 height: 175,
                 id: 2,
                 source: 'user_input',
-                weight: 71
+                weight: 71,
             }, {
                 dataId: '103',
                 date: '2024-05-22T10:00:00Z',
                 height: 175,
                 id: 3,
                 source: 'user_input',
-                weight: 72
+                weight: 72,
             }, {
                 dataId: '104',
                 date: '2024-05-23T11:00:00Z',
                 height: 175,
                 id: 4,
                 source: 'user_input',
-                weight: 73
+                weight: 73,
             }, {
                 dataId: '105',
                 date: '2024-05-24T12:00:00Z',
                 height: 175,
                 id: 5,
                 source: 'user_input',
-                weight: 74
+                weight: 74,
             }, {
                 dataId: '106',
                 date: '2024-05-25T13:00:00Z',
                 height: 175,
                 id: 6,
                 source: 'user_input',
-                weight: 75
+                weight: 75,
             }, {
                 dataId: '107',
                 date: '2024-05-26T14:00:00Z',
                 height: 175,
                 id: 7,
                 source: 'user_input',
-                weight: 76
+                weight: 76,
             }],
             weekEnd: '2024-05-26T23:59:59+02:00',
-            weekStart: '2024-05-20T00:00:00+02:00'
+            weekStart: '2024-05-20T00:00:00+02:00',
         }, {
             data: [{
                 dataId: '108',
@@ -757,52 +757,52 @@ describe('Nutrition and Metrics Functions', () => {
                 height: 175,
                 id: 8,
                 source: 'user_input',
-                weight: 77
+                weight: 77,
             }, {
                 dataId: '109',
                 date: '2024-05-28T16:00:00Z',
                 height: 175,
                 id: 9,
                 source: 'user_input',
-                weight: 78
+                weight: 78,
             }, {
                 dataId: '110',
                 date: '2024-05-29T17:00:00Z',
                 height: 175,
                 id: 10,
                 source: 'user_input',
-                weight: 79
+                weight: 79,
             }, {
                 dataId: '111',
                 date: '2024-05-30T18:00:00Z',
                 height: 175,
                 id: 11,
                 source: 'user_input',
-                weight: 80
+                weight: 80,
             }, {
                 dataId: '112',
                 date: '2024-05-31T19:00:00Z',
                 height: 175,
                 id: 12,
                 source: 'user_input',
-                weight: 81
+                weight: 81,
             }, {
                 dataId: '113',
                 date: '2024-06-01T20:00:00Z',
                 height: 175,
                 id: 13,
                 source: 'user_input',
-                weight: 82
+                weight: 82,
             }, {
                 dataId: '114',
                 date: '2024-06-02T21:00:00Z',
                 height: 175,
                 id: 14,
                 source: 'user_input',
-                weight: 83
+                weight: 83,
             }],
             weekEnd: '2024-06-02T23:59:59+02:00',
-            weekStart: '2024-05-27T00:00:00+02:00'
+            weekStart: '2024-05-27T00:00:00+02:00',
         }, {
             data: [{
                 dataId: '115',
@@ -810,24 +810,24 @@ describe('Nutrition and Metrics Functions', () => {
                 height: 175,
                 id: 15,
                 source: 'user_input',
-                weight: 84
+                weight: 84,
             }, {
                 dataId: '116',
                 date: '2024-06-04T23:00:00Z',
                 height: 175,
                 id: 16,
                 source: 'user_input',
-                weight: 85
+                weight: 85,
             }, {
                 dataId: '117',
                 date: '2024-06-05T24:00:00Z',
                 height: 175,
                 id: 17,
                 source: 'user_input',
-                weight: 86
+                weight: 86,
             }],
             weekEnd: '2024-06-09T23:59:59+02:00',
-            weekStart: '2024-06-03T00:00:00+02:00'
+            weekStart: '2024-06-03T00:00:00+02:00',
         }]);
     });
 });

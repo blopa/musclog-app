@@ -1,3 +1,5 @@
+import type { Locale } from 'date-fns';
+
 import {
     FRIDAY,
     MONDAY,
@@ -8,7 +10,7 @@ import {
     WEDNESDAY,
 } from '@/constants/storage';
 import i18n, { LOCALE_MAP } from '@/lang/lang';
-import { Locale, format, parseISO } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 
 const daysOfWeekMap: { [key: string]: number } = {
     [FRIDAY]: 5,
@@ -41,7 +43,7 @@ export const getDayOfWeek = (date: Date): string => {
 export const formatDate = (date: string, formatStr = 'EEEE, MMMM do, yyyy'): string => {
     const language = i18n.language as keyof typeof LOCALE_MAP;
     return format(parseISO(date), formatStr, {
-        locale: LOCALE_MAP[language] as Locale
+        locale: LOCALE_MAP[language] as Locale,
     });
 };
 

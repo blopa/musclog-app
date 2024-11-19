@@ -86,8 +86,9 @@ fs.readdir(localesDir, (err, files) => {
             const constantName = baseName.toUpperCase().replace(/-/g, '_');
 
             const langName = baseName.split('-').map(
-                (word, index) => index === 1 ? word.toUpperCase() : word
-            ).join('-');
+                (word, index) => (index === 1 ? word.toUpperCase() : word)
+            )
+                .join('-');
 
             constants.push(`export const ${constantName} = '${langName}';`);
 
@@ -144,7 +145,8 @@ fs.readdir(localesDir, (err, files) => {
             'export const EXERCISES_DATA = {',
             '[EN_US]: exercisesEnUSData,',
             `${jsonFiles.map((file, index) => {
-                const constantName = path.basename(file, '.json').toUpperCase().replace(/-/g, '_');
+                const constantName = path.basename(file, '.json').toUpperCase()
+                    .replace(/-/g, '_');
                 const localeVariable = localeVariables[index];
 
                 const exerciseDataLocale = localeVariable.split('').reduce((acc, char, index) => acc + (index === 0 ? char.toUpperCase() : char), '');
@@ -163,10 +165,12 @@ fs.readdir(localesDir, (err, files) => {
             '',
             'export const AVAILABLE_LANGUAGES = Object.keys(resources) as LanguageKeys[];',
             '',
-            i18Configuration.toString().slice(7, -1).trim().replace('AVAILABLE_LANGUAGES.includes(locale.languageTag)', 'AVAILABLE_LANGUAGES.includes(locale.languageTag as LanguageKeys)'),
+            i18Configuration.toString().slice(7, -1)
+                .trim()
+                .replace('AVAILABLE_LANGUAGES.includes(locale.languageTag)', 'AVAILABLE_LANGUAGES.includes(locale.languageTag as LanguageKeys)'),
             '',
             'export default i18n;',
-            ''
+            '',
         ].join('\n');
 
         // Run ESLint on the generated output
@@ -186,8 +190,9 @@ fs.readdir(localesDir, (err, files) => {
                     console.log(`Generated ${outputFilePath}`);
                 }
             });
-        }).catch((err) => {
-            console.error('Error running ESLint:', err);
-        });
+        })
+            .catch((err) => {
+                console.error('Error running ESLint:', err);
+            });
     });
 });

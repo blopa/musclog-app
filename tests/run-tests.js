@@ -38,9 +38,9 @@ function startExpo() {
             {
                 env: {
                     ...process.env,
-                    BROWSER: 'none'
+                    BROWSER: 'none',
                 },
-                stdio: 'inherit'
+                stdio: 'inherit',
             }
         );
 

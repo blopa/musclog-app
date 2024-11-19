@@ -1,5 +1,6 @@
 import Chat from '@/app/chat';
 import CreateExercise from '@/app/createExercise';
+import CreateFitnessGoals from '@/app/CreateFitnessGoals';
 import CreateFood from '@/app/createFood';
 import CreateRecentWorkout from '@/app/createRecentWorkout';
 import CreateUserMeasurements from '@/app/createUserMeasurements';
@@ -11,6 +12,7 @@ import FoodLog from '@/app/foodLog';
 import FoodSearch from '@/app/foodSearch';
 import Index from '@/app/index';
 import ListExercises from '@/app/listExercises';
+import ListFitnessGoals from '@/app/listFitnessGoals';
 import ListUserMeasurements from '@/app/listUserMeasurements';
 import ListUserMetrics from '@/app/listUserMetrics';
 import ListUserNutrition from '@/app/listUserNutrition';
@@ -27,7 +29,6 @@ import Onboarding from '@/components/Onboarding';
 import { DARK, SYSTEM_DEFAULT } from '@/constants/colors';
 import {
     AI_SETTINGS_TYPE,
-    CAN_USE_GEMINI,
     FIRST_BOOT,
     GEMINI_API_KEY_TYPE,
     HAS_COMPLETED_ONBOARDING,
@@ -64,6 +65,10 @@ import {
     getLatestUser,
     getUser,
     createNewWorkoutTables,
+    addMealTypeGramsToUserNutritionTable,
+    createFoodTable,
+    createFitnessGoalsTable,
+    createMigrationsTable,
 } from '@/utils/database';
 import { getCurrentTimestamp } from '@/utils/date';
 import { getEncryptionKey } from '@/utils/encryption';
@@ -80,12 +85,12 @@ import {
     createDrawerNavigator,
 } from '@react-navigation/drawer';
 import * as Sentry from '@sentry/react-native';
+import 'react-native-reanimated';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
-import 'react-native-reanimated';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { I18nextProvider, useTranslation } from 'react-i18next';
-import { StatusBar, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { ActivityIndicator, PaperProvider, useTheme } from 'react-native-paper';
 
 import packageJson from '../package.json';
@@ -163,7 +168,6 @@ function RootLayout() {
 
                     const encryptedKey = process.env.EXPO_PUBLIC_ENCRYPTED_GEMINI_API_KEY;
                     try {
-                        await AsyncStorage.setItem(CAN_USE_GEMINI, 'true');
                         if (encryptedKey) {
                             const decrypter = getDecrypter();
                             const key = decrypter(encryptedKey);
@@ -174,7 +178,6 @@ function RootLayout() {
                                     value: key,
                                 });
                             } else {
-                                await AsyncStorage.setItem(CAN_USE_GEMINI, 'false');
                                 Sentry.captureMessage('Country not allowed!');
                             }
                         } else {
@@ -239,6 +242,10 @@ function RootLayout() {
             await addAlcoholAndFiberMacroToWorkoutEventTable();
             await addAlcoholMacroToUserNutritionTable();
             await createNewWorkoutTables();
+            await addMealTypeGramsToUserNutritionTable();
+            await createFoodTable();
+            await createFitnessGoalsTable();
+            await createMigrationsTable();
 
             // update to latest version
             await addVersioning(packageJson.version);
@@ -261,7 +268,9 @@ function RootLayout() {
                 <HealthConnectProvider>
                     <SnackbarProvider>
                         {/* TODO use SafeAreaView maybe */}
-                        <RootLayoutNav />
+                        <SafeAreaView style={{ flex: 1 }}>
+                            <RootLayoutNav />
+                        </SafeAreaView>
                     </SnackbarProvider>
                 </HealthConnectProvider>
             </I18nextProvider>
@@ -304,7 +313,7 @@ function RootLayoutNav() {
             { component: ListExercises, label: 'exercises', name: 'listExercises' },
             { component: ListWorkouts, label: 'workouts', name: 'listWorkouts' },
             { component: UserMetricsCharts, hidden: !showUserMetrics, label: 'user_metrics_charts', name: 'userMetricsCharts' },
-            { component: FoodLog, hidden: true, label: 'food_log', name: 'foodLog' },
+            { component: FoodLog, label: 'food_log', name: 'foodLog' },
             { component: Profile, label: 'profile', name: 'profile' },
             { component: Settings, label: 'settings', name: 'settings' },
 
@@ -327,6 +336,8 @@ function RootLayoutNav() {
             { component: FoodSearch, hidden: true, label: 'food_search', name: 'foodSearch' },
             { component: FoodDetails, hidden: true, label: 'food_details', name: 'foodDetails' },
             { component: CreateFood, hidden: true, label: 'create_food', name: 'createFood' },
+            { component: ListFitnessGoals, hidden: true, label: 'fitness_goals', name: 'listFitnessGoals' },
+            { component: CreateFitnessGoals, hidden: true, label: 'create_fitness_goals', name: 'createFitnessGoals' },
         ];
 
         return routes;
@@ -398,7 +409,7 @@ function RootLayoutNav() {
                     options={{
                         drawerItemStyle: route.hidden ? { display: 'none' } : undefined,
                         drawerLabel: t(route.label),
-                        headerTitle: ''
+                        headerTitle: '',
                     }}
                 />
             ))}

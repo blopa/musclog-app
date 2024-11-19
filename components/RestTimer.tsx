@@ -2,8 +2,8 @@ import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { formatTime } from '@/utils/date';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, Text, View } from 'react-native';
-import { Button, useTheme } from 'react-native-paper';
+import { StyleSheet, View } from 'react-native';
+import { Button, useTheme, Text } from 'react-native-paper';
 
 type RestTimerProps = {
     onAddTime: () => void;

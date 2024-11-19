@@ -19,8 +19,8 @@ import {
     FoodInsertType,
     FoodReturnType,
     MetricsForUserType,
-    NutritionGoalsInsertType,
-    NutritionGoalsReturnType,
+    FitnessGoalsInsertType,
+    FitnessGoalsReturnType,
     OneRepMaxInsertType,
     OneRepMaxReturnType,
     SetInsertType,
@@ -46,6 +46,8 @@ import {
     WorkoutPlan,
     WorkoutReturnType,
     WorkoutWithExercisesRepsAndSetsDetailsReturnType,
+    MigrationReturnType,
+    MigrationInsertType,
 } from '@/utils/types';
 import Dexie from 'dexie';
 
@@ -122,7 +124,8 @@ interface IDatabase {
         // update: (id: number, workout: WorkoutInsertType) => Promise<number>;
     };
     food: {},
-    nutritionGoals: {},
+    fitnessGoals: {},
+    migrations: {},
 }
 
 type WorkoutExerciseInsertTypeWithStrValues = { setIds: string } & Omit<WorkoutExerciseInsertType, 'setIds'>;
@@ -135,8 +138,9 @@ export class WorkoutLoggerDatabase extends Dexie implements IDatabase {
     bio!: Dexie.Table<BioReturnType, number, BioInsertType>;
     chats!: Dexie.Table<ChatReturnType, number, ChatInsertType>;
     exercises!: Dexie.Table<ExerciseReturnType, number, ExerciseInsertType>;
+    fitnessGoals!: Dexie.Table<FitnessGoalsReturnType, number, FitnessGoalsInsertType>;
     food!: Dexie.Table<FoodReturnType, number, FoodInsertType>;
-    nutritionGoals!: Dexie.Table<NutritionGoalsReturnType, number, NutritionGoalsInsertType>;
+    migrations!: Dexie.Table<MigrationReturnType, number, MigrationInsertType>;
     oneRepMaxes!: Dexie.Table<OneRepMaxReturnType, number, OneRepMaxInsertType>;
     sets!: Dexie.Table<SetReturnType, number, SetInsertType>;
     settings!: Dexie.Table<SettingsReturnType, number, SettingsInsertType>;
@@ -247,6 +251,8 @@ export class WorkoutLoggerDatabase extends Dexie implements IDatabase {
                 'date',
                 'type',
                 'source',
+                'mealType',
+                'grams',
                 'createdAt',
                 'deletedAt',
             ].join(', '),
@@ -264,6 +270,12 @@ export class WorkoutLoggerDatabase extends Dexie implements IDatabase {
             versioning: [
                 '++id',
                 'version',
+            ].join(', '),
+            migrations: [
+                '++id',
+                'migration',
+                'createdAt',
+                'deletedAt',
             ].join(', '),
             workoutEvents: [
                 '++id',
@@ -320,10 +332,48 @@ export class WorkoutLoggerDatabase extends Dexie implements IDatabase {
                 'fiber',
                 'totalFat',
                 'dataId',
+                'brand',
+                'servingSize',
+                'productCode',
                 'createdAt',
                 'deletedAt',
+                'zinc',
+                'vitaminK',
+                'vitaminC',
+                'vitaminB12',
+                'vitaminA',
+                'unsaturatedFat',
+                'vitaminE',
+                'thiamin',
+                'selenium',
+                'polyunsaturatedFat',
+                'vitaminB6',
+                'pantothenicAcid',
+                'niacin',
+                'monounsaturatedFat',
+                'calcium',
+                'iodine',
+                'molybdenum',
+                'vitaminD',
+                'manganese',
+                'magnesium',
+                'transFat',
+                'folicAcid',
+                'copper',
+                'iron',
+                'saturatedFat',
+                'chromium',
+                'caffeine',
+                'cholesterol',
+                'phosphorus',
+                'chloride',
+                'folate',
+                'biotin',
+                'sodium',
+                'riboflavin',
+                'potassium',
             ].join(', '),
-            nutritionGoals: [
+            fitnessGoals: [
                 '++id',
                 'calories',
                 'protein',
@@ -332,6 +382,10 @@ export class WorkoutLoggerDatabase extends Dexie implements IDatabase {
                 'alcohol',
                 'fiber',
                 'totalFat',
+                'weight',
+                'bodyFat',
+                'bmi',
+                'ffmi',
                 'createdAt',
                 'deletedAt',
             ].join(', '),
@@ -555,12 +609,17 @@ export const addFood = async (food: FoodInsertType): Promise<number> => {
     });
 };
 
-export const addNutritionGoals = async (nutritionGoals: NutritionGoalsInsertType): Promise<number> => {
-    const createdAt = nutritionGoals.createdAt || getCurrentTimestamp();
-    return database.nutritionGoals.add({
-        ...nutritionGoals,
+export const addFitnessGoals = async (fitnessGoals: FitnessGoalsInsertType): Promise<number> => {
+    const createdAt = fitnessGoals.createdAt || getCurrentTimestamp();
+    return database.fitnessGoals.add({
+        ...fitnessGoals,
         createdAt,
     });
+};
+
+export const createMigration = async (migration: string): Promise<number> => {
+    const createdAt = getCurrentTimestamp();
+    return database.migrations.add({ migration, createdAt });
 };
 
 // Get functions
@@ -790,7 +849,7 @@ export const getAllUserMetricsByUserId = async (userId: number): Promise<UserMet
         ...userMetrics,
         fatPercentage: parseFloat(String(userMetrics.fatPercentage)),
         height: parseFloat(String(userMetrics.height)),
-        weight: parseFloat(String(userMetrics.weight))
+        weight: parseFloat(String(userMetrics.weight)),
     }));
 };
 
@@ -805,7 +864,7 @@ export const getUserMetrics = async (id: number): Promise<UserMetricsDecryptedRe
             ...userMetrics,
             fatPercentage: parseFloat(String(userMetrics.fatPercentage)),
             height: parseFloat(String(userMetrics.height)),
-            weight: parseFloat(String(userMetrics.weight))
+            weight: parseFloat(String(userMetrics.weight)),
         };
     }
     return undefined;
@@ -824,7 +883,7 @@ export const getUserMetricsPaginated = async (offset = 0, limit = 20): Promise<U
         ...userMetrics,
         fatPercentage: parseFloat(String(userMetrics.fatPercentage)),
         height: parseFloat(String(userMetrics.height)),
-        weight: parseFloat(String(userMetrics.weight))
+        weight: parseFloat(String(userMetrics.weight)),
     }));
 };
 
@@ -839,7 +898,7 @@ export const getUserMetricsBetweenDates = async (startDate: string, endDate: str
         ...userMetrics,
         fatPercentage: parseFloat(String(userMetrics.fatPercentage)),
         height: parseFloat(String(userMetrics.height)),
-        weight: parseFloat(String(userMetrics.weight))
+        weight: parseFloat(String(userMetrics.weight)),
     }));
 };
 
@@ -857,7 +916,7 @@ export const getUserMetricsFromDate = async (startDate: string): Promise<UserMet
         ...userMetrics,
         fatPercentage: parseFloat(String(userMetrics.fatPercentage)),
         height: parseFloat(String(userMetrics.height)),
-        weight: parseFloat(String(userMetrics.weight))
+        weight: parseFloat(String(userMetrics.weight)),
     }));
 };
 
@@ -874,7 +933,7 @@ export const getAllUserMetrics = async (): Promise<UserMetricsDecryptedReturnTyp
         ...userMetrics,
         fatPercentage: parseFloat(String(userMetrics.fatPercentage)),
         height: parseFloat(String(userMetrics.height)),
-        weight: parseFloat(String(userMetrics.weight))
+        weight: parseFloat(String(userMetrics.weight)),
     }));
 };
 
@@ -895,7 +954,7 @@ export const getAllUserNutrition = async (): Promise<UserNutritionDecryptedRetur
         saturatedFat: parseFloat(String(userNutrition.saturatedFat)),
         sugar: parseFloat(String(userNutrition.sugar)),
         transFat: parseFloat(String(userNutrition.transFat)),
-        unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat))
+        unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat)),
     }));
 };
 
@@ -910,7 +969,7 @@ export const getUserMetricsByDataId = async (dataId: string): Promise<UserMetric
             ...userMetrics,
             fatPercentage: parseFloat(String(userMetrics.fatPercentage)),
             height: parseFloat(String(userMetrics.height)),
-            weight: parseFloat(String(userMetrics.weight))
+            weight: parseFloat(String(userMetrics.weight)),
         };
     }
     return undefined;
@@ -927,7 +986,7 @@ export const getLatestUserMetrics = async (): Promise<UserMetricsDecryptedReturn
             ...userMetrics,
             fatPercentage: parseFloat(String(userMetrics.fatPercentage)),
             height: parseFloat(String(userMetrics.height)),
-            weight: parseFloat(String(userMetrics.weight))
+            weight: parseFloat(String(userMetrics.weight)),
         };
     }
     return undefined;
@@ -1126,7 +1185,9 @@ export const getTotalUpcomingWorkoutsCount = async (): Promise<number> => {
 };
 
 export const getUpcomingWorkoutsPaginated = async (offset: number, limit: number): Promise<WorkoutEventReturnType[]> => {
-    const todayDate = new Date().toISOString().split('T')[0];
+    const todayDate = new Date()
+        .toISOString()
+        .split('T')[0];
 
     return database.workoutEvents
         .where('status')
@@ -1289,7 +1350,7 @@ export const getWorkoutsPaginated = async (offset: number, limit: number, loadDe
     const workouts = await database.workouts
         .orderBy('createdAt')
         .filter((workout) => {
-            return loadDeleted || (!workout.deletedAt)
+            return loadDeleted || (!workout.deletedAt);
         })
         .offset(offset)
         .limit(limit)
@@ -1317,7 +1378,7 @@ export const getUserNutrition = async (id: number): Promise<UserNutritionDecrypt
             saturatedFat: parseFloat(String(userNutrition.saturatedFat)),
             sugar: parseFloat(String(userNutrition.sugar)),
             transFat: parseFloat(String(userNutrition.transFat)),
-            unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat))
+            unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat)),
         };
     }
     return undefined;
@@ -1342,7 +1403,7 @@ export const getLatestUserNutritionByUserId = async (userId: number): Promise<Us
             saturatedFat: parseFloat(String(userNutrition.saturatedFat)),
             sugar: parseFloat(String(userNutrition.sugar)),
             transFat: parseFloat(String(userNutrition.transFat)),
-            unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat))
+            unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat)),
         };
     }
     return undefined;
@@ -1366,7 +1427,29 @@ export const getAllUserNutritionByUserId = async (userId: number): Promise<UserN
         saturatedFat: parseFloat(String(userNutrition.saturatedFat)),
         sugar: parseFloat(String(userNutrition.sugar)),
         transFat: parseFloat(String(userNutrition.transFat)),
-        unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat))
+        unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat)),
+    }));
+};
+
+export const getAllUserNutritionBySource = async (source: string): Promise<UserNutritionDecryptedReturnType[]> => {
+    const results = await database.userNutrition
+        .where({ source })
+        .filter((userNutrition) => !userNutrition.deletedAt)
+        .toArray();
+
+    return results.map((userNutrition) => ({
+        ...userNutrition,
+        calories: parseFloat(String(userNutrition.calories)),
+        carbohydrate: parseFloat(String(userNutrition.carbohydrate)),
+        fat: parseFloat(String(userNutrition.fat)),
+        fiber: parseFloat(String(userNutrition.fiber)),
+        monounsaturatedFat: parseFloat(String(userNutrition.monounsaturatedFat)),
+        polyunsaturatedFat: parseFloat(String(userNutrition.polyunsaturatedFat)),
+        protein: parseFloat(String(userNutrition.protein)),
+        saturatedFat: parseFloat(String(userNutrition.saturatedFat)),
+        sugar: parseFloat(String(userNutrition.sugar)),
+        transFat: parseFloat(String(userNutrition.transFat)),
+        unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat)),
     }));
 };
 
@@ -1389,7 +1472,7 @@ export const getUserNutritionByDataId = async (dataId: string): Promise<UserNutr
             saturatedFat: parseFloat(String(userNutrition.saturatedFat)),
             sugar: parseFloat(String(userNutrition.sugar)),
             transFat: parseFloat(String(userNutrition.transFat)),
-            unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat))
+            unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat)),
         };
     }
     return undefined;
@@ -1416,7 +1499,7 @@ export const getUserNutritionPaginated = async (offset = 0, limit = 20, order: '
         saturatedFat: parseFloat(String(userNutrition.saturatedFat)),
         sugar: parseFloat(String(userNutrition.sugar)),
         transFat: parseFloat(String(userNutrition.transFat)),
-        unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat))
+        unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat)),
     }));
 };
 
@@ -1439,7 +1522,7 @@ export const getUserNutritionBetweenDates = async (startDate: string, endDate: s
         saturatedFat: parseFloat(String(userNutrition.saturatedFat)),
         sugar: parseFloat(String(userNutrition.sugar)),
         transFat: parseFloat(String(userNutrition.transFat)),
-        unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat))
+        unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat)),
     }));
 };
 
@@ -1465,7 +1548,7 @@ export const getUserNutritionFromDate = async (startDate: string): Promise<UserN
         saturatedFat: parseFloat(String(userNutrition.saturatedFat)),
         sugar: parseFloat(String(userNutrition.sugar)),
         transFat: parseFloat(String(userNutrition.transFat)),
-        unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat))
+        unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat)),
     }));
 };
 
@@ -1480,11 +1563,55 @@ export const getFood = async (id: number): Promise<FoodReturnType | undefined> =
         .first();
 };
 
-export const getNutritionGoals = async (id: number): Promise<NutritionGoalsReturnType | undefined> => {
-    return database.nutritionGoals
+export const getFitnessGoals = async (id: number): Promise<FitnessGoalsReturnType | undefined> => {
+    return database.fitnessGoals
         .where({ id })
-        .filter((nutritionGoals) => !nutritionGoals.deletedAt)
+        .filter((fitnessGoals) => !fitnessGoals.deletedAt)
         .first();
+};
+
+export const getLatestFitnessGoals = async (): Promise<FitnessGoalsReturnType | null> => {
+    const fitnessGoals = await database.fitnessGoals
+        .orderBy('id')
+        .filter((userMetrics) => !userMetrics.deletedAt)
+        .last();
+
+    return fitnessGoals || null;
+};
+
+export const getFitnessGoalsPaginated = async (offset: number, limit: number): Promise<FitnessGoalsReturnType[]> => {
+    return database.fitnessGoals
+        .orderBy('id')
+        .filter((fitnessGoal) => !fitnessGoal.deletedAt)
+        .reverse()
+        .offset(limit * offset)
+        .limit(limit)
+        .toArray();
+};
+
+export const getTotalFitnessGoalsCount = async (): Promise<number> => {
+    return database.fitnessGoals.count();
+};
+
+export const getMigration = async (id: number): Promise<MigrationReturnType | undefined> => {
+    return database.migrations
+        .where({ id })
+        .filter((migration) => !migration.deletedAt)
+        .first();
+};
+
+export const getAllMigrations = async (): Promise<MigrationReturnType[] | undefined> => {
+    return database.migrations
+        .filter((migration) => !migration.deletedAt)
+        .toArray();
+};
+
+export const checkIfMigrationExists = async (migration: string): Promise<boolean> => {
+    const existingMigration = await database.migrations
+        .where({ migration })
+        .first();
+
+    return Boolean(existingMigration);
 };
 
 // Update functions
@@ -1513,7 +1640,7 @@ export const updateExercise = async (id: number, exercise: ExerciseInsertType): 
         image: exercise.image || existingExercise?.image || '',
         muscleGroup: exercise.muscleGroup || existingExercise?.muscleGroup || '',
         name: exercise.name || existingExercise?.name || '',
-        type: exercise.type || existingExercise?.type || ''
+        type: exercise.type || existingExercise?.type || '',
     };
 
     return database.exercises.update(id, updatedExercise);
@@ -1541,7 +1668,7 @@ const updateUser = async (id: number, user: UserInsertType): Promise<number> => 
         fitnessGoals: user.fitnessGoals || existingUser?.fitnessGoals || '',
         gender: user.gender || existingUser?.gender || '',
         liftingExperience: (user.liftingExperience || existingUser?.liftingExperience || '') as ExperienceLevelType,
-        name: user.name || existingUser?.name || ''
+        name: user.name || existingUser?.name || '',
     };
 
     return database.users.update(id, updatedUser);
@@ -1558,7 +1685,7 @@ export const updateUserMetrics = async (id: number, userMetrics: UserMetricsInse
         height: (userMetrics.height?.toString() || existingUserMetrics?.height?.toString() || '0'),
         source: userMetrics.source || existingUserMetrics?.source || USER_METRICS_SOURCES.USER_INPUT,
         userId: userMetrics.userId || existingUserMetrics?.userId || 0,
-        weight: (userMetrics.weight?.toString() || existingUserMetrics?.weight?.toString() || '0')
+        weight: (userMetrics.weight?.toString() || existingUserMetrics?.weight?.toString() || '0'),
     } as unknown as UserMetricsInsertType;
 
     return database.userMetrics.update(id, updatedUserMetrics);
@@ -1637,7 +1764,7 @@ export const updateWorkoutEvent = async (id: number, workoutEvent: WorkoutEventI
         title: workoutEvent.title || existingWorkoutEvent?.title || '',
         workoutId: workoutEvent.workoutId,
         workoutScore: workoutEvent.workoutScore || existingWorkoutEvent?.workoutScore || 5,
-        workoutVolume: workoutEvent.workoutVolume || existingWorkoutEvent?.workoutVolume || ''
+        workoutVolume: workoutEvent.workoutVolume || existingWorkoutEvent?.workoutVolume || '',
     } as unknown as WorkoutEventInsertType;
 
     return database.workoutEvents.update(id, updatedWorkoutEvent);
@@ -1663,22 +1790,26 @@ export const updateFood = async (id: number, food: FoodInsertType): Promise<numb
     return database.food.update(id, updatedFood);
 };
 
-export const updateNutritionGoals = async (id: number, nutritionGoals: NutritionGoalsInsertType): Promise<number> => {
-    const existingNutritionGoals = await getNutritionGoals(id);
+export const updateFitnessGoals = async (id: number, fitnessGoals: FitnessGoalsInsertType): Promise<number> => {
+    const existingFitnessGoals = await getFitnessGoals(id);
 
-    const updatedNutritionGoals = {
-        calories: nutritionGoals.calories || existingNutritionGoals?.calories || 0,
-        carbohydrate: nutritionGoals.totalCarbohydrate || existingNutritionGoals?.totalCarbohydrate || 0,
-        fat: nutritionGoals.totalFat || existingNutritionGoals?.totalFat || 0,
-        fiber: nutritionGoals.fiber || existingNutritionGoals?.fiber || 0,
-        protein: nutritionGoals.protein || existingNutritionGoals?.protein || 0,
-        sugar: nutritionGoals.sugar || existingNutritionGoals?.sugar || 0,
-        alcohol: nutritionGoals.alcohol || existingNutritionGoals?.alcohol || 0,
-        createdAt: nutritionGoals.createdAt || existingNutritionGoals?.createdAt || getCurrentTimestamp(),
-        deletedAt: nutritionGoals.deletedAt || existingNutritionGoals?.deletedAt || '',
+    const updatedFitnessGoals = {
+        calories: fitnessGoals.calories || existingFitnessGoals?.calories || 0,
+        carbohydrate: fitnessGoals.totalCarbohydrate || existingFitnessGoals?.totalCarbohydrate || 0,
+        fat: fitnessGoals.totalFat || existingFitnessGoals?.totalFat || 0,
+        fiber: fitnessGoals.fiber || existingFitnessGoals?.fiber || 0,
+        protein: fitnessGoals.protein || existingFitnessGoals?.protein || 0,
+        sugar: fitnessGoals.sugar || existingFitnessGoals?.sugar || 0,
+        alcohol: fitnessGoals.alcohol || existingFitnessGoals?.alcohol || 0,
+        weight: fitnessGoals.weight || existingFitnessGoals?.weight || 0,
+        bodyFat: fitnessGoals.bodyFat || existingFitnessGoals?.bodyFat || 0,
+        bmi: fitnessGoals.bmi || existingFitnessGoals?.bmi || 0,
+        ffmi: fitnessGoals.ffmi || existingFitnessGoals?.ffmi || 0,
+        createdAt: fitnessGoals.createdAt || existingFitnessGoals?.createdAt || getCurrentTimestamp(),
+        deletedAt: fitnessGoals.deletedAt || existingFitnessGoals?.deletedAt || '',
     };
 
-    return database.nutritionGoals.update(id, updatedNutritionGoals);
+    return database.fitnessGoals.update(id, updatedFitnessGoals);
 };
 
 // Delete functions
@@ -1747,8 +1878,8 @@ export const deleteChatById = async (id: number): Promise<void> => {
     await database.chats.delete(id);
 };
 
-export const deleteNutritionGoals = async (id: number): Promise<void> => {
-    await database.nutritionGoals.delete(id);
+export const deleteFitnessGoals = async (id: number): Promise<void> => {
+    await database.fitnessGoals.delete(id);
 };
 
 // Misc functions
@@ -1878,6 +2009,9 @@ const TABLE_NAMES_MAP: { [key: string]: string } = {
     Workout: 'workouts',
     WorkoutEvent: 'workoutEvents',
     WorkoutExercise: 'workoutExercises',
+    Food: 'food',
+    FitnessGoals: 'fitnessGoals',
+    Migrations: 'migrations',
 };
 
 const getDumpTableName = (originalName: string) => {
@@ -1902,7 +2036,9 @@ export const dumpDatabase = async (encryptionPhrase?: string): Promise<string> =
 
             let tableData: any[];
             if (correctTableName === 'Setting') {
-                tableData = await database.table(originalTableName).where('type').noneOf(['OPENAI_API_KEY_TYPE', 'GEMINI_API_KEY_TYPE']).toArray();
+                tableData = await database.table(originalTableName).where('type')
+                    .noneOf(['OPENAI_API_KEY_TYPE', 'GEMINI_API_KEY_TYPE'])
+                    .toArray();
             } else {
                 tableData = await database.table(originalTableName).toArray();
             }
@@ -2040,6 +2176,47 @@ export const createNewWorkoutTables = async (): Promise<void> => {
         });
 
         console.log('Done with migration');
+    }
+};
+
+export const addMealTypeGramsToUserNutritionTable = async (): Promise<void> => {
+    const currentVersion = await getLatestVersion();
+    if (currentVersion && currentVersion < packageJson.version) {
+        if (database.isOpen()) {
+            database.close();
+        }
+
+        database.version(8).stores({
+            userNutrition: [
+                '++id',
+                'userId',
+                'dataId',
+                'name',
+                'calories',
+                'protein',
+                'carbohydrate',
+                'sugar',
+                'alcohol',
+                'fiber',
+                'fat',
+                'monounsaturatedFat',
+                'polyunsaturatedFat',
+                'saturatedFat',
+                'transFat',
+                'unsaturatedFat',
+                'date',
+                'type',
+                'source',
+                'mealType',
+                'grams',
+                'createdAt',
+                'deletedAt',
+            ].join(', '),
+        });
+
+        if (!database.isOpen()) {
+            database.open();
+        }
     }
 };
 
@@ -2191,6 +2368,62 @@ export const createFoodTable = async (): Promise<void> => {
         if (!database.isOpen()) {
             database.open();
         }
+    }
+};
+
+export const createFitnessGoalsTable = async (): Promise<void> => {
+    const currentVersion = await getLatestVersion();
+    if (currentVersion && currentVersion < packageJson.version) {
+        if (database.isOpen()) {
+            database.close();
+        }
+
+        database.version(9).stores({
+            fitnessGoals: [
+                '++id',
+                'calories',
+                'protein',
+                'totalCarbohydrate',
+                'sugar',
+                'alcohol',
+                'fiber',
+                'totalFat',
+                'weight',
+                'bodyFat',
+                'bmi',
+                'ffmi',
+                'createdAt',
+                'deletedAt',
+            ].join(', '),
+        });
+
+        if (!database.isOpen()) {
+            database.open();
+        }
+    }
+};
+
+export const createMigrationsTable = async (): Promise<void> => {
+    const currentVersion = await getLatestVersion();
+    if (currentVersion && currentVersion < packageJson.version) {
+        if (database.isOpen()) {
+            database.close();
+        }
+
+        database.version(10).stores({
+            migrations: [
+                '++id',
+                'migration',
+                'createdAt',
+                'deletedAt',
+            ].join(', '),
+        });
+
+        if (!database.isOpen()) {
+            database.open();
+        }
+
+        await createMigration('createMigrationsTable');
     }
 };
 

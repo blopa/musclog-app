@@ -2,9 +2,9 @@ import { FAB_ICON_SIZE } from '@/constants/ui';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { MaterialIcons } from '@expo/vector-icons';
 import React, { ReactNode, useCallback, useRef } from 'react';
-import { Dimensions, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, StyleSheet, View } from 'react-native';
 import { BarChart as OriginalBarChart } from 'react-native-charts-wrapper';
-import { IconButton, useTheme } from 'react-native-paper';
+import { IconButton, useTheme, Text } from 'react-native-paper';
 import { processColor } from 'react-native-reanimated';
 import Share from 'react-native-share';
 import ViewShot from 'react-native-view-shot';
@@ -137,7 +137,7 @@ const BarChart: React.FC<BarChartProps> = ({
                     onPress={shareChart}
                     style={[
                         styles.shareButton,
-                        shareButtonPosition === 'top' ? styles.sharePositionTop : styles.sharePositionBottom
+                        shareButtonPosition === 'top' ? styles.sharePositionTop : styles.sharePositionBottom,
                     ]}
                 />
             ) : null}

@@ -53,7 +53,7 @@ const exerciseImages: { [key: string]: string } = {
     53: image19,
     64: image21,
     65: image22,
-    fallback: image26
+    fallback: image26,
 };
 
 export default exerciseImages;

@@ -39,7 +39,7 @@ import {
     LineChartDataType,
     SetReturnType,
     WorkoutEventReturnType,
-    WorkoutReturnType
+    WorkoutReturnType,
 } from '@/utils/types';
 import { getDisplayFormattedWeight } from '@/utils/unit';
 import { calculateWorkoutVolume, resetWorkoutStorageData } from '@/utils/workout';
@@ -258,12 +258,11 @@ const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
 
                 let workoutVolume = 0;
                 if (selectedChartData === WHOLE_WORKOUT) {
-                    workoutVolume =
-                        parseFloat(recentWorkout.workoutVolume || '0') ||
-                        (await calculateWorkoutVolume(
-                            exerciseData.filter((ex) => exercisesMap.has(ex.exerciseId)),
-                        )) ||
-                        0;
+                    workoutVolume = parseFloat(recentWorkout.workoutVolume || '0')
+                        || (await calculateWorkoutVolume(
+                            exerciseData.filter((ex) => exercisesMap.has(ex.exerciseId))
+                        ))
+                        || 0;
                 } else {
                     const selectedExerciseId = parseInt(selectedChartData, 10);
                     const selectedExerciseData = exerciseData.find(
@@ -355,7 +354,7 @@ const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
                     message,
                     misc: '',
                     sender: 'assistant',
-                    type: 'text'
+                    type: 'text',
                 });
                 increaseUnreadMessages(1);
                 showSnackbar(t('your_trainer_answered'), t('see_message'), () => {
@@ -383,7 +382,7 @@ const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
                     message,
                     misc: '',
                     sender: 'assistant',
-                    type: 'text'
+                    type: 'text',
                 });
                 increaseUnreadMessages(1);
                 showSnackbar(t('your_trainer_answered'), t('see_message'), () => {
@@ -529,7 +528,7 @@ const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
                                     ...Array.from(exercisesMap.values()).map((ex) => ({
                                         label: ex.name || '',
                                         value: ex.id!.toString() || '',
-                                    }))
+                                    })),
                                 ]}
                                 label={t('select_metric')}
                                 onValueChange={setSelectedChartData}

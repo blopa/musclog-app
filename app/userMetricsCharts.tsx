@@ -1,3 +1,5 @@
+import type { NutritionRecord } from 'react-native-health-connect/src/types/records.types';
+
 import LineChart from '@/components/Charts/LineChart';
 import NutritionDetailedChart from '@/components/Charts/NutritionDetailedChart';
 import WeightLineChart from '@/components/Charts/WeightLineChart';
@@ -10,7 +12,7 @@ import {
     CALORIES_IN_PROTEIN,
     USER_METRICS_SOURCES,
 } from '@/constants/healthConnect';
-import { EATING_PHASES, NUTRITION_TYPES } from '@/constants/nutrition';
+import { EATING_PHASES, MEAL_TYPE, NUTRITION_TYPES } from '@/constants/nutrition';
 import {
     AI_SETTINGS_TYPE,
     GRAMS,
@@ -44,6 +46,7 @@ import {
     addUserNutrition,
     deleteHealthConnectUserMetricsBetweenDates,
     deleteHealthConnectUserNutritionBetweenDates,
+    getAllUserNutritionBySource,
     getRecentWorkoutsBetweenDates,
     getRecentWorkoutsFromDate,
     getUser,
@@ -53,6 +56,7 @@ import {
     getUserMetricsFromDate,
     getUserNutritionBetweenDates,
     getUserNutritionFromDate,
+    updateUserNutrition,
 } from '@/utils/database';
 import { formatDate } from '@/utils/date';
 import { combineHeightAndWeightHealthData } from '@/utils/healthConnect';
@@ -131,7 +135,7 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
     } | undefined>(undefined);
 
     const { increaseUnreadMessages } = useUnreadMessages();
-    const { checkIsPermitted, getHealthData } = useHealthConnect();
+    const { insertHealthData, checkWriteIsPermitted, checkReadIsPermitted, getHealthData } = useHealthConnect();
     const { addNewChat } = useChatData();
     const { getSettingByType } = useSettings();
 
@@ -326,10 +330,10 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
 
             if (calorieDifference !== 0) {
                 // Calculate the total "weight" of the macros based on their caloric contribution
-                const weightSum = (CALORIES_IN_CARBS * nutritionData.carbohydrate) +
-                    (CALORIES_IN_FAT * nutritionData.fat) +
-                    (CALORIES_IN_PROTEIN * nutritionData.protein) +
-                    (CALORIES_IN_FIBER * nutritionData.fiber);
+                const weightSum = (CALORIES_IN_CARBS * nutritionData.carbohydrate)
+                    + (CALORIES_IN_FAT * nutritionData.fat)
+                    + (CALORIES_IN_PROTEIN * nutritionData.protein)
+                    + (CALORIES_IN_FIBER * nutritionData.fiber);
 
                 // Distribute the calorie difference proportionally among macros
                 if (weightSum > 0) {
@@ -554,7 +558,7 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
                 const exerciseData = JSON.parse(workout?.exerciseData || '[]') as { exerciseId: number, sets: SetReturnType[] }[];
 
                 const workoutVolume = parseFloat(workout.workoutVolume || '0') || await calculateWorkoutVolume(
-                    exerciseData,
+                    exerciseData
                 ) || 0;
 
                 recentWorkoutsChartData.push({
@@ -565,8 +569,7 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
                 });
             }
 
-            const recentWorkoutsDataToShow =
-                showWeeklyAverages ? calculatePastWorkoutsWeeklyAverages(recentWorkoutsChartData) : recentWorkoutsChartData;
+            const recentWorkoutsDataToShow = showWeeklyAverages ? calculatePastWorkoutsWeeklyAverages(recentWorkoutsChartData) : recentWorkoutsChartData;
 
             const filteredRecentWorkoutsData = recentWorkoutsDataToShow.filter((workout) => workout.y);
 
@@ -777,7 +780,7 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
                 initialWeight,
                 finalWeight,
                 useFatPercentageTDEE ? initialFatPercentage : undefined,
-                useFatPercentageTDEE ? finalFatPercentage : undefined,
+                useFatPercentageTDEE ? finalFatPercentage : undefined
             );
 
             if (user?.metrics?.height) {
@@ -889,11 +892,10 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
 
     const handleSyncHealthConnect = useCallback(async () => {
         setIsLoading(true);
-        const isPermitted = await checkIsPermitted();
-
-        if (isPermitted) {
+        const isReadPermitted = await checkReadIsPermitted(['BodyFat', 'Weight', 'Nutrition']);
+        if (isReadPermitted) {
             const dataPointsCount = 1000;
-            const healthData = await getHealthData(dataPointsCount);
+            const healthData = await getHealthData(dataPointsCount, ['BodyFat', 'Weight', 'Nutrition']);
 
             const combinedData = await combineHeightAndWeightHealthData(
                 healthData.bodyFatRecords,
@@ -962,8 +964,61 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
             loadUserMetricsAndNutrition();
         }
 
+        const isWritePermitted = await checkWriteIsPermitted(['Nutrition']);
+        if (isWritePermitted) {
+            const userNutritions = await getAllUserNutritionBySource(USER_METRICS_SOURCES.USER_INPUT);
+
+            // console.log(`Adding ${userNutritions.length} userNutritions to Health Connect`);
+            for (const userNutrition of userNutritions) {
+                const nutritionRecord: NutritionRecord = {
+                    startTime: userNutrition.date || new Date().toISOString(),
+                    endTime: new Date((new Date()).getTime() + 10000).toISOString(),
+                    mealType: parseInt(userNutrition?.mealType || '') || MEAL_TYPE.UNKNOWN,
+                    energy: {
+                        value: userNutrition.calories || 0,
+                        unit: 'kilocalories',
+                    },
+                    protein: {
+                        value: userNutrition.protein || 0,
+                        unit: 'grams',
+                    },
+                    totalCarbohydrate: {
+                        value: userNutrition.carbohydrate || 0,
+                        unit: 'grams',
+                    },
+                    totalFat: {
+                        value: userNutrition.fat || 0,
+                        unit: 'grams',
+                    },
+                    dietaryFiber: {
+                        value: userNutrition.fiber || 0,
+                        unit: 'grams',
+                    },
+                    sugar: {
+                        value: userNutrition.sugar || 0,
+                        unit: 'grams',
+                    },
+                    name: userNutrition.name,
+                    recordType: 'Nutrition',
+                };
+
+                try {
+                    const results = await insertHealthData([nutritionRecord]);
+                    if (results[0]) {
+                        await updateUserNutrition(userNutrition.id, {
+                            ...userNutrition,
+                            source: USER_METRICS_SOURCES.HEALTH_CONNECT,
+                            dataId: results[0],
+                        });
+                    }
+                } catch (error) {
+                    console.error(`Failed to insert health data for userNutri ID ${userNutrition.id}:`, error);
+                }
+            }
+        }
+
         setIsLoading(false);
-    }, [eatingPhase, checkIsPermitted, getHealthData, loadUserMetricsAndNutrition]);
+    }, [checkReadIsPermitted, checkWriteIsPermitted, getHealthData, loadUserMetricsAndNutrition, eatingPhase, insertHealthData]);
 
     const foodLabels = [t('carbs'), t('fats'), t('proteins'), t('fibers')];
     const yAxisFood = useMemo(() => {
@@ -1064,7 +1119,7 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
                     message,
                     misc: '',
                     sender: 'assistant',
-                    type: 'text'
+                    type: 'text',
                 });
                 increaseUnreadMessages(1);
                 showSnackbar(t('your_trainer_answered'), t('see_message'), () => navigation.navigate('chat'));

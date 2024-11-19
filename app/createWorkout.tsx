@@ -21,7 +21,7 @@ import {
     SetInsertType,
     VolumeCalculationTypeType,
     WorkoutInsertType,
-    WorkoutReturnType
+    WorkoutReturnType,
 } from '@/utils/types';
 import { NavigationProp, useFocusEffect, useRoute } from '@react-navigation/native';
 import React, { useState, useCallback, useMemo } from 'react';
@@ -250,7 +250,7 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
 
     const toggleExerciseSelection = (index: number) => {
         setSelectedExercises((prev) =>
-            prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
+            (prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index])
         );
     };
 
@@ -431,7 +431,7 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
             const findSupersetBounds = (index: number) => {
                 let start = index;
                 let end = index;
-                const supersetName = newWorkout[index].supersetName;
+                const { supersetName } = newWorkout[index];
 
                 if (supersetName) {
                     while (start > 0 && newWorkout[start - 1].supersetName === supersetName) {
@@ -503,7 +503,7 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
     const moveSuperset = (fromIndex: number, direction: 'up' | 'down') => {
         setWorkout((prevWorkout) => {
             const newWorkout = [...prevWorkout];
-            const supersetName = newWorkout[fromIndex].supersetName;
+            const { supersetName } = newWorkout[fromIndex];
             if (!supersetName) {
                 return newWorkout;
             }
@@ -565,11 +565,10 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
         return workout.reduce(
             (acc: any[], workoutWithExercisesAndSets: WorkoutWithExercisesAndSets, exerciseIndex: number) => {
                 const isSuperset = !!workoutWithExercisesAndSets.supersetName;
-                const isFirstInSuperset =
-                    isSuperset &&
-                    (exerciseIndex === 0 ||
-                        workout[exerciseIndex - 1].supersetName !==
-                        workoutWithExercisesAndSets.supersetName);
+                const isFirstInSuperset = isSuperset
+                    && (exerciseIndex === 0
+                        || workout[exerciseIndex - 1].supersetName
+                        !== workoutWithExercisesAndSets.supersetName);
 
                 if (isFirstInSuperset) {
                     acc.push(
@@ -590,8 +589,8 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                                         icon="arrow-down"
                                         onPress={() => moveSuperset(exerciseIndex, 'down')}
                                         disabled={
-                                            exerciseIndex >=
-                                            workout.length - workout.filter((ex) => ex.supersetName === workoutWithExercisesAndSets.supersetName).length
+                                            exerciseIndex
+                                            >= workout.length - workout.filter((ex) => ex.supersetName === workoutWithExercisesAndSets.supersetName).length
                                         }
                                     />
                                 </View>
@@ -622,7 +621,7 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
             : exerciseIndex !== 0;
 
         const canMoveDown = isSuperset
-            ?  workout[exerciseIndex + 1]?.supersetName === workoutWithExercisesAndSets.supersetName
+            ? workout[exerciseIndex + 1]?.supersetName === workoutWithExercisesAndSets.supersetName
             : exerciseIndex !== workout.length - 1;
 
         return (
@@ -752,9 +751,9 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                 );
                 if (remainingSupersetExercises.length < 2) {
                     newWorkout = newWorkout.map((ex) =>
-                        ex.supersetName === removedExercise.supersetName
+                        (ex.supersetName === removedExercise.supersetName
                             ? { ...ex, supersetName: null }
-                            : ex
+                            : ex)
                     );
                 }
             }
@@ -821,7 +820,7 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                             items={[
                                 {
                                     label: t('select_muscle_group'),
-                                    value: ''
+                                    value: '',
                                 },
                                 ...muscleGroups.map((group) => ({
                                     label: t(`muscle_groups.${group}`),

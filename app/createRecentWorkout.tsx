@@ -12,7 +12,7 @@ import {
     getWorkoutEvent,
     getWorkoutWithExercisesRepsAndSetsDetails,
     getWorkoutsPaginated,
-    updateWorkoutEvent
+    updateWorkoutEvent,
 } from '@/utils/database';
 import { formatFloatNumericInputText, formatIntegerNumericInputText } from '@/utils/string';
 import { ExerciseVolumeSetType, ExerciseVolumeType, WorkoutEventInsertType, WorkoutReturnType } from '@/utils/types';
@@ -209,10 +209,9 @@ export default function CreateRecentWorkout({ navigation }: { navigation: Naviga
     }, [setToDeleteIndex]);
 
     const handleFormatNumericText = useCallback((set: LocalStateSetType, text: string, key: 'reps' | 'restTime' | 'weight') => {
-        const formattedText =
-            key === 'weight'
-                ? formatFloatNumericInputText(text)
-                : formatIntegerNumericInputText(text);
+        const formattedText = key === 'weight'
+            ? formatFloatNumericInputText(text)
+            : formatIntegerNumericInputText(text);
 
         if (formattedText || !text) {
             setSets((prevSets) =>
@@ -274,7 +273,7 @@ export default function CreateRecentWorkout({ navigation }: { navigation: Naviga
                 } else {
                     acc.push({
                         exerciseId: set.exerciseId,
-                        sets: [setObject]
+                        sets: [setObject],
                     });
                 }
 

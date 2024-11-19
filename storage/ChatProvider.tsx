@@ -117,15 +117,17 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children, initialPag
     }, [fetchInitialChats]);
 
     return (
-        <ChatContext.Provider value={{
-            addNewChat,
-            chats,
-            deleteChat,
-            fetchInitialChats,
-            fetchMoreChats,
-            hasMore,
-            isLoading,
-        }}>
+        <ChatContext.Provider
+            value={{
+                addNewChat,
+                chats,
+                deleteChat,
+                fetchInitialChats,
+                fetchMoreChats,
+                hasMore,
+                isLoading,
+            }}
+        >
             {children}
         </ChatContext.Provider>
     );

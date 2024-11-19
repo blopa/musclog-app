@@ -334,14 +334,15 @@ export const getCommonFunctions = ({
 
     const processPastNutrition = async (
         parsedNutrition: ParsedPastNutrition[],
-        fullDay = true,
+        fullDay = true
     ) => {
         try {
             if (fullDay) {
                 const reducedNutrition = parsedNutrition.reduce((acc: {
                     [key: string]: UserNutritionInsertType;
                 }, curr) => {
-                    const date = new Date(curr.date).toISOString().split('T')[0];
+                    const date = new Date(curr.date).toISOString()
+                        .split('T')[0];
                     if (!acc[date]) {
                         acc[date] = {
                             calories: 0,
@@ -367,7 +368,8 @@ export const getCommonFunctions = ({
                     await addUserNutrition({
                         calories: nutrition.calories,
                         carbohydrate: nutrition.carbohydrate,
-                        createdAt: new Date(nutrition.date).toISOString().split('T')[0],
+                        createdAt: new Date(nutrition.date).toISOString()
+                            .split('T')[0],
                         dataId: nutrition.dataId,
                         date: nutrition.date,
                         fat: nutrition.fat,
@@ -383,7 +385,8 @@ export const getCommonFunctions = ({
                     await addUserNutrition({
                         calories: Number(curr.calories),
                         carbohydrate: Number(curr.carbs),
-                        createdAt: new Date(curr.date).toISOString().split('T')[0],
+                        createdAt: new Date(curr.date).toISOString()
+                            .split('T')[0],
                         dataId: generateHash(),
                         date: curr.date,
                         fat: Number(curr.fat),

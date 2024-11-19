@@ -8,7 +8,7 @@ import {
     IMPERIAL_SYSTEM,
     KILOGRAMS,
     SCHEDULED_STATUS,
-    WORKOUT_START_TIME
+    WORKOUT_START_TIME,
 } from '@/constants/storage';
 import i18n from '@/lang/lang';
 import {
@@ -163,7 +163,7 @@ export const generateWorkoutSummary = async (
     exerciseVolumeData: ExerciseVolumeType[],
     workoutVolume: number,
     unitSystem: string,
-    weightUnit: string,
+    weightUnit: string
 ) => {
     try {
         const isImperial = unitSystem === IMPERIAL_SYSTEM;
@@ -247,11 +247,10 @@ async function calculateNewSets(
                     didUpdate = true;
                 }
             } else if (
-                liftingExperience === EXPERIENCE_LEVELS.INTERMEDIATE ||
-                liftingExperience === EXPERIENCE_LEVELS.ADVANCED
+                liftingExperience === EXPERIENCE_LEVELS.INTERMEDIATE
+                || liftingExperience === EXPERIENCE_LEVELS.ADVANCED
             ) {
-                const checkWorkouts =
-                    liftingExperience === EXPERIENCE_LEVELS.INTERMEDIATE ? 2 : 4;
+                const checkWorkouts = liftingExperience === EXPERIENCE_LEVELS.INTERMEDIATE ? 2 : 4;
 
                 for (let i = 0; i < sets.length; i++) {
                     const pastSetReps = pastSets
@@ -265,12 +264,11 @@ async function calculateNewSets(
                 }
             }
         } else if (eatingPhase === EATING_PHASES.MAINTENANCE || !eatingPhase) {
-            const checkWorkouts =
-                liftingExperience === EXPERIENCE_LEVELS.BEGINNER
-                    ? 2
-                    : liftingExperience === EXPERIENCE_LEVELS.INTERMEDIATE
-                        ? 3
-                        : 4;
+            const checkWorkouts = liftingExperience === EXPERIENCE_LEVELS.BEGINNER
+                ? 2
+                : liftingExperience === EXPERIENCE_LEVELS.INTERMEDIATE
+                    ? 3
+                    : 4;
 
             for (let i = 0; i < sets.length; i++) {
                 const pastSetReps = pastSets
