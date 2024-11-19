@@ -104,6 +104,7 @@ export type WorkoutInsertType = {
     volumeCalculationType: VolumeCalculationTypeType;
 };
 
+// TODO: use this type
 export type MigrationInsertType = {
     id?: number;
     migration: string;
