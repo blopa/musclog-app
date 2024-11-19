@@ -348,7 +348,7 @@ export async function estimateNutritionFromPhoto(photoUri: string) {
     const apiKey = await getApiKey();
 
     if (!apiKey) {
-        return Promise.resolve();
+        return Promise.resolve(null);
     }
 
     const openai = new OpenAI({
@@ -389,6 +389,7 @@ export async function estimateNutritionFromPhoto(photoUri: string) {
         fat: 0,
         calories: 0,
         name: '',
+        grams: 0,
     };
 
     try {
@@ -405,7 +406,7 @@ export async function extractMacrosFromLabelPhoto(photoUri: string) {
     const apiKey = await getApiKey();
 
     if (!apiKey) {
-        return Promise.resolve();
+        return Promise.resolve(null);
     }
 
     const openai = new OpenAI({
@@ -447,6 +448,7 @@ export async function extractMacrosFromLabelPhoto(photoUri: string) {
         fat: 0,
         calories: 0,
         name: '',
+        grams: 0,
     };
 
     try {

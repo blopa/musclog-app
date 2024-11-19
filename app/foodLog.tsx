@@ -305,9 +305,33 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 if (photoMode === 'meal') {
                     const macros = await estimateNutritionFromPhoto(photo.uri);
                     console.log('meal', macros);
+
+                    if (macros) {
+                        setSelectedFood({
+                            productTitle: macros.name,
+                            kcal: macros.calories,
+                            protein: macros.protein,
+                            carbs: macros.carbs,
+                            fat: macros.fat,
+                            grams: macros.grams,
+                        });
+                        setIsNutritionModalVisible(true);
+                    }
                 } else {
                     const macros = await extractMacrosFromLabelPhoto(photo.uri);
                     console.log('label', macros);
+
+                    if (macros) {
+                        setSelectedFood({
+                            productTitle: macros.name,
+                            kcal: macros.calories,
+                            protein: macros.protein,
+                            carbs: macros.carbs,
+                            fat: macros.fat,
+                            grams: macros.grams,
+                        });
+                        setIsNutritionModalVisible(true);
+                    }
                 }
 
                 setShowPhotoCamera(false);

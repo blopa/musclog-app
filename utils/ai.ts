@@ -161,7 +161,7 @@ export const estimateNutritionFromPhoto = async (photo: string) => {
         return geminiFunctions.estimateNutritionFromPhoto(photo);
     }
 
-    return;
+    return null;
 };
 
 export const extractMacrosFromLabelPhoto = async (photo: string) => {
@@ -173,5 +173,5 @@ export const extractMacrosFromLabelPhoto = async (photo: string) => {
         return geminiFunctions.extractMacrosFromLabelPhoto(photo);
     }
 
-    return;
+    return null;
 };

@@ -733,7 +733,7 @@ export async function estimateNutritionFromPhoto(photoUri: string) {
     const apiKey = await getApiKey();
 
     if (!apiKey) {
-        return;
+        return Promise.resolve(null);
     }
 
     const genAI = new GoogleGenerativeAI(apiKey);
@@ -766,17 +766,42 @@ export async function estimateNutritionFromPhoto(photoUri: string) {
 
         if (result.response.promptFeedback && result.response.promptFeedback.blockReason) {
             console.log(`Blocked for ${result.response.promptFeedback.blockReason}`);
-            return;
+            return Promise.resolve(null);
+
         }
 
-        return result.response.candidates?.[0]?.content?.parts[0]?.text;
+        // return result.response.candidates?.[0]?.content?.parts[0]?.text;
+
+        return {
+            calories: 0,
+            carbs: 0,
+            fat: 0,
+            protein: 0,
+            grams: 0,
+            name: '',
+        };
     } catch (e) {
         console.error(e);
-        return;
+        return Promise.resolve(null);
     }
+
+    return {
+        calories: 0,
+        carbs: 0,
+        fat: 0,
+        protein: 0,
+        grams: 0,
+        name: '',
+    };
 }
 
 export async function extractMacrosFromLabelPhoto(photoUri: string) {
-    // TODO
-    return '';
+    return {
+        calories: 0,
+        carbs: 0,
+        fat: 0,
+        protein: 0,
+        grams: 0,
+        name: '',
+    };
 }
