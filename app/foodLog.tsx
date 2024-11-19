@@ -3,7 +3,7 @@ import type { BarcodeScanningResult } from 'expo-camera';
 import FoodTrackingModal, { FoodTrackingType } from '@/components/FoodTrackingModal';
 import ThemedCard from '@/components/ThemedCard';
 import { MEAL_TYPE } from '@/constants/nutrition';
-import { estimateNutritionFromPhoto } from '@/utils/ai';
+import { estimateNutritionFromPhoto, extractMacrosFromLabelPhoto } from '@/utils/ai';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { getUserNutritionBetweenDates } from '@/utils/database';
 import { fetchProductByEAN } from '@/utils/fetchFoodData';
@@ -304,9 +304,10 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
                 if (photoMode === 'meal') {
                     const macros = await estimateNutritionFromPhoto(photo.uri);
-                    console.log(macros);
+                    console.log('meal', macros);
                 } else {
-                    // TODO: Implement food label recognition
+                    const macros = await extractMacrosFromLabelPhoto(photo.uri);
+                    console.log('label', macros);
                 }
 
                 setShowPhotoCamera(false);

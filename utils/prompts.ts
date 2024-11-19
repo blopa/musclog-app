@@ -606,34 +606,41 @@ export const getParsePastWorkoutsFunctions = (): (FunctionDeclaration[] | OpenAI
     }];
 };
 
-export const getMacrosEstimationFunctions = (description: string): (FunctionDeclaration[] | OpenAI.Chat.ChatCompletionCreateParams.Function[]) => {
+export const getMacrosEstimationFunctions = (
+    description: string,
+    mode: 'estimated' | 'extracted' = 'estimated'
+): (FunctionDeclaration[] | OpenAI.Chat.ChatCompletionCreateParams.Function[]) => {
     return [{
         description,
         name: 'estimateMacros',
         parameters: {
             properties: {
                 protein: {
-                    description: 'The estimated protein in grams',
+                    description: `The ${mode} protein in grams`,
                     type: 'number',
                 },
                 fat: {
-                    description: 'The estimated fat in grams',
+                    description: `The ${mode} fat in grams`,
                     type: 'number',
                 },
                 carbs: {
-                    description: 'The estimated carbohydrates in grams',
+                    description: `The ${mode} carbohydrates in grams`,
                     type: 'number',
                 },
                 calories: {
-                    description: 'The estimated calories',
+                    description: `The ${mode} calories`,
+                    type: 'number',
+                },
+                grams: {
+                    description: `The ${mode} weight in grams`,
                     type: 'number',
                 },
                 name: {
-                    description: 'The name of the meal',
+                    description: 'The name of the food / meal',
                     type: 'string',
                 },
             },
-            required: ['protein', 'fat', 'carbs', 'calories', 'name'],
+            required: ['protein', 'fat', 'carbs', 'calories', 'name', 'grams'],
             type: 'object',
         },
     }];

@@ -362,8 +362,16 @@ export async function estimateNutritionFromPhoto(photoUri: string) {
 
     const result = await openai.chat.completions.create({
         function_call: { name: 'estimateMacros' },
-        functions: getMacrosEstimationFunctions('Estimates the macronutrients of the meal from the photo') as OpenAI.Chat.ChatCompletionCreateParams.Function[],
+        functions: getMacrosEstimationFunctions(
+            'Estimates the macronutrients of a meal from a photo',
+            'estimated'
+        ) as OpenAI.Chat.ChatCompletionCreateParams.Function[],
         messages: [{
+            role: 'system',
+            content: [
+                'You are a very powerful AI, trained to estimate the macronutrients of a food / meal from a photo.',
+            ].join('\n'),
+        }, {
             role: 'user',
             content: [{
                 type: 'image_url',
@@ -411,8 +419,17 @@ export async function extractMacrosFromLabelPhoto(photoUri: string) {
 
     const result = await openai.chat.completions.create({
         function_call: { name: 'estimateMacros' },
-        functions: getMacrosEstimationFunctions('Extract the macronutrients of the label from the photo') as OpenAI.Chat.ChatCompletionCreateParams.Function[],
+        functions: getMacrosEstimationFunctions(
+            'Extracts the macronutrients of a food label from a photo',
+            'extracted'
+        ) as OpenAI.Chat.ChatCompletionCreateParams.Function[],
         messages: [{
+            role: 'system',
+            content: [
+                'You are a very powerful AI, trained to extract the macronutrients of a food label from a photo.',
+                'Use OCR to extract the text from the image, then parse the text to extract the macronutrients.',
+            ].join('\n'),
+        }, {
             role: 'user',
             content: [{
                 type: 'image_url',
