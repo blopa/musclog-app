@@ -5,6 +5,7 @@ import ThemedCard from '@/components/ThemedCard';
 import { MEAL_TYPE } from '@/constants/nutrition';
 import { estimateNutritionFromPhoto, extractMacrosFromLabelPhoto } from '@/utils/ai';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
+import { normalizeMacrosByGrams } from '@/utils/data';
 import { getUserNutritionBetweenDates } from '@/utils/database';
 import { fetchProductByEAN } from '@/utils/fetchFoodData';
 import { safeToFixed } from '@/utils/string';
@@ -24,6 +25,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const { colors, dark } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors, dark);
 
+    const [isLoading, setIsLoading] = useState(false);
     const [index, setIndex] = useState(0);
     const [searchQuery, setSearchQuery] = useState('');
     const [consumed, setConsumed] = useState({
@@ -301,40 +303,40 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
             try {
                 // @ts-ignore
                 const photo = await (photoCameraRef.current as typeof CameraView).takePictureAsync();
+                setIsLoading(true);
+                setShowPhotoCamera(false);
 
                 if (photoMode === 'meal') {
                     const macros = await estimateNutritionFromPhoto(photo.uri);
-                    console.log('meal', macros);
-
                     if (macros) {
-                        setSelectedFood({
+                        setSelectedFood(normalizeMacrosByGrams({
                             productTitle: macros.name,
                             kcal: macros.calories,
                             protein: macros.protein,
                             carbs: macros.carbs,
                             fat: macros.fat,
                             grams: macros.grams,
-                        });
+                        }));
+
                         setIsNutritionModalVisible(true);
                     }
                 } else {
                     const macros = await extractMacrosFromLabelPhoto(photo.uri);
-                    console.log('label', macros);
-
                     if (macros) {
-                        setSelectedFood({
+                        setSelectedFood(normalizeMacrosByGrams({
                             productTitle: macros.name,
                             kcal: macros.calories,
                             protein: macros.protein,
                             carbs: macros.carbs,
                             fat: macros.fat,
                             grams: macros.grams,
-                        });
+                        }));
+
                         setIsNutritionModalVisible(true);
                     }
                 }
 
-                setShowPhotoCamera(false);
+                setIsLoading(false);
             } catch (error) {
                 console.error('Error taking photo:', error);
             }

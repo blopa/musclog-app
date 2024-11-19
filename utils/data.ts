@@ -453,3 +453,17 @@ export const calculatePastWorkoutsWeeklyAverages = (data: ExtendedLineChartDataT
 
     return weeklyAverages;
 };
+
+export const normalizeMacrosByGrams = (macros: any) => {
+    const servingSize = macros.grams || 100;
+    const multiplier = 100 / servingSize;
+
+    return {
+        ...macros,
+        carbs: macros.carbs * multiplier,
+        fat: macros.fat * multiplier,
+        protein: macros.protein * multiplier,
+        kcal: macros.calories * multiplier,
+        grams: 100,
+    };
+};
