@@ -304,7 +304,6 @@ function RootLayoutNav() {
             { component: RecentWorkouts, label: 'recent_workouts', name: 'recentWorkouts' },
             { component: ListExercises, label: 'exercises', name: 'listExercises' },
             { component: ListWorkouts, label: 'workouts', name: 'listWorkouts' },
-            { component: ListFitnessGoals, label: 'fitness_goals', name: 'listFitnessGoals' },
             { component: UserMetricsCharts, hidden: !showUserMetrics, label: 'user_metrics_charts', name: 'userMetricsCharts' },
             { component: FoodLog, label: 'food_log', name: 'foodLog' },
             { component: Profile, label: 'profile', name: 'profile' },
@@ -329,6 +328,7 @@ function RootLayoutNav() {
             { component: FoodSearch, hidden: true, label: 'food_search', name: 'foodSearch' },
             { component: FoodDetails, hidden: true, label: 'food_details', name: 'foodDetails' },
             { component: CreateFood, hidden: true, label: 'create_food', name: 'createFood' },
+            { component: ListFitnessGoals, hidden: true, label: 'fitness_goals', name: 'listFitnessGoals' },
             { component: CreateFitnessGoals, hidden: true, label: 'create_fitness_goals', name: 'createFitnessGoals' },
         ];
 

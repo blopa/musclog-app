@@ -203,6 +203,11 @@ const Profile = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
     const fabActions = useMemo(() => {
         const actions = [{
+            icon: () => <FontAwesome5 color={colors.primary} name="heartbeat" size={FAB_ICON_SIZE} />,
+            label: t('fitness_goals'),
+            onPress: () => navigation.navigate('listFitnessGoals'),
+            style: { backgroundColor: colors.surface },
+        }, {
             icon: () => <FontAwesome5 color={colors.primary} name="dumbbell" size={18} />,
             label: t('set_1rms'),
             onPress: () => navigation.navigate('oneRepMaxes'),
@@ -406,11 +411,11 @@ const Profile = ({ navigation }: { navigation: NavigationProp<any> }) => {
                             {showUserMetrics ? (
                                 <View style={styles.bottomButtonContainer}>
                                     <Button
-                                        icon={() => <FontAwesome5 color={colors.surface} name="chart-bar" size={20} />}
+                                        icon={() => <FontAwesome5 color={colors.surface} name="heartbeat" size={20} />}
                                         mode="contained"
-                                        onPress={() => navigation.navigate('userMetricsCharts')}
+                                        onPress={() => navigation.navigate('listFitnessGoals')}
                                     >
-                                        {t('user_metrics')}
+                                        {t('fitness_goals')}
                                     </Button>
                                 </View>
                             ) : null}
