@@ -406,6 +406,8 @@
     "edit_user_nutrition": "Editar Nutrición del Usuario",
     "edit_macros": "Editar Macros",
     "full_day": "Día Completo",
+    "tracked_today": "Rastreado Hoy",
+    "tracked": "Rastreado",
     "import_as_full_day_of_eating": "Importar como un día completo de alimentación",
     "meal": "Comida",
     "food_label": "Etiqueta de Comida",

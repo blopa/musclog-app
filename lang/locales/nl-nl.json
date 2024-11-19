@@ -406,6 +406,8 @@
     "edit_user_nutrition": "Gebruikersvoeding bewerken",
     "edit_macros": "Macro's bewerken",
     "full_day": "Volledige dag",
+    "tracked_today": "Vandaag gevolgd",
+    "tracked": "Gevolgd",
     "import_as_full_day_of_eating": "Importeren als een volledige dag eten",
     "meal": "Maaltijd",
     "food_label": "Voedingslabel",

@@ -40,7 +40,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
     const [routes] = useState([
         { key: 'overview', title: t('overview') },
-        { key: 'meals', title: t('meals') },
+        { key: 'meals', title: t('tracked') },
     ]);
 
     // New state variables for camera permission and barcode scanning
