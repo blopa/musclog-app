@@ -2334,6 +2334,38 @@ export const createFoodTable = async (): Promise<void> => {
     }
 };
 
+export const createFitnessGoalsTable = async (): Promise<void> => {
+    const currentVersion = await getLatestVersion();
+    if (currentVersion && currentVersion < packageJson.version) {
+        if (database.isOpen()) {
+            database.close();
+        }
+
+        database.version(9).stores({
+            fitnessGoals: [
+                '++id',
+                'calories',
+                'protein',
+                'totalCarbohydrate',
+                'sugar',
+                'alcohol',
+                'fiber',
+                'totalFat',
+                'weight',
+                'bodyFat',
+                'bmi',
+                'ffmi',
+                'createdAt',
+                'deletedAt',
+            ].join(', '),
+        });
+
+        if (!database.isOpen()) {
+            database.open();
+        }
+    }
+};
+
 // Functions that are exactly the same
 
 const commonFunctions = getCommonFunctions({

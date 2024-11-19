@@ -2938,6 +2938,11 @@ export const addUserMeasurementsTable = async (): Promise<void> => {
 
 export const createNewWorkoutTables = async (): Promise<void> => {
     const currentVersion = await getLatestVersion();
+
+    if (!(await tableExists('WorkoutExercise'))) {
+        return;
+    }
+
     // Check if migration is needed
     if (currentVersion && currentVersion < packageJson.version) {
         try {
