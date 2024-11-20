@@ -145,9 +145,9 @@ const createTables = (database: SQLiteDatabase) => {
             "'weight' INTEGER",
             "'restTime' INTEGER",
             "'exerciseId' INTEGER",
-            "'workoutId' INTEGER",
-            "'setOrder' INTEGER",
-            "'supersetName' TEXT",
+            "'workoutId' INTEGER DEFAULT 0",
+            "'setOrder' INTEGER DEFAULT 0",
+            "'supersetName' TEXT DEFAULT \"\"",
             "'difficultyLevel' INTEGER",
             "'isDropSet' INTEGER",
             "'createdAt' TEXT DEFAULT CURRENT_TIMESTAMP",
@@ -212,12 +212,12 @@ const createTables = (database: SQLiteDatabase) => {
             "'description' TEXT",
             "'createdAt' TEXT DEFAULT CURRENT_TIMESTAMP",
             "'deletedAt' TEXT NULLABLE",
-            "'alcohol' REAL",
-            "'protein' REAL",
-            "'carbohydrate' REAL",
-            "'fat' REAL",
-            "'fiber' REAL",
-            "'calories' REAL",
+            "'alcohol' REAL DEFAULT 0",
+            "'protein' REAL DEFAULT 0",
+            "'carbohydrate' REAL DEFAULT 0",
+            "'fat' REAL DEFAULT 0",
+            "'fiber' REAL DEFAULT 0",
+            "'calories' REAL DEFAULT 0",
         ],
         name: 'WorkoutEvent',
     },
@@ -301,7 +301,7 @@ const createTables = (database: SQLiteDatabase) => {
             "'userId' INTEGER",
             "'name' TEXT",
             "'calories' TEXT",
-            "'alcohol' TEXT",
+            "'alcohol' TEXT NULLABLE",
             "'protein' TEXT",
             "'carbohydrate' TEXT",
             "'sugar' TEXT",
@@ -3244,11 +3244,11 @@ export const addMealTypeGramsToUserNutritionTable = async (): Promise<void> => {
     const currentVersion = await getLatestVersion();
     if (currentVersion && currentVersion < packageJson.version) {
         if (!(await columnExists('UserNutrition', 'mealType'))) {
-            await database.execAsync('ALTER TABLE "UserNutrition" ADD COLUMN "mealType" TEXT');
+            await database.execAsync('ALTER TABLE "UserNutrition" ADD COLUMN "mealType" TEXT NULLABLE');
         }
 
         if (!(await columnExists('UserNutrition', 'grams'))) {
-            await database.execAsync('ALTER TABLE "UserNutrition" ADD COLUMN "grams" TEXT');
+            await database.execAsync('ALTER TABLE "UserNutrition" ADD COLUMN "grams" TEXT NULLABLE');
         }
     }
 };
@@ -3257,7 +3257,7 @@ export const addAlcoholMacroToUserNutritionTable = async (): Promise<void> => {
     const currentVersion = await getLatestVersion();
     if (currentVersion && currentVersion < packageJson.version) {
         if (!(await columnExists('UserNutrition', 'alcohol'))) {
-            await database.execAsync('ALTER TABLE "UserNutrition" ADD COLUMN "alcohol" TEXT');
+            await database.execAsync('ALTER TABLE "UserNutrition" ADD COLUMN "alcohol" TEXT NULLABLE');
         }
     }
 };
