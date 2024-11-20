@@ -4,6 +4,7 @@ import CustomTextInput from '@/components/CustomTextInput';
 import SliderWithButtons from '@/components/SliderWithButtons';
 import { ACTIVITY_LEVELS, ACTIVITY_LEVELS_MULTIPLIER } from '@/constants/exercises';
 import { CALORIES_IN_CARBS, CALORIES_IN_FAT, CALORIES_IN_PROTEIN } from '@/constants/healthConnect';
+import { GRAMS, IMPERIAL_SYSTEM } from '@/constants/storage';
 import useUnit from '@/hooks/useUnit';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { calculateBMR } from '@/utils/data';
@@ -17,6 +18,7 @@ import {
 import { getCurrentTimestamp, isValidDateParam } from '@/utils/date';
 import { formatFloatNumericInputText } from '@/utils/string';
 import { FitnessGoalsInsertType } from '@/utils/types';
+import { getDisplayFormattedWeight } from '@/utils/unit';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { NavigationProp, useRoute } from '@react-navigation/native';
 import { useFocusEffect } from 'expo-router';
@@ -51,6 +53,9 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
     const slideAnim = useRef(new Animated.Value(300)).current;
     const { colors, dark } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors, dark);
+
+    const { unitSystem, weightUnit } = useUnit();
+    const isImperial = unitSystem === IMPERIAL_SYSTEM;
 
     const [maxMacros, setMaxMacros] = useState(600);
     const [defaultMacros, setDefaultMacros] = useState({
@@ -102,8 +107,6 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
     const [bodyFat, setBodyFat] = useState<string>('');
     const [bmi, setBmi] = useState<string>('');
     const [ffmi, setFfmi] = useState<string>('');
-
-    const { weightUnit } = useUnit();
 
     // New state variables for the dynamic daily goals tab
     const [activeMacro, setActiveMacro] = useState<'protein' | 'carbs' | 'fats'>('protein');
@@ -358,7 +361,7 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
                     <View style={styles.activeMacroContainer}>
                         <Text style={styles.activeMacroTitle}>{t(activeMacro)}</Text>
                         <Text style={styles.activeMacroValue}>
-                            {activeMacroValue}{' '}g
+                            {getDisplayFormattedWeight(activeMacroValue || 0, GRAMS, isImperial).toString()}
                         </Text>
                     </View>
                     <Button mode="outlined" onPress={nextMacro} style={styles.arrowButton}>
@@ -375,19 +378,27 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
                 <View style={styles.macrosSummary}>
                     <View style={styles.macroSummaryItem}>
                         <Text style={styles.macroSummaryTitle}>{t('protein')}</Text>
-                        <Text style={styles.macroSummaryValue}>{protein || 0}g</Text>
+                        <Text style={styles.macroSummaryValue}>
+                            {getDisplayFormattedWeight(protein || 0, GRAMS, isImperial).toString()}
+                        </Text>
                     </View>
                     <View style={styles.macroSummaryItem}>
                         <Text style={styles.macroSummaryTitle}>{t('carbohydrates')}</Text>
-                        <Text style={styles.macroSummaryValue}>{totalCarbohydrate || 0}g</Text>
+                        <Text style={styles.macroSummaryValue}>
+                            {getDisplayFormattedWeight(totalCarbohydrate || 0, GRAMS, isImperial).toString()}
+                        </Text>
                     </View>
                     <View style={styles.macroSummaryItem}>
                         <Text style={styles.macroSummaryTitle}>{t('fat')}</Text>
-                        <Text style={styles.macroSummaryValue}>{totalFat || 0}g</Text>
+                        <Text style={styles.macroSummaryValue}>
+                            {getDisplayFormattedWeight(totalFat || 0, GRAMS, isImperial).toString()}
+                        </Text>
                     </View>
                     <View style={styles.macroSummaryItem}>
                         <Text style={styles.macroSummaryTitle}>{t('calories')}</Text>
-                        <Text style={styles.macroSummaryValue}>{calories || 0} kcal</Text>
+                        <Text style={styles.macroSummaryValue}>
+                            {t('value_kcal', { value: calories })}
+                        </Text>
                     </View>
                 </View>
                 <PieChart

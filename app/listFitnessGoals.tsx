@@ -2,7 +2,9 @@ import PieChart from '@/components/Charts/PieChart';
 import FABWrapper from '@/components/FABWrapper';
 import ThemedCard from '@/components/ThemedCard';
 import ThemedModal from '@/components/ThemedModal';
+import { GRAMS, IMPERIAL_SYSTEM } from '@/constants/storage';
 import { FAB_ICON_SIZE, ICON_SIZE } from '@/constants/ui';
+import useUnit from '@/hooks/useUnit';
 import { useSnackbar } from '@/storage/SnackbarProvider';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import {
@@ -13,6 +15,7 @@ import {
 } from '@/utils/database';
 import { formatDate } from '@/utils/date';
 import { FitnessGoalsInsertType } from '@/utils/types';
+import { getDisplayFormattedWeight } from '@/utils/unit';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { NavigationProp } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
@@ -33,6 +36,9 @@ export default function ListFitnessGoals({ navigation }: { navigation: Navigatio
     const { colors, dark } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors, dark);
     const { showSnackbar } = useSnackbar();
+
+    const { unitSystem, weightUnit } = useUnit();
+    const isImperial = unitSystem === IMPERIAL_SYSTEM;
 
     const loadLatestFitnessGoal = useCallback(async () => {
         try {
@@ -216,18 +222,27 @@ export default function ListFitnessGoals({ navigation }: { navigation: Navigatio
                                     </Text>
                                     <View style={styles.metricRow}>
                                         <Text style={styles.metricDetailText}>
-                                            {t('calories')}: {goal.calories}
+                                            {t('item_value', { item: 'kcal', value: goal.calories })}
                                         </Text>
                                         <Text style={styles.metricDetailText}>
-                                            {t('protein')}: {goal.protein}g
+                                            {t('item_value', {
+                                                item: t('protein'),
+                                                value: getDisplayFormattedWeight(goal.protein || 0, GRAMS, isImperial).toString(),
+                                            })}
                                         </Text>
                                     </View>
                                     <View style={styles.metricRow}>
                                         <Text style={styles.metricDetailText}>
-                                            {t('carbohydrates')}: {goal.totalCarbohydrate}g
+                                            {t('item_value', {
+                                                item: t('carbohydrates'),
+                                                value: getDisplayFormattedWeight(goal.totalCarbohydrate || 0, GRAMS, isImperial).toString(),
+                                            })}
                                         </Text>
                                         <Text style={styles.metricDetailText}>
-                                            {t('fat')}: {goal.totalFat}g
+                                            {t('item_value', {
+                                                item: t('fat'),
+                                                value: getDisplayFormattedWeight(goal.totalFat || 0, GRAMS, isImperial).toString(),
+                                            })}
                                         </Text>
                                     </View>
                                 </View>

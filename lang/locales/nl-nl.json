@@ -504,7 +504,7 @@
     "your_tdee": "Uw TDEE",
     "your_ffmi": "Je FFMI",
     "ffmi": "FFMI",
-    "value_ffmi": "FFMI: {{value}}",
+    "item_value": "{{item}}: {{value}}",
     "your_normalized_ffmi": "Je Genormaliseerde FFMI",
     "your_muscle_fat_difference": "Je spierverandering is {{muscle}}{{weightUnit}} en je vetverschil is {{fat}}{{weightUnit}}.",
     "you_have_gained_muscle_lost_fat": "Je hebt {{muscle}}{{weightUnit}} aan spiermassa gewonnen en {{fat}}{{weightUnit}} aan vet verloren.",

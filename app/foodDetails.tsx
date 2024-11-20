@@ -2,36 +2,36 @@ import ThemedCard from '@/components/ThemedCard';
 import { GRAMS, OUNCES, IMPERIAL_SYSTEM, METRIC_SYSTEM } from '@/constants/storage';
 import useUnit from '@/hooks/useUnit';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
+import { getFood } from '@/utils/database';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
-import { NavigationProp } from '@react-navigation/native';
-import React, { useState } from 'react';
+import { NavigationProp, useFocusEffect, useRoute } from '@react-navigation/native';
+import React, { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { View, StyleSheet, Platform } from 'react-native';
+import { View, StyleSheet, Platform, ActivityIndicator } from 'react-native';
 import { Appbar, TextInput, Button, Text, useTheme, HelperText } from 'react-native-paper';
+
+type RouteParams = {
+    id?: string;
+};
 
 const FoodDetails = ({
     navigation,
-    route,
 }: {
     navigation: NavigationProp<any>;
-    route: any;
 }) => {
     const { t } = useTranslation();
     const { colors, dark } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors, dark);
     const { unitSystem } = useUnit();
+    const route = useRoute();
+
     const isImperial = unitSystem === IMPERIAL_SYSTEM;
     const macroUnit = unitSystem === METRIC_SYSTEM ? GRAMS : OUNCES;
 
-    const selectedFood = route.params?.food || {
-        name: 'Chicken Breast',
-        calories: 165,
-        proteins: 31,
-        carbs: 0,
-        fats: 3.6,
-        servingSize: 100,
-    };
+    const { id } = (route.params as RouteParams) || {};
+    const [foodDetails, setFoodDetails] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
 
     const mealCategories = [t('breakfast'), t('lunch'), t('dinner'), t('snacks')];
     const units = [GRAMS, OUNCES];
@@ -41,14 +41,65 @@ const FoodDetails = ({
     const [category, setCategory] = useState('');
     const [errors, setErrors] = useState<{ amount?: string; category?: string }>({});
 
+    const fetchFoodDetails = useCallback(async () => {
+        if (!id) {
+            navigation.goBack();
+            return;
+        }
+
+        try {
+            setLoading(true);
+            const food = await getFood(Number(id));
+            if (food) {
+                setFoodDetails(food);
+            } else {
+                setFoodDetails({
+                    name: t('unknown_food'),
+                    calories: 0,
+                    proteins: 0,
+                    carbs: 0,
+                    fats: 0,
+                    servingSize: 100,
+                });
+            }
+        } catch (error) {
+            console.error(t('failed_to_load_food_details'), error);
+        } finally {
+            setLoading(false);
+        }
+    }, [id, navigation, t]);
+
+    useFocusEffect(
+        useCallback(() => {
+            fetchFoodDetails();
+        }, [fetchFoodDetails])
+    );
+
+    if (loading) {
+        return (
+            <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color={colors.primary} />
+                <Text>{t('loading_food_details')}</Text>
+            </View>
+        );
+    }
+
+    if (!foodDetails) {
+        return (
+            <View style={styles.container}>
+                <Text>{t('no_food_details')}</Text>
+            </View>
+        );
+    }
+
     const conversionFactor = unit === OUNCES ? 28.35 : 1;
-    const multiplier = (parseFloat(amount) * conversionFactor) / selectedFood.servingSize;
+    const multiplier = (parseFloat(amount) * conversionFactor) / foodDetails.servingSize;
 
     const calculatedNutrition = {
-        calories: Math.round(selectedFood.calories * multiplier),
-        proteins: Math.round(selectedFood.proteins * multiplier * 10) / 10,
-        carbs: Math.round(selectedFood.carbs * multiplier * 10) / 10,
-        fats: Math.round(selectedFood.fats * multiplier * 10) / 10,
+        calories: Math.round(foodDetails.calories * multiplier),
+        proteins: Math.round(foodDetails.proteins * multiplier * 10) / 10,
+        carbs: Math.round(foodDetails.carbs * multiplier * 10) / 10,
+        fats: Math.round(foodDetails.fats * multiplier * 10) / 10,
     };
 
     const handleFoodDetails = () => {
@@ -84,7 +135,7 @@ const FoodDetails = ({
             <View style={styles.content}>
                 <ThemedCard>
                     <View style={styles.cardContent}>
-                        <Text style={styles.cardTitle}>{selectedFood.name}</Text>
+                        <Text style={styles.cardTitle}>{foodDetails.name}</Text>
                         <View style={styles.metricRow}>
                             <Text style={styles.metricDetail}>{t('calories')}: {calculatedNutrition.calories}</Text>
                         </View>
@@ -200,6 +251,11 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         color: colors.onSurface,
         fontSize: 16,
         marginBottom: 4,
+    },
+    loadingContainer: {
+        alignItems: 'center',
+        flex: 1,
+        justifyContent: 'center',
     },
     metricDetail: {
         color: colors.onSurface,

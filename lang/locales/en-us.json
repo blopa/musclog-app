@@ -504,7 +504,7 @@
     "your_tdee": "Your TDEE",
     "your_ffmi": "Your FFMI",
     "ffmi": "FFMI",
-    "value_ffmi": "FFMI: {{value}}",
+    "item_value": "{{item}}: {{value}}",
     "your_normalized_ffmi": "Your Normalized FFMI",
     "your_muscle_fat_difference": "Your muscle change is {{muscle}}{{weightUnit}} and your fat difference is {{fat}}{{weightUnit}}.",
     "you_have_gained_muscle_lost_fat": "You have gained {{muscle}}{{weightUnit}} of muscle and lost {{fat}}{{weightUnit}} of fat.",

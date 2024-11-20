@@ -366,7 +366,7 @@ const NutritionDetailedChart = ({
                                 {t('your_ffmi')}
                             </Text>
                             <Text style={styles.ffmiValue}>
-                                {t('value_ffmi', { value: ffmi.ffmi })}
+                                {t('item_value', { item: t('ffmi'), value: ffmi.ffmi })}
                             </Text>
                             {ffmi.ffmi !== ffmi.normalizedFFMI ? (
                                 <>
@@ -374,7 +374,7 @@ const NutritionDetailedChart = ({
                                         {t('your_normalized_ffmi')}
                                     </Text>
                                     <Text style={styles.ffmiValue}>
-                                        {t('value_ffmi', { value: ffmi.normalizedFFMI })}
+                                        {t('item_value', { item: t('ffmi'), value: ffmi.normalizedFFMI })}
                                     </Text>
                                 </>
                             ) : null}
