@@ -11,6 +11,7 @@ type SliderWithButtonsProps = {
     minimumValue?: number;
     onValueChange: (value: number) => void;
     value: number;
+    step?: number;
 };
 
 const SliderWithButtons = ({
@@ -19,6 +20,7 @@ const SliderWithButtons = ({
     minimumValue = 1,
     onValueChange,
     value,
+    step = 1,
 }: SliderWithButtonsProps) => {
     const { colors } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors);
@@ -40,7 +42,7 @@ const SliderWithButtons = ({
                     minimumTrackTintColor={colors.shadow}
                     minimumValue={minimumValue}
                     onValueChange={onValueChange}
-                    step={1}
+                    step={step}
                     style={styles.slider}
                     thumbTintColor={colors.shadow}
                     value={value}
