@@ -61,12 +61,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const [userNutritionId, setUserNutritionId] = useState<number | null>(null);
     const [isNutritionModalVisible, setIsNutritionModalVisible] = useState<boolean>(false);
     const [photoMode, setPhotoMode] = useState<string>('meal');
-    const [dailyGoals, setDailyGoals] = useState<Omit<FitnessGoalsReturnType, 'id'>>({
-        calories: 2500,
-        totalCarbohydrate: 300,
-        totalFat: 80,
-        protein: 150,
-    });
+    const [dailyGoals, setDailyGoals] = useState<Omit<FitnessGoalsReturnType, 'id'> | null>(null);
 
     const { getSettingByType } = useSettings();
     const checkApiKey = useCallback(async () => {
@@ -82,6 +77,8 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
             const latestGoal = await getLatestFitnessGoals();
             if (latestGoal) {
                 setDailyGoals(latestGoal);
+            } else {
+                setDailyGoals(null);
             }
         } catch (error) {
             console.error('Failed to load latest fitness goal:', error);
@@ -96,6 +93,10 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     ];
 
     const calculatePercentage = (consumedAmount: number, goalAmount: number) => {
+        if (goalAmount === 0) {
+            return 0;
+        }
+
         return Math.min(Math.round((consumedAmount / goalAmount) * 100), 100);
     };
 
@@ -155,34 +156,44 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     );
 
     const OverviewRoute = () => {
-        const macros = [
+        const macros = dailyGoals ? [
             { name: t('calories'), consumed: safeToFixed(consumed.calories), goal: dailyGoals.calories, unit: 'kcal' },
             { name: t('proteins'), consumed: safeToFixed(consumed.protein), goal: dailyGoals.protein, unit: 'g' },
             { name: t('carbs'), consumed: safeToFixed(consumed.carbohydrate), goal: dailyGoals.totalCarbohydrate, unit: 'g' },
             { name: t('fats'), consumed: safeToFixed(consumed.fat), goal: dailyGoals.totalFat, unit: 'g' },
-        ];
+        ] : [];
 
         return (
             <ThemedCard>
                 <View style={styles.cardContent}>
                     <Text style={styles.cardTitle}>{t('todays_progress')}</Text>
-                    {macros.map((macro) => (
-                        <View key={macro.name} style={styles.macroContainer}>
-                            <Text style={styles.metricDetail}>
-                                {macro.name}: {macro.consumed} / {macro.goal} {macro.unit}
-                            </Text>
-                            <View style={styles.progressBarContainer}>
-                                <View
-                                    style={[
-                                        styles.progressBar,
-                                        {
-                                            width: `${calculatePercentage(parseFloat(macro.consumed), macro.goal)}%`,
-                                        },
-                                    ]}
-                                />
+                    {dailyGoals ? (
+                        macros.map((macro) => (
+                            <View key={macro.name} style={styles.macroContainer}>
+                                <Text style={styles.metricDetail}>
+                                    {macro.name}: {macro.consumed} / {macro.goal} {macro.unit}
+                                </Text>
+                                <View style={styles.progressBarContainer}>
+                                    <View
+                                        style={[
+                                            styles.progressBar,
+                                            {
+                                                width: `${calculatePercentage(parseFloat(macro.consumed), macro.goal)}%`,
+                                            },
+                                        ]}
+                                    />
+                                </View>
                             </View>
-                        </View>
-                    ))}
+                        ))
+                    ) : (
+                        <Button
+                            mode="contained"
+                            onPress={() => navigation.navigate('createFitnessGoals')}
+                            style={styles.addGoalButton}
+                        >
+                            {t('add_your_fitness_goal')}
+                        </Button>
+                    )}
                 </View>
             </ThemedCard>
         );
@@ -263,12 +274,20 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                                                 </View>
                                             </View>
                                             <View style={styles.metricRow}>
-                                                <Text style={styles.metricDetail}>{t('calories')}: {safeToFixed(userNutrition.calories)}kcal</Text>
-                                                <Text style={styles.metricDetail}>{t('carbs')}: {safeToFixed(userNutrition.carbohydrate)}g</Text>
+                                                <Text style={styles.metricDetail}>
+                                                    {t('calories')}: {safeToFixed(userNutrition.calories)}kcal
+                                                </Text>
+                                                <Text style={styles.metricDetail}>
+                                                    {t('carbs')}: {safeToFixed(userNutrition.carbohydrate)}g
+                                                </Text>
                                             </View>
                                             <View style={styles.metricRow}>
-                                                <Text style={styles.metricDetail}>{t('fats')}: {safeToFixed(userNutrition.fat)}g</Text>
-                                                <Text style={styles.metricDetail}>{t('proteins')}: {safeToFixed(userNutrition.protein)}g</Text>
+                                                <Text style={styles.metricDetail}>
+                                                    {t('fats')}: {safeToFixed(userNutrition.fat)}g
+                                                </Text>
+                                                <Text style={styles.metricDetail}>
+                                                    {t('proteins')}: {safeToFixed(userNutrition.protein)}g
+                                                </Text>
                                             </View>
                                         </Card.Content>
                                     </ThemedCard>
@@ -537,6 +556,12 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
 };
 
 const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
+    addGoalButton: {
+        backgroundColor: colors.primary,
+        borderRadius: 8,
+        marginTop: 16,
+        paddingVertical: 12,
+    },
     appbarHeader: {
         backgroundColor: colors.primary,
         justifyContent: 'center',
