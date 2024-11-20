@@ -2,6 +2,7 @@ import PieChart from '@/components/Charts/PieChart';
 import CompletionModal from '@/components/CompletionModal';
 import CustomTextInput from '@/components/CustomTextInput';
 import SliderWithButtons from '@/components/SliderWithButtons';
+import { CALORIES_IN_CARBS, CALORIES_IN_FAT, CALORIES_IN_PROTEIN } from '@/constants/healthConnect';
 import useUnit from '@/hooks/useUnit';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { addFitnessGoals, getFitnessGoals, getLatestFitnessGoals, updateFitnessGoals } from '@/utils/database';
@@ -27,10 +28,10 @@ import { Appbar, Button, useTheme, Text } from 'react-native-paper';
 import { TabView, TabBar } from 'react-native-tab-view';
 
 const DEFAULT_MACROS = {
-    CALORIES: 2000,
-    PROTEIN: 25,
-    TOTAL_CARBOHYDRATE: 50,
-    TOTAL_FAT: 25,
+    CALORIES: 2230,
+    PROTEIN: 150,
+    TOTAL_CARBOHYDRATE: 250,
+    TOTAL_FAT: 70,
 };
 
 type RouteParams = {
@@ -75,35 +76,60 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
     const { weightUnit } = useUnit();
 
     // New state variables for the dynamic daily goals tab
-    const [activeMacro, setActiveMacro] = useState<'protein' | 'carbs' | 'fats' | 'calories'>(
-        'protein'
+    const [activeMacro, setActiveMacro] = useState<'protein' | 'carbs' | 'fats' | 'calories'>('protein');
+
+    const macroOrder: ('protein' | 'carbs' | 'fats' | 'calories')[] = ['protein', 'carbs', 'fats', 'calories'];
+
+    const adjustCaloriesBasedOnMacros = useCallback(
+        (newProtein: number, newCarbs: number, newFat: number) => {
+            const calculatedCalories = newProtein * CALORIES_IN_PROTEIN + newCarbs * CALORIES_IN_CARBS + newFat * CALORIES_IN_FAT;
+            setCalories(Math.round(calculatedCalories));
+        },
+        []
     );
 
-    const macroOrder: ('protein' | 'carbs' | 'fats' | 'calories')[] = [
-        'protein',
-        'carbs',
-        'fats',
-        'calories',
-    ];
+    const adjustMacrosBasedOnCalories = useCallback(
+        (newCalories: number) => {
+            const totalMacroCalories = protein * CALORIES_IN_PROTEIN + totalCarbohydrate * CALORIES_IN_CARBS + totalFat * CALORIES_IN_FAT;
+            if (totalMacroCalories === 0) {
+                // If total macro calories is zero, distribute calories equally
+                const oneThirdCalories = newCalories / 3;
+
+                setProtein(Math.round(oneThirdCalories / CALORIES_IN_PROTEIN));
+                setTotalCarbohydrate(Math.round(oneThirdCalories / CALORIES_IN_CARBS));
+                setTotalFat(Math.round(oneThirdCalories / CALORIES_IN_FAT));
+            } else {
+                const calorieRatio = newCalories / totalMacroCalories;
+                setProtein(Math.round(protein * calorieRatio));
+                setTotalCarbohydrate(Math.round(totalCarbohydrate * calorieRatio));
+                setTotalFat(Math.round(totalFat * calorieRatio));
+            }
+            setCalories(newCalories);
+        },
+        [protein, totalCarbohydrate, totalFat]
+    );
 
     const handleSliderChange = useCallback(
         (value: number) => {
             switch (activeMacro) {
                 case 'protein':
                     setProtein(value);
+                    adjustCaloriesBasedOnMacros(value, totalCarbohydrate, totalFat);
                     break;
                 case 'carbs':
                     setTotalCarbohydrate(value);
+                    adjustCaloriesBasedOnMacros(protein, value, totalFat);
                     break;
                 case 'fats':
                     setTotalFat(value);
+                    adjustCaloriesBasedOnMacros(protein, totalCarbohydrate, value);
                     break;
                 case 'calories':
-                    setCalories(value);
+                    adjustMacrosBasedOnCalories(value);
                     break;
             }
         },
-        [activeMacro]
+        [activeMacro, adjustCaloriesBasedOnMacros, adjustMacrosBasedOnCalories, protein, totalCarbohydrate, totalFat]
     );
 
     const nextMacro = () => {
@@ -113,9 +139,7 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
 
     const prevMacro = () => {
         const currentIndex = macroOrder.indexOf(activeMacro);
-        setActiveMacro(
-            macroOrder[(currentIndex - 1 + macroOrder.length) % macroOrder.length]
-        );
+        setActiveMacro(macroOrder[(currentIndex - 1 + macroOrder.length) % macroOrder.length]);
     };
 
     const getSliderMax = () => {
@@ -169,8 +193,10 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
                 setFfmi(fitnessGoals?.ffmi?.toString() || '');
             };
 
-            loadLatest();
-        }, [])
+            if (!id) {
+                loadLatest();
+            }
+        }, [id])
     );
 
     useFocusEffect(
@@ -322,9 +348,9 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
     // Render functions for each tab
     const renderDailyIntakeTab = () => {
         const pieData = [
-            { label: t('protein'), value: protein || 0, color: '#FF6384' },
-            { label: t('carbohydrates'), value: totalCarbohydrate || 0, color: '#36A2EB' },
-            { label: t('fat'), value: totalFat || 0, color: '#FFCE56' },
+            { label: t('protein'), value: protein * CALORIES_IN_PROTEIN, color: '#FF6384' },
+            { label: t('carbohydrates'), value: totalCarbohydrate * CALORIES_IN_CARBS, color: '#36A2EB' },
+            { label: t('fat'), value: totalFat * CALORIES_IN_FAT, color: '#FFCE56' },
         ];
 
         const activeMacroValue = activeMacro === 'calories'
