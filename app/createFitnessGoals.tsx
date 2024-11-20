@@ -2,11 +2,19 @@ import PieChart from '@/components/Charts/PieChart';
 import CompletionModal from '@/components/CompletionModal';
 import CustomTextInput from '@/components/CustomTextInput';
 import SliderWithButtons from '@/components/SliderWithButtons';
+import { ACTIVITY_LEVELS, ACTIVITY_LEVELS_MULTIPLIER } from '@/constants/exercises';
 import { CALORIES_IN_CARBS, CALORIES_IN_FAT, CALORIES_IN_PROTEIN } from '@/constants/healthConnect';
 import useUnit from '@/hooks/useUnit';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
-import { addFitnessGoals, getFitnessGoals, getLatestFitnessGoals, updateFitnessGoals } from '@/utils/database';
-import { getCurrentTimestamp } from '@/utils/date';
+import { calculateBMR } from '@/utils/data';
+import {
+    addFitnessGoals,
+    getFitnessGoals,
+    getLatestFitnessGoals,
+    getLatestUser,
+    updateFitnessGoals,
+} from '@/utils/database';
+import { getCurrentTimestamp, isValidDateParam } from '@/utils/date';
 import { formatFloatNumericInputText } from '@/utils/string';
 import { FitnessGoalsInsertType } from '@/utils/types';
 import { FontAwesome5 } from '@expo/vector-icons';
@@ -27,12 +35,6 @@ import {
 import { Appbar, Button, useTheme, Text } from 'react-native-paper';
 import { TabView, TabBar } from 'react-native-tab-view';
 
-const DEFAULT_MACROS = {
-    PROTEIN: 150,
-    TOTAL_CARBOHYDRATE: 250,
-    TOTAL_FAT: 70,
-};
-
 type RouteParams = {
     id?: string;
 };
@@ -50,6 +52,33 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
     const { colors, dark } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors, dark);
 
+    const [defaultMacros, setDefaultMacros] = useState({
+        protein: 150,
+        carbohydrate: 250,
+        fat: 70,
+    });
+
+    const calculateTdee = useCallback(async () => {
+        const user = await getLatestUser();
+
+        if (user) {
+            const { metrics, birthday, gender, activityLevel } = user;
+            const { weight, height } = metrics;
+
+            if (gender && weight && height && isValidDateParam(birthday)) {
+                const age = Math.floor((new Date().getTime() - new Date(birthday).getTime()) / 3.15576e+10);
+                const bmr = calculateBMR(weight, height * 100, age, gender.toLowerCase());
+                const tdee = bmr * ACTIVITY_LEVELS_MULTIPLIER[activityLevel || ACTIVITY_LEVELS.LIGHTLY_ACTIVE];
+
+                setDefaultMacros({
+                    protein: Math.round(tdee * 0.3 / 4),
+                    carbohydrate: Math.round(tdee * 0.5 / 4),
+                    fat: Math.round(tdee * 0.2 / 9),
+                });
+            }
+        }
+    }, []);
+
     // State variables for tabs and input fields
     const [index, setIndex] = useState(0);
     const [routes] = useState([
@@ -58,9 +87,9 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
     ]);
 
     // Daily Intake Goals
-    const [protein, setProtein] = useState<number>(DEFAULT_MACROS.PROTEIN);
-    const [totalCarbohydrate, setTotalCarbohydrate] = useState<number>(DEFAULT_MACROS.TOTAL_CARBOHYDRATE);
-    const [totalFat, setTotalFat] = useState<number>(DEFAULT_MACROS.TOTAL_FAT);
+    const [protein, setProtein] = useState<number>(defaultMacros.protein);
+    const [totalCarbohydrate, setTotalCarbohydrate] = useState<number>(defaultMacros.carbohydrate);
+    const [totalFat, setTotalFat] = useState<number>(defaultMacros.fat);
     const [alcohol, setAlcohol] = useState<string>('');
     const [fiber, setFiber] = useState<string>('');
     const [sugar, setSugar] = useState<string>('');
@@ -122,9 +151,9 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
             const goal = await getFitnessGoals(Number(id));
 
             if (goal) {
-                setProtein(goal.protein ?? DEFAULT_MACROS.PROTEIN);
-                setTotalCarbohydrate(goal.totalCarbohydrate ?? DEFAULT_MACROS.TOTAL_CARBOHYDRATE);
-                setTotalFat(goal.totalFat ?? DEFAULT_MACROS.TOTAL_FAT);
+                setProtein(goal.protein ?? defaultMacros.protein);
+                setTotalCarbohydrate(goal.totalCarbohydrate ?? defaultMacros.carbohydrate);
+                setTotalFat(goal.totalFat ?? defaultMacros.fat);
                 setAlcohol(goal.alcohol?.toString() || '');
                 setFiber(goal.fiber?.toString() || '');
                 setSugar(goal.sugar?.toString() || '');
@@ -142,9 +171,9 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
         useCallback(() => {
             const loadLatest = async () => {
                 const fitnessGoals = await getLatestFitnessGoals();
-                setProtein(fitnessGoals?.protein ?? DEFAULT_MACROS.PROTEIN);
-                setTotalCarbohydrate(fitnessGoals?.totalCarbohydrate ?? DEFAULT_MACROS.TOTAL_CARBOHYDRATE);
-                setTotalFat(fitnessGoals?.totalFat ?? DEFAULT_MACROS.TOTAL_FAT);
+                setProtein(fitnessGoals?.protein ?? defaultMacros.protein);
+                setTotalCarbohydrate(fitnessGoals?.totalCarbohydrate ?? defaultMacros.carbohydrate);
+                setTotalFat(fitnessGoals?.totalFat ?? defaultMacros.fat);
                 setAlcohol(fitnessGoals?.alcohol?.toString() || '');
                 setFiber(fitnessGoals?.fiber?.toString() || '');
                 setSugar(fitnessGoals?.sugar?.toString() || '');
@@ -257,9 +286,9 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
     ]);
 
     const resetScreenData = useCallback(() => {
-        setProtein(DEFAULT_MACROS.PROTEIN);
-        setTotalCarbohydrate(DEFAULT_MACROS.TOTAL_CARBOHYDRATE);
-        setTotalFat(DEFAULT_MACROS.TOTAL_FAT);
+        setProtein(defaultMacros.protein);
+        setTotalCarbohydrate(defaultMacros.carbohydrate);
+        setTotalFat(defaultMacros.fat);
         setAlcohol('');
         setFiber('');
         setSugar('');
@@ -271,10 +300,12 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
 
     useFocusEffect(
         useCallback(() => {
+            calculateTdee();
+
             return () => {
                 resetScreenData();
             };
-        }, [resetScreenData])
+        }, [calculateTdee, resetScreenData])
     );
 
     const handleModalClose = useCallback(() => {

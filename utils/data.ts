@@ -468,7 +468,12 @@ export const normalizeMacrosByGrams = (macros: any) => {
     };
 };
 
-export const calculateBMR = (weight: number, height: number, age: number, gender: string) => {
+export const calculateBMR = (
+    weight: number,
+    height: number,
+    age: number,
+    gender: string
+) => {
     let bmr;
     if (gender === 'male') {
         bmr = 10 * weight + 6.25 * height - 5 * age + 5;
