@@ -388,7 +388,7 @@ export type UserNutritionInsertType = {
     type: UserNutritionTypeType;
     unsaturatedFat?: number;
     userId?: number;
-    mealType?: string;
+    mealType?: number;
 };
 
 export type UserNutritionEncryptedReturnType = {

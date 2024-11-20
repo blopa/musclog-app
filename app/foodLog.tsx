@@ -161,7 +161,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         }, [checkApiKey, loadConsumed, loadLatestFitnessGoal, resetScreenData])
     );
 
-    const OverviewRoute = () => {
+    const OverviewRoute = useCallback(() => {
         const macros = dailyGoals ? [
             { name: t('calories'), consumed: safeToFixed(consumed.calories), goal: dailyGoals.calories, unit: 'kcal' },
             { name: t('proteins'), consumed: safeToFixed(consumed.protein), goal: dailyGoals.protein, unit: macroUnit },
@@ -203,7 +203,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 </View>
             </ThemedCard>
         );
-    };
+    }, [consumed.calories, consumed.carbohydrate, consumed.fat, consumed.protein, dailyGoals, macroUnit, navigation, styles.addGoalButton, styles.cardContent, styles.cardTitle, styles.macroContainer, styles.metricDetail, styles.progressBar, styles.progressBarContainer, t]);
 
     const handleEditNutrition = (userNutrition: UserNutritionDecryptedReturnType) => {
         setSelectedFood({
@@ -240,9 +240,9 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         }
     }, [selectedNutrition, loadConsumed, t]);
 
-    const MealsRoute = () => {
+    const MealsRoute = useCallback(() => {
         const mealGroups = consumedFoods.reduce((groups, food) => {
-            const mealType = food.mealType || 'snacks';
+            const mealType = food.mealType || '0';
             if (!groups[mealType]) {
                 groups[mealType] = [];
             }
@@ -318,7 +318,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 })}
             </ScrollView>
         );
-    };
+    }, [colors.primary, consumedFoods, handleDeleteNutrition, isImperial, mealCategories, styles.cardContent, styles.cardHeader, styles.cardTitle, styles.foodItem, styles.iconContainer, styles.mealContainer, styles.mealHeader, styles.mealTitle, styles.mealsContent, styles.metricDetail, styles.metricRow, t]);
 
     const renderScene = ({ route }: { route: { key: string } }) => {
         switch (route.key) {

@@ -943,6 +943,7 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
                         transFat: nutrition?.transFat?.inGrams || 0,
                         type: NUTRITION_TYPES.MEAL,
                         unsaturatedFat: nutrition?.unsaturatedFat?.inGrams || 0,
+                        mealType: nutrition.mealType || 0,
                     });
                 }
             }
@@ -973,7 +974,7 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
                 const nutritionRecord: NutritionRecord = {
                     startTime: userNutrition.date || new Date().toISOString(),
                     endTime: new Date((new Date()).getTime() + 10000).toISOString(),
-                    mealType: parseInt(userNutrition?.mealType || '') || MEAL_TYPE.UNKNOWN,
+                    mealType: userNutrition?.mealType || MEAL_TYPE.UNKNOWN,
                     energy: {
                         value: userNutrition.calories || 0,
                         unit: 'kilocalories',
