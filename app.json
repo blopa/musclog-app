@@ -3,7 +3,7 @@
     "name": "Musclog - Lift, Log, Repeat",
     "slug": "logger",
     "jsEngine": "hermes",
-    "version": "1.2.3",
+    "version": "1.2.4",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "musclog",
@@ -11,11 +11,11 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.werules.logger",
-      "buildNumber": "61"
+      "buildNumber": "62"
     },
     "android": {
       "package": "com.werules.logger",
-      "versionCode": 61,
+      "versionCode": 62,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
