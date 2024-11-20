@@ -32,6 +32,8 @@ type FoodTrackingModalProps = {
     isLoading?: boolean;
 };
 
+const GRAM_BASE = 100;
+
 const FoodTrackingModal = ({
     visible,
     onClose,
@@ -42,8 +44,8 @@ const FoodTrackingModal = ({
     const { t } = useTranslation();
     const { colors, dark } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors, dark);
-    const [unitAmount, setUnitAmount] = useState('100');
-    const [mealType, setMealType] = useState('');
+    const [unitAmount, setUnitAmount] = useState(GRAM_BASE.toString());
+    const [mealType, setMealType] = useState('0');
 
     const { unitSystem } = useUnit();
     const isImperial = unitSystem === IMPERIAL_SYSTEM;
@@ -68,7 +70,8 @@ const FoodTrackingModal = ({
 
     const updateCalculatedValues = useCallback((gramsValue: number) => {
         if (food) {
-            const factor = gramsValue / 100;
+            const factor = gramsValue / GRAM_BASE;
+
             setCalculatedValues({
                 kcal: factor * food.kcal,
                 protein: factor * food.protein,
@@ -80,17 +83,17 @@ const FoodTrackingModal = ({
 
     useEffect(() => {
         if (food) {
-            updateCalculatedValues(100);
+            updateCalculatedValues(GRAM_BASE);
         }
     }, [food, updateCalculatedValues]);
 
-    const handleGramsChange = (text: string) => {
+    const handleGramsChange = useCallback((text: string) => {
         const formattedText = text.replace(/\D/g, '');
         handleSetUnitAmount(formattedText);
 
         const gramsValue = parseFloat(formattedText) || 0;
         updateCalculatedValues(gramsValue);
-    };
+    }, [handleSetUnitAmount, updateCalculatedValues]);
 
     const handleTrackFood = useCallback(async () => {
         const userNutrition = {
@@ -103,7 +106,7 @@ const FoodTrackingModal = ({
             name: food?.productTitle || t('unknown_food'),
             source: USER_METRICS_SOURCES.USER_INPUT,
             type: NUTRITION_TYPES.MEAL,
-            mealType,
+            mealType: parseInt(mealType, 10),
             grams: parseFloat(unitAmount),
         } as UserNutritionInsertType;
 
