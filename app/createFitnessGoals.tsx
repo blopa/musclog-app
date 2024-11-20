@@ -165,7 +165,7 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
         } catch (error) {
             console.error(t('failed_to_load_fitness_goal'), error);
         }
-    }, [id, t]);
+    }, [defaultMacros.carbohydrate, defaultMacros.fat, defaultMacros.protein, id, t]);
 
     useFocusEffect(
         useCallback(() => {
@@ -186,7 +186,7 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
             if (!id) {
                 loadLatest();
             }
-        }, [id])
+        }, [defaultMacros.carbohydrate, defaultMacros.fat, defaultMacros.protein, id])
     );
 
     useFocusEffect(
@@ -296,7 +296,7 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
         setBodyFat('');
         setBmi('');
         setFfmi('');
-    }, []);
+    }, [defaultMacros.carbohydrate, defaultMacros.fat, defaultMacros.protein]);
 
     useFocusEffect(
         useCallback(() => {
