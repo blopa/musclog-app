@@ -1,6 +1,6 @@
 import Chat from '@/app/chat';
 import CreateExercise from '@/app/createExercise';
-import CreateFitnessGoals from '@/app/CreateFitnessGoals';
+import CreateFitnessGoals from '@/app/createFitnessGoals';
 import CreateFood from '@/app/createFood';
 import CreateRecentWorkout from '@/app/createRecentWorkout';
 import CreateUserMeasurements from '@/app/createUserMeasurements';
