@@ -52,6 +52,7 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
     const { colors, dark } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors, dark);
 
+    const [maxMacros, setMaxMacros] = useState(600);
     const [defaultMacros, setDefaultMacros] = useState({
         protein: 150,
         carbohydrate: 250,
@@ -75,6 +76,8 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
                     carbohydrate: Math.round(tdee * 0.5 / 4),
                     fat: Math.round(tdee * 0.2 / 9),
                 });
+
+                setMaxMacros(Math.round(tdee / 4));
             }
         }
     }, []);
@@ -136,14 +139,6 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
     const prevMacro = () => {
         const currentIndex = macroOrder.indexOf(activeMacro);
         setActiveMacro(macroOrder[(currentIndex - 1 + macroOrder.length) % macroOrder.length]);
-    };
-
-    const getSliderMax = () => {
-        return 800;
-    };
-
-    const getSliderMin = () => {
-        return 0;
     };
 
     const loadFitnessGoal = useCallback(async () => {
@@ -374,8 +369,8 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
                     label=""
                     value={activeMacroValue}
                     onValueChange={handleSliderChange}
-                    minimumValue={getSliderMin()}
-                    maximumValue={getSliderMax()}
+                    minimumValue={0}
+                    maximumValue={maxMacros}
                 />
                 <View style={styles.macrosSummary}>
                     <View style={styles.macroSummaryItem}>
