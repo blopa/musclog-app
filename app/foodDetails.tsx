@@ -1,10 +1,10 @@
+import CustomPicker from '@/components/CustomPicker';
 import ThemedCard from '@/components/ThemedCard';
-import { GRAMS, OUNCES, IMPERIAL_SYSTEM, METRIC_SYSTEM } from '@/constants/storage';
+import { GRAMS, OUNCES, IMPERIAL_SYSTEM } from '@/constants/storage';
 import useUnit from '@/hooks/useUnit';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { getFood } from '@/utils/database';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { Picker } from '@react-native-picker/picker';
 import { NavigationProp, useFocusEffect, useRoute } from '@react-navigation/native';
 import React, { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -15,11 +15,7 @@ type RouteParams = {
     id?: string;
 };
 
-const FoodDetails = ({
-    navigation,
-}: {
-    navigation: NavigationProp<any>;
-}) => {
+const FoodDetails = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const { t } = useTranslation();
     const { colors, dark } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors, dark);
@@ -27,17 +23,20 @@ const FoodDetails = ({
     const route = useRoute();
 
     const isImperial = unitSystem === IMPERIAL_SYSTEM;
-    const macroUnit = unitSystem === METRIC_SYSTEM ? GRAMS : OUNCES;
+    const macroUnit = isImperial ? OUNCES : GRAMS;
 
     const { id } = (route.params as RouteParams) || {};
     const [foodDetails, setFoodDetails] = useState<any>(null);
     const [loading, setLoading] = useState(true);
 
-    const mealCategories = [t('breakfast'), t('lunch'), t('dinner'), t('snacks')];
-    const units = [GRAMS, OUNCES];
+    const mealCategories = [
+        { label: t('breakfast'), value: 'breakfast' },
+        { label: t('lunch'), value: 'lunch' },
+        { label: t('dinner'), value: 'dinner' },
+        { label: t('snacks'), value: 'snacks' },
+    ];
 
     const [amount, setAmount] = useState('100');
-    const [unit, setUnit] = useState(macroUnit);
     const [category, setCategory] = useState('');
     const [errors, setErrors] = useState<{ amount?: string; category?: string }>({});
 
@@ -92,7 +91,7 @@ const FoodDetails = ({
         );
     }
 
-    const conversionFactor = unit === OUNCES ? 28.35 : 1;
+    const conversionFactor = isImperial ? 28.35 : 1;
     const multiplier = (parseFloat(amount) * conversionFactor) / foodDetails.servingSize;
 
     const calculatedNutrition = {
@@ -150,7 +149,6 @@ const FoodDetails = ({
                         </View>
                     </View>
                 </ThemedCard>
-
                 <View style={styles.form}>
                     <View style={styles.inputGroup}>
                         <Text style={styles.label}>{t('amount')}</Text>
@@ -166,34 +164,12 @@ const FoodDetails = ({
                     </View>
 
                     <View style={styles.inputGroup}>
-                        <Text style={styles.label}>{t('unit')}</Text>
-                        <View style={styles.pickerContainer}>
-                            <Picker
-                                selectedValue={unit}
-                                onValueChange={(itemValue) => setUnit(itemValue)}
-                                style={styles.picker}
-                            >
-                                {units.map((u) => (
-                                    <Picker.Item key={u} label={u} value={u} />
-                                ))}
-                            </Picker>
-                        </View>
-                    </View>
-
-                    <View style={styles.inputGroup}>
-                        <Text style={styles.label}>{t('meal_category')}</Text>
-                        <View style={styles.pickerContainer}>
-                            <Picker
-                                selectedValue={category}
-                                onValueChange={(itemValue) => setCategory(itemValue)}
-                                style={styles.picker}
-                            >
-                                <Picker.Item label={t('select_category')} value="" />
-                                {mealCategories.map((cat) => (
-                                    <Picker.Item key={cat} label={cat} value={cat} />
-                                ))}
-                            </Picker>
-                        </View>
+                        <CustomPicker
+                            label={t('meal_category')}
+                            items={mealCategories}
+                            selectedValue={category}
+                            onValueChange={(itemValue) => setCategory(itemValue)}
+                        />
                         {errors.category && <HelperText type="error">{errors.category}</HelperText>}
                     </View>
 
@@ -266,16 +242,6 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         flexDirection: 'row',
         justifyContent: 'space-between',
         marginVertical: 4,
-    },
-    picker: {
-        height: 50,
-        width: '100%',
-    },
-    pickerContainer: {
-        backgroundColor: colors.surface,
-        borderColor: colors.shadow,
-        borderRadius: 4,
-        borderWidth: 1,
     },
 });
 
