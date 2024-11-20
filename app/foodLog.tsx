@@ -4,7 +4,8 @@ import FoodTrackingModal, { FoodTrackingType } from '@/components/FoodTrackingMo
 import ThemedCard from '@/components/ThemedCard';
 import ThemedModal from '@/components/ThemedModal';
 import { MEAL_TYPE } from '@/constants/nutrition';
-import { AI_SETTINGS_TYPE } from '@/constants/storage';
+import { AI_SETTINGS_TYPE, GRAMS, IMPERIAL_SYSTEM, OUNCES } from '@/constants/storage';
+import useUnit from '@/hooks/useUnit';
 import { useSettings } from '@/storage/SettingsContext';
 import { estimateNutritionFromPhoto, extractMacrosFromLabelPhoto, getAiApiVendor } from '@/utils/ai';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
@@ -62,6 +63,10 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const [isNutritionModalVisible, setIsNutritionModalVisible] = useState<boolean>(false);
     const [photoMode, setPhotoMode] = useState<string>('meal');
     const [dailyGoals, setDailyGoals] = useState<Omit<FitnessGoalsReturnType, 'id'> | null>(null);
+
+    const { unitSystem } = useUnit();
+    const isImperial = unitSystem === IMPERIAL_SYSTEM;
+    const macroUnit = isImperial ? OUNCES : GRAMS;
 
     const { getSettingByType } = useSettings();
     const checkApiKey = useCallback(async () => {
@@ -158,9 +163,9 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const OverviewRoute = () => {
         const macros = dailyGoals ? [
             { name: t('calories'), consumed: safeToFixed(consumed.calories), goal: dailyGoals.calories, unit: 'kcal' },
-            { name: t('proteins'), consumed: safeToFixed(consumed.protein), goal: dailyGoals.protein, unit: 'g' },
-            { name: t('carbs'), consumed: safeToFixed(consumed.carbohydrate), goal: dailyGoals.totalCarbohydrate, unit: 'g' },
-            { name: t('fats'), consumed: safeToFixed(consumed.fat), goal: dailyGoals.totalFat, unit: 'g' },
+            { name: t('proteins'), consumed: safeToFixed(consumed.protein), goal: dailyGoals.protein, unit: macroUnit },
+            { name: t('carbs'), consumed: safeToFixed(consumed.carbohydrate), goal: dailyGoals.totalCarbohydrate, unit: macroUnit },
+            { name: t('fats'), consumed: safeToFixed(consumed.fat), goal: dailyGoals.totalFat, unit: macroUnit },
         ] : [];
 
         return (

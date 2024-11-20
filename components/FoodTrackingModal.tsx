@@ -3,10 +3,13 @@ import CustomTextInput from '@/components/CustomTextInput';
 import ThemedModal from '@/components/ThemedModal';
 import { USER_METRICS_SOURCES } from '@/constants/healthConnect';
 import { MEAL_TYPE, NUTRITION_TYPES } from '@/constants/nutrition';
+import { GRAMS, IMPERIAL_SYSTEM } from '@/constants/storage';
+import useUnit from '@/hooks/useUnit';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { addUserNutrition, updateUserNutrition } from '@/utils/database';
-import { generateHash } from '@/utils/string';
+import { generateHash, safeToFixed } from '@/utils/string';
 import { UserNutritionInsertType } from '@/utils/types';
+import { getDisplayFormattedWeight } from '@/utils/unit';
 import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View, StyleSheet } from 'react-native';
@@ -39,8 +42,12 @@ const FoodTrackingModal = ({
     const { t } = useTranslation();
     const { colors, dark } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors, dark);
-    const [grams, setGrams] = useState('100');
+    const [unitAmount, setUnitAmount] = useState('100');
     const [mealType, setMealType] = useState('');
+
+    const { unitSystem } = useUnit();
+    const isImperial = unitSystem === IMPERIAL_SYSTEM;
+
     const [calculatedValues, setCalculatedValues] = useState({
         kcal: 0,
         protein: 0,
@@ -48,11 +55,16 @@ const FoodTrackingModal = ({
         fat: 0,
     });
 
+    const handleSetUnitAmount = useCallback((text: string) => {
+        const value = getDisplayFormattedWeight(parseFloat(text), GRAMS, isImperial);
+        setUnitAmount(value.toString());
+    }, [isImperial]);
+
     useEffect(() => {
         if (userNutritionId && food?.grams) {
-            setGrams(food.grams.toString());
+            handleSetUnitAmount(food.grams.toString());
         }
-    }, [food?.grams, userNutritionId]);
+    }, [food?.grams, handleSetUnitAmount, userNutritionId]);
 
     const updateCalculatedValues = useCallback((gramsValue: number) => {
         if (food) {
@@ -74,7 +86,7 @@ const FoodTrackingModal = ({
 
     const handleGramsChange = (text: string) => {
         const formattedText = text.replace(/\D/g, '');
-        setGrams(formattedText);
+        handleSetUnitAmount(formattedText);
 
         const gramsValue = parseFloat(formattedText) || 0;
         updateCalculatedValues(gramsValue);
@@ -92,7 +104,7 @@ const FoodTrackingModal = ({
             source: USER_METRICS_SOURCES.USER_INPUT,
             type: NUTRITION_TYPES.MEAL,
             mealType,
-            grams: parseFloat(grams),
+            grams: parseFloat(unitAmount),
         } as UserNutritionInsertType;
 
         if (userNutritionId) {
@@ -101,7 +113,7 @@ const FoodTrackingModal = ({
             await addUserNutrition(userNutrition);
         }
         onClose();
-    }, [calculatedValues.kcal, calculatedValues.protein, calculatedValues.carbs, calculatedValues.fat, food?.productTitle, t, mealType, grams, userNutritionId, onClose]);
+    }, [calculatedValues.kcal, calculatedValues.protein, calculatedValues.carbs, calculatedValues.fat, food?.productTitle, t, mealType, unitAmount, userNutritionId, onClose]);
 
     return (
         <ThemedModal
@@ -117,7 +129,7 @@ const FoodTrackingModal = ({
                     <CustomTextInput
                         keyboardType="numeric"
                         label={t('grams')}
-                        value={grams}
+                        value={unitAmount}
                         onChangeText={handleGramsChange}
                         placeholder={t('quantity')}
                     />
@@ -134,10 +146,30 @@ const FoodTrackingModal = ({
                         selectedValue={mealType}
                         onValueChange={(value) => setMealType(value)}
                     />
-                    <Text>{t('calories')}: {calculatedValues.kcal.toFixed(2)} kcal</Text>
-                    <Text>{t('proteins')}: {calculatedValues.protein.toFixed(2)} g</Text>
-                    <Text>{t('carbs')}: {calculatedValues.carbs.toFixed(2)} g</Text>
-                    <Text>{t('fats')}: {calculatedValues.fat.toFixed(2)} g</Text>
+                    <Text>
+                        {t('item_value', {
+                            item: 'kcal',
+                            value: safeToFixed(calculatedValues.kcal),
+                        })}
+                    </Text>
+                    <Text>
+                        {t('item_value', {
+                            item: t('protein'),
+                            value: getDisplayFormattedWeight(calculatedValues.protein || 0, GRAMS, isImperial).toString(),
+                        })}
+                    </Text>
+                    <Text>
+                        {t('item_value', {
+                            item: t('carbs'),
+                            value: getDisplayFormattedWeight(calculatedValues.carbs || 0, GRAMS, isImperial).toString(),
+                        })}
+                    </Text>
+                    <Text>
+                        {t('item_value', {
+                            item: t('fats'),
+                            value: getDisplayFormattedWeight(calculatedValues.fat || 0, GRAMS, isImperial).toString(),
+                        })}
+                    </Text>
                 </View>
             )}
             {isLoading && <ActivityIndicator color={colors.primary} size="large" />}
