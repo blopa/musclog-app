@@ -4,6 +4,8 @@ import { GRAMS, OUNCES, IMPERIAL_SYSTEM } from '@/constants/storage';
 import useUnit from '@/hooks/useUnit';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { getFood } from '@/utils/database';
+import { safeToFixed } from '@/utils/string';
+import { getDisplayFormattedWeight } from '@/utils/unit';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { NavigationProp, useFocusEffect, useRoute } from '@react-navigation/native';
 import React, { useState, useCallback } from 'react';
@@ -136,16 +138,36 @@ const FoodDetails = ({ navigation }: { navigation: NavigationProp<any> }) => {
                     <View style={styles.cardContent}>
                         <Text style={styles.cardTitle}>{foodDetails.name}</Text>
                         <View style={styles.metricRow}>
-                            <Text style={styles.metricDetail}>{t('calories')}: {calculatedNutrition.calories}</Text>
+                            <Text style={styles.metricDetail}>
+                                {t('item_value', {
+                                    item: t('calories'),
+                                    value: safeToFixed(calculatedNutrition.calories),
+                                })}
+                            </Text>
                         </View>
                         <View style={styles.metricRow}>
-                            <Text style={styles.metricDetail}>{t('proteins')}: {calculatedNutrition.proteins}g</Text>
+                            <Text style={styles.metricDetail}>
+                                {t('item_value', {
+                                    item: t('proteins'),
+                                    value: getDisplayFormattedWeight(calculatedNutrition.proteins || 0, GRAMS, isImperial).toString(),
+                                })}
+                            </Text>
                         </View>
                         <View style={styles.metricRow}>
-                            <Text style={styles.metricDetail}>{t('carbs')}: {calculatedNutrition.carbs}g</Text>
+                            <Text style={styles.metricDetail}>
+                                {t('item_value', {
+                                    item: t('carbs'),
+                                    value: getDisplayFormattedWeight(calculatedNutrition.carbs || 0, GRAMS, isImperial).toString(),
+                                })}
+                            </Text>
                         </View>
                         <View style={styles.metricRow}>
-                            <Text style={styles.metricDetail}>{t('fats')}: {calculatedNutrition.fats}g</Text>
+                            <Text style={styles.metricDetail}>
+                                {t('item_value', {
+                                    item: t('fats'),
+                                    value: getDisplayFormattedWeight(calculatedNutrition.fats || 0, GRAMS, isImperial).toString(),
+                                })}
+                            </Text>
                         </View>
                     </View>
                 </ThemedCard>

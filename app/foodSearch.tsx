@@ -1,9 +1,13 @@
 import FoodTrackingModal from '@/components/FoodTrackingModal';
 import ThemedCard from '@/components/ThemedCard';
+import { GRAMS, IMPERIAL_SYSTEM } from '@/constants/storage';
 import { ICON_SIZE } from '@/constants/ui';
+import useUnit from '@/hooks/useUnit';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { fetchFoodData } from '@/utils/fetchFoodData';
+import { safeToFixed } from '@/utils/string';
 import { MusclogApiFoodInfoType } from '@/utils/types';
+import { getDisplayFormattedWeight } from '@/utils/unit';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { NavigationProp, useRoute } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
@@ -31,6 +35,9 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const [loadMoreError, setLoadMoreError] = useState(false);
     const [selectedFood, setSelectedFood] = useState<MusclogApiFoodInfoType | null>(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
+
+    const { unitSystem } = useUnit();
+    const isImperial = unitSystem === IMPERIAL_SYSTEM;
 
     useEffect(() => {
         const loadInitialData = async () => {
@@ -157,18 +164,30 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
                                     </Text>
                                     <View style={styles.metricRow}>
                                         <Text style={styles.metricDetail}>
-                                            {t('calories')}: {item.kcal.toString()} kcal
+                                            {t('item_value', {
+                                                item: t('calories'),
+                                                value: safeToFixed(item.kcal),
+                                            })}
                                         </Text>
                                         <Text style={styles.metricDetail}>
-                                            {t('carbs')}: {(item.carbs || 0).toString()} g
+                                            {t('item_value', {
+                                                item: t('carbs'),
+                                                value: getDisplayFormattedWeight(item.carbs || 0, GRAMS, isImperial).toString(),
+                                            })}
                                         </Text>
                                     </View>
                                     <View style={styles.metricRow}>
                                         <Text style={styles.metricDetail}>
-                                            {t('proteins')}: {(item.protein || 0).toString()} g
+                                            {t('item_value', {
+                                                item: t('proteins'),
+                                                value: getDisplayFormattedWeight(item.protein || 0, GRAMS, isImperial).toString(),
+                                            })}
                                         </Text>
                                         <Text style={styles.metricDetail}>
-                                            {t('fats')}: {(item.fat || 0).toString()} g
+                                            {t('item_value', {
+                                                item: t('fats'),
+                                                value: getDisplayFormattedWeight(item.fat || 0, GRAMS, isImperial).toString(),
+                                            })}
                                         </Text>
                                     </View>
                                 </View>

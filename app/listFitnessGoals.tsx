@@ -14,6 +14,7 @@ import {
     getLatestFitnessGoals,
 } from '@/utils/database';
 import { formatDate } from '@/utils/date';
+import { safeToFixed } from '@/utils/string';
 import { FitnessGoalsInsertType } from '@/utils/types';
 import { getDisplayFormattedWeight } from '@/utils/unit';
 import { FontAwesome5 } from '@expo/vector-icons';
@@ -179,10 +180,30 @@ export default function ListFitnessGoals({ navigation }: { navigation: Navigatio
                         <Text style={styles.cardTitle}>{t('current_fitness_goals').toUpperCase()}</Text>
                         <Card.Content style={styles.latestGoalContent}>
                             <View style={styles.goalTextContainer}>
-                                <Text style={styles.metricDetailText}>{t('calories')}: {latestFitnessGoal.calories}</Text>
-                                <Text style={styles.metricDetailText}>{t('protein')}: {latestFitnessGoal.protein}g</Text>
-                                <Text style={styles.metricDetailText}>{t('carbohydrates')}: {latestFitnessGoal.totalCarbohydrate}g</Text>
-                                <Text style={styles.metricDetailText}>{t('fat')}: {latestFitnessGoal.totalFat}g</Text>
+                                <Text style={styles.metricDetailText}>
+                                    {t('item_value', {
+                                        item: t('calories'),
+                                        value: safeToFixed(latestFitnessGoal.calories),
+                                    })}
+                                </Text>
+                                <Text style={styles.metricDetailText}>
+                                    {t('item_value', {
+                                        item: t('protein'),
+                                        value: getDisplayFormattedWeight(latestFitnessGoal.protein || 0, GRAMS, isImperial).toString(),
+                                    })}
+                                </Text>
+                                <Text style={styles.metricDetailText}>
+                                    {t('item_value', {
+                                        item: t('carbohydrates'),
+                                        value: getDisplayFormattedWeight(latestFitnessGoal.totalCarbohydrate || 0, GRAMS, isImperial).toString(),
+                                    })}
+                                </Text>
+                                <Text style={styles.metricDetailText}>
+                                    {t('item_value', {
+                                        item: t('fat'),
+                                        value: getDisplayFormattedWeight(latestFitnessGoal.totalFat || 0, GRAMS, isImperial).toString(),
+                                    })}
+                                </Text>
                             </View>
                             <View style={styles.pieChartContainer}>
                                 <PieChart
@@ -222,7 +243,7 @@ export default function ListFitnessGoals({ navigation }: { navigation: Navigatio
                                     </Text>
                                     <View style={styles.metricRow}>
                                         <Text style={styles.metricDetailText}>
-                                            {t('item_value', { item: 'kcal', value: goal.calories })}
+                                            {t('item_value', { item: t('calories'), value: goal.calories })}
                                         </Text>
                                         <Text style={styles.metricDetailText}>
                                             {t('item_value', {

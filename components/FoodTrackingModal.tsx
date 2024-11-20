@@ -148,7 +148,7 @@ const FoodTrackingModal = ({
                     />
                     <Text>
                         {t('item_value', {
-                            item: 'kcal',
+                            item: t('calories'),
                             value: safeToFixed(calculatedValues.kcal),
                         })}
                     </Text>

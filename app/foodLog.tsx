@@ -14,6 +14,7 @@ import { deleteUserNutrition, getLatestFitnessGoals, getUserNutritionBetweenDate
 import { fetchProductByEAN } from '@/utils/fetchFoodData';
 import { safeToFixed } from '@/utils/string';
 import { FitnessGoalsReturnType, UserNutritionDecryptedReturnType } from '@/utils/types';
+import { getDisplayFormattedWeight } from '@/utils/unit';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { NavigationProp } from '@react-navigation/native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
@@ -280,18 +281,30 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                                             </View>
                                             <View style={styles.metricRow}>
                                                 <Text style={styles.metricDetail}>
-                                                    {t('calories')}: {safeToFixed(userNutrition.calories)}kcal
+                                                    {t('item_value', {
+                                                        item: t('calories'),
+                                                        value: safeToFixed(userNutrition.calories),
+                                                    })}
                                                 </Text>
                                                 <Text style={styles.metricDetail}>
-                                                    {t('carbs')}: {safeToFixed(userNutrition.carbohydrate)}g
+                                                    {t('item_value', {
+                                                        item: t('carbs'),
+                                                        value: getDisplayFormattedWeight(userNutrition.carbohydrate || 0, GRAMS, isImperial).toString(),
+                                                    })}
                                                 </Text>
                                             </View>
                                             <View style={styles.metricRow}>
                                                 <Text style={styles.metricDetail}>
-                                                    {t('fats')}: {safeToFixed(userNutrition.fat)}g
+                                                    {t('item_value', {
+                                                        item: t('fats'),
+                                                        value: getDisplayFormattedWeight(userNutrition.fat || 0, GRAMS, isImperial).toString(),
+                                                    })}
                                                 </Text>
                                                 <Text style={styles.metricDetail}>
-                                                    {t('proteins')}: {safeToFixed(userNutrition.protein)}g
+                                                    {t('item_value', {
+                                                        item: t('proteins'),
+                                                        value: getDisplayFormattedWeight(userNutrition.protein || 0, GRAMS, isImperial).toString(),
+                                                    })}
                                                 </Text>
                                             </View>
                                         </Card.Content>
