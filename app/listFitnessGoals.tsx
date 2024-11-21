@@ -278,7 +278,7 @@ export default function ListFitnessGoals({ navigation }: { navigation: Navigatio
                                         color={colors.primary}
                                         name="edit"
                                         onPress={() =>
-                                            navigation.navigate('createFitnessGoal', { id: goal.id })
+                                            navigation.navigate('createFitnessGoals', { id: goal.id })
                                         }
                                         size={ICON_SIZE}
                                         style={styles.iconButton}
