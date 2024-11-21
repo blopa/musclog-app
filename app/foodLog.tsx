@@ -194,7 +194,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                         macros.map((macro) => (
                             <View key={macro.name} style={styles.macroContainer}>
                                 <Text style={styles.metricDetail}>
-                                    {macro.name}: {macro.consumed} / {macro.goal} {macro.unit}
+                                    {t('item_value_unit', { item: macro.name, value: `${macro.consumed} / ${macro.goal}`, weightUnit: macro.unit })}
                                 </Text>
                                 <View style={styles.progressBarContainer}>
                                     <View
