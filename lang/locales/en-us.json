@@ -465,6 +465,8 @@
     "food_log": "Food Log",
     "food_search": "Food Search",
     "food_details": "Food Details",
+    "no_food_details": "No food details",
+    "loading_food_details": "Loading food details...",
     "add_food": "Add Food",
     "amount": "Amount",
     "unit": "Unit",

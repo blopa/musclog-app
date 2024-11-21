@@ -465,6 +465,8 @@
     "food_log": "Registro de Comida",
     "food_search": "Búsqueda de Comida",
     "food_details": "Detalles del alimento",
+    "no_food_details": "No hay detalles de comida",
+    "loading_food_details": "Cargando detalles de comida...",
     "add_food": "Agregar alimento",
     "amount": "Cantidad",
     "unit": "Unidad",

@@ -465,6 +465,8 @@
     "food_log": "Voedingslogboek",
     "food_search": "Voedsel zoeken",
     "food_details": "Voedingsdetails",
+    "no_food_details": "Geen voedingsdetails",
+    "loading_food_details": "Voedingsdetails laden...",
     "add_food": "Voeding toevoegen",
     "amount": "Hoeveelheid",
     "unit": "Eenheid",
