@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const ts = require('typescript');
 
-// Adjust the project root as needed
+// eslint-disable-next-line no-undef
 const DIRNAME = __dirname;
 const projectRoot = path.resolve(DIRNAME, '..');
 
@@ -15,6 +15,10 @@ function getAllTsxFiles(dir) {
         const stat = fs.statSync(filePath);
 
         if (stat.isDirectory()) {
+            if (file === 'node_modules') {
+                return;
+            }
+
             results = results.concat(getAllTsxFiles(filePath));
         } else if (filePath.endsWith('.tsx')) {
             results.push(filePath);
@@ -81,7 +85,7 @@ function checkUnusedStyles(filePath) {
         console.log(`\nFile: ${filePath}`);
         unusedProperties.forEach((property) => {
             console.log(
-                `Unused property: "${property}" (declared at ${filePath}:${declaredLines[property]})`
+                `Unused property: "${property}" (declared at ${filePath}:${declaredLines[property] + 1})`
             );
         });
     }
