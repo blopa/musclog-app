@@ -278,7 +278,7 @@ function RootLayout() {
                             style={{
                                 flex: 1,
                                 // let's see if this works for Android 15
-                                paddingBottom: (visibility && parseFloat(Device?.osVersion || '0') > 14) ? navbarHeight : 0,
+                                paddingBottom: (visibility && parseFloat(Device?.osVersion || '0') > 14) ? Math.abs(navbarHeight) : 0,
                             }}
                         >
                             <RootLayoutNav />
