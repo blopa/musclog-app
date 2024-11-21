@@ -2,10 +2,8 @@ const fs = require('fs');
 const path = require('path');
 const ts = require('typescript');
 
-// eslint-disable-next-line no-undef
-const DIRNAME = __dirname;
-
 // Adjust the project root as needed
+const DIRNAME = __dirname;
 const projectRoot = path.resolve(DIRNAME, '..');
 
 function getAllTsxFiles(dir) {
@@ -26,110 +24,64 @@ function getAllTsxFiles(dir) {
     return results;
 }
 
+/**
+ * Parse the `.tsx` file and find unused styles properties.
+ */
 function checkUnusedStyles(filePath) {
     const fileContent = fs.readFileSync(filePath, 'utf-8');
-    const sourceFile = ts.createSourceFile(filePath, fileContent, ts.ScriptTarget.Latest, true);
+    const sourceFile = ts.createSourceFile(filePath, fileContent, ts.ScriptTarget.ESNext, true);
 
     let stylesProperties = [];
     let declaredLines = {};
-    let stylesIdentifierName = null;
 
-    // First pass: Find the styles object and extract its properties
-    function findStylesDeclaration(node) {
-        // Look for: const styles = makeStyles(...)
+    function visit(node) {
+        // Detect `StyleSheet.create` call
         if (
-            ts.isVariableDeclaration(node)
-            && ts.isIdentifier(node.name)
-            && node.initializer
-            && ts.isCallExpression(node.initializer)
+            ts.isCallExpression(node)
+            && ts.isPropertyAccessExpression(node.expression)
+            && ts.isIdentifier(node.expression.expression)
+            && node.expression.expression.escapedText === 'StyleSheet'
+            && ts.isIdentifier(node.expression.name)
+            && node.expression.name.escapedText === 'create'
+            && node.arguments.length > 0
         ) {
-            const variableName = node.name.text;
-            const callExpression = node.initializer;
-
-            // Check if the function called is 'makeStyles'
-            if (
-                ts.isIdentifier(callExpression.expression)
-                && callExpression.expression.text === 'makeStyles'
-            ) {
-                stylesIdentifierName = variableName;
-
-                // Extract the styles object passed to StyleSheet.create
-                const args = callExpression.arguments;
-                if (args.length > 0) {
-                    const arg = args[0];
-                    extractStyleProperties(arg);
-                }
+            const arg = node.arguments[0];
+            if (ts.isObjectLiteralExpression(arg)) {
+                extractStyleProperties(arg);
             }
         }
 
-        ts.forEachChild(node, findStylesDeclaration);
+        ts.forEachChild(node, visit);
     }
 
-    function extractStyleProperties(node) {
-        if (ts.isCallExpression(node) && ts.isPropertyAccessExpression(node.expression)) {
-            // Handle StyleSheet.create({...})
-            const methodName = node.expression.name.text;
-            if (methodName === 'create') {
-                const args = node.arguments;
-                if (args.length > 0 && ts.isObjectLiteralExpression(args[0])) {
-                    const objectLiteral = args[0];
-                    objectLiteral.properties.forEach((prop) => {
-                        if (ts.isPropertyAssignment(prop) && ts.isIdentifier(prop.name)) {
-                            const propertyName = prop.name.text;
-                            stylesProperties.push(propertyName);
-
-                            const { line } = sourceFile.getLineAndCharacterOfPosition(prop.name.pos);
-                            declaredLines[propertyName] = line + 1; // Line numbers are 0-indexed
-                        }
-                    });
-                }
-            }
-        } else if (ts.isObjectLiteralExpression(node)) {
-            // Handle direct object literals
-            node.properties.forEach((prop) => {
+    function extractStyleProperties(objectLiteral) {
+        if (ts.isObjectLiteralExpression(objectLiteral)) {
+            objectLiteral.properties.forEach((prop) => {
                 if (ts.isPropertyAssignment(prop) && ts.isIdentifier(prop.name)) {
                     const propertyName = prop.name.text;
                     stylesProperties.push(propertyName);
 
                     const { line } = sourceFile.getLineAndCharacterOfPosition(prop.name.pos);
-                    declaredLines[propertyName] = line + 1;
+                    declaredLines[propertyName] = line + 1; // Line numbers are 0-indexed
                 }
             });
         }
     }
 
-    // Second pass: Find usages of the styles properties
-    function findStylesUsages(node) {
-        if (
-            ts.isPropertyAccessExpression(node)
-            && ts.isIdentifier(node.expression)
-            && node.expression.text === stylesIdentifierName
-            && ts.isIdentifier(node.name)
-        ) {
-            const propertyName = node.name.text;
-            // Remove the property from stylesProperties if found
-            const index = stylesProperties.indexOf(propertyName);
-            if (index > -1) {
-                stylesProperties.splice(index, 1);
-            }
-        }
+    visit(sourceFile);
 
-        ts.forEachChild(node, findStylesUsages);
-    }
+    // Check for unused properties
+    const unusedProperties = stylesProperties.filter((property) => {
+        const regex = new RegExp(`\\bstyles\\.(${property})\\b`);
+        return !regex.test(fileContent);
+    });
 
-    // Run the passes
-    findStylesDeclaration(sourceFile);
-
-    if (stylesIdentifierName) {
-        findStylesUsages(sourceFile);
-
-        // Any remaining properties in stylesProperties are unused
-        if (stylesProperties.length > 0) {
-            console.log(`\nFile: ${filePath}`);
-            stylesProperties.forEach((property) => {
-                console.log(`Unused property: "${property}" (declared at line ${declaredLines[property]})`);
-            });
-        }
+    // Log unused properties
+    if (unusedProperties.length > 0) {
+        console.log(`\nFile: ${filePath}`);
+        unusedProperties.forEach((property) => {
+            console.log(`Unused property: "${property}" (declared at line ${declaredLines[property]})`);
+        });
     }
 }
 
