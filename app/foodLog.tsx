@@ -6,12 +6,14 @@ import ThemedModal from '@/components/ThemedModal';
 import { MEAL_TYPE } from '@/constants/nutrition';
 import { AI_SETTINGS_TYPE, GRAMS, IMPERIAL_SYSTEM, OUNCES } from '@/constants/storage';
 import useUnit from '@/hooks/useUnit';
+import { useHealthConnect } from '@/storage/HealthConnectProvider';
 import { useSettings } from '@/storage/SettingsContext';
 import { estimateNutritionFromPhoto, extractMacrosFromLabelPhoto, getAiApiVendor } from '@/utils/ai';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { normalizeMacrosByGrams } from '@/utils/data';
 import { deleteUserNutrition, getLatestFitnessGoals, getUserNutritionBetweenDates } from '@/utils/database';
 import { fetchProductByEAN } from '@/utils/fetchFoodData';
+import { syncHealthConnectData } from '@/utils/healthConnect';
 import { safeToFixed } from '@/utils/string';
 import { FitnessGoalsReturnType, UserNutritionDecryptedReturnType } from '@/utils/types';
 import { getDisplayFormattedWeight } from '@/utils/unit';
@@ -33,6 +35,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
     const [selectedNutrition, setSelectedNutrition] = useState<UserNutritionDecryptedReturnType | null>(null);
+    const { insertHealthData, checkWriteIsPermitted, checkReadIsPermitted, getHealthData } = useHealthConnect();
 
     const [index, setIndex] = useState(0);
     const [searchQuery, setSearchQuery] = useState('');
@@ -136,6 +139,20 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
             console.error('Error loading consumed data:', error);
         }
     }, []);
+
+    const handleSyncHealthConnect = useCallback(async () => {
+        setIsLoading(true);
+
+        await syncHealthConnectData(
+            checkReadIsPermitted,
+            checkWriteIsPermitted,
+            getHealthData,
+            insertHealthData
+        );
+
+        await loadConsumed();
+        setIsLoading(false);
+    }, [checkReadIsPermitted, checkWriteIsPermitted, getHealthData, insertHealthData, loadConsumed]);
 
     const resetScreenData = useCallback(() => {
         setSearchQuery('');
@@ -253,6 +270,13 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
         return (
             <ScrollView contentContainerStyle={styles.mealsContent}>
+                <Button
+                    mode="outlined"
+                    onPress={handleSyncHealthConnect}
+                    disabled={isLoading}
+                >
+                    <FontAwesome5 color={colors.primary} name="sync" size={20} />
+                </Button>
                 {Object.entries(MEAL_TYPE).map(([mealTypeName, mealType]) => {
                     const userNutritions = mealGroups[mealType];
                     if (userNutritions && userNutritions.length > 0) {

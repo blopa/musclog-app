@@ -1,9 +1,24 @@
+import type { NutritionRecord } from 'react-native-health-connect/src/types/records.types';
+
 import { USER_METRICS_SOURCES } from '@/constants/healthConnect';
-import { EATING_PHASES, NUTRITION_TYPES } from '@/constants/nutrition';
+import { EATING_PHASES, MEAL_TYPE, NUTRITION_TYPES } from '@/constants/nutrition';
 import { READ_HEALTH_CONNECT_TYPE, LAST_TIME_APP_USED } from '@/constants/storage';
 import { LAST_RUN_KEY } from '@/constants/tasks';
-import { checkIsHealthConnectedPermitted, getHealthConnectData } from '@/storage/HealthConnectProvider';
-import { addOrUpdateSetting, addUserMetrics, addUserNutrition, getUser } from '@/utils/database';
+import {
+    checkIsHealthConnectedPermitted,
+    getHealthConnectData,
+    HealthConnectContextValue,
+} from '@/storage/HealthConnectProvider';
+import {
+    addOrUpdateSetting,
+    addUserMetrics,
+    addUserNutrition,
+    deleteHealthConnectUserMetricsBetweenDates,
+    deleteHealthConnectUserNutritionBetweenDates,
+    getAllUserNutritionBySource,
+    getUser,
+    updateUserNutrition,
+} from '@/utils/database';
 import { isValidDateParam } from '@/utils/date';
 import { generateHash } from '@/utils/string';
 import {
@@ -199,3 +214,135 @@ export function aggregateUserNutritionMetricsDataByDate(
 
     return aggregatedData;
 }
+
+export const syncHealthConnectData = async (
+    checkReadIsPermitted: HealthConnectContextValue['checkReadIsPermitted'],
+    checkWriteIsPermitted: HealthConnectContextValue['checkWriteIsPermitted'],
+    getHealthData: HealthConnectContextValue['getHealthData'],
+    insertHealthData: HealthConnectContextValue['insertHealthData']
+) => {
+    const user = await getUser();
+    const isReadPermitted = await checkReadIsPermitted(['BodyFat', 'Weight', 'Nutrition']);
+    if (isReadPermitted) {
+        const dataPointsCount = 1000;
+        const healthData = await getHealthData(dataPointsCount, ['BodyFat', 'Weight', 'Nutrition']);
+
+        const combinedData = await combineHeightAndWeightHealthData(
+            healthData.bodyFatRecords,
+            healthData.weightRecords
+        );
+
+        const currentHealthConnectDates = [
+            ...(healthData.nutritionRecords?.map((n) => n.startTime) || []),
+            ...(healthData.weightRecords?.map((n) => n.time) || []),
+            ...combinedData.map((d) => d.date),
+            ...combinedData.map((d) => d.createdAt),
+        ].filter((date) => date) as string[];
+
+        // TODO: maybe simply get last 30 days of data
+        if (currentHealthConnectDates.length > 0) {
+            // Sort dates in ascending order
+            currentHealthConnectDates.sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+
+            // Get the first and last date
+            const startDate = currentHealthConnectDates[0];
+            const endDate = currentHealthConnectDates[currentHealthConnectDates.length - 1];
+
+            // Delete all existing Health Connect data in the date range
+            await deleteHealthConnectUserNutritionBetweenDates(startDate, endDate);
+            await deleteHealthConnectUserMetricsBetweenDates(startDate, endDate);
+        }
+
+        if (healthData?.nutritionRecords?.length) {
+            for (const nutrition of healthData.nutritionRecords) {
+                await addUserNutrition({
+                    calories: nutrition.energy?.inKilocalories || 0,
+                    carbohydrate: nutrition.totalCarbohydrate?.inGrams || 0,
+                    createdAt: nutrition.startTime,
+                    dataId: nutrition?.metadata?.id || generateHash(),
+                    date: nutrition.startTime,
+                    fat: nutrition?.totalFat?.inGrams || 0,
+                    fiber: nutrition?.dietaryFiber?.inGrams || 0,
+                    monounsaturatedFat: nutrition?.monounsaturatedFat?.inGrams || 0,
+                    name: nutrition?.name || '',
+                    polyunsaturatedFat: nutrition?.polyunsaturatedFat?.inGrams || 0,
+                    protein: nutrition?.protein?.inGrams || 0,
+                    saturatedFat: nutrition?.saturatedFat?.inGrams || 0,
+                    source: USER_METRICS_SOURCES.HEALTH_CONNECT,
+                    sugar: nutrition?.sugar?.inGrams || 0,
+                    transFat: nutrition?.transFat?.inGrams || 0,
+                    type: NUTRITION_TYPES.MEAL,
+                    unsaturatedFat: nutrition?.unsaturatedFat?.inGrams || 0,
+                    mealType: nutrition.mealType || 0,
+                });
+            }
+        }
+
+        for (const data of combinedData) {
+            await addUserMetrics({
+                createdAt: data.createdAt,
+                dataId: data.dataId,
+                date: data.date,
+                // TODO: get eating phase from that date
+                eatingPhase: user?.metrics?.eatingPhase || EATING_PHASES.MAINTENANCE,
+                fatPercentage: data.fatPercentage,
+                height: data.height,
+                source: USER_METRICS_SOURCES.HEALTH_CONNECT,
+                weight: data.weight,
+            });
+        }
+    }
+
+    const isWritePermitted = await checkWriteIsPermitted(['Nutrition']);
+    if (isWritePermitted) {
+        const userNutritions = await getAllUserNutritionBySource(USER_METRICS_SOURCES.USER_INPUT);
+
+        // console.log(`Adding ${userNutritions.length} userNutritions to Health Connect`);
+        for (const userNutrition of userNutritions) {
+            const nutritionRecord: NutritionRecord = {
+                startTime: userNutrition.date || new Date().toISOString(),
+                endTime: new Date((new Date()).getTime() + 10000).toISOString(),
+                mealType: userNutrition?.mealType || MEAL_TYPE.UNKNOWN,
+                energy: {
+                    value: userNutrition.calories || 0,
+                    unit: 'kilocalories',
+                },
+                protein: {
+                    value: userNutrition.protein || 0,
+                    unit: 'grams',
+                },
+                totalCarbohydrate: {
+                    value: userNutrition.carbohydrate || 0,
+                    unit: 'grams',
+                },
+                totalFat: {
+                    value: userNutrition.fat || 0,
+                    unit: 'grams',
+                },
+                dietaryFiber: {
+                    value: userNutrition.fiber || 0,
+                    unit: 'grams',
+                },
+                sugar: {
+                    value: userNutrition.sugar || 0,
+                    unit: 'grams',
+                },
+                name: userNutrition.name,
+                recordType: 'Nutrition',
+            };
+
+            try {
+                const results = await insertHealthData([nutritionRecord]);
+                if (results[0]) {
+                    await updateUserNutrition(userNutrition.id, {
+                        ...userNutrition,
+                        source: USER_METRICS_SOURCES.HEALTH_CONNECT,
+                        dataId: results[0],
+                    });
+                }
+            } catch (error) {
+                console.error(`Failed to insert health data for userNutri ID ${userNutrition.id}:`, error);
+            }
+        }
+    }
+};
