@@ -296,6 +296,11 @@ export default function ListWorkouts({ navigation }: { navigation: NavigationPro
             label: t('create_workout'),
             onPress: () => navigation.navigate('createWorkout'),
             style: { backgroundColor: colors.surface },
+        }, {
+            icon: () => <FontAwesome5 color={colors.primary} name="running" size={FAB_ICON_SIZE} />,
+            label: t('exercises'),
+            onPress: () => navigation.navigate('listExercises'),
+            style: { backgroundColor: colors.surface },
         }];
 
         if (isAiEnabled) {

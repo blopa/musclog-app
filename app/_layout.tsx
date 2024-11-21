@@ -321,12 +321,11 @@ function RootLayoutNav() {
     const routes = useMemo(() => {
         const routes = [
             // { component: UpcomingWorkouts, label: 'upcoming_workouts', name: 'upcomingWorkouts' },
-            { component: RecentWorkouts, label: 'recent_workouts', name: 'recentWorkouts' },
-            { component: ListExercises, label: 'exercises', name: 'listExercises' },
-            { component: ListWorkouts, label: 'workouts', name: 'listWorkouts' },
-            { component: UserMetricsCharts, hidden: !showUserMetrics, label: 'user_metrics_charts', name: 'userMetricsCharts' },
-            { component: FoodLog, label: 'food_log', name: 'foodLog' },
             { component: Profile, label: 'profile', name: 'profile' },
+            { component: ListWorkouts, label: 'workouts', name: 'listWorkouts' },
+            { component: FoodLog, label: 'food_log', name: 'foodLog' },
+            { component: RecentWorkouts, label: 'recent_workouts', name: 'recentWorkouts' },
+            { component: UserMetricsCharts, hidden: !showUserMetrics, label: 'user_metrics_charts', name: 'userMetricsCharts' },
             { component: Settings, label: 'settings', name: 'settings' },
 
             // Hidden routes
@@ -350,6 +349,7 @@ function RootLayoutNav() {
             { component: CreateFood, hidden: true, label: 'create_food', name: 'createFood' },
             { component: ListFitnessGoals, hidden: true, label: 'fitness_goals', name: 'listFitnessGoals' },
             { component: CreateFitnessGoals, hidden: true, label: 'create_fitness_goals', name: 'createFitnessGoals' },
+            { component: ListExercises, hidden: true, label: 'exercises', name: 'listExercises' },
         ];
 
         return routes;

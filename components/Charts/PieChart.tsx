@@ -22,6 +22,7 @@ interface PieChartProps {
     size?: number;
     showLabels?: boolean;
     showLegend?: boolean;
+    backgroundColor?: string;
 }
 
 const PieChart: React.FC<PieChartProps> = ({
@@ -32,9 +33,10 @@ const PieChart: React.FC<PieChartProps> = ({
     size = 300,
     showLabels = true,
     showLegend = true,
+    backgroundColor = undefined,
 }) => {
     const { colors } = useTheme<CustomThemeType>();
-    const styles = makeStyles(colors, size);
+    const styles = makeStyles(colors, size, backgroundColor);
     const chartRef = useRef(null);
 
     const shareChart = useCallback(async () => {
@@ -74,7 +76,7 @@ const PieChart: React.FC<PieChartProps> = ({
             <ViewShot
                 options={{ format: 'png', quality: 1.0 }}
                 ref={chartRef}
-                // style={{ backgroundColor: colors.surface }}
+                style={{ backgroundColor }}
             >
                 <OriginalPieChart
                     chartDescription={{ text: '' }}
@@ -114,14 +116,14 @@ const PieChart: React.FC<PieChartProps> = ({
     );
 };
 
-const makeStyles = (colors: CustomThemeColorsType, size: number) => StyleSheet.create({
+const makeStyles = (colors: CustomThemeColorsType, size: number, backgroundColor?: string) => StyleSheet.create({
     chart: {
         height: size,
         width: size,
     },
     chartContainer: {
         alignItems: 'center',
-        // backgroundColor: colors.surface,
+        backgroundColor,
         borderRadius: Math.round(size * 0.06),
         marginVertical: Math.round(size * 0.03),
         padding: Math.round(size * 0.03),

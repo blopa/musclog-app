@@ -386,6 +386,7 @@ const NutritionDetailedChart = ({
                 data={pieChartData}
                 shareButtonPosition={isLastChart ? 'top' : 'bottom'}
                 title={t('average_nutrition_distribution')}
+                backgroundColor={colors.surface}
             />
         </>
     );
