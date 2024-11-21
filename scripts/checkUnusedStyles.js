@@ -80,7 +80,9 @@ function checkUnusedStyles(filePath) {
     if (unusedProperties.length > 0) {
         console.log(`\nFile: ${filePath}`);
         unusedProperties.forEach((property) => {
-            console.log(`Unused property: "${property}" (declared at line ${declaredLines[property]})`);
+            console.log(
+                `Unused property: "${property}" (declared at ${filePath}:${declaredLines[property]})`
+            );
         });
     }
 }
