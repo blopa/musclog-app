@@ -138,8 +138,8 @@ const FoodTrackingModal = ({
                     />
                     <CustomPicker
                         items={[
-                            { label: t('none'), value: '' },
                             ...Object.entries(MEAL_TYPE)
+                                .filter(([_, mealType]) => mealType !== MEAL_TYPE.UNKNOWN)
                                 .map(([mealTypeName, mealType]) => ({
                                     label: t(mealTypeName.toLowerCase()),
                                     value: mealType.toString(),

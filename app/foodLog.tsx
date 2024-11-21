@@ -23,7 +23,7 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useFocusEffect } from 'expo-router';
 import React, { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { View, StyleSheet, Platform, Dimensions, TouchableOpacity, ScrollView } from 'react-native';
+import { View, StyleSheet, Platform, Dimensions, TouchableOpacity, ScrollView, RefreshControl } from 'react-native';
 import { Appbar, TextInput, Button, Text, useTheme, Card, SegmentedButtons } from 'react-native-paper';
 import { TabView, TabBar } from 'react-native-tab-view';
 
@@ -269,14 +269,19 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         }, {} as { [key: string]: UserNutritionDecryptedReturnType[] });
 
         return (
-            <ScrollView contentContainerStyle={styles.mealsContent}>
-                <Button
-                    mode="outlined"
-                    onPress={handleSyncHealthConnect}
-                    disabled={isLoading}
-                >
-                    <FontAwesome5 color={colors.primary} name="sync" size={20} />
-                </Button>
+            <ScrollView
+                contentContainerStyle={styles.mealsContent}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={isLoading}
+                        onRefresh={handleSyncHealthConnect}
+                        colors={[colors.primary]}
+                    />
+                }
+            >
+                {consumedFoods.length === 0 ? (
+                    <Text style={styles.noTrackedText}>{t('no_tracked_meals')}</Text>
+                ) : null}
                 {Object.entries(MEAL_TYPE).map(([mealTypeName, mealType]) => {
                     const userNutritions = mealGroups[mealType];
                     if (userNutritions && userNutritions.length > 0) {
@@ -342,7 +347,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 })}
             </ScrollView>
         );
-    }, [colors.primary, consumedFoods, handleDeleteNutrition, isImperial, mealCategories, styles.cardContent, styles.cardHeader, styles.cardTitle, styles.foodItem, styles.iconContainer, styles.mealContainer, styles.mealHeader, styles.mealTitle, styles.mealsContent, styles.metricDetail, styles.metricRow, t]);
+    }, [consumedFoods, styles.mealsContent, styles.mealContainer, styles.mealHeader, styles.mealTitle, styles.foodItem, styles.cardContent, styles.cardHeader, styles.cardTitle, styles.iconContainer, styles.metricRow, styles.metricDetail, isLoading, handleSyncHealthConnect, colors.primary, mealCategories, t, isImperial, handleDeleteNutrition]);
 
     const renderScene = ({ route }: { route: { key: string } }) => {
         switch (route.key) {
@@ -364,7 +369,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         />
     );
 
-    const handleBarCodeScanned = async ({ type, data }: BarcodeScanningResult) => {
+    const handleBarCodeScanned = useCallback(async ({ type, data }: BarcodeScanningResult) => {
         setScanned(true);
         setShowBarcodeCamera(false);
 
@@ -376,10 +381,10 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         }
 
         setScanned(false);
-    };
+    }, []);
 
     // Function to request camera permissions and show the barcode scanner
-    const openBarcodeCamera = async () => {
+    const openBarcodeCamera = useCallback(async () => {
         if (!permission?.granted) {
             const { granted } = await requestPermission();
             if (!granted) {
@@ -387,11 +392,12 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 return;
             }
         }
+
         setShowBarcodeCamera(true);
-    };
+    }, [permission?.granted, requestPermission, t]);
 
     // Function to request camera permissions and show the photo camera
-    const openPhotoCamera = async () => {
+    const openPhotoCamera = useCallback(async () => {
         if (!permission?.granted) {
             const { granted } = await requestPermission();
             if (!granted) {
@@ -400,7 +406,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
             }
         }
         setShowPhotoCamera(true);
-    };
+    }, []);
 
     // Handler for taking a photo
     const handleTakePhoto = useCallback(async () => {
@@ -410,6 +416,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 const photo = await (photoCameraRef.current as typeof CameraView).takePictureAsync();
                 setIsLoading(true);
                 setShowPhotoCamera(false);
+                setIsNutritionModalVisible(true);
 
                 if (photoMode === 'meal') {
                     const macros = await estimateNutritionFromPhoto(photo.uri);
@@ -422,8 +429,6 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                             fat: macros.fat,
                             grams: macros.grams,
                         }));
-
-                        setIsNutritionModalVisible(true);
                     }
                 } else {
                     const macros = await extractMacrosFromLabelPhoto(photo.uri);
@@ -436,8 +441,6 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                             fat: macros.fat,
                             grams: macros.grams,
                         }));
-
-                        setIsNutritionModalVisible(true);
                     }
                 }
 
@@ -464,7 +467,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         </View>
     ), [styles.focusBorder, styles.scannerFocusArea, styles.scannerOverlayBottom, styles.scannerOverlayContainer, styles.scannerOverlayMiddle, styles.scannerOverlayTop]);
 
-    const renderPhotoCameraOverlay = () => (
+    const renderPhotoCameraOverlay = useCallback(() => (
         <View style={styles.photoCameraOverlay}>
             <SegmentedButtons
                 value={photoMode}
@@ -490,7 +493,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 </TouchableOpacity>
             </View>
         </View>
-    );
+    ), [colors.primary, colors.secondaryContainer, colors.surface, handleTakePhoto, photoMode, styles.bottomControls, styles.captureButton, styles.photoCameraOverlay, styles.photoCloseButton, styles.photoCloseText, styles.segmentedButtons, t]);
 
     return (
         <View style={styles.container}>
@@ -543,7 +546,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                     initialLayout={{ width: Dimensions.get('window').width }}
                 />
             </View>
-            {showBarcodeCamera && (
+            {showBarcodeCamera ? (
                 <View style={styles.cameraContainer}>
                     <CameraView
                         style={styles.camera}
@@ -562,8 +565,8 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                         </View>
                     </CameraView>
                 </View>
-            )}
-            {showPhotoCamera && (
+            ) : null}
+            {showPhotoCamera ? (
                 <View style={styles.cameraContainer}>
                     <CameraView
                         style={styles.camera}
@@ -572,7 +575,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                         {renderPhotoCameraOverlay()}
                     </CameraView>
                 </View>
-            )}
+            ) : null}
             <FoodTrackingModal
                 visible={isNutritionModalVisible}
                 onClose={() => {
@@ -728,6 +731,11 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     metricRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
+    },
+    noTrackedText: {
+        color: colors.onSurface,
+        fontSize: 16,
+        textAlign: 'center',
     },
     photoCameraOverlay: {
         flex: 1,
