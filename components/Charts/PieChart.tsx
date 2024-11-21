@@ -1,7 +1,7 @@
 import { FAB_ICON_SIZE } from '@/constants/ui';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { MaterialIcons } from '@expo/vector-icons';
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { PieChart as OriginalPieChart } from 'react-native-charts-wrapper';
 import { IconButton, useTheme, Text } from 'react-native-paper';
@@ -50,7 +50,7 @@ const PieChart: React.FC<PieChartProps> = ({
         }
     }, []);
 
-    const chartData = {
+    const chartData = useMemo(() => ({
         dataSets: [{
             config: {
                 colors: data.map(({ color }) => processColor(color || colors.primary)),
@@ -62,7 +62,7 @@ const PieChart: React.FC<PieChartProps> = ({
             label: '',
             values: data.map(({ label, marker, value }) => ({ label, marker, value })),
         }],
-    };
+    }), [colors.inverseOnSurface, colors.primary, colors.surface, data, size]);
 
     return (
         <View style={styles.chartContainer}>
@@ -74,7 +74,7 @@ const PieChart: React.FC<PieChartProps> = ({
             <ViewShot
                 options={{ format: 'png', quality: 1.0 }}
                 ref={chartRef}
-                style={{ backgroundColor: colors.surface }}
+                // style={{ backgroundColor: colors.surface }}
             >
                 <OriginalPieChart
                     chartDescription={{ text: '' }}
@@ -121,7 +121,7 @@ const makeStyles = (colors: CustomThemeColorsType, size: number) => StyleSheet.c
     },
     chartContainer: {
         alignItems: 'center',
-        backgroundColor: colors.surface,
+        // backgroundColor: colors.surface,
         borderRadius: Math.round(size * 0.06),
         marginVertical: Math.round(size * 0.03),
         padding: Math.round(size * 0.03),

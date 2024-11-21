@@ -147,25 +147,28 @@ const FoodDetails = ({ navigation }: { navigation: NavigationProp<any> }) => {
                         </View>
                         <View style={styles.metricRow}>
                             <Text style={styles.metricDetail}>
-                                {t('item_value', {
+                                {t('item_value_unit', {
                                     item: t('proteins'),
                                     value: getDisplayFormattedWeight(calculatedNutrition.proteins || 0, GRAMS, isImperial).toString(),
+                                    weightUnit: macroUnit,
                                 })}
                             </Text>
                         </View>
                         <View style={styles.metricRow}>
                             <Text style={styles.metricDetail}>
-                                {t('item_value', {
+                                {t('item_value_unit', {
                                     item: t('carbs'),
                                     value: getDisplayFormattedWeight(calculatedNutrition.carbs || 0, GRAMS, isImperial).toString(),
+                                    weightUnit: macroUnit,
                                 })}
                             </Text>
                         </View>
                         <View style={styles.metricRow}>
                             <Text style={styles.metricDetail}>
-                                {t('item_value', {
+                                {t('item_value_unit', {
                                     item: t('fats'),
                                     value: getDisplayFormattedWeight(calculatedNutrition.fats || 0, GRAMS, isImperial).toString(),
+                                    weightUnit: macroUnit,
                                 })}
                             </Text>
                         </View>

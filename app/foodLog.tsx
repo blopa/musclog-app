@@ -316,23 +316,26 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                                                     })}
                                                 </Text>
                                                 <Text style={styles.metricDetail}>
-                                                    {t('item_value', {
+                                                    {t('item_value_unit', {
                                                         item: t('carbs'),
                                                         value: getDisplayFormattedWeight(userNutrition.carbohydrate || 0, GRAMS, isImperial).toString(),
+                                                        weightUnit: macroUnit,
                                                     })}
                                                 </Text>
                                             </View>
                                             <View style={styles.metricRow}>
                                                 <Text style={styles.metricDetail}>
-                                                    {t('item_value', {
+                                                    {t('item_value_unit', {
                                                         item: t('fats'),
                                                         value: getDisplayFormattedWeight(userNutrition.fat || 0, GRAMS, isImperial).toString(),
+                                                        weightUnit: macroUnit,
                                                     })}
                                                 </Text>
                                                 <Text style={styles.metricDetail}>
-                                                    {t('item_value', {
+                                                    {t('item_value_unit', {
                                                         item: t('proteins'),
                                                         value: getDisplayFormattedWeight(userNutrition.protein || 0, GRAMS, isImperial).toString(),
+                                                        weightUnit: macroUnit,
                                                     })}
                                                 </Text>
                                             </View>

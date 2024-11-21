@@ -507,6 +507,7 @@
     "your_ffmi": "Je FFMI",
     "ffmi": "FFMI",
     "item_value": "{{item}}: {{value}}",
+    "item_value_unit": "{{item}}: {{value}}{{weightUnit}}",
     "your_normalized_ffmi": "Je Genormaliseerde FFMI",
     "your_muscle_fat_difference": "Je spierverandering is {{muscle}}{{weightUnit}} en je vetverschil is {{fat}}{{weightUnit}}.",
     "you_have_gained_muscle_lost_fat": "Je hebt {{muscle}}{{weightUnit}} aan spiermassa gewonnen en {{fat}}{{weightUnit}} aan vet verloren.",

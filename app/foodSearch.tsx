@@ -1,6 +1,6 @@
 import FoodTrackingModal from '@/components/FoodTrackingModal';
 import ThemedCard from '@/components/ThemedCard';
-import { GRAMS, IMPERIAL_SYSTEM } from '@/constants/storage';
+import { GRAMS, IMPERIAL_SYSTEM, METRIC_SYSTEM, OUNCES } from '@/constants/storage';
 import { ICON_SIZE } from '@/constants/ui';
 import useUnit from '@/hooks/useUnit';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
@@ -38,6 +38,7 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
     const { unitSystem } = useUnit();
     const isImperial = unitSystem === IMPERIAL_SYSTEM;
+    const macroUnit = unitSystem === METRIC_SYSTEM ? GRAMS : OUNCES;
 
     useEffect(() => {
         const loadInitialData = async () => {
@@ -170,23 +171,26 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
                                             })}
                                         </Text>
                                         <Text style={styles.metricDetail}>
-                                            {t('item_value', {
+                                            {t('item_value_unit', {
                                                 item: t('carbs'),
                                                 value: getDisplayFormattedWeight(item.carbs || 0, GRAMS, isImperial).toString(),
+                                                weightUnit: macroUnit,
                                             })}
                                         </Text>
                                     </View>
                                     <View style={styles.metricRow}>
                                         <Text style={styles.metricDetail}>
-                                            {t('item_value', {
+                                            {t('item_value_unit', {
                                                 item: t('proteins'),
                                                 value: getDisplayFormattedWeight(item.protein || 0, GRAMS, isImperial).toString(),
+                                                weightUnit: macroUnit,
                                             })}
                                         </Text>
                                         <Text style={styles.metricDetail}>
-                                            {t('item_value', {
+                                            {t('item_value_unit', {
                                                 item: t('fats'),
                                                 value: getDisplayFormattedWeight(item.fat || 0, GRAMS, isImperial).toString(),
+                                                weightUnit: macroUnit,
                                             })}
                                         </Text>
                                     </View>

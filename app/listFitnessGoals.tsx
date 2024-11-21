@@ -2,7 +2,7 @@ import PieChart from '@/components/Charts/PieChart';
 import FABWrapper from '@/components/FABWrapper';
 import ThemedCard from '@/components/ThemedCard';
 import ThemedModal from '@/components/ThemedModal';
-import { GRAMS, IMPERIAL_SYSTEM } from '@/constants/storage';
+import { GRAMS, IMPERIAL_SYSTEM, METRIC_SYSTEM, OUNCES } from '@/constants/storage';
 import { FAB_ICON_SIZE, ICON_SIZE } from '@/constants/ui';
 import useUnit from '@/hooks/useUnit';
 import { useSnackbar } from '@/storage/SnackbarProvider';
@@ -38,8 +38,9 @@ export default function ListFitnessGoals({ navigation }: { navigation: Navigatio
     const styles = makeStyles(colors, dark);
     const { showSnackbar } = useSnackbar();
 
-    const { unitSystem, weightUnit } = useUnit();
+    const { unitSystem } = useUnit();
     const isImperial = unitSystem === IMPERIAL_SYSTEM;
+    const macroUnit = unitSystem === METRIC_SYSTEM ? GRAMS : OUNCES;
 
     const loadLatestFitnessGoal = useCallback(async () => {
         try {
@@ -187,33 +188,35 @@ export default function ListFitnessGoals({ navigation }: { navigation: Navigatio
                                     })}
                                 </Text>
                                 <Text style={styles.metricDetailText}>
-                                    {t('item_value', {
+                                    {t('item_value_unit', {
                                         item: t('protein'),
                                         value: getDisplayFormattedWeight(latestFitnessGoal.protein || 0, GRAMS, isImperial).toString(),
+                                        weightUnit: macroUnit,
                                     })}
                                 </Text>
                                 <Text style={styles.metricDetailText}>
-                                    {t('item_value', {
+                                    {t('item_value_unit', {
                                         item: t('carbohydrates'),
                                         value: getDisplayFormattedWeight(latestFitnessGoal.totalCarbohydrate || 0, GRAMS, isImperial).toString(),
+                                        weightUnit: macroUnit,
                                     })}
                                 </Text>
                                 <Text style={styles.metricDetailText}>
-                                    {t('item_value', {
+                                    {t('item_value_unit', {
                                         item: t('fat'),
                                         value: getDisplayFormattedWeight(latestFitnessGoal.totalFat || 0, GRAMS, isImperial).toString(),
+                                        weightUnit: macroUnit,
                                     })}
                                 </Text>
                             </View>
                             <View style={styles.pieChartContainer}>
                                 <PieChart
                                     data={[
-                                        { label: 'Protein', value: latestFitnessGoal.protein, color: '#4CAF50' },
-                                        { label: 'Carbohydrates', value: latestFitnessGoal.totalCarbohydrate, color: '#2196F3' },
-                                        { label: 'Fat', value: latestFitnessGoal.totalFat, color: '#FF9800' },
+                                        { label: t('protein'), value: getDisplayFormattedWeight(latestFitnessGoal.protein || 0, GRAMS, isImperial), color: '#4CAF50' },
+                                        { label: t('carbohydrates'), value: getDisplayFormattedWeight(latestFitnessGoal.totalCarbohydrate || 0, GRAMS, isImperial), color: '#2196F3' },
+                                        { label: t('fat'), value: getDisplayFormattedWeight(latestFitnessGoal.totalFat || 0, GRAMS, isImperial), color: '#FF9800' },
                                     ]}
                                     showShareImageButton={false}
-                                    shareButtonPosition="bottom"
                                     size={130}
                                     showLabels={false}
                                     showLegend={false}
@@ -246,23 +249,26 @@ export default function ListFitnessGoals({ navigation }: { navigation: Navigatio
                                             {t('item_value', { item: t('calories'), value: goal.calories })}
                                         </Text>
                                         <Text style={styles.metricDetailText}>
-                                            {t('item_value', {
+                                            {t('item_value_unit', {
                                                 item: t('protein'),
                                                 value: getDisplayFormattedWeight(goal.protein || 0, GRAMS, isImperial).toString(),
+                                                weightUnit: macroUnit,
                                             })}
                                         </Text>
                                     </View>
                                     <View style={styles.metricRow}>
                                         <Text style={styles.metricDetailText}>
-                                            {t('item_value', {
+                                            {t('item_value_unit', {
                                                 item: t('carbohydrates'),
                                                 value: getDisplayFormattedWeight(goal.totalCarbohydrate || 0, GRAMS, isImperial).toString(),
+                                                weightUnit: macroUnit,
                                             })}
                                         </Text>
                                         <Text style={styles.metricDetailText}>
-                                            {t('item_value', {
+                                            {t('item_value_unit', {
                                                 item: t('fat'),
                                                 value: getDisplayFormattedWeight(goal.totalFat || 0, GRAMS, isImperial).toString(),
+                                                weightUnit: macroUnit,
                                             })}
                                         </Text>
                                     </View>
