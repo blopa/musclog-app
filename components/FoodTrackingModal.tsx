@@ -4,13 +4,15 @@ import CustomTextInput from '@/components/CustomTextInput';
 import ThemedModal from '@/components/ThemedModal';
 import { USER_METRICS_SOURCES } from '@/constants/healthConnect';
 import { MEAL_TYPE, NUTRITION_TYPES } from '@/constants/nutrition';
-import { GRAMS, IMPERIAL_SYSTEM, METRIC_SYSTEM, OUNCES } from '@/constants/storage';
+import { GRAMS, IMPERIAL_SYSTEM, METRIC_SYSTEM, OUNCES, RECENT_FOOD } from '@/constants/storage';
 import useUnit from '@/hooks/useUnit';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
-import { addUserNutrition, updateUserNutrition } from '@/utils/database';
+import { normalizeMacrosByGrams } from '@/utils/data';
+import { addFood, addUserNutrition, getFoodByNameAndMacros, updateUserNutrition } from '@/utils/database';
 import { generateHash, safeToFixed } from '@/utils/string';
 import { UserNutritionInsertType } from '@/utils/types';
 import { getDisplayFormattedWeight } from '@/utils/unit';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View, StyleSheet, ScrollView } from 'react-native';
@@ -118,6 +120,43 @@ const FoodTrackingModal = ({
             await updateUserNutrition(userNutritionId, userNutrition);
         } else {
             await addUserNutrition(userNutrition);
+
+            const normalizedMacros = normalizeMacrosByGrams({
+                fat: userNutrition.fat,
+                carbs: userNutrition.carbohydrate,
+                protein: userNutrition.protein,
+                kcal: userNutrition.calories,
+                grams: userNutrition.grams,
+            });
+
+            const food = {
+                totalCarbohydrate: normalizedMacros.carbohydrate,
+                totalFat: normalizedMacros.fat,
+                calories: normalizedMacros.calories,
+                protein: normalizedMacros.protein,
+                name: normalizedMacros.name,
+                // TODO: add the rest of the fields
+                // productCode: userNutrition.ean,
+            };
+
+            const existingFood = await getFoodByNameAndMacros(
+                food.name,
+                food.calories,
+                food.protein,
+                food.totalCarbohydrate,
+                food.totalFat
+            );
+
+            let foodId = existingFood?.id;
+            if (!existingFood) {
+                foodId = await addFood(food);
+            }
+
+            if (foodId) {
+                const recentFood: number[] = JSON.parse(await AsyncStorage.getItem(RECENT_FOOD) || '[]');
+                recentFood.push(foodId);
+                await AsyncStorage.setItem(RECENT_FOOD, JSON.stringify(recentFood));
+            }
         }
         onClose();
     }, [calculatedValues.kcal, calculatedValues.protein, calculatedValues.carbs, calculatedValues.fat, food?.productTitle, t, mealType, unitAmount, userNutritionId, onClose]);

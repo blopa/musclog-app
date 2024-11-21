@@ -1,17 +1,13 @@
+import FoodItem from '@/components/FoodItem';
 import FoodTrackingModal from '@/components/FoodTrackingModal';
-import ThemedCard from '@/components/ThemedCard';
-import { GRAMS, IMPERIAL_SYSTEM, METRIC_SYSTEM, OUNCES } from '@/constants/storage';
-import { ICON_SIZE } from '@/constants/ui';
-import useUnit from '@/hooks/useUnit';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { fetchFoodData } from '@/utils/fetchFoodData';
-import { safeToFixed } from '@/utils/string';
 import { MusclogApiFoodInfoType } from '@/utils/types';
-import { getDisplayFormattedWeight } from '@/utils/unit';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { NavigationProp, useRoute } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useFocusEffect } from 'expo-router';
+import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, StyleSheet, View, ActivityIndicator } from 'react-native';
 import { Appbar, Button, Text, TextInput, useTheme } from 'react-native-paper';
@@ -36,24 +32,14 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const [selectedFood, setSelectedFood] = useState<MusclogApiFoodInfoType | null>(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
 
-    const { unitSystem } = useUnit();
-    const isImperial = unitSystem === IMPERIAL_SYSTEM;
-    const macroUnit = unitSystem === METRIC_SYSTEM ? GRAMS : OUNCES;
+    const loadInitialData = useCallback(async () => {
+        setIsLoading(true);
 
-    useEffect(() => {
-        const loadInitialData = async () => {
-            setIsLoading(true);
+        const { products, pageCount } = await fetchFoodData(initialSearchQuery, 1);
+        setSearchResults(products);
+        setTotalPages(pageCount);
 
-            const { products, pageCount } = await fetchFoodData(initialSearchQuery, 1);
-            setSearchResults(products);
-            setTotalPages(pageCount);
-
-            setIsLoading(false);
-        };
-
-        if (initialSearchQuery) {
-            loadInitialData();
-        }
+        setIsLoading(false);
     }, [initialSearchQuery]);
 
     const handleSearch = useCallback(async () => {
@@ -110,6 +96,18 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
         setLoadMoreError(false);
     }, []);
 
+    useFocusEffect(
+        useCallback(() => {
+            if (initialSearchQuery) {
+                loadInitialData();
+            }
+
+            return () => {
+                resetScreenData();
+            };
+        }, [initialSearchQuery, loadInitialData, resetScreenData])
+    );
+
     const openAddNewFoodModal = useCallback(() => {
         resetScreenData();
         navigation.navigate('createFood', { foodName: searchQuery });
@@ -153,60 +151,9 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 <FlashList
                     data={searchResults}
                     keyExtractor={(item, index) => (item.productTitle || index).toString()}
-                    renderItem={({ item }) => (
-                        <ThemedCard key={item.productTitle}>
-                            <View style={styles.cardContent}>
-                                <View style={styles.cardHeader}>
-                                    <Text style={styles.cardTitle}>
-                                        {item.productTitle}
-                                    </Text>
-                                    <Text style={styles.metricDetail}>
-                                        {item.ean}
-                                    </Text>
-                                    <View style={styles.metricRow}>
-                                        <Text style={styles.metricDetail}>
-                                            {t('item_value', {
-                                                item: t('calories'),
-                                                value: safeToFixed(item.kcal),
-                                            })}
-                                        </Text>
-                                        <Text style={styles.metricDetail}>
-                                            {t('item_value_unit', {
-                                                item: t('carbs'),
-                                                value: getDisplayFormattedWeight(item.carbs || 0, GRAMS, isImperial).toString(),
-                                                weightUnit: macroUnit,
-                                            })}
-                                        </Text>
-                                    </View>
-                                    <View style={styles.metricRow}>
-                                        <Text style={styles.metricDetail}>
-                                            {t('item_value_unit', {
-                                                item: t('proteins'),
-                                                value: getDisplayFormattedWeight(item.protein || 0, GRAMS, isImperial).toString(),
-                                                weightUnit: macroUnit,
-                                            })}
-                                        </Text>
-                                        <Text style={styles.metricDetail}>
-                                            {t('item_value_unit', {
-                                                item: t('fats'),
-                                                value: getDisplayFormattedWeight(item.fat || 0, GRAMS, isImperial).toString(),
-                                                weightUnit: macroUnit,
-                                            })}
-                                        </Text>
-                                    </View>
-                                </View>
-                                <View style={styles.cardActions}>
-                                    <FontAwesome5
-                                        color={colors.primary}
-                                        name="plus"
-                                        onPress={() => handleAddFood(item)}
-                                        size={ICON_SIZE}
-                                        style={styles.iconButton}
-                                    />
-                                </View>
-                            </View>
-                        </ThemedCard>
-                    )}
+                    renderItem={
+                        ({ item }) => <FoodItem food={item} onAddFood={handleAddFood} />
+                    }
                     estimatedItemSize={115}
                     contentContainerStyle={styles.listContent}
                     onEndReached={loadMoreResults}
@@ -245,26 +192,6 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         color: colors.onPrimary,
         fontSize: Platform.OS === 'web' ? 20 : 26,
     },
-    cardActions: {
-        alignItems: 'center',
-        flexDirection: 'row',
-    },
-    cardContent: {
-        alignItems: 'center',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        padding: 16,
-    },
-    cardHeader: {
-        flex: 1,
-        marginRight: 22,
-    },
-    cardTitle: {
-        color: colors.onSurface,
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 8,
-    },
     container: {
         backgroundColor: colors.background,
         flex: 1,
@@ -283,15 +210,6 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     loadMoreButton: {
         alignSelf: 'center',
         marginVertical: 10,
-    },
-    metricDetail: {
-        color: colors.onSurface,
-        fontSize: 14,
-    },
-    metricRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 4,
     },
     noResultsContainer: {
         alignItems: 'center',

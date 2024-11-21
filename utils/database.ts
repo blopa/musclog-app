@@ -2084,6 +2084,18 @@ export const getFood = async (id: number): Promise<FoodReturnType | undefined> =
     }
 };
 
+export const getAllFoodsByIds = async (ids: number[]): Promise<FoodReturnType[] | undefined> => {
+    try {
+        return database.getAllSync<FoodReturnType>(`
+            SELECT * FROM "Food"
+            WHERE "id" IN (${ids.join(',')})
+            AND ("deletedAt" IS NULL OR "deletedAt" = '')
+        `);
+    } catch (error) {
+        throw error;
+    }
+};
+
 export const getFitnessGoals = async (id: number): Promise<FitnessGoalsReturnType | undefined> => {
     try {
         return database.getFirstSync<FitnessGoalsReturnType>('SELECT * FROM "FitnessGoals" WHERE "id" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')', [id]) ?? undefined;
@@ -2149,6 +2161,23 @@ export const checkIfMigrationExists = async (migration: string): Promise<boolean
         );
 
         return !!result?.count;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const getFoodByNameAndMacros = async (
+    name: string,
+    calories: number,
+    protein: number,
+    totalCarbohydrate: number,
+    totalFat: number
+): Promise<FoodReturnType | null> => {
+    try {
+        return database.getFirstSync<FoodReturnType>(
+            'SELECT * FROM "Food" WHERE "name" = ? AND "calories" = ? AND "protein" = ? AND "totalCarbohydrate" = ? AND "totalFat" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')',
+            [name, calories, protein, totalCarbohydrate, totalFat]
+        );
     } catch (error) {
         throw error;
     }

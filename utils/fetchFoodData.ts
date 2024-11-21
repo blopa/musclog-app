@@ -83,7 +83,7 @@ export const fetchProductByEAN = async (ean: string): Promise<MusclogApiFoodInfo
                 return mapProductData(data.product as PaginatedOpenFoodFactsApiFoodProductInfoType);
             } else {
                 const response = await fetch(
-                    `https://blopa.github.io/musclog-api/ean/${ean}.json`
+                    `https://raw.githubusercontent.com/blopa/musclog-api/ean/${ean}.json`
                 );
 
                 if (response.ok) {
