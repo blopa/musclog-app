@@ -310,9 +310,6 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         fontWeight: '600',
         marginBottom: 8,
     },
-    required: {
-        color: colors.error,
-    },
     sourceText: {
         color: colors.onSurface,
         fontSize: 16,

@@ -9,7 +9,7 @@ import { getDisplayFormattedWeight } from '@/utils/unit';
 import { FontAwesome5 } from '@expo/vector-icons';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Text, useTheme } from 'react-native-paper';
 
 type FoodItemProps = {
@@ -83,19 +83,6 @@ const FoodItem = ({ food, onAddFood }: FoodItemProps) => {
 };
 
 const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
-    addButton: {
-        alignSelf: 'center',
-        marginTop: 16,
-    },
-    appbarHeader: {
-        backgroundColor: colors.primary,
-        justifyContent: 'center',
-        paddingHorizontal: 16,
-    },
-    appbarTitle: {
-        color: colors.onPrimary,
-        fontSize: Platform.OS === 'web' ? 20 : 26,
-    },
     cardActions: {
         alignItems: 'center',
         flexDirection: 'row',
@@ -116,24 +103,8 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         fontWeight: 'bold',
         marginBottom: 8,
     },
-    container: {
-        backgroundColor: colors.background,
-        flex: 1,
-    },
-    foodTrackingForm: {
-        paddingBottom: 16,
-    },
     iconButton: {
         marginLeft: 8,
-    },
-    listContent: {
-        backgroundColor: colors.background,
-        paddingBottom: 16,
-        paddingHorizontal: 16,
-    },
-    loadMoreButton: {
-        alignSelf: 'center',
-        marginVertical: 10,
     },
     metricDetail: {
         color: colors.onSurface,
@@ -143,25 +114,6 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         flexDirection: 'row',
         justifyContent: 'space-between',
         marginBottom: 4,
-    },
-    noResultsContainer: {
-        alignItems: 'center',
-        marginTop: 20,
-    },
-    noResultsText: {
-        color: colors.onSurface,
-        fontSize: 16,
-    },
-    searchContainer: {
-        alignItems: 'center',
-        flexDirection: 'row',
-        marginBottom: 16,
-        marginTop: 12,
-        paddingHorizontal: 16,
-    },
-    searchInput: {
-        backgroundColor: colors.surface,
-        flex: 1,
     },
 });
 

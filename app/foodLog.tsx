@@ -736,10 +736,6 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         height: '100%',
         width: '100%',
     },
-    foodDetails: {
-        color: colors.onSurfaceVariant,
-        fontSize: 12,
-    },
     foodItem: {
         backgroundColor: colors.surface,
         borderColor: colors.primary,
@@ -747,11 +743,6 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         borderWidth: 1,
         marginBottom: 8,
         padding: 8,
-    },
-    foodName: {
-        color: colors.onSurface,
-        fontSize: 14,
-        fontWeight: 'bold',
     },
     iconButton: {
         marginLeft: 4,

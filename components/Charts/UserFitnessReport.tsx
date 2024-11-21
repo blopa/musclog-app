@@ -307,23 +307,6 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         flexGrow: 1,
         padding: 16,
     },
-    insight: {
-        color: colors.onBackground,
-        fontSize: 16,
-        marginBottom: 4,
-    },
-    insightsContainer: {
-        backgroundColor: colors.surface,
-        borderRadius: 8,
-        marginTop: 16,
-        padding: 16,
-    },
-    insightsTitle: {
-        color: colors.onBackground,
-        fontSize: 20,
-        fontWeight: 'bold',
-        marginBottom: 8,
-    },
     title: {
         color: colors.onBackground,
         fontSize: 24,

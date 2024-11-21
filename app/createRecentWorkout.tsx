@@ -467,9 +467,6 @@ export default function CreateRecentWorkout({ navigation }: { navigation: Naviga
 }
 
 const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
-    addButton: {
-        marginTop: 16,
-    },
     alignCenter: {
         alignItems: 'center',
     },

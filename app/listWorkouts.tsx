@@ -472,14 +472,6 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         color: colors.onPrimary,
         fontSize: Platform.OS === 'web' ? 20 : 26,
     },
-    button: {
-        marginHorizontal: 8,
-    },
-    buttonsContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 16,
-    },
     cardActions: {
         alignItems: 'center',
         flexDirection: 'row',
@@ -492,11 +484,6 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     cardHeader: {
         flex: 1,
     },
-    cardSubtitle: {
-        color: colors.onSurface,
-        fontSize: 14,
-        marginBottom: 4,
-    },
     cardTitle: {
         color: colors.onSurface,
         fontSize: 18,
@@ -505,29 +492,6 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     container: {
         backgroundColor: colors.background,
         flex: 1,
-    },
-    deleteButton: {
-        backgroundColor: colors.tertiary,
-        color: colors.surface,
-    },
-    deleteButtonContent: {
-        color: colors.surface,
-    },
-    dumbbellIcon: {
-        minWidth: 46,
-    },
-    editButton: {
-        backgroundColor: colors.secondary,
-        color: colors.onBackground,
-    },
-    exerciseContainer: {
-        marginVertical: 8,
-    },
-    fabButton: {
-        backgroundColor: colors.surface,
-        bottom: 16,
-        position: 'absolute',
-        right: 16,
     },
     iconButton: {
         marginHorizontal: 8,
@@ -546,15 +510,6 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         backgroundColor: colors.background,
         paddingBottom: 16,
         paddingHorizontal: 16,
-    },
-    searchBar: {
-        backgroundColor: colors.background,
-        width: '100%',
-        zIndex: 1,
-    },
-    startWorkoutButton: {
-        backgroundColor: colors.primary,
-        color: colors.onBackground,
     },
     toggleContainer: {
         alignItems: 'center',

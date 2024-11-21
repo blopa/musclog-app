@@ -992,15 +992,9 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
 };
 
 const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
-    addButton: {
-        marginTop: 16,
-    },
     addSetButton: {
         marginBottom: 8,
         marginTop: 12,
-    },
-    alignCenter: {
-        alignItems: 'center',
     },
     appbarHeader: {
         backgroundColor: colors.primary,
@@ -1034,29 +1028,11 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         marginBottom: 16,
         padding: 16,
     },
-    exerciseDescription: {
-        color: colors.onSurface,
-        marginBottom: 8,
-    },
-    exerciseHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 8,
-    },
-    exerciseTitle: {
-        color: colors.primary,
-        fontSize: 18,
-        fontWeight: 'bold',
-    },
     footer: {
         alignItems: 'center',
         borderTopColor: colors.shadow,
         borderTopWidth: 1,
         padding: 16,
-    },
-    input: {
-        flex: 1,
-        marginLeft: 8,
     },
     label: {
         fontSize: 16,
@@ -1127,9 +1103,6 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         color: colors.onSurface,
         fontSize: 16,
         fontWeight: '600',
-    },
-    toggleSwitch: {
-        marginLeft: 8,
     },
     workoutContainer: {
         paddingBottom: 32,

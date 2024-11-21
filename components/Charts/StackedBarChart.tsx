@@ -203,14 +203,6 @@ const makeStyles = (colors: CustomThemeColorsType) => StyleSheet.create({
     },
     sharePositionBottom: { bottom: 6 },
     sharePositionTop: { top: 10 },
-    totalCalories: {
-        backgroundColor: colors.surface + 'B3',
-        color: colors.onBackground,
-        paddingLeft: 4,
-        position: 'absolute',
-        top: 20,
-        transform: [{ rotate: '-90deg' }],
-    },
     totalsToggle: {
         alignSelf: 'flex-end',
         position: 'absolute',

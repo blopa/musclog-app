@@ -467,10 +467,6 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         paddingTop: 8,
         width: '100%',
     },
-    editButton: {
-        borderRadius: 25,
-        marginTop: 16,
-    },
     editIcon: {
         borderRadius: 16,
         padding: 8,

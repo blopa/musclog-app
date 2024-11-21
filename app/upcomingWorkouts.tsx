@@ -423,12 +423,6 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     iconButton: {
         marginHorizontal: 8,
     },
-    noDataText: {
-        color: colors.onBackground,
-        fontSize: 16,
-        marginTop: 16,
-        textAlign: 'center',
-    },
     scrollViewContent: {
         backgroundColor: colors.background,
         paddingBottom: 16,

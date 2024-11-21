@@ -658,13 +658,6 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         height: 1,
         marginVertical: 16,
     },
-    snackbar: {
-        backgroundColor: colors.background,
-        marginBottom: 80,
-    },
-    snackbarText: {
-        color: colors.onBackground,
-    },
     supersetContainer: {
         backgroundColor: colors.surfaceVariant,
         borderColor: colors.primary,

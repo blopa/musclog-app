@@ -75,10 +75,6 @@ const styles = StyleSheet.create({
         maxHeight: '40%',
         width: '80%',
     },
-    title: {
-        fontSize: 24,
-        marginBottom: 20,
-    },
 });
 
 export default CustomErrorBoundary;

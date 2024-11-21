@@ -265,26 +265,8 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         fontSize: 14,
         marginBottom: 4,
     },
-    modalText: {
-        fontSize: 14,
-        marginBottom: 20,
-    },
-    modalTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 12,
-    },
-    scrollContainer: {
-        flex: 1,
-    },
     scrollViewContent: {
         paddingBottom: 16,
         paddingHorizontal: 16,
-    },
-    selectJsonButton: {
-        marginBottom: 12,
-    },
-    selectedFileWrapper: {
-        marginBottom: 24,
     },
 });

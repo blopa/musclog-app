@@ -196,9 +196,6 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         backgroundColor: colors.background,
         flex: 1,
     },
-    foodTrackingForm: {
-        paddingBottom: 16,
-    },
     iconButton: {
         marginLeft: 8,
     },

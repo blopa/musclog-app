@@ -352,9 +352,6 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         color: colors.onPrimary,
         fontSize: Platform.OS === 'web' ? 20 : 26,
     },
-    button: {
-        marginHorizontal: 8,
-    },
     cardActions: {
         alignItems: 'center',
         flexDirection: 'row',
@@ -387,9 +384,6 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     iconButton: {
         marginHorizontal: 8,
     },
-    importJsonButton: {
-        marginTop: 12,
-    },
     loadingIndicator: {
         marginVertical: 16,
     },
@@ -407,12 +401,6 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         fontSize: 18,
         fontWeight: 'bold',
         marginBottom: 12,
-    },
-    noDataText: {
-        color: colors.onBackground,
-        fontSize: 16,
-        marginTop: 16,
-        textAlign: 'center',
     },
     scrollContainer: {
         flex: 1,

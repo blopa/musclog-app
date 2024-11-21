@@ -160,16 +160,6 @@ const makeStyles = (colors: CustomThemeColorsType) => StyleSheet.create({
     },
     sharePositionBottom: { bottom: 6 },
     sharePositionTop: { top: 10 },
-    xAxisLabel: {
-        color: colors.onBackground,
-        fontSize: 14,
-    },
-    yAxisLabel: {
-        color: colors.onBackground,
-        fontSize: 14,
-        position: 'absolute',
-        transform: [{ rotate: '-90deg' }],
-    },
 });
 
 export default LineChart;

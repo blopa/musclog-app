@@ -1059,9 +1059,6 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
 }
 
 const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
-    confirmMessage: {
-        marginBottom: 28,
-    },
     container: {
         backgroundColor: colors.background,
         flex: 1,

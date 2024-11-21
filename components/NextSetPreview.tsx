@@ -42,10 +42,6 @@ const makeStyles = (colors: CustomThemeColorsType) => StyleSheet.create({
         padding: 8,
         width: '80%',
     },
-    details: {
-        color: colors.onSurface,
-        fontSize: 16,
-    },
     exerciseName: {
         color: colors.onSurface,
     },

@@ -1193,17 +1193,9 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         color: colors.onPrimary,
         fontSize: Platform.OS === 'web' ? 20 : 26,
     },
-    confirmButton: {
-        marginVertical: 8,
-    },
     container: {
         backgroundColor: colors.background,
         flex: 1,
-    },
-    loadMoreButton: {
-        alignSelf: 'center',
-        marginTop: 8,
-        width: '80%',
     },
     overlay: {
         ...StyleSheet.absoluteFillObject,
@@ -1212,38 +1204,12 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         flex: 1,
         justifyContent: 'center',
     },
-    pickerContainer: {
-        alignItems: 'center',
-        flexDirection: 'row',
-        marginBottom: 8,
-        width: '100%',
-    },
     scrollView: {
         marginHorizontal: 16,
     },
     scrollViewContainer: {
         alignItems: 'center',
         paddingVertical: 16,
-    },
-    segmentedButtons: {
-        width: '100%',
-    },
-    settingsContent: {
-        width: '90%',
-    },
-    showLastDaysText: {
-        marginBottom: 8,
-        textAlign: 'center',
-    },
-    switch: {
-        marginLeft: 12,
-    },
-    toggleContainer: {
-        alignItems: 'center',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginVertical: 12,
-        width: '100%',
     },
 });
 

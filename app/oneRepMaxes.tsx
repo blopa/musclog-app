@@ -355,12 +355,6 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         fontSize: 14,
         marginBottom: 8,
     },
-    exerciseTitle: {
-        color: colors.onSurface,
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 8,
-    },
     iconButton: {
         marginHorizontal: 8,
     },

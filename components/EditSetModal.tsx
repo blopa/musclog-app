@@ -129,11 +129,6 @@ const makeStyles = (colors: CustomThemeColorsType) => StyleSheet.create({
         paddingHorizontal: 8,
         width: '100%',
     },
-    modalLabel: {
-        color: colors.onBackground,
-        flex: 1,
-        fontSize: 16,
-    },
     modalRow: {
         alignItems: 'center',
         backgroundColor: colors.background,

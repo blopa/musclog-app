@@ -205,14 +205,6 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         color: colors.onPrimary,
         fontSize: Platform.OS === 'web' ? 20 : 26,
     },
-    button: {
-        marginHorizontal: 8,
-    },
-    buttonContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 8,
-    },
     cardActions: {
         alignItems: 'center',
         flexDirection: 'row',
@@ -234,30 +226,10 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         backgroundColor: colors.background,
         flex: 1,
     },
-    deleteButton: {
-        backgroundColor: colors.tertiary,
-    },
-    deleteButtonContent: {
-        color: colors.surface,
-    },
-    editButton: {
-        backgroundColor: colors.secondary,
-    },
-    exerciseDescription: {
-        color: colors.onSurface,
-        fontSize: 12,
-        marginBottom: 4,
-    },
     exerciseDetail: {
         color: colors.onSurface,
         fontSize: 14,
         marginBottom: 4,
-    },
-    fabButton: {
-        backgroundColor: colors.surface,
-        bottom: 16,
-        position: 'absolute',
-        right: 16,
     },
     iconButton: {
         marginHorizontal: 8,

@@ -628,17 +628,8 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         backgroundColor: colors.background,
         flex: 1,
     },
-    fabButton: {
-        backgroundColor: colors.surface,
-        bottom: 16,
-        position: 'absolute',
-        right: 16,
-    },
     iconButton: {
         marginHorizontal: 8,
-    },
-    importJsonButton: {
-        marginTop: 12,
     },
     loadingIndicator: {
         marginVertical: 16,
