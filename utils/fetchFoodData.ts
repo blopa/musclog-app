@@ -36,10 +36,17 @@ export const fetchFoodData = async (query: string, page: number): Promise<{ prod
                     `https://raw.githubusercontent.com/blopa/musclog-api/refs/heads/gh-pages/title/${apiPath}/index.json`
                 );
 
-                const data: MusclogApiFoodInfoType[] = await response.json();
+                if (response.ok) {
+                    const data: MusclogApiFoodInfoType[] = await response.json();
+
+                    return {
+                        products: data,
+                        pageCount: 1,
+                    };
+                }
 
                 return {
-                    products: data,
+                    products: [],
                     pageCount: 1,
                 };
             }

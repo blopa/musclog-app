@@ -42,7 +42,7 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
     const handleModalClose = useCallback(() => {
         setIsModalVisible(false);
-        navigation.navigate('listExercises');
+        navigation.navigate('foodSearch');
     }, [navigation]);
 
     useEffect(() => {
