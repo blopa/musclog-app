@@ -149,30 +149,34 @@ const FoodTrackingModal = ({
                         selectedValue={mealType}
                         onValueChange={(value) => setMealType(value)}
                     />
-                    <Text>
-                        {t('item_value', {
-                            item: t('calories'),
-                            value: safeToFixed(calculatedValues.kcal),
-                        })}
-                    </Text>
-                    <Text>
-                        {t('item_value', {
-                            item: t('protein'),
-                            value: getDisplayFormattedWeight(calculatedValues.protein || 0, GRAMS, isImperial).toString(),
-                        })}
-                    </Text>
-                    <Text>
-                        {t('item_value', {
-                            item: t('carbs'),
-                            value: getDisplayFormattedWeight(calculatedValues.carbs || 0, GRAMS, isImperial).toString(),
-                        })}
-                    </Text>
-                    <Text>
-                        {t('item_value', {
-                            item: t('fats'),
-                            value: getDisplayFormattedWeight(calculatedValues.fat || 0, GRAMS, isImperial).toString(),
-                        })}
-                    </Text>
+                    <View style={styles.metricRow}>
+                        <Text style={styles.metricDetail}>
+                            {t('item_value', {
+                                item: t('calories'),
+                                value: safeToFixed(calculatedValues.kcal),
+                            })}
+                        </Text>
+                        <Text style={styles.metricDetail}>
+                            {t('item_value', {
+                                item: t('carbs'),
+                                value: getDisplayFormattedWeight(calculatedValues.carbs || 0, GRAMS, isImperial).toString(),
+                            })}
+                        </Text>
+                    </View>
+                    <View style={styles.metricRow}>
+                        <Text style={styles.metricDetail}>
+                            {t('item_value', {
+                                item: t('proteins'),
+                                value: getDisplayFormattedWeight(calculatedValues.protein || 0, GRAMS, isImperial).toString(),
+                            })}
+                        </Text>
+                        <Text style={styles.metricDetail}>
+                            {t('item_value', {
+                                item: t('fats'),
+                                value: getDisplayFormattedWeight(calculatedValues.fat || 0, GRAMS, isImperial).toString(),
+                            })}
+                        </Text>
+                    </View>
                 </View>
             )}
             {isLoading && <ActivityIndicator color={colors.primary} size="large" />}
@@ -183,6 +187,16 @@ const FoodTrackingModal = ({
 const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
     foodTrackingForm: {
         paddingBottom: 16,
+    },
+    metricDetail: {
+        color: colors.onSurface,
+        fontSize: 14,
+    },
+    metricRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+        marginBottom: 4,
+        paddingHorizontal: 16,
     },
 });
 
