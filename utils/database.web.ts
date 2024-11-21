@@ -1563,6 +1563,14 @@ export const getFood = async (id: number): Promise<FoodReturnType | undefined> =
         .first();
 };
 
+export const getAllFoodsByIds = async (ids: number[]): Promise<FoodReturnType[] | undefined> => {
+    return database.food
+        .where('id')
+        .anyOf(ids)
+        .filter((food) => !food.deletedAt)
+        .toArray();
+};
+
 export const getFitnessGoals = async (id: number): Promise<FitnessGoalsReturnType | undefined> => {
     return database.fitnessGoals
         .where({ id })
@@ -1612,6 +1620,20 @@ export const checkIfMigrationExists = async (migration: string): Promise<boolean
         .first();
 
     return Boolean(existingMigration);
+};
+
+export const getFoodByNameAndMacros = async (
+    name: string,
+    calories: number,
+    protein: number,
+    totalCarbohydrate: number,
+    totalFat: number
+): Promise<FoodReturnType | null> => {
+    const food = await database.food
+        .where({ name, calories, protein, totalCarbohydrate, totalFat })
+        .first();
+
+    return food || null;
 };
 
 // Update functions

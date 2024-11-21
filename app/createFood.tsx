@@ -42,7 +42,7 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
     const handleModalClose = useCallback(() => {
         setIsModalVisible(false);
-        navigation.navigate('listExercises');
+        navigation.navigate('foodSearch');
     }, [navigation]);
 
     useEffect(() => {
@@ -55,12 +55,12 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
     }, [foodName]);
 
     // Update the form data on text input change
-    const handleInputChange = (id: string, value: string) => {
+    const handleInputChange = useCallback((id: string, value: string) => {
         setFormData((prevData) => ({
             ...prevData,
             [id]: value,
         }));
-    };
+    }, []);
 
     const resetScreenData = useCallback(() => {
         setFormData(initialFormState);
@@ -69,7 +69,7 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
     const formatQuestionName = (id: string) => `entry.${id}`;
 
-    const submitForm = async () => {
+    const submitForm = useCallback(async () => {
         setIsSaving(true);
 
         const urlParams = new URLSearchParams();
@@ -131,7 +131,7 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
         } finally {
             setIsSaving(false);
         }
-    };
+    }, [formData, t]);
 
     const numericFields = [
         'calories',
@@ -164,7 +164,7 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
                     mode="outlined"
                     onPress={() => {
                         resetScreenData();
-                        navigation.navigate('listExercises');
+                        navigation.navigate('foodSearch');
                     }}
                     textColor={colors.onPrimary}
                 >

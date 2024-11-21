@@ -34,6 +34,14 @@ export const ACTIVITY_LEVELS = {
     SUPER_ACTIVE: 'super_active',
 } as const;
 
+export const ACTIVITY_LEVELS_MULTIPLIER = {
+    [ACTIVITY_LEVELS.SEDENTARY]: 1.2,
+    [ACTIVITY_LEVELS.LIGHTLY_ACTIVE]: 1.375,
+    [ACTIVITY_LEVELS.MODERATELY_ACTIVE]: 1.55,
+    [ACTIVITY_LEVELS.VERY_ACTIVE]: 1.725,
+    [ACTIVITY_LEVELS.SUPER_ACTIVE]: 1.9,
+} as const;
+
 export const EXPERIENCE_LEVELS = {
     BEGINNER: 'beginner',
     INTERMEDIATE: 'intermediate',

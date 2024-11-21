@@ -1,54 +1,106 @@
+import CustomPicker from '@/components/CustomPicker';
 import ThemedCard from '@/components/ThemedCard';
-import { GRAMS, OUNCES, IMPERIAL_SYSTEM, METRIC_SYSTEM } from '@/constants/storage';
+import { GRAMS, OUNCES, IMPERIAL_SYSTEM } from '@/constants/storage';
 import useUnit from '@/hooks/useUnit';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
+import { getFood } from '@/utils/database';
+import { safeToFixed } from '@/utils/string';
+import { getDisplayFormattedWeight } from '@/utils/unit';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { Picker } from '@react-native-picker/picker';
-import { NavigationProp } from '@react-navigation/native';
-import React, { useState } from 'react';
+import { NavigationProp, useFocusEffect, useRoute } from '@react-navigation/native';
+import React, { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { View, StyleSheet, Platform } from 'react-native';
+import { View, StyleSheet, Platform, ActivityIndicator } from 'react-native';
 import { Appbar, TextInput, Button, Text, useTheme, HelperText } from 'react-native-paper';
 
-const FoodDetails = ({
-    navigation,
-    route,
-}: {
-    navigation: NavigationProp<any>;
-    route: any;
-}) => {
+type RouteParams = {
+    id?: string;
+};
+
+const FoodDetails = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const { t } = useTranslation();
     const { colors, dark } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors, dark);
     const { unitSystem } = useUnit();
+    const route = useRoute();
+
     const isImperial = unitSystem === IMPERIAL_SYSTEM;
-    const macroUnit = unitSystem === METRIC_SYSTEM ? GRAMS : OUNCES;
+    const macroUnit = isImperial ? OUNCES : GRAMS;
 
-    const selectedFood = route.params?.food || {
-        name: 'Chicken Breast',
-        calories: 165,
-        proteins: 31,
-        carbs: 0,
-        fats: 3.6,
-        servingSize: 100,
-    };
+    const { id } = (route.params as RouteParams) || {};
+    const [foodDetails, setFoodDetails] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
 
-    const mealCategories = [t('breakfast'), t('lunch'), t('dinner'), t('snacks')];
-    const units = [GRAMS, OUNCES];
+    const mealCategories = [
+        { label: t('breakfast'), value: 'breakfast' },
+        { label: t('lunch'), value: 'lunch' },
+        { label: t('dinner'), value: 'dinner' },
+        { label: t('snacks'), value: 'snacks' },
+    ];
 
     const [amount, setAmount] = useState('100');
-    const [unit, setUnit] = useState(macroUnit);
     const [category, setCategory] = useState('');
     const [errors, setErrors] = useState<{ amount?: string; category?: string }>({});
 
-    const conversionFactor = unit === OUNCES ? 28.35 : 1;
-    const multiplier = (parseFloat(amount) * conversionFactor) / selectedFood.servingSize;
+    const fetchFoodDetails = useCallback(async () => {
+        if (!id) {
+            navigation.goBack();
+            return;
+        }
+
+        try {
+            setLoading(true);
+            const food = await getFood(Number(id));
+            if (food) {
+                setFoodDetails(food);
+            } else {
+                setFoodDetails({
+                    name: t('unknown_food'),
+                    calories: 0,
+                    proteins: 0,
+                    carbs: 0,
+                    fats: 0,
+                    servingSize: 100,
+                });
+            }
+        } catch (error) {
+            console.error(t('failed_to_load_food_details'), error);
+        } finally {
+            setLoading(false);
+        }
+    }, [id, navigation, t]);
+
+    useFocusEffect(
+        useCallback(() => {
+            fetchFoodDetails();
+        }, [fetchFoodDetails])
+    );
+
+    if (loading) {
+        return (
+            <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color={colors.primary} />
+                <Text>{t('loading_food_details')}</Text>
+            </View>
+        );
+    }
+
+    if (!foodDetails) {
+        return (
+            <View style={styles.container}>
+                <Text>{t('no_food_details')}</Text>
+            </View>
+        );
+    }
+
+    const conversionFactor = isImperial ? 28.35 : 1;
+    const multiplier = (parseFloat(amount) * conversionFactor) / foodDetails.servingSize;
 
     const calculatedNutrition = {
-        calories: Math.round(selectedFood.calories * multiplier),
-        proteins: Math.round(selectedFood.proteins * multiplier * 10) / 10,
-        carbs: Math.round(selectedFood.carbs * multiplier * 10) / 10,
-        fats: Math.round(selectedFood.fats * multiplier * 10) / 10,
+        calories: Math.round(foodDetails.calories * multiplier),
+        proteins: Math.round(foodDetails.proteins * multiplier * 10) / 10,
+        carbs: Math.round(foodDetails.carbs * multiplier * 10) / 10,
+        fats: Math.round(foodDetails.fats * multiplier * 10) / 10,
     };
 
     const handleFoodDetails = () => {
@@ -84,22 +136,44 @@ const FoodDetails = ({
             <View style={styles.content}>
                 <ThemedCard>
                     <View style={styles.cardContent}>
-                        <Text style={styles.cardTitle}>{selectedFood.name}</Text>
+                        <Text style={styles.cardTitle}>{foodDetails.name}</Text>
                         <View style={styles.metricRow}>
-                            <Text style={styles.metricDetail}>{t('calories')}: {calculatedNutrition.calories}</Text>
+                            <Text style={styles.metricDetail}>
+                                {t('item_value', {
+                                    item: t('calories'),
+                                    value: safeToFixed(calculatedNutrition.calories),
+                                })}
+                            </Text>
                         </View>
                         <View style={styles.metricRow}>
-                            <Text style={styles.metricDetail}>{t('proteins')}: {calculatedNutrition.proteins}g</Text>
+                            <Text style={styles.metricDetail}>
+                                {t('item_value_unit', {
+                                    item: t('proteins'),
+                                    value: getDisplayFormattedWeight(calculatedNutrition.proteins || 0, GRAMS, isImperial).toString(),
+                                    weightUnit: macroUnit,
+                                })}
+                            </Text>
                         </View>
                         <View style={styles.metricRow}>
-                            <Text style={styles.metricDetail}>{t('carbs')}: {calculatedNutrition.carbs}g</Text>
+                            <Text style={styles.metricDetail}>
+                                {t('item_value_unit', {
+                                    item: t('carbs'),
+                                    value: getDisplayFormattedWeight(calculatedNutrition.carbs || 0, GRAMS, isImperial).toString(),
+                                    weightUnit: macroUnit,
+                                })}
+                            </Text>
                         </View>
                         <View style={styles.metricRow}>
-                            <Text style={styles.metricDetail}>{t('fats')}: {calculatedNutrition.fats}g</Text>
+                            <Text style={styles.metricDetail}>
+                                {t('item_value_unit', {
+                                    item: t('fats'),
+                                    value: getDisplayFormattedWeight(calculatedNutrition.fats || 0, GRAMS, isImperial).toString(),
+                                    weightUnit: macroUnit,
+                                })}
+                            </Text>
                         </View>
                     </View>
                 </ThemedCard>
-
                 <View style={styles.form}>
                     <View style={styles.inputGroup}>
                         <Text style={styles.label}>{t('amount')}</Text>
@@ -115,34 +189,12 @@ const FoodDetails = ({
                     </View>
 
                     <View style={styles.inputGroup}>
-                        <Text style={styles.label}>{t('unit')}</Text>
-                        <View style={styles.pickerContainer}>
-                            <Picker
-                                selectedValue={unit}
-                                onValueChange={(itemValue) => setUnit(itemValue)}
-                                style={styles.picker}
-                            >
-                                {units.map((u) => (
-                                    <Picker.Item key={u} label={u} value={u} />
-                                ))}
-                            </Picker>
-                        </View>
-                    </View>
-
-                    <View style={styles.inputGroup}>
-                        <Text style={styles.label}>{t('meal_category')}</Text>
-                        <View style={styles.pickerContainer}>
-                            <Picker
-                                selectedValue={category}
-                                onValueChange={(itemValue) => setCategory(itemValue)}
-                                style={styles.picker}
-                            >
-                                <Picker.Item label={t('select_category')} value="" />
-                                {mealCategories.map((cat) => (
-                                    <Picker.Item key={cat} label={cat} value={cat} />
-                                ))}
-                            </Picker>
-                        </View>
+                        <CustomPicker
+                            label={t('meal_category')}
+                            items={mealCategories}
+                            selectedValue={category}
+                            onValueChange={(itemValue) => setCategory(itemValue)}
+                        />
                         {errors.category && <HelperText type="error">{errors.category}</HelperText>}
                     </View>
 
@@ -201,6 +253,11 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         fontSize: 16,
         marginBottom: 4,
     },
+    loadingContainer: {
+        alignItems: 'center',
+        flex: 1,
+        justifyContent: 'center',
+    },
     metricDetail: {
         color: colors.onSurface,
         fontSize: 16,
@@ -210,16 +267,6 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         flexDirection: 'row',
         justifyContent: 'space-between',
         marginVertical: 4,
-    },
-    picker: {
-        height: 50,
-        width: '100%',
-    },
-    pickerContainer: {
-        backgroundColor: colors.surface,
-        borderColor: colors.shadow,
-        borderRadius: 4,
-        borderWidth: 1,
     },
 });
 

@@ -2,12 +2,23 @@ import PieChart from '@/components/Charts/PieChart';
 import CompletionModal from '@/components/CompletionModal';
 import CustomTextInput from '@/components/CustomTextInput';
 import SliderWithButtons from '@/components/SliderWithButtons';
+import { ACTIVITY_LEVELS, ACTIVITY_LEVELS_MULTIPLIER } from '@/constants/exercises';
+import { CALORIES_IN_CARBS, CALORIES_IN_FAT, CALORIES_IN_PROTEIN } from '@/constants/healthConnect';
+import { GRAMS, IMPERIAL_SYSTEM } from '@/constants/storage';
 import useUnit from '@/hooks/useUnit';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
-import { addFitnessGoals, getFitnessGoals, getLatestFitnessGoals, updateFitnessGoals } from '@/utils/database';
-import { getCurrentTimestamp } from '@/utils/date';
+import { calculateBMR } from '@/utils/data';
+import {
+    addFitnessGoals,
+    getFitnessGoals,
+    getLatestFitnessGoals,
+    getLatestUser,
+    updateFitnessGoals,
+} from '@/utils/database';
+import { getCurrentTimestamp, isValidDateParam } from '@/utils/date';
 import { formatFloatNumericInputText } from '@/utils/string';
 import { FitnessGoalsInsertType } from '@/utils/types';
+import { getDisplayFormattedWeight } from '@/utils/unit';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { NavigationProp, useRoute } from '@react-navigation/native';
 import { useFocusEffect } from 'expo-router';
@@ -26,13 +37,6 @@ import {
 import { Appbar, Button, useTheme, Text } from 'react-native-paper';
 import { TabView, TabBar } from 'react-native-tab-view';
 
-const DEFAULT_MACROS = {
-    CALORIES: 2000,
-    PROTEIN: 25,
-    TOTAL_CARBOHYDRATE: 50,
-    TOTAL_FAT: 25,
-};
-
 type RouteParams = {
     id?: string;
 };
@@ -50,6 +54,39 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
     const { colors, dark } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors, dark);
 
+    const { unitSystem, weightUnit } = useUnit();
+    const isImperial = unitSystem === IMPERIAL_SYSTEM;
+
+    const [maxMacros, setMaxMacros] = useState(600);
+    const [defaultMacros, setDefaultMacros] = useState({
+        protein: 150,
+        carbohydrate: 250,
+        fat: 70,
+    });
+
+    const calculateTdee = useCallback(async () => {
+        const user = await getLatestUser();
+
+        if (user) {
+            const { metrics, birthday, gender, activityLevel } = user;
+            const { weight, height } = metrics;
+
+            if (gender && weight && height && isValidDateParam(birthday)) {
+                const age = Math.floor((new Date().getTime() - new Date(birthday).getTime()) / 3.15576e+10);
+                const bmr = calculateBMR(weight, height * 100, age, gender.toLowerCase());
+                const tdee = bmr * ACTIVITY_LEVELS_MULTIPLIER[activityLevel || ACTIVITY_LEVELS.LIGHTLY_ACTIVE];
+
+                setDefaultMacros({
+                    protein: Math.round(tdee * 0.3 / CALORIES_IN_PROTEIN),
+                    carbohydrate: Math.round(tdee * 0.5 / CALORIES_IN_CARBS),
+                    fat: Math.round(tdee * 0.2 / CALORIES_IN_FAT),
+                });
+
+                setMaxMacros(Math.round(tdee / 4));
+            }
+        }
+    }, []);
+
     // State variables for tabs and input fields
     const [index, setIndex] = useState(0);
     const [routes] = useState([
@@ -58,10 +95,9 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
     ]);
 
     // Daily Intake Goals
-    const [calories, setCalories] = useState<number>(DEFAULT_MACROS.CALORIES);
-    const [protein, setProtein] = useState<number>(DEFAULT_MACROS.PROTEIN);
-    const [totalCarbohydrate, setTotalCarbohydrate] = useState<number>(DEFAULT_MACROS.TOTAL_CARBOHYDRATE);
-    const [totalFat, setTotalFat] = useState<number>(DEFAULT_MACROS.TOTAL_FAT);
+    const [protein, setProtein] = useState<number>(defaultMacros.protein);
+    const [totalCarbohydrate, setTotalCarbohydrate] = useState<number>(defaultMacros.carbohydrate);
+    const [totalFat, setTotalFat] = useState<number>(defaultMacros.fat);
     const [alcohol, setAlcohol] = useState<string>('');
     const [fiber, setFiber] = useState<string>('');
     const [sugar, setSugar] = useState<string>('');
@@ -72,19 +108,14 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
     const [bmi, setBmi] = useState<string>('');
     const [ffmi, setFfmi] = useState<string>('');
 
-    const { weightUnit } = useUnit();
-
     // New state variables for the dynamic daily goals tab
-    const [activeMacro, setActiveMacro] = useState<'protein' | 'carbs' | 'fats' | 'calories'>(
-        'protein'
-    );
+    const [activeMacro, setActiveMacro] = useState<'protein' | 'carbs' | 'fats'>('protein');
 
-    const macroOrder: ('protein' | 'carbs' | 'fats' | 'calories')[] = [
-        'protein',
-        'carbs',
-        'fats',
-        'calories',
-    ];
+    const macroOrder: ('protein' | 'carbs' | 'fats')[] = ['protein', 'carbs', 'fats'];
+
+    const calculateCalories = useCallback(() => {
+        return Math.round(protein * CALORIES_IN_PROTEIN + totalCarbohydrate * CALORIES_IN_CARBS + totalFat * CALORIES_IN_FAT);
+    }, [protein, totalCarbohydrate, totalFat]);
 
     const handleSliderChange = useCallback(
         (value: number) => {
@@ -98,9 +129,6 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
                 case 'fats':
                     setTotalFat(value);
                     break;
-                case 'calories':
-                    setCalories(value);
-                    break;
             }
         },
         [activeMacro]
@@ -113,21 +141,7 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
 
     const prevMacro = () => {
         const currentIndex = macroOrder.indexOf(activeMacro);
-        setActiveMacro(
-            macroOrder[(currentIndex - 1 + macroOrder.length) % macroOrder.length]
-        );
-    };
-
-    const getSliderMax = () => {
-        if (activeMacro === 'calories') {
-            return 8000;
-        }
-
-        return 400;
-    };
-
-    const getSliderMin = () => {
-        return 0;
+        setActiveMacro(macroOrder[(currentIndex - 1 + macroOrder.length) % macroOrder.length]);
     };
 
     const loadFitnessGoal = useCallback(async () => {
@@ -135,10 +149,9 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
             const goal = await getFitnessGoals(Number(id));
 
             if (goal) {
-                setCalories(goal.calories ?? DEFAULT_MACROS.CALORIES);
-                setProtein(goal.protein ?? DEFAULT_MACROS.PROTEIN);
-                setTotalCarbohydrate(goal.totalCarbohydrate ?? DEFAULT_MACROS.TOTAL_CARBOHYDRATE);
-                setTotalFat(goal.totalFat ?? DEFAULT_MACROS.TOTAL_FAT);
+                setProtein(goal.protein ?? defaultMacros.protein);
+                setTotalCarbohydrate(goal.totalCarbohydrate ?? defaultMacros.carbohydrate);
+                setTotalFat(goal.totalFat ?? defaultMacros.fat);
                 setAlcohol(goal.alcohol?.toString() || '');
                 setFiber(goal.fiber?.toString() || '');
                 setSugar(goal.sugar?.toString() || '');
@@ -150,16 +163,15 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
         } catch (error) {
             console.error(t('failed_to_load_fitness_goal'), error);
         }
-    }, [id, t]);
+    }, [defaultMacros.carbohydrate, defaultMacros.fat, defaultMacros.protein, id, t]);
 
     useFocusEffect(
         useCallback(() => {
             const loadLatest = async () => {
                 const fitnessGoals = await getLatestFitnessGoals();
-                setCalories(fitnessGoals?.calories ?? DEFAULT_MACROS.CALORIES);
-                setProtein(fitnessGoals?.protein ?? DEFAULT_MACROS.PROTEIN);
-                setTotalCarbohydrate(fitnessGoals?.totalCarbohydrate ?? DEFAULT_MACROS.TOTAL_CARBOHYDRATE);
-                setTotalFat(fitnessGoals?.totalFat ?? DEFAULT_MACROS.TOTAL_FAT);
+                setProtein(fitnessGoals?.protein ?? defaultMacros.protein);
+                setTotalCarbohydrate(fitnessGoals?.totalCarbohydrate ?? defaultMacros.carbohydrate);
+                setTotalFat(fitnessGoals?.totalFat ?? defaultMacros.fat);
                 setAlcohol(fitnessGoals?.alcohol?.toString() || '');
                 setFiber(fitnessGoals?.fiber?.toString() || '');
                 setSugar(fitnessGoals?.sugar?.toString() || '');
@@ -169,8 +181,10 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
                 setFfmi(fitnessGoals?.ffmi?.toString() || '');
             };
 
-            loadLatest();
-        }, [])
+            if (!id) {
+                loadLatest();
+            }
+        }, [defaultMacros.carbohydrate, defaultMacros.fat, defaultMacros.protein, id])
     );
 
     useFocusEffect(
@@ -213,14 +227,15 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
 
     const handleSaveFitnessGoal = useCallback(async () => {
         if (
-            calories === undefined
-            || protein === undefined
+            protein === undefined
             || totalCarbohydrate === undefined
             || totalFat === undefined
         ) {
             Alert.alert(t('validation_error'), t('mandatory_fields_required'));
             return;
         }
+
+        const calories = calculateCalories();
 
         const goalData: FitnessGoalsInsertType = {
             calories,
@@ -252,7 +267,6 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
             setIsSaving(false);
         }
     }, [
-        calories,
         protein,
         totalCarbohydrate,
         totalFat,
@@ -266,13 +280,13 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
         id,
         showModal,
         t,
+        calculateCalories,
     ]);
 
     const resetScreenData = useCallback(() => {
-        setCalories(DEFAULT_MACROS.CALORIES);
-        setProtein(DEFAULT_MACROS.PROTEIN);
-        setTotalCarbohydrate(DEFAULT_MACROS.TOTAL_CARBOHYDRATE);
-        setTotalFat(DEFAULT_MACROS.TOTAL_FAT);
+        setProtein(defaultMacros.protein);
+        setTotalCarbohydrate(defaultMacros.carbohydrate);
+        setTotalFat(defaultMacros.fat);
         setAlcohol('');
         setFiber('');
         setSugar('');
@@ -280,14 +294,16 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
         setBodyFat('');
         setBmi('');
         setFfmi('');
-    }, []);
+    }, [defaultMacros.carbohydrate, defaultMacros.fat, defaultMacros.protein]);
 
     useFocusEffect(
         useCallback(() => {
+            calculateTdee();
+
             return () => {
                 resetScreenData();
             };
-        }, [resetScreenData])
+        }, [calculateTdee, resetScreenData])
     );
 
     const handleModalClose = useCallback(() => {
@@ -321,19 +337,19 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
 
     // Render functions for each tab
     const renderDailyIntakeTab = () => {
+        const calories = calculateCalories();
+
         const pieData = [
-            { label: t('protein'), value: protein || 0, color: '#FF6384' },
-            { label: t('carbohydrates'), value: totalCarbohydrate || 0, color: '#36A2EB' },
-            { label: t('fat'), value: totalFat || 0, color: '#FFCE56' },
+            { label: t('protein'), value: protein * CALORIES_IN_PROTEIN, color: '#FF6384' },
+            { label: t('carbohydrates'), value: totalCarbohydrate * CALORIES_IN_CARBS, color: '#36A2EB' },
+            { label: t('fat'), value: totalFat * CALORIES_IN_FAT, color: '#FFCE56' },
         ];
 
-        const activeMacroValue = activeMacro === 'calories'
-            ? calories
-            : activeMacro === 'protein'
-                ? protein
-                : activeMacro === 'carbs'
-                    ? totalCarbohydrate
-                    : totalFat;
+        const activeMacroValue = activeMacro === 'protein'
+            ? protein
+            : activeMacro === 'carbs'
+                ? totalCarbohydrate
+                : totalFat;
 
         return (
             <ScrollView contentContainerStyle={styles.flexContainer}>
@@ -345,8 +361,7 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
                     <View style={styles.activeMacroContainer}>
                         <Text style={styles.activeMacroTitle}>{t(activeMacro)}</Text>
                         <Text style={styles.activeMacroValue}>
-                            {activeMacroValue}{' '}
-                            {activeMacro === 'calories' ? 'kcal' : 'g'}
+                            {getDisplayFormattedWeight(activeMacroValue || 0, GRAMS, isImperial).toString()}
                         </Text>
                     </View>
                     <Button mode="outlined" onPress={nextMacro} style={styles.arrowButton}>
@@ -357,25 +372,33 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
                     label=""
                     value={activeMacroValue}
                     onValueChange={handleSliderChange}
-                    minimumValue={getSliderMin()}
-                    maximumValue={getSliderMax()}
+                    minimumValue={0}
+                    maximumValue={maxMacros}
                 />
                 <View style={styles.macrosSummary}>
                     <View style={styles.macroSummaryItem}>
                         <Text style={styles.macroSummaryTitle}>{t('protein')}</Text>
-                        <Text style={styles.macroSummaryValue}>{protein || 0}g</Text>
+                        <Text style={styles.macroSummaryValue}>
+                            {getDisplayFormattedWeight(protein || 0, GRAMS, isImperial).toString()}
+                        </Text>
                     </View>
                     <View style={styles.macroSummaryItem}>
                         <Text style={styles.macroSummaryTitle}>{t('carbohydrates')}</Text>
-                        <Text style={styles.macroSummaryValue}>{totalCarbohydrate || 0}g</Text>
+                        <Text style={styles.macroSummaryValue}>
+                            {getDisplayFormattedWeight(totalCarbohydrate || 0, GRAMS, isImperial).toString()}
+                        </Text>
                     </View>
                     <View style={styles.macroSummaryItem}>
                         <Text style={styles.macroSummaryTitle}>{t('fat')}</Text>
-                        <Text style={styles.macroSummaryValue}>{totalFat || 0}g</Text>
+                        <Text style={styles.macroSummaryValue}>
+                            {getDisplayFormattedWeight(totalFat || 0, GRAMS, isImperial).toString()}
+                        </Text>
                     </View>
                     <View style={styles.macroSummaryItem}>
                         <Text style={styles.macroSummaryTitle}>{t('calories')}</Text>
-                        <Text style={styles.macroSummaryValue}>{calories || 0} kcal</Text>
+                        <Text style={styles.macroSummaryValue}>
+                            {t('value_kcal', { value: calories })}
+                        </Text>
                     </View>
                 </View>
                 <PieChart

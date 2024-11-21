@@ -36,10 +36,17 @@ export const fetchFoodData = async (query: string, page: number): Promise<{ prod
                     `https://raw.githubusercontent.com/blopa/musclog-api/refs/heads/gh-pages/title/${apiPath}/index.json`
                 );
 
-                const data: MusclogApiFoodInfoType[] = await response.json();
+                if (response.ok) {
+                    const data: MusclogApiFoodInfoType[] = await response.json();
+
+                    return {
+                        products: data,
+                        pageCount: 1,
+                    };
+                }
 
                 return {
-                    products: data,
+                    products: [],
                     pageCount: 1,
                 };
             }
@@ -76,7 +83,7 @@ export const fetchProductByEAN = async (ean: string): Promise<MusclogApiFoodInfo
                 return mapProductData(data.product as PaginatedOpenFoodFactsApiFoodProductInfoType);
             } else {
                 const response = await fetch(
-                    `https://blopa.github.io/musclog-api/ean/${ean}.json`
+                    `https://raw.githubusercontent.com/blopa/musclog-api/ean/${ean}.json`
                 );
 
                 if (response.ok) {

@@ -2,7 +2,9 @@ import PieChart from '@/components/Charts/PieChart';
 import FABWrapper from '@/components/FABWrapper';
 import ThemedCard from '@/components/ThemedCard';
 import ThemedModal from '@/components/ThemedModal';
+import { GRAMS, IMPERIAL_SYSTEM, METRIC_SYSTEM, OUNCES } from '@/constants/storage';
 import { FAB_ICON_SIZE, ICON_SIZE } from '@/constants/ui';
+import useUnit from '@/hooks/useUnit';
 import { useSnackbar } from '@/storage/SnackbarProvider';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import {
@@ -12,7 +14,9 @@ import {
     getLatestFitnessGoals,
 } from '@/utils/database';
 import { formatDate } from '@/utils/date';
+import { safeToFixed } from '@/utils/string';
 import { FitnessGoalsInsertType } from '@/utils/types';
+import { getDisplayFormattedWeight } from '@/utils/unit';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { NavigationProp } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
@@ -33,6 +37,10 @@ export default function ListFitnessGoals({ navigation }: { navigation: Navigatio
     const { colors, dark } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors, dark);
     const { showSnackbar } = useSnackbar();
+
+    const { unitSystem } = useUnit();
+    const isImperial = unitSystem === IMPERIAL_SYSTEM;
+    const macroUnit = unitSystem === METRIC_SYSTEM ? GRAMS : OUNCES;
 
     const loadLatestFitnessGoal = useCallback(async () => {
         try {
@@ -173,20 +181,42 @@ export default function ListFitnessGoals({ navigation }: { navigation: Navigatio
                         <Text style={styles.cardTitle}>{t('current_fitness_goals').toUpperCase()}</Text>
                         <Card.Content style={styles.latestGoalContent}>
                             <View style={styles.goalTextContainer}>
-                                <Text style={styles.metricDetailText}>{t('calories')}: {latestFitnessGoal.calories}</Text>
-                                <Text style={styles.metricDetailText}>{t('protein')}: {latestFitnessGoal.protein}g</Text>
-                                <Text style={styles.metricDetailText}>{t('carbohydrates')}: {latestFitnessGoal.totalCarbohydrate}g</Text>
-                                <Text style={styles.metricDetailText}>{t('fat')}: {latestFitnessGoal.totalFat}g</Text>
+                                <Text style={styles.metricDetailText}>
+                                    {t('item_value', {
+                                        item: t('calories'),
+                                        value: safeToFixed(latestFitnessGoal.calories),
+                                    })}
+                                </Text>
+                                <Text style={styles.metricDetailText}>
+                                    {t('item_value_unit', {
+                                        item: t('protein'),
+                                        value: getDisplayFormattedWeight(latestFitnessGoal.protein || 0, GRAMS, isImperial).toString(),
+                                        weightUnit: macroUnit,
+                                    })}
+                                </Text>
+                                <Text style={styles.metricDetailText}>
+                                    {t('item_value_unit', {
+                                        item: t('carbohydrates'),
+                                        value: getDisplayFormattedWeight(latestFitnessGoal.totalCarbohydrate || 0, GRAMS, isImperial).toString(),
+                                        weightUnit: macroUnit,
+                                    })}
+                                </Text>
+                                <Text style={styles.metricDetailText}>
+                                    {t('item_value_unit', {
+                                        item: t('fat'),
+                                        value: getDisplayFormattedWeight(latestFitnessGoal.totalFat || 0, GRAMS, isImperial).toString(),
+                                        weightUnit: macroUnit,
+                                    })}
+                                </Text>
                             </View>
                             <View style={styles.pieChartContainer}>
                                 <PieChart
                                     data={[
-                                        { label: 'Protein', value: latestFitnessGoal.protein, color: '#4CAF50' },
-                                        { label: 'Carbohydrates', value: latestFitnessGoal.totalCarbohydrate, color: '#2196F3' },
-                                        { label: 'Fat', value: latestFitnessGoal.totalFat, color: '#FF9800' },
+                                        { label: t('protein'), value: getDisplayFormattedWeight(latestFitnessGoal.protein || 0, GRAMS, isImperial), color: '#4CAF50' },
+                                        { label: t('carbohydrates'), value: getDisplayFormattedWeight(latestFitnessGoal.totalCarbohydrate || 0, GRAMS, isImperial), color: '#2196F3' },
+                                        { label: t('fat'), value: getDisplayFormattedWeight(latestFitnessGoal.totalFat || 0, GRAMS, isImperial), color: '#FF9800' },
                                     ]}
                                     showShareImageButton={false}
-                                    shareButtonPosition="bottom"
                                     size={130}
                                     showLabels={false}
                                     showLegend={false}
@@ -216,18 +246,30 @@ export default function ListFitnessGoals({ navigation }: { navigation: Navigatio
                                     </Text>
                                     <View style={styles.metricRow}>
                                         <Text style={styles.metricDetailText}>
-                                            {t('calories')}: {goal.calories}
+                                            {t('item_value', { item: t('calories'), value: goal.calories })}
                                         </Text>
                                         <Text style={styles.metricDetailText}>
-                                            {t('protein')}: {goal.protein}g
+                                            {t('item_value_unit', {
+                                                item: t('protein'),
+                                                value: getDisplayFormattedWeight(goal.protein || 0, GRAMS, isImperial).toString(),
+                                                weightUnit: macroUnit,
+                                            })}
                                         </Text>
                                     </View>
                                     <View style={styles.metricRow}>
                                         <Text style={styles.metricDetailText}>
-                                            {t('carbohydrates')}: {goal.totalCarbohydrate}g
+                                            {t('item_value_unit', {
+                                                item: t('carbohydrates'),
+                                                value: getDisplayFormattedWeight(goal.totalCarbohydrate || 0, GRAMS, isImperial).toString(),
+                                                weightUnit: macroUnit,
+                                            })}
                                         </Text>
                                         <Text style={styles.metricDetailText}>
-                                            {t('fat')}: {goal.totalFat}g
+                                            {t('item_value_unit', {
+                                                item: t('fat'),
+                                                value: getDisplayFormattedWeight(goal.totalFat || 0, GRAMS, isImperial).toString(),
+                                                weightUnit: macroUnit,
+                                            })}
                                         </Text>
                                     </View>
                                 </View>
@@ -236,7 +278,7 @@ export default function ListFitnessGoals({ navigation }: { navigation: Navigatio
                                         color={colors.primary}
                                         name="edit"
                                         onPress={() =>
-                                            navigation.navigate('createFitnessGoal', { id: goal.id })
+                                            navigation.navigate('createFitnessGoals', { id: goal.id })
                                         }
                                         size={ICON_SIZE}
                                         style={styles.iconButton}

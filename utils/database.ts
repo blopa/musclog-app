@@ -145,9 +145,9 @@ const createTables = (database: SQLiteDatabase) => {
             "'weight' INTEGER",
             "'restTime' INTEGER",
             "'exerciseId' INTEGER",
-            "'workoutId' INTEGER",
-            "'setOrder' INTEGER",
-            "'supersetName' TEXT",
+            "'workoutId' INTEGER DEFAULT 0",
+            "'setOrder' INTEGER DEFAULT 0",
+            "'supersetName' TEXT DEFAULT \"\"",
             "'difficultyLevel' INTEGER",
             "'isDropSet' INTEGER",
             "'createdAt' TEXT DEFAULT CURRENT_TIMESTAMP",
@@ -212,12 +212,12 @@ const createTables = (database: SQLiteDatabase) => {
             "'description' TEXT",
             "'createdAt' TEXT DEFAULT CURRENT_TIMESTAMP",
             "'deletedAt' TEXT NULLABLE",
-            "'alcohol' REAL",
-            "'protein' REAL",
-            "'carbohydrate' REAL",
-            "'fat' REAL",
-            "'fiber' REAL",
-            "'calories' REAL",
+            "'alcohol' REAL DEFAULT 0",
+            "'protein' REAL DEFAULT 0",
+            "'carbohydrate' REAL DEFAULT 0",
+            "'fat' REAL DEFAULT 0",
+            "'fiber' REAL DEFAULT 0",
+            "'calories' REAL DEFAULT 0",
         ],
         name: 'WorkoutEvent',
     },
@@ -301,7 +301,7 @@ const createTables = (database: SQLiteDatabase) => {
             "'userId' INTEGER",
             "'name' TEXT",
             "'calories' TEXT",
-            "'alcohol' TEXT",
+            "'alcohol' TEXT NULLABLE",
             "'protein' TEXT",
             "'carbohydrate' TEXT",
             "'sugar' TEXT",
@@ -1774,7 +1774,7 @@ export const getUserNutrition = async (id: number): Promise<UserNutritionDecrypt
                 fiber: parseFloat(await decryptDatabaseValue(result.fiber)) || 0,
                 alcohol: parseFloat(await decryptDatabaseValue(result.alcohol)) || 0,
                 grams: parseFloat(await decryptDatabaseValue(result.grams)) || 0,
-                mealType: await decryptDatabaseValue(result.mealType) || '',
+                mealType: parseFloat(await decryptDatabaseValue(result.mealType)) || 0,
                 monounsaturatedFat: parseFloat(await decryptDatabaseValue(result.monounsaturatedFat)) || 0,
                 name: await decryptDatabaseValue(result.name) || '',
                 polyunsaturatedFat: parseFloat(await decryptDatabaseValue(result.polyunsaturatedFat)) || 0,
@@ -2084,6 +2084,18 @@ export const getFood = async (id: number): Promise<FoodReturnType | undefined> =
     }
 };
 
+export const getAllFoodsByIds = async (ids: number[]): Promise<FoodReturnType[] | undefined> => {
+    try {
+        return database.getAllSync<FoodReturnType>(`
+            SELECT * FROM "Food"
+            WHERE "id" IN (${ids.join(',')})
+            AND ("deletedAt" IS NULL OR "deletedAt" = '')
+        `);
+    } catch (error) {
+        throw error;
+    }
+};
+
 export const getFitnessGoals = async (id: number): Promise<FitnessGoalsReturnType | undefined> => {
     try {
         return database.getFirstSync<FitnessGoalsReturnType>('SELECT * FROM "FitnessGoals" WHERE "id" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')', [id]) ?? undefined;
@@ -2149,6 +2161,23 @@ export const checkIfMigrationExists = async (migration: string): Promise<boolean
         );
 
         return !!result?.count;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const getFoodByNameAndMacros = async (
+    name: string,
+    calories: number,
+    protein: number,
+    totalCarbohydrate: number,
+    totalFat: number
+): Promise<FoodReturnType | null> => {
+    try {
+        return database.getFirstSync<FoodReturnType>(
+            'SELECT * FROM "Food" WHERE "name" = ? AND "calories" = ? AND "protein" = ? AND "totalCarbohydrate" = ? AND "totalFat" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')',
+            [name, calories, protein, totalCarbohydrate, totalFat]
+        );
     } catch (error) {
         throw error;
     }
@@ -2325,7 +2354,7 @@ export const updateUserNutrition = async (id: number, userNutrition: UserNutriti
             'UPDATE "UserNutrition" SET "name" = ?, "mealType" = ?, "calories" = ?, "protein" = ?, "alcohol" = ?, "carbohydrate" = ?, "sugar" = ?, "fiber" = ?, "fat" = ?, "monounsaturatedFat" = ?, "polyunsaturatedFat" = ?, "saturatedFat" = ?, "transFat" = ?, "unsaturatedFat" = ?, "grams" = ?, "userId" = ?, "date" = ?, "type" = ?, "source" = ? WHERE "id" = ?',
             [
                 await encryptDatabaseValue(userNutrition.name || existingUserNutrition?.name || ''),
-                await encryptDatabaseValue(userNutrition.mealType || existingUserNutrition?.mealType || ''),
+                await encryptDatabaseValue(userNutrition.mealType?.toString() || existingUserNutrition?.mealType?.toString() || ''),
                 await encryptDatabaseValue(userNutrition.calories?.toString() || existingUserNutrition?.calories?.toString() || ''),
                 await encryptDatabaseValue(userNutrition.protein?.toString() || existingUserNutrition?.protein?.toString() || ''),
                 await encryptDatabaseValue(userNutrition.alcohol?.toString() || existingUserNutrition?.alcohol?.toString() || ''),
@@ -2773,7 +2802,7 @@ export const dumpDatabase = async (encryptionPhrase?: string): Promise<string> =
                         (row as UserNutritionDecryptedReturnType).transFat = parseFloat(await decryptDatabaseValue((row as UserNutritionEncryptedReturnType).transFat));
                         (row as UserNutritionDecryptedReturnType).unsaturatedFat = parseFloat(await decryptDatabaseValue((row as UserNutritionEncryptedReturnType).unsaturatedFat));
                         (row as UserNutritionDecryptedReturnType).name = await decryptDatabaseValue((row as UserNutritionEncryptedReturnType).name);
-                        (row as UserNutritionDecryptedReturnType).mealType = await decryptDatabaseValue((row as UserNutritionEncryptedReturnType).mealType);
+                        (row as UserNutritionDecryptedReturnType).mealType = parseFloat(await decryptDatabaseValue((row as UserNutritionEncryptedReturnType).mealType));
                         (row as UserNutritionDecryptedReturnType).grams = parseFloat(await decryptDatabaseValue((row as UserNutritionEncryptedReturnType).grams));
                     }
 
@@ -3244,11 +3273,11 @@ export const addMealTypeGramsToUserNutritionTable = async (): Promise<void> => {
     const currentVersion = await getLatestVersion();
     if (currentVersion && currentVersion < packageJson.version) {
         if (!(await columnExists('UserNutrition', 'mealType'))) {
-            await database.execAsync('ALTER TABLE "UserNutrition" ADD COLUMN "mealType" TEXT');
+            await database.execAsync('ALTER TABLE "UserNutrition" ADD COLUMN "mealType" TEXT NULLABLE');
         }
 
         if (!(await columnExists('UserNutrition', 'grams'))) {
-            await database.execAsync('ALTER TABLE "UserNutrition" ADD COLUMN "grams" TEXT');
+            await database.execAsync('ALTER TABLE "UserNutrition" ADD COLUMN "grams" TEXT NULLABLE');
         }
     }
 };
@@ -3257,7 +3286,7 @@ export const addAlcoholMacroToUserNutritionTable = async (): Promise<void> => {
     const currentVersion = await getLatestVersion();
     if (currentVersion && currentVersion < packageJson.version) {
         if (!(await columnExists('UserNutrition', 'alcohol'))) {
-            await database.execAsync('ALTER TABLE "UserNutrition" ADD COLUMN "alcohol" TEXT');
+            await database.execAsync('ALTER TABLE "UserNutrition" ADD COLUMN "alcohol" TEXT NULLABLE');
         }
     }
 };

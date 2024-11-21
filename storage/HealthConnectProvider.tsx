@@ -25,7 +25,7 @@ const packageName = DeviceInfo.getBundleId();
 
 type HealthConnectAccessType = 'read' | 'write';
 
-interface HealthConnectContextValue {
+export interface HealthConnectContextValue {
     checkReadIsPermitted: (recordTypes?: RecordType[]) => Promise<boolean>;
     checkWriteIsPermitted: (recordTypes?: RecordType[]) => Promise<boolean>;
     getHealthData: (pageSize?: number, recordTypes?: RecordType[]) => Promise<HealthDataType>;

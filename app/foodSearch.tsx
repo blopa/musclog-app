@@ -1,13 +1,13 @@
+import FoodItem from '@/components/FoodItem';
 import FoodTrackingModal from '@/components/FoodTrackingModal';
-import ThemedCard from '@/components/ThemedCard';
-import { ICON_SIZE } from '@/constants/ui';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { fetchFoodData } from '@/utils/fetchFoodData';
 import { MusclogApiFoodInfoType } from '@/utils/types';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { NavigationProp, useRoute } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useFocusEffect } from 'expo-router';
+import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, StyleSheet, View, ActivityIndicator } from 'react-native';
 import { Appbar, Button, Text, TextInput, useTheme } from 'react-native-paper';
@@ -32,20 +32,14 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const [selectedFood, setSelectedFood] = useState<MusclogApiFoodInfoType | null>(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
 
-    useEffect(() => {
-        const loadInitialData = async () => {
-            setIsLoading(true);
+    const loadInitialData = useCallback(async () => {
+        setIsLoading(true);
 
-            const { products, pageCount } = await fetchFoodData(initialSearchQuery, 1);
-            setSearchResults(products);
-            setTotalPages(pageCount);
+        const { products, pageCount } = await fetchFoodData(initialSearchQuery, 1);
+        setSearchResults(products);
+        setTotalPages(pageCount);
 
-            setIsLoading(false);
-        };
-
-        if (initialSearchQuery) {
-            loadInitialData();
-        }
+        setIsLoading(false);
     }, [initialSearchQuery]);
 
     const handleSearch = useCallback(async () => {
@@ -102,6 +96,18 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
         setLoadMoreError(false);
     }, []);
 
+    useFocusEffect(
+        useCallback(() => {
+            if (initialSearchQuery) {
+                loadInitialData();
+            }
+
+            return () => {
+                resetScreenData();
+            };
+        }, [initialSearchQuery, loadInitialData, resetScreenData])
+    );
+
     const openAddNewFoodModal = useCallback(() => {
         resetScreenData();
         navigation.navigate('createFood', { foodName: searchQuery });
@@ -145,45 +151,9 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 <FlashList
                     data={searchResults}
                     keyExtractor={(item, index) => (item.productTitle || index).toString()}
-                    renderItem={({ item }) => (
-                        <ThemedCard key={item.productTitle}>
-                            <View style={styles.cardContent}>
-                                <View style={styles.cardHeader}>
-                                    <Text style={styles.cardTitle}>
-                                        {item.productTitle}
-                                    </Text>
-                                    <Text style={styles.metricDetail}>
-                                        {item.ean}
-                                    </Text>
-                                    <View style={styles.metricRow}>
-                                        <Text style={styles.metricDetail}>
-                                            {t('calories')}: {item.kcal.toString()} kcal
-                                        </Text>
-                                        <Text style={styles.metricDetail}>
-                                            {t('carbs')}: {(item.carbs || 0).toString()} g
-                                        </Text>
-                                    </View>
-                                    <View style={styles.metricRow}>
-                                        <Text style={styles.metricDetail}>
-                                            {t('proteins')}: {(item.protein || 0).toString()} g
-                                        </Text>
-                                        <Text style={styles.metricDetail}>
-                                            {t('fats')}: {(item.fat || 0).toString()} g
-                                        </Text>
-                                    </View>
-                                </View>
-                                <View style={styles.cardActions}>
-                                    <FontAwesome5
-                                        color={colors.primary}
-                                        name="plus"
-                                        onPress={() => handleAddFood(item)}
-                                        size={ICON_SIZE}
-                                        style={styles.iconButton}
-                                    />
-                                </View>
-                            </View>
-                        </ThemedCard>
-                    )}
+                    renderItem={
+                        ({ item }) => <FoodItem food={item} onAddFood={handleAddFood} />
+                    }
                     estimatedItemSize={115}
                     contentContainerStyle={styles.listContent}
                     onEndReached={loadMoreResults}
@@ -222,26 +192,6 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         color: colors.onPrimary,
         fontSize: Platform.OS === 'web' ? 20 : 26,
     },
-    cardActions: {
-        alignItems: 'center',
-        flexDirection: 'row',
-    },
-    cardContent: {
-        alignItems: 'center',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        padding: 16,
-    },
-    cardHeader: {
-        flex: 1,
-        marginRight: 22,
-    },
-    cardTitle: {
-        color: colors.onSurface,
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 8,
-    },
     container: {
         backgroundColor: colors.background,
         flex: 1,
@@ -260,15 +210,6 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     loadMoreButton: {
         alignSelf: 'center',
         marginVertical: 10,
-    },
-    metricDetail: {
-        color: colors.onSurface,
-        fontSize: 14,
-    },
-    metricRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 4,
     },
     noResultsContainer: {
         alignItems: 'center',
