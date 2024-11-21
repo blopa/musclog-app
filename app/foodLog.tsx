@@ -407,7 +407,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 })}
             </ScrollView>
         );
-    }, [consumedFoods, styles.mealsContent, styles.mealContainer, styles.mealHeader, styles.mealTitle, styles.foodItem, styles.cardContent, styles.cardHeader, styles.cardTitle, styles.iconContainer, styles.metricRow, styles.metricDetail, isLoading, handleSyncHealthConnect, colors.primary, mealCategories, t, isImperial, handleDeleteNutrition]);
+    }, [consumedFoods, styles.mealsContent, styles.noTrackedText, styles.mealContainer, styles.mealHeader, styles.mealTitle, styles.foodItem, styles.cardContent, styles.cardHeader, styles.cardTitle, styles.iconContainer, styles.metricRow, styles.metricDetail, isLoading, handleSyncHealthConnect, colors.primary, t, mealCategories, isImperial, macroUnit, handleDeleteNutrition]);
 
     const renderScene = ({ route }: { route: { key: string } }) => {
         switch (route.key) {
@@ -466,7 +466,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
             }
         }
         setShowPhotoCamera(true);
-    }, []);
+    }, [permission?.granted, requestPermission, t]);
 
     // Handler for taking a photo
     const handleTakePhoto = useCallback(async () => {
