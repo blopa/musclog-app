@@ -77,9 +77,9 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
                 const tdee = bmr * ACTIVITY_LEVELS_MULTIPLIER[activityLevel || ACTIVITY_LEVELS.LIGHTLY_ACTIVE];
 
                 setDefaultMacros({
-                    protein: Math.round(tdee * 0.3 / 4),
-                    carbohydrate: Math.round(tdee * 0.5 / 4),
-                    fat: Math.round(tdee * 0.2 / 9),
+                    protein: Math.round(tdee * 0.3 / CALORIES_IN_PROTEIN),
+                    carbohydrate: Math.round(tdee * 0.5 / CALORIES_IN_CARBS),
+                    fat: Math.round(tdee * 0.2 / CALORIES_IN_FAT),
                 });
 
                 setMaxMacros(Math.round(tdee / 4));
