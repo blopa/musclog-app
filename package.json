@@ -126,6 +126,8 @@
     },
     "devDependencies": {
         "@babel/core": "7.26.0",
+        "@eslint/eslintrc": "3.2.0",
+        "@eslint/js": "9.15.0",
         "@expo/config-plugins": "9.0.10",
         "@expo/metro-config": "0.19.4",
         "@expo/prebuild-config": "8.0.20",
@@ -144,7 +146,7 @@
         "csv-parser": "3.0.0",
         "eas-cli": "13.4.1",
         "eslint": "9.15.0",
-        "eslint-config-expo": "8.0.1",
+        "eslint-plugin-import": "2.31.0",
         "eslint-plugin-perfectionist": "4.0.3",
         "eslint-plugin-react": "7.37.2",
         "eslint-plugin-react-hooks": "5.0.0",
