@@ -1,6 +1,7 @@
 import CompletionModal from '@/components/CompletionModal';
 import CustomPicker from '@/components/CustomPicker';
 import CustomTextInput from '@/components/CustomTextInput';
+import { Screen } from '@/components/Screen';
 import { USER_METRICS_SOURCES } from '@/constants/healthConnect';
 import { EATING_PHASES } from '@/constants/nutrition';
 import { IMPERIAL_SYSTEM, KILOGRAMS, POUNDS } from '@/constants/storage';
@@ -55,7 +56,9 @@ const CreateUserMetrics = ({ navigation }: { navigation: NavigationProp<any> }) 
                 const metricHeight = metrics.height || 0;
                 const metricWeight = metrics.weight || 0;
 
-                setWeight(getDisplayFormattedWeight(metricWeight, KILOGRAMS, isImperial).toString());
+                setWeight(
+                    getDisplayFormattedWeight(metricWeight, KILOGRAMS, isImperial).toString()
+                );
                 setHeight(getDisplayFormattedHeight(metricHeight, isImperial).toString());
                 setFatPercentage(safeToFixed(metrics.fatPercentage || 0));
                 setEatingPhase(metrics.eatingPhase || EATING_PHASES.MAINTENANCE);
@@ -176,40 +179,39 @@ const CreateUserMetrics = ({ navigation }: { navigation: NavigationProp<any> }) 
         });
     }, [fadeAnim, navigation, resetScreenData, slideAnim]);
 
-    const handleFormatNumericText = useCallback((text: string, key: 'fatPercentage' | 'height' | 'weight') => {
-        const formattedText = formatFloatNumericInputText(text);
+    const handleFormatNumericText = useCallback(
+        (text: string, key: 'fatPercentage' | 'height' | 'weight') => {
+            const formattedText = formatFloatNumericInputText(text);
 
-        if (formattedText || !text) {
-            switch (key) {
-                case 'height':
-                    setHeight(formattedText || '');
-                    break;
-                case 'weight':
-                    setWeight(formattedText || '');
-                    break;
-                case 'fatPercentage':
-                    setFatPercentage(formattedText || '');
-                    break;
-                default: {
-                    break;
+            if (formattedText || !text) {
+                switch (key) {
+                    case 'height':
+                        setHeight(formattedText || '');
+                        break;
+                    case 'weight':
+                        setWeight(formattedText || '');
+                        break;
+                    case 'fatPercentage':
+                        setFatPercentage(formattedText || '');
+                        break;
+                    default: {
+                        break;
+                    }
                 }
             }
-        }
-    }, []);
+        },
+        []
+    );
 
     return (
-        <View style={styles.container}>
+        <Screen style={styles.container}>
             <CompletionModal
                 buttonText={t('ok')}
                 isModalVisible={isModalVisible}
                 onClose={handleModalClose}
                 title={t('generic_created_successfully')}
             />
-            <Appbar.Header
-                mode="small"
-                statusBarHeight={0}
-                style={styles.appbarHeader}
-            >
+            <Appbar.Header mode="small" statusBarHeight={0} style={styles.appbarHeader}>
                 <Appbar.Content
                     title={t(id ? 'edit_user_metrics' : 'create_user_metrics')}
                     titleStyle={styles.appbarTitle}
@@ -250,7 +252,10 @@ const CreateUserMetrics = ({ navigation }: { navigation: NavigationProp<any> }) 
                 <CustomPicker
                     items={[
                         { label: t('none'), value: '' },
-                        ...Object.values(EATING_PHASES).map((phase) => ({ label: t(phase), value: phase })),
+                        ...Object.values(EATING_PHASES).map((phase) => ({
+                            label: t(phase),
+                            value: phase,
+                        })),
                     ]}
                     label={t('eating_phase')}
                     onValueChange={(itemValue) => setEatingPhase(itemValue as EatingPhaseType)}
@@ -271,50 +276,51 @@ const CreateUserMetrics = ({ navigation }: { navigation: NavigationProp<any> }) 
                     {t('save')}
                 </Button>
             </View>
-        </View>
+        </Screen>
     );
 };
 
-const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
-    appbarHeader: {
-        backgroundColor: colors.primary,
-        justifyContent: 'center',
-        paddingHorizontal: 16,
-    },
-    appbarTitle: {
-        color: colors.onPrimary,
-        fontSize: Platform.OS === 'web' ? 20 : 26,
-    },
-    button: {
-        marginVertical: 10,
-    },
-    container: {
-        backgroundColor: colors.background,
-        // flexGrow: 1,
-        flex: 1,
-    },
-    content: {
-        padding: 16,
-    },
-    footer: {
-        alignItems: 'center',
-        borderTopColor: colors.shadow,
-        borderTopWidth: 1,
-        padding: 16,
-    },
-    formGroup: {
-        marginBottom: 16,
-    },
-    label: {
-        fontSize: 16,
-        fontWeight: '600',
-        marginBottom: 8,
-    },
-    sourceText: {
-        color: colors.onSurface,
-        fontSize: 16,
-        paddingVertical: 8,
-    },
-});
+const makeStyles = (colors: CustomThemeColorsType, dark: boolean) =>
+    StyleSheet.create({
+        appbarHeader: {
+            backgroundColor: colors.primary,
+            justifyContent: 'center',
+            paddingHorizontal: 16,
+        },
+        appbarTitle: {
+            color: colors.onPrimary,
+            fontSize: Platform.OS === 'web' ? 20 : 26,
+        },
+        button: {
+            marginVertical: 10,
+        },
+        container: {
+            backgroundColor: colors.background,
+            // flexGrow: 1,
+            flex: 1,
+        },
+        content: {
+            padding: 16,
+        },
+        footer: {
+            alignItems: 'center',
+            borderTopColor: colors.shadow,
+            borderTopWidth: 1,
+            padding: 16,
+        },
+        formGroup: {
+            marginBottom: 16,
+        },
+        label: {
+            fontSize: 16,
+            fontWeight: '600',
+            marginBottom: 8,
+        },
+        sourceText: {
+            color: colors.onSurface,
+            fontSize: 16,
+            paddingVertical: 8,
+        },
+    });
 
 export default CreateUserMetrics;

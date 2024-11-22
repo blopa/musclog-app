@@ -13,6 +13,7 @@ import { View, ScrollView, StyleSheet, Platform, Alert } from 'react-native';
 import { Appbar, Button, Text, useTheme } from 'react-native-paper';
 
 import form from '../data/form.json';
+import { Screen } from '@/components/Screen';
 
 const GOOGLE_FORMS_URL = 'https://docs.google.com/forms/d';
 
@@ -33,10 +34,13 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const [isSaving, setIsSaving] = useState(false);
 
     // Initialize form state based on fields from form.json
-    const initialFormState = form.fields.reduce((acc, field) => {
-        acc[field.id] = '';
-        return acc;
-    }, {} as { [key: string]: string });
+    const initialFormState = form.fields.reduce(
+        (acc, field) => {
+            acc[field.id] = '';
+            return acc;
+        },
+        {} as { [key: string]: string }
+    );
 
     const [formData, setFormData] = useState(initialFormState);
 
@@ -106,21 +110,18 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
         const foodId = await addFood(food);
 
-        const recentFood: number[] = JSON.parse(await AsyncStorage.getItem(RECENT_FOOD) || '[]');
+        const recentFood: number[] = JSON.parse((await AsyncStorage.getItem(RECENT_FOOD)) || '[]');
         recentFood.push(foodId);
         await AsyncStorage.setItem(RECENT_FOOD, JSON.stringify(recentFood));
 
         try {
-            fetch(
-                `${GOOGLE_FORMS_URL}/${form.action}/formResponse?${urlParams.toString()}`,
-                {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    ...Platform.OS === 'web' ? { mode: 'no-cors' } : {},
-                }
-            ).then(() => {
+            fetch(`${GOOGLE_FORMS_URL}/${form.action}/formResponse?${urlParams.toString()}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                ...(Platform.OS === 'web' ? { mode: 'no-cors' } : {}),
+            }).then(() => {
                 console.log('Request done');
             });
 
@@ -144,22 +145,15 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
     ];
 
     return (
-        <View style={styles.container}>
+        <Screen style={styles.container}>
             <CompletionModal
                 buttonText={t('ok')}
                 isModalVisible={isModalVisible}
                 onClose={handleModalClose}
                 title={t('form_submitted_successfully')}
             />
-            <Appbar.Header
-                mode="small"
-                statusBarHeight={0}
-                style={styles.appbarHeader}
-            >
-                <Appbar.Content
-                    title={t('create_food')}
-                    titleStyle={styles.appbarTitle}
-                />
+            <Appbar.Header mode="small" statusBarHeight={0} style={styles.appbarHeader}>
+                <Appbar.Content title={t('create_food')} titleStyle={styles.appbarTitle} />
                 <Button
                     mode="outlined"
                     onPress={() => {
@@ -180,12 +174,15 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
                         return (
                             <View key={field.id} style={styles.formGroup}>
                                 <Text style={styles.label}>
-                                    {t(`google_form.${field.label}`)} {field.required ? <Text style={styles.required}>*</Text> : null}
+                                    {t(`google_form.${field.label}`)}{' '}
+                                    {field.required ? <Text style={styles.required}>*</Text> : null}
                                 </Text>
                                 <CustomTextInput
                                     keyboardType={isNumericField ? 'numeric' : 'default'}
                                     onChangeText={(text) => {
-                                        const formattedText = isNumericField ? formatFloatNumericInputText(text) : text;
+                                        const formattedText = isNumericField
+                                            ? formatFloatNumericInputText(text)
+                                            : text;
                                         if (formattedText) {
                                             handleInputChange(field.id, formattedText);
                                         }
@@ -207,47 +204,48 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
                     {t('submit')}
                 </Button>
             </View>
-        </View>
+        </Screen>
     );
 };
 
-const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
-    appbarHeader: {
-        backgroundColor: colors.primary,
-        justifyContent: 'center',
-        paddingHorizontal: 16,
-    },
-    appbarTitle: {
-        color: colors.onPrimary,
-        fontSize: Platform.OS === 'web' ? 20 : 26,
-    },
-    button: {
-        marginVertical: 10,
-    },
-    container: {
-        backgroundColor: colors.background,
-        flex: 1,
-    },
-    content: {
-        padding: 16,
-    },
-    footer: {
-        alignItems: 'center',
-        borderTopColor: colors.shadow,
-        borderTopWidth: 1,
-        padding: 16,
-    },
-    formGroup: {
-        marginBottom: 16,
-    },
-    label: {
-        fontSize: 16,
-        fontWeight: '600',
-        marginBottom: 8,
-    },
-    required: {
-        color: colors.error,
-    },
-});
+const makeStyles = (colors: CustomThemeColorsType, dark: boolean) =>
+    StyleSheet.create({
+        appbarHeader: {
+            backgroundColor: colors.primary,
+            justifyContent: 'center',
+            paddingHorizontal: 16,
+        },
+        appbarTitle: {
+            color: colors.onPrimary,
+            fontSize: Platform.OS === 'web' ? 20 : 26,
+        },
+        button: {
+            marginVertical: 10,
+        },
+        container: {
+            backgroundColor: colors.background,
+            flex: 1,
+        },
+        content: {
+            padding: 16,
+        },
+        footer: {
+            alignItems: 'center',
+            borderTopColor: colors.shadow,
+            borderTopWidth: 1,
+            padding: 16,
+        },
+        formGroup: {
+            marginBottom: 16,
+        },
+        label: {
+            fontSize: 16,
+            fontWeight: '600',
+            marginBottom: 8,
+        },
+        required: {
+            color: colors.error,
+        },
+    });
 
 export default CreateFood;

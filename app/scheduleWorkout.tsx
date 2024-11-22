@@ -1,5 +1,6 @@
 import CustomPicker from '@/components/CustomPicker';
 import DatePickerModal from '@/components/DatePickerModal';
+import { Screen } from '@/components/Screen';
 import { SCHEDULED_STATUS } from '@/constants/storage';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { addWorkoutEvent, getAllWorkouts } from '@/utils/database';
@@ -71,7 +72,8 @@ function ScheduleWorkout({ navigation }: { navigation: NavigationProp<any> }) {
             duration: 0,
             exerciseData: '[]',
             status: SCHEDULED_STATUS,
-            title: workouts.find((w) => w.id === selectedWorkoutId)?.title || t('scheduled_workout'),
+            title:
+                workouts.find((w) => w.id === selectedWorkoutId)?.title || t('scheduled_workout'),
             workoutId: selectedWorkoutId,
         };
 
@@ -85,16 +87,9 @@ function ScheduleWorkout({ navigation }: { navigation: NavigationProp<any> }) {
     }, [navigation, selectedDate, selectedWorkoutId, t, workouts]);
 
     return (
-        <View style={styles.container}>
-            <Appbar.Header
-                mode="small"
-                statusBarHeight={0}
-                style={styles.appbarHeader}
-            >
-                <Appbar.Content
-                    title={t('schedule_workout')}
-                    titleStyle={styles.appbarTitle}
-                />
+        <Screen style={styles.container}>
+            <Appbar.Header mode="small" statusBarHeight={0} style={styles.appbarHeader}>
+                <Appbar.Content title={t('schedule_workout')} titleStyle={styles.appbarTitle} />
                 <Button
                     mode="outlined"
                     onPress={() => {
@@ -139,47 +134,48 @@ function ScheduleWorkout({ navigation }: { navigation: NavigationProp<any> }) {
                     {t('save_schedule')}
                 </Button>
             </ScrollView>
-        </View>
+        </Screen>
     );
 }
 
-const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
-    appbarHeader: {
-        backgroundColor: colors.primary,
-        justifyContent: 'center',
-        paddingHorizontal: 16,
-    },
-    appbarTitle: {
-        color: colors.onPrimary,
-        fontSize: Platform.OS === 'web' ? 20 : 26,
-    },
-    container: {
-        backgroundColor: colors.background,
-        flexGrow: 1,
-    },
-    content: {
-        padding: 16,
-    },
-    formGroup: {
-        marginBottom: 16,
-    },
-    inputButton: {
-        backgroundColor: colors.surface,
-        borderColor: colors.onSurface,
-        borderRadius: 8,
-        borderWidth: 1,
-        color: colors.onSurface,
-        paddingLeft: 10,
-        width: '100%',
-    },
-    label: {
-        fontSize: 16,
-        fontWeight: '600',
-        marginBottom: 8,
-    },
-    saveButton: {
-        marginTop: 16,
-    },
-});
+const makeStyles = (colors: CustomThemeColorsType, dark: boolean) =>
+    StyleSheet.create({
+        appbarHeader: {
+            backgroundColor: colors.primary,
+            justifyContent: 'center',
+            paddingHorizontal: 16,
+        },
+        appbarTitle: {
+            color: colors.onPrimary,
+            fontSize: Platform.OS === 'web' ? 20 : 26,
+        },
+        container: {
+            backgroundColor: colors.background,
+            flexGrow: 1,
+        },
+        content: {
+            padding: 16,
+        },
+        formGroup: {
+            marginBottom: 16,
+        },
+        inputButton: {
+            backgroundColor: colors.surface,
+            borderColor: colors.onSurface,
+            borderRadius: 8,
+            borderWidth: 1,
+            color: colors.onSurface,
+            paddingLeft: 10,
+            width: '100%',
+        },
+        label: {
+            fontSize: 16,
+            fontWeight: '600',
+            marginBottom: 8,
+        },
+        saveButton: {
+            marginTop: 16,
+        },
+    });
 
 export default ScheduleWorkout;

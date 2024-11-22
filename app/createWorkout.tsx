@@ -2,6 +2,7 @@ import CompletionModal from '@/components/CompletionModal';
 import CustomPicker from '@/components/CustomPicker';
 import CustomTextArea from '@/components/CustomTextArea';
 import CustomTextInput from '@/components/CustomTextInput';
+import { Screen } from '@/components/Screen';
 import { VOLUME_CALCULATION_TYPES, VOLUME_CALCULATION_TYPES_VALUES } from '@/constants/exercises';
 import { IMPERIAL_SYSTEM } from '@/constants/storage';
 import useUnit from '@/hooks/useUnit';
@@ -17,7 +18,8 @@ import {
     deleteSet,
 } from '@/utils/database';
 import {
-    ExerciseReturnType, ExerciseWithSetsType,
+    ExerciseReturnType,
+    ExerciseWithSetsType,
     SetInsertType,
     VolumeCalculationTypeType,
     WorkoutInsertType,
@@ -92,10 +94,14 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
     const [workoutTitle, setWorkoutTitle] = useState('');
     const [workoutDescription, setWorkoutDescription] = useState('');
     const [recurringOnWeek, setRecurringOnWeek] = useState('');
-    const [volumeCalculationType, setVolumeCalculationType] = useState<VolumeCalculationTypeType>('');
+    const [volumeCalculationType, setVolumeCalculationType] =
+        useState<VolumeCalculationTypeType>('');
 
     const [workout, setWorkout] = useState<WorkoutWithExercisesAndSets[]>([]);
-    const [workoutDetails, setWorkoutDetails] = useState<{ workout: WorkoutReturnType; exercisesWithSets: ExerciseWithSetsType[] } | null>(null);
+    const [workoutDetails, setWorkoutDetails] = useState<{
+        workout: WorkoutReturnType;
+        exercisesWithSets: ExerciseWithSetsType[];
+    } | null>(null);
     const [supersetName, setSupersetName] = useState('');
     const [selectedExercises, setSelectedExercises] = useState<number[]>([]);
     const [selectedMuscleGroup, setSelectedMuscleGroup] = useState<string | null>(null);
@@ -138,7 +144,8 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                         supersetName: set.supersetName,
                         id: set.id,
                     })),
-                    supersetName: exercise.sets.find((set) => set.supersetName)?.supersetName || null,
+                    supersetName:
+                        exercise.sets.find((set) => set.supersetName)?.supersetName || null,
                     description: exercise.description || '',
                 }));
 
@@ -212,9 +219,7 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
         }, [t])
     );
 
-    const muscleGroups = Array.from(
-        new Set(allExercises.map((ex) => ex.muscleGroup))
-    ) as string[];
+    const muscleGroups = Array.from(new Set(allExercises.map((ex) => ex.muscleGroup))) as string[];
 
     const addExerciseToWorkout = (exerciseId: number) => {
         const exercise = allExercises.find((ex) => ex.id === exerciseId);
@@ -250,7 +255,7 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
 
     const toggleExerciseSelection = (index: number) => {
         setSelectedExercises((prev) =>
-            (prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index])
+            prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
         );
     };
 
@@ -271,9 +276,7 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
 
         setWorkout((prevWorkout) => {
             const newWorkout = [...prevWorkout];
-            const supersetExercises = selectedExercises.map(
-                (index) => newWorkout[index]
-            );
+            const supersetExercises = selectedExercises.map((index) => newWorkout[index]);
 
             selectedExercises
                 .sort((a, b) => b - a)
@@ -310,10 +313,7 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
 
         const exercisesWithoutSets = workout.filter((ex) => ex.sets.length === 0);
         if (exercisesWithoutSets.length > 0) {
-            Alert.alert(
-                t('validation_error'),
-                t('all_exercises_must_have_at_least_one_set')
-            );
+            Alert.alert(t('validation_error'), t('all_exercises_must_have_at_least_one_set'));
 
             return;
         }
@@ -324,7 +324,8 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
             const workoutData: WorkoutInsertType = {
                 title: workoutTitle,
                 description: workoutDescription,
-                recurringOnWeek: (recurringOnWeek || undefined) as WorkoutReturnType['recurringOnWeek'],
+                recurringOnWeek: (recurringOnWeek ||
+                    undefined) as WorkoutReturnType['recurringOnWeek'],
                 volumeCalculationType: volumeCalculationType || VOLUME_CALCULATION_TYPES.NONE,
             };
 
@@ -402,7 +403,16 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
         } finally {
             setIsSaving(false);
         }
-    }, [workoutDetails, workoutTitle, workout, t, workoutDescription, recurringOnWeek, volumeCalculationType, id]);
+    }, [
+        workoutDetails,
+        workoutTitle,
+        workout,
+        t,
+        workoutDescription,
+        recurringOnWeek,
+        volumeCalculationType,
+        id,
+    ]);
 
     const handleDeleteWorkout = useCallback(async () => {
         if (id) {
@@ -437,7 +447,10 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                     while (start > 0 && newWorkout[start - 1].supersetName === supersetName) {
                         start--;
                     }
-                    while (end < newWorkout.length - 1 && newWorkout[end + 1].supersetName === supersetName) {
+                    while (
+                        end < newWorkout.length - 1 &&
+                        newWorkout[end + 1].supersetName === supersetName
+                    ) {
                         end++;
                     }
                 }
@@ -451,12 +464,18 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                 // If moving up within the superset
                 if (direction === 'up' && fromIndex > start) {
                     const targetIndex = fromIndex - 1;
-                    [newWorkout[fromIndex], newWorkout[targetIndex]] = [newWorkout[targetIndex], newWorkout[fromIndex]];
+                    [newWorkout[fromIndex], newWorkout[targetIndex]] = [
+                        newWorkout[targetIndex],
+                        newWorkout[fromIndex],
+                    ];
                 }
                 // If moving down within the superset
                 else if (direction === 'down' && fromIndex < end) {
                     const targetIndex = fromIndex + 1;
-                    [newWorkout[fromIndex], newWorkout[targetIndex]] = [newWorkout[targetIndex], newWorkout[fromIndex]];
+                    [newWorkout[fromIndex], newWorkout[targetIndex]] = [
+                        newWorkout[targetIndex],
+                        newWorkout[fromIndex],
+                    ];
                 }
             } else {
                 // For exercises not in a superset, follow the existing movement logic
@@ -508,12 +527,8 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                 return newWorkout;
             }
 
-            const supersetExercises = newWorkout.filter(
-                (ex) => ex.supersetName === supersetName
-            );
-            const firstIndex = newWorkout.findIndex(
-                (ex) => ex.supersetName === supersetName
-            );
+            const supersetExercises = newWorkout.filter((ex) => ex.supersetName === supersetName);
+            const firstIndex = newWorkout.findIndex((ex) => ex.supersetName === supersetName);
             const lastIndex = firstIndex + supersetExercises.length - 1;
 
             if (direction === 'up' && firstIndex > 0) {
@@ -521,7 +536,11 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                 const moveLength = lastIndex - firstIndex + 1;
                 const itemAbove = newWorkout[targetIndex - 1];
 
-                if (itemAbove && itemAbove.supersetName && itemAbove.supersetName !== supersetName) {
+                if (
+                    itemAbove &&
+                    itemAbove.supersetName &&
+                    itemAbove.supersetName !== supersetName
+                ) {
                     // Check entire superset length above and adjust
                     const aboveSupersetStart = newWorkout.findIndex(
                         (ex) => ex.supersetName === itemAbove.supersetName
@@ -539,17 +558,26 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                 const moveLength = lastIndex - firstIndex + 1;
                 const itemBelow = newWorkout[targetIndex + 1];
 
-                if (itemBelow && itemBelow.supersetName && itemBelow.supersetName !== supersetName) {
+                if (
+                    itemBelow &&
+                    itemBelow.supersetName &&
+                    itemBelow.supersetName !== supersetName
+                ) {
                     // Check entire superset length below and adjust
                     const belowSupersetEnd = newWorkout.lastIndexOf(
-                        newWorkout.findLast((ex) => ex.supersetName === itemBelow.supersetName) ?? {} as WorkoutWithExercisesAndSets
+                        newWorkout.findLast((ex) => ex.supersetName === itemBelow.supersetName) ??
+                            ({} as WorkoutWithExercisesAndSets)
                     );
                     const belowSupersetCount = newWorkout.filter(
                         (ex) => ex.supersetName === itemBelow.supersetName
                     ).length;
 
                     newWorkout.splice(firstIndex, moveLength);
-                    newWorkout.splice(belowSupersetEnd + 1 - belowSupersetCount, 0, ...supersetExercises);
+                    newWorkout.splice(
+                        belowSupersetEnd + 1 - belowSupersetCount,
+                        0,
+                        ...supersetExercises
+                    );
                 } else {
                     // Normal move down
                     newWorkout.splice(firstIndex, moveLength);
@@ -563,12 +591,17 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
 
     const renderWorkoutWithExercisesAndSetss = () => {
         return workout.reduce(
-            (acc: any[], workoutWithExercisesAndSets: WorkoutWithExercisesAndSets, exerciseIndex: number) => {
+            (
+                acc: any[],
+                workoutWithExercisesAndSets: WorkoutWithExercisesAndSets,
+                exerciseIndex: number
+            ) => {
                 const isSuperset = !!workoutWithExercisesAndSets.supersetName;
-                const isFirstInSuperset = isSuperset
-                    && (exerciseIndex === 0
-                        || workout[exerciseIndex - 1].supersetName
-                        !== workoutWithExercisesAndSets.supersetName);
+                const isFirstInSuperset =
+                    isSuperset &&
+                    (exerciseIndex === 0 ||
+                        workout[exerciseIndex - 1].supersetName !==
+                            workoutWithExercisesAndSets.supersetName);
 
                 if (isFirstInSuperset) {
                     acc.push(
@@ -576,7 +609,8 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                             <View style={styles.supersetHeader}>
                                 <View>
                                     <Text style={styles.supersetTitle}>
-                                        {t('superset')}: {workoutWithExercisesAndSets.supersetName || ''}
+                                        {t('superset')}:{' '}
+                                        {workoutWithExercisesAndSets.supersetName || ''}
                                     </Text>
                                 </View>
                                 <View style={styles.supersetButtons}>
@@ -589,8 +623,13 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                                         icon="arrow-down"
                                         onPress={() => moveSuperset(exerciseIndex, 'down')}
                                         disabled={
-                                            exerciseIndex
-                                            >= workout.length - workout.filter((ex) => ex.supersetName === workoutWithExercisesAndSets.supersetName).length
+                                            exerciseIndex >=
+                                            workout.length -
+                                                workout.filter(
+                                                    (ex) =>
+                                                        ex.supersetName ===
+                                                        workoutWithExercisesAndSets.supersetName
+                                                ).length
                                         }
                                     />
                                 </View>
@@ -600,11 +639,10 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                     );
                 } else if (isSuperset) {
                     const lastSuperset = acc[acc.length - 1];
-                    acc[acc.length - 1] = React.cloneElement(
-                        lastSuperset,
-                        {},
-                        [...lastSuperset.props.children, renderExercise(workoutWithExercisesAndSets, exerciseIndex)]
-                    );
+                    acc[acc.length - 1] = React.cloneElement(lastSuperset, {}, [
+                        ...lastSuperset.props.children,
+                        renderExercise(workoutWithExercisesAndSets, exerciseIndex),
+                    ]);
                 } else {
                     acc.push(renderExercise(workoutWithExercisesAndSets, exerciseIndex));
                 }
@@ -614,7 +652,10 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
         );
     };
 
-    function renderExercise(workoutWithExercisesAndSets: WorkoutWithExercisesAndSets, exerciseIndex: number) {
+    function renderExercise(
+        workoutWithExercisesAndSets: WorkoutWithExercisesAndSets,
+        exerciseIndex: number
+    ) {
         const isSuperset = !!workoutWithExercisesAndSets.supersetName;
         const canMoveUp = isSuperset
             ? workout[exerciseIndex - 1]?.supersetName === workoutWithExercisesAndSets.supersetName
@@ -667,7 +708,12 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                                 keyboardType="numeric"
                                 value={set.weight.toString()}
                                 onChangeText={(text) =>
-                                    updateLocalSet(exerciseIndex, setIndex, 'weight', parseFloat(text))
+                                    updateLocalSet(
+                                        exerciseIndex,
+                                        setIndex,
+                                        'weight',
+                                        parseFloat(text)
+                                    )
                                 }
                                 placeholder={t('weight')}
                             />
@@ -676,7 +722,12 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                                 keyboardType="numeric"
                                 value={set.restTime.toString()}
                                 onChangeText={(text) =>
-                                    updateLocalSet(exerciseIndex, setIndex, 'restTime', parseInt(text))
+                                    updateLocalSet(
+                                        exerciseIndex,
+                                        setIndex,
+                                        'restTime',
+                                        parseInt(text)
+                                    )
                                 }
                                 placeholder={t('rest_time_sec')}
                             />
@@ -732,9 +783,7 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
         setWorkout((prevWorkout) => {
             const newWorkout = [...prevWorkout];
             const updatedExercise = { ...newWorkout[exerciseIndex] };
-            updatedExercise.sets = updatedExercise.sets.filter(
-                (_, idx) => idx !== setIndex
-            );
+            updatedExercise.sets = updatedExercise.sets.filter((_, idx) => idx !== setIndex);
             newWorkout[exerciseIndex] = updatedExercise;
             return newWorkout;
         });
@@ -751,9 +800,9 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                 );
                 if (remainingSupersetExercises.length < 2) {
                     newWorkout = newWorkout.map((ex) =>
-                        (ex.supersetName === removedExercise.supersetName
+                        ex.supersetName === removedExercise.supersetName
                             ? { ...ex, supersetName: null }
-                            : ex)
+                            : ex
                     );
                 }
             }
@@ -781,22 +830,15 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
     }, [workoutTitle, workout]);
 
     return (
-        <View style={styles.container}>
+        <Screen style={styles.container}>
             <CompletionModal
                 buttonText={t('ok')}
                 isModalVisible={isModalVisible}
                 onClose={handleModalClose}
                 title={t('workout_saved_successfully')}
             />
-            <Appbar.Header
-                mode="small"
-                statusBarHeight={0}
-                style={styles.appbarHeader}
-            >
-                <Appbar.Content
-                    title={t('create_workout')}
-                    titleStyle={styles.appbarTitle}
-                />
+            <Appbar.Header mode="small" statusBarHeight={0} style={styles.appbarHeader}>
+                <Appbar.Content title={t('create_workout')} titleStyle={styles.appbarTitle} />
                 <Button
                     mode="outlined"
                     onPress={() => {
@@ -836,9 +878,7 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                                 items={[
                                     { label: t('select_exercise'), value: '' },
                                     ...allExercises
-                                        .filter(
-                                            (ex) => ex.muscleGroup === selectedMuscleGroup
-                                        )
+                                        .filter((ex) => ex.muscleGroup === selectedMuscleGroup)
                                         .map((exercise) => ({
                                             label: exercise.name,
                                             value: exercise.id.toString(),
@@ -854,9 +894,7 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                         ) : null}
                     </Dialog.Content>
                     <Dialog.Actions>
-                        <Button onPress={() => setIsExerciseModalOpen(false)}>
-                            {t('cancel')}
-                        </Button>
+                        <Button onPress={() => setIsExerciseModalOpen(false)}>{t('cancel')}</Button>
                     </Dialog.Actions>
                 </Dialog>
                 <Dialog
@@ -876,9 +914,7 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                             <View key={index} style={styles.checkboxContainer}>
                                 <Checkbox
                                     status={
-                                        selectedExercises.includes(index)
-                                            ? 'checked'
-                                            : 'unchecked'
+                                        selectedExercises.includes(index) ? 'checked' : 'unchecked'
                                     }
                                     onPress={() => toggleExerciseSelection(index)}
                                 />
@@ -973,11 +1009,7 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                     {isSaving ? t('saving') : t('save_workout')}
                 </Button>
                 {id ? (
-                    <Button
-                        mode="contained"
-                        onPress={handleDeleteWorkout}
-                        style={styles.button}
-                    >
+                    <Button mode="contained" onPress={handleDeleteWorkout} style={styles.button}>
                         {t('delete_workout')}
                     </Button>
                 ) : null}
@@ -987,124 +1019,125 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                     <ActivityIndicator color={colors.primary} size="large" />
                 </View>
             )}
-        </View>
+        </Screen>
     );
-};
+}
 
-const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
-    addSetButton: {
-        marginBottom: 8,
-        marginTop: 12,
-    },
-    appbarHeader: {
-        backgroundColor: colors.primary,
-        justifyContent: 'center',
-        paddingHorizontal: 16,
-    },
-    appbarTitle: {
-        color: colors.onPrimary,
-        fontSize: Platform.OS === 'web' ? 20 : 26,
-    },
-    button: {
-        marginVertical: 10,
-    },
-    checkboxContainer: {
-        alignItems: 'center',
-        flexDirection: 'row',
-        marginVertical: 8,
-    },
-    container: {
-        backgroundColor: colors.background,
-        flex: 1,
-    },
-    content: {
-        padding: 16,
-    },
-    exerciseContainer: {
-        backgroundColor: colors.surface,
-        borderColor: colors.primary,
-        borderRadius: 8,
-        borderWidth: 1,
-        marginBottom: 16,
-        padding: 16,
-    },
-    footer: {
-        alignItems: 'center',
-        borderTopColor: colors.shadow,
-        borderTopWidth: 1,
-        padding: 16,
-    },
-    label: {
-        fontSize: 16,
-        fontWeight: '600',
-        marginBottom: 8,
-    },
-    labelToggleSwitch: {
-        color: colors.onSurface,
-        fontSize: 16,
-        fontWeight: '600',
-    },
-    moveButtonsContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 8,
-    },
-    overlay: {
-        ...StyleSheet.absoluteFillObject,
-        alignItems: 'center',
-        backgroundColor: 'rgba(0,0,0,0.5)',
-        flex: 1,
-        justifyContent: 'center',
-    },
-    row: {
-        alignItems: 'center',
-        flexDirection: 'row',
-        marginVertical: 8,
-    },
-    setContainer: {
-        alignItems: 'center',
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        marginBottom: 8,
-    },
-    setText: {
-        color: colors.onSurface,
-        marginRight: 8,
-    },
-    smallInput: {
-        backgroundColor: colors.surface,
-        borderColor: colors.onSurface,
-        borderRadius: 4,
-        borderWidth: 1,
-        color: colors.onSurface,
-        marginHorizontal: 4,
-        marginVertical: 4,
-        padding: 4,
-        textAlign: 'center',
-        width: 60,
-    },
-    supersetButtons: {
-        flexDirection: 'row',
-    },
-    supersetContainer: {
-        borderColor: colors.primary,
-        borderRadius: 8,
-        borderWidth: 1,
-        marginBottom: 16,
-        padding: 8,
-    },
-    supersetHeader: {
-        alignItems: 'center',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 8,
-    },
-    supersetTitle: {
-        color: colors.onSurface,
-        fontSize: 16,
-        fontWeight: '600',
-    },
-    workoutContainer: {
-        paddingBottom: 32,
-    },
-});
+const makeStyles = (colors: CustomThemeColorsType, dark: boolean) =>
+    StyleSheet.create({
+        addSetButton: {
+            marginBottom: 8,
+            marginTop: 12,
+        },
+        appbarHeader: {
+            backgroundColor: colors.primary,
+            justifyContent: 'center',
+            paddingHorizontal: 16,
+        },
+        appbarTitle: {
+            color: colors.onPrimary,
+            fontSize: Platform.OS === 'web' ? 20 : 26,
+        },
+        button: {
+            marginVertical: 10,
+        },
+        checkboxContainer: {
+            alignItems: 'center',
+            flexDirection: 'row',
+            marginVertical: 8,
+        },
+        container: {
+            backgroundColor: colors.background,
+            flex: 1,
+        },
+        content: {
+            padding: 16,
+        },
+        exerciseContainer: {
+            backgroundColor: colors.surface,
+            borderColor: colors.primary,
+            borderRadius: 8,
+            borderWidth: 1,
+            marginBottom: 16,
+            padding: 16,
+        },
+        footer: {
+            alignItems: 'center',
+            borderTopColor: colors.shadow,
+            borderTopWidth: 1,
+            padding: 16,
+        },
+        label: {
+            fontSize: 16,
+            fontWeight: '600',
+            marginBottom: 8,
+        },
+        labelToggleSwitch: {
+            color: colors.onSurface,
+            fontSize: 16,
+            fontWeight: '600',
+        },
+        moveButtonsContainer: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            marginTop: 8,
+        },
+        overlay: {
+            ...StyleSheet.absoluteFillObject,
+            alignItems: 'center',
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            flex: 1,
+            justifyContent: 'center',
+        },
+        row: {
+            alignItems: 'center',
+            flexDirection: 'row',
+            marginVertical: 8,
+        },
+        setContainer: {
+            alignItems: 'center',
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            marginBottom: 8,
+        },
+        setText: {
+            color: colors.onSurface,
+            marginRight: 8,
+        },
+        smallInput: {
+            backgroundColor: colors.surface,
+            borderColor: colors.onSurface,
+            borderRadius: 4,
+            borderWidth: 1,
+            color: colors.onSurface,
+            marginHorizontal: 4,
+            marginVertical: 4,
+            padding: 4,
+            textAlign: 'center',
+            width: 60,
+        },
+        supersetButtons: {
+            flexDirection: 'row',
+        },
+        supersetContainer: {
+            borderColor: colors.primary,
+            borderRadius: 8,
+            borderWidth: 1,
+            marginBottom: 16,
+            padding: 8,
+        },
+        supersetHeader: {
+            alignItems: 'center',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            marginBottom: 8,
+        },
+        supersetTitle: {
+            color: colors.onSurface,
+            fontSize: 16,
+            fontWeight: '600',
+        },
+        workoutContainer: {
+            paddingBottom: 32,
+        },
+    });

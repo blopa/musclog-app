@@ -1,3 +1,4 @@
+import { Screen } from '@/components/Screen';
 import WorkoutModal from '@/components/WorkoutModal';
 import WorkoutSession from '@/components/WorkoutSession';
 import { VOLUME_CALCULATION_TYPES } from '@/constants/exercises';
@@ -56,7 +57,9 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
     const { t } = useTranslation();
     const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
     const [exercise, setExercise] = useState<ExerciseReturnType | null>(null);
-    const [exercises, setExercises] = useState<{ exercise: ExerciseReturnType; sets: SetReturnType[] }[]>([]);
+    const [exercises, setExercises] = useState<
+        { exercise: ExerciseReturnType; sets: SetReturnType[] }[]
+    >([]);
     const [modalVisible, setModalVisible] = useState(false);
     const [startTime, setStartTime] = useState<null | number>(null);
     const [workoutDuration, setWorkoutDuration] = useState(0);
@@ -89,7 +92,9 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
                     const sets = await getSetsByWorkoutId(workoutId);
 
                     // Initialize maps to group sets by supersetName and exerciseId
-                    const supersetsMap: { [supersetName: string]: { [exerciseId: number]: SetReturnType[] } } = {};
+                    const supersetsMap: {
+                        [supersetName: string]: { [exerciseId: number]: SetReturnType[] };
+                    } = {};
                     const standaloneSetsMap: { [exerciseId: number]: SetReturnType[] } = {};
 
                     // Group sets into supersets and standalone exercises
@@ -113,12 +118,17 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
                         }
                     });
 
-                    const orderedExercises: { exercise: ExerciseReturnType; sets: SetReturnType[] }[] = [];
+                    const orderedExercises: {
+                        exercise: ExerciseReturnType;
+                        sets: SetReturnType[];
+                    }[] = [];
 
                     // Process Supersets: Interleave sets from exercises within the same superset
                     for (const supersetName of Object.keys(supersetsMap)) {
                         const exercisesInSuperset = supersetsMap[supersetName];
-                        const exerciseIds = Object.keys(exercisesInSuperset).map((id) => parseInt(id, 10));
+                        const exerciseIds = Object.keys(exercisesInSuperset).map((id) =>
+                            parseInt(id, 10)
+                        );
 
                         // Fetch all exercises within the current superset
                         const exercisesData = await Promise.all(
@@ -140,7 +150,9 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
                         // Sort sets for each exercise by setOrder
                         const sortedExerciseSets = validExercises.map((exercise) => ({
                             exercise,
-                            sets: exercisesInSuperset[exercise.id].sort((a, b) => a.setOrder - b.setOrder),
+                            sets: exercisesInSuperset[exercise.id].sort(
+                                (a, b) => a.setOrder - b.setOrder
+                            ),
                         }));
 
                         // Determine the maximum number of sets among the exercises in the superset
@@ -204,9 +216,8 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
 
                     // Determine the current exercise index from AsyncStorage
                     if (orderedExercises.length > 0) {
-                        const storedCurrentIndex = await AsyncStorage.getItem(
-                            CURRENT_EXERCISE_INDEX
-                        );
+                        const storedCurrentIndex =
+                            await AsyncStorage.getItem(CURRENT_EXERCISE_INDEX);
                         let currentIndex = storedCurrentIndex
                             ? parseInt(storedCurrentIndex, 10)
                             : 0;
@@ -225,10 +236,7 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
                         setExercise(currentExercise.exercise);
 
                         // Persist the current exercise index
-                        await AsyncStorage.setItem(
-                            CURRENT_EXERCISE_INDEX,
-                            currentIndex.toString()
-                        );
+                        await AsyncStorage.setItem(CURRENT_EXERCISE_INDEX, currentIndex.toString());
                     }
                 }
             }
@@ -268,197 +276,254 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
         }, [navigation])
     );
 
-    const handleFinishExercise = useCallback(async (workoutScore?: number, exhaustionLevel?: number) => {
-        try {
-            const endTime = Date.now();
-            const duration = (endTime - startTime!) / 1000;
-            setWorkoutDuration(duration);
+    const handleFinishExercise = useCallback(
+        async (workoutScore?: number, exhaustionLevel?: number) => {
+            try {
+                const endTime = Date.now();
+                const duration = (endTime - startTime!) / 1000;
+                setWorkoutDuration(duration);
 
-            if (currentExerciseIndex + 1 < exercises.length) {
-                const nextExercise = exercises[currentExerciseIndex + 1].exercise;
-                setCurrentExerciseIndex(currentExerciseIndex + 1);
-                setExercise(nextExercise);
-                await AsyncStorage.setItem(CURRENT_EXERCISE_INDEX, (currentExerciseIndex + 1).toString());
-            } else {
-                // Finish the workout
-                // const workoutId = await AsyncStorage.getItem(CURRENT_WORKOUT_ID);
-                if (workout) {
-                    const existingProgress = await AsyncStorage.getItem(CURRENT_WORKOUT_PROGRESS);
-                    const { completed: completedProgress = [], skipped = [] } = JSON.parse(existingProgress || '{}') as CurrentWorkoutProgressType;
+                if (currentExerciseIndex + 1 < exercises.length) {
+                    const nextExercise = exercises[currentExerciseIndex + 1].exercise;
+                    setCurrentExerciseIndex(currentExerciseIndex + 1);
+                    setExercise(nextExercise);
+                    await AsyncStorage.setItem(
+                        CURRENT_EXERCISE_INDEX,
+                        (currentExerciseIndex + 1).toString()
+                    );
+                } else {
+                    // Finish the workout
+                    // const workoutId = await AsyncStorage.getItem(CURRENT_WORKOUT_ID);
+                    if (workout) {
+                        const existingProgress =
+                            await AsyncStorage.getItem(CURRENT_WORKOUT_PROGRESS);
+                        const { completed: completedProgress = [], skipped = [] } = JSON.parse(
+                            existingProgress || '{}'
+                        ) as CurrentWorkoutProgressType;
 
-                    for (const progress of completedProgress) {
-                        if (progress.setId) {
-                            const set = await getSetById(progress.setId);
+                        for (const progress of completedProgress) {
+                            if (progress.setId) {
+                                const set = await getSetById(progress.setId);
 
-                            if (set) {
-                                await updateSet(progress.setId, {
-                                    ...set,
-                                    difficultyLevel: progress.difficultyLevel || set.difficultyLevel,
-                                    reps: progress.reps || set.reps,
-                                    weight: getDisplayFormattedWeight(progress.weight, POUNDS, isImperial),
-                                });
+                                if (set) {
+                                    await updateSet(progress.setId, {
+                                        ...set,
+                                        difficultyLevel:
+                                            progress.difficultyLevel || set.difficultyLevel,
+                                        reps: progress.reps || set.reps,
+                                        weight: getDisplayFormattedWeight(
+                                            progress.weight,
+                                            POUNDS,
+                                            isImperial
+                                        ),
+                                    });
+                                }
                             }
                         }
-                    }
 
-                    const exerciseData: ExerciseVolumeType[] = [];
-                    for (const item of completedProgress) {
-                        let exercise = exerciseData.find((ex) => ex.exerciseId === item.exerciseId);
-
-                        if (!exercise) {
-                            exercise = {
-                                exerciseId: item.exerciseId!,
-                                sets: [],
-                            };
-
-                            exerciseData.push(exercise);
-                        }
-
-                        const set = {
-                            difficultyLevel: item.difficultyLevel,
-                            exerciseId: item.exerciseId!,
-                            id: item.setId,
-                            isDropSet: item.isDropSet,
-                            reps: item.reps,
-                            restTime: item.restTime,
-                            setId: item.setId,
-                            targetReps: item.targetReps,
-                            targetWeight: item.targetWeight,
-                            unitSystem,
-                            weight: item.weight,
-                            setOrder: item.setOrder,
-                            workoutId: workout.id,
-                            supersetName: item.supersetName,
-                        };
-
-                        exercise.sets.push(set);
-                    }
-
-                    const isPermitted = await checkReadIsPermitted(['Nutrition']);
-                    if (isPermitted) {
-                        const healthData = await getHealthData(1000, ['Nutrition']);
-                        if (healthData) {
-                            const todaysNutrition = healthData.nutritionRecords!.filter(
-                                ({ startTime }) => startTime.startsWith(new Date().toISOString().split('T')[0])
+                        const exerciseData: ExerciseVolumeType[] = [];
+                        for (const item of completedProgress) {
+                            let exercise = exerciseData.find(
+                                (ex) => ex.exerciseId === item.exerciseId
                             );
 
-                            for (const nutrition of todaysNutrition) {
-                                await addUserNutrition({
-                                    calories: nutrition.energy?.inKilocalories || 0,
-                                    carbohydrate: nutrition.totalCarbohydrate?.inGrams || 0,
-                                    createdAt: nutrition.startTime,
-                                    dataId: nutrition?.metadata?.id || generateHash(),
-                                    date: nutrition.startTime,
-                                    fat: nutrition?.totalFat?.inGrams || 0,
-                                    fiber: nutrition?.dietaryFiber?.inGrams || 0,
-                                    monounsaturatedFat: nutrition?.monounsaturatedFat?.inGrams || 0,
-                                    name: nutrition?.name || '',
-                                    polyunsaturatedFat: nutrition?.polyunsaturatedFat?.inGrams || 0,
-                                    protein: nutrition?.protein?.inGrams || 0,
-                                    saturatedFat: nutrition?.saturatedFat?.inGrams || 0,
-                                    source: USER_METRICS_SOURCES.HEALTH_CONNECT,
-                                    sugar: nutrition?.sugar?.inGrams || 0,
-                                    transFat: nutrition?.transFat?.inGrams || 0,
-                                    type: NUTRITION_TYPES.MEAL,
-                                    unsaturatedFat: nutrition?.unsaturatedFat?.inGrams || 0,
-                                });
+                            if (!exercise) {
+                                exercise = {
+                                    exerciseId: item.exerciseId!,
+                                    sets: [],
+                                };
+
+                                exerciseData.push(exercise);
                             }
+
+                            const set = {
+                                difficultyLevel: item.difficultyLevel,
+                                exerciseId: item.exerciseId!,
+                                id: item.setId,
+                                isDropSet: item.isDropSet,
+                                reps: item.reps,
+                                restTime: item.restTime,
+                                setId: item.setId,
+                                targetReps: item.targetReps,
+                                targetWeight: item.targetWeight,
+                                unitSystem,
+                                weight: item.weight,
+                                setOrder: item.setOrder,
+                                workoutId: workout.id,
+                                supersetName: item.supersetName,
+                            };
+
+                            exercise.sets.push(set);
                         }
-                    }
 
-                    const userNutritionFromToday = await getUserNutritionFromDate(
-                        new Date().toISOString().split('T')[0] + 'T00:00:00.000Z'
-                    );
+                        const isPermitted = await checkReadIsPermitted(['Nutrition']);
+                        if (isPermitted) {
+                            const healthData = await getHealthData(1000, ['Nutrition']);
+                            if (healthData) {
+                                const todaysNutrition = healthData.nutritionRecords!.filter(
+                                    ({ startTime }) =>
+                                        startTime.startsWith(new Date().toISOString().split('T')[0])
+                                );
 
-                    const totalCarbs = userNutritionFromToday.reduce((acc, item) => acc + item.carbohydrate, 0);
-                    const totalCalories = userNutritionFromToday.reduce((acc, item) => acc + item.calories, 0);
-                    const totalProteins = userNutritionFromToday.reduce((acc, item) => acc + item.protein, 0);
-                    const totalFats = userNutritionFromToday.reduce((acc, item) => acc + item.fat, 0);
-
-                    const recentWorkout: WorkoutEventInsertType = {
-                        calories: totalCalories,
-                        carbohydrate: totalCarbs,
-                        date: new Date().toISOString(),
-                        description: workout.description, // TODO: add option for user to add description
-                        duration: Math.floor(duration / 60),
-                        exerciseData: JSON.stringify(exerciseData),
-                        exhaustionLevel,
-                        fat: totalFats,
-                        protein: totalProteins,
-                        recurringOnWeek: workout.recurringOnWeek,
-                        status: COMPLETED_STATUS,
-                        title: workout.title,
-                        workoutId: workout.id!,
-                        workoutScore,
-                    };
-
-                    await AsyncStorage.removeItem(CURRENT_WORKOUT_PROGRESS);
-                    const recentWorkoutId = await addWorkoutEvent(recentWorkout);
-
-                    const randomNum = Math.floor(Math.random() * 10) + 1;
-                    const genericMessageToUser = t(`great_job_on_workout_${randomNum}`);
-
-                    if (isAiEnabled) {
-                        await addNewChat({
-                            message: '',
-                            misc: JSON.stringify({ recentWorkoutId }),
-                            sender: 'user',
-                            type: 'recentWorkout',
-                        });
-
-                        increaseUnreadMessages(1);
-                    }
-
-                    if (workout.volumeCalculationType === VOLUME_CALCULATION_TYPES.AI_GENERATED) {
-                        // Start the long-running task in a setTimeout to prevent blocking the UI
-                        setTimeout(async () => {
-                            try {
-                                const response = await calculateNextWorkoutVolume(workout);
-                                if (response) {
-                                    const { messageToUser = genericMessageToUser, workoutVolume = [] } = response;
-                                    await updateWorkoutSetsVolume(workoutVolume, workout.id);
-
-                                    if (messageToUser) {
-                                        await addNewChat({
-                                            message: messageToUser,
-                                            misc: '',
-                                            sender: 'assistant',
-                                            type: 'text',
-                                        });
-
-                                        increaseUnreadMessages(1);
-                                    }
+                                for (const nutrition of todaysNutrition) {
+                                    await addUserNutrition({
+                                        calories: nutrition.energy?.inKilocalories || 0,
+                                        carbohydrate: nutrition.totalCarbohydrate?.inGrams || 0,
+                                        createdAt: nutrition.startTime,
+                                        dataId: nutrition?.metadata?.id || generateHash(),
+                                        date: nutrition.startTime,
+                                        fat: nutrition?.totalFat?.inGrams || 0,
+                                        fiber: nutrition?.dietaryFiber?.inGrams || 0,
+                                        monounsaturatedFat:
+                                            nutrition?.monounsaturatedFat?.inGrams || 0,
+                                        name: nutrition?.name || '',
+                                        polyunsaturatedFat:
+                                            nutrition?.polyunsaturatedFat?.inGrams || 0,
+                                        protein: nutrition?.protein?.inGrams || 0,
+                                        saturatedFat: nutrition?.saturatedFat?.inGrams || 0,
+                                        source: USER_METRICS_SOURCES.HEALTH_CONNECT,
+                                        sugar: nutrition?.sugar?.inGrams || 0,
+                                        transFat: nutrition?.transFat?.inGrams || 0,
+                                        type: NUTRITION_TYPES.MEAL,
+                                        unsaturatedFat: nutrition?.unsaturatedFat?.inGrams || 0,
+                                    });
                                 }
-                            } catch (error) {
-                                console.error('Failed to calculate next workout volume:', error);
-                                Sentry.captureException(error);
                             }
-                        }, 10);
-                    } else {
-                        await addNewChat({
-                            message: genericMessageToUser,
-                            misc: '',
-                            sender: 'assistant',
-                            type: 'text',
-                        });
+                        }
 
-                        increaseUnreadMessages(1);
+                        const userNutritionFromToday = await getUserNutritionFromDate(
+                            new Date().toISOString().split('T')[0] + 'T00:00:00.000Z'
+                        );
 
-                        if (workout.volumeCalculationType === VOLUME_CALCULATION_TYPES.ALGO_GENERATED) {
-                            const recentWorkouts = await getRecentWorkoutsByWorkoutId(Number(workout.id));
-                            await calculateNextWorkoutRepsAndSets(workout, recentWorkouts);
+                        const totalCarbs = userNutritionFromToday.reduce(
+                            (acc, item) => acc + item.carbohydrate,
+                            0
+                        );
+                        const totalCalories = userNutritionFromToday.reduce(
+                            (acc, item) => acc + item.calories,
+                            0
+                        );
+                        const totalProteins = userNutritionFromToday.reduce(
+                            (acc, item) => acc + item.protein,
+                            0
+                        );
+                        const totalFats = userNutritionFromToday.reduce(
+                            (acc, item) => acc + item.fat,
+                            0
+                        );
+
+                        const recentWorkout: WorkoutEventInsertType = {
+                            calories: totalCalories,
+                            carbohydrate: totalCarbs,
+                            date: new Date().toISOString(),
+                            description: workout.description, // TODO: add option for user to add description
+                            duration: Math.floor(duration / 60),
+                            exerciseData: JSON.stringify(exerciseData),
+                            exhaustionLevel,
+                            fat: totalFats,
+                            protein: totalProteins,
+                            recurringOnWeek: workout.recurringOnWeek,
+                            status: COMPLETED_STATUS,
+                            title: workout.title,
+                            workoutId: workout.id!,
+                            workoutScore,
+                        };
+
+                        await AsyncStorage.removeItem(CURRENT_WORKOUT_PROGRESS);
+                        const recentWorkoutId = await addWorkoutEvent(recentWorkout);
+
+                        const randomNum = Math.floor(Math.random() * 10) + 1;
+                        const genericMessageToUser = t(`great_job_on_workout_${randomNum}`);
+
+                        if (isAiEnabled) {
+                            await addNewChat({
+                                message: '',
+                                misc: JSON.stringify({ recentWorkoutId }),
+                                sender: 'user',
+                                type: 'recentWorkout',
+                            });
+
+                            increaseUnreadMessages(1);
+                        }
+
+                        if (
+                            workout.volumeCalculationType === VOLUME_CALCULATION_TYPES.AI_GENERATED
+                        ) {
+                            // Start the long-running task in a setTimeout to prevent blocking the UI
+                            setTimeout(async () => {
+                                try {
+                                    const response = await calculateNextWorkoutVolume(workout);
+                                    if (response) {
+                                        const {
+                                            messageToUser = genericMessageToUser,
+                                            workoutVolume = [],
+                                        } = response;
+                                        await updateWorkoutSetsVolume(workoutVolume, workout.id);
+
+                                        if (messageToUser) {
+                                            await addNewChat({
+                                                message: messageToUser,
+                                                misc: '',
+                                                sender: 'assistant',
+                                                type: 'text',
+                                            });
+
+                                            increaseUnreadMessages(1);
+                                        }
+                                    }
+                                } catch (error) {
+                                    console.error(
+                                        'Failed to calculate next workout volume:',
+                                        error
+                                    );
+                                    Sentry.captureException(error);
+                                }
+                            }, 10);
+                        } else {
+                            await addNewChat({
+                                message: genericMessageToUser,
+                                misc: '',
+                                sender: 'assistant',
+                                type: 'text',
+                            });
+
+                            increaseUnreadMessages(1);
+
+                            if (
+                                workout.volumeCalculationType ===
+                                VOLUME_CALCULATION_TYPES.ALGO_GENERATED
+                            ) {
+                                const recentWorkouts = await getRecentWorkoutsByWorkoutId(
+                                    Number(workout.id)
+                                );
+                                await calculateNextWorkoutRepsAndSets(workout, recentWorkouts);
+                            }
                         }
                     }
-                }
 
-                setCurrentExerciseIndex(0);
-                setExercise(null);
-                await resetWorkoutStorageData();
+                    setCurrentExerciseIndex(0);
+                    setExercise(null);
+                    await resetWorkoutStorageData();
+                }
+            } catch (error) {
+                console.error('Failed to finish exercise:', error);
             }
-        } catch (error) {
-            console.error('Failed to finish exercise:', error);
-        }
-    }, [startTime, currentExerciseIndex, exercises, workout, checkReadIsPermitted, t, isAiEnabled, isImperial, unitSystem, getHealthData, addNewChat, increaseUnreadMessages]);
+        },
+        [
+            startTime,
+            currentExerciseIndex,
+            exercises,
+            workout,
+            checkReadIsPermitted,
+            t,
+            isAiEnabled,
+            isImperial,
+            unitSystem,
+            getHealthData,
+            addNewChat,
+            increaseUnreadMessages,
+        ]
+    );
 
     useEffect(() => {
         const checkStartingTime = async () => {
@@ -508,68 +573,71 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
     }
 
     return (
-        <ScrollView
-            contentContainerStyle={styles.container}
-            keyboardShouldPersistTaps="handled"
-        >
-            <WorkoutModal
-                onClose={() => {
-                    setLoading(true);
-                    fetchWorkout().then(() => {
-                        setLoading(false);
-                        setModalVisible(false);
-                    });
-                }}
-                visible={modalVisible}
-            />
-            <View style={styles.section}>
-                <Text style={styles.header}>{t('no_ongoing_workout')}</Text>
-                <Button
-                    mode="contained"
-                    onPress={() => setModalVisible(true)}
-                    style={styles.startLoggingButton}
-                >
-                    {t('start_logging')}
-                </Button>
-            </View>
-            {loading ? (
-                <View style={styles.loadingOverlay}>
-                    <ActivityIndicator color="#fff" size="large" />
+        <Screen style={styles.container}>
+            <ScrollView
+                contentContainerStyle={styles.container}
+                keyboardShouldPersistTaps="handled"
+            >
+                <WorkoutModal
+                    onClose={() => {
+                        setLoading(true);
+                        fetchWorkout().then(() => {
+                            setLoading(false);
+                            setModalVisible(false);
+                        });
+                    }}
+                    visible={modalVisible}
+                />
+                <View style={styles.section}>
+                    <Text style={styles.header}>{t('no_ongoing_workout')}</Text>
+                    <Button
+                        mode="contained"
+                        onPress={() => setModalVisible(true)}
+                        style={styles.startLoggingButton}
+                    >
+                        {t('start_logging')}
+                    </Button>
                 </View>
-            ) : null}
-        </ScrollView>
+                {loading ? (
+                    <View style={styles.loadingOverlay}>
+                        <ActivityIndicator color="#fff" size="large" />
+                    </View>
+                ) : null}
+            </ScrollView>
+        </Screen>
     );
 };
 
-const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
-    container: {
-        alignItems: 'center',
-        backgroundColor: colors.background,
-        flexGrow: 1,
-        justifyContent: 'center',
-        padding: 16,
-    },
-    header: {
-        color: colors.onBackground,
-        fontSize: 28,
-        fontWeight: 'bold',
-        lineHeight: 40,
-        textAlign: 'center',
-    },
-    loadingOverlay: {
-        ...StyleSheet.absoluteFillObject,
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        justifyContent: 'center',
-        zIndex: 1000,
-    },
-    section: {
-        backgroundColor: 'transparent',
-        marginBottom: 32,
-    },
-    startLoggingButton: {
-        marginTop: 16,
-    },
-});
+const makeStyles = (colors: CustomThemeColorsType, dark: boolean) =>
+    StyleSheet.create({
+        container: {
+            alignItems: 'center',
+            backgroundColor: colors.background,
+            flexGrow: 1,
+            justifyContent: 'center',
+            padding: 16,
+        },
+        header: {
+            color: colors.onBackground,
+            fontSize: 28,
+            fontWeight: 'bold',
+            lineHeight: 40,
+            textAlign: 'center',
+        },
+        loadingOverlay: {
+            ...StyleSheet.absoluteFillObject,
+            alignItems: 'center',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            justifyContent: 'center',
+            zIndex: 1000,
+        },
+        section: {
+            backgroundColor: 'transparent',
+            marginBottom: 32,
+        },
+        startLoggingButton: {
+            marginTop: 16,
+        },
+    });
 
 export default CurrentWorkout;

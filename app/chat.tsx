@@ -1,9 +1,13 @@
 import BotAvatar from '@/components/BotAvatar';
 import BottomPageModal from '@/components/BottomPageModal';
+import { Screen } from '@/components/Screen';
 import ThemedModal from '@/components/ThemedModal';
 import WorkoutGeneratedSuccessModal from '@/components/WorkoutGeneratedSuccessModal';
 import { GENERATE_MY_WORKOUTS } from '@/constants/chat';
-import useChatRenderFunctions, { AIJsonResponseType, CustomMessage } from '@/hooks/useChatRenderFunctions';
+import useChatRenderFunctions, {
+    AIJsonResponseType,
+    CustomMessage,
+} from '@/hooks/useChatRenderFunctions';
 import { useChatData } from '@/storage/ChatProvider';
 import { useUnreadMessages } from '@/storage/UnreadMessagesProvider';
 import { generateWorkoutPlan, sendChatMessage } from '@/utils/ai';
@@ -99,10 +103,12 @@ export default function Chat({ navigation }: { navigation: NavigationProp<any> }
     }, [isSuccessModalVisible, successFadeAnim, successSlideAnim]);
 
     const fetchInitialData = useCallback(async () => {
-        const initialMessages: ChatCompletionMessageParam[] = [{
-            content: await getChatMessagePromptContent(),
-            role: 'system',
-        }];
+        const initialMessages: ChatCompletionMessageParam[] = [
+            {
+                content: await getChatMessagePromptContent(),
+                role: 'system',
+            },
+        ];
 
         setSystemMessages(initialMessages);
     }, []);
@@ -224,149 +230,181 @@ export default function Chat({ navigation }: { navigation: NavigationProp<any> }
         toggleToolsMenu();
     }, [chats, toggleToolsMenu, t, addNewChat, waitingForResponse]);
 
-    const handleSend = useCallback(async (newMessages: CustomMessage[] = []) => {
-        if (newMessages.length === 0) {
-            return Promise.resolve();
-        }
-
-        const newMessage = newMessages[0];
-        const newChat: ChatInsertType = {
-            createdAt: formatCreatedAt(newMessage.createdAt),
-            message: newMessage.text,
-            misc: '',
-            sender: 'user',
-            type: 'text',
-        };
-
-        await addNewChat(newChat);
-        setWaitingForResponse(true);
-
-        try {
-            const messagesToSend = chats.length > 20 ? chats.slice(0, 20) : chats;
-            const messages = [
-                ...systemMessages,
-                ...[newChat, ...messagesToSend]
-                    .filter((msg) => msg.type === 'text')
-                    .map((msg) => ({
-                        content: msg.message,
-                        role: msg.sender as 'assistant' | 'system' | 'user',
-                    }))
-                    .reverse(),
-            ];
-
-            if (storedIntentionValue === GENERATE_MY_WORKOUTS) {
-                const result = await generateWorkoutPlan(
-                    messages.filter((m) => m.role !== 'system')
-                );
-
-                await updateTotalWorkoutsCount();
-                let text = t('workout_plan_generated');
-                if (!result) {
-                    text = t('error_generating_workout');
-                }
-
-                const newWorkoutChat: ChatInsertType = {
-                    createdAt: new Date().toISOString(),
-                    message: text,
-                    misc: '',
-                    sender: 'assistant',
-                    type: 'text',
-                };
-
-                await addNewChat(newWorkoutChat);
-                await removeStoredIntention();
-                return;
+    const handleSend = useCallback(
+        async (newMessages: CustomMessage[] = []) => {
+            if (newMessages.length === 0) {
+                return Promise.resolve();
             }
 
-            const jsonResponse = await sendChatMessage(messages);
-
-            const {
-                // messageToBio,
-                messageToUser,
-                // shouldGenerateWorkout,
-            } = jsonResponse as AIJsonResponseType;
-
-            // if (messageToBio) {
-            //     await addBio(messageToBio);
-            // }
-
-            if (messageToUser) {
-                const newAssistantChat: ChatInsertType = {
-                    createdAt: new Date().toISOString(),
-                    message: messageToUser,
-                    misc: '',
-                    sender: 'assistant',
-                    type: 'text',
-                };
-
-                await addNewChat(newAssistantChat);
-            }
-
-            // if (shouldGenerateWorkout) {
-            //     const result = await generateWorkoutPlan(
-            //         messages.filter((m) => m.role !== 'system')
-            //     );
-            //
-            //     let text = t('workout_plan_generated');
-            //     if (!result) {
-            //         text = t('error_generating_workout');
-            //     }
-            //
-            //     const newWorkoutChat: ChatInsertType = {
-            //         createdAt: new Date().toISOString(),
-            //         message: text,
-            //         misc: '',
-            //         sender: 'assistant',
-            //         type: 'text',
-            //     };
-            //
-            //     await addNewChat(newWorkoutChat);
-            // }
-        } catch (error) {
-            console.error(t('error_calling_openai'), error);
-            const newAssistantMessage: ChatInsertType = {
-                createdAt: new Date().toISOString(),
-                message: t('error_processing_request'),
+            const newMessage = newMessages[0];
+            const newChat: ChatInsertType = {
+                createdAt: formatCreatedAt(newMessage.createdAt),
+                message: newMessage.text,
                 misc: '',
-                sender: 'assistant',
+                sender: 'user',
                 type: 'text',
             };
 
-            await addNewChat(newAssistantMessage);
-        } finally {
-            setWaitingForResponse(false);
-        }
-    }, [addNewChat, chats, systemMessages, storedIntentionValue, updateTotalWorkoutsCount, t, removeStoredIntention]);
+            await addNewChat(newChat);
+            setWaitingForResponse(true);
 
-    const renderSend = useCallback((props: SendProps<CustomMessage>) => (
-        <Send {...props} disabled={waitingForResponse}>
-            <View style={styles.sendingContainer}>
-                <IconButton icon="send" size={24} />
-            </View>
-        </Send>
-    ), [styles.sendingContainer, waitingForResponse]);
+            try {
+                const messagesToSend = chats.length > 20 ? chats.slice(0, 20) : chats;
+                const messages = [
+                    ...systemMessages,
+                    ...[newChat, ...messagesToSend]
+                        .filter((msg) => msg.type === 'text')
+                        .map((msg) => ({
+                            content: msg.message,
+                            role: msg.sender as 'assistant' | 'system' | 'user',
+                        }))
+                        .reverse(),
+                ];
 
-    const renderLoadEarlierButton = useCallback((onLoadEarlier: () => void) => {
-        const loading = loadingNewMessages || isLoading;
+                if (storedIntentionValue === GENERATE_MY_WORKOUTS) {
+                    const result = await generateWorkoutPlan(
+                        messages.filter((m) => m.role !== 'system')
+                    );
 
-        return (
-            <View style={styles.loadEarlierContainer}>
-                {loading ? (
-                    <ActivityIndicator color={colors.primary} size="small" style={styles.loadingIndicator} />
-                ) : null}
-                <Button
-                    disabled={loading}
-                    mode="outlined"
-                    onPress={onLoadEarlier}
-                    style={[styles.loadEarlierButton, loading ? styles.loadEarlierButtonDisabled : styles.loadEarlierButtonEnabled]}
-                >
-                    <Text style={loading ? styles.loadEarlierButtonTextDisabled : styles.loadEarlierButtonText}>
-                        {t('load_more_messages')}
-                    </Text>
-                </Button>
-            </View>
-        );
-    }, [loadingNewMessages, isLoading, styles, colors.primary, t]);
+                    await updateTotalWorkoutsCount();
+                    let text = t('workout_plan_generated');
+                    if (!result) {
+                        text = t('error_generating_workout');
+                    }
+
+                    const newWorkoutChat: ChatInsertType = {
+                        createdAt: new Date().toISOString(),
+                        message: text,
+                        misc: '',
+                        sender: 'assistant',
+                        type: 'text',
+                    };
+
+                    await addNewChat(newWorkoutChat);
+                    await removeStoredIntention();
+                    return;
+                }
+
+                const jsonResponse = await sendChatMessage(messages);
+
+                const {
+                    // messageToBio,
+                    messageToUser,
+                    // shouldGenerateWorkout,
+                } = jsonResponse as AIJsonResponseType;
+
+                // if (messageToBio) {
+                //     await addBio(messageToBio);
+                // }
+
+                if (messageToUser) {
+                    const newAssistantChat: ChatInsertType = {
+                        createdAt: new Date().toISOString(),
+                        message: messageToUser,
+                        misc: '',
+                        sender: 'assistant',
+                        type: 'text',
+                    };
+
+                    await addNewChat(newAssistantChat);
+                }
+
+                // if (shouldGenerateWorkout) {
+                //     const result = await generateWorkoutPlan(
+                //         messages.filter((m) => m.role !== 'system')
+                //     );
+                //
+                //     let text = t('workout_plan_generated');
+                //     if (!result) {
+                //         text = t('error_generating_workout');
+                //     }
+                //
+                //     const newWorkoutChat: ChatInsertType = {
+                //         createdAt: new Date().toISOString(),
+                //         message: text,
+                //         misc: '',
+                //         sender: 'assistant',
+                //         type: 'text',
+                //     };
+                //
+                //     await addNewChat(newWorkoutChat);
+                // }
+            } catch (error) {
+                console.error(t('error_calling_openai'), error);
+                const newAssistantMessage: ChatInsertType = {
+                    createdAt: new Date().toISOString(),
+                    message: t('error_processing_request'),
+                    misc: '',
+                    sender: 'assistant',
+                    type: 'text',
+                };
+
+                await addNewChat(newAssistantMessage);
+            } finally {
+                setWaitingForResponse(false);
+            }
+        },
+        [
+            addNewChat,
+            chats,
+            systemMessages,
+            storedIntentionValue,
+            updateTotalWorkoutsCount,
+            t,
+            removeStoredIntention,
+        ]
+    );
+
+    const renderSend = useCallback(
+        (props: SendProps<CustomMessage>) => (
+            <Send {...props} disabled={waitingForResponse}>
+                <View style={styles.sendingContainer}>
+                    <IconButton icon="send" size={24} />
+                </View>
+            </Send>
+        ),
+        [styles.sendingContainer, waitingForResponse]
+    );
+
+    const renderLoadEarlierButton = useCallback(
+        (onLoadEarlier: () => void) => {
+            const loading = loadingNewMessages || isLoading;
+
+            return (
+                <View style={styles.loadEarlierContainer}>
+                    {loading ? (
+                        <ActivityIndicator
+                            color={colors.primary}
+                            size="small"
+                            style={styles.loadingIndicator}
+                        />
+                    ) : null}
+                    <Button
+                        disabled={loading}
+                        mode="outlined"
+                        onPress={onLoadEarlier}
+                        style={[
+                            styles.loadEarlierButton,
+                            loading
+                                ? styles.loadEarlierButtonDisabled
+                                : styles.loadEarlierButtonEnabled,
+                        ]}
+                    >
+                        <Text
+                            style={
+                                loading
+                                    ? styles.loadEarlierButtonTextDisabled
+                                    : styles.loadEarlierButtonText
+                            }
+                        >
+                            {t('load_more_messages')}
+                        </Text>
+                    </Button>
+                </View>
+            );
+        },
+        [loadingNewMessages, isLoading, styles, colors.primary, t]
+    );
 
     const navigateToWorkouts = useCallback(() => {
         setSuccessModalVisible(false);
@@ -392,22 +430,20 @@ export default function Chat({ navigation }: { navigation: NavigationProp<any> }
             setLoadingNewMessages(true);
 
             // this hack is necessary so that the UI can update before the async operation
-            await new Promise((resolve) => setTimeout(async (data) => {
-                await fetchMoreChats();
-                return resolve(data);
-            }, 1));
+            await new Promise((resolve) =>
+                setTimeout(async (data) => {
+                    await fetchMoreChats();
+                    return resolve(data);
+                }, 1)
+            );
 
             setLoadingNewMessages(false);
         }
     }, [hasMore, fetchMoreChats, isLoading]);
 
     return (
-        <View style={styles.container}>
-            <Appbar.Header
-                mode="small"
-                statusBarHeight={0}
-                style={styles.appbarHeader}
-            >
+        <Screen style={styles.container}>
+            <Appbar.Header mode="small" statusBarHeight={0} style={styles.appbarHeader}>
                 <Appbar.Content title={t('chat')} titleStyle={styles.appbarTitle} />
                 <Appbar.Action icon="dots-vertical" onPress={toggleToolsMenu} />
             </Appbar.Header>
@@ -420,7 +456,9 @@ export default function Chat({ navigation }: { navigation: NavigationProp<any> }
                 onSend={handleSend}
                 renderAvatar={renderAvatar}
                 renderLoadEarlier={() => renderLoadEarlierButton(onLoadEarlier)}
-                renderLoading={() => isLoading && <ActivityIndicator color={colors.primary} size="large" />}
+                renderLoading={() =>
+                    isLoading && <ActivityIndicator color={colors.primary} size="large" />
+                }
                 renderMessage={renderCustomMessage}
                 renderMessageText={renderMessageText}
                 renderSend={renderSend}
@@ -428,17 +466,18 @@ export default function Chat({ navigation }: { navigation: NavigationProp<any> }
             />
             <BottomPageModal isVisible={isToolsMenuVisible} toggleToolsMenu={toggleToolsMenu}>
                 {isGeneratingWorkout ? (
-                    <ActivityIndicator color={colors.primary} size="large" style={styles.loadingIndicator} />
+                    <ActivityIndicator
+                        color={colors.primary}
+                        size="large"
+                        style={styles.loadingIndicator}
+                    />
                 ) : (
                     <Button mode="contained" onPress={generateWorkouts} style={styles.menuItem}>
                         {t('generate_my_workouts')}
                     </Button>
                 )}
             </BottomPageModal>
-            <BottomPageModal
-                isVisible={isActionsVisible}
-                toggleToolsMenu={handleCancel}
-            >
+            <BottomPageModal isVisible={isActionsVisible} toggleToolsMenu={handleCancel}>
                 <Button mode="contained" onPress={handleCopyText} style={styles.menuItem}>
                     {t('copy_text')}
                 </Button>
@@ -462,56 +501,57 @@ export default function Chat({ navigation }: { navigation: NavigationProp<any> }
                 navigateToWorkouts={navigateToWorkouts}
                 onClose={() => setSuccessModalVisible(false)}
             />
-        </View>
+        </Screen>
     );
 }
 
-const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
-    appbarHeader: {
-        backgroundColor: colors.primary,
-        justifyContent: 'center',
-        paddingHorizontal: 16,
-    },
-    appbarTitle: {
-        color: colors.onPrimary,
-        fontSize: Platform.OS === 'web' ? 20 : 26,
-    },
-    container: {
-        backgroundColor: colors.background,
-        flex: 1,
-    },
-    loadEarlierButton: {
-        paddingVertical: 10,
-    },
-    loadEarlierButtonDisabled: {
-        backgroundColor: colors.surfaceDisabled,
-    },
-    loadEarlierButtonEnabled: {
-        backgroundColor: colors.surface,
-    },
-    loadEarlierButtonText: {
-        color: colors.onSurface,
-    },
-    loadEarlierButtonTextDisabled: {
-        color: colors.onSurfaceDisabled,
-    },
-    loadEarlierContainer: {
-        alignItems: 'center',
-        marginVertical: 10,
-    },
-    loadingIndicator: {
-        color: colors.primary,
-        marginBottom: 8,
-        marginVertical: 16,
-    },
-    menuItem: {
-        marginBottom: 8,
-        width: '100%',
-    },
-    sendingContainer: {
-        alignItems: 'center',
-        height: 44,
-        justifyContent: 'center',
-        marginRight: 10,
-    },
-});
+const makeStyles = (colors: CustomThemeColorsType, dark: boolean) =>
+    StyleSheet.create({
+        appbarHeader: {
+            backgroundColor: colors.primary,
+            justifyContent: 'center',
+            paddingHorizontal: 16,
+        },
+        appbarTitle: {
+            color: colors.onPrimary,
+            fontSize: Platform.OS === 'web' ? 20 : 26,
+        },
+        container: {
+            backgroundColor: colors.background,
+            flex: 1,
+        },
+        loadEarlierButton: {
+            paddingVertical: 10,
+        },
+        loadEarlierButtonDisabled: {
+            backgroundColor: colors.surfaceDisabled,
+        },
+        loadEarlierButtonEnabled: {
+            backgroundColor: colors.surface,
+        },
+        loadEarlierButtonText: {
+            color: colors.onSurface,
+        },
+        loadEarlierButtonTextDisabled: {
+            color: colors.onSurfaceDisabled,
+        },
+        loadEarlierContainer: {
+            alignItems: 'center',
+            marginVertical: 10,
+        },
+        loadingIndicator: {
+            color: colors.primary,
+            marginBottom: 8,
+            marginVertical: 16,
+        },
+        menuItem: {
+            marginBottom: 8,
+            width: '100%',
+        },
+        sendingContainer: {
+            alignItems: 'center',
+            height: 44,
+            justifyContent: 'center',
+            marginRight: 10,
+        },
+    });

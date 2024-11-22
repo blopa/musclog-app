@@ -1,5 +1,6 @@
 import AnimatedSearchBar from '@/components/AnimatedSearch';
 import FABWrapper from '@/components/FABWrapper';
+import { Screen } from '@/components/Screen';
 import ThemedCard from '@/components/ThemedCard';
 import ThemedModal from '@/components/ThemedModal';
 import { FAB_ICON_SIZE, ICON_SIZE } from '@/constants/ui';
@@ -107,7 +108,9 @@ export default function ListExercises({ navigation }: { navigation: NavigationPr
         if (exerciseToDelete) {
             try {
                 await deleteExercise(exerciseToDelete);
-                const updatedExercises = exercises.filter((exercise) => exercise.id !== exerciseToDelete);
+                const updatedExercises = exercises.filter(
+                    (exercise) => exercise.id !== exerciseToDelete
+                );
                 setExercises(updatedExercises);
                 setIsDeleteModalVisible(false);
                 setExerciseToDelete(null);
@@ -122,121 +125,148 @@ export default function ListExercises({ navigation }: { navigation: NavigationPr
         setExerciseToDelete(null);
     }, []);
 
-    const filteredExercises = useMemo(() => exercises.reverse().filter((exercise) =>
-        exercise.name.toLowerCase().includes(searchQuery.toLowerCase())
-    ), [exercises, searchQuery]);
+    const filteredExercises = useMemo(
+        () =>
+            exercises
+                .reverse()
+                .filter((exercise) =>
+                    exercise.name.toLowerCase().includes(searchQuery.toLowerCase())
+                ),
+        [exercises, searchQuery]
+    );
 
-    const fabActions = useMemo(() => [{
-        icon: () => <FontAwesome5 color={colors.primary} name="plus" size={FAB_ICON_SIZE} />,
-        label: t('create_exercise'),
-        onPress: () => navigation.navigate('createExercise'),
-        style: { backgroundColor: colors.surface },
-    }], [colors.primary, colors.surface, navigation, t]);
+    const fabActions = useMemo(
+        () => [
+            {
+                icon: () => (
+                    <FontAwesome5 color={colors.primary} name="plus" size={FAB_ICON_SIZE} />
+                ),
+                label: t('create_exercise'),
+                onPress: () => navigation.navigate('createExercise'),
+                style: { backgroundColor: colors.surface },
+            },
+        ],
+        [colors.primary, colors.surface, navigation, t]
+    );
 
     return (
-        <FABWrapper actions={fabActions} visible>
-            <View style={styles.container}>
-                <Appbar.Header
-                    mode="small"
-                    statusBarHeight={0}
-                    style={styles.appbarHeader}
-                >
-                    <Appbar.Content title={t('exercises')} titleStyle={styles.appbarTitle} />
-                    <AnimatedSearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-                </Appbar.Header>
-                <FlashList
-                    ListFooterComponent={exercises.length < totalExercisesCount ? <ActivityIndicator /> : null}
-                    contentContainerStyle={styles.scrollViewContent}
-                    data={filteredExercises}
-                    estimatedItemSize={95}
-                    keyExtractor={(item) => (item?.id ? item.id.toString() : 'default')}
-                    onEndReached={loadMoreExercises}
-                    onEndReachedThreshold={0.5}
-                    renderItem={({ item: exercise }) => (
-                        <ThemedCard key={exercise.id}>
-                            <Card.Content style={styles.cardContent}>
-                                <View style={styles.cardHeader}>
-                                    <Text style={styles.cardTitle}>{exercise.name}</Text>
-                                    <Text style={styles.exerciseDetail}>{t('muscle_group')}: {t(`muscle_groups.${exercise?.muscleGroup || ''}`)}</Text>
-                                    <Text style={styles.exerciseDetail}>{t('type')}: {t(exercise?.type || 'unset')}</Text>
-                                </View>
-                                <View style={styles.cardActions}>
-                                    <FontAwesome5
-                                        color={colors.primary}
-                                        name="edit"
-                                        onPress={() => navigation.navigate('createExercise', { id: exercise.id })}
-                                        size={ICON_SIZE}
-                                        style={styles.iconButton}
-                                    />
-                                    <FontAwesome5
-                                        color={colors.primary}
-                                        name="trash"
-                                        onPress={() => handleDeleteExercise(exercise.id!)}
-                                        size={ICON_SIZE}
-                                        style={styles.iconButton}
-                                    />
-                                </View>
-                            </Card.Content>
-                        </ThemedCard>
-                    )}
-                />
-                <ThemedModal
-                    cancelText={t('no')}
-                    confirmText={t('yes')}
-                    onClose={handleDeleteCancel}
-                    onConfirm={handleDeleteConfirmation}
-                    title={t('delete_exercise_confirmation', {
-                        title: exercises.find((exercise) => exercise.id === exerciseToDelete)?.name,
-                    })}
-                    visible={isDeleteModalVisible}
-                />
-            </View>
-        </FABWrapper>
+        <Screen style={styles.container}>
+            <FABWrapper actions={fabActions} visible>
+                <View style={styles.container}>
+                    <Appbar.Header mode="small" statusBarHeight={0} style={styles.appbarHeader}>
+                        <Appbar.Content title={t('exercises')} titleStyle={styles.appbarTitle} />
+                        <AnimatedSearchBar
+                            searchQuery={searchQuery}
+                            setSearchQuery={setSearchQuery}
+                        />
+                    </Appbar.Header>
+                    <FlashList
+                        ListFooterComponent={
+                            exercises.length < totalExercisesCount ? <ActivityIndicator /> : null
+                        }
+                        contentContainerStyle={styles.scrollViewContent}
+                        data={filteredExercises}
+                        estimatedItemSize={95}
+                        keyExtractor={(item) => (item?.id ? item.id.toString() : 'default')}
+                        onEndReached={loadMoreExercises}
+                        onEndReachedThreshold={0.5}
+                        renderItem={({ item: exercise }) => (
+                            <ThemedCard key={exercise.id}>
+                                <Card.Content style={styles.cardContent}>
+                                    <View style={styles.cardHeader}>
+                                        <Text style={styles.cardTitle}>{exercise.name}</Text>
+                                        <Text style={styles.exerciseDetail}>
+                                            {t('muscle_group')}:{' '}
+                                            {t(`muscle_groups.${exercise?.muscleGroup || ''}`)}
+                                        </Text>
+                                        <Text style={styles.exerciseDetail}>
+                                            {t('type')}: {t(exercise?.type || 'unset')}
+                                        </Text>
+                                    </View>
+                                    <View style={styles.cardActions}>
+                                        <FontAwesome5
+                                            color={colors.primary}
+                                            name="edit"
+                                            onPress={() =>
+                                                navigation.navigate('createExercise', {
+                                                    id: exercise.id,
+                                                })
+                                            }
+                                            size={ICON_SIZE}
+                                            style={styles.iconButton}
+                                        />
+                                        <FontAwesome5
+                                            color={colors.primary}
+                                            name="trash"
+                                            onPress={() => handleDeleteExercise(exercise.id!)}
+                                            size={ICON_SIZE}
+                                            style={styles.iconButton}
+                                        />
+                                    </View>
+                                </Card.Content>
+                            </ThemedCard>
+                        )}
+                    />
+                    <ThemedModal
+                        cancelText={t('no')}
+                        confirmText={t('yes')}
+                        onClose={handleDeleteCancel}
+                        onConfirm={handleDeleteConfirmation}
+                        title={t('delete_exercise_confirmation', {
+                            title: exercises.find((exercise) => exercise.id === exerciseToDelete)
+                                ?.name,
+                        })}
+                        visible={isDeleteModalVisible}
+                    />
+                </View>
+            </FABWrapper>
+        </Screen>
     );
 }
 
-const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
-    appbarHeader: {
-        backgroundColor: colors.primary,
-        justifyContent: 'center',
-        paddingHorizontal: 16,
-    },
-    appbarTitle: {
-        color: colors.onPrimary,
-        fontSize: Platform.OS === 'web' ? 20 : 26,
-    },
-    cardActions: {
-        alignItems: 'center',
-        flexDirection: 'row',
-    },
-    cardContent: {
-        alignItems: 'center',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-    },
-    cardHeader: {
-        flex: 1,
-    },
-    cardTitle: {
-        color: colors.onSurface,
-        fontSize: 18,
-        fontWeight: 'bold',
-    },
-    container: {
-        backgroundColor: colors.background,
-        flex: 1,
-    },
-    exerciseDetail: {
-        color: colors.onSurface,
-        fontSize: 14,
-        marginBottom: 4,
-    },
-    iconButton: {
-        marginHorizontal: 8,
-    },
-    scrollViewContent: {
-        backgroundColor: colors.background,
-        paddingBottom: 16,
-        paddingHorizontal: 16,
-    },
-});
+const makeStyles = (colors: CustomThemeColorsType, dark: boolean) =>
+    StyleSheet.create({
+        appbarHeader: {
+            backgroundColor: colors.primary,
+            justifyContent: 'center',
+            paddingHorizontal: 16,
+        },
+        appbarTitle: {
+            color: colors.onPrimary,
+            fontSize: Platform.OS === 'web' ? 20 : 26,
+        },
+        cardActions: {
+            alignItems: 'center',
+            flexDirection: 'row',
+        },
+        cardContent: {
+            alignItems: 'center',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+        },
+        cardHeader: {
+            flex: 1,
+        },
+        cardTitle: {
+            color: colors.onSurface,
+            fontSize: 18,
+            fontWeight: 'bold',
+        },
+        container: {
+            backgroundColor: colors.background,
+            flex: 1,
+        },
+        exerciseDetail: {
+            color: colors.onSurface,
+            fontSize: 14,
+            marginBottom: 4,
+        },
+        iconButton: {
+            marginHorizontal: 8,
+        },
+        scrollViewContent: {
+            backgroundColor: colors.background,
+            paddingBottom: 16,
+            paddingHorizontal: 16,
+        },
+    });

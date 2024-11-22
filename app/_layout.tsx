@@ -85,15 +85,14 @@ import {
     createDrawerNavigator,
 } from '@react-navigation/drawer';
 import * as Sentry from '@sentry/react-native';
-import * as Device from 'expo-device';
 import 'react-native-reanimated';
 import { useFonts } from 'expo-font';
-import * as NavigationBar from 'expo-navigation-bar';
 import * as SplashScreen from 'expo-splash-screen';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { I18nextProvider, useTranslation } from 'react-i18next';
-import { Dimensions, SafeAreaView, StatusBar, StyleSheet, Text, View } from 'react-native';
+import { StatusBar, StyleSheet, Text, View } from 'react-native';
 import { ActivityIndicator, PaperProvider, useTheme } from 'react-native-paper';
+import { initialWindowMetrics, SafeAreaProvider } from 'react-native-safe-area-context';
 
 import packageJson from '../package.json';
 
@@ -131,10 +130,6 @@ function RootLayout() {
     const { theme: colorScheme } = useCustomTheme();
     const { addNewChat } = useChatData();
     const { increaseUnreadMessages } = useUnreadMessages();
-    const visibility = NavigationBar.useVisibility();
-    const screenHeight = Dimensions.get('screen').height;
-    const windowHeight = Dimensions.get('window').height;
-    const navbarHeight = screenHeight - (windowHeight + (StatusBar?.currentHeight || 0));
 
     // throw new Error('This is a test error');
 
@@ -221,7 +216,9 @@ function RootLayout() {
 
                     const user = await getUser();
                     const userName = user?.name ? user.name : i18n.t('default_name');
-                    const fitnessGoalMessage = user?.fitnessGoals ? i18n.t('goal_message', { fitnessGoals: i18n.t(user?.fitnessGoals) }) : '';
+                    const fitnessGoalMessage = user?.fitnessGoals
+                        ? i18n.t('goal_message', { fitnessGoals: i18n.t(user?.fitnessGoals) })
+                        : '';
 
                     await addNewChat({
                         createdAt: getCurrentTimestamp(),
@@ -273,16 +270,9 @@ function RootLayout() {
             <I18nextProvider i18n={i18n}>
                 <HealthConnectProvider>
                     <SnackbarProvider>
-                        {/* TODO use SafeAreaView maybe */}
-                        <SafeAreaView
-                            style={{
-                                flex: 1,
-                                // let's see if this works for Android 15
-                                paddingBottom: (visibility && parseFloat(Device?.osVersion || '0') > 14) ? navbarHeight : 0,
-                            }}
-                        >
+                        <SafeAreaProvider initialMetrics={initialWindowMetrics}>
                             <RootLayoutNav />
-                        </SafeAreaView>
+                        </SafeAreaProvider>
                     </SnackbarProvider>
                 </HealthConnectProvider>
             </I18nextProvider>
@@ -324,7 +314,12 @@ function RootLayoutNav() {
             { component: RecentWorkouts, label: 'recent_workouts', name: 'recentWorkouts' },
             { component: ListExercises, label: 'exercises', name: 'listExercises' },
             { component: ListWorkouts, label: 'workouts', name: 'listWorkouts' },
-            { component: UserMetricsCharts, hidden: !showUserMetrics, label: 'user_metrics_charts', name: 'userMetricsCharts' },
+            {
+                component: UserMetricsCharts,
+                hidden: !showUserMetrics,
+                label: 'user_metrics_charts',
+                name: 'userMetricsCharts',
+            },
             { component: FoodLog, label: 'food_log', name: 'foodLog' },
             { component: Profile, label: 'profile', name: 'profile' },
             { component: Settings, label: 'settings', name: 'settings' },
@@ -333,23 +328,88 @@ function RootLayoutNav() {
             { component: Chat, hidden: true, label: 'chat', name: 'chat' },
             { component: Index, hidden: true, label: 'home', name: 'index' },
             { component: OneRepMaxes, hidden: true, label: 'one_rep_maxes', name: 'oneRepMaxes' },
-            { component: CreateWorkout, hidden: true, label: 'create_workout', name: 'createWorkout' },
-            { component: ListUserMetrics, hidden: true, label: 'user_metrics', name: 'listUserMetrics' },
-            { component: WorkoutDetails, hidden: true, label: 'workout_details', name: 'workoutDetails' },
-            { component: CreateExercise, hidden: true, label: 'create_exercise', name: 'createExercise' },
+            {
+                component: CreateWorkout,
+                hidden: true,
+                label: 'create_workout',
+                name: 'createWorkout',
+            },
+            {
+                component: ListUserMetrics,
+                hidden: true,
+                label: 'user_metrics',
+                name: 'listUserMetrics',
+            },
+            {
+                component: WorkoutDetails,
+                hidden: true,
+                label: 'workout_details',
+                name: 'workoutDetails',
+            },
+            {
+                component: CreateExercise,
+                hidden: true,
+                label: 'create_exercise',
+                name: 'createExercise',
+            },
             // { component: ScheduleWorkout, hidden: true, label: 'schedule_workout', name: 'scheduleWorkout' },
-            { component: ListUserNutrition, hidden: true, label: 'user_nutrition', name: 'listUserNutrition' },
-            { component: CreateUserMetrics, hidden: true, label: 'create_user_metrics', name: 'createUserMetrics' },
-            { component: ListUserMeasurements, hidden: true, label: 'list_user_measurements', name: 'listUserMeasurements' },
-            { component: CreateUserMeasurements, hidden: true, label: 'create_user_measurements', name: 'createUserMeasurements' },
-            { component: CreateUserNutrition, hidden: true, label: 'create_user_nutrition', name: 'createUserNutrition' },
-            { component: CreateRecentWorkout, hidden: true, label: 'create_recent_workout', name: 'createRecentWorkout' },
-            { component: RecentWorkoutDetails, hidden: true, label: 'recent_workout_details', name: 'recentWorkoutDetails' },
+            {
+                component: ListUserNutrition,
+                hidden: true,
+                label: 'user_nutrition',
+                name: 'listUserNutrition',
+            },
+            {
+                component: CreateUserMetrics,
+                hidden: true,
+                label: 'create_user_metrics',
+                name: 'createUserMetrics',
+            },
+            {
+                component: ListUserMeasurements,
+                hidden: true,
+                label: 'list_user_measurements',
+                name: 'listUserMeasurements',
+            },
+            {
+                component: CreateUserMeasurements,
+                hidden: true,
+                label: 'create_user_measurements',
+                name: 'createUserMeasurements',
+            },
+            {
+                component: CreateUserNutrition,
+                hidden: true,
+                label: 'create_user_nutrition',
+                name: 'createUserNutrition',
+            },
+            {
+                component: CreateRecentWorkout,
+                hidden: true,
+                label: 'create_recent_workout',
+                name: 'createRecentWorkout',
+            },
+            {
+                component: RecentWorkoutDetails,
+                hidden: true,
+                label: 'recent_workout_details',
+                name: 'recentWorkoutDetails',
+            },
             { component: FoodSearch, hidden: true, label: 'food_search', name: 'foodSearch' },
             { component: FoodDetails, hidden: true, label: 'food_details', name: 'foodDetails' },
             { component: CreateFood, hidden: true, label: 'create_food', name: 'createFood' },
-            { component: ListFitnessGoals, hidden: true, label: 'fitness_goals', name: 'listFitnessGoals' },
-            { component: CreateFitnessGoals, hidden: true, label: 'create_fitness_goals', name: 'createFitnessGoals' },
+            {
+                component: ListFitnessGoals,
+                hidden: true,
+                label: 'fitness_goals',
+                name: 'listFitnessGoals',
+            },
+            {
+                component: CreateFitnessGoals,
+                hidden: true,
+                label: 'create_fitness_goals',
+                name: 'createFitnessGoals',
+            },
         ];
 
         return routes;
@@ -384,15 +444,17 @@ function RootLayoutNav() {
     }
 
     if (!onboardingCompleted) {
-        return (
-            <Onboarding onFinish={() => setOnboardingCompleted(true)} />
-        );
+        return <Onboarding onFinish={() => setOnboardingCompleted(true)} />;
     }
 
     return (
         <Drawer.Navigator
             drawerContent={(props) => (
-                <CustomDrawerContent {...props} isAiEnabled={isAiEnabled} unreadMessages={unreadMessages} />
+                <CustomDrawerContent
+                    {...props}
+                    isAiEnabled={isAiEnabled}
+                    unreadMessages={unreadMessages}
+                />
             )}
             initialRouteName="index"
             screenOptions={{
@@ -447,9 +509,7 @@ function CustomDrawerContent(props: CustomDrawerContentProps) {
                     focused={currentRoute === 'index'}
                     label={() => (
                         <View style={styles.customItem}>
-                            <Text style={styles.indexItemText}>
-                                {t('home')}
-                            </Text>
+                            <Text style={styles.indexItemText}>{t('home')}</Text>
                         </View>
                     )}
                     onPress={() => props.navigation.navigate('index')}
@@ -459,9 +519,7 @@ function CustomDrawerContent(props: CustomDrawerContentProps) {
                         focused={currentRoute === 'chat'}
                         label={() => (
                             <View style={styles.customItem}>
-                                <Text style={styles.chatItemText}>
-                                    {t('chat')}
-                                </Text>
+                                <Text style={styles.chatItemText}>{t('chat')}</Text>
                                 {props.unreadMessages > 0 && (
                                     <View style={styles.badge}>
                                         <Text style={styles.badgeText}>{props.unreadMessages}</Text>
@@ -475,9 +533,7 @@ function CustomDrawerContent(props: CustomDrawerContentProps) {
                 <DrawerItemList {...props} />
             </View>
             <View style={styles.footer}>
-                <Text style={styles.footerText}>
-                    {`v${packageJson.version}`}
-                </Text>
+                <Text style={styles.footerText}>{`v${packageJson.version}`}</Text>
             </View>
         </DrawerContentScrollView>
     );
@@ -491,52 +547,53 @@ const determineTextColor = (currentRoute: string, dark: boolean, targetRoute: st
     return '#1c1c1ead';
 };
 
-const makeStyles = (colors: CustomThemeColorsType, dark: boolean, currentRoute: string) => StyleSheet.create({
-    badge: {
-        alignItems: 'center',
-        backgroundColor: colors.tertiary,
-        borderRadius: 10,
-        height: 20,
-        justifyContent: 'center',
-        marginLeft: 10,
-        width: 20,
-    },
-    badgeText: {
-        color: colors.onTertiary,
-        fontSize: 12,
-        fontWeight: 'bold',
-    },
-    chatItemText: {
-        color: determineTextColor(currentRoute, dark, 'chat'),
-        fontWeight: '500',
-    },
-    customItem: {
-        alignItems: 'center',
-        flexDirection: 'row',
-    },
-    drawerContainer: {
-        backgroundColor: '#f5f5f5',
-        flex: 1,
-        justifyContent: 'space-between',
-    },
-    footer: {
-        alignItems: 'center',
-        borderTopColor: colors.shadow,
-        borderTopWidth: 1,
-        padding: 10,
-    },
-    footerText: {
-        color: '#212121',
-    },
-    indexItemText: {
-        color: determineTextColor(currentRoute, dark, 'index'),
-        fontWeight: '500',
-    },
-    overlay: {
-        ...StyleSheet.absoluteFillObject,
-        alignItems: 'center',
-        backgroundColor: addTransparency(colors.background, 0.5),
-        flex: 1,
-        justifyContent: 'center',
-    },
-});
+const makeStyles = (colors: CustomThemeColorsType, dark: boolean, currentRoute: string) =>
+    StyleSheet.create({
+        badge: {
+            alignItems: 'center',
+            backgroundColor: colors.tertiary,
+            borderRadius: 10,
+            height: 20,
+            justifyContent: 'center',
+            marginLeft: 10,
+            width: 20,
+        },
+        badgeText: {
+            color: colors.onTertiary,
+            fontSize: 12,
+            fontWeight: 'bold',
+        },
+        chatItemText: {
+            color: determineTextColor(currentRoute, dark, 'chat'),
+            fontWeight: '500',
+        },
+        customItem: {
+            alignItems: 'center',
+            flexDirection: 'row',
+        },
+        drawerContainer: {
+            backgroundColor: '#f5f5f5',
+            flex: 1,
+            justifyContent: 'space-between',
+        },
+        footer: {
+            alignItems: 'center',
+            borderTopColor: colors.shadow,
+            borderTopWidth: 1,
+            padding: 10,
+        },
+        footerText: {
+            color: '#212121',
+        },
+        indexItemText: {
+            color: determineTextColor(currentRoute, dark, 'index'),
+            fontWeight: '500',
+        },
+        overlay: {
+            ...StyleSheet.absoluteFillObject,
+            alignItems: 'center',
+            backgroundColor: addTransparency(colors.background, 0.5),
+            flex: 1,
+            justifyContent: 'center',
+        },
+    });
