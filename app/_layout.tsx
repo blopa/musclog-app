@@ -26,7 +26,6 @@ import Settings from '@/app/settings';
 import UserMetricsCharts from '@/app/userMetricsCharts';
 import WorkoutDetails from '@/app/workoutDetails';
 import CustomErrorBoundary from '@/components/CustomErrorBoundary';
-import ForceInsetsUpdate from '@/components/ForceInsetsUpdate';
 import Onboarding from '@/components/Onboarding';
 import { DARK, SYSTEM_DEFAULT } from '@/constants/colors';
 import {

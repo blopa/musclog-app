@@ -463,7 +463,7 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         flexGrow: 1,
         justifyContent: 'center',
         padding: 16,
-        paddingBottom: 60, // hack to fix issue with navbar
+        // paddingBottom: 60, // hack to fix issue with navbar
         paddingTop: StatusBar.currentHeight || 0,
     },
     datePickerButton: {
