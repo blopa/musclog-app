@@ -9,7 +9,7 @@
     "scheme": "musclog",
     "userInterfaceStyle": "automatic",
     "androidStatusBar": {
-      "backgroundColor": "#000000",
+      "backgroundColor": "#ffffff",
       "translucent": false
     },
     "androidNavigationBar": {
