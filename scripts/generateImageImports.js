@@ -4,7 +4,6 @@ const path = require('path');
 
 const eslintBaseConfig = require('../eslint.config.js');
 
-// eslint-disable-next-line no-undef
 const DIRNAME = __dirname;
 
 // Directory containing the exercise images

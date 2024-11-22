@@ -4,7 +4,6 @@ const path = require('path');
 
 const eslintBaseConfig = require('../eslint.config.js');
 
-// eslint-disable-next-line no-undef
 const DIRNAME = __dirname;
 const localesDir = path.join(DIRNAME, '..', 'lang', 'locales');
 const outputFilePath = path.join(DIRNAME, '..', 'lang', 'lang.ts');

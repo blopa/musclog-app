@@ -2,7 +2,6 @@ import Chat from '@/app/chat';
 import CreateExercise from '@/app/createExercise';
 import CreateFitnessGoals from '@/app/createFitnessGoals';
 import CreateFood from '@/app/createFood';
-import { Screen } from '@/components/Screen';
 import CreateRecentWorkout from '@/app/createRecentWorkout';
 import CreateUserMeasurements from '@/app/createUserMeasurements';
 import CreateUserMetrics from '@/app/createUserMetrics';
@@ -11,7 +10,6 @@ import CreateWorkout from '@/app/createWorkout';
 import FoodDetails from '@/app/foodDetails';
 import FoodLog from '@/app/foodLog';
 import FoodSearch from '@/app/foodSearch';
-import SystemNavigationBar from 'react-native-system-navigation-bar';
 import Index from '@/app/index';
 import ListExercises from '@/app/listExercises';
 import ListFitnessGoals from '@/app/listFitnessGoals';
@@ -27,7 +25,9 @@ import Settings from '@/app/settings';
 import UserMetricsCharts from '@/app/userMetricsCharts';
 import WorkoutDetails from '@/app/workoutDetails';
 import CustomErrorBoundary from '@/components/CustomErrorBoundary';
+import ForceInsetsUpdate from '@/components/ForceInsetsUpdate';
 import Onboarding from '@/components/Onboarding';
+import { Screen } from '@/components/Screen';
 import { DARK, LIGHT, SYSTEM_DEFAULT } from '@/constants/colors';
 import {
     AI_SETTINGS_TYPE,
@@ -92,13 +92,12 @@ import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { I18nextProvider, useTranslation } from 'react-i18next';
-import { StatusBar, StyleSheet, Text, View } from 'react-native';
-import * as ExpoStatusBar from 'expo-status-bar';
+import { StyleSheet, Text, View } from 'react-native';
 import { ActivityIndicator, PaperProvider, useTheme } from 'react-native-paper';
 import { initialWindowMetrics, SafeAreaProvider } from 'react-native-safe-area-context';
+import SystemNavigationBar from 'react-native-system-navigation-bar';
 
 import packageJson from '../package.json';
-import ForceInsetsUpdate from '@/components/ForceInsetsUpdate';
 
 // export {
 //     ErrorBoundary,
@@ -323,7 +322,7 @@ function RootLayoutNav() {
 
     useEffect(() => {
         checkDynamicMenuItems();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+         
     }, [checkDynamicMenuItems, settings]);
 
     const routes = useMemo(() => {

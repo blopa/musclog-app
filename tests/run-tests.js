@@ -19,7 +19,6 @@ async function waitForExpoServer() {
     while (!isReady && retries < maxRetries) {
         isReady = await isExpoServerReady();
         if (!isReady) {
-            // eslint-disable-next-line no-undef
             await new Promise((resolve) => setTimeout(resolve, 1000));
             retries++;
         }

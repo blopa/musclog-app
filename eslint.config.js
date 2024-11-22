@@ -1,5 +1,6 @@
 const { FlatCompat } = require('@eslint/eslintrc');
 const tsParser = require('@typescript-eslint/parser');
+const path = require('path');
 const compat = new FlatCompat();
 
 module.exports = [
@@ -102,6 +103,7 @@ module.exports = [
             'quote-props': ['warn', 'as-needed'],
             quotes: ['warn', 'single', { avoidEscape: true }],
             'react/react-in-jsx-scope': 'off',
+            '@typescript-eslint/no-require-imports': 'off',
             'react-hooks/exhaustive-deps': 'warn',
             'unused-imports/no-unused-imports': 'error',
             'unused-imports/no-unused-vars': [
@@ -135,9 +137,8 @@ module.exports = [
         settings: {
             'import/ignore': ['react-navigation'],
             'import/resolver': {
-                alias: {
-                    map: [['@', path.resolve(__dirname, 'app')]],
-                    extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
+                typescript: {
+                    project: path.resolve(__dirname, 'tsconfig.json'), // Points to your tsconfig.json
                 },
             },
             react: {

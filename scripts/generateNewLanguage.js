@@ -5,7 +5,6 @@ const fs = require('fs');
 const OpenAI = require('openai');
 const path = require('path');
 
-// eslint-disable-next-line no-undef
 const DIRNAME = __dirname;
 
 const openai = new OpenAI({

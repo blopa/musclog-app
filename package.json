@@ -146,6 +146,7 @@
         "csv-parser": "3.0.0",
         "eas-cli": "13.4.1",
         "eslint": "9.15.0",
+        "eslint-import-resolver-typescript": "3.6.3",
         "eslint-plugin-import": "2.31.0",
         "eslint-plugin-perfectionist": "4.0.3",
         "eslint-plugin-react": "7.37.2",
