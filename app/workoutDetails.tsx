@@ -3,6 +3,7 @@ import LineChart from '@/components/Charts/LineChart';
 import CustomPicker from '@/components/CustomPicker';
 import FABWrapper from '@/components/FABWrapper';
 import Filters from '@/components/Filters';
+import { Screen } from '@/components/Screen';
 import ThemedCard from '@/components/ThemedCard';
 import ThemedModal from '@/components/ThemedModal';
 import WorkoutExerciseDetail from '@/components/WorkoutExerciseDetail';
@@ -18,11 +19,7 @@ import { useChatData } from '@/storage/ChatProvider';
 import { useSettings } from '@/storage/SettingsContext';
 import { useSnackbar } from '@/storage/SnackbarProvider';
 import { useUnreadMessages } from '@/storage/UnreadMessagesProvider';
-import {
-    getAiApiVendor,
-    getWorkoutInsights,
-    getWorkoutVolumeInsights,
-} from '@/utils/ai';
+import { getAiApiVendor, getWorkoutInsights, getWorkoutVolumeInsights } from '@/utils/ai';
 import { CustomThemeColorsType, CustomThemeType, addTransparency } from '@/utils/colors';
 import { calculatePastWorkoutsWeeklyAverages } from '@/utils/data';
 import {
@@ -125,7 +122,9 @@ const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
 
             const recentWorkoutsData = await getRecentWorkoutsByWorkoutId(Number(id));
             setRecentWorkouts(
-                recentWorkoutsData.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                recentWorkoutsData.sort(
+                    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+                )
             );
 
             // Fetch all sets for this workout, ordered by setOrder
@@ -156,11 +155,15 @@ const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
             });
 
             // Create a list of exercises with their sets and earliest setOrder
-            const exercisesWithSets = Array.from(newExercisesMap.entries()).map(([exerciseId, exercise]) => ({
-                exercise,
-                sets: exerciseSetsMap[exerciseId] || [],
-                earliestSetOrder: Math.min(...(exerciseSetsMap[exerciseId]?.map((set) => set.setOrder) || [Infinity])),
-            }));
+            const exercisesWithSets = Array.from(newExercisesMap.entries()).map(
+                ([exerciseId, exercise]) => ({
+                    exercise,
+                    sets: exerciseSetsMap[exerciseId] || [],
+                    earliestSetOrder: Math.min(
+                        ...(exerciseSetsMap[exerciseId]?.map((set) => set.setOrder) || [Infinity])
+                    ),
+                })
+            );
 
             // Sort exercises by earliestSetOrder
             exercisesWithSets.sort((a, b) => a.earliestSetOrder - b.earliestSetOrder);
@@ -171,7 +174,9 @@ const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
             let currentGroup: ExerciseGroup | null = null;
 
             exercisesWithSets.forEach(({ exercise, sets }) => {
-                const supersetNames = Array.from(new Set(sets.map((set) => set.supersetName).filter(Boolean))) as string[];
+                const supersetNames = Array.from(
+                    new Set(sets.map((set) => set.supersetName).filter(Boolean))
+                ) as string[];
 
                 if (supersetNames.length > 0) {
                     // Assuming all sets of an exercise have the same supersetName
@@ -254,15 +259,19 @@ const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
             const data: ExtendedLineChartDataType[] = [];
 
             for (const [index, recentWorkout] of filteredWorkouts.entries()) {
-                const exerciseData = JSON.parse(recentWorkout?.exerciseData || '[]') as { exerciseId: number, sets: SetReturnType[] }[];
+                const exerciseData = JSON.parse(recentWorkout?.exerciseData || '[]') as {
+                    exerciseId: number;
+                    sets: SetReturnType[];
+                }[];
 
                 let workoutVolume = 0;
                 if (selectedChartData === WHOLE_WORKOUT) {
-                    workoutVolume = parseFloat(recentWorkout.workoutVolume || '0')
-                        || (await calculateWorkoutVolume(
+                    workoutVolume =
+                        parseFloat(recentWorkout.workoutVolume || '0') ||
+                        (await calculateWorkoutVolume(
                             exerciseData.filter((ex) => exercisesMap.has(ex.exerciseId))
-                        ))
-                        || 0;
+                        )) ||
+                        0;
                 } else {
                     const selectedExerciseId = parseInt(selectedChartData, 10);
                     const selectedExerciseData = exerciseData.find(
@@ -292,7 +301,16 @@ const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
         if (recentWorkouts.length > 1) {
             getChartData();
         }
-    }, [recentWorkouts, timeRange, showWeeklyAverages, t, weightUnit, isImperial, selectedChartData, exercisesMap]);
+    }, [
+        recentWorkouts,
+        timeRange,
+        showWeeklyAverages,
+        t,
+        weightUnit,
+        isImperial,
+        selectedChartData,
+        exercisesMap,
+    ]);
 
     const chartLabels = useMemo(() => {
         const filteredWorkouts = recentWorkouts.slice(-parseInt(timeRange));
@@ -396,21 +414,31 @@ const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
         navigation.navigate('createWorkout', { id: workout?.id });
     }, [navigation, workout]);
 
-    const handleDeleteSet = useCallback((exerciseId: number) => (setIndex: number, setId?: number) => {
-        // TODO this is just a nice to have
-    }, []);
+    const handleDeleteSet = useCallback(
+        (exerciseId: number) => (setIndex: number, setId?: number) => {
+            // TODO this is just a nice to have
+        },
+        []
+    );
 
-    const handleEditSet = useCallback((exerciseId: number) => (setIndex: number, setId?: number) => {
-        // TODO this is just a nice to have
-    }, []);
+    const handleEditSet = useCallback(
+        (exerciseId: number) => (setIndex: number, setId?: number) => {
+            // TODO this is just a nice to have
+        },
+        []
+    );
 
     const fabActions = useMemo(() => {
-        const actions = [{
-            icon: () => <FontAwesome5 color={colors.primary} name="file-export" size={ICON_SIZE} />,
-            label: t('export_workout_as_json'),
-            onPress: handleExportWorkoutJson,
-            style: { backgroundColor: colors.surface },
-        }];
+        const actions = [
+            {
+                icon: () => (
+                    <FontAwesome5 color={colors.primary} name="file-export" size={ICON_SIZE} />
+                ),
+                label: t('export_workout_as_json'),
+                onPress: handleExportWorkoutJson,
+                style: { backgroundColor: colors.surface },
+            },
+        ];
 
         if (isAiEnabled) {
             actions.unshift({
@@ -422,7 +450,9 @@ const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
 
             if (recentWorkouts.length > 0) {
                 actions.unshift({
-                    icon: () => <FontAwesome5 color={colors.primary} name="brain" size={ICON_SIZE} />,
+                    icon: () => (
+                        <FontAwesome5 color={colors.primary} name="brain" size={ICON_SIZE} />
+                    ),
                     label: t('get_workout_volume_insights'),
                     onPress: handleGetWorkoutVolumeInsights,
                     style: { backgroundColor: colors.surface },
@@ -443,235 +473,258 @@ const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
     ]);
 
     return (
-        <FABWrapper actions={fabActions} icon="cog" visible>
-            <View style={styles.container}>
-                <AppHeader title={t('workout_details')} />
-                <ScrollView contentContainerStyle={styles.scrollViewContent} keyboardShouldPersistTaps="handled">
-                    {workout ? (
-                        <ThemedCard style={styles.cardContainer}>
-                            <View style={styles.cardHeader}>
-                                <Text style={styles.dateTitle}>
-                                    {workout.title}
-                                </Text>
-                                <View style={styles.buttonGroup}>
-                                    <FontAwesome5
-                                        color={colors.primary}
-                                        name="edit"
-                                        onPress={handleEditWorkout}
-                                        size={ICON_SIZE}
-                                        style={styles.editButton}
-                                    />
-                                    <FontAwesome5
-                                        color={colors.primary}
-                                        name="play"
-                                        onPress={openStartWorkoutConfirmationModal}
-                                        size={ICON_SIZE}
-                                        style={styles.playButton}
-                                    />
-                                </View>
-                            </View>
-                            <View style={styles.separator} />
-                            {workout.description ? (
-                                <View style={styles.detailRow}>
-                                    <Text style={styles.detailValue}>{workout.description}</Text>
-                                </View>
-                            ) : null}
-                            {workout.recurringOnWeek ? (
-                                <View style={styles.detailRow}>
-                                    <Text style={styles.detailLabel}>{t('recurring_on')}</Text>
-                                    <Text style={styles.detailValue}>{t(workout.recurringOnWeek.toLowerCase())}</Text>
-                                </View>
-                            ) : null}
-                            <Text style={styles.exercisesTitle}>
-                                {t('exercises')}
-                            </Text>
-                            {exerciseGroups.map((group, groupIndex) => (
-                                <View key={`group-${groupIndex}`} style={group.supersetName ? styles.supersetContainer : styles.groupContainer}>
-                                    {group.supersetName && (
-                                        <Text style={styles.supersetHeader}>{`${t('superset')}: ${group.supersetName}`}</Text>
-                                    )}
-                                    {group.exercises.map((we, exerciseIndex) => (
-                                        <WorkoutExerciseDetail
-                                            exercise={we.exercise}
-                                            exerciseVolume={{
-                                                exerciseId: we.exercise.id!,
-                                                sets: we.sets.map((set) => ({
-                                                    ...set,
-                                                    setId: set.id ?? 0,
-                                                    weight: getDisplayFormattedWeight(Number(set.weight), KILOGRAMS, isImperial),
-                                                })),
-                                            }}
-                                            key={`group-${groupIndex}-exercise-${we.exercise.id}-${exerciseIndex}`}
-                                            // onDeleteSet={handleDeleteSet(we.exercise.id!)}
-                                            // onEditSet={handleEditSet(we.exercise.id!)}
+        <Screen style={styles.container}>
+            <FABWrapper actions={fabActions} icon="cog" visible>
+                <View style={styles.container}>
+                    <AppHeader title={t('workout_details')} />
+                    <ScrollView
+                        contentContainerStyle={styles.scrollViewContent}
+                        keyboardShouldPersistTaps="handled"
+                    >
+                        {workout ? (
+                            <ThemedCard style={styles.cardContainer}>
+                                <View style={styles.cardHeader}>
+                                    <Text style={styles.dateTitle}>{workout.title}</Text>
+                                    <View style={styles.buttonGroup}>
+                                        <FontAwesome5
+                                            color={colors.primary}
+                                            name="edit"
+                                            onPress={handleEditWorkout}
+                                            size={ICON_SIZE}
+                                            style={styles.editButton}
                                         />
-                                    ))}
+                                        <FontAwesome5
+                                            color={colors.primary}
+                                            name="play"
+                                            onPress={openStartWorkoutConfirmationModal}
+                                            size={ICON_SIZE}
+                                            style={styles.playButton}
+                                        />
+                                    </View>
                                 </View>
-                            ))}
-                        </ThemedCard>
-                    ) : (
-                        <Text style={styles.noDataText}>{t('no_workout_details')}</Text>
-                    )}
-                    {chartData.length > 0 ? (
-                        <View>
-                            <Filters
-                                aggregatedValuesLabel={t('show_aggregated_averages')}
-                                setShowAggregatedValues={setShowWeeklyAverages}
-                                setTimeRange={setTimeRange}
-                                showAggregateSwitch={recentWorkouts.length > 7}
-                                showAggregatedValues={showWeeklyAverages}
-                                timeRange={timeRange}
-                            />
-                            <CustomPicker
-                                items={[
-                                    { label: t('whole_workout'), value: WHOLE_WORKOUT },
-                                    ...Array.from(exercisesMap.values()).map((ex) => ({
-                                        label: ex.name || '',
-                                        value: ex.id!.toString() || '',
-                                    })),
-                                ]}
-                                label={t('select_metric')}
-                                onValueChange={setSelectedChartData}
-                                selectedValue={selectedChartData}
-                                wrapperStyle={{ marginTop: 8 }}
-                            />
-                            <LineChart
-                                data={chartData}
-                                granularity={1}
-                                labelLeftMargin={-55}
-                                labels={chartLabels}
-                                padding={12}
-                                shareButtonPosition="top"
-                                title={t('workout_volume_over_time')}
-                                xAxisLabel={t('workouts')}
-                                yAxis={{
-                                    axisMaximum: Math.max(...chartData.map((d) => d.y)) * 1.1,
-                                    axisMinimum: Math.min(...chartData.map((d) => d.y)) * 0.9,
-                                }}
-                                yAxisLabel={t('workout_volume_weight', { weightUnit })}
-                            />
+                                <View style={styles.separator} />
+                                {workout.description ? (
+                                    <View style={styles.detailRow}>
+                                        <Text style={styles.detailValue}>
+                                            {workout.description}
+                                        </Text>
+                                    </View>
+                                ) : null}
+                                {workout.recurringOnWeek ? (
+                                    <View style={styles.detailRow}>
+                                        <Text style={styles.detailLabel}>{t('recurring_on')}</Text>
+                                        <Text style={styles.detailValue}>
+                                            {t(workout.recurringOnWeek.toLowerCase())}
+                                        </Text>
+                                    </View>
+                                ) : null}
+                                <Text style={styles.exercisesTitle}>{t('exercises')}</Text>
+                                {exerciseGroups.map((group, groupIndex) => (
+                                    <View
+                                        key={`group-${groupIndex}`}
+                                        style={
+                                            group.supersetName
+                                                ? styles.supersetContainer
+                                                : styles.groupContainer
+                                        }
+                                    >
+                                        {group.supersetName && (
+                                            <Text
+                                                style={styles.supersetHeader}
+                                            >{`${t('superset')}: ${group.supersetName}`}</Text>
+                                        )}
+                                        {group.exercises.map((we, exerciseIndex) => (
+                                            <WorkoutExerciseDetail
+                                                exercise={we.exercise}
+                                                exerciseVolume={{
+                                                    exerciseId: we.exercise.id!,
+                                                    sets: we.sets.map((set) => ({
+                                                        ...set,
+                                                        setId: set.id ?? 0,
+                                                        weight: getDisplayFormattedWeight(
+                                                            Number(set.weight),
+                                                            KILOGRAMS,
+                                                            isImperial
+                                                        ),
+                                                    })),
+                                                }}
+                                                key={`group-${groupIndex}-exercise-${we.exercise.id}-${exerciseIndex}`}
+                                                // onDeleteSet={handleDeleteSet(we.exercise.id!)}
+                                                // onEditSet={handleEditSet(we.exercise.id!)}
+                                            />
+                                        ))}
+                                    </View>
+                                ))}
+                            </ThemedCard>
+                        ) : (
+                            <Text style={styles.noDataText}>{t('no_workout_details')}</Text>
+                        )}
+                        {chartData.length > 0 ? (
+                            <View>
+                                <Filters
+                                    aggregatedValuesLabel={t('show_aggregated_averages')}
+                                    setShowAggregatedValues={setShowWeeklyAverages}
+                                    setTimeRange={setTimeRange}
+                                    showAggregateSwitch={recentWorkouts.length > 7}
+                                    showAggregatedValues={showWeeklyAverages}
+                                    timeRange={timeRange}
+                                />
+                                <CustomPicker
+                                    items={[
+                                        { label: t('whole_workout'), value: WHOLE_WORKOUT },
+                                        ...Array.from(exercisesMap.values()).map((ex) => ({
+                                            label: ex.name || '',
+                                            value: ex.id!.toString() || '',
+                                        })),
+                                    ]}
+                                    label={t('select_metric')}
+                                    onValueChange={setSelectedChartData}
+                                    selectedValue={selectedChartData}
+                                    wrapperStyle={{ marginTop: 8 }}
+                                />
+                                <LineChart
+                                    data={chartData}
+                                    granularity={1}
+                                    labelLeftMargin={-55}
+                                    labels={chartLabels}
+                                    padding={12}
+                                    shareButtonPosition="top"
+                                    title={t('workout_volume_over_time')}
+                                    xAxisLabel={t('workouts')}
+                                    yAxis={{
+                                        axisMaximum: Math.max(...chartData.map((d) => d.y)) * 1.1,
+                                        axisMinimum: Math.min(...chartData.map((d) => d.y)) * 0.9,
+                                    }}
+                                    yAxisLabel={t('workout_volume_weight', { weightUnit })}
+                                />
+                            </View>
+                        ) : null}
+                    </ScrollView>
+                    {loading && (
+                        <View style={styles.overlay}>
+                            <ActivityIndicator color={colors.primary} size="large" />
                         </View>
-                    ) : null}
-                </ScrollView>
-                {loading && (
-                    <View style={styles.overlay}>
-                        <ActivityIndicator color={colors.primary} size="large" />
-                    </View>
-                )}
-                <ThemedModal
-                    cancelText={t('no')}
-                    confirmText={t('yes')}
-                    onClose={() => setModalVisible(false)}
-                    onConfirm={handleStartWorkout}
-                    title={workout ? t('start_workout_confirmation', { title: workout.title }) : t('start_workout_confirmation_generic')}
-                    visible={modalVisible}
-                />
-                <ThemedModal
-                    cancelText={t('no')}
-                    confirmText={t('yes')}
-                    onClose={() => setConfirmationModalVisible(false)}
-                    onConfirm={handleConfirmStartNewWorkout}
-                    title={t('confirm_start_new_workout')}
-                    visible={confirmationModalVisible}
-                />
-            </View>
-        </FABWrapper>
+                    )}
+                    <ThemedModal
+                        cancelText={t('no')}
+                        confirmText={t('yes')}
+                        onClose={() => setModalVisible(false)}
+                        onConfirm={handleStartWorkout}
+                        title={
+                            workout
+                                ? t('start_workout_confirmation', { title: workout.title })
+                                : t('start_workout_confirmation_generic')
+                        }
+                        visible={modalVisible}
+                    />
+                    <ThemedModal
+                        cancelText={t('no')}
+                        confirmText={t('yes')}
+                        onClose={() => setConfirmationModalVisible(false)}
+                        onConfirm={handleConfirmStartNewWorkout}
+                        title={t('confirm_start_new_workout')}
+                        visible={confirmationModalVisible}
+                    />
+                </View>
+            </FABWrapper>
+        </Screen>
     );
 };
 
-const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
-    buttonGroup: {
-        flexDirection: 'row',
-    },
-    cardContainer: {
-        marginTop: 16,
-        padding: 8,
-    },
-    cardHeader: {
-        alignItems: 'center',
-        backgroundColor: colors.surface,
-        borderRadius: 8,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        padding: 12,
-    },
-    container: {
-        backgroundColor: colors.background,
-        flex: 1,
-    },
-    dateTitle: {
-        color: colors.onSurface,
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
-    detailLabel: {
-        color: colors.onSurface,
-        fontSize: 16,
-    },
-    detailRow: {
-        borderRadius: 8,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 12,
-        padding: 12,
-    },
-    detailValue: {
-        color: colors.onSurface,
-        fontSize: 16,
-        fontWeight: '500',
-    },
-    editButton: {
-        marginLeft: 16,
-    },
-    exercisesTitle: {
-        color: colors.onSurface,
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 8,
-    },
-    groupContainer: {
-        marginBottom: 16,
-    },
-    noDataText: {
-        color: colors.onBackground,
-        fontSize: 16,
-        marginTop: 16,
-        textAlign: 'center',
-    },
-    overlay: {
-        ...StyleSheet.absoluteFillObject,
-        alignItems: 'center',
-        backgroundColor: addTransparency(colors.background, 0.5),
-        flex: 1,
-        justifyContent: 'center',
-    },
-    playButton: {
-        marginLeft: 16,
-    },
-    scrollViewContent: {
-        backgroundColor: colors.background,
-        paddingBottom: 16,
-        paddingHorizontal: 16,
-    },
-    separator: {
-        backgroundColor: colors.background,
-        height: 1,
-        marginVertical: 16,
-    },
-    supersetContainer: {
-        backgroundColor: colors.surfaceVariant,
-        borderColor: colors.primary,
-        borderRadius: 8,
-        borderWidth: 1,
-        marginBottom: 16,
-        padding: 8,
-    },
-    supersetHeader: {
-        color: colors.primary,
-        fontSize: 16,
-        fontWeight: 'bold',
-        marginBottom: 8,
-    },
-});
+const makeStyles = (colors: CustomThemeColorsType, dark: boolean) =>
+    StyleSheet.create({
+        buttonGroup: {
+            flexDirection: 'row',
+        },
+        cardContainer: {
+            marginTop: 16,
+            padding: 8,
+        },
+        cardHeader: {
+            alignItems: 'center',
+            backgroundColor: colors.surface,
+            borderRadius: 8,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            padding: 12,
+        },
+        container: {
+            backgroundColor: colors.background,
+            flex: 1,
+        },
+        dateTitle: {
+            color: colors.onSurface,
+            fontSize: 16,
+            fontWeight: 'bold',
+        },
+        detailLabel: {
+            color: colors.onSurface,
+            fontSize: 16,
+        },
+        detailRow: {
+            borderRadius: 8,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            marginBottom: 12,
+            padding: 12,
+        },
+        detailValue: {
+            color: colors.onSurface,
+            fontSize: 16,
+            fontWeight: '500',
+        },
+        editButton: {
+            marginLeft: 16,
+        },
+        exercisesTitle: {
+            color: colors.onSurface,
+            fontSize: 18,
+            fontWeight: 'bold',
+            marginBottom: 8,
+        },
+        groupContainer: {
+            marginBottom: 16,
+        },
+        noDataText: {
+            color: colors.onBackground,
+            fontSize: 16,
+            marginTop: 16,
+            textAlign: 'center',
+        },
+        overlay: {
+            ...StyleSheet.absoluteFillObject,
+            alignItems: 'center',
+            backgroundColor: addTransparency(colors.background, 0.5),
+            flex: 1,
+            justifyContent: 'center',
+        },
+        playButton: {
+            marginLeft: 16,
+        },
+        scrollViewContent: {
+            backgroundColor: colors.background,
+            paddingBottom: 16,
+            paddingHorizontal: 16,
+        },
+        separator: {
+            backgroundColor: colors.background,
+            height: 1,
+            marginVertical: 16,
+        },
+        supersetContainer: {
+            backgroundColor: colors.surfaceVariant,
+            borderColor: colors.primary,
+            borderRadius: 8,
+            borderWidth: 1,
+            marginBottom: 16,
+            padding: 8,
+        },
+        supersetHeader: {
+            color: colors.primary,
+            fontSize: 16,
+            fontWeight: 'bold',
+            marginBottom: 8,
+        },
+    });
 
 export default WorkoutDetails;
