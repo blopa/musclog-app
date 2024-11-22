@@ -25,6 +25,7 @@ import Settings from '@/app/settings';
 import UserMetricsCharts from '@/app/userMetricsCharts';
 import WorkoutDetails from '@/app/workoutDetails';
 import CustomErrorBoundary from '@/components/CustomErrorBoundary';
+import ForceInsetsUpdate from '@/components/ForceInsetsUpdate';
 import Onboarding from '@/components/Onboarding';
 import { DARK, SYSTEM_DEFAULT } from '@/constants/colors';
 import {
@@ -84,8 +85,8 @@ import {
     DrawerItemList,
     createDrawerNavigator,
 } from '@react-navigation/drawer';
-import * as Sentry from '@sentry/react-native';
 import 'react-native-reanimated';
+import * as Sentry from '@sentry/react-native';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -266,6 +267,7 @@ function RootLayout() {
                 <HealthConnectProvider>
                     <SnackbarProvider>
                         {/* TODO use SafeAreaView maybe */}
+                        <ForceInsetsUpdate />
                         <SafeAreaView
                             style={{
                                 flex: 1,
