@@ -1,6 +1,7 @@
 import CompletionModal from '@/components/CompletionModal';
 import CustomPicker from '@/components/CustomPicker';
 import CustomTextInput from '@/components/CustomTextInput';
+import { Screen } from '@/components/Screen';
 import { USER_METRICS_SOURCES } from '@/constants/healthConnect';
 import { EATING_PHASES } from '@/constants/nutrition';
 import { IMPERIAL_SYSTEM, KILOGRAMS, POUNDS } from '@/constants/storage';
@@ -198,7 +199,7 @@ const CreateUserMetrics = ({ navigation }: { navigation: NavigationProp<any> }) 
     }, []);
 
     return (
-        <View style={styles.container}>
+        <Screen style={styles.container}>
             <CompletionModal
                 buttonText={t('ok')}
                 isModalVisible={isModalVisible}
@@ -271,7 +272,7 @@ const CreateUserMetrics = ({ navigation }: { navigation: NavigationProp<any> }) 
                     {t('save')}
                 </Button>
             </View>
-        </View>
+        </Screen>
     );
 };
 

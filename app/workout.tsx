@@ -1,3 +1,4 @@
+import { Screen } from '@/components/Screen';
 import WorkoutModal from '@/components/WorkoutModal';
 import WorkoutSession from '@/components/WorkoutSession';
 import { VOLUME_CALCULATION_TYPES } from '@/constants/exercises';
@@ -508,36 +509,38 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
     }
 
     return (
-        <ScrollView
-            contentContainerStyle={styles.container}
-            keyboardShouldPersistTaps="handled"
-        >
-            <WorkoutModal
-                onClose={() => {
-                    setLoading(true);
-                    fetchWorkout().then(() => {
-                        setLoading(false);
-                        setModalVisible(false);
-                    });
-                }}
-                visible={modalVisible}
-            />
-            <View style={styles.section}>
-                <Text style={styles.header}>{t('no_ongoing_workout')}</Text>
-                <Button
-                    mode="contained"
-                    onPress={() => setModalVisible(true)}
-                    style={styles.startLoggingButton}
-                >
-                    {t('start_logging')}
-                </Button>
-            </View>
-            {loading ? (
-                <View style={styles.loadingOverlay}>
-                    <ActivityIndicator color="#fff" size="large" />
+        <Screen style={styles.container}>
+            <ScrollView
+                contentContainerStyle={styles.container}
+                keyboardShouldPersistTaps="handled"
+            >
+                <WorkoutModal
+                    onClose={() => {
+                        setLoading(true);
+                        fetchWorkout().then(() => {
+                            setLoading(false);
+                            setModalVisible(false);
+                        });
+                    }}
+                    visible={modalVisible}
+                />
+                <View style={styles.section}>
+                    <Text style={styles.header}>{t('no_ongoing_workout')}</Text>
+                    <Button
+                        mode="contained"
+                        onPress={() => setModalVisible(true)}
+                        style={styles.startLoggingButton}
+                    >
+                        {t('start_logging')}
+                    </Button>
                 </View>
-            ) : null}
-        </ScrollView>
+                {loading ? (
+                    <View style={styles.loadingOverlay}>
+                        <ActivityIndicator color="#fff" size="large" />
+                    </View>
+                ) : null}
+            </ScrollView>
+        </Screen>
     );
 };
 

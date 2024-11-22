@@ -1,5 +1,6 @@
 import AnimatedSearchBar from '@/components/AnimatedSearch';
 import FABWrapper from '@/components/FABWrapper';
+import { Screen } from '@/components/Screen';
 import ThemedCard from '@/components/ThemedCard';
 import ThemedModal from '@/components/ThemedModal';
 import { FAB_ICON_SIZE, ICON_SIZE } from '@/constants/ui';
@@ -159,69 +160,71 @@ export default function ListUserMeasurements({ navigation }: { navigation: Navig
     }, [t, colors.surface, colors.primary, navigation]);
 
     return (
-        <FABWrapper actions={fabActions} icon="cog" visible>
-            <View style={styles.container}>
-                <Appbar.Header
-                    mode="small"
-                    statusBarHeight={0}
-                    style={styles.appbarHeader}
-                >
-                    <Appbar.Content title={t('user_measurements')} titleStyle={styles.appbarTitle} />
-                    <AnimatedSearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-                </Appbar.Header>
-                <FlashList
-                    ListFooterComponent={userMeasurements.length < totalUserMeasurementsCount ? <ActivityIndicator /> : null}
-                    contentContainerStyle={styles.scrollViewContent}
-                    data={filteredUserMeasurements}
-                    estimatedItemSize={95}
-                    keyExtractor={(item) => (item?.id ? item.id.toString() : 'default')}
-                    onEndReached={loadMoreUserMeasurements}
-                    onEndReachedThreshold={0.5}
-                    renderItem={({ item: measurement }) => (
-                        <ThemedCard key={measurement.id}>
-                            <Card.Content style={styles.cardContent}>
-                                <View style={styles.cardHeader}>
-                                    <Text style={styles.cardTitle}>{formatDate(measurement.date || measurement.createdAt || '')}</Text>
-                                    {Object.entries(measurement.measurements).map(([key, value]) => {
-                                        return (
-                                            <Text key={key} style={styles.metricDetailText}>
-                                                {key}: {value}
-                                            </Text>
-                                        );
-                                    })}
-                                </View>
-                                <View style={styles.cardActions}>
-                                    <FontAwesome5
-                                        color={colors.primary}
-                                        name="edit"
-                                        onPress={() => navigation.navigate('createUserMeasurements', { id: measurement.id })}
-                                        size={ICON_SIZE}
-                                        style={styles.iconButton}
-                                    />
-                                    <FontAwesome5
-                                        color={colors.primary}
-                                        name="trash"
-                                        onPress={() => handleDeleteMeasurement(measurement.id!)}
-                                        size={ICON_SIZE}
-                                        style={styles.iconButton}
-                                    />
-                                </View>
-                            </Card.Content>
-                        </ThemedCard>
-                    )}
-                />
-                <ThemedModal
-                    cancelText={t('no')}
-                    confirmText={t('yes')}
-                    onClose={handleDeleteCancel}
-                    onConfirm={handleDeleteConfirmation}
-                    title={t('delete_confirmation_generic', {
-                        title: userMeasurements.find((measurement) => measurement.id === measurementToDelete)?.userId,
-                    })}
-                    visible={isDeleteModalVisible}
-                />
-            </View>
-        </FABWrapper>
+        <Screen style={styles.container}>
+            <FABWrapper actions={fabActions} icon="cog" visible>
+                <View style={styles.container}>
+                    <Appbar.Header
+                        mode="small"
+                        statusBarHeight={0}
+                        style={styles.appbarHeader}
+                    >
+                        <Appbar.Content title={t('user_measurements')} titleStyle={styles.appbarTitle} />
+                        <AnimatedSearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+                    </Appbar.Header>
+                    <FlashList
+                        ListFooterComponent={userMeasurements.length < totalUserMeasurementsCount ? <ActivityIndicator /> : null}
+                        contentContainerStyle={styles.scrollViewContent}
+                        data={filteredUserMeasurements}
+                        estimatedItemSize={95}
+                        keyExtractor={(item) => (item?.id ? item.id.toString() : 'default')}
+                        onEndReached={loadMoreUserMeasurements}
+                        onEndReachedThreshold={0.5}
+                        renderItem={({ item: measurement }) => (
+                            <ThemedCard key={measurement.id}>
+                                <Card.Content style={styles.cardContent}>
+                                    <View style={styles.cardHeader}>
+                                        <Text style={styles.cardTitle}>{formatDate(measurement.date || measurement.createdAt || '')}</Text>
+                                        {Object.entries(measurement.measurements).map(([key, value]) => {
+                                            return (
+                                                <Text key={key} style={styles.metricDetailText}>
+                                                    {key}: {value}
+                                                </Text>
+                                            );
+                                        })}
+                                    </View>
+                                    <View style={styles.cardActions}>
+                                        <FontAwesome5
+                                            color={colors.primary}
+                                            name="edit"
+                                            onPress={() => navigation.navigate('createUserMeasurements', { id: measurement.id })}
+                                            size={ICON_SIZE}
+                                            style={styles.iconButton}
+                                        />
+                                        <FontAwesome5
+                                            color={colors.primary}
+                                            name="trash"
+                                            onPress={() => handleDeleteMeasurement(measurement.id!)}
+                                            size={ICON_SIZE}
+                                            style={styles.iconButton}
+                                        />
+                                    </View>
+                                </Card.Content>
+                            </ThemedCard>
+                        )}
+                    />
+                    <ThemedModal
+                        cancelText={t('no')}
+                        confirmText={t('yes')}
+                        onClose={handleDeleteCancel}
+                        onConfirm={handleDeleteConfirmation}
+                        title={t('delete_confirmation_generic', {
+                            title: userMeasurements.find((measurement) => measurement.id === measurementToDelete)?.userId,
+                        })}
+                        visible={isDeleteModalVisible}
+                    />
+                </View>
+            </FABWrapper>
+        </Screen>
     );
 }
 

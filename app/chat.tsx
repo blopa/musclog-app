@@ -1,5 +1,6 @@
 import BotAvatar from '@/components/BotAvatar';
 import BottomPageModal from '@/components/BottomPageModal';
+import { Screen } from '@/components/Screen';
 import ThemedModal from '@/components/ThemedModal';
 import WorkoutGeneratedSuccessModal from '@/components/WorkoutGeneratedSuccessModal';
 import { GENERATE_MY_WORKOUTS } from '@/constants/chat';
@@ -402,7 +403,7 @@ export default function Chat({ navigation }: { navigation: NavigationProp<any> }
     }, [hasMore, fetchMoreChats, isLoading]);
 
     return (
-        <View style={styles.container}>
+        <Screen style={styles.container}>
             <Appbar.Header
                 mode="small"
                 statusBarHeight={0}
@@ -462,7 +463,7 @@ export default function Chat({ navigation }: { navigation: NavigationProp<any> }
                 navigateToWorkouts={navigateToWorkouts}
                 onClose={() => setSuccessModalVisible(false)}
             />
-        </View>
+        </Screen>
     );
 }
 

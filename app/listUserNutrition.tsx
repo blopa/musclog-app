@@ -1,6 +1,7 @@
 import AnimatedSearchBar from '@/components/AnimatedSearch';
 import CustomTextArea from '@/components/CustomTextArea';
 import FABWrapper from '@/components/FABWrapper';
+import { Screen } from '@/components/Screen';
 import ThemedCard from '@/components/ThemedCard';
 import ThemedModal from '@/components/ThemedModal';
 import { USER_METRICS_SOURCES } from '@/constants/healthConnect';
@@ -395,192 +396,194 @@ export default function ListUserNutrition({ navigation }: { navigation: Navigati
     }, [t, colors.surface, colors.primary, handleRemoveAllHealthConnectData, jsonImportEnabled, csvImportEnabled, isAiEnabled, navigation]);
 
     return (
-        <FABWrapper actions={fabActions} icon="cog" visible>
-            <View style={styles.container}>
-                <Appbar.Header
-                    mode="small"
-                    statusBarHeight={0}
-                    style={styles.appbarHeader}
-                >
-                    <Appbar.Content title={t('user_nutrition')} titleStyle={styles.appbarTitle} />
-                    <AnimatedSearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-                </Appbar.Header>
-                <FlashList
-                    ListFooterComponent={userNutritions.length < totalUserNutritionCount ? <ActivityIndicator /> : null}
-                    contentContainerStyle={styles.scrollViewContent}
-                    data={filteredUserNutrition}
-                    estimatedItemSize={115}
-                    keyExtractor={(item) => (item?.id ? item.id.toString() : 'default')}
-                    onEndReached={loadMoreUserNutrition}
-                    onEndReachedThreshold={0.5}
-                    renderItem={({ item: nutrition }) => (
-                        <ThemedCard key={nutrition.id}>
-                            <Card.Content style={styles.cardContent}>
-                                <View style={styles.cardHeader}>
-                                    <Text style={styles.cardTitle}>
-                                        {formatDate(nutrition.date)}
+        <Screen style={styles.container}>
+            <FABWrapper actions={fabActions} icon="cog" visible>
+                <View style={styles.container}>
+                    <Appbar.Header
+                        mode="small"
+                        statusBarHeight={0}
+                        style={styles.appbarHeader}
+                    >
+                        <Appbar.Content title={t('user_nutrition')} titleStyle={styles.appbarTitle} />
+                        <AnimatedSearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+                    </Appbar.Header>
+                    <FlashList
+                        ListFooterComponent={userNutritions.length < totalUserNutritionCount ? <ActivityIndicator /> : null}
+                        contentContainerStyle={styles.scrollViewContent}
+                        data={filteredUserNutrition}
+                        estimatedItemSize={115}
+                        keyExtractor={(item) => (item?.id ? item.id.toString() : 'default')}
+                        onEndReached={loadMoreUserNutrition}
+                        onEndReachedThreshold={0.5}
+                        renderItem={({ item: nutrition }) => (
+                            <ThemedCard key={nutrition.id}>
+                                <Card.Content style={styles.cardContent}>
+                                    <View style={styles.cardHeader}>
+                                        <Text style={styles.cardTitle}>
+                                            {formatDate(nutrition.date)}
+                                        </Text>
+                                        <View style={styles.metricRow}>
+                                            <Text style={styles.metricDetail}>{t('name')}: {nutrition.name}</Text>
+                                        </View>
+                                        <View style={styles.metricRow}>
+                                            <Text style={styles.metricDetail}>{t('calories')}: {safeToFixed(nutrition.calories)}kcal</Text>
+                                            <Text style={styles.metricDetail}>{t('carbs')}: {getDisplayFormattedWeight(nutrition.carbohydrate, GRAMS, isImperial)}{macroUnit}</Text>
+                                        </View>
+                                        <View style={styles.metricRow}>
+                                            <Text style={styles.metricDetail}>{t('fats')}: {getDisplayFormattedWeight(nutrition.fat, GRAMS, isImperial)}{macroUnit}</Text>
+                                            <Text style={styles.metricDetail}>{t('proteins')}: {getDisplayFormattedWeight(nutrition.protein, GRAMS, isImperial)}{macroUnit}</Text>
+                                        </View>
+                                    </View>
+                                    <View style={styles.cardActions}>
+                                        <FontAwesome5
+                                            color={colors.primary}
+                                            name="edit"
+                                            onPress={() => navigation.navigate('createUserNutrition', { id: nutrition.id })}
+                                            size={ICON_SIZE}
+                                            style={styles.iconButton}
+                                        />
+                                        <FontAwesome5
+                                            color={colors.primary}
+                                            name="trash"
+                                            onPress={() => handleDeleteNutrition(nutrition.id!)}
+                                            size={ICON_SIZE}
+                                            style={styles.iconButton}
+                                        />
+                                    </View>
+                                </Card.Content>
+                            </ThemedCard>
+                        )}
+                    />
+                    <ThemedModal
+                        cancelText={!isModalLoading ? t('cancel') : undefined}
+                        confirmText={!isModalLoading ? t('import') : undefined}
+                        onClose={() => setModalVisible(false)}
+                        onConfirm={!isModalLoading ? handleImportNutritionWithAi : undefined}
+                        visible={modalVisible}
+                    >
+                        {isModalLoading ? (
+                            <>
+                                <ActivityIndicator size="large" style={styles.loadingIndicator} />
+                                <Text style={styles.loadingText}>{t('this_might_take_a_minute_or_more')}</Text>
+                            </>
+                        ) : (
+                            <>
+                                <Text style={styles.modalTitle}>{t('past_nutrition')}</Text>
+                                <CustomTextArea
+                                    numberOfLines={4}
+                                    onChangeText={setTextInputValue}
+                                    placeholder={t('write_down_past_nutrition')}
+                                    value={textInputValue}
+                                />
+                            </>
+                        )}
+                    </ThemedModal>
+                    <ThemedModal
+                        cancelText={t('cancel')}
+                        confirmText={jsonFilename ? t('import') : undefined}
+                        onClose={handleCancelImportJson}
+                        onConfirm={jsonFilename ? handleImportJsonFile : undefined}
+                        visible={jsonImportModalVisible}
+                    >
+                        <ScrollView contentContainerStyle={styles.scrollContainer}>
+                            <Text style={styles.modalTitle}>
+                                {t('import_from_json_file')}
+                            </Text>
+                            <Text style={styles.modalText}>
+                                {t('past_nutrition_json_format_description', {
+                                    jsonFormat: JSON.stringify([{
+                                        calories: 2500,
+                                        carbs: 300,
+                                        cholesterol: 200,
+                                        date: '2023-06-15',
+                                        fat: 80,
+                                        fat_saturated: 20,
+                                        fat_unsaturated: 60,
+                                        fiber: 25,
+                                        potassium: 3500,
+                                        protein: 150,
+                                        sodium: 2300,
+                                        sugar: 50,
+                                        type: 'full_day || meal',
+                                    }], null, 1),
+                                })}
+                            </Text>
+                            <View style={styles.checkboxContainer}>
+                                <Checkbox
+                                    onPress={() => setImportAsFullDayOfEating(!importAsFullDayOfEating)}
+                                    status={importAsFullDayOfEating ? 'checked' : 'unchecked'}
+                                />
+                                <Pressable
+                                    onPress={() => setImportAsFullDayOfEating(!importAsFullDayOfEating)}
+                                >
+                                    <Text style={styles.checkboxLabel}>
+                                        {t('import_as_full_day_of_eating')}
                                     </Text>
-                                    <View style={styles.metricRow}>
-                                        <Text style={styles.metricDetail}>{t('name')}: {nutrition.name}</Text>
-                                    </View>
-                                    <View style={styles.metricRow}>
-                                        <Text style={styles.metricDetail}>{t('calories')}: {safeToFixed(nutrition.calories)}kcal</Text>
-                                        <Text style={styles.metricDetail}>{t('carbs')}: {getDisplayFormattedWeight(nutrition.carbohydrate, GRAMS, isImperial)}{macroUnit}</Text>
-                                    </View>
-                                    <View style={styles.metricRow}>
-                                        <Text style={styles.metricDetail}>{t('fats')}: {getDisplayFormattedWeight(nutrition.fat, GRAMS, isImperial)}{macroUnit}</Text>
-                                        <Text style={styles.metricDetail}>{t('proteins')}: {getDisplayFormattedWeight(nutrition.protein, GRAMS, isImperial)}{macroUnit}</Text>
-                                    </View>
-                                </View>
-                                <View style={styles.cardActions}>
-                                    <FontAwesome5
-                                        color={colors.primary}
-                                        name="edit"
-                                        onPress={() => navigation.navigate('createUserNutrition', { id: nutrition.id })}
-                                        size={ICON_SIZE}
-                                        style={styles.iconButton}
-                                    />
-                                    <FontAwesome5
-                                        color={colors.primary}
-                                        name="trash"
-                                        onPress={() => handleDeleteNutrition(nutrition.id!)}
-                                        size={ICON_SIZE}
-                                        style={styles.iconButton}
-                                    />
-                                </View>
-                            </Card.Content>
-                        </ThemedCard>
-                    )}
-                />
-                <ThemedModal
-                    cancelText={!isModalLoading ? t('cancel') : undefined}
-                    confirmText={!isModalLoading ? t('import') : undefined}
-                    onClose={() => setModalVisible(false)}
-                    onConfirm={!isModalLoading ? handleImportNutritionWithAi : undefined}
-                    visible={modalVisible}
-                >
-                    {isModalLoading ? (
-                        <>
-                            <ActivityIndicator size="large" style={styles.loadingIndicator} />
-                            <Text style={styles.loadingText}>{t('this_might_take_a_minute_or_more')}</Text>
-                        </>
-                    ) : (
-                        <>
-                            <Text style={styles.modalTitle}>{t('past_nutrition')}</Text>
-                            <CustomTextArea
-                                numberOfLines={4}
-                                onChangeText={setTextInputValue}
-                                placeholder={t('write_down_past_nutrition')}
-                                value={textInputValue}
-                            />
-                        </>
-                    )}
-                </ThemedModal>
-                <ThemedModal
-                    cancelText={t('cancel')}
-                    confirmText={jsonFilename ? t('import') : undefined}
-                    onClose={handleCancelImportJson}
-                    onConfirm={jsonFilename ? handleImportJsonFile : undefined}
-                    visible={jsonImportModalVisible}
-                >
-                    <ScrollView contentContainerStyle={styles.scrollContainer}>
-                        <Text style={styles.modalTitle}>
-                            {t('import_from_json_file')}
-                        </Text>
-                        <Text style={styles.modalText}>
-                            {t('past_nutrition_json_format_description', {
-                                jsonFormat: JSON.stringify([{
-                                    calories: 2500,
-                                    carbs: 300,
-                                    cholesterol: 200,
-                                    date: '2023-06-15',
-                                    fat: 80,
-                                    fat_saturated: 20,
-                                    fat_unsaturated: 60,
-                                    fiber: 25,
-                                    potassium: 3500,
-                                    protein: 150,
-                                    sodium: 2300,
-                                    sugar: 50,
-                                    type: 'full_day || meal',
-                                }], null, 1),
-                            })}
-                        </Text>
-                        <View style={styles.checkboxContainer}>
-                            <Checkbox
-                                onPress={() => setImportAsFullDayOfEating(!importAsFullDayOfEating)}
-                                status={importAsFullDayOfEating ? 'checked' : 'unchecked'}
-                            />
-                            <Pressable
-                                onPress={() => setImportAsFullDayOfEating(!importAsFullDayOfEating)}
-                            >
-                                <Text style={styles.checkboxLabel}>
-                                    {t('import_as_full_day_of_eating')}
-                                </Text>
-                            </Pressable>
-                        </View>
-                    </ScrollView>
-                    {jsonFilename ? (
-                        <View style={styles.selectedFileWrapper}>
-                            <Text>{t('selected_file')}: {jsonFilename}</Text>
-                        </View>
-                    ) : (
-                        <Button mode="contained" onPress={handleSelectJsonFile} style={styles.selectJsonButton}>
-                            {t('select_json_file')}
-                        </Button>
-                    )}
-                </ThemedModal>
-                <ThemedModal
-                    cancelText={t('cancel')}
-                    confirmText={csvFilename ? t('import') : undefined}
-                    onClose={handleCancelImportCsv}
-                    onConfirm={csvFilename ? handleImportCsvFile : undefined}
-                    visible={csvImportModalVisible}
-                >
-                    <ScrollView contentContainerStyle={styles.scrollContainer}>
-                        <Text style={styles.modalTitle}>
-                            {t('import_from_csv_file')}
-                        </Text>
-                        <Text style={styles.modalText}>
-                            {t('past_nutrition_csv_format_description', {
-                                csvColumns: ['date', 'name', 'amount_in_grams', 'calories', 'carbs', 'fiber', 'sugar', 'cholesterol', 'fat', 'fat_saturated', 'fat_unsaturated', 'potassium', 'protein', 'sodium'].join(','),
-                            })}
-                        </Text>
-                    </ScrollView>
-                    {csvFilename ? (
-                        <View style={styles.selectedFileWrapper}>
-                            <Text>{t('selected_file')}: {csvFilename}</Text>
-                        </View>
-                    ) : (
-                        <Button mode="contained" onPress={handleSelectCsvFile} style={styles.selectJsonButton}>
-                            {t('select_csv_file')}
-                        </Button>
-                    )}
-                </ThemedModal>
-                <ThemedModal
-                    cancelText={t('no')}
-                    confirmText={t('yes')}
-                    onClose={handleDeleteCancel}
-                    onConfirm={handleDeleteConfirmation}
-                    title={t('delete_confirmation_generic', {
-                        title: userNutritions.find((nutrition) => nutrition.id === nutritionToDelete)?.name,
-                    })}
-                    visible={isDeleteModalVisible}
-                />
-                <ThemedModal
-                    cancelText={t('no')}
-                    confirmText={t('yes')}
-                    onClose={() => setIsConfirmRemoveAllVisible(false)}
-                    onConfirm={handleRemoveAllConfirmation}
-                    title={t('delete_all_health_connect_data_confirmation')}
-                    visible={isConfirmRemoveAllVisible}
-                >
-                    {isLoading && (
-                        <ActivityIndicator color={colors.primary} size="large" />
-                    )}
-                </ThemedModal>
-            </View>
-        </FABWrapper>
+                                </Pressable>
+                            </View>
+                        </ScrollView>
+                        {jsonFilename ? (
+                            <View style={styles.selectedFileWrapper}>
+                                <Text>{t('selected_file')}: {jsonFilename}</Text>
+                            </View>
+                        ) : (
+                            <Button mode="contained" onPress={handleSelectJsonFile} style={styles.selectJsonButton}>
+                                {t('select_json_file')}
+                            </Button>
+                        )}
+                    </ThemedModal>
+                    <ThemedModal
+                        cancelText={t('cancel')}
+                        confirmText={csvFilename ? t('import') : undefined}
+                        onClose={handleCancelImportCsv}
+                        onConfirm={csvFilename ? handleImportCsvFile : undefined}
+                        visible={csvImportModalVisible}
+                    >
+                        <ScrollView contentContainerStyle={styles.scrollContainer}>
+                            <Text style={styles.modalTitle}>
+                                {t('import_from_csv_file')}
+                            </Text>
+                            <Text style={styles.modalText}>
+                                {t('past_nutrition_csv_format_description', {
+                                    csvColumns: ['date', 'name', 'amount_in_grams', 'calories', 'carbs', 'fiber', 'sugar', 'cholesterol', 'fat', 'fat_saturated', 'fat_unsaturated', 'potassium', 'protein', 'sodium'].join(','),
+                                })}
+                            </Text>
+                        </ScrollView>
+                        {csvFilename ? (
+                            <View style={styles.selectedFileWrapper}>
+                                <Text>{t('selected_file')}: {csvFilename}</Text>
+                            </View>
+                        ) : (
+                            <Button mode="contained" onPress={handleSelectCsvFile} style={styles.selectJsonButton}>
+                                {t('select_csv_file')}
+                            </Button>
+                        )}
+                    </ThemedModal>
+                    <ThemedModal
+                        cancelText={t('no')}
+                        confirmText={t('yes')}
+                        onClose={handleDeleteCancel}
+                        onConfirm={handleDeleteConfirmation}
+                        title={t('delete_confirmation_generic', {
+                            title: userNutritions.find((nutrition) => nutrition.id === nutritionToDelete)?.name,
+                        })}
+                        visible={isDeleteModalVisible}
+                    />
+                    <ThemedModal
+                        cancelText={t('no')}
+                        confirmText={t('yes')}
+                        onClose={() => setIsConfirmRemoveAllVisible(false)}
+                        onConfirm={handleRemoveAllConfirmation}
+                        title={t('delete_all_health_connect_data_confirmation')}
+                        visible={isConfirmRemoveAllVisible}
+                    >
+                        {isLoading && (
+                            <ActivityIndicator color={colors.primary} size="large" />
+                        )}
+                    </ThemedModal>
+                </View>
+            </FABWrapper>
+        </Screen>
     );
 }
 

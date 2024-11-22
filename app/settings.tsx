@@ -1,5 +1,6 @@
 import AppHeader from '@/components/AppHeader';
 import CustomTextInput from '@/components/CustomTextInput';
+import { Screen } from '@/components/Screen';
 import ThemedModal from '@/components/ThemedModal';
 import { DARK, LIGHT, SYSTEM_DEFAULT } from '@/constants/colors';
 import { USER_METRICS_SOURCES } from '@/constants/healthConnect';
@@ -540,7 +541,7 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
     }, []);
 
     return (
-        <View style={styles.container}>
+        <Screen style={styles.container}>
             <AppHeader title={t('settings')} />
             <ScrollView contentContainerStyle={styles.settingsContainer} keyboardShouldPersistTaps="handled">
                 <List.Section>
@@ -1054,7 +1055,7 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
                     <Text>{t('app_version', { version: packageJson.version })}</Text>
                 </ScrollView>
             </ThemedModal>
-        </View>
+        </Screen>
     );
 }
 

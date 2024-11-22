@@ -1,4 +1,5 @@
 import CustomPicker from '@/components/CustomPicker';
+import { Screen } from '@/components/Screen';
 import ThemedCard from '@/components/ThemedCard';
 import { GRAMS, OUNCES, IMPERIAL_SYSTEM } from '@/constants/storage';
 import useUnit from '@/hooks/useUnit';
@@ -123,7 +124,7 @@ const FoodDetails = ({ navigation }: { navigation: NavigationProp<any> }) => {
     };
 
     return (
-        <View style={styles.container}>
+        <Screen style={styles.container}>
             <Appbar.Header mode="small" statusBarHeight={0} style={styles.appbarHeader}>
                 <Appbar.Action
                     icon={() => (
@@ -203,7 +204,7 @@ const FoodDetails = ({ navigation }: { navigation: NavigationProp<any> }) => {
                     </Button>
                 </View>
             </View>
-        </View>
+        </Screen>
     );
 };
 

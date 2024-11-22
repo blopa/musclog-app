@@ -1,5 +1,6 @@
 import AnimatedSearchBar from '@/components/AnimatedSearch';
 import CustomTextInput from '@/components/CustomTextInput';
+import { Screen } from '@/components/Screen';
 import ThemedCard from '@/components/ThemedCard';
 import ThemedModal from '@/components/ThemedModal';
 import { IMPERIAL_SYSTEM, KILOGRAMS, POUNDS } from '@/constants/storage';
@@ -263,7 +264,7 @@ export default function OneRepMaxes({ navigation }: { navigation: NavigationProp
     );
 
     return (
-        <View style={styles.container}>
+        <Screen style={styles.container}>
             <Appbar.Header
                 mode="small"
                 statusBarHeight={0}
@@ -308,7 +309,7 @@ export default function OneRepMaxes({ navigation }: { navigation: NavigationProp
                     {renderModalContent()}
                 </ThemedModal>
             </ScrollView>
-        </View>
+        </Screen>
     );
 }
 

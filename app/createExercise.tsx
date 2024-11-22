@@ -2,6 +2,7 @@ import CompletionModal from '@/components/CompletionModal';
 import CustomPicker from '@/components/CustomPicker';
 import CustomTextArea from '@/components/CustomTextArea';
 import CustomTextInput from '@/components/CustomTextInput';
+import { Screen } from '@/components/Screen';
 import { EXERCISE_TYPES, MUSCLE_GROUPS } from '@/constants/exercises';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { addExercise, getExerciseById, updateExercise } from '@/utils/database';
@@ -196,7 +197,7 @@ const CreateExercise = ({ navigation }: { navigation: NavigationProp<any> }) => 
     }, [t]);
 
     return (
-        <View style={styles.container}>
+        <Screen style={styles.container}>
             <CompletionModal
                 buttonText={t('ok')}
                 isModalVisible={isModalVisible}
@@ -284,7 +285,7 @@ const CreateExercise = ({ navigation }: { navigation: NavigationProp<any> }) => 
                     <ActivityIndicator color={colors.primary} size="large" />
                 </View>
             )}
-        </View>
+        </Screen>
     );
 };
 

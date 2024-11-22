@@ -1,6 +1,7 @@
 import PieChart from '@/components/Charts/PieChart';
 import CompletionModal from '@/components/CompletionModal';
 import CustomTextInput from '@/components/CustomTextInput';
+import { Screen } from '@/components/Screen';
 import SliderWithButtons from '@/components/SliderWithButtons';
 import { ACTIVITY_LEVELS, ACTIVITY_LEVELS_MULTIPLIER } from '@/constants/exercises';
 import { CALORIES_IN_CARBS, CALORIES_IN_FAT, CALORIES_IN_PROTEIN } from '@/constants/healthConnect';
@@ -352,84 +353,86 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
                 : totalFat;
 
         return (
-            <ScrollView contentContainerStyle={styles.flexContainer}>
-                <Text style={styles.title}>{t('adjust_your_macros')}</Text>
-                <View style={styles.macroAdjusterContainer}>
-                    <Button mode="outlined" onPress={prevMacro} style={styles.arrowButton}>
-                        <FontAwesome5 name="arrow-left" size={20} color={colors.primary} />
-                    </Button>
-                    <View style={styles.activeMacroContainer}>
-                        <Text style={styles.activeMacroTitle}>{t(activeMacro)}</Text>
-                        <Text style={styles.activeMacroValue}>
-                            {getDisplayFormattedWeight(activeMacroValue || 0, GRAMS, isImperial).toString()}
-                        </Text>
+            <Screen style={styles.container}>
+                <ScrollView contentContainerStyle={styles.flexContainer}>
+                    <Text style={styles.title}>{t('adjust_your_macros')}</Text>
+                    <View style={styles.macroAdjusterContainer}>
+                        <Button mode="outlined" onPress={prevMacro} style={styles.arrowButton}>
+                            <FontAwesome5 name="arrow-left" size={20} color={colors.primary} />
+                        </Button>
+                        <View style={styles.activeMacroContainer}>
+                            <Text style={styles.activeMacroTitle}>{t(activeMacro)}</Text>
+                            <Text style={styles.activeMacroValue}>
+                                {getDisplayFormattedWeight(activeMacroValue || 0, GRAMS, isImperial).toString()}
+                            </Text>
+                        </View>
+                        <Button mode="outlined" onPress={nextMacro} style={styles.arrowButton}>
+                            <FontAwesome5 name="arrow-right" size={20} color={colors.primary} />
+                        </Button>
                     </View>
-                    <Button mode="outlined" onPress={nextMacro} style={styles.arrowButton}>
-                        <FontAwesome5 name="arrow-right" size={20} color={colors.primary} />
-                    </Button>
-                </View>
-                <SliderWithButtons
-                    label=""
-                    value={activeMacroValue}
-                    onValueChange={handleSliderChange}
-                    minimumValue={0}
-                    maximumValue={maxMacros}
-                />
-                <View style={styles.macrosSummary}>
-                    <View style={styles.macroSummaryItem}>
-                        <Text style={styles.macroSummaryTitle}>{t('protein')}</Text>
-                        <Text style={styles.macroSummaryValue}>
-                            {getDisplayFormattedWeight(protein || 0, GRAMS, isImperial).toString()}
-                        </Text>
-                    </View>
-                    <View style={styles.macroSummaryItem}>
-                        <Text style={styles.macroSummaryTitle}>{t('carbohydrates')}</Text>
-                        <Text style={styles.macroSummaryValue}>
-                            {getDisplayFormattedWeight(totalCarbohydrate || 0, GRAMS, isImperial).toString()}
-                        </Text>
-                    </View>
-                    <View style={styles.macroSummaryItem}>
-                        <Text style={styles.macroSummaryTitle}>{t('fat')}</Text>
-                        <Text style={styles.macroSummaryValue}>
-                            {getDisplayFormattedWeight(totalFat || 0, GRAMS, isImperial).toString()}
-                        </Text>
-                    </View>
-                    <View style={styles.macroSummaryItem}>
-                        <Text style={styles.macroSummaryTitle}>{t('calories')}</Text>
-                        <Text style={styles.macroSummaryValue}>
-                            {t('value_kcal', { value: calories })}
-                        </Text>
-                    </View>
-                </View>
-                <PieChart
-                    data={pieData}
-                    title={t('macros_distribution')}
-                    showShareImageButton={false}
-                />
-                <View style={styles.optionalFields}>
-                    <CustomTextInput
-                        keyboardType="numeric"
-                        label={t('alcohol')}
-                        onChangeText={(text) => handleFormatNumericText(text, setAlcohol)}
-                        placeholder={t('enter_alcohol')}
-                        value={alcohol}
+                    <SliderWithButtons
+                        label=""
+                        value={activeMacroValue}
+                        onValueChange={handleSliderChange}
+                        minimumValue={0}
+                        maximumValue={maxMacros}
                     />
-                    <CustomTextInput
-                        keyboardType="numeric"
-                        label={t('fiber')}
-                        onChangeText={(text) => handleFormatNumericText(text, setFiber)}
-                        placeholder={t('enter_fiber')}
-                        value={fiber}
+                    <View style={styles.macrosSummary}>
+                        <View style={styles.macroSummaryItem}>
+                            <Text style={styles.macroSummaryTitle}>{t('protein')}</Text>
+                            <Text style={styles.macroSummaryValue}>
+                                {getDisplayFormattedWeight(protein || 0, GRAMS, isImperial).toString()}
+                            </Text>
+                        </View>
+                        <View style={styles.macroSummaryItem}>
+                            <Text style={styles.macroSummaryTitle}>{t('carbohydrates')}</Text>
+                            <Text style={styles.macroSummaryValue}>
+                                {getDisplayFormattedWeight(totalCarbohydrate || 0, GRAMS, isImperial).toString()}
+                            </Text>
+                        </View>
+                        <View style={styles.macroSummaryItem}>
+                            <Text style={styles.macroSummaryTitle}>{t('fat')}</Text>
+                            <Text style={styles.macroSummaryValue}>
+                                {getDisplayFormattedWeight(totalFat || 0, GRAMS, isImperial).toString()}
+                            </Text>
+                        </View>
+                        <View style={styles.macroSummaryItem}>
+                            <Text style={styles.macroSummaryTitle}>{t('calories')}</Text>
+                            <Text style={styles.macroSummaryValue}>
+                                {t('value_kcal', { value: calories })}
+                            </Text>
+                        </View>
+                    </View>
+                    <PieChart
+                        data={pieData}
+                        title={t('macros_distribution')}
+                        showShareImageButton={false}
                     />
-                    <CustomTextInput
-                        keyboardType="numeric"
-                        label={t('sugar')}
-                        onChangeText={(text) => handleFormatNumericText(text, setSugar)}
-                        placeholder={t('enter_sugar')}
-                        value={sugar}
-                    />
-                </View>
-            </ScrollView>
+                    <View style={styles.optionalFields}>
+                        <CustomTextInput
+                            keyboardType="numeric"
+                            label={t('alcohol')}
+                            onChangeText={(text) => handleFormatNumericText(text, setAlcohol)}
+                            placeholder={t('enter_alcohol')}
+                            value={alcohol}
+                        />
+                        <CustomTextInput
+                            keyboardType="numeric"
+                            label={t('fiber')}
+                            onChangeText={(text) => handleFormatNumericText(text, setFiber)}
+                            placeholder={t('enter_fiber')}
+                            value={fiber}
+                        />
+                        <CustomTextInput
+                            keyboardType="numeric"
+                            label={t('sugar')}
+                            onChangeText={(text) => handleFormatNumericText(text, setSugar)}
+                            placeholder={t('enter_sugar')}
+                            value={sugar}
+                        />
+                    </View>
+                </ScrollView>
+            </Screen>
         );
     };
 

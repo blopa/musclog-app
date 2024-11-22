@@ -3,6 +3,7 @@ import CustomPicker from '@/components/CustomPicker';
 import CustomTextInput from '@/components/CustomTextInput';
 import DatePickerModal from '@/components/DatePickerModal';
 import FABWrapper from '@/components/FABWrapper';
+import { Screen } from '@/components/Screen';
 import { ACTIVITY_LEVELS_VALUES, EXPERIENCE_LEVELS_VALUES } from '@/constants/exercises';
 import { USER_METRICS_SOURCES } from '@/constants/healthConnect';
 import { EATING_PHASES } from '@/constants/nutrition';
@@ -250,186 +251,188 @@ const Profile = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const age = Math.floor((new Date().getTime() - new Date(birthday).getTime()) / 3.15576e+10);
 
     return (
-        <FABWrapper actions={fabActions} icon="cog" visible>
-            <View style={styles.container}>
-                <AppHeader title={t('profile')} />
-                <ScrollView contentContainerStyle={styles.scrollViewContent} keyboardShouldPersistTaps="handled">
-                    {isEditing ? (
-                        <View style={styles.formContainer}>
-                            <Text style={styles.title}>{t('edit_profile')}</Text>
-                            <CustomTextInput
-                                label={t('name')}
-                                onChangeText={setName}
-                                placeholder={t('name')}
-                                value={name}
-                            />
-                            <View style={styles.formGroup}>
-                                <Text style={styles.label}>{t('birthday')}</Text>
-                                <Button
-                                    mode="outlined"
-                                    onPress={() => setDatePickerVisible(true)}
-                                    style={styles.datePickerButton}
-                                >
-                                    {birthday.toLocaleDateString()}
-                                </Button>
-                            </View>
-                            <CustomTextInput
-                                keyboardType="numeric"
-                                label={t('weight', { weightUnit })}
-                                onChangeText={(text) => handleFormatNumericText(text, 'weight')}
-                                placeholder={t('weight', { weightUnit })}
-                                value={weight}
-                            />
-                            <CustomTextInput
-                                keyboardType="numeric"
-                                label={t('height', { heightUnit })}
-                                onChangeText={(text) => handleFormatNumericText(text, 'height')}
-                                placeholder={t('height', { heightUnit })}
-                                value={height}
-                            />
-                            <CustomTextInput
-                                keyboardType="numeric"
-                                label={t('fat_percentage')}
-                                onChangeText={(text) => handleFormatNumericText(text, 'fatPercentage')}
-                                placeholder={t('fat_percentage')}
-                                value={fatPercentage}
-                            />
-                            <CustomPicker
-                                items={[
-                                    { label: t('none'), value: '' },
-                                    ...Object.values(EATING_PHASES).map((phase) => ({ label: t(phase), value: phase })),
-                                ]}
-                                label={t('eating_phase')}
-                                onValueChange={(value) => setEatingPhase(value as EatingPhaseType)}
-                                selectedValue={eatingPhase}
-                            />
-                            <CustomTextInput
-                                label={t('fitness_goal')}
-                                onChangeText={setFitnessGoal}
-                                placeholder={t('fitness_goal')}
-                                value={fitnessGoal}
-                            />
-                            <CustomTextInput
-                                label={t('gender')}
-                                onChangeText={setGender}
-                                placeholder={t('gender')}
-                                value={gender}
-                            />
-                            <CustomPicker
-                                items={[
-                                    { label: t('select_activity_level'), value: '' },
-                                    ...ACTIVITY_LEVELS_VALUES.map((level) => ({ label: t(level), value: level })),
-                                ]}
-                                label={t('activity_level')}
-                                onValueChange={(value) => setActivityLevel(value as ActivityLevelType)}
-                                selectedValue={activityLevel || ''}
-                            />
-                            <CustomPicker
-                                items={[
-                                    { label: t('select_experience_level'), value: '' },
-                                    ...EXPERIENCE_LEVELS_VALUES.map((level) => ({ label: t(level), value: level })),
-                                ]}
-                                label={t('lifting_experience')}
-                                onValueChange={(value) => setLiftingExperience(value as ExperienceLevelType)}
-                                selectedValue={liftingExperience || ''}
-                            />
-                            <View style={styles.buttonContainer}>
-                                <Button mode="outlined" onPress={handleCancel} style={styles.button}>
-                                    {t('cancel')}
-                                </Button>
-                                <Button mode="contained" onPress={handleSave} style={styles.button}>
-                                    {t('save')}
-                                </Button>
-                            </View>
-                        </View>
-                    ) : (
-                        <View style={styles.profileContainer}>
-                            <Avatar.Icon icon="account" size={120} style={styles.avatar} />
-                            <Text style={styles.profileName}>{name}</Text>
-                            <Text style={styles.subtitle}>
-                                {age > 0 ? `${age} ${t('years_old')}${gender ? `, ${gender}` : ''}` : gender ? gender : ''}
-                            </Text>
-                            <Card style={styles.profileCard}>
-                                <Card.Content>
-                                    <View style={styles.profileHeader}>
-                                        <Text style={styles.sectionTitle}>{t('about')}</Text>
-                                        <FontAwesome5
-                                            color={colors.primary}
-                                            name="edit"
-                                            onPress={() => setIsEditing(true)}
-                                            size={24}
-                                            style={styles.editIcon}
-                                        />
-                                    </View>
-                                    <View style={styles.profileSection}>
-                                        <View style={styles.profileGrid}>
-                                            <View style={styles.profileItem}>
-                                                <FontAwesome color={colors.primary} name="calendar" size={20} />
-                                                <Text style={styles.profileLabel}>{t('birthday')}</Text>
-                                                <Text style={styles.profileValue}>{birthday.toLocaleDateString()}</Text>
-                                            </View>
-                                            <View style={styles.profileItem}>
-                                                <FontAwesome6 color={colors.primary} name="weight-scale" size={20} />
-                                                <Text style={styles.profileLabel}>{t('weight', { weightUnit })}</Text>
-                                                <Text style={styles.profileValue}>{weight && `${weight} ${weightUnit}`}</Text>
-                                            </View>
-                                            <View style={styles.profileItem}>
-                                                <MaterialCommunityIcons color={colors.primary} name="human-male-height" size={24} />
-                                                <Text style={styles.profileLabel}>{t('height', { heightUnit })}</Text>
-                                                <Text style={styles.profileValue}>{height && `${height} ${heightUnit}`}</Text>
-                                            </View>
-                                            <View style={styles.profileItem}>
-                                                <FontAwesome5 color={colors.primary} name="percentage" size={20} />
-                                                <Text style={styles.profileLabel}>{t('fat_percentage')}</Text>
-                                                <Text style={styles.profileValue}>{fatPercentage && `${fatPercentage} %`}</Text>
-                                            </View>
-                                        </View>
-                                    </View>
-                                    <View style={styles.profileSection}>
-                                        <Text style={styles.sectionTitle}>{t('fitness_goals')}</Text>
-                                        <View style={styles.profileGrid}>
-                                            <View style={styles.profileItem}>
-                                                <FontAwesome5 color={colors.primary} name="heartbeat" size={ICON_SIZE} />
-                                                <Text style={styles.profileValue}>{t(fitnessGoal || 'not_set')}</Text>
-                                            </View>
-                                            <View style={styles.profileItem}>
-                                                <FontAwesome5 color={colors.primary} name="utensils" size={20} />
-                                                <Text style={styles.profileValue}>{t(eatingPhase || 'not_set')}</Text>
-                                            </View>
-                                            <View style={styles.profileItem}>
-                                                <FontAwesome5 color={colors.primary} name="running" size={20} />
-                                                <Text style={styles.profileValue}>{t(activityLevel || 'not_set')}</Text>
-                                            </View>
-                                            <View style={styles.profileItem}>
-                                                <MaterialCommunityIcons color={colors.primary} name="weight-lifter" size={24} />
-                                                <Text style={styles.profileValue}>{t(liftingExperience || 'not_set')}</Text>
-                                            </View>
-                                        </View>
-                                    </View>
-                                </Card.Content>
-                            </Card>
-                            {showUserMetrics ? (
-                                <View style={styles.bottomButtonContainer}>
+        <Screen style={styles.container}>
+            <FABWrapper actions={fabActions} icon="cog" visible>
+                <View style={styles.container}>
+                    <AppHeader title={t('profile')} />
+                    <ScrollView contentContainerStyle={styles.scrollViewContent} keyboardShouldPersistTaps="handled">
+                        {isEditing ? (
+                            <View style={styles.formContainer}>
+                                <Text style={styles.title}>{t('edit_profile')}</Text>
+                                <CustomTextInput
+                                    label={t('name')}
+                                    onChangeText={setName}
+                                    placeholder={t('name')}
+                                    value={name}
+                                />
+                                <View style={styles.formGroup}>
+                                    <Text style={styles.label}>{t('birthday')}</Text>
                                     <Button
-                                        icon={() => <FontAwesome5 color={colors.surface} name="heartbeat" size={20} />}
-                                        mode="contained"
-                                        onPress={() => navigation.navigate('listFitnessGoals')}
+                                        mode="outlined"
+                                        onPress={() => setDatePickerVisible(true)}
+                                        style={styles.datePickerButton}
                                     >
-                                        {t('fitness_goals')}
+                                        {birthday.toLocaleDateString()}
                                     </Button>
                                 </View>
-                            ) : null}
-                        </View>
-                    )}
-                    <DatePickerModal
-                        onChangeDate={setBirthday}
-                        onClose={() => setDatePickerVisible(false)}
-                        selectedDate={birthday}
-                        visible={isDatePickerVisible}
-                    />
-                </ScrollView>
-            </View>
-        </FABWrapper>
+                                <CustomTextInput
+                                    keyboardType="numeric"
+                                    label={t('weight', { weightUnit })}
+                                    onChangeText={(text) => handleFormatNumericText(text, 'weight')}
+                                    placeholder={t('weight', { weightUnit })}
+                                    value={weight}
+                                />
+                                <CustomTextInput
+                                    keyboardType="numeric"
+                                    label={t('height', { heightUnit })}
+                                    onChangeText={(text) => handleFormatNumericText(text, 'height')}
+                                    placeholder={t('height', { heightUnit })}
+                                    value={height}
+                                />
+                                <CustomTextInput
+                                    keyboardType="numeric"
+                                    label={t('fat_percentage')}
+                                    onChangeText={(text) => handleFormatNumericText(text, 'fatPercentage')}
+                                    placeholder={t('fat_percentage')}
+                                    value={fatPercentage}
+                                />
+                                <CustomPicker
+                                    items={[
+                                        { label: t('none'), value: '' },
+                                        ...Object.values(EATING_PHASES).map((phase) => ({ label: t(phase), value: phase })),
+                                    ]}
+                                    label={t('eating_phase')}
+                                    onValueChange={(value) => setEatingPhase(value as EatingPhaseType)}
+                                    selectedValue={eatingPhase}
+                                />
+                                <CustomTextInput
+                                    label={t('fitness_goal')}
+                                    onChangeText={setFitnessGoal}
+                                    placeholder={t('fitness_goal')}
+                                    value={fitnessGoal}
+                                />
+                                <CustomTextInput
+                                    label={t('gender')}
+                                    onChangeText={setGender}
+                                    placeholder={t('gender')}
+                                    value={gender}
+                                />
+                                <CustomPicker
+                                    items={[
+                                        { label: t('select_activity_level'), value: '' },
+                                        ...ACTIVITY_LEVELS_VALUES.map((level) => ({ label: t(level), value: level })),
+                                    ]}
+                                    label={t('activity_level')}
+                                    onValueChange={(value) => setActivityLevel(value as ActivityLevelType)}
+                                    selectedValue={activityLevel || ''}
+                                />
+                                <CustomPicker
+                                    items={[
+                                        { label: t('select_experience_level'), value: '' },
+                                        ...EXPERIENCE_LEVELS_VALUES.map((level) => ({ label: t(level), value: level })),
+                                    ]}
+                                    label={t('lifting_experience')}
+                                    onValueChange={(value) => setLiftingExperience(value as ExperienceLevelType)}
+                                    selectedValue={liftingExperience || ''}
+                                />
+                                <View style={styles.buttonContainer}>
+                                    <Button mode="outlined" onPress={handleCancel} style={styles.button}>
+                                        {t('cancel')}
+                                    </Button>
+                                    <Button mode="contained" onPress={handleSave} style={styles.button}>
+                                        {t('save')}
+                                    </Button>
+                                </View>
+                            </View>
+                        ) : (
+                            <View style={styles.profileContainer}>
+                                <Avatar.Icon icon="account" size={120} style={styles.avatar} />
+                                <Text style={styles.profileName}>{name}</Text>
+                                <Text style={styles.subtitle}>
+                                    {age > 0 ? `${age} ${t('years_old')}${gender ? `, ${gender}` : ''}` : gender ? gender : ''}
+                                </Text>
+                                <Card style={styles.profileCard}>
+                                    <Card.Content>
+                                        <View style={styles.profileHeader}>
+                                            <Text style={styles.sectionTitle}>{t('about')}</Text>
+                                            <FontAwesome5
+                                                color={colors.primary}
+                                                name="edit"
+                                                onPress={() => setIsEditing(true)}
+                                                size={24}
+                                                style={styles.editIcon}
+                                            />
+                                        </View>
+                                        <View style={styles.profileSection}>
+                                            <View style={styles.profileGrid}>
+                                                <View style={styles.profileItem}>
+                                                    <FontAwesome color={colors.primary} name="calendar" size={20} />
+                                                    <Text style={styles.profileLabel}>{t('birthday')}</Text>
+                                                    <Text style={styles.profileValue}>{birthday.toLocaleDateString()}</Text>
+                                                </View>
+                                                <View style={styles.profileItem}>
+                                                    <FontAwesome6 color={colors.primary} name="weight-scale" size={20} />
+                                                    <Text style={styles.profileLabel}>{t('weight', { weightUnit })}</Text>
+                                                    <Text style={styles.profileValue}>{weight && `${weight} ${weightUnit}`}</Text>
+                                                </View>
+                                                <View style={styles.profileItem}>
+                                                    <MaterialCommunityIcons color={colors.primary} name="human-male-height" size={24} />
+                                                    <Text style={styles.profileLabel}>{t('height', { heightUnit })}</Text>
+                                                    <Text style={styles.profileValue}>{height && `${height} ${heightUnit}`}</Text>
+                                                </View>
+                                                <View style={styles.profileItem}>
+                                                    <FontAwesome5 color={colors.primary} name="percentage" size={20} />
+                                                    <Text style={styles.profileLabel}>{t('fat_percentage')}</Text>
+                                                    <Text style={styles.profileValue}>{fatPercentage && `${fatPercentage} %`}</Text>
+                                                </View>
+                                            </View>
+                                        </View>
+                                        <View style={styles.profileSection}>
+                                            <Text style={styles.sectionTitle}>{t('fitness_goals')}</Text>
+                                            <View style={styles.profileGrid}>
+                                                <View style={styles.profileItem}>
+                                                    <FontAwesome5 color={colors.primary} name="heartbeat" size={ICON_SIZE} />
+                                                    <Text style={styles.profileValue}>{t(fitnessGoal || 'not_set')}</Text>
+                                                </View>
+                                                <View style={styles.profileItem}>
+                                                    <FontAwesome5 color={colors.primary} name="utensils" size={20} />
+                                                    <Text style={styles.profileValue}>{t(eatingPhase || 'not_set')}</Text>
+                                                </View>
+                                                <View style={styles.profileItem}>
+                                                    <FontAwesome5 color={colors.primary} name="running" size={20} />
+                                                    <Text style={styles.profileValue}>{t(activityLevel || 'not_set')}</Text>
+                                                </View>
+                                                <View style={styles.profileItem}>
+                                                    <MaterialCommunityIcons color={colors.primary} name="weight-lifter" size={24} />
+                                                    <Text style={styles.profileValue}>{t(liftingExperience || 'not_set')}</Text>
+                                                </View>
+                                            </View>
+                                        </View>
+                                    </Card.Content>
+                                </Card>
+                                {showUserMetrics ? (
+                                    <View style={styles.bottomButtonContainer}>
+                                        <Button
+                                            icon={() => <FontAwesome5 color={colors.surface} name="heartbeat" size={20} />}
+                                            mode="contained"
+                                            onPress={() => navigation.navigate('listFitnessGoals')}
+                                        >
+                                            {t('fitness_goals')}
+                                        </Button>
+                                    </View>
+                                ) : null}
+                            </View>
+                        )}
+                        <DatePickerModal
+                            onChangeDate={setBirthday}
+                            onClose={() => setDatePickerVisible(false)}
+                            selectedDate={birthday}
+                            visible={isDatePickerVisible}
+                        />
+                    </ScrollView>
+                </View>
+            </FABWrapper>
+        </Screen>
     );
 };
 

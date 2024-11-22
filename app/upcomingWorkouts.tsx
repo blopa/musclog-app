@@ -1,6 +1,7 @@
 import AnimatedSearchBar from '@/components/AnimatedSearch';
 import CompletionModal from '@/components/CompletionModal';
 import FABWrapper from '@/components/FABWrapper';
+import { Screen } from '@/components/Screen';
 import StatusBadge from '@/components/StatusBadge';
 import ThemedCard from '@/components/ThemedCard';
 import ThemedModal from '@/components/ThemedModal';
@@ -288,96 +289,98 @@ export default function UpcomingWorkouts({ navigation }: { navigation: Navigatio
     }], [colors.primary, colors.surface, navigation, t]);
 
     return (
-        <FABWrapper actions={fabActions} visible>
-            <View style={styles.container}>
-                <Appbar.Header
-                    mode="small"
-                    statusBarHeight={0}
-                    style={styles.appbarHeader}
-                >
-                    <Appbar.Content title={t('upcoming_workouts')} titleStyle={styles.appbarTitle} />
-                    <AnimatedSearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-                </Appbar.Header>
-                <FlashList
-                    ListFooterComponent={upcomingWorkouts.length < totalWorkoutsCount ? <ActivityIndicator /> : null}
-                    contentContainerStyle={styles.scrollViewContent}
-                    data={filteredWorkouts}
-                    estimatedItemSize={100}
-                    keyExtractor={(item) => (item?.id ? item.id.toString() : 'default')}
-                    onEndReached={loadMoreWorkouts}
-                    onEndReachedThreshold={0.5}
-                    renderItem={({ item: workout }) => (
-                        <ThemedCard key={workout.id}>
-                            <Card.Content style={styles.cardContent}>
-                                <View style={styles.cardHeader}>
-                                    <Text style={styles.cardTitle}>{workout.title}</Text>
-                                    <Text style={styles.cardDate}>{formatDate(workout.date)}</Text>
-                                    <StatusBadge status={SCHEDULED_STATUS} />
-                                    {(workout?.duration || 0) > 0 && (
-                                        <Text style={styles.cardDuration}>{workout.duration} {t('minutes')}</Text>
-                                    )}
-                                </View>
-                                <View style={styles.cardActions}>
-                                    <FontAwesome5
-                                        color={colors.primary}
-                                        name="play"
-                                        onPress={() => openConfirmationModal(workout)}
-                                        size={ICON_SIZE}
-                                        style={styles.iconButton}
-                                    />
-                                    <FontAwesome5
-                                        color={colors.primary}
-                                        disabled={disabledButtons[workout.id!]}
-                                        name="calendar"
-                                        onPress={() => handleAddToCalendar(workout)}
-                                        size={ICON_SIZE}
-                                        style={styles.iconButton}
-                                    />
-                                    <FontAwesome5
-                                        color={colors.primary}
-                                        name="trash"
-                                        onPress={() => openDeleteWorkoutConfirmationModal(workout)}
-                                        size={ICON_SIZE}
-                                        style={styles.iconButton}
-                                    />
-                                </View>
-                            </Card.Content>
-                        </ThemedCard>
-                    )}
-                />
-                <ThemedModal
-                    cancelText={t('no')}
-                    confirmText={t('yes')}
-                    onClose={() => setModalVisible(false)}
-                    onConfirm={handleStartWorkout}
-                    title={t('start_workout_confirmation_generic')}
-                    visible={modalVisible}
-                />
-                <ThemedModal
-                    cancelText={t('no')}
-                    confirmText={t('yes')}
-                    onClose={() => setConfirmationModalVisible(false)}
-                    onConfirm={handleConfirmStartNewWorkout}
-                    title={t('confirm_start_new_workout')}
-                    visible={confirmationModalVisible}
-                />
-                <ThemedModal
-                    cancelText={t('no')}
-                    confirmText={t('yes')}
-                    onClose={() => setDeleteModalVisible(false)}
-                    onConfirm={handleDeleteWorkout}
-                    title={selectedWorkout ? t('delete_workout_confirmation', { title: selectedWorkout.title }) : t('delete_confirmation_generic')}
-                    visible={deleteModalVisible}
-                />
-                <CompletionModal
-                    buttonText={t('ok')}
-                    isModalVisible={isModalVisible}
-                    message={modalMessage}
-                    onClose={handleModalClose}
-                    title={t('add_to_calendar')}
-                />
-            </View>
-        </FABWrapper>
+        <Screen style={styles.container}>
+            <FABWrapper actions={fabActions} visible>
+                <View style={styles.container}>
+                    <Appbar.Header
+                        mode="small"
+                        statusBarHeight={0}
+                        style={styles.appbarHeader}
+                    >
+                        <Appbar.Content title={t('upcoming_workouts')} titleStyle={styles.appbarTitle} />
+                        <AnimatedSearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+                    </Appbar.Header>
+                    <FlashList
+                        ListFooterComponent={upcomingWorkouts.length < totalWorkoutsCount ? <ActivityIndicator /> : null}
+                        contentContainerStyle={styles.scrollViewContent}
+                        data={filteredWorkouts}
+                        estimatedItemSize={100}
+                        keyExtractor={(item) => (item?.id ? item.id.toString() : 'default')}
+                        onEndReached={loadMoreWorkouts}
+                        onEndReachedThreshold={0.5}
+                        renderItem={({ item: workout }) => (
+                            <ThemedCard key={workout.id}>
+                                <Card.Content style={styles.cardContent}>
+                                    <View style={styles.cardHeader}>
+                                        <Text style={styles.cardTitle}>{workout.title}</Text>
+                                        <Text style={styles.cardDate}>{formatDate(workout.date)}</Text>
+                                        <StatusBadge status={SCHEDULED_STATUS} />
+                                        {(workout?.duration || 0) > 0 && (
+                                            <Text style={styles.cardDuration}>{workout.duration} {t('minutes')}</Text>
+                                        )}
+                                    </View>
+                                    <View style={styles.cardActions}>
+                                        <FontAwesome5
+                                            color={colors.primary}
+                                            name="play"
+                                            onPress={() => openConfirmationModal(workout)}
+                                            size={ICON_SIZE}
+                                            style={styles.iconButton}
+                                        />
+                                        <FontAwesome5
+                                            color={colors.primary}
+                                            disabled={disabledButtons[workout.id!]}
+                                            name="calendar"
+                                            onPress={() => handleAddToCalendar(workout)}
+                                            size={ICON_SIZE}
+                                            style={styles.iconButton}
+                                        />
+                                        <FontAwesome5
+                                            color={colors.primary}
+                                            name="trash"
+                                            onPress={() => openDeleteWorkoutConfirmationModal(workout)}
+                                            size={ICON_SIZE}
+                                            style={styles.iconButton}
+                                        />
+                                    </View>
+                                </Card.Content>
+                            </ThemedCard>
+                        )}
+                    />
+                    <ThemedModal
+                        cancelText={t('no')}
+                        confirmText={t('yes')}
+                        onClose={() => setModalVisible(false)}
+                        onConfirm={handleStartWorkout}
+                        title={t('start_workout_confirmation_generic')}
+                        visible={modalVisible}
+                    />
+                    <ThemedModal
+                        cancelText={t('no')}
+                        confirmText={t('yes')}
+                        onClose={() => setConfirmationModalVisible(false)}
+                        onConfirm={handleConfirmStartNewWorkout}
+                        title={t('confirm_start_new_workout')}
+                        visible={confirmationModalVisible}
+                    />
+                    <ThemedModal
+                        cancelText={t('no')}
+                        confirmText={t('yes')}
+                        onClose={() => setDeleteModalVisible(false)}
+                        onConfirm={handleDeleteWorkout}
+                        title={selectedWorkout ? t('delete_workout_confirmation', { title: selectedWorkout.title }) : t('delete_confirmation_generic')}
+                        visible={deleteModalVisible}
+                    />
+                    <CompletionModal
+                        buttonText={t('ok')}
+                        isModalVisible={isModalVisible}
+                        message={modalMessage}
+                        onClose={handleModalClose}
+                        title={t('add_to_calendar')}
+                    />
+                </View>
+            </FABWrapper>
+        </Screen>
     );
 }
 

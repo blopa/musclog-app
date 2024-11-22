@@ -3,6 +3,7 @@ import NutritionDetailedChart from '@/components/Charts/NutritionDetailedChart';
 import WeightLineChart from '@/components/Charts/WeightLineChart';
 import FABWrapper from '@/components/FABWrapper';
 import Filters from '@/components/Filters';
+import { Screen } from '@/components/Screen';
 import {
     CALORIES_IN_CARBS,
     CALORIES_IN_FAT,
@@ -1060,126 +1061,128 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
     // );
 
     return (
-        <FABWrapper actions={fabActions} icon="cog" visible>
-            <View style={styles.container}>
-                <Appbar.Header
-                    mode="small"
-                    statusBarHeight={0}
-                    style={styles.appbarHeader}
-                >
-                    <Appbar.Content title={t('user_metrics_charts')} titleStyle={styles.appbarTitle} />
-                    <Button
-                        mode="outlined"
-                        onPress={() => navigation.navigate('profile')}
-                        textColor={colors.onPrimary}
+        <Screen style={styles.container}>
+            <FABWrapper actions={fabActions} icon="cog" visible>
+                <View style={styles.container}>
+                    <Appbar.Header
+                        mode="small"
+                        statusBarHeight={0}
+                        style={styles.appbarHeader}
                     >
-                        {t('back')}
-                    </Button>
-                </Appbar.Header>
-                <Filters
-                    aggregatedValuesLabel={t('weekly_averages')}
-                    endDate={endDate}
-                    setEndDate={handleSetEndDate}
-                    setShowAggregatedValues={handleShowWeeklyAverages}
-                    setStartDate={handleSetStartDate}
-                    setTimeRange={handleSetDateRange}
-                    showAggregatedValues={showWeeklyAverages}
-                    showDateRange
-                    startDate={startDate}
-                    timeRange={dateRange}
-                />
-                <ScrollView contentContainerStyle={styles.scrollViewContainer} style={styles.scrollView}>
-                    {fatPercentageData.length > 0 ? (
-                        <LineChart
-                            data={fatPercentageData}
-                            granularity={showWeeklyAverages ? 1 : 3}
-                            labelLeftMargin={-42}
-                            labels={fatPercentageLabels}
-                            title={t('fat_percentage')}
-                            xAxisLabel={t('date')}
-                            yAxis={yAxisFat}
-                            yAxisLabel={t('fat_percentage')}
-                        />
-                    ) : null}
-                    {weightData.length > 0 ? (
-                        <WeightLineChart
-                            metricsAverages={metricsAverages}
-                            showWeeklyAverages={showWeeklyAverages}
-                            weightData={weightData}
-                            weightLabels={weightLabels}
-                            yAxisConfig={yAxisWeight}
-                        />
-                    ) : null}
-                    {ffmiData.length > 0 ? (
-                        <LineChart
-                            data={ffmiData}
-                            granularity={showWeeklyAverages ? 1 : 3}
-                            labelLeftMargin={-42}
-                            labels={ffmiLabels}
-                            title={t('ffmi')}
-                            xAxisLabel={t('date')}
-                            yAxis={{
-                                axisMaximum: Math.round(Math.max(...ffmiData.map((d) => d.y)) * 1.05),
-                                axisMinimum: Math.round(Math.min(...ffmiData.map((d) => d.y)) * 0.95),
-                            }}
-                            yAxisLabel={t('ffmi')}
-                        />
-                    ) : null}
-                    {foodChartData.length > 0 ? (
-                        <NutritionDetailedChart
-                            aggregatedNutritionAndWeightData={aggregatedNutritionAndWeightData}
-                            averageCalories={averageCalories}
-                            ffmi={ffmi}
-                            foodChartData={foodChartData}
-                            foodLabels={foodLabels}
-                            isLastChart={recentWorkoutsData.length === 0}
-                            pieChartData={pieChartData}
-                            showWeeklyAverages={showWeeklyAverages}
-                            stackedMacrosYAxisConfig={yAxisFood}
-                            tdee={tdee}
-                            totalCaloriesLabel={totalCaloriesLabel}
-                            weightData={weightData}
-                        />
-                    ) : null}
-                    {recentWorkoutsData.length > 0 ? (
-                        <LineChart
-                            data={recentWorkoutsData}
-                            granularity={showWeeklyAverages ? 1 : 3}
-                            labelLeftMargin={-42}
-                            labels={recentWorkoutsDataLabels}
-                            shareButtonPosition="top"
-                            title={t('recent_workouts')}
-                            xAxisLabel={t('date')}
-                            yAxis={{
-                                axisMaximum: Math.round(Math.max(...recentWorkoutsData.map((d) => d.y)) * 1.2),
-                                axisMinimum: Math.round(Math.min(...recentWorkoutsData.map((d) => d.y)) * 0.5),
-                            }}
-                            yAxisLabel={t('workout_volume')}
-                        />
-                    ) : null}
-                    {Object.keys(measurementsData).map((measurementKey) => (
-                        <LineChart
-                            key={measurementKey}
-                            data={measurementsData[measurementKey]}
-                            granularity={showWeeklyAverages ? 1 : 3}
-                            labels={measurementLabels[measurementKey]}
-                            title={t(measurementKey)}
-                            xAxisLabel={t('date')}
-                            yAxis={{
-                                axisMaximum: Math.round(Math.max(...measurementsData[measurementKey].map((d) => d.y)) * 1.2),
-                                axisMinimum: Math.round(Math.min(...measurementsData[measurementKey].map((d) => d.y)) * 0.8),
-                            }}
-                            yAxisLabel={t(measurementKey)}
-                        />
-                    ))}
-                </ScrollView>
-                {isLoading && (
-                    <View style={styles.overlay}>
-                        <ActivityIndicator color={colors.primary} size="large" />
-                    </View>
-                )}
-            </View>
-        </FABWrapper>
+                        <Appbar.Content title={t('user_metrics_charts')} titleStyle={styles.appbarTitle} />
+                        <Button
+                            mode="outlined"
+                            onPress={() => navigation.navigate('profile')}
+                            textColor={colors.onPrimary}
+                        >
+                            {t('back')}
+                        </Button>
+                    </Appbar.Header>
+                    <Filters
+                        aggregatedValuesLabel={t('weekly_averages')}
+                        endDate={endDate}
+                        setEndDate={handleSetEndDate}
+                        setShowAggregatedValues={handleShowWeeklyAverages}
+                        setStartDate={handleSetStartDate}
+                        setTimeRange={handleSetDateRange}
+                        showAggregatedValues={showWeeklyAverages}
+                        showDateRange
+                        startDate={startDate}
+                        timeRange={dateRange}
+                    />
+                    <ScrollView contentContainerStyle={styles.scrollViewContainer} style={styles.scrollView}>
+                        {fatPercentageData.length > 0 ? (
+                            <LineChart
+                                data={fatPercentageData}
+                                granularity={showWeeklyAverages ? 1 : 3}
+                                labelLeftMargin={-42}
+                                labels={fatPercentageLabels}
+                                title={t('fat_percentage')}
+                                xAxisLabel={t('date')}
+                                yAxis={yAxisFat}
+                                yAxisLabel={t('fat_percentage')}
+                            />
+                        ) : null}
+                        {weightData.length > 0 ? (
+                            <WeightLineChart
+                                metricsAverages={metricsAverages}
+                                showWeeklyAverages={showWeeklyAverages}
+                                weightData={weightData}
+                                weightLabels={weightLabels}
+                                yAxisConfig={yAxisWeight}
+                            />
+                        ) : null}
+                        {ffmiData.length > 0 ? (
+                            <LineChart
+                                data={ffmiData}
+                                granularity={showWeeklyAverages ? 1 : 3}
+                                labelLeftMargin={-42}
+                                labels={ffmiLabels}
+                                title={t('ffmi')}
+                                xAxisLabel={t('date')}
+                                yAxis={{
+                                    axisMaximum: Math.round(Math.max(...ffmiData.map((d) => d.y)) * 1.05),
+                                    axisMinimum: Math.round(Math.min(...ffmiData.map((d) => d.y)) * 0.95),
+                                }}
+                                yAxisLabel={t('ffmi')}
+                            />
+                        ) : null}
+                        {foodChartData.length > 0 ? (
+                            <NutritionDetailedChart
+                                aggregatedNutritionAndWeightData={aggregatedNutritionAndWeightData}
+                                averageCalories={averageCalories}
+                                ffmi={ffmi}
+                                foodChartData={foodChartData}
+                                foodLabels={foodLabels}
+                                isLastChart={recentWorkoutsData.length === 0}
+                                pieChartData={pieChartData}
+                                showWeeklyAverages={showWeeklyAverages}
+                                stackedMacrosYAxisConfig={yAxisFood}
+                                tdee={tdee}
+                                totalCaloriesLabel={totalCaloriesLabel}
+                                weightData={weightData}
+                            />
+                        ) : null}
+                        {recentWorkoutsData.length > 0 ? (
+                            <LineChart
+                                data={recentWorkoutsData}
+                                granularity={showWeeklyAverages ? 1 : 3}
+                                labelLeftMargin={-42}
+                                labels={recentWorkoutsDataLabels}
+                                shareButtonPosition="top"
+                                title={t('recent_workouts')}
+                                xAxisLabel={t('date')}
+                                yAxis={{
+                                    axisMaximum: Math.round(Math.max(...recentWorkoutsData.map((d) => d.y)) * 1.2),
+                                    axisMinimum: Math.round(Math.min(...recentWorkoutsData.map((d) => d.y)) * 0.5),
+                                }}
+                                yAxisLabel={t('workout_volume')}
+                            />
+                        ) : null}
+                        {Object.keys(measurementsData).map((measurementKey) => (
+                            <LineChart
+                                key={measurementKey}
+                                data={measurementsData[measurementKey]}
+                                granularity={showWeeklyAverages ? 1 : 3}
+                                labels={measurementLabels[measurementKey]}
+                                title={t(measurementKey)}
+                                xAxisLabel={t('date')}
+                                yAxis={{
+                                    axisMaximum: Math.round(Math.max(...measurementsData[measurementKey].map((d) => d.y)) * 1.2),
+                                    axisMinimum: Math.round(Math.min(...measurementsData[measurementKey].map((d) => d.y)) * 0.8),
+                                }}
+                                yAxisLabel={t(measurementKey)}
+                            />
+                        ))}
+                    </ScrollView>
+                    {isLoading && (
+                        <View style={styles.overlay}>
+                            <ActivityIndicator color={colors.primary} size="large" />
+                        </View>
+                    )}
+                </View>
+            </FABWrapper>
+        </Screen>
     );
 };
 

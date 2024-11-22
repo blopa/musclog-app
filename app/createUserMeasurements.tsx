@@ -1,6 +1,7 @@
 import CompletionModal from '@/components/CompletionModal';
 import CustomTextInput from '@/components/CustomTextInput';
 import DatePickerModal from '@/components/DatePickerModal';
+import { Screen } from '@/components/Screen';
 import { USER_METRICS_SOURCES } from '@/constants/healthConnect';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { addUserMeasurements, getUser, getUserMeasurements, updateUserMeasurements } from '@/utils/database';
@@ -184,7 +185,7 @@ const CreateUserMeasurements = ({ navigation }: { navigation: NavigationProp<any
     }, []);
 
     return (
-        <View style={styles.container}>
+        <Screen style={styles.container}>
             <CompletionModal
                 buttonText={t('ok')}
                 isModalVisible={isModalVisible}
@@ -275,7 +276,7 @@ const CreateUserMeasurements = ({ navigation }: { navigation: NavigationProp<any
                 selectedDate={selectedDate}
                 onChangeDate={handleDateChange}
             />
-        </View>
+        </Screen>
     );
 };
 
