@@ -85,14 +85,12 @@ import {
     createDrawerNavigator,
 } from '@react-navigation/drawer';
 import * as Sentry from '@sentry/react-native';
-import * as Device from 'expo-device';
 import 'react-native-reanimated';
 import { useFonts } from 'expo-font';
-import * as NavigationBar from 'expo-navigation-bar';
 import * as SplashScreen from 'expo-splash-screen';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { I18nextProvider, useTranslation } from 'react-i18next';
-import { Dimensions, SafeAreaView, StatusBar, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { ActivityIndicator, PaperProvider, useTheme } from 'react-native-paper';
 
 import packageJson from '../package.json';
@@ -131,12 +129,6 @@ function RootLayout() {
     const { theme: colorScheme } = useCustomTheme();
     const { addNewChat } = useChatData();
     const { increaseUnreadMessages } = useUnreadMessages();
-    const visibility = NavigationBar.useVisibility();
-    const screenHeight = Dimensions.get('screen').height;
-    const windowHeight = Dimensions.get('window').height;
-    const navbarHeight = screenHeight - (windowHeight + (StatusBar?.currentHeight || 0));
-
-    // throw new Error('This is a test error');
 
     const [loaded, error] = useFonts({
         SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
@@ -277,8 +269,6 @@ function RootLayout() {
                         <SafeAreaView
                             style={{
                                 flex: 1,
-                                // let's see if this works for Android 15
-                                paddingBottom: (visibility && parseFloat(Device?.osVersion || '0') > 14) ? Math.abs(navbarHeight) : 0,
                             }}
                         >
                             <RootLayoutNav />
