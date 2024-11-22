@@ -85,64 +85,61 @@ export default function ListUserNutrition({ navigation }: { navigation: Navigati
     const [searchQuery, setSearchQuery] = useState('');
     const isImperial = unitSystem === IMPERIAL_SYSTEM;
 
-    const loadUserNutrition = useCallback(
-        async (offset = 0, limit = 20) => {
-            try {
-                const loadedUserNutrition = await getUserNutritionPaginated(offset, limit, 'DESC');
+    const loadUserNutrition = useCallback(async (offset = 0, limit = 20) => {
+        try {
+            const loadedUserNutrition = await getUserNutritionPaginated(offset, limit, 'DESC');
 
-                setUserNutritions((prevState) => {
-                    const combinedData = [
-                        ...prevState,
-                        ...loadedUserNutrition.filter(
-                            (data) => !prevState.some((prevData) => prevData.id === data.id)
-                        ),
-                    ];
+            setUserNutritions((prevState) => {
+                const combinedData = [
+                    ...prevState,
+                    ...loadedUserNutrition.filter(
+                        (data) => !prevState.some((prevData) => prevData.id === data.id)
+                    ),
+                ];
 
-                    combinedData.sort((a, b) => {
-                        if (a.date < b.date) {
-                            return -1;
-                        }
+                combinedData.sort((a, b) => {
+                    if (a.date < b.date) {
+                        return -1;
+                    }
 
-                        if (a.date > b.date) {
-                            return 1;
-                        }
+                    if (a.date > b.date) {
+                        return 1;
+                    }
 
-                        if (a?.id! < b?.id!) {
-                            return 1;
-                        }
+                    if (a?.id! < b?.id!) {
+                        return 1;
+                    }
 
-                        if (a?.id! > b?.id!) {
-                            return -1;
-                        }
+                    if (a?.id! > b?.id!) {
+                        return -1;
+                    }
 
-                        return 0;
-                    });
-
-                    return combinedData;
+                    return 0;
                 });
 
-                const vendor = await getAiApiVendor();
-                const isAiSettingsEnabled = await getSettingByType(AI_SETTINGS_TYPE);
-                const hasAiEnabled = Boolean(vendor) && isAiSettingsEnabled?.value === 'true';
-                setIsAiEnabled(hasAiEnabled);
+                return combinedData;
+            });
 
-                const jsonImportEnabledFromDb = await getSettingByType(JSON_IMPORT_TYPE);
-                if (jsonImportEnabledFromDb) {
-                    const value = jsonImportEnabledFromDb.value === 'true';
-                    setJsonImportEnabled(value);
-                }
+            const vendor = await getAiApiVendor();
+            const isAiSettingsEnabled = await getSettingByType(AI_SETTINGS_TYPE);
+            const hasAiEnabled = Boolean(vendor) && isAiSettingsEnabled?.value === 'true';
+            setIsAiEnabled(hasAiEnabled);
 
-                const csvImportEnabledFromDb = await getSettingByType(CSV_IMPORT_TYPE);
-                if (csvImportEnabledFromDb) {
-                    const value = csvImportEnabledFromDb.value === 'true';
-                    setCsvImportEnabled(value);
-                }
-            } catch (error) {
-                console.error('Failed to load user nutrition:', error);
+            const jsonImportEnabledFromDb = await getSettingByType(JSON_IMPORT_TYPE);
+            if (jsonImportEnabledFromDb) {
+                const value = jsonImportEnabledFromDb.value === 'true';
+                setJsonImportEnabled(value);
             }
-        },
-        [getSettingByType]
-    );
+
+            const csvImportEnabledFromDb = await getSettingByType(CSV_IMPORT_TYPE);
+            if (csvImportEnabledFromDb) {
+                const value = csvImportEnabledFromDb.value === 'true';
+                setCsvImportEnabled(value);
+            }
+        } catch (error) {
+            console.error('Failed to load user nutrition:', error);
+        }
+    }, [getSettingByType]);
 
     const resetScreenData = useCallback(() => {
         setSearchQuery('');
@@ -193,24 +190,15 @@ export default function ListUserNutrition({ navigation }: { navigation: Navigati
 
                 const isWritePermitted = await checkWriteIsPermitted(['Nutrition']);
                 if (isWritePermitted) {
-                    const userNutrition = userNutritions.find(
-                        (nutrition) => nutrition.id === nutritionToDelete
-                    );
-                    if (
-                        userNutrition?.source === USER_METRICS_SOURCES.HEALTH_CONNECT &&
-                        userNutrition.dataId
-                    ) {
+                    const userNutrition = userNutritions.find((nutrition) => nutrition.id === nutritionToDelete);
+                    if (userNutrition?.source === USER_METRICS_SOURCES.HEALTH_CONNECT && userNutrition.dataId) {
                         // don't wait because it never resolves https://github.com/matinzd/react-native-health-connect/issues/161
                         deleteHealthData('Nutrition', [userNutrition.dataId]);
-                        console.log(
-                            `Deleted health connect data with dataId: ${userNutrition.dataId}`
-                        );
+                        console.log(`Deleted health connect data with dataId: ${userNutrition.dataId}`);
                     }
                 }
 
-                const updatedUserNutrition = userNutritions.filter(
-                    (nutrition) => nutrition.id !== nutritionToDelete
-                );
+                const updatedUserNutrition = userNutritions.filter((nutrition) => nutrition.id !== nutritionToDelete);
                 setUserNutritions(updatedUserNutrition);
                 setIsDeleteModalVisible(false);
                 setNutritionToDelete(null);
@@ -302,24 +290,25 @@ export default function ListUserNutrition({ navigation }: { navigation: Navigati
         setNutritionToDelete(null);
     };
 
-    const filteredUserNutrition = useMemo(
-        () =>
-            userNutritions.reverse().filter((nutrition) => {
-                const searchLower = searchQuery.toLowerCase();
-                return (
-                    nutrition.name?.toLowerCase().includes(searchLower) ||
-                    nutrition.calories?.toString().toLowerCase().includes(searchLower) ||
-                    nutrition.carbohydrate?.toString().toLowerCase().includes(searchLower) ||
-                    nutrition.fat?.toString().toLowerCase().includes(searchLower) ||
-                    nutrition.protein?.toString().toLowerCase().includes(searchLower) ||
-                    nutrition.date?.toLowerCase().includes(searchLower) ||
-                    nutrition.dataId?.toLowerCase().includes(searchLower) ||
-                    nutrition.deletedAt?.toLowerCase().includes(searchLower) ||
-                    nutrition.userId?.toString().toLowerCase().includes(searchLower)
-                );
-            }),
-        [userNutritions, searchQuery]
-    );
+    const filteredUserNutrition = useMemo(() => userNutritions.reverse().filter((nutrition) => {
+        const searchLower = searchQuery.toLowerCase();
+        return (
+            nutrition.name?.toLowerCase().includes(searchLower)
+            || nutrition.calories?.toString().toLowerCase()
+                .includes(searchLower)
+            || nutrition.carbohydrate?.toString().toLowerCase()
+                .includes(searchLower)
+            || nutrition.fat?.toString().toLowerCase()
+                .includes(searchLower)
+            || nutrition.protein?.toString().toLowerCase()
+                .includes(searchLower)
+            || nutrition.date?.toLowerCase().includes(searchLower)
+            || nutrition.dataId?.toLowerCase().includes(searchLower)
+            || nutrition.deletedAt?.toLowerCase().includes(searchLower)
+            || nutrition.userId?.toString().toLowerCase()
+                .includes(searchLower)
+        );
+    }), [userNutritions, searchQuery]);
 
     const handleCancelImportJson = useCallback(() => {
         setJsonImportModalVisible(false);
@@ -364,30 +353,21 @@ export default function ListUserNutrition({ navigation }: { navigation: Navigati
     }, [fetchTotalUserNutritionCount, loadUserNutrition]);
 
     const fabActions = useMemo(() => {
-        const actions = [
-            {
-                icon: () => (
-                    <FontAwesome5 color={colors.primary} name="plus" size={FAB_ICON_SIZE} />
-                ),
-                label: t('create_user_nutrition'),
-                onPress: () => navigation.navigate('createUserNutrition'),
-                style: { backgroundColor: colors.surface },
-            },
-            {
-                icon: () => (
-                    <FontAwesome5 color={colors.primary} name="trash" size={FAB_ICON_SIZE} />
-                ),
-                label: t('delete_all_health_connect_data'),
-                onPress: handleRemoveAllHealthConnectData,
-                style: { backgroundColor: colors.surface },
-            },
-        ];
+        const actions = [{
+            icon: () => <FontAwesome5 color={colors.primary} name="plus" size={FAB_ICON_SIZE} />,
+            label: t('create_user_nutrition'),
+            onPress: () => navigation.navigate('createUserNutrition'),
+            style: { backgroundColor: colors.surface },
+        }, {
+            icon: () => <FontAwesome5 color={colors.primary} name="trash" size={FAB_ICON_SIZE} />,
+            label: t('delete_all_health_connect_data'),
+            onPress: handleRemoveAllHealthConnectData,
+            style: { backgroundColor: colors.surface },
+        }];
 
         if (jsonImportEnabled) {
             actions.unshift({
-                icon: () => (
-                    <FontAwesome5 color={colors.primary} name="file-import" size={FAB_ICON_SIZE} />
-                ),
+                icon: () => <FontAwesome5 color={colors.primary} name="file-import" size={FAB_ICON_SIZE} />,
                 label: t('import_from_json_file'),
                 onPress: () => setJsonImportModalVisible(true),
                 style: { backgroundColor: colors.surface },
@@ -396,9 +376,7 @@ export default function ListUserNutrition({ navigation }: { navigation: Navigati
 
         if (csvImportEnabled) {
             actions.unshift({
-                icon: () => (
-                    <FontAwesome5 color={colors.primary} name="file-csv" size={FAB_ICON_SIZE} />
-                ),
+                icon: () => <FontAwesome5 color={colors.primary} name="file-csv" size={FAB_ICON_SIZE} />,
                 label: t('import_from_csv_file'),
                 onPress: () => setCsvImportModalVisible(true),
                 style: { backgroundColor: colors.surface },
@@ -415,37 +393,22 @@ export default function ListUserNutrition({ navigation }: { navigation: Navigati
         }
 
         return actions;
-    }, [
-        t,
-        colors.surface,
-        colors.primary,
-        handleRemoveAllHealthConnectData,
-        jsonImportEnabled,
-        csvImportEnabled,
-        isAiEnabled,
-        navigation,
-    ]);
+    }, [t, colors.surface, colors.primary, handleRemoveAllHealthConnectData, jsonImportEnabled, csvImportEnabled, isAiEnabled, navigation]);
 
     return (
         <Screen style={styles.container}>
             <FABWrapper actions={fabActions} icon="cog" visible>
                 <View style={styles.container}>
-                    <Appbar.Header mode="small" statusBarHeight={0} style={styles.appbarHeader}>
-                        <Appbar.Content
-                            title={t('user_nutrition')}
-                            titleStyle={styles.appbarTitle}
-                        />
-                        <AnimatedSearchBar
-                            searchQuery={searchQuery}
-                            setSearchQuery={setSearchQuery}
-                        />
+                    <Appbar.Header
+                        mode="small"
+                        statusBarHeight={0}
+                        style={styles.appbarHeader}
+                    >
+                        <Appbar.Content title={t('user_nutrition')} titleStyle={styles.appbarTitle} />
+                        <AnimatedSearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
                     </Appbar.Header>
                     <FlashList
-                        ListFooterComponent={
-                            userNutritions.length < totalUserNutritionCount ? (
-                                <ActivityIndicator />
-                            ) : null
-                        }
+                        ListFooterComponent={userNutritions.length < totalUserNutritionCount ? <ActivityIndicator /> : null}
                         contentContainerStyle={styles.scrollViewContent}
                         data={filteredUserNutrition}
                         estimatedItemSize={115}
@@ -460,55 +423,22 @@ export default function ListUserNutrition({ navigation }: { navigation: Navigati
                                             {formatDate(nutrition.date)}
                                         </Text>
                                         <View style={styles.metricRow}>
-                                            <Text style={styles.metricDetail}>
-                                                {t('name')}: {nutrition.name}
-                                            </Text>
+                                            <Text style={styles.metricDetail}>{t('name')}: {nutrition.name}</Text>
                                         </View>
                                         <View style={styles.metricRow}>
-                                            <Text style={styles.metricDetail}>
-                                                {t('calories')}: {safeToFixed(nutrition.calories)}
-                                                kcal
-                                            </Text>
-                                            <Text style={styles.metricDetail}>
-                                                {t('carbs')}:{' '}
-                                                {getDisplayFormattedWeight(
-                                                    nutrition.carbohydrate,
-                                                    GRAMS,
-                                                    isImperial
-                                                )}
-                                                {macroUnit}
-                                            </Text>
+                                            <Text style={styles.metricDetail}>{t('calories')}: {safeToFixed(nutrition.calories)}kcal</Text>
+                                            <Text style={styles.metricDetail}>{t('carbs')}: {getDisplayFormattedWeight(nutrition.carbohydrate, GRAMS, isImperial)}{macroUnit}</Text>
                                         </View>
                                         <View style={styles.metricRow}>
-                                            <Text style={styles.metricDetail}>
-                                                {t('fats')}:{' '}
-                                                {getDisplayFormattedWeight(
-                                                    nutrition.fat,
-                                                    GRAMS,
-                                                    isImperial
-                                                )}
-                                                {macroUnit}
-                                            </Text>
-                                            <Text style={styles.metricDetail}>
-                                                {t('proteins')}:{' '}
-                                                {getDisplayFormattedWeight(
-                                                    nutrition.protein,
-                                                    GRAMS,
-                                                    isImperial
-                                                )}
-                                                {macroUnit}
-                                            </Text>
+                                            <Text style={styles.metricDetail}>{t('fats')}: {getDisplayFormattedWeight(nutrition.fat, GRAMS, isImperial)}{macroUnit}</Text>
+                                            <Text style={styles.metricDetail}>{t('proteins')}: {getDisplayFormattedWeight(nutrition.protein, GRAMS, isImperial)}{macroUnit}</Text>
                                         </View>
                                     </View>
                                     <View style={styles.cardActions}>
                                         <FontAwesome5
                                             color={colors.primary}
                                             name="edit"
-                                            onPress={() =>
-                                                navigation.navigate('createUserNutrition', {
-                                                    id: nutrition.id,
-                                                })
-                                            }
+                                            onPress={() => navigation.navigate('createUserNutrition', { id: nutrition.id })}
                                             size={ICON_SIZE}
                                             style={styles.iconButton}
                                         />
@@ -534,9 +464,7 @@ export default function ListUserNutrition({ navigation }: { navigation: Navigati
                         {isModalLoading ? (
                             <>
                                 <ActivityIndicator size="large" style={styles.loadingIndicator} />
-                                <Text style={styles.loadingText}>
-                                    {t('this_might_take_a_minute_or_more')}
-                                </Text>
+                                <Text style={styles.loadingText}>{t('this_might_take_a_minute_or_more')}</Text>
                             </>
                         ) : (
                             <>
@@ -558,43 +486,35 @@ export default function ListUserNutrition({ navigation }: { navigation: Navigati
                         visible={jsonImportModalVisible}
                     >
                         <ScrollView contentContainerStyle={styles.scrollContainer}>
-                            <Text style={styles.modalTitle}>{t('import_from_json_file')}</Text>
+                            <Text style={styles.modalTitle}>
+                                {t('import_from_json_file')}
+                            </Text>
                             <Text style={styles.modalText}>
                                 {t('past_nutrition_json_format_description', {
-                                    jsonFormat: JSON.stringify(
-                                        [
-                                            {
-                                                calories: 2500,
-                                                carbs: 300,
-                                                cholesterol: 200,
-                                                date: '2023-06-15',
-                                                fat: 80,
-                                                fat_saturated: 20,
-                                                fat_unsaturated: 60,
-                                                fiber: 25,
-                                                potassium: 3500,
-                                                protein: 150,
-                                                sodium: 2300,
-                                                sugar: 50,
-                                                type: 'full_day || meal',
-                                            },
-                                        ],
-                                        null,
-                                        1
-                                    ),
+                                    jsonFormat: JSON.stringify([{
+                                        calories: 2500,
+                                        carbs: 300,
+                                        cholesterol: 200,
+                                        date: '2023-06-15',
+                                        fat: 80,
+                                        fat_saturated: 20,
+                                        fat_unsaturated: 60,
+                                        fiber: 25,
+                                        potassium: 3500,
+                                        protein: 150,
+                                        sodium: 2300,
+                                        sugar: 50,
+                                        type: 'full_day || meal',
+                                    }], null, 1),
                                 })}
                             </Text>
                             <View style={styles.checkboxContainer}>
                                 <Checkbox
-                                    onPress={() =>
-                                        setImportAsFullDayOfEating(!importAsFullDayOfEating)
-                                    }
+                                    onPress={() => setImportAsFullDayOfEating(!importAsFullDayOfEating)}
                                     status={importAsFullDayOfEating ? 'checked' : 'unchecked'}
                                 />
                                 <Pressable
-                                    onPress={() =>
-                                        setImportAsFullDayOfEating(!importAsFullDayOfEating)
-                                    }
+                                    onPress={() => setImportAsFullDayOfEating(!importAsFullDayOfEating)}
                                 >
                                     <Text style={styles.checkboxLabel}>
                                         {t('import_as_full_day_of_eating')}
@@ -604,16 +524,10 @@ export default function ListUserNutrition({ navigation }: { navigation: Navigati
                         </ScrollView>
                         {jsonFilename ? (
                             <View style={styles.selectedFileWrapper}>
-                                <Text>
-                                    {t('selected_file')}: {jsonFilename}
-                                </Text>
+                                <Text>{t('selected_file')}: {jsonFilename}</Text>
                             </View>
                         ) : (
-                            <Button
-                                mode="contained"
-                                onPress={handleSelectJsonFile}
-                                style={styles.selectJsonButton}
-                            >
+                            <Button mode="contained" onPress={handleSelectJsonFile} style={styles.selectJsonButton}>
                                 {t('select_json_file')}
                             </Button>
                         )}
@@ -626,40 +540,21 @@ export default function ListUserNutrition({ navigation }: { navigation: Navigati
                         visible={csvImportModalVisible}
                     >
                         <ScrollView contentContainerStyle={styles.scrollContainer}>
-                            <Text style={styles.modalTitle}>{t('import_from_csv_file')}</Text>
+                            <Text style={styles.modalTitle}>
+                                {t('import_from_csv_file')}
+                            </Text>
                             <Text style={styles.modalText}>
                                 {t('past_nutrition_csv_format_description', {
-                                    csvColumns: [
-                                        'date',
-                                        'name',
-                                        'amount_in_grams',
-                                        'calories',
-                                        'carbs',
-                                        'fiber',
-                                        'sugar',
-                                        'cholesterol',
-                                        'fat',
-                                        'fat_saturated',
-                                        'fat_unsaturated',
-                                        'potassium',
-                                        'protein',
-                                        'sodium',
-                                    ].join(','),
+                                    csvColumns: ['date', 'name', 'amount_in_grams', 'calories', 'carbs', 'fiber', 'sugar', 'cholesterol', 'fat', 'fat_saturated', 'fat_unsaturated', 'potassium', 'protein', 'sodium'].join(','),
                                 })}
                             </Text>
                         </ScrollView>
                         {csvFilename ? (
                             <View style={styles.selectedFileWrapper}>
-                                <Text>
-                                    {t('selected_file')}: {csvFilename}
-                                </Text>
+                                <Text>{t('selected_file')}: {csvFilename}</Text>
                             </View>
                         ) : (
-                            <Button
-                                mode="contained"
-                                onPress={handleSelectCsvFile}
-                                style={styles.selectJsonButton}
-                            >
+                            <Button mode="contained" onPress={handleSelectCsvFile} style={styles.selectJsonButton}>
                                 {t('select_csv_file')}
                             </Button>
                         )}
@@ -670,9 +565,7 @@ export default function ListUserNutrition({ navigation }: { navigation: Navigati
                         onClose={handleDeleteCancel}
                         onConfirm={handleDeleteConfirmation}
                         title={t('delete_confirmation_generic', {
-                            title: userNutritions.find(
-                                (nutrition) => nutrition.id === nutritionToDelete
-                            )?.name,
+                            title: userNutritions.find((nutrition) => nutrition.id === nutritionToDelete)?.name,
                         })}
                         visible={isDeleteModalVisible}
                     />
@@ -684,7 +577,9 @@ export default function ListUserNutrition({ navigation }: { navigation: Navigati
                         title={t('delete_all_health_connect_data_confirmation')}
                         visible={isConfirmRemoveAllVisible}
                     >
-                        {isLoading && <ActivityIndicator color={colors.primary} size="large" />}
+                        {isLoading && (
+                            <ActivityIndicator color={colors.primary} size="large" />
+                        )}
                     </ThemedModal>
                 </View>
             </FABWrapper>
@@ -692,93 +587,92 @@ export default function ListUserNutrition({ navigation }: { navigation: Navigati
     );
 }
 
-const makeStyles = (colors: CustomThemeColorsType, dark: boolean) =>
-    StyleSheet.create({
-        appbarHeader: {
-            backgroundColor: colors.primary,
-            justifyContent: 'center',
-            paddingHorizontal: 16,
-        },
-        appbarTitle: {
-            color: colors.onPrimary,
-            fontSize: Platform.OS === 'web' ? 20 : 26,
-        },
-        cardActions: {
-            alignItems: 'center',
-            flexDirection: 'row',
-            marginTop: 8,
-        },
-        cardContent: {
-            alignItems: 'center',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-        },
-        cardHeader: {
-            flex: 1,
-            marginRight: 22,
-        },
-        cardTitle: {
-            color: colors.onSurface,
-            fontSize: 18,
-            fontWeight: 'bold',
-        },
-        checkboxContainer: {
-            alignItems: 'center',
-            flexDirection: 'row',
-            marginBottom: 12,
-            marginTop: 12,
-        },
-        checkboxLabel: {
-            color: colors.onBackground,
-            fontSize: 16,
-            marginLeft: 8,
-        },
-        container: {
-            backgroundColor: colors.background,
-            flex: 1,
-        },
-        iconButton: {
-            marginHorizontal: 8,
-        },
-        loadingIndicator: {
-            marginVertical: 16,
-        },
-        loadingText: {
-            color: colors.onBackground,
-            fontSize: 16,
-            marginTop: 8,
-            textAlign: 'center',
-        },
-        metricDetail: {
-            color: colors.onSurface,
-            fontSize: 14,
-            marginBottom: 4,
-        },
-        metricRow: {
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-        },
-        modalText: {
-            fontSize: 14,
-            marginBottom: 20,
-        },
-        modalTitle: {
-            fontSize: 18,
-            fontWeight: 'bold',
-            marginBottom: 12,
-        },
-        scrollContainer: {
-            flex: 1,
-        },
-        scrollViewContent: {
-            backgroundColor: colors.background,
-            paddingBottom: 16,
-            paddingHorizontal: 16,
-        },
-        selectJsonButton: {
-            marginBottom: 12,
-        },
-        selectedFileWrapper: {
-            marginBottom: 24,
-        },
-    });
+const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
+    appbarHeader: {
+        backgroundColor: colors.primary,
+        justifyContent: 'center',
+        paddingHorizontal: 16,
+    },
+    appbarTitle: {
+        color: colors.onPrimary,
+        fontSize: Platform.OS === 'web' ? 20 : 26,
+    },
+    cardActions: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        marginTop: 8,
+    },
+    cardContent: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    cardHeader: {
+        flex: 1,
+        marginRight: 22,
+    },
+    cardTitle: {
+        color: colors.onSurface,
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    checkboxContainer: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        marginBottom: 12,
+        marginTop: 12,
+    },
+    checkboxLabel: {
+        color: colors.onBackground,
+        fontSize: 16,
+        marginLeft: 8,
+    },
+    container: {
+        backgroundColor: colors.background,
+        flex: 1,
+    },
+    iconButton: {
+        marginHorizontal: 8,
+    },
+    loadingIndicator: {
+        marginVertical: 16,
+    },
+    loadingText: {
+        color: colors.onBackground,
+        fontSize: 16,
+        marginTop: 8,
+        textAlign: 'center',
+    },
+    metricDetail: {
+        color: colors.onSurface,
+        fontSize: 14,
+        marginBottom: 4,
+    },
+    metricRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    modalText: {
+        fontSize: 14,
+        marginBottom: 20,
+    },
+    modalTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 12,
+    },
+    scrollContainer: {
+        flex: 1,
+    },
+    scrollViewContent: {
+        backgroundColor: colors.background,
+        paddingBottom: 16,
+        paddingHorizontal: 16,
+    },
+    selectJsonButton: {
+        marginBottom: 12,
+    },
+    selectedFileWrapper: {
+        marginBottom: 24,
+    },
+});

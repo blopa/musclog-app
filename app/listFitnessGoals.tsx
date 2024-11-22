@@ -171,17 +171,16 @@ export default function ListFitnessGoals({ navigation }: { navigation: Navigatio
         <Screen style={styles.container}>
             <FABWrapper actions={fabActions} icon="cog" visible>
                 <View style={styles.container}>
-                    <Appbar.Header mode="small" statusBarHeight={0} style={styles.appbarHeader}>
-                        <Appbar.Content
-                            title={t('fitness_goals')}
-                            titleStyle={styles.appbarTitle}
-                        />
+                    <Appbar.Header
+                        mode="small"
+                        statusBarHeight={0}
+                        style={styles.appbarHeader}
+                    >
+                        <Appbar.Content title={t('fitness_goals')} titleStyle={styles.appbarTitle} />
                     </Appbar.Header>
                     {latestFitnessGoal && (
                         <ThemedCard style={styles.latestGoalCard}>
-                            <Text style={styles.cardTitle}>
-                                {t('current_fitness_goals').toUpperCase()}
-                            </Text>
+                            <Text style={styles.cardTitle}>{t('current_fitness_goals').toUpperCase()}</Text>
                             <Card.Content style={styles.latestGoalContent}>
                                 <View style={styles.goalTextContainer}>
                                     <Text style={styles.metricDetailText}>
@@ -193,33 +192,21 @@ export default function ListFitnessGoals({ navigation }: { navigation: Navigatio
                                     <Text style={styles.metricDetailText}>
                                         {t('item_value_unit', {
                                             item: t('protein'),
-                                            value: getDisplayFormattedWeight(
-                                                latestFitnessGoal.protein || 0,
-                                                GRAMS,
-                                                isImperial
-                                            ).toString(),
+                                            value: getDisplayFormattedWeight(latestFitnessGoal.protein || 0, GRAMS, isImperial).toString(),
                                             weightUnit: macroUnit,
                                         })}
                                     </Text>
                                     <Text style={styles.metricDetailText}>
                                         {t('item_value_unit', {
                                             item: t('carbohydrates'),
-                                            value: getDisplayFormattedWeight(
-                                                latestFitnessGoal.totalCarbohydrate || 0,
-                                                GRAMS,
-                                                isImperial
-                                            ).toString(),
+                                            value: getDisplayFormattedWeight(latestFitnessGoal.totalCarbohydrate || 0, GRAMS, isImperial).toString(),
                                             weightUnit: macroUnit,
                                         })}
                                     </Text>
                                     <Text style={styles.metricDetailText}>
                                         {t('item_value_unit', {
                                             item: t('fat'),
-                                            value: getDisplayFormattedWeight(
-                                                latestFitnessGoal.totalFat || 0,
-                                                GRAMS,
-                                                isImperial
-                                            ).toString(),
+                                            value: getDisplayFormattedWeight(latestFitnessGoal.totalFat || 0, GRAMS, isImperial).toString(),
                                             weightUnit: macroUnit,
                                         })}
                                     </Text>
@@ -227,33 +214,9 @@ export default function ListFitnessGoals({ navigation }: { navigation: Navigatio
                                 <View style={styles.pieChartContainer}>
                                     <PieChart
                                         data={[
-                                            {
-                                                label: t('protein'),
-                                                value: getDisplayFormattedWeight(
-                                                    latestFitnessGoal.protein || 0,
-                                                    GRAMS,
-                                                    isImperial
-                                                ),
-                                                color: '#4CAF50',
-                                            },
-                                            {
-                                                label: t('carbohydrates'),
-                                                value: getDisplayFormattedWeight(
-                                                    latestFitnessGoal.totalCarbohydrate || 0,
-                                                    GRAMS,
-                                                    isImperial
-                                                ),
-                                                color: '#2196F3',
-                                            },
-                                            {
-                                                label: t('fat'),
-                                                value: getDisplayFormattedWeight(
-                                                    latestFitnessGoal.totalFat || 0,
-                                                    GRAMS,
-                                                    isImperial
-                                                ),
-                                                color: '#FF9800',
-                                            },
+                                            { label: t('protein'), value: getDisplayFormattedWeight(latestFitnessGoal.protein || 0, GRAMS, isImperial), color: '#4CAF50' },
+                                            { label: t('carbohydrates'), value: getDisplayFormattedWeight(latestFitnessGoal.totalCarbohydrate || 0, GRAMS, isImperial), color: '#2196F3' },
+                                            { label: t('fat'), value: getDisplayFormattedWeight(latestFitnessGoal.totalFat || 0, GRAMS, isImperial), color: '#FF9800' },
                                         ]}
                                         showShareImageButton={false}
                                         size={130}
@@ -285,19 +248,12 @@ export default function ListFitnessGoals({ navigation }: { navigation: Navigatio
                                         </Text>
                                         <View style={styles.metricRow}>
                                             <Text style={styles.metricDetailText}>
-                                                {t('item_value', {
-                                                    item: t('calories'),
-                                                    value: goal.calories,
-                                                })}
+                                                {t('item_value', { item: t('calories'), value: goal.calories })}
                                             </Text>
                                             <Text style={styles.metricDetailText}>
                                                 {t('item_value_unit', {
                                                     item: t('protein'),
-                                                    value: getDisplayFormattedWeight(
-                                                        goal.protein || 0,
-                                                        GRAMS,
-                                                        isImperial
-                                                    ).toString(),
+                                                    value: getDisplayFormattedWeight(goal.protein || 0, GRAMS, isImperial).toString(),
                                                     weightUnit: macroUnit,
                                                 })}
                                             </Text>
@@ -306,22 +262,14 @@ export default function ListFitnessGoals({ navigation }: { navigation: Navigatio
                                             <Text style={styles.metricDetailText}>
                                                 {t('item_value_unit', {
                                                     item: t('carbohydrates'),
-                                                    value: getDisplayFormattedWeight(
-                                                        goal.totalCarbohydrate || 0,
-                                                        GRAMS,
-                                                        isImperial
-                                                    ).toString(),
+                                                    value: getDisplayFormattedWeight(goal.totalCarbohydrate || 0, GRAMS, isImperial).toString(),
                                                     weightUnit: macroUnit,
                                                 })}
                                             </Text>
                                             <Text style={styles.metricDetailText}>
                                                 {t('item_value_unit', {
                                                     item: t('fat'),
-                                                    value: getDisplayFormattedWeight(
-                                                        goal.totalFat || 0,
-                                                        GRAMS,
-                                                        isImperial
-                                                    ).toString(),
+                                                    value: getDisplayFormattedWeight(goal.totalFat || 0, GRAMS, isImperial).toString(),
                                                     weightUnit: macroUnit,
                                                 })}
                                             </Text>
@@ -332,9 +280,7 @@ export default function ListFitnessGoals({ navigation }: { navigation: Navigatio
                                             color={colors.primary}
                                             name="edit"
                                             onPress={() =>
-                                                navigation.navigate('createFitnessGoals', {
-                                                    id: goal.id,
-                                                })
+                                                navigation.navigate('createFitnessGoals', { id: goal.id })
                                             }
                                             size={ICON_SIZE}
                                             style={styles.iconButton}
@@ -367,77 +313,76 @@ export default function ListFitnessGoals({ navigation }: { navigation: Navigatio
     );
 }
 
-const makeStyles = (colors: CustomThemeColorsType, dark: boolean) =>
-    StyleSheet.create({
-        appbarHeader: {
-            backgroundColor: colors.primary,
-            justifyContent: 'center',
-            paddingHorizontal: 16,
-        },
-        appbarTitle: {
-            color: colors.onPrimary,
-            fontSize: Platform.OS === 'web' ? 20 : 26,
-        },
-        cardActions: {
-            alignItems: 'center',
-            flexDirection: 'row',
-            marginTop: 8,
-        },
-        cardHeader: {
-            flex: 1,
-        },
-        cardTitle: {
-            color: colors.onSurface,
-            fontSize: 18,
-            fontWeight: 'bold',
-            marginBottom: 8,
-            marginTop: 8,
-            textAlign: 'center',
-        },
-        container: {
-            backgroundColor: colors.background,
-            flex: 1,
-        },
-        flashListCard: {
-            marginHorizontal: 16,
-            marginVertical: 8,
-        },
-        flashListCardContent: {
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-        },
-        goalTextContainer: {
-            flex: 1,
-            marginRight: 16,
-        },
-        iconButton: {
-            marginHorizontal: 8,
-        },
-        latestGoalCard: {
-            marginBottom: 8,
-            marginHorizontal: 16,
-            marginTop: 16,
-        },
-        latestGoalContent: {
-            alignItems: 'center',
-            flexDirection: 'row',
-        },
-        metricDetailText: {
-            color: colors.onSurface,
-            fontSize: 14,
-            marginBottom: 4,
-        },
-        metricRow: {
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-        },
-        pieChartContainer: {
-            alignItems: 'center',
-            flex: 1,
-        },
-        scrollViewContent: {
-            backgroundColor: colors.background,
-            paddingBottom: 16,
-            paddingHorizontal: 16,
-        },
-    });
+const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
+    appbarHeader: {
+        backgroundColor: colors.primary,
+        justifyContent: 'center',
+        paddingHorizontal: 16,
+    },
+    appbarTitle: {
+        color: colors.onPrimary,
+        fontSize: Platform.OS === 'web' ? 20 : 26,
+    },
+    cardActions: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        marginTop: 8,
+    },
+    cardHeader: {
+        flex: 1,
+    },
+    cardTitle: {
+        color: colors.onSurface,
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 8,
+        marginTop: 8,
+        textAlign: 'center',
+    },
+    container: {
+        backgroundColor: colors.background,
+        flex: 1,
+    },
+    flashListCard: {
+        marginHorizontal: 16,
+        marginVertical: 8,
+    },
+    flashListCardContent: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    goalTextContainer: {
+        flex: 1,
+        marginRight: 16,
+    },
+    iconButton: {
+        marginHorizontal: 8,
+    },
+    latestGoalCard: {
+        marginBottom: 8,
+        marginHorizontal: 16,
+        marginTop: 16,
+    },
+    latestGoalContent: {
+        alignItems: 'center',
+        flexDirection: 'row',
+    },
+    metricDetailText: {
+        color: colors.onSurface,
+        fontSize: 14,
+        marginBottom: 4,
+    },
+    metricRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    pieChartContainer: {
+        alignItems: 'center',
+        flex: 1,
+    },
+    scrollViewContent: {
+        backgroundColor: colors.background,
+        paddingBottom: 16,
+        paddingHorizontal: 16,
+    },
+});

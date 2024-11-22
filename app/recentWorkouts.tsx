@@ -12,11 +12,7 @@ import { useSnackbar } from '@/storage/SnackbarProvider';
 import { getAiApiVendor, parsePastWorkouts } from '@/utils/ai';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { isEmptyObject } from '@/utils/data';
-import {
-    getRecentWorkoutsPaginated,
-    getTotalRecentWorkoutsCount,
-    processRecentWorkouts,
-} from '@/utils/database';
+import { getRecentWorkoutsPaginated, getTotalRecentWorkoutsCount, processRecentWorkouts } from '@/utils/database';
 import { formatDate } from '@/utils/date';
 import { importJson } from '@/utils/file';
 import { ParsedRecentWorkout, WorkoutEventReturnType } from '@/utils/types';
@@ -50,36 +46,33 @@ export default function RecentWorkouts() {
     const navigation = useNavigation<NavigationProp<any>>();
     const { showSnackbar } = useSnackbar();
 
-    const loadWorkouts = useCallback(
-        async (offset = 0, limit = 20) => {
-            try {
-                const loadedWorkouts = await getRecentWorkoutsPaginated(offset, limit);
+    const loadWorkouts = useCallback(async (offset = 0, limit = 20) => {
+        try {
+            const loadedWorkouts = await getRecentWorkoutsPaginated(offset, limit);
 
-                setRecentWorkouts((prevState) => {
-                    return [
-                        ...prevState,
-                        ...loadedWorkouts.filter(
-                            (data) => !prevState.some((prevData) => prevData.id === data.id)
-                        ),
-                    ];
-                });
+            setRecentWorkouts((prevState) => {
+                return [
+                    ...prevState,
+                    ...loadedWorkouts.filter(
+                        (data) => !prevState.some((prevData) => prevData.id === data.id)
+                    ),
+                ];
+            });
 
-                const vendor = await getAiApiVendor();
-                const isAiSettingsEnabled = await getSettingByType(AI_SETTINGS_TYPE);
-                const hasAiEnabled = Boolean(vendor) && isAiSettingsEnabled?.value === 'true';
-                setIsAiEnabled(hasAiEnabled);
+            const vendor = await getAiApiVendor();
+            const isAiSettingsEnabled = await getSettingByType(AI_SETTINGS_TYPE);
+            const hasAiEnabled = Boolean(vendor) && isAiSettingsEnabled?.value === 'true';
+            setIsAiEnabled(hasAiEnabled);
 
-                const jsonImportEnabledFromDb = await getSettingByType(JSON_IMPORT_TYPE);
-                if (jsonImportEnabledFromDb) {
-                    const value = jsonImportEnabledFromDb.value === 'true';
-                    setJsonImportEnabled(value);
-                }
-            } catch (error) {
-                console.error('Failed to load recent workouts:', error);
+            const jsonImportEnabledFromDb = await getSettingByType(JSON_IMPORT_TYPE);
+            if (jsonImportEnabledFromDb) {
+                const value = jsonImportEnabledFromDb.value === 'true';
+                setJsonImportEnabled(value);
             }
-        },
-        [getSettingByType]
-    );
+        } catch (error) {
+            console.error('Failed to load recent workouts:', error);
+        }
+    }, [getSettingByType]);
 
     const loadMoreWorkouts = useCallback(() => {
         if (recentWorkouts.length >= totalWorkoutsCount) {
@@ -128,8 +121,7 @@ export default function RecentWorkouts() {
     );
 
     const handleViewAllRecentWorkouts = useCallback(
-        (recentWorkoutId: number) =>
-            navigation.navigate('recentWorkoutDetails', { id: recentWorkoutId }),
+        (recentWorkoutId: number) => navigation.navigate('recentWorkoutDetails', { id: recentWorkoutId }),
         [navigation]
     );
 
@@ -187,13 +179,9 @@ export default function RecentWorkouts() {
         }
     }, [showSnackbar, t]);
 
-    const filteredWorkouts = useMemo(
-        () =>
-            recentWorkouts.filter((workout) =>
-                workout.title.toLowerCase().includes(searchQuery.toLowerCase())
-            ),
-        [recentWorkouts, searchQuery]
-    );
+    const filteredWorkouts = useMemo(() => recentWorkouts.filter((workout) =>
+        workout.title.toLowerCase().includes(searchQuery.toLowerCase())
+    ), [recentWorkouts, searchQuery]);
 
     const handleCancelImportJson = useCallback(() => {
         setJsonImportModalVisible(false);
@@ -202,22 +190,16 @@ export default function RecentWorkouts() {
     }, []);
 
     const fabActions = useMemo(() => {
-        const actions = [
-            {
-                icon: () => (
-                    <FontAwesome5 color={colors.primary} name="plus" size={FAB_ICON_SIZE} />
-                ),
-                label: t('create_recent_workout'),
-                onPress: () => navigation.navigate('createRecentWorkout'),
-                style: { backgroundColor: colors.surface },
-            },
-        ];
+        const actions = [{
+            icon: () => <FontAwesome5 color={colors.primary} name="plus" size={FAB_ICON_SIZE} />,
+            label: t('create_recent_workout'),
+            onPress: () => navigation.navigate('createRecentWorkout'),
+            style: { backgroundColor: colors.surface },
+        }];
 
         if (isAiEnabled) {
             actions.unshift({
-                icon: () => (
-                    <FontAwesome5 color={colors.primary} name="brain" size={FAB_ICON_SIZE} />
-                ),
+                icon: () => <FontAwesome5 color={colors.primary} name="brain" size={FAB_ICON_SIZE} />,
                 label: t('import_with_ai'),
                 onPress: () => setModalVisible(true),
                 style: { backgroundColor: colors.surface },
@@ -226,9 +208,7 @@ export default function RecentWorkouts() {
 
         if (jsonImportEnabled) {
             actions.unshift({
-                icon: () => (
-                    <FontAwesome5 color={colors.primary} name="file-import" size={FAB_ICON_SIZE} />
-                ),
+                icon: () => <FontAwesome5 color={colors.primary} name="file-import" size={FAB_ICON_SIZE} />,
                 label: t('import_from_json_file'),
                 onPress: () => setJsonImportModalVisible(true),
                 style: { backgroundColor: colors.surface },
@@ -242,22 +222,16 @@ export default function RecentWorkouts() {
         <Screen style={styles.container}>
             <FABWrapper actions={fabActions} icon="cog" visible>
                 <View style={styles.container}>
-                    <Appbar.Header mode="small" statusBarHeight={0} style={styles.appbarHeader}>
-                        <Appbar.Content
-                            title={t('recent_workouts')}
-                            titleStyle={styles.appbarTitle}
-                        />
-                        <AnimatedSearchBar
-                            searchQuery={searchQuery}
-                            setSearchQuery={setSearchQuery}
-                        />
+                    <Appbar.Header
+                        mode="small"
+                        statusBarHeight={0}
+                        style={styles.appbarHeader}
+                    >
+                        <Appbar.Content title={t('recent_workouts')} titleStyle={styles.appbarTitle} />
+                        <AnimatedSearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
                     </Appbar.Header>
                     <FlashList
-                        ListFooterComponent={
-                            recentWorkouts.length < totalWorkoutsCount ? (
-                                <ActivityIndicator />
-                            ) : null
-                        }
+                        ListFooterComponent={recentWorkouts.length < totalWorkoutsCount ? <ActivityIndicator /> : null}
                         contentContainerStyle={styles.scrollViewContent}
                         data={filteredWorkouts}
                         estimatedItemSize={100}
@@ -269,14 +243,11 @@ export default function RecentWorkouts() {
                                 <Card.Content style={styles.cardContent}>
                                     <View style={styles.cardHeader}>
                                         <Text style={styles.cardTitle}>{workout.title}</Text>
-                                        <Text style={styles.cardDate}>
-                                            {formatDate(workout.date)}
-                                        </Text>
+                                        <Text style={styles.cardDate}>{formatDate(workout.date)}</Text>
                                         <StatusBadge status={workout.status} />
                                         {workout?.duration ? (
                                             <Text style={styles.cardDuration}>
-                                                {workout.duration}{' '}
-                                                {t(workout.duration > 1 ? 'minutes' : 'minute')}
+                                                {workout.duration} {t(workout.duration > 1 ? 'minutes' : 'minute')}
                                             </Text>
                                         ) : null}
                                     </View>
@@ -310,9 +281,7 @@ export default function RecentWorkouts() {
                         {isModalLoading ? (
                             <>
                                 <ActivityIndicator size="large" style={styles.loadingIndicator} />
-                                <Text style={styles.loadingText}>
-                                    {t('this_might_take_a_minute_or_more')}
-                                </Text>
+                                <Text style={styles.loadingText}>{t('this_might_take_a_minute_or_more')}</Text>
                             </>
                         ) : (
                             <>
@@ -337,51 +306,35 @@ export default function RecentWorkouts() {
                             <Text style={styles.modalTitle}>{t('import_from_json_file')}</Text>
                             <Text style={styles.modalText}>
                                 {t('recent_workouts_json_format_description', {
-                                    jsonFormat: JSON.stringify(
-                                        [
-                                            {
-                                                date: '2023-06-15T06:35:00Z',
-                                                description: 'description',
-                                                duration: 300,
-                                                title: 'Chest and Back Day',
-                                                exercises: [
-                                                    {
-                                                        muscleGroup: 'chest',
-                                                        name: 'Bench Press',
-                                                        sets: [
-                                                            {
-                                                                createdAt: '2023-06-15T06:35:00Z',
-                                                                isDropSet: false,
-                                                                reps: 8,
-                                                                restTime: 90,
-                                                                targetReps: 8,
-                                                                targetWeight: 110,
-                                                                weight: 110,
-                                                            },
-                                                        ],
-                                                        type: 'compound',
-                                                    },
-                                                ],
-                                            },
-                                        ],
-                                        null,
-                                        1
-                                    ),
+                                    jsonFormat: JSON.stringify([{
+                                        date: '2023-06-15T06:35:00Z',
+                                        description: 'description',
+                                        duration: 300,
+                                        title: 'Chest and Back Day',
+                                        exercises: [{
+                                            muscleGroup: 'chest',
+                                            name: 'Bench Press',
+                                            sets: [{
+                                                createdAt: '2023-06-15T06:35:00Z',
+                                                isDropSet: false,
+                                                reps: 8,
+                                                restTime: 90,
+                                                targetReps: 8,
+                                                targetWeight: 110,
+                                                weight: 110,
+                                            }],
+                                            type: 'compound',
+                                        }],
+                                    }], null, 1),
                                 })}
                             </Text>
                         </ScrollView>
                         {jsonFilename ? (
                             <View style={styles.selectedFileWrapper}>
-                                <Text>
-                                    {t('selected_file')}: {jsonFilename}
-                                </Text>
+                                <Text>{t('selected_file')}: {jsonFilename}</Text>
                             </View>
                         ) : (
-                            <Button
-                                mode="contained"
-                                onPress={handleSelectJsonFile}
-                                style={styles.selectJsonButton}
-                            >
+                            <Button mode="contained" onPress={handleSelectJsonFile} style={styles.selectJsonButton}>
                                 {t('select_json_file')}
                             </Button>
                         )}
@@ -392,79 +345,78 @@ export default function RecentWorkouts() {
     );
 }
 
-const makeStyles = (colors: CustomThemeColorsType, dark: boolean) =>
-    StyleSheet.create({
-        appbarHeader: {
-            backgroundColor: colors.primary,
-            justifyContent: 'center',
-            paddingHorizontal: 16,
-        },
-        appbarTitle: {
-            color: colors.onPrimary,
-            fontSize: Platform.OS === 'web' ? 20 : 26,
-        },
-        cardActions: {
-            alignItems: 'center',
-            flexDirection: 'row',
-        },
-        cardContent: {
-            alignItems: 'center',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-        },
-        cardDate: {
-            color: colors.onBackground,
-            fontSize: 14,
-        },
-        cardDuration: {
-            color: colors.onBackground,
-            marginTop: 4,
-        },
-        cardHeader: {
-            flex: 1,
-        },
-        cardTitle: {
-            color: colors.onSurface,
-            fontSize: 18,
-            fontWeight: 'bold',
-        },
-        container: {
-            backgroundColor: colors.background,
-            flex: 1,
-        },
-        iconButton: {
-            marginHorizontal: 8,
-        },
-        loadingIndicator: {
-            marginVertical: 16,
-        },
-        loadingText: {
-            color: colors.onBackground,
-            fontSize: 16,
-            marginTop: 8,
-            textAlign: 'center',
-        },
-        modalText: {
-            fontSize: 14,
-            marginBottom: 20,
-        },
-        modalTitle: {
-            fontSize: 18,
-            fontWeight: 'bold',
-            marginBottom: 12,
-        },
-        scrollContainer: {
-            flex: 1,
-        },
-        scrollViewContent: {
-            backgroundColor: colors.background,
-            paddingBottom: 16,
-            paddingHorizontal: 16,
-        },
-        selectJsonButton: {
-            marginBottom: 12,
-        },
-        selectedFileWrapper: {
-            marginBottom: 24,
-        },
-    });
+const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
+    appbarHeader: {
+        backgroundColor: colors.primary,
+        justifyContent: 'center',
+        paddingHorizontal: 16,
+    },
+    appbarTitle: {
+        color: colors.onPrimary,
+        fontSize: Platform.OS === 'web' ? 20 : 26,
+    },
+    cardActions: {
+        alignItems: 'center',
+        flexDirection: 'row',
+    },
+    cardContent: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    cardDate: {
+        color: colors.onBackground,
+        fontSize: 14,
+    },
+    cardDuration: {
+        color: colors.onBackground,
+        marginTop: 4,
+    },
+    cardHeader: {
+        flex: 1,
+    },
+    cardTitle: {
+        color: colors.onSurface,
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    container: {
+        backgroundColor: colors.background,
+        flex: 1,
+    },
+    iconButton: {
+        marginHorizontal: 8,
+    },
+    loadingIndicator: {
+        marginVertical: 16,
+    },
+    loadingText: {
+        color: colors.onBackground,
+        fontSize: 16,
+        marginTop: 8,
+        textAlign: 'center',
+    },
+    modalText: {
+        fontSize: 14,
+        marginBottom: 20,
+    },
+    modalTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 12,
+    },
+    scrollContainer: {
+        flex: 1,
+    },
+    scrollViewContent: {
+        backgroundColor: colors.background,
+        paddingBottom: 16,
+        paddingHorizontal: 16,
+    },
+    selectJsonButton: {
+        marginBottom: 12,
+    },
+    selectedFileWrapper: {
+        marginBottom: 24,
+    },
+});

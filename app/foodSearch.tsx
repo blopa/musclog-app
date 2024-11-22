@@ -133,7 +133,11 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
                     style={styles.searchInput}
                     mode="outlined"
                 />
-                <Button mode="outlined" onPress={handleSearch} style={styles.iconButton}>
+                <Button
+                    mode="outlined"
+                    onPress={handleSearch}
+                    style={styles.iconButton}
+                >
                     <FontAwesome5 name="search" size={20} color={colors.primary} />
                 </Button>
             </View>
@@ -148,7 +152,9 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 <FlashList
                     data={searchResults}
                     keyExtractor={(item, index) => (item.productTitle || index).toString()}
-                    renderItem={({ item }) => <FoodItem food={item} onAddFood={handleAddFood} />}
+                    renderItem={
+                        ({ item }) => <FoodItem food={item} onAddFood={handleAddFood} />
+                    }
                     estimatedItemSize={115}
                     contentContainerStyle={styles.listContent}
                     onEndReached={loadMoreResults}
@@ -157,72 +163,71 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
                         isLoading ? (
                             <ActivityIndicator size="large" color={colors.primary} />
                         ) : loadMoreError ? (
-                            <Button
-                                onPress={loadMoreResults}
-                                mode="outlined"
-                                style={styles.loadMoreButton}
-                            >
+                            <Button onPress={loadMoreResults} mode="outlined" style={styles.loadMoreButton}>
                                 {t('load_more')}
                             </Button>
                         ) : null
                     }
                 />
             )}
-            <FoodTrackingModal visible={isModalVisible} onClose={closeModal} food={selectedFood} />
+            <FoodTrackingModal
+                visible={isModalVisible}
+                onClose={closeModal}
+                food={selectedFood}
+            />
         </Screen>
     );
 };
 
-const makeStyles = (colors: CustomThemeColorsType, dark: boolean) =>
-    StyleSheet.create({
-        addButton: {
-            alignSelf: 'center',
-            marginTop: 16,
-        },
-        appbarHeader: {
-            backgroundColor: colors.primary,
-            justifyContent: 'center',
-            paddingHorizontal: 16,
-        },
-        appbarTitle: {
-            color: colors.onPrimary,
-            fontSize: Platform.OS === 'web' ? 20 : 26,
-        },
-        container: {
-            backgroundColor: colors.background,
-            flex: 1,
-        },
-        iconButton: {
-            marginLeft: 8,
-        },
-        listContent: {
-            backgroundColor: colors.background,
-            paddingBottom: 16,
-            paddingHorizontal: 16,
-        },
-        loadMoreButton: {
-            alignSelf: 'center',
-            marginVertical: 10,
-        },
-        noResultsContainer: {
-            alignItems: 'center',
-            marginTop: 20,
-        },
-        noResultsText: {
-            color: colors.onSurface,
-            fontSize: 16,
-        },
-        searchContainer: {
-            alignItems: 'center',
-            flexDirection: 'row',
-            marginBottom: 16,
-            marginTop: 12,
-            paddingHorizontal: 16,
-        },
-        searchInput: {
-            backgroundColor: colors.surface,
-            flex: 1,
-        },
-    });
+const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
+    addButton: {
+        alignSelf: 'center',
+        marginTop: 16,
+    },
+    appbarHeader: {
+        backgroundColor: colors.primary,
+        justifyContent: 'center',
+        paddingHorizontal: 16,
+    },
+    appbarTitle: {
+        color: colors.onPrimary,
+        fontSize: Platform.OS === 'web' ? 20 : 26,
+    },
+    container: {
+        backgroundColor: colors.background,
+        flex: 1,
+    },
+    iconButton: {
+        marginLeft: 8,
+    },
+    listContent: {
+        backgroundColor: colors.background,
+        paddingBottom: 16,
+        paddingHorizontal: 16,
+    },
+    loadMoreButton: {
+        alignSelf: 'center',
+        marginVertical: 10,
+    },
+    noResultsContainer: {
+        alignItems: 'center',
+        marginTop: 20,
+    },
+    noResultsText: {
+        color: colors.onSurface,
+        fontSize: 16,
+    },
+    searchContainer: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        marginBottom: 16,
+        marginTop: 12,
+        paddingHorizontal: 16,
+    },
+    searchInput: {
+        backgroundColor: colors.surface,
+        flex: 1,
+    },
+});
 
 export default FoodSearch;

@@ -150,11 +150,7 @@ const FoodDetails = ({ navigation }: { navigation: NavigationProp<any> }) => {
                             <Text style={styles.metricDetail}>
                                 {t('item_value_unit', {
                                     item: t('proteins'),
-                                    value: getDisplayFormattedWeight(
-                                        calculatedNutrition.proteins || 0,
-                                        GRAMS,
-                                        isImperial
-                                    ).toString(),
+                                    value: getDisplayFormattedWeight(calculatedNutrition.proteins || 0, GRAMS, isImperial).toString(),
                                     weightUnit: macroUnit,
                                 })}
                             </Text>
@@ -163,11 +159,7 @@ const FoodDetails = ({ navigation }: { navigation: NavigationProp<any> }) => {
                             <Text style={styles.metricDetail}>
                                 {t('item_value_unit', {
                                     item: t('carbs'),
-                                    value: getDisplayFormattedWeight(
-                                        calculatedNutrition.carbs || 0,
-                                        GRAMS,
-                                        isImperial
-                                    ).toString(),
+                                    value: getDisplayFormattedWeight(calculatedNutrition.carbs || 0, GRAMS, isImperial).toString(),
                                     weightUnit: macroUnit,
                                 })}
                             </Text>
@@ -176,11 +168,7 @@ const FoodDetails = ({ navigation }: { navigation: NavigationProp<any> }) => {
                             <Text style={styles.metricDetail}>
                                 {t('item_value_unit', {
                                     item: t('fats'),
-                                    value: getDisplayFormattedWeight(
-                                        calculatedNutrition.fats || 0,
-                                        GRAMS,
-                                        isImperial
-                                    ).toString(),
+                                    value: getDisplayFormattedWeight(calculatedNutrition.fats || 0, GRAMS, isImperial).toString(),
                                     weightUnit: macroUnit,
                                 })}
                             </Text>
@@ -220,68 +208,67 @@ const FoodDetails = ({ navigation }: { navigation: NavigationProp<any> }) => {
     );
 };
 
-const makeStyles = (colors: CustomThemeColorsType, dark: boolean) =>
-    StyleSheet.create({
-        addButton: {
-            backgroundColor: colors.primary,
-            marginTop: 16,
-        },
-        appbarHeader: {
-            backgroundColor: colors.primary,
-            justifyContent: 'center',
-            paddingHorizontal: 16,
-        },
-        appbarTitle: {
-            color: colors.onPrimary,
-            fontSize: Platform.OS === 'web' ? 20 : 26,
-        },
-        cardContent: {
-            padding: 16,
-        },
-        cardTitle: {
-            color: colors.onSurface,
-            fontSize: 24,
-            fontWeight: 'bold',
-            marginBottom: 8,
-        },
-        container: {
-            backgroundColor: colors.background,
-            flex: 1,
-        },
-        content: {
-            flex: 1,
-            padding: 16,
-        },
-        form: {
-            flex: 1,
-            padding: 16,
-        },
-        input: {
-            backgroundColor: colors.surface,
-        },
-        inputGroup: {
-            marginBottom: 16,
-        },
-        label: {
-            color: colors.onSurface,
-            fontSize: 16,
-            marginBottom: 4,
-        },
-        loadingContainer: {
-            alignItems: 'center',
-            flex: 1,
-            justifyContent: 'center',
-        },
-        metricDetail: {
-            color: colors.onSurface,
-            fontSize: 16,
-            fontWeight: 'bold',
-        },
-        metricRow: {
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            marginVertical: 4,
-        },
-    });
+const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
+    addButton: {
+        backgroundColor: colors.primary,
+        marginTop: 16,
+    },
+    appbarHeader: {
+        backgroundColor: colors.primary,
+        justifyContent: 'center',
+        paddingHorizontal: 16,
+    },
+    appbarTitle: {
+        color: colors.onPrimary,
+        fontSize: Platform.OS === 'web' ? 20 : 26,
+    },
+    cardContent: {
+        padding: 16,
+    },
+    cardTitle: {
+        color: colors.onSurface,
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 8,
+    },
+    container: {
+        backgroundColor: colors.background,
+        flex: 1,
+    },
+    content: {
+        flex: 1,
+        padding: 16,
+    },
+    form: {
+        flex: 1,
+        padding: 16,
+    },
+    input: {
+        backgroundColor: colors.surface,
+    },
+    inputGroup: {
+        marginBottom: 16,
+    },
+    label: {
+        color: colors.onSurface,
+        fontSize: 16,
+        marginBottom: 4,
+    },
+    loadingContainer: {
+        alignItems: 'center',
+        flex: 1,
+        justifyContent: 'center',
+    },
+    metricDetail: {
+        color: colors.onSurface,
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    metricRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginVertical: 4,
+    },
+});
 
 export default FoodDetails;

@@ -108,9 +108,7 @@ export default function ListExercises({ navigation }: { navigation: NavigationPr
         if (exerciseToDelete) {
             try {
                 await deleteExercise(exerciseToDelete);
-                const updatedExercises = exercises.filter(
-                    (exercise) => exercise.id !== exerciseToDelete
-                );
+                const updatedExercises = exercises.filter((exercise) => exercise.id !== exerciseToDelete);
                 setExercises(updatedExercises);
                 setIsDeleteModalVisible(false);
                 setExerciseToDelete(null);
@@ -125,45 +123,31 @@ export default function ListExercises({ navigation }: { navigation: NavigationPr
         setExerciseToDelete(null);
     }, []);
 
-    const filteredExercises = useMemo(
-        () =>
-            exercises
-                .reverse()
-                .filter((exercise) =>
-                    exercise.name.toLowerCase().includes(searchQuery.toLowerCase())
-                ),
-        [exercises, searchQuery]
-    );
+    const filteredExercises = useMemo(() => exercises.reverse().filter((exercise) =>
+        exercise.name.toLowerCase().includes(searchQuery.toLowerCase())
+    ), [exercises, searchQuery]);
 
-    const fabActions = useMemo(
-        () => [
-            {
-                icon: () => (
-                    <FontAwesome5 color={colors.primary} name="plus" size={FAB_ICON_SIZE} />
-                ),
-                label: t('create_exercise'),
-                onPress: () => navigation.navigate('createExercise'),
-                style: { backgroundColor: colors.surface },
-            },
-        ],
-        [colors.primary, colors.surface, navigation, t]
-    );
+    const fabActions = useMemo(() => [{
+        icon: () => <FontAwesome5 color={colors.primary} name="plus" size={FAB_ICON_SIZE} />,
+        label: t('create_exercise'),
+        onPress: () => navigation.navigate('createExercise'),
+        style: { backgroundColor: colors.surface },
+    }], [colors.primary, colors.surface, navigation, t]);
 
     return (
         <Screen style={styles.container}>
             <FABWrapper actions={fabActions} visible>
                 <View style={styles.container}>
-                    <Appbar.Header mode="small" statusBarHeight={0} style={styles.appbarHeader}>
+                    <Appbar.Header
+                        mode="small"
+                        statusBarHeight={0}
+                        style={styles.appbarHeader}
+                    >
                         <Appbar.Content title={t('exercises')} titleStyle={styles.appbarTitle} />
-                        <AnimatedSearchBar
-                            searchQuery={searchQuery}
-                            setSearchQuery={setSearchQuery}
-                        />
+                        <AnimatedSearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
                     </Appbar.Header>
                     <FlashList
-                        ListFooterComponent={
-                            exercises.length < totalExercisesCount ? <ActivityIndicator /> : null
-                        }
+                        ListFooterComponent={exercises.length < totalExercisesCount ? <ActivityIndicator /> : null}
                         contentContainerStyle={styles.scrollViewContent}
                         data={filteredExercises}
                         estimatedItemSize={95}
@@ -175,23 +159,14 @@ export default function ListExercises({ navigation }: { navigation: NavigationPr
                                 <Card.Content style={styles.cardContent}>
                                     <View style={styles.cardHeader}>
                                         <Text style={styles.cardTitle}>{exercise.name}</Text>
-                                        <Text style={styles.exerciseDetail}>
-                                            {t('muscle_group')}:{' '}
-                                            {t(`muscle_groups.${exercise?.muscleGroup || ''}`)}
-                                        </Text>
-                                        <Text style={styles.exerciseDetail}>
-                                            {t('type')}: {t(exercise?.type || 'unset')}
-                                        </Text>
+                                        <Text style={styles.exerciseDetail}>{t('muscle_group')}: {t(`muscle_groups.${exercise?.muscleGroup || ''}`)}</Text>
+                                        <Text style={styles.exerciseDetail}>{t('type')}: {t(exercise?.type || 'unset')}</Text>
                                     </View>
                                     <View style={styles.cardActions}>
                                         <FontAwesome5
                                             color={colors.primary}
                                             name="edit"
-                                            onPress={() =>
-                                                navigation.navigate('createExercise', {
-                                                    id: exercise.id,
-                                                })
-                                            }
+                                            onPress={() => navigation.navigate('createExercise', { id: exercise.id })}
                                             size={ICON_SIZE}
                                             style={styles.iconButton}
                                         />
@@ -213,8 +188,7 @@ export default function ListExercises({ navigation }: { navigation: NavigationPr
                         onClose={handleDeleteCancel}
                         onConfirm={handleDeleteConfirmation}
                         title={t('delete_exercise_confirmation', {
-                            title: exercises.find((exercise) => exercise.id === exerciseToDelete)
-                                ?.name,
+                            title: exercises.find((exercise) => exercise.id === exerciseToDelete)?.name,
                         })}
                         visible={isDeleteModalVisible}
                     />
@@ -224,49 +198,48 @@ export default function ListExercises({ navigation }: { navigation: NavigationPr
     );
 }
 
-const makeStyles = (colors: CustomThemeColorsType, dark: boolean) =>
-    StyleSheet.create({
-        appbarHeader: {
-            backgroundColor: colors.primary,
-            justifyContent: 'center',
-            paddingHorizontal: 16,
-        },
-        appbarTitle: {
-            color: colors.onPrimary,
-            fontSize: Platform.OS === 'web' ? 20 : 26,
-        },
-        cardActions: {
-            alignItems: 'center',
-            flexDirection: 'row',
-        },
-        cardContent: {
-            alignItems: 'center',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-        },
-        cardHeader: {
-            flex: 1,
-        },
-        cardTitle: {
-            color: colors.onSurface,
-            fontSize: 18,
-            fontWeight: 'bold',
-        },
-        container: {
-            backgroundColor: colors.background,
-            flex: 1,
-        },
-        exerciseDetail: {
-            color: colors.onSurface,
-            fontSize: 14,
-            marginBottom: 4,
-        },
-        iconButton: {
-            marginHorizontal: 8,
-        },
-        scrollViewContent: {
-            backgroundColor: colors.background,
-            paddingBottom: 16,
-            paddingHorizontal: 16,
-        },
-    });
+const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
+    appbarHeader: {
+        backgroundColor: colors.primary,
+        justifyContent: 'center',
+        paddingHorizontal: 16,
+    },
+    appbarTitle: {
+        color: colors.onPrimary,
+        fontSize: Platform.OS === 'web' ? 20 : 26,
+    },
+    cardActions: {
+        alignItems: 'center',
+        flexDirection: 'row',
+    },
+    cardContent: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    cardHeader: {
+        flex: 1,
+    },
+    cardTitle: {
+        color: colors.onSurface,
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    container: {
+        backgroundColor: colors.background,
+        flex: 1,
+    },
+    exerciseDetail: {
+        color: colors.onSurface,
+        fontSize: 14,
+        marginBottom: 4,
+    },
+    iconButton: {
+        marginHorizontal: 8,
+    },
+    scrollViewContent: {
+        backgroundColor: colors.background,
+        paddingBottom: 16,
+        paddingHorizontal: 16,
+    },
+});

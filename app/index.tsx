@@ -6,8 +6,8 @@ import * as Sentry from '@sentry/react-native';
 import { useFocusEffect } from 'expo-router';
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { BackHandler } from 'react-native';
 import 'react-native-url-polyfill/auto';
+import { BackHandler } from 'react-native';
 
 Sentry.init({
     _experiments: {
@@ -17,7 +17,9 @@ Sentry.init({
     debug: __DEV__,
     dsn: 'https://e4a649f87e2cf7bc05e3e000cb9ce7ba@o4507421287972864.ingest.de.sentry.io/4507426322579536',
     environment: __DEV__ ? 'development' : 'production',
-    integrations: [Sentry.mobileReplayIntegration()],
+    integrations: [
+        Sentry.mobileReplayIntegration(),
+    ],
 });
 
 const Tab = createBottomTabNavigator();

@@ -73,18 +73,14 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
             const { weight, height } = metrics;
 
             if (gender && weight && height && isValidDateParam(birthday)) {
-                const age = Math.floor(
-                    (new Date().getTime() - new Date(birthday).getTime()) / 3.15576e10
-                );
+                const age = Math.floor((new Date().getTime() - new Date(birthday).getTime()) / 3.15576e+10);
                 const bmr = calculateBMR(weight, height * 100, age, gender.toLowerCase());
-                const tdee =
-                    bmr *
-                    ACTIVITY_LEVELS_MULTIPLIER[activityLevel || ACTIVITY_LEVELS.LIGHTLY_ACTIVE];
+                const tdee = bmr * ACTIVITY_LEVELS_MULTIPLIER[activityLevel || ACTIVITY_LEVELS.LIGHTLY_ACTIVE];
 
                 setDefaultMacros({
-                    protein: Math.round((tdee * 0.3) / CALORIES_IN_PROTEIN),
-                    carbohydrate: Math.round((tdee * 0.5) / CALORIES_IN_CARBS),
-                    fat: Math.round((tdee * 0.2) / CALORIES_IN_FAT),
+                    protein: Math.round(tdee * 0.3 / CALORIES_IN_PROTEIN),
+                    carbohydrate: Math.round(tdee * 0.5 / CALORIES_IN_CARBS),
+                    fat: Math.round(tdee * 0.2 / CALORIES_IN_FAT),
                 });
 
                 setMaxMacros(Math.round(tdee / 4));
@@ -119,11 +115,7 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
     const macroOrder: ('protein' | 'carbs' | 'fats')[] = ['protein', 'carbs', 'fats'];
 
     const calculateCalories = useCallback(() => {
-        return Math.round(
-            protein * CALORIES_IN_PROTEIN +
-                totalCarbohydrate * CALORIES_IN_CARBS +
-                totalFat * CALORIES_IN_FAT
-        );
+        return Math.round(protein * CALORIES_IN_PROTEIN + totalCarbohydrate * CALORIES_IN_CARBS + totalFat * CALORIES_IN_FAT);
     }, [protein, totalCarbohydrate, totalFat]);
 
     const handleSliderChange = useCallback(
@@ -235,7 +227,11 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
     }, [fadeAnim, slideAnim]);
 
     const handleSaveFitnessGoal = useCallback(async () => {
-        if (protein === undefined || totalCarbohydrate === undefined || totalFat === undefined) {
+        if (
+            protein === undefined
+            || totalCarbohydrate === undefined
+            || totalFat === undefined
+        ) {
             Alert.alert(t('validation_error'), t('mandatory_fields_required'));
             return;
         }
@@ -346,20 +342,15 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
 
         const pieData = [
             { label: t('protein'), value: protein * CALORIES_IN_PROTEIN, color: '#FF6384' },
-            {
-                label: t('carbohydrates'),
-                value: totalCarbohydrate * CALORIES_IN_CARBS,
-                color: '#36A2EB',
-            },
+            { label: t('carbohydrates'), value: totalCarbohydrate * CALORIES_IN_CARBS, color: '#36A2EB' },
             { label: t('fat'), value: totalFat * CALORIES_IN_FAT, color: '#FFCE56' },
         ];
 
-        const activeMacroValue =
-            activeMacro === 'protein'
-                ? protein
-                : activeMacro === 'carbs'
-                  ? totalCarbohydrate
-                  : totalFat;
+        const activeMacroValue = activeMacro === 'protein'
+            ? protein
+            : activeMacro === 'carbs'
+                ? totalCarbohydrate
+                : totalFat;
 
         return (
             <Screen style={styles.container}>
@@ -372,11 +363,7 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
                         <View style={styles.activeMacroContainer}>
                             <Text style={styles.activeMacroTitle}>{t(activeMacro)}</Text>
                             <Text style={styles.activeMacroValue}>
-                                {getDisplayFormattedWeight(
-                                    activeMacroValue || 0,
-                                    GRAMS,
-                                    isImperial
-                                ).toString()}
+                                {getDisplayFormattedWeight(activeMacroValue || 0, GRAMS, isImperial).toString()}
                             </Text>
                         </View>
                         <Button mode="outlined" onPress={nextMacro} style={styles.arrowButton}>
@@ -394,31 +381,19 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
                         <View style={styles.macroSummaryItem}>
                             <Text style={styles.macroSummaryTitle}>{t('protein')}</Text>
                             <Text style={styles.macroSummaryValue}>
-                                {getDisplayFormattedWeight(
-                                    protein || 0,
-                                    GRAMS,
-                                    isImperial
-                                ).toString()}
+                                {getDisplayFormattedWeight(protein || 0, GRAMS, isImperial).toString()}
                             </Text>
                         </View>
                         <View style={styles.macroSummaryItem}>
                             <Text style={styles.macroSummaryTitle}>{t('carbohydrates')}</Text>
                             <Text style={styles.macroSummaryValue}>
-                                {getDisplayFormattedWeight(
-                                    totalCarbohydrate || 0,
-                                    GRAMS,
-                                    isImperial
-                                ).toString()}
+                                {getDisplayFormattedWeight(totalCarbohydrate || 0, GRAMS, isImperial).toString()}
                             </Text>
                         </View>
                         <View style={styles.macroSummaryItem}>
                             <Text style={styles.macroSummaryTitle}>{t('fat')}</Text>
                             <Text style={styles.macroSummaryValue}>
-                                {getDisplayFormattedWeight(
-                                    totalFat || 0,
-                                    GRAMS,
-                                    isImperial
-                                ).toString()}
+                                {getDisplayFormattedWeight(totalFat || 0, GRAMS, isImperial).toString()}
                             </Text>
                         </View>
                         <View style={styles.macroSummaryItem}>
@@ -546,12 +521,7 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
                 initialLayout={{ width: Dimensions.get('window').width }}
             />
             <View style={styles.footer}>
-                <Button
-                    disabled={isSaving}
-                    mode="contained"
-                    onPress={handleSaveFitnessGoal}
-                    style={styles.button}
-                >
+                <Button disabled={isSaving} mode="contained" onPress={handleSaveFitnessGoal} style={styles.button}>
                     {t('save')}
                 </Button>
             </View>
@@ -559,93 +529,92 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
     );
 };
 
-const makeStyles = (colors: CustomThemeColorsType, dark: boolean) =>
-    StyleSheet.create({
-        activeMacroContainer: {
-            alignItems: 'center',
-        },
-        activeMacroTitle: {
-            color: colors.onSurface,
-            fontSize: 20,
-            fontWeight: '600',
-            textTransform: 'capitalize',
-        },
-        activeMacroValue: {
-            color: colors.primary,
-            fontSize: 32,
-            fontWeight: 'bold',
-        },
-        appbarHeader: {
-            backgroundColor: colors.primary,
-            justifyContent: 'center',
-            paddingHorizontal: 16,
-        },
-        appbarTitle: {
-            color: colors.onPrimary,
-            fontSize: Platform.OS === 'web' ? 20 : 26,
-        },
-        arrowButton: {
-            marginHorizontal: 8,
-        },
-        button: {
-            marginVertical: 10,
-        },
-        container: {
-            backgroundColor: colors.background,
-            flex: 1,
-        },
-        content: {
-            padding: 16,
-        },
-        flexContainer: {
-            alignItems: 'center',
-            padding: 16,
-        },
-        footer: {
-            alignItems: 'center',
-            borderTopColor: colors.shadow,
-            borderTopWidth: 1,
-            padding: 16,
-        },
-        macroAdjusterContainer: {
-            alignItems: 'center',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            marginVertical: 16,
-        },
-        macroSummaryItem: {
-            alignItems: 'center',
-            marginVertical: 8,
-            width: '45%',
-        },
-        macroSummaryTitle: {
-            color: colors.onSurface,
-            fontSize: 16,
-            fontWeight: '600',
-        },
-        macroSummaryValue: {
-            color: colors.primary,
-            fontSize: 18,
-            fontWeight: 'bold',
-        },
-        macrosSummary: {
-            flexDirection: 'row',
-            flexWrap: 'wrap',
-            justifyContent: 'space-around',
-            marginTop: 16,
-            width: '100%',
-        },
-        optionalFields: {
-            paddingVertical: 16,
-            width: '100%',
-        },
-        title: {
-            color: colors.onSurface,
-            fontSize: 24,
-            fontWeight: 'bold',
-            marginBottom: 16,
-            textAlign: 'center',
-        },
-    });
+const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
+    activeMacroContainer: {
+        alignItems: 'center',
+    },
+    activeMacroTitle: {
+        color: colors.onSurface,
+        fontSize: 20,
+        fontWeight: '600',
+        textTransform: 'capitalize',
+    },
+    activeMacroValue: {
+        color: colors.primary,
+        fontSize: 32,
+        fontWeight: 'bold',
+    },
+    appbarHeader: {
+        backgroundColor: colors.primary,
+        justifyContent: 'center',
+        paddingHorizontal: 16,
+    },
+    appbarTitle: {
+        color: colors.onPrimary,
+        fontSize: Platform.OS === 'web' ? 20 : 26,
+    },
+    arrowButton: {
+        marginHorizontal: 8,
+    },
+    button: {
+        marginVertical: 10,
+    },
+    container: {
+        backgroundColor: colors.background,
+        flex: 1,
+    },
+    content: {
+        padding: 16,
+    },
+    flexContainer: {
+        alignItems: 'center',
+        padding: 16,
+    },
+    footer: {
+        alignItems: 'center',
+        borderTopColor: colors.shadow,
+        borderTopWidth: 1,
+        padding: 16,
+    },
+    macroAdjusterContainer: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginVertical: 16,
+    },
+    macroSummaryItem: {
+        alignItems: 'center',
+        marginVertical: 8,
+        width: '45%',
+    },
+    macroSummaryTitle: {
+        color: colors.onSurface,
+        fontSize: 16,
+        fontWeight: '600',
+    },
+    macroSummaryValue: {
+        color: colors.primary,
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    macrosSummary: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-around',
+        marginTop: 16,
+        width: '100%',
+    },
+    optionalFields: {
+        paddingVertical: 16,
+        width: '100%',
+    },
+    title: {
+        color: colors.onSurface,
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 16,
+        textAlign: 'center',
+    },
+});
 
 export default CreateFitnessGoals;

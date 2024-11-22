@@ -17,7 +17,9 @@ import { useTranslation } from 'react-i18next';
 import { BackHandler, ScrollView, StyleSheet, View } from 'react-native';
 import { Button, Card, Text, useTheme } from 'react-native-paper';
 
-export default function Dashboard({ navigation }: { navigation: NavigationProp<any> }) {
+export default function Dashboard({ navigation }: {
+    navigation: NavigationProp<any>,
+}) {
     const { t } = useTranslation();
     const { colors, dark } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors, dark);
@@ -27,9 +29,7 @@ export default function Dashboard({ navigation }: { navigation: NavigationProp<a
     const [upcomingWorkouts, setUpcomingWorkouts] = useState<WorkoutReturnType[]>([]);
     const [modalVisible, setModalVisible] = useState(false);
     const [confirmationModalVisible, setConfirmationModalVisible] = useState(false);
-    const [selectedUpcomingEvent, setSelectedUpcomingEvent] = useState<WorkoutReturnType | null>(
-        null
-    );
+    const [selectedUpcomingEvent, setSelectedUpcomingEvent] = useState<WorkoutReturnType | null>(null);
 
     const fetchWorkoutData = useCallback(async () => {
         try {
@@ -80,10 +80,7 @@ export default function Dashboard({ navigation }: { navigation: NavigationProp<a
                 }
 
                 await resetWorkoutStorageData();
-                await AsyncStorage.setItem(
-                    CURRENT_WORKOUT_ID,
-                    JSON.stringify(selectedUpcomingEvent.id)
-                );
+                await AsyncStorage.setItem(CURRENT_WORKOUT_ID, JSON.stringify(selectedUpcomingEvent.id));
 
                 navigation.navigate('index', { screen: 'workout' });
             } catch (error) {
@@ -98,10 +95,7 @@ export default function Dashboard({ navigation }: { navigation: NavigationProp<a
         if (selectedUpcomingEvent) {
             try {
                 await resetWorkoutStorageData();
-                await AsyncStorage.setItem(
-                    CURRENT_WORKOUT_ID,
-                    JSON.stringify(selectedUpcomingEvent.id)
-                );
+                await AsyncStorage.setItem(CURRENT_WORKOUT_ID, JSON.stringify(selectedUpcomingEvent.id));
 
                 navigation.navigate('index', { screen: 'workout' });
             } catch (error) {
@@ -134,24 +128,14 @@ export default function Dashboard({ navigation }: { navigation: NavigationProp<a
 
     return (
         <Screen style={styles.container}>
-            <ScrollView
-                contentContainerStyle={styles.container}
-                keyboardShouldPersistTaps="handled"
-            >
-                <WorkoutModal
-                    onClose={() => setWorkoutModalVisible(false)}
-                    visible={workoutModalVisible}
-                />
+            <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+                <WorkoutModal onClose={() => setWorkoutModalVisible(false)} visible={workoutModalVisible} />
                 <View style={styles.section}>
                     <Text style={styles.header}>{t('track_your_fitness_journey')}</Text>
-                    <Text style={styles.description}>{t('easily_log_your_workouts')}</Text>
-                    <Button
-                        mode="contained"
-                        onPress={() => setWorkoutModalVisible(true)}
-                        style={styles.startLoggingButton}
-                    >
-                        {t('start_logging')}
-                    </Button>
+                    <Text style={styles.description}>
+                        {t('easily_log_your_workouts')}
+                    </Text>
+                    <Button mode="contained" onPress={() => setWorkoutModalVisible(true)} style={styles.startLoggingButton}>{t('start_logging')}</Button>
                 </View>
                 <View style={styles.section}>
                     <View style={styles.sectionHeader}>
@@ -187,7 +171,9 @@ export default function Dashboard({ navigation }: { navigation: NavigationProp<a
                                 </ThemedCard>
                             ))
                         ) : (
-                            <Text style={styles.noDataText}>{t('no_upcoming_workouts')}</Text>
+                            <Text style={styles.noDataText}>
+                                {t('no_upcoming_workouts')}
+                            </Text>
                         )}
                     </View>
                 </View>
@@ -216,15 +202,16 @@ export default function Dashboard({ navigation }: { navigation: NavigationProp<a
                                         <Text style={styles.cardTitle}>{workout.title}</Text>
                                         {workout?.duration ? (
                                             <Text style={styles.cardDuration}>
-                                                {workout.duration}{' '}
-                                                {t(workout?.duration > 1 ? 'minutes' : 'minute')}
+                                                {workout.duration} {t(workout?.duration > 1 ? 'minutes' : 'minute')}
                                             </Text>
                                         ) : null}
                                     </Card.Content>
                                 </ThemedCard>
                             ))
                         ) : (
-                            <Text style={styles.noDataText}>{t('no_recent_workouts')}</Text>
+                            <Text style={styles.noDataText}>
+                                {t('no_recent_workouts')}
+                            </Text>
                         )}
                     </View>
                 </View>
@@ -249,81 +236,80 @@ export default function Dashboard({ navigation }: { navigation: NavigationProp<a
     );
 }
 
-const makeStyles = (colors: CustomThemeColorsType, dark: boolean) =>
-    StyleSheet.create({
-        cardContainer: {
-            marginBottom: 4,
-        },
-        cardDate: {
-            color: colors.onSurface,
-            fontSize: 14,
-        },
-        cardDuration: {
-            color: colors.onSurface,
-            marginTop: 4,
-        },
-        cardHeader: {
-            alignItems: 'center',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-        },
-        cardTitle: {
-            color: colors.onSurface,
-            fontSize: 18,
-            fontWeight: 'bold',
-            marginTop: 8,
-        },
-        cardWrapper: {
-            flexDirection: 'column',
-        },
-        container: {
-            backgroundColor: colors.background,
-            flexGrow: 1,
-            padding: 16,
-        },
-        description: {
-            alignSelf: 'center',
-            color: colors.onSurface,
-            marginTop: 8,
-            maxWidth: 320,
-            textAlign: 'center',
-        },
-        header: {
-            color: colors.onSurface,
-            fontSize: 28,
-            fontWeight: 'bold',
-            lineHeight: 32,
-            marginTop: 8,
-            textAlign: 'center',
-        },
-        noDataText: {
-            color: colors.onBackground,
-            fontSize: 16,
-            marginBottom: 12,
-            textAlign: 'center',
-        },
-        section: {
-            marginBottom: 32,
-            padding: 12,
-        },
-        sectionHeader: {
-            alignItems: 'center',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            marginBottom: 16,
-        },
-        sectionTitle: {
-            color: colors.onSurface,
-            fontSize: 24,
-            fontWeight: 'bold',
-        },
-        startLoggingButton: {
-            marginTop: 16,
-        },
-        startWorkoutButton: {
-            marginTop: 8,
-        },
-        viewAllButton: {
-            marginTop: 0,
-        },
-    });
+const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
+    cardContainer: {
+        marginBottom: 4,
+    },
+    cardDate: {
+        color: colors.onSurface,
+        fontSize: 14,
+    },
+    cardDuration: {
+        color: colors.onSurface,
+        marginTop: 4,
+    },
+    cardHeader: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    cardTitle: {
+        color: colors.onSurface,
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginTop: 8,
+    },
+    cardWrapper: {
+        flexDirection: 'column',
+    },
+    container: {
+        backgroundColor: colors.background,
+        flexGrow: 1,
+        padding: 16,
+    },
+    description: {
+        alignSelf: 'center',
+        color: colors.onSurface,
+        marginTop: 8,
+        maxWidth: 320,
+        textAlign: 'center',
+    },
+    header: {
+        color: colors.onSurface,
+        fontSize: 28,
+        fontWeight: 'bold',
+        lineHeight: 32,
+        marginTop: 8,
+        textAlign: 'center',
+    },
+    noDataText: {
+        color: colors.onBackground,
+        fontSize: 16,
+        marginBottom: 12,
+        textAlign: 'center',
+    },
+    section: {
+        marginBottom: 32,
+        padding: 12,
+    },
+    sectionHeader: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 16,
+    },
+    sectionTitle: {
+        color: colors.onSurface,
+        fontSize: 24,
+        fontWeight: 'bold',
+    },
+    startLoggingButton: {
+        marginTop: 16,
+    },
+    startWorkoutButton: {
+        marginTop: 8,
+    },
+    viewAllButton: {
+        marginTop: 0,
+    },
+});

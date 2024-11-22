@@ -7,14 +7,7 @@ import StatusBadge from '@/components/StatusBadge';
 import ThemedCard from '@/components/ThemedCard';
 import ThemedModal from '@/components/ThemedModal';
 import WorkoutExerciseDetail from '@/components/WorkoutExerciseDetail';
-import {
-    AI_SETTINGS_TYPE,
-    GRAMS,
-    IMPERIAL_SYSTEM,
-    KILOGRAMS,
-    METRIC_SYSTEM,
-    OUNCES,
-} from '@/constants/storage';
+import { AI_SETTINGS_TYPE, GRAMS, IMPERIAL_SYSTEM, KILOGRAMS, METRIC_SYSTEM, OUNCES } from '@/constants/storage';
 import { ICON_SIZE } from '@/constants/ui';
 import useUnit from '@/hooks/useUnit';
 import { useChatData } from '@/storage/ChatProvider';
@@ -27,12 +20,7 @@ import { getExerciseById, getRecentWorkoutById, updateWorkoutEvent } from '@/uti
 import { formatDate } from '@/utils/date';
 import { exportRecentWorkout } from '@/utils/file';
 import { safeToFixed } from '@/utils/string';
-import {
-    ExerciseReturnType,
-    ExerciseVolumeType,
-    WorkoutEventInsertType,
-    WorkoutEventReturnType,
-} from '@/utils/types';
+import { ExerciseReturnType, ExerciseVolumeType, WorkoutEventInsertType, WorkoutEventReturnType } from '@/utils/types';
 import { getDisplayFormattedWeight } from '@/utils/unit';
 import { calculateWorkoutVolume, generateWorkoutSummary } from '@/utils/workout';
 import { FontAwesome5 } from '@expo/vector-icons';
@@ -60,13 +48,8 @@ const RecentWorkoutDetails: React.FC<RecentWorkoutDetailsProps> = ({ navigation 
     const [workoutVolume, setWorkoutVolume] = useState<number>(0);
     const [deleteSetModalVisible, setDeleteSetModalVisible] = useState<boolean>(false);
     const [editSetModalVisible, setEditSetModalVisible] = useState<boolean>(false);
-    const [currentEdit, setCurrentEdit] = useState<{ exerciseId: number; setIndex: number } | null>(
-        null
-    );
-    const [currentDelete, setCurrentDelete] = useState<{
-        exerciseId: number;
-        setIndex: number;
-    } | null>(null);
+    const [currentEdit, setCurrentEdit] = useState<{ exerciseId: number, setIndex: number } | null>(null);
+    const [currentDelete, setCurrentDelete] = useState<{ exerciseId: number, setIndex: number } | null>(null);
     const [editReps, setEditReps] = useState<string>('');
     const [editWeight, setEditWeight] = useState<string>('');
     const [editMacrosModalVisible, setEditMacrosModalVisible] = useState<boolean>(false);
@@ -169,51 +152,42 @@ const RecentWorkoutDetails: React.FC<RecentWorkoutDetailsProps> = ({ navigation 
         }, [navigation])
     );
 
-    const handleDeleteSet = useCallback(
-        async (exerciseId: number, setIndex: number) => {
-            const newExerciseVolumeData = exerciseVolumeData.map((exercise) => {
-                if (exercise.exerciseId === exerciseId) {
-                    return {
-                        ...exercise,
-                        sets: exercise.sets.filter((set, index) => index !== setIndex),
-                    };
-                }
-
-                return exercise;
-            });
-
-            setExerciseVolumeData(newExerciseVolumeData);
-            setDeleteSetModalVisible(false);
-            await updateWorkoutEvent(recentWorkout?.id!, {
-                ...recentWorkout,
-                exerciseData: JSON.stringify(newExerciseVolumeData),
-            } as WorkoutEventInsertType);
-        },
-        [exerciseVolumeData, recentWorkout]
-    );
-
-    const handleDeleteSetConfirmation = useCallback(
-        (exerciseId: number) => (setIndex: number, setId?: number) => {
-            setCurrentDelete({ exerciseId, setIndex });
-            setDeleteSetModalVisible(true);
-        },
-        []
-    );
-
-    const handleEditSet = useCallback(
-        (exerciseId: number) => (setIndex: number, setId?: number) => {
-            const exercise = exerciseVolumeData.find((e) => e.exerciseId === exerciseId);
-            const set = exercise?.sets[setIndex];
-
-            if (set) {
-                setEditReps(set.reps.toString());
-                setEditWeight(set.weight.toString());
-                setCurrentEdit({ exerciseId, setIndex });
-                setEditSetModalVisible(true);
+    const handleDeleteSet = useCallback(async (exerciseId: number, setIndex: number) => {
+        const newExerciseVolumeData = exerciseVolumeData.map((exercise) => {
+            if (exercise.exerciseId === exerciseId) {
+                return {
+                    ...exercise,
+                    sets: exercise.sets.filter((set, index) => index !== setIndex),
+                };
             }
-        },
-        [exerciseVolumeData]
-    );
+
+            return exercise;
+        });
+
+        setExerciseVolumeData(newExerciseVolumeData);
+        setDeleteSetModalVisible(false);
+        await updateWorkoutEvent(recentWorkout?.id!, {
+            ...recentWorkout,
+            exerciseData: JSON.stringify(newExerciseVolumeData),
+        } as WorkoutEventInsertType);
+    }, [exerciseVolumeData, recentWorkout]);
+
+    const handleDeleteSetConfirmation = useCallback((exerciseId: number) => (setIndex: number, setId?: number) => {
+        setCurrentDelete({ exerciseId, setIndex });
+        setDeleteSetModalVisible(true);
+    }, []);
+
+    const handleEditSet = useCallback((exerciseId: number) => (setIndex: number, setId?: number) => {
+        const exercise = exerciseVolumeData.find((e) => e.exerciseId === exerciseId);
+        const set = exercise?.sets[setIndex];
+
+        if (set) {
+            setEditReps(set.reps.toString());
+            setEditWeight(set.weight.toString());
+            setCurrentEdit({ exerciseId, setIndex });
+            setEditSetModalVisible(true);
+        }
+    }, [exerciseVolumeData]);
 
     const handleSaveEdit = useCallback(async () => {
         if (currentEdit) {
@@ -288,24 +262,17 @@ const RecentWorkoutDetails: React.FC<RecentWorkoutDetailsProps> = ({ navigation 
     }, [exerciseVolumeData, recentWorkout, unitSystem, weightUnit, workoutVolume]);
 
     const fabActions = useMemo(() => {
-        const actions = [
-            {
-                icon: () => (
-                    <FontAwesome5 color={colors.primary} name="file-export" size={ICON_SIZE} />
-                ),
-                label: t('export_workout_as_json'),
-                onPress: handleExportWorkoutJson,
-                style: { backgroundColor: colors.surface },
-            },
-            {
-                icon: () => (
-                    <FontAwesome5 color={colors.primary} name="share-alt" size={ICON_SIZE} />
-                ),
-                label: t('share_workout_details'),
-                onPress: handleShareWorkoutDetails,
-                style: { backgroundColor: colors.surface },
-            },
-        ];
+        const actions = [{
+            icon: () => <FontAwesome5 color={colors.primary} name="file-export" size={ICON_SIZE} />,
+            label: t('export_workout_as_json'),
+            onPress: handleExportWorkoutJson,
+            style: { backgroundColor: colors.surface },
+        }, {
+            icon: () => <FontAwesome5 color={colors.primary} name="share-alt" size={ICON_SIZE} />,
+            label: t('share_workout_details'),
+            onPress: handleShareWorkoutDetails,
+            style: { backgroundColor: colors.surface },
+        }];
 
         if (isAiEnabled) {
             actions.unshift({
@@ -317,15 +284,7 @@ const RecentWorkoutDetails: React.FC<RecentWorkoutDetailsProps> = ({ navigation 
         }
 
         return actions;
-    }, [
-        t,
-        handleExportWorkoutJson,
-        colors.surface,
-        colors.primary,
-        isAiEnabled,
-        handleGetWorkoutInsights,
-        handleShareWorkoutDetails,
-    ]);
+    }, [t, handleExportWorkoutJson, colors.surface, colors.primary, isAiEnabled, handleGetWorkoutInsights, handleShareWorkoutDetails]);
 
     const handleSaveMacrosEdit = useCallback(async () => {
         if (recentWorkout) {
@@ -365,10 +324,7 @@ const RecentWorkoutDetails: React.FC<RecentWorkoutDetailsProps> = ({ navigation 
             <FABWrapper actions={fabActions} icon="cog" visible>
                 <View style={styles.container}>
                     <AppHeader title={t('recent_workout')} />
-                    <ScrollView
-                        contentContainerStyle={styles.scrollViewContent}
-                        keyboardShouldPersistTaps="handled"
-                    >
+                    <ScrollView contentContainerStyle={styles.scrollViewContent} keyboardShouldPersistTaps="handled">
                         {loading ? (
                             <ActivityIndicator color={colors.primary} size="large" />
                         ) : recentWorkout ? (
@@ -387,17 +343,13 @@ const RecentWorkoutDetails: React.FC<RecentWorkoutDetailsProps> = ({ navigation 
                                     styles={styles}
                                     value={`${recentWorkout.duration} ${t(recentWorkout?.duration || 0 > 1 ? 'minutes' : 'minute')}`}
                                 />
-                                {(workoutVolume ?? 0 > 0) ? (
+                                {workoutVolume ?? 0 > 0 ? (
                                     <DetailRow
                                         isEven={listIndex++ % 2 === 0}
                                         label={t('workout_volume')}
                                         styles={styles}
                                         value={t('value_weight', {
-                                            value: getDisplayFormattedWeight(
-                                                workoutVolume,
-                                                KILOGRAMS,
-                                                isImperial
-                                            ),
+                                            value: getDisplayFormattedWeight(workoutVolume, KILOGRAMS, isImperial),
                                             weightUnit,
                                         })}
                                     />
@@ -414,9 +366,7 @@ const RecentWorkoutDetails: React.FC<RecentWorkoutDetailsProps> = ({ navigation 
                                     isEven={listIndex++ % 2 === 0}
                                     label={t('exhaustion_level')}
                                     styles={styles}
-                                    value={t('out_of_ten', {
-                                        number: recentWorkout.exhaustionLevel,
-                                    })}
+                                    value={t('out_of_ten', { number: recentWorkout.exhaustionLevel })}
                                 />
                                 <DetailRow
                                     isEven={listIndex++ % 2 === 0}
@@ -424,15 +374,8 @@ const RecentWorkoutDetails: React.FC<RecentWorkoutDetailsProps> = ({ navigation 
                                     styles={styles}
                                     value={t('out_of_ten', { number: recentWorkout.workoutScore })}
                                 />
-                                {recentWorkout.carbohydrate ||
-                                recentWorkout.fat ||
-                                recentWorkout.protein ? (
-                                    <View
-                                        style={[
-                                            styles.macrosDetailRow,
-                                            listIndex++ % 2 === 0 ? styles.detailRowEvenBg : {},
-                                        ]}
-                                    >
+                                {(recentWorkout.carbohydrate || recentWorkout.fat || recentWorkout.protein) ? (
+                                    <View style={[styles.macrosDetailRow, listIndex++ % 2 === 0 ? styles.detailRowEvenBg : {}]}>
                                         <View style={styles.macrosHeader}>
                                             <Text style={styles.macroDetailLabelTitle}>
                                                 {t('macros_consumed_before_workout')}
@@ -449,12 +392,7 @@ const RecentWorkoutDetails: React.FC<RecentWorkoutDetailsProps> = ({ navigation 
                                             <View style={styles.macroDetailRow}>
                                                 <Text style={styles.detailLabel}>{t('carbs')}</Text>
                                                 <Text style={styles.detailValue}>
-                                                    {getDisplayFormattedWeight(
-                                                        recentWorkout.carbohydrate,
-                                                        GRAMS,
-                                                        isImperial
-                                                    )}
-                                                    {macroUnit}
+                                                    {getDisplayFormattedWeight(recentWorkout.carbohydrate, GRAMS, isImperial)}{macroUnit}
                                                 </Text>
                                             </View>
                                         ) : null}
@@ -462,45 +400,29 @@ const RecentWorkoutDetails: React.FC<RecentWorkoutDetailsProps> = ({ navigation 
                                             <View style={styles.macroDetailRow}>
                                                 <Text style={styles.detailLabel}>{t('fats')}</Text>
                                                 <Text style={styles.detailValue}>
-                                                    {getDisplayFormattedWeight(
-                                                        recentWorkout.fat,
-                                                        GRAMS,
-                                                        isImperial
-                                                    )}
-                                                    {macroUnit}
+                                                    {getDisplayFormattedWeight(recentWorkout.fat, GRAMS, isImperial)}{macroUnit}
                                                 </Text>
                                             </View>
                                         ) : null}
                                         {recentWorkout.protein ? (
                                             <View style={styles.macroDetailRow}>
-                                                <Text style={styles.detailLabel}>
-                                                    {t('proteins')}
-                                                </Text>
+                                                <Text style={styles.detailLabel}>{t('proteins')}</Text>
                                                 <Text style={styles.detailValue}>
-                                                    {getDisplayFormattedWeight(
-                                                        recentWorkout.protein,
-                                                        GRAMS,
-                                                        isImperial
-                                                    )}
-                                                    {macroUnit}
+                                                    {getDisplayFormattedWeight(recentWorkout.protein, GRAMS, isImperial)}{macroUnit}
                                                 </Text>
                                             </View>
                                         ) : null}
                                     </View>
                                 ) : null}
-                                {recentWorkout.bodyWeight && recentWorkout.bodyWeight > 0 ? (
+                                {(recentWorkout.bodyWeight && recentWorkout.bodyWeight > 0) ? (
                                     <DetailRow
                                         isEven={listIndex++ % 2 === 0}
                                         label={t('body_weight', { weightUnit })}
                                         styles={styles}
-                                        value={getDisplayFormattedWeight(
-                                            recentWorkout?.bodyWeight || 0,
-                                            KILOGRAMS,
-                                            isImperial
-                                        ).toString()}
+                                        value={getDisplayFormattedWeight(recentWorkout?.bodyWeight || 0, KILOGRAMS, isImperial).toString()}
                                     />
                                 ) : null}
-                                {recentWorkout.fatPercentage && recentWorkout.fatPercentage > 0 ? (
+                                {(recentWorkout.fatPercentage && recentWorkout.fatPercentage > 0) ? (
                                     <DetailRow
                                         isEven={listIndex++ % 2 === 0}
                                         label={t('fat_percentage')}
@@ -521,30 +443,18 @@ const RecentWorkoutDetails: React.FC<RecentWorkoutDetailsProps> = ({ navigation 
                                         <Text style={styles.exercisesTitle}>{t('exercises')}</Text>
                                         {exerciseVolumeData.map((exercise, index) => (
                                             <WorkoutExerciseDetail
-                                                exercise={exercises.find(
-                                                    (ex) => ex?.id === exercise.exerciseId
-                                                )}
+                                                exercise={exercises.find((ex) => ex?.id === exercise.exerciseId)}
                                                 exerciseVolume={{
                                                     ...exercise,
                                                     sets: exercise.sets.map((set) => ({
                                                         ...set,
                                                         setId: set.id ?? 0,
-                                                        targetWeight: getDisplayFormattedWeight(
-                                                            Number(set.targetWeight),
-                                                            KILOGRAMS,
-                                                            isImperial
-                                                        ),
-                                                        weight: getDisplayFormattedWeight(
-                                                            Number(set.weight),
-                                                            KILOGRAMS,
-                                                            isImperial
-                                                        ),
+                                                        targetWeight: getDisplayFormattedWeight(Number(set.targetWeight), KILOGRAMS, isImperial),
+                                                        weight: getDisplayFormattedWeight(Number(set.weight), KILOGRAMS, isImperial),
                                                     })),
                                                 }}
                                                 key={index}
-                                                onDeleteSet={handleDeleteSetConfirmation(
-                                                    exercise.exerciseId
-                                                )}
+                                                onDeleteSet={handleDeleteSetConfirmation(exercise.exerciseId)}
                                                 onEditSet={handleEditSet(exercise.exerciseId)}
                                             />
                                         ))}
@@ -559,10 +469,7 @@ const RecentWorkoutDetails: React.FC<RecentWorkoutDetailsProps> = ({ navigation 
                         cancelText={t('cancel')}
                         confirmText={t('delete')}
                         onClose={() => setDeleteSetModalVisible(false)}
-                        onConfirm={() =>
-                            currentDelete &&
-                            handleDeleteSet(currentDelete.exerciseId, currentDelete.setIndex)
-                        }
+                        onConfirm={() => currentDelete && handleDeleteSet(currentDelete.exerciseId, currentDelete.setIndex)}
                         title={t('delete_set_confirmation')}
                         visible={deleteSetModalVisible}
                     />
@@ -607,106 +514,109 @@ const DetailRow: React.FC<{
 }> = ({ isEven, label, status, styles, value }) => (
     <View style={[styles.detailRow, isEven ? styles.detailRowEvenBg : {}]}>
         <Text style={styles.detailLabel}>{label}</Text>
-        {status ? <StatusBadge status={status} /> : <Text style={styles.detailValue}>{value}</Text>}
+        {status ? (
+            <StatusBadge status={status} />
+        ) : (
+            <Text style={styles.detailValue}>{value}</Text>
+        )}
     </View>
 );
 
-const makeStyles = (colors: CustomThemeColorsType, dark: boolean) =>
-    StyleSheet.create({
-        cardContainer: {
-            marginTop: 16,
-            padding: 8,
-        },
-        cardHeader: {
-            alignItems: 'center',
-            backgroundColor: colors.surface,
-            borderRadius: 8,
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            padding: 12,
-        },
-        container: {
-            backgroundColor: colors.background,
-            flex: 1,
-        },
-        crudButton: {
-            marginLeft: 10,
-        },
-        dateTitle: {
-            color: colors.onSurface,
-            fontSize: 16,
-            fontWeight: 'bold',
-        },
-        detailLabel: {
-            color: colors.onSurface,
-            fontSize: 16,
-        },
-        detailRow: {
-            borderRadius: 8,
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            marginBottom: 12,
-            paddingHorizontal: 8,
-            paddingVertical: 12,
-        },
-        detailRowEvenBg: {
-            backgroundColor: colors.inverseOnSurface,
-        },
-        detailValue: {
-            color: colors.onSurface,
-            fontSize: 16,
-            fontWeight: '500',
-        },
-        exercisesTitle: {
-            color: colors.onSurface,
-            fontSize: 18,
-            fontWeight: 'bold',
-            marginBottom: 8,
-        },
-        macroDetailLabelTitle: {
-            color: colors.onSurface,
-            fontSize: 16,
-            marginBottom: 8,
-        },
-        macroDetailRow: {
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            marginBottom: 4,
-        },
-        macrosDetailRow: {
-            borderRadius: 8,
-            marginBottom: 12,
-            padding: 12,
-        },
-        macrosHeader: {
-            alignItems: 'center',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            marginBottom: 8,
-        },
-        noDataText: {
-            color: colors.onBackground,
-            fontSize: 16,
-            marginTop: 16,
-            textAlign: 'center',
-        },
-        overlay: {
-            ...StyleSheet.absoluteFillObject,
-            alignItems: 'center',
-            backgroundColor: 'rgba(0,0,0,0.5)',
-            flex: 1,
-            justifyContent: 'center',
-        },
-        scrollViewContent: {
-            backgroundColor: colors.background,
-            paddingBottom: 16,
-            paddingHorizontal: 16,
-        },
-        separator: {
-            backgroundColor: colors.background,
-            height: 1,
-            marginVertical: 16,
-        },
-    });
+const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
+    cardContainer: {
+        marginTop: 16,
+        padding: 8,
+    },
+    cardHeader: {
+        alignItems: 'center',
+        backgroundColor: colors.surface,
+        borderRadius: 8,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        padding: 12,
+    },
+    container: {
+        backgroundColor: colors.background,
+        flex: 1,
+    },
+    crudButton: {
+        marginLeft: 10,
+    },
+    dateTitle: {
+        color: colors.onSurface,
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    detailLabel: {
+        color: colors.onSurface,
+        fontSize: 16,
+    },
+    detailRow: {
+        borderRadius: 8,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 12,
+        paddingHorizontal: 8,
+        paddingVertical: 12,
+    },
+    detailRowEvenBg: {
+        backgroundColor: colors.inverseOnSurface,
+    },
+    detailValue: {
+        color: colors.onSurface,
+        fontSize: 16,
+        fontWeight: '500',
+    },
+    exercisesTitle: {
+        color: colors.onSurface,
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 8,
+    },
+    macroDetailLabelTitle: {
+        color: colors.onSurface,
+        fontSize: 16,
+        marginBottom: 8,
+    },
+    macroDetailRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 4,
+    },
+    macrosDetailRow: {
+        borderRadius: 8,
+        marginBottom: 12,
+        padding: 12,
+    },
+    macrosHeader: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 8,
+    },
+    noDataText: {
+        color: colors.onBackground,
+        fontSize: 16,
+        marginTop: 16,
+        textAlign: 'center',
+    },
+    overlay: {
+        ...StyleSheet.absoluteFillObject,
+        alignItems: 'center',
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        flex: 1,
+        justifyContent: 'center',
+    },
+    scrollViewContent: {
+        backgroundColor: colors.background,
+        paddingBottom: 16,
+        paddingHorizontal: 16,
+    },
+    separator: {
+        backgroundColor: colors.background,
+        height: 1,
+        marginVertical: 16,
+    },
+});
 
 export default RecentWorkoutDetails;

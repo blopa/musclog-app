@@ -204,7 +204,11 @@ const CreateExercise = ({ navigation }: { navigation: NavigationProp<any> }) => 
                 onClose={handleModalClose}
                 title={t(`exercise_${id ? 'updated' : 'created'}_successfully`)}
             />
-            <Appbar.Header mode="small" statusBarHeight={0} style={styles.appbarHeader}>
+            <Appbar.Header
+                mode="small"
+                statusBarHeight={0}
+                style={styles.appbarHeader}
+            >
                 <Appbar.Content
                     title={t(id ? 'edit_exercise' : 'create_exercise')}
                     titleStyle={styles.appbarTitle}
@@ -285,58 +289,57 @@ const CreateExercise = ({ navigation }: { navigation: NavigationProp<any> }) => 
     );
 };
 
-const makeStyles = (colors: CustomThemeColorsType, dark: boolean) =>
-    StyleSheet.create({
-        appbarHeader: {
-            backgroundColor: colors.primary,
-            justifyContent: 'center',
-            paddingHorizontal: 16,
-        },
-        appbarTitle: {
-            color: colors.onPrimary,
-            fontSize: Platform.OS === 'web' ? 20 : 26,
-        },
-        button: {
-            marginVertical: 10,
-        },
-        container: {
-            backgroundColor: colors.background,
-            // flexGrow: 1,
-            flex: 1,
-        },
-        content: {
-            padding: 16,
-        },
-        footer: {
-            alignItems: 'center',
-            borderTopColor: colors.shadow,
-            borderTopWidth: 1,
-            padding: 16,
-        },
-        formGroup: {
-            marginBottom: 16,
-        },
-        imagePicker: {
-            marginTop: 10,
-        },
-        imagePreview: {
-            borderRadius: 5,
-            height: 200,
-            marginTop: 10,
-            width: '100%',
-        },
-        label: {
-            fontSize: 16,
-            fontWeight: '600',
-            marginBottom: 8,
-        },
-        overlay: {
-            ...StyleSheet.absoluteFillObject,
-            alignItems: 'center',
-            backgroundColor: 'rgba(0,0,0,0.5)',
-            flex: 1,
-            justifyContent: 'center',
-        },
-    });
+const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
+    appbarHeader: {
+        backgroundColor: colors.primary,
+        justifyContent: 'center',
+        paddingHorizontal: 16,
+    },
+    appbarTitle: {
+        color: colors.onPrimary,
+        fontSize: Platform.OS === 'web' ? 20 : 26,
+    },
+    button: {
+        marginVertical: 10,
+    },
+    container: {
+        backgroundColor: colors.background,
+        // flexGrow: 1,
+        flex: 1,
+    },
+    content: {
+        padding: 16,
+    },
+    footer: {
+        alignItems: 'center',
+        borderTopColor: colors.shadow,
+        borderTopWidth: 1,
+        padding: 16,
+    },
+    formGroup: {
+        marginBottom: 16,
+    },
+    imagePicker: {
+        marginTop: 10,
+    },
+    imagePreview: {
+        borderRadius: 5,
+        height: 200,
+        marginTop: 10,
+        width: '100%',
+    },
+    label: {
+        fontSize: 16,
+        fontWeight: '600',
+        marginBottom: 8,
+    },
+    overlay: {
+        ...StyleSheet.absoluteFillObject,
+        alignItems: 'center',
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        flex: 1,
+        justifyContent: 'center',
+    },
+});
 
 export default CreateExercise;

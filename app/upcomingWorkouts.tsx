@@ -30,49 +30,35 @@ import { ActivityIndicator, Appbar, Card, Text, useTheme } from 'react-native-pa
 
 type Callback = () => void;
 
-async function createCalendarEvent(
-    workout: WorkoutEventReturnType,
-    onSuccess: Callback,
-    onError: Callback
-) {
+async function createCalendarEvent(workout: WorkoutEventReturnType, onSuccess: Callback, onError: Callback) {
     if (Platform.OS === 'web') {
         const event = {
             description: workout.title || '',
-            duration: {
-                hours: Math.floor((workout.duration || 60) / 60),
-                minutes: (workout.duration || 60) % 60,
-            },
+            duration: { hours: Math.floor((workout.duration || 60) / 60), minutes: (workout.duration || 60) % 60 },
             location: '',
             start: new Date(workout.date),
             title: workout.title,
         };
 
-        createEvent(
-            {
-                ...event,
-                start: [
-                    new Date(event.start).getFullYear(),
-                    new Date(event.start).getMonth() + 1,
-                    new Date(event.start).getDate(),
-                ],
-            },
-            (error, value) => {
-                if (error) {
-                    console.error(error);
-                    onError();
-                    return;
-                }
-
-                const blob = new Blob([value], { type: 'text/calendar;charset=utf-8' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `${workout.title}.ics`;
-                a.click();
-                URL.revokeObjectURL(url);
-                onSuccess();
+        createEvent({
+            ...event,
+            start: [new Date(event.start).getFullYear(), new Date(event.start).getMonth() + 1, new Date(event.start).getDate()],
+        }, (error, value) => {
+            if (error) {
+                console.error(error);
+                onError();
+                return;
             }
-        );
+
+            const blob = new Blob([value], { type: 'text/calendar;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${workout.title}.ics`;
+            a.click();
+            URL.revokeObjectURL(url);
+            onSuccess();
+        });
 
         return;
     }
@@ -85,9 +71,7 @@ async function createCalendarEvent(
         if (defaultCalendar) {
             try {
                 await Calendar.createEventAsync(defaultCalendar.id, {
-                    endDate: new Date(
-                        new Date(workout.date).getTime() + (workout.duration || 60) * 60000
-                    ),
+                    endDate: new Date(new Date(workout.date).getTime() + (workout.duration || 60) * 60000),
                     location: '',
                     notes: workout.description || '',
                     startDate: new Date(workout.date),
@@ -267,14 +251,11 @@ export default function UpcomingWorkouts({ navigation }: { navigation: Navigatio
         setIsModalVisible(true);
     }, [t]);
 
-    const handleAddToCalendar = useCallback(
-        async (workout: WorkoutEventReturnType) => {
-            setDisabledButtons((prev) => ({ ...prev, [workout.id!]: true }));
-            await createCalendarEvent(workout, handleSuccess, handleError);
-            setDisabledButtons((prev) => ({ ...prev, [workout.id!]: false }));
-        },
-        [handleSuccess, handleError]
-    );
+    const handleAddToCalendar = useCallback(async (workout: WorkoutEventReturnType) => {
+        setDisabledButtons((prev) => ({ ...prev, [workout.id!]: true }));
+        await createCalendarEvent(workout, handleSuccess, handleError);
+        setDisabledButtons((prev) => ({ ...prev, [workout.id!]: false }));
+    }, [handleSuccess, handleError]);
 
     const handleDeleteWorkout = useCallback(async () => {
         if (selectedWorkout) {
@@ -300,40 +281,27 @@ export default function UpcomingWorkouts({ navigation }: { navigation: Navigatio
         workout.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    const fabActions = useMemo(
-        () => [
-            {
-                icon: () => (
-                    <FontAwesome5 color={colors.primary} name="plus" size={FAB_ICON_SIZE} />
-                ),
-                label: t('schedule_workout'),
-                onPress: () => navigation.navigate('scheduleWorkout'),
-                style: { backgroundColor: colors.surface },
-            },
-        ],
-        [colors.primary, colors.surface, navigation, t]
-    );
+    const fabActions = useMemo(() => [{
+        icon: () => <FontAwesome5 color={colors.primary} name="plus" size={FAB_ICON_SIZE} />,
+        label: t('schedule_workout'),
+        onPress: () => navigation.navigate('scheduleWorkout'),
+        style: { backgroundColor: colors.surface },
+    }], [colors.primary, colors.surface, navigation, t]);
 
     return (
         <Screen style={styles.container}>
             <FABWrapper actions={fabActions} visible>
                 <View style={styles.container}>
-                    <Appbar.Header mode="small" statusBarHeight={0} style={styles.appbarHeader}>
-                        <Appbar.Content
-                            title={t('upcoming_workouts')}
-                            titleStyle={styles.appbarTitle}
-                        />
-                        <AnimatedSearchBar
-                            searchQuery={searchQuery}
-                            setSearchQuery={setSearchQuery}
-                        />
+                    <Appbar.Header
+                        mode="small"
+                        statusBarHeight={0}
+                        style={styles.appbarHeader}
+                    >
+                        <Appbar.Content title={t('upcoming_workouts')} titleStyle={styles.appbarTitle} />
+                        <AnimatedSearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
                     </Appbar.Header>
                     <FlashList
-                        ListFooterComponent={
-                            upcomingWorkouts.length < totalWorkoutsCount ? (
-                                <ActivityIndicator />
-                            ) : null
-                        }
+                        ListFooterComponent={upcomingWorkouts.length < totalWorkoutsCount ? <ActivityIndicator /> : null}
                         contentContainerStyle={styles.scrollViewContent}
                         data={filteredWorkouts}
                         estimatedItemSize={100}
@@ -345,14 +313,10 @@ export default function UpcomingWorkouts({ navigation }: { navigation: Navigatio
                                 <Card.Content style={styles.cardContent}>
                                     <View style={styles.cardHeader}>
                                         <Text style={styles.cardTitle}>{workout.title}</Text>
-                                        <Text style={styles.cardDate}>
-                                            {formatDate(workout.date)}
-                                        </Text>
+                                        <Text style={styles.cardDate}>{formatDate(workout.date)}</Text>
                                         <StatusBadge status={SCHEDULED_STATUS} />
                                         {(workout?.duration || 0) > 0 && (
-                                            <Text style={styles.cardDuration}>
-                                                {workout.duration} {t('minutes')}
-                                            </Text>
+                                            <Text style={styles.cardDuration}>{workout.duration} {t('minutes')}</Text>
                                         )}
                                     </View>
                                     <View style={styles.cardActions}>
@@ -374,9 +338,7 @@ export default function UpcomingWorkouts({ navigation }: { navigation: Navigatio
                                         <FontAwesome5
                                             color={colors.primary}
                                             name="trash"
-                                            onPress={() =>
-                                                openDeleteWorkoutConfirmationModal(workout)
-                                            }
+                                            onPress={() => openDeleteWorkoutConfirmationModal(workout)}
                                             size={ICON_SIZE}
                                             style={styles.iconButton}
                                         />
@@ -406,11 +368,7 @@ export default function UpcomingWorkouts({ navigation }: { navigation: Navigatio
                         confirmText={t('yes')}
                         onClose={() => setDeleteModalVisible(false)}
                         onConfirm={handleDeleteWorkout}
-                        title={
-                            selectedWorkout
-                                ? t('delete_workout_confirmation', { title: selectedWorkout.title })
-                                : t('delete_confirmation_generic')
-                        }
+                        title={selectedWorkout ? t('delete_workout_confirmation', { title: selectedWorkout.title }) : t('delete_confirmation_generic')}
                         visible={deleteModalVisible}
                     />
                     <CompletionModal
@@ -426,52 +384,51 @@ export default function UpcomingWorkouts({ navigation }: { navigation: Navigatio
     );
 }
 
-const makeStyles = (colors: CustomThemeColorsType, dark: boolean) =>
-    StyleSheet.create({
-        appbarHeader: {
-            backgroundColor: colors.primary,
-            justifyContent: 'center',
-            paddingHorizontal: 16,
-        },
-        appbarTitle: {
-            color: colors.onPrimary,
-            fontSize: Platform.OS === 'web' ? 20 : 26,
-        },
-        cardActions: {
-            alignItems: 'center',
-            flexDirection: 'row',
-        },
-        cardContent: {
-            alignItems: 'center',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-        },
-        cardDate: {
-            color: colors.onBackground,
-            fontSize: 14,
-        },
-        cardDuration: {
-            color: colors.onBackground,
-            marginTop: 4,
-        },
-        cardHeader: {
-            flex: 1,
-        },
-        cardTitle: {
-            color: colors.onSurface,
-            fontSize: 18,
-            fontWeight: 'bold',
-        },
-        container: {
-            backgroundColor: colors.background,
-            flex: 1,
-        },
-        iconButton: {
-            marginHorizontal: 8,
-        },
-        scrollViewContent: {
-            backgroundColor: colors.background,
-            paddingBottom: 16,
-            paddingHorizontal: 16,
-        },
-    });
+const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
+    appbarHeader: {
+        backgroundColor: colors.primary,
+        justifyContent: 'center',
+        paddingHorizontal: 16,
+    },
+    appbarTitle: {
+        color: colors.onPrimary,
+        fontSize: Platform.OS === 'web' ? 20 : 26,
+    },
+    cardActions: {
+        alignItems: 'center',
+        flexDirection: 'row',
+    },
+    cardContent: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    cardDate: {
+        color: colors.onBackground,
+        fontSize: 14,
+    },
+    cardDuration: {
+        color: colors.onBackground,
+        marginTop: 4,
+    },
+    cardHeader: {
+        flex: 1,
+    },
+    cardTitle: {
+        color: colors.onSurface,
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    container: {
+        backgroundColor: colors.background,
+        flex: 1,
+    },
+    iconButton: {
+        marginHorizontal: 8,
+    },
+    scrollViewContent: {
+        backgroundColor: colors.background,
+        paddingBottom: 16,
+        paddingHorizontal: 16,
+    },
+});

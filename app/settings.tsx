@@ -1,5 +1,6 @@
 import AppHeader from '@/components/AppHeader';
 import CustomTextInput from '@/components/CustomTextInput';
+import { Screen } from '@/components/Screen';
 import ThemedModal from '@/components/ThemedModal';
 import { DARK, LIGHT, SYSTEM_DEFAULT } from '@/constants/colors';
 import { USER_METRICS_SOURCES } from '@/constants/healthConnect';
@@ -40,7 +41,6 @@ import { BackHandler, Linking, ScrollView, StyleSheet, TouchableOpacity, View } 
 import { ActivityIndicator, Button, List, Switch, Text, useTheme } from 'react-native-paper';
 
 import packageJson from '../package.json';
-import { Screen } from '@/components/Screen';
 
 export default function Settings({ navigation }: { navigation: NavigationProp<any> }) {
     const { i18n, t } = useTranslation();
@@ -66,22 +66,16 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
     const [exerciseImageModalVisible, setExerciseImageModalVisible] = useState(false);
 
     const [readHealthConnectEnabled, setReadHealthConnectEnabled] = useState<boolean>(false);
-    const [tempReadHealthConnectEnabled, setTempReadHealthConnectEnabled] =
-        useState<boolean>(false);
-    const [readHealthConnectModalVisible, setReadHealthConnectModalVisible] =
-        useState<boolean>(false);
+    const [tempReadHealthConnectEnabled, setTempReadHealthConnectEnabled] = useState<boolean>(false);
+    const [readHealthConnectModalVisible, setReadHealthConnectModalVisible] = useState<boolean>(false);
     const [writeHealthConnectEnabled, setWriteHealthConnectEnabled] = useState<boolean>(false);
-    const [tempWriteHealthConnectEnabled, setTempWriteHealthConnectEnabled] =
-        useState<boolean>(false);
-    const [writeHealthConnectModalVisible, setWriteHealthConnectModalVisible] =
-        useState<boolean>(false);
+    const [tempWriteHealthConnectEnabled, setTempWriteHealthConnectEnabled] = useState<boolean>(false);
+    const [writeHealthConnectModalVisible, setWriteHealthConnectModalVisible] = useState<boolean>(false);
 
     const [showCheckPermissionButton, setShowCheckPermissionButton] = useState(false);
     const [showCheckWritePermissionButton, setShowCheckWritePermissionButton] = useState(false);
 
-    const [advancedSettingsEnabled, setAdvancedSettingsEnabled] = useState<boolean | undefined>(
-        undefined
-    );
+    const [advancedSettingsEnabled, setAdvancedSettingsEnabled] = useState<boolean | undefined>(undefined);
     const [aiSettingsEnabled, setAiSettingsEnabled] = useState<boolean | undefined>(undefined);
     const [exportModalVisible, setExportModalVisible] = useState(false);
     const [importModalVisible, setImportModalVisible] = useState(false);
@@ -95,9 +89,7 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
     const [appInfoModalVisible, setAppInfoModalVisible] = useState(false);
     const [encryptionPhrase, setEncryptionPhrase] = useState('');
     const [decryptionPhrase, setDecryptionPhrase] = useState('');
-    const [useFatPercentageTDEE, setUseFatPercentageTDEE] = useState<boolean | undefined>(
-        undefined
-    );
+    const [useFatPercentageTDEE, setUseFatPercentageTDEE] = useState<boolean | undefined>(undefined);
 
     const { colors, dark } = useTheme<CustomThemeType>();
     const { setTheme } = useCustomTheme();
@@ -132,9 +124,7 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
             setTempSelectedUnit(unitChoiceFromDb.value);
         }
 
-        const exerciseImageGenerationFromDb = await getSettingByType(
-            EXERCISE_IMAGE_GENERATION_TYPE
-        );
+        const exerciseImageGenerationFromDb = await getSettingByType(EXERCISE_IMAGE_GENERATION_TYPE);
         if (exerciseImageGenerationFromDb) {
             const value = exerciseImageGenerationFromDb.value === 'true';
             setExerciseImageGeneration(value);
@@ -188,11 +178,9 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
         }
     }, [i18n, getSettingByType]);
 
-    useFocusEffect(
-        useCallback(() => {
-            fetchSettings();
-        }, [fetchSettings])
-    );
+    useFocusEffect(useCallback(() => {
+        fetchSettings();
+    }, [fetchSettings]));
 
     useFocusEffect(
         useCallback(() => {
@@ -208,18 +196,13 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
         }, [navigation])
     );
 
-    const updateSettingWithLoadingState = useCallback(
-        async (type: string, value: string) => {
-            // this hack is necessary so that the UI can update before the async operation
-            await new Promise((resolve) =>
-                setTimeout(async (data) => {
-                    await addOrUpdateSettingValue(type, value);
-                    return resolve(data);
-                }, 0)
-            );
-        },
-        [addOrUpdateSettingValue]
-    );
+    const updateSettingWithLoadingState = useCallback(async (type: string, value: string) => {
+        // this hack is necessary so that the UI can update before the async operation
+        await new Promise((resolve) => setTimeout(async (data) => {
+            await addOrUpdateSettingValue(type, value);
+            return resolve(data);
+        }, 0));
+    }, [addOrUpdateSettingValue]);
 
     const handleSaveOpenAiKey = useCallback(async () => {
         setLoading(true);
@@ -301,10 +284,7 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
 
     const handleConfirmExerciseImageGenerationChange = useCallback(async () => {
         setLoading(true);
-        await updateSettingWithLoadingState(
-            EXERCISE_IMAGE_GENERATION_TYPE,
-            tempExerciseImageGeneration.toString()
-        );
+        await updateSettingWithLoadingState(EXERCISE_IMAGE_GENERATION_TYPE, tempExerciseImageGeneration.toString());
 
         setExerciseImageGeneration(tempExerciseImageGeneration);
         setExerciseImageModalVisible(false);
@@ -312,19 +292,9 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
     }, [updateSettingWithLoadingState, tempExerciseImageGeneration]);
 
     const getHealthConnectData = useCallback(async () => {
-        const isPermitted = await checkReadIsPermitted([
-            'Height',
-            'Weight',
-            'BodyFat',
-            'Nutrition',
-        ]);
+        const isPermitted = await checkReadIsPermitted(['Height', 'Weight', 'BodyFat', 'Nutrition']);
         if (isPermitted) {
-            const healthData = await getHealthData(1000, [
-                'Height',
-                'Weight',
-                'BodyFat',
-                'Nutrition',
-            ]);
+            const healthData = await getHealthData(1000, ['Height', 'Weight', 'BodyFat', 'Nutrition']);
 
             if (healthData) {
                 const latestHeight = healthData?.heightRecords?.[0];
@@ -340,11 +310,10 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
                 const user = await getUser();
                 for (const [date, healthData] of Object.entries(aggregatedData)) {
                     await addUserMetrics({
-                        dataId:
-                            healthData.bodyFatData?.metadata?.id ||
-                            healthData.heightData?.metadata?.id ||
-                            healthData.weightData?.metadata?.id ||
-                            generateHash(),
+                        dataId: healthData.bodyFatData?.metadata?.id
+                            || healthData.heightData?.metadata?.id
+                            || healthData.weightData?.metadata?.id
+                            || generateHash(),
                         date,
                         eatingPhase: user?.metrics?.eatingPhase || EATING_PHASES.MAINTENANCE,
                         fatPercentage: healthData.bodyFatData?.percentage || 0,
@@ -383,10 +352,7 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
 
     const handleConfirmHealthConnectChange = useCallback(async () => {
         setLoading(true);
-        await updateSettingWithLoadingState(
-            READ_HEALTH_CONNECT_TYPE,
-            tempReadHealthConnectEnabled.toString()
-        );
+        await updateSettingWithLoadingState(READ_HEALTH_CONNECT_TYPE, tempReadHealthConnectEnabled.toString());
 
         setReadHealthConnectEnabled(tempReadHealthConnectEnabled);
         setReadHealthConnectModalVisible(false);
@@ -420,10 +386,7 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
 
     const handleConfirmHealthConnectWriteChange = useCallback(async () => {
         setLoading(true);
-        await updateSettingWithLoadingState(
-            WRITE_HEALTH_CONNECT_TYPE,
-            tempWriteHealthConnectEnabled.toString()
-        );
+        await updateSettingWithLoadingState(WRITE_HEALTH_CONNECT_TYPE, tempWriteHealthConnectEnabled.toString());
 
         setWriteHealthConnectEnabled(tempWriteHealthConnectEnabled);
         setWriteHealthConnectModalVisible(false);
@@ -507,12 +470,10 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
         setLoading(true);
 
         // this hack is necessary so that the UI can update before the async operation
-        await new Promise((resolve) =>
-            setTimeout(async (data) => {
-                await exportDatabase(encryptionPhrase);
-                return resolve(data);
-            }, 0)
-        );
+        await new Promise((resolve) => setTimeout(async (data) => {
+            await exportDatabase(encryptionPhrase);
+            return resolve(data);
+        }, 0));
 
         setExportModalVisible(false);
         setLoading(false);
@@ -522,12 +483,10 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
         setLoading(true);
 
         // this hack is necessary so that the UI can update before the async operation
-        await new Promise((resolve) =>
-            setTimeout(async (data) => {
-                await importDatabase(decryptionPhrase);
-                return resolve(data);
-            }, 0)
-        );
+        await new Promise((resolve) => setTimeout(async (data) => {
+            await importDatabase(decryptionPhrase);
+            return resolve(data);
+        }, 0));
 
         setImportModalVisible(false);
         setLoading(false);
@@ -584,10 +543,7 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
     return (
         <Screen style={styles.container}>
             <AppHeader title={t('settings')} />
-            <ScrollView
-                contentContainerStyle={styles.settingsContainer}
-                keyboardShouldPersistTaps="handled"
-            >
+            <ScrollView contentContainerStyle={styles.settingsContainer} keyboardShouldPersistTaps="handled">
                 <List.Section>
                     <List.Subheader>{t('general_settings')}</List.Subheader>
                     <List.Item
@@ -628,9 +584,7 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
                         onPress={() => setReadHealthConnectModalVisible(true)}
                         right={() => (
                             <View style={styles.rightContainer}>
-                                <Text>
-                                    {readHealthConnectEnabled ? t('enabled') : t('disabled')}
-                                </Text>
+                                <Text>{readHealthConnectEnabled ? t('enabled') : t('disabled')}</Text>
                                 <List.Icon icon="chevron-right" />
                             </View>
                         )}
@@ -641,9 +595,7 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
                         onPress={() => setWriteHealthConnectModalVisible(true)}
                         right={() => (
                             <View style={styles.rightContainer}>
-                                <Text>
-                                    {writeHealthConnectEnabled ? t('enabled') : t('disabled')}
-                                </Text>
+                                <Text>{writeHealthConnectEnabled ? t('enabled') : t('disabled')}</Text>
                                 <List.Icon icon="chevron-right" />
                             </View>
                         )}
@@ -654,10 +606,7 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
                         onPress={handleToggleAISettings}
                         right={() => (
                             <View style={styles.rightContainer}>
-                                <Switch
-                                    onChange={handleToggleAISettings}
-                                    value={aiSettingsEnabled}
-                                />
+                                <Switch onChange={handleToggleAISettings} value={aiSettingsEnabled} />
                             </View>
                         )}
                         title={t('ai_settings')}
@@ -687,9 +636,7 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
                                 }}
                                 right={() => (
                                     <View style={styles.rightContainer}>
-                                        <Text>
-                                            {googleGeminiApiKey ? '**********' : t('not_set')}
-                                        </Text>
+                                        <Text>{googleGeminiApiKey ? '**********' : t('not_set')}</Text>
                                         <List.Icon icon="chevron-right" />
                                     </View>
                                 )}
@@ -700,9 +647,7 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
                                 onPress={() => setExerciseImageModalVisible(true)}
                                 right={() => (
                                     <View style={styles.rightContainer}>
-                                        <Text>
-                                            {exerciseImageGeneration ? t('enabled') : t('disabled')}
-                                        </Text>
+                                        <Text>{exerciseImageGeneration ? t('enabled') : t('disabled')}</Text>
                                         <List.Icon icon="chevron-right" />
                                     </View>
                                 )}
@@ -715,10 +660,7 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
                         onPress={handleToggleAdvancedSettings}
                         right={() => (
                             <View style={styles.rightContainer}>
-                                <Switch
-                                    onChange={handleToggleAdvancedSettings}
-                                    value={advancedSettingsEnabled}
-                                />
+                                <Switch onChange={handleToggleAdvancedSettings} value={advancedSettingsEnabled} />
                             </View>
                         )}
                         title={t('advanced_settings')}
@@ -778,10 +720,7 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
                         onPress={handleToggleUseFatPercentageTDEE}
                         right={() => (
                             <View style={styles.rightContainer}>
-                                <Switch
-                                    onChange={handleToggleUseFatPercentageTDEE}
-                                    value={useFatPercentageTDEE}
-                                />
+                                <Switch onChange={handleToggleUseFatPercentageTDEE} value={useFatPercentageTDEE} />
                             </View>
                         )}
                         title={t('use_fat_percentage_tdee')}
@@ -877,32 +816,17 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
                 visible={themedModalVisible}
             >
                 <View style={styles.radioContainer}>
-                    <TouchableOpacity
-                        onPress={() => setTempSelectedTheme(LIGHT)}
-                        style={styles.radio}
-                    >
+                    <TouchableOpacity onPress={() => setTempSelectedTheme(LIGHT)} style={styles.radio}>
                         <Text style={styles.radioText}>{t('light')}</Text>
-                        <Text style={styles.radioText}>
-                            {tempSelectedTheme === LIGHT ? '✔' : ''}
-                        </Text>
+                        <Text style={styles.radioText}>{tempSelectedTheme === LIGHT ? '✔' : ''}</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() => setTempSelectedTheme(DARK)}
-                        style={styles.radio}
-                    >
+                    <TouchableOpacity onPress={() => setTempSelectedTheme(DARK)} style={styles.radio}>
                         <Text style={styles.radioText}>{t('dark')}</Text>
-                        <Text style={styles.radioText}>
-                            {tempSelectedTheme === DARK ? '✔' : ''}
-                        </Text>
+                        <Text style={styles.radioText}>{tempSelectedTheme === DARK ? '✔' : ''}</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() => setTempSelectedTheme(SYSTEM_DEFAULT)}
-                        style={styles.radio}
-                    >
+                    <TouchableOpacity onPress={() => setTempSelectedTheme(SYSTEM_DEFAULT)} style={styles.radio}>
                         <Text style={styles.radioText}>{t('system_default')}</Text>
-                        <Text style={styles.radioText}>
-                            {tempSelectedTheme === SYSTEM_DEFAULT ? '✔' : ''}
-                        </Text>
+                        <Text style={styles.radioText}>{tempSelectedTheme === SYSTEM_DEFAULT ? '✔' : ''}</Text>
                     </TouchableOpacity>
                     {loading ? <ActivityIndicator color={colors.surface} /> : null}
                 </View>
@@ -917,15 +841,9 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
             >
                 <View style={styles.radioContainer}>
                     {AVAILABLE_LANGUAGES.map((lang) => (
-                        <TouchableOpacity
-                            key={lang}
-                            onPress={() => setSelectedLanguage(lang)}
-                            style={styles.radio}
-                        >
+                        <TouchableOpacity key={lang} onPress={() => setSelectedLanguage(lang)} style={styles.radio}>
                             <Text style={styles.radioText}>{t(`langs.${lang.toLowerCase()}`)}</Text>
-                            <Text style={styles.radioText}>
-                                {selectedLanguage === lang ? '✔' : ''}
-                            </Text>
+                            <Text style={styles.radioText}>{selectedLanguage === lang ? '✔' : ''}</Text>
                         </TouchableOpacity>
                     ))}
                     {loading ? <ActivityIndicator color={colors.surface} /> : null}
@@ -940,23 +858,13 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
                 visible={unitModalVisible}
             >
                 <View style={styles.radioContainer}>
-                    <TouchableOpacity
-                        onPress={() => setTempSelectedUnit(METRIC_SYSTEM)}
-                        style={styles.radio}
-                    >
+                    <TouchableOpacity onPress={() => setTempSelectedUnit(METRIC_SYSTEM)} style={styles.radio}>
                         <Text style={styles.radioText}>{t('metric')}</Text>
-                        <Text style={styles.radioText}>
-                            {tempSelectedUnit === METRIC_SYSTEM ? '✔' : ''}
-                        </Text>
+                        <Text style={styles.radioText}>{tempSelectedUnit === METRIC_SYSTEM ? '✔' : ''}</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() => setTempSelectedUnit(IMPERIAL_SYSTEM)}
-                        style={styles.radio}
-                    >
+                    <TouchableOpacity onPress={() => setTempSelectedUnit(IMPERIAL_SYSTEM)} style={styles.radio}>
                         <Text style={styles.radioText}>{t('imperial')}</Text>
-                        <Text style={styles.radioText}>
-                            {tempSelectedUnit === IMPERIAL_SYSTEM ? '✔' : ''}
-                        </Text>
+                        <Text style={styles.radioText}>{tempSelectedUnit === IMPERIAL_SYSTEM ? '✔' : ''}</Text>
                     </TouchableOpacity>
                     {loading ? <ActivityIndicator color={colors.surface} /> : null}
                 </View>
@@ -970,63 +878,35 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
                 visible={exerciseImageModalVisible}
             >
                 <View style={styles.radioContainer}>
-                    <TouchableOpacity
-                        onPress={() => setTempExerciseImageGeneration(true)}
-                        style={styles.radio}
-                    >
+                    <TouchableOpacity onPress={() => setTempExerciseImageGeneration(true)} style={styles.radio}>
                         <Text style={styles.radioText}>{t('enabled')}</Text>
-                        <Text style={styles.radioText}>
-                            {tempExerciseImageGeneration ? '✔' : ''}
-                        </Text>
+                        <Text style={styles.radioText}>{tempExerciseImageGeneration ? '✔' : ''}</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() => setTempExerciseImageGeneration(false)}
-                        style={styles.radio}
-                    >
+                    <TouchableOpacity onPress={() => setTempExerciseImageGeneration(false)} style={styles.radio}>
                         <Text style={styles.radioText}>{t('disabled')}</Text>
-                        <Text style={styles.radioText}>
-                            {!tempExerciseImageGeneration ? '✔' : ''}
-                        </Text>
+                        <Text style={styles.radioText}>{!tempExerciseImageGeneration ? '✔' : ''}</Text>
                     </TouchableOpacity>
                     {loading ? <ActivityIndicator color={colors.surface} /> : null}
                 </View>
             </ThemedModal>
             <ThemedModal
                 cancelText={t('cancel')}
-                confirmText={
-                    showCheckPermissionButton ? undefined : loading ? undefined : t('confirm')
-                }
+                confirmText={showCheckPermissionButton ? undefined : (loading ? undefined : t('confirm'))}
                 onClose={() => setReadHealthConnectModalVisible(false)}
-                onConfirm={
-                    showCheckPermissionButton
-                        ? undefined
-                        : loading
-                          ? undefined
-                          : handleConfirmHealthConnectChange
-                }
+                onConfirm={showCheckPermissionButton ? undefined : (loading ? undefined : handleConfirmHealthConnectChange)}
                 title={t('health_connect_read')}
                 visible={readHealthConnectModalVisible}
             >
                 <View style={styles.radioContainer}>
                     {!showCheckPermissionButton ? (
                         <>
-                            <TouchableOpacity
-                                onPress={() => handleEnableHealthConnect()}
-                                style={styles.radio}
-                            >
+                            <TouchableOpacity onPress={() => handleEnableHealthConnect()} style={styles.radio}>
                                 <Text style={styles.radioText}>{t('enabled')}</Text>
-                                <Text style={styles.radioText}>
-                                    {tempReadHealthConnectEnabled ? '✔' : ''}
-                                </Text>
+                                <Text style={styles.radioText}>{tempReadHealthConnectEnabled ? '✔' : ''}</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity
-                                onPress={() => setTempReadHealthConnectEnabled(false)}
-                                style={styles.radio}
-                            >
+                            <TouchableOpacity onPress={() => setTempReadHealthConnectEnabled(false)} style={styles.radio}>
                                 <Text style={styles.radioText}>{t('disabled')}</Text>
-                                <Text style={styles.radioText}>
-                                    {!tempReadHealthConnectEnabled ? '✔' : ''}
-                                </Text>
+                                <Text style={styles.radioText}>{!tempReadHealthConnectEnabled ? '✔' : ''}</Text>
                             </TouchableOpacity>
                             {loading ? <ActivityIndicator color={colors.surface} /> : null}
                         </>
@@ -1039,11 +919,7 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
                                 onPress={loading ? undefined : handleCheckPermissions}
                                 style={styles.validateButton}
                             >
-                                {loading ? (
-                                    <ActivityIndicator color={colors.surface} />
-                                ) : (
-                                    t('validate_permissions')
-                                )}
+                                {loading ? <ActivityIndicator color={colors.surface} /> : t('validate_permissions')}
                             </Button>
                         </View>
                     ) : null}
@@ -1051,40 +927,22 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
             </ThemedModal>
             <ThemedModal
                 cancelText={t('cancel')}
-                confirmText={
-                    showCheckWritePermissionButton ? undefined : loading ? undefined : t('confirm')
-                }
+                confirmText={showCheckWritePermissionButton ? undefined : (loading ? undefined : t('confirm'))}
                 onClose={() => setWriteHealthConnectModalVisible(false)}
-                onConfirm={
-                    showCheckWritePermissionButton
-                        ? undefined
-                        : loading
-                          ? undefined
-                          : handleConfirmHealthConnectWriteChange
-                }
+                onConfirm={showCheckWritePermissionButton ? undefined : (loading ? undefined : handleConfirmHealthConnectWriteChange)}
                 title={t('health_connect_write')}
                 visible={writeHealthConnectModalVisible}
             >
                 <View style={styles.radioContainer}>
                     {!showCheckWritePermissionButton ? (
                         <>
-                            <TouchableOpacity
-                                onPress={() => handleEnableHealthConnectWrite()}
-                                style={styles.radio}
-                            >
+                            <TouchableOpacity onPress={() => handleEnableHealthConnectWrite()} style={styles.radio}>
                                 <Text style={styles.radioText}>{t('enabled')}</Text>
-                                <Text style={styles.radioText}>
-                                    {tempWriteHealthConnectEnabled ? '✔' : ''}
-                                </Text>
+                                <Text style={styles.radioText}>{tempWriteHealthConnectEnabled ? '✔' : ''}</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity
-                                onPress={() => setTempWriteHealthConnectEnabled(false)}
-                                style={styles.radio}
-                            >
+                            <TouchableOpacity onPress={() => setTempWriteHealthConnectEnabled(false)} style={styles.radio}>
                                 <Text style={styles.radioText}>{t('disabled')}</Text>
-                                <Text style={styles.radioText}>
-                                    {!tempWriteHealthConnectEnabled ? '✔' : ''}
-                                </Text>
+                                <Text style={styles.radioText}>{!tempWriteHealthConnectEnabled ? '✔' : ''}</Text>
                             </TouchableOpacity>
                             {loading ? <ActivityIndicator color={colors.surface} /> : null}
                         </>
@@ -1097,11 +955,7 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
                                 onPress={loading ? undefined : handleCheckWritePermissions}
                                 style={styles.validateButton}
                             >
-                                {loading ? (
-                                    <ActivityIndicator color={colors.surface} />
-                                ) : (
-                                    t('validate_permissions')
-                                )}
+                                {loading ? <ActivityIndicator color={colors.surface} /> : t('validate_permissions')}
                             </Button>
                         </View>
                     ) : null}
@@ -1152,17 +1006,11 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
                 visible={jsonImportModalVisible}
             >
                 <View style={styles.radioContainer}>
-                    <TouchableOpacity
-                        onPress={() => setTempJsonImportEnabled(true)}
-                        style={styles.radio}
-                    >
+                    <TouchableOpacity onPress={() => setTempJsonImportEnabled(true)} style={styles.radio}>
                         <Text style={styles.radioText}>{t('enabled')}</Text>
                         <Text style={styles.radioText}>{tempJsonImportEnabled ? '✔' : ''}</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() => setTempJsonImportEnabled(false)}
-                        style={styles.radio}
-                    >
+                    <TouchableOpacity onPress={() => setTempJsonImportEnabled(false)} style={styles.radio}>
                         <Text style={styles.radioText}>{t('disabled')}</Text>
                         <Text style={styles.radioText}>{!tempJsonImportEnabled ? '✔' : ''}</Text>
                     </TouchableOpacity>
@@ -1178,17 +1026,11 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
                 visible={csvImportModalVisible}
             >
                 <View style={styles.radioContainer}>
-                    <TouchableOpacity
-                        onPress={() => setTempCsvImportEnabled(true)}
-                        style={styles.radio}
-                    >
+                    <TouchableOpacity onPress={() => setTempCsvImportEnabled(true)} style={styles.radio}>
                         <Text style={styles.radioText}>{t('enabled')}</Text>
                         <Text style={styles.radioText}>{tempCsvImportEnabled ? '✔' : ''}</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() => setTempCsvImportEnabled(false)}
-                        style={styles.radio}
-                    >
+                    <TouchableOpacity onPress={() => setTempCsvImportEnabled(false)} style={styles.radio}>
                         <Text style={styles.radioText}>{t('disabled')}</Text>
                         <Text style={styles.radioText}>{!tempCsvImportEnabled ? '✔' : ''}</Text>
                     </TouchableOpacity>
@@ -1217,72 +1059,71 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
     );
 }
 
-const makeStyles = (colors: CustomThemeColorsType, dark: boolean) =>
-    StyleSheet.create({
-        container: {
-            backgroundColor: colors.background,
-            flex: 1,
-        },
-        deleteButton: {
-            backgroundColor: colors.tertiary,
-            borderRadius: 28,
-            marginTop: 8,
-            width: '100%',
-        },
-        deleteButtonContent: {
-            color: colors.surface,
-        },
-        modalContent: {
-            backgroundColor: colors.background,
-            padding: 16,
-        },
-        openAiModalContent: {
-            backgroundColor: colors.background,
-            padding: 16,
-        },
-        radio: {
-            backgroundColor: colors.surface,
-            borderColor: colors.shadow,
-            borderRadius: 28,
-            borderWidth: 1,
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            marginHorizontal: '10%',
-            marginVertical: 5,
-            paddingHorizontal: 20,
-            paddingVertical: 10,
-            width: '80%',
-        },
-        radioContainer: {
-            backgroundColor: colors.background,
-            borderRadius: 28,
-            marginBottom: 20,
-            width: '100%',
-        },
-        radioText: {
-            color: colors.onSurface,
-            fontSize: 16,
-        },
-        resourcesList: {
-            marginBottom: 10,
-            marginTop: 10,
-        },
-        rightContainer: {
-            alignItems: 'center',
-            flexDirection: 'row',
-        },
-        settingsContainer: {
-            backgroundColor: colors.background,
-            borderRadius: 28,
-            padding: 16,
-        },
-        validateButton: {
-            borderRadius: 28,
-            marginHorizontal: '10%',
-            minWidth: '80%',
-        },
-        validateButtonWrapper: {
-            marginHorizontal: 'auto',
-            width: '100%',
-        },
-    });
+const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
+    container: {
+        backgroundColor: colors.background,
+        flex: 1,
+    },
+    deleteButton: {
+        backgroundColor: colors.tertiary,
+        borderRadius: 28,
+        marginTop: 8,
+        width: '100%',
+    },
+    deleteButtonContent: {
+        color: colors.surface,
+    },
+    modalContent: {
+        backgroundColor: colors.background,
+        padding: 16,
+    },
+    openAiModalContent: {
+        backgroundColor: colors.background,
+        padding: 16,
+    },
+    radio: {
+        backgroundColor: colors.surface,
+        borderColor: colors.shadow,
+        borderRadius: 28,
+        borderWidth: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginHorizontal: '10%',
+        marginVertical: 5,
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        width: '80%',
+    },
+    radioContainer: {
+        backgroundColor: colors.background,
+        borderRadius: 28,
+        marginBottom: 20,
+        width: '100%',
+    },
+    radioText: {
+        color: colors.onSurface,
+        fontSize: 16,
+    },
+    resourcesList: {
+        marginBottom: 10,
+        marginTop: 10,
+    },
+    rightContainer: {
+        alignItems: 'center',
+        flexDirection: 'row',
+    },
+    settingsContainer: {
+        backgroundColor: colors.background,
+        borderRadius: 28,
+        padding: 16,
+    },
+    validateButton: {
+        borderRadius: 28,
+        marginHorizontal: '10%',
+        minWidth: '80%',
+    },
+    validateButtonWrapper: {
+        marginHorizontal: 'auto',
+        width: '100%',
+    },
+});

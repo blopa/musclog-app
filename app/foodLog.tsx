@@ -2,6 +2,7 @@ import type { BarcodeScanningResult } from 'expo-camera';
 
 import FoodItem from '@/components/FoodItem';
 import FoodTrackingModal, { FoodTrackingType } from '@/components/FoodTrackingModal';
+import { Screen } from '@/components/Screen';
 import ThemedCard from '@/components/ThemedCard';
 import ThemedModal from '@/components/ThemedModal';
 import { MEAL_TYPE } from '@/constants/nutrition';
@@ -9,11 +10,7 @@ import { AI_SETTINGS_TYPE, GRAMS, IMPERIAL_SYSTEM, OUNCES, RECENT_FOOD } from '@
 import useUnit from '@/hooks/useUnit';
 import { useHealthConnect } from '@/storage/HealthConnectProvider';
 import { useSettings } from '@/storage/SettingsContext';
-import {
-    estimateNutritionFromPhoto,
-    extractMacrosFromLabelPhoto,
-    getAiApiVendor,
-} from '@/utils/ai';
+import { estimateNutritionFromPhoto, extractMacrosFromLabelPhoto, getAiApiVendor } from '@/utils/ai';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { normalizeMacrosByGrams } from '@/utils/data';
 import {
@@ -25,11 +22,7 @@ import {
 import { fetchProductByEAN } from '@/utils/fetchFoodData';
 import { syncHealthConnectData } from '@/utils/healthConnect';
 import { safeToFixed } from '@/utils/string';
-import {
-    FitnessGoalsReturnType,
-    MusclogApiFoodInfoType,
-    UserNutritionDecryptedReturnType,
-} from '@/utils/types';
+import { FitnessGoalsReturnType, MusclogApiFoodInfoType, UserNutritionDecryptedReturnType } from '@/utils/types';
 import { getDisplayFormattedWeight } from '@/utils/unit';
 import { FontAwesome5 } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -48,17 +41,8 @@ import {
     ScrollView,
     RefreshControl,
 } from 'react-native';
-import {
-    Appbar,
-    TextInput,
-    Button,
-    Text,
-    useTheme,
-    Card,
-    SegmentedButtons,
-} from 'react-native-paper';
+import { Appbar, TextInput, Button, Text, useTheme, Card, SegmentedButtons } from 'react-native-paper';
 import { TabView, TabBar } from 'react-native-tab-view';
-import { Screen } from '@/components/Screen';
 
 const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const { t } = useTranslation();
@@ -67,10 +51,8 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
     const [isLoading, setIsLoading] = useState(false);
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
-    const [selectedNutrition, setSelectedNutrition] =
-        useState<UserNutritionDecryptedReturnType | null>(null);
-    const { insertHealthData, checkWriteIsPermitted, checkReadIsPermitted, getHealthData } =
-        useHealthConnect();
+    const [selectedNutrition, setSelectedNutrition] = useState<UserNutritionDecryptedReturnType | null>(null);
+    const { insertHealthData, checkWriteIsPermitted, checkReadIsPermitted, getHealthData } = useHealthConnect();
 
     const [index, setIndex] = useState(0);
     const [searchQuery, setSearchQuery] = useState('');
@@ -188,32 +170,22 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
         await loadConsumed();
         setIsLoading(false);
-    }, [
-        checkReadIsPermitted,
-        checkWriteIsPermitted,
-        getHealthData,
-        insertHealthData,
-        loadConsumed,
-    ]);
+    }, [checkReadIsPermitted, checkWriteIsPermitted, getHealthData, insertHealthData, loadConsumed]);
 
     const loadRecentFood = useCallback(async () => {
-        const recentFoodIds: number[] = JSON.parse(
-            (await AsyncStorage.getItem(RECENT_FOOD)) || '[]'
-        );
+        const recentFoodIds: number[] = JSON.parse(await AsyncStorage.getItem(RECENT_FOOD) || '[]');
 
         const foods = await getAllFoodsByIds(recentFoodIds);
 
         if (foods) {
-            setRecentTrackedFoods(
-                foods.map((food) => ({
-                    productTitle: food.name,
-                    kcal: food.calories,
-                    protein: food.protein,
-                    carbs: food.totalCarbohydrate,
-                    fat: food.totalFat,
-                    ean: food.productCode,
-                }))
-            );
+            setRecentTrackedFoods(foods.map((food) => ({
+                productTitle: food.name,
+                kcal: food.calories,
+                protein: food.protein,
+                carbs: food.totalCarbohydrate,
+                fat: food.totalFat,
+                ean: food.productCode,
+            })));
         }
     }, []);
 
@@ -243,34 +215,12 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     );
 
     const OverviewRoute = useCallback(() => {
-        const macros = dailyGoals
-            ? [
-                  {
-                      name: t('calories'),
-                      consumed: safeToFixed(consumed.calories),
-                      goal: dailyGoals.calories,
-                      unit: 'kcal',
-                  },
-                  {
-                      name: t('proteins'),
-                      consumed: safeToFixed(consumed.protein),
-                      goal: dailyGoals.protein,
-                      unit: macroUnit,
-                  },
-                  {
-                      name: t('carbs'),
-                      consumed: safeToFixed(consumed.carbohydrate),
-                      goal: dailyGoals.totalCarbohydrate,
-                      unit: macroUnit,
-                  },
-                  {
-                      name: t('fats'),
-                      consumed: safeToFixed(consumed.fat),
-                      goal: dailyGoals.totalFat,
-                      unit: macroUnit,
-                  },
-              ]
-            : [];
+        const macros = dailyGoals ? [
+            { name: t('calories'), consumed: safeToFixed(consumed.calories), goal: dailyGoals.calories, unit: 'kcal' },
+            { name: t('proteins'), consumed: safeToFixed(consumed.protein), goal: dailyGoals.protein, unit: macroUnit },
+            { name: t('carbs'), consumed: safeToFixed(consumed.carbohydrate), goal: dailyGoals.totalCarbohydrate, unit: macroUnit },
+            { name: t('fats'), consumed: safeToFixed(consumed.fat), goal: dailyGoals.totalFat, unit: macroUnit },
+        ] : [];
 
         return (
             <Screen style={styles.container}>
@@ -282,11 +232,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                                 macros.map((macro) => (
                                     <View key={macro.name} style={styles.macroContainer}>
                                         <Text style={styles.metricDetail}>
-                                            {t('item_value_unit', {
-                                                item: macro.name,
-                                                value: `${macro.consumed} / ${macro.goal}`,
-                                                weightUnit: macro.unit,
-                                            })}
+                                            {t('item_value_unit', { item: macro.name, value: `${macro.consumed} / ${macro.goal}`, weightUnit: macro.unit })}
                                         </Text>
                                         <View style={styles.progressBarContainer}>
                                             <View
@@ -315,15 +261,17 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                         <FlashList
                             data={recentTrackedFoods}
                             keyExtractor={(item, index) => (item.productTitle || index).toString()}
-                            renderItem={({ item }) => (
-                                <FoodItem
-                                    food={item}
-                                    onAddFood={(food) => {
-                                        setSelectedFood(food);
-                                        setIsNutritionModalVisible(true);
-                                    }}
-                                />
-                            )}
+                            renderItem={
+                                ({ item }) => (
+                                    <FoodItem
+                                        food={item}
+                                        onAddFood={(food) => {
+                                            setSelectedFood(food);
+                                            setIsNutritionModalVisible(true);
+                                        }}
+                                    />
+                                )
+                            }
                             estimatedItemSize={115}
                             contentContainerStyle={styles.listContent}
                             onEndReachedThreshold={0.5}
@@ -332,25 +280,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 </ScrollView>
             </Screen>
         );
-    }, [
-        consumed.calories,
-        consumed.carbohydrate,
-        consumed.fat,
-        consumed.protein,
-        dailyGoals,
-        macroUnit,
-        navigation,
-        recentTrackedFoods,
-        styles.addGoalButton,
-        styles.cardContent,
-        styles.cardTitle,
-        styles.listContent,
-        styles.macroContainer,
-        styles.metricDetail,
-        styles.progressBar,
-        styles.progressBarContainer,
-        t,
-    ]);
+    }, [consumed.calories, consumed.carbohydrate, consumed.fat, consumed.protein, dailyGoals, macroUnit, navigation, recentTrackedFoods, styles.addGoalButton, styles.cardContent, styles.cardTitle, styles.listContent, styles.macroContainer, styles.metricDetail, styles.progressBar, styles.progressBarContainer, t]);
 
     const handleEditNutrition = (userNutrition: UserNutritionDecryptedReturnType) => {
         setSelectedFood({
@@ -388,18 +318,15 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     }, [selectedNutrition, loadConsumed, t]);
 
     const MealsRoute = useCallback(() => {
-        const mealGroups = consumedFoods.reduce(
-            (groups, food) => {
-                const mealType = food.mealType || '0';
-                if (!groups[mealType]) {
-                    groups[mealType] = [];
-                }
+        const mealGroups = consumedFoods.reduce((groups, food) => {
+            const mealType = food.mealType || '0';
+            if (!groups[mealType]) {
+                groups[mealType] = [];
+            }
 
-                groups[mealType].push(food);
-                return groups;
-            },
-            {} as { [key: string]: UserNutritionDecryptedReturnType[] }
-        );
+            groups[mealType].push(food);
+            return groups;
+        }, {} as { [key: string]: UserNutritionDecryptedReturnType[] });
 
         return (
             <ScrollView
@@ -422,8 +349,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                             <View key={mealTypeName} style={styles.mealContainer}>
                                 <View style={styles.mealHeader}>
                                     <Text style={styles.mealTitle}>
-                                        {mealCategories.find((m) => m.name === mealTypeName)?.icon}{' '}
-                                        {t(mealTypeName)}
+                                        {mealCategories.find((m) => m.name === mealTypeName)?.icon} {t(mealTypeName)}
                                     </Text>
                                 </View>
                                 {userNutritions.map((userNutrition, index) => (
@@ -434,27 +360,11 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                                                     {userNutrition.name || t('unknown_food')}
                                                 </Text>
                                                 <View style={styles.iconContainer}>
-                                                    <TouchableOpacity
-                                                        onPress={() =>
-                                                            handleEditNutrition(userNutrition)
-                                                        }
-                                                    >
-                                                        <FontAwesome5
-                                                            name="edit"
-                                                            size={20}
-                                                            color={colors.primary}
-                                                        />
+                                                    <TouchableOpacity onPress={() => handleEditNutrition(userNutrition)}>
+                                                        <FontAwesome5 name="edit" size={20} color={colors.primary} />
                                                     </TouchableOpacity>
-                                                    <TouchableOpacity
-                                                        onPress={() =>
-                                                            handleDeleteNutrition(userNutrition)
-                                                        }
-                                                    >
-                                                        <FontAwesome5
-                                                            name="trash"
-                                                            size={20}
-                                                            color={colors.primary}
-                                                        />
+                                                    <TouchableOpacity onPress={() => handleDeleteNutrition(userNutrition)}>
+                                                        <FontAwesome5 name="trash" size={20} color={colors.primary} />
                                                     </TouchableOpacity>
                                                 </View>
                                             </View>
@@ -468,11 +378,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                                                 <Text style={styles.metricDetail}>
                                                     {t('item_value_unit', {
                                                         item: t('carbs'),
-                                                        value: getDisplayFormattedWeight(
-                                                            userNutrition.carbohydrate || 0,
-                                                            GRAMS,
-                                                            isImperial
-                                                        ).toString(),
+                                                        value: getDisplayFormattedWeight(userNutrition.carbohydrate || 0, GRAMS, isImperial).toString(),
                                                         weightUnit: macroUnit,
                                                     })}
                                                 </Text>
@@ -481,22 +387,14 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                                                 <Text style={styles.metricDetail}>
                                                     {t('item_value_unit', {
                                                         item: t('fats'),
-                                                        value: getDisplayFormattedWeight(
-                                                            userNutrition.fat || 0,
-                                                            GRAMS,
-                                                            isImperial
-                                                        ).toString(),
+                                                        value: getDisplayFormattedWeight(userNutrition.fat || 0, GRAMS, isImperial).toString(),
                                                         weightUnit: macroUnit,
                                                     })}
                                                 </Text>
                                                 <Text style={styles.metricDetail}>
                                                     {t('item_value_unit', {
                                                         item: t('proteins'),
-                                                        value: getDisplayFormattedWeight(
-                                                            userNutrition.protein || 0,
-                                                            GRAMS,
-                                                            isImperial
-                                                        ).toString(),
+                                                        value: getDisplayFormattedWeight(userNutrition.protein || 0, GRAMS, isImperial).toString(),
                                                         weightUnit: macroUnit,
                                                     })}
                                                 </Text>
@@ -512,29 +410,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 })}
             </ScrollView>
         );
-    }, [
-        consumedFoods,
-        styles.mealsContent,
-        styles.noTrackedText,
-        styles.mealContainer,
-        styles.mealHeader,
-        styles.mealTitle,
-        styles.foodItem,
-        styles.cardContent,
-        styles.cardHeader,
-        styles.cardTitle,
-        styles.iconContainer,
-        styles.metricRow,
-        styles.metricDetail,
-        isLoading,
-        handleSyncHealthConnect,
-        colors.primary,
-        t,
-        mealCategories,
-        isImperial,
-        macroUnit,
-        handleDeleteNutrition,
-    ]);
+    }, [consumedFoods, styles.mealsContent, styles.noTrackedText, styles.mealContainer, styles.mealHeader, styles.mealTitle, styles.foodItem, styles.cardContent, styles.cardHeader, styles.cardTitle, styles.iconContainer, styles.metricRow, styles.metricDetail, isLoading, handleSyncHealthConnect, colors.primary, t, mealCategories, isImperial, macroUnit, handleDeleteNutrition]);
 
     const renderScene = ({ route }: { route: { key: string } }) => {
         switch (route.key) {
@@ -600,9 +476,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         if (photoCameraRef.current) {
             try {
                 // @ts-ignore
-                const photo = await (
-                    photoCameraRef.current as typeof CameraView
-                ).takePictureAsync();
+                const photo = await (photoCameraRef.current as typeof CameraView).takePictureAsync();
                 setIsLoading(true);
                 setShowPhotoCamera(false);
                 setIsNutritionModalVisible(true);
@@ -610,30 +484,26 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 if (photoMode === 'meal') {
                     const macros = await estimateNutritionFromPhoto(photo.uri);
                     if (macros) {
-                        setSelectedFood(
-                            normalizeMacrosByGrams({
-                                productTitle: macros.name,
-                                kcal: macros.calories,
-                                protein: macros.protein,
-                                carbs: macros.carbs,
-                                fat: macros.fat,
-                                grams: macros.grams,
-                            })
-                        );
+                        setSelectedFood(normalizeMacrosByGrams({
+                            productTitle: macros.name,
+                            kcal: macros.calories,
+                            protein: macros.protein,
+                            carbs: macros.carbs,
+                            fat: macros.fat,
+                            grams: macros.grams,
+                        }));
                     }
                 } else {
                     const macros = await extractMacrosFromLabelPhoto(photo.uri);
                     if (macros) {
-                        setSelectedFood(
-                            normalizeMacrosByGrams({
-                                productTitle: macros.name,
-                                kcal: macros.calories,
-                                protein: macros.protein,
-                                carbs: macros.carbs,
-                                fat: macros.fat,
-                                grams: macros.grams,
-                            })
-                        );
+                        setSelectedFood(normalizeMacrosByGrams({
+                            productTitle: macros.name,
+                            kcal: macros.calories,
+                            protein: macros.protein,
+                            carbs: macros.carbs,
+                            fat: macros.fat,
+                            grams: macros.grams,
+                        }));
                     }
                 }
 
@@ -648,86 +518,45 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         navigation.navigate('foodSearch', { initialSearchQuery: searchQuery });
     }, [navigation, searchQuery]);
 
-    const renderScannerOverlay = useCallback(
-        () => (
-            <View style={styles.scannerOverlayContainer}>
-                <View style={styles.scannerOverlayTop} />
-                <View style={styles.scannerOverlayMiddle}>
-                    <View style={styles.scannerFocusArea}>
-                        <View style={styles.focusBorder} />
-                    </View>
+    const renderScannerOverlay = useCallback(() => (
+        <View style={styles.scannerOverlayContainer}>
+            <View style={styles.scannerOverlayTop} />
+            <View style={styles.scannerOverlayMiddle}>
+                <View style={styles.scannerFocusArea}>
+                    <View style={styles.focusBorder} />
                 </View>
-                <View style={styles.scannerOverlayBottom} />
             </View>
-        ),
-        [
-            styles.focusBorder,
-            styles.scannerFocusArea,
-            styles.scannerOverlayBottom,
-            styles.scannerOverlayContainer,
-            styles.scannerOverlayMiddle,
-            styles.scannerOverlayTop,
-        ]
-    );
+            <View style={styles.scannerOverlayBottom} />
+        </View>
+    ), [styles.focusBorder, styles.scannerFocusArea, styles.scannerOverlayBottom, styles.scannerOverlayContainer, styles.scannerOverlayMiddle, styles.scannerOverlayTop]);
 
-    const renderPhotoCameraOverlay = useCallback(
-        () => (
-            <View style={styles.photoCameraOverlay}>
-                <SegmentedButtons
-                    value={photoMode}
-                    onValueChange={setPhotoMode}
-                    buttons={[
-                        {
-                            value: 'meal',
-                            label: t('meal'),
-                            style: {
-                                backgroundColor:
-                                    photoMode === 'meal'
-                                        ? colors.secondaryContainer
-                                        : colors.surface,
-                            },
-                        },
-                        {
-                            value: 'label',
-                            label: t('food_label'),
-                            style: {
-                                backgroundColor:
-                                    photoMode === 'label'
-                                        ? colors.secondaryContainer
-                                        : colors.surface,
-                            },
-                        },
-                    ]}
-                    style={styles.segmentedButtons}
-                />
-                <View style={styles.bottomControls}>
-                    <TouchableOpacity
-                        onPress={() => setShowPhotoCamera(false)}
-                        style={styles.photoCloseButton}
-                    >
-                        <Text style={styles.photoCloseText}>{t('close')}</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={handleTakePhoto} style={styles.captureButton}>
-                        <FontAwesome5 name="camera" size={30} color={colors.primary} />
-                    </TouchableOpacity>
-                </View>
+    const renderPhotoCameraOverlay = useCallback(() => (
+        <View style={styles.photoCameraOverlay}>
+            <SegmentedButtons
+                value={photoMode}
+                onValueChange={setPhotoMode}
+                buttons={[{
+                    value: 'meal',
+                    label: t('meal'),
+                    style: { backgroundColor: photoMode === 'meal' ? colors.secondaryContainer : colors.surface },
+                },
+                {
+                    value: 'label',
+                    label: t('food_label'),
+                    style: { backgroundColor: photoMode === 'label' ? colors.secondaryContainer : colors.surface },
+                }]}
+                style={styles.segmentedButtons}
+            />
+            <View style={styles.bottomControls}>
+                <TouchableOpacity onPress={() => setShowPhotoCamera(false)} style={styles.photoCloseButton}>
+                    <Text style={styles.photoCloseText}>{t('close')}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={handleTakePhoto} style={styles.captureButton}>
+                    <FontAwesome5 name="camera" size={30} color={colors.primary} />
+                </TouchableOpacity>
             </View>
-        ),
-        [
-            colors.primary,
-            colors.secondaryContainer,
-            colors.surface,
-            handleTakePhoto,
-            photoMode,
-            styles.bottomControls,
-            styles.captureButton,
-            styles.photoCameraOverlay,
-            styles.photoCloseButton,
-            styles.photoCloseText,
-            styles.segmentedButtons,
-            t,
-        ]
-    );
+        </View>
+    ), [colors.primary, colors.secondaryContainer, colors.surface, handleTakePhoto, photoMode, styles.bottomControls, styles.captureButton, styles.photoCameraOverlay, styles.photoCloseButton, styles.photoCloseText, styles.segmentedButtons, t]);
 
     return (
         <View style={styles.container}>
@@ -802,7 +631,10 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
             ) : null}
             {showPhotoCamera ? (
                 <View style={styles.cameraContainer}>
-                    <CameraView style={styles.camera} ref={photoCameraRef}>
+                    <CameraView
+                        style={styles.camera}
+                        ref={photoCameraRef}
+                    >
                         {renderPhotoCameraOverlay()}
                     </CameraView>
                 </View>
@@ -824,226 +656,221 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 confirmText={t('yes')}
                 onClose={() => setDeleteModalVisible(false)}
                 onConfirm={handleConfirmDeleteNutrition}
-                title={
-                    selectedNutrition
-                        ? t('delete_nutrition_confirmation', { title: selectedNutrition.name })
-                        : t('delete_confirmation_generic')
-                }
+                title={selectedNutrition ? t('delete_nutrition_confirmation', { title: selectedNutrition.name }) : t('delete_confirmation_generic')}
                 visible={deleteModalVisible}
             />
         </View>
     );
 };
 
-const makeStyles = (colors: CustomThemeColorsType, dark: boolean) =>
-    StyleSheet.create({
-        addGoalButton: {
-            backgroundColor: colors.primary,
-            borderRadius: 8,
-            marginTop: 16,
-            paddingVertical: 12,
-        },
-        appbarHeader: {
-            backgroundColor: colors.primary,
-            justifyContent: 'center',
-            paddingHorizontal: 16,
-        },
-        appbarTitle: {
-            color: colors.onPrimary,
-            fontSize: Platform.OS === 'web' ? 20 : 26,
-        },
-        bottomControls: {
-            alignItems: 'center',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            paddingBottom: 40,
-            paddingHorizontal: 20,
-        },
-        camera: {
-            flex: 1,
-        },
-        cameraContainer: {
-            ...StyleSheet.absoluteFillObject,
-            backgroundColor: 'black',
-            justifyContent: 'center',
-        },
-        cameraOverlay: {
-            alignItems: 'flex-end',
-            backgroundColor: 'transparent',
-            flex: 1,
-            flexDirection: 'row',
-            justifyContent: 'center',
-            paddingBottom: 40,
-        },
-        captureButton: {
-            backgroundColor: 'transparent',
-        },
-        cardContent: {
-            padding: 16,
-        },
-        cardHeader: {
-            alignItems: 'center',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-        },
-        cardTitle: {
-            color: colors.onSurface,
-            fontSize: 18,
-            fontWeight: 'bold',
-            marginBottom: 8,
-            width: '85%',
-        },
-        closeButton: {
-            backgroundColor: colors.primary,
-            padding: 8,
-        },
-        container: {
-            backgroundColor: colors.background,
-            flex: 1,
-        },
-        content: {
-            flex: 1,
-            padding: 16,
-        },
-        focusBorder: {
-            borderColor: colors.primary,
-            borderRadius: 8,
-            borderWidth: 2,
-            height: '100%',
-            width: '100%',
-        },
-        foodItem: {
-            backgroundColor: colors.surface,
-            borderColor: colors.primary,
-            borderRadius: 8,
-            borderWidth: 1,
-            marginBottom: 8,
-            padding: 8,
-        },
-        iconButton: {
-            marginLeft: 4,
-        },
-        iconContainer: {
-            flexDirection: 'row',
-            gap: 8,
-        },
-        listContent: {
-            backgroundColor: colors.background,
-            flex: 1,
-            paddingBottom: 16,
-            paddingHorizontal: 16,
-        },
-        macroContainer: {
-            marginBottom: 12,
-        },
-        mealContainer: {
-            borderColor: colors.primary,
-            borderRadius: 8,
-            borderWidth: 1,
-            marginBottom: 16,
-            padding: 8,
-        },
-        mealHeader: {
-            alignItems: 'center',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            marginBottom: 8,
-        },
-        mealTitle: {
-            color: colors.onSurface,
-            fontSize: 16,
-            fontWeight: '600',
-        },
-        mealsContent: {
-            padding: 16,
-        },
-        metricDetail: {
-            color: colors.onSurface,
-            fontSize: 14,
-            marginBottom: 4,
-        },
-        metricRow: {
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-        },
-        noTrackedText: {
-            color: colors.onSurface,
-            fontSize: 16,
-            textAlign: 'center',
-        },
-        photoCameraOverlay: {
-            flex: 1,
-            justifyContent: 'space-between',
-        },
-        photoCloseButton: {
-            backgroundColor: colors.primary,
-            borderRadius: 5,
-            padding: 10,
-        },
-        photoCloseText: {
-            color: colors.onPrimary,
-            fontSize: 16,
-        },
-        progressBar: {
-            backgroundColor: colors.primary,
-            height: '100%',
-        },
-        progressBarContainer: {
-            backgroundColor: colors.surfaceVariant,
-            borderRadius: 4,
-            height: 10,
-            overflow: 'hidden',
-        },
-        scannerFocusArea: {
-            backgroundColor: 'transparent',
-            borderRadius: 8,
-            height: '50%',
-            overflow: 'hidden',
-            width: Dimensions.get('window').width - 20,
-        },
-        scannerOverlayBottom: {
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            bottom: 0,
-            // height: (Dimensions.get('window').height / 2) - 135,
-            height: '35%',
-            position: 'absolute',
-            width: '100%',
-        },
-        scannerOverlayContainer: {
-            ...StyleSheet.absoluteFillObject,
-            alignItems: 'center',
-            justifyContent: 'center',
-        },
-        scannerOverlayMiddle: {
-            alignItems: 'center',
-            flexDirection: 'row',
-        },
-        scannerOverlayTop: {
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            // height: (Dimensions.get('window').height / 2) - 135,
-            height: '35%',
-            position: 'absolute',
-            top: 0,
-            width: '100%',
-        },
-        searchContainer: {
-            alignItems: 'center',
-            flexDirection: 'row',
-            marginBottom: 16,
-        },
-        searchInput: {
-            backgroundColor: colors.surface,
-            flex: 1,
-            marginRight: 8,
-        },
-        segmentedButtons: {
-            alignSelf: 'center',
-            backgroundColor: 'transparent',
-            borderRadius: 8,
-            marginTop: 16,
-            paddingVertical: 8,
-            width: '90%',
-        },
-    });
+const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
+    addGoalButton: {
+        backgroundColor: colors.primary,
+        borderRadius: 8,
+        marginTop: 16,
+        paddingVertical: 12,
+    },
+    appbarHeader: {
+        backgroundColor: colors.primary,
+        justifyContent: 'center',
+        paddingHorizontal: 16,
+    },
+    appbarTitle: {
+        color: colors.onPrimary,
+        fontSize: Platform.OS === 'web' ? 20 : 26,
+    },
+    bottomControls: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingBottom: 40,
+        paddingHorizontal: 20,
+    },
+    camera: {
+        flex: 1,
+    },
+    cameraContainer: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'black',
+        justifyContent: 'center',
+    },
+    cameraOverlay: {
+        alignItems: 'flex-end',
+        backgroundColor: 'transparent',
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        paddingBottom: 40,
+    },
+    captureButton: {
+        backgroundColor: 'transparent',
+    },
+    cardContent: {
+        padding: 16,
+    },
+    cardHeader: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    cardTitle: {
+        color: colors.onSurface,
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 8,
+        width: '85%',
+    },
+    closeButton: {
+        backgroundColor: colors.primary,
+        padding: 8,
+    },
+    container: {
+        backgroundColor: colors.background,
+        flex: 1,
+    },
+    content: {
+        flex: 1,
+        padding: 16,
+    },
+    focusBorder: {
+        borderColor: colors.primary,
+        borderRadius: 8,
+        borderWidth: 2,
+        height: '100%',
+        width: '100%',
+    },
+    foodItem: {
+        backgroundColor: colors.surface,
+        borderColor: colors.primary,
+        borderRadius: 8,
+        borderWidth: 1,
+        marginBottom: 8,
+        padding: 8,
+    },
+    iconButton: {
+        marginLeft: 4,
+    },
+    iconContainer: {
+        flexDirection: 'row',
+        gap: 8,
+    },
+    listContent: {
+        backgroundColor: colors.background,
+        flex: 1,
+        paddingBottom: 16,
+        paddingHorizontal: 16,
+    },
+    macroContainer: {
+        marginBottom: 12,
+    },
+    mealContainer: {
+        borderColor: colors.primary,
+        borderRadius: 8,
+        borderWidth: 1,
+        marginBottom: 16,
+        padding: 8,
+    },
+    mealHeader: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 8,
+    },
+    mealTitle: {
+        color: colors.onSurface,
+        fontSize: 16,
+        fontWeight: '600',
+    },
+    mealsContent: {
+        padding: 16,
+    },
+    metricDetail: {
+        color: colors.onSurface,
+        fontSize: 14,
+        marginBottom: 4,
+    },
+    metricRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    noTrackedText: {
+        color: colors.onSurface,
+        fontSize: 16,
+        textAlign: 'center',
+    },
+    photoCameraOverlay: {
+        flex: 1,
+        justifyContent: 'space-between',
+    },
+    photoCloseButton: {
+        backgroundColor: colors.primary,
+        borderRadius: 5,
+        padding: 10,
+    },
+    photoCloseText: {
+        color: colors.onPrimary,
+        fontSize: 16,
+    },
+    progressBar: {
+        backgroundColor: colors.primary,
+        height: '100%',
+    },
+    progressBarContainer: {
+        backgroundColor: colors.surfaceVariant,
+        borderRadius: 4,
+        height: 10,
+        overflow: 'hidden',
+    },
+    scannerFocusArea: {
+        backgroundColor: 'transparent',
+        borderRadius: 8,
+        height: '50%',
+        overflow: 'hidden',
+        width: Dimensions.get('window').width - 20,
+    },
+    scannerOverlayBottom: {
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        bottom: 0,
+        // height: (Dimensions.get('window').height / 2) - 135,
+        height: '35%',
+        position: 'absolute',
+        width: '100%',
+    },
+    scannerOverlayContainer: {
+        ...StyleSheet.absoluteFillObject,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    scannerOverlayMiddle: {
+        alignItems: 'center',
+        flexDirection: 'row',
+    },
+    scannerOverlayTop: {
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        // height: (Dimensions.get('window').height / 2) - 135,
+        height: '35%',
+        position: 'absolute',
+        top: 0,
+        width: '100%',
+    },
+    searchContainer: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        marginBottom: 16,
+    },
+    searchInput: {
+        backgroundColor: colors.surface,
+        flex: 1,
+        marginRight: 8,
+    },
+    segmentedButtons: {
+        alignSelf: 'center',
+        backgroundColor: 'transparent',
+        borderRadius: 8,
+        marginTop: 16,
+        paddingVertical: 8,
+        width: '90%',
+    },
+});
 
 export default FoodLog;

@@ -39,9 +39,7 @@ const CreateUserNutrition = ({ navigation }: { navigation: NavigationProp<any> }
     const [polyunsaturatedFat, setPolyunsaturatedFat] = useState('');
     const [transFat, setTransFat] = useState('');
     const [unsaturatedFat, setUnsaturatedFat] = useState('');
-    const [nutritionType, setNutritionType] = useState<UserNutritionTypeType>(
-        NUTRITION_TYPES.FULL_DAY
-    );
+    const [nutritionType, setNutritionType] = useState<UserNutritionTypeType>(NUTRITION_TYPES.FULL_DAY);
     const [source, setSource] = useState<string>(USER_METRICS_SOURCES.USER_INPUT);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
@@ -60,50 +58,16 @@ const CreateUserNutrition = ({ navigation }: { navigation: NavigationProp<any> }
             if (nutrition) {
                 setName(nutrition.name || '');
                 setCalories((nutrition.calories || 0).toString());
-                setCarbohydrate(
-                    getDisplayFormattedWeight(nutrition.carbohydrate, GRAMS, isImperial).toString()
-                );
+                setCarbohydrate(getDisplayFormattedWeight(nutrition.carbohydrate, GRAMS, isImperial).toString());
                 setFat(getDisplayFormattedWeight(nutrition.fat, GRAMS, isImperial).toString());
-                setProtein(
-                    getDisplayFormattedWeight(nutrition.protein, GRAMS, isImperial).toString()
-                );
-                setFiber(
-                    getDisplayFormattedWeight(nutrition.fiber || 0, GRAMS, isImperial).toString()
-                );
-                setSugar(
-                    getDisplayFormattedWeight(nutrition.sugar || 0, GRAMS, isImperial).toString()
-                );
-                setSaturatedFat(
-                    getDisplayFormattedWeight(
-                        nutrition.saturatedFat || 0,
-                        GRAMS,
-                        isImperial
-                    ).toString()
-                );
-                setMonounsaturatedFat(
-                    getDisplayFormattedWeight(
-                        nutrition.monounsaturatedFat || 0,
-                        GRAMS,
-                        isImperial
-                    ).toString()
-                );
-                setPolyunsaturatedFat(
-                    getDisplayFormattedWeight(
-                        nutrition.polyunsaturatedFat || 0,
-                        GRAMS,
-                        isImperial
-                    ).toString()
-                );
-                setTransFat(
-                    getDisplayFormattedWeight(nutrition.transFat || 0, GRAMS, isImperial).toString()
-                );
-                setUnsaturatedFat(
-                    getDisplayFormattedWeight(
-                        nutrition.unsaturatedFat || 0,
-                        GRAMS,
-                        isImperial
-                    ).toString()
-                );
+                setProtein(getDisplayFormattedWeight(nutrition.protein, GRAMS, isImperial).toString());
+                setFiber(getDisplayFormattedWeight(nutrition.fiber || 0, GRAMS, isImperial).toString());
+                setSugar(getDisplayFormattedWeight(nutrition.sugar || 0, GRAMS, isImperial).toString());
+                setSaturatedFat(getDisplayFormattedWeight(nutrition.saturatedFat || 0, GRAMS, isImperial).toString());
+                setMonounsaturatedFat(getDisplayFormattedWeight(nutrition.monounsaturatedFat || 0, GRAMS, isImperial).toString());
+                setPolyunsaturatedFat(getDisplayFormattedWeight(nutrition.polyunsaturatedFat || 0, GRAMS, isImperial).toString());
+                setTransFat(getDisplayFormattedWeight(nutrition.transFat || 0, GRAMS, isImperial).toString());
+                setUnsaturatedFat(getDisplayFormattedWeight(nutrition.unsaturatedFat || 0, GRAMS, isImperial).toString());
                 setNutritionType(nutrition.type || NUTRITION_TYPES.FULL_DAY);
                 setSource(nutrition.source || USER_METRICS_SOURCES.USER_INPUT);
             }
@@ -137,13 +101,7 @@ const CreateUserNutrition = ({ navigation }: { navigation: NavigationProp<any> }
     }, [fadeAnim, slideAnim]);
 
     const handleSaveUserNutrition = useCallback(async () => {
-        if (
-            !name.trim() ||
-            !calories.trim() ||
-            !carbohydrate.trim() ||
-            !fat.trim() ||
-            !protein.trim()
-        ) {
+        if (!name.trim() || !calories.trim() || !carbohydrate.trim() || !fat.trim() || !protein.trim()) {
             Alert.alert(t('validation_error'), t('all_fields_required'));
             return;
         }
@@ -155,17 +113,9 @@ const CreateUserNutrition = ({ navigation }: { navigation: NavigationProp<any> }
             date: getCurrentTimestamp(), // TODO: add a date picker
             fat: getSaveFormattedWeight(parseFloat(fat), OUNCES, isImperial),
             fiber: getSaveFormattedWeight(parseFloat(fiber), OUNCES, isImperial),
-            monounsaturatedFat: getSaveFormattedWeight(
-                parseFloat(monounsaturatedFat),
-                OUNCES,
-                isImperial
-            ),
+            monounsaturatedFat: getSaveFormattedWeight(parseFloat(monounsaturatedFat), OUNCES, isImperial),
             name,
-            polyunsaturatedFat: getSaveFormattedWeight(
-                parseFloat(polyunsaturatedFat),
-                OUNCES,
-                isImperial
-            ),
+            polyunsaturatedFat: getSaveFormattedWeight(parseFloat(polyunsaturatedFat), OUNCES, isImperial),
             protein: getSaveFormattedWeight(parseFloat(protein), OUNCES, isImperial),
             saturatedFat: getSaveFormattedWeight(parseFloat(saturatedFat), OUNCES, isImperial),
             source: USER_METRICS_SOURCES.USER_INPUT,
@@ -269,67 +219,50 @@ const CreateUserNutrition = ({ navigation }: { navigation: NavigationProp<any> }
         });
     }, [fadeAnim, navigation, resetScreenData, slideAnim]);
 
-    const handleFormatNumericText = useCallback(
-        (
-            text: string,
-            key:
-                | 'calories'
-                | 'carbohydrate'
-                | 'fat'
-                | 'fiber'
-                | 'monounsaturatedFat'
-                | 'polyunsaturatedFat'
-                | 'protein'
-                | 'saturatedFat'
-                | 'sugar'
-                | 'transFat'
-                | 'unsaturatedFat'
-        ) => {
-            const formattedText = formatFloatNumericInputText(text);
+    const handleFormatNumericText = useCallback((text: string, key: 'calories' | 'carbohydrate' | 'fat' | 'fiber' | 'monounsaturatedFat' | 'polyunsaturatedFat' | 'protein' | 'saturatedFat' | 'sugar' | 'transFat' | 'unsaturatedFat') => {
+        const formattedText = formatFloatNumericInputText(text);
 
-            if (formattedText || !text) {
-                switch (key) {
-                    case 'calories':
-                        setCalories(formattedText || '0');
-                        break;
-                    case 'carbohydrate':
-                        setCarbohydrate(formattedText || '0');
-                        break;
-                    case 'fat':
-                        setFat(formattedText || '0');
-                        break;
-                    case 'protein':
-                        setProtein(formattedText || '0');
-                        break;
-                    case 'fiber':
-                        setFiber(formattedText || '0');
-                        break;
-                    case 'sugar':
-                        setSugar(formattedText || '0');
-                        break;
-                    case 'saturatedFat':
-                        setSaturatedFat(formattedText || '0');
-                        break;
-                    case 'monounsaturatedFat':
-                        setMonounsaturatedFat(formattedText || '0');
-                        break;
-                    case 'polyunsaturatedFat':
-                        setPolyunsaturatedFat(formattedText || '0');
-                        break;
-                    case 'transFat':
-                        setTransFat(formattedText || '0');
-                        break;
-                    case 'unsaturatedFat':
-                        setUnsaturatedFat(formattedText || '0');
-                        break;
-                    default: {
-                        break;
-                    }
+        if (formattedText || !text) {
+            switch (key) {
+                case 'calories':
+                    setCalories(formattedText || '0');
+                    break;
+                case 'carbohydrate':
+                    setCarbohydrate(formattedText || '0');
+                    break;
+                case 'fat':
+                    setFat(formattedText || '0');
+                    break;
+                case 'protein':
+                    setProtein(formattedText || '0');
+                    break;
+                case 'fiber':
+                    setFiber(formattedText || '0');
+                    break;
+                case 'sugar':
+                    setSugar(formattedText || '0');
+                    break;
+                case 'saturatedFat':
+                    setSaturatedFat(formattedText || '0');
+                    break;
+                case 'monounsaturatedFat':
+                    setMonounsaturatedFat(formattedText || '0');
+                    break;
+                case 'polyunsaturatedFat':
+                    setPolyunsaturatedFat(formattedText || '0');
+                    break;
+                case 'transFat':
+                    setTransFat(formattedText || '0');
+                    break;
+                case 'unsaturatedFat':
+                    setUnsaturatedFat(formattedText || '0');
+                    break;
+                default: {
+                    break;
                 }
             }
-        },
-        []
-    );
+        }
+    }, []);
 
     return (
         <Screen style={styles.container}>
@@ -339,7 +272,11 @@ const CreateUserNutrition = ({ navigation }: { navigation: NavigationProp<any> }
                 onClose={handleModalClose}
                 title={t('generic_created_successfully')}
             />
-            <Appbar.Header mode="small" statusBarHeight={0} style={styles.appbarHeader}>
+            <Appbar.Header
+                mode="small"
+                statusBarHeight={0}
+                style={styles.appbarHeader}
+            >
                 <Appbar.Content
                     title={t(id ? 'edit_user_nutrition' : 'create_user_nutrition')}
                     titleStyle={styles.appbarTitle}
@@ -357,15 +294,15 @@ const CreateUserNutrition = ({ navigation }: { navigation: NavigationProp<any> }
             </Appbar.Header>
             <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
                 <View style={styles.formGroup}>
-                    <Text style={styles.label}>
-                        {t('name')} <Text style={styles.required}>*</Text>
-                    </Text>
-                    <CustomTextInput onChangeText={setName} placeholder={t('name')} value={name} />
+                    <Text style={styles.label}>{t('name')} <Text style={styles.required}>*</Text></Text>
+                    <CustomTextInput
+                        onChangeText={setName}
+                        placeholder={t('name')}
+                        value={name}
+                    />
                 </View>
                 <View style={styles.formGroup}>
-                    <Text style={styles.label}>
-                        {t('calories')} <Text style={styles.required}>*</Text>
-                    </Text>
+                    <Text style={styles.label}>{t('calories')} <Text style={styles.required}>*</Text></Text>
                     <CustomTextInput
                         keyboardType="numeric"
                         onChangeText={(text) => handleFormatNumericText(text, 'calories')}
@@ -374,9 +311,7 @@ const CreateUserNutrition = ({ navigation }: { navigation: NavigationProp<any> }
                     />
                 </View>
                 <View style={styles.formGroup}>
-                    <Text style={styles.label}>
-                        {t('carbs')} <Text style={styles.required}>*</Text>
-                    </Text>
+                    <Text style={styles.label}>{t('carbs')} <Text style={styles.required}>*</Text></Text>
                     <CustomTextInput
                         keyboardType="numeric"
                         onChangeText={(text) => handleFormatNumericText(text, 'carbohydrate')}
@@ -385,9 +320,7 @@ const CreateUserNutrition = ({ navigation }: { navigation: NavigationProp<any> }
                     />
                 </View>
                 <View style={styles.formGroup}>
-                    <Text style={styles.label}>
-                        {t('fats')} <Text style={styles.required}>*</Text>
-                    </Text>
+                    <Text style={styles.label}>{t('fats')} <Text style={styles.required}>*</Text></Text>
                     <CustomTextInput
                         keyboardType="numeric"
                         onChangeText={(text) => handleFormatNumericText(text, 'fat')}
@@ -396,9 +329,7 @@ const CreateUserNutrition = ({ navigation }: { navigation: NavigationProp<any> }
                     />
                 </View>
                 <View style={styles.formGroup}>
-                    <Text style={styles.label}>
-                        {t('proteins')} <Text style={styles.required}>*</Text>
-                    </Text>
+                    <Text style={styles.label}>{t('proteins')} <Text style={styles.required}>*</Text></Text>
                     <CustomTextInput
                         keyboardType="numeric"
                         onChangeText={(text) => handleFormatNumericText(text, 'protein')}
@@ -476,9 +407,7 @@ const CreateUserNutrition = ({ navigation }: { navigation: NavigationProp<any> }
                     </View>
                 ) : null}
                 <View>
-                    <Text style={styles.label}>
-                        {t('type')} <Text style={styles.required}>*</Text>
-                    </Text>
+                    <Text style={styles.label}>{t('type')} <Text style={styles.required}>*</Text></Text>
                     <SegmentedButtons
                         buttons={[
                             { label: t(NUTRITION_TYPES.FULL_DAY), value: NUTRITION_TYPES.FULL_DAY },
@@ -504,53 +433,52 @@ const CreateUserNutrition = ({ navigation }: { navigation: NavigationProp<any> }
     );
 };
 
-const makeStyles = (colors: CustomThemeColorsType, dark: boolean) =>
-    StyleSheet.create({
-        appbarHeader: {
-            backgroundColor: colors.primary,
-            justifyContent: 'center',
-            paddingHorizontal: 16,
-        },
-        appbarTitle: {
-            color: colors.onPrimary,
-            fontSize: Platform.OS === 'web' ? 20 : 26,
-        },
-        button: {
-            marginVertical: 10,
-        },
-        container: {
-            backgroundColor: colors.background,
-            // flexGrow: 1,
-            flex: 1,
-        },
-        content: {
-            padding: 16,
-        },
-        footer: {
-            alignItems: 'center',
-            borderTopColor: colors.shadow,
-            borderTopWidth: 1,
-            padding: 16,
-        },
-        formGroup: {
-            marginBottom: 16,
-        },
-        label: {
-            fontSize: 16,
-            fontWeight: '600',
-            marginBottom: 8,
-        },
-        required: {
-            color: colors.error,
-        },
-        segmentedButtons: {
-            width: '100%',
-        },
-        sourceText: {
-            color: colors.onSurface,
-            fontSize: 16,
-            paddingVertical: 8,
-        },
-    });
+const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
+    appbarHeader: {
+        backgroundColor: colors.primary,
+        justifyContent: 'center',
+        paddingHorizontal: 16,
+    },
+    appbarTitle: {
+        color: colors.onPrimary,
+        fontSize: Platform.OS === 'web' ? 20 : 26,
+    },
+    button: {
+        marginVertical: 10,
+    },
+    container: {
+        backgroundColor: colors.background,
+        // flexGrow: 1,
+        flex: 1,
+    },
+    content: {
+        padding: 16,
+    },
+    footer: {
+        alignItems: 'center',
+        borderTopColor: colors.shadow,
+        borderTopWidth: 1,
+        padding: 16,
+    },
+    formGroup: {
+        marginBottom: 16,
+    },
+    label: {
+        fontSize: 16,
+        fontWeight: '600',
+        marginBottom: 8,
+    },
+    required: {
+        color: colors.error,
+    },
+    segmentedButtons: {
+        width: '100%',
+    },
+    sourceText: {
+        color: colors.onSurface,
+        fontSize: 16,
+        paddingVertical: 8,
+    },
+});
 
 export default CreateUserNutrition;

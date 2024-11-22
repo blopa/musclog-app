@@ -314,12 +314,7 @@ function RootLayoutNav() {
             { component: RecentWorkouts, label: 'recent_workouts', name: 'recentWorkouts' },
             { component: ListExercises, label: 'exercises', name: 'listExercises' },
             { component: ListWorkouts, label: 'workouts', name: 'listWorkouts' },
-            {
-                component: UserMetricsCharts,
-                hidden: !showUserMetrics,
-                label: 'user_metrics_charts',
-                name: 'userMetricsCharts',
-            },
+            { component: UserMetricsCharts, hidden: !showUserMetrics, label: 'user_metrics_charts', name: 'userMetricsCharts' },
             { component: FoodLog, label: 'food_log', name: 'foodLog' },
             { component: Profile, label: 'profile', name: 'profile' },
             { component: Settings, label: 'settings', name: 'settings' },
@@ -328,88 +323,23 @@ function RootLayoutNav() {
             { component: Chat, hidden: true, label: 'chat', name: 'chat' },
             { component: Index, hidden: true, label: 'home', name: 'index' },
             { component: OneRepMaxes, hidden: true, label: 'one_rep_maxes', name: 'oneRepMaxes' },
-            {
-                component: CreateWorkout,
-                hidden: true,
-                label: 'create_workout',
-                name: 'createWorkout',
-            },
-            {
-                component: ListUserMetrics,
-                hidden: true,
-                label: 'user_metrics',
-                name: 'listUserMetrics',
-            },
-            {
-                component: WorkoutDetails,
-                hidden: true,
-                label: 'workout_details',
-                name: 'workoutDetails',
-            },
-            {
-                component: CreateExercise,
-                hidden: true,
-                label: 'create_exercise',
-                name: 'createExercise',
-            },
+            { component: CreateWorkout, hidden: true, label: 'create_workout', name: 'createWorkout' },
+            { component: ListUserMetrics, hidden: true, label: 'user_metrics', name: 'listUserMetrics' },
+            { component: WorkoutDetails, hidden: true, label: 'workout_details', name: 'workoutDetails' },
+            { component: CreateExercise, hidden: true, label: 'create_exercise', name: 'createExercise' },
             // { component: ScheduleWorkout, hidden: true, label: 'schedule_workout', name: 'scheduleWorkout' },
-            {
-                component: ListUserNutrition,
-                hidden: true,
-                label: 'user_nutrition',
-                name: 'listUserNutrition',
-            },
-            {
-                component: CreateUserMetrics,
-                hidden: true,
-                label: 'create_user_metrics',
-                name: 'createUserMetrics',
-            },
-            {
-                component: ListUserMeasurements,
-                hidden: true,
-                label: 'list_user_measurements',
-                name: 'listUserMeasurements',
-            },
-            {
-                component: CreateUserMeasurements,
-                hidden: true,
-                label: 'create_user_measurements',
-                name: 'createUserMeasurements',
-            },
-            {
-                component: CreateUserNutrition,
-                hidden: true,
-                label: 'create_user_nutrition',
-                name: 'createUserNutrition',
-            },
-            {
-                component: CreateRecentWorkout,
-                hidden: true,
-                label: 'create_recent_workout',
-                name: 'createRecentWorkout',
-            },
-            {
-                component: RecentWorkoutDetails,
-                hidden: true,
-                label: 'recent_workout_details',
-                name: 'recentWorkoutDetails',
-            },
+            { component: ListUserNutrition, hidden: true, label: 'user_nutrition', name: 'listUserNutrition' },
+            { component: CreateUserMetrics, hidden: true, label: 'create_user_metrics', name: 'createUserMetrics' },
+            { component: ListUserMeasurements, hidden: true, label: 'list_user_measurements', name: 'listUserMeasurements' },
+            { component: CreateUserMeasurements, hidden: true, label: 'create_user_measurements', name: 'createUserMeasurements' },
+            { component: CreateUserNutrition, hidden: true, label: 'create_user_nutrition', name: 'createUserNutrition' },
+            { component: CreateRecentWorkout, hidden: true, label: 'create_recent_workout', name: 'createRecentWorkout' },
+            { component: RecentWorkoutDetails, hidden: true, label: 'recent_workout_details', name: 'recentWorkoutDetails' },
             { component: FoodSearch, hidden: true, label: 'food_search', name: 'foodSearch' },
             { component: FoodDetails, hidden: true, label: 'food_details', name: 'foodDetails' },
             { component: CreateFood, hidden: true, label: 'create_food', name: 'createFood' },
-            {
-                component: ListFitnessGoals,
-                hidden: true,
-                label: 'fitness_goals',
-                name: 'listFitnessGoals',
-            },
-            {
-                component: CreateFitnessGoals,
-                hidden: true,
-                label: 'create_fitness_goals',
-                name: 'createFitnessGoals',
-            },
+            { component: ListFitnessGoals, hidden: true, label: 'fitness_goals', name: 'listFitnessGoals' },
+            { component: CreateFitnessGoals, hidden: true, label: 'create_fitness_goals', name: 'createFitnessGoals' },
         ];
 
         return routes;
@@ -509,7 +439,9 @@ function CustomDrawerContent(props: CustomDrawerContentProps) {
                     focused={currentRoute === 'index'}
                     label={() => (
                         <View style={styles.customItem}>
-                            <Text style={styles.indexItemText}>{t('home')}</Text>
+                            <Text style={styles.indexItemText}>
+                                {t('home')}
+                            </Text>
                         </View>
                     )}
                     onPress={() => props.navigation.navigate('index')}
@@ -519,7 +451,9 @@ function CustomDrawerContent(props: CustomDrawerContentProps) {
                         focused={currentRoute === 'chat'}
                         label={() => (
                             <View style={styles.customItem}>
-                                <Text style={styles.chatItemText}>{t('chat')}</Text>
+                                <Text style={styles.chatItemText}>
+                                    {t('chat')}
+                                </Text>
                                 {props.unreadMessages > 0 && (
                                     <View style={styles.badge}>
                                         <Text style={styles.badgeText}>{props.unreadMessages}</Text>
@@ -547,53 +481,52 @@ const determineTextColor = (currentRoute: string, dark: boolean, targetRoute: st
     return '#1c1c1ead';
 };
 
-const makeStyles = (colors: CustomThemeColorsType, dark: boolean, currentRoute: string) =>
-    StyleSheet.create({
-        badge: {
-            alignItems: 'center',
-            backgroundColor: colors.tertiary,
-            borderRadius: 10,
-            height: 20,
-            justifyContent: 'center',
-            marginLeft: 10,
-            width: 20,
-        },
-        badgeText: {
-            color: colors.onTertiary,
-            fontSize: 12,
-            fontWeight: 'bold',
-        },
-        chatItemText: {
-            color: determineTextColor(currentRoute, dark, 'chat'),
-            fontWeight: '500',
-        },
-        customItem: {
-            alignItems: 'center',
-            flexDirection: 'row',
-        },
-        drawerContainer: {
-            backgroundColor: '#f5f5f5',
-            flex: 1,
-            justifyContent: 'space-between',
-        },
-        footer: {
-            alignItems: 'center',
-            borderTopColor: colors.shadow,
-            borderTopWidth: 1,
-            padding: 10,
-        },
-        footerText: {
-            color: '#212121',
-        },
-        indexItemText: {
-            color: determineTextColor(currentRoute, dark, 'index'),
-            fontWeight: '500',
-        },
-        overlay: {
-            ...StyleSheet.absoluteFillObject,
-            alignItems: 'center',
-            backgroundColor: addTransparency(colors.background, 0.5),
-            flex: 1,
-            justifyContent: 'center',
-        },
-    });
+const makeStyles = (colors: CustomThemeColorsType, dark: boolean, currentRoute: string) => StyleSheet.create({
+    badge: {
+        alignItems: 'center',
+        backgroundColor: colors.tertiary,
+        borderRadius: 10,
+        height: 20,
+        justifyContent: 'center',
+        marginLeft: 10,
+        width: 20,
+    },
+    badgeText: {
+        color: colors.onTertiary,
+        fontSize: 12,
+        fontWeight: 'bold',
+    },
+    chatItemText: {
+        color: determineTextColor(currentRoute, dark, 'chat'),
+        fontWeight: '500',
+    },
+    customItem: {
+        alignItems: 'center',
+        flexDirection: 'row',
+    },
+    drawerContainer: {
+        backgroundColor: '#f5f5f5',
+        flex: 1,
+        justifyContent: 'space-between',
+    },
+    footer: {
+        alignItems: 'center',
+        borderTopColor: colors.shadow,
+        borderTopWidth: 1,
+        padding: 10,
+    },
+    footerText: {
+        color: '#212121',
+    },
+    indexItemText: {
+        color: determineTextColor(currentRoute, dark, 'index'),
+        fontWeight: '500',
+    },
+    overlay: {
+        ...StyleSheet.absoluteFillObject,
+        alignItems: 'center',
+        backgroundColor: addTransparency(colors.background, 0.5),
+        flex: 1,
+        justifyContent: 'center',
+    },
+});

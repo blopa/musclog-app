@@ -22,7 +22,10 @@ import {
     getWorkoutDetails,
     getWorkoutsPaginated,
 } from '@/utils/database';
-import { ExerciseWithSetsType, WorkoutReturnType } from '@/utils/types';
+import {
+    ExerciseWithSetsType,
+    WorkoutReturnType,
+} from '@/utils/types';
 import { getDisplayFormattedWeight } from '@/utils/unit';
 import { resetWorkoutStorageData } from '@/utils/workout';
 import { FontAwesome5 } from '@expo/vector-icons';
@@ -33,7 +36,14 @@ import { useFocusEffect } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BackHandler, Platform, StyleSheet, View } from 'react-native';
-import { ActivityIndicator, Appbar, Card, Text, useTheme, Switch } from 'react-native-paper';
+import {
+    ActivityIndicator,
+    Appbar,
+    Card,
+    Text,
+    useTheme,
+    Switch,
+} from 'react-native-paper';
 
 export default function ListWorkouts({ navigation }: { navigation: NavigationProp<any> }) {
     const { t } = useTranslation();
@@ -71,37 +81,38 @@ export default function ListWorkouts({ navigation }: { navigation: NavigationPro
         setIsAiEnabled(hasAiEnabled);
     }, [getSettingByType]);
 
-    const loadWorkouts = useCallback(
-        async (offset = 0, limit = 20) => {
-            try {
-                const loadedWorkouts = await getWorkoutsPaginated(
-                    offset,
-                    limit,
-                    showDeletedWorkouts
+    const loadWorkouts = useCallback(async (offset = 0, limit = 20) => {
+        try {
+            const loadedWorkouts = await getWorkoutsPaginated(offset, limit, showDeletedWorkouts);
+            const sortedWorkouts = loadedWorkouts.sort(
+                (a, b) => b.id! - a.id!
+            );
+
+            setWorkouts((prevState) => {
+                const uniqueWorkouts = sortedWorkouts.filter(
+                    (workout) =>
+                        !prevState.some(
+                            (prevWorkout) => prevWorkout.id === workout.id
+                        )
                 );
-                const sortedWorkouts = loadedWorkouts.sort((a, b) => b.id! - a.id!);
 
-                setWorkouts((prevState) => {
-                    const uniqueWorkouts = sortedWorkouts.filter(
-                        (workout) => !prevState.some((prevWorkout) => prevWorkout.id === workout.id)
-                    );
+                return [...prevState, ...uniqueWorkouts];
+            });
 
-                    return [...prevState, ...uniqueWorkouts];
-                });
-
-                const workoutDetailsMap: {
+            const workoutDetailsMap: {
                     [key: number]: {
                         workout: WorkoutReturnType;
                         exercisesWithSets: ExerciseWithSetsType[];
                     };
                 } = {};
 
-                for (const workout of sortedWorkouts) {
-                    const details = await getWorkoutDetails(workout.id!);
-                    if (details) {
-                        workoutDetailsMap[workout.id!] = {
-                            ...details,
-                            exercisesWithSets: details.exercisesWithSets.map((exercise) => ({
+            for (const workout of sortedWorkouts) {
+                const details = await getWorkoutDetails(workout.id!);
+                if (details) {
+                    workoutDetailsMap[workout.id!] = {
+                        ...details,
+                        exercisesWithSets: details.exercisesWithSets.map(
+                            (exercise) => ({
                                 ...exercise,
                                 sets: exercise.sets.map((set) => ({
                                     ...set,
@@ -111,18 +122,17 @@ export default function ListWorkouts({ navigation }: { navigation: NavigationPro
                                         isImperial
                                     ),
                                 })),
-                            })),
-                        };
-                    }
+                            })
+                        ),
+                    };
                 }
-
-                setWorkoutDetails(workoutDetailsMap);
-            } catch (error) {
-                console.error(t('failed_load_workouts'), error);
             }
-        },
-        [isImperial, t, showDeletedWorkouts]
-    );
+
+            setWorkoutDetails(workoutDetailsMap);
+        } catch (error) {
+            console.error(t('failed_load_workouts'), error);
+        }
+    }, [isImperial, t, showDeletedWorkouts]);
 
     const loadMoreWorkouts = useCallback(() => {
         if (workouts.length >= totalWorkoutsCount) {
@@ -178,14 +188,19 @@ export default function ListWorkouts({ navigation }: { navigation: NavigationPro
     const handleStartWorkout = useCallback(async () => {
         if (selectedWorkout) {
             try {
-                const ongoingWorkout = await AsyncStorage.getItem(CURRENT_WORKOUT_ID);
+                const ongoingWorkout = await AsyncStorage.getItem(
+                    CURRENT_WORKOUT_ID
+                );
                 if (ongoingWorkout) {
                     setConfirmationModalVisible(true);
                     return;
                 }
 
                 await resetWorkoutStorageData();
-                await AsyncStorage.setItem(CURRENT_WORKOUT_ID, JSON.stringify(selectedWorkout.id));
+                await AsyncStorage.setItem(
+                    CURRENT_WORKOUT_ID,
+                    JSON.stringify(selectedWorkout.id)
+                );
 
                 navigation.navigate('index', { screen: 'workout' });
             } catch (error) {
@@ -200,7 +215,10 @@ export default function ListWorkouts({ navigation }: { navigation: NavigationPro
         if (selectedWorkout) {
             try {
                 await resetWorkoutStorageData();
-                await AsyncStorage.setItem(CURRENT_WORKOUT_ID, JSON.stringify(selectedWorkout.id));
+                await AsyncStorage.setItem(
+                    CURRENT_WORKOUT_ID,
+                    JSON.stringify(selectedWorkout.id)
+                );
 
                 navigation.navigate('index', { screen: 'workout' });
             } catch (error) {
@@ -252,12 +270,10 @@ export default function ListWorkouts({ navigation }: { navigation: NavigationPro
     const handleCreateWorkoutPlan = useCallback(async () => {
         setIsLoading(true);
         try {
-            await generateWorkoutPlan([
-                {
-                    content: `Please create me a workout plan based on: ${inputValue}`,
-                    role: 'user',
-                },
-            ]);
+            await generateWorkoutPlan([{
+                content: `Please create me a workout plan based on: ${inputValue}`,
+                role: 'user',
+            }]);
 
             await loadWorkouts();
             setGenerateModalVisible(false);
@@ -276,22 +292,16 @@ export default function ListWorkouts({ navigation }: { navigation: NavigationPro
     }, [searchQuery, workouts]);
 
     const fabActions = useMemo(() => {
-        const actions = [
-            {
-                icon: () => (
-                    <FontAwesome5 color={colors.primary} name="plus" size={FAB_ICON_SIZE} />
-                ),
-                label: t('create_workout'),
-                onPress: () => navigation.navigate('createWorkout'),
-                style: { backgroundColor: colors.surface },
-            },
-        ];
+        const actions = [{
+            icon: () => <FontAwesome5 color={colors.primary} name="plus" size={FAB_ICON_SIZE} />,
+            label: t('create_workout'),
+            onPress: () => navigation.navigate('createWorkout'),
+            style: { backgroundColor: colors.surface },
+        }];
 
         if (isAiEnabled) {
             actions.unshift({
-                icon: () => (
-                    <FontAwesome5 color={colors.primary} name="magic" size={FAB_ICON_SIZE} />
-                ),
+                icon: () => <FontAwesome5 color={colors.primary} name="magic" size={FAB_ICON_SIZE} />,
                 label: t('generate_workouts_with_ai'),
                 onPress: handleGenerateWorkoutPlan,
                 style: { backgroundColor: colors.surface },
@@ -309,8 +319,15 @@ export default function ListWorkouts({ navigation }: { navigation: NavigationPro
         <Screen style={styles.container}>
             <FABWrapper actions={fabActions} visible>
                 <View style={styles.container}>
-                    <Appbar.Header mode="small" statusBarHeight={0} style={styles.appbarHeader}>
-                        <Appbar.Content title={t('workouts')} titleStyle={styles.appbarTitle} />
+                    <Appbar.Header
+                        mode="small"
+                        statusBarHeight={0}
+                        style={styles.appbarHeader}
+                    >
+                        <Appbar.Content
+                            title={t('workouts')}
+                            titleStyle={styles.appbarTitle}
+                        />
                         <AnimatedSearchBar
                             searchQuery={searchQuery}
                             setSearchQuery={setSearchQuery}
@@ -326,19 +343,25 @@ export default function ListWorkouts({ navigation }: { navigation: NavigationPro
                     {filteredWorkouts.length > 0 ? (
                         <FlashList
                             ListFooterComponent={
-                                workouts.length < totalWorkoutsCount ? <ActivityIndicator /> : null
+                                workouts.length < totalWorkoutsCount ? (
+                                    <ActivityIndicator />
+                                ) : null
                             }
                             contentContainerStyle={styles.scrollViewContent}
                             data={filteredWorkouts}
                             estimatedItemSize={135}
-                            keyExtractor={(item) => (item?.id ? item.id.toString() : 'default')}
+                            keyExtractor={(item) =>
+                                (item?.id ? item.id.toString() : 'default')
+                            }
                             onEndReached={loadMoreWorkouts}
                             onEndReachedThreshold={0.5}
                             renderItem={({ item: workout }) => (
                                 <ThemedCard key={workout.id}>
                                     <Card.Content style={styles.cardContent}>
                                         <View style={styles.cardHeader}>
-                                            <Text style={styles.cardTitle}>{workout.title}</Text>
+                                            <Text style={styles.cardTitle}>
+                                                {workout.title}
+                                            </Text>
                                             <WorkoutItem
                                                 workoutDetails={workoutDetails}
                                                 workoutId={workout.id!}
@@ -349,7 +372,9 @@ export default function ListWorkouts({ navigation }: { navigation: NavigationPro
                                                 color={colors.primary}
                                                 name="play"
                                                 onPress={() =>
-                                                    openStartWorkoutConfirmationModal(workout)
+                                                    openStartWorkoutConfirmationModal(
+                                                        workout
+                                                    )
                                                 }
                                                 size={ICON_SIZE}
                                                 style={styles.iconButton}
@@ -357,22 +382,14 @@ export default function ListWorkouts({ navigation }: { navigation: NavigationPro
                                             <FontAwesome5
                                                 color={colors.primary}
                                                 name="eye"
-                                                onPress={() =>
-                                                    navigation.navigate('workoutDetails', {
-                                                        id: workout.id,
-                                                    })
-                                                }
+                                                onPress={() => navigation.navigate('workoutDetails', { id: workout.id })}
                                                 size={ICON_SIZE}
                                                 style={styles.iconButton}
                                             />
                                             <FontAwesome5
                                                 color={colors.primary}
                                                 name="edit"
-                                                onPress={() =>
-                                                    navigation.navigate('createWorkout', {
-                                                        id: workout.id,
-                                                    })
-                                                }
+                                                onPress={() => navigation.navigate('createWorkout', { id: workout.id })}
                                                 size={ICON_SIZE}
                                                 style={styles.iconButton}
                                             />
@@ -380,7 +397,9 @@ export default function ListWorkouts({ navigation }: { navigation: NavigationPro
                                                 color={colors.primary}
                                                 name="trash"
                                                 onPress={() =>
-                                                    openDeleteWorkoutConfirmationModal(workout)
+                                                    openDeleteWorkoutConfirmationModal(
+                                                        workout
+                                                    )
                                                 }
                                                 size={ICON_SIZE}
                                                 style={styles.iconButton}
@@ -398,11 +417,7 @@ export default function ListWorkouts({ navigation }: { navigation: NavigationPro
                         confirmText={t('yes')}
                         onClose={() => setModalVisible(false)}
                         onConfirm={handleStartWorkout}
-                        title={
-                            selectedWorkout
-                                ? t('start_workout_confirmation', { title: selectedWorkout.title })
-                                : t('start_workout_confirmation_generic')
-                        }
+                        title={selectedWorkout ? t('start_workout_confirmation', { title: selectedWorkout.title }) : t('start_workout_confirmation_generic')}
                         visible={modalVisible}
                     />
                     <ThemedModal
@@ -418,11 +433,7 @@ export default function ListWorkouts({ navigation }: { navigation: NavigationPro
                         confirmText={t('yes')}
                         onClose={() => setDeleteModalVisible(false)}
                         onConfirm={handleDeleteWorkout}
-                        title={
-                            selectedWorkout
-                                ? t('delete_workout_confirmation', { title: selectedWorkout.title })
-                                : t('delete_confirmation_generic')
-                        }
+                        title={selectedWorkout ? t('delete_workout_confirmation', { title: selectedWorkout.title }) : t('delete_confirmation_generic')}
                         visible={deleteModalVisible}
                     />
                     <ThemedModal
@@ -440,7 +451,12 @@ export default function ListWorkouts({ navigation }: { navigation: NavigationPro
                                 placeholder={t('enter_workout_details')}
                                 value={inputValue}
                             />
-                            {isLoading && <ActivityIndicator color={colors.primary} size="large" />}
+                            {isLoading && (
+                                <ActivityIndicator
+                                    color={colors.primary}
+                                    size="large"
+                                />
+                            )}
                         </View>
                     </ThemedModal>
                 </View>
@@ -449,66 +465,65 @@ export default function ListWorkouts({ navigation }: { navigation: NavigationPro
     );
 }
 
-const makeStyles = (colors: CustomThemeColorsType, dark: boolean) =>
-    StyleSheet.create({
-        appbarHeader: {
-            backgroundColor: colors.primary,
-            justifyContent: 'center',
-            paddingHorizontal: 16,
-        },
-        appbarTitle: {
-            color: colors.onPrimary,
-            fontSize: Platform.OS === 'web' ? 20 : 26,
-        },
-        cardActions: {
-            alignItems: 'center',
-            flexDirection: 'row',
-        },
-        cardContent: {
-            alignItems: 'center',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-        },
-        cardHeader: {
-            flex: 1,
-        },
-        cardTitle: {
-            color: colors.onSurface,
-            fontSize: 18,
-            fontWeight: 'bold',
-        },
-        container: {
-            backgroundColor: colors.background,
-            flex: 1,
-        },
-        iconButton: {
-            marginHorizontal: 8,
-        },
-        modalContent: {
-            backgroundColor: colors.background,
-            padding: 16,
-        },
-        noDataText: {
-            color: colors.onBackground,
-            fontSize: 16,
-            marginTop: 16,
-            textAlign: 'center',
-        },
-        scrollViewContent: {
-            backgroundColor: colors.background,
-            paddingBottom: 16,
-            paddingHorizontal: 16,
-        },
-        toggleContainer: {
-            alignItems: 'center',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            marginTop: 16,
-            marginVertical: 8,
-            paddingHorizontal: 16,
-        },
-        toggleLabel: {
-            color: colors.onBackground,
-            fontSize: 16,
-        },
-    });
+const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
+    appbarHeader: {
+        backgroundColor: colors.primary,
+        justifyContent: 'center',
+        paddingHorizontal: 16,
+    },
+    appbarTitle: {
+        color: colors.onPrimary,
+        fontSize: Platform.OS === 'web' ? 20 : 26,
+    },
+    cardActions: {
+        alignItems: 'center',
+        flexDirection: 'row',
+    },
+    cardContent: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    cardHeader: {
+        flex: 1,
+    },
+    cardTitle: {
+        color: colors.onSurface,
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    container: {
+        backgroundColor: colors.background,
+        flex: 1,
+    },
+    iconButton: {
+        marginHorizontal: 8,
+    },
+    modalContent: {
+        backgroundColor: colors.background,
+        padding: 16,
+    },
+    noDataText: {
+        color: colors.onBackground,
+        fontSize: 16,
+        marginTop: 16,
+        textAlign: 'center',
+    },
+    scrollViewContent: {
+        backgroundColor: colors.background,
+        paddingBottom: 16,
+        paddingHorizontal: 16,
+    },
+    toggleContainer: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 16,
+        marginVertical: 8,
+        paddingHorizontal: 16,
+    },
+    toggleLabel: {
+        color: colors.onBackground,
+        fontSize: 16,
+    },
+});

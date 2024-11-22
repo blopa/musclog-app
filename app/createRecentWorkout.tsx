@@ -16,12 +16,7 @@ import {
     updateWorkoutEvent,
 } from '@/utils/database';
 import { formatFloatNumericInputText, formatIntegerNumericInputText } from '@/utils/string';
-import {
-    ExerciseVolumeSetType,
-    ExerciseVolumeType,
-    WorkoutEventInsertType,
-    WorkoutReturnType,
-} from '@/utils/types';
+import { ExerciseVolumeSetType, ExerciseVolumeType, WorkoutEventInsertType, WorkoutReturnType } from '@/utils/types';
 import { NavigationProp, useRoute } from '@react-navigation/native';
 import { useFocusEffect } from 'expo-router';
 import React, { useCallback, useState } from 'react';
@@ -124,36 +119,22 @@ export default function CreateRecentWorkout({ navigation }: { navigation: Naviga
             setWorkoutTitle(workoutEvent.title);
 
             // Load the associated Workout and its exercises/sets
-            const workoutDetails = await getWorkoutWithExercisesRepsAndSetsDetails(
-                workoutEvent.workoutId
-            );
+            const workoutDetails = await getWorkoutWithExercisesRepsAndSetsDetails(workoutEvent.workoutId);
             if (workoutDetails) {
                 const updatedSets = workoutDetails.exercises.flatMap((exercise, exerciseIndex) =>
                     exercise.sets.map((set, index) => {
-                        const exerciseData: ExerciseVolumeType[] = workoutEvent.exerciseData
-                            ? JSON.parse(workoutEvent.exerciseData)
-                            : [];
-                        const matchingExercise = exerciseData.find(
-                            (e) => e.exerciseId === exercise.id
-                        );
-                        const matchingVolumeSet = matchingExercise?.sets.find(
-                            (s) => s.setId === set.id
-                        );
+                        const exerciseData: ExerciseVolumeType[] = workoutEvent.exerciseData ? JSON.parse(workoutEvent.exerciseData) : [];
+                        const matchingExercise = exerciseData.find((e) => e.exerciseId === exercise.id);
+                        const matchingVolumeSet = matchingExercise?.sets.find((s) => s.setId === set.id);
 
                         return {
                             exerciseId: exercise.id,
                             exerciseName: exercise.name,
                             id: set.id,
                             isDropSet: set.isDropSet,
-                            reps: matchingVolumeSet
-                                ? matchingVolumeSet.reps.toString()
-                                : set.reps.toString(),
-                            restTime: matchingVolumeSet
-                                ? matchingVolumeSet.restTime.toString()
-                                : set.restTime.toString(),
-                            weight: matchingVolumeSet
-                                ? matchingVolumeSet.weight.toString()
-                                : set.weight.toString(),
+                            reps: matchingVolumeSet ? matchingVolumeSet.reps.toString() : set.reps.toString(),
+                            restTime: matchingVolumeSet ? matchingVolumeSet.restTime.toString() : set.restTime.toString(),
+                            weight: matchingVolumeSet ? matchingVolumeSet.weight.toString() : set.weight.toString(),
                             setOrder: exerciseIndex + index + 1,
                             supersetName: set.supersetName || null,
                         };
@@ -189,38 +170,31 @@ export default function CreateRecentWorkout({ navigation }: { navigation: Naviga
         }, [navigation])
     );
 
-    const handleSelectWorkout = useCallback(
-        async (workoutId: string) => {
-            try {
-                const workoutDetails = await getWorkoutWithExercisesRepsAndSetsDetails(
-                    Number(workoutId)
-                );
-                if (workoutDetails) {
-                    setWorkoutId(workoutDetails.id);
-                    setWorkoutTitle(workoutDetails.title);
-                    setWorkoutDescription(workoutDetails.description || '');
-                    setSets(
-                        workoutDetails.exercises.flatMap((exercise, exerciseIndex) =>
-                            exercise.sets.map((set, setIndex) => ({
-                                exerciseId: exercise.id,
-                                exerciseName: exercise.name,
-                                id: set.id,
-                                isDropSet: set.isDropSet,
-                                reps: set.reps.toString(),
-                                restTime: set.restTime.toString(),
-                                weight: set.weight.toString(),
-                                setOrder: exerciseIndex + setIndex + 1,
-                                supersetName: set.supersetName || null,
-                            }))
-                        )
-                    );
-                }
-            } catch (error) {
-                console.error(t('failed_to_load_workout_details'), error);
+    const handleSelectWorkout = useCallback(async (workoutId: string) => {
+        try {
+            const workoutDetails = await getWorkoutWithExercisesRepsAndSetsDetails(Number(workoutId));
+            if (workoutDetails) {
+                setWorkoutId(workoutDetails.id);
+                setWorkoutTitle(workoutDetails.title);
+                setWorkoutDescription(workoutDetails.description || '');
+                setSets(workoutDetails.exercises.flatMap((exercise, exerciseIndex) =>
+                    exercise.sets.map((set, setIndex) => ({
+                        exerciseId: exercise.id,
+                        exerciseName: exercise.name,
+                        id: set.id,
+                        isDropSet: set.isDropSet,
+                        reps: set.reps.toString(),
+                        restTime: set.restTime.toString(),
+                        weight: set.weight.toString(),
+                        setOrder: exerciseIndex + setIndex + 1,
+                        supersetName: set.supersetName || null,
+                    }))
+                ));
             }
-        },
-        [t]
-    );
+        } catch (error) {
+            console.error(t('failed_to_load_workout_details'), error);
+        }
+    }, [t]);
 
     const confirmDeleteSet = useCallback((setIndex: number) => {
         setSetToDeleteIndex(setIndex);
@@ -235,24 +209,22 @@ export default function CreateRecentWorkout({ navigation }: { navigation: Naviga
         }
     }, [setToDeleteIndex]);
 
-    const handleFormatNumericText = useCallback(
-        (set: LocalStateSetType, text: string, key: 'reps' | 'restTime' | 'weight') => {
-            const formattedText =
-                key === 'weight'
-                    ? formatFloatNumericInputText(text)
-                    : formatIntegerNumericInputText(text);
+    const handleFormatNumericText = useCallback((set: LocalStateSetType, text: string, key: 'reps' | 'restTime' | 'weight') => {
+        const formattedText = key === 'weight'
+            ? formatFloatNumericInputText(text)
+            : formatIntegerNumericInputText(text);
 
-            if (formattedText || !text) {
-                setSets((prevSets) =>
-                    prevSets.map((s) => (s === set ? { ...s, [key]: formattedText } : s))
-                );
-            }
-        },
-        []
-    );
+        if (formattedText || !text) {
+            setSets((prevSets) =>
+                prevSets.map((s) => (s === set ? { ...s, [key]: formattedText } : s))
+            );
+        }
+    }, []);
 
     const handleSupersetNameChange = useCallback((set: LocalStateSetType, text: string) => {
-        setSets((prevSets) => prevSets.map((s) => (s === set ? { ...s, supersetName: text } : s)));
+        setSets((prevSets) =>
+            prevSets.map((s) => (s === set ? { ...s, supersetName: text } : s))
+        );
     }, []);
 
     const handleFormatDurationText = useCallback((text: string) => {
@@ -282,35 +254,32 @@ export default function CreateRecentWorkout({ navigation }: { navigation: Naviga
         setIsSaving(true);
 
         try {
-            const exerciseData: ExerciseVolumeType[] = sets.reduce(
-                (acc: ExerciseVolumeType[], set) => {
-                    const exerciseIndex = acc.findIndex((e) => e.exerciseId === set.exerciseId);
-                    const setObject: ExerciseVolumeSetType = {
+            const exerciseData: ExerciseVolumeType[] = sets.reduce((acc: ExerciseVolumeType[], set) => {
+                const exerciseIndex = acc.findIndex((e) => e.exerciseId === set.exerciseId);
+                const setObject: ExerciseVolumeSetType = {
+                    exerciseId: set.exerciseId,
+                    id: set.id,
+                    isDropSet: set.isDropSet,
+                    reps: Number(set.reps),
+                    restTime: Number(set.restTime),
+                    setId: set.id,
+                    weight: Number(set.weight),
+                    workoutId: workoutId!,
+                    setOrder: set.setOrder,
+                    supersetName: set.supersetName || '',
+                };
+
+                if (exerciseIndex >= 0) {
+                    acc[exerciseIndex].sets.push(setObject);
+                } else {
+                    acc.push({
                         exerciseId: set.exerciseId,
-                        id: set.id,
-                        isDropSet: set.isDropSet,
-                        reps: Number(set.reps),
-                        restTime: Number(set.restTime),
-                        setId: set.id,
-                        weight: Number(set.weight),
-                        workoutId: workoutId!,
-                        setOrder: set.setOrder,
-                        supersetName: set.supersetName || '',
-                    };
+                        sets: [setObject],
+                    });
+                }
 
-                    if (exerciseIndex >= 0) {
-                        acc[exerciseIndex].sets.push(setObject);
-                    } else {
-                        acc.push({
-                            exerciseId: set.exerciseId,
-                            sets: [setObject],
-                        });
-                    }
-
-                    return acc;
-                },
-                []
-            );
+                return acc;
+            }, []);
 
             const workoutDateTime = new Date(workoutDate);
             workoutDateTime.setHours(workoutTime.getHours());
@@ -338,17 +307,7 @@ export default function CreateRecentWorkout({ navigation }: { navigation: Naviga
         } finally {
             setIsSaving(false);
         }
-    }, [
-        workoutTitle,
-        workoutDuration,
-        sets,
-        t,
-        workoutDate,
-        workoutDescription,
-        workoutId,
-        workoutTime,
-        id,
-    ]);
+    }, [workoutTitle, workoutDuration, sets, t, workoutDate, workoutDescription, workoutId, workoutTime, id]);
 
     const handleModalClose = useCallback(() => {
         setIsSaveModalVisible(false);
@@ -387,10 +346,7 @@ export default function CreateRecentWorkout({ navigation }: { navigation: Naviga
                     visible={isTimePickerVisible}
                 />
                 <Appbar.Header mode="small" statusBarHeight={0} style={styles.appbarHeader}>
-                    <Appbar.Content
-                        title={t(id ? 'edit_recent_workout' : 'create_recent_workout')}
-                        titleStyle={styles.appbarTitle}
-                    />
+                    <Appbar.Content title={t(id ? 'edit_recent_workout' : 'create_recent_workout')} titleStyle={styles.appbarTitle} />
                     <Button
                         mode="outlined"
                         onPress={() => {
@@ -441,17 +397,13 @@ export default function CreateRecentWorkout({ navigation }: { navigation: Naviga
                     />
                     {sets.map((set, index) => (
                         <View key={index} style={styles.setForm}>
-                            <Text style={styles.exerciseLabel}>
-                                {t('exercise')}: {set.exerciseName}
-                            </Text>
+                            <Text style={styles.exerciseLabel}>{t('exercise')}: {set.exerciseName}</Text>
                             {/*<Text style={styles.exerciseLabel}>{t('set_order')}: {set.setOrder}</Text>*/}
                             <View style={styles.row}>
                                 <CustomTextInput
                                     keyboardType="numeric"
                                     label={t('weight', { weightUnit })}
-                                    onChangeText={(text) =>
-                                        handleFormatNumericText(set, text, 'weight')
-                                    }
+                                    onChangeText={(text) => handleFormatNumericText(set, text, 'weight')}
                                     placeholder={t('enter_weight')}
                                     value={set.weight}
                                     wrapperStyle={styles.input}
@@ -459,9 +411,7 @@ export default function CreateRecentWorkout({ navigation }: { navigation: Naviga
                                 <CustomTextInput
                                     keyboardType="numeric"
                                     label={t('reps')}
-                                    onChangeText={(text) =>
-                                        handleFormatNumericText(set, text, 'reps')
-                                    }
+                                    onChangeText={(text) => handleFormatNumericText(set, text, 'reps')}
                                     placeholder={t('enter_reps')}
                                     value={set.reps}
                                     wrapperStyle={styles.input}
@@ -471,9 +421,7 @@ export default function CreateRecentWorkout({ navigation }: { navigation: Naviga
                                 <CustomTextInput
                                     keyboardType="numeric"
                                     label={t('rest_time_sec')}
-                                    onChangeText={(text) =>
-                                        handleFormatNumericText(set, text, 'restTime')
-                                    }
+                                    onChangeText={(text) => handleFormatNumericText(set, text, 'restTime')}
                                     placeholder={t('enter_rest_time')}
                                     value={set.restTime}
                                     wrapperStyle={styles.input}
@@ -491,9 +439,7 @@ export default function CreateRecentWorkout({ navigation }: { navigation: Naviga
                                 <Switch
                                     onValueChange={(value) => {
                                         setSets((prevSets) =>
-                                            prevSets.map((s, i) =>
-                                                i === index ? { ...s, isDropSet: value } : s
-                                            )
+                                            prevSets.map((s, i) => (i === index ? { ...s, isDropSet: value } : s))
                                         );
                                     }}
                                     style={styles.toggleSwitch}
@@ -523,83 +469,82 @@ export default function CreateRecentWorkout({ navigation }: { navigation: Naviga
     );
 }
 
-const makeStyles = (colors: CustomThemeColorsType, dark: boolean) =>
-    StyleSheet.create({
-        alignCenter: {
-            alignItems: 'center',
-        },
-        appbarHeader: {
-            backgroundColor: colors.primary,
-            justifyContent: 'center',
-            paddingHorizontal: 16,
-        },
-        appbarTitle: {
-            color: colors.onPrimary,
-            fontSize: Platform.OS === 'web' ? 20 : 26,
-        },
-        button: {
-            marginVertical: 10,
-        },
-        container: {
-            backgroundColor: colors.background,
-            flexGrow: 1,
-        },
-        content: {
-            padding: 16,
-        },
-        datePickerWrapper: {
-            marginVertical: 16,
-        },
-        deleteButton: {
-            backgroundColor: colors.tertiary,
-            marginTop: 8,
-        },
-        exerciseLabel: {
-            fontSize: 16,
-            fontWeight: 'bold',
-            marginBottom: 8,
-        },
-        input: {
-            flex: 1,
-            marginLeft: 8,
-        },
-        inputButton: {
-            backgroundColor: colors.surface,
-            borderColor: colors.onSurface,
-            borderRadius: 8,
-            borderWidth: 1,
-            color: colors.onSurface,
-            paddingLeft: 10,
-            width: '100%',
-        },
-        label: {
-            color: colors.onSurface,
-            fontSize: 16,
-            marginBottom: 8,
-        },
-        labelToggleSwitch: {
-            color: colors.onSurface,
-            fontSize: 16,
-            fontWeight: '600',
-        },
-        row: {
-            alignItems: 'center',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            marginBottom: 8,
-        },
-        saveButton: {
-            marginHorizontal: 'auto',
-            width: '80%',
-        },
-        setForm: {
-            borderColor: colors.onSurface,
-            borderRadius: 8,
-            borderWidth: 1,
-            marginBottom: 16,
-            padding: 16,
-        },
-        toggleSwitch: {
-            marginLeft: 8,
-        },
-    });
+const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
+    alignCenter: {
+        alignItems: 'center',
+    },
+    appbarHeader: {
+        backgroundColor: colors.primary,
+        justifyContent: 'center',
+        paddingHorizontal: 16,
+    },
+    appbarTitle: {
+        color: colors.onPrimary,
+        fontSize: Platform.OS === 'web' ? 20 : 26,
+    },
+    button: {
+        marginVertical: 10,
+    },
+    container: {
+        backgroundColor: colors.background,
+        flexGrow: 1,
+    },
+    content: {
+        padding: 16,
+    },
+    datePickerWrapper: {
+        marginVertical: 16,
+    },
+    deleteButton: {
+        backgroundColor: colors.tertiary,
+        marginTop: 8,
+    },
+    exerciseLabel: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        marginBottom: 8,
+    },
+    input: {
+        flex: 1,
+        marginLeft: 8,
+    },
+    inputButton: {
+        backgroundColor: colors.surface,
+        borderColor: colors.onSurface,
+        borderRadius: 8,
+        borderWidth: 1,
+        color: colors.onSurface,
+        paddingLeft: 10,
+        width: '100%',
+    },
+    label: {
+        color: colors.onSurface,
+        fontSize: 16,
+        marginBottom: 8,
+    },
+    labelToggleSwitch: {
+        color: colors.onSurface,
+        fontSize: 16,
+        fontWeight: '600',
+    },
+    row: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 8,
+    },
+    saveButton: {
+        marginHorizontal: 'auto',
+        width: '80%',
+    },
+    setForm: {
+        borderColor: colors.onSurface,
+        borderRadius: 8,
+        borderWidth: 1,
+        marginBottom: 16,
+        padding: 16,
+    },
+    toggleSwitch: {
+        marginLeft: 8,
+    },
+});

@@ -1,6 +1,5 @@
 import AnimatedSearchBar from '@/components/AnimatedSearch';
 import FABWrapper from '@/components/FABWrapper';
-import { Screen } from '@/components/Screen';
 import ThemedCard from '@/components/ThemedCard';
 import ThemedModal from '@/components/ThemedModal';
 import { CSV_IMPORT_TYPE, IMPERIAL_SYSTEM, JSON_IMPORT_TYPE, KILOGRAMS } from '@/constants/storage';
@@ -57,59 +56,56 @@ export default function ListUserMetrics({ navigation }: { navigation: Navigation
     const { getSettingByType } = useSettings();
     const { showSnackbar } = useSnackbar();
 
-    const loadUserMetrics = useCallback(
-        async (offset = 0, limit = 20) => {
-            try {
-                const loadedUserMetrics = await getUserMetricsPaginated(offset, limit);
+    const loadUserMetrics = useCallback(async (offset = 0, limit = 20) => {
+        try {
+            const loadedUserMetrics = await getUserMetricsPaginated(offset, limit);
 
-                setUserMetrics((prevState) => {
-                    const combinedData = [
-                        ...prevState,
-                        ...loadedUserMetrics.filter(
-                            (data) => !prevState.some((prevData) => prevData.id === data.id)
-                        ),
-                    ];
+            setUserMetrics((prevState) => {
+                const combinedData = [
+                    ...prevState,
+                    ...loadedUserMetrics.filter(
+                        (data) => !prevState.some((prevData) => prevData.id === data.id)
+                    ),
+                ];
 
-                    combinedData.sort((a, b) => {
-                        if (a.date < b.date) {
-                            return 1;
-                        }
+                combinedData.sort((a, b) => {
+                    if (a.date < b.date) {
+                        return 1;
+                    }
 
-                        if (a.date > b.date) {
-                            return -1;
-                        }
+                    if (a.date > b.date) {
+                        return -1;
+                    }
 
-                        if (a?.id! < b?.id!) {
-                            return 1;
-                        }
+                    if (a?.id! < b?.id!) {
+                        return 1;
+                    }
 
-                        if (a?.id! > b?.id!) {
-                            return -1;
-                        }
+                    if (a?.id! > b?.id!) {
+                        return -1;
+                    }
 
-                        return 0;
-                    });
-
-                    return combinedData;
+                    return 0;
                 });
 
-                const jsonImportEnabledFromDb = await getSettingByType(JSON_IMPORT_TYPE);
-                if (jsonImportEnabledFromDb) {
-                    const value = jsonImportEnabledFromDb.value === 'true';
-                    setJsonImportEnabled(value);
-                }
+                return combinedData;
+            });
 
-                const csvImportEnabledFromDb = await getSettingByType(CSV_IMPORT_TYPE);
-                if (csvImportEnabledFromDb) {
-                    const value = csvImportEnabledFromDb.value === 'true';
-                    setCsvImportEnabled(value);
-                }
-            } catch (error) {
-                console.error('Failed to load user metrics:', error);
+            const jsonImportEnabledFromDb = await getSettingByType(JSON_IMPORT_TYPE);
+            if (jsonImportEnabledFromDb) {
+                const value = jsonImportEnabledFromDb.value === 'true';
+                setJsonImportEnabled(value);
             }
-        },
-        [getSettingByType]
-    );
+
+            const csvImportEnabledFromDb = await getSettingByType(CSV_IMPORT_TYPE);
+            if (csvImportEnabledFromDb) {
+                const value = csvImportEnabledFromDb.value === 'true';
+                setCsvImportEnabled(value);
+            }
+        } catch (error) {
+            console.error('Failed to load user metrics:', error);
+        }
+    }, [getSettingByType]);
 
     const loadMoreUserMetrics = useCallback(() => {
         if (userMetrics.length >= totalUserMetricsCount) {
@@ -165,9 +161,7 @@ export default function ListUserMetrics({ navigation }: { navigation: Navigation
         if (metricToDelete) {
             try {
                 await deleteUserMetrics(metricToDelete);
-                const updatedUserMetrics = userMetrics.filter(
-                    (metric) => metric.id !== metricToDelete
-                );
+                const updatedUserMetrics = userMetrics.filter((metric) => metric.id !== metricToDelete);
                 setUserMetrics(updatedUserMetrics);
                 setIsDeleteModalVisible(false);
                 setMetricToDelete(null);
@@ -183,23 +177,23 @@ export default function ListUserMetrics({ navigation }: { navigation: Navigation
         setMetricToDelete(null);
     }, []);
 
-    const filteredUserMetrics = useMemo(
-        () =>
-            userMetrics.filter((metric) => {
-                const searchLower = searchQuery.toLowerCase();
-                return (
-                    metric.eatingPhase?.toLowerCase().includes(searchLower) ||
-                    metric.height?.toString().toLowerCase().includes(searchLower) ||
-                    metric.weight?.toString().toLowerCase().includes(searchLower) ||
-                    metric.fatPercentage?.toString().toLowerCase().includes(searchLower) ||
-                    metric.date?.toLowerCase().includes(searchLower) ||
-                    metric.dataId?.toLowerCase().includes(searchLower) ||
-                    metric.deletedAt?.toLowerCase().includes(searchLower) ||
-                    metric.userId?.toString().toLowerCase().includes(searchLower)
-                );
-            }),
-        [userMetrics, searchQuery]
-    );
+    const filteredUserMetrics = useMemo(() => userMetrics.filter((metric) => {
+        const searchLower = searchQuery.toLowerCase();
+        return (
+            metric.eatingPhase?.toLowerCase().includes(searchLower)
+            || metric.height?.toString().toLowerCase()
+                .includes(searchLower)
+            || metric.weight?.toString().toLowerCase()
+                .includes(searchLower)
+            || metric.fatPercentage?.toString().toLowerCase()
+                .includes(searchLower)
+            || metric.date?.toLowerCase().includes(searchLower)
+            || metric.dataId?.toLowerCase().includes(searchLower)
+            || metric.deletedAt?.toLowerCase().includes(searchLower)
+            || metric.userId?.toString().toLowerCase()
+                .includes(searchLower)
+        );
+    }), [userMetrics, searchQuery]);
 
     const handleRemoveAllHealthConnectData = useCallback(async () => {
         setIsConfirmRemoveAllVisible(true);
@@ -283,30 +277,21 @@ export default function ListUserMetrics({ navigation }: { navigation: Navigation
     }, [csvData, loadUserMetrics, showSnackbar, t]);
 
     const fabActions = useMemo(() => {
-        const actions = [
-            {
-                icon: () => (
-                    <FontAwesome5 color={colors.primary} name="plus" size={FAB_ICON_SIZE} />
-                ),
-                label: t('create_user_nutrition'),
-                onPress: () => navigation.navigate('createUserMetrics'),
-                style: { backgroundColor: colors.surface },
-            },
-            {
-                icon: () => (
-                    <FontAwesome5 color={colors.primary} name="trash" size={FAB_ICON_SIZE} />
-                ),
-                label: t('delete_all_health_connect_data'),
-                onPress: handleRemoveAllHealthConnectData,
-                style: { backgroundColor: colors.surface },
-            },
-        ];
+        const actions = [{
+            icon: () => <FontAwesome5 color={colors.primary} name="plus" size={FAB_ICON_SIZE} />,
+            label: t('create_user_nutrition'),
+            onPress: () => navigation.navigate('createUserMetrics'),
+            style: { backgroundColor: colors.surface },
+        }, {
+            icon: () => <FontAwesome5 color={colors.primary} name="trash" size={FAB_ICON_SIZE} />,
+            label: t('delete_all_health_connect_data'),
+            onPress: handleRemoveAllHealthConnectData,
+            style: { backgroundColor: colors.surface },
+        }];
 
         if (jsonImportEnabled) {
             actions.unshift({
-                icon: () => (
-                    <FontAwesome5 color={colors.primary} name="file-import" size={FAB_ICON_SIZE} />
-                ),
+                icon: () => <FontAwesome5 color={colors.primary} name="file-import" size={FAB_ICON_SIZE} />,
                 label: t('import_from_json_file'),
                 onPress: handleImportJsonFile,
                 style: { backgroundColor: colors.surface },
@@ -325,9 +310,7 @@ export default function ListUserMetrics({ navigation }: { navigation: Navigation
 
         if (csvImportEnabled) {
             actions.unshift({
-                icon: () => (
-                    <FontAwesome5 color={colors.primary} name="file-csv" size={FAB_ICON_SIZE} />
-                ),
+                icon: () => <FontAwesome5 color={colors.primary} name="file-csv" size={FAB_ICON_SIZE} />,
                 label: t('import_from_csv_file'),
                 onPress: handleImportCsvFile,
                 style: { backgroundColor: colors.surface },
@@ -335,282 +318,227 @@ export default function ListUserMetrics({ navigation }: { navigation: Navigation
         }
 
         return actions;
-    }, [
-        t,
-        colors.surface,
-        colors.primary,
-        handleRemoveAllHealthConnectData,
-        jsonImportEnabled,
-        csvImportEnabled,
-        navigation,
-        handleImportJsonFile,
-        handleImportCsvFile,
-    ]);
+    }, [t, colors.surface, colors.primary, handleRemoveAllHealthConnectData, jsonImportEnabled, csvImportEnabled, navigation, handleImportJsonFile, handleImportCsvFile]);
 
     return (
-        <Screen style={styles.container}>
-            <FABWrapper actions={fabActions} icon="cog" visible>
-                <View style={styles.container}>
-                    <Appbar.Header mode="small" statusBarHeight={0} style={styles.appbarHeader}>
-                        <Appbar.Content title={t('user_metrics')} titleStyle={styles.appbarTitle} />
-                        <AnimatedSearchBar
-                            searchQuery={searchQuery}
-                            setSearchQuery={setSearchQuery}
-                        />
-                    </Appbar.Header>
-                    <FlashList
-                        ListFooterComponent={
-                            userMetrics.length < totalUserMetricsCount ? (
-                                <ActivityIndicator />
-                            ) : null
-                        }
-                        contentContainerStyle={styles.scrollViewContent}
-                        data={filteredUserMetrics}
-                        estimatedItemSize={95}
-                        keyExtractor={(item) => (item?.id ? item.id.toString() : 'default')}
-                        onEndReached={loadMoreUserMetrics}
-                        onEndReachedThreshold={0.5}
-                        renderItem={({ item: metric }) => (
-                            <ThemedCard key={metric.id}>
-                                <Card.Content style={styles.cardContent}>
-                                    <View style={styles.cardHeader}>
-                                        <Text style={styles.cardTitle}>
-                                            {formatDate(metric.date || metric.createdAt || '')}
-                                        </Text>
-                                        <View style={styles.metricRow}>
-                                            {metric.height ? (
-                                                <Text style={styles.metricDetailText}>
-                                                    {t('height', { heightUnit })}:{' '}
-                                                    {getDisplayFormattedHeight(
-                                                        metric.height,
-                                                        isImperial
-                                                    )}
-                                                </Text>
-                                            ) : null}
-                                            {metric.weight ? (
-                                                <Text style={styles.metricDetailText}>
-                                                    {t('weight', { weightUnit })}:{' '}
-                                                    {getDisplayFormattedWeight(
-                                                        metric.weight,
-                                                        KILOGRAMS,
-                                                        isImperial
-                                                    )}
-                                                </Text>
-                                            ) : null}
-                                        </View>
-                                        <View>
-                                            {metric.fatPercentage ? (
-                                                <View style={styles.metricDetail}>
-                                                    <Text style={styles.metricDetailText}>
-                                                        {t('fat_percentage')}:{' '}
-                                                        {safeToFixed(metric.fatPercentage)}
-                                                    </Text>
-                                                </View>
-                                            ) : null}
-                                            {metric.eatingPhase ? (
-                                                <View style={styles.metricDetail}>
-                                                    <Text style={styles.metricDetailText}>
-                                                        {t('eating_phase')}: {t(metric.eatingPhase)}
-                                                    </Text>
-                                                </View>
-                                            ) : null}
-                                        </View>
+        <FABWrapper actions={fabActions} icon="cog" visible>
+            <View style={styles.container}>
+                <Appbar.Header
+                    mode="small"
+                    statusBarHeight={0}
+                    style={styles.appbarHeader}
+                >
+                    <Appbar.Content title={t('user_metrics')} titleStyle={styles.appbarTitle} />
+                    <AnimatedSearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+                </Appbar.Header>
+                <FlashList
+                    ListFooterComponent={userMetrics.length < totalUserMetricsCount ? <ActivityIndicator /> : null}
+                    contentContainerStyle={styles.scrollViewContent}
+                    data={filteredUserMetrics}
+                    estimatedItemSize={95}
+                    keyExtractor={(item) => (item?.id ? item.id.toString() : 'default')}
+                    onEndReached={loadMoreUserMetrics}
+                    onEndReachedThreshold={0.5}
+                    renderItem={({ item: metric }) => (
+                        <ThemedCard key={metric.id}>
+                            <Card.Content style={styles.cardContent}>
+                                <View style={styles.cardHeader}>
+                                    <Text style={styles.cardTitle}>{formatDate(metric.date || metric.createdAt || '')}</Text>
+                                    <View style={styles.metricRow}>
+                                        {metric.height ? (
+                                            <Text style={styles.metricDetailText}>{t('height', { heightUnit })}: {getDisplayFormattedHeight(metric.height, isImperial)}</Text>
+                                        ) : null}
+                                        {metric.weight ? (
+                                            <Text style={styles.metricDetailText}>{t('weight', { weightUnit })}: {getDisplayFormattedWeight(metric.weight, KILOGRAMS, isImperial)}</Text>
+                                        ) : null}
                                     </View>
-                                    <View style={styles.cardActions}>
-                                        <FontAwesome5
-                                            color={colors.primary}
-                                            name="edit"
-                                            onPress={() =>
-                                                navigation.navigate('createUserMetrics', {
-                                                    id: metric.id,
-                                                })
-                                            }
-                                            size={ICON_SIZE}
-                                            style={styles.iconButton}
-                                        />
-                                        <FontAwesome5
-                                            color={colors.primary}
-                                            name="trash"
-                                            onPress={() => handleDeleteMetric(metric.id!)}
-                                            size={ICON_SIZE}
-                                            style={styles.iconButton}
-                                        />
+                                    <View>
+                                        {metric.fatPercentage ? (
+                                            <View style={styles.metricDetail}>
+                                                <Text style={styles.metricDetailText}>{t('fat_percentage')}: {safeToFixed(metric.fatPercentage)}</Text>
+                                            </View>
+                                        ) : null}
+                                        {metric.eatingPhase ? (
+                                            <View style={styles.metricDetail}>
+                                                <Text style={styles.metricDetailText}>{t('eating_phase')}: {t(metric.eatingPhase)}</Text>
+                                            </View>
+                                        ) : null}
                                     </View>
-                                </Card.Content>
-                            </ThemedCard>
-                        )}
-                    />
-                    <ThemedModal
-                        cancelText={t('cancel')}
-                        confirmText={t('import')}
-                        onClose={() => setJsonImportModalVisible(false)}
-                        onConfirm={handleConfirmJsonImport}
-                        visible={jsonImportModalVisible}
-                    >
-                        <ScrollView contentContainerStyle={styles.scrollContainer}>
-                            <Text style={styles.modalTitle}>{t('import_from_json_file')}</Text>
-                            <Text style={styles.modalText}>
-                                {t('past_metrics_json_format_description', {
-                                    jsonFormat: JSON.stringify(
-                                        [
-                                            {
-                                                date: '2023-06-15',
-                                                fatPercentage: 15,
-                                                height: 1.8,
-                                                weight: 75,
-                                            },
-                                        ],
-                                        null,
-                                        1
-                                    ),
-                                })}
-                            </Text>
-                        </ScrollView>
-                        {jsonFilename ? (
-                            <View style={styles.selectedFileWrapper}>
-                                <Text>
-                                    {t('selected_file')}: {jsonFilename}
-                                </Text>
-                            </View>
-                        ) : (
-                            <Button
-                                mode="contained"
-                                onPress={handleImportJsonFile}
-                                style={styles.selectJsonButton}
-                            >
-                                {t('select_json_file')}
-                            </Button>
-                        )}
-                    </ThemedModal>
-                    <ThemedModal
-                        cancelText={t('cancel')}
-                        confirmText={t('import')}
-                        onClose={() => setCsvImportModalVisible(false)}
-                        onConfirm={handleConfirmCsvImport}
-                        visible={csvImportModalVisible}
-                    >
-                        <ScrollView contentContainerStyle={styles.scrollContainer}>
-                            <Text style={styles.modalTitle}>{t('import_from_csv_file')}</Text>
-                            <Text style={styles.modalText}>
-                                {t('past_metrics_csv_format_description', {
-                                    csvColumns: ['date', 'fatPercentage', 'height', 'weight'].join(
-                                        ', '
-                                    ),
-                                })}
-                            </Text>
-                        </ScrollView>
-                        {csvFilename ? (
-                            <View style={styles.selectedFileWrapper}>
-                                <Text>
-                                    {t('selected_file')}: {csvFilename}
-                                </Text>
-                            </View>
-                        ) : (
-                            <Button
-                                mode="contained"
-                                onPress={handleImportCsvFile}
-                                style={styles.selectJsonButton}
-                            >
-                                {t('select_csv_file')}
-                            </Button>
-                        )}
-                    </ThemedModal>
-                    <ThemedModal
-                        cancelText={t('no')}
-                        confirmText={t('yes')}
-                        onClose={handleDeleteCancel}
-                        onConfirm={handleDeleteConfirmation}
-                        title={t('delete_confirmation_generic', {
-                            title: userMetrics.find((metric) => metric.id === metricToDelete)
-                                ?.userId,
-                        })}
-                        visible={isDeleteModalVisible}
-                    />
-                    <ThemedModal
-                        cancelText={t('no')}
-                        confirmText={t('yes')}
-                        onClose={handleRemoveAllCancel}
-                        onConfirm={handleRemoveAllConfirmation}
-                        title={t('delete_all_health_connect_data_confirmation')}
-                        visible={isConfirmRemoveAllVisible}
-                    >
-                        {isLoading && <ActivityIndicator color={colors.primary} size="large" />}
-                    </ThemedModal>
-                </View>
-            </FABWrapper>
-        </Screen>
+                                </View>
+                                <View style={styles.cardActions}>
+                                    <FontAwesome5
+                                        color={colors.primary}
+                                        name="edit"
+                                        onPress={() => navigation.navigate('createUserMetrics', { id: metric.id })}
+                                        size={ICON_SIZE}
+                                        style={styles.iconButton}
+                                    />
+                                    <FontAwesome5
+                                        color={colors.primary}
+                                        name="trash"
+                                        onPress={() => handleDeleteMetric(metric.id!)}
+                                        size={ICON_SIZE}
+                                        style={styles.iconButton}
+                                    />
+                                </View>
+                            </Card.Content>
+                        </ThemedCard>
+                    )}
+                />
+                <ThemedModal
+                    cancelText={t('cancel')}
+                    confirmText={t('import')}
+                    onClose={() => setJsonImportModalVisible(false)}
+                    onConfirm={handleConfirmJsonImport}
+                    visible={jsonImportModalVisible}
+                >
+                    <ScrollView contentContainerStyle={styles.scrollContainer}>
+                        <Text style={styles.modalTitle}>
+                            {t('import_from_json_file')}
+                        </Text>
+                        <Text style={styles.modalText}>
+                            {t('past_metrics_json_format_description', {
+                                jsonFormat: JSON.stringify([{
+                                    date: '2023-06-15',
+                                    fatPercentage: 15,
+                                    height: 1.80,
+                                    weight: 75,
+                                }], null, 1),
+                            })}
+                        </Text>
+                    </ScrollView>
+                    {jsonFilename ? (
+                        <View style={styles.selectedFileWrapper}>
+                            <Text>{t('selected_file')}: {jsonFilename}</Text>
+                        </View>
+                    ) : (
+                        <Button mode="contained" onPress={handleImportJsonFile} style={styles.selectJsonButton}>
+                            {t('select_json_file')}
+                        </Button>
+                    )}
+                </ThemedModal>
+                <ThemedModal
+                    cancelText={t('cancel')}
+                    confirmText={t('import')}
+                    onClose={() => setCsvImportModalVisible(false)}
+                    onConfirm={handleConfirmCsvImport}
+                    visible={csvImportModalVisible}
+                >
+                    <ScrollView contentContainerStyle={styles.scrollContainer}>
+                        <Text style={styles.modalTitle}>
+                            {t('import_from_csv_file')}
+                        </Text>
+                        <Text style={styles.modalText}>
+                            {t('past_metrics_csv_format_description', {
+                                csvColumns: ['date', 'fatPercentage', 'height', 'weight'].join(', '),
+                            })}
+                        </Text>
+                    </ScrollView>
+                    {csvFilename ? (
+                        <View style={styles.selectedFileWrapper}>
+                            <Text>{t('selected_file')}: {csvFilename}</Text>
+                        </View>
+                    ) : (
+                        <Button mode="contained" onPress={handleImportCsvFile} style={styles.selectJsonButton}>
+                            {t('select_csv_file')}
+                        </Button>
+                    )}
+                </ThemedModal>
+                <ThemedModal
+                    cancelText={t('no')}
+                    confirmText={t('yes')}
+                    onClose={handleDeleteCancel}
+                    onConfirm={handleDeleteConfirmation}
+                    title={t('delete_confirmation_generic', {
+                        title: userMetrics.find((metric) => metric.id === metricToDelete)?.userId,
+                    })}
+                    visible={isDeleteModalVisible}
+                />
+                <ThemedModal
+                    cancelText={t('no')}
+                    confirmText={t('yes')}
+                    onClose={handleRemoveAllCancel}
+                    onConfirm={handleRemoveAllConfirmation}
+                    title={t('delete_all_health_connect_data_confirmation')}
+                    visible={isConfirmRemoveAllVisible}
+                >
+                    {isLoading && (
+                        <ActivityIndicator color={colors.primary} size="large" />
+                    )}
+                </ThemedModal>
+            </View>
+        </FABWrapper>
     );
 }
 
-const makeStyles = (colors: CustomThemeColorsType, dark: boolean) =>
-    StyleSheet.create({
-        appbarHeader: {
-            backgroundColor: colors.primary,
-            justifyContent: 'center',
-            paddingHorizontal: 16,
-        },
-        appbarTitle: {
-            color: colors.onPrimary,
-            fontSize: Platform.OS === 'web' ? 20 : 26,
-        },
-        cardActions: {
-            alignItems: 'center',
-            flexDirection: 'row',
-            marginTop: 8,
-        },
-        cardContent: {
-            alignItems: 'center',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-        },
-        cardHeader: {
-            flex: 1,
-        },
-        cardTitle: {
-            color: colors.onSurface,
-            fontSize: 18,
-            fontWeight: 'bold',
-        },
-        container: {
-            backgroundColor: colors.background,
-            flex: 1,
-        },
-        iconButton: {
-            marginHorizontal: 8,
-        },
-        metricDetail: {
-            display: 'flex',
-        },
-        metricDetailText: {
-            color: colors.onSurface,
-            fontSize: 14,
-            marginBottom: 4,
-        },
-        metricRow: {
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-        },
-        modalText: {
-            fontSize: 14,
-            marginBottom: 20,
-        },
-        modalTitle: {
-            fontSize: 18,
-            fontWeight: 'bold',
-            marginBottom: 12,
-        },
-        scrollContainer: {
-            flex: 1,
-        },
-        scrollViewContent: {
-            backgroundColor: colors.background,
-            paddingBottom: 16,
-            paddingHorizontal: 16,
-        },
-        selectJsonButton: {
-            marginBottom: 12,
-        },
-        selectedFileWrapper: {
-            marginBottom: 24,
-        },
-    });
+const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
+    appbarHeader: {
+        backgroundColor: colors.primary,
+        justifyContent: 'center',
+        paddingHorizontal: 16,
+    },
+    appbarTitle: {
+        color: colors.onPrimary,
+        fontSize: Platform.OS === 'web' ? 20 : 26,
+    },
+    cardActions: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        marginTop: 8,
+    },
+    cardContent: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    cardHeader: {
+        flex: 1,
+    },
+    cardTitle: {
+        color: colors.onSurface,
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    container: {
+        backgroundColor: colors.background,
+        flex: 1,
+    },
+    iconButton: {
+        marginHorizontal: 8,
+    },
+    metricDetail: {
+        display: 'flex',
+    },
+    metricDetailText: {
+        color: colors.onSurface,
+        fontSize: 14,
+        marginBottom: 4,
+    },
+    metricRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    modalText: {
+        fontSize: 14,
+        marginBottom: 20,
+    },
+    modalTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 12,
+    },
+    scrollContainer: {
+        flex: 1,
+    },
+    scrollViewContent: {
+        backgroundColor: colors.background,
+        paddingBottom: 16,
+        paddingHorizontal: 16,
+    },
+    selectJsonButton: {
+        marginBottom: 12,
+    },
+    selectedFileWrapper: {
+        marginBottom: 24,
+    },
+});
