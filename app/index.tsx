@@ -8,6 +8,10 @@ import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import 'react-native-url-polyfill/auto';
 import { BackHandler } from 'react-native';
+import { useTheme } from 'react-native-paper';
+import { CustomThemeType } from '@/utils/colors';
+import SystemNavigationBar from 'react-native-system-navigation-bar';
+import { DARK, LIGHT } from '@/constants/colors';
 
 Sentry.init({
     _experiments: {
@@ -26,9 +30,16 @@ const Tab = createBottomTabNavigator();
 
 function Index() {
     const { t } = useTranslation();
+    const { dark } = useTheme<CustomThemeType>();
 
     useFocusEffect(
         useCallback(() => {
+            SystemNavigationBar.setNavigationColor(
+                dark ? '#FFFFFF' : '#121212',
+                dark ? DARK : LIGHT,
+                'navigation'
+            );
+
             const onBackPress = () => {
                 BackHandler.exitApp();
                 return true;
@@ -36,9 +47,15 @@ function Index() {
 
             BackHandler.addEventListener('hardwareBackPress', onBackPress);
             return () => {
+                SystemNavigationBar.setNavigationColor(
+                    dark ? '#121212' : '#E0E0E0',
+                    dark ? LIGHT : DARK,
+                    'both'
+                );
+
                 BackHandler.removeEventListener('hardwareBackPress', onBackPress);
             };
-        }, [])
+        }, [dark])
     );
 
     return (

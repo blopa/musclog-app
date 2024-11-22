@@ -11,6 +11,7 @@ import CreateWorkout from '@/app/createWorkout';
 import FoodDetails from '@/app/foodDetails';
 import FoodLog from '@/app/foodLog';
 import FoodSearch from '@/app/foodSearch';
+import SystemNavigationBar from 'react-native-system-navigation-bar';
 import Index from '@/app/index';
 import ListExercises from '@/app/listExercises';
 import ListFitnessGoals from '@/app/listFitnessGoals';
@@ -27,7 +28,7 @@ import UserMetricsCharts from '@/app/userMetricsCharts';
 import WorkoutDetails from '@/app/workoutDetails';
 import CustomErrorBoundary from '@/components/CustomErrorBoundary';
 import Onboarding from '@/components/Onboarding';
-import { DARK, SYSTEM_DEFAULT } from '@/constants/colors';
+import { DARK, LIGHT, SYSTEM_DEFAULT } from '@/constants/colors';
 import {
     AI_SETTINGS_TYPE,
     FIRST_BOOT,
@@ -92,6 +93,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { I18nextProvider, useTranslation } from 'react-i18next';
 import { StatusBar, StyleSheet, Text, View } from 'react-native';
+import * as ExpoStatusBar from 'expo-status-bar';
 import { ActivityIndicator, PaperProvider, useTheme } from 'react-native-paper';
 import { initialWindowMetrics, SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -267,6 +269,9 @@ function RootLayout() {
     const theme = colorScheme === DARK ? CustomDarkTheme : CustomLightTheme;
     return (
         <PaperProvider theme={theme}>
+            {/*<ExpoStatusBar.StatusBar*/}
+            {/*    backgroundColor={theme.colors.background}*/}
+            {/*/>*/}
             <ForceInsetsUpdate />
             <I18nextProvider i18n={i18n}>
                 <HealthConnectProvider>
@@ -291,6 +296,18 @@ function RootLayoutNav() {
     const [onboardingCompleted, setOnboardingCompleted] = useState(false);
 
     const { getSettingByType, settings } = useSettings();
+
+    useEffect(() => {
+        SystemNavigationBar.setNavigationColor(
+            colorScheme === DARK ? '#121212' : '#E0E0E0',
+            colorScheme === DARK ? LIGHT : DARK,
+            'both'
+        );
+
+        // ExpoStatusBar.setStatusBarBackgroundColor(colorScheme === DARK ? '#212121' : '#E0E0E0');
+        // SystemNavigationBar.setBarMode(colorScheme as typeof LIGHT | typeof DARK, 'both');
+    }, [colorScheme, settings]);
+
     const checkDynamicMenuItems = useCallback(async () => {
         const vendor = await getAiApiVendor();
         const isAiSettingsEnabled = await getSettingByType(AI_SETTINGS_TYPE);
@@ -402,7 +419,7 @@ function RootLayoutNav() {
                     <View
                         style={{
                             backgroundColor: theme.colors.background,
-                            height: StatusBar.currentHeight || 0,
+                            // height: StatusBar.currentHeight || 0,
                         }}
                     />
                 ),
