@@ -5,7 +5,8 @@
     "scripts": {
         "playwright": "node tests/run-tests.js",
         "typecheck": "tsc --noEmit --skipLibCheck",
-        "eslint": "eslint --ext .js,.ts,.tsx .",
+        "eslint": "eslint .",
+        "eslint-fix": "eslint . --fix",
         "bump": "ncu -u -t minor",
         "bump-any": "ncu -u",
         "bump-app-version": "node scripts/bump.js",

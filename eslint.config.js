@@ -105,6 +105,7 @@ module.exports = [
             'react/react-in-jsx-scope': 'off',
             '@typescript-eslint/no-require-imports': 'off',
             'react-hooks/exhaustive-deps': 'warn',
+            // 'react-hooks/exhaustive-deps': ['warn', { enableDangerousAutofixThisMayCauseInfiniteLoops: true }],
             'unused-imports/no-unused-imports': 'error',
             'unused-imports/no-unused-vars': [
                 'warn',

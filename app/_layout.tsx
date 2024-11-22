@@ -322,7 +322,6 @@ function RootLayoutNav() {
 
     useEffect(() => {
         checkDynamicMenuItems();
-         
     }, [checkDynamicMenuItems, settings]);
 
     const routes = useMemo(() => {
