@@ -2,7 +2,6 @@ module.exports = {
     extends: [
         'expo',
         'plugin:react/recommended',
-        'plugin:react-native/all',
         'plugin:import/recommended',
         'plugin:regexp/recommended',
         'plugin:@typescript-eslint/recommended',
@@ -12,7 +11,6 @@ module.exports = {
             files: ['*.js', '*.jsx'],
             plugins: [
                 'react',
-                'react-native',
                 'unused-imports',
                 'perfectionist',
                 'regexp',
@@ -34,7 +32,6 @@ module.exports = {
     },
     plugins: [
         'react',
-        'react-native',
         'unused-imports',
         'perfectionist',
         'regexp',
@@ -91,10 +88,6 @@ module.exports = {
         'react/react-in-jsx-scope': 'off',
         'react-hooks/exhaustive-deps': 'warn',
         // 'react-hooks/exhaustive-deps': ['warn', { enableDangerousAutofixThisMayCauseInfiniteLoops: true }],
-        'react-native/no-color-literals': 'off',
-        'react-native/no-inline-styles': 'warn',
-        'react-native/no-raw-text': 'error',
-        'react-native/no-unused-styles': 'off',
         'unused-imports/no-unused-imports': 'error',
         'unused-imports/no-unused-vars': [
             'warn',
@@ -125,7 +118,7 @@ module.exports = {
         ],
     },
     settings: {
-        'import/ignore': ['react-navigation', 'react-native'],
+        'import/ignore': ['react-navigation'],
         react: {
             version: 'detect',
         },

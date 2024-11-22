@@ -2,6 +2,7 @@ import Chat from '@/app/chat';
 import CreateExercise from '@/app/createExercise';
 import CreateFitnessGoals from '@/app/createFitnessGoals';
 import CreateFood from '@/app/createFood';
+import { Screen } from '@/components/Screen';
 import CreateRecentWorkout from '@/app/createRecentWorkout';
 import CreateUserMeasurements from '@/app/createUserMeasurements';
 import CreateUserMetrics from '@/app/createUserMetrics';
@@ -374,7 +375,16 @@ function RootLayoutNav() {
     }
 
     if (!onboardingCompleted) {
-        return <Onboarding onFinish={() => setOnboardingCompleted(true)} />;
+        return (
+            <Screen
+                style={{
+                    backgroundColor: theme.colors.background,
+                    flex: 1,
+                }}
+            >
+                <Onboarding onFinish={() => setOnboardingCompleted(true)} />
+            </Screen>
+        );
     }
 
     return (
