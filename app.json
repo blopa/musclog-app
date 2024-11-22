@@ -8,12 +8,21 @@
     "icon": "./assets/images/icon.png",
     "scheme": "musclog",
     "userInterfaceStyle": "automatic",
+    "androidStatusBar": {
+      "backgroundColor": "#000000",
+      "translucent": false
+    },
+    "androidNavigationBar": {
+      "visible": "sticky-immersive",
+      "backgroundColor": "#000000"
+    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.werules.logger",
       "buildNumber": "65"
     },
     "android": {
+      "softwareKeyboardLayoutMode": "resize",
       "package": "com.werules.logger",
       "versionCode": 65,
       "adaptiveIcon": {
