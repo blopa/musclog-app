@@ -2,7 +2,7 @@ const { ESLint } = require('eslint');
 const fs = require('fs');
 const path = require('path');
 
-const eslintBaseConfig = require('../.eslintrc.js');
+const eslintBaseConfig = require('../eslint.config.js');
 
 // eslint-disable-next-line no-undef
 const DIRNAME = __dirname;
