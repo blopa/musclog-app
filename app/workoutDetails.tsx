@@ -3,6 +3,7 @@ import LineChart from '@/components/Charts/LineChart';
 import CustomPicker from '@/components/CustomPicker';
 import FABWrapper from '@/components/FABWrapper';
 import Filters from '@/components/Filters';
+import { Screen } from '@/components/Screen';
 import ThemedCard from '@/components/ThemedCard';
 import ThemedModal from '@/components/ThemedModal';
 import WorkoutExerciseDetail from '@/components/WorkoutExerciseDetail';
@@ -443,139 +444,141 @@ const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
     ]);
 
     return (
-        <FABWrapper actions={fabActions} icon="cog" visible>
-            <View style={styles.container}>
-                <AppHeader title={t('workout_details')} />
-                <ScrollView contentContainerStyle={styles.scrollViewContent} keyboardShouldPersistTaps="handled">
-                    {workout ? (
-                        <ThemedCard style={styles.cardContainer}>
-                            <View style={styles.cardHeader}>
-                                <Text style={styles.dateTitle}>
-                                    {workout.title}
+        <Screen style={styles.container}>
+            <FABWrapper actions={fabActions} icon="cog" visible>
+                <View style={styles.container}>
+                    <AppHeader title={t('workout_details')} />
+                    <ScrollView contentContainerStyle={styles.scrollViewContent} keyboardShouldPersistTaps="handled">
+                        {workout ? (
+                            <ThemedCard style={styles.cardContainer}>
+                                <View style={styles.cardHeader}>
+                                    <Text style={styles.dateTitle}>
+                                        {workout.title}
+                                    </Text>
+                                    <View style={styles.buttonGroup}>
+                                        <FontAwesome5
+                                            color={colors.primary}
+                                            name="edit"
+                                            onPress={handleEditWorkout}
+                                            size={ICON_SIZE}
+                                            style={styles.editButton}
+                                        />
+                                        <FontAwesome5
+                                            color={colors.primary}
+                                            name="play"
+                                            onPress={openStartWorkoutConfirmationModal}
+                                            size={ICON_SIZE}
+                                            style={styles.playButton}
+                                        />
+                                    </View>
+                                </View>
+                                <View style={styles.separator} />
+                                {workout.description ? (
+                                    <View style={styles.detailRow}>
+                                        <Text style={styles.detailValue}>{workout.description}</Text>
+                                    </View>
+                                ) : null}
+                                {workout.recurringOnWeek ? (
+                                    <View style={styles.detailRow}>
+                                        <Text style={styles.detailLabel}>{t('recurring_on')}</Text>
+                                        <Text style={styles.detailValue}>{t(workout.recurringOnWeek.toLowerCase())}</Text>
+                                    </View>
+                                ) : null}
+                                <Text style={styles.exercisesTitle}>
+                                    {t('exercises')}
                                 </Text>
-                                <View style={styles.buttonGroup}>
-                                    <FontAwesome5
-                                        color={colors.primary}
-                                        name="edit"
-                                        onPress={handleEditWorkout}
-                                        size={ICON_SIZE}
-                                        style={styles.editButton}
-                                    />
-                                    <FontAwesome5
-                                        color={colors.primary}
-                                        name="play"
-                                        onPress={openStartWorkoutConfirmationModal}
-                                        size={ICON_SIZE}
-                                        style={styles.playButton}
-                                    />
-                                </View>
-                            </View>
-                            <View style={styles.separator} />
-                            {workout.description ? (
-                                <View style={styles.detailRow}>
-                                    <Text style={styles.detailValue}>{workout.description}</Text>
-                                </View>
-                            ) : null}
-                            {workout.recurringOnWeek ? (
-                                <View style={styles.detailRow}>
-                                    <Text style={styles.detailLabel}>{t('recurring_on')}</Text>
-                                    <Text style={styles.detailValue}>{t(workout.recurringOnWeek.toLowerCase())}</Text>
-                                </View>
-                            ) : null}
-                            <Text style={styles.exercisesTitle}>
-                                {t('exercises')}
-                            </Text>
-                            {exerciseGroups.map((group, groupIndex) => (
-                                <View key={`group-${groupIndex}`} style={group.supersetName ? styles.supersetContainer : styles.groupContainer}>
-                                    {group.supersetName && (
-                                        <Text style={styles.supersetHeader}>{`${t('superset')}: ${group.supersetName}`}</Text>
-                                    )}
-                                    {group.exercises.map((we, exerciseIndex) => (
-                                        <WorkoutExerciseDetail
-                                            exercise={we.exercise}
-                                            exerciseVolume={{
-                                                exerciseId: we.exercise.id!,
-                                                sets: we.sets.map((set) => ({
-                                                    ...set,
-                                                    setId: set.id ?? 0,
-                                                    weight: getDisplayFormattedWeight(Number(set.weight), KILOGRAMS, isImperial),
-                                                })),
-                                            }}
-                                            key={`group-${groupIndex}-exercise-${we.exercise.id}-${exerciseIndex}`}
+                                {exerciseGroups.map((group, groupIndex) => (
+                                    <View key={`group-${groupIndex}`} style={group.supersetName ? styles.supersetContainer : styles.groupContainer}>
+                                        {group.supersetName && (
+                                            <Text style={styles.supersetHeader}>{`${t('superset')}: ${group.supersetName}`}</Text>
+                                        )}
+                                        {group.exercises.map((we, exerciseIndex) => (
+                                            <WorkoutExerciseDetail
+                                                exercise={we.exercise}
+                                                exerciseVolume={{
+                                                    exerciseId: we.exercise.id!,
+                                                    sets: we.sets.map((set) => ({
+                                                        ...set,
+                                                        setId: set.id ?? 0,
+                                                        weight: getDisplayFormattedWeight(Number(set.weight), KILOGRAMS, isImperial),
+                                                    })),
+                                                }}
+                                                key={`group-${groupIndex}-exercise-${we.exercise.id}-${exerciseIndex}`}
                                             // onDeleteSet={handleDeleteSet(we.exercise.id!)}
                                             // onEditSet={handleEditSet(we.exercise.id!)}
-                                        />
-                                    ))}
-                                </View>
-                            ))}
-                        </ThemedCard>
-                    ) : (
-                        <Text style={styles.noDataText}>{t('no_workout_details')}</Text>
-                    )}
-                    {chartData.length > 0 ? (
-                        <View>
-                            <Filters
-                                aggregatedValuesLabel={t('show_aggregated_averages')}
-                                setShowAggregatedValues={setShowWeeklyAverages}
-                                setTimeRange={setTimeRange}
-                                showAggregateSwitch={recentWorkouts.length > 7}
-                                showAggregatedValues={showWeeklyAverages}
-                                timeRange={timeRange}
-                            />
-                            <CustomPicker
-                                items={[
-                                    { label: t('whole_workout'), value: WHOLE_WORKOUT },
-                                    ...Array.from(exercisesMap.values()).map((ex) => ({
-                                        label: ex.name || '',
-                                        value: ex.id!.toString() || '',
-                                    })),
-                                ]}
-                                label={t('select_metric')}
-                                onValueChange={setSelectedChartData}
-                                selectedValue={selectedChartData}
-                                wrapperStyle={{ marginTop: 8 }}
-                            />
-                            <LineChart
-                                data={chartData}
-                                granularity={1}
-                                labelLeftMargin={-55}
-                                labels={chartLabels}
-                                padding={12}
-                                shareButtonPosition="top"
-                                title={t('workout_volume_over_time')}
-                                xAxisLabel={t('workouts')}
-                                yAxis={{
-                                    axisMaximum: Math.max(...chartData.map((d) => d.y)) * 1.1,
-                                    axisMinimum: Math.min(...chartData.map((d) => d.y)) * 0.9,
-                                }}
-                                yAxisLabel={t('workout_volume_weight', { weightUnit })}
-                            />
+                                            />
+                                        ))}
+                                    </View>
+                                ))}
+                            </ThemedCard>
+                        ) : (
+                            <Text style={styles.noDataText}>{t('no_workout_details')}</Text>
+                        )}
+                        {chartData.length > 0 ? (
+                            <View>
+                                <Filters
+                                    aggregatedValuesLabel={t('show_aggregated_averages')}
+                                    setShowAggregatedValues={setShowWeeklyAverages}
+                                    setTimeRange={setTimeRange}
+                                    showAggregateSwitch={recentWorkouts.length > 7}
+                                    showAggregatedValues={showWeeklyAverages}
+                                    timeRange={timeRange}
+                                />
+                                <CustomPicker
+                                    items={[
+                                        { label: t('whole_workout'), value: WHOLE_WORKOUT },
+                                        ...Array.from(exercisesMap.values()).map((ex) => ({
+                                            label: ex.name || '',
+                                            value: ex.id!.toString() || '',
+                                        })),
+                                    ]}
+                                    label={t('select_metric')}
+                                    onValueChange={setSelectedChartData}
+                                    selectedValue={selectedChartData}
+                                    wrapperStyle={{ marginTop: 8 }}
+                                />
+                                <LineChart
+                                    data={chartData}
+                                    granularity={1}
+                                    labelLeftMargin={-55}
+                                    labels={chartLabels}
+                                    padding={12}
+                                    shareButtonPosition="top"
+                                    title={t('workout_volume_over_time')}
+                                    xAxisLabel={t('workouts')}
+                                    yAxis={{
+                                        axisMaximum: Math.max(...chartData.map((d) => d.y)) * 1.1,
+                                        axisMinimum: Math.min(...chartData.map((d) => d.y)) * 0.9,
+                                    }}
+                                    yAxisLabel={t('workout_volume_weight', { weightUnit })}
+                                />
+                            </View>
+                        ) : null}
+                    </ScrollView>
+                    {loading && (
+                        <View style={styles.overlay}>
+                            <ActivityIndicator color={colors.primary} size="large" />
                         </View>
-                    ) : null}
-                </ScrollView>
-                {loading && (
-                    <View style={styles.overlay}>
-                        <ActivityIndicator color={colors.primary} size="large" />
-                    </View>
-                )}
-                <ThemedModal
-                    cancelText={t('no')}
-                    confirmText={t('yes')}
-                    onClose={() => setModalVisible(false)}
-                    onConfirm={handleStartWorkout}
-                    title={workout ? t('start_workout_confirmation', { title: workout.title }) : t('start_workout_confirmation_generic')}
-                    visible={modalVisible}
-                />
-                <ThemedModal
-                    cancelText={t('no')}
-                    confirmText={t('yes')}
-                    onClose={() => setConfirmationModalVisible(false)}
-                    onConfirm={handleConfirmStartNewWorkout}
-                    title={t('confirm_start_new_workout')}
-                    visible={confirmationModalVisible}
-                />
-            </View>
-        </FABWrapper>
+                    )}
+                    <ThemedModal
+                        cancelText={t('no')}
+                        confirmText={t('yes')}
+                        onClose={() => setModalVisible(false)}
+                        onConfirm={handleStartWorkout}
+                        title={workout ? t('start_workout_confirmation', { title: workout.title }) : t('start_workout_confirmation_generic')}
+                        visible={modalVisible}
+                    />
+                    <ThemedModal
+                        cancelText={t('no')}
+                        confirmText={t('yes')}
+                        onClose={() => setConfirmationModalVisible(false)}
+                        onConfirm={handleConfirmStartNewWorkout}
+                        title={t('confirm_start_new_workout')}
+                        visible={confirmationModalVisible}
+                    />
+                </View>
+            </FABWrapper>
+        </Screen>
     );
 };
 

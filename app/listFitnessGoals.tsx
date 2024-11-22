@@ -1,5 +1,6 @@
 import PieChart from '@/components/Charts/PieChart';
 import FABWrapper from '@/components/FABWrapper';
+import { Screen } from '@/components/Screen';
 import ThemedCard from '@/components/ThemedCard';
 import ThemedModal from '@/components/ThemedModal';
 import { GRAMS, IMPERIAL_SYSTEM, METRIC_SYSTEM, OUNCES } from '@/constants/storage';
@@ -167,146 +168,148 @@ export default function ListFitnessGoals({ navigation }: { navigation: Navigatio
     ];
 
     return (
-        <FABWrapper actions={fabActions} icon="cog" visible>
-            <View style={styles.container}>
-                <Appbar.Header
-                    mode="small"
-                    statusBarHeight={0}
-                    style={styles.appbarHeader}
-                >
-                    <Appbar.Content title={t('fitness_goals')} titleStyle={styles.appbarTitle} />
-                </Appbar.Header>
-                {latestFitnessGoal && (
-                    <ThemedCard style={styles.latestGoalCard}>
-                        <Text style={styles.cardTitle}>{t('current_fitness_goals').toUpperCase()}</Text>
-                        <Card.Content style={styles.latestGoalContent}>
-                            <View style={styles.goalTextContainer}>
-                                <Text style={styles.metricDetailText}>
-                                    {t('item_value', {
-                                        item: t('calories'),
-                                        value: safeToFixed(latestFitnessGoal.calories),
-                                    })}
-                                </Text>
-                                <Text style={styles.metricDetailText}>
-                                    {t('item_value_unit', {
-                                        item: t('protein'),
-                                        value: getDisplayFormattedWeight(latestFitnessGoal.protein || 0, GRAMS, isImperial).toString(),
-                                        weightUnit: macroUnit,
-                                    })}
-                                </Text>
-                                <Text style={styles.metricDetailText}>
-                                    {t('item_value_unit', {
-                                        item: t('carbohydrates'),
-                                        value: getDisplayFormattedWeight(latestFitnessGoal.totalCarbohydrate || 0, GRAMS, isImperial).toString(),
-                                        weightUnit: macroUnit,
-                                    })}
-                                </Text>
-                                <Text style={styles.metricDetailText}>
-                                    {t('item_value_unit', {
-                                        item: t('fat'),
-                                        value: getDisplayFormattedWeight(latestFitnessGoal.totalFat || 0, GRAMS, isImperial).toString(),
-                                        weightUnit: macroUnit,
-                                    })}
-                                </Text>
-                            </View>
-                            <View style={styles.pieChartContainer}>
-                                <PieChart
-                                    data={[
-                                        { label: t('protein'), value: getDisplayFormattedWeight(latestFitnessGoal.protein || 0, GRAMS, isImperial), color: '#4CAF50' },
-                                        { label: t('carbohydrates'), value: getDisplayFormattedWeight(latestFitnessGoal.totalCarbohydrate || 0, GRAMS, isImperial), color: '#2196F3' },
-                                        { label: t('fat'), value: getDisplayFormattedWeight(latestFitnessGoal.totalFat || 0, GRAMS, isImperial), color: '#FF9800' },
-                                    ]}
-                                    showShareImageButton={false}
-                                    size={130}
-                                    showLabels={false}
-                                    showLegend={false}
-                                />
-                            </View>
-                        </Card.Content>
-                    </ThemedCard>
-                )}
-                <FlashList
-                    ListFooterComponent={
-                        fitnessGoals.length < totalFitnessGoalsCount ? (
-                            <ActivityIndicator />
-                        ) : null
-                    }
-                    contentContainerStyle={styles.scrollViewContent}
-                    data={fitnessGoals}
-                    estimatedItemSize={95}
-                    keyExtractor={(item) => (item?.id ? item.id.toString() : 'default')}
-                    onEndReached={loadMoreFitnessGoals}
-                    onEndReachedThreshold={0.5}
-                    renderItem={({ item: goal }) => (
-                        <ThemedCard key={goal.id} style={styles.flashListCard}>
-                            <Card.Content style={styles.flashListCardContent}>
-                                <View style={styles.cardHeader}>
-                                    <Text style={styles.cardTitle}>
-                                        {formatDate(goal.createdAt || '')}
+        <Screen style={styles.container}>
+            <FABWrapper actions={fabActions} icon="cog" visible>
+                <View style={styles.container}>
+                    <Appbar.Header
+                        mode="small"
+                        statusBarHeight={0}
+                        style={styles.appbarHeader}
+                    >
+                        <Appbar.Content title={t('fitness_goals')} titleStyle={styles.appbarTitle} />
+                    </Appbar.Header>
+                    {latestFitnessGoal && (
+                        <ThemedCard style={styles.latestGoalCard}>
+                            <Text style={styles.cardTitle}>{t('current_fitness_goals').toUpperCase()}</Text>
+                            <Card.Content style={styles.latestGoalContent}>
+                                <View style={styles.goalTextContainer}>
+                                    <Text style={styles.metricDetailText}>
+                                        {t('item_value', {
+                                            item: t('calories'),
+                                            value: safeToFixed(latestFitnessGoal.calories),
+                                        })}
                                     </Text>
-                                    <View style={styles.metricRow}>
-                                        <Text style={styles.metricDetailText}>
-                                            {t('item_value', { item: t('calories'), value: goal.calories })}
-                                        </Text>
-                                        <Text style={styles.metricDetailText}>
-                                            {t('item_value_unit', {
-                                                item: t('protein'),
-                                                value: getDisplayFormattedWeight(goal.protein || 0, GRAMS, isImperial).toString(),
-                                                weightUnit: macroUnit,
-                                            })}
-                                        </Text>
-                                    </View>
-                                    <View style={styles.metricRow}>
-                                        <Text style={styles.metricDetailText}>
-                                            {t('item_value_unit', {
-                                                item: t('carbohydrates'),
-                                                value: getDisplayFormattedWeight(goal.totalCarbohydrate || 0, GRAMS, isImperial).toString(),
-                                                weightUnit: macroUnit,
-                                            })}
-                                        </Text>
-                                        <Text style={styles.metricDetailText}>
-                                            {t('item_value_unit', {
-                                                item: t('fat'),
-                                                value: getDisplayFormattedWeight(goal.totalFat || 0, GRAMS, isImperial).toString(),
-                                                weightUnit: macroUnit,
-                                            })}
-                                        </Text>
-                                    </View>
+                                    <Text style={styles.metricDetailText}>
+                                        {t('item_value_unit', {
+                                            item: t('protein'),
+                                            value: getDisplayFormattedWeight(latestFitnessGoal.protein || 0, GRAMS, isImperial).toString(),
+                                            weightUnit: macroUnit,
+                                        })}
+                                    </Text>
+                                    <Text style={styles.metricDetailText}>
+                                        {t('item_value_unit', {
+                                            item: t('carbohydrates'),
+                                            value: getDisplayFormattedWeight(latestFitnessGoal.totalCarbohydrate || 0, GRAMS, isImperial).toString(),
+                                            weightUnit: macroUnit,
+                                        })}
+                                    </Text>
+                                    <Text style={styles.metricDetailText}>
+                                        {t('item_value_unit', {
+                                            item: t('fat'),
+                                            value: getDisplayFormattedWeight(latestFitnessGoal.totalFat || 0, GRAMS, isImperial).toString(),
+                                            weightUnit: macroUnit,
+                                        })}
+                                    </Text>
                                 </View>
-                                <View style={styles.cardActions}>
-                                    <FontAwesome5
-                                        color={colors.primary}
-                                        name="edit"
-                                        onPress={() =>
-                                            navigation.navigate('createFitnessGoals', { id: goal.id })
-                                        }
-                                        size={ICON_SIZE}
-                                        style={styles.iconButton}
-                                    />
-                                    <FontAwesome5
-                                        color={colors.primary}
-                                        name="trash"
-                                        onPress={() => handleDeleteGoal(goal.id!)}
-                                        size={ICON_SIZE}
-                                        style={styles.iconButton}
+                                <View style={styles.pieChartContainer}>
+                                    <PieChart
+                                        data={[
+                                            { label: t('protein'), value: getDisplayFormattedWeight(latestFitnessGoal.protein || 0, GRAMS, isImperial), color: '#4CAF50' },
+                                            { label: t('carbohydrates'), value: getDisplayFormattedWeight(latestFitnessGoal.totalCarbohydrate || 0, GRAMS, isImperial), color: '#2196F3' },
+                                            { label: t('fat'), value: getDisplayFormattedWeight(latestFitnessGoal.totalFat || 0, GRAMS, isImperial), color: '#FF9800' },
+                                        ]}
+                                        showShareImageButton={false}
+                                        size={130}
+                                        showLabels={false}
+                                        showLegend={false}
                                     />
                                 </View>
                             </Card.Content>
                         </ThemedCard>
                     )}
-                />
-                <ThemedModal
-                    cancelText={t('no')}
-                    confirmText={t('yes')}
-                    onClose={handleDeleteCancel}
-                    onConfirm={handleDeleteConfirmation}
-                    title={t('delete_confirmation_generic', {
-                        title: t('fitness_goal'),
-                    })}
-                    visible={isDeleteModalVisible}
-                />
-            </View>
-        </FABWrapper>
+                    <FlashList
+                        ListFooterComponent={
+                            fitnessGoals.length < totalFitnessGoalsCount ? (
+                                <ActivityIndicator />
+                            ) : null
+                        }
+                        contentContainerStyle={styles.scrollViewContent}
+                        data={fitnessGoals}
+                        estimatedItemSize={95}
+                        keyExtractor={(item) => (item?.id ? item.id.toString() : 'default')}
+                        onEndReached={loadMoreFitnessGoals}
+                        onEndReachedThreshold={0.5}
+                        renderItem={({ item: goal }) => (
+                            <ThemedCard key={goal.id} style={styles.flashListCard}>
+                                <Card.Content style={styles.flashListCardContent}>
+                                    <View style={styles.cardHeader}>
+                                        <Text style={styles.cardTitle}>
+                                            {formatDate(goal.createdAt || '')}
+                                        </Text>
+                                        <View style={styles.metricRow}>
+                                            <Text style={styles.metricDetailText}>
+                                                {t('item_value', { item: t('calories'), value: goal.calories })}
+                                            </Text>
+                                            <Text style={styles.metricDetailText}>
+                                                {t('item_value_unit', {
+                                                    item: t('protein'),
+                                                    value: getDisplayFormattedWeight(goal.protein || 0, GRAMS, isImperial).toString(),
+                                                    weightUnit: macroUnit,
+                                                })}
+                                            </Text>
+                                        </View>
+                                        <View style={styles.metricRow}>
+                                            <Text style={styles.metricDetailText}>
+                                                {t('item_value_unit', {
+                                                    item: t('carbohydrates'),
+                                                    value: getDisplayFormattedWeight(goal.totalCarbohydrate || 0, GRAMS, isImperial).toString(),
+                                                    weightUnit: macroUnit,
+                                                })}
+                                            </Text>
+                                            <Text style={styles.metricDetailText}>
+                                                {t('item_value_unit', {
+                                                    item: t('fat'),
+                                                    value: getDisplayFormattedWeight(goal.totalFat || 0, GRAMS, isImperial).toString(),
+                                                    weightUnit: macroUnit,
+                                                })}
+                                            </Text>
+                                        </View>
+                                    </View>
+                                    <View style={styles.cardActions}>
+                                        <FontAwesome5
+                                            color={colors.primary}
+                                            name="edit"
+                                            onPress={() =>
+                                                navigation.navigate('createFitnessGoals', { id: goal.id })
+                                            }
+                                            size={ICON_SIZE}
+                                            style={styles.iconButton}
+                                        />
+                                        <FontAwesome5
+                                            color={colors.primary}
+                                            name="trash"
+                                            onPress={() => handleDeleteGoal(goal.id!)}
+                                            size={ICON_SIZE}
+                                            style={styles.iconButton}
+                                        />
+                                    </View>
+                                </Card.Content>
+                            </ThemedCard>
+                        )}
+                    />
+                    <ThemedModal
+                        cancelText={t('no')}
+                        confirmText={t('yes')}
+                        onClose={handleDeleteCancel}
+                        onConfirm={handleDeleteConfirmation}
+                        title={t('delete_confirmation_generic', {
+                            title: t('fitness_goal'),
+                        })}
+                        visible={isDeleteModalVisible}
+                    />
+                </View>
+            </FABWrapper>
+        </Screen>
     );
 }
 

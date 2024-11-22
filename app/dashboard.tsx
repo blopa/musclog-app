@@ -1,3 +1,4 @@
+import { Screen } from '@/components/Screen';
 import StatusBadge from '@/components/StatusBadge';
 import ThemedCard from '@/components/ThemedCard';
 import ThemedModal from '@/components/ThemedModal';
@@ -126,110 +127,112 @@ export default function Dashboard({ navigation }: {
     );
 
     return (
-        <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-            <WorkoutModal onClose={() => setWorkoutModalVisible(false)} visible={workoutModalVisible} />
-            <View style={styles.section}>
-                <Text style={styles.header}>{t('track_your_fitness_journey')}</Text>
-                <Text style={styles.description}>
-                    {t('easily_log_your_workouts')}
-                </Text>
-                <Button mode="contained" onPress={() => setWorkoutModalVisible(true)} style={styles.startLoggingButton}>{t('start_logging')}</Button>
-            </View>
-            <View style={styles.section}>
-                <View style={styles.sectionHeader}>
-                    <Text style={styles.sectionTitle}>{t('upcoming_workouts')}</Text>
-                    {/*<Button*/}
-                    {/*    onPress={handleViewAllUpcomingWorkouts}*/}
-                    {/*    style={styles.viewAllButton}*/}
-                    {/*    textColor={colors.primary}*/}
-                    {/*>*/}
-                    {/*    {t('view_all')}*/}
-                    {/*</Button>*/}
+        <Screen style={styles.container}>
+            <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+                <WorkoutModal onClose={() => setWorkoutModalVisible(false)} visible={workoutModalVisible} />
+                <View style={styles.section}>
+                    <Text style={styles.header}>{t('track_your_fitness_journey')}</Text>
+                    <Text style={styles.description}>
+                        {t('easily_log_your_workouts')}
+                    </Text>
+                    <Button mode="contained" onPress={() => setWorkoutModalVisible(true)} style={styles.startLoggingButton}>{t('start_logging')}</Button>
                 </View>
-                <View style={styles.cardWrapper}>
-                    {upcomingWorkouts.length > 0 ? (
-                        upcomingWorkouts.map((workout) => (
-                            <ThemedCard key={workout.id} style={styles.cardContainer}>
-                                <Card.Content>
-                                    <View style={styles.cardHeader}>
-                                        <Text style={styles.cardDate}>
-                                            {t(workout.recurringOnWeek!)}
-                                        </Text>
-                                        <StatusBadge status={SCHEDULED_STATUS} />
-                                    </View>
-                                    <Text style={styles.cardTitle}>{workout.title}</Text>
-                                    <Button
-                                        mode="contained"
-                                        onPress={() => openConfirmationModal(workout)}
-                                        style={styles.startWorkoutButton}
-                                    >
-                                        {t('start')}
-                                    </Button>
-                                </Card.Content>
-                            </ThemedCard>
-                        ))
-                    ) : (
-                        <Text style={styles.noDataText}>
-                            {t('no_upcoming_workouts')}
-                        </Text>
-                    )}
+                <View style={styles.section}>
+                    <View style={styles.sectionHeader}>
+                        <Text style={styles.sectionTitle}>{t('upcoming_workouts')}</Text>
+                        {/*<Button*/}
+                        {/*    onPress={handleViewAllUpcomingWorkouts}*/}
+                        {/*    style={styles.viewAllButton}*/}
+                        {/*    textColor={colors.primary}*/}
+                        {/*>*/}
+                        {/*    {t('view_all')}*/}
+                        {/*</Button>*/}
+                    </View>
+                    <View style={styles.cardWrapper}>
+                        {upcomingWorkouts.length > 0 ? (
+                            upcomingWorkouts.map((workout) => (
+                                <ThemedCard key={workout.id} style={styles.cardContainer}>
+                                    <Card.Content>
+                                        <View style={styles.cardHeader}>
+                                            <Text style={styles.cardDate}>
+                                                {t(workout.recurringOnWeek!)}
+                                            </Text>
+                                            <StatusBadge status={SCHEDULED_STATUS} />
+                                        </View>
+                                        <Text style={styles.cardTitle}>{workout.title}</Text>
+                                        <Button
+                                            mode="contained"
+                                            onPress={() => openConfirmationModal(workout)}
+                                            style={styles.startWorkoutButton}
+                                        >
+                                            {t('start')}
+                                        </Button>
+                                    </Card.Content>
+                                </ThemedCard>
+                            ))
+                        ) : (
+                            <Text style={styles.noDataText}>
+                                {t('no_upcoming_workouts')}
+                            </Text>
+                        )}
+                    </View>
                 </View>
-            </View>
-            <View style={styles.section}>
-                <View style={styles.sectionHeader}>
-                    <Text style={styles.sectionTitle}>{t('recent_workouts')}</Text>
-                    <Button
-                        onPress={handleViewAllRecentWorkouts}
-                        style={styles.viewAllButton}
-                        textColor={colors.primary}
-                    >
-                        {t('view_all')}
-                    </Button>
+                <View style={styles.section}>
+                    <View style={styles.sectionHeader}>
+                        <Text style={styles.sectionTitle}>{t('recent_workouts')}</Text>
+                        <Button
+                            onPress={handleViewAllRecentWorkouts}
+                            style={styles.viewAllButton}
+                            textColor={colors.primary}
+                        >
+                            {t('view_all')}
+                        </Button>
+                    </View>
+                    <View style={styles.cardWrapper}>
+                        {recentWorkouts.length > 0 ? (
+                            recentWorkouts.map((workout) => (
+                                <ThemedCard key={workout.id} style={styles.cardContainer}>
+                                    <Card.Content>
+                                        <View style={styles.cardHeader}>
+                                            <Text style={styles.cardDate}>
+                                                {formatDate(workout.date)}
+                                            </Text>
+                                            <StatusBadge status={workout.status} />
+                                        </View>
+                                        <Text style={styles.cardTitle}>{workout.title}</Text>
+                                        {workout?.duration ? (
+                                            <Text style={styles.cardDuration}>
+                                                {workout.duration} {t(workout?.duration > 1 ? 'minutes' : 'minute')}
+                                            </Text>
+                                        ) : null}
+                                    </Card.Content>
+                                </ThemedCard>
+                            ))
+                        ) : (
+                            <Text style={styles.noDataText}>
+                                {t('no_recent_workouts')}
+                            </Text>
+                        )}
+                    </View>
                 </View>
-                <View style={styles.cardWrapper}>
-                    {recentWorkouts.length > 0 ? (
-                        recentWorkouts.map((workout) => (
-                            <ThemedCard key={workout.id} style={styles.cardContainer}>
-                                <Card.Content>
-                                    <View style={styles.cardHeader}>
-                                        <Text style={styles.cardDate}>
-                                            {formatDate(workout.date)}
-                                        </Text>
-                                        <StatusBadge status={workout.status} />
-                                    </View>
-                                    <Text style={styles.cardTitle}>{workout.title}</Text>
-                                    {workout?.duration ? (
-                                        <Text style={styles.cardDuration}>
-                                            {workout.duration} {t(workout?.duration > 1 ? 'minutes' : 'minute')}
-                                        </Text>
-                                    ) : null}
-                                </Card.Content>
-                            </ThemedCard>
-                        ))
-                    ) : (
-                        <Text style={styles.noDataText}>
-                            {t('no_recent_workouts')}
-                        </Text>
-                    )}
-                </View>
-            </View>
-            <ThemedModal
-                cancelText={t('no')}
-                confirmText={t('yes')}
-                onClose={() => setModalVisible(false)}
-                onConfirm={handleStartWorkout}
-                title={t('confirm_start_workout')}
-                visible={modalVisible}
-            />
-            <ThemedModal
-                cancelText={t('no')}
-                confirmText={t('yes')}
-                onClose={() => setConfirmationModalVisible(false)}
-                onConfirm={handleConfirmStartNewWorkout}
-                title={t('confirm_start_new_workout')}
-                visible={confirmationModalVisible}
-            />
-        </ScrollView>
+                <ThemedModal
+                    cancelText={t('no')}
+                    confirmText={t('yes')}
+                    onClose={() => setModalVisible(false)}
+                    onConfirm={handleStartWorkout}
+                    title={t('confirm_start_workout')}
+                    visible={modalVisible}
+                />
+                <ThemedModal
+                    cancelText={t('no')}
+                    confirmText={t('yes')}
+                    onClose={() => setConfirmationModalVisible(false)}
+                    onConfirm={handleConfirmStartNewWorkout}
+                    title={t('confirm_start_new_workout')}
+                    visible={confirmationModalVisible}
+                />
+            </ScrollView>
+        </Screen>
     );
 }
 

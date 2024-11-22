@@ -1,5 +1,6 @@
 import CompletionModal from '@/components/CompletionModal';
 import CustomTextInput from '@/components/CustomTextInput';
+import { Screen } from '@/components/Screen';
 import { RECENT_FOOD } from '@/constants/storage';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { addFood } from '@/utils/database';
@@ -144,7 +145,7 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
     ];
 
     return (
-        <View style={styles.container}>
+        <Screen style={styles.container}>
             <CompletionModal
                 buttonText={t('ok')}
                 isModalVisible={isModalVisible}
@@ -207,7 +208,7 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
                     {t('submit')}
                 </Button>
             </View>
-        </View>
+        </Screen>
     );
 };
 

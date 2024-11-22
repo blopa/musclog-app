@@ -1,5 +1,6 @@
 import CompletionModal from '@/components/CompletionModal';
 import CustomTextInput from '@/components/CustomTextInput';
+import { Screen } from '@/components/Screen';
 import { USER_METRICS_SOURCES } from '@/constants/healthConnect';
 import { NUTRITION_TYPES } from '@/constants/nutrition';
 import { GRAMS, IMPERIAL_SYSTEM, OUNCES } from '@/constants/storage';
@@ -264,7 +265,7 @@ const CreateUserNutrition = ({ navigation }: { navigation: NavigationProp<any> }
     }, []);
 
     return (
-        <View style={styles.container}>
+        <Screen style={styles.container}>
             <CompletionModal
                 buttonText={t('ok')}
                 isModalVisible={isModalVisible}
@@ -428,7 +429,7 @@ const CreateUserNutrition = ({ navigation }: { navigation: NavigationProp<any> }
                     {t('save')}
                 </Button>
             </View>
-        </View>
+        </Screen>
     );
 };
 

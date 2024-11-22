@@ -1,5 +1,6 @@
 import FoodItem from '@/components/FoodItem';
 import FoodTrackingModal from '@/components/FoodTrackingModal';
+import { Screen } from '@/components/Screen';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { fetchFoodData } from '@/utils/fetchFoodData';
 import { MusclogApiFoodInfoType } from '@/utils/types';
@@ -114,7 +115,7 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
     }, [navigation, resetScreenData, searchQuery]);
 
     return (
-        <View style={styles.container}>
+        <Screen style={styles.container}>
             <Appbar.Header mode="small" statusBarHeight={0} style={styles.appbarHeader}>
                 <Appbar.Action
                     icon={() => (
@@ -174,7 +175,7 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 onClose={closeModal}
                 food={selectedFood}
             />
-        </View>
+        </Screen>
     );
 };
 

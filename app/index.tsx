@@ -6,8 +6,8 @@ import * as Sentry from '@sentry/react-native';
 import { useFocusEffect } from 'expo-router';
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { BackHandler } from 'react-native';
 import 'react-native-url-polyfill/auto';
+import { BackHandler } from 'react-native';
 
 Sentry.init({
     _experiments: {

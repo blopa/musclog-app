@@ -2,6 +2,7 @@ import type { BarcodeScanningResult } from 'expo-camera';
 
 import FoodItem from '@/components/FoodItem';
 import FoodTrackingModal, { FoodTrackingType } from '@/components/FoodTrackingModal';
+import { Screen } from '@/components/Screen';
 import ThemedCard from '@/components/ThemedCard';
 import ThemedModal from '@/components/ThemedModal';
 import { MEAL_TYPE } from '@/constants/nutrition';
@@ -222,60 +223,62 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         ] : [];
 
         return (
-            <ScrollView>
-                <ThemedCard>
-                    <View style={styles.cardContent}>
-                        <Text style={styles.cardTitle}>{t('todays_progress')}</Text>
-                        {dailyGoals ? (
-                            macros.map((macro) => (
-                                <View key={macro.name} style={styles.macroContainer}>
-                                    <Text style={styles.metricDetail}>
-                                        {t('item_value_unit', { item: macro.name, value: `${macro.consumed} / ${macro.goal}`, weightUnit: macro.unit })}
-                                    </Text>
-                                    <View style={styles.progressBarContainer}>
-                                        <View
-                                            style={[
-                                                styles.progressBar,
-                                                {
-                                                    width: `${calculatePercentage(parseFloat(macro.consumed), macro.goal)}%`,
-                                                },
-                                            ]}
-                                        />
+            <Screen style={styles.container}>
+                <ScrollView>
+                    <ThemedCard>
+                        <View style={styles.cardContent}>
+                            <Text style={styles.cardTitle}>{t('todays_progress')}</Text>
+                            {dailyGoals ? (
+                                macros.map((macro) => (
+                                    <View key={macro.name} style={styles.macroContainer}>
+                                        <Text style={styles.metricDetail}>
+                                            {t('item_value_unit', { item: macro.name, value: `${macro.consumed} / ${macro.goal}`, weightUnit: macro.unit })}
+                                        </Text>
+                                        <View style={styles.progressBarContainer}>
+                                            <View
+                                                style={[
+                                                    styles.progressBar,
+                                                    {
+                                                        width: `${calculatePercentage(parseFloat(macro.consumed), macro.goal)}%`,
+                                                    },
+                                                ]}
+                                            />
+                                        </View>
                                     </View>
-                                </View>
-                            ))
-                        ) : (
-                            <Button
-                                mode="contained"
-                                onPress={() => navigation.navigate('createFitnessGoals')}
-                                style={styles.addGoalButton}
-                            >
-                                {t('add_your_fitness_goal')}
-                            </Button>
-                        )}
-                    </View>
-                </ThemedCard>
-                {recentTrackedFoods.length > 0 ? (
-                    <FlashList
-                        data={recentTrackedFoods}
-                        keyExtractor={(item, index) => (item.productTitle || index).toString()}
-                        renderItem={
-                            ({ item }) => (
-                                <FoodItem
-                                    food={item}
-                                    onAddFood={(food) => {
-                                        setSelectedFood(food);
-                                        setIsNutritionModalVisible(true);
-                                    }}
-                                />
-                            )
-                        }
-                        estimatedItemSize={115}
-                        contentContainerStyle={styles.listContent}
-                        onEndReachedThreshold={0.5}
-                    />
-                ) : null}
-            </ScrollView>
+                                ))
+                            ) : (
+                                <Button
+                                    mode="contained"
+                                    onPress={() => navigation.navigate('createFitnessGoals')}
+                                    style={styles.addGoalButton}
+                                >
+                                    {t('add_your_fitness_goal')}
+                                </Button>
+                            )}
+                        </View>
+                    </ThemedCard>
+                    {recentTrackedFoods.length > 0 ? (
+                        <FlashList
+                            data={recentTrackedFoods}
+                            keyExtractor={(item, index) => (item.productTitle || index).toString()}
+                            renderItem={
+                                ({ item }) => (
+                                    <FoodItem
+                                        food={item}
+                                        onAddFood={(food) => {
+                                            setSelectedFood(food);
+                                            setIsNutritionModalVisible(true);
+                                        }}
+                                    />
+                                )
+                            }
+                            estimatedItemSize={115}
+                            contentContainerStyle={styles.listContent}
+                            onEndReachedThreshold={0.5}
+                        />
+                    ) : null}
+                </ScrollView>
+            </Screen>
         );
     }, [consumed.calories, consumed.carbohydrate, consumed.fat, consumed.protein, dailyGoals, macroUnit, navigation, recentTrackedFoods, styles.addGoalButton, styles.cardContent, styles.cardTitle, styles.listContent, styles.macroContainer, styles.metricDetail, styles.progressBar, styles.progressBarContainer, t]);
 

@@ -1,6 +1,7 @@
 import AnimatedSearchBar from '@/components/AnimatedSearch';
 import CustomTextArea from '@/components/CustomTextArea';
 import FABWrapper from '@/components/FABWrapper';
+import { Screen } from '@/components/Screen';
 import StatusBadge from '@/components/StatusBadge';
 import ThemedCard from '@/components/ThemedCard';
 import ThemedModal from '@/components/ThemedModal';
@@ -218,127 +219,129 @@ export default function RecentWorkouts() {
     }, [colors.primary, colors.surface, isAiEnabled, jsonImportEnabled, navigation, t]);
 
     return (
-        <FABWrapper actions={fabActions} icon="cog" visible>
-            <View style={styles.container}>
-                <Appbar.Header
-                    mode="small"
-                    statusBarHeight={0}
-                    style={styles.appbarHeader}
-                >
-                    <Appbar.Content title={t('recent_workouts')} titleStyle={styles.appbarTitle} />
-                    <AnimatedSearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-                </Appbar.Header>
-                <FlashList
-                    ListFooterComponent={recentWorkouts.length < totalWorkoutsCount ? <ActivityIndicator /> : null}
-                    contentContainerStyle={styles.scrollViewContent}
-                    data={filteredWorkouts}
-                    estimatedItemSize={100}
-                    keyExtractor={(item) => (item?.id ? item.id.toString() : 'default')}
-                    onEndReached={loadMoreWorkouts}
-                    onEndReachedThreshold={0.5}
-                    renderItem={({ item: workout }) => (
-                        <ThemedCard key={workout.id}>
-                            <Card.Content style={styles.cardContent}>
-                                <View style={styles.cardHeader}>
-                                    <Text style={styles.cardTitle}>{workout.title}</Text>
-                                    <Text style={styles.cardDate}>{formatDate(workout.date)}</Text>
-                                    <StatusBadge status={workout.status} />
-                                    {workout?.duration ? (
-                                        <Text style={styles.cardDuration}>
-                                            {workout.duration} {t(workout.duration > 1 ? 'minutes' : 'minute')}
-                                        </Text>
-                                    ) : null}
-                                </View>
-                                <View style={styles.cardActions}>
-                                    <FontAwesome5
-                                        color={colors.primary}
-                                        name="eye"
-                                        onPress={() => handleViewAllRecentWorkouts(workout.id!)}
-                                        size={ICON_SIZE}
-                                        style={styles.iconButton}
-                                    />
-                                    <FontAwesome5
-                                        color={colors.primary}
-                                        name="edit"
-                                        onPress={() => handleEditWorkout(workout.id!)}
-                                        size={ICON_SIZE}
-                                        style={styles.iconButton}
-                                    />
-                                </View>
-                            </Card.Content>
-                        </ThemedCard>
-                    )}
-                />
-                <ThemedModal
-                    cancelText={!isModalLoading ? t('cancel') : undefined}
-                    confirmText={!isModalLoading ? t('import') : undefined}
-                    onClose={() => setModalVisible(false)}
-                    onConfirm={!isModalLoading ? handleImportPastWorkoutsWithAi : undefined}
-                    visible={modalVisible}
-                >
-                    {isModalLoading ? (
-                        <>
-                            <ActivityIndicator size="large" style={styles.loadingIndicator} />
-                            <Text style={styles.loadingText}>{t('this_might_take_a_minute_or_more')}</Text>
-                        </>
-                    ) : (
-                        <>
-                            <Text style={styles.modalTitle}>{t('recent_workouts')}</Text>
-                            <CustomTextArea
-                                numberOfLines={4}
-                                onChangeText={setTextInputValue}
-                                placeholder={t('write_down_recent_workouts')}
-                                value={textInputValue}
-                            />
-                        </>
-                    )}
-                </ThemedModal>
-                <ThemedModal
-                    cancelText={t('cancel')}
-                    confirmText={jsonFilename ? t('import') : undefined}
-                    onClose={handleCancelImportJson}
-                    onConfirm={jsonFilename ? handleImportJsonFile : undefined}
-                    visible={jsonImportModalVisible}
-                >
-                    <ScrollView contentContainerStyle={styles.scrollContainer}>
-                        <Text style={styles.modalTitle}>{t('import_from_json_file')}</Text>
-                        <Text style={styles.modalText}>
-                            {t('recent_workouts_json_format_description', {
-                                jsonFormat: JSON.stringify([{
-                                    date: '2023-06-15T06:35:00Z',
-                                    description: 'description',
-                                    duration: 300,
-                                    title: 'Chest and Back Day',
-                                    exercises: [{
-                                        muscleGroup: 'chest',
-                                        name: 'Bench Press',
-                                        sets: [{
-                                            createdAt: '2023-06-15T06:35:00Z',
-                                            isDropSet: false,
-                                            reps: 8,
-                                            restTime: 90,
-                                            targetReps: 8,
-                                            targetWeight: 110,
-                                            weight: 110,
+        <Screen style={styles.container}>
+            <FABWrapper actions={fabActions} icon="cog" visible>
+                <View style={styles.container}>
+                    <Appbar.Header
+                        mode="small"
+                        statusBarHeight={0}
+                        style={styles.appbarHeader}
+                    >
+                        <Appbar.Content title={t('recent_workouts')} titleStyle={styles.appbarTitle} />
+                        <AnimatedSearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+                    </Appbar.Header>
+                    <FlashList
+                        ListFooterComponent={recentWorkouts.length < totalWorkoutsCount ? <ActivityIndicator /> : null}
+                        contentContainerStyle={styles.scrollViewContent}
+                        data={filteredWorkouts}
+                        estimatedItemSize={100}
+                        keyExtractor={(item) => (item?.id ? item.id.toString() : 'default')}
+                        onEndReached={loadMoreWorkouts}
+                        onEndReachedThreshold={0.5}
+                        renderItem={({ item: workout }) => (
+                            <ThemedCard key={workout.id}>
+                                <Card.Content style={styles.cardContent}>
+                                    <View style={styles.cardHeader}>
+                                        <Text style={styles.cardTitle}>{workout.title}</Text>
+                                        <Text style={styles.cardDate}>{formatDate(workout.date)}</Text>
+                                        <StatusBadge status={workout.status} />
+                                        {workout?.duration ? (
+                                            <Text style={styles.cardDuration}>
+                                                {workout.duration} {t(workout.duration > 1 ? 'minutes' : 'minute')}
+                                            </Text>
+                                        ) : null}
+                                    </View>
+                                    <View style={styles.cardActions}>
+                                        <FontAwesome5
+                                            color={colors.primary}
+                                            name="eye"
+                                            onPress={() => handleViewAllRecentWorkouts(workout.id!)}
+                                            size={ICON_SIZE}
+                                            style={styles.iconButton}
+                                        />
+                                        <FontAwesome5
+                                            color={colors.primary}
+                                            name="edit"
+                                            onPress={() => handleEditWorkout(workout.id!)}
+                                            size={ICON_SIZE}
+                                            style={styles.iconButton}
+                                        />
+                                    </View>
+                                </Card.Content>
+                            </ThemedCard>
+                        )}
+                    />
+                    <ThemedModal
+                        cancelText={!isModalLoading ? t('cancel') : undefined}
+                        confirmText={!isModalLoading ? t('import') : undefined}
+                        onClose={() => setModalVisible(false)}
+                        onConfirm={!isModalLoading ? handleImportPastWorkoutsWithAi : undefined}
+                        visible={modalVisible}
+                    >
+                        {isModalLoading ? (
+                            <>
+                                <ActivityIndicator size="large" style={styles.loadingIndicator} />
+                                <Text style={styles.loadingText}>{t('this_might_take_a_minute_or_more')}</Text>
+                            </>
+                        ) : (
+                            <>
+                                <Text style={styles.modalTitle}>{t('recent_workouts')}</Text>
+                                <CustomTextArea
+                                    numberOfLines={4}
+                                    onChangeText={setTextInputValue}
+                                    placeholder={t('write_down_recent_workouts')}
+                                    value={textInputValue}
+                                />
+                            </>
+                        )}
+                    </ThemedModal>
+                    <ThemedModal
+                        cancelText={t('cancel')}
+                        confirmText={jsonFilename ? t('import') : undefined}
+                        onClose={handleCancelImportJson}
+                        onConfirm={jsonFilename ? handleImportJsonFile : undefined}
+                        visible={jsonImportModalVisible}
+                    >
+                        <ScrollView contentContainerStyle={styles.scrollContainer}>
+                            <Text style={styles.modalTitle}>{t('import_from_json_file')}</Text>
+                            <Text style={styles.modalText}>
+                                {t('recent_workouts_json_format_description', {
+                                    jsonFormat: JSON.stringify([{
+                                        date: '2023-06-15T06:35:00Z',
+                                        description: 'description',
+                                        duration: 300,
+                                        title: 'Chest and Back Day',
+                                        exercises: [{
+                                            muscleGroup: 'chest',
+                                            name: 'Bench Press',
+                                            sets: [{
+                                                createdAt: '2023-06-15T06:35:00Z',
+                                                isDropSet: false,
+                                                reps: 8,
+                                                restTime: 90,
+                                                targetReps: 8,
+                                                targetWeight: 110,
+                                                weight: 110,
+                                            }],
+                                            type: 'compound',
                                         }],
-                                        type: 'compound',
-                                    }],
-                                }], null, 1),
-                            })}
-                        </Text>
-                    </ScrollView>
-                    {jsonFilename ? (
-                        <View style={styles.selectedFileWrapper}>
-                            <Text>{t('selected_file')}: {jsonFilename}</Text>
-                        </View>
-                    ) : (
-                        <Button mode="contained" onPress={handleSelectJsonFile} style={styles.selectJsonButton}>
-                            {t('select_json_file')}
-                        </Button>
-                    )}
-                </ThemedModal>
-            </View>
-        </FABWrapper>
+                                    }], null, 1),
+                                })}
+                            </Text>
+                        </ScrollView>
+                        {jsonFilename ? (
+                            <View style={styles.selectedFileWrapper}>
+                                <Text>{t('selected_file')}: {jsonFilename}</Text>
+                            </View>
+                        ) : (
+                            <Button mode="contained" onPress={handleSelectJsonFile} style={styles.selectJsonButton}>
+                                {t('select_json_file')}
+                            </Button>
+                        )}
+                    </ThemedModal>
+                </View>
+            </FABWrapper>
+        </Screen>
     );
 }
 

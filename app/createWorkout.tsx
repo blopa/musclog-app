@@ -2,6 +2,7 @@ import CompletionModal from '@/components/CompletionModal';
 import CustomPicker from '@/components/CustomPicker';
 import CustomTextArea from '@/components/CustomTextArea';
 import CustomTextInput from '@/components/CustomTextInput';
+import { Screen } from '@/components/Screen';
 import { VOLUME_CALCULATION_TYPES, VOLUME_CALCULATION_TYPES_VALUES } from '@/constants/exercises';
 import { IMPERIAL_SYSTEM } from '@/constants/storage';
 import useUnit from '@/hooks/useUnit';
@@ -781,7 +782,7 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
     }, [workoutTitle, workout]);
 
     return (
-        <View style={styles.container}>
+        <Screen style={styles.container}>
             <CompletionModal
                 buttonText={t('ok')}
                 isModalVisible={isModalVisible}
@@ -987,7 +988,7 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                     <ActivityIndicator color={colors.primary} size="large" />
                 </View>
             )}
-        </View>
+        </Screen>
     );
 };
 

@@ -1,5 +1,6 @@
 import CustomPicker from '@/components/CustomPicker';
 import DatePickerModal from '@/components/DatePickerModal';
+import { Screen } from '@/components/Screen';
 import { SCHEDULED_STATUS } from '@/constants/storage';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { addWorkoutEvent, getAllWorkouts } from '@/utils/database';
@@ -85,7 +86,7 @@ function ScheduleWorkout({ navigation }: { navigation: NavigationProp<any> }) {
     }, [navigation, selectedDate, selectedWorkoutId, t, workouts]);
 
     return (
-        <View style={styles.container}>
+        <Screen style={styles.container}>
             <Appbar.Header
                 mode="small"
                 statusBarHeight={0}
@@ -139,7 +140,7 @@ function ScheduleWorkout({ navigation }: { navigation: NavigationProp<any> }) {
                     {t('save_schedule')}
                 </Button>
             </ScrollView>
-        </View>
+        </Screen>
     );
 }
 

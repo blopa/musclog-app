@@ -2,6 +2,7 @@ import AppHeader from '@/components/AppHeader';
 import EditMacrosModal from '@/components/EditMacrosModal';
 import EditSetModal from '@/components/EditSetModal';
 import FABWrapper from '@/components/FABWrapper';
+import { Screen } from '@/components/Screen';
 import StatusBadge from '@/components/StatusBadge';
 import ThemedCard from '@/components/ThemedCard';
 import ThemedModal from '@/components/ThemedModal';
@@ -319,185 +320,187 @@ const RecentWorkoutDetails: React.FC<RecentWorkoutDetailsProps> = ({ navigation 
     const macroUnit = unitSystem === METRIC_SYSTEM ? GRAMS : OUNCES;
 
     return (
-        <FABWrapper actions={fabActions} icon="cog" visible>
-            <View style={styles.container}>
-                <AppHeader title={t('recent_workout')} />
-                <ScrollView contentContainerStyle={styles.scrollViewContent} keyboardShouldPersistTaps="handled">
-                    {loading ? (
-                        <ActivityIndicator color={colors.primary} size="large" />
-                    ) : recentWorkout ? (
-                        <ThemedCard style={styles.cardContainer}>
-                            <View style={styles.cardHeader}>
-                                <Text style={styles.dateTitle}>
-                                    {t('completed_on', {
-                                        date: formatDate(recentWorkout.date),
-                                    })}
-                                </Text>
-                            </View>
-                            <View style={styles.separator} />
-                            <DetailRow
-                                isEven={listIndex++ % 2 === 0}
-                                label={t('duration')}
-                                styles={styles}
-                                value={`${recentWorkout.duration} ${t(recentWorkout?.duration || 0 > 1 ? 'minutes' : 'minute')}`}
-                            />
-                            {workoutVolume ?? 0 > 0 ? (
-                                <DetailRow
-                                    isEven={listIndex++ % 2 === 0}
-                                    label={t('workout_volume')}
-                                    styles={styles}
-                                    value={t('value_weight', {
-                                        value: getDisplayFormattedWeight(workoutVolume, KILOGRAMS, isImperial),
-                                        weightUnit,
-                                    })}
-                                />
-                            ) : null}
-                            {recentWorkout.eatingPhase ? (
-                                <DetailRow
-                                    isEven={listIndex++ % 2 === 0}
-                                    label={t('eating_phase')}
-                                    styles={styles}
-                                    value={t(recentWorkout.eatingPhase)}
-                                />
-                            ) : null}
-                            <DetailRow
-                                isEven={listIndex++ % 2 === 0}
-                                label={t('exhaustion_level')}
-                                styles={styles}
-                                value={t('out_of_ten', { number: recentWorkout.exhaustionLevel })}
-                            />
-                            <DetailRow
-                                isEven={listIndex++ % 2 === 0}
-                                label={t('workout_score')}
-                                styles={styles}
-                                value={t('out_of_ten', { number: recentWorkout.workoutScore })}
-                            />
-                            {(recentWorkout.carbohydrate || recentWorkout.fat || recentWorkout.protein) ? (
-                                <View style={[styles.macrosDetailRow, listIndex++ % 2 === 0 ? styles.detailRowEvenBg : {}]}>
-                                    <View style={styles.macrosHeader}>
-                                        <Text style={styles.macroDetailLabelTitle}>
-                                            {t('macros_consumed_before_workout')}
-                                        </Text>
-                                        <FontAwesome5
-                                            color={colors.primary}
-                                            name="edit"
-                                            onPress={handleEditMacros}
-                                            size={ICON_SIZE}
-                                            style={styles.crudButton}
-                                        />
-                                    </View>
-                                    {recentWorkout.carbohydrate ? (
-                                        <View style={styles.macroDetailRow}>
-                                            <Text style={styles.detailLabel}>{t('carbs')}</Text>
-                                            <Text style={styles.detailValue}>
-                                                {getDisplayFormattedWeight(recentWorkout.carbohydrate, GRAMS, isImperial)}{macroUnit}
-                                            </Text>
-                                        </View>
-                                    ) : null}
-                                    {recentWorkout.fat ? (
-                                        <View style={styles.macroDetailRow}>
-                                            <Text style={styles.detailLabel}>{t('fats')}</Text>
-                                            <Text style={styles.detailValue}>
-                                                {getDisplayFormattedWeight(recentWorkout.fat, GRAMS, isImperial)}{macroUnit}
-                                            </Text>
-                                        </View>
-                                    ) : null}
-                                    {recentWorkout.protein ? (
-                                        <View style={styles.macroDetailRow}>
-                                            <Text style={styles.detailLabel}>{t('proteins')}</Text>
-                                            <Text style={styles.detailValue}>
-                                                {getDisplayFormattedWeight(recentWorkout.protein, GRAMS, isImperial)}{macroUnit}
-                                            </Text>
-                                        </View>
-                                    ) : null}
+        <Screen style={styles.container}>
+            <FABWrapper actions={fabActions} icon="cog" visible>
+                <View style={styles.container}>
+                    <AppHeader title={t('recent_workout')} />
+                    <ScrollView contentContainerStyle={styles.scrollViewContent} keyboardShouldPersistTaps="handled">
+                        {loading ? (
+                            <ActivityIndicator color={colors.primary} size="large" />
+                        ) : recentWorkout ? (
+                            <ThemedCard style={styles.cardContainer}>
+                                <View style={styles.cardHeader}>
+                                    <Text style={styles.dateTitle}>
+                                        {t('completed_on', {
+                                            date: formatDate(recentWorkout.date),
+                                        })}
+                                    </Text>
                                 </View>
-                            ) : null}
-                            {(recentWorkout.bodyWeight && recentWorkout.bodyWeight > 0) ? (
+                                <View style={styles.separator} />
                                 <DetailRow
                                     isEven={listIndex++ % 2 === 0}
-                                    label={t('body_weight', { weightUnit })}
+                                    label={t('duration')}
                                     styles={styles}
-                                    value={getDisplayFormattedWeight(recentWorkout?.bodyWeight || 0, KILOGRAMS, isImperial).toString()}
+                                    value={`${recentWorkout.duration} ${t(recentWorkout?.duration || 0 > 1 ? 'minutes' : 'minute')}`}
                                 />
-                            ) : null}
-                            {(recentWorkout.fatPercentage && recentWorkout.fatPercentage > 0) ? (
+                                {workoutVolume ?? 0 > 0 ? (
+                                    <DetailRow
+                                        isEven={listIndex++ % 2 === 0}
+                                        label={t('workout_volume')}
+                                        styles={styles}
+                                        value={t('value_weight', {
+                                            value: getDisplayFormattedWeight(workoutVolume, KILOGRAMS, isImperial),
+                                            weightUnit,
+                                        })}
+                                    />
+                                ) : null}
+                                {recentWorkout.eatingPhase ? (
+                                    <DetailRow
+                                        isEven={listIndex++ % 2 === 0}
+                                        label={t('eating_phase')}
+                                        styles={styles}
+                                        value={t(recentWorkout.eatingPhase)}
+                                    />
+                                ) : null}
                                 <DetailRow
                                     isEven={listIndex++ % 2 === 0}
-                                    label={t('fat_percentage')}
+                                    label={t('exhaustion_level')}
                                     styles={styles}
-                                    value={`${safeToFixed(recentWorkout.fatPercentage)}%`}
+                                    value={t('out_of_ten', { number: recentWorkout.exhaustionLevel })}
                                 />
-                            ) : null}
-                            <DetailRow
-                                isEven={listIndex++ % 2 === 0}
-                                label={t('status')}
-                                status={recentWorkout.status}
-                                styles={styles}
-                                value={t(recentWorkout.status)}
-                            />
-                            {exerciseVolumeData.length > 0 ? (
-                                <>
-                                    <View style={styles.separator} />
-                                    <Text style={styles.exercisesTitle}>{t('exercises')}</Text>
-                                    {exerciseVolumeData.map((exercise, index) => (
-                                        <WorkoutExerciseDetail
-                                            exercise={exercises.find((ex) => ex?.id === exercise.exerciseId)}
-                                            exerciseVolume={{
-                                                ...exercise,
-                                                sets: exercise.sets.map((set) => ({
-                                                    ...set,
-                                                    setId: set.id ?? 0,
-                                                    targetWeight: getDisplayFormattedWeight(Number(set.targetWeight), KILOGRAMS, isImperial),
-                                                    weight: getDisplayFormattedWeight(Number(set.weight), KILOGRAMS, isImperial),
-                                                })),
-                                            }}
-                                            key={index}
-                                            onDeleteSet={handleDeleteSetConfirmation(exercise.exerciseId)}
-                                            onEditSet={handleEditSet(exercise.exerciseId)}
-                                        />
-                                    ))}
-                                </>
-                            ) : null}
-                        </ThemedCard>
-                    ) : (
-                        <Text style={styles.noDataText}>{t('no_workout_details')}</Text>
+                                <DetailRow
+                                    isEven={listIndex++ % 2 === 0}
+                                    label={t('workout_score')}
+                                    styles={styles}
+                                    value={t('out_of_ten', { number: recentWorkout.workoutScore })}
+                                />
+                                {(recentWorkout.carbohydrate || recentWorkout.fat || recentWorkout.protein) ? (
+                                    <View style={[styles.macrosDetailRow, listIndex++ % 2 === 0 ? styles.detailRowEvenBg : {}]}>
+                                        <View style={styles.macrosHeader}>
+                                            <Text style={styles.macroDetailLabelTitle}>
+                                                {t('macros_consumed_before_workout')}
+                                            </Text>
+                                            <FontAwesome5
+                                                color={colors.primary}
+                                                name="edit"
+                                                onPress={handleEditMacros}
+                                                size={ICON_SIZE}
+                                                style={styles.crudButton}
+                                            />
+                                        </View>
+                                        {recentWorkout.carbohydrate ? (
+                                            <View style={styles.macroDetailRow}>
+                                                <Text style={styles.detailLabel}>{t('carbs')}</Text>
+                                                <Text style={styles.detailValue}>
+                                                    {getDisplayFormattedWeight(recentWorkout.carbohydrate, GRAMS, isImperial)}{macroUnit}
+                                                </Text>
+                                            </View>
+                                        ) : null}
+                                        {recentWorkout.fat ? (
+                                            <View style={styles.macroDetailRow}>
+                                                <Text style={styles.detailLabel}>{t('fats')}</Text>
+                                                <Text style={styles.detailValue}>
+                                                    {getDisplayFormattedWeight(recentWorkout.fat, GRAMS, isImperial)}{macroUnit}
+                                                </Text>
+                                            </View>
+                                        ) : null}
+                                        {recentWorkout.protein ? (
+                                            <View style={styles.macroDetailRow}>
+                                                <Text style={styles.detailLabel}>{t('proteins')}</Text>
+                                                <Text style={styles.detailValue}>
+                                                    {getDisplayFormattedWeight(recentWorkout.protein, GRAMS, isImperial)}{macroUnit}
+                                                </Text>
+                                            </View>
+                                        ) : null}
+                                    </View>
+                                ) : null}
+                                {(recentWorkout.bodyWeight && recentWorkout.bodyWeight > 0) ? (
+                                    <DetailRow
+                                        isEven={listIndex++ % 2 === 0}
+                                        label={t('body_weight', { weightUnit })}
+                                        styles={styles}
+                                        value={getDisplayFormattedWeight(recentWorkout?.bodyWeight || 0, KILOGRAMS, isImperial).toString()}
+                                    />
+                                ) : null}
+                                {(recentWorkout.fatPercentage && recentWorkout.fatPercentage > 0) ? (
+                                    <DetailRow
+                                        isEven={listIndex++ % 2 === 0}
+                                        label={t('fat_percentage')}
+                                        styles={styles}
+                                        value={`${safeToFixed(recentWorkout.fatPercentage)}%`}
+                                    />
+                                ) : null}
+                                <DetailRow
+                                    isEven={listIndex++ % 2 === 0}
+                                    label={t('status')}
+                                    status={recentWorkout.status}
+                                    styles={styles}
+                                    value={t(recentWorkout.status)}
+                                />
+                                {exerciseVolumeData.length > 0 ? (
+                                    <>
+                                        <View style={styles.separator} />
+                                        <Text style={styles.exercisesTitle}>{t('exercises')}</Text>
+                                        {exerciseVolumeData.map((exercise, index) => (
+                                            <WorkoutExerciseDetail
+                                                exercise={exercises.find((ex) => ex?.id === exercise.exerciseId)}
+                                                exerciseVolume={{
+                                                    ...exercise,
+                                                    sets: exercise.sets.map((set) => ({
+                                                        ...set,
+                                                        setId: set.id ?? 0,
+                                                        targetWeight: getDisplayFormattedWeight(Number(set.targetWeight), KILOGRAMS, isImperial),
+                                                        weight: getDisplayFormattedWeight(Number(set.weight), KILOGRAMS, isImperial),
+                                                    })),
+                                                }}
+                                                key={index}
+                                                onDeleteSet={handleDeleteSetConfirmation(exercise.exerciseId)}
+                                                onEditSet={handleEditSet(exercise.exerciseId)}
+                                            />
+                                        ))}
+                                    </>
+                                ) : null}
+                            </ThemedCard>
+                        ) : (
+                            <Text style={styles.noDataText}>{t('no_workout_details')}</Text>
+                        )}
+                    </ScrollView>
+                    <ThemedModal
+                        cancelText={t('cancel')}
+                        confirmText={t('delete')}
+                        onClose={() => setDeleteSetModalVisible(false)}
+                        onConfirm={() => currentDelete && handleDeleteSet(currentDelete.exerciseId, currentDelete.setIndex)}
+                        title={t('delete_set_confirmation')}
+                        visible={deleteSetModalVisible}
+                    />
+                    <EditSetModal
+                        handleCloseEditModal={() => setEditSetModalVisible(false)}
+                        handleSaveEdit={handleSaveEdit}
+                        reps={editReps}
+                        setReps={setEditReps}
+                        setWeight={setEditWeight}
+                        visible={editSetModalVisible}
+                        weight={editWeight}
+                    />
+                    <EditMacrosModal
+                        carbohydrate={editCarbohydrate}
+                        fat={editFat}
+                        handleCloseEditModal={() => setEditMacrosModalVisible(false)}
+                        handleSaveEdit={handleSaveMacrosEdit}
+                        protein={editProtein}
+                        setCarbohydrate={setEditCarbohydrate}
+                        setFat={setEditFat}
+                        setProtein={setEditProtein}
+                        visible={editMacrosModalVisible}
+                    />
+                    {loading && (
+                        <View style={styles.overlay}>
+                            <ActivityIndicator color={colors.primary} size="large" />
+                        </View>
                     )}
-                </ScrollView>
-                <ThemedModal
-                    cancelText={t('cancel')}
-                    confirmText={t('delete')}
-                    onClose={() => setDeleteSetModalVisible(false)}
-                    onConfirm={() => currentDelete && handleDeleteSet(currentDelete.exerciseId, currentDelete.setIndex)}
-                    title={t('delete_set_confirmation')}
-                    visible={deleteSetModalVisible}
-                />
-                <EditSetModal
-                    handleCloseEditModal={() => setEditSetModalVisible(false)}
-                    handleSaveEdit={handleSaveEdit}
-                    reps={editReps}
-                    setReps={setEditReps}
-                    setWeight={setEditWeight}
-                    visible={editSetModalVisible}
-                    weight={editWeight}
-                />
-                <EditMacrosModal
-                    carbohydrate={editCarbohydrate}
-                    fat={editFat}
-                    handleCloseEditModal={() => setEditMacrosModalVisible(false)}
-                    handleSaveEdit={handleSaveMacrosEdit}
-                    protein={editProtein}
-                    setCarbohydrate={setEditCarbohydrate}
-                    setFat={setEditFat}
-                    setProtein={setEditProtein}
-                    visible={editMacrosModalVisible}
-                />
-                {loading && (
-                    <View style={styles.overlay}>
-                        <ActivityIndicator color={colors.primary} size="large" />
-                    </View>
-                )}
-            </View>
-        </FABWrapper>
+                </View>
+            </FABWrapper>
+        </Screen>
     );
 };
 

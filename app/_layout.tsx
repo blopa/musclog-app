@@ -2,6 +2,7 @@ import Chat from '@/app/chat';
 import CreateExercise from '@/app/createExercise';
 import CreateFitnessGoals from '@/app/createFitnessGoals';
 import CreateFood from '@/app/createFood';
+import { Screen } from '@/components/Screen';
 import CreateRecentWorkout from '@/app/createRecentWorkout';
 import CreateUserMeasurements from '@/app/createUserMeasurements';
 import CreateUserMetrics from '@/app/createUserMetrics';
@@ -91,8 +92,9 @@ import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { I18nextProvider, useTranslation } from 'react-i18next';
-import { SafeAreaView, StatusBar, StyleSheet, Text, View } from 'react-native';
+import { StatusBar, StyleSheet, Text, View } from 'react-native';
 import { ActivityIndicator, PaperProvider, useTheme } from 'react-native-paper';
+import { initialWindowMetrics, SafeAreaProvider } from 'react-native-safe-area-context';
 
 import packageJson from '../package.json';
 
@@ -214,7 +216,9 @@ function RootLayout() {
 
                     const user = await getUser();
                     const userName = user?.name ? user.name : i18n.t('default_name');
-                    const fitnessGoalMessage = user?.fitnessGoals ? i18n.t('goal_message', { fitnessGoals: i18n.t(user?.fitnessGoals) }) : '';
+                    const fitnessGoalMessage = user?.fitnessGoals
+                        ? i18n.t('goal_message', { fitnessGoals: i18n.t(user?.fitnessGoals) })
+                        : '';
 
                     await addNewChat({
                         createdAt: getCurrentTimestamp(),
@@ -266,15 +270,9 @@ function RootLayout() {
             <I18nextProvider i18n={i18n}>
                 <HealthConnectProvider>
                     <SnackbarProvider>
-                        {/* TODO use SafeAreaView maybe */}
-                        <ForceInsetsUpdate />
-                        <SafeAreaView
-                            style={{
-                                flex: 1,
-                            }}
-                        >
+                        <SafeAreaProvider initialMetrics={initialWindowMetrics}>
                             <RootLayoutNav />
-                        </SafeAreaView>
+                        </SafeAreaProvider>
                     </SnackbarProvider>
                 </HealthConnectProvider>
             </I18nextProvider>
@@ -377,14 +375,25 @@ function RootLayoutNav() {
 
     if (!onboardingCompleted) {
         return (
-            <Onboarding onFinish={() => setOnboardingCompleted(true)} />
+            <Screen
+                style={{
+                    backgroundColor: theme.colors.background,
+                    flex: 1,
+                }}
+            >
+                <Onboarding onFinish={() => setOnboardingCompleted(true)} />
+            </Screen>
         );
     }
 
     return (
         <Drawer.Navigator
             drawerContent={(props) => (
-                <CustomDrawerContent {...props} isAiEnabled={isAiEnabled} unreadMessages={unreadMessages} />
+                <CustomDrawerContent
+                    {...props}
+                    isAiEnabled={isAiEnabled}
+                    unreadMessages={unreadMessages}
+                />
             )}
             initialRouteName="index"
             screenOptions={{
@@ -467,9 +476,7 @@ function CustomDrawerContent(props: CustomDrawerContentProps) {
                 <DrawerItemList {...props} />
             </View>
             <View style={styles.footer}>
-                <Text style={styles.footerText}>
-                    {`v${packageJson.version}`}
-                </Text>
+                <Text style={styles.footerText}>{`v${packageJson.version}`}</Text>
             </View>
         </DrawerContentScrollView>
     );
