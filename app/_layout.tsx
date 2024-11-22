@@ -96,6 +96,7 @@ import { ActivityIndicator, PaperProvider, useTheme } from 'react-native-paper';
 import { initialWindowMetrics, SafeAreaProvider } from 'react-native-safe-area-context';
 
 import packageJson from '../package.json';
+import ForceInsetsUpdate from '@/components/ForceInsetsUpdate';
 
 // export {
 //     ErrorBoundary,
@@ -266,6 +267,7 @@ function RootLayout() {
     const theme = colorScheme === DARK ? CustomDarkTheme : CustomLightTheme;
     return (
         <PaperProvider theme={theme}>
+            <ForceInsetsUpdate />
             <I18nextProvider i18n={i18n}>
                 <HealthConnectProvider>
                     <SnackbarProvider>
