@@ -13,7 +13,6 @@
       "translucent": false
     },
     "androidNavigationBar": {
-      "visible": "sticky-immersive",
       "backgroundColor": "#000000"
     },
     "ios": {
