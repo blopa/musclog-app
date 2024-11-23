@@ -2183,6 +2183,33 @@ export const getFoodByNameAndMacros = async (
     }
 };
 
+export const searchFoodByName = async (searchTerm: string): Promise<FoodReturnType[] | null> => {
+    try {
+        const query = `
+            SELECT * FROM "Food"
+            WHERE "name" LIKE ? 
+            AND ("deletedAt" IS NULL OR "deletedAt" = '')
+        `;
+        const searchPattern = `%${searchTerm}%`;
+        return database.getAllSync<FoodReturnType>(query, [searchPattern]);
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const getFoodByProductCode = async (productCode: string): Promise<FoodReturnType | null> => {
+    try {
+        return database.getFirstSync<FoodReturnType>(
+            'SELECT * FROM "Food" WHERE "productCode" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')',
+            [productCode]
+        );
+    } catch (error) {
+        throw error;
+    }
+
+    return null;
+};
+
 // Update functions
 
 export const updateUserMeasurements = async (id: number, userMeasurements: UserMeasurementsInsertType): Promise<number> => {

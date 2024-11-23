@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { Alert, Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { Appbar, Button, Text, useTheme } from 'react-native-paper';
 
-import form from '../data/form.json';
+import form from '../data/foodForm.json';
 
 const GOOGLE_FORMS_URL = 'https://docs.google.com/forms/d';
 

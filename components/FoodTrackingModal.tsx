@@ -23,6 +23,7 @@ export type FoodTrackingType = {
     fat: number;
     grams?: number;
     kcal: number;
+    productCode?: string;
     productTitle: string;
     protein: number;
 };
@@ -129,9 +130,10 @@ const FoodTrackingModal = ({
                 protein: userNutrition.protein,
             });
 
-            const food = {
+            const updatedFood = {
                 calories: normalizedMacros.kcal,
                 name: userNutrition.name,
+                productCode: food?.productCode,
                 protein: normalizedMacros.protein,
                 totalCarbohydrate: normalizedMacros.carbs,
                 totalFat: normalizedMacros.fat,
@@ -140,16 +142,16 @@ const FoodTrackingModal = ({
             };
 
             const existingFood = await getFoodByNameAndMacros(
-                food.name,
-                food.calories,
-                food.protein,
-                food.totalCarbohydrate,
-                food.totalFat
+                updatedFood.name,
+                updatedFood.calories,
+                updatedFood.protein,
+                updatedFood.totalCarbohydrate,
+                updatedFood.totalFat
             );
 
             let foodId = existingFood?.id;
             if (!existingFood) {
-                foodId = await addFood(food);
+                foodId = await addFood(updatedFood);
             }
 
             if (foodId) {
@@ -158,7 +160,7 @@ const FoodTrackingModal = ({
         }
 
         onClose();
-    }, [calculatedValues.kcal, calculatedValues.protein, calculatedValues.carbs, calculatedValues.fat, food?.productTitle, t, mealType, unitAmount, userNutritionId, onClose]);
+    }, [calculatedValues.kcal, calculatedValues.carbs, calculatedValues.fat, calculatedValues.protein, unitAmount, mealType, food?.productTitle, food?.productCode, t, userNutritionId, onClose]);
 
     return (
         <ThemedModal

@@ -1636,6 +1636,22 @@ export const getFoodByNameAndMacros = async (
     return food || null;
 };
 
+export const searchFoodByName = async (searchTerm: string): Promise<FoodReturnType[] | null> => {
+    const foods = await database.food
+        .filter((food) => food.name.toLowerCase().includes(searchTerm.toLowerCase()))
+        .toArray();
+
+    return foods || null;
+};
+
+export const getFoodByProductCode = async (productCode: string): Promise<FoodReturnType | null> => {
+    const food = await database.food
+        .where({ productCode })
+        .first();
+
+    return food || null;
+};
+
 // Update functions
 
 export const updateUserMeasurements = async (id: number, userMeasurements: UserMeasurementsInsertType): Promise<number> => {

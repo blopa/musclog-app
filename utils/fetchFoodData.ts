@@ -1,3 +1,4 @@
+import { getFoodByProductCode, searchFoodByName } from '@/utils/database';
 import { normalizeText } from '@/utils/string';
 import {
     MusclogApiFoodInfoType,
@@ -17,7 +18,29 @@ export const mapProductData = (product: PaginatedOpenFoodFactsApiFoodProductInfo
 };
 
 export const fetchFoodData = async (query: string, page: number): Promise<{ pageCount: number; products: MusclogApiFoodInfoType[], }> => {
+    const result = {
+        pageCount: 1,
+        products: [] as MusclogApiFoodInfoType[],
+    };
+
     try {
+        if (page === 1) {
+            const savedFood = await searchFoodByName(query);
+            if (savedFood) {
+                result.products = [
+                    ...result.products,
+                    ...savedFood.map((food) => ({
+                        carbs: food.totalCarbohydrate,
+                        ean: food.productCode,
+                        fat: food.totalFat,
+                        kcal: food.calories,
+                        productTitle: food.name,
+                        protein: food.protein,
+                    })),
+                ];
+            }
+        }
+
         const response = await fetch(
             `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&page=${page}&search_simple=1&json=1`
         );
@@ -25,7 +48,7 @@ export const fetchFoodData = async (query: string, page: number): Promise<{ page
         if (response.ok) {
             const data: PaginatedOpenFoodFactsApiFoodInfoType = await response.json();
 
-            if (data.products.length === 0) {
+            if (data.products.length === 0 && page === 1) {
                 const normalizedQuery = normalizeText(query.slice(0, 10));
 
                 const apiPath = [...normalizedQuery].reduce((acc, char) => {
@@ -39,39 +62,42 @@ export const fetchFoodData = async (query: string, page: number): Promise<{ page
                 if (response.ok) {
                     const data: MusclogApiFoodInfoType[] = await response.json();
 
-                    return {
-                        pageCount: 1,
-                        products: data,
-                    };
+                    result.products = [
+                        ...result.products,
+                        ...data,
+                    ];
                 }
-
-                return {
-                    pageCount: 1,
-                    products: [],
-                };
             }
 
-            return {
-                pageCount: data.page_count,
-                products: data.products.map(mapProductData),
-            };
+            result.pageCount = data.page_count;
+            result.products = [
+                ...result.products,
+                ...data.products.map(mapProductData),
+            ];
         } else {
             console.error('Failed to fetch food items:', response.statusText);
-            return {
-                pageCount: 1,
-                products: [],
-            };
         }
     } catch (error) {
         console.error('Error fetching food items:', error);
-        return {
-            pageCount: 1,
-            products: [],
-        };
     }
+
+    return result;
 };
 
 export const fetchProductByEAN = async (ean: string): Promise<MusclogApiFoodInfoType | null> => {
+    const savedFood = await getFoodByProductCode(ean);
+
+    if (savedFood) {
+        return {
+            carbs: savedFood.totalCarbohydrate,
+            ean: savedFood.productCode,
+            fat: savedFood.totalFat,
+            kcal: savedFood.calories,
+            productTitle: savedFood.name,
+            protein: savedFood.protein,
+        };
+    }
+
     try {
         const response = await fetch(
             `https://world.openfoodfacts.org/api/v0/product/${ean}.json`
