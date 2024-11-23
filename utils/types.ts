@@ -187,7 +187,6 @@ export type FoodInsertType = {
     vitaminD?: number;
     vitaminE?: number;
     vitaminK?: number;
-    // these are not used yet
     zinc?: number;
 };
 

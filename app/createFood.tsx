@@ -94,16 +94,52 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
         const food = {
             alcohol: parseInt(urlParams.get('entry.1665963898') || '0', 10),
+            biotin: parseFloat(urlParams.get('entry.1257288602') || '0'),
+            brand: urlParams.get('entry.825388453') || '',
+            caffeine: parseFloat(urlParams.get('entry.1688892088') || '0'),
+            calcium: parseFloat(urlParams.get('entry.995973121') || '0'),
             calories: parseInt(urlParams.get('entry.1848808507') || '0', 10),
+            chloride: parseFloat(urlParams.get('entry.946753782') || '0'),
+            cholesterol: parseFloat(urlParams.get('entry.1733386302') || '0'),
+            chromium: parseFloat(urlParams.get('entry.281656146') || '0'),
+            copper: parseFloat(urlParams.get('entry.1049396127') || '0'),
             createdAt: urlParams.get('entry.1917240265') || new Date().toISOString(),
             dataId: urlParams.get('entry.1025747995') || generateHash(),
             fiber: parseInt(urlParams.get('entry.1039537292') || '0', 10),
+            folate: parseFloat(urlParams.get('entry.1243452339') || '0'),
+            folicAcid: parseFloat(urlParams.get('entry.670035765') || '0'),
+            iodine: parseFloat(urlParams.get('entry.1072580240') || '0'),
+            iron: parseFloat(urlParams.get('entry.1648646017') || '0'),
+            magnesium: parseFloat(urlParams.get('entry.1120455816') || '0'),
+            manganese: parseFloat(urlParams.get('entry.681293427') || '0'),
+            molybdenum: parseFloat(urlParams.get('entry.1402996') || '0'),
+            monounsaturatedFat: parseFloat(urlParams.get('entry.2003052366') || '0'),
             name: urlParams.get('entry.1515281433') || t('unnamed'),
+            niacin: parseFloat(urlParams.get('entry.396501138') || '0'),
+            pantothenicAcid: parseFloat(urlParams.get('entry.1055614332') || '0'),
+            phosphorus: parseFloat(urlParams.get('entry.555762242') || '0'),
+            polyunsaturatedFat: parseFloat(urlParams.get('entry.1663928689') || '0'),
+            potassium: parseFloat(urlParams.get('entry.22311928') || '0'),
             productCode: urlParams.get('entry.589875398') || '',
             protein: parseInt(urlParams.get('entry.1811363356') || '0', 10),
+            riboflavin: parseFloat(urlParams.get('entry.281566105') || '0'),
+            saturatedFat: parseFloat(urlParams.get('entry.1321812725') || '0'),
+            selenium: parseFloat(urlParams.get('entry.630251394') || '0'),
+            servingSize: parseFloat(urlParams.get('entry.422897572') || '0'),
+            sodium: parseFloat(urlParams.get('entry.1491871504') || '0'),
             sugar: parseInt(urlParams.get('entry.231759517') || '0', 10),
+            thiamin: parseFloat(urlParams.get('entry.1862464253') || '0'),
             totalCarbohydrate: parseInt(urlParams.get('entry.919411420') || '0', 10),
             totalFat: parseInt(urlParams.get('entry.2114676271') || '0', 10),
+            transFat: parseFloat(urlParams.get('entry.648448017') || '0'),
+            unsaturatedFat: parseFloat(urlParams.get('entry.538006077') || '0'),
+            vitaminA: parseFloat(urlParams.get('entry.1285896543') || '0'),
+            vitaminB6: parseFloat(urlParams.get('entry.1650599429') || '0'),
+            vitaminB12: parseFloat(urlParams.get('entry.994462403') || '0'),
+            vitaminC: parseFloat(urlParams.get('entry.636273284') || '0'),
+            vitaminD: parseFloat(urlParams.get('entry.1168816410') || '0'),
+            vitaminK: parseFloat(urlParams.get('entry.446901229') || '0'),
+            zinc: parseFloat(urlParams.get('entry.19181913') || '0'),
         };
 
         const foodId = await addFood(food);
@@ -141,14 +177,10 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
         }
     }, [foodName, formData, t]);
 
-    const numericFields = [
-        'calories',
-        'total_carbohydrate',
-        'total_fat',
-        'protein',
-        'alcohol',
-        'fiber',
-        'sugar',
+    const textFields = [
+        'name',
+        'product_code',
+        'brand',
     ];
 
     return (
@@ -183,7 +215,7 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 {form.fields
                     .filter((field) => !HIDDEN_FIELDS.includes(field.label))
                     .map((field) => {
-                        const isNumericField = numericFields.includes(field.label);
+                        const isNumericField = !textFields.includes(field.label);
 
                         return (
                             <View key={field.id} style={styles.formGroup}>
