@@ -99,6 +99,7 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
             dataId: urlParams.get('entry.1025747995') || generateHash(),
             fiber: parseInt(urlParams.get('entry.1039537292') || '0', 10),
             name: urlParams.get('entry.1515281433') || t('unnamed'),
+            productCode: urlParams.get('entry.589875398') || '',
             protein: parseInt(urlParams.get('entry.1811363356') || '0', 10),
             sugar: parseInt(urlParams.get('entry.231759517') || '0', 10),
             totalCarbohydrate: parseInt(urlParams.get('entry.919411420') || '0', 10),
