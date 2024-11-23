@@ -490,7 +490,7 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
     );
 
     return (
-        <View style={styles.container}>
+        <Screen style={styles.container}>
             <CompletionModal
                 buttonText={t('ok')}
                 isModalVisible={isModalVisible}
@@ -525,7 +525,7 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
                     {t('save')}
                 </Button>
             </View>
-        </View>
+        </Screen>
     );
 };
 

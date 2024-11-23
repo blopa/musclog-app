@@ -322,7 +322,7 @@ export default function ListWorkouts({ navigation }: { navigation: NavigationPro
 
     return (
         <Screen style={styles.container}>
-            <FABWrapper actions={fabActions} visible>
+            <FABWrapper actions={fabActions} icon="cog" visible>
                 <View style={styles.container}>
                     <Appbar.Header
                         mode="small"

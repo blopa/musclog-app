@@ -492,19 +492,21 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
 
     if (exercise && exercises?.[currentExerciseIndex]?.sets.length) {
         return (
-            <WorkoutSession
-                exercise={exercise}
-                isFirstExercise={currentExerciseIndex === 0}
-                isLastExercise={currentExerciseIndex === exercises.length - 1}
-                key={workout?.id}
-                onCancel={handleCancelWorkout}
-                onFinish={handleFinishExercise}
-                orderedExercises={exercises}
-                sets={exercises[currentExerciseIndex].sets}
-                startTime={startTime}
-                workoutDuration={workoutDuration}
-                workoutId={workout?.id}
-            />
+            <Screen style={styles.container}>
+                <WorkoutSession
+                    exercise={exercise}
+                    isFirstExercise={currentExerciseIndex === 0}
+                    isLastExercise={currentExerciseIndex === exercises.length - 1}
+                    key={workout?.id}
+                    onCancel={handleCancelWorkout}
+                    onFinish={handleFinishExercise}
+                    orderedExercises={exercises}
+                    sets={exercises[currentExerciseIndex].sets}
+                    startTime={startTime}
+                    workoutDuration={workoutDuration}
+                    workoutId={workout?.id}
+                />
+            </Screen>
         );
     }
 
