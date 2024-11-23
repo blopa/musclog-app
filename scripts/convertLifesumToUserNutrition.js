@@ -2,6 +2,7 @@ const csv = require('csv-parser');
 const fs = require('fs');
 const path = require('path');
 
+// eslint-disable-next-line no-undef
 const DIRNAME = __dirname;
 
 const generateHash = (length = 32) => {

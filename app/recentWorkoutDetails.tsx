@@ -31,25 +31,25 @@ import { useTranslation } from 'react-i18next';
 import { BackHandler, ScrollView, Share, StyleSheet, View } from 'react-native';
 import { ActivityIndicator, Text, useTheme } from 'react-native-paper';
 
-interface RecentWorkoutDetailsProps {
-    navigation: NavigationProp<any>;
-}
-
 type RouteParams = {
     id?: string;
 };
 
+interface RecentWorkoutDetailsProps {
+    navigation: NavigationProp<any>;
+}
+
 const RecentWorkoutDetails: React.FC<RecentWorkoutDetailsProps> = ({ navigation }) => {
     const { t } = useTranslation();
-    const [recentWorkout, setRecentWorkout] = useState<undefined | WorkoutEventReturnType>();
+    const [recentWorkout, setRecentWorkout] = useState<WorkoutEventReturnType | undefined>();
     const [exerciseVolumeData, setExerciseVolumeData] = useState<ExerciseVolumeType[]>([]);
     const [exercises, setExercises] = useState<(ExerciseReturnType | undefined)[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [workoutVolume, setWorkoutVolume] = useState<number>(0);
     const [deleteSetModalVisible, setDeleteSetModalVisible] = useState<boolean>(false);
     const [editSetModalVisible, setEditSetModalVisible] = useState<boolean>(false);
-    const [currentEdit, setCurrentEdit] = useState<null | { exerciseId: number, setIndex: number }>(null);
-    const [currentDelete, setCurrentDelete] = useState<null | { exerciseId: number, setIndex: number }>(null);
+    const [currentEdit, setCurrentEdit] = useState<{ exerciseId: number, setIndex: number } | null>(null);
+    const [currentDelete, setCurrentDelete] = useState<{ exerciseId: number, setIndex: number } | null>(null);
     const [editReps, setEditReps] = useState<string>('');
     const [editWeight, setEditWeight] = useState<string>('');
     const [editMacrosModalVisible, setEditMacrosModalVisible] = useState<boolean>(false);

@@ -12,6 +12,22 @@ import * as Sharing from 'expo-sharing';
 import * as Updates from 'expo-updates';
 import Papa from 'papaparse';
 
+export async function getFileInfoForExerciseId (exerciseId: number) {
+    try {
+        const localFilePath = getFileUriForExerciseId(exerciseId);
+        return await FileSystem.getInfoAsync(localFilePath);
+    } catch (error) {
+        console.error('Error getting file info for exercise ID:', error);
+        alert('An error occurred while getting file info. Please try again.');
+    }
+
+    return null;
+}
+
+export function getFileUriForExerciseId (exerciseId: number) {
+    return `${FileSystem.documentDirectory}${exerciseId}`;
+}
+
 export async function downloadAsyncToFileSystem (imageUrl: string, localFilePath: string) {
     try {
         return await FileSystem.downloadAsync(imageUrl, localFilePath);
@@ -74,6 +90,22 @@ export async function exportWorkout(workoutId: number) {
     }
 }
 
+export async function importDatabase(decryptionPhrase?: string) {
+    try {
+        const result = await DocumentPicker.getDocumentAsync({ type: 'application/json' });
+        if (!result.canceled && result.assets.length > 0) {
+            const { uri } = result.assets[0];
+
+            const dbDump = await FileSystem.readAsStringAsync(uri);
+            await restoreDatabase(dbDump, decryptionPhrase);
+            await Updates.reloadAsync();
+        }
+    } catch (error) {
+        console.error('Error importing database:', error);
+        alert('An error occurred while importing the database. Please try again.');
+    }
+}
+
 export async function getBase64StringFromPhotoUri(photoUri: string) {
     try {
         return await FileSystem.readAsStringAsync(photoUri, { encoding: FileSystem.EncodingType.Base64 });
@@ -85,20 +117,39 @@ export async function getBase64StringFromPhotoUri(photoUri: string) {
     return '';
 }
 
-export async function getFileInfoForExerciseId (exerciseId: number) {
-    try {
-        const localFilePath = getFileUriForExerciseId(exerciseId);
-        return await FileSystem.getInfoAsync(localFilePath);
-    } catch (error) {
-        console.error('Error getting file info for exercise ID:', error);
-        alert('An error occurred while getting file info. Please try again.');
-    }
+export async function resizeImage(photoUri: string, width: number = 512): Promise<string> {
+    const manipulatedImage = await ImageManipulator.manipulateAsync(
+        photoUri,
+        [{ resize: { width } }],
+        { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
+    );
 
-    return null;
+    return manipulatedImage.uri;
 }
 
-export function getFileUriForExerciseId (exerciseId: number) {
-    return `${FileSystem.documentDirectory}${exerciseId}`;
+export async function importJson() {
+    try {
+        const result = await DocumentPicker.getDocumentAsync({ type: 'application/json' });
+        if (!result.canceled && result.assets.length > 0) {
+            const { uri } = result.assets[0];
+
+            const dataString = await FileSystem.readAsStringAsync(uri);
+            return {
+                data: JSON.parse(dataString),
+                fileName: result.assets[0].name,
+            };
+        }
+
+        return {
+            data: {},
+            fileName: '',
+        };
+    } catch (error) {
+        console.error('Error importing JSON:', error);
+        alert('An error occurred while importing JSON data. Please try again.');
+    }
+
+    return {};
 }
 
 export async function importCsv() {
@@ -135,55 +186,4 @@ export async function importCsv() {
     }
 
     return {};
-}
-
-export async function importDatabase(decryptionPhrase?: string) {
-    try {
-        const result = await DocumentPicker.getDocumentAsync({ type: 'application/json' });
-        if (!result.canceled && result.assets.length > 0) {
-            const { uri } = result.assets[0];
-
-            const dbDump = await FileSystem.readAsStringAsync(uri);
-            await restoreDatabase(dbDump, decryptionPhrase);
-            await Updates.reloadAsync();
-        }
-    } catch (error) {
-        console.error('Error importing database:', error);
-        alert('An error occurred while importing the database. Please try again.');
-    }
-}
-
-export async function importJson() {
-    try {
-        const result = await DocumentPicker.getDocumentAsync({ type: 'application/json' });
-        if (!result.canceled && result.assets.length > 0) {
-            const { uri } = result.assets[0];
-
-            const dataString = await FileSystem.readAsStringAsync(uri);
-            return {
-                data: JSON.parse(dataString),
-                fileName: result.assets[0].name,
-            };
-        }
-
-        return {
-            data: {},
-            fileName: '',
-        };
-    } catch (error) {
-        console.error('Error importing JSON:', error);
-        alert('An error occurred while importing JSON data. Please try again.');
-    }
-
-    return {};
-}
-
-export async function resizeImage(photoUri: string, width: number = 512): Promise<string> {
-    const manipulatedImage = await ImageManipulator.manipulateAsync(
-        photoUri,
-        [{ resize: { width } }],
-        { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
-    );
-
-    return manipulatedImage.uri;
 }

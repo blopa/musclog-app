@@ -1,4 +1,4 @@
-import { addTransparency, CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
+import { CustomThemeColorsType, CustomThemeType, addTransparency } from '@/utils/colors';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, Modal, Pressable, StyleSheet, View, ViewStyle } from 'react-native';
 import { Button, Text, useTheme } from 'react-native-paper';

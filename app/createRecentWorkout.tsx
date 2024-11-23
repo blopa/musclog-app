@@ -11,8 +11,8 @@ import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import {
     addWorkoutEvent,
     getWorkoutEvent,
-    getWorkoutsPaginated,
     getWorkoutWithExercisesRepsAndSetsDetails,
+    getWorkoutsPaginated,
     updateWorkoutEvent,
 } from '@/utils/database';
 import { formatFloatNumericInputText, formatIntegerNumericInputText } from '@/utils/string';
@@ -24,6 +24,10 @@ import { useTranslation } from 'react-i18next';
 import { Alert, BackHandler, Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { Appbar, Button, Switch, Text, useTheme } from 'react-native-paper';
 
+type RouteParams = {
+    id?: string;
+};
+
 type LocalStateSetType = {
     exerciseId: number;
     exerciseName: string;
@@ -31,13 +35,9 @@ type LocalStateSetType = {
     isDropSet: boolean | undefined;
     reps: string;
     restTime: string;
-    setOrder: number;
-    supersetName: null | string;
     weight: string;
-};
-
-type RouteParams = {
-    id?: string;
+    setOrder: number;
+    supersetName: string | null;
 };
 
 export default function CreateRecentWorkout({ navigation }: { navigation: NavigationProp<any> }) {
@@ -134,9 +134,9 @@ export default function CreateRecentWorkout({ navigation }: { navigation: Naviga
                             isDropSet: set.isDropSet,
                             reps: matchingVolumeSet ? matchingVolumeSet.reps.toString() : set.reps.toString(),
                             restTime: matchingVolumeSet ? matchingVolumeSet.restTime.toString() : set.restTime.toString(),
+                            weight: matchingVolumeSet ? matchingVolumeSet.weight.toString() : set.weight.toString(),
                             setOrder: exerciseIndex + index + 1,
                             supersetName: set.supersetName || null,
-                            weight: matchingVolumeSet ? matchingVolumeSet.weight.toString() : set.weight.toString(),
                         };
                     })
                 );
@@ -185,9 +185,9 @@ export default function CreateRecentWorkout({ navigation }: { navigation: Naviga
                         isDropSet: set.isDropSet,
                         reps: set.reps.toString(),
                         restTime: set.restTime.toString(),
+                        weight: set.weight.toString(),
                         setOrder: exerciseIndex + setIndex + 1,
                         supersetName: set.supersetName || null,
-                        weight: set.weight.toString(),
                     }))
                 ));
             }
@@ -263,10 +263,10 @@ export default function CreateRecentWorkout({ navigation }: { navigation: Naviga
                     reps: Number(set.reps),
                     restTime: Number(set.restTime),
                     setId: set.id,
-                    setOrder: set.setOrder,
-                    supersetName: set.supersetName || '',
                     weight: Number(set.weight),
                     workoutId: workoutId!,
+                    setOrder: set.setOrder,
+                    supersetName: set.supersetName || '',
                 };
 
                 if (exerciseIndex >= 0) {

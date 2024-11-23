@@ -182,14 +182,14 @@ const CreateUserMetrics = ({ navigation }: { navigation: NavigationProp<any> }) 
 
         if (formattedText || !text) {
             switch (key) {
-                case 'fatPercentage':
-                    setFatPercentage(formattedText || '');
-                    break;
                 case 'height':
                     setHeight(formattedText || '');
                     break;
                 case 'weight':
                     setWeight(formattedText || '');
+                    break;
+                case 'fatPercentage':
+                    setFatPercentage(formattedText || '');
                     break;
                 default: {
                     break;

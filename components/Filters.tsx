@@ -13,8 +13,8 @@ type FiltersProps = {
     setShowAggregatedValues: (value: boolean) => void;
     setStartDate?: (date: Date) => void;
     setTimeRange: (value: string) => void;
-    showAggregatedValues: boolean;
     showAggregateSwitch?: boolean;
+    showAggregatedValues: boolean;
     showDateRange?: boolean;
     startDate?: Date;
     timeRange: string;
@@ -27,8 +27,8 @@ const Filters = ({
     setShowAggregatedValues,
     setStartDate,
     setTimeRange,
-    showAggregatedValues,
     showAggregateSwitch = true,
+    showAggregatedValues,
     showDateRange = false,
     startDate,
     timeRange,

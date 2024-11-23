@@ -13,38 +13,38 @@ import { generateHash, safeToFixed } from '@/utils/string';
 import { UserNutritionInsertType } from '@/utils/types';
 import { getDisplayFormattedWeight } from '@/utils/unit';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, StyleSheet, View } from 'react-native';
-import { ActivityIndicator, Text, useTheme } from 'react-native-paper';
+import { View, StyleSheet, ScrollView } from 'react-native';
+import { useTheme, Text, ActivityIndicator } from 'react-native-paper';
 
 export type FoodTrackingType = {
-    carbs: number;
-    fat: number;
-    grams?: number;
-    kcal: number;
     productTitle: string;
+    fat: number;
+    carbs: number;
     protein: number;
+    kcal: number;
+    grams?: number;
 };
 
 type FoodTrackingModalProps = {
-    food: FoodTrackingType | null;
-    isLoading?: boolean;
-    onClose: () => void;
-    showChart?: boolean;
-    userNutritionId?: null | number;
     visible: boolean;
+    onClose: () => void;
+    food: FoodTrackingType | null;
+    userNutritionId?: number | null;
+    isLoading?: boolean;
+    showChart?: boolean;
 };
 
 const GRAM_BASE = 100;
 
 const FoodTrackingModal = ({
-    food,
-    isLoading = false,
-    onClose,
-    showChart = true,
-    userNutritionId,
     visible,
+    onClose,
+    food,
+    userNutritionId,
+    isLoading = false,
+    showChart = true,
 }: FoodTrackingModalProps) => {
     const { t } = useTranslation();
     const { colors, dark } = useTheme<CustomThemeType>();
@@ -57,10 +57,10 @@ const FoodTrackingModal = ({
     const macroUnit = unitSystem === METRIC_SYSTEM ? GRAMS : OUNCES;
 
     const [calculatedValues, setCalculatedValues] = useState({
-        carbs: 0,
-        fat: 0,
         kcal: 0,
         protein: 0,
+        carbs: 0,
+        fat: 0,
     });
 
     const handleSetUnitAmount = useCallback((text: string) => {
@@ -79,10 +79,10 @@ const FoodTrackingModal = ({
             const factor = gramsValue / GRAM_BASE;
 
             setCalculatedValues({
-                carbs: factor * food.carbs,
-                fat: factor * food.fat,
                 kcal: factor * food.kcal,
                 protein: factor * food.protein,
+                carbs: factor * food.carbs,
+                fat: factor * food.fat,
             });
         }
     }, [food]);
@@ -103,17 +103,17 @@ const FoodTrackingModal = ({
 
     const handleTrackFood = useCallback(async () => {
         const userNutrition = {
-            calories: calculatedValues.kcal,
-            carbohydrate: calculatedValues.carbs,
-            dataId: generateHash(),
             date: new Date().toISOString(),
-            fat: calculatedValues.fat,
-            grams: parseFloat(unitAmount),
-            mealType: parseInt(mealType, 10),
-            name: food?.productTitle || t('unknown_food'),
+            calories: calculatedValues.kcal,
             protein: calculatedValues.protein,
+            carbohydrate: calculatedValues.carbs,
+            fat: calculatedValues.fat,
+            dataId: generateHash(),
+            name: food?.productTitle || t('unknown_food'),
             source: USER_METRICS_SOURCES.USER_INPUT,
             type: NUTRITION_TYPES.MEAL,
+            mealType: parseInt(mealType, 10),
+            grams: parseFloat(unitAmount),
         } as UserNutritionInsertType;
 
         if (userNutritionId) {
@@ -122,19 +122,19 @@ const FoodTrackingModal = ({
             await addUserNutrition(userNutrition);
 
             const normalizedMacros = normalizeMacrosByGrams({
-                carbs: userNutrition.carbohydrate,
                 fat: userNutrition.fat,
-                grams: userNutrition.grams,
-                kcal: userNutrition.calories,
+                carbs: userNutrition.carbohydrate,
                 protein: userNutrition.protein,
+                kcal: userNutrition.calories,
+                grams: userNutrition.grams,
             });
 
             const food = {
-                calories: normalizedMacros.calories,
-                name: normalizedMacros.name,
-                protein: normalizedMacros.protein,
                 totalCarbohydrate: normalizedMacros.carbohydrate,
                 totalFat: normalizedMacros.fat,
+                calories: normalizedMacros.calories,
+                protein: normalizedMacros.protein,
+                name: normalizedMacros.name,
                 // TODO: add the rest of the fields
                 // productCode: userNutrition.ean,
             };
@@ -163,12 +163,12 @@ const FoodTrackingModal = ({
 
     return (
         <ThemedModal
-            cancelText={t('cancel')}
-            confirmText={userNutritionId ? t('update') : t('track')}
-            onClose={onClose}
-            onConfirm={handleTrackFood}
-            title={food?.productTitle || ''}
             visible={visible}
+            onClose={onClose}
+            title={food?.productTitle || ''}
+            confirmText={userNutritionId ? t('update') : t('track')}
+            cancelText={t('cancel')}
+            onConfirm={handleTrackFood}
         >
             <ScrollView>
                 {food && !isLoading && (
@@ -176,9 +176,9 @@ const FoodTrackingModal = ({
                         <CustomTextInput
                             keyboardType="numeric"
                             label={t('grams')}
+                            value={unitAmount}
                             onChangeText={handleGramsChange}
                             placeholder={t('quantity')}
-                            value={unitAmount}
                         />
                         <CustomPicker
                             items={[
@@ -190,8 +190,8 @@ const FoodTrackingModal = ({
                                     })),
                             ]}
                             label={t('meal_type')}
-                            onValueChange={(value) => setMealType(value)}
                             selectedValue={mealType}
+                            onValueChange={(value) => setMealType(value)}
                         />
                         <View style={styles.metricRow}>
                             <Text style={styles.metricDetail}>
@@ -230,14 +230,14 @@ const FoodTrackingModal = ({
                     <View style={styles.pieChartContainer}>
                         <PieChart
                             data={[
-                                { color: '#4CAF50', label: t('protein'), value: getDisplayFormattedWeight(calculatedValues.protein || 0, GRAMS, isImperial) },
-                                { color: '#2196F3', label: t('carbohydrates'), value: getDisplayFormattedWeight(calculatedValues.carbs || 0, GRAMS, isImperial) },
-                                { color: '#FF9800', label: t('fat'), value: getDisplayFormattedWeight(calculatedValues.fat || 0, GRAMS, isImperial) },
+                                { label: t('protein'), value: getDisplayFormattedWeight(calculatedValues.protein || 0, GRAMS, isImperial), color: '#4CAF50' },
+                                { label: t('carbohydrates'), value: getDisplayFormattedWeight(calculatedValues.carbs || 0, GRAMS, isImperial), color: '#2196F3' },
+                                { label: t('fat'), value: getDisplayFormattedWeight(calculatedValues.fat || 0, GRAMS, isImperial), color: '#FF9800' },
                             ]}
-                            showLabels={false}
-                            showLegend={false}
                             showShareImageButton={false}
                             size={180}
+                            showLabels={false}
+                            showLegend={false}
                         />
                     </View>
                 ) : null}

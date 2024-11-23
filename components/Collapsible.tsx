@@ -4,7 +4,7 @@ import React, { PropsWithChildren, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Text, useTheme } from 'react-native-paper';
 
-export function Collapsible({ children, title }: PropsWithChildren & { title: string }) {
+export function Collapsible({ children, title }: { title: string } & PropsWithChildren) {
     const [isOpen, setIsOpen] = useState(false);
     const { colors } = useTheme<CustomThemeType>();
 

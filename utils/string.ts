@@ -20,7 +20,7 @@ const getNumericSeparator = () => {
             groupingSeparator = part.value;
         }
     });
-
+    
     return { decimalSeparator, groupingSeparator };
 };
 

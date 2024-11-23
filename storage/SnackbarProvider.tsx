@@ -1,5 +1,5 @@
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
-import React, { createContext, ReactNode, useContext, useState } from 'react';
+import React, { ReactNode, createContext, useContext, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StatusBar, StyleSheet } from 'react-native';
 import { Snackbar, useTheme } from 'react-native-paper';

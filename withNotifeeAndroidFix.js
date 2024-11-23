@@ -12,12 +12,12 @@ const notifeeAndroidWorkaroundCode = `
 module.exports = (expoConfig) => {
     return withProjectBuildGradle(expoConfig, async (config) => {
         const { contents } = generateCode.mergeContents({
+            newSrc: notifeeAndroidWorkaroundCode,
+            tag: 'notifieeAndroidWorkaround',
+            src: config.modResults.contents,
             anchor: /maven\s*\{\s*url\s*'https:\/\/www\.jitpack\.io'\s*\}/,
             comment: '//',
-            newSrc: notifeeAndroidWorkaroundCode,
             offset: 1,
-            src: config.modResults.contents,
-            tag: 'notifieeAndroidWorkaround',
         });
 
         config.modResults.contents = contents;

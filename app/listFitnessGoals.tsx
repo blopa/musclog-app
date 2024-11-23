@@ -10,9 +10,9 @@ import { useSnackbar } from '@/storage/SnackbarProvider';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import {
     deleteFitnessGoals,
+    getTotalFitnessGoalsCount,
     getFitnessGoalsPaginated,
     getLatestFitnessGoals,
-    getTotalFitnessGoalsCount,
 } from '@/utils/database';
 import { formatDate } from '@/utils/date';
 import { safeToFixed } from '@/utils/string';
@@ -214,29 +214,29 @@ export default function ListFitnessGoals({ navigation }: { navigation: Navigatio
                                 <View style={styles.pieChartContainer}>
                                     <PieChart
                                         data={[
-                                            { color: '#4CAF50', label: t('protein'), value: getDisplayFormattedWeight(latestFitnessGoal.protein || 0, GRAMS, isImperial) },
-                                            { color: '#2196F3', label: t('carbohydrates'), value: getDisplayFormattedWeight(latestFitnessGoal.totalCarbohydrate || 0, GRAMS, isImperial) },
-                                            { color: '#FF9800', label: t('fat'), value: getDisplayFormattedWeight(latestFitnessGoal.totalFat || 0, GRAMS, isImperial) },
+                                            { label: t('protein'), value: getDisplayFormattedWeight(latestFitnessGoal.protein || 0, GRAMS, isImperial), color: '#4CAF50' },
+                                            { label: t('carbohydrates'), value: getDisplayFormattedWeight(latestFitnessGoal.totalCarbohydrate || 0, GRAMS, isImperial), color: '#2196F3' },
+                                            { label: t('fat'), value: getDisplayFormattedWeight(latestFitnessGoal.totalFat || 0, GRAMS, isImperial), color: '#FF9800' },
                                         ]}
-                                        showLabels={false}
-                                        showLegend={false}
                                         showShareImageButton={false}
                                         size={130}
+                                        showLabels={false}
+                                        showLegend={false}
                                     />
                                 </View>
                             </Card.Content>
                         </ThemedCard>
                     )}
                     <FlashList
-                        contentContainerStyle={styles.scrollViewContent}
-                        data={fitnessGoals}
-                        estimatedItemSize={95}
-                        keyExtractor={(item) => (item?.id ? item.id.toString() : 'default')}
                         ListFooterComponent={
                             fitnessGoals.length < totalFitnessGoalsCount ? (
                                 <ActivityIndicator />
                             ) : null
                         }
+                        contentContainerStyle={styles.scrollViewContent}
+                        data={fitnessGoals}
+                        estimatedItemSize={95}
+                        keyExtractor={(item) => (item?.id ? item.id.toString() : 'default')}
                         onEndReached={loadMoreFitnessGoals}
                         onEndReachedThreshold={0.5}
                         renderItem={({ item: goal }) => (

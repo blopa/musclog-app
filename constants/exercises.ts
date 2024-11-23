@@ -23,8 +23,8 @@ export const MUSCLE_GROUPS = {
     SHOULDERS: 'shoulders',
 } as const;
 
-
-
+/* eslint-disable sort-imports */
+/* eslint-disable import/first */
 /* eslint-disable perfectionist/sort-objects */
 export const ACTIVITY_LEVELS = {
     SEDENTARY: 'sedentary',
@@ -53,8 +53,8 @@ export const VOLUME_CALCULATION_TYPES = {
     ALGO_GENERATED: 'algo_generated',
     AI_GENERATED: 'ai_generated',
 } as const;
-
-
+/* eslint-enable sort-imports */
+/* eslint-enable import/first */
 /* eslint-enable perfectionist/sort-objects */
 
 export const VOLUME_CALCULATION_TYPES_VALUES = Object.values(VOLUME_CALCULATION_TYPES);

@@ -30,7 +30,7 @@ const WorkoutModal = ({ onClose, visible }: WorkoutModalProps) => {
     const navigation = useNavigation();
     const { t } = useTranslation();
     const [isVisible, setIsVisible] = useState(visible);
-    const [selectedWorkout, setSelectedWorkout] = useState<null | WorkoutReturnType>(null);
+    const [selectedWorkout, setSelectedWorkout] = useState<WorkoutReturnType | null>(null);
     const [workoutDays, setWorkoutDays] = useState<WorkoutReturnType[]>([]);
     const [exercises, setExercises] = useState<ExerciseReturnType[]>([]);
     const [exerciseSets, setExerciseSets] = useState<{ exerciseId: number; sets: SetReturnType[] }[]>([]);
@@ -83,7 +83,7 @@ const WorkoutModal = ({ onClose, visible }: WorkoutModalProps) => {
             (exerciseWithSets) => {
                 const { id: exerciseId, sets } = exerciseWithSets;
                 const minSetOrder = Math.min(...sets.map((set) => set.setOrder));
-                return { exerciseId: exerciseId!, minSetOrder, sets };
+                return { exerciseId: exerciseId!, sets, minSetOrder };
             }
         );
 
@@ -271,10 +271,6 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean, listQty: numbe
         fontSize: 14,
         marginTop: 8,
     },
-    cardsContainer: {
-        paddingBottom: 16,
-        paddingHorizontal: 20,
-    },
     cardSubtitle: {
         color: colors.onBackground,
         fontSize: 14,
@@ -284,6 +280,10 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean, listQty: numbe
         color: colors.onSurface,
         fontSize: 18,
         fontWeight: 'bold',
+    },
+    cardsContainer: {
+        paddingBottom: 16,
+        paddingHorizontal: 20,
     },
     createWorkoutButton: {
         marginTop: 16,

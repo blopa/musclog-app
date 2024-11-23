@@ -30,7 +30,7 @@ type NutritionDetailedChartProps = {
         weightData: ExtendedLineChartDataType,
     }[],
     averageCalories: null | number,
-    ffmi: undefined | { ffmi: string, normalizedFFMI: string },
+    ffmi: { ffmi: string, normalizedFFMI: string } | undefined,
     foodChartData: NutritionStackedBarChartDataType[],
     foodLabels: string[],
     isLastChart: boolean,
@@ -383,7 +383,6 @@ const NutritionDetailedChart = ({
                 </View>
             ) : null}
             <PieChart
-                backgroundColor={colors.surface}
                 data={pieChartData}
                 shareButtonPosition={isLastChart ? 'top' : 'bottom'}
                 title={t('average_nutrition_distribution')}

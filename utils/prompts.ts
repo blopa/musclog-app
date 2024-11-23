@@ -74,7 +74,7 @@ export const getSendChatMessageFunctions = (): (FunctionDeclaration[] | OpenAI.C
     }];
 };
 
-export const getUserDetailsPrompt = (user: undefined | UserWithMetricsType, weightUnit = KILOGRAMS) => {
+export const getUserDetailsPrompt = (user: UserWithMetricsType | undefined, weightUnit = KILOGRAMS) => {
     return `The user ${user?.metrics.eatingPhase ? `is currently ${user.metrics.eatingPhase}` : 'is using this workout logger app'}`
         + `${user?.birthday ? ` and their age is ${Math.floor((new Date().getTime() - new Date(user.birthday).getTime()) / 3.15576e+10)}` : ''}`
         + `${user?.gender ? ` and their gender is ${user.gender}` : ''}.`
@@ -396,7 +396,7 @@ export const getCalculateNextWorkoutVolumePrompt = async (workout: WorkoutReturn
 
         return [];
     };
-
+    
     return [
         {
             content: [
@@ -615,16 +615,20 @@ export const getMacrosEstimationFunctions = (
         name: 'estimateMacros',
         parameters: {
             properties: {
-                calories: {
-                    description: `The ${mode} calories`,
+                protein: {
+                    description: `The ${mode} protein in grams`,
+                    type: 'number',
+                },
+                fat: {
+                    description: `The ${mode} fat in grams`,
                     type: 'number',
                 },
                 carbs: {
                     description: `The ${mode} carbohydrates in grams`,
                     type: 'number',
                 },
-                fat: {
-                    description: `The ${mode} fat in grams`,
+                calories: {
+                    description: `The ${mode} calories`,
                     type: 'number',
                 },
                 grams: {
@@ -634,10 +638,6 @@ export const getMacrosEstimationFunctions = (
                 name: {
                     description: 'The name of the food / meal',
                     type: 'string',
-                },
-                protein: {
-                    description: `The ${mode} protein in grams`,
-                    type: 'number',
                 },
             },
             required: ['protein', 'fat', 'carbs', 'calories', 'name', 'grams'],

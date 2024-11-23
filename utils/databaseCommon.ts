@@ -29,17 +29,17 @@ interface CommonFunctionsParams {
     addSetting: (type: string, value: string) => Promise<number>;
     addUserMetrics: (userMetrics: UserMetricsInsertType) => Promise<number>;
     addUserNutrition: (userNutrition: UserNutritionInsertType) => Promise<number>;
-    addWorkout: (workout: WorkoutInsertType) => Promise<number>;
     addWorkoutEvent: (event: any) => Promise<number>;
+    addWorkout: (workout: WorkoutInsertType) => Promise<number>;
     countChatMessages: () => Promise<number>;
     countExercises: () => Promise<number>;
     getAllExercises: () => Promise<ExerciseReturnType[]>;
     getAllWorkoutsWithTrashed: () => Promise<WorkoutReturnType[]>;
     getExerciseById: (id: number) => Promise<ExerciseReturnType | undefined>;
-    getSetById: (id: number) => Promise<null | SetReturnType | undefined>;
+    getSetById: (id: number) => Promise<SetReturnType | null | undefined>;
     getSetsByWorkoutId: (workoutId: number) => Promise<SetReturnType[]>;
     getUser: () => Promise<any>;
-    getWorkoutByIdWithTrashed: (id: number) => Promise<undefined | WorkoutReturnType>;
+    getWorkoutByIdWithTrashed: (id: number) => Promise<WorkoutReturnType | undefined>;
     updateSet: (id: number, set: SetInsertType) => Promise<number>;
     updateWorkout: (id: number, workout: WorkoutInsertType) => Promise<number>;
 }
@@ -51,8 +51,8 @@ export const getCommonFunctions = ({
     addSetting,
     addUserMetrics,
     addUserNutrition,
-    addWorkout,
     addWorkoutEvent,
+    addWorkout,
     countChatMessages,
     countExercises,
     getAllExercises,
@@ -181,15 +181,15 @@ export const getCommonFunctions = ({
                         // Save sets
                         for (const set of exercise.sets) {
                             await addSet({
-                                createdAt: parsedWorkout.date,
+                                workoutId,
                                 exerciseId,
-                                isDropSet: false, // or as appropriate
-                                reps: set.reps,
-                                restTime: 60, // or as appropriate
                                 setOrder: setOrder++,
                                 supersetName: '', // or as appropriate
+                                reps: set.reps,
                                 weight: set.weight,
-                                workoutId,
+                                restTime: 60, // or as appropriate
+                                isDropSet: false, // or as appropriate
+                                createdAt: parsedWorkout.date,
                             });
                         }
                     }
@@ -242,15 +242,15 @@ export const getCommonFunctions = ({
 
                             if (originalSet) {
                                 const updatedSet: SetInsertType = {
-                                    createdAt: originalSet.createdAt,
+                                    workoutId: originalSet.workoutId,
                                     exerciseId: originalSet.exerciseId,
-                                    isDropSet: set.isDropSet !== undefined ? set.isDropSet : originalSet.isDropSet,
-                                    reps: set.reps !== undefined ? set.reps : originalSet.reps,
-                                    restTime: set.restTime !== undefined ? set.restTime : originalSet.restTime,
                                     setOrder: originalSet.setOrder,
                                     supersetName: set.supersetName || originalSet.supersetName,
+                                    reps: set.reps !== undefined ? set.reps : originalSet.reps,
                                     weight: set.weight !== undefined ? set.weight : originalSet.weight,
-                                    workoutId: originalSet.workoutId,
+                                    restTime: set.restTime !== undefined ? set.restTime : originalSet.restTime,
+                                    isDropSet: set.isDropSet !== undefined ? set.isDropSet : originalSet.isDropSet,
+                                    createdAt: originalSet.createdAt,
                                 };
 
                                 await updateSet(set.setId, updatedSet);
@@ -259,15 +259,15 @@ export const getCommonFunctions = ({
                         } else {
                             // New set
                             const newSet: SetInsertType = {
-                                createdAt: getCurrentTimestamp(),
+                                workoutId: workoutId!,
                                 exerciseId: exercise.exerciseId,
-                                isDropSet: set.isDropSet || false,
-                                reps: set.reps,
-                                restTime: set.restTime || 0,
                                 setOrder: setOrder++,
                                 supersetName: set.supersetName || '',
+                                reps: set.reps,
                                 weight: set.weight,
-                                workoutId: workoutId!,
+                                restTime: set.restTime || 0,
+                                isDropSet: set.isDropSet || false,
+                                createdAt: getCurrentTimestamp(),
                             };
 
                             await addSet(newSet);

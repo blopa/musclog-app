@@ -2,8 +2,31 @@ const fs = require('fs');
 const path = require('path');
 const ts = require('typescript');
 
+// eslint-disable-next-line no-undef
 const DIRNAME = __dirname;
 const projectRoot = path.resolve(DIRNAME, '..');
+
+function getAllTsxFiles(dir) {
+    let results = [];
+    const files = fs.readdirSync(dir);
+
+    files.forEach((file) => {
+        const filePath = path.join(dir, file);
+        const stat = fs.statSync(filePath);
+
+        if (stat.isDirectory()) {
+            if (file === 'node_modules') {
+                return;
+            }
+
+            results = results.concat(getAllTsxFiles(filePath));
+        } else if (filePath.endsWith('.tsx')) {
+            results.push(filePath);
+        }
+    });
+
+    return results;
+}
 
 /**
  * Parse the `.tsx` file and find unused styles properties.
@@ -66,28 +89,6 @@ function checkUnusedStyles(filePath) {
             );
         });
     }
-}
-
-function getAllTsxFiles(dir) {
-    let results = [];
-    const files = fs.readdirSync(dir);
-
-    files.forEach((file) => {
-        const filePath = path.join(dir, file);
-        const stat = fs.statSync(filePath);
-
-        if (stat.isDirectory()) {
-            if (file === 'node_modules') {
-                return;
-            }
-
-            results = results.concat(getAllTsxFiles(filePath));
-        } else if (filePath.endsWith('.tsx')) {
-            results.push(filePath);
-        }
-    });
-
-    return results;
 }
 
 /**

@@ -11,10 +11,10 @@ import {
 } from './date';
 
 jest.mock('@/lang/lang', () => ({
-    language: 'en-US',
     LOCALE_MAP: {
         'en-US': require('date-fns/locale/en-US'),
     },
+    language: 'en-US',
 }));
 
 describe('Date Utils Functions', () => {

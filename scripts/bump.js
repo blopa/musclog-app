@@ -2,11 +2,8 @@ const fs = require('fs');
 const path = require('path');
 // const { execSync } = require('child_process');
 
+// eslint-disable-next-line no-undef
 const DIRNAME = __dirname;
-
-function bumpBuildNumber(buildNumber) {
-    return (parseInt(buildNumber, 10) + 1).toString();
-}
 
 function bumpVersion(version) {
     const versionParts = version.split('.').map(Number);
@@ -20,6 +17,10 @@ function bumpVersion(version) {
         versionParts[0] += 1;
     }
     return versionParts.join('.');
+}
+
+function bumpBuildNumber(buildNumber) {
+    return (parseInt(buildNumber, 10) + 1).toString();
 }
 
 function bumpVersionCode(versionCode) {

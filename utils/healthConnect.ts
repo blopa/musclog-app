@@ -2,7 +2,7 @@ import type { NutritionRecord } from 'react-native-health-connect/src/types/reco
 
 import { USER_METRICS_SOURCES } from '@/constants/healthConnect';
 import { EATING_PHASES, MEAL_TYPE, NUTRITION_TYPES } from '@/constants/nutrition';
-import { LAST_TIME_APP_USED, READ_HEALTH_CONNECT_TYPE } from '@/constants/storage';
+import { READ_HEALTH_CONNECT_TYPE, LAST_TIME_APP_USED } from '@/constants/storage';
 import { LAST_RUN_KEY } from '@/constants/tasks';
 import {
     checkIsHealthConnectedPermitted,
@@ -263,7 +263,6 @@ export const syncHealthConnectData = async (
                     date: nutrition.startTime,
                     fat: nutrition?.totalFat?.inGrams || 0,
                     fiber: nutrition?.dietaryFiber?.inGrams || 0,
-                    mealType: nutrition.mealType || 0,
                     monounsaturatedFat: nutrition?.monounsaturatedFat?.inGrams || 0,
                     name: nutrition?.name || '',
                     polyunsaturatedFat: nutrition?.polyunsaturatedFat?.inGrams || 0,
@@ -274,6 +273,7 @@ export const syncHealthConnectData = async (
                     transFat: nutrition?.transFat?.inGrams || 0,
                     type: NUTRITION_TYPES.MEAL,
                     unsaturatedFat: nutrition?.unsaturatedFat?.inGrams || 0,
+                    mealType: nutrition.mealType || 0,
                 });
             }
         }
@@ -300,35 +300,35 @@ export const syncHealthConnectData = async (
         // console.log(`Adding ${userNutritions.length} userNutritions to Health Connect`);
         for (const userNutrition of userNutritions) {
             const nutritionRecord: NutritionRecord = {
-                dietaryFiber: {
-                    unit: 'grams',
-                    value: userNutrition.fiber || 0,
-                },
-                endTime: new Date((new Date()).getTime() + 10000).toISOString(),
-                energy: {
-                    unit: 'kilocalories',
-                    value: userNutrition.calories || 0,
-                },
-                mealType: userNutrition?.mealType || MEAL_TYPE.UNKNOWN,
-                name: userNutrition.name,
-                protein: {
-                    unit: 'grams',
-                    value: userNutrition.protein || 0,
-                },
-                recordType: 'Nutrition',
                 startTime: userNutrition.date || new Date().toISOString(),
-                sugar: {
+                endTime: new Date((new Date()).getTime() + 10000).toISOString(),
+                mealType: userNutrition?.mealType || MEAL_TYPE.UNKNOWN,
+                energy: {
+                    value: userNutrition.calories || 0,
+                    unit: 'kilocalories',
+                },
+                protein: {
+                    value: userNutrition.protein || 0,
                     unit: 'grams',
-                    value: userNutrition.sugar || 0,
                 },
                 totalCarbohydrate: {
-                    unit: 'grams',
                     value: userNutrition.carbohydrate || 0,
+                    unit: 'grams',
                 },
                 totalFat: {
-                    unit: 'grams',
                     value: userNutrition.fat || 0,
+                    unit: 'grams',
                 },
+                dietaryFiber: {
+                    value: userNutrition.fiber || 0,
+                    unit: 'grams',
+                },
+                sugar: {
+                    value: userNutrition.sugar || 0,
+                    unit: 'grams',
+                },
+                name: userNutrition.name,
+                recordType: 'Nutrition',
             };
 
             try {
@@ -336,8 +336,8 @@ export const syncHealthConnectData = async (
                 if (results[0]) {
                     await updateUserNutrition(userNutrition.id, {
                         ...userNutrition,
-                        dataId: results[0],
                         source: USER_METRICS_SOURCES.HEALTH_CONNECT,
+                        dataId: results[0],
                     });
                 }
             } catch (error) {

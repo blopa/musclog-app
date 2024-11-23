@@ -15,7 +15,7 @@ import { Button, Card, Text, useTheme } from 'react-native-paper';
 
 const RecentWorkoutMessageCard = ({ recentWorkoutId }: { recentWorkoutId: number }) => {
     const navigation = useNavigation<NavigationProp<any>>();
-    const [recentWorkout, setRecentWorkout] = useState<undefined | WorkoutEventReturnType>();
+    const [recentWorkout, setRecentWorkout] = useState<WorkoutEventReturnType | undefined>();
     const [exerciseData, setExerciseData] = useState([]);
     const [workoutVolume, setWorkoutVolume] = useState<number>(0);
 

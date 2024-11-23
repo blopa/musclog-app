@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
+// eslint-disable-next-line no-undef
 const DIRNAME = __dirname;
 
 // Path to the JSON file

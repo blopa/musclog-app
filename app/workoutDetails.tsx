@@ -24,7 +24,7 @@ import {
     getWorkoutInsights,
     getWorkoutVolumeInsights,
 } from '@/utils/ai';
-import { addTransparency, CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
+import { CustomThemeColorsType, CustomThemeType, addTransparency } from '@/utils/colors';
 import { calculatePastWorkoutsWeeklyAverages } from '@/utils/data';
 import {
     getExerciseById,
@@ -63,16 +63,16 @@ interface WorkoutDetailsProps {
 const WHOLE_WORKOUT = 'wholeWorkout';
 
 interface ExerciseGroup {
+    supersetName?: string;
     exercises: {
         exercise: ExerciseReturnType;
         sets: SetReturnType[];
     }[];
-    supersetName?: string;
 }
 
 const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
     const { t } = useTranslation();
-    const [workout, setWorkout] = useState<undefined | WorkoutReturnType>();
+    const [workout, setWorkout] = useState<WorkoutReturnType | undefined>();
     const [exerciseGroups, setExerciseGroups] = useState<ExerciseGroup[]>([]);
     const [exercisesMap, setExercisesMap] = useState<Map<number, ExerciseReturnType>>(new Map());
     const [recentWorkouts, setRecentWorkouts] = useState<WorkoutEventReturnType[]>([]);
@@ -158,9 +158,9 @@ const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
 
             // Create a list of exercises with their sets and earliest setOrder
             const exercisesWithSets = Array.from(newExercisesMap.entries()).map(([exerciseId, exercise]) => ({
-                earliestSetOrder: Math.min(...(exerciseSetsMap[exerciseId]?.map((set) => set.setOrder) || [Infinity])),
                 exercise,
                 sets: exerciseSetsMap[exerciseId] || [],
+                earliestSetOrder: Math.min(...(exerciseSetsMap[exerciseId]?.map((set) => set.setOrder) || [Infinity])),
             }));
 
             // Sort exercises by earliestSetOrder
@@ -168,7 +168,7 @@ const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
 
             // Group exercises into supersets based on supersetName
             const groupedExercises: ExerciseGroup[] = [];
-            let currentSupersetName: string | undefined;
+            let currentSupersetName: string | undefined = undefined;
             let currentGroup: ExerciseGroup | null = null;
 
             exercisesWithSets.forEach(({ exercise, sets }) => {
@@ -180,8 +180,8 @@ const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
                     if (currentSupersetName !== supersetName) {
                         // Start a new superset group
                         currentGroup = {
-                            exercises: [],
                             supersetName,
+                            exercises: [],
                         };
                         groupedExercises.push(currentGroup);
                         currentSupersetName = supersetName;
@@ -520,8 +520,8 @@ const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
                                     aggregatedValuesLabel={t('show_aggregated_averages')}
                                     setShowAggregatedValues={setShowWeeklyAverages}
                                     setTimeRange={setTimeRange}
-                                    showAggregatedValues={showWeeklyAverages}
                                     showAggregateSwitch={recentWorkouts.length > 7}
+                                    showAggregatedValues={showWeeklyAverages}
                                     timeRange={timeRange}
                                 />
                                 <CustomPicker

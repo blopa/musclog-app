@@ -1,6 +1,6 @@
 import { addChat, deleteChatById, getChatsPaginated } from '@/utils/database';
 import { ChatInsertType, ChatReturnType } from '@/utils/types';
-import React, { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react';
+import React, { ReactNode, createContext, useCallback, useContext, useEffect, useState } from 'react';
 
 interface ChatContextValue {
     addNewChat: (chat: ChatInsertType) => Promise<void>;

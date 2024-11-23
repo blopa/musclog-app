@@ -25,14 +25,14 @@ type UserFitnessReportProps = {
     fatPercentageLabels: string[];
     foodChartData: NutritionStackedBarChartDataType[];
     foodLabels: string[];
-    metricsAverages: undefined | {
+    metricsAverages: {
         averageFatPercentage: number;
         averageFatPercentageDifference: number;
         averageWeight: number;
         averageWeightDifference: number;
         fatPercentageDataPointsCount: number;
         weightDataPointsCount: number;
-    };
+    } | undefined;
     period: number;
     showWeeklyAverages: boolean;
     stackedMacrosYAxisConfig: {

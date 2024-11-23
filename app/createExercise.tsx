@@ -56,9 +56,7 @@ const CreateExercise = ({ navigation }: { navigation: NavigationProp<any> }) => 
     useFocusEffect(
         useCallback(() => {
             if (id) {
-                loadExercise()
-                    .finally(() => setIsLoading(false))
-                    .catch(() => setIsLoading(false));
+                loadExercise().then(() => setIsLoading(false));
             } else {
                 setIsLoading(false);
             }

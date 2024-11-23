@@ -172,11 +172,11 @@ export default function ListUserMeasurements({ navigation }: { navigation: Navig
                         <AnimatedSearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
                     </Appbar.Header>
                     <FlashList
+                        ListFooterComponent={userMeasurements.length < totalUserMeasurementsCount ? <ActivityIndicator /> : null}
                         contentContainerStyle={styles.scrollViewContent}
                         data={filteredUserMeasurements}
                         estimatedItemSize={95}
                         keyExtractor={(item) => (item?.id ? item.id.toString() : 'default')}
-                        ListFooterComponent={userMeasurements.length < totalUserMeasurementsCount ? <ActivityIndicator /> : null}
                         onEndReached={loadMoreUserMeasurements}
                         onEndReachedThreshold={0.5}
                         renderItem={({ item: measurement }) => (

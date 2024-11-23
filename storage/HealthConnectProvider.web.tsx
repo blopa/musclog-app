@@ -1,7 +1,7 @@
 import type { HealthConnectRecord, RecordType } from 'react-native-health-connect/src/types';
 
 import { HealthDataType } from '@/utils/types';
-import React, { createContext, ReactNode, useContext } from 'react';
+import React, { ReactNode, createContext, useContext } from 'react';
 
 import data from '../data/healthDataExample.json';
 
@@ -12,10 +12,10 @@ type HealthConnectAccessType = 'read' | 'write';
 interface HealthConnectContextValue {
     checkReadIsPermitted: (recordTypes?: RecordType[]) => Promise<boolean>;
     checkWriteIsPermitted: (recordTypes?: RecordType[]) => Promise<boolean>;
-    deleteHealthData: (recordType: RecordType, dataIds: string[]) => Promise<void>;
     getHealthData: (pageSize?: number, recordTypes?: RecordType[]) => Promise<HealthDataType>;
-    healthData: HealthDataType;
     insertHealthData: (data: HealthConnectRecord[]) => Promise<string[]>;
+    deleteHealthData: (recordType: RecordType, dataIds: string[]) => Promise<void>;
+    healthData: HealthDataType;
     requestPermissions: () => Promise<void>;
 }
 
@@ -30,10 +30,10 @@ export const getHealthConnectData = async (pageSize?: number): Promise<HealthDat
 const HealthConnectContext = createContext<HealthConnectContextValue>({
     checkReadIsPermitted: async (recordTypes?: RecordType[]) => IS_PERMITTED,
     checkWriteIsPermitted: async (recordTypes?: RecordType[]) => IS_PERMITTED,
-    deleteHealthData: async (recordType: RecordType, dataIds: string[]) => {},
     getHealthData: async (pageSize?: number, recordTypes?: RecordType[]) => (IS_PERMITTED ? data : []) as unknown as HealthDataType,
-    healthData: (IS_PERMITTED ? data : []) as unknown as HealthDataType,
     insertHealthData: async (data: HealthConnectRecord[]): Promise<string[]> => Promise.resolve([]),
+    deleteHealthData: async (recordType: RecordType, dataIds: string[]) => {},
+    healthData: (IS_PERMITTED ? data : []) as unknown as HealthDataType,
     requestPermissions: async () => {},
 });
 
@@ -49,11 +49,11 @@ export const HealthConnectProvider = ({ children }: HealthConnectProviderProps) 
             value={{
                 checkReadIsPermitted: async () => IS_PERMITTED,
                 checkWriteIsPermitted: async () => IS_PERMITTED,
-                deleteHealthData: async (recordType: RecordType, dataIds: string[]) => {},
                 getHealthData: async () => (IS_PERMITTED ? data : []) as unknown as HealthDataType,
                 healthData: (IS_PERMITTED ? data : []) as unknown as HealthDataType,
-                insertHealthData: async (data: HealthConnectRecord[]) => Promise.resolve([]),
                 requestPermissions: async () => {},
+                insertHealthData: async (data: HealthConnectRecord[]) => Promise.resolve([]),
+                deleteHealthData: async (recordType: RecordType, dataIds: string[]) => {},
             }}
         >
             {children}

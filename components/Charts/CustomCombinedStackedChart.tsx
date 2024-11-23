@@ -4,7 +4,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import React, { ReactNode, useCallback, useRef } from 'react';
 import { Dimensions, StyleSheet, View } from 'react-native';
 import { CombinedChart } from 'react-native-charts-wrapper';
-import { IconButton, Text, useTheme } from 'react-native-paper';
+import { IconButton, useTheme, Text } from 'react-native-paper';
 import { processColor } from 'react-native-reanimated';
 import Share from 'react-native-share';
 import ViewShot from 'react-native-view-shot';

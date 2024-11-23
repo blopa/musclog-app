@@ -1,4 +1,11 @@
+/* eslint-disable sort-imports */
+/* eslint-disable import/first */
+/* eslint-disable perfectionist/sort-imports */
 import 'react-native-get-random-values';
+/* eslint-enable sort-imports */
+/* eslint-enable import/first */
+/* eslint-enable perfectionist/sort-imports */
+
 import { ENCRYPTION_KEY } from '@/constants/storage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CryptoJS from 'crypto-js';

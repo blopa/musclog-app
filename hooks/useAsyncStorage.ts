@@ -2,14 +2,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCallback, useEffect, useState } from 'react';
 
 type UseAsyncStorageReturn<T> = {
-    getValue: () => Promise<null | T>;
+    getValue: () => Promise<T | null>;
     removeValue: () => Promise<void>;
     setValue: (value: T) => Promise<void>;
-    value: null | T;
+    value: T | null;
 };
 
 const useAsyncStorage = <T,>(key: string, initialValue: T): UseAsyncStorageReturn<T> => {
-    const [storedValue, setStoredValue] = useState<null | T>(initialValue);
+    const [storedValue, setStoredValue] = useState<T | null>(initialValue);
 
     useEffect(() => {
         const loadStoredValue = async () => {
@@ -44,7 +44,7 @@ const useAsyncStorage = <T,>(key: string, initialValue: T): UseAsyncStorageRetur
         }
     }, [key]);
 
-    const getValue = useCallback(async (): Promise<null | T> => {
+    const getValue = useCallback(async (): Promise<T | null> => {
         try {
             const value = await AsyncStorage.getItem(key);
             if (value !== null) {

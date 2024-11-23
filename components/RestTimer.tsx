@@ -3,7 +3,7 @@ import { formatTime } from '@/utils/date';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
-import { Button, Text, useTheme } from 'react-native-paper';
+import { Button, useTheme, Text } from 'react-native-paper';
 
 type RestTimerProps = {
     onAddTime: () => void;

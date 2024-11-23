@@ -167,56 +167,6 @@ export const aggregateMetricsByDate = (metrics: UserMetricsDecryptedReturnType[]
     }));
 };
 
-type AggregatedWeeklyData = {
-    data: UserMetricsDecryptedReturnType[];
-    weekEnd: string;
-    weekStart: string;
-};
-
-type WeeklyAveragesReturnType = {
-    totalDays: number;
-    weeklyAverages: WeeklyAveragesType[];
-};
-
-type WeeklyAveragesType = {
-    averageCalories: number;
-    averageCarbs: number;
-    averageFatPercentage: number;
-    averageFats: number;
-    averageProteins: number;
-    averageWeight: number;
-    weekEndDate: string;
-    weekStartDate: string;
-};
-
-export function aggregateDataByWeek(data: UserMetricsDecryptedReturnType[]): AggregatedWeeklyData[] {
-    const weeksMap = new Map<string, UserMetricsDecryptedReturnType[]>();
-
-    data.forEach((entry) => {
-        const parsedDate = parseISO(entry.date);
-        const weekStart = startOfWeek(parsedDate, { weekStartsOn: 1 });
-        const weekEnd = endOfWeek(parsedDate, { weekStartsOn: 1 });
-
-        const weekKey = `${formatISO(weekStart)}_${formatISO(weekEnd)}`;
-
-        if (!weeksMap.has(weekKey)) {
-            weeksMap.set(weekKey, []);
-        }
-
-        weeksMap.get(weekKey)?.push(entry);
-    });
-
-    return Array.from(weeksMap.entries()).map(([weekKey, entries]) => {
-        const [weekStart, weekEnd] = weekKey.split('_');
-
-        return {
-            data: entries,
-            weekEnd,
-            weekStart,
-        };
-    });
-}
-
 export function aggregateUserMetricsNutrition(
     nutritionData: UserNutritionDecryptedReturnType[],
     metricsData: UserMetricsDecryptedReturnType[],
@@ -288,6 +238,22 @@ export function aggregateUserMetricsNutrition(
 
     return aggregatedData;
 }
+
+type WeeklyAveragesType = {
+    averageCalories: number;
+    averageCarbs: number;
+    averageFatPercentage: number;
+    averageFats: number;
+    averageProteins: number;
+    averageWeight: number;
+    weekEndDate: string;
+    weekStartDate: string;
+};
+
+type WeeklyAveragesReturnType = {
+    totalDays: number;
+    weeklyAverages: WeeklyAveragesType[];
+};
 
 export function calculateUserMetricsNutritionWeeklyAverages(
     aggregatedUserMetricsNutrition: AggregatedUserMetricsNutritionType
@@ -381,6 +347,40 @@ export function calculateUserMetricsNutritionWeeklyAverages(
     };
 }
 
+type AggregatedWeeklyData = {
+    data: UserMetricsDecryptedReturnType[];
+    weekEnd: string;
+    weekStart: string;
+};
+
+export function aggregateDataByWeek(data: UserMetricsDecryptedReturnType[]): AggregatedWeeklyData[] {
+    const weeksMap = new Map<string, UserMetricsDecryptedReturnType[]>();
+
+    data.forEach((entry) => {
+        const parsedDate = parseISO(entry.date);
+        const weekStart = startOfWeek(parsedDate, { weekStartsOn: 1 });
+        const weekEnd = endOfWeek(parsedDate, { weekStartsOn: 1 });
+
+        const weekKey = `${formatISO(weekStart)}_${formatISO(weekEnd)}`;
+
+        if (!weeksMap.has(weekKey)) {
+            weeksMap.set(weekKey, []);
+        }
+
+        weeksMap.get(weekKey)?.push(entry);
+    });
+
+    return Array.from(weeksMap.entries()).map(([weekKey, entries]) => {
+        const [weekStart, weekEnd] = weekKey.split('_');
+
+        return {
+            data: entries,
+            weekEnd,
+            weekStart,
+        };
+    });
+}
+
 export const calculatePastWorkoutsWeeklyAverages = (data: ExtendedLineChartDataType[]) => {
     if (data.length === 0) {
         return [];
@@ -462,9 +462,9 @@ export const normalizeMacrosByGrams = (macros: any) => {
         ...macros,
         carbs: macros.carbs * multiplier,
         fat: macros.fat * multiplier,
-        grams: 100,
-        kcal: macros.kcal * multiplier,
         protein: macros.protein * multiplier,
+        kcal: macros.kcal * multiplier,
+        grams: 100,
     };
 };
 

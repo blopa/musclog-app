@@ -1,22 +1,22 @@
 import { normalizeText } from '@/utils/string';
 import {
-    MusclogApiFoodInfoType,
     PaginatedOpenFoodFactsApiFoodInfoType,
+    MusclogApiFoodInfoType,
     PaginatedOpenFoodFactsApiFoodProductInfoType,
 } from '@/utils/types';
 
 export const mapProductData = (product: PaginatedOpenFoodFactsApiFoodProductInfoType): MusclogApiFoodInfoType => {
     return {
-        carbs: product.nutriments.carbohydrates_100g || 0,
-        ean: product.code,
-        fat: product.nutriments.fat_100g || 0,
-        kcal: product.nutriments['energy-kcal_100g'] || 0,
         productTitle: product.product_name || 'Unknown Food',
-        protein: product.nutriments.proteins_100g || 0,
+        kcal: product.nutriments['energy-kcal_100g'] || 0,
+        protein: product.nutriments['proteins_100g'] || 0,
+        carbs: product.nutriments['carbohydrates_100g'] || 0,
+        fat: product.nutriments['fat_100g'] || 0,
+        ean: product.code,
     };
 };
 
-export const fetchFoodData = async (query: string, page: number): Promise<{ pageCount: number; products: MusclogApiFoodInfoType[], }> => {
+export const fetchFoodData = async (query: string, page: number): Promise<{ products: MusclogApiFoodInfoType[], pageCount: number }> => {
     try {
         const response = await fetch(
             `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&page=${page}&search_simple=1&json=1`
@@ -40,33 +40,33 @@ export const fetchFoodData = async (query: string, page: number): Promise<{ page
                     const data: MusclogApiFoodInfoType[] = await response.json();
 
                     return {
-                        pageCount: 1,
                         products: data,
+                        pageCount: 1,
                     };
                 }
 
                 return {
-                    pageCount: 1,
                     products: [],
+                    pageCount: 1,
                 };
             }
 
             return {
-                pageCount: data.page_count,
                 products: data.products.map(mapProductData),
+                pageCount: data.page_count,
             };
         } else {
             console.error('Failed to fetch food items:', response.statusText);
             return {
-                pageCount: 1,
                 products: [],
+                pageCount: 1,
             };
         }
     } catch (error) {
         console.error('Error fetching food items:', error);
         return {
-            pageCount: 1,
             products: [],
+            pageCount: 1,
         };
     }
 };

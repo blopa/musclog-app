@@ -35,8 +35,8 @@ import {
     StyleSheet,
     View,
 } from 'react-native';
-import { Appbar, Button, Text, useTheme } from 'react-native-paper';
-import { TabBar, TabView } from 'react-native-tab-view';
+import { Appbar, Button, useTheme, Text } from 'react-native-paper';
+import { TabView, TabBar } from 'react-native-tab-view';
 
 type RouteParams = {
     id?: string;
@@ -60,17 +60,17 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
 
     const [maxMacros, setMaxMacros] = useState(600);
     const [defaultMacros, setDefaultMacros] = useState({
+        protein: 150,
         carbohydrate: 250,
         fat: 70,
-        protein: 150,
     });
 
     const calculateTdee = useCallback(async () => {
         const user = await getLatestUser();
 
         if (user) {
-            const { activityLevel, birthday, gender, metrics } = user;
-            const { height, weight } = metrics;
+            const { metrics, birthday, gender, activityLevel } = user;
+            const { weight, height } = metrics;
 
             if (gender && weight && height && isValidDateParam(birthday)) {
                 const age = Math.floor((new Date().getTime() - new Date(birthday).getTime()) / 3.15576e+10);
@@ -78,9 +78,9 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
                 const tdee = bmr * ACTIVITY_LEVELS_MULTIPLIER[activityLevel || ACTIVITY_LEVELS.LIGHTLY_ACTIVE];
 
                 setDefaultMacros({
+                    protein: Math.round(tdee * 0.3 / CALORIES_IN_PROTEIN),
                     carbohydrate: Math.round(tdee * 0.5 / CALORIES_IN_CARBS),
                     fat: Math.round(tdee * 0.2 / CALORIES_IN_FAT),
-                    protein: Math.round(tdee * 0.3 / CALORIES_IN_PROTEIN),
                 });
 
                 setMaxMacros(Math.round(tdee / 4));
@@ -110,9 +110,9 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
     const [ffmi, setFfmi] = useState<string>('');
 
     // New state variables for the dynamic daily goals tab
-    const [activeMacro, setActiveMacro] = useState<'carbs' | 'fats' | 'protein'>('protein');
+    const [activeMacro, setActiveMacro] = useState<'protein' | 'carbs' | 'fats'>('protein');
 
-    const macroOrder: ('carbs' | 'fats' | 'protein')[] = ['protein', 'carbs', 'fats'];
+    const macroOrder: ('protein' | 'carbs' | 'fats')[] = ['protein', 'carbs', 'fats'];
 
     const calculateCalories = useCallback(() => {
         return Math.round(protein * CALORIES_IN_PROTEIN + totalCarbohydrate * CALORIES_IN_CARBS + totalFat * CALORIES_IN_FAT);
@@ -121,14 +121,14 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
     const handleSliderChange = useCallback(
         (value: number) => {
             switch (activeMacro) {
+                case 'protein':
+                    setProtein(value);
+                    break;
                 case 'carbs':
                     setTotalCarbohydrate(value);
                     break;
                 case 'fats':
                     setTotalFat(value);
-                    break;
-                case 'protein':
-                    setProtein(value);
                     break;
             }
         },
@@ -239,18 +239,18 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
         const calories = calculateCalories();
 
         const goalData: FitnessGoalsInsertType = {
-            alcohol: alcohol ? Number(alcohol) : undefined,
-            bmi: bmi ? Number(bmi) : undefined,
-            bodyFat: bodyFat ? Number(bodyFat) : undefined,
             calories,
-            createdAt: getCurrentTimestamp(),
-            ffmi: ffmi ? Number(ffmi) : undefined,
-            fiber: fiber ? Number(fiber) : undefined,
             protein,
-            sugar: sugar ? Number(sugar) : undefined,
             totalCarbohydrate,
             totalFat,
+            alcohol: alcohol ? Number(alcohol) : undefined,
+            fiber: fiber ? Number(fiber) : undefined,
+            sugar: sugar ? Number(sugar) : undefined,
             weight: weight ? Number(weight) : undefined,
+            bodyFat: bodyFat ? Number(bodyFat) : undefined,
+            bmi: bmi ? Number(bmi) : undefined,
+            ffmi: ffmi ? Number(ffmi) : undefined,
+            createdAt: getCurrentTimestamp(),
         };
 
         setIsSaving(true);
@@ -341,9 +341,9 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
         const calories = calculateCalories();
 
         const pieData = [
-            { color: '#FF6384', label: t('protein'), value: protein * CALORIES_IN_PROTEIN },
-            { color: '#36A2EB', label: t('carbohydrates'), value: totalCarbohydrate * CALORIES_IN_CARBS },
-            { color: '#FFCE56', label: t('fat'), value: totalFat * CALORIES_IN_FAT },
+            { label: t('protein'), value: protein * CALORIES_IN_PROTEIN, color: '#FF6384' },
+            { label: t('carbohydrates'), value: totalCarbohydrate * CALORIES_IN_CARBS, color: '#36A2EB' },
+            { label: t('fat'), value: totalFat * CALORIES_IN_FAT, color: '#FFCE56' },
         ];
 
         const activeMacroValue = activeMacro === 'protein'
@@ -358,7 +358,7 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
                     <Text style={styles.title}>{t('adjust_your_macros')}</Text>
                     <View style={styles.macroAdjusterContainer}>
                         <Button mode="outlined" onPress={prevMacro} style={styles.arrowButton}>
-                            <FontAwesome5 color={colors.primary} name="arrow-left" size={20} />
+                            <FontAwesome5 name="arrow-left" size={20} color={colors.primary} />
                         </Button>
                         <View style={styles.activeMacroContainer}>
                             <Text style={styles.activeMacroTitle}>{t(activeMacro)}</Text>
@@ -367,15 +367,15 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
                             </Text>
                         </View>
                         <Button mode="outlined" onPress={nextMacro} style={styles.arrowButton}>
-                            <FontAwesome5 color={colors.primary} name="arrow-right" size={20} />
+                            <FontAwesome5 name="arrow-right" size={20} color={colors.primary} />
                         </Button>
                     </View>
                     <SliderWithButtons
                         label=""
-                        maximumValue={maxMacros}
-                        minimumValue={0}
-                        onValueChange={handleSliderChange}
                         value={activeMacroValue}
+                        onValueChange={handleSliderChange}
+                        minimumValue={0}
+                        maximumValue={maxMacros}
                     />
                     <View style={styles.macrosSummary}>
                         <View style={styles.macroSummaryItem}>
@@ -405,8 +405,8 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
                     </View>
                     <PieChart
                         data={pieData}
-                        showShareImageButton={false}
                         title={t('macros_distribution')}
+                        showShareImageButton={false}
                     />
                     <View style={styles.optionalFields}>
                         <CustomTextInput
@@ -484,13 +484,13 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
         <TabBar
             {...props}
             indicatorStyle={{ backgroundColor: colors.primary }}
-            labelStyle={{ color: colors.onSurface }}
             style={{ backgroundColor: colors.surface }}
+            labelStyle={{ color: colors.onSurface }}
         />
     );
 
     return (
-        <Screen style={styles.container}>
+        <View style={styles.container}>
             <CompletionModal
                 buttonText={t('ok')}
                 isModalVisible={isModalVisible}
@@ -514,18 +514,18 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
                 </Button>
             </Appbar.Header>
             <TabView
-                initialLayout={{ width: Dimensions.get('window').width }}
                 navigationState={{ index, routes }}
-                onIndexChange={setIndex}
                 renderScene={renderScene}
                 renderTabBar={renderTabBar}
+                onIndexChange={setIndex}
+                initialLayout={{ width: Dimensions.get('window').width }}
             />
             <View style={styles.footer}>
                 <Button disabled={isSaving} mode="contained" onPress={handleSaveFitnessGoal} style={styles.button}>
                     {t('save')}
                 </Button>
             </View>
-        </Screen>
+        </View>
     );
 };
 
@@ -582,13 +582,6 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         justifyContent: 'space-between',
         marginVertical: 16,
     },
-    macrosSummary: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'space-around',
-        marginTop: 16,
-        width: '100%',
-    },
     macroSummaryItem: {
         alignItems: 'center',
         marginVertical: 8,
@@ -603,6 +596,13 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         color: colors.primary,
         fontSize: 18,
         fontWeight: 'bold',
+    },
+    macrosSummary: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-around',
+        marginTop: 16,
+        width: '100%',
     },
     optionalFields: {
         paddingVertical: 16,

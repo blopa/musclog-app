@@ -4,13 +4,12 @@ import { MaterialIcons } from '@expo/vector-icons';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { PieChart as OriginalPieChart } from 'react-native-charts-wrapper';
-import { IconButton, Text, useTheme } from 'react-native-paper';
+import { IconButton, useTheme, Text } from 'react-native-paper';
 import { processColor } from 'react-native-reanimated';
 import Share from 'react-native-share';
 import ViewShot from 'react-native-view-shot';
 
 interface PieChartProps {
-    backgroundColor?: string;
     data: {
         color?: string;
         label: string;
@@ -18,25 +17,24 @@ interface PieChartProps {
         value: number;
     }[];
     shareButtonPosition?: 'bottom' | 'top';
+    showShareImageButton?: boolean;
+    title?: string;
+    size?: number;
     showLabels?: boolean;
     showLegend?: boolean;
-    showShareImageButton?: boolean;
-    size?: number;
-    title?: string;
 }
 
 const PieChart: React.FC<PieChartProps> = ({
-    backgroundColor = undefined,
     data,
     shareButtonPosition = 'bottom',
+    showShareImageButton = true,
+    title,
+    size = 300,
     showLabels = true,
     showLegend = true,
-    showShareImageButton = true,
-    size = 300,
-    title,
 }) => {
     const { colors } = useTheme<CustomThemeType>();
-    const styles = makeStyles(colors, size, backgroundColor);
+    const styles = makeStyles(colors, size);
     const chartRef = useRef(null);
 
     const shareChart = useCallback(async () => {
@@ -76,7 +74,7 @@ const PieChart: React.FC<PieChartProps> = ({
             <ViewShot
                 options={{ format: 'png', quality: 1.0 }}
                 ref={chartRef}
-                style={{ backgroundColor }}
+                // style={{ backgroundColor: colors.surface }}
             >
                 <OriginalPieChart
                     chartDescription={{ text: '' }}
@@ -116,14 +114,14 @@ const PieChart: React.FC<PieChartProps> = ({
     );
 };
 
-const makeStyles = (colors: CustomThemeColorsType, size: number, backgroundColor?: string) => StyleSheet.create({
+const makeStyles = (colors: CustomThemeColorsType, size: number) => StyleSheet.create({
     chart: {
         height: size,
         width: size,
     },
     chartContainer: {
         alignItems: 'center',
-        backgroundColor,
+        // backgroundColor: colors.surface,
         borderRadius: Math.round(size * 0.06),
         marginVertical: Math.round(size * 0.03),
         padding: Math.round(size * 0.03),

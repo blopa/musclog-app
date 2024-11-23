@@ -7,12 +7,12 @@ import { EATING_PHASES, NUTRITION_TYPES } from '@/constants/nutrition';
 import {
     FEET,
     HAS_COMPLETED_ONBOARDING,
+    READ_HEALTH_CONNECT_TYPE,
     IMPERIAL_SYSTEM,
     KILOGRAMS,
     METERS,
     METRIC_SYSTEM,
     POUNDS,
-    READ_HEALTH_CONNECT_TYPE,
     UNIT_CHOICE_TYPE,
 } from '@/constants/storage';
 import { useHealthConnect } from '@/storage/HealthConnectProvider';
@@ -269,7 +269,7 @@ const Onboarding = ({ onFinish }: OnboardingProps) => {
         }
 
         const formattedText = formatFloatNumericInputText(text);
-
+        
         if (formattedText) {
             setForm({ ...form, [key]: formattedText });
         }
@@ -463,7 +463,6 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         flexGrow: 1,
         justifyContent: 'center',
         padding: 16,
-        // paddingBottom: 60, // hack to fix issue with navbar
         paddingTop: StatusBar.currentHeight || 0,
     },
     datePickerButton: {

@@ -11,16 +11,16 @@ interface PreviousSetDataModalProps {
     completedWorkoutData: ExerciseProgressType[];
     isVisible: boolean;
     onClose: () => void;
-    orderedExercises: { exercise: ExerciseReturnType; sets: SetReturnType[] }[];
     remainingWorkoutData: ExerciseWithSetsType[];
+    orderedExercises: { exercise: ExerciseReturnType; sets: SetReturnType[] }[];
 }
 
 const CurrentWorkoutProgressModal: React.FC<PreviousSetDataModalProps> = ({
     completedWorkoutData,
     isVisible,
     onClose,
-    orderedExercises,
     remainingWorkoutData,
+    orderedExercises,
 }) => {
     const { colors } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors);
@@ -29,11 +29,9 @@ const CurrentWorkoutProgressModal: React.FC<PreviousSetDataModalProps> = ({
     const windowHeight = Dimensions.get('window').height;
 
     // Map remainingWorkoutData sets by their set IDs for quick lookup
-    const remainingSetIds = useMemo(()=> {
-        return new Set(
-            remainingWorkoutData.flatMap((exercise) => exercise.sets.map((set) => set.id))
-        );
-    }, [remainingWorkoutData]);
+    const remainingSetIds = new Set(
+        remainingWorkoutData.flatMap((exercise) => exercise.sets.map((set) => set.id))
+    );
 
     // Group completedWorkoutData by supersetName and then by exerciseName
     const groupedCompletedData = useMemo(() => {
@@ -55,7 +53,7 @@ const CurrentWorkoutProgressModal: React.FC<PreviousSetDataModalProps> = ({
             }
         });
 
-        return { standaloneExercises, supersets };
+        return { supersets, standaloneExercises };
     }, [completedWorkoutData]);
 
     // Group remaining data by supersetName and exerciseName using orderedExercises for ordering
@@ -86,7 +84,7 @@ const CurrentWorkoutProgressModal: React.FC<PreviousSetDataModalProps> = ({
             }
         });
 
-        return { standaloneExercises, supersets };
+        return { supersets, standaloneExercises };
     }, [orderedExercises, remainingSetIds]);
 
     return (

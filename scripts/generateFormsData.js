@@ -2,6 +2,7 @@ const { writeFileSync } = require('fs');
 const path = require('path');
 const { googleFormsToJson } = require('react-google-forms-hooks');
 
+// eslint-disable-next-line no-undef
 const DIRNAME = __dirname;
 
 const doTask = async () => {

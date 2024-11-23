@@ -35,11 +35,11 @@ export function calculate1RM(weight: number, reps: number, formula: string, rir:
     const adjustedReps = reps + rir;
     try {
         switch (formula) {
-            case 'Brzycki': {
-                return weight / (1.0278 - 0.0278 * adjustedReps);
-            }
             case 'Epley': {
                 return weight * (1 + adjustedReps / 30);
+            }
+            case 'Brzycki': {
+                return weight / (1.0278 - 0.0278 * adjustedReps);
             }
             case 'Lander': {
                 return weight / (1.013 - 0.0267123 * adjustedReps);
@@ -190,44 +190,38 @@ export const generateWorkoutSummary = async (
     }
 };
 
-export async function calculateNextWorkoutRepsAndSets(
-    workout: WorkoutReturnType,
-    pastWorkouts: WorkoutEventReturnType[]
-): Promise<WorkoutReturnType> {
+async function getExerciseVolumeText(exerciseVolumeData: ExerciseVolumeType[]) {
     try {
-        // Sort past workouts by date and take the most recent 5
-        const sortedWorkouts = pastWorkouts
-            .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-            .slice(0, 5);
+        const exerciseVolumePromises = exerciseVolumeData.map(async ({ exerciseId }) => {
+            const exercise = await getExerciseById(exerciseId);
+            return exercise?.name || '';
+        });
 
-        // Get all sets for the current workout
-        const sets = await getSetsByWorkoutId(workout.id!);
-
-        // Get unique exercise IDs from the sets
-        const exerciseIds = Array.from(new Set(sets.map((set) => set.exerciseId)));
-
-        for (const exerciseId of exerciseIds) {
-            // Get sets for the specific exercise
-            const exerciseSets = sets.filter((set) => set.exerciseId === exerciseId);
-
-            // Calculate new sets based on past performance
-            const [newSets, didUpdate] = await calculateNewSets(
-                sortedWorkouts,
-                exerciseId,
-                exerciseSets
-            );
-
-            if (didUpdate) {
-                // Update each set in the database
-                for (const set of newSets) {
-                    await updateSet(set.id!, set);
-                }
-            }
-        }
-
-        return workout;
+        return (await Promise.all(exerciseVolumePromises))
+            .filter((exerciseName) => exerciseName)
+            .join(', ');
     } catch (error) {
-        console.error('Error calculating next workout reps and sets:', error);
+        console.error('Error getting exercise volume text:', error);
+        throw error;
+    }
+}
+
+async function getPastSetsForExercise(
+    sortedWorkouts: WorkoutEventReturnType[],
+    exerciseId: number
+): Promise<SetReturnType[]> {
+    try {
+        const pastSets: SetReturnType[] = [];
+        for (const workoutEvent of sortedWorkouts) {
+            // Get all sets for the workout event
+            const sets = await getSetsByWorkoutId(workoutEvent.workoutId);
+            // Filter sets by the specific exerciseId
+            const exerciseSets = sets.filter((set) => set.exerciseId === exerciseId);
+            pastSets.push(...exerciseSets);
+        }
+        return pastSets;
+    } catch (error) {
+        console.error('Error getting past sets for exercise:', error);
         throw error;
     }
 }
@@ -295,38 +289,44 @@ async function calculateNewSets(
     }
 }
 
-async function getExerciseVolumeText(exerciseVolumeData: ExerciseVolumeType[]) {
+export async function calculateNextWorkoutRepsAndSets(
+    workout: WorkoutReturnType,
+    pastWorkouts: WorkoutEventReturnType[]
+): Promise<WorkoutReturnType> {
     try {
-        const exerciseVolumePromises = exerciseVolumeData.map(async ({ exerciseId }) => {
-            const exercise = await getExerciseById(exerciseId);
-            return exercise?.name || '';
-        });
+        // Sort past workouts by date and take the most recent 5
+        const sortedWorkouts = pastWorkouts
+            .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+            .slice(0, 5);
 
-        return (await Promise.all(exerciseVolumePromises))
-            .filter((exerciseName) => exerciseName)
-            .join(', ');
-    } catch (error) {
-        console.error('Error getting exercise volume text:', error);
-        throw error;
-    }
-}
+        // Get all sets for the current workout
+        const sets = await getSetsByWorkoutId(workout.id!);
 
-async function getPastSetsForExercise(
-    sortedWorkouts: WorkoutEventReturnType[],
-    exerciseId: number
-): Promise<SetReturnType[]> {
-    try {
-        const pastSets: SetReturnType[] = [];
-        for (const workoutEvent of sortedWorkouts) {
-            // Get all sets for the workout event
-            const sets = await getSetsByWorkoutId(workoutEvent.workoutId);
-            // Filter sets by the specific exerciseId
+        // Get unique exercise IDs from the sets
+        const exerciseIds = Array.from(new Set(sets.map((set) => set.exerciseId)));
+
+        for (const exerciseId of exerciseIds) {
+            // Get sets for the specific exercise
             const exerciseSets = sets.filter((set) => set.exerciseId === exerciseId);
-            pastSets.push(...exerciseSets);
+
+            // Calculate new sets based on past performance
+            const [newSets, didUpdate] = await calculateNewSets(
+                sortedWorkouts,
+                exerciseId,
+                exerciseSets
+            );
+
+            if (didUpdate) {
+                // Update each set in the database
+                for (const set of newSets) {
+                    await updateSet(set.id!, set);
+                }
+            }
         }
-        return pastSets;
+
+        return workout;
     } catch (error) {
-        console.error('Error getting past sets for exercise:', error);
+        console.error('Error calculating next workout reps and sets:', error);
         throw error;
     }
 }

@@ -27,7 +27,7 @@ import { useSettings } from '@/storage/SettingsContext';
 import { useSnackbar } from '@/storage/SnackbarProvider';
 import { useUnreadMessages } from '@/storage/UnreadMessagesProvider';
 import { getAiApiVendor, getNutritionInsights } from '@/utils/ai';
-import { addTransparency, CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
+import { CustomThemeColorsType, CustomThemeType, addTransparency } from '@/utils/colors';
 import {
     aggregateDataByWeek,
     aggregateMetricsByDate,
@@ -72,10 +72,10 @@ import { ActivityIndicator, Appbar, Button, useTheme } from 'react-native-paper'
 
 const DATE_FORMAT = 'MMM d';
 
-type AverageWeekDataType = (ExtendedLineChartDataType & {
+type AverageWeekDataType = ({
     endDate: string;
     startDate: string;
-});
+} & ExtendedLineChartDataType);
 
 const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const { t } = useTranslation();
@@ -114,19 +114,19 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
 
     const [shouldReloadData, setShouldReloadData] = useState<number>(0);
     const [tdee, setTDEE] = useState<number>(0);
-    const [ffmi, setFFMI] = useState<undefined | { ffmi: string, normalizedFFMI: string }>(undefined);
+    const [ffmi, setFFMI] = useState<{ ffmi: string, normalizedFFMI: string } | undefined>(undefined);
     const [averageCalories, setAverageCalories] = useState<null | number>(null);
-    const [metricsAverages, setMetricsAverages] = useState<undefined | {
+    const [metricsAverages, setMetricsAverages] = useState<{
         averageFatPercentage: number;
         averageFatPercentageDifference: number;
         averageWeight: number;
         averageWeightDifference: number;
         fatPercentageDataPointsCount: number;
         weightDataPointsCount: number;
-    }>(undefined);
+    } | undefined>(undefined);
 
     const { increaseUnreadMessages } = useUnreadMessages();
-    const { checkReadIsPermitted, checkWriteIsPermitted, getHealthData, insertHealthData } = useHealthConnect();
+    const { insertHealthData, checkWriteIsPermitted, checkReadIsPermitted, getHealthData } = useHealthConnect();
     const { addNewChat } = useChatData();
     const { getSettingByType } = useSettings();
 
@@ -1039,7 +1039,7 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
 
         return actions;
     }, [colors.primary, colors.surface, handleGetAiInsights, handleSyncHealthConnect, navigation, isAiEnabled, t]);
-
+    
     // TODO one day do this
     // return (
     //     <UserFitnessReport
@@ -1161,9 +1161,9 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
                         ) : null}
                         {Object.keys(measurementsData).map((measurementKey) => (
                             <LineChart
+                                key={measurementKey}
                                 data={measurementsData[measurementKey]}
                                 granularity={showWeeklyAverages ? 1 : 3}
-                                key={measurementKey}
                                 labels={measurementLabels[measurementKey]}
                                 title={t(measurementKey)}
                                 xAxisLabel={t('date')}

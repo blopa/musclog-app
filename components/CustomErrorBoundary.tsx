@@ -15,6 +15,15 @@ interface State {
 }
 
 class CustomErrorBoundary extends React.Component<Props, State> {
+    handleReset = async () => {
+        this.setState({ error: null, hasError: false });
+        try {
+            await Updates.reloadAsync();
+        } catch (e) {
+            console.error('Failed to reload the app:', e);
+        }
+    };
+
     constructor(props: Props) {
         super(props);
         this.state = { error: null, hasError: false };
@@ -28,15 +37,6 @@ class CustomErrorBoundary extends React.Component<Props, State> {
         console.error('Uncaught error:', error, errorInfo);
         Sentry.captureException(error);
     }
-
-    handleReset = async () => {
-        this.setState({ error: null, hasError: false });
-        try {
-            await Updates.reloadAsync();
-        } catch (e) {
-            console.error('Failed to reload the app:', e);
-        }
-    };
 
     render() {
         if (this.state.hasError) {

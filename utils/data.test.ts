@@ -24,10 +24,10 @@ jest.mock('@/utils/string', () => ({
 }));
 
 jest.mock('@/lang/lang', () => ({
-    language: 'en-US',
     LOCALE_MAP: {
         'en-US': require('date-fns/locale/en-US'),
     },
+    language: 'en-US',
 }));
 
 describe('Nutrition and Metrics Functions', () => {

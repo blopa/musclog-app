@@ -3,7 +3,7 @@ import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View, ViewStyle } from 'react-native';
-import { Text, useTheme } from 'react-native-paper';
+import { useTheme, Text } from 'react-native-paper';
 
 interface StatusBadgeProps {
     status: string;

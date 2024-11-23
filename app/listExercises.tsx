@@ -147,11 +147,11 @@ export default function ListExercises({ navigation }: { navigation: NavigationPr
                         <AnimatedSearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
                     </Appbar.Header>
                     <FlashList
+                        ListFooterComponent={exercises.length < totalExercisesCount ? <ActivityIndicator /> : null}
                         contentContainerStyle={styles.scrollViewContent}
                         data={filteredExercises}
                         estimatedItemSize={95}
                         keyExtractor={(item) => (item?.id ? item.id.toString() : 'default')}
-                        ListFooterComponent={exercises.length < totalExercisesCount ? <ActivityIndicator /> : null}
                         onEndReached={loadMoreExercises}
                         onEndReachedThreshold={0.5}
                         renderItem={({ item: exercise }) => (

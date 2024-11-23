@@ -7,8 +7,8 @@ type ScreenProps = ViewProps &
         | { hideSafeArea: true }
         | {
               hideSafeArea?: false;
-              safeAreaEdges?: SafeAreaViewProps['edges'];
               safeAreaMode?: SafeAreaViewProps['mode'];
+              safeAreaEdges?: SafeAreaViewProps['edges'];
           }
     );
 
@@ -25,9 +25,9 @@ export const Screen: FC<ScreenProps> = (props) => {
 
     return (
         <SafeAreaView
+            mode={props.safeAreaMode ?? 'padding'}
             // No top safe area by default because all the screens are wrapped in a drawer
             edges={props.safeAreaEdges ?? ['bottom', 'left', 'right']}
-            mode={props.safeAreaMode ?? 'padding'}
             style={[styles.container, style]}
             {...rest}
         >

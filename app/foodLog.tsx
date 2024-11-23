@@ -30,19 +30,19 @@ import { NavigationProp } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useFocusEffect } from 'expo-router';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-    Dimensions,
-    Platform,
-    RefreshControl,
-    ScrollView,
-    StyleSheet,
-    TouchableOpacity,
     View,
+    StyleSheet,
+    Platform,
+    Dimensions,
+    TouchableOpacity,
+    ScrollView,
+    RefreshControl,
 } from 'react-native';
-import { Appbar, Button, Card, SegmentedButtons, Text, TextInput, useTheme } from 'react-native-paper';
-import { TabBar, TabView } from 'react-native-tab-view';
+import { Appbar, TextInput, Button, Text, useTheme, Card, SegmentedButtons } from 'react-native-paper';
+import { TabView, TabBar } from 'react-native-tab-view';
 
 const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const { t } = useTranslation();
@@ -51,16 +51,16 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
     const [isLoading, setIsLoading] = useState(false);
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
-    const [selectedNutrition, setSelectedNutrition] = useState<null | UserNutritionDecryptedReturnType>(null);
-    const { checkReadIsPermitted, checkWriteIsPermitted, getHealthData, insertHealthData } = useHealthConnect();
+    const [selectedNutrition, setSelectedNutrition] = useState<UserNutritionDecryptedReturnType | null>(null);
+    const { insertHealthData, checkWriteIsPermitted, checkReadIsPermitted, getHealthData } = useHealthConnect();
 
     const [index, setIndex] = useState(0);
     const [searchQuery, setSearchQuery] = useState('');
     const [consumed, setConsumed] = useState({
         calories: 0,
+        protein: 0,
         carbohydrate: 0,
         fat: 0,
-        protein: 0,
     });
     const [consumedFoods, setConsumedFoods] = useState<UserNutritionDecryptedReturnType[]>([]);
 
@@ -80,10 +80,10 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const photoCameraRef = useRef(null);
 
     const [selectedFood, setSelectedFood] = useState<FoodTrackingType | null>(null);
-    const [userNutritionId, setUserNutritionId] = useState<null | number>(null);
+    const [userNutritionId, setUserNutritionId] = useState<number | null>(null);
     const [isNutritionModalVisible, setIsNutritionModalVisible] = useState<boolean>(false);
     const [photoMode, setPhotoMode] = useState<string>('meal');
-    const [dailyGoals, setDailyGoals] = useState<null | Omit<FitnessGoalsReturnType, 'id'>>(null);
+    const [dailyGoals, setDailyGoals] = useState<Omit<FitnessGoalsReturnType, 'id'> | null>(null);
     const [recentTrackedFoods, setRecentTrackedFoods] = useState<MusclogApiFoodInfoType[]>([]);
 
     const { unitSystem } = useUnit();
@@ -112,12 +112,12 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         }
     }, []);
 
-    const mealCategories = useMemo(() => [
-        { icon: '🍳', name: t('breakfast') },
-        { icon: '🥪', name: t('lunch') },
-        { icon: '🍽️', name: t('dinner') },
-        { icon: '🍎', name: t('snacks') },
-    ], [t]);
+    const mealCategories = [
+        { name: t('breakfast'), icon: '🍳' },
+        { name: t('lunch'), icon: '🥪' },
+        { name: t('dinner'), icon: '🍽️' },
+        { name: t('snacks'), icon: '🍎' },
+    ];
 
     const calculatePercentage = (consumedAmount: number, goalAmount: number) => {
         if (goalAmount === 0) {
@@ -148,7 +148,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                     acc.fat += item.fat || 0;
                     return acc;
                 },
-                { calories: 0, carbohydrate: 0, fat: 0, protein: 0 }
+                { calories: 0, protein: 0, carbohydrate: 0, fat: 0 }
             );
 
             setConsumed(consumed);
@@ -179,12 +179,12 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
         if (foods) {
             setRecentTrackedFoods(foods.map((food) => ({
-                carbs: food.totalCarbohydrate,
-                ean: food.productCode,
-                fat: food.totalFat,
-                kcal: food.calories,
                 productTitle: food.name,
+                kcal: food.calories,
                 protein: food.protein,
+                carbs: food.totalCarbohydrate,
+                fat: food.totalFat,
+                ean: food.productCode,
             })));
         }
     }, []);
@@ -194,9 +194,9 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         setIndex(0);
         setConsumed({
             calories: 0,
+            protein: 0,
             carbohydrate: 0,
             fat: 0,
-            protein: 0,
         });
         setConsumedFoods([]);
     }, []);
@@ -216,10 +216,10 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
     const OverviewRoute = useCallback(() => {
         const macros = dailyGoals ? [
-            { consumed: safeToFixed(consumed.calories), goal: dailyGoals.calories, name: t('calories'), unit: 'kcal' },
-            { consumed: safeToFixed(consumed.protein), goal: dailyGoals.protein, name: t('proteins'), unit: macroUnit },
-            { consumed: safeToFixed(consumed.carbohydrate), goal: dailyGoals.totalCarbohydrate, name: t('carbs'), unit: macroUnit },
-            { consumed: safeToFixed(consumed.fat), goal: dailyGoals.totalFat, name: t('fats'), unit: macroUnit },
+            { name: t('calories'), consumed: safeToFixed(consumed.calories), goal: dailyGoals.calories, unit: 'kcal' },
+            { name: t('proteins'), consumed: safeToFixed(consumed.protein), goal: dailyGoals.protein, unit: macroUnit },
+            { name: t('carbs'), consumed: safeToFixed(consumed.carbohydrate), goal: dailyGoals.totalCarbohydrate, unit: macroUnit },
+            { name: t('fats'), consumed: safeToFixed(consumed.fat), goal: dailyGoals.totalFat, unit: macroUnit },
         ] : [];
 
         return (
@@ -259,11 +259,8 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                     </ThemedCard>
                     {recentTrackedFoods.length > 0 ? (
                         <FlashList
-                            contentContainerStyle={styles.listContent}
                             data={recentTrackedFoods}
-                            estimatedItemSize={115}
                             keyExtractor={(item, index) => (item.productTitle || index).toString()}
-                            onEndReachedThreshold={0.5}
                             renderItem={
                                 ({ item }) => (
                                     <FoodItem
@@ -275,21 +272,24 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                                     />
                                 )
                             }
+                            estimatedItemSize={115}
+                            contentContainerStyle={styles.listContent}
+                            onEndReachedThreshold={0.5}
                         />
                     ) : null}
                 </ScrollView>
             </Screen>
         );
-    }, [consumed.calories, consumed.carbohydrate, consumed.fat, consumed.protein, dailyGoals, macroUnit, navigation, recentTrackedFoods, styles.addGoalButton, styles.cardContent, styles.cardTitle, styles.container, styles.listContent, styles.macroContainer, styles.metricDetail, styles.progressBar, styles.progressBarContainer, t]);
+    }, [consumed.calories, consumed.carbohydrate, consumed.fat, consumed.protein, dailyGoals, macroUnit, navigation, recentTrackedFoods, styles.addGoalButton, styles.cardContent, styles.cardTitle, styles.listContent, styles.macroContainer, styles.metricDetail, styles.progressBar, styles.progressBarContainer, t]);
 
     const handleEditNutrition = (userNutrition: UserNutritionDecryptedReturnType) => {
         setSelectedFood({
+            productTitle: userNutrition.name,
+            kcal: userNutrition.calories,
+            protein: userNutrition.protein,
             carbs: userNutrition.carbohydrate,
             fat: userNutrition.fat,
             grams: userNutrition.grams,
-            kcal: userNutrition.calories,
-            productTitle: userNutrition.name,
-            protein: userNutrition.protein,
         });
 
         setUserNutritionId(userNutrition.id);
@@ -333,9 +333,9 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 contentContainerStyle={styles.mealsContent}
                 refreshControl={
                     <RefreshControl
-                        colors={[colors.primary]}
-                        onRefresh={handleSyncHealthConnect}
                         refreshing={isLoading}
+                        onRefresh={handleSyncHealthConnect}
+                        colors={[colors.primary]}
                     />
                 }
             >
@@ -361,10 +361,10 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                                                 </Text>
                                                 <View style={styles.iconContainer}>
                                                     <TouchableOpacity onPress={() => handleEditNutrition(userNutrition)}>
-                                                        <FontAwesome5 color={colors.primary} name="edit" size={20} />
+                                                        <FontAwesome5 name="edit" size={20} color={colors.primary} />
                                                     </TouchableOpacity>
                                                     <TouchableOpacity onPress={() => handleDeleteNutrition(userNutrition)}>
-                                                        <FontAwesome5 color={colors.primary} name="trash" size={20} />
+                                                        <FontAwesome5 name="trash" size={20} color={colors.primary} />
                                                     </TouchableOpacity>
                                                 </View>
                                             </View>
@@ -414,10 +414,10 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
     const renderScene = ({ route }: { route: { key: string } }) => {
         switch (route.key) {
-            case 'meals':
-                return <MealsRoute />;
             case 'overview':
                 return <OverviewRoute />;
+            case 'meals':
+                return <MealsRoute />;
             default:
                 return null;
         }
@@ -427,12 +427,12 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         <TabBar
             {...props}
             indicatorStyle={{ backgroundColor: colors.primary }}
-            labelStyle={{ color: colors.onSurface }}
             style={{ backgroundColor: colors.surface }}
+            labelStyle={{ color: colors.onSurface }}
         />
     );
 
-    const handleBarCodeScanned = useCallback(async ({ data, type }: BarcodeScanningResult) => {
+    const handleBarCodeScanned = useCallback(async ({ type, data }: BarcodeScanningResult) => {
         setScanned(true);
         setShowBarcodeCamera(false);
 
@@ -485,24 +485,24 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                     const macros = await estimateNutritionFromPhoto(photo.uri);
                     if (macros) {
                         setSelectedFood(normalizeMacrosByGrams({
+                            productTitle: macros.name,
+                            kcal: macros.calories,
+                            protein: macros.protein,
                             carbs: macros.carbs,
                             fat: macros.fat,
                             grams: macros.grams,
-                            kcal: macros.calories,
-                            productTitle: macros.name,
-                            protein: macros.protein,
                         }));
                     }
                 } else {
                     const macros = await extractMacrosFromLabelPhoto(photo.uri);
                     if (macros) {
                         setSelectedFood(normalizeMacrosByGrams({
+                            productTitle: macros.name,
+                            kcal: macros.calories,
+                            protein: macros.protein,
                             carbs: macros.carbs,
                             fat: macros.fat,
                             grams: macros.grams,
-                            kcal: macros.calories,
-                            productTitle: macros.name,
-                            protein: macros.protein,
                         }));
                     }
                 }
@@ -533,26 +533,26 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const renderPhotoCameraOverlay = useCallback(() => (
         <View style={styles.photoCameraOverlay}>
             <SegmentedButtons
+                value={photoMode}
+                onValueChange={setPhotoMode}
                 buttons={[{
+                    value: 'meal',
                     label: t('meal'),
                     style: { backgroundColor: photoMode === 'meal' ? colors.secondaryContainer : colors.surface },
-                    value: 'meal',
                 },
                 {
+                    value: 'label',
                     label: t('food_label'),
                     style: { backgroundColor: photoMode === 'label' ? colors.secondaryContainer : colors.surface },
-                    value: 'label',
                 }]}
-                onValueChange={setPhotoMode}
                 style={styles.segmentedButtons}
-                value={photoMode}
             />
             <View style={styles.bottomControls}>
                 <TouchableOpacity onPress={() => setShowPhotoCamera(false)} style={styles.photoCloseButton}>
                     <Text style={styles.photoCloseText}>{t('close')}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={handleTakePhoto} style={styles.captureButton}>
-                    <FontAwesome5 color={colors.primary} name="camera" size={30} />
+                    <FontAwesome5 name="camera" size={30} color={colors.primary} />
                 </TouchableOpacity>
             </View>
         </View>
@@ -566,11 +566,11 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
             <View style={styles.content}>
                 <View style={styles.searchContainer}>
                     <TextInput
-                        mode="outlined"
-                        onChangeText={setSearchQuery}
                         placeholder={t('search_food')}
-                        style={styles.searchInput}
                         value={searchQuery}
+                        onChangeText={setSearchQuery}
+                        style={styles.searchInput}
+                        mode="outlined"
                     />
                     {searchQuery ? (
                         <Button
@@ -578,7 +578,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                             onPress={handleFoodSearch}
                             style={styles.iconButton}
                         >
-                            <FontAwesome5 color={colors.primary} name="search" size={20} />
+                            <FontAwesome5 name="search" size={20} color={colors.primary} />
                         </Button>
                     ) : (
                         <>
@@ -587,7 +587,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                                 onPress={openBarcodeCamera}
                                 style={styles.iconButton}
                             >
-                                <FontAwesome5 color={colors.primary} name="barcode" size={20} />
+                                <FontAwesome5 name="barcode" size={20} color={colors.primary} />
                             </Button>
                             {isAiEnabled ? (
                                 <Button
@@ -595,26 +595,26 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                                     onPress={openPhotoCamera}
                                     style={styles.iconButton}
                                 >
-                                    <FontAwesome5 color={colors.primary} name="camera" size={20} />
+                                    <FontAwesome5 name="camera" size={20} color={colors.primary} />
                                 </Button>
                             ) : null}
                         </>
                     )}
                 </View>
                 <TabView
-                    initialLayout={{ width: Dimensions.get('window').width }}
                     navigationState={{ index, routes }}
-                    onIndexChange={setIndex}
                     renderScene={renderScene}
                     renderTabBar={renderTabBar}
+                    onIndexChange={setIndex}
+                    initialLayout={{ width: Dimensions.get('window').width }}
                 />
             </View>
             {showBarcodeCamera ? (
                 <View style={styles.cameraContainer}>
                     <CameraView
+                        style={styles.camera}
                         onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
                         ratio="16:9"
-                        style={styles.camera}
                     >
                         {renderScannerOverlay()}
                         <View style={styles.cameraOverlay}>
@@ -632,24 +632,24 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
             {showPhotoCamera ? (
                 <View style={styles.cameraContainer}>
                     <CameraView
-                        ref={photoCameraRef}
                         style={styles.camera}
+                        ref={photoCameraRef}
                     >
                         {renderPhotoCameraOverlay()}
                     </CameraView>
                 </View>
             ) : null}
             <FoodTrackingModal
-                food={selectedFood}
-                isLoading={isLoading}
+                visible={isNutritionModalVisible}
                 onClose={() => {
                     setIsNutritionModalVisible(false);
                     setSelectedFood(null);
                     setUserNutritionId(null);
                     loadConsumed();
                 }}
+                food={selectedFood}
                 userNutritionId={userNutritionId}
-                visible={isNutritionModalVisible}
+                isLoading={isLoading}
             />
             <ThemedModal
                 cancelText={t('no')}
@@ -776,13 +776,13 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         justifyContent: 'space-between',
         marginBottom: 8,
     },
-    mealsContent: {
-        padding: 16,
-    },
     mealTitle: {
         color: colors.onSurface,
         fontSize: 16,
         fontWeight: '600',
+    },
+    mealsContent: {
+        padding: 16,
     },
     metricDetail: {
         color: colors.onSurface,
