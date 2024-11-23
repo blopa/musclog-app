@@ -61,7 +61,7 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
     const [modalVisible, setModalVisible] = useState(false);
     const [startTime, setStartTime] = useState<null | number>(null);
     const [workoutDuration, setWorkoutDuration] = useState(0);
-    const [workout, setWorkout] = useState<WorkoutReturnType | undefined>();
+    const [workout, setWorkout] = useState<undefined | WorkoutReturnType>();
     const [loading, setLoading] = useState(false);
     const [isAiEnabled, setIsAiEnabled] = useState(false);
 
@@ -186,10 +186,10 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
                     const sortedStandaloneExercises = validStandaloneExercises
                         .map((exercise) => ({
                             exercise,
+                            firstSetOrder: standaloneSetsMap[exercise.id][0]?.setOrder || 0,
                             sets: standaloneSetsMap[exercise.id].sort(
                                 (a, b) => a.setOrder - b.setOrder
                             ),
-                            firstSetOrder: standaloneSetsMap[exercise.id][0]?.setOrder || 0,
                         }))
                         .sort((a, b) => a.firstSetOrder - b.firstSetOrder)
                         .map(({ exercise, sets }) => ({
@@ -323,13 +323,13 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
                             reps: item.reps,
                             restTime: item.restTime,
                             setId: item.setId,
+                            setOrder: item.setOrder,
+                            supersetName: item.supersetName,
                             targetReps: item.targetReps,
                             targetWeight: item.targetWeight,
                             unitSystem,
                             weight: item.weight,
-                            setOrder: item.setOrder,
                             workoutId: workout.id,
-                            supersetName: item.supersetName,
                         };
 
                         exercise.sets.push(set);
@@ -499,11 +499,11 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
                 key={workout?.id}
                 onCancel={handleCancelWorkout}
                 onFinish={handleFinishExercise}
+                orderedExercises={exercises}
                 sets={exercises[currentExerciseIndex].sets}
                 startTime={startTime}
                 workoutDuration={workoutDuration}
                 workoutId={workout?.id}
-                orderedExercises={exercises}
             />
         );
     }

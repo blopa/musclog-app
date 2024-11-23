@@ -8,16 +8,6 @@ import { getCurrentTimestamp } from '@/utils/date';
 
 import jsonData from '../data/importJsonExample.json';
 
-export async function getFileInfoForExerciseId (exerciseId: number) {
-    return {
-        exists: false,
-    };
-}
-
-export function getFileUriForExerciseId (exerciseId: number) {
-    return '';
-}
-
 export function downloadAsyncToFileSystem (imageUrl: string, localFilePath: string) {
     return Promise.resolve();
 }
@@ -72,6 +62,27 @@ export async function exportWorkout(workoutId: number) {
     URL.revokeObjectURL(url);
 }
 
+export async function getBase64StringFromPhotoUri(photoUri: string) {
+    return photoUri.split(',')[1];
+}
+
+export async function getFileInfoForExerciseId (exerciseId: number) {
+    return {
+        exists: false,
+    };
+}
+
+export function getFileUriForExerciseId (exerciseId: number) {
+    return '';
+}
+
+export async function importCsv() {
+    return {
+        data: '',
+        fileName: 'my-json-file.csv',
+    };
+}
+
 export async function importDatabase() {
     const input = document.createElement('input');
     input.type = 'file';
@@ -93,14 +104,6 @@ export async function importDatabase() {
     input.click();
 }
 
-export async function getBase64StringFromPhotoUri(photoUri: string) {
-    return photoUri.split(',')[1];
-}
-
-export async function resizeImage(photoUri: string, width: number = 512): Promise<string> {
-    return photoUri;
-}
-
 export async function importJson() {
     return {
         data: jsonData,
@@ -108,9 +111,6 @@ export async function importJson() {
     };
 }
 
-export async function importCsv() {
-    return {
-        data: '',
-        fileName: 'my-json-file.csv',
-    };
+export async function resizeImage(photoUri: string, width: number = 512): Promise<string> {
+    return photoUri;
 }

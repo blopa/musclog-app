@@ -9,19 +9,20 @@ module.exports = [
     ...compat.extends('plugin:import/recommended'),
     ...compat.extends('plugin:regexp/recommended'),
     ...compat.extends('plugin:@typescript-eslint/recommended'),
+    ...compat.extends('plugin:perfectionist/recommended-natural-legacy'),
 
     // TypeScript-specific configuration
     {
         files: ['*.ts', '*.tsx'],
         languageOptions: {
-            parser: tsParser,
             ecmaVersion: 2020,
+            parser: tsParser,
             sourceType: 'module',
         },
         rules: {
             '@typescript-eslint/ban-ts-comment': 'off', // TODO maybe turn it on one day
             '@typescript-eslint/no-explicit-any': 'off', // TODO maybe turn it on one day
-            '@typescript-eslint/no-non-null-asserted-optional-chain': 'off', // TODO maybe turn it on one day
+            '@typescript-eslint/no-non-null-asserted-optional-chain': 'warm', // TODO maybe turn it on one day
             '@typescript-eslint/no-unused-vars': [
                 'warn',
                 {
@@ -43,12 +44,12 @@ module.exports = [
             sourceType: 'module',
         },
         plugins: {
+            import: require('eslint-plugin-import'),
+            perfectionist: require('eslint-plugin-perfectionist'),
             react: require('eslint-plugin-react'),
             'react-hooks': require('eslint-plugin-react-hooks'),
-            'unused-imports': require('eslint-plugin-unused-imports'),
-            perfectionist: require('eslint-plugin-perfectionist'),
             regexp: require('eslint-plugin-regexp'),
-            import: require('eslint-plugin-import'),
+            'unused-imports': require('eslint-plugin-unused-imports'),
         },
         rules: {
             '@typescript-eslint/no-unused-vars': 'off',
@@ -59,52 +60,70 @@ module.exports = [
     // General configuration
     {
         plugins: {
+            perfectionist: require('eslint-plugin-perfectionist'),
             react: require('eslint-plugin-react'),
             'react-hooks': require('eslint-plugin-react-hooks'),
-            'unused-imports': require('eslint-plugin-unused-imports'),
-            perfectionist: require('eslint-plugin-perfectionist'),
             regexp: require('eslint-plugin-regexp'),
+            'unused-imports': require('eslint-plugin-unused-imports'),
         },
         rules: {
+            '@typescript-eslint/no-require-imports': 'off',
+            'array-bracket-spacing': ['warn', 'never'],
+            'arrow-parens': ['warn', 'always'],
+            camelcase: 'off',
+            'comma-dangle': [
+                'error',
+                {
+                    arrays: 'always-multiline',
+                    exports: 'always-multiline',
+                    functions: 'never',
+                    imports: 'always-multiline',
+                    objects: 'always-multiline',
+                },
+            ],
+            'consistent-return': 'off',
+            curly: ['error', 'all'],
+            'default-case': 'warn',
+            eqeqeq: ['error', 'always'],
+            indent: ['warn', 4, { SwitchCase: 1 }],
+            'key-spacing': ['warn', { afterColon: true, beforeColon: false }],
+            'max-len': 'off',
+            'max-params': ['warn', 4],
+            'no-confusing-arrow': ['warn', { allowParens: true }],
+            'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'warn',
+            'no-multi-spaces': 'error',
+            'no-nested-ternary': 'warn',
+            'no-shadow': 'off',
+            'no-useless-escape': 'warn',
+            'object-curly-spacing': ['warn', 'always'],
             'operator-linebreak': [
                 'error',
                 'before',
                 {
                     overrides: {
-                        '=': 'none',
                         '&&': 'before',
+                        '=': 'none',
                         '||': 'before',
                     },
                 },
             ],
-            semi: ['error', 'always'],
-            'no-multi-spaces': 'error',
-            curly: ['error', 'all'],
-            'consistent-return': 'off',
-            'prefer-destructuring': ['warn', { object: true, array: false }],
-            'no-confusing-arrow': ['warn', { allowParens: true }],
-            'max-len': 'off',
-            camelcase: 'off',
-            'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'warn',
-            eqeqeq: ['error', 'always'],
-            'no-shadow': 'off',
-            'array-bracket-spacing': ['warn', 'never'],
-            'key-spacing': ['warn', { beforeColon: false, afterColon: true }],
-            'no-useless-escape': 'warn',
-            'no-nested-ternary': 'warn',
-            'default-case': 'warn',
-            'max-params': ['warn', 4],
-            'react/jsx-first-prop-new-line': ['warn', 'multiline'],
-            'react/jsx-max-props-per-line': ['warn', { when: 'multiline' }],
-            'react/jsx-curly-spacing': ['warn', { when: 'never', children: true }],
-            'arrow-parens': ['warn', 'always'],
-            indent: ['warn', 4, { SwitchCase: 1 }],
-            'object-curly-spacing': ['warn', 'always'],
+            'perfectionist/sort-classes': [
+                'warn',
+                { ignoreCase: true, order: 'asc', type: 'natural' },
+            ],
+            'perfectionist/sort-imports': [
+                'warn',
+                { ignoreCase: true, order: 'asc', type: 'natural' },
+            ],
+            'prefer-destructuring': ['warn', { array: false, object: true }],
             'quote-props': ['warn', 'as-needed'],
             quotes: ['warn', 'single', { avoidEscape: true }],
-            'react/react-in-jsx-scope': 'off',
-            '@typescript-eslint/no-require-imports': 'off',
             'react-hooks/exhaustive-deps': 'warn',
+            'react/jsx-curly-spacing': ['warn', { children: true, when: 'never' }],
+            'react/jsx-first-prop-new-line': ['warn', 'multiline'],
+            'react/jsx-max-props-per-line': ['warn', { when: 'multiline' }],
+            'react/react-in-jsx-scope': 'off',
+            semi: ['error', 'always'],
             // 'react-hooks/exhaustive-deps': ['warn', { enableDangerousAutofixThisMayCauseInfiniteLoops: true }],
             'unused-imports/no-unused-imports': 'error',
             'unused-imports/no-unused-vars': [
@@ -114,24 +133,6 @@ module.exports = [
                     argsIgnorePattern: '^_',
                     vars: 'all',
                     varsIgnorePattern: '^_',
-                },
-            ],
-            'perfectionist/sort-classes': [
-                'warn',
-                { type: 'alphabetical', order: 'asc', ignoreCase: true },
-            ],
-            'perfectionist/sort-imports': [
-                'warn',
-                { type: 'alphabetical', order: 'asc', ignoreCase: true },
-            ],
-            'comma-dangle': [
-                'error',
-                {
-                    arrays: 'always-multiline',
-                    objects: 'always-multiline',
-                    imports: 'always-multiline',
-                    exports: 'always-multiline',
-                    functions: 'never',
                 },
             ],
         },

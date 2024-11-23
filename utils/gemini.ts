@@ -44,6 +44,77 @@ const safetySettings = [
     { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
 ];
 
+export async function generateWorkoutPlan(messages: any[]): Promise<boolean> {
+    const workoutPlanResponse = await createWorkoutPlan(messages);
+
+    try {
+        if (workoutPlanResponse?.workoutPlan) {
+            await processWorkoutPlan(workoutPlanResponse as WorkoutPlan);
+        }
+
+        return true;
+    } catch (error) {
+        console.error('Failed to process workout plan:', error);
+    }
+
+    return false;
+}
+
+export async function getNutritionInsights(startDate: string): Promise<string | undefined> {
+    const apiKey = await getApiKey();
+
+    if (!apiKey) {
+        return;
+    }
+
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const prompt = await getNutritionInsightsPrompt(startDate);
+
+    const systemParts: Part[] = prompt
+        .filter((msg) => msg.role === 'system')
+        .map((msg) => ({ text: msg.content } as Part));
+
+    const model = genAI.getGenerativeModel({
+        model: GEMINI_MODEL,
+        safetySettings,
+        systemInstruction: {
+            parts: systemParts,
+            role: 'system',
+        },
+    });
+
+    const generationConfig = {
+        // maxOutputTokens: 2048,
+        temperature: 0.9,
+        topK: 1,
+        topP: 1,
+    };
+
+    const conversationContent: Content[] = prompt
+        .filter((msg) => msg.role !== 'system')
+        .map((msg) => ({
+            parts: [{ text: msg.content } as Part],
+            role: msg.role === 'assistant' ? 'model' : msg.role,
+        }));
+
+    try {
+        const result = await model.generateContent({
+            contents: conversationContent,
+            generationConfig,
+        } as GenerateContentRequest);
+
+        if (result.response.promptFeedback && result.response.promptFeedback.blockReason) {
+            console.log(`Blocked for ${result.response.promptFeedback.blockReason}`);
+            return;
+        }
+
+        return result.response.candidates?.[0]?.content?.parts[0]?.text;
+    } catch (e) {
+        console.error(e);
+        return;
+    }
+}
+
 export async function sendChatMessage(messages: any[]) {
     const apiKey = await getApiKey();
 
@@ -190,77 +261,6 @@ async function createWorkoutPlan(messages: any[]) {
         console.error(e);
         return;
     }
-}
-
-export async function getNutritionInsights(startDate: string): Promise<string | undefined> {
-    const apiKey = await getApiKey();
-
-    if (!apiKey) {
-        return;
-    }
-
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const prompt = await getNutritionInsightsPrompt(startDate);
-
-    const systemParts: Part[] = prompt
-        .filter((msg) => msg.role === 'system')
-        .map((msg) => ({ text: msg.content } as Part));
-
-    const model = genAI.getGenerativeModel({
-        model: GEMINI_MODEL,
-        safetySettings,
-        systemInstruction: {
-            parts: systemParts,
-            role: 'system',
-        },
-    });
-
-    const generationConfig = {
-        // maxOutputTokens: 2048,
-        temperature: 0.9,
-        topK: 1,
-        topP: 1,
-    };
-
-    const conversationContent: Content[] = prompt
-        .filter((msg) => msg.role !== 'system')
-        .map((msg) => ({
-            parts: [{ text: msg.content } as Part],
-            role: msg.role === 'assistant' ? 'model' : msg.role,
-        }));
-
-    try {
-        const result = await model.generateContent({
-            contents: conversationContent,
-            generationConfig,
-        } as GenerateContentRequest);
-
-        if (result.response.promptFeedback && result.response.promptFeedback.blockReason) {
-            console.log(`Blocked for ${result.response.promptFeedback.blockReason}`);
-            return;
-        }
-
-        return result.response.candidates?.[0]?.content?.parts[0]?.text;
-    } catch (e) {
-        console.error(e);
-        return;
-    }
-}
-
-export async function generateWorkoutPlan(messages: any[]): Promise<boolean> {
-    const workoutPlanResponse = await createWorkoutPlan(messages);
-
-    try {
-        if (workoutPlanResponse?.workoutPlan) {
-            await processWorkoutPlan(workoutPlanResponse as WorkoutPlan);
-        }
-
-        return true;
-    } catch (error) {
-        console.error('Failed to process workout plan:', error);
-    }
-
-    return false;
 }
 
 export const calculateNextWorkoutVolume = async (workout: WorkoutReturnType) => {
@@ -680,54 +680,6 @@ export const getWorkoutVolumeInsights = async (workoutId: number): Promise<strin
     }
 };
 
-export async function isValidApiKey(apiKey: string): Promise<boolean> {
-    const genAI = new GoogleGenerativeAI(apiKey);
-
-    try {
-        const model = genAI.getGenerativeModel({ model: GEMINI_MODEL });
-
-        await model.generateContent({
-            contents: [{ parts: [{ text: 'hi' } as Part], role: 'user' }],
-            generationConfig: {
-                maxOutputTokens: 1,
-                temperature: 0.5,
-            },
-        } as GenerateContentRequest);
-
-        return true;
-    } catch (error) {
-        return false;
-    }
-}
-
-export async function isAllowedLocation(apiKey: string): Promise<boolean> {
-    const genAI = new GoogleGenerativeAI(apiKey);
-
-    try {
-        const model = genAI.getGenerativeModel({ model: GEMINI_MODEL });
-
-        await model.generateContent({
-            contents: [{ parts: [{ text: 'hi' } as Part], role: 'user' }],
-            generationConfig: {
-                maxOutputTokens: 1,
-                temperature: 0.5,
-            },
-        } as GenerateContentRequest);
-
-        return true;
-    } catch (error) {
-        // @ts-expect-error
-        if (error?.status === 400 && error?.message?.includes('location is not supported')) {
-            return false;
-        } else {
-            // send notification to Sentry
-            Sentry.captureMessage(`Error in isAllowedLocation: ${error}`);
-        }
-
-        return false;
-    }
-}
-
 export async function estimateNutritionFromPhoto(photoUri: string) {
     // TODO: this is probably not the right way to do this, so fix it later
     const apiKey = await getApiKey();
@@ -760,8 +712,8 @@ export async function estimateNutritionFromPhoto(photoUri: string) {
     try {
         const result = await model.generateContent({
             contents: conversationContent,
+            files: [{ content: base64Image, name: 'image.jpg' }],
             generationConfig,
-            files: [{ name: 'image.jpg', content: base64Image }],
         } as GenerateContentRequest);
 
         if (result.response.promptFeedback && result.response.promptFeedback.blockReason) {
@@ -776,9 +728,9 @@ export async function estimateNutritionFromPhoto(photoUri: string) {
             calories: 0,
             carbs: 0,
             fat: 0,
-            protein: 0,
             grams: 0,
             name: '',
+            protein: 0,
         };
     } catch (e) {
         console.error(e);
@@ -789,9 +741,9 @@ export async function estimateNutritionFromPhoto(photoUri: string) {
         calories: 0,
         carbs: 0,
         fat: 0,
-        protein: 0,
         grams: 0,
         name: '',
+        protein: 0,
     };
 }
 
@@ -800,8 +752,56 @@ export async function extractMacrosFromLabelPhoto(photoUri: string) {
         calories: 0,
         carbs: 0,
         fat: 0,
-        protein: 0,
         grams: 0,
         name: '',
+        protein: 0,
     };
+}
+
+export async function isAllowedLocation(apiKey: string): Promise<boolean> {
+    const genAI = new GoogleGenerativeAI(apiKey);
+
+    try {
+        const model = genAI.getGenerativeModel({ model: GEMINI_MODEL });
+
+        await model.generateContent({
+            contents: [{ parts: [{ text: 'hi' } as Part], role: 'user' }],
+            generationConfig: {
+                maxOutputTokens: 1,
+                temperature: 0.5,
+            },
+        } as GenerateContentRequest);
+
+        return true;
+    } catch (error) {
+        // @ts-expect-error
+        if (error?.status === 400 && error?.message?.includes('location is not supported')) {
+            return false;
+        } else {
+            // send notification to Sentry
+            Sentry.captureMessage(`Error in isAllowedLocation: ${error}`);
+        }
+
+        return false;
+    }
+}
+
+export async function isValidApiKey(apiKey: string): Promise<boolean> {
+    const genAI = new GoogleGenerativeAI(apiKey);
+
+    try {
+        const model = genAI.getGenerativeModel({ model: GEMINI_MODEL });
+
+        await model.generateContent({
+            contents: [{ parts: [{ text: 'hi' } as Part], role: 'user' }],
+            generationConfig: {
+                maxOutputTokens: 1,
+                temperature: 0.5,
+            },
+        } as GenerateContentRequest);
+
+        return true;
+    } catch (error) {
+        return false;
+    }
 }

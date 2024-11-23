@@ -17,11 +17,12 @@ import {
     ExerciseReturnType,
     ExerciseVolumeType,
     ExerciseWithSetsType,
+    FitnessGoalsInsertType,
+    FitnessGoalsReturnType,
     FoodInsertType,
     FoodReturnType,
     MetricsForUserType,
-    FitnessGoalsInsertType,
-    FitnessGoalsReturnType,
+    MigrationReturnType,
     OneRepMaxReturnType,
     SetInsertType,
     SetReturnType,
@@ -45,7 +46,6 @@ import {
     WorkoutPlan,
     WorkoutReturnType,
     WorkoutWithExercisesRepsAndSetsDetailsReturnType,
-    MigrationReturnType,
 } from '@/utils/types';
 import { addDatabaseChangeListener, openDatabaseSync } from 'expo-sqlite';
 
@@ -418,7 +418,6 @@ export const addWorkoutEvent = async (workoutEvent: WorkoutEventInsertType): Pro
         exerciseData = JSON.stringify(exercisesWithSets.map((exercisesWithSet) => {
             return {
                 exerciseId: exercisesWithSet.id,
-                workoutId: workoutEvent.workoutId,
                 sets: exercisesWithSet.sets.map((set) => {
                     return {
                         difficultyLevel: set.difficultyLevel,
@@ -429,8 +428,9 @@ export const addWorkoutEvent = async (workoutEvent: WorkoutEventInsertType): Pro
                         setId: set.id,
                         weight: set.weight,
                         // setOrder: set.setOrder, // TODO not needed?
-                    } as Omit<SetReturnType, 'exerciseId' | 'workoutId' | 'setOrder' | 'supersetName'>;
+                    } as Omit<SetReturnType, 'exerciseId' | 'setOrder' | 'supersetName' | 'workoutId'>;
                 }),
+                workoutId: workoutEvent.workoutId,
             };
         }));
     }
@@ -788,9 +788,9 @@ export const createMigration = async (migration: string): Promise<number> => {
 
 // Get functions
 
-export const getUserMeasurements = async (id: number): Promise<{ measurements: string } & UserMeasurementsReturnType | undefined> => {
+export const getUserMeasurements = async (id: number): Promise<undefined | UserMeasurementsReturnType & { measurements: string }> => {
     try {
-        const result = database.getFirstSync<{ measurements: string } & UserMeasurementsReturnType>(
+        const result = database.getFirstSync<UserMeasurementsReturnType & { measurements: string }>(
             'SELECT * FROM "UserMeasurements" WHERE "id" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')',
             [id]
         );
@@ -808,9 +808,9 @@ export const getUserMeasurements = async (id: number): Promise<{ measurements: s
     }
 };
 
-export const getUserMeasurementsBetweenDates = async (startDate: string, endDate: string): Promise<({ measurements: string } & UserMeasurementsReturnType)[]> => {
+export const getUserMeasurementsBetweenDates = async (startDate: string, endDate: string): Promise<(UserMeasurementsReturnType & { measurements: string })[]> => {
     try {
-        const results = database.getAllSync<{ measurements: string } & UserMeasurementsReturnType>(
+        const results = database.getAllSync<UserMeasurementsReturnType & { measurements: string }>(
             'SELECT * FROM "UserMeasurements" WHERE "date" BETWEEN ? AND ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')',
             [startDate, endDate]
         );
@@ -824,9 +824,9 @@ export const getUserMeasurementsBetweenDates = async (startDate: string, endDate
     }
 };
 
-export const getUserMeasurementsFromDate = async (startDate: string): Promise<({ measurements: string } & UserMeasurementsReturnType)[]> => {
+export const getUserMeasurementsFromDate = async (startDate: string): Promise<(UserMeasurementsReturnType & { measurements: string })[]> => {
     try {
-        const results = database.getAllSync<{ measurements: string } & UserMeasurementsReturnType>(
+        const results = database.getAllSync<UserMeasurementsReturnType & { measurements: string }>(
             'SELECT * FROM "UserMeasurements" WHERE "date" >= ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')',
             [startDate]
         );
@@ -840,9 +840,9 @@ export const getUserMeasurementsFromDate = async (startDate: string): Promise<({
     }
 };
 
-export const getUserMeasurementsPaginated = async (offset = 0, limit = 20): Promise<({ measurements: string } & UserMeasurementsReturnType)[]> => {
+export const getUserMeasurementsPaginated = async (offset = 0, limit = 20): Promise<(UserMeasurementsReturnType & { measurements: string })[]> => {
     try {
-        const results = database.getAllSync<{ measurements: string } & UserMeasurementsReturnType>(
+        const results = database.getAllSync<UserMeasurementsReturnType & { measurements: string }>(
             'SELECT * FROM "UserMeasurements" WHERE ("deletedAt" IS NULL OR "deletedAt" = \'\') ORDER BY "id" DESC LIMIT ? OFFSET ?',
             [limit, limit * offset]
         );
@@ -877,7 +877,7 @@ export const getLatestVersion = async (): Promise<string | undefined> => {
     }
 };
 
-export const getVersioningByVersion = async (version: string): Promise<VersioningReturnType | undefined> => {
+export const getVersioningByVersion = async (version: string): Promise<undefined | VersioningReturnType> => {
     try {
         const result = database.getFirstSync<VersioningReturnType>('SELECT * FROM "Versioning" WHERE "version" = ?', [version]);
         return result ?? undefined;
@@ -961,7 +961,7 @@ export const getChatsPaginated = async (offset = 0, limit = 20): Promise<ChatRet
     }
 };
 
-export const getUser = async (id?: number): Promise<UserWithMetricsType | undefined> => {
+export const getUser = async (id?: number): Promise<undefined | UserWithMetricsType> => {
     if (!id) {
         return getLatestUser();
     }
@@ -1077,7 +1077,7 @@ export const getAllUserMetricsByUserId = async (userId: number): Promise<UserMet
     }
 };
 
-export const getUserMetrics = async (id: number): Promise<UserMetricsDecryptedReturnType | undefined> => {
+export const getUserMetrics = async (id: number): Promise<undefined | UserMetricsDecryptedReturnType> => {
     try {
         const result = database.getFirstSync<UserMetricsEncryptedReturnType>(
             'SELECT * FROM "UserMetrics" WHERE "id" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')',
@@ -1223,11 +1223,11 @@ export const getAllUserNutrition = async (): Promise<UserNutritionDecryptedRetur
         return await Promise.all(results.map(async (row) => {
             return {
                 ...row,
+                alcohol: parseFloat(await decryptDatabaseValue(row.alcohol)) || 0,
                 calories: parseFloat(await decryptDatabaseValue(row.calories)) || 0,
                 carbohydrate: parseFloat(await decryptDatabaseValue(row.carbohydrate)) || 0,
                 fat: parseFloat(await decryptDatabaseValue(row.fat)) || 0,
                 fiber: parseFloat(await decryptDatabaseValue(row.fiber)) || 0,
-                alcohol: parseFloat(await decryptDatabaseValue(row.alcohol)) || 0,
                 grams: parseFloat(await decryptDatabaseValue(row.grams)) || 0,
                 mealType: await decryptDatabaseValue(row.mealType),
                 monounsaturatedFat: parseFloat(await decryptDatabaseValue(row.monounsaturatedFat)) || 0,
@@ -1245,7 +1245,7 @@ export const getAllUserNutrition = async (): Promise<UserNutritionDecryptedRetur
     }
 };
 
-export const getUserMetricsByDataId = async (dataId: string): Promise<UserMetricsDecryptedReturnType | undefined> => {
+export const getUserMetricsByDataId = async (dataId: string): Promise<undefined | UserMetricsDecryptedReturnType> => {
     try {
         const result = database.getFirstSync<UserMetricsEncryptedReturnType>(
             'SELECT * FROM "UserMetrics" WHERE "dataId" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')',
@@ -1273,7 +1273,7 @@ export const getUserMetricsByDataId = async (dataId: string): Promise<UserMetric
     }
 };
 
-export const getLatestUserMetrics = async (): Promise<UserMetricsDecryptedReturnType | undefined> => {
+export const getLatestUserMetrics = async (): Promise<undefined | UserMetricsDecryptedReturnType> => {
     try {
         const result = database.getFirstSync<UserMetricsEncryptedReturnType>('SELECT * FROM "UserMetrics" WHERE ("deletedAt" IS NULL OR "deletedAt" = \'\') ORDER BY "id" DESC LIMIT 1');
 
@@ -1290,7 +1290,7 @@ export const getLatestUserMetrics = async (): Promise<UserMetricsDecryptedReturn
     }
 };
 
-export const getLatestUser = async (): Promise<UserWithMetricsType | undefined> => {
+export const getLatestUser = async (): Promise<undefined | UserWithMetricsType> => {
     try {
         const user = database.getFirstSync<UserReturnType>('SELECT * FROM "User" WHERE ("deletedAt" IS NULL OR "deletedAt" = \'\') ORDER BY "id" DESC LIMIT 1') ?? undefined;
 
@@ -1362,7 +1362,7 @@ export const getAllWorkoutsWithTrashed = async (): Promise<WorkoutReturnType[]> 
     }
 };
 
-export const getRecurringWorkouts = async (): Promise<WorkoutReturnType[] | undefined> => {
+export const getRecurringWorkouts = async (): Promise<undefined | WorkoutReturnType[]> => {
     try {
         const result = database.getAllSync<WorkoutReturnType>(
             'SELECT * FROM "Workout" WHERE "recurringOnWeek" IS NOT NULL AND ("deletedAt" IS NULL OR "deletedAt" = \'\') ORDER BY "date" ASC'
@@ -1376,7 +1376,7 @@ export const getRecurringWorkouts = async (): Promise<WorkoutReturnType[] | unde
     }
 };
 
-export const getWorkouts = async (): Promise<WorkoutReturnType[] | undefined> => {
+export const getWorkouts = async (): Promise<undefined | WorkoutReturnType[]> => {
     try {
         const result = database.getAllSync<WorkoutReturnType>(
             'SELECT * FROM "Workout" WHERE ("deletedAt" IS NULL OR "deletedAt" = \'\')'
@@ -1390,7 +1390,7 @@ export const getWorkouts = async (): Promise<WorkoutReturnType[] | undefined> =>
     }
 };
 
-export const getWorkoutById = async (id: number): Promise<WorkoutReturnType | undefined> => {
+export const getWorkoutById = async (id: number): Promise<undefined | WorkoutReturnType> => {
     try {
         const result = database.getFirstSync<WorkoutReturnType>('SELECT * FROM "Workout" WHERE "id" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')', [id]) ?? undefined;
 
@@ -1410,7 +1410,7 @@ export const getSetsByExerciseId = async (exerciseId: number): Promise<SetReturn
     }
 };
 
-export const getSetById = async (setId: number): Promise<SetReturnType | null | undefined> => {
+export const getSetById = async (setId: number): Promise<null | SetReturnType | undefined> => {
     try {
         return database.getFirstSync<SetReturnType>(
             'SELECT * FROM "Set" WHERE "id" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')',
@@ -1468,7 +1468,7 @@ export const getExerciseById = async (id: number): Promise<ExerciseReturnType | 
     }
 };
 
-export const getWorkoutEvent = async (id: number): Promise<WorkoutEventReturnType | undefined> => {
+export const getWorkoutEvent = async (id: number): Promise<undefined | WorkoutEventReturnType> => {
     try {
         const result = database.getFirstSync<WorkoutEventReturnType>('SELECT * FROM "WorkoutEvent" WHERE "id" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')', [id]);
 
@@ -1583,7 +1583,7 @@ export const getRecentWorkouts = async (): Promise<WorkoutEventReturnType[]> => 
     }
 };
 
-export const getRecentWorkoutById = async (id: number): Promise<WorkoutEventReturnType | undefined> => {
+export const getRecentWorkoutById = async (id: number): Promise<undefined | WorkoutEventReturnType> => {
     try {
         return database.getFirstSync<WorkoutEventReturnType>('SELECT * FROM "WorkoutEvent" WHERE "id" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')', [id]) ?? undefined;
     } catch (error) {
@@ -1637,7 +1637,7 @@ export const getRecentWorkoutsPaginated = async (offset: number, limit: number):
     }
 };
 
-export const getWorkoutByIdWithTrashed = async (id: number): Promise<WorkoutReturnType | undefined> => {
+export const getWorkoutByIdWithTrashed = async (id: number): Promise<undefined | WorkoutReturnType> => {
     try {
         const result = database.getFirstSync<WorkoutReturnType>('SELECT * FROM "Workout" WHERE "id" = ?', [id]) ?? undefined;
 
@@ -1651,7 +1651,7 @@ export const getWorkoutByIdWithTrashed = async (id: number): Promise<WorkoutRetu
 
 export const getWorkoutDetails = async (
     workoutId: number
-): Promise<{ workout: WorkoutReturnType; exercisesWithSets: ExerciseWithSetsType[] } | undefined> => {
+): Promise<undefined | { exercisesWithSets: ExerciseWithSetsType[]; workout: WorkoutReturnType; }> => {
     try {
         const workout = database.getFirstSync<WorkoutReturnType>('SELECT * FROM "Workout" WHERE "id" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')', [workoutId]);
         if (!workout) {
@@ -1661,8 +1661,8 @@ export const getWorkoutDetails = async (
         const exercisesWithSets = await getExercisesWithSetsByWorkoutId(workoutId);
 
         return {
-            workout,
             exercisesWithSets,
+            workout,
         };
     } catch (error) {
         throw error;
@@ -1714,7 +1714,7 @@ export const getExercisesWithSetsByWorkoutId = async (
     }
 };
 
-export const getWorkoutWithExercisesRepsAndSetsDetails = async (workoutId: number): Promise<WorkoutWithExercisesRepsAndSetsDetailsReturnType | undefined> => {
+export const getWorkoutWithExercisesRepsAndSetsDetails = async (workoutId: number): Promise<undefined | WorkoutWithExercisesRepsAndSetsDetailsReturnType> => {
     const workout = database.getFirstSync<WorkoutReturnType>('SELECT * FROM "Workout" WHERE "id" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')', [workoutId]);
 
     if (!workout) {
@@ -1724,9 +1724,9 @@ export const getWorkoutWithExercisesRepsAndSetsDetails = async (workoutId: numbe
     const exercises = await getExercisesWithSetsByWorkoutId(workoutId);
 
     return {
+        exercises,
         id: workout.id,
         title: workout.title,
-        exercises,
     };
 };
 
@@ -1757,7 +1757,7 @@ export const getWorkoutsPaginated = async (offset: number, limit: number, loadDe
     }
 };
 
-export const getUserNutrition = async (id: number): Promise<UserNutritionDecryptedReturnType | undefined> => {
+export const getUserNutrition = async (id: number): Promise<undefined | UserNutritionDecryptedReturnType> => {
     try {
         const result = database.getFirstSync<UserNutritionEncryptedReturnType>(
             'SELECT * FROM "UserNutrition" WHERE "id" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')',
@@ -1768,11 +1768,11 @@ export const getUserNutrition = async (id: number): Promise<UserNutritionDecrypt
         if (result) {
             decryptedResult = {
                 ...result,
+                alcohol: parseFloat(await decryptDatabaseValue(result.alcohol)) || 0,
                 calories: parseFloat(await decryptDatabaseValue(result.calories)) || 0,
                 carbohydrate: parseFloat(await decryptDatabaseValue(result.carbohydrate)) || 0,
                 fat: parseFloat(await decryptDatabaseValue(result.fat)) || 0,
                 fiber: parseFloat(await decryptDatabaseValue(result.fiber)) || 0,
-                alcohol: parseFloat(await decryptDatabaseValue(result.alcohol)) || 0,
                 grams: parseFloat(await decryptDatabaseValue(result.grams)) || 0,
                 mealType: parseFloat(await decryptDatabaseValue(result.mealType)) || 0,
                 monounsaturatedFat: parseFloat(await decryptDatabaseValue(result.monounsaturatedFat)) || 0,
@@ -1792,7 +1792,7 @@ export const getUserNutrition = async (id: number): Promise<UserNutritionDecrypt
     }
 };
 
-export const getLatestUserNutritionByUserId = async (userId: number): Promise<UserNutritionDecryptedReturnType | undefined> => {
+export const getLatestUserNutritionByUserId = async (userId: number): Promise<undefined | UserNutritionDecryptedReturnType> => {
     try {
         const result = database.getFirstSync<UserNutritionEncryptedReturnType>(
             'SELECT * FROM "UserNutrition" WHERE "userId" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\') ORDER BY "id" DESC LIMIT 1',
@@ -1805,15 +1805,15 @@ export const getLatestUserNutritionByUserId = async (userId: number): Promise<Us
 
         return {
             ...result,
+            alcohol: parseFloat(await decryptDatabaseValue(result.alcohol)) || 0,
             calories: parseFloat(await decryptDatabaseValue(result.calories)) || 0,
             carbohydrate: parseFloat(await decryptDatabaseValue(result.carbohydrate)) || 0,
             fat: parseFloat(await decryptDatabaseValue(result.fat)) || 0,
             fiber: parseFloat(await decryptDatabaseValue(result.fiber)) || 0,
-            alcohol: parseFloat(await decryptDatabaseValue(result.alcohol)) || 0,
+            grams: parseFloat(await decryptDatabaseValue(result.grams)) || 0,
+            mealType: await decryptDatabaseValue(result.mealType),
             monounsaturatedFat: parseFloat(await decryptDatabaseValue(result.monounsaturatedFat)) || 0,
             name: await decryptDatabaseValue(result.name),
-            mealType: await decryptDatabaseValue(result.mealType),
-            grams: parseFloat(await decryptDatabaseValue(result.grams)) || 0,
             polyunsaturatedFat: parseFloat(await decryptDatabaseValue(result.polyunsaturatedFat)) || 0,
             protein: parseFloat(await decryptDatabaseValue(result.protein)) || 0,
             saturatedFat: parseFloat(await decryptDatabaseValue(result.saturatedFat)) || 0,
@@ -1837,15 +1837,15 @@ export const getAllUserNutritionByUserId = async (userId: number): Promise<UserN
             try {
                 return {
                     ...row,
+                    alcohol: parseFloat(await decryptDatabaseValue(row.alcohol)) || 0,
                     calories: parseFloat(await decryptDatabaseValue(row.calories)) || 0,
                     carbohydrate: parseFloat(await decryptDatabaseValue(row.carbohydrate)) || 0,
                     fat: parseFloat(await decryptDatabaseValue(row.fat)) || 0,
                     fiber: parseFloat(await decryptDatabaseValue(row.fiber)) || 0,
-                    alcohol: parseFloat(await decryptDatabaseValue(row.alcohol)) || 0,
+                    grams: parseFloat(await decryptDatabaseValue(row.grams)) || 0,
+                    mealType: await decryptDatabaseValue(row.mealType) || '',
                     monounsaturatedFat: parseFloat(await decryptDatabaseValue(row.monounsaturatedFat)) || 0,
                     name: await decryptDatabaseValue(row.name) || '',
-                    mealType: await decryptDatabaseValue(row.mealType) || '',
-                    grams: parseFloat(await decryptDatabaseValue(row.grams)) || 0,
                     polyunsaturatedFat: parseFloat(await decryptDatabaseValue(row.polyunsaturatedFat)) || 0,
                     protein: parseFloat(await decryptDatabaseValue(row.protein)) || 0,
                     saturatedFat: parseFloat(await decryptDatabaseValue(row.saturatedFat)) || 0,
@@ -1875,15 +1875,15 @@ export const getAllUserNutritionBySource = async (source: string): Promise<UserN
             try {
                 return {
                     ...row,
+                    alcohol: parseFloat(await decryptDatabaseValue(row.alcohol)) || 0,
                     calories: parseFloat(await decryptDatabaseValue(row.calories)) || 0,
                     carbohydrate: parseFloat(await decryptDatabaseValue(row.carbohydrate)) || 0,
                     fat: parseFloat(await decryptDatabaseValue(row.fat)) || 0,
                     fiber: parseFloat(await decryptDatabaseValue(row.fiber)) || 0,
-                    alcohol: parseFloat(await decryptDatabaseValue(row.alcohol)) || 0,
+                    grams: parseFloat(await decryptDatabaseValue(row.grams)) || 0,
+                    mealType: await decryptDatabaseValue(row.mealType) || '',
                     monounsaturatedFat: parseFloat(await decryptDatabaseValue(row.monounsaturatedFat)) || 0,
                     name: await decryptDatabaseValue(row.name) || '',
-                    mealType: await decryptDatabaseValue(row.mealType) || '',
-                    grams: parseFloat(await decryptDatabaseValue(row.grams)) || 0,
                     polyunsaturatedFat: parseFloat(await decryptDatabaseValue(row.polyunsaturatedFat)) || 0,
                     protein: parseFloat(await decryptDatabaseValue(row.protein)) || 0,
                     saturatedFat: parseFloat(await decryptDatabaseValue(row.saturatedFat)) || 0,
@@ -1902,7 +1902,7 @@ export const getAllUserNutritionBySource = async (source: string): Promise<UserN
     }
 };
 
-export const getUserNutritionByDataId = async (dataId: string): Promise<UserNutritionDecryptedReturnType | undefined> => {
+export const getUserNutritionByDataId = async (dataId: string): Promise<undefined | UserNutritionDecryptedReturnType> => {
     try {
         const result = database.getFirstSync<UserNutritionEncryptedReturnType>(
             'SELECT * FROM "UserNutrition" WHERE "dataId" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')',
@@ -1916,15 +1916,15 @@ export const getUserNutritionByDataId = async (dataId: string): Promise<UserNutr
         try {
             return {
                 ...result,
+                alcohol: parseFloat(await decryptDatabaseValue(result.alcohol)) || 0,
                 calories: parseFloat(await decryptDatabaseValue(result.calories)) || 0,
                 carbohydrate: parseFloat(await decryptDatabaseValue(result.carbohydrate)) || 0,
                 fat: parseFloat(await decryptDatabaseValue(result.fat)) || 0,
-                alcohol: parseFloat(await decryptDatabaseValue(result.alcohol)) || 0,
                 fiber: parseFloat(await decryptDatabaseValue(result.fiber)) || 0,
+                grams: parseFloat(await decryptDatabaseValue(result.grams)) || 0,
+                mealType: await decryptDatabaseValue(result.mealType) || '',
                 monounsaturatedFat: parseFloat(await decryptDatabaseValue(result.monounsaturatedFat)) || 0,
                 name: await decryptDatabaseValue(result.name) || '',
-                mealType: await decryptDatabaseValue(result.mealType) || '',
-                grams: parseFloat(await decryptDatabaseValue(result.grams)) || 0,
                 polyunsaturatedFat: parseFloat(await decryptDatabaseValue(result.polyunsaturatedFat)) || 0,
                 protein: parseFloat(await decryptDatabaseValue(result.protein)) || 0,
                 saturatedFat: parseFloat(await decryptDatabaseValue(result.saturatedFat)) || 0,
@@ -1955,15 +1955,15 @@ export const getUserNutritionPaginated = async (offset = 0, limit = 20, order: '
             try {
                 return {
                     ...row,
+                    alcohol: parseFloat(await decryptDatabaseValue(row.alcohol)) || 0,
                     calories: parseFloat(await decryptDatabaseValue(row.calories)) || 0,
                     carbohydrate: parseFloat(await decryptDatabaseValue(row.carbohydrate)) || 0,
                     fat: parseFloat(await decryptDatabaseValue(row.fat)) || 0,
-                    alcohol: parseFloat(await decryptDatabaseValue(row.alcohol)) || 0,
                     fiber: parseFloat(await decryptDatabaseValue(row.fiber)) || 0,
+                    grams: parseFloat(await decryptDatabaseValue(row.grams)) || 0,
+                    mealType: await decryptDatabaseValue(row.mealType) || '',
                     monounsaturatedFat: parseFloat(await decryptDatabaseValue(row.monounsaturatedFat)) || 0,
                     name: await decryptDatabaseValue(row.name) || '',
-                    mealType: await decryptDatabaseValue(row.mealType) || '',
-                    grams: parseFloat(await decryptDatabaseValue(row.grams)) || 0,
                     polyunsaturatedFat: parseFloat(await decryptDatabaseValue(row.polyunsaturatedFat)) || 0,
                     protein: parseFloat(await decryptDatabaseValue(row.protein)) || 0,
                     saturatedFat: parseFloat(await decryptDatabaseValue(row.saturatedFat)) || 0,
@@ -1995,15 +1995,15 @@ export const getUserNutritionBetweenDates = async (startDate: string, endDate: s
             try {
                 return {
                     ...row,
+                    alcohol: parseFloat(await decryptDatabaseValue(row.alcohol)) || 0,
                     calories: parseFloat(await decryptDatabaseValue(row.calories)) || 0,
                     carbohydrate: parseFloat(await decryptDatabaseValue(row.carbohydrate)) || 0,
                     fat: parseFloat(await decryptDatabaseValue(row.fat)) || 0,
                     fiber: parseFloat(await decryptDatabaseValue(row.fiber)) || 0,
-                    alcohol: parseFloat(await decryptDatabaseValue(row.alcohol)) || 0,
+                    grams: parseFloat(await decryptDatabaseValue(row.grams)) || 0,
+                    mealType: await decryptDatabaseValue(row.mealType) || '',
                     monounsaturatedFat: parseFloat(await decryptDatabaseValue(row.monounsaturatedFat)) || 0,
                     name: await decryptDatabaseValue(row.name) || '',
-                    mealType: await decryptDatabaseValue(row.mealType) || '',
-                    grams: parseFloat(await decryptDatabaseValue(row.grams)) || 0,
                     polyunsaturatedFat: parseFloat(await decryptDatabaseValue(row.polyunsaturatedFat)) || 0,
                     protein: parseFloat(await decryptDatabaseValue(row.protein)) || 0,
                     saturatedFat: parseFloat(await decryptDatabaseValue(row.saturatedFat)) || 0,
@@ -2037,15 +2037,15 @@ export const getUserNutritionFromDate = async (startDate: string): Promise<UserN
             try {
                 return {
                     ...row,
+                    alcohol: parseFloat(await decryptDatabaseValue(row.alcohol)) || 0,
                     calories: parseFloat(await decryptDatabaseValue(row.calories)) || 0,
                     carbohydrate: parseFloat(await decryptDatabaseValue(row.carbohydrate)) || 0,
                     fat: parseFloat(await decryptDatabaseValue(row.fat)) || 0,
-                    alcohol: parseFloat(await decryptDatabaseValue(row.alcohol)) || 0,
                     fiber: parseFloat(await decryptDatabaseValue(row.fiber)) || 0,
+                    grams: parseFloat(await decryptDatabaseValue(row.grams)) || 0,
+                    mealType: await decryptDatabaseValue(row.mealType) || '',
                     monounsaturatedFat: parseFloat(await decryptDatabaseValue(row.monounsaturatedFat)) || 0,
                     name: await decryptDatabaseValue(row.name) || '',
-                    mealType: await decryptDatabaseValue(row.mealType) || '',
-                    grams: parseFloat(await decryptDatabaseValue(row.grams)) || 0,
                     polyunsaturatedFat: parseFloat(await decryptDatabaseValue(row.polyunsaturatedFat)) || 0,
                     protein: parseFloat(await decryptDatabaseValue(row.protein)) || 0,
                     saturatedFat: parseFloat(await decryptDatabaseValue(row.saturatedFat)) || 0,
@@ -2654,10 +2654,10 @@ export const processWorkoutPlan = async (workoutPlan: WorkoutPlan): Promise<void
 
     for (const workout of workoutPlan.workoutPlan) {
         const newWorkout: WorkoutInsertType = {
+            createdAt: getCurrentTimestamp(),
             description: workout.description || '',
             title: workout.title,
             volumeCalculationType: VOLUME_CALCULATION_TYPES.NONE,
-            createdAt: getCurrentTimestamp(),
         };
 
         // Create the workout and get the workoutId
@@ -2674,12 +2674,12 @@ export const processWorkoutPlan = async (workoutPlan: WorkoutPlan): Promise<void
                 exercise = exerciseMap[normalizedExerciseName];
             } else {
                 const exerciseId = await addExercise({
+                    createdAt: getCurrentTimestamp(),
                     description: '',
                     image: '',
                     muscleGroup: '',
                     name: planExercise.name,
                     type: '',
-                    createdAt: getCurrentTimestamp(),
                 });
                 exercise = await getExerciseById(exerciseId);
 
@@ -2701,15 +2701,15 @@ export const processWorkoutPlan = async (workoutPlan: WorkoutPlan): Promise<void
             // Add sets for the exercise
             for (let i = 0; i < sets; i++) {
                 const set: SetInsertType = {
-                    workoutId: workoutId,
+                    createdAt: getCurrentTimestamp(),
                     exerciseId: exercise?.id!,
+                    isDropSet: false, // Adjust if needed
+                    reps,
+                    restTime,
                     setOrder: setOrder++,
                     supersetName: '', // Adjust if needed
-                    reps,
                     weight: calculatedWeight,
-                    restTime,
-                    isDropSet: false, // Adjust if needed
-                    createdAt: getCurrentTimestamp(),
+                    workoutId: workoutId,
                 };
 
                 await addSet(set);
@@ -2832,11 +2832,11 @@ export const restoreDatabase = async (dump: string, decryptionPhrase?: string): 
             dump = await decrypt(dump, decryptionPhrase);
         }
 
-        const dbData: Record<string, Record<string, string | number | null>[]> = JSON.parse(dump);
+        const dbData: Record<string, Record<string, null | number | string>[]> = JSON.parse(dump);
         database.runSync('PRAGMA foreign_keys = OFF;');
 
         for (const tableName of Object.keys(dbData)) {
-            const tableData: Record<string, string | number | null>[] = dbData[tableName];
+            const tableData: Record<string, null | number | string>[] = dbData[tableName];
             if (tableName === 'Versioning') {
                 continue;
             }
@@ -2935,7 +2935,7 @@ export const restoreDatabase = async (dump: string, decryptionPhrase?: string): 
                     }
                 }
 
-                const values = Object.values(row).map((value: string | number | null | undefined) => {
+                const values = Object.values(row).map((value: null | number | string | undefined) => {
                     if (typeof value === 'string') {
                         return `'${value.replace(/'/g, "''")}'`;
                     } else if (value === null || value === undefined) {
@@ -3067,9 +3067,9 @@ export const createNewWorkoutTables = async (): Promise<void> => {
                             .filter((set) => we.setIds.includes(set.id))
                             .map((set, setIndex) => ({
                                 ...set,
-                                workoutId: workout.id,
                                 setOrder: exerciseIndex + setIndex,
                                 supersetName: '',
+                                workoutId: workout.id,
                             }));
                         return { ...we, sets: exerciseSets };
                     });
@@ -3440,6 +3440,7 @@ const commonFunctions = getCommonFunctions({
     addSetting,
     addUserMetrics,
     addUserNutrition,
+    addWorkout,
     addWorkoutEvent,
     countChatMessages,
     countExercises,
@@ -3447,12 +3448,11 @@ const commonFunctions = getCommonFunctions({
     getAllWorkoutsWithTrashed,
     getExerciseById,
     getSetById,
+    getSetsByWorkoutId,
     getUser,
     getWorkoutByIdWithTrashed,
     updateSet,
     updateWorkout,
-    addWorkout,
-    getSetsByWorkoutId,
 });
 
 export const {

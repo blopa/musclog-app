@@ -11,16 +11,16 @@ interface PreviousSetDataModalProps {
     completedWorkoutData: ExerciseProgressType[];
     isVisible: boolean;
     onClose: () => void;
-    remainingWorkoutData: ExerciseWithSetsType[];
     orderedExercises: { exercise: ExerciseReturnType; sets: SetReturnType[] }[];
+    remainingWorkoutData: ExerciseWithSetsType[];
 }
 
 const CurrentWorkoutProgressModal: React.FC<PreviousSetDataModalProps> = ({
     completedWorkoutData,
     isVisible,
     onClose,
-    remainingWorkoutData,
     orderedExercises,
+    remainingWorkoutData,
 }) => {
     const { colors } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors);
@@ -53,7 +53,7 @@ const CurrentWorkoutProgressModal: React.FC<PreviousSetDataModalProps> = ({
             }
         });
 
-        return { supersets, standaloneExercises };
+        return { standaloneExercises, supersets };
     }, [completedWorkoutData]);
 
     // Group remaining data by supersetName and exerciseName using orderedExercises for ordering
@@ -84,7 +84,7 @@ const CurrentWorkoutProgressModal: React.FC<PreviousSetDataModalProps> = ({
             }
         });
 
-        return { supersets, standaloneExercises };
+        return { standaloneExercises, supersets };
     }, [orderedExercises, remainingSetIds]);
 
     return (

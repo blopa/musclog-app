@@ -6,8 +6,8 @@ import {
     CategoryScale,
     Chart as ChartJS,
     Legend,
-    LineElement,
     LinearScale,
+    LineElement,
     PointElement,
     Title,
     Tooltip,
@@ -15,7 +15,7 @@ import {
 import React, { ReactNode, useCallback } from 'react';
 import { Chart } from 'react-chartjs-2';
 import { Dimensions, StyleSheet, View } from 'react-native';
-import { IconButton, useTheme, Text } from 'react-native-paper';
+import { IconButton, Text, useTheme } from 'react-native-paper';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, Title, Tooltip, Legend);
 

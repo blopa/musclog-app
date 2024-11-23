@@ -38,7 +38,7 @@ import {
     LAST_TIME_APP_USED,
     THEME_CHOICE_TYPE,
 } from '@/constants/storage';
-import i18n, { LanguageKeys, getExerciseData } from '@/lang/lang';
+import i18n, { getExerciseData, LanguageKeys } from '@/lang/lang';
 import { ChatProvider, useChatData } from '@/storage/ChatProvider';
 import { CustomThemeProvider, useCustomTheme } from '@/storage/CustomThemeProvider';
 import { HealthConnectProvider } from '@/storage/HealthConnectProvider';
@@ -48,29 +48,29 @@ import { SnackbarProvider } from '@/storage/SnackbarProvider';
 import { UnreadMessagesProvider, useUnreadMessages } from '@/storage/UnreadMessagesProvider';
 import { getAiApiVendor, isAllowedLocation } from '@/utils/ai';
 import {
+    addTransparency,
     CustomDarkTheme,
     CustomLightTheme,
     CustomThemeColorsType,
     CustomThemeType,
-    addTransparency,
 } from '@/utils/colors';
 import {
     addAlcoholAndFiberMacroToWorkoutEventTable,
     addAlcoholMacroToUserNutritionTable,
     addExercise,
     addMacrosToWorkoutEventTable,
+    addMealTypeGramsToUserNutritionTable,
     addOrUpdateSetting,
     addOrUpdateUser,
     addUserMeasurementsTable,
     addVersioning,
     countExercises,
+    createFitnessGoalsTable,
+    createFoodTable,
+    createMigrationsTable,
+    createNewWorkoutTables,
     getLatestUser,
     getUser,
-    createNewWorkoutTables,
-    addMealTypeGramsToUserNutritionTable,
-    createFoodTable,
-    createFitnessGoalsTable,
-    createMigrationsTable,
 } from '@/utils/database';
 import { getCurrentTimestamp } from '@/utils/date';
 import { getEncryptionKey } from '@/utils/encryption';
@@ -80,11 +80,11 @@ import { ExerciseInsertType } from '@/utils/types';
 import { FontAwesome } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
+    createDrawerNavigator,
     DrawerContentComponentProps,
     DrawerContentScrollView,
     DrawerItem,
     DrawerItemList,
-    createDrawerNavigator,
 } from '@react-navigation/drawer';
 import 'react-native-reanimated';
 import * as Sentry from '@sentry/react-native';
@@ -111,6 +111,11 @@ SplashScreen.preventAutoHideAsync();
 
 const Drawer = createDrawerNavigator();
 
+interface CustomDrawerContentProps extends DrawerContentComponentProps {
+    isAiEnabled: boolean;
+    unreadMessages: number;
+}
+
 export default function MasterRootLayout() {
     return (
         <CustomErrorBoundary>
@@ -126,6 +131,53 @@ export default function MasterRootLayout() {
                 </SettingsProvider>
             </LayoutReloaderProvider>
         </CustomErrorBoundary>
+    );
+}
+
+function CustomDrawerContent(props: CustomDrawerContentProps) {
+    const currentRoute = props.state.routeNames[props.state.index];
+    const { colors, dark } = useTheme<CustomThemeType>();
+    const styles = makeStyles(colors, dark, currentRoute);
+    const { t } = useTranslation();
+
+    return (
+        <DrawerContentScrollView {...props} contentContainerStyle={styles.drawerContainer}>
+            <View>
+                <DrawerItem
+                    focused={currentRoute === 'index'}
+                    label={() => (
+                        <View style={styles.customItem}>
+                            <Text style={styles.indexItemText}>
+                                {t('home')}
+                            </Text>
+                        </View>
+                    )}
+                    onPress={() => props.navigation.navigate('index')}
+                />
+                {props.isAiEnabled && (
+                    <DrawerItem
+                        focused={currentRoute === 'chat'}
+                        label={() => (
+                            <View style={styles.customItem}>
+                                <Text style={styles.chatItemText}>
+                                    {t('chat')}
+                                </Text>
+                                {props.unreadMessages > 0 && (
+                                    <View style={styles.badge}>
+                                        <Text style={styles.badgeText}>{props.unreadMessages}</Text>
+                                    </View>
+                                )}
+                            </View>
+                        )}
+                        onPress={() => props.navigation.navigate('chat')}
+                    />
+                )}
+                <DrawerItemList {...props} />
+            </View>
+            <View style={styles.footer}>
+                <Text style={styles.footerText}>{`v${packageJson.version}`}</Text>
+            </View>
+        </DrawerContentScrollView>
     );
 }
 
@@ -187,8 +239,8 @@ function RootLayout() {
                         }
                     } catch (error) {
                         Sentry.captureException({
-                            error,
                             encryptedKey,
+                            error,
                         });
                     }
 
@@ -443,58 +495,6 @@ function RootLayoutNav() {
                 />
             ))}
         </Drawer.Navigator>
-    );
-}
-
-interface CustomDrawerContentProps extends DrawerContentComponentProps {
-    isAiEnabled: boolean;
-    unreadMessages: number;
-}
-
-function CustomDrawerContent(props: CustomDrawerContentProps) {
-    const currentRoute = props.state.routeNames[props.state.index];
-    const { colors, dark } = useTheme<CustomThemeType>();
-    const styles = makeStyles(colors, dark, currentRoute);
-    const { t } = useTranslation();
-
-    return (
-        <DrawerContentScrollView {...props} contentContainerStyle={styles.drawerContainer}>
-            <View>
-                <DrawerItem
-                    focused={currentRoute === 'index'}
-                    label={() => (
-                        <View style={styles.customItem}>
-                            <Text style={styles.indexItemText}>
-                                {t('home')}
-                            </Text>
-                        </View>
-                    )}
-                    onPress={() => props.navigation.navigate('index')}
-                />
-                {props.isAiEnabled && (
-                    <DrawerItem
-                        focused={currentRoute === 'chat'}
-                        label={() => (
-                            <View style={styles.customItem}>
-                                <Text style={styles.chatItemText}>
-                                    {t('chat')}
-                                </Text>
-                                {props.unreadMessages > 0 && (
-                                    <View style={styles.badge}>
-                                        <Text style={styles.badgeText}>{props.unreadMessages}</Text>
-                                    </View>
-                                )}
-                            </View>
-                        )}
-                        onPress={() => props.navigation.navigate('chat')}
-                    />
-                )}
-                <DrawerItemList {...props} />
-            </View>
-            <View style={styles.footer}>
-                <Text style={styles.footerText}>{`v${packageJson.version}`}</Text>
-            </View>
-        </DrawerContentScrollView>
     );
 }
 

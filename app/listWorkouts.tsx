@@ -40,9 +40,9 @@ import {
     ActivityIndicator,
     Appbar,
     Card,
+    Switch,
     Text,
     useTheme,
-    Switch,
 } from 'react-native-paper';
 
 export default function ListWorkouts({ navigation }: { navigation: NavigationProp<any> }) {
@@ -54,14 +54,14 @@ export default function ListWorkouts({ navigation }: { navigation: NavigationPro
     const [showDeletedWorkouts, setShowDeletedWorkouts] = useState(false);
     const [workoutDetails, setWorkoutDetails] = useState<{
         [key: number]: {
-            workout: WorkoutReturnType;
             exercisesWithSets: ExerciseWithSetsType[];
+            workout: WorkoutReturnType;
         };
     }>({});
     const [modalVisible, setModalVisible] = useState(false);
     const [confirmationModalVisible, setConfirmationModalVisible] = useState(false);
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
-    const [selectedWorkout, setSelectedWorkout] = useState<WorkoutReturnType | null>(null);
+    const [selectedWorkout, setSelectedWorkout] = useState<null | WorkoutReturnType>(null);
     const [generateModalVisible, setGenerateModalVisible] = useState(false);
     const [inputValue, setInputValue] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -101,8 +101,8 @@ export default function ListWorkouts({ navigation }: { navigation: NavigationPro
 
             const workoutDetailsMap: {
                     [key: number]: {
-                        workout: WorkoutReturnType;
                         exercisesWithSets: ExerciseWithSetsType[];
+                        workout: WorkoutReturnType;
                     };
                 } = {};
 
@@ -341,22 +341,22 @@ export default function ListWorkouts({ navigation }: { navigation: NavigationPro
                     <View style={styles.toggleContainer}>
                         <Text style={styles.toggleLabel}>{t('show_deleted_workouts')}</Text>
                         <Switch
-                            value={showDeletedWorkouts}
                             onValueChange={handleShowDeletedWorkouts}
+                            value={showDeletedWorkouts}
                         />
                     </View>
                     {filteredWorkouts.length > 0 ? (
                         <FlashList
-                            ListFooterComponent={
-                                workouts.length < totalWorkoutsCount ? (
-                                    <ActivityIndicator />
-                                ) : null
-                            }
                             contentContainerStyle={styles.scrollViewContent}
                             data={filteredWorkouts}
                             estimatedItemSize={135}
                             keyExtractor={(item) =>
                                 (item?.id ? item.id.toString() : 'default')
+                            }
+                            ListFooterComponent={
+                                workouts.length < totalWorkoutsCount ? (
+                                    <ActivityIndicator />
+                                ) : null
                             }
                             onEndReached={loadMoreWorkouts}
                             onEndReachedThreshold={0.5}

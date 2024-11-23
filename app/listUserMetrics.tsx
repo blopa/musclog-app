@@ -332,11 +332,11 @@ export default function ListUserMetrics({ navigation }: { navigation: Navigation
                     <AnimatedSearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
                 </Appbar.Header>
                 <FlashList
-                    ListFooterComponent={userMetrics.length < totalUserMetricsCount ? <ActivityIndicator /> : null}
                     contentContainerStyle={styles.scrollViewContent}
                     data={filteredUserMetrics}
                     estimatedItemSize={95}
                     keyExtractor={(item) => (item?.id ? item.id.toString() : 'default')}
+                    ListFooterComponent={userMetrics.length < totalUserMetricsCount ? <ActivityIndicator /> : null}
                     onEndReached={loadMoreUserMetrics}
                     onEndReachedThreshold={0.5}
                     renderItem={({ item: metric }) => (
@@ -535,10 +535,10 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         paddingBottom: 16,
         paddingHorizontal: 16,
     },
-    selectJsonButton: {
-        marginBottom: 12,
-    },
     selectedFileWrapper: {
         marginBottom: 24,
+    },
+    selectJsonButton: {
+        marginBottom: 12,
     },
 });

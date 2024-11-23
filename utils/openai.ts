@@ -30,6 +30,42 @@ const OPENAI_MODEL = 'gpt-4o-mini';
 export const getApiKey = async () =>
     (await getSetting(OPENAI_API_KEY_TYPE))?.value || process.env.EXPO_PUBLIC_FORCE_OPENAI_API_KEY;
 
+export async function generateWorkoutPlan(messages: any[]): Promise<boolean> {
+    const workoutPlanResponse = await createWorkoutPlan(messages);
+
+    try {
+        if (workoutPlanResponse?.workoutPlan) {
+            await processWorkoutPlan(workoutPlanResponse as WorkoutPlan);
+        }
+
+        return true;
+    } catch (error) {
+        console.error('Failed to process workout plan:', error);
+    }
+
+    return false;
+}
+
+export async function getNutritionInsights(startDate: string) {
+    const apiKey = await getApiKey();
+
+    if (!apiKey) {
+        return Promise.resolve();
+    }
+
+    const openai = new OpenAI({
+        apiKey: apiKey,
+        dangerouslyAllowBrowser: true,
+    });
+
+    const result = await openai.chat.completions.create({
+        messages: await getNutritionInsightsPrompt(startDate),
+        model: OPENAI_MODEL,
+    });
+
+    return result?.choices?.[0].message.content;
+}
+
 export async function sendChatMessage(messages: any[]) {
     const apiKey = await getApiKey();
 
@@ -98,42 +134,6 @@ async function createWorkoutPlan(messages: any[]) {
     }
 
     return jsonResponse;
-}
-
-export async function getNutritionInsights(startDate: string) {
-    const apiKey = await getApiKey();
-
-    if (!apiKey) {
-        return Promise.resolve();
-    }
-
-    const openai = new OpenAI({
-        apiKey: apiKey,
-        dangerouslyAllowBrowser: true,
-    });
-
-    const result = await openai.chat.completions.create({
-        messages: await getNutritionInsightsPrompt(startDate),
-        model: OPENAI_MODEL,
-    });
-
-    return result?.choices?.[0].message.content;
-}
-
-export async function generateWorkoutPlan(messages: any[]): Promise<boolean> {
-    const workoutPlanResponse = await createWorkoutPlan(messages);
-
-    try {
-        if (workoutPlanResponse?.workoutPlan) {
-            await processWorkoutPlan(workoutPlanResponse as WorkoutPlan);
-        }
-
-        return true;
-    } catch (error) {
-        console.error('Failed to process workout plan:', error);
-    }
-
-    return false;
 }
 
 export const calculateNextWorkoutVolume = async (workout: WorkoutReturnType) => {
@@ -262,6 +262,123 @@ export const parsePastNutrition = async (userMessage: string) => {
     return jsonResponse;
 };
 
+export async function estimateNutritionFromPhoto(photoUri: string) {
+    const apiKey = await getApiKey();
+
+    if (!apiKey) {
+        return Promise.resolve(null);
+    }
+
+    const openai = new OpenAI({
+        apiKey: apiKey,
+        dangerouslyAllowBrowser: true,
+    });
+
+    const base64Image = await getBase64StringFromPhotoUri(
+        await resizeImage(photoUri)
+    );
+
+    const result = await openai.chat.completions.create({
+        function_call: { name: 'estimateMacros' },
+        functions: getMacrosEstimationFunctions(
+            'Estimates the macronutrients of a meal from a photo',
+            'estimated'
+        ) as OpenAI.Chat.ChatCompletionCreateParams.Function[],
+        messages: [{
+            content: [
+                'You are a very powerful AI, trained to estimate the macronutrients of a food / meal from a photo.',
+            ].join('\n'),
+            role: 'system',
+        }, {
+            content: [{
+                image_url: {
+                    url: `data:image/jpeg;base64,${base64Image}`,
+                },
+                type: 'image_url',
+            }],
+            role: 'user',
+        }],
+        model: OPENAI_MODEL,
+    });
+
+    let jsonResponse = {
+        calories: 0,
+        carbs: 0,
+        fat: 0,
+        grams: 0,
+        name: '',
+        protein: 0,
+    };
+
+    try {
+        // @ts-expect-error
+        jsonResponse = JSON.parse(result?.choices?.[0]?.message?.function_call?.arguments);
+    } catch (error) {
+        console.log('Error parsing JSON response:', error);
+    }
+
+    return jsonResponse;
+};
+
+export async function extractMacrosFromLabelPhoto(photoUri: string) {
+    const apiKey = await getApiKey();
+
+    if (!apiKey) {
+        return Promise.resolve(null);
+    }
+
+    const openai = new OpenAI({
+        apiKey: apiKey,
+        dangerouslyAllowBrowser: true,
+    });
+
+    const base64Image = await getBase64StringFromPhotoUri(
+        await resizeImage(photoUri)
+    );
+
+    const result = await openai.chat.completions.create({
+        function_call: { name: 'estimateMacros' },
+        functions: getMacrosEstimationFunctions(
+            'Extracts the macronutrients of a food label from a photo',
+            'extracted'
+        ) as OpenAI.Chat.ChatCompletionCreateParams.Function[],
+        messages: [{
+            content: [
+                'You are a very powerful AI, trained to extract the macronutrients of a food label from a photo.',
+                'Use OCR to extract the text from the image, then parse the text to extract the macronutrients.',
+            ].join('\n'),
+            role: 'system',
+        }, {
+            content: [{
+                image_url: {
+                    url: `data:image/jpeg;base64,${base64Image}`,
+                },
+                type: 'image_url',
+            }],
+            role: 'user',
+        }],
+        model: OPENAI_MODEL,
+    });
+
+    let jsonResponse = {
+        calories: 0,
+        carbs: 0,
+        fat: 0,
+        grams: 0,
+        name: '',
+        protein: 0,
+    };
+
+    try {
+        // @ts-expect-error
+        jsonResponse = JSON.parse(result?.choices?.[0]?.message?.function_call?.arguments);
+    } catch (error) {
+        console.log('Error parsing JSON response:', error);
+    }
+
+    return jsonResponse;
+}
+
 export async function getRecentWorkoutInsights(workoutEventId: number) {
     const apiKey = await getApiKey();
 
@@ -280,7 +397,7 @@ export async function getRecentWorkoutInsights(workoutEventId: number) {
     });
 
     return result?.choices?.[0].message.content;
-};
+}
 
 export async function getWorkoutInsights(workoutId: number) {
     const apiKey = await getApiKey();
@@ -342,121 +459,4 @@ export async function isValidApiKey(apiKey: string) {
     } catch (error) {
         return false;
     }
-}
-
-export async function estimateNutritionFromPhoto(photoUri: string) {
-    const apiKey = await getApiKey();
-
-    if (!apiKey) {
-        return Promise.resolve(null);
-    }
-
-    const openai = new OpenAI({
-        apiKey: apiKey,
-        dangerouslyAllowBrowser: true,
-    });
-
-    const base64Image = await getBase64StringFromPhotoUri(
-        await resizeImage(photoUri)
-    );
-
-    const result = await openai.chat.completions.create({
-        function_call: { name: 'estimateMacros' },
-        functions: getMacrosEstimationFunctions(
-            'Estimates the macronutrients of a meal from a photo',
-            'estimated'
-        ) as OpenAI.Chat.ChatCompletionCreateParams.Function[],
-        messages: [{
-            role: 'system',
-            content: [
-                'You are a very powerful AI, trained to estimate the macronutrients of a food / meal from a photo.',
-            ].join('\n'),
-        }, {
-            role: 'user',
-            content: [{
-                type: 'image_url',
-                image_url: {
-                    url: `data:image/jpeg;base64,${base64Image}`,
-                },
-            }],
-        }],
-        model: OPENAI_MODEL,
-    });
-
-    let jsonResponse = {
-        protein: 0,
-        carbs: 0,
-        fat: 0,
-        calories: 0,
-        name: '',
-        grams: 0,
-    };
-
-    try {
-        // @ts-expect-error
-        jsonResponse = JSON.parse(result?.choices?.[0]?.message?.function_call?.arguments);
-    } catch (error) {
-        console.log('Error parsing JSON response:', error);
-    }
-
-    return jsonResponse;
-}
-
-export async function extractMacrosFromLabelPhoto(photoUri: string) {
-    const apiKey = await getApiKey();
-
-    if (!apiKey) {
-        return Promise.resolve(null);
-    }
-
-    const openai = new OpenAI({
-        apiKey: apiKey,
-        dangerouslyAllowBrowser: true,
-    });
-
-    const base64Image = await getBase64StringFromPhotoUri(
-        await resizeImage(photoUri)
-    );
-
-    const result = await openai.chat.completions.create({
-        function_call: { name: 'estimateMacros' },
-        functions: getMacrosEstimationFunctions(
-            'Extracts the macronutrients of a food label from a photo',
-            'extracted'
-        ) as OpenAI.Chat.ChatCompletionCreateParams.Function[],
-        messages: [{
-            role: 'system',
-            content: [
-                'You are a very powerful AI, trained to extract the macronutrients of a food label from a photo.',
-                'Use OCR to extract the text from the image, then parse the text to extract the macronutrients.',
-            ].join('\n'),
-        }, {
-            role: 'user',
-            content: [{
-                type: 'image_url',
-                image_url: {
-                    url: `data:image/jpeg;base64,${base64Image}`,
-                },
-            }],
-        }],
-        model: OPENAI_MODEL,
-    });
-
-    let jsonResponse = {
-        protein: 0,
-        carbs: 0,
-        fat: 0,
-        calories: 0,
-        name: '',
-        grams: 0,
-    };
-
-    try {
-        // @ts-expect-error
-        jsonResponse = JSON.parse(result?.choices?.[0]?.message?.function_call?.arguments);
-    } catch (error) {
-        console.log('Error parsing JSON response:', error);
-    }
-
-    return jsonResponse;
 }

@@ -10,7 +10,7 @@ import { NavigationProp, useRoute } from '@react-navigation/native';
 import fetch from 'isomorphic-fetch';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { View, ScrollView, StyleSheet, Platform, Alert } from 'react-native';
+import { Alert, Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { Appbar, Button, Text, useTheme } from 'react-native-paper';
 
 import form from '../data/form.json';
@@ -93,16 +93,16 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
         });
 
         const food = {
-            protein: parseInt(urlParams.get('entry.1811363356') || '0', 10),
-            totalFat: parseInt(urlParams.get('entry.2114676271') || '0', 10),
-            totalCarbohydrate: parseInt(urlParams.get('entry.919411420') || '0', 10),
-            calories: parseInt(urlParams.get('entry.1848808507') || '0', 10),
-            sugar: parseInt(urlParams.get('entry.231759517') || '0', 10),
-            fiber: parseInt(urlParams.get('entry.1039537292') || '0', 10),
             alcohol: parseInt(urlParams.get('entry.1665963898') || '0', 10),
-            name: urlParams.get('entry.1515281433') || t('unnamed'),
-            dataId: urlParams.get('entry.1025747995') || generateHash(),
+            calories: parseInt(urlParams.get('entry.1848808507') || '0', 10),
             createdAt: urlParams.get('entry.1917240265') || new Date().toISOString(),
+            dataId: urlParams.get('entry.1025747995') || generateHash(),
+            fiber: parseInt(urlParams.get('entry.1039537292') || '0', 10),
+            name: urlParams.get('entry.1515281433') || t('unnamed'),
+            protein: parseInt(urlParams.get('entry.1811363356') || '0', 10),
+            sugar: parseInt(urlParams.get('entry.231759517') || '0', 10),
+            totalCarbohydrate: parseInt(urlParams.get('entry.919411420') || '0', 10),
+            totalFat: parseInt(urlParams.get('entry.2114676271') || '0', 10),
         };
 
         const foodId = await addFood(food);
@@ -115,10 +115,10 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
             fetch(
                 `${GOOGLE_FORMS_URL}/${form.action}/formResponse?${urlParams.toString()}`,
                 {
-                    method: 'GET',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
                     },
+                    method: 'GET',
                     ...Platform.OS === 'web' ? { mode: 'no-cors' } : {},
                 }
             ).then(() => {

@@ -5,7 +5,7 @@ import {
     listenToDatabaseChanges,
 } from '@/utils/database';
 import { DatabaseChangeEvent } from 'expo-sqlite/src/SQLiteDatabase';
-import React, { ReactNode, createContext, useCallback, useContext, useEffect, useState } from 'react';
+import React, { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react';
 
 interface Setting {
     createdAt?: string;

@@ -74,7 +74,7 @@ export default function ListUserNutrition({ navigation }: { navigation: Navigati
     const [isLoading, setIsLoading] = useState(false);
     const [importAsFullDayOfEating, setImportAsFullDayOfEating] = useState(false);
 
-    const { deleteHealthData, checkWriteIsPermitted } = useHealthConnect();
+    const { checkWriteIsPermitted, deleteHealthData } = useHealthConnect();
 
     const { showSnackbar } = useSnackbar();
     const { getSettingByType } = useSettings();
@@ -408,11 +408,11 @@ export default function ListUserNutrition({ navigation }: { navigation: Navigati
                         <AnimatedSearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
                     </Appbar.Header>
                     <FlashList
-                        ListFooterComponent={userNutritions.length < totalUserNutritionCount ? <ActivityIndicator /> : null}
                         contentContainerStyle={styles.scrollViewContent}
                         data={filteredUserNutrition}
                         estimatedItemSize={115}
                         keyExtractor={(item) => (item?.id ? item.id.toString() : 'default')}
+                        ListFooterComponent={userNutritions.length < totalUserNutritionCount ? <ActivityIndicator /> : null}
                         onEndReached={loadMoreUserNutrition}
                         onEndReachedThreshold={0.5}
                         renderItem={({ item: nutrition }) => (
@@ -669,10 +669,10 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         paddingBottom: 16,
         paddingHorizontal: 16,
     },
-    selectJsonButton: {
-        marginBottom: 12,
-    },
     selectedFileWrapper: {
         marginBottom: 24,
+    },
+    selectJsonButton: {
+        marginBottom: 12,
     },
 });

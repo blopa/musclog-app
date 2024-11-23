@@ -8,13 +8,13 @@ import { calculateWorkoutVolume } from '@/utils/workout';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
-import { useTheme, Text } from 'react-native-paper';
+import { Text, useTheme } from 'react-native-paper';
 
 interface WorkoutDetailsProps {
     workoutDetails: {
         [key: number]: {
-            workout: WorkoutReturnType;
             exercisesWithSets: ExerciseWithSetsType[];
+            workout: WorkoutReturnType;
         };
     };
     workoutId: number;

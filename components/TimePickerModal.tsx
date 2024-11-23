@@ -1,4 +1,4 @@
-import { CustomThemeColorsType, CustomThemeType, addTransparency } from '@/utils/colors';
+import { addTransparency, CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import React from 'react';
 import { useTranslation } from 'react-i18next';

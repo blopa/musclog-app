@@ -13,7 +13,7 @@ import {
 import React, { useCallback, useMemo, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { Dimensions, StyleSheet, View } from 'react-native';
-import { IconButton, Switch, useTheme, Text } from 'react-native-paper';
+import { IconButton, Switch, Text, useTheme } from 'react-native-paper';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 

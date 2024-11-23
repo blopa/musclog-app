@@ -10,8 +10,8 @@ type SliderWithButtonsProps = {
     maximumValue?: number;
     minimumValue?: number;
     onValueChange: (value: number) => void;
-    value: number;
     step?: number;
+    value: number;
 };
 
 const SliderWithButtons = ({
@@ -19,8 +19,8 @@ const SliderWithButtons = ({
     maximumValue = 10,
     minimumValue = 1,
     onValueChange,
-    value,
     step = 1,
+    value,
 }: SliderWithButtonsProps) => {
     const { colors } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors);

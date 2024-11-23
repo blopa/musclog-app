@@ -4,6 +4,10 @@ const path = require('path');
 
 const DIRNAME = __dirname;
 
+function bumpBuildNumber(buildNumber) {
+    return (parseInt(buildNumber, 10) + 1).toString();
+}
+
 function bumpVersion(version) {
     const versionParts = version.split('.').map(Number);
     versionParts[2] += 1;
@@ -16,10 +20,6 @@ function bumpVersion(version) {
         versionParts[0] += 1;
     }
     return versionParts.join('.');
-}
-
-function bumpBuildNumber(buildNumber) {
-    return (parseInt(buildNumber, 10) + 1).toString();
 }
 
 function bumpVersionCode(versionCode) {

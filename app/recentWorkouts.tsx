@@ -232,14 +232,14 @@ export default function RecentWorkouts() {
                     </Appbar.Header>
                     {filteredWorkouts.length > 0 ? (
                         <FlashList
-                            ListFooterComponent={
-                                recentWorkouts.length < totalWorkoutsCount ? (
-                                    <ActivityIndicator />
-                                ) : null}
                             contentContainerStyle={styles.scrollViewContent}
                             data={filteredWorkouts}
                             estimatedItemSize={100}
                             keyExtractor={(item) => (item?.id ? item.id.toString() : 'default')}
+                            ListFooterComponent={
+                                recentWorkouts.length < totalWorkoutsCount ? (
+                                    <ActivityIndicator />
+                                ) : null}
                             onEndReached={loadMoreWorkouts}
                             onEndReachedThreshold={0.5}
                             renderItem={({ item: workout }) => (
@@ -317,7 +317,6 @@ export default function RecentWorkouts() {
                                         date: '2023-06-15T06:35:00Z',
                                         description: 'description',
                                         duration: 300,
-                                        title: 'Chest and Back Day',
                                         exercises: [{
                                             muscleGroup: 'chest',
                                             name: 'Bench Press',
@@ -332,6 +331,7 @@ export default function RecentWorkouts() {
                                             }],
                                             type: 'compound',
                                         }],
+                                        title: 'Chest and Back Day',
                                     }], null, 1),
                                 })}
                             </Text>
@@ -391,12 +391,6 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         backgroundColor: colors.background,
         flex: 1,
     },
-    noDataText: {
-        color: colors.onBackground,
-        fontSize: 16,
-        marginTop: 16,
-        textAlign: 'center',
-    },
     iconButton: {
         marginHorizontal: 8,
     },
@@ -418,6 +412,12 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         fontWeight: 'bold',
         marginBottom: 12,
     },
+    noDataText: {
+        color: colors.onBackground,
+        fontSize: 16,
+        marginTop: 16,
+        textAlign: 'center',
+    },
     scrollContainer: {
         flex: 1,
     },
@@ -426,10 +426,10 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         paddingBottom: 16,
         paddingHorizontal: 16,
     },
-    selectJsonButton: {
-        marginBottom: 12,
-    },
     selectedFileWrapper: {
         marginBottom: 24,
+    },
+    selectJsonButton: {
+        marginBottom: 12,
     },
 });

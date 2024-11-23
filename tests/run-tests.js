@@ -11,22 +11,34 @@ function isExpoServerReady() {
     });
 }
 
-async function waitForExpoServer() {
-    let isReady = false;
-    const maxRetries = 30;
-    let retries = 0;
-
-    while (!isReady && retries < maxRetries) {
-        isReady = await isExpoServerReady();
-        if (!isReady) {
-            await new Promise((resolve) => setTimeout(resolve, 1000));
-            retries++;
+async function main() {
+    let expoProcess;
+    try {
+        expoProcess = await startExpo();
+        await waitForExpoServer();
+        await runPlaywrightTests();
+    } catch (err) {
+        console.error(`Error: ${err}`);
+        process.exit(1);
+    } finally {
+        if (expoProcess) {
+            expoProcess.kill();
         }
     }
+}
 
-    if (!isReady) {
-        throw new Error('Expo server did not start in time.');
-    }
+function runPlaywrightTests() {
+    return new Promise((resolve, reject) => {
+        exec('npx playwright test', (err, stdout, stderr) => {
+            if (err) {
+                console.error(`Playwright test error: ${stderr}`);
+                reject(err);
+            } else {
+                console.log(stdout);
+                resolve();
+            }
+        });
+    });
 }
 
 function startExpo() {
@@ -51,33 +63,21 @@ function startExpo() {
     });
 }
 
-function runPlaywrightTests() {
-    return new Promise((resolve, reject) => {
-        exec('npx playwright test', (err, stdout, stderr) => {
-            if (err) {
-                console.error(`Playwright test error: ${stderr}`);
-                reject(err);
-            } else {
-                console.log(stdout);
-                resolve();
-            }
-        });
-    });
-}
+async function waitForExpoServer() {
+    let isReady = false;
+    const maxRetries = 30;
+    let retries = 0;
 
-async function main() {
-    let expoProcess;
-    try {
-        expoProcess = await startExpo();
-        await waitForExpoServer();
-        await runPlaywrightTests();
-    } catch (err) {
-        console.error(`Error: ${err}`);
-        process.exit(1);
-    } finally {
-        if (expoProcess) {
-            expoProcess.kill();
+    while (!isReady && retries < maxRetries) {
+        isReady = await isExpoServerReady();
+        if (!isReady) {
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+            retries++;
         }
+    }
+
+    if (!isReady) {
+        throw new Error('Expo server did not start in time.');
     }
 }
 

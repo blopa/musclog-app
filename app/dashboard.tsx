@@ -29,7 +29,7 @@ export default function Dashboard({ navigation }: {
     const [upcomingWorkouts, setUpcomingWorkouts] = useState<WorkoutReturnType[]>([]);
     const [modalVisible, setModalVisible] = useState(false);
     const [confirmationModalVisible, setConfirmationModalVisible] = useState(false);
-    const [selectedUpcomingEvent, setSelectedUpcomingEvent] = useState<WorkoutReturnType | null>(null);
+    const [selectedUpcomingEvent, setSelectedUpcomingEvent] = useState<null | WorkoutReturnType>(null);
 
     const fetchWorkoutData = useCallback(async () => {
         try {
