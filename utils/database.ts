@@ -2873,7 +2873,12 @@ export const restoreDatabase = async (dump: string, decryptionPhrase?: string): 
                 continue;
             }
 
-            database.runSync(`DELETE FROM "${tableName}";`);
+            if (['Chat', 'Setting', 'UserMeasurements', 'UserMetrics', 'UserNutrition'].includes(tableName)) {
+                database.runSync(`DELETE FROM "${tableName}";`);
+                database.runSync(`DELETE FROM sqlite_sequence WHERE name = "${tableName}";`);
+            } else {
+                database.runSync(`DELETE FROM "${tableName}";`);
+            }
 
             for (const row of tableData) {
                 // console.log('THE ROW:', row);
