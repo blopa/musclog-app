@@ -13,6 +13,7 @@ import {
     addOrUpdateSetting,
     addUserMetrics,
     addUserNutrition,
+    addUserNutritions,
     deleteHealthConnectUserMetricsBetweenDates,
     deleteHealthConnectUserNutritionBetweenDates,
     getAllUserNutritionBySource,
@@ -254,28 +255,50 @@ export const syncHealthConnectData = async (
         }
 
         if (healthData?.nutritionRecords?.length) {
-            for (const nutrition of healthData.nutritionRecords) {
-                await addUserNutrition({
-                    calories: nutrition.energy?.inKilocalories || 0,
-                    carbohydrate: nutrition.totalCarbohydrate?.inGrams || 0,
-                    createdAt: nutrition.startTime,
-                    dataId: nutrition?.metadata?.id || generateHash(),
-                    date: nutrition.startTime,
-                    fat: nutrition?.totalFat?.inGrams || 0,
-                    fiber: nutrition?.dietaryFiber?.inGrams || 0,
-                    mealType: nutrition.mealType || 0,
-                    monounsaturatedFat: nutrition?.monounsaturatedFat?.inGrams || 0,
-                    name: nutrition?.name || '',
-                    polyunsaturatedFat: nutrition?.polyunsaturatedFat?.inGrams || 0,
-                    protein: nutrition?.protein?.inGrams || 0,
-                    saturatedFat: nutrition?.saturatedFat?.inGrams || 0,
-                    source: USER_METRICS_SOURCES.HEALTH_CONNECT,
-                    sugar: nutrition?.sugar?.inGrams || 0,
-                    transFat: nutrition?.transFat?.inGrams || 0,
-                    type: NUTRITION_TYPES.MEAL,
-                    unsaturatedFat: nutrition?.unsaturatedFat?.inGrams || 0,
-                });
-            }
+            // for (const nutrition of healthData.nutritionRecords) {
+            //     await addUserNutrition({
+            //         calories: nutrition.energy?.inKilocalories || 0,
+            //         carbohydrate: nutrition.totalCarbohydrate?.inGrams || 0,
+            //         createdAt: nutrition.startTime,
+            //         dataId: nutrition?.metadata?.id || generateHash(),
+            //         date: nutrition.startTime,
+            //         fat: nutrition?.totalFat?.inGrams || 0,
+            //         fiber: nutrition?.dietaryFiber?.inGrams || 0,
+            //         mealType: nutrition.mealType || 0,
+            //         monounsaturatedFat: nutrition?.monounsaturatedFat?.inGrams || 0,
+            //         name: nutrition?.name || '',
+            //         polyunsaturatedFat: nutrition?.polyunsaturatedFat?.inGrams || 0,
+            //         protein: nutrition?.protein?.inGrams || 0,
+            //         saturatedFat: nutrition?.saturatedFat?.inGrams || 0,
+            //         source: USER_METRICS_SOURCES.HEALTH_CONNECT,
+            //         sugar: nutrition?.sugar?.inGrams || 0,
+            //         transFat: nutrition?.transFat?.inGrams || 0,
+            //         type: NUTRITION_TYPES.MEAL,
+            //         unsaturatedFat: nutrition?.unsaturatedFat?.inGrams || 0,
+            //     });
+            // }
+            const userNutritions = healthData.nutritionRecords.map((nutrition) => ({
+                calories: nutrition.energy?.inKilocalories || 0,
+                carbohydrate: nutrition.totalCarbohydrate?.inGrams || 0,
+                createdAt: nutrition.startTime,
+                dataId: nutrition?.metadata?.id || generateHash(),
+                date: nutrition.startTime,
+                fat: nutrition?.totalFat?.inGrams || 0,
+                fiber: nutrition?.dietaryFiber?.inGrams || 0,
+                mealType: nutrition.mealType || 0,
+                monounsaturatedFat: nutrition?.monounsaturatedFat?.inGrams || 0,
+                name: nutrition?.name || '',
+                polyunsaturatedFat: nutrition?.polyunsaturatedFat?.inGrams || 0,
+                protein: nutrition?.protein?.inGrams || 0,
+                saturatedFat: nutrition?.saturatedFat?.inGrams || 0,
+                source: USER_METRICS_SOURCES.HEALTH_CONNECT,
+                sugar: nutrition?.sugar?.inGrams || 0,
+                transFat: nutrition?.transFat?.inGrams || 0,
+                type: NUTRITION_TYPES.MEAL,
+                unsaturatedFat: nutrition?.unsaturatedFat?.inGrams || 0,
+            }));
+
+            await addUserNutritions(userNutritions);
         }
 
         for (const data of combinedData) {

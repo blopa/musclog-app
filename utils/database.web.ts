@@ -574,6 +574,14 @@ const addChatRaw = async (chat: ChatInsertType): Promise<number> => {
     return database.chats.add({ ...chat, createdAt });
 };
 
+export const addUserNutritions = async (userNutritions: UserNutritionInsertType[]): Promise<boolean> => {
+    for (const userNutrition of userNutritions) {
+        await addUserNutrition(userNutrition);
+    }
+
+    return true;
+};
+
 export const addUserNutrition = async (userNutrition: UserNutritionInsertType): Promise<number> => {
     const createdAt = userNutrition.createdAt || getCurrentTimestamp();
     const existingUserNutrition = await getUserNutritionByDataId(userNutrition.dataId);

@@ -663,6 +663,92 @@ const addChatRaw = async (chat: ChatInsertType): Promise<number> => {
     }
 };
 
+export const addUserNutritions = async (userNutritions: UserNutritionInsertType[]): Promise<boolean> => {
+    if (userNutritions.length === 0) {
+        return false;
+    }
+
+    const user = await getLatestUser();
+    const userId = user?.id;
+    if (!userId) {
+        console.error('No user found to add metrics to');
+        return false;
+    }
+
+    const processedUserNutritions = await Promise.all(
+        userNutritions.map(async (nutrition) => ({
+            ...nutrition,
+            alcohol: await encryptDatabaseValue(nutrition.alcohol?.toString() || ''),
+            calories: await encryptDatabaseValue(nutrition.calories?.toString() || ''),
+            carbohydrate: await encryptDatabaseValue(nutrition.carbohydrate?.toString() || ''),
+            createdAt: nutrition.createdAt || getCurrentTimestamp(),
+            fat: await encryptDatabaseValue(nutrition.fat?.toString() || ''),
+            fiber: await encryptDatabaseValue(nutrition.fiber?.toString() || ''),
+            grams: await encryptDatabaseValue(nutrition.grams?.toString() || ''),
+            mealType: await encryptDatabaseValue(nutrition.mealType?.toString() || ''),
+            monounsaturatedFat: await encryptDatabaseValue(nutrition.monounsaturatedFat?.toString() || ''),
+            name: await encryptDatabaseValue(nutrition.name || ''),
+            polyunsaturatedFat: await encryptDatabaseValue(nutrition.polyunsaturatedFat?.toString() || ''),
+            protein: await encryptDatabaseValue(nutrition.protein?.toString() || ''),
+            saturatedFat: await encryptDatabaseValue(nutrition.saturatedFat?.toString() || ''),
+            source: nutrition.source || USER_METRICS_SOURCES.USER_INPUT,
+            sugar: await encryptDatabaseValue(nutrition.sugar?.toString() || ''),
+            transFat: await encryptDatabaseValue(nutrition.transFat?.toString() || ''),
+            unsaturatedFat: await encryptDatabaseValue(nutrition.unsaturatedFat?.toString() || ''),
+            userId: nutrition.userId || userId,
+        }))
+    );
+
+    const columns = [
+        'userId',
+        'name',
+        'calories',
+        'carbohydrate',
+        'sugar',
+        'fiber',
+        'fat',
+        'monounsaturatedFat',
+        'polyunsaturatedFat',
+        'saturatedFat',
+        'transFat',
+        'unsaturatedFat',
+        'protein',
+        'alcohol',
+        'grams',
+        'mealType',
+        'dataId',
+        'date',
+        'createdAt',
+        'type',
+        'source',
+    ] as (keyof UserNutritionInsertType)[];
+
+    const valuesClause = processedUserNutritions
+        .map(() => `(${columns.map(() => '?').join(', ')})`)
+        .join(', ');
+
+    const parameters = processedUserNutritions.flatMap((nutrition) =>
+        columns.map((col) => nutrition[col])
+    ).map((param) => param ?? '');
+
+    const sql = `
+        INSERT INTO "UserNutrition" (${columns.map((col) => `"${col}"`).join(', ')})
+        VALUES ${valuesClause}
+    `;
+
+    debugger;
+    try {
+        const result = database.runSync(sql, ...parameters);
+        debugger;
+        return true;
+    } catch (error) {
+        console.error('Error during bulk insert:', error);
+        throw error;
+    }
+
+    return false;
+};
+
 export const addUserNutrition = async (userNutrition: UserNutritionInsertType): Promise<number> => {
     const createdAt = userNutrition.createdAt || getCurrentTimestamp();
     const existingUserNutrition = await getUserNutritionByDataId(userNutrition.dataId);
