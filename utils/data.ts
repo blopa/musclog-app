@@ -454,7 +454,15 @@ export const calculatePastWorkoutsWeeklyAverages = (data: ExtendedLineChartDataT
     return weeklyAverages;
 };
 
-export const normalizeMacrosByGrams = (macros: any) => {
+type MacrosToNormalize = {
+    carbs: number;
+    fat: number;
+    grams?: number;
+    kcal: number;
+    protein: number;
+};
+
+export const normalizeMacrosByGrams = (macros: MacrosToNormalize): MacrosToNormalize => {
     const servingSize = macros.grams || 100;
     const multiplier = 100 / servingSize;
 

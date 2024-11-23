@@ -426,9 +426,11 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const renderTabBar = (props: any) => (
         <TabBar
             {...props}
-            indicatorStyle={{ backgroundColor: colors.primary }}
-            labelStyle={{ color: colors.onSurface }}
-            style={{ backgroundColor: colors.surface }}
+            activeColor={colors.onSurface}
+            inactiveColor={colors.onSurface}
+            indicatorStyle={{ backgroundColor: dark ? colors.primary : colors.surface }}
+            labelStyle={{ fontWeight: 'bold' }}
+            style={{ backgroundColor: dark ? colors.surface : colors.primaryContainer }}
         />
     );
 
@@ -484,26 +486,34 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 if (photoMode === 'meal') {
                     const macros = await estimateNutritionFromPhoto(photo.uri);
                     if (macros) {
-                        setSelectedFood(normalizeMacrosByGrams({
+                        const normalizedMacros = normalizeMacrosByGrams({
                             carbs: macros.carbs,
                             fat: macros.fat,
                             grams: macros.grams,
                             kcal: macros.calories,
-                            productTitle: macros.name,
                             protein: macros.protein,
-                        }));
+                        });
+
+                        setSelectedFood({
+                            ...normalizedMacros,
+                            productTitle: macros.name,
+                        });
                     }
                 } else {
                     const macros = await extractMacrosFromLabelPhoto(photo.uri);
                     if (macros) {
-                        setSelectedFood(normalizeMacrosByGrams({
+                        const normalizedMacros = normalizeMacrosByGrams({
                             carbs: macros.carbs,
                             fat: macros.fat,
                             grams: macros.grams,
                             kcal: macros.calories,
-                            productTitle: macros.name,
                             protein: macros.protein,
-                        }));
+                        });
+
+                        setSelectedFood({
+                            ...normalizedMacros,
+                            productTitle: macros.name,
+                        });
                     }
                 }
 

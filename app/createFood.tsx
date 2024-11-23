@@ -32,6 +32,7 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
+    const [foodId, setFoodId] = useState<number | undefined>(undefined);
 
     // Initialize form state based on fields from form.json
     const initialFormState = form.fields.reduce((acc, field) => {
@@ -41,10 +42,10 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
     const [formData, setFormData] = useState(initialFormState);
 
-    const handleModalClose = useCallback(() => {
+    const handleCloseConfirmationModal = useCallback(() => {
         setIsModalVisible(false);
-        navigation.navigate('foodSearch');
-    }, [navigation]);
+        navigation.navigate('foodSearch', { foodId });
+    }, [foodId, navigation]);
 
     useEffect(() => {
         if (foodName) {
@@ -70,7 +71,7 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
     const formatQuestionName = (id: string) => `entry.${id}`;
 
-    const submitForm = useCallback(async () => {
+    const handleSubmitForm = useCallback(async () => {
         setIsSaving(true);
 
         const urlParams = new URLSearchParams();
@@ -107,6 +108,12 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
         const foodId = await addFood(food);
 
+        // only set the food id if the user came
+        // from the food search screen
+        if (foodName) {
+            setFoodId(foodId);
+        }
+
         const recentFood: number[] = JSON.parse(await AsyncStorage.getItem(RECENT_FOOD) || '[]');
         recentFood.push(foodId);
         await AsyncStorage.setItem(RECENT_FOOD, JSON.stringify(recentFood));
@@ -135,7 +142,7 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
         } finally {
             setIsSaving(false);
         }
-    }, [formData, t]);
+    }, [foodName, formData, t]);
 
     const numericFields = [
         'calories',
@@ -152,7 +159,7 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
             <CompletionModal
                 buttonText={t('ok')}
                 isModalVisible={isModalVisible}
-                onClose={handleModalClose}
+                onClose={handleCloseConfirmationModal}
                 title={t('form_submitted_successfully')}
             />
             <Appbar.Header
@@ -205,7 +212,7 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 <Button
                     disabled={isSaving}
                     mode="contained"
-                    onPress={submitForm}
+                    onPress={handleSubmitForm}
                     style={styles.button}
                 >
                     {t('submit')}

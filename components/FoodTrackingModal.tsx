@@ -130,10 +130,10 @@ const FoodTrackingModal = ({
             });
 
             const food = {
-                calories: normalizedMacros.calories,
-                name: normalizedMacros.name,
+                calories: normalizedMacros.kcal,
+                name: userNutrition.name,
                 protein: normalizedMacros.protein,
-                totalCarbohydrate: normalizedMacros.carbohydrate,
+                totalCarbohydrate: normalizedMacros.carbs,
                 totalFat: normalizedMacros.fat,
                 // TODO: add the rest of the fields
                 // productCode: userNutrition.ean,
@@ -158,6 +158,7 @@ const FoodTrackingModal = ({
                 await AsyncStorage.setItem(RECENT_FOOD, JSON.stringify(recentFood));
             }
         }
+
         onClose();
     }, [calculatedValues.kcal, calculatedValues.protein, calculatedValues.carbs, calculatedValues.fat, food?.productTitle, t, mealType, unitAmount, userNutritionId, onClose]);
 
