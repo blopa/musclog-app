@@ -26,17 +26,17 @@ export const getUnit = async () => {
 
 const convertToMetric = (value: number, unit: string): number => {
     switch (unit) {
-        case POUNDS: {
-            return parseFloat(safeToFixed(value * 0.453592));
-        }
-        case OUNCES: {
-            return parseFloat(safeToFixed(value * 0.0283495));
+        case FEET: {
+            return parseFloat(safeToFixed(value * 0.3048));
         }
         case INCHES: {
             return parseFloat(safeToFixed(value * 2.54));
         }
-        case FEET: {
-            return parseFloat(safeToFixed(value * 0.3048));
+        case OUNCES: {
+            return parseFloat(safeToFixed(value * 0.0283495));
+        }
+        case POUNDS: {
+            return parseFloat(safeToFixed(value * 0.453592));
         }
         default: {
             return parseFloat(safeToFixed(value));
@@ -46,12 +46,12 @@ const convertToMetric = (value: number, unit: string): number => {
 
 const convertToImperial = (value: number, inputUnit: string): number => {
     switch (inputUnit) {
-        case KILOGRAMS:
-            return parseFloat(safeToFixed(value / 0.453592));
-        case GRAMS:
-            return parseFloat(safeToFixed(value / 28.3495));
         case CENTIMETERS:
             return parseFloat(safeToFixed(value / 2.54));
+        case GRAMS:
+            return parseFloat(safeToFixed(value / 28.3495));
+        case KILOGRAMS:
+            return parseFloat(safeToFixed(value / 0.453592));
         case METERS:
             return parseFloat(safeToFixed(value / 0.3048));
         default:

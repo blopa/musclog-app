@@ -16,11 +16,13 @@ import {
     ExerciseReturnType,
     ExerciseWithSetsType,
     ExperienceLevelType,
+    FitnessGoalsInsertType,
+    FitnessGoalsReturnType,
     FoodInsertType,
     FoodReturnType,
     MetricsForUserType,
-    FitnessGoalsInsertType,
-    FitnessGoalsReturnType,
+    MigrationInsertType,
+    MigrationReturnType,
     OneRepMaxInsertType,
     OneRepMaxReturnType,
     SetInsertType,
@@ -46,8 +48,6 @@ import {
     WorkoutPlan,
     WorkoutReturnType,
     WorkoutWithExercisesRepsAndSetsDetailsReturnType,
-    MigrationReturnType,
-    MigrationInsertType,
 } from '@/utils/types';
 import Dexie from 'dexie';
 
@@ -73,6 +73,9 @@ interface IDatabase {
         toArray: () => Promise<ExerciseReturnType[]>;
         update: (id: number, exercise: ExerciseInsertType) => Promise<number>;
     };
+    fitnessGoals: {},
+    food: {},
+    migrations: {},
     oneRepMaxes: {
         add: (oneRepMax: OneRepMaxInsertType) => Promise<number>;
         clear: () => Promise<void>;
@@ -100,7 +103,7 @@ interface IDatabase {
     users: {
         add: (user: UserInsertType) => Promise<number>;
         clear: () => Promise<void>;
-        get: (id: number) => Promise<UserReturnType | undefined>;
+        get: (id: number) => Promise<undefined | UserReturnType>;
         orderBy: (field: string) => any;
         put: (user: UserInsertType) => Promise<number>;
     };
@@ -123,14 +126,11 @@ interface IDatabase {
         // toArray: () => Promise<WorkoutReturnType[]>;
         // update: (id: number, workout: WorkoutInsertType) => Promise<number>;
     };
-    food: {},
-    fitnessGoals: {},
-    migrations: {},
 }
 
-type WorkoutExerciseInsertTypeWithStrValues = { setIds: string } & Omit<WorkoutExerciseInsertType, 'setIds'>;
+type WorkoutExerciseInsertTypeWithStrValues = Omit<WorkoutExerciseInsertType, 'setIds'> & { setIds: string };
 
-type WorkoutExerciseReturnTypeWithStrValues = { setIds: string } & Omit<WorkoutExerciseReturnType, 'setIds'>;
+type WorkoutExerciseReturnTypeWithStrValues = Omit<WorkoutExerciseReturnType, 'setIds'> & { setIds: string };
 
 type WorkoutInsertTypeWithStrValues = WorkoutInsertType;
 
@@ -144,7 +144,7 @@ export class WorkoutLoggerDatabase extends Dexie implements IDatabase {
     oneRepMaxes!: Dexie.Table<OneRepMaxReturnType, number, OneRepMaxInsertType>;
     sets!: Dexie.Table<SetReturnType, number, SetInsertType>;
     settings!: Dexie.Table<SettingsReturnType, number, SettingsInsertType>;
-    userMeasurements!: Dexie.Table<({ measurements: string } & Omit<UserMeasurementsReturnType, 'measurements'>), number, { measurements: string } & Omit<UserMeasurementsInsertType, 'measurements'>>;
+    userMeasurements!: Dexie.Table<(Omit<UserMeasurementsReturnType, 'measurements'> & { measurements: string }), number, Omit<UserMeasurementsInsertType, 'measurements'> & { measurements: string }>;
     userMetrics!: Dexie.Table<UserMetricsDecryptedReturnType, number, UserMetricsInsertType>;
     userNutrition!: Dexie.Table<UserNutritionDecryptedReturnType, number, UserNutritionInsertType>;
     users!: Dexie.Table<UserReturnType, number, UserInsertType>;
@@ -178,6 +178,80 @@ export class WorkoutLoggerDatabase extends Dexie implements IDatabase {
                 'type',
                 'description',
                 'image',
+                'createdAt',
+                'deletedAt',
+            ].join(', '),
+            fitnessGoals: [
+                '++id',
+                'calories',
+                'protein',
+                'totalCarbohydrate',
+                'sugar',
+                'alcohol',
+                'fiber',
+                'totalFat',
+                'weight',
+                'bodyFat',
+                'bmi',
+                'ffmi',
+                'createdAt',
+                'deletedAt',
+            ].join(', '),
+            food: [
+                '++id',
+                'name',
+                'calories',
+                'protein',
+                'totalCarbohydrate',
+                'sugar',
+                'alcohol',
+                'fiber',
+                'totalFat',
+                'dataId',
+                'brand',
+                'servingSize',
+                'productCode',
+                'createdAt',
+                'deletedAt',
+                'zinc',
+                'vitaminK',
+                'vitaminC',
+                'vitaminB12',
+                'vitaminA',
+                'unsaturatedFat',
+                'vitaminE',
+                'thiamin',
+                'selenium',
+                'polyunsaturatedFat',
+                'vitaminB6',
+                'pantothenicAcid',
+                'niacin',
+                'monounsaturatedFat',
+                'calcium',
+                'iodine',
+                'molybdenum',
+                'vitaminD',
+                'manganese',
+                'magnesium',
+                'transFat',
+                'folicAcid',
+                'copper',
+                'iron',
+                'saturatedFat',
+                'chromium',
+                'caffeine',
+                'cholesterol',
+                'phosphorus',
+                'chloride',
+                'folate',
+                'biotin',
+                'sodium',
+                'riboflavin',
+                'potassium',
+            ].join(', '),
+            migrations: [
+                '++id',
+                'migration',
                 'createdAt',
                 'deletedAt',
             ].join(', '),
@@ -271,12 +345,6 @@ export class WorkoutLoggerDatabase extends Dexie implements IDatabase {
                 '++id',
                 'version',
             ].join(', '),
-            migrations: [
-                '++id',
-                'migration',
-                'createdAt',
-                'deletedAt',
-            ].join(', '),
             workoutEvents: [
                 '++id',
                 'date',
@@ -318,74 +386,6 @@ export class WorkoutLoggerDatabase extends Dexie implements IDatabase {
                 'description',
                 'recurringOnWeek',
                 'volumeCalculationType',
-                'createdAt',
-                'deletedAt',
-            ].join(', '),
-            food: [
-                '++id',
-                'name',
-                'calories',
-                'protein',
-                'totalCarbohydrate',
-                'sugar',
-                'alcohol',
-                'fiber',
-                'totalFat',
-                'dataId',
-                'brand',
-                'servingSize',
-                'productCode',
-                'createdAt',
-                'deletedAt',
-                'zinc',
-                'vitaminK',
-                'vitaminC',
-                'vitaminB12',
-                'vitaminA',
-                'unsaturatedFat',
-                'vitaminE',
-                'thiamin',
-                'selenium',
-                'polyunsaturatedFat',
-                'vitaminB6',
-                'pantothenicAcid',
-                'niacin',
-                'monounsaturatedFat',
-                'calcium',
-                'iodine',
-                'molybdenum',
-                'vitaminD',
-                'manganese',
-                'magnesium',
-                'transFat',
-                'folicAcid',
-                'copper',
-                'iron',
-                'saturatedFat',
-                'chromium',
-                'caffeine',
-                'cholesterol',
-                'phosphorus',
-                'chloride',
-                'folate',
-                'biotin',
-                'sodium',
-                'riboflavin',
-                'potassium',
-            ].join(', '),
-            fitnessGoals: [
-                '++id',
-                'calories',
-                'protein',
-                'totalCarbohydrate',
-                'sugar',
-                'alcohol',
-                'fiber',
-                'totalFat',
-                'weight',
-                'bodyFat',
-                'bmi',
-                'ffmi',
                 'createdAt',
                 'deletedAt',
             ].join(', '),
@@ -449,7 +449,6 @@ export const addWorkoutEvent = async (workoutEvent: WorkoutEventInsertType): Pro
         exerciseData = JSON.stringify(exercisesWithSets.map((exercisesWithSet) => {
             return {
                 exerciseId: exercisesWithSet.id,
-                workoutId: workoutEvent.workoutId,
                 sets: exercisesWithSet.sets.map((set) => {
                     return {
                         difficultyLevel: set.difficultyLevel,
@@ -460,8 +459,9 @@ export const addWorkoutEvent = async (workoutEvent: WorkoutEventInsertType): Pro
                         setId: set.id,
                         weight: set.weight,
                         // setOrder: set.setOrder, // TODO not needed?
-                    } as Omit<SetReturnType, 'exerciseId' | 'workoutId' | 'setOrder' | 'supersetName'>;
+                    } as Omit<SetReturnType, 'exerciseId' | 'setOrder' | 'supersetName' | 'workoutId'>;
                 }),
+                workoutId: workoutEvent.workoutId,
             };
         }));
     }
@@ -619,12 +619,12 @@ export const addFitnessGoals = async (fitnessGoals: FitnessGoalsInsertType): Pro
 
 export const createMigration = async (migration: string): Promise<number> => {
     const createdAt = getCurrentTimestamp();
-    return database.migrations.add({ migration, createdAt });
+    return database.migrations.add({ createdAt, migration });
 };
 
 // Get functions
 
-export const getUserMeasurements = async (id: number): Promise<UserMeasurementsReturnType | undefined> => {
+export const getUserMeasurements = async (id: number): Promise<undefined | UserMeasurementsReturnType> => {
     const result = await database.userMeasurements
         .where({ id })
         .filter((userMeasurements) => !userMeasurements.deletedAt)
@@ -640,7 +640,7 @@ export const getUserMeasurements = async (id: number): Promise<UserMeasurementsR
     return undefined;
 };
 
-export const getUserMeasurementsBetweenDates = async (startDate: string, endDate: string): Promise<({ measurements: string } & UserMeasurementsReturnType)[]> => {
+export const getUserMeasurementsBetweenDates = async (startDate: string, endDate: string): Promise<(UserMeasurementsReturnType & { measurements: string })[]> => {
     const result = await database.userMeasurements
         .where('date')
         .between(startDate, endDate, true, true)
@@ -653,7 +653,7 @@ export const getUserMeasurementsBetweenDates = async (startDate: string, endDate
     }));
 };
 
-export const getUserMeasurementsFromDate = async (startDate: string): Promise<({ measurements: string } & UserMeasurementsReturnType)[]> => {
+export const getUserMeasurementsFromDate = async (startDate: string): Promise<(UserMeasurementsReturnType & { measurements: string })[]> => {
     const todayDate = new Date().toISOString();
 
     const result = await database.userMeasurements
@@ -694,7 +694,7 @@ export const getLatestVersion = async (): Promise<string | undefined> => {
     return version?.version;
 };
 
-export const getVersioningByVersion = async (version: string): Promise<VersioningReturnType | undefined> => {
+export const getVersioningByVersion = async (version: string): Promise<undefined | VersioningReturnType> => {
     return database.versioning
         .where({ version })
         .first();
@@ -749,7 +749,7 @@ export const getChatsPaginated = async (offset = 0, limit = 20): Promise<ChatRet
         .toArray();
 };
 
-export const getUser = async (id?: number): Promise<UserWithMetricsType | undefined> => {
+export const getUser = async (id?: number): Promise<undefined | UserWithMetricsType> => {
     if (!id) {
         return getLatestUser();
     }
@@ -853,7 +853,7 @@ export const getAllUserMetricsByUserId = async (userId: number): Promise<UserMet
     }));
 };
 
-export const getUserMetrics = async (id: number): Promise<UserMetricsDecryptedReturnType | undefined> => {
+export const getUserMetrics = async (id: number): Promise<undefined | UserMetricsDecryptedReturnType> => {
     const userMetrics = await database.userMetrics
         .where({ id })
         .filter((userMetrics) => !userMetrics.deletedAt)
@@ -958,7 +958,7 @@ export const getAllUserNutrition = async (): Promise<UserNutritionDecryptedRetur
     }));
 };
 
-export const getUserMetricsByDataId = async (dataId: string): Promise<UserMetricsDecryptedReturnType | undefined> => {
+export const getUserMetricsByDataId = async (dataId: string): Promise<undefined | UserMetricsDecryptedReturnType> => {
     const userMetrics = await database.userMetrics
         .where({ dataId })
         .filter((userMetrics) => !userMetrics.deletedAt)
@@ -975,7 +975,7 @@ export const getUserMetricsByDataId = async (dataId: string): Promise<UserMetric
     return undefined;
 };
 
-export const getLatestUserMetrics = async (): Promise<UserMetricsDecryptedReturnType | undefined> => {
+export const getLatestUserMetrics = async (): Promise<undefined | UserMetricsDecryptedReturnType> => {
     const userMetrics = await database.userMetrics
         .orderBy('id')
         .filter((userMetrics) => !userMetrics.deletedAt)
@@ -992,7 +992,7 @@ export const getLatestUserMetrics = async (): Promise<UserMetricsDecryptedReturn
     return undefined;
 };
 
-export const getLatestUser = async (): Promise<UserWithMetricsType | undefined> => {
+export const getLatestUser = async (): Promise<undefined | UserWithMetricsType> => {
     const user = await database.users
         .orderBy('id')
         .filter((user) => !user.deletedAt)
@@ -1042,7 +1042,7 @@ export const getAllWorkoutsWithTrashed = async (): Promise<WorkoutReturnType[]> 
     return workouts;
 };
 
-export const getRecurringWorkouts = async (): Promise<WorkoutReturnType[] | undefined> => {
+export const getRecurringWorkouts = async (): Promise<undefined | WorkoutReturnType[]> => {
     const result = await database.workouts
         .filter((workout) => Boolean(workout.recurringOnWeek))
         .toArray();
@@ -1052,7 +1052,7 @@ export const getRecurringWorkouts = async (): Promise<WorkoutReturnType[] | unde
     }));
 };
 
-export const getWorkouts = async (): Promise<WorkoutReturnType[] | undefined> => {
+export const getWorkouts = async (): Promise<undefined | WorkoutReturnType[]> => {
     const result = await database.workouts
         .filter((workout) => !workout.deletedAt)
         .toArray();
@@ -1062,7 +1062,7 @@ export const getWorkouts = async (): Promise<WorkoutReturnType[] | undefined> =>
     }));
 };
 
-export const getWorkoutById = async (id: number): Promise<WorkoutReturnType | undefined> => {
+export const getWorkoutById = async (id: number): Promise<undefined | WorkoutReturnType> => {
     const result = await database.workouts
         .where({ id })
         .filter((workout) => !workout.deletedAt)
@@ -1122,7 +1122,7 @@ export const getExerciseById = async (id: number): Promise<ExerciseReturnType | 
         .first();
 };
 
-export const getWorkoutEvent = async (id: number): Promise<WorkoutEventReturnType | undefined> => {
+export const getWorkoutEvent = async (id: number): Promise<undefined | WorkoutEventReturnType> => {
     return database.workoutEvents
         .where({ id })
         .filter((workoutEvent) => !workoutEvent.deletedAt)
@@ -1211,7 +1211,7 @@ export const getRecentWorkouts = async (): Promise<WorkoutEventReturnType[]> => 
         .toArray();
 };
 
-export const getRecentWorkoutById = async (id: number): Promise<WorkoutEventReturnType | undefined> => {
+export const getRecentWorkoutById = async (id: number): Promise<undefined | WorkoutEventReturnType> => {
     return database.workoutEvents
         .where({ id })
         .filter((workoutEvent) => !workoutEvent.deletedAt)
@@ -1255,7 +1255,7 @@ export const getRecentWorkoutsPaginated = async (offset: number, limit: number):
     return allWorkouts.slice(offset, offset + limit);
 };
 
-export const getWorkoutByIdWithTrashed = async (id: number): Promise<WorkoutReturnType | undefined> => {
+export const getWorkoutByIdWithTrashed = async (id: number): Promise<undefined | WorkoutReturnType> => {
     const workout = await database.workouts
         .where({ id })
         .first();
@@ -1265,7 +1265,7 @@ export const getWorkoutByIdWithTrashed = async (id: number): Promise<WorkoutRetu
 
 export const getWorkoutDetails = async (
     workoutId: number
-): Promise<{ workout: WorkoutReturnType; exercisesWithSets: ExerciseWithSetsType[] } | undefined> => {
+): Promise<undefined | { exercisesWithSets: ExerciseWithSetsType[]; workout: WorkoutReturnType; }> => {
     const workout = await database.workouts
         .where('id')
         .equals(workoutId)
@@ -1279,8 +1279,8 @@ export const getWorkoutDetails = async (
     const exercisesWithSets = await getExercisesWithSetsByWorkoutId(workoutId);
 
     return {
-        workout,
         exercisesWithSets,
+        workout,
     };
 };
 
@@ -1294,7 +1294,7 @@ export const getExercisesWithSetsByWorkoutId = async (
         .sortBy('setOrder');
 
     // Group sets by exerciseId while preserving order
-    const exercisesMap = new Map<number, { sets: SetReturnType[]; supersetName?: string | null }>();
+    const exercisesMap = new Map<number, { sets: SetReturnType[]; supersetName?: null | string }>();
     for (const set of sets) {
         if (!exercisesMap.has(set.exerciseId)) {
             exercisesMap.set(set.exerciseId, { sets: [], supersetName: set.supersetName });
@@ -1320,7 +1320,7 @@ export const getExercisesWithSetsByWorkoutId = async (
 
 export const getWorkoutWithExercisesRepsAndSetsDetails = async (
     workoutId: number
-): Promise<WorkoutWithExercisesRepsAndSetsDetailsReturnType | undefined> => {
+): Promise<undefined | WorkoutWithExercisesRepsAndSetsDetailsReturnType> => {
     const workout = await database.workouts
         .where('id')
         .equals(workoutId)
@@ -1334,9 +1334,9 @@ export const getWorkoutWithExercisesRepsAndSetsDetails = async (
     const exercises = await getExercisesWithSetsByWorkoutId(workoutId);
 
     return {
+        exercises,
         id: workout.id,
         title: workout.title,
-        exercises,
     };
 };
 
@@ -1359,7 +1359,7 @@ export const getWorkoutsPaginated = async (offset: number, limit: number, loadDe
     return workouts;
 };
 
-export const getUserNutrition = async (id: number): Promise<UserNutritionDecryptedReturnType | undefined> => {
+export const getUserNutrition = async (id: number): Promise<undefined | UserNutritionDecryptedReturnType> => {
     const userNutrition = await database.userNutrition
         .where({ id })
         .filter((userNutrition) => !userNutrition.deletedAt)
@@ -1384,7 +1384,7 @@ export const getUserNutrition = async (id: number): Promise<UserNutritionDecrypt
     return undefined;
 };
 
-export const getLatestUserNutritionByUserId = async (userId: number): Promise<UserNutritionDecryptedReturnType | undefined> => {
+export const getLatestUserNutritionByUserId = async (userId: number): Promise<undefined | UserNutritionDecryptedReturnType> => {
     const userNutrition = await database.userNutrition
         .where({ userId })
         .filter((userNutrition) => !userNutrition.deletedAt)
@@ -1453,7 +1453,7 @@ export const getAllUserNutritionBySource = async (source: string): Promise<UserN
     }));
 };
 
-export const getUserNutritionByDataId = async (dataId: string): Promise<UserNutritionDecryptedReturnType | undefined> => {
+export const getUserNutritionByDataId = async (dataId: string): Promise<undefined | UserNutritionDecryptedReturnType> => {
     const userNutrition = await database.userNutrition
         .where({ dataId })
         .filter((userNutrition) => !userNutrition.deletedAt)
@@ -1630,7 +1630,7 @@ export const getFoodByNameAndMacros = async (
     totalFat: number
 ): Promise<FoodReturnType | null> => {
     const food = await database.food
-        .where({ name, calories, protein, totalCarbohydrate, totalFat })
+        .where({ calories, name, protein, totalCarbohydrate, totalFat })
         .first();
 
     return food || null;
@@ -1649,7 +1649,7 @@ export const updateUserMeasurements = async (id: number, userMeasurements: UserM
         measurements: JSON.stringify(userMeasurements.measurements || existingUserMeasurements?.measurements || {}),
         source: userMeasurements.source || existingUserMeasurements?.source || USER_METRICS_SOURCES.USER_INPUT,
         userId: userMeasurements.userId || existingUserMeasurements?.userId || 0,
-    } as { measurements: string } & Omit<UserMeasurementsInsertType, 'measurements'>;
+    } as Omit<UserMeasurementsInsertType, 'measurements'> & { measurements: string };
 
     return database.userMeasurements.update(id, updatedUserMeasurements);
 };
@@ -1796,17 +1796,17 @@ export const updateFood = async (id: number, food: FoodInsertType): Promise<numb
     const existingFood = await getFood(id);
 
     const updatedFood = {
+        alcohol: food.alcohol || existingFood?.alcohol || 0,
         calories: food.calories || existingFood?.calories || 0,
-        totalCarbohydrate: food.totalCarbohydrate || existingFood?.totalCarbohydrate || 0,
-        totalFat: food.totalFat || existingFood?.totalFat || 0,
+        createdAt: food.createdAt || existingFood?.createdAt || getCurrentTimestamp(),
+        dataId: food.dataId || existingFood?.dataId || generateHash(),
+        deletedAt: food.deletedAt || existingFood?.deletedAt || '',
         fiber: food.fiber || existingFood?.fiber || 0,
         name: food.name || existingFood?.name || '',
         protein: food.protein || existingFood?.protein || 0,
-        createdAt: food.createdAt || existingFood?.createdAt || getCurrentTimestamp(),
-        deletedAt: food.deletedAt || existingFood?.deletedAt || '',
-        dataId: food.dataId || existingFood?.dataId || generateHash(),
         sugar: food.sugar || existingFood?.sugar || 0,
-        alcohol: food.alcohol || existingFood?.alcohol || 0,
+        totalCarbohydrate: food.totalCarbohydrate || existingFood?.totalCarbohydrate || 0,
+        totalFat: food.totalFat || existingFood?.totalFat || 0,
     };
 
     return database.food.update(id, updatedFood);
@@ -1816,19 +1816,19 @@ export const updateFitnessGoals = async (id: number, fitnessGoals: FitnessGoalsI
     const existingFitnessGoals = await getFitnessGoals(id);
 
     const updatedFitnessGoals = {
+        alcohol: fitnessGoals.alcohol || existingFitnessGoals?.alcohol || 0,
+        bmi: fitnessGoals.bmi || existingFitnessGoals?.bmi || 0,
+        bodyFat: fitnessGoals.bodyFat || existingFitnessGoals?.bodyFat || 0,
         calories: fitnessGoals.calories || existingFitnessGoals?.calories || 0,
         carbohydrate: fitnessGoals.totalCarbohydrate || existingFitnessGoals?.totalCarbohydrate || 0,
+        createdAt: fitnessGoals.createdAt || existingFitnessGoals?.createdAt || getCurrentTimestamp(),
+        deletedAt: fitnessGoals.deletedAt || existingFitnessGoals?.deletedAt || '',
         fat: fitnessGoals.totalFat || existingFitnessGoals?.totalFat || 0,
+        ffmi: fitnessGoals.ffmi || existingFitnessGoals?.ffmi || 0,
         fiber: fitnessGoals.fiber || existingFitnessGoals?.fiber || 0,
         protein: fitnessGoals.protein || existingFitnessGoals?.protein || 0,
         sugar: fitnessGoals.sugar || existingFitnessGoals?.sugar || 0,
-        alcohol: fitnessGoals.alcohol || existingFitnessGoals?.alcohol || 0,
         weight: fitnessGoals.weight || existingFitnessGoals?.weight || 0,
-        bodyFat: fitnessGoals.bodyFat || existingFitnessGoals?.bodyFat || 0,
-        bmi: fitnessGoals.bmi || existingFitnessGoals?.bmi || 0,
-        ffmi: fitnessGoals.ffmi || existingFitnessGoals?.ffmi || 0,
-        createdAt: fitnessGoals.createdAt || existingFitnessGoals?.createdAt || getCurrentTimestamp(),
-        deletedAt: fitnessGoals.deletedAt || existingFitnessGoals?.deletedAt || '',
     };
 
     return database.fitnessGoals.update(id, updatedFitnessGoals);
@@ -1927,10 +1927,10 @@ export const processWorkoutPlan = async (workoutPlan: WorkoutPlan): Promise<void
 
     for (const workout of workoutPlan.workoutPlan) {
         const newWorkout: WorkoutInsertType = {
+            createdAt: getCurrentTimestamp(),
             description: workout.description || '',
             title: workout.title,
             volumeCalculationType: VOLUME_CALCULATION_TYPES.NONE,
-            createdAt: getCurrentTimestamp(),
         };
 
         // Create the workout and get the workoutId
@@ -1947,12 +1947,12 @@ export const processWorkoutPlan = async (workoutPlan: WorkoutPlan): Promise<void
                 exercise = exerciseMap[normalizedExerciseName];
             } else {
                 const exerciseId = await addExercise({
+                    createdAt: getCurrentTimestamp(),
                     description: '',
                     image: '',
                     muscleGroup: '',
                     name: planExercise.name,
                     type: '',
-                    createdAt: getCurrentTimestamp(),
                 });
                 exercise = await getExerciseById(exerciseId);
 
@@ -1974,15 +1974,15 @@ export const processWorkoutPlan = async (workoutPlan: WorkoutPlan): Promise<void
             // Add sets for the exercise
             for (let i = 0; i < sets; i++) {
                 const set: SetInsertType = {
-                    workoutId: workoutId,
+                    createdAt: getCurrentTimestamp(),
                     exerciseId: exercise?.id!,
+                    isDropSet: false, // Adjust if needed
+                    reps,
+                    restTime,
                     setOrder: setOrder++,
                     supersetName: '', // Adjust if needed
-                    reps,
                     weight: calculatedWeight,
-                    restTime,
-                    isDropSet: false, // Adjust if needed
-                    createdAt: getCurrentTimestamp(),
+                    workoutId: workoutId,
                 };
 
                 await addSet(set);
@@ -2020,6 +2020,9 @@ const TABLE_NAMES_MAP: { [key: string]: string } = {
     Bio: 'bio',
     Chat: 'chats',
     Exercise: 'exercises',
+    FitnessGoals: 'fitnessGoals',
+    Food: 'food',
+    Migrations: 'migrations',
     OneRepMax: 'oneRepMaxes',
     Set: 'sets',
     Setting: 'settings',
@@ -2031,9 +2034,6 @@ const TABLE_NAMES_MAP: { [key: string]: string } = {
     Workout: 'workouts',
     WorkoutEvent: 'workoutEvents',
     WorkoutExercise: 'workoutExercises',
-    Food: 'food',
-    FitnessGoals: 'fitnessGoals',
-    Migrations: 'migrations',
 };
 
 const getDumpTableName = (originalName: string) => {
@@ -2152,15 +2152,6 @@ export const createNewWorkoutTables = async (): Promise<void> => {
 
         // Define version 6 schema with updated structure (removing 'workoutExerciseIds' from 'workouts' table)
         database.version(6).stores({
-            workouts: [
-                '++id',
-                'title',
-                'description',
-                'recurringOnWeek',
-                'volumeCalculationType',
-                'createdAt',
-                'deletedAt',
-            ].join(', '),
             sets: [
                 '++id',
                 'reps',
@@ -2174,6 +2165,15 @@ export const createNewWorkoutTables = async (): Promise<void> => {
                 'workoutId',
                 'setOrder',
                 'supersetName',
+            ].join(', '),
+            workouts: [
+                '++id',
+                'title',
+                'description',
+                'recurringOnWeek',
+                'volumeCalculationType',
+                'createdAt',
+                'deletedAt',
             ].join(', '),
         });
 
@@ -2458,6 +2458,7 @@ const commonFunctions = getCommonFunctions({
     addSetting,
     addUserMetrics,
     addUserNutrition,
+    addWorkout,
     addWorkoutEvent,
     countChatMessages,
     countExercises,
@@ -2465,12 +2466,11 @@ const commonFunctions = getCommonFunctions({
     getAllWorkoutsWithTrashed,
     getExerciseById,
     getSetById,
+    getSetsByWorkoutId,
     getUser,
     getWorkoutByIdWithTrashed,
     updateSet,
     updateWorkout,
-    addWorkout,
-    getSetsByWorkoutId,
 });
 
 export const {

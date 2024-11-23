@@ -230,47 +230,54 @@ export default function RecentWorkouts() {
                         <Appbar.Content title={t('recent_workouts')} titleStyle={styles.appbarTitle} />
                         <AnimatedSearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
                     </Appbar.Header>
-                    <FlashList
-                        ListFooterComponent={recentWorkouts.length < totalWorkoutsCount ? <ActivityIndicator /> : null}
-                        contentContainerStyle={styles.scrollViewContent}
-                        data={filteredWorkouts}
-                        estimatedItemSize={100}
-                        keyExtractor={(item) => (item?.id ? item.id.toString() : 'default')}
-                        onEndReached={loadMoreWorkouts}
-                        onEndReachedThreshold={0.5}
-                        renderItem={({ item: workout }) => (
-                            <ThemedCard key={workout.id}>
-                                <Card.Content style={styles.cardContent}>
-                                    <View style={styles.cardHeader}>
-                                        <Text style={styles.cardTitle}>{workout.title}</Text>
-                                        <Text style={styles.cardDate}>{formatDate(workout.date)}</Text>
-                                        <StatusBadge status={workout.status} />
-                                        {workout?.duration ? (
-                                            <Text style={styles.cardDuration}>
-                                                {workout.duration} {t(workout.duration > 1 ? 'minutes' : 'minute')}
-                                            </Text>
-                                        ) : null}
-                                    </View>
-                                    <View style={styles.cardActions}>
-                                        <FontAwesome5
-                                            color={colors.primary}
-                                            name="eye"
-                                            onPress={() => handleViewAllRecentWorkouts(workout.id!)}
-                                            size={ICON_SIZE}
-                                            style={styles.iconButton}
-                                        />
-                                        <FontAwesome5
-                                            color={colors.primary}
-                                            name="edit"
-                                            onPress={() => handleEditWorkout(workout.id!)}
-                                            size={ICON_SIZE}
-                                            style={styles.iconButton}
-                                        />
-                                    </View>
-                                </Card.Content>
-                            </ThemedCard>
-                        )}
-                    />
+                    {filteredWorkouts.length > 0 ? (
+                        <FlashList
+                            contentContainerStyle={styles.scrollViewContent}
+                            data={filteredWorkouts}
+                            estimatedItemSize={100}
+                            keyExtractor={(item) => (item?.id ? item.id.toString() : 'default')}
+                            ListFooterComponent={
+                                recentWorkouts.length < totalWorkoutsCount ? (
+                                    <ActivityIndicator />
+                                ) : null}
+                            onEndReached={loadMoreWorkouts}
+                            onEndReachedThreshold={0.5}
+                            renderItem={({ item: workout }) => (
+                                <ThemedCard key={workout.id}>
+                                    <Card.Content style={styles.cardContent}>
+                                        <View style={styles.cardHeader}>
+                                            <Text style={styles.cardTitle}>{workout.title}</Text>
+                                            <Text style={styles.cardDate}>{formatDate(workout.date)}</Text>
+                                            <StatusBadge status={workout.status} />
+                                            {workout?.duration ? (
+                                                <Text style={styles.cardDuration}>
+                                                    {workout.duration} {t(workout.duration > 1 ? 'minutes' : 'minute')}
+                                                </Text>
+                                            ) : null}
+                                        </View>
+                                        <View style={styles.cardActions}>
+                                            <FontAwesome5
+                                                color={colors.primary}
+                                                name="eye"
+                                                onPress={() => handleViewAllRecentWorkouts(workout.id!)}
+                                                size={ICON_SIZE}
+                                                style={styles.iconButton}
+                                            />
+                                            <FontAwesome5
+                                                color={colors.primary}
+                                                name="edit"
+                                                onPress={() => handleEditWorkout(workout.id!)}
+                                                size={ICON_SIZE}
+                                                style={styles.iconButton}
+                                            />
+                                        </View>
+                                    </Card.Content>
+                                </ThemedCard>
+                            )}
+                        />
+                    ) : (
+                        <Text style={styles.noDataText}>{t('no_workouts')}</Text>
+                    )}
                     <ThemedModal
                         cancelText={!isModalLoading ? t('cancel') : undefined}
                         confirmText={!isModalLoading ? t('import') : undefined}
@@ -310,7 +317,6 @@ export default function RecentWorkouts() {
                                         date: '2023-06-15T06:35:00Z',
                                         description: 'description',
                                         duration: 300,
-                                        title: 'Chest and Back Day',
                                         exercises: [{
                                             muscleGroup: 'chest',
                                             name: 'Bench Press',
@@ -325,6 +331,7 @@ export default function RecentWorkouts() {
                                             }],
                                             type: 'compound',
                                         }],
+                                        title: 'Chest and Back Day',
                                     }], null, 1),
                                 })}
                             </Text>
@@ -405,6 +412,12 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         fontWeight: 'bold',
         marginBottom: 12,
     },
+    noDataText: {
+        color: colors.onBackground,
+        fontSize: 16,
+        marginTop: 16,
+        textAlign: 'center',
+    },
     scrollContainer: {
         flex: 1,
     },
@@ -413,10 +426,10 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         paddingBottom: 16,
         paddingHorizontal: 16,
     },
-    selectJsonButton: {
-        marginBottom: 12,
-    },
     selectedFileWrapper: {
         marginBottom: 24,
+    },
+    selectJsonButton: {
+        marginBottom: 12,
     },
 });

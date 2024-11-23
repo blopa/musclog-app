@@ -2,7 +2,6 @@ const fs = require('fs');
 const path = require('path');
 const ts = require('typescript');
 
-// eslint-disable-next-line no-undef
 const DIRNAME = __dirname;
 
 // Function to get exported functions from a TypeScript file in the order they appear

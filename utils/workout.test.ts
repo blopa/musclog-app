@@ -136,9 +136,9 @@ describe('Workout Utils Functions', () => {
                 isDropSet: false,
                 reps: 10,
                 restTime: 60,
+                setOrder: 0,
                 weight: 50,
                 workoutId: 1,
-                setOrder: 0,
             },
             {
                 createdAt: '2023-01-01T00:00:00Z',
@@ -148,9 +148,9 @@ describe('Workout Utils Functions', () => {
                 isDropSet: false,
                 reps: 10,
                 restTime: 60,
+                setOrder: 1,
                 weight: 50,
                 workoutId: 1,
-                setOrder: 1,
             },
         ];
 

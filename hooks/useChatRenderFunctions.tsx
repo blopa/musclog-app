@@ -19,17 +19,17 @@ import { QuickReplies } from 'react-native-gifted-chat/lib/QuickReplies';
 import Markdown from 'react-native-markdown-display';
 import { ActivityIndicator, useTheme } from 'react-native-paper';
 
-export interface CustomMessage extends IMessage {
-    custom?: {
-        recentWorkoutId?: string;
-    };
-}
-
 export type AIJsonResponseType = {
     messageToBio?: string;
     messageToUser: string;
     // shouldGenerateWorkout: boolean;
 };
+
+export interface CustomMessage extends IMessage {
+    custom?: {
+        recentWorkoutId?: string;
+    };
+}
 
 type QuickReplyPayload = {
     recentWorkoutId?: number;
@@ -205,33 +205,6 @@ const useChatRenderFunctions = () => {
         const reply = replies[0];
 
         switch (reply.value) {
-            case GENERATE_MY_WORKOUTS: {
-                await setStoredIntention(GENERATE_MY_WORKOUTS);
-                const newChat: ChatInsertType = {
-                    createdAt: new Date().toISOString(),
-                    message: t('can_you_generate_me_some_workouts'),
-                    misc: '',
-                    sender: 'user',
-                    type: 'text',
-                };
-
-                await addNewChat(newChat);
-
-                setTimeout(() => {
-                    const newBotChat: ChatInsertType = {
-                        createdAt: new Date().toISOString(),
-                        message: t('sure_thing_anything_workout_details'),
-                        misc: '',
-                        sender: 'assistant',
-                        type: 'text',
-                    };
-
-                    addNewChat(newBotChat);
-                }, WAIT_TIME);
-
-                break;
-            }
-
             case CANCEL_GENERATE_MY_WORKOUTS: {
                 await removeStoredIntention();
                 const newChat: ChatInsertType = {
@@ -248,6 +221,33 @@ const useChatRenderFunctions = () => {
                     const newBotChat: ChatInsertType = {
                         createdAt: new Date().toISOString(),
                         message: t('no_worries_let_me_know'),
+                        misc: '',
+                        sender: 'assistant',
+                        type: 'text',
+                    };
+
+                    addNewChat(newBotChat);
+                }, WAIT_TIME);
+
+                break;
+            }
+
+            case GENERATE_MY_WORKOUTS: {
+                await setStoredIntention(GENERATE_MY_WORKOUTS);
+                const newChat: ChatInsertType = {
+                    createdAt: new Date().toISOString(),
+                    message: t('can_you_generate_me_some_workouts'),
+                    misc: '',
+                    sender: 'user',
+                    type: 'text',
+                };
+
+                await addNewChat(newChat);
+
+                setTimeout(() => {
+                    const newBotChat: ChatInsertType = {
+                        createdAt: new Date().toISOString(),
+                        message: t('sure_thing_anything_workout_details'),
                         misc: '',
                         sender: 'assistant',
                         type: 'text',
@@ -317,7 +317,7 @@ const useChatRenderFunctions = () => {
         const { currentMessage, nextMessage } = props;
         const isBotMessage = currentMessage?.user._id !== 1; // TODO: for now user id is always 1
         const isLastMessage = isEmptyObject(nextMessage);
-        let quickReplies = undefined;
+        let quickReplies;
 
         if (currentMessage?.custom && currentMessage.custom.recentWorkoutId) {
             const recentWorkoutId = Number(currentMessage.custom.recentWorkoutId);

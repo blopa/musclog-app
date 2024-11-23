@@ -6,7 +6,7 @@ import { FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, StyleSheet, View } from 'react-native';
-import { useTheme, Text } from 'react-native-paper';
+import { Text, useTheme } from 'react-native-paper';
 
 type SetInfoProps = {
     completedReps: string;

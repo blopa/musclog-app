@@ -1,11 +1,12 @@
+import type { DatabaseChangeEvent } from 'expo-sqlite/src/SQLiteDatabase';
+
 import {
     addOrUpdateSetting,
     getAllSettings,
     getSetting,
     listenToDatabaseChanges,
 } from '@/utils/database';
-import { DatabaseChangeEvent } from 'expo-sqlite/src/SQLiteDatabase';
-import React, { ReactNode, createContext, useCallback, useContext, useEffect, useState } from 'react';
+import React, { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react';
 
 interface Setting {
     createdAt?: string;
@@ -75,7 +76,7 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({ children }) 
             console.error('Error updating setting value:', error);
         }
     }, [loadSettings]);
-    
+
     const addOrUpdateSettingValue = useCallback(async (type: string, value: string) => {
         try {
             await addOrUpdateSetting({ type, value });

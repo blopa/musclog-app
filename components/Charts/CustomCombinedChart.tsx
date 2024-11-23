@@ -4,7 +4,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import React, { ReactNode, useCallback, useRef } from 'react';
 import { Dimensions, StyleSheet, View } from 'react-native';
 import { CombinedChart } from 'react-native-charts-wrapper';
-import { IconButton, useTheme, Text } from 'react-native-paper';
+import { IconButton, Text, useTheme } from 'react-native-paper';
 import { processColor } from 'react-native-reanimated';
 import Share from 'react-native-share';
 import ViewShot from 'react-native-view-shot';
@@ -14,11 +14,11 @@ interface CustomCombinedChartProps {
         label: string;
         values: { marker: string; x: number; y: number }[];
     }[];
-    customLegend?: {
+    customLegend?: undefined
+        | {
             colors?: string[] | undefined;
             labels?: string[] | undefined;
-        }
-        | undefined;
+        };
     extraInfo?: ReactNode;
     granularity?: number;
     labelLeftMargin?: number;
@@ -126,7 +126,7 @@ const CustomCombinedChart: React.FC<CustomCombinedChartProps> = ({
                         dragEnabled={false}
                         highlightPerDragEnabled={false}
                         highlightPerTapEnabled={true}
-                        legend={{ 
+                        legend={{
                             custom: customLegend ? {
                                 colors: customLegend.colors?.map((color) => processColor(color)),
                                 labels: customLegend.labels,

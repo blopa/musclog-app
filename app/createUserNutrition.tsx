@@ -233,23 +233,23 @@ const CreateUserNutrition = ({ navigation }: { navigation: NavigationProp<any> }
                 case 'fat':
                     setFat(formattedText || '0');
                     break;
-                case 'protein':
-                    setProtein(formattedText || '0');
-                    break;
                 case 'fiber':
                     setFiber(formattedText || '0');
-                    break;
-                case 'sugar':
-                    setSugar(formattedText || '0');
-                    break;
-                case 'saturatedFat':
-                    setSaturatedFat(formattedText || '0');
                     break;
                 case 'monounsaturatedFat':
                     setMonounsaturatedFat(formattedText || '0');
                     break;
                 case 'polyunsaturatedFat':
                     setPolyunsaturatedFat(formattedText || '0');
+                    break;
+                case 'protein':
+                    setProtein(formattedText || '0');
+                    break;
+                case 'saturatedFat':
+                    setSaturatedFat(formattedText || '0');
+                    break;
+                case 'sugar':
+                    setSugar(formattedText || '0');
                     break;
                 case 'transFat':
                     setTransFat(formattedText || '0');

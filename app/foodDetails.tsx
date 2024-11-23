@@ -1,7 +1,7 @@
 import CustomPicker from '@/components/CustomPicker';
 import { Screen } from '@/components/Screen';
 import ThemedCard from '@/components/ThemedCard';
-import { GRAMS, OUNCES, IMPERIAL_SYSTEM } from '@/constants/storage';
+import { GRAMS, IMPERIAL_SYSTEM, OUNCES } from '@/constants/storage';
 import useUnit from '@/hooks/useUnit';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { getFood } from '@/utils/database';
@@ -9,10 +9,10 @@ import { safeToFixed } from '@/utils/string';
 import { getDisplayFormattedWeight } from '@/utils/unit';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { NavigationProp, useFocusEffect, useRoute } from '@react-navigation/native';
-import React, { useState, useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { View, StyleSheet, Platform, ActivityIndicator } from 'react-native';
-import { Appbar, TextInput, Button, Text, useTheme, HelperText } from 'react-native-paper';
+import { ActivityIndicator, Platform, StyleSheet, View } from 'react-native';
+import { Appbar, Button, HelperText, Text, TextInput, useTheme } from 'react-native-paper';
 
 type RouteParams = {
     id?: string;
@@ -56,11 +56,11 @@ const FoodDetails = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 setFoodDetails(food);
             } else {
                 setFoodDetails({
-                    name: t('unknown_food'),
                     calories: 0,
-                    proteins: 0,
                     carbs: 0,
                     fats: 0,
+                    name: t('unknown_food'),
+                    proteins: 0,
                     servingSize: 100,
                 });
             }
@@ -80,7 +80,7 @@ const FoodDetails = ({ navigation }: { navigation: NavigationProp<any> }) => {
     if (loading) {
         return (
             <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color={colors.primary} />
+                <ActivityIndicator color={colors.primary} size="large" />
                 <Text>{t('loading_food_details')}</Text>
             </View>
         );
@@ -99,9 +99,9 @@ const FoodDetails = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
     const calculatedNutrition = {
         calories: Math.round(foodDetails.calories * multiplier),
-        proteins: Math.round(foodDetails.proteins * multiplier * 10) / 10,
         carbs: Math.round(foodDetails.carbs * multiplier * 10) / 10,
         fats: Math.round(foodDetails.fats * multiplier * 10) / 10,
+        proteins: Math.round(foodDetails.proteins * multiplier * 10) / 10,
     };
 
     const handleFoodDetails = () => {
@@ -128,7 +128,7 @@ const FoodDetails = ({ navigation }: { navigation: NavigationProp<any> }) => {
             <Appbar.Header mode="small" statusBarHeight={0} style={styles.appbarHeader}>
                 <Appbar.Action
                     icon={() => (
-                        <FontAwesome5 name="arrow-left" size={24} color={colors.onPrimary} />
+                        <FontAwesome5 color={colors.onPrimary} name="arrow-left" size={24} />
                     )}
                     onPress={() => navigation.goBack()}
                 />
@@ -179,22 +179,22 @@ const FoodDetails = ({ navigation }: { navigation: NavigationProp<any> }) => {
                     <View style={styles.inputGroup}>
                         <Text style={styles.label}>{t('amount')}</Text>
                         <TextInput
-                            mode="outlined"
-                            value={amount}
-                            onChangeText={(text) => setAmount(text)}
-                            keyboardType="numeric"
-                            style={styles.input}
                             error={!!errors.amount}
+                            keyboardType="numeric"
+                            mode="outlined"
+                            onChangeText={(text) => setAmount(text)}
+                            style={styles.input}
+                            value={amount}
                         />
                         {errors.amount && <HelperText type="error">{errors.amount}</HelperText>}
                     </View>
 
                     <View style={styles.inputGroup}>
                         <CustomPicker
-                            label={t('meal_category')}
                             items={mealCategories}
-                            selectedValue={category}
+                            label={t('meal_category')}
                             onValueChange={(itemValue) => setCategory(itemValue)}
+                            selectedValue={category}
                         />
                         {errors.category && <HelperText type="error">{errors.category}</HelperText>}
                     </View>

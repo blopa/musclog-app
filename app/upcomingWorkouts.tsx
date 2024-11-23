@@ -30,75 +30,12 @@ import { ActivityIndicator, Appbar, Card, Text, useTheme } from 'react-native-pa
 
 type Callback = () => void;
 
-async function createCalendarEvent(workout: WorkoutEventReturnType, onSuccess: Callback, onError: Callback) {
-    if (Platform.OS === 'web') {
-        const event = {
-            description: workout.title || '',
-            duration: { hours: Math.floor((workout.duration || 60) / 60), minutes: (workout.duration || 60) % 60 },
-            location: '',
-            start: new Date(workout.date),
-            title: workout.title,
-        };
-
-        createEvent({
-            ...event,
-            start: [new Date(event.start).getFullYear(), new Date(event.start).getMonth() + 1, new Date(event.start).getDate()],
-        }, (error, value) => {
-            if (error) {
-                console.error(error);
-                onError();
-                return;
-            }
-
-            const blob = new Blob([value], { type: 'text/calendar;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `${workout.title}.ics`;
-            a.click();
-            URL.revokeObjectURL(url);
-            onSuccess();
-        });
-
-        return;
-    }
-
-    const { status } = await Calendar.requestCalendarPermissionsAsync();
-    if (status === 'granted') {
-        const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
-        const defaultCalendar = calendars.find((cal) => cal.allowsModifications);
-
-        if (defaultCalendar) {
-            try {
-                await Calendar.createEventAsync(defaultCalendar.id, {
-                    endDate: new Date(new Date(workout.date).getTime() + (workout.duration || 60) * 60000),
-                    location: '',
-                    notes: workout.description || '',
-                    startDate: new Date(workout.date),
-                    timeZone: 'GMT',
-                    title: workout.title,
-                });
-                onSuccess();
-            } catch (error) {
-                console.error('Failed to create event:', error);
-                onError();
-            }
-        } else {
-            console.error('No modifiable calendar found');
-            onError();
-        }
-    } else {
-        console.error('Calendar permissions not granted');
-        onError();
-    }
-}
-
 export default function UpcomingWorkouts({ navigation }: { navigation: NavigationProp<any> }) {
     const { t } = useTranslation();
     const [upcomingWorkouts, setUpcomingWorkouts] = useState<WorkoutEventReturnType[]>([]);
     const [modalVisible, setModalVisible] = useState(false);
     const [confirmationModalVisible, setConfirmationModalVisible] = useState(false);
-    const [selectedWorkout, setSelectedWorkout] = useState<WorkoutEventReturnType | null>(null);
+    const [selectedWorkout, setSelectedWorkout] = useState<null | WorkoutEventReturnType>(null);
     const [totalWorkoutsCount, setTotalWorkoutsCount] = useState(0);
     const { colors, dark } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors, dark);
@@ -301,11 +238,11 @@ export default function UpcomingWorkouts({ navigation }: { navigation: Navigatio
                         <AnimatedSearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
                     </Appbar.Header>
                     <FlashList
-                        ListFooterComponent={upcomingWorkouts.length < totalWorkoutsCount ? <ActivityIndicator /> : null}
                         contentContainerStyle={styles.scrollViewContent}
                         data={filteredWorkouts}
                         estimatedItemSize={100}
                         keyExtractor={(item) => (item?.id ? item.id.toString() : 'default')}
+                        ListFooterComponent={upcomingWorkouts.length < totalWorkoutsCount ? <ActivityIndicator /> : null}
                         onEndReached={loadMoreWorkouts}
                         onEndReachedThreshold={0.5}
                         renderItem={({ item: workout }) => (
@@ -382,6 +319,69 @@ export default function UpcomingWorkouts({ navigation }: { navigation: Navigatio
             </FABWrapper>
         </Screen>
     );
+}
+
+async function createCalendarEvent(workout: WorkoutEventReturnType, onSuccess: Callback, onError: Callback) {
+    if (Platform.OS === 'web') {
+        const event = {
+            description: workout.title || '',
+            duration: { hours: Math.floor((workout.duration || 60) / 60), minutes: (workout.duration || 60) % 60 },
+            location: '',
+            start: new Date(workout.date),
+            title: workout.title,
+        };
+
+        createEvent({
+            ...event,
+            start: [new Date(event.start).getFullYear(), new Date(event.start).getMonth() + 1, new Date(event.start).getDate()],
+        }, (error, value) => {
+            if (error) {
+                console.error(error);
+                onError();
+                return;
+            }
+
+            const blob = new Blob([value], { type: 'text/calendar;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${workout.title}.ics`;
+            a.click();
+            URL.revokeObjectURL(url);
+            onSuccess();
+        });
+
+        return;
+    }
+
+    const { status } = await Calendar.requestCalendarPermissionsAsync();
+    if (status === 'granted') {
+        const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
+        const defaultCalendar = calendars.find((cal) => cal.allowsModifications);
+
+        if (defaultCalendar) {
+            try {
+                await Calendar.createEventAsync(defaultCalendar.id, {
+                    endDate: new Date(new Date(workout.date).getTime() + (workout.duration || 60) * 60000),
+                    location: '',
+                    notes: workout.description || '',
+                    startDate: new Date(workout.date),
+                    timeZone: 'GMT',
+                    title: workout.title,
+                });
+                onSuccess();
+            } catch (error) {
+                console.error('Failed to create event:', error);
+                onError();
+            }
+        } else {
+            console.error('No modifiable calendar found');
+            onError();
+        }
+    } else {
+        console.error('Calendar permissions not granted');
+        onError();
+    }
 }
 
 const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({

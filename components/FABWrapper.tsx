@@ -12,7 +12,7 @@ interface FABWrapperProps {
     visible: boolean;
 }
 
-const FABWrapper: React.FC<FABWrapperProps> = ({ 
+const FABWrapper: React.FC<FABWrapperProps> = ({
     actions,
     children,
     icon = 'plus',

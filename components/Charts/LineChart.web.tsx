@@ -1,11 +1,11 @@
 import { FAB_ICON_SIZE } from '@/constants/ui';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { MaterialIcons } from '@expo/vector-icons';
-import { CategoryScale, Chart as ChartJS, Legend, LineElement, LinearScale, PointElement, Title, Tooltip } from 'chart.js';
+import { CategoryScale, Chart as ChartJS, Legend, LinearScale, LineElement, PointElement, Title, Tooltip } from 'chart.js';
 import React, { ReactNode, useCallback } from 'react';
 import { Line } from 'react-chartjs-2';
 import { Dimensions, StyleSheet, View } from 'react-native';
-import { IconButton, useTheme, Text } from 'react-native-paper';
+import { IconButton, Text, useTheme } from 'react-native-paper';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 

@@ -10,12 +10,12 @@ import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import {
     addSet,
     addWorkout,
+    deleteSet,
+    deleteWorkout,
     getAllExercises,
     getWorkoutDetails,
     updateSet,
     updateWorkout,
-    deleteWorkout,
-    deleteSet,
 } from '@/utils/database';
 import {
     ExerciseReturnType, ExerciseWithSetsType,
@@ -25,48 +25,48 @@ import {
     WorkoutReturnType,
 } from '@/utils/types';
 import { NavigationProp, useFocusEffect, useRoute } from '@react-navigation/native';
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-    View,
-    ScrollView,
-    StyleSheet,
-    Platform,
     Alert,
     BackHandler,
+    Platform,
     TextInput as RNTextInput,
+    ScrollView,
+    StyleSheet,
+    View,
 } from 'react-native';
 import {
     ActivityIndicator,
     Appbar,
     Button,
-    Dialog,
-    Portal,
     Checkbox,
+    Dialog,
     IconButton,
-    useTheme,
-    Text,
-    Switch,
     List,
+    Portal,
+    Switch,
+    Text,
+    useTheme,
 } from 'react-native-paper';
 
 type SetLocalType = {
-    id?: number;
-    reps: number;
-    weight: number;
-    restTime: number;
-    isDropSet?: boolean;
     exerciseId: number;
-    setOrder?: number;
-    supersetName?: string | null;
+    id?: number;
+    isDropSet?: boolean;
     isNew?: boolean;
+    reps: number;
+    restTime: number;
+    setOrder?: number;
+    supersetName?: null | string;
+    weight: number;
 };
 
 type WorkoutWithExercisesAndSets = {
+    description?: string;
     exercise: ExerciseReturnType;
     sets: SetLocalType[];
-    supersetName: string | null;
-    description?: string;
+    supersetName: null | string;
 };
 
 const daysOfWeek = [
@@ -96,10 +96,10 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
     const [volumeCalculationType, setVolumeCalculationType] = useState<VolumeCalculationTypeType>('');
 
     const [workout, setWorkout] = useState<WorkoutWithExercisesAndSets[]>([]);
-    const [workoutDetails, setWorkoutDetails] = useState<{ workout: WorkoutReturnType; exercisesWithSets: ExerciseWithSetsType[] } | null>(null);
+    const [workoutDetails, setWorkoutDetails] = useState<null | { exercisesWithSets: ExerciseWithSetsType[]; workout: WorkoutReturnType; }>(null);
     const [supersetName, setSupersetName] = useState('');
     const [selectedExercises, setSelectedExercises] = useState<number[]>([]);
-    const [selectedMuscleGroup, setSelectedMuscleGroup] = useState<string | null>(null);
+    const [selectedMuscleGroup, setSelectedMuscleGroup] = useState<null | string>(null);
     const [isExerciseModalOpen, setIsExerciseModalOpen] = useState(false);
     const [isSupersetModalOpen, setIsSupersetModalOpen] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
@@ -116,31 +116,31 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
             if (workoutData) {
                 setWorkoutDetails(workoutData);
 
-                const { workout, exercisesWithSets } = workoutData;
+                const { exercisesWithSets, workout } = workoutData;
                 setWorkoutTitle(workout.title || '');
                 setWorkoutDescription(workout.description || '');
                 setRecurringOnWeek(workout.recurringOnWeek || '');
                 setVolumeCalculationType(workout.volumeCalculationType || '');
 
                 const workoutExercises = exercisesWithSets.map((exercise) => ({
+                    description: exercise.description || '',
                     exercise: {
-                        id: exercise.id,
-                        name: exercise.name,
-                        muscleGroup: exercise.muscleGroup,
                         description: exercise.description,
+                        id: exercise.id,
+                        muscleGroup: exercise.muscleGroup,
+                        name: exercise.name,
                     },
                     sets: exercise.sets.map((set) => ({
-                        reps: set.reps,
-                        weight: set.weight,
-                        restTime: set.restTime,
-                        isDropSet: set.isDropSet,
                         exerciseId: exercise.id,
+                        id: set.id,
+                        isDropSet: set.isDropSet,
+                        reps: set.reps,
+                        restTime: set.restTime,
                         setOrder: set.setOrder,
                         supersetName: set.supersetName,
-                        id: set.id,
+                        weight: set.weight,
                     })),
                     supersetName: exercise.sets.find((set) => set.supersetName)?.supersetName || null,
-                    description: exercise.description || '',
                 }));
 
                 setWorkout(workoutExercises);
@@ -236,12 +236,12 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
             updatedExercise.sets = [
                 ...updatedExercise.sets,
                 {
-                    reps: 0,
-                    weight: 0,
-                    restTime: 60,
-                    isDropSet: false,
                     exerciseId: updatedExercise.exercise.id,
+                    isDropSet: false,
                     isNew: true,
+                    reps: 0,
+                    restTime: 60,
+                    weight: 0,
                 },
             ];
             newWorkout[exerciseIndex] = updatedExercise;
@@ -323,9 +323,9 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
 
         try {
             const workoutData: WorkoutInsertType = {
-                title: workoutTitle,
                 description: workoutDescription,
                 recurringOnWeek: (recurringOnWeek || undefined) as WorkoutReturnType['recurringOnWeek'],
+                title: workoutTitle,
                 volumeCalculationType: volumeCalculationType || VOLUME_CALCULATION_TYPES.NONE,
             };
 
@@ -344,14 +344,14 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                 for (const workoutWithExercisesAndSets of workout) {
                     for (const set of workoutWithExercisesAndSets.sets) {
                         const setData: SetInsertType = {
-                            workoutId,
                             exerciseId: workoutWithExercisesAndSets.exercise.id,
+                            isDropSet: set.isDropSet,
+                            reps: set.reps,
+                            restTime: set.restTime,
                             setOrder: setOrder++,
                             supersetName: workoutWithExercisesAndSets.supersetName || '',
-                            reps: set.reps,
                             weight: set.weight,
-                            restTime: set.restTime,
-                            isDropSet: set.isDropSet,
+                            workoutId,
                         };
 
                         if (set.isNew) {
@@ -381,14 +381,14 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                 for (const workoutWithExercisesAndSets of workout) {
                     for (const set of workoutWithExercisesAndSets.sets) {
                         const setData: SetInsertType = {
-                            workoutId,
                             exerciseId: workoutWithExercisesAndSets.exercise.id,
+                            isDropSet: set.isDropSet,
+                            reps: set.reps,
+                            restTime: set.restTime,
                             setOrder: setOrder++,
                             supersetName: workoutWithExercisesAndSets.supersetName || '',
-                            reps: set.reps,
                             weight: set.weight,
-                            restTime: set.restTime,
-                            isDropSet: set.isDropSet,
+                            workoutId,
                         };
 
                         await addSet(setData);
@@ -423,7 +423,7 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
         navigation.navigate('listWorkouts');
     }, [navigation, resetScreenData]);
 
-    const moveExercise = (fromIndex: number, direction: 'up' | 'down') => {
+    const moveExercise = (fromIndex: number, direction: 'down' | 'up') => {
         setWorkout((prevWorkout) => {
             const newWorkout = [...prevWorkout];
             const movedExercise = newWorkout[fromIndex];
@@ -443,11 +443,11 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                     }
                 }
 
-                return { start, end };
+                return { end, start };
             };
 
             if (isSupersetExercise) {
-                const { start, end } = findSupersetBounds(fromIndex);
+                const { end, start } = findSupersetBounds(fromIndex);
 
                 // If moving up within the superset
                 if (direction === 'up' && fromIndex > start) {
@@ -469,7 +469,7 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
 
                     if (nextItem && nextItem.supersetName) {
                         // Move past the entire superset if the target is within one
-                        const { start, end } = findSupersetBounds(targetIndex);
+                        const { end, start } = findSupersetBounds(targetIndex);
                         let newIndex = direction === 'up' ? start : end + 1;
 
                         // Remove the exercise
@@ -501,7 +501,7 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
         });
     };
 
-    const moveSuperset = (fromIndex: number, direction: 'up' | 'down') => {
+    const moveSuperset = (fromIndex: number, direction: 'down' | 'up') => {
         setWorkout((prevWorkout) => {
             const newWorkout = [...prevWorkout];
             const { supersetName } = newWorkout[fromIndex];
@@ -582,17 +582,17 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                                 </View>
                                 <View style={styles.supersetButtons}>
                                     <IconButton
+                                        disabled={exerciseIndex === 0}
                                         icon="arrow-up"
                                         onPress={() => moveSuperset(exerciseIndex, 'up')}
-                                        disabled={exerciseIndex === 0}
                                     />
                                     <IconButton
-                                        icon="arrow-down"
-                                        onPress={() => moveSuperset(exerciseIndex, 'down')}
                                         disabled={
                                             exerciseIndex
                                             >= workout.length - workout.filter((ex) => ex.supersetName === workoutWithExercisesAndSets.supersetName).length
                                         }
+                                        icon="arrow-down"
+                                        onPress={() => moveSuperset(exerciseIndex, 'down')}
                                     />
                                 </View>
                             </View>
@@ -630,24 +630,24 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                 <View style={styles.moveButtonsContainer}>
                     <IconButton
                         icon="delete"
-                        size={20}
                         onPress={() => removeExercise(exerciseIndex)}
+                        size={20}
                     />
                     <IconButton
+                        disabled={!canMoveUp}
                         icon="arrow-up"
                         onPress={() => moveExercise(exerciseIndex, 'up')}
-                        disabled={!canMoveUp}
                     />
                     <IconButton
+                        disabled={!canMoveDown}
                         icon="arrow-down"
                         onPress={() => moveExercise(exerciseIndex, 'down')}
-                        disabled={!canMoveDown}
                     />
                 </View>
                 <List.Accordion
-                    title={workoutWithExercisesAndSets.exercise.name}
                     description={workoutWithExercisesAndSets.exercise.description}
                     left={(props) => <List.Icon {...props} icon="dumbbell" />}
+                    title={workoutWithExercisesAndSets.exercise.name}
                 >
                     {workoutWithExercisesAndSets.sets.map((set, setIndex) => (
                         <View key={setIndex} style={styles.setContainer}>
@@ -655,31 +655,31 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                                 {t('set')} {setIndex + 1}:
                             </Text>
                             <RNTextInput
-                                style={styles.smallInput}
                                 keyboardType="numeric"
-                                value={set.reps.toString()}
                                 onChangeText={(text) =>
                                     updateLocalSet(exerciseIndex, setIndex, 'reps', parseInt(text))
                                 }
                                 placeholder={t('reps')}
+                                style={styles.smallInput}
+                                value={set.reps.toString()}
                             />
                             <RNTextInput
-                                style={styles.smallInput}
                                 keyboardType="numeric"
-                                value={set.weight.toString()}
                                 onChangeText={(text) =>
                                     updateLocalSet(exerciseIndex, setIndex, 'weight', parseFloat(text))
                                 }
                                 placeholder={t('weight')}
+                                style={styles.smallInput}
+                                value={set.weight.toString()}
                             />
                             <RNTextInput
-                                style={styles.smallInput}
                                 keyboardType="numeric"
-                                value={set.restTime.toString()}
                                 onChangeText={(text) =>
                                     updateLocalSet(exerciseIndex, setIndex, 'restTime', parseInt(text))
                                 }
                                 placeholder={t('rest_time_sec')}
+                                style={styles.smallInput}
+                                value={set.restTime.toString()}
                             />
                             <View style={styles.row}>
                                 <Text style={styles.labelToggleSwitch}>{t('is_drop_set')}</Text>
@@ -692,8 +692,8 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                             </View>
                             <IconButton
                                 icon="delete"
-                                size={20}
                                 onPress={() => removeSet(exerciseIndex, setIndex)}
+                                size={20}
                             />
                         </View>
                     ))}
@@ -812,8 +812,8 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
 
             <Portal>
                 <Dialog
-                    visible={isExerciseModalOpen}
                     onDismiss={() => setIsExerciseModalOpen(false)}
+                    visible={isExerciseModalOpen}
                 >
                     <Dialog.Title>{t('add_exercise')}</Dialog.Title>
                     <Dialog.Content>
@@ -861,27 +861,27 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                     </Dialog.Actions>
                 </Dialog>
                 <Dialog
-                    visible={isSupersetModalOpen}
                     onDismiss={() => setIsSupersetModalOpen(false)}
+                    visible={isSupersetModalOpen}
                 >
                     <Dialog.Title>{t('create_superset')}</Dialog.Title>
                     <Dialog.Content>
                         <CustomTextInput
                             label={t('superset_name')}
+                            onChangeText={setSupersetName}
                             placeholder={t('enter_superset_name')}
                             value={supersetName}
-                            onChangeText={setSupersetName}
                         />
                         <Text style={styles.label}>{t('select_exercises')}</Text>
                         {workout.map((exercise, index) => (
                             <View key={index} style={styles.checkboxContainer}>
                                 <Checkbox
+                                    onPress={() => toggleExerciseSelection(index)}
                                     status={
                                         selectedExercises.includes(index)
                                             ? 'checked'
                                             : 'unchecked'
                                     }
-                                    onPress={() => toggleExerciseSelection(index)}
                                 />
                                 <Text>{exercise.exercise.name}</Text>
                             </View>
@@ -898,8 +898,8 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                             {t('cancel')}
                         </Button>
                         <Button
-                            onPress={createSuperset}
                             disabled={selectedExercises.length < 2 || !supersetName}
+                            onPress={createSuperset}
                         >
                             {t('create_superset')}
                         </Button>
@@ -908,8 +908,8 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
             </Portal>
             <ScrollView contentContainerStyle={styles.content}>
                 <List.Accordion
-                    title={t('workout_details')}
                     left={(props) => <List.Icon {...props} icon="information-outline" />}
+                    title={t('workout_details')}
                 >
                     <CustomTextInput
                         label={t('workout_title')}
@@ -955,10 +955,10 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                     {t('add_exercise')}
                 </Button>
                 <Button
+                    disabled={workout.length < 2}
                     mode="contained"
                     onPress={() => setIsSupersetModalOpen(true)}
                     style={styles.button}
-                    disabled={workout.length < 2}
                 >
                     {t('create_superset')}
                 </Button>
@@ -990,7 +990,7 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
             )}
         </Screen>
     );
-};
+}
 
 const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
     addSetButton: {

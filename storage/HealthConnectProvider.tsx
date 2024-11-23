@@ -9,31 +9,31 @@ import {
     TotalMacrosType,
 } from '@/utils/types';
 import * as IntentLauncher from 'expo-intent-launcher';
-import React, { ReactNode, createContext, useCallback, useContext, useState } from 'react';
+import React, { createContext, ReactNode, useCallback, useContext, useState } from 'react';
 import DeviceInfo from 'react-native-device-info';
 import {
+    deleteRecordsByUuids,
     getGrantedPermissions,
     initialize,
-    readRecords,
     insertRecords,
+    readRecords,
     requestPermission,
-    deleteRecordsByUuids,
 } from 'react-native-health-connect';
 import { Permission } from 'react-native-health-connect/lib/typescript/types';
 
 const packageName = DeviceInfo.getBundleId();
 
-type HealthConnectAccessType = 'read' | 'write';
-
 export interface HealthConnectContextValue {
     checkReadIsPermitted: (recordTypes?: RecordType[]) => Promise<boolean>;
     checkWriteIsPermitted: (recordTypes?: RecordType[]) => Promise<boolean>;
-    getHealthData: (pageSize?: number, recordTypes?: RecordType[]) => Promise<HealthDataType>;
-    insertHealthData: (data: HealthConnectRecord[]) => Promise<string[]>;
     deleteHealthData: (recordType: RecordType, dataIds: string[]) => Promise<void>;
+    getHealthData: (pageSize?: number, recordTypes?: RecordType[]) => Promise<HealthDataType>;
     healthData: HealthDataType;
+    insertHealthData: (data: HealthConnectRecord[]) => Promise<string[]>;
     requestPermissions: () => Promise<void>;
 }
+
+type HealthConnectAccessType = 'read' | 'write';
 
 const data = {
     latest: {
@@ -47,6 +47,18 @@ const data = {
         weight: undefined,
     },
 };
+
+function areMandatoryPermissionsGranted(permissions: Permission[], accessType: HealthConnectAccessType) {
+    return arePermissionsGranted(MANDATORY_PERMISSIONS, permissions, accessType);
+}
+
+function arePermissionsGranted(recordTypes: string[], permissions: Permission[], accessType: HealthConnectAccessType) {
+    return recordTypes.every((recordType) =>
+        permissions.some(
+            (permission) => permission.recordType === recordType && permission.accessType === accessType
+        )
+    );
+}
 
 function calculateTotals(data: any[]): TotalMacrosType {
     const totals: TotalMacrosType = {
@@ -74,18 +86,6 @@ function isReadPermissionGranted(recordType: string, permissions: Permission[]) 
     return permissions.some(
         (permission) => permission.recordType === recordType && permission.accessType === 'read'
     );
-}
-
-function arePermissionsGranted(recordTypes: string[], permissions: Permission[], accessType: HealthConnectAccessType) {
-    return recordTypes.every((recordType) =>
-        permissions.some(
-            (permission) => permission.recordType === recordType && permission.accessType === accessType
-        )
-    );
-}
-
-function areMandatoryPermissionsGranted(permissions: Permission[], accessType: HealthConnectAccessType) {
-    return arePermissionsGranted(MANDATORY_PERMISSIONS, permissions, accessType);
 }
 
 export const checkIsHealthConnectedPermitted = async (accessType: HealthConnectAccessType, recordTypes?: RecordType[]) => {
@@ -205,10 +205,10 @@ export const getHealthConnectData = async (pageSize: number = 1000): Promise<Hea
 const HealthConnectContext = createContext<HealthConnectContextValue>({
     checkReadIsPermitted: async (recordTypes?: RecordType[]) => false,
     checkWriteIsPermitted: async (recordTypes?: RecordType[]) => false,
-    getHealthData: async (pageSize?: number, recordTypes?: RecordType[]) => data,
-    insertHealthData: async (data: HealthConnectRecord[]): Promise<string[]> => Promise.resolve([]),
     deleteHealthData: async (recordType: RecordType, dataIds: string[]): Promise<void> => {},
+    getHealthData: async (pageSize?: number, recordTypes?: RecordType[]) => data,
     healthData: data,
+    insertHealthData: async (data: HealthConnectRecord[]): Promise<string[]> => Promise.resolve([]),
     requestPermissions: async () => {},
 });
 
@@ -294,11 +294,11 @@ export const HealthConnectProvider = ({ children }: HealthConnectProviderProps) 
             value={{
                 checkReadIsPermitted,
                 checkWriteIsPermitted,
+                deleteHealthData,
                 getHealthData,
                 healthData,
-                requestPermissions,
                 insertHealthData,
-                deleteHealthData,
+                requestPermissions,
             }}
         >
             {children}

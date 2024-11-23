@@ -6,7 +6,7 @@ import { ArcElement, Chart as ChartJS, Legend, Tooltip } from 'chart.js';
 import React, { useCallback } from 'react';
 import { Pie } from 'react-chartjs-2';
 import { StyleSheet, View } from 'react-native';
-import { IconButton, useTheme, Text } from 'react-native-paper';
+import { IconButton, Text, useTheme } from 'react-native-paper';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -18,21 +18,21 @@ interface PieChartProps {
         value: number;
     }[];
     shareButtonPosition?: 'bottom' | 'top';
-    showShareImageButton?: boolean;
-    title?: string;
-    size?: number;
     showLabels?: boolean;
     showLegend?: boolean;
+    showShareImageButton?: boolean;
+    size?: number;
+    title?: string;
 }
 
 const PieChart: React.FC<PieChartProps> = ({
     data,
     shareButtonPosition = 'bottom',
-    showShareImageButton = true,
-    title,
-    size = 300,
     showLabels = true,
     showLegend = true,
+    showShareImageButton = true,
+    size = 300,
+    title,
 }) => {
     const { colors } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors, size);

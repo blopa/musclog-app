@@ -109,10 +109,10 @@ export const CustomDarkTheme = {
     },
 } as const;
 
-type CustomLightThemeType = typeof CustomLightTheme;
-
-type CustomDarkThemeType = typeof CustomDarkTheme;
-
 export type CustomThemeColorsType = CustomDarkThemeType['colors'] | CustomLightThemeType['colors'];
 
 export type CustomThemeType = CustomDarkThemeType | CustomLightThemeType;
+
+type CustomDarkThemeType = typeof CustomDarkTheme;
+
+type CustomLightThemeType = typeof CustomLightTheme;

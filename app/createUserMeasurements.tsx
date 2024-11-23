@@ -13,7 +13,7 @@ import { useFocusEffect } from 'expo-router';
 import React, { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Animated, Platform, ScrollView, StyleSheet, View } from 'react-native';
-import { Appbar, Button, IconButton, useTheme, Text } from 'react-native-paper';
+import { Appbar, Button, IconButton, Text, useTheme } from 'react-native-paper';
 
 type RouteParams = {
     id?: string;
@@ -28,7 +28,7 @@ const CreateUserMeasurements = ({ navigation }: { navigation: NavigationProp<any
     const [isSaving, setIsSaving] = useState(false);
     const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
     const [selectedDate, setSelectedDate] = useState(new Date());
-    const [currentMeasurement, setCurrentMeasurement] = useState({ name: '', value: '', index: -1 });
+    const [currentMeasurement, setCurrentMeasurement] = useState({ index: -1, name: '', value: '' });
     const [measurements, setMeasurements] = useState<{ name: string; value: string }[]>([]);
 
     const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -113,7 +113,7 @@ const CreateUserMeasurements = ({ navigation }: { navigation: NavigationProp<any
     }, [measurements, id, selectedDate, showModal, t]);
 
     const resetScreenData = useCallback(() => {
-        setCurrentMeasurement({ name: '', value: '', index: -1 });
+        setCurrentMeasurement({ index: -1, name: '', value: '' });
         setMeasurements([]);
         setSelectedDate(new Date());
         setIsModalVisible(false);
@@ -161,7 +161,7 @@ const CreateUserMeasurements = ({ navigation }: { navigation: NavigationProp<any
                 setMeasurements((prevMeasurements) => [...prevMeasurements, { name: currentMeasurement.name, value: currentMeasurement.value }]);
             }
 
-            setCurrentMeasurement({ name: '', value: '', index: -1 });
+            setCurrentMeasurement({ index: -1, name: '', value: '' });
         } else {
             Alert.alert(t('validation_error'), t('measurement_name_and_value_required'));
         }
@@ -271,10 +271,10 @@ const CreateUserMeasurements = ({ navigation }: { navigation: NavigationProp<any
                 </Button>
             </View>
             <DatePickerModal
-                visible={isDatePickerVisible}
+                onChangeDate={handleDateChange}
                 onClose={() => setIsDatePickerVisible(false)}
                 selectedDate={selectedDate}
-                onChangeDate={handleDateChange}
+                visible={isDatePickerVisible}
             />
         </Screen>
     );
@@ -340,11 +340,11 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         marginBottom: 8,
         padding: 8,
     },
-    savedMeasurementText: {
-        color: colors.onSurface,
-    },
     savedMeasurementsContainer: {
         marginBottom: 16,
+    },
+    savedMeasurementText: {
+        color: colors.onSurface,
     },
 });
 

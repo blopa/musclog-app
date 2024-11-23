@@ -10,7 +10,7 @@ import { FlashList } from '@shopify/flash-list';
 import { useFocusEffect } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, StyleSheet, View, ActivityIndicator } from 'react-native';
+import { ActivityIndicator, Platform, StyleSheet, View } from 'react-native';
 import { Appbar, Button, Text, TextInput, useTheme } from 'react-native-paper';
 
 type RouteParams = {
@@ -36,7 +36,7 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const loadInitialData = useCallback(async () => {
         setIsLoading(true);
 
-        const { products, pageCount } = await fetchFoodData(initialSearchQuery, 1);
+        const { pageCount, products } = await fetchFoodData(initialSearchQuery, 1);
         setSearchResults(products);
         setTotalPages(pageCount);
 
@@ -48,7 +48,7 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
         setCurrentPage(1);
         setLoadMoreError(false);
 
-        const { products, pageCount } = await fetchFoodData(searchQuery, 1);
+        const { pageCount, products } = await fetchFoodData(searchQuery, 1);
         setSearchResults(products);
         setTotalPages(pageCount);
 
@@ -119,7 +119,7 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
             <Appbar.Header mode="small" statusBarHeight={0} style={styles.appbarHeader}>
                 <Appbar.Action
                     icon={() => (
-                        <FontAwesome5 name="arrow-left" size={24} color={colors.onPrimary} />
+                        <FontAwesome5 color={colors.onPrimary} name="arrow-left" size={24} />
                     )}
                     onPress={() => navigation.navigate('foodLog')}
                 />
@@ -127,18 +127,18 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
             </Appbar.Header>
             <View style={styles.searchContainer}>
                 <TextInput
-                    placeholder={t('search_food')}
-                    value={searchQuery}
-                    onChangeText={setSearchQuery}
-                    style={styles.searchInput}
                     mode="outlined"
+                    onChangeText={setSearchQuery}
+                    placeholder={t('search_food')}
+                    style={styles.searchInput}
+                    value={searchQuery}
                 />
                 <Button
                     mode="outlined"
                     onPress={handleSearch}
                     style={styles.iconButton}
                 >
-                    <FontAwesome5 name="search" size={20} color={colors.primary} />
+                    <FontAwesome5 color={colors.primary} name="search" size={20} />
                 </Button>
             </View>
             {searchResults.length === 0 && !isLoading ? (
@@ -150,30 +150,30 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 </View>
             ) : (
                 <FlashList
-                    data={searchResults}
-                    keyExtractor={(item, index) => (item.productTitle || index).toString()}
-                    renderItem={
-                        ({ item }) => <FoodItem food={item} onAddFood={handleAddFood} />
-                    }
-                    estimatedItemSize={115}
                     contentContainerStyle={styles.listContent}
-                    onEndReached={loadMoreResults}
-                    onEndReachedThreshold={0.5}
+                    data={searchResults}
+                    estimatedItemSize={115}
+                    keyExtractor={(item, index) => (item.productTitle || index).toString()}
                     ListFooterComponent={
                         isLoading ? (
-                            <ActivityIndicator size="large" color={colors.primary} />
+                            <ActivityIndicator color={colors.primary} size="large" />
                         ) : loadMoreError ? (
-                            <Button onPress={loadMoreResults} mode="outlined" style={styles.loadMoreButton}>
+                            <Button mode="outlined" onPress={loadMoreResults} style={styles.loadMoreButton}>
                                 {t('load_more')}
                             </Button>
                         ) : null
                     }
+                    onEndReached={loadMoreResults}
+                    onEndReachedThreshold={0.5}
+                    renderItem={
+                        ({ item }) => <FoodItem food={item} onAddFood={handleAddFood} />
+                    }
                 />
             )}
             <FoodTrackingModal
-                visible={isModalVisible}
-                onClose={closeModal}
                 food={selectedFood}
+                onClose={closeModal}
+                visible={isModalVisible}
             />
         </Screen>
     );

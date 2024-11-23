@@ -2,9 +2,8 @@ const { ESLint } = require('eslint');
 const fs = require('fs');
 const path = require('path');
 
-const eslintBaseConfig = require('../.eslintrc.js');
+const eslintBaseConfig = require('../eslint.config.js');
 
-// eslint-disable-next-line no-undef
 const DIRNAME = __dirname;
 
 // Directory containing the exercise images
@@ -45,7 +44,9 @@ const eslint = new ESLint({
     fix: true,
 });
 
+// eslint-disable-next-line promise/catch-or-return
 eslint.lintText(output).then((lintResults) => {
+    // eslint-disable-next-line promise/always-return
     const lintedOutput = lintResults[0].output || output;
 
     fs.writeFileSync(outputFilePath, lintedOutput);

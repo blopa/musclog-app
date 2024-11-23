@@ -5,12 +5,28 @@ const fs = require('fs');
 const OpenAI = require('openai');
 const path = require('path');
 
-// eslint-disable-next-line no-undef
 const DIRNAME = __dirname;
 
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
+
+// Main function
+async function main() {
+    const inputFilePath = path.join(DIRNAME, '..', 'lang', 'locales', 'en-us.json');
+    const outputFilePath = path.join(DIRNAME, '..', 'lang', 'locales', 'it.json');
+
+    // Load the input JSON file
+    const content = fs.readFileSync(inputFilePath, 'utf8');
+
+    // Translate the content
+    const translatedContent = await translateContent(content, 'Italian');
+
+    // Save the translated content to a new file
+    fs.writeFileSync(outputFilePath, translatedContent, 'utf8');
+
+    console.log(`Translation completed and saved to ${outputFilePath}`);
+}
 
 // Function to translate the content
 async function translateContent(content, targetLanguage) {
@@ -52,23 +68,6 @@ async function translateContent(content, targetLanguage) {
     }
 
     return response?.choices?.[0]?.message?.function_call?.arguments;
-}
-
-// Main function
-async function main() {
-    const inputFilePath = path.join(DIRNAME, '..', 'lang', 'locales', 'en-us.json');
-    const outputFilePath = path.join(DIRNAME, '..', 'lang', 'locales', 'it.json');
-
-    // Load the input JSON file
-    const content = fs.readFileSync(inputFilePath, 'utf8');
-
-    // Translate the content
-    const translatedContent = await translateContent(content, 'Italian');
-
-    // Save the translated content to a new file
-    fs.writeFileSync(outputFilePath, translatedContent, 'utf8');
-
-    console.log(`Translation completed and saved to ${outputFilePath}`);
 }
 
 // Execute the main function

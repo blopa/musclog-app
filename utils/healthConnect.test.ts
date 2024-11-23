@@ -17,10 +17,10 @@ jest.mock('@/storage/HealthConnectProvider', () => ({
 }));
 
 jest.mock('@/lang/lang', () => ({
+    language: 'en-US',
     LOCALE_MAP: {
         'en-US': require('date-fns/locale/en-US'),
     },
-    language: 'en-US',
 }));
 
 jest.mock('@/utils/database', () => ({

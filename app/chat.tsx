@@ -1,3 +1,5 @@
+import type { ChatCompletionMessageParam } from 'openai/resources';
+
 import BotAvatar from '@/components/BotAvatar';
 import BottomPageModal from '@/components/BottomPageModal';
 import { Screen } from '@/components/Screen';
@@ -17,28 +19,11 @@ import { NavigationProp } from '@react-navigation/native';
 import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
 import { useFocusEffect } from 'expo-router';
-import { ChatCompletionMessageParam } from 'openai/resources';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Animated, BackHandler, Platform, StyleSheet, View } from 'react-native';
 import { GiftedChat, Send, SendProps } from 'react-native-gifted-chat';
 import { ActivityIndicator, Appbar, Button, IconButton, Text, useTheme } from 'react-native-paper';
-
-// copied from https://github.com/FaridSafi/react-native-gifted-chat/issues/2448#issuecomment-2167027162
-function invisibleMessagesLoadingFix() {
-    if (Platform.OS === 'web') {
-        const gcLoadingContaineEl = document.querySelectorAll(
-            '[data-testid="GC_LOADING_CONTAINER"]'
-        )[0] as HTMLElement;
-
-        if (gcLoadingContaineEl) {
-            gcLoadingContaineEl.style.display = 'none';
-            setTimeout(() => {
-                gcLoadingContaineEl.style.display = 'flex';
-            }, 500);
-        }
-    }
-}
 
 export default function Chat({ navigation }: { navigation: NavigationProp<any> }) {
     const { t } = useTranslation();
@@ -465,6 +450,23 @@ export default function Chat({ navigation }: { navigation: NavigationProp<any> }
             />
         </Screen>
     );
+}
+
+// copied from https://github.com/FaridSafi/react-native-gifted-chat/issues/2448#issuecomment-2167027162
+function invisibleMessagesLoadingFix() {
+    if (Platform.OS === 'web') {
+        const gcLoadingContaineEl = document.querySelectorAll(
+            '[data-testid="GC_LOADING_CONTAINER"]'
+            // eslint-disable-next-line no-undef
+        )[0] as HTMLElement;
+
+        if (gcLoadingContaineEl) {
+            gcLoadingContaineEl.style.display = 'none';
+            setTimeout(() => {
+                gcLoadingContaineEl.style.display = 'flex';
+            }, 500);
+        }
+    }
 }
 
 const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({

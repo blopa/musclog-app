@@ -12,24 +12,15 @@ import {
     SetReturnType,
 } from '@/utils/types';
 
-function isMuscleGroupType(value: any): value is MuscleGroupType {
-    return Object.values(MUSCLE_GROUPS).includes(value);
-}
-
 function isExerciseTypesType(value: any): value is ExerciseTypesType {
     return Object.values(EXERCISE_TYPES).includes(value);
 }
 
-function isSetType(obj: any): obj is Omit<SetReturnType, 'exerciseId'> {
-    return typeof obj === 'object'
-        && (typeof obj.createdAt === 'string' || obj.createdAt === undefined)
-        && (typeof obj.deletedAt === 'string' || obj.deletedAt === undefined)
-        && (typeof obj.difficultyLevel === 'number' || obj.difficultyLevel === undefined)
-        && (typeof obj.id === 'number' || obj.id === undefined)
-        && (typeof obj.isDropSet === 'boolean' || obj.isDropSet === undefined)
-        && typeof obj.reps === 'number'
-        && typeof obj.restTime === 'number'
-        && typeof obj.weight === 'number';
+function isExerciseTypeWithSets(obj: any): obj is ParsedExerciseTypeWithSets {
+    return isExerciseVolumeType(obj)
+        && isMuscleGroupType((obj as unknown as ParsedExerciseTypeWithSets).muscleGroup)
+        && typeof (obj as unknown as ParsedExerciseTypeWithSets).name === 'string'
+        && isExerciseTypesType((obj as unknown as ParsedExerciseTypeWithSets).type);
 }
 
 function isExerciseVolumeSetType(obj: any): obj is ExerciseVolumeSetType {
@@ -44,11 +35,8 @@ function isExerciseVolumeType(obj: any): obj is Omit<ExerciseVolumeType, 'exerci
         && obj.sets.every(isExerciseVolumeSetType);
 }
 
-function isExerciseTypeWithSets(obj: any): obj is ParsedExerciseTypeWithSets {
-    return isExerciseVolumeType(obj)
-        && isMuscleGroupType((obj as unknown as ParsedExerciseTypeWithSets).muscleGroup)
-        && typeof (obj as unknown as ParsedExerciseTypeWithSets).name === 'string'
-        && isExerciseTypesType((obj as unknown as ParsedExerciseTypeWithSets).type);
+function isMuscleGroupType(value: any): value is MuscleGroupType {
+    return Object.values(MUSCLE_GROUPS).includes(value);
 }
 
 function isParsedPastNutrition(obj: any): obj is ParsedPastNutrition {
@@ -77,6 +65,18 @@ function isParsedRecentWorkout(obj: any): obj is ParsedRecentWorkout {
         && Array.isArray(obj.exercises)
         && obj.exercises.every(isExerciseTypeWithSets)
         && typeof obj.title === 'string';
+}
+
+function isSetType(obj: any): obj is Omit<SetReturnType, 'exerciseId'> {
+    return typeof obj === 'object'
+        && (typeof obj.createdAt === 'string' || obj.createdAt === undefined)
+        && (typeof obj.deletedAt === 'string' || obj.deletedAt === undefined)
+        && (typeof obj.difficultyLevel === 'number' || obj.difficultyLevel === undefined)
+        && (typeof obj.id === 'number' || obj.id === undefined)
+        && (typeof obj.isDropSet === 'boolean' || obj.isDropSet === undefined)
+        && typeof obj.reps === 'number'
+        && typeof obj.restTime === 'number'
+        && typeof obj.weight === 'number';
 }
 
 export const validateParsedRecentWorkouts = (data: any[]): data is ParsedRecentWorkout[] => {

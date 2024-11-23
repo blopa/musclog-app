@@ -2,9 +2,8 @@ const { ESLint } = require('eslint');
 const fs = require('fs');
 const path = require('path');
 
-const eslintBaseConfig = require('../.eslintrc.js');
+const eslintBaseConfig = require('../eslint.config.js');
 
-// eslint-disable-next-line no-undef
 const DIRNAME = __dirname;
 const localesDir = path.join(DIRNAME, '..', 'lang', 'locales');
 const outputFilePath = path.join(DIRNAME, '..', 'lang', 'lang.ts');
@@ -180,6 +179,7 @@ fs.readdir(localesDir, (err, files) => {
         });
 
         eslint.lintText(output).then((lintResults) => {
+            // eslint-disable-next-line promise/always-return
             const lintedOutput = lintResults[0].output || output;
 
             // Write the output to the lang.ts file

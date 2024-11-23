@@ -46,11 +46,11 @@ type WorkoutSessionProps = {
     isLastExercise?: boolean;
     onCancel: () => void;
     onFinish: (workoutScore?: number, exhaustionLevel?: number) => Promise<void>;
+    orderedExercises: { exercise: ExerciseReturnType; sets: SetReturnType[] }[];
     sets: SetReturnType[];
     startTime: null | number;
     workoutDuration?: number;
     workoutId: number | undefined;
-    orderedExercises: { exercise: ExerciseReturnType; sets: SetReturnType[] }[];
 };
 
 const WorkoutSession = ({
@@ -59,11 +59,11 @@ const WorkoutSession = ({
     isLastExercise,
     onCancel,
     onFinish,
+    orderedExercises,
     sets,
     startTime,
     workoutDuration,
     workoutId,
-    orderedExercises,
 }: WorkoutSessionProps) => {
     const { t } = useTranslation();
     const { colors, dark } = useTheme<CustomThemeType>();
@@ -89,7 +89,7 @@ const WorkoutSession = ({
     const [setDifficulty, setSetDifficulty] = useState<number>(5);
     const [skippedSets, setSkippedSets] = useState<number[]>([]);
     const [remainingWorkoutData, setRemainingWorkoutData] = useState<ExerciseWithSetsType[]>([]);
-    const [workoutDetails, setWorkoutDetails] = useState<WorkoutWithExercisesRepsAndSetsDetailsReturnType | undefined>(undefined);
+    const [workoutDetails, setWorkoutDetails] = useState<undefined | WorkoutWithExercisesRepsAndSetsDetailsReturnType>(undefined);
 
     const { unitSystem, weightUnit } = useUnit();
     const isImperial = unitSystem === IMPERIAL_SYSTEM;
@@ -279,12 +279,12 @@ const WorkoutSession = ({
             restTime: currentSet.restTime,
             setId: currentSet.id,
             setIndex: currentSetIndex + 1,
+            setOrder: currentSet.setOrder,
+            supersetName: currentSet.supersetName,
             targetReps: currentSet.reps,
             targetWeight: currentSet.weight,
             weight: getSaveFormattedWeight(Number(weightLifted), POUNDS, isImperial),
             workoutDuration,
-            setOrder: currentSet.setOrder,
-            supersetName: currentSet.supersetName,
         } as ExerciseProgressType;
 
         try {
@@ -336,7 +336,7 @@ const WorkoutSession = ({
     const handleFinishWorkout = useCallback(() => {
         setLoading(true);
         // finish the exercise and the workout
-        finishExercise().then(async () => {
+        finishExercise().finally(async () => {
             await resetWorkoutStorageData();
 
             setIsFinishWorkoutModalVisible(false);
@@ -354,6 +354,9 @@ const WorkoutSession = ({
                     useNativeDriver: true,
                 }),
             ]).start();
+        }).catch((error) => {
+            console.error('Failed to finish workout:', error);
+            setLoading(false);
         });
     }, [fadeAnim, finishExercise, slideAnim]);
 
@@ -508,8 +511,8 @@ const WorkoutSession = ({
                 completedWorkoutData={completedWorkoutData}
                 isVisible={isInfoModalVisible}
                 onClose={() => setIsInfoModalVisible(false)}
-                remainingWorkoutData={remainingWorkoutData}
                 orderedExercises={orderedExercises}
+                remainingWorkoutData={remainingWorkoutData}
             />
             {isResting ? (
                 <RestTimer
@@ -530,7 +533,7 @@ const WorkoutSession = ({
                 />
             )}
             {!isResting && (
-                <>
+                <View>
                     <Button
                         disabled={loading}
                         mode="contained"
@@ -555,7 +558,7 @@ const WorkoutSession = ({
                     >
                         {finishButtonText}
                     </Button>
-                </>
+                </View>
             )}
             {isResting ? (
                 <NextSetPreview
