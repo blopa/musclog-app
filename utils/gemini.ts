@@ -1,7 +1,7 @@
 import { EXERCISE_IMAGE_GENERATION_TYPE, GEMINI_API_KEY_TYPE } from '@/constants/storage';
 import i18n from '@/lang/lang';
 import { getSetting, processWorkoutPlan } from '@/utils/database';
-import { getBase64StringFromPhotoUri } from '@/utils/file';
+import { getBase64StringFromPhotoUri, resizeImage } from '@/utils/file';
 import { WorkoutPlan, WorkoutReturnType } from '@/utils/types';
 import {
     Content,
@@ -32,7 +32,8 @@ import {
     getWorkoutVolumeInsightsPrompt,
 } from './prompts';
 
-const GEMINI_MODEL = 'gemini-1.5-flash'; // or gemini-1.5-pro-latest
+const GEMINI_MODEL = 'gemini-1.5-flash';
+// const GEMINI_MODEL = 'gemini-1.5-pro-latest';
 
 export const getApiKey = async () =>
     (await getSetting(GEMINI_API_KEY_TYPE))?.value || process.env.EXPO_PUBLIC_FORCE_GEMINI_API_KEY;
@@ -681,12 +682,12 @@ export const getWorkoutVolumeInsights = async (workoutId: number): Promise<strin
 };
 
 export async function estimateNutritionFromPhoto(photoUri: string) {
-    // TODO: this is probably not the right way to do this, so fix it later
     const apiKey = await getApiKey();
-
     if (!apiKey) {
-        return Promise.resolve(null);
+        return null;
     }
+
+    const base64Image = await getBase64StringFromPhotoUri(await resizeImage(photoUri));
 
     const genAI = new GoogleGenerativeAI(apiKey);
 
@@ -695,66 +696,112 @@ export async function estimateNutritionFromPhoto(photoUri: string) {
         safetySettings,
     });
 
-    const generationConfig = {
-        // maxOutputTokens: 2048,
-        temperature: 0.9,
-        topK: 1,
-        topP: 1,
-    };
-
-    const base64Image = await getBase64StringFromPhotoUri(photoUri);
-
-    const conversationContent: Content[] = [{
-        parts: [{ text: 'Estimate the nutrition of the food in the image.' }],
-        role: 'user',
-    }];
-
     try {
         const result = await model.generateContent({
-            contents: conversationContent,
-            files: [{ content: base64Image, name: 'image.jpg' }],
-            generationConfig,
+            contents: [
+                {
+                    parts: [{
+                        text: [
+                            'You are a very powerful AI, trained to estimate the macronutrients of a food/meal from the photo provided',
+                        ].join('\n'),
+                    }, {
+                        inline_data: {
+                            data: base64Image,
+                            mime_type: 'image/jpeg',
+                        },
+                    }],
+                    role: 'user',
+                },
+            ],
+            generationConfig: {
+                maxOutputTokens: 1024,
+                temperature: 0.7,
+                topK: 1,
+                topP: 1,
+            },
         } as GenerateContentRequest);
 
-        if (result.response.promptFeedback && result.response.promptFeedback.blockReason) {
+        if (result.response.promptFeedback?.blockReason) {
             console.log(`Blocked for ${result.response.promptFeedback.blockReason}`);
-            return Promise.resolve(null);
-
+            return null;
         }
 
-        // return result.response.candidates?.[0]?.content?.parts[0]?.text;
-
+        debugger;
+        const response = JSON.parse(result.response.candidates?.[0]?.content?.parts?.[0]?.text || '{}');
         return {
-            calories: 0,
-            carbs: 0,
-            fat: 0,
-            grams: 0,
-            name: '',
-            protein: 0,
+            calories: response.calories || 0,
+            carbs: response.carbs || 0,
+            fat: response.fat || 0,
+            grams: response.grams || 0,
+            name: response.name || '',
+            protein: response.protein || 0,
         };
-    } catch (e) {
-        console.error(e);
-
-        return {
-            calories: 0,
-            carbs: 0,
-            fat: 0,
-            grams: 0,
-            name: '',
-            protein: 0,
-        };
+    } catch (error) {
+        console.error('Error estimating nutrition from photo:', error);
+        return null;
     }
 }
 
 export async function extractMacrosFromLabelPhoto(photoUri: string) {
-    return {
-        calories: 0,
-        carbs: 0,
-        fat: 0,
-        grams: 0,
-        name: '',
-        protein: 0,
-    };
+    const apiKey = await getApiKey();
+    if (!apiKey) {
+        return null;
+    }
+
+    const base64Image = await getBase64StringFromPhotoUri(await resizeImage(photoUri));
+
+    const genAI = new GoogleGenerativeAI(apiKey);
+
+    const model = genAI.getGenerativeModel({
+        model: GEMINI_MODEL,
+        safetySettings,
+    });
+
+    try {
+        const result = await model.generateContent({
+            contents: [
+                {
+                    parts: [{
+                        text: [
+                            'You are a very powerful AI, trained to extract the macronutrients of a food label from the photo provided',
+                            'Use OCR to extract the text from the image, then parse the text to extract the macronutrients.',
+                        ].join('\n'),
+                    },
+                    {
+                        inline_data: {
+                            data: base64Image,
+                            mime_type: 'image/jpeg',
+                        },
+                    }],
+                    role: 'user',
+                },
+            ],
+            generationConfig: {
+                maxOutputTokens: 1024,
+                temperature: 0.7,
+                topK: 1,
+                topP: 1,
+            },
+        } as GenerateContentRequest);
+
+        if (result.response.promptFeedback?.blockReason) {
+            console.log(`Blocked for ${result.response.promptFeedback.blockReason}`);
+            return null;
+        }
+
+        const response = JSON.parse(result.response.candidates?.[0]?.content?.parts?.[0]?.text || '{}');
+        return {
+            calories: response.calories || 0,
+            carbs: response.carbs || 0,
+            fat: response.fat || 0,
+            grams: response.grams || 0,
+            name: response.name || '',
+            protein: response.protein || 0,
+        };
+    } catch (error) {
+        console.error('Error extracting macros from label photo:', error);
+        return null;
+    }
 }
 
 export async function isAllowedLocation(apiKey: string): Promise<boolean> {
