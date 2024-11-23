@@ -1,3 +1,5 @@
+import type { ChatCompletionMessageParam } from 'openai/resources';
+
 import BotAvatar from '@/components/BotAvatar';
 import BottomPageModal from '@/components/BottomPageModal';
 import { Screen } from '@/components/Screen';
@@ -17,7 +19,6 @@ import { NavigationProp } from '@react-navigation/native';
 import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
 import { useFocusEffect } from 'expo-router';
-import { ChatCompletionMessageParam } from 'openai/resources';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Animated, BackHandler, Platform, StyleSheet, View } from 'react-native';

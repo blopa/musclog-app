@@ -20,9 +20,6 @@ module.exports = [
             sourceType: 'module',
         },
         rules: {
-            '@typescript-eslint/ban-ts-comment': 'off', // TODO maybe turn it on one day
-            '@typescript-eslint/no-explicit-any': 'off', // TODO maybe turn it on one day
-            '@typescript-eslint/no-non-null-asserted-optional-chain': 'warm', // TODO maybe turn it on one day
             '@typescript-eslint/no-unused-vars': [
                 'warn',
                 {
@@ -38,7 +35,7 @@ module.exports = [
 
     // JavaScript and JSX-specific configuration
     {
-        files: ['*.js', '*.jsx'],
+        files: ['*.tsx', '*.jsx'],
         languageOptions: {
             ecmaVersion: 2020,
             sourceType: 'module',
@@ -67,7 +64,12 @@ module.exports = [
             'unused-imports': require('eslint-plugin-unused-imports'),
         },
         rules: {
+            '@typescript-eslint/ban-ts-comment': 'off', // TODO maybe turn it on one day
+            '@typescript-eslint/no-empty-object-type': 'warn',
+            '@typescript-eslint/no-explicit-any': 'off', // TODO maybe turn it on one day
+            '@typescript-eslint/no-non-null-asserted-optional-chain': 'warn', // TODO maybe turn it on one day
             '@typescript-eslint/no-require-imports': 'off',
+            '@typescript-eslint/no-unused-vars': 'warn',
             'array-bracket-spacing': ['warn', 'never'],
             'arrow-parens': ['warn', 'always'],
             camelcase: 'off',
@@ -140,7 +142,7 @@ module.exports = [
             'import/ignore': ['react-navigation'],
             'import/resolver': {
                 typescript: {
-                    project: path.resolve(__dirname, 'tsconfig.json'), // Points to your tsconfig.json
+                    project: path.resolve(__dirname, 'tsconfig.json'),
                 },
             },
             react: {
