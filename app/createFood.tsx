@@ -5,6 +5,7 @@ import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { addFood } from '@/utils/database';
 import { updateRecentFood } from '@/utils/storage';
 import { formatFloatNumericInputText, generateHash } from '@/utils/string';
+import { GoogleFormFoodFoodLabelType } from '@/utils/types';
 import { NavigationProp, useRoute } from '@react-navigation/native';
 import fetch from 'isomorphic-fetch';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -16,7 +17,7 @@ import form from '../data/foodForm.json';
 
 const GOOGLE_FORMS_URL = 'https://docs.google.com/forms/d';
 
-const HIDDEN_FIELDS = ['data_id', 'created_at', 'deleted_at'];
+const HIDDEN_FIELDS = ['data_id', 'created_at', 'deleted_at'] as GoogleFormFoodFoodLabelType[];
 
 type RouteParams = {
     foodName?: string;
@@ -80,7 +81,7 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
             }
         });
 
-        HIDDEN_FIELDS.forEach((field) => {
+        HIDDEN_FIELDS.forEach((field: GoogleFormFoodFoodLabelType) => {
             const id = form.fields.find((f) => f.label === field)?.id;
 
             if (id) {
@@ -138,6 +139,7 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
             vitaminB12: parseFloat(urlParams.get('entry.994462403') || '0'),
             vitaminC: parseFloat(urlParams.get('entry.636273284') || '0'),
             vitaminD: parseFloat(urlParams.get('entry.1168816410') || '0'),
+            vitaminE: parseFloat(urlParams.get('entry.1412584634') || '0'),
             vitaminK: parseFloat(urlParams.get('entry.446901229') || '0'),
             zinc: parseFloat(urlParams.get('entry.19181913') || '0'),
         };
@@ -181,7 +183,7 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
         'name',
         'product_code',
         'brand',
-    ];
+    ] as GoogleFormFoodFoodLabelType[];
 
     return (
         <Screen style={styles.container}>
@@ -213,9 +215,9 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
             </Appbar.Header>
             <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
                 {form.fields
-                    .filter((field) => !HIDDEN_FIELDS.includes(field.label))
+                    .filter((field) => !HIDDEN_FIELDS.includes(field.label as GoogleFormFoodFoodLabelType))
                     .map((field) => {
-                        const isNumericField = !textFields.includes(field.label);
+                        const isNumericField = !textFields.includes(field.label as GoogleFormFoodFoodLabelType);
 
                         return (
                             <View key={field.id} style={styles.formGroup}>

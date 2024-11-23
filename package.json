@@ -123,7 +123,8 @@
         "react-native-view-shot": "4.0.2",
         "react-native-web": "0.19.13",
         "simple-git": "3.27.0",
-        "turtle-cli": "0.28.1"
+        "turtle-cli": "0.28.1",
+        "xlsx": "^0.18.5"
     },
     "devDependencies": {
         "@babel/core": "7.26.0",
@@ -133,6 +134,7 @@
         "@expo/metro-config": "0.19.4",
         "@expo/prebuild-config": "8.0.20",
         "@playwright/test": "1.49.0",
+        "@react-native/eslint-plugin": "0.76.3",
         "@testing-library/react": "16.0.1",
         "@types/chart.js": "2.9.41",
         "@types/crypto-js": "4.2.2",
@@ -145,14 +147,13 @@
         "@types/react-test-renderer": "18.3.0",
         "@typescript-eslint/eslint-plugin": "8.15.0",
         "@typescript-eslint/parser": "8.15.0",
-        "@react-native/eslint-plugin": "0.76.3",
         "csv-parser": "3.0.0",
         "eas-cli": "13.4.1",
         "eslint": "9.15.0",
         "eslint-import-resolver-typescript": "3.6.3",
         "eslint-plugin-eslint-comments": "3.2.0",
-        "eslint-plugin-jest": "28.9.0",
         "eslint-plugin-import": "2.31.0",
+        "eslint-plugin-jest": "28.9.0",
         "eslint-plugin-perfectionist": "4.0.3",
         "eslint-plugin-promise": "7.1.0",
         "eslint-plugin-react": "7.37.2",
