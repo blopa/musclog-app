@@ -4,15 +4,15 @@ import CustomTextInput from '@/components/CustomTextInput';
 import ThemedModal from '@/components/ThemedModal';
 import { USER_METRICS_SOURCES } from '@/constants/healthConnect';
 import { MEAL_TYPE, NUTRITION_TYPES } from '@/constants/nutrition';
-import { GRAMS, IMPERIAL_SYSTEM, METRIC_SYSTEM, OUNCES, RECENT_FOOD } from '@/constants/storage';
+import { GRAMS, IMPERIAL_SYSTEM, METRIC_SYSTEM, OUNCES } from '@/constants/storage';
 import useUnit from '@/hooks/useUnit';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { normalizeMacrosByGrams } from '@/utils/data';
 import { addFood, addUserNutrition, getFoodByNameAndMacros, updateUserNutrition } from '@/utils/database';
+import { updateRecentFood } from '@/utils/storage';
 import { generateHash, safeToFixed } from '@/utils/string';
 import { UserNutritionInsertType } from '@/utils/types';
 import { getDisplayFormattedWeight } from '@/utils/unit';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, View } from 'react-native';
@@ -153,9 +153,7 @@ const FoodTrackingModal = ({
             }
 
             if (foodId) {
-                const recentFood: number[] = JSON.parse(await AsyncStorage.getItem(RECENT_FOOD) || '[]');
-                recentFood.push(foodId);
-                await AsyncStorage.setItem(RECENT_FOOD, JSON.stringify(recentFood));
+                await updateRecentFood(foodId);
             }
         }
 

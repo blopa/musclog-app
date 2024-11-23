@@ -1,11 +1,10 @@
 import CompletionModal from '@/components/CompletionModal';
 import CustomTextInput from '@/components/CustomTextInput';
 import { Screen } from '@/components/Screen';
-import { RECENT_FOOD } from '@/constants/storage';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { addFood } from '@/utils/database';
+import { updateRecentFood } from '@/utils/storage';
 import { formatFloatNumericInputText, generateHash } from '@/utils/string';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationProp, useRoute } from '@react-navigation/native';
 import fetch from 'isomorphic-fetch';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -107,16 +106,13 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
         };
 
         const foodId = await addFood(food);
+        await updateRecentFood(foodId);
 
         // only set the food id if the user came
         // from the food search screen
         if (foodName) {
             setFoodId(foodId);
         }
-
-        const recentFood: number[] = JSON.parse(await AsyncStorage.getItem(RECENT_FOOD) || '[]');
-        recentFood.push(foodId);
-        await AsyncStorage.setItem(RECENT_FOOD, JSON.stringify(recentFood));
 
         try {
             fetch(

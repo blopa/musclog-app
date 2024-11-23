@@ -6,7 +6,7 @@ import { Screen } from '@/components/Screen';
 import ThemedCard from '@/components/ThemedCard';
 import ThemedModal from '@/components/ThemedModal';
 import { MEAL_TYPE } from '@/constants/nutrition';
-import { AI_SETTINGS_TYPE, GRAMS, IMPERIAL_SYSTEM, OUNCES, RECENT_FOOD } from '@/constants/storage';
+import { AI_SETTINGS_TYPE, GRAMS, IMPERIAL_SYSTEM, OUNCES } from '@/constants/storage';
 import useUnit from '@/hooks/useUnit';
 import { useHealthConnect } from '@/storage/HealthConnectProvider';
 import { useSettings } from '@/storage/SettingsContext';
@@ -21,11 +21,11 @@ import {
 } from '@/utils/database';
 import { fetchProductByEAN } from '@/utils/fetchFoodData';
 import { syncHealthConnectData } from '@/utils/healthConnect';
+import { getRecentFood } from '@/utils/storage';
 import { safeToFixed } from '@/utils/string';
 import { FitnessGoalsReturnType, MusclogApiFoodInfoType, UserNutritionDecryptedReturnType } from '@/utils/types';
 import { getDisplayFormattedWeight } from '@/utils/unit';
 import { FontAwesome5 } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationProp } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
 import { CameraView, useCameraPermissions } from 'expo-camera';
@@ -173,7 +173,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     }, [checkReadIsPermitted, checkWriteIsPermitted, getHealthData, insertHealthData, loadConsumed]);
 
     const loadRecentFood = useCallback(async () => {
-        const recentFoodIds: number[] = JSON.parse(await AsyncStorage.getItem(RECENT_FOOD) || '[]');
+        const recentFoodIds = await getRecentFood();
 
         const foods = await getAllFoodsByIds(recentFoodIds);
 
