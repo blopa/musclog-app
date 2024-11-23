@@ -517,7 +517,11 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
                 <WorkoutModal
                     onClose={() => {
                         setLoading(true);
-                        fetchWorkout().then(() => {
+                        fetchWorkout().finally(() => {
+                            setLoading(false);
+                            setModalVisible(false);
+                        }).catch((err) => {
+                            console.error('Failed to close workout modal:', err);
                             setLoading(false);
                             setModalVisible(false);
                         });

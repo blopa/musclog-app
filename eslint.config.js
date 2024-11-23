@@ -10,6 +10,7 @@ module.exports = [
     ...compat.extends('plugin:regexp/recommended'),
     ...compat.extends('plugin:@typescript-eslint/recommended'),
     ...compat.extends('plugin:perfectionist/recommended-natural-legacy'),
+    ...compat.extends('plugin:promise/recommended'),
 
     // TypeScript-specific configuration
     {
@@ -58,6 +59,7 @@ module.exports = [
     {
         plugins: {
             perfectionist: require('eslint-plugin-perfectionist'),
+            promise: require('eslint-plugin-promise'),
             react: require('eslint-plugin-react'),
             'react-hooks': require('eslint-plugin-react-hooks'),
             regexp: require('eslint-plugin-regexp'),

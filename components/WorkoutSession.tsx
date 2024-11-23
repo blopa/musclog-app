@@ -336,7 +336,7 @@ const WorkoutSession = ({
     const handleFinishWorkout = useCallback(() => {
         setLoading(true);
         // finish the exercise and the workout
-        finishExercise().then(async () => {
+        finishExercise().finally(async () => {
             await resetWorkoutStorageData();
 
             setIsFinishWorkoutModalVisible(false);
@@ -354,6 +354,9 @@ const WorkoutSession = ({
                     useNativeDriver: true,
                 }),
             ]).start();
+        }).catch((error) => {
+            console.error('Failed to finish workout:', error);
+            setLoading(false);
         });
     }, [fadeAnim, finishExercise, slideAnim]);
 
@@ -530,7 +533,7 @@ const WorkoutSession = ({
                 />
             )}
             {!isResting && (
-                <>
+                <View>
                     <Button
                         disabled={loading}
                         mode="contained"
@@ -555,7 +558,7 @@ const WorkoutSession = ({
                     >
                         {finishButtonText}
                     </Button>
-                </>
+                </View>
             )}
             {isResting ? (
                 <NextSetPreview

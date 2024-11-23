@@ -121,8 +121,11 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
                     method: 'GET',
                     ...Platform.OS === 'web' ? { mode: 'no-cors' } : {},
                 }
-            ).then(() => {
+            ).finally(() => {
                 console.log('Request done');
+            }).catch((error) => {
+                console.error('Failed to submit to Google Forms', error);
+                Alert.alert(t('error'), t('failed_to_submit_form'));
             });
 
             setIsModalVisible(true);

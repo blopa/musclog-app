@@ -179,6 +179,7 @@ fs.readdir(localesDir, (err, files) => {
         });
 
         eslint.lintText(output).then((lintResults) => {
+            // eslint-disable-next-line promise/always-return
             const lintedOutput = lintResults[0].output || output;
 
             // Write the output to the lang.ts file

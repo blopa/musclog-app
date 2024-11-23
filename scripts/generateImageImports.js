@@ -44,7 +44,9 @@ const eslint = new ESLint({
     fix: true,
 });
 
+// eslint-disable-next-line promise/catch-or-return
 eslint.lintText(output).then((lintResults) => {
+    // eslint-disable-next-line promise/always-return
     const lintedOutput = lintResults[0].output || output;
 
     fs.writeFileSync(outputFilePath, lintedOutput);
