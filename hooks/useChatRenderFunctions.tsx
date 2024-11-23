@@ -317,7 +317,7 @@ const useChatRenderFunctions = () => {
         const { currentMessage, nextMessage } = props;
         const isBotMessage = currentMessage?.user._id !== 1; // TODO: for now user id is always 1
         const isLastMessage = isEmptyObject(nextMessage);
-        let quickReplies = undefined;
+        let quickReplies;
 
         if (currentMessage?.custom && currentMessage.custom.recentWorkoutId) {
             const recentWorkoutId = Number(currentMessage.custom.recentWorkoutId);

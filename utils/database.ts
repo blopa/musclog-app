@@ -2840,7 +2840,7 @@ export const restoreDatabase = async (dump: string, decryptionPhrase?: string): 
             if (tableName === 'Versioning') {
                 continue;
             }
-            
+
             if (!(await tableExists(tableName))) {
                 console.log(`Table ${tableName} does not exist, creating it...`);
                 continue;
@@ -2952,7 +2952,7 @@ export const restoreDatabase = async (dump: string, decryptionPhrase?: string): 
                 }
 
                 const query = `INSERT INTO "${tableName}" (${columns}) VALUES (${values})`;
-                
+
                 // if (tableName === 'Set') {
                 //     console.log(`Running query: ${query}`);
                 // }

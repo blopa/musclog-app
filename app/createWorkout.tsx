@@ -990,7 +990,7 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
             )}
         </Screen>
     );
-};
+}
 
 const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
     addSetButton: {

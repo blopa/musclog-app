@@ -29,9 +29,11 @@ const CurrentWorkoutProgressModal: React.FC<PreviousSetDataModalProps> = ({
     const windowHeight = Dimensions.get('window').height;
 
     // Map remainingWorkoutData sets by their set IDs for quick lookup
-    const remainingSetIds = new Set(
-        remainingWorkoutData.flatMap((exercise) => exercise.sets.map((set) => set.id))
-    );
+    const remainingSetIds = useMemo(()=> {
+        return new Set(
+            remainingWorkoutData.flatMap((exercise) => exercise.sets.map((set) => set.id))
+        );
+    }, [remainingWorkoutData]);
 
     // Group completedWorkoutData by supersetName and then by exerciseName
     const groupedCompletedData = useMemo(() => {

@@ -318,7 +318,7 @@ export async function estimateNutritionFromPhoto(photoUri: string) {
     }
 
     return jsonResponse;
-};
+}
 
 export async function extractMacrosFromLabelPhoto(photoUri: string) {
     const apiKey = await getApiKey();

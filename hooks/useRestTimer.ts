@@ -76,7 +76,7 @@ const useRestTimer = (): UseRestTimerReturnType => {
         setRestTime(0);
         await removeStoredStartTime();
     }, [removeStoredStartTime]);
-    
+
     const forceStartCountdown = useCallback(async (waitTime: number, existingStartTime: null | number = null) => {
         const startTime = existingStartTime || Date.now();
         await removeStoredStartTime();

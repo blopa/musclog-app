@@ -50,15 +50,15 @@ export async function exportWorkout(workoutId: number) {
     const workoutWithDetails = await getWorkoutWithExercisesRepsAndSetsDetails(workoutId);
     const fileName = `${getCurrentTimestamp()}-workout_export.json`;
     const jsonString = JSON.stringify(workoutWithDetails);
-    
+
     const blob = new Blob([jsonString], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
-    
+
     const a = document.createElement('a');
     a.href = url;
     a.download = fileName;
     a.click();
-    
+
     URL.revokeObjectURL(url);
 }
 
@@ -89,6 +89,7 @@ export async function importDatabase() {
     input.accept = 'application/json';
 
     input.onchange = async (event) => {
+        // eslint-disable-next-line no-undef
         const file = (event.target as HTMLInputElement).files?.[0];
         if (file) {
             const reader = new FileReader();

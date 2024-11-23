@@ -168,7 +168,7 @@ const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
 
             // Group exercises into supersets based on supersetName
             const groupedExercises: ExerciseGroup[] = [];
-            let currentSupersetName: string | undefined = undefined;
+            let currentSupersetName: string | undefined;
             let currentGroup: ExerciseGroup | null = null;
 
             exercisesWithSets.forEach(({ exercise, sets }) => {

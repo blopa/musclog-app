@@ -7,12 +7,12 @@ import {
 
 export const mapProductData = (product: PaginatedOpenFoodFactsApiFoodProductInfoType): MusclogApiFoodInfoType => {
     return {
-        carbs: product.nutriments['carbohydrates_100g'] || 0,
+        carbs: product.nutriments.carbohydrates_100g || 0,
         ean: product.code,
-        fat: product.nutriments['fat_100g'] || 0,
+        fat: product.nutriments.fat_100g || 0,
         kcal: product.nutriments['energy-kcal_100g'] || 0,
         productTitle: product.product_name || 'Unknown Food',
-        protein: product.nutriments['proteins_100g'] || 0,
+        protein: product.nutriments.proteins_100g || 0,
     };
 };
 

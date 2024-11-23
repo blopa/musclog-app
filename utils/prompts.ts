@@ -396,7 +396,7 @@ export const getCalculateNextWorkoutVolumePrompt = async (workout: WorkoutReturn
 
         return [];
     };
-    
+
     return [
         {
             content: [

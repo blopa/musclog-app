@@ -1039,7 +1039,7 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
 
         return actions;
     }, [colors.primary, colors.surface, handleGetAiInsights, handleSyncHealthConnect, navigation, isAiEnabled, t]);
-    
+
     // TODO one day do this
     // return (
     //     <UserFitnessReport

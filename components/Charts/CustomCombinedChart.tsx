@@ -126,7 +126,7 @@ const CustomCombinedChart: React.FC<CustomCombinedChartProps> = ({
                         dragEnabled={false}
                         highlightPerDragEnabled={false}
                         highlightPerTapEnabled={true}
-                        legend={{ 
+                        legend={{
                             custom: customLegend ? {
                                 colors: customLegend.colors?.map((color) => processColor(color)),
                                 labels: customLegend.labels,

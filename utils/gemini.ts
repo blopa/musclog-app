@@ -734,17 +734,16 @@ export async function estimateNutritionFromPhoto(photoUri: string) {
         };
     } catch (e) {
         console.error(e);
-        return Promise.resolve(null);
-    }
 
-    return {
-        calories: 0,
-        carbs: 0,
-        fat: 0,
-        grams: 0,
-        name: '',
-        protein: 0,
-    };
+        return {
+            calories: 0,
+            carbs: 0,
+            fat: 0,
+            grams: 0,
+            name: '',
+            protein: 0,
+        };
+    }
 }
 
 export async function extractMacrosFromLabelPhoto(photoUri: string) {

@@ -30,7 +30,7 @@ import { NavigationProp } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useFocusEffect } from 'expo-router';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
     Dimensions,
@@ -112,12 +112,12 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         }
     }, []);
 
-    const mealCategories = [
+    const mealCategories = useMemo(() => [
         { icon: '🍳', name: t('breakfast') },
         { icon: '🥪', name: t('lunch') },
         { icon: '🍽️', name: t('dinner') },
         { icon: '🍎', name: t('snacks') },
-    ];
+    ], [t]);
 
     const calculatePercentage = (consumedAmount: number, goalAmount: number) => {
         if (goalAmount === 0) {

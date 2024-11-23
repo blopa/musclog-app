@@ -5,9 +5,11 @@ import { useEffect, useState } from 'react';
 // TODO: maybe use useAsyncStorage here
 const useWorkoutTimer = (startTime: null | number) => {
     const [workoutTime, setWorkoutTime] = useState(0);
+    // eslint-disable-next-line no-undef
     const [intervalTimer, setIntervalTimer] = useState<NodeJS.Timeout | undefined>(undefined);
 
     useEffect(() => {
+        // eslint-disable-next-line no-undef
         let interval: NodeJS.Timeout;
         const initializeWorkoutTime = async () => {
             if (!startTime) {

@@ -457,6 +457,7 @@ function invisibleMessagesLoadingFix() {
     if (Platform.OS === 'web') {
         const gcLoadingContaineEl = document.querySelectorAll(
             '[data-testid="GC_LOADING_CONTAINER"]'
+            // eslint-disable-next-line no-undef
         )[0] as HTMLElement;
 
         if (gcLoadingContaineEl) {

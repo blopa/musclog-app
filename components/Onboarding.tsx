@@ -269,7 +269,7 @@ const Onboarding = ({ onFinish }: OnboardingProps) => {
         }
 
         const formattedText = formatFloatNumericInputText(text);
-        
+
         if (formattedText) {
             setForm({ ...form, [key]: formattedText });
         }
