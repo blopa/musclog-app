@@ -1,3 +1,5 @@
+import type { ChatCompletionMessageParam } from 'openai/resources';
+
 import { EXERCISE_IMAGE_GENERATION_TYPE, GEMINI_API_KEY_TYPE } from '@/constants/storage';
 import i18n from '@/lang/lang';
 import { getSetting, processWorkoutPlan } from '@/utils/database';
@@ -46,6 +48,26 @@ const safetySettings = [
     { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
 ];
 
+const configureBasicGenAI = (apiKey: string, systemParts: Part[]) => {
+    const genAI = new GoogleGenerativeAI(apiKey);
+
+    return genAI.getGenerativeModel({
+        model: GEMINI_MODEL,
+        safetySettings,
+        systemInstruction: {
+            parts: systemParts,
+            role: 'system',
+        },
+    });
+};
+
+const createConversationContent = (messages: ChatCompletionMessageParam[]): Content[] =>
+    messages.filter((msg) => msg.role !== 'system')
+        .map((msg) => ({
+            parts: [{ text: msg.content } as Part],
+            role: msg.role === 'assistant' ? 'model' : msg.role,
+        }));
+
 export async function generateWorkoutPlan(messages: any[]): Promise<boolean> {
     const workoutPlanResponse = await createWorkoutPlan(messages);
 
@@ -69,21 +91,13 @@ export async function getNutritionInsights(startDate: string): Promise<string | 
         return;
     }
 
-    const genAI = new GoogleGenerativeAI(apiKey);
     const prompt = await getNutritionInsightsPrompt(startDate);
 
     const systemParts: Part[] = prompt
         .filter((msg) => msg.role === 'system')
         .map((msg) => ({ text: msg.content } as Part));
 
-    const model = genAI.getGenerativeModel({
-        model: GEMINI_MODEL,
-        safetySettings,
-        systemInstruction: {
-            parts: systemParts,
-            role: 'system',
-        },
-    });
+    const model = configureBasicGenAI(apiKey, systemParts);
 
     const generationConfig = {
         // maxOutputTokens: 2048,
@@ -92,12 +106,7 @@ export async function getNutritionInsights(startDate: string): Promise<string | 
         topP: 1,
     };
 
-    const conversationContent: Content[] = prompt
-        .filter((msg) => msg.role !== 'system')
-        .map((msg) => ({
-            parts: [{ text: msg.content } as Part],
-            role: msg.role === 'assistant' ? 'model' : msg.role,
-        }));
+    const conversationContent: Content[] = createConversationContent(prompt);
 
     try {
         const result = await model.generateContent({
@@ -126,12 +135,7 @@ export async function sendChatMessage(messages: any[]) {
 
     const genAI = new GoogleGenerativeAI(apiKey);
 
-    const conversationContent: Content[] = messages
-        .filter((msg) => msg.role !== 'system')
-        .map((msg) => ({
-            parts: [{ text: msg.content } as Part],
-            role: msg.role === 'assistant' ? 'model' : msg.role,
-        }));
+    const conversationContent: Content[] = createConversationContent(messages);
 
     const latestMessage = conversationContent.pop();
     const firstMessage = conversationContent.at(0);
@@ -208,12 +212,7 @@ async function createWorkoutPlan(messages: any[]) {
     const genAI = new GoogleGenerativeAI(apiKey);
     const prompt = await createWorkoutPlanPrompt(messagesToSend);
 
-    const conversationContent: Content[] = prompt
-        .filter((msg) => msg.role !== 'system')
-        .map((msg) => ({
-            parts: [{ text: msg.content } as Part],
-            role: msg.role === 'assistant' ? 'model' : msg.role,
-        }));
+    const conversationContent: Content[] = createConversationContent(prompt);
 
     const systemParts: Part[] = prompt
         .filter((msg) => msg.role === 'system')
@@ -274,12 +273,7 @@ export const calculateNextWorkoutVolume = async (workout: WorkoutReturnType) => 
     const genAI = new GoogleGenerativeAI(apiKey);
     const prompt = await getCalculateNextWorkoutVolumePrompt(workout);
 
-    const conversationContent: Content[] = prompt
-        .filter((msg) => msg.role !== 'system')
-        .map((msg) => ({
-            parts: [{ text: msg.content } as Part],
-            role: msg.role === 'assistant' ? 'model' : msg.role,
-        }));
+    const conversationContent: Content[] = createConversationContent(prompt);
 
     const systemParts: Part[] = prompt
         .filter((msg) => msg.role === 'system')
@@ -343,12 +337,7 @@ export const generateExerciseImage = async (exerciseName: string): Promise<strin
         return 'https://via.placeholder.com/300';
     }
 
-    const genAI = new GoogleGenerativeAI(apiKey);
-
-    const model = genAI.getGenerativeModel({
-        model: GEMINI_MODEL,
-        safetySettings,
-    });
+    const model = configureBasicGenAI(apiKey, []);
 
     const generationConfig = {
         // maxOutputTokens: 2048,
@@ -396,12 +385,7 @@ export const parsePastWorkouts = async (userMessage: string) => {
     const genAI = new GoogleGenerativeAI(apiKey);
     const prompt = await getParsePastWorkoutsPrompt(userMessage);
 
-    const conversationContent: Content[] = prompt
-        .filter((msg) => msg.role !== 'system')
-        .map((msg) => ({
-            parts: [{ text: msg.content } as Part],
-            role: msg.role === 'assistant' ? 'model' : msg.role,
-        }));
+    const conversationContent: Content[] = createConversationContent(prompt);
 
     const systemParts: Part[] = prompt
         .filter((msg) => msg.role === 'system')
@@ -461,12 +445,7 @@ export const parsePastNutrition = async (userMessage: string) => {
     const genAI = new GoogleGenerativeAI(apiKey);
     const prompt = await getParsePastNutritionPrompt(userMessage);
 
-    const conversationContent: Content[] = prompt
-        .filter((msg) => msg.role !== 'system')
-        .map((msg) => ({
-            parts: [{ text: msg.content } as Part],
-            role: msg.role === 'assistant' ? 'model' : msg.role,
-        }));
+    const conversationContent: Content[] = createConversationContent(prompt);
 
     const systemParts: Part[] = prompt
         .filter((msg) => msg.role === 'system')
@@ -524,21 +503,13 @@ export const getRecentWorkoutInsights = async (workoutEventId: number): Promise<
         return;
     }
 
-    const genAI = new GoogleGenerativeAI(apiKey);
     const prompt = await getRecentWorkoutInsightsPrompt(workoutEventId);
 
     const systemParts: Part[] = prompt
         .filter((msg) => msg.role === 'system')
         .map((msg) => ({ text: msg.content } as Part));
 
-    const model = genAI.getGenerativeModel({
-        model: GEMINI_MODEL,
-        safetySettings,
-        systemInstruction: {
-            parts: systemParts,
-            role: 'system',
-        },
-    });
+    const model = configureBasicGenAI(apiKey, systemParts);
 
     const generationConfig = {
         // maxOutputTokens: 2048,
@@ -547,12 +518,7 @@ export const getRecentWorkoutInsights = async (workoutEventId: number): Promise<
         topP: 1,
     };
 
-    const conversationContent: Content[] = prompt
-        .filter((msg) => msg.role !== 'system')
-        .map((msg) => ({
-            parts: [{ text: msg.content } as Part],
-            role: msg.role === 'assistant' ? 'model' : msg.role,
-        }));
+    const conversationContent: Content[] = createConversationContent(prompt);
 
     try {
         const result = await model.generateContent({
@@ -579,21 +545,13 @@ export const getWorkoutInsights = async (workoutId: number): Promise<string | un
         return;
     }
 
-    const genAI = new GoogleGenerativeAI(apiKey);
     const prompt = await getWorkoutInsightsPrompt(workoutId);
 
     const systemParts: Part[] = prompt
         .filter((msg) => msg.role === 'system')
         .map((msg) => ({ text: msg.content } as Part));
 
-    const model = genAI.getGenerativeModel({
-        model: GEMINI_MODEL,
-        safetySettings,
-        systemInstruction: {
-            parts: systemParts,
-            role: 'system',
-        },
-    });
+    const model = configureBasicGenAI(apiKey, systemParts);
 
     const generationConfig = {
         // maxOutputTokens: 2048,
@@ -602,12 +560,7 @@ export const getWorkoutInsights = async (workoutId: number): Promise<string | un
         topP: 1,
     };
 
-    const conversationContent: Content[] = prompt
-        .filter((msg) => msg.role !== 'system')
-        .map((msg) => ({
-            parts: [{ text: msg.content } as Part],
-            role: msg.role === 'assistant' ? 'model' : msg.role,
-        }));
+    const conversationContent: Content[] = createConversationContent(prompt);
 
     try {
         const result = await model.generateContent({
@@ -634,21 +587,13 @@ export const getWorkoutVolumeInsights = async (workoutId: number): Promise<strin
         return;
     }
 
-    const genAI = new GoogleGenerativeAI(apiKey);
     const prompt = await getWorkoutVolumeInsightsPrompt(workoutId);
 
     const systemParts: Part[] = prompt
         .filter((msg) => msg.role === 'system')
         .map((msg) => ({ text: msg.content } as Part));
 
-    const model = genAI.getGenerativeModel({
-        model: GEMINI_MODEL,
-        safetySettings,
-        systemInstruction: {
-            parts: systemParts,
-            role: 'system',
-        },
-    });
+    const model = configureBasicGenAI(apiKey, systemParts);
 
     const generationConfig = {
         // maxOutputTokens: 2048,
@@ -657,12 +602,7 @@ export const getWorkoutVolumeInsights = async (workoutId: number): Promise<strin
         topP: 1,
     };
 
-    const conversationContent: Content[] = prompt
-        .filter((msg) => msg.role !== 'system')
-        .map((msg) => ({
-            parts: [{ text: msg.content } as Part],
-            role: msg.role === 'assistant' ? 'model' : msg.role,
-        }));
+    const conversationContent: Content[] = createConversationContent(prompt);
 
     try {
         const result = await model.generateContent({
@@ -843,10 +783,8 @@ export async function extractMacrosFromLabelPhoto(photoUri: string) {
 }
 
 export async function isAllowedLocation(apiKey: string): Promise<boolean> {
-    const genAI = new GoogleGenerativeAI(apiKey);
-
     try {
-        const model = genAI.getGenerativeModel({ model: GEMINI_MODEL });
+        const model = configureBasicGenAI(apiKey, []);
 
         await model.generateContent({
             contents: [{ parts: [{ text: 'hi' } as Part], role: 'user' }],
@@ -871,10 +809,8 @@ export async function isAllowedLocation(apiKey: string): Promise<boolean> {
 }
 
 export async function isValidApiKey(apiKey: string): Promise<boolean> {
-    const genAI = new GoogleGenerativeAI(apiKey);
-
     try {
-        const model = genAI.getGenerativeModel({ model: GEMINI_MODEL });
+        const model = configureBasicGenAI(apiKey, []);
 
         await model.generateContent({
             contents: [{ parts: [{ text: 'hi' } as Part], role: 'user' }],
