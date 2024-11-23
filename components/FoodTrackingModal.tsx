@@ -20,6 +20,7 @@ import { ActivityIndicator, Text, useTheme } from 'react-native-paper';
 
 export type FoodTrackingType = {
     carbs: number;
+    estimatedGrams?: number;
     fat: number;
     grams?: number;
     kcal: number;
@@ -29,6 +30,7 @@ export type FoodTrackingType = {
 };
 
 type FoodTrackingModalProps = {
+    allowEditName?: boolean;
     food: FoodTrackingType | null;
     isLoading?: boolean;
     onClose: () => void;
@@ -40,6 +42,7 @@ type FoodTrackingModalProps = {
 const GRAM_BASE = 100;
 
 const FoodTrackingModal = ({
+    allowEditName = false,
     food,
     isLoading = false,
     onClose,
@@ -52,6 +55,7 @@ const FoodTrackingModal = ({
     const styles = makeStyles(colors, dark);
     const [unitAmount, setUnitAmount] = useState(GRAM_BASE.toString());
     const [mealType, setMealType] = useState('0');
+    const [editableName, setEditableName] = useState(food?.productTitle || '');
 
     const { unitSystem } = useUnit();
     const isImperial = unitSystem === IMPERIAL_SYSTEM;
@@ -111,7 +115,7 @@ const FoodTrackingModal = ({
             fat: calculatedValues.fat,
             grams: parseFloat(unitAmount),
             mealType: parseInt(mealType, 10),
-            name: food?.productTitle || t('unknown_food'),
+            name: editableName || t('unknown_food'),
             protein: calculatedValues.protein,
             source: USER_METRICS_SOURCES.USER_INPUT,
             type: NUTRITION_TYPES.MEAL,
@@ -138,7 +142,6 @@ const FoodTrackingModal = ({
                 totalCarbohydrate: normalizedMacros.carbs,
                 totalFat: normalizedMacros.fat,
                 // TODO: add the rest of the fields
-                // productCode: userNutrition.ean,
             };
 
             const existingFood = await getFoodByNameAndMacros(
@@ -160,7 +163,19 @@ const FoodTrackingModal = ({
         }
 
         onClose();
-    }, [calculatedValues.kcal, calculatedValues.carbs, calculatedValues.fat, calculatedValues.protein, unitAmount, mealType, food?.productTitle, food?.productCode, t, userNutritionId, onClose]);
+    }, [calculatedValues.kcal, calculatedValues.carbs, calculatedValues.fat, calculatedValues.protein, unitAmount, mealType, editableName, food?.productCode, t, userNutritionId, onClose]);
+
+    useEffect(() => {
+        if (food) {
+            if (allowEditName) {
+                setEditableName(food.productTitle);
+            }
+
+            if (food.estimatedGrams) {
+                handleSetUnitAmount(food.estimatedGrams.toString());
+            }
+        }
+    }, [allowEditName, food, handleSetUnitAmount]);
 
     return (
         <ThemedModal
@@ -168,12 +183,20 @@ const FoodTrackingModal = ({
             confirmText={userNutritionId ? t('update') : t('track')}
             onClose={onClose}
             onConfirm={handleTrackFood}
-            title={food?.productTitle || ''}
+            title={allowEditName ? '' : editableName}
             visible={visible}
         >
             <ScrollView>
                 {food && !isLoading && (
                     <View style={styles.foodTrackingForm}>
+                        {allowEditName ? (
+                            <CustomTextInput
+                                label={t('name')}
+                                onChangeText={setEditableName}
+                                placeholder={t('enter_food_name')}
+                                value={editableName}
+                            />
+                        ) : null}
                         <CustomTextInput
                             keyboardType="numeric"
                             label={t('grams')}

@@ -75,6 +75,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const [showBarcodeCamera, setShowBarcodeCamera] = useState(false);
     const [showPhotoCamera, setShowPhotoCamera] = useState(false);
     const [isAiEnabled, setIsAiEnabled] = useState<boolean>(false);
+    const [allowEditName, setAllowEditName] = useState<boolean>(false);
 
     // Reference to the photo camera
     const photoCameraRef = useRef(null);
@@ -199,6 +200,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
             protein: 0,
         });
         setConsumedFoods([]);
+        setAllowEditName(false);
     }, []);
 
     useFocusEffect(
@@ -496,8 +498,10 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
                         setSelectedFood({
                             ...normalizedMacros,
+                            estimatedGrams: macros.grams,
                             productTitle: macros.name,
                         });
+                        setAllowEditName(true);
                     }
                 } else {
                     const macros = await extractMacrosFromLabelPhoto(photo.uri);
@@ -514,6 +518,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                             ...normalizedMacros,
                             productTitle: macros.name,
                         });
+                        setAllowEditName(true);
                     }
                 }
 
@@ -527,6 +532,15 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const handleFoodSearch = useCallback(() => {
         navigation.navigate('foodSearch', { initialSearchQuery: searchQuery });
     }, [navigation, searchQuery]);
+
+    const handleCloseTrackingModal = useCallback(() => {
+        setIsNutritionModalVisible(false);
+        setSelectedFood(null);
+        setUserNutritionId(null);
+        setAllowEditName(false);
+
+        loadConsumed();
+    }, [loadConsumed]);
 
     const renderScannerOverlay = useCallback(() => (
         <View style={styles.scannerOverlayContainer}>
@@ -650,14 +664,10 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 </View>
             ) : null}
             <FoodTrackingModal
+                allowEditName={allowEditName}
                 food={selectedFood}
                 isLoading={isLoading}
-                onClose={() => {
-                    setIsNutritionModalVisible(false);
-                    setSelectedFood(null);
-                    setUserNutritionId(null);
-                    loadConsumed();
-                }}
+                onClose={handleCloseTrackingModal}
                 userNutritionId={userNutritionId}
                 visible={isNutritionModalVisible}
             />

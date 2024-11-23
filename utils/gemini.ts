@@ -21,6 +21,7 @@ import {
     getCalculateNextWorkoutVolumeFunctions,
     getCalculateNextWorkoutVolumePrompt,
     getCreateWorkoutPlanFunctions,
+    getMacrosEstimationFunctions,
     getNutritionInsightsPrompt,
     getParsePastNutritionFunctions,
     getParsePastNutritionPrompt,
@@ -691,28 +692,48 @@ export async function estimateNutritionFromPhoto(photoUri: string) {
 
     const genAI = new GoogleGenerativeAI(apiKey);
 
+    const functionDeclarations = getMacrosEstimationFunctions(
+        'Extracts the macronutrients of a food label from a photo',
+        'extracted'
+    ) as FunctionDeclaration[];
+    const tools: Tool[] = [{ functionDeclarations }];
+
     const model = genAI.getGenerativeModel({
         model: GEMINI_MODEL,
         safetySettings,
+        systemInstruction: {
+            parts: [{
+                text: [
+                    'You are a very powerful AI, trained to extract the macronutrients of a food label from the photo provided',
+                    'Use OCR to extract the text from the image, then parse the text to extract the macronutrients.',
+                ].join('\n'),
+            }],
+            role: 'system',
+        },
+        toolConfig: {
+            functionCallingConfig: {
+                allowedFunctionNames: functionDeclarations.map((f) => f.name),
+                mode: 'ANY',
+            },
+        } as ToolConfig,
+        tools,
     });
 
     try {
         const result = await model.generateContent({
-            contents: [
-                {
-                    parts: [{
-                        text: [
-                            'You are a very powerful AI, trained to estimate the macronutrients of a food/meal from the photo provided',
-                        ].join('\n'),
-                    }, {
-                        inline_data: {
-                            data: base64Image,
-                            mime_type: 'image/jpeg',
-                        },
-                    }],
-                    role: 'user',
-                },
-            ],
+            contents: [{
+                parts: [{
+                    text: [
+                        'Please estimate the macronutrients of the food/meal from the photo provided',
+                    ].join('\n'),
+                }, {
+                    inline_data: {
+                        data: base64Image,
+                        mime_type: 'image/jpeg',
+                    },
+                }],
+                role: 'user',
+            }],
             generationConfig: {
                 maxOutputTokens: 1024,
                 temperature: 0.7,
@@ -726,15 +747,14 @@ export async function estimateNutritionFromPhoto(photoUri: string) {
             return null;
         }
 
-        debugger;
-        const response = JSON.parse(result.response.candidates?.[0]?.content?.parts?.[0]?.text || '{}');
         return {
-            calories: response.calories || 0,
-            carbs: response.carbs || 0,
-            fat: response.fat || 0,
-            grams: response.grams || 0,
-            name: response.name || '',
-            protein: response.protein || 0,
+            calories: 0,
+            carbs: 0,
+            fat: 0,
+            grams: 0,
+            name: '',
+            protein: 0,
+            ...result?.response?.candidates?.[0]?.content?.parts?.[0]?.functionCall?.args,
         };
     } catch (error) {
         console.error('Error estimating nutrition from photo:', error);
@@ -752,30 +772,48 @@ export async function extractMacrosFromLabelPhoto(photoUri: string) {
 
     const genAI = new GoogleGenerativeAI(apiKey);
 
+    const functionDeclarations = getMacrosEstimationFunctions(
+        'Extracts the macronutrients of a food label from a photo',
+        'extracted'
+    ) as FunctionDeclaration[];
+    const tools: Tool[] = [{ functionDeclarations }];
+
     const model = genAI.getGenerativeModel({
         model: GEMINI_MODEL,
         safetySettings,
+        systemInstruction: {
+            parts: [{
+                text: [
+                    'You are a very powerful AI, trained to extract the macronutrients of a food label from the photo provided',
+                    'Use OCR to extract the text from the image, then parse the text to extract the macronutrients.',
+                ].join('\n'),
+            }],
+            role: 'system',
+        },
+        toolConfig: {
+            functionCallingConfig: {
+                allowedFunctionNames: functionDeclarations.map((f) => f.name),
+                mode: 'ANY',
+            },
+        } as ToolConfig,
+        tools,
     });
 
     try {
         const result = await model.generateContent({
-            contents: [
-                {
-                    parts: [{
-                        text: [
-                            'You are a very powerful AI, trained to extract the macronutrients of a food label from the photo provided',
-                            'Use OCR to extract the text from the image, then parse the text to extract the macronutrients.',
-                        ].join('\n'),
+            contents: [{
+                parts: [{
+                    text: [
+                        'Please extract the macronutrients of the food label from the photo provided.',
+                    ].join('\n'),
+                }, {
+                    inline_data: {
+                        data: base64Image,
+                        mime_type: 'image/jpeg',
                     },
-                    {
-                        inline_data: {
-                            data: base64Image,
-                            mime_type: 'image/jpeg',
-                        },
-                    }],
-                    role: 'user',
-                },
-            ],
+                }],
+                role: 'user',
+            }],
             generationConfig: {
                 maxOutputTokens: 1024,
                 temperature: 0.7,
@@ -789,14 +827,14 @@ export async function extractMacrosFromLabelPhoto(photoUri: string) {
             return null;
         }
 
-        const response = JSON.parse(result.response.candidates?.[0]?.content?.parts?.[0]?.text || '{}');
         return {
-            calories: response.calories || 0,
-            carbs: response.carbs || 0,
-            fat: response.fat || 0,
-            grams: response.grams || 0,
-            name: response.name || '',
-            protein: response.protein || 0,
+            calories: 0,
+            carbs: 0,
+            fat: 0,
+            grams: 0,
+            name: '',
+            protein: 0,
+            ...result?.response?.candidates?.[0]?.content?.parts?.[0]?.functionCall?.args,
         };
     } catch (error) {
         console.error('Error extracting macros from label photo:', error);
