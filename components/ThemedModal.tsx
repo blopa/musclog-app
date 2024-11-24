@@ -1,7 +1,14 @@
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
-import React, { memo, useCallback, useState } from 'react';
-import { StyleSheet, TouchableWithoutFeedback, View, ViewStyle } from 'react-native';
-import { Button, Modal, Portal, Text, useTheme } from 'react-native-paper';
+import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
+import {
+    Animated,
+    Easing,
+    StyleSheet,
+    TouchableWithoutFeedback,
+    View,
+    ViewStyle,
+} from 'react-native';
+import { Button, Portal, Text, useTheme } from 'react-native-paper';
 
 interface ThemedModalProps {
     cancelText?: string;
@@ -26,9 +33,32 @@ const ThemedModal = ({
     title,
     visible,
 }: ThemedModalProps) => {
+    const [isVisible, setIsVisible] = useState(visible);
     const [isLoading, setIsLoading] = useState(false);
+
     const { colors, dark } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors, dark);
+
+    const translateY = useRef(new Animated.Value(300)).current;
+
+    useEffect(() => {
+        if (visible) {
+            setIsVisible(true);
+            Animated.timing(translateY, {
+                duration: 300,
+                easing: Easing.out(Easing.ease),
+                toValue: 0,
+                useNativeDriver: true,
+            }).start();
+        } else {
+            Animated.timing(translateY, {
+                duration: 300,
+                easing: Easing.in(Easing.ease),
+                toValue: 300,
+                useNativeDriver: true,
+            }).start(() => setIsVisible(false));
+        }
+    }, [visible, translateY]);
 
     const handleOnConfirm = useCallback(async () => {
         setIsLoading(true);
@@ -47,59 +77,67 @@ const ThemedModal = ({
         }
     }, [closeOnTouchOutside, handleOnClose]);
 
+    if (!isVisible) {
+        return null;
+    }
+
     return (
         <Portal>
-            {visible && (
-                <TouchableWithoutFeedback
-                    accessible={false} // Prevent the overlay from interfering with accessibility
-                    onPress={handleDismissOnOverlayPress}
-                >
-                    <View style={styles.overlay}>
-                        <Modal
-                            contentContainerStyle={[styles.modalContent, style]}
-                            dismissable={false} // We handle dismissal ourselves
-                            visible={visible}
-                        >
-                            <View style={styles.innerContent}>
-                                {title && (
-                                    <Text style={styles.modalMessage}>{title}</Text>
+            <TouchableWithoutFeedback
+                accessible={false}
+                onPress={handleDismissOnOverlayPress}
+            >
+                <View style={styles.overlay}>
+                    <Animated.View
+                        style={[
+                            styles.animatedContainer,
+                            { transform: [{ translateY }] },
+                        ]}
+                    >
+                        <View style={[styles.modalContent, style]}>
+                            {title && (
+                                <Text style={styles.modalMessage}>{title}</Text>
+                            )}
+                            {children}
+                            <View style={styles.buttonContainer}>
+                                {cancelText && (
+                                    <Button
+                                        disabled={isLoading}
+                                        mode="outlined"
+                                        onPress={handleOnClose}
+                                        style={[
+                                            styles.button,
+                                            !onConfirm ? styles.wideButton : {},
+                                        ]}
+                                    >
+                                        {cancelText}
+                                    </Button>
                                 )}
-                                {children}
-                                <View style={styles.buttonContainer}>
-                                    {cancelText && (
-                                        <Button
-                                            disabled={isLoading}
-                                            mode="outlined"
-                                            onPress={handleOnClose}
-                                            style={[
-                                                styles.button,
-                                                !onConfirm ? styles.wideButton : {},
-                                            ]}
-                                        >
-                                            {cancelText}
-                                        </Button>
-                                    )}
-                                    {confirmText && onConfirm && (
-                                        <Button
-                                            disabled={isLoading}
-                                            mode="contained"
-                                            onPress={handleOnConfirm}
-                                            style={styles.button}
-                                        >
-                                            {confirmText}
-                                        </Button>
-                                    )}
-                                </View>
+                                {confirmText && onConfirm && (
+                                    <Button
+                                        disabled={isLoading}
+                                        mode="contained"
+                                        onPress={handleOnConfirm}
+                                        style={styles.button}
+                                    >
+                                        {confirmText}
+                                    </Button>
+                                )}
                             </View>
-                        </Modal>
-                    </View>
-                </TouchableWithoutFeedback>
-            )}
+                        </View>
+                    </Animated.View>
+                </View>
+            </TouchableWithoutFeedback>
         </Portal>
     );
 };
 
 const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
+    animatedContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+    },
     button: {
         marginHorizontal: 5,
     },
@@ -108,12 +146,9 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         justifyContent: 'space-between',
         width: '100%',
     },
-    innerContent: {
-        width: '100%',
-    },
     modalContent: {
         alignItems: 'center',
-        alignSelf: 'center', // Center the modal horizontally
+        alignSelf: 'center',
         backgroundColor: colors.background,
         borderColor: colors.shadow,
         borderRadius: 8,
@@ -129,7 +164,7 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     },
     overlay: {
         alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent overlay
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
         flex: 1,
         justifyContent: 'center',
     },
