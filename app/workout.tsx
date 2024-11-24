@@ -104,6 +104,7 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
                             if (!supersetsMap[supersetName][set.exerciseId]) {
                                 supersetsMap[supersetName][set.exerciseId] = [];
                             }
+
                             supersetsMap[supersetName][set.exerciseId].push(set);
                         } else {
                             if (!standaloneSetsMap[set.exerciseId]) {
@@ -138,8 +139,14 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
                             (ex): ex is ExerciseReturnType => ex !== null && ex !== undefined
                         );
 
+                        const sortedValidExercises = validExercises.sort((a, b) => {
+                            const aFirstSetOrder = exercisesInSuperset[a.id][0]?.setOrder || 0;
+                            const bFirstSetOrder = exercisesInSuperset[b.id][0]?.setOrder || 0;
+                            return aFirstSetOrder - bFirstSetOrder;
+                        });
+
                         // Sort sets for each exercise by setOrder
-                        const sortedExerciseSets = validExercises.map((exercise) => ({
+                        const sortedExerciseSets = sortedValidExercises.map((exercise) => ({
                             exercise,
                             sets: exercisesInSuperset[exercise.id].sort((a, b) => a.setOrder - b.setOrder),
                         }));
