@@ -12,7 +12,9 @@ import {
     GoogleGenerativeAI,
     HarmBlockThreshold,
     HarmCategory,
+    ModelParams,
     Part,
+    StartChatParams,
     Tool,
     ToolConfig,
 } from '@google/generative-ai';
@@ -48,15 +50,103 @@ const safetySettings = [
     { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
 ];
 
-const configureBasicGenAI = (apiKey: string, systemParts: Part[]) => {
-    const genAI = new GoogleGenerativeAI(apiKey);
+const getGenerativeAI = async ({ accessToken, apiKey }: { accessToken?: string; apiKey?: string;}): Promise<GoogleGenerativeAI> => {
+    if (accessToken) {
+        return {
+            getGenerativeModel: ({ model, ...modelParams }: ModelParams) => {
+                return {
+                    generateContent: async (request: GenerateContentRequest) => {
+                        return await rawFetchGeminiApi(model, accessToken, {
+                            ...modelParams,
+                            ...request,
+                        });
+                    },
+                    startChat: ({ history }: StartChatParams) => {
+                        return {
+                            sendMessage: async (request: string) => {
+                                return await rawFetchGeminiApi(model, accessToken, {
+                                    ...modelParams,
+                                    contents: [
+                                        ...(history || []),
+                                        { parts: [{ text: request } as Part], role: 'user' },
+                                    ],
+                                });
+                            },
+                        };
+                    },
+                };
+            },
+        } as unknown as GoogleGenerativeAI;
+    }
+
+    if (apiKey) {
+        return new GoogleGenerativeAI(apiKey);
+    }
+
+    return {
+        getGenerativeModel: (modelParams: ModelParams) => {
+            return {
+                generateContent: async (request: GenerateContentRequest) => {
+                    Sentry.captureMessage('No API key or access token provided for generative AI');
+                    return {
+                        response: null,
+                        status: 401,
+                    };
+                },
+                startChat: async (startChatParams: StartChatParams) => {
+                    return {
+                        sendMessage: async (request: string) => {
+                            Sentry.captureMessage('No API key or access token provided for generative AI');
+                            return {
+                                response: {},
+                                status: 401,
+                            };
+                        },
+                    };
+                },
+            };
+        },
+    } as unknown as GoogleGenerativeAI;
+};
+
+const rawFetchGeminiApi = async (model: string, accessToken: string, body: any) => {
+    const result = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`
+        , {
+            body: JSON.stringify(body),
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json',
+            },
+            method: 'POST',
+        });
+
+    if (result.ok) {
+        const data = await result.json();
+
+        return {
+            response: data,
+            status: result.status,
+        };
+    }
+
+    return {
+        response: null,
+        status: result.status,
+    };
+};
+
+const configureBasicGenAI = async (apiKey: string, systemParts?: Part[]) => {
+    const genAI = await getGenerativeAI({ apiKey });
 
     return genAI.getGenerativeModel({
         model: GEMINI_MODEL,
         safetySettings,
-        systemInstruction: {
-            parts: systemParts,
-            role: 'system',
+        ... systemParts && {
+            systemInstruction: {
+                parts: systemParts,
+                role: 'system',
+            },
         },
     });
 };
@@ -97,7 +187,7 @@ export async function getNutritionInsights(startDate: string): Promise<string | 
         .filter((msg) => msg.role === 'system')
         .map((msg) => ({ text: msg.content } as Part));
 
-    const model = configureBasicGenAI(apiKey, systemParts);
+    const model = await configureBasicGenAI(apiKey, systemParts);
 
     const generationConfig = {
         // maxOutputTokens: 2048,
@@ -133,7 +223,7 @@ export async function sendChatMessage(messages: any[]) {
         return;
     }
 
-    const genAI = new GoogleGenerativeAI(apiKey);
+    const genAI = await getGenerativeAI({ apiKey });
 
     const conversationContent: Content[] = createConversationContent(messages);
 
@@ -209,7 +299,7 @@ async function createWorkoutPlan(messages: any[]) {
     }
 
     const messagesToSend = messages.length > 20 ? messages.slice(0, 20) : messages;
-    const genAI = new GoogleGenerativeAI(apiKey);
+    const genAI = await getGenerativeAI({ apiKey });
     const prompt = await createWorkoutPlanPrompt(messagesToSend);
 
     const conversationContent: Content[] = createConversationContent(prompt);
@@ -270,7 +360,7 @@ export const calculateNextWorkoutVolume = async (workout: WorkoutReturnType) => 
         return;
     }
 
-    const genAI = new GoogleGenerativeAI(apiKey);
+    const genAI = await getGenerativeAI({ apiKey });
     const prompt = await getCalculateNextWorkoutVolumePrompt(workout);
 
     const conversationContent: Content[] = createConversationContent(prompt);
@@ -337,7 +427,7 @@ export const generateExerciseImage = async (exerciseName: string): Promise<strin
         return 'https://via.placeholder.com/300';
     }
 
-    const model = configureBasicGenAI(apiKey, []);
+    const model = await configureBasicGenAI(apiKey);
 
     const generationConfig = {
         // maxOutputTokens: 2048,
@@ -382,7 +472,7 @@ export const parsePastWorkouts = async (userMessage: string) => {
         return;
     }
 
-    const genAI = new GoogleGenerativeAI(apiKey);
+    const genAI = await getGenerativeAI({ apiKey });
     const prompt = await getParsePastWorkoutsPrompt(userMessage);
 
     const conversationContent: Content[] = createConversationContent(prompt);
@@ -442,7 +532,7 @@ export const parsePastNutrition = async (userMessage: string) => {
         return;
     }
 
-    const genAI = new GoogleGenerativeAI(apiKey);
+    const genAI = await getGenerativeAI({ apiKey });
     const prompt = await getParsePastNutritionPrompt(userMessage);
 
     const conversationContent: Content[] = createConversationContent(prompt);
@@ -509,7 +599,7 @@ export const getRecentWorkoutInsights = async (workoutEventId: number): Promise<
         .filter((msg) => msg.role === 'system')
         .map((msg) => ({ text: msg.content } as Part));
 
-    const model = configureBasicGenAI(apiKey, systemParts);
+    const model = await configureBasicGenAI(apiKey, systemParts);
 
     const generationConfig = {
         // maxOutputTokens: 2048,
@@ -551,7 +641,7 @@ export const getWorkoutInsights = async (workoutId: number): Promise<string | un
         .filter((msg) => msg.role === 'system')
         .map((msg) => ({ text: msg.content } as Part));
 
-    const model = configureBasicGenAI(apiKey, systemParts);
+    const model = await configureBasicGenAI(apiKey, systemParts);
 
     const generationConfig = {
         // maxOutputTokens: 2048,
@@ -593,7 +683,7 @@ export const getWorkoutVolumeInsights = async (workoutId: number): Promise<strin
         .filter((msg) => msg.role === 'system')
         .map((msg) => ({ text: msg.content } as Part));
 
-    const model = configureBasicGenAI(apiKey, systemParts);
+    const model = await configureBasicGenAI(apiKey, systemParts);
 
     const generationConfig = {
         // maxOutputTokens: 2048,
@@ -630,7 +720,7 @@ export async function estimateNutritionFromPhoto(photoUri: string) {
 
     const base64Image = await getBase64StringFromPhotoUri(await resizeImage(photoUri));
 
-    const genAI = new GoogleGenerativeAI(apiKey);
+    const genAI = await getGenerativeAI({ apiKey });
 
     const functionDeclarations = getMacrosEstimationFunctions(
         'Extracts the macronutrients of a food label from a photo',
@@ -710,7 +800,7 @@ export async function extractMacrosFromLabelPhoto(photoUri: string) {
 
     const base64Image = await getBase64StringFromPhotoUri(await resizeImage(photoUri));
 
-    const genAI = new GoogleGenerativeAI(apiKey);
+    const genAI = await getGenerativeAI({ apiKey });
 
     const functionDeclarations = getMacrosEstimationFunctions(
         'Extracts the macronutrients of a food label from a photo',
@@ -784,7 +874,7 @@ export async function extractMacrosFromLabelPhoto(photoUri: string) {
 
 export async function isAllowedLocation(apiKey: string): Promise<boolean> {
     try {
-        const model = configureBasicGenAI(apiKey, []);
+        const model = await configureBasicGenAI(apiKey);
 
         await model.generateContent({
             contents: [{ parts: [{ text: 'hi' } as Part], role: 'user' }],
@@ -810,7 +900,7 @@ export async function isAllowedLocation(apiKey: string): Promise<boolean> {
 
 export async function isValidApiKey(apiKey: string): Promise<boolean> {
     try {
-        const model = configureBasicGenAI(apiKey, []);
+        const model = await configureBasicGenAI(apiKey);
 
         await model.generateContent({
             contents: [{ parts: [{ text: 'hi' } as Part], role: 'user' }],

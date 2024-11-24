@@ -55,12 +55,14 @@
     "dexie": "4.0.10",
     "dotenv": "16.4.5",
     "expo": "52.0.11",
+    "expo-auth-session": "6.0.0",
     "expo-background-fetch": "13.0.3",
     "expo-build-properties": "0.13.1",
     "expo-calendar": "14.0.3",
     "expo-camera": "16.0.7",
     "expo-clipboard": "7.0.0",
     "expo-constants": "17.0.3",
+    "expo-crypto": "14.0.1",
     "expo-dev-client": "5.0.4",
     "expo-device": "7.0.1",
     "expo-document-picker": "13.0.1",
@@ -124,7 +126,7 @@
     "react-native-web": "0.19.13",
     "simple-git": "3.27.0",
     "turtle-cli": "0.28.1",
-    "xlsx": "^0.18.5"
+    "xlsx": "0.18.5"
   },
   "devDependencies": {
     "@babel/core": "7.26.0",
