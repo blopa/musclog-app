@@ -172,7 +172,7 @@ const WorkoutModal = ({ onClose, visible }: WorkoutModalProps) => {
             onConfirm={handleStartWorkout}
             visible={isVisible}
         >
-            <View style={[styles.mainWrapper, { maxHeight: windowHeight * 0.8 }]}>
+            <View style={[styles.mainWrapper, { maxHeight: 'auto' }]}>
                 {!selectedWorkout ? (
                     workoutDays.length === 0 ? (
                         <View style={styles.noWorkoutsContainer}>
@@ -314,7 +314,6 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean, listQty: numbe
     mainWrapper: {
         backgroundColor: colors.background,
         borderRadius: 8,
-        padding: 16,
     },
     modalDescription: {
         color: colors.onBackground,
