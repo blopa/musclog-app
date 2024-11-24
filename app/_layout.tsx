@@ -22,6 +22,7 @@ import Profile from '@/app/profile';
 import RecentWorkoutDetails from '@/app/recentWorkoutDetails';
 import RecentWorkouts from '@/app/recentWorkouts';
 import Settings from '@/app/settings';
+// import TestScreen from '@/app/test';
 import UserMetricsCharts from '@/app/userMetricsCharts';
 import WorkoutDetails from '@/app/workoutDetails';
 import CustomErrorBoundary from '@/components/CustomErrorBoundary';
@@ -79,6 +80,7 @@ import { getDecrypter } from '@/utils/storage';
 import { ExerciseInsertType } from '@/utils/types';
 import { FontAwesome } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import 'react-native-reanimated';
 import {
     createDrawerNavigator,
     DrawerContentComponentProps,
@@ -86,7 +88,6 @@ import {
     DrawerItem,
     DrawerItemList,
 } from '@react-navigation/drawer';
-import 'react-native-reanimated';
 import * as Sentry from '@sentry/react-native';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
@@ -380,6 +381,7 @@ function RootLayoutNav() {
         const routes = [
             // { component: UpcomingWorkouts, label: 'upcoming_workouts', name: 'upcomingWorkouts' },
             { component: Profile, label: 'profile', name: 'profile' },
+            // { component: TestScreen, label: 'test', name: 'test' },
             { component: ListWorkouts, label: 'workouts', name: 'listWorkouts' },
             { component: FoodLog, label: 'food_log', name: 'foodLog' },
             { component: RecentWorkouts, label: 'recent_workouts', name: 'recentWorkouts' },

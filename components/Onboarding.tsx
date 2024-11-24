@@ -15,6 +15,7 @@ import {
     READ_HEALTH_CONNECT_TYPE,
     UNIT_CHOICE_TYPE,
 } from '@/constants/storage';
+import { useGoogleAuth } from '@/hooks/useGoogleAuth';
 import { useHealthConnect } from '@/storage/HealthConnectProvider';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import {
@@ -25,6 +26,7 @@ import {
     getLatestUser,
 } from '@/utils/database';
 import { getCurrentTimestamp, isValidDateParam } from '@/utils/date';
+import { GoogleUserInfo, handleGoogleSignIn } from '@/utils/googleAuth';
 import { aggregateUserNutritionMetricsDataByDate } from '@/utils/healthConnect';
 import { formatFloatNumericInputText, generateHash } from '@/utils/string';
 import { ActivityLevelType, EatingPhaseType, ExperienceLevelType } from '@/utils/types';
@@ -36,7 +38,7 @@ import {
 } from '@/utils/unit';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Linking, ScrollView, StatusBar, StyleSheet, View } from 'react-native';
 import { ActivityIndicator, Button, SegmentedButtons, Text, useTheme } from 'react-native-paper';
@@ -51,6 +53,7 @@ const Onboarding = ({ onFinish }: OnboardingProps) => {
     const { colors, dark } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors, dark);
     const { checkReadIsPermitted, getHealthData, requestPermissions } = useHealthConnect();
+    const { isSigningIn, promptAsync, request, response } = useGoogleAuth();
 
     const [currentStep, setCurrentStep] = useState(0);
     const [form, setForm] = useState<{
@@ -81,6 +84,7 @@ const Onboarding = ({ onFinish }: OnboardingProps) => {
     const [isPermissionGranted, setIsPermissionGranted] = useState(false);
     const [showNoPermittedMessage, setShowNoPermittedMessage] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [userInfo, setUserInfo] = useState<GoogleUserInfo | null>(null);
 
     const isImperial = form.unitSystem === IMPERIAL_SYSTEM;
     const heightUnit = isImperial ? FEET : METERS;
@@ -106,6 +110,10 @@ const Onboarding = ({ onFinish }: OnboardingProps) => {
     {
         description: [t('permissions_description')],
         title: t('permissions_request'),
+    },
+    {
+        description: [t('sign_in_with_google_or_skip')],
+        title: t('connect_your_account'),
     },
     {
         description: [t('personalize_experience_or_skip')],
@@ -275,6 +283,36 @@ const Onboarding = ({ onFinish }: OnboardingProps) => {
         }
     }, [form]);
 
+    const handleSignIn = useCallback(async () => {
+        setIsLoading(true);
+
+        await promptAsync();
+
+        setIsLoading(false);
+    }, [promptAsync]);
+
+    useEffect(() => {
+        const fetchUserInfo = async () => {
+            if (response) {
+                setIsLoading(true);
+
+                const userInfo = await handleGoogleSignIn(response);
+                if (userInfo) {
+                    setUserInfo(userInfo);
+
+                    setForm((prevForm) => ({
+                        ...prevForm,
+                        name: userInfo.given_name || userInfo.name || '',
+                    }));
+                }
+
+                setIsLoading(false);
+            }
+        };
+
+        fetchUserInfo();
+    }, [response]);
+
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <Text style={styles.title}>
@@ -285,7 +323,7 @@ const Onboarding = ({ onFinish }: OnboardingProps) => {
                     {description}
                 </Text>
             ))}
-            {steps[currentStep].form && (currentStep === 2 ? (
+            {steps[currentStep].form && (currentStep === 3 ? (
                 <View style={styles.form}>
                     <CustomTextInput
                         label={t('name')}
@@ -376,8 +414,38 @@ const Onboarding = ({ onFinish }: OnboardingProps) => {
                     />
                 </View>
             ))}
+            {!steps[currentStep].form && currentStep === 2 && (
+                <View style={styles.buttonContainer}>
+                    {userInfo ? (
+                        <View style={styles.userInfo}>
+                            <Text style={styles.description}>{t('signed_in_as', { name: userInfo.name })}</Text>
+                            <Button mode="contained" onPress={handleNext} style={styles.buttonSpacing}>
+                                {t('continue')}
+                            </Button>
+                        </View>
+                    ) : (
+                        <View style={styles.submitButton}>
+                            <Button
+                                disabled={!request || isSigningIn}
+                                mode="contained"
+                                onPress={handleSignIn}
+                                style={styles.buttonSpacing}
+                            >
+                                {t('sign_in_with_google')}
+                            </Button>
+                            <Button
+                                mode="outlined"
+                                onPress={handleNext}
+                                style={styles.buttonSpacing}
+                            >
+                                {t('skip')}
+                            </Button>
+                        </View>
+                    )}
+                </View>
+            )}
             <View style={styles.buttonContainer}>
-                {(steps[currentStep].form && currentStep === 2) ? (
+                {(steps[currentStep].form && currentStep === 3) ? (
                     <View style={styles.submitButton}>
                         <Text style={styles.submitButtonText}>
                             {t('your_information_is_stored_locally_only')}
@@ -456,6 +524,7 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     },
     buttonSpacing: {
         flex: 1,
+        marginBottom: 10,
         marginHorizontal: 5,
     },
     container: {
@@ -520,6 +589,11 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 16,
+        textAlign: 'center',
+    },
+    userInfo: {
+        alignItems: 'center',
+        marginHorizontal: 'auto',
         textAlign: 'center',
     },
 });
