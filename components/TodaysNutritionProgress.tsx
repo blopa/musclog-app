@@ -6,8 +6,7 @@ import { getLatestFitnessGoals, getUserNutritionBetweenDates } from '@/utils/dat
 import { safeToFixed } from '@/utils/string';
 import { FitnessGoalsReturnType } from '@/utils/types';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { useFocusEffect } from 'expo-router';
-import React, { useCallback, useState } from 'react';
+import React, { memo, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 import { ActivityIndicator, Button, Text, useTheme } from 'react-native-paper';
@@ -18,7 +17,7 @@ const TodaysNutritionProgress = () => {
     const { colors, dark } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors, dark);
 
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     const [consumed, setConsumed] = useState({
         calories: 0,
@@ -84,18 +83,16 @@ const TodaysNutritionProgress = () => {
         }
     }, []);
 
-    useFocusEffect(
-        useCallback(() => {
-            const loadData = async () => {
-                setIsLoading(true);
-                await loadConsumed();
-                await loadLatestFitnessGoal();
-                setIsLoading(false);
-            };
+    useEffect(() => {
+        const loadData = async () => {
+            setIsLoading(true);
+            await loadConsumed();
+            await loadLatestFitnessGoal();
+            setIsLoading(false);
+        };
 
-            loadData();
-        }, [loadConsumed, loadLatestFitnessGoal])
-    );
+        loadData();
+    }, [loadConsumed, loadLatestFitnessGoal]);
 
     const macros = dailyGoals ? [
         { consumed: safeToFixed(consumed.calories), goal: dailyGoals.calories, name: t('calories'), unit: 'kcal' },
@@ -192,4 +189,5 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     },
 });
 
-export default TodaysNutritionProgress;
+export default memo(TodaysNutritionProgress);
+
