@@ -591,11 +591,6 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         marginBottom: 16,
         textAlign: 'center',
     },
-    userInfo: {
-        alignItems: 'center',
-        marginHorizontal: 'auto',
-        textAlign: 'center',
-    },
 });
 
 export default Onboarding;

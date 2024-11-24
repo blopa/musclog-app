@@ -4,6 +4,7 @@ import SearchFoodModal from '@/components/SearchFoodModal';
 import StatusBadge from '@/components/StatusBadge';
 import ThemedCard from '@/components/ThemedCard';
 import ThemedModal from '@/components/ThemedModal';
+import TodaysNutritionProgress from '@/components/TodaysNutritionProgress';
 import WorkoutModal from '@/components/WorkoutModal';
 import { CURRENT_WORKOUT_ID, SCHEDULED_STATUS } from '@/constants/storage';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
@@ -179,6 +180,7 @@ export default function Dashboard({ navigation }: {
                         {t('track_food_intake')}
                     </Button>
                 </View>
+                <TodaysNutritionProgress />
                 <View style={styles.section}>
                     <View style={styles.sectionHeader}>
                         <Text style={styles.sectionTitle}>{t('upcoming_workouts')}</Text>
