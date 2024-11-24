@@ -72,7 +72,7 @@ export default function App() {
         if (response) {
             signIn();
         }
-    }, [response]);
+    }, [response, signIn]);
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
