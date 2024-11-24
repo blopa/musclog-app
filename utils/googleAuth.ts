@@ -38,26 +38,23 @@ export const getUserInfo = async (token: string): Promise<GoogleUserInfo | null>
         throw new Error('Access token is missing.');
     }
 
-    try {
-        const response = await fetch('https://www.googleapis.com/userinfo/v2/me', {
-            headers: { Authorization: `Bearer ${token}` },
+    const makeRequest = async (accessToken: string) => {
+        return fetch('https://www.googleapis.com/userinfo/v2/me', {
+            headers: { Authorization: `Bearer ${accessToken}` },
         });
+    };
+
+    try {
+        // First attempt
+        let response = await makeRequest(token);
 
         if (response.status === 401) {
             // Token is invalid, try refreshing it
             console.warn('Access token is invalid. Attempting to refresh...');
             const newAccessToken = await refreshAccessToken();
 
-            // Retry fetching user info with the new access token
-            const retryResponse = await fetch('https://www.googleapis.com/userinfo/v2/me', {
-                headers: { Authorization: `Bearer ${newAccessToken}` },
-            });
-
-            if (!retryResponse.ok) {
-                throw new Error('Failed to fetch user info after refreshing access token.');
-            }
-
-            return (await retryResponse.json()) as GoogleUserInfo;
+            // Retry with the new access token
+            response = await makeRequest(newAccessToken);
         }
 
         if (!response.ok) {

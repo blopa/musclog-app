@@ -4,6 +4,7 @@ import { EXERCISE_IMAGE_GENERATION_TYPE, GEMINI_API_KEY_TYPE, GOOGLE_ACCESS_TOKE
 import i18n from '@/lang/lang';
 import { getSetting, processWorkoutPlan } from '@/utils/database';
 import { getBase64StringFromPhotoUri, resizeImage } from '@/utils/file';
+import { refreshAccessToken } from '@/utils/googleAuth';
 import { WorkoutPlan, WorkoutReturnType } from '@/utils/types';
 import {
     Content,
@@ -113,16 +114,37 @@ const getGenerativeAI = async ({ accessToken, apiKey }: { accessToken?: string; 
 };
 
 const rawFetchGeminiApi = async (model: string, accessToken: string, body: any) => {
-    const result = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`
-        , {
-            body: JSON.stringify(body),
-            headers: {
-                'Authorization': `Bearer ${accessToken}`,
-                'Content-Type': 'application/json',
-            },
-            method: 'POST',
-        });
+    const makeRequest = async (accessToken: string) => {
+        const result = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
+            {
+                body: JSON.stringify(body),
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json',
+                },
+                method: 'POST',
+            }
+        );
+
+        return result;
+    };
+
+    // First attempt
+    let result = await makeRequest(accessToken);
+
+    if (result.status === 401) {
+        try {
+            console.warn('Access token is invalid. Attempting to refresh...');
+            const newAccessToken = await refreshAccessToken();
+
+            // Retry with the new access token
+            result = await makeRequest(newAccessToken);
+        } catch (error) {
+            console.error('Error refreshing access token:', error);
+            throw new Error('Failed to refresh access token and retry the request.');
+        }
+    }
 
     if (result.ok) {
         const data = await result.json();
