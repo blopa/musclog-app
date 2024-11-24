@@ -11,6 +11,7 @@ import {
 import { Button, Portal, Text, useTheme } from 'react-native-paper';
 
 interface ThemedModalProps {
+    animate?: boolean;
     cancelText?: string;
     children?: React.ReactNode;
     closeOnTouchOutside?: boolean;
@@ -23,6 +24,7 @@ interface ThemedModalProps {
 }
 
 const ThemedModal = ({
+    animate = true,
     cancelText,
     children,
     closeOnTouchOutside = true,
@@ -44,21 +46,30 @@ const ThemedModal = ({
     useEffect(() => {
         if (visible) {
             setIsVisible(true);
-            Animated.timing(translateY, {
-                duration: 300,
-                easing: Easing.out(Easing.ease),
-                toValue: 0,
-                useNativeDriver: true,
-            }).start();
+            if (animate) {
+                Animated.timing(translateY, {
+                    duration: 300,
+                    easing: Easing.out(Easing.ease),
+                    toValue: 0,
+                    useNativeDriver: true,
+                }).start();
+            } else {
+                translateY.setValue(0);
+            }
         } else {
-            Animated.timing(translateY, {
-                duration: 300,
-                easing: Easing.in(Easing.ease),
-                toValue: 300,
-                useNativeDriver: true,
-            }).start(() => setIsVisible(false));
+            if (animate) {
+                Animated.timing(translateY, {
+                    duration: 300,
+                    easing: Easing.in(Easing.ease),
+                    toValue: 300,
+                    useNativeDriver: true,
+                }).start(() => setIsVisible(false));
+            } else {
+                translateY.setValue(300);
+                setIsVisible(false);
+            }
         }
-    }, [visible, translateY]);
+    }, [visible, animate, translateY]);
 
     const handleOnConfirm = useCallback(async () => {
         setIsLoading(true);
