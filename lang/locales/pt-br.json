@@ -29,6 +29,8 @@
     "json_import_description": "Importe seus dados de um arquivo JSON.",
     "csv_import_description": "Importe seus dados de um arquivo CSV.",
     "google_sign_in_description": "Entre com o Google para sincronizar seus dados.",
+    "google_gemini_oauth_description": "Entre com o Google Gemini para sincronizar seus dados.",
+    "google_gemini_oauth": "Google Gemini OAuth",
     "fitness_goals": "Objetivos de Fitness",
     "enter_openai_key": "Digite sua chave da OpenAI",
     "enter_google_gemini_key": "Digite sua chave do Google Gemini",

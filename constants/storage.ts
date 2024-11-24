@@ -4,6 +4,10 @@ export const CURRENT_WORKOUT_PROGRESS = 'currentWorkoutProgress';
 export const WORKOUT_START_TIME = 'workoutStartTime';
 export const COUNTDOWN_START_TIME = 'countdownStartTime';
 
+export const GOOGLE_ACCESS_TOKEN = 'googleAccessToken';
+export const GOOGLE_USER_INFO = 'googleUserInfo';
+export const GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE = 'googleAccessTokenExpirationDate';
+
 export const RECENT_FOOD = 'recentFood';
 
 export const CHAT_INTENTION = 'chatIntention';

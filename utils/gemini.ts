@@ -1,6 +1,6 @@
 import type { ChatCompletionMessageParam } from 'openai/resources';
 
-import { EXERCISE_IMAGE_GENERATION_TYPE, GEMINI_API_KEY_TYPE } from '@/constants/storage';
+import { EXERCISE_IMAGE_GENERATION_TYPE, GEMINI_API_KEY_TYPE, GOOGLE_ACCESS_TOKEN } from '@/constants/storage';
 import i18n from '@/lang/lang';
 import { getSetting, processWorkoutPlan } from '@/utils/database';
 import { getBase64StringFromPhotoUri, resizeImage } from '@/utils/file';
@@ -18,6 +18,7 @@ import {
     Tool,
     ToolConfig,
 } from '@google/generative-ai';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Sentry from '@sentry/react-native';
 
 import {
@@ -42,6 +43,8 @@ const GEMINI_MODEL = 'gemini-1.5-flash';
 
 export const getApiKey = async () =>
     (await getSetting(GEMINI_API_KEY_TYPE))?.value || process.env.EXPO_PUBLIC_FORCE_GEMINI_API_KEY;
+
+export const getAccessToken = async () => await AsyncStorage.getItem(GOOGLE_ACCESS_TOKEN) || undefined;
 
 const safetySettings = [
     { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
@@ -136,7 +139,7 @@ const rawFetchGeminiApi = async (model: string, accessToken: string, body: any) 
     };
 };
 
-const configureBasicGenAI = async (apiKey: string, systemParts?: Part[]) => {
+const configureBasicGenAI = async ({ accessToken, apiKey }: { accessToken?: string; apiKey?: string;}, systemParts?: Part[]) => {
     const genAI = await getGenerativeAI({ apiKey });
 
     return genAI.getGenerativeModel({
@@ -176,8 +179,9 @@ export async function generateWorkoutPlan(messages: any[]): Promise<boolean> {
 
 export async function getNutritionInsights(startDate: string): Promise<string | undefined> {
     const apiKey = await getApiKey();
+    const accessToken = await getAccessToken();
 
-    if (!apiKey) {
+    if (!apiKey && !accessToken) {
         return;
     }
 
@@ -187,7 +191,7 @@ export async function getNutritionInsights(startDate: string): Promise<string | 
         .filter((msg) => msg.role === 'system')
         .map((msg) => ({ text: msg.content } as Part));
 
-    const model = await configureBasicGenAI(apiKey, systemParts);
+    const model = await configureBasicGenAI({ accessToken, apiKey }, systemParts);
 
     const generationConfig = {
         // maxOutputTokens: 2048,
@@ -218,8 +222,9 @@ export async function getNutritionInsights(startDate: string): Promise<string | 
 
 export async function sendChatMessage(messages: any[]) {
     const apiKey = await getApiKey();
+    const accessToken = await getAccessToken();
 
-    if (!apiKey) {
+    if (!apiKey && !accessToken) {
         return;
     }
 
@@ -293,8 +298,9 @@ export async function sendChatMessage(messages: any[]) {
 
 async function createWorkoutPlan(messages: any[]) {
     const apiKey = await getApiKey();
+    const accessToken = await getAccessToken();
 
-    if (!apiKey) {
+    if (!apiKey && !accessToken) {
         return;
     }
 
@@ -356,7 +362,9 @@ async function createWorkoutPlan(messages: any[]) {
 
 export const calculateNextWorkoutVolume = async (workout: WorkoutReturnType) => {
     const apiKey = await getApiKey();
-    if (!apiKey) {
+    const accessToken = await getAccessToken();
+
+    if (!apiKey && !accessToken) {
         return;
     }
 
@@ -422,12 +430,13 @@ export const generateExerciseImage = async (exerciseName: string): Promise<strin
     }
 
     const apiKey = await getApiKey();
+    const accessToken = await getAccessToken();
 
-    if (!apiKey) {
+    if (!apiKey && !accessToken) {
         return 'https://via.placeholder.com/300';
     }
 
-    const model = await configureBasicGenAI(apiKey);
+    const model = await configureBasicGenAI({ accessToken, apiKey });
 
     const generationConfig = {
         // maxOutputTokens: 2048,
@@ -468,7 +477,9 @@ export const generateExerciseImage = async (exerciseName: string): Promise<strin
 
 export const parsePastWorkouts = async (userMessage: string) => {
     const apiKey = await getApiKey();
-    if (!apiKey) {
+    const accessToken = await getAccessToken();
+
+    if (!apiKey && !accessToken) {
         return;
     }
 
@@ -528,7 +539,9 @@ export const parsePastWorkouts = async (userMessage: string) => {
 
 export const parsePastNutrition = async (userMessage: string) => {
     const apiKey = await getApiKey();
-    if (!apiKey) {
+    const accessToken = await getAccessToken();
+
+    if (!apiKey && !accessToken) {
         return;
     }
 
@@ -588,8 +601,9 @@ export const parsePastNutrition = async (userMessage: string) => {
 
 export const getRecentWorkoutInsights = async (workoutEventId: number): Promise<string | undefined> => {
     const apiKey = await getApiKey();
+    const accessToken = await getAccessToken();
 
-    if (!apiKey) {
+    if (!apiKey && !accessToken) {
         return;
     }
 
@@ -599,7 +613,7 @@ export const getRecentWorkoutInsights = async (workoutEventId: number): Promise<
         .filter((msg) => msg.role === 'system')
         .map((msg) => ({ text: msg.content } as Part));
 
-    const model = await configureBasicGenAI(apiKey, systemParts);
+    const model = await configureBasicGenAI({ accessToken, apiKey }, systemParts);
 
     const generationConfig = {
         // maxOutputTokens: 2048,
@@ -630,8 +644,9 @@ export const getRecentWorkoutInsights = async (workoutEventId: number): Promise<
 
 export const getWorkoutInsights = async (workoutId: number): Promise<string | undefined> => {
     const apiKey = await getApiKey();
+    const accessToken = await getAccessToken();
 
-    if (!apiKey) {
+    if (!apiKey && !accessToken) {
         return;
     }
 
@@ -641,7 +656,7 @@ export const getWorkoutInsights = async (workoutId: number): Promise<string | un
         .filter((msg) => msg.role === 'system')
         .map((msg) => ({ text: msg.content } as Part));
 
-    const model = await configureBasicGenAI(apiKey, systemParts);
+    const model = await configureBasicGenAI({ accessToken, apiKey }, systemParts);
 
     const generationConfig = {
         // maxOutputTokens: 2048,
@@ -672,8 +687,9 @@ export const getWorkoutInsights = async (workoutId: number): Promise<string | un
 
 export const getWorkoutVolumeInsights = async (workoutId: number): Promise<string | undefined> => {
     const apiKey = await getApiKey();
+    const accessToken = await getAccessToken();
 
-    if (!apiKey) {
+    if (!apiKey && !accessToken) {
         return;
     }
 
@@ -683,7 +699,7 @@ export const getWorkoutVolumeInsights = async (workoutId: number): Promise<strin
         .filter((msg) => msg.role === 'system')
         .map((msg) => ({ text: msg.content } as Part));
 
-    const model = await configureBasicGenAI(apiKey, systemParts);
+    const model = await configureBasicGenAI({ accessToken, apiKey }, systemParts);
 
     const generationConfig = {
         // maxOutputTokens: 2048,
@@ -714,8 +730,10 @@ export const getWorkoutVolumeInsights = async (workoutId: number): Promise<strin
 
 export async function estimateNutritionFromPhoto(photoUri: string) {
     const apiKey = await getApiKey();
-    if (!apiKey) {
-        return null;
+    const accessToken = await getAccessToken();
+
+    if (!apiKey && !accessToken) {
+        return;
     }
 
     const base64Image = await getBase64StringFromPhotoUri(await resizeImage(photoUri));
@@ -794,8 +812,10 @@ export async function estimateNutritionFromPhoto(photoUri: string) {
 
 export async function extractMacrosFromLabelPhoto(photoUri: string) {
     const apiKey = await getApiKey();
-    if (!apiKey) {
-        return null;
+    const accessToken = await getAccessToken();
+
+    if (!apiKey && !accessToken) {
+        return;
     }
 
     const base64Image = await getBase64StringFromPhotoUri(await resizeImage(photoUri));
@@ -874,7 +894,7 @@ export async function extractMacrosFromLabelPhoto(photoUri: string) {
 
 export async function isAllowedLocation(apiKey: string): Promise<boolean> {
     try {
-        const model = await configureBasicGenAI(apiKey);
+        const model = await configureBasicGenAI({ apiKey });
 
         await model.generateContent({
             contents: [{ parts: [{ text: 'hi' } as Part], role: 'user' }],
@@ -900,7 +920,7 @@ export async function isAllowedLocation(apiKey: string): Promise<boolean> {
 
 export async function isValidApiKey(apiKey: string): Promise<boolean> {
     try {
-        const model = await configureBasicGenAI(apiKey);
+        const model = await configureBasicGenAI({ apiKey });
 
         await model.generateContent({
             contents: [{ parts: [{ text: 'hi' } as Part], role: 'user' }],

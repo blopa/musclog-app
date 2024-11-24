@@ -1,4 +1,11 @@
-import { GOOGLE_REFRESH_TOKEN_TYPE } from '@/constants/storage';
+import {
+    AI_SETTINGS_TYPE,
+    GOOGLE_ACCESS_TOKEN,
+    GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE,
+    GOOGLE_OAUTH_GEMINI_ENABLED_TYPE,
+    GOOGLE_REFRESH_TOKEN_TYPE,
+    GOOGLE_USER_INFO,
+} from '@/constants/storage';
 import { addOrUpdateSetting, getSetting } from '@/utils/database';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthSessionResult } from 'expo-auth-session';
@@ -79,9 +86,9 @@ export const refreshAccessToken = async (): Promise<string> => {
         const data = (await response.json()) as RefreshTokenResponse;
 
         // Save the new access token and expiration time
-        await AsyncStorage.setItem('accessToken', data.access_token);
+        await AsyncStorage.setItem(GOOGLE_ACCESS_TOKEN, data.access_token);
         const expirationTime = new Date().getTime() + data.expires_in * 1000;
-        await AsyncStorage.setItem('tokenExpirationTime', expirationTime.toString());
+        await AsyncStorage.setItem(GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE, expirationTime.toString());
 
         return data.access_token;
     } catch (error) {
@@ -94,14 +101,14 @@ export const refreshAccessToken = async (): Promise<string> => {
  * Retrieve a valid access token (refresh if expired)
  */
 export const getAccessToken = async (): Promise<string> => {
-    const accessToken = await AsyncStorage.getItem('accessToken');
-    const tokenExpirationTime = await AsyncStorage.getItem('tokenExpirationTime');
+    const accessToken = await AsyncStorage.getItem(GOOGLE_ACCESS_TOKEN);
+    const tokenExpirationTime = await AsyncStorage.getItem(GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE);
 
     if (accessToken && tokenExpirationTime && new Date().getTime() < parseInt(tokenExpirationTime, 10)) {
         return accessToken;
     }
 
-    return await refreshAccessToken(); // Refresh token if expired
+    return await refreshAccessToken();
 };
 
 /**
@@ -113,20 +120,30 @@ export const handleGoogleSignIn = async (
     if (response?.type === 'success' && response.authentication) {
         const { accessToken, expiresIn, refreshToken } = response.authentication;
 
-        await AsyncStorage.setItem('accessToken', accessToken);
+        await AsyncStorage.setItem(GOOGLE_ACCESS_TOKEN, accessToken);
         if (refreshToken) {
             await addOrUpdateSetting({
                 type: GOOGLE_REFRESH_TOKEN_TYPE,
                 value: refreshToken,
             });
+
+            await addOrUpdateSetting({
+                type: GOOGLE_OAUTH_GEMINI_ENABLED_TYPE,
+                value: 'true',
+            });
+
+            await addOrUpdateSetting({
+                type: AI_SETTINGS_TYPE,
+                value: 'true',
+            });
         }
 
         const expirationTime = new Date().getTime() + (expiresIn ?? 0) * 1000;
-        await AsyncStorage.setItem('tokenExpirationTime', expirationTime.toString());
+        await AsyncStorage.setItem(GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE, expirationTime.toString());
 
         const userInfo = await getUserInfo(accessToken);
         if (userInfo) {
-            await AsyncStorage.setItem('user', JSON.stringify(userInfo));
+            await AsyncStorage.setItem(GOOGLE_USER_INFO, JSON.stringify(userInfo));
         }
 
         return userInfo;
@@ -138,5 +155,15 @@ export const handleGoogleSignIn = async (
  * Delete all stored tokens and user info
  */
 export const deleteAllData = async (): Promise<void> => {
-    await AsyncStorage.multiRemove(['user', 'accessToken', 'tokenExpirationTime']);
+    await addOrUpdateSetting({
+        type: GOOGLE_REFRESH_TOKEN_TYPE,
+        value: '',
+    });
+
+    await addOrUpdateSetting({
+        type: GOOGLE_OAUTH_GEMINI_ENABLED_TYPE,
+        value: 'false',
+    });
+
+    await AsyncStorage.multiRemove([GOOGLE_USER_INFO, GOOGLE_ACCESS_TOKEN, GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE]);
 };

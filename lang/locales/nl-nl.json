@@ -29,6 +29,8 @@
     "json_import_description": "Importeer uw gegevens uit een JSON-bestand.",
     "csv_import_description": "Importeer uw gegevens uit een CSV-bestand.",
     "google_sign_in_description": "Log in met Google om uw gegevens te synchroniseren.",
+    "google_gemini_oauth_description": "Log in met Google Gemini om uw gegevens te synchroniseren.",
+    "google_gemini_oauth": "Google Gemini OAuth",
     "fitness_goals": "Fitnessdoelen",
     "enter_openai_key": "Voer uw OpenAI-sleutel in",
     "enter_google_gemini_key": "Voer uw Google Gemini-sleutel in",

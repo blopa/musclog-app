@@ -11,7 +11,9 @@ import {
     CSV_IMPORT_TYPE,
     EXERCISE_IMAGE_GENERATION_TYPE,
     GEMINI_API_KEY_TYPE,
+    GOOGLE_OAUTH_GEMINI_ENABLED_TYPE,
     GOOGLE_REFRESH_TOKEN_TYPE,
+    GOOGLE_USER_INFO,
     IMPERIAL_SYSTEM,
     JSON_IMPORT_TYPE,
     LANGUAGE_CHOICE_TYPE,
@@ -94,7 +96,9 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
     const [appInfoModalVisible, setAppInfoModalVisible] = useState(false);
     const [encryptionPhrase, setEncryptionPhrase] = useState('');
     const [decryptionPhrase, setDecryptionPhrase] = useState('');
+
     const [useFatPercentageTDEE, setUseFatPercentageTDEE] = useState<boolean | undefined>(undefined);
+    const [isGoogleOauthGeminiElabled, setIsGoogleOauthGeminiElabled] = useState<boolean | undefined>(undefined);
 
     const { colors, dark } = useTheme<CustomThemeType>();
     const { setTheme } = useCustomTheme();
@@ -191,7 +195,13 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
             setRefreshToken(googleRefreshTokenFromDb.value);
         }
 
-        const storedUser = await AsyncStorage.getItem('user');
+        const googleOauthGeminiElabledFromDb = await getSettingByType(GOOGLE_OAUTH_GEMINI_ENABLED_TYPE);
+        if (googleOauthGeminiElabledFromDb) {
+            const value = googleOauthGeminiElabledFromDb.value === 'true';
+            setIsGoogleOauthGeminiElabled(value);
+        }
+
+        const storedUser = await AsyncStorage.getItem(GOOGLE_USER_INFO);
         if (storedUser) {
             setUserInfo(JSON.parse(storedUser));
         }
@@ -491,6 +501,12 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
         setLoading(false);
     }, [useFatPercentageTDEE]);
 
+    const handleToggleGoogleOauthGeminiElabled = useCallback(async () => {
+        setLoading(true);
+        setIsGoogleOauthGeminiElabled(!isGoogleOauthGeminiElabled);
+        setLoading(false);
+    }, [isGoogleOauthGeminiElabled]);
+
     useEffect(() => {
         const saveAdvancedSettings = async () => {
             if (advancedSettingsEnabled !== undefined) {
@@ -523,6 +539,17 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
 
         saveUseFatPercentageTDEE();
     }, [useFatPercentageTDEE, updateSettingValue, updateSettingWithLoadingState]);
+
+    useEffect(() => {
+        const saveGoogleOauthGeminiElabled = async () => {
+            if (isGoogleOauthGeminiElabled !== undefined) {
+                const newValue = isGoogleOauthGeminiElabled.toString();
+                await updateSettingWithLoadingState(GOOGLE_OAUTH_GEMINI_ENABLED_TYPE, newValue);
+            }
+        };
+
+        saveGoogleOauthGeminiElabled();
+    }, [isGoogleOauthGeminiElabled, updateSettingWithLoadingState]);
 
     const handleExportDatabase = useCallback(async () => {
         setLoading(true);
@@ -689,6 +716,17 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
                     {aiSettingsEnabled ? (
                         <List.Section>
                             <List.Subheader>{t('ai_settings')}</List.Subheader>
+                            <List.Item
+                                description={t('google_gemini_oauth_description')}
+                                onPress={handleToggleGoogleOauthGeminiElabled}
+                                right={() => (
+                                    <View style={styles.rightContainer}>
+                                        <Text>{isGoogleOauthGeminiElabled ? t('enabled') : t('disabled')}</Text>
+                                        <List.Icon icon="chevron-right" />
+                                    </View>
+                                )}
+                                title={t('google_gemini_oauth')}
+                            />
                             <List.Item
                                 description={t('openai_key_description')}
                                 onPress={() => {
