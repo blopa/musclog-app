@@ -208,21 +208,18 @@ const SearchFoodModal = ({
                     style={styles.searchInput}
                     value={searchQuery}
                 />
-                {searchQuery ? (
-                    <Button mode="outlined" onPress={handleFoodSearch} style={styles.iconButton}>
-                        <FontAwesome5 color={colors.primary} name="search" size={20} />
+                <Button mode="outlined" onPress={handleFoodSearch} style={styles.iconButton}>
+                    <FontAwesome5 color={colors.primary} name="search" size={20} />
+                </Button>
+            </View>
+            <View style={styles.iconRow}>
+                <Button mode="outlined" onPress={openBarcodeCamera} style={styles.iconButton}>
+                    <FontAwesome5 color={colors.primary} name="barcode" size={20} />
+                </Button>
+                {isAiEnabled && (
+                    <Button mode="outlined" onPress={openPhotoCamera} style={styles.iconButton}>
+                        <FontAwesome5 color={colors.primary} name="camera" size={20} />
                     </Button>
-                ) : (
-                    <>
-                        <Button mode="outlined" onPress={openBarcodeCamera} style={styles.iconButton}>
-                            <FontAwesome5 color={colors.primary} name="barcode" size={20} />
-                        </Button>
-                        {isAiEnabled && (
-                            <Button mode="outlined" onPress={openPhotoCamera} style={styles.iconButton}>
-                                <FontAwesome5 color={colors.primary} name="camera" size={20} />
-                            </Button>
-                        )}
-                    </>
                 )}
             </View>
             {showBarcodeCamera && (
@@ -292,6 +289,11 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     },
     iconButton: {
         marginLeft: 4,
+    },
+    iconRow: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        marginBottom: 16,
     },
     photoCameraOverlay: {
         flex: 1,
