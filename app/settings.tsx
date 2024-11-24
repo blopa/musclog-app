@@ -11,6 +11,7 @@ import {
     CSV_IMPORT_TYPE,
     EXERCISE_IMAGE_GENERATION_TYPE,
     GEMINI_API_KEY_TYPE,
+    GOOGLE_REFRESH_TOKEN_TYPE,
     IMPERIAL_SYSTEM,
     JSON_IMPORT_TYPE,
     LANGUAGE_CHOICE_TYPE,
@@ -22,17 +23,20 @@ import {
     USE_FAT_PERCENTAGE_TDEE_TYPE,
     WRITE_HEALTH_CONNECT_TYPE,
 } from '@/constants/storage';
+import { useGoogleAuth } from '@/hooks/useGoogleAuth';
 import { AVAILABLE_LANGUAGES, EN_US } from '@/lang/lang';
 import { useCustomTheme } from '@/storage/CustomThemeProvider';
 import { useHealthConnect } from '@/storage/HealthConnectProvider';
 import { useSettings } from '@/storage/SettingsContext';
 import { isValidApiKey } from '@/utils/ai';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
-import { addUserMetrics, addUserNutrition, getUser } from '@/utils/database';
+import { addUserMetrics, addUserNutrition, getSetting, getUser } from '@/utils/database';
 import { exportDatabase, importDatabase } from '@/utils/file';
+import { deleteAllData, GoogleUserInfo, handleGoogleSignIn } from '@/utils/googleAuth';
 import { aggregateUserNutritionMetricsDataByDate } from '@/utils/healthConnect';
 import { generateHash } from '@/utils/string';
 import { ThemeType } from '@/utils/types';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationProp } from '@react-navigation/native';
 import { useFocusEffect } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -46,6 +50,7 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
     const { i18n, t } = useTranslation();
     const { checkReadIsPermitted, getHealthData, requestPermissions } = useHealthConnect();
     const { addOrUpdateSettingValue, getSettingByType, updateSettingValue } = useSettings();
+    const { isSigningIn, promptAsync, request, response } = useGoogleAuth();
 
     const [apiKey, setApiKey] = useState<null | string>(null);
     const [googleGeminiApiKey, setGoogleGeminiApiKey] = useState<null | string>(null);
@@ -94,6 +99,10 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
     const { colors, dark } = useTheme<CustomThemeType>();
     const { setTheme } = useCustomTheme();
     const styles = makeStyles(colors, dark);
+
+    const [userInfo, setUserInfo] = useState<GoogleUserInfo | null>(null);
+    const [refreshToken, setRefreshToken] = useState<null | string>(null);
+    const [googleSignInModalVisible, setGoogleSignInModalVisible] = useState(false);
 
     const fetchSettings = useCallback(async () => {
         const apiKeyFromDb = await getSettingByType(OPENAI_API_KEY_TYPE);
@@ -176,11 +185,23 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
             const value = useFatPercentageTDEEFromDb.value === 'true';
             setUseFatPercentageTDEE(value);
         }
+
+        const googleRefreshTokenFromDb = await getSettingByType(GOOGLE_REFRESH_TOKEN_TYPE);
+        if (googleRefreshTokenFromDb) {
+            setRefreshToken(googleRefreshTokenFromDb.value);
+        }
+
+        const storedUser = await AsyncStorage.getItem('user');
+        if (storedUser) {
+            setUserInfo(JSON.parse(storedUser));
+        }
     }, [i18n, getSettingByType]);
 
-    useFocusEffect(useCallback(() => {
-        fetchSettings();
-    }, [fetchSettings]));
+    useFocusEffect(
+        useCallback(() => {
+            fetchSettings();
+        }, [fetchSettings])
+    );
 
     useFocusEffect(
         useCallback(() => {
@@ -203,6 +224,43 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
             return resolve(data);
         }, 0));
     }, [addOrUpdateSettingValue]);
+
+    const handleGoogleSignInPress = useCallback(async () => {
+        setLoading(true);
+        await promptAsync();
+        setLoading(false);
+    }, [promptAsync]);
+
+    const handleGoogleSignOut = useCallback(async () => {
+        setLoading(true);
+        await deleteAllData();
+        setUserInfo(null);
+        setRefreshToken(null);
+        await updateSettingValue(GOOGLE_REFRESH_TOKEN_TYPE, '');
+        setLoading(false);
+        setGoogleSignInModalVisible(false);
+    }, [updateSettingValue]);
+
+    useEffect(() => {
+        const handleGoogleSignInResponse = async () => {
+            if (response) {
+                setLoading(true);
+                const user = await handleGoogleSignIn(response);
+                if (user) {
+                    setUserInfo(user);
+                    const storedRefreshToken = await getSetting(GOOGLE_REFRESH_TOKEN_TYPE);
+
+                    if (storedRefreshToken?.value) {
+                        setRefreshToken(storedRefreshToken.value);
+                    }
+                }
+                setLoading(false);
+                setGoogleSignInModalVisible(false);
+            }
+        };
+
+        handleGoogleSignInResponse();
+    }, [response, updateSettingValue]);
 
     const handleSaveOpenAiKey = useCallback(async () => {
         setLoading(true);
@@ -580,6 +638,23 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
                         title={t('unit_system')}
                     />
                     <List.Item
+                        description={t('google_sign_in_description')}
+                        onPress={() => {
+                            setGoogleSignInModalVisible(true);
+                        }}
+                        right={() => (
+                            <View style={styles.rightContainer}>
+                                <Text>
+                                    {refreshToken
+                                        ? t('signed_in')
+                                        : t('not_signed_in')}
+                                </Text>
+                                <List.Icon icon="chevron-right" />
+                            </View>
+                        )}
+                        title={t('google_sign_in')}
+                    />
+                    <List.Item
                         description={t('health_connect_read_description')}
                         onPress={() => setReadHealthConnectModalVisible(true)}
                         right={() => (
@@ -749,6 +824,48 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
                     />
                 </List.Section>
             </ScrollView>
+            <ThemedModal
+                cancelText={t('cancel')}
+                onClose={() => setGoogleSignInModalVisible(false)}
+                title={t('google_sign_in')}
+                visible={googleSignInModalVisible}
+            >
+                <View style={styles.modalContent}>
+                    {refreshToken ? (
+                        <>
+                            <Text style={styles.modalText}>
+                                {t('signed_in_as', { name: userInfo?.name || t('unknown') })}
+                            </Text>
+                            <Button
+                                disabled={loading}
+                                mode="contained"
+                                onPress={handleGoogleSignInPress}
+                                style={styles.modalButton}
+                            >
+                                {t('reauthenticate')}
+                            </Button>
+                            <Button
+                                disabled={loading}
+                                mode="contained"
+                                onPress={handleGoogleSignOut}
+                                style={styles.modalButton}
+                            >
+                                {t('sign_out')}
+                            </Button>
+                        </>
+                    ) : (
+                        <Button
+                            disabled={loading}
+                            mode="contained"
+                            onPress={handleGoogleSignInPress}
+                            style={styles.modalButton}
+                        >
+                            {t('sign_in_with_google')}
+                        </Button>
+                    )}
+                    {loading ? <ActivityIndicator color={colors.primary} style={styles.loadingIndicator} /> : null}
+                </View>
+            </ThemedModal>
             <ThemedModal
                 cancelText={t('cancel')}
                 confirmText={t('confirm')}
@@ -1073,9 +1190,23 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     deleteButtonContent: {
         color: colors.surface,
     },
+    loadingIndicator: {
+        marginTop: 16,
+    },
+    modalButton: {
+        marginVertical: 8,
+        width: '80%',
+    },
     modalContent: {
+        alignItems: 'center',
         backgroundColor: colors.background,
         padding: 16,
+    },
+    modalText: {
+        color: colors.onSurface,
+        fontSize: 16,
+        marginBottom: 16,
+        textAlign: 'center',
     },
     openAiModalContent: {
         backgroundColor: colors.background,

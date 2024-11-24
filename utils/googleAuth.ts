@@ -1,3 +1,5 @@
+import { GOOGLE_REFRESH_TOKEN_TYPE } from '@/constants/storage';
+import { addOrUpdateSetting, getSetting } from '@/utils/database';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthSessionResult } from 'expo-auth-session';
 
@@ -47,8 +49,8 @@ export const getUserInfo = async (token: string): Promise<GoogleUserInfo | null>
  * Refresh the access token using the stored refresh token
  */
 export const refreshAccessToken = async (): Promise<string> => {
-    const refreshToken = await AsyncStorage.getItem('refreshToken');
-    if (!refreshToken) {
+    const refreshToken = await getSetting(GOOGLE_REFRESH_TOKEN_TYPE);
+    if (!refreshToken?.value) {
         throw new Error('Refresh token is missing. Please sign in again.');
     }
 
@@ -57,7 +59,7 @@ export const refreshAccessToken = async (): Promise<string> => {
             body: new URLSearchParams({
                 client_id: GOOGLE_CLIENT_ID,
                 grant_type: 'refresh_token',
-                refresh_token: refreshToken,
+                refresh_token: refreshToken.value,
             }).toString(),
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -113,7 +115,10 @@ export const handleGoogleSignIn = async (
 
         await AsyncStorage.setItem('accessToken', accessToken);
         if (refreshToken) {
-            await AsyncStorage.setItem('refreshToken', refreshToken);
+            await addOrUpdateSetting({
+                type: GOOGLE_REFRESH_TOKEN_TYPE,
+                value: refreshToken,
+            });
         }
 
         const expirationTime = new Date().getTime() + (expiresIn ?? 0) * 1000;
@@ -133,5 +138,5 @@ export const handleGoogleSignIn = async (
  * Delete all stored tokens and user info
  */
 export const deleteAllData = async (): Promise<void> => {
-    await AsyncStorage.multiRemove(['user', 'accessToken', 'refreshToken', 'tokenExpirationTime']);
+    await AsyncStorage.multiRemove(['user', 'accessToken', 'tokenExpirationTime']);
 };

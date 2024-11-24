@@ -417,9 +417,9 @@ const Onboarding = ({ onFinish }: OnboardingProps) => {
             {!steps[currentStep].form && currentStep === 2 && (
                 <View style={styles.buttonContainer}>
                     {userInfo ? (
-                        <View style={styles.userInfo}>
-                            <Text style={styles.description}>{t('signed_in_as', { name: userInfo.name })}</Text>
-                            <Button mode="contained" onPress={handleNext} style={styles.buttonSpacing}>
+                        <View style={styles.submitButton}>
+                            <Text style={styles.submitButtonText}>{t('signed_in_as', { name: userInfo.name })}</Text>
+                            <Button mode="elevated" onPress={handleNext} style={styles.buttonSpacing}>
                                 {t('continue')}
                             </Button>
                         </View>
