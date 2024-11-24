@@ -196,7 +196,7 @@ const SearchFoodModal = ({
             cancelText={t('close')}
             closeOnTouchOutside={false}
             onClose={onClose}
-            style={style}
+            style={(showPhotoCamera || showBarcodeCamera) ? styles.fullSize : style}
             title={t('search_food')}
             visible={visible}
         >
@@ -259,11 +259,17 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     },
     camera: {
         flex: 1,
+        height: Dimensions.get('window').height - 28,
+        left: 0,
+        position:'absolute',
+        top: 0,
+        width: '100%',
     },
     cameraContainer: {
         ...StyleSheet.absoluteFillObject,
         backgroundColor: 'black',
         justifyContent: 'center',
+        zIndex: 9999,
     },
     cameraOverlay: {
         alignItems: 'flex-end',
@@ -285,6 +291,13 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         borderRadius: 8,
         borderWidth: 2,
         height: '100%',
+        width: '100%',
+    },
+    fullSize: {
+        height: '100%',
+        left: 0,
+        position: 'absolute',
+        top: 0,
         width: '100%',
     },
     iconButton: {

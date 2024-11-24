@@ -1,4 +1,6 @@
+import FoodTrackingModal, { FoodTrackingType } from '@/components/FoodTrackingModal';
 import { Screen } from '@/components/Screen';
+import SearchFoodModal from '@/components/SearchFoodModal';
 import StatusBadge from '@/components/StatusBadge';
 import ThemedCard from '@/components/ThemedCard';
 import ThemedModal from '@/components/ThemedModal';
@@ -7,7 +9,7 @@ import { CURRENT_WORKOUT_ID, SCHEDULED_STATUS } from '@/constants/storage';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { getRecentWorkoutsPaginated, getRecurringWorkouts } from '@/utils/database';
 import { formatDate } from '@/utils/date';
-import { WorkoutEventReturnType, WorkoutReturnType } from '@/utils/types';
+import { MusclogApiFoodInfoType, WorkoutEventReturnType, WorkoutReturnType } from '@/utils/types';
 import { resetWorkoutStorageData } from '@/utils/workout';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationProp } from '@react-navigation/native';
@@ -25,11 +27,14 @@ export default function Dashboard({ navigation }: {
     const styles = makeStyles(colors, dark);
 
     const [workoutModalVisible, setWorkoutModalVisible] = useState(false);
+    const [foodSearchModalVisible, setFoodSearchModalVisible] = useState(false);
+    const [foodTrackingModalVisible, setFoodTrackingModalVisible] = useState(false);
     const [recentWorkouts, setRecentWorkouts] = useState<WorkoutEventReturnType[]>([]);
     const [upcomingWorkouts, setUpcomingWorkouts] = useState<WorkoutReturnType[]>([]);
     const [modalVisible, setModalVisible] = useState(false);
     const [confirmationModalVisible, setConfirmationModalVisible] = useState(false);
     const [selectedUpcomingEvent, setSelectedUpcomingEvent] = useState<null | WorkoutReturnType>(null);
+    const [selectedFood, setSelectedFood] = useState<MusclogApiFoodInfoType | null>(null);
 
     const fetchWorkoutData = useCallback(async () => {
         try {
@@ -126,16 +131,53 @@ export default function Dashboard({ navigation }: {
         }, [])
     );
 
+    const handleCloseFoodSearchModal = useCallback(() => {
+        setFoodSearchModalVisible(false);
+    }, []);
+
+    const handleOnFoodSelected = useCallback((food: FoodTrackingType) => {
+        setSelectedFood(food);
+        setFoodTrackingModalVisible(true);
+    }, []);
+
+    const handleCloseTrackingModal = useCallback(() => {
+        setFoodTrackingModalVisible(false);
+        setFoodSearchModalVisible(false);
+    }, []);
+
     return (
         <Screen style={styles.container}>
             <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
                 <WorkoutModal onClose={() => setWorkoutModalVisible(false)} visible={workoutModalVisible} />
+                <SearchFoodModal
+                    onClose={handleCloseFoodSearchModal}
+                    onFoodSelected={handleOnFoodSelected}
+                    visible={foodSearchModalVisible}
+                />
+                <FoodTrackingModal
+                    food={selectedFood}
+                    onClose={handleCloseTrackingModal}
+                    visible={foodTrackingModalVisible}
+                />
                 <View style={styles.section}>
                     <Text style={styles.header}>{t('track_your_fitness_journey')}</Text>
                     <Text style={styles.description}>
                         {t('easily_log_your_workouts')}
                     </Text>
-                    <Button mode="contained" onPress={() => setWorkoutModalVisible(true)} style={styles.startLoggingButton}>{t('start_logging')}</Button>
+                    <Button
+                        mode="contained"
+                        onPress={() => setWorkoutModalVisible(true)}
+                        style={styles.startLoggingButton}
+                    >
+                        {t('start_a_workout')}
+                    </Button>
+                    <Button
+                        mode="contained"
+                        onPress={() => setFoodSearchModalVisible(true)}
+                        style={styles.startLoggingButton}
+                    >
+                        {t('track_food_intake')}
+                    </Button>
                 </View>
                 <View style={styles.section}>
                     <View style={styles.sectionHeader}>

@@ -537,7 +537,7 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
                         onPress={() => setModalVisible(true)}
                         style={styles.startLoggingButton}
                     >
-                        {t('start_logging')}
+                        {t('start_a_workout')}
                     </Button>
                 </View>
                 {loading ? (
