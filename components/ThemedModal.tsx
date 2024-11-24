@@ -99,44 +99,46 @@ const ThemedModal = ({
                 onPress={handleDismissOnOverlayPress}
             >
                 <View style={styles.overlay}>
-                    <Animated.View
-                        style={[
-                            styles.animatedContainer,
-                            { transform: [{ translateY }] },
-                        ]}
-                    >
-                        <View style={[styles.modalContent, style]}>
-                            {title && (
-                                <Text style={styles.modalMessage}>{title}</Text>
-                            )}
-                            {children}
-                            <View style={styles.buttonContainer}>
-                                {cancelText && (
-                                    <Button
-                                        disabled={isLoading}
-                                        mode="outlined"
-                                        onPress={handleOnClose}
-                                        style={[
-                                            styles.button,
-                                            !onConfirm ? styles.wideButton : {},
-                                        ]}
-                                    >
-                                        {cancelText}
-                                    </Button>
+                    <TouchableWithoutFeedback accessible={false}>
+                        <Animated.View
+                            style={[
+                                styles.animatedContainer,
+                                { transform: [{ translateY }] },
+                            ]}
+                        >
+                            <View style={[styles.modalContent, style]}>
+                                {title && (
+                                    <Text style={styles.modalMessage}>{title}</Text>
                                 )}
-                                {confirmText && onConfirm && (
-                                    <Button
-                                        disabled={isLoading}
-                                        mode="contained"
-                                        onPress={handleOnConfirm}
-                                        style={styles.button}
-                                    >
-                                        {confirmText}
-                                    </Button>
-                                )}
+                                {children}
+                                <View style={styles.buttonContainer}>
+                                    {cancelText && (
+                                        <Button
+                                            disabled={isLoading}
+                                            mode="outlined"
+                                            onPress={handleOnClose}
+                                            style={[
+                                                styles.button,
+                                                !onConfirm ? styles.wideButton : {},
+                                            ]}
+                                        >
+                                            {cancelText}
+                                        </Button>
+                                    )}
+                                    {confirmText && onConfirm && (
+                                        <Button
+                                            disabled={isLoading}
+                                            mode="contained"
+                                            onPress={handleOnConfirm}
+                                            style={styles.button}
+                                        >
+                                            {confirmText}
+                                        </Button>
+                                    )}
+                                </View>
                             </View>
-                        </View>
-                    </Animated.View>
+                        </Animated.View>
+                    </TouchableWithoutFeedback>
                 </View>
             </TouchableWithoutFeedback>
         </Portal>

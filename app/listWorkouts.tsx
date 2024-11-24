@@ -58,7 +58,7 @@ export default function ListWorkouts({ navigation }: { navigation: NavigationPro
             workout: WorkoutReturnType;
         };
     }>({});
-    const [modalVisible, setModalVisible] = useState(false);
+    const [startWorkoutConfirmationModalVisible, setStartWorkoutConfirmationModalVisible] = useState(false);
     const [confirmationModalVisible, setConfirmationModalVisible] = useState(false);
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
     const [selectedWorkout, setSelectedWorkout] = useState<null | WorkoutReturnType>(null);
@@ -148,7 +148,7 @@ export default function ListWorkouts({ navigation }: { navigation: NavigationPro
     }, []);
 
     const resetScreenData = useCallback(() => {
-        setModalVisible(false);
+        setStartWorkoutConfirmationModalVisible(false);
         setConfirmationModalVisible(false);
         setSelectedWorkout(null);
         setSearchQuery('');
@@ -206,7 +206,7 @@ export default function ListWorkouts({ navigation }: { navigation: NavigationPro
             } catch (error) {
                 console.error(t('failed_save_current_workout'), error);
             } finally {
-                setModalVisible(false);
+                setStartWorkoutConfirmationModalVisible(false);
             }
         }
     }, [navigation, selectedWorkout, t]);
@@ -225,14 +225,14 @@ export default function ListWorkouts({ navigation }: { navigation: NavigationPro
                 console.error(t('failed_save_current_workout'), error);
             } finally {
                 setConfirmationModalVisible(false);
-                setModalVisible(false);
+                setStartWorkoutConfirmationModalVisible(false);
             }
         }
     }, [navigation, selectedWorkout, t]);
 
     const openStartWorkoutConfirmationModal = useCallback((workout: WorkoutReturnType) => {
         setSelectedWorkout(workout);
-        setModalVisible(true);
+        setStartWorkoutConfirmationModalVisible(true);
     }, []);
 
     const openDeleteWorkoutConfirmationModal = useCallback((workout: WorkoutReturnType) => {
@@ -321,152 +321,154 @@ export default function ListWorkouts({ navigation }: { navigation: NavigationPro
     }, []);
 
     return (
-        <Screen style={styles.container}>
-            <FABWrapper actions={fabActions} icon="cog" visible>
-                <View style={styles.container}>
-                    <Appbar.Header
-                        mode="small"
-                        statusBarHeight={0}
-                        style={styles.appbarHeader}
-                    >
-                        <Appbar.Content
-                            title={t('workouts')}
-                            titleStyle={styles.appbarTitle}
+        <>
+            <ThemedModal
+                cancelText={t('no')}
+                confirmText={t('yes')}
+                onClose={() => setStartWorkoutConfirmationModalVisible(false)}
+                onConfirm={handleStartWorkout}
+                title={selectedWorkout ? t('start_workout_confirmation', { title: selectedWorkout.title }) : t('start_workout_confirmation_generic')}
+                visible={startWorkoutConfirmationModalVisible}
+            />
+            <ThemedModal
+                cancelText={t('no')}
+                confirmText={t('yes')}
+                onClose={() => setConfirmationModalVisible(false)}
+                onConfirm={handleConfirmStartNewWorkout}
+                title={t('confirm_start_new_workout')}
+                visible={confirmationModalVisible}
+            />
+            <ThemedModal
+                cancelText={t('no')}
+                confirmText={t('yes')}
+                onClose={() => setDeleteModalVisible(false)}
+                onConfirm={handleDeleteWorkout}
+                title={selectedWorkout ? t('delete_workout_confirmation', { title: selectedWorkout.title }) : t('delete_confirmation_generic')}
+                visible={deleteModalVisible}
+            />
+            <ThemedModal
+                cancelText={!isLoading ? t('cancel') : undefined}
+                confirmText={!isLoading ? t('generate') : undefined}
+                onClose={handleCloseGenerateWorkoutPlanModal}
+                onConfirm={handleCreateWorkoutPlan}
+                title={t('enter_workout_details')}
+                visible={generateModalVisible}
+            >
+                <View style={styles.modalContent}>
+                    <CustomTextInput
+                        label={t('workout_details')}
+                        onChangeText={setInputValue}
+                        placeholder={t('enter_workout_details')}
+                        value={inputValue}
+                    />
+                    {isLoading && (
+                        <ActivityIndicator
+                            color={colors.primary}
+                            size="large"
                         />
-                        <AnimatedSearchBar
-                            searchQuery={searchQuery}
-                            setSearchQuery={setSearchQuery}
-                        />
-                    </Appbar.Header>
-                    <View style={styles.toggleContainer}>
-                        <Text style={styles.toggleLabel}>{t('show_deleted_workouts')}</Text>
-                        <Switch
-                            onValueChange={handleShowDeletedWorkouts}
-                            value={showDeletedWorkouts}
-                        />
-                    </View>
-                    {filteredWorkouts.length > 0 ? (
-                        <FlashList
-                            contentContainerStyle={styles.scrollViewContent}
-                            data={filteredWorkouts}
-                            estimatedItemSize={135}
-                            keyExtractor={(item) =>
-                                (item?.id ? item.id.toString() : 'default')
-                            }
-                            ListFooterComponent={
-                                workouts.length < totalWorkoutsCount ? (
-                                    <ActivityIndicator />
-                                ) : null
-                            }
-                            onEndReached={loadMoreWorkouts}
-                            onEndReachedThreshold={0.5}
-                            renderItem={({ item: workout }) => (
-                                <ThemedCard key={workout.id}>
-                                    <Card.Content style={styles.cardContent}>
-                                        <View style={styles.cardHeader}>
-                                            <Text style={styles.cardTitle}>
-                                                {workout.title}
-                                            </Text>
-                                            <WorkoutItem
-                                                workoutDetails={workoutDetails}
-                                                workoutId={workout.id!}
-                                            />
-                                        </View>
-                                        <View style={styles.cardActions}>
-                                            <FontAwesome5
-                                                color={colors.primary}
-                                                name="play"
-                                                onPress={() =>
-                                                    openStartWorkoutConfirmationModal(
-                                                        workout
-                                                    )
-                                                }
-                                                size={ICON_SIZE}
-                                                style={styles.iconButton}
-                                            />
-                                            <FontAwesome5
-                                                color={colors.primary}
-                                                name="eye"
-                                                onPress={() => navigation.navigate('workoutDetails', { id: workout.id })}
-                                                size={ICON_SIZE}
-                                                style={styles.iconButton}
-                                            />
-                                            <FontAwesome5
-                                                color={colors.primary}
-                                                name="edit"
-                                                onPress={() => navigation.navigate('createWorkout', { id: workout.id })}
-                                                size={ICON_SIZE}
-                                                style={styles.iconButton}
-                                            />
-                                            <FontAwesome5
-                                                color={colors.primary}
-                                                name="trash"
-                                                onPress={() =>
-                                                    openDeleteWorkoutConfirmationModal(
-                                                        workout
-                                                    )
-                                                }
-                                                size={ICON_SIZE}
-                                                style={styles.iconButton}
-                                            />
-                                        </View>
-                                    </Card.Content>
-                                </ThemedCard>
-                            )}
-                        />
-                    ) : (
-                        <Text style={styles.noDataText}>{t('no_workouts')}</Text>
                     )}
-                    <ThemedModal
-                        cancelText={t('no')}
-                        confirmText={t('yes')}
-                        onClose={() => setModalVisible(false)}
-                        onConfirm={handleStartWorkout}
-                        title={selectedWorkout ? t('start_workout_confirmation', { title: selectedWorkout.title }) : t('start_workout_confirmation_generic')}
-                        visible={modalVisible}
-                    />
-                    <ThemedModal
-                        cancelText={t('no')}
-                        confirmText={t('yes')}
-                        onClose={() => setConfirmationModalVisible(false)}
-                        onConfirm={handleConfirmStartNewWorkout}
-                        title={t('confirm_start_new_workout')}
-                        visible={confirmationModalVisible}
-                    />
-                    <ThemedModal
-                        cancelText={t('no')}
-                        confirmText={t('yes')}
-                        onClose={() => setDeleteModalVisible(false)}
-                        onConfirm={handleDeleteWorkout}
-                        title={selectedWorkout ? t('delete_workout_confirmation', { title: selectedWorkout.title }) : t('delete_confirmation_generic')}
-                        visible={deleteModalVisible}
-                    />
-                    <ThemedModal
-                        cancelText={!isLoading ? t('cancel') : undefined}
-                        confirmText={!isLoading ? t('generate') : undefined}
-                        onClose={handleCloseGenerateWorkoutPlanModal}
-                        onConfirm={handleCreateWorkoutPlan}
-                        title={t('enter_workout_details')}
-                        visible={generateModalVisible}
-                    >
-                        <View style={styles.modalContent}>
-                            <CustomTextInput
-                                label={t('workout_details')}
-                                onChangeText={setInputValue}
-                                placeholder={t('enter_workout_details')}
-                                value={inputValue}
-                            />
-                            {isLoading && (
-                                <ActivityIndicator
-                                    color={colors.primary}
-                                    size="large"
-                                />
-                            )}
-                        </View>
-                    </ThemedModal>
                 </View>
-            </FABWrapper>
-        </Screen>
+            </ThemedModal>
+            <Screen style={styles.container}>
+                <FABWrapper actions={fabActions} icon="cog" visible>
+                    <View style={styles.container}>
+                        <Appbar.Header
+                            mode="small"
+                            statusBarHeight={0}
+                            style={styles.appbarHeader}
+                        >
+                            <Appbar.Content
+                                title={t('workouts')}
+                                titleStyle={styles.appbarTitle}
+                            />
+                            <AnimatedSearchBar
+                                searchQuery={searchQuery}
+                                setSearchQuery={setSearchQuery}
+                            />
+                        </Appbar.Header>
+                        <View style={styles.toggleContainer}>
+                            <Text style={styles.toggleLabel}>{t('show_deleted_workouts')}</Text>
+                            <Switch
+                                onValueChange={handleShowDeletedWorkouts}
+                                value={showDeletedWorkouts}
+                            />
+                        </View>
+                        {filteredWorkouts.length > 0 ? (
+                            <FlashList
+                                contentContainerStyle={styles.scrollViewContent}
+                                data={filteredWorkouts}
+                                estimatedItemSize={135}
+                                keyExtractor={(item) =>
+                                    (item?.id ? item.id.toString() : 'default')
+                                }
+                                ListFooterComponent={
+                                    workouts.length < totalWorkoutsCount ? (
+                                        <ActivityIndicator />
+                                    ) : null
+                                }
+                                onEndReached={loadMoreWorkouts}
+                                onEndReachedThreshold={0.5}
+                                renderItem={({ item: workout }) => (
+                                    <ThemedCard key={workout.id}>
+                                        <Card.Content style={styles.cardContent}>
+                                            <View style={styles.cardHeader}>
+                                                <Text style={styles.cardTitle}>
+                                                    {workout.title}
+                                                </Text>
+                                                <WorkoutItem
+                                                    workoutDetails={workoutDetails}
+                                                    workoutId={workout.id!}
+                                                />
+                                            </View>
+                                            <View style={styles.cardActions}>
+                                                <FontAwesome5
+                                                    color={colors.primary}
+                                                    name="play"
+                                                    onPress={() =>
+                                                        openStartWorkoutConfirmationModal(
+                                                            workout
+                                                        )
+                                                    }
+                                                    size={ICON_SIZE}
+                                                    style={styles.iconButton}
+                                                />
+                                                <FontAwesome5
+                                                    color={colors.primary}
+                                                    name="eye"
+                                                    onPress={() => navigation.navigate('workoutDetails', { id: workout.id })}
+                                                    size={ICON_SIZE}
+                                                    style={styles.iconButton}
+                                                />
+                                                <FontAwesome5
+                                                    color={colors.primary}
+                                                    name="edit"
+                                                    onPress={() => navigation.navigate('createWorkout', { id: workout.id })}
+                                                    size={ICON_SIZE}
+                                                    style={styles.iconButton}
+                                                />
+                                                <FontAwesome5
+                                                    color={colors.primary}
+                                                    name="trash"
+                                                    onPress={() =>
+                                                        openDeleteWorkoutConfirmationModal(
+                                                            workout
+                                                        )
+                                                    }
+                                                    size={ICON_SIZE}
+                                                    style={styles.iconButton}
+                                                />
+                                            </View>
+                                        </Card.Content>
+                                    </ThemedCard>
+                                )}
+                            />
+                        ) : (
+                            <Text style={styles.noDataText}>{t('no_workouts')}</Text>
+                        )}
+                    </View>
+                </FABWrapper>
+            </Screen>
+        </>
     );
 }
 

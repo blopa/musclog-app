@@ -492,7 +492,7 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
 
     if (exercise && exercises?.[currentExerciseIndex]?.sets.length) {
         return (
-            <Screen style={styles.container}>
+            <Screen>
                 <WorkoutSession
                     exercise={exercise}
                     isFirstExercise={currentExerciseIndex === 0}
