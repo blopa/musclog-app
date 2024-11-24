@@ -16,8 +16,8 @@ interface ThemedModalProps {
     children?: React.ReactNode;
     closeOnTouchOutside?: boolean;
     confirmText?: string;
-    onClose: () => void;
-    onConfirm?: () => (() => void) | Promise<void>;
+    onClose: (() => Promise<void>) | (() => void);
+    onConfirm?: (() => Promise<void>) | (() => void);
     style?: ViewStyle;
     title?: string;
     visible: boolean;
