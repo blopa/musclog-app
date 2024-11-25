@@ -233,25 +233,32 @@ export const syncHealthConnectData = async (
             healthData.weightRecords
         );
 
-        const currentHealthConnectDates = [
+        const currentHealthConnectNutritionDates = [
             ...(healthData.nutritionRecords?.map((n) => n.startTime) || []),
+        ].filter((date) => date) as string[];
+
+        const currentHealthConnectMetricsDates = [
             ...(healthData.weightRecords?.map((n) => n.time) || []),
             ...combinedData.map((d) => d.date),
             ...combinedData.map((d) => d.createdAt),
         ].filter((date) => date) as string[];
 
         // TODO: maybe simply get last 30 days of data
-        if (currentHealthConnectDates.length > 0) {
+        if (currentHealthConnectNutritionDates.length > 0) {
             // Sort dates in ascending order
-            currentHealthConnectDates.sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+            currentHealthConnectNutritionDates.sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+            currentHealthConnectMetricsDates.sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
 
             // Get the first and last date
-            const startDate = currentHealthConnectDates[0];
-            const endDate = currentHealthConnectDates[currentHealthConnectDates.length - 1];
+            const nutritionStartDate = currentHealthConnectNutritionDates[0];
+            const nutritionEndDate = currentHealthConnectNutritionDates[currentHealthConnectNutritionDates.length - 1];
+
+            const metricsStartDate = currentHealthConnectMetricsDates[0];
+            const metricsEndDate = currentHealthConnectMetricsDates[currentHealthConnectMetricsDates.length - 1];
 
             // Delete all existing Health Connect data in the date range
-            await deleteHealthConnectUserNutritionBetweenDates(startDate, endDate);
-            await deleteHealthConnectUserMetricsBetweenDates(startDate, endDate);
+            await deleteHealthConnectUserNutritionBetweenDates(nutritionStartDate, nutritionEndDate);
+            await deleteHealthConnectUserMetricsBetweenDates(metricsStartDate, metricsEndDate);
         }
 
         if (healthData?.nutritionRecords?.length) {
