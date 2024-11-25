@@ -19,6 +19,10 @@ interface HealthConnectContextValue {
     requestPermissions: () => Promise<void>;
 }
 
+export const hasAccessToHealthConnectDataHistory = async () => {
+    return IS_PERMITTED;
+};
+
 export const checkIsHealthConnectedPermitted = async (accessType: HealthConnectAccessType, recordTypes?: RecordType[]) => {
     return IS_PERMITTED;
 };

@@ -1,6 +1,6 @@
 import type { HealthConnectRecord, RecordType } from 'react-native-health-connect/src/types';
 
-import { MANDATORY_PERMISSIONS, NEEDED_PERMISSIONS } from '@/constants/healthConnect';
+import { DEFAULT_PAGE_SIZE, MANDATORY_PERMISSIONS, NEEDED_PERMISSIONS } from '@/constants/healthConnect';
 import { METRIC_SYSTEM } from '@/constants/storage';
 import {
     HealthConnectBodyFatRecordData,
@@ -10,6 +10,7 @@ import {
 } from '@/utils/types';
 import * as IntentLauncher from 'expo-intent-launcher';
 import React, { createContext, ReactNode, useCallback, useContext, useState } from 'react';
+import { PermissionsAndroid } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import {
     deleteRecordsByUuids,
@@ -22,8 +23,6 @@ import {
 import { Permission } from 'react-native-health-connect/lib/typescript/types';
 
 const packageName = DeviceInfo.getBundleId();
-
-export const DEFAULT_PAGE_SIZE = 5000; // arbitrary number to get records from last 30 days
 
 export interface HealthConnectContextValue {
     checkReadIsPermitted: (recordTypes?: RecordType[]) => Promise<boolean>;
@@ -89,6 +88,19 @@ function isReadPermissionGranted(recordType: string, permissions: Permission[]) 
         (permission) => permission.recordType === recordType && permission.accessType === 'read'
     );
 }
+
+function isWritePermissionGranted(recordType: string, permissions: Permission[]) {
+    return permissions.some(
+        (permission) => permission.recordType === recordType && permission.accessType === 'write'
+    );
+}
+
+export const hasAccessToHealthConnectDataHistory = async () => {
+    return await PermissionsAndroid.check(
+        // @ts-ignore permission exists but is not in the type definition
+        'android.permission.health.READ_HEALTH_DATA_HISTORY'
+    );
+};
 
 export const checkIsHealthConnectedPermitted = async (accessType: HealthConnectAccessType, recordTypes?: RecordType[]) => {
     try {

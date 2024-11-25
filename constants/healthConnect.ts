@@ -51,3 +51,5 @@ export const CALORIES_IN_CARBS = 4;
 export const CALORIES_IN_PROTEIN = 4;
 
 export const CALORIES_IN_FIBER = 2;
+
+export const DEFAULT_PAGE_SIZE = 5000; // arbitrary number to get records from last 30 days
