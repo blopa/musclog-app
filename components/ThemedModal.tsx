@@ -110,7 +110,9 @@ const ThemedModal = ({
                                 {title && (
                                     <Text style={styles.modalMessage}>{title}</Text>
                                 )}
-                                {children}
+                                <View style={{ width: 'auto' }}>
+                                    {children}
+                                </View>
                                 <View style={styles.buttonContainer}>
                                     {cancelText && (
                                         <Button
