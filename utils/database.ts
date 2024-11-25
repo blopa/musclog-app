@@ -723,30 +723,33 @@ export const addUserNutritions = async (userNutritions: UserNutritionInsertType[
         'source',
     ] as (keyof UserNutritionInsertType)[];
 
-    const valuesClause = processedUserNutritions
-        .map(() => `(${columns.map(() => '?').join(', ')})`)
-        .join(', ');
+    const batchSize = 500;
 
-    const parameters = processedUserNutritions.flatMap((nutrition) =>
-        columns.map((col) => nutrition[col])
-    ).map((param) => param ?? '');
+    for (let i = 0; i < processedUserNutritions.length; i += batchSize) {
+        const batch = processedUserNutritions.slice(i, i + batchSize);
 
-    const sql = `
-        INSERT INTO "UserNutrition" (${columns.map((col) => `"${col}"`).join(', ')})
-        VALUES ${valuesClause}
-    `;
+        const valuesClause = batch
+            .map(() => `(${columns.map(() => '?').join(', ')})`)
+            .join(', ');
 
-    debugger;
-    try {
-        const result = database.runSync(sql, ...parameters);
-        debugger;
-        return true;
-    } catch (error) {
-        console.error('Error during bulk insert:', error);
-        throw error;
+        const parameters = batch.flatMap((nutrition) =>
+            columns.map((col) => nutrition[col])
+        ).map((param) => param ?? '');
+
+        const sql = `
+            INSERT INTO "UserNutrition" (${columns.map((col) => `"${col}"`).join(', ')})
+            VALUES ${valuesClause}
+        `;
+
+        try {
+            database.runSync(sql, ...parameters);
+        } catch (error) {
+            console.error(`Error during batch insert (batch ${i / batchSize + 1}):`, error);
+            throw error;
+        }
     }
 
-    return false;
+    return true;
 };
 
 export const addUserNutrition = async (userNutrition: UserNutritionInsertType): Promise<number> => {

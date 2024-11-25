@@ -126,6 +126,7 @@ export const checkIsHealthConnectedPermitted = async (accessType: HealthConnectA
 export const getHealthConnectData = async (pageSize: number = DEFAULT_PAGE_SIZE): Promise<HealthDataType> => {
     const timeRangeFilter = {
         endTime: new Date().toISOString(),
+        // TODO: use 'between'
         operator: 'before',
     } as const;
 

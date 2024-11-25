@@ -126,7 +126,8 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
             checkReadIsPermitted,
             checkWriteIsPermitted,
             getHealthData,
-            insertHealthData
+            insertHealthData,
+            300 // arbitrary page size to get food for today
         );
 
         await loadConsumed();

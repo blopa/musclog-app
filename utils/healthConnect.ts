@@ -220,12 +220,13 @@ export const syncHealthConnectData = async (
     checkReadIsPermitted: HealthConnectContextValue['checkReadIsPermitted'],
     checkWriteIsPermitted: HealthConnectContextValue['checkWriteIsPermitted'],
     getHealthData: HealthConnectContextValue['getHealthData'],
-    insertHealthData: HealthConnectContextValue['insertHealthData']
+    insertHealthData: HealthConnectContextValue['insertHealthData'],
+    pageSize = DEFAULT_PAGE_SIZE
 ) => {
     const user = await getUser();
     const isReadPermitted = await checkReadIsPermitted(['BodyFat', 'Weight', 'Nutrition']);
     if (isReadPermitted) {
-        const healthData = await getHealthData(DEFAULT_PAGE_SIZE, ['BodyFat', 'Weight', 'Nutrition']);
+        const healthData = await getHealthData(pageSize, ['BodyFat', 'Weight', 'Nutrition']);
 
         const combinedData = await combineHeightAndWeightHealthData(
             healthData.bodyFatRecords,
@@ -255,6 +256,7 @@ export const syncHealthConnectData = async (
             const metricsStartDate = currentHealthConnectMetricsDates[0];
             const metricsEndDate = currentHealthConnectMetricsDates[currentHealthConnectMetricsDates.length - 1];
 
+            debugger;
             // Delete all existing Health Connect data in the date range
             await deleteHealthConnectUserNutritionBetweenDates(nutritionStartDate, nutritionEndDate);
             await deleteHealthConnectUserMetricsBetweenDates(metricsStartDate, metricsEndDate);
