@@ -23,7 +23,7 @@ import { Permission } from 'react-native-health-connect/lib/typescript/types';
 
 const packageName = DeviceInfo.getBundleId();
 
-export const DEFAULT_PAGE_SIZE = 10000;
+export const DEFAULT_PAGE_SIZE = 5000; // arbitrary number to get records from last 30 days
 
 export interface HealthConnectContextValue {
     checkReadIsPermitted: (recordTypes?: RecordType[]) => Promise<boolean>;
