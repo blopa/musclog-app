@@ -23,6 +23,8 @@ import { Permission } from 'react-native-health-connect/lib/typescript/types';
 
 const packageName = DeviceInfo.getBundleId();
 
+export const DEFAULT_PAGE_SIZE = 10000;
+
 export interface HealthConnectContextValue {
     checkReadIsPermitted: (recordTypes?: RecordType[]) => Promise<boolean>;
     checkWriteIsPermitted: (recordTypes?: RecordType[]) => Promise<boolean>;
@@ -109,10 +111,10 @@ export const checkIsHealthConnectedPermitted = async (accessType: HealthConnectA
     }
 };
 
-export const getHealthConnectData = async (pageSize: number = 1000): Promise<HealthDataType> => {
+export const getHealthConnectData = async (pageSize: number = DEFAULT_PAGE_SIZE): Promise<HealthDataType> => {
     const timeRangeFilter = {
-        operator: 'after',
-        startTime: '2000-01-01T00:00:00.000Z',
+        endTime: new Date().toISOString(),
+        operator: 'before',
     } as const;
 
     const grantedPermissions = await getGrantedPermissions();
@@ -162,11 +164,7 @@ export const getHealthConnectData = async (pageSize: number = 1000): Promise<Hea
             await readRecords('TotalCaloriesBurned', {
                 ascendingOrder: false,
                 pageSize: 1,
-                timeRangeFilter: {
-                    ...timeRangeFilter,
-                    startTime: new Date().toISOString()
-                        .split('T')[0] + 'T00:00:00.000Z',
-                },
+                timeRangeFilter,
             })
         ).records
         : [];
@@ -259,7 +257,7 @@ export const HealthConnectProvider = ({ children }: HealthConnectProviderProps) 
     }, []);
 
     const getHealthData = useCallback(
-        async (pageSize: number = 1000, recordTypes?: RecordType[]): Promise<HealthDataType> => {
+        async (pageSize: number = DEFAULT_PAGE_SIZE, recordTypes?: RecordType[]): Promise<HealthDataType> => {
             try {
                 const isInitialized = await initialize();
                 if (!isInitialized) {

@@ -6,6 +6,7 @@ import { LAST_TIME_APP_USED, READ_HEALTH_CONNECT_TYPE } from '@/constants/storag
 import { LAST_RUN_KEY } from '@/constants/tasks';
 import {
     checkIsHealthConnectedPermitted,
+    DEFAULT_PAGE_SIZE,
     getHealthConnectData,
     HealthConnectContextValue,
 } from '@/storage/HealthConnectProvider';
@@ -225,8 +226,7 @@ export const syncHealthConnectData = async (
     const user = await getUser();
     const isReadPermitted = await checkReadIsPermitted(['BodyFat', 'Weight', 'Nutrition']);
     if (isReadPermitted) {
-        const dataPointsCount = 1000;
-        const healthData = await getHealthData(dataPointsCount, ['BodyFat', 'Weight', 'Nutrition']);
+        const healthData = await getHealthData(DEFAULT_PAGE_SIZE, ['BodyFat', 'Weight', 'Nutrition']);
 
         const combinedData = await combineHeightAndWeightHealthData(
             healthData.bodyFatRecords,
