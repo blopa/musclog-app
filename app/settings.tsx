@@ -33,6 +33,7 @@ import { useSettings } from '@/storage/SettingsContext';
 import { isValidApiKey } from '@/utils/ai';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { addUserMetrics, addUserNutrition, getSetting, getUser } from '@/utils/database';
+import { getCurrentTimestampISOString, getDaysAgoTimestampISOString } from '@/utils/date';
 import { exportDatabase, importDatabase } from '@/utils/file';
 import { deleteAllData, GoogleUserInfo, handleGoogleSignIn } from '@/utils/googleAuth';
 import { aggregateUserNutritionMetricsDataByDate } from '@/utils/healthConnect';
@@ -362,7 +363,14 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
     const getHealthConnectData = useCallback(async () => {
         const isPermitted = await checkReadIsPermitted(['Height', 'Weight', 'BodyFat', 'Nutrition']);
         if (isPermitted) {
-            const healthData = await getHealthData(1000, ['Height', 'Weight', 'BodyFat', 'Nutrition']);
+            const startTime = getDaysAgoTimestampISOString(1);
+            const endTime = getCurrentTimestampISOString();
+            const healthData = await getHealthData(
+                startTime,
+                endTime,
+                1000,
+                ['Height', 'Weight', 'BodyFat', 'Nutrition']
+            );
 
             if (healthData) {
                 const latestHeight = healthData?.heightRecords?.[0];

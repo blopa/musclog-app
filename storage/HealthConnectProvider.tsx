@@ -2,6 +2,7 @@ import type { HealthConnectRecord, RecordType } from 'react-native-health-connec
 
 import { DEFAULT_PAGE_SIZE, MANDATORY_PERMISSIONS, NEEDED_PERMISSIONS } from '@/constants/healthConnect';
 import { METRIC_SYSTEM } from '@/constants/storage';
+import { getCurrentTimestampISOString } from '@/utils/date';
 import {
     HealthConnectBodyFatRecordData,
     HealthConnectWeightRecord,
@@ -28,7 +29,7 @@ export interface HealthConnectContextValue {
     checkReadIsPermitted: (recordTypes?: RecordType[]) => Promise<boolean>;
     checkWriteIsPermitted: (recordTypes?: RecordType[]) => Promise<boolean>;
     deleteHealthData: (recordType: RecordType, dataIds: string[]) => Promise<void>;
-    getHealthData: (pageSize?: number, recordTypes?: RecordType[]) => Promise<HealthDataType>;
+    getHealthData: (startTime: string, endTime: string, pageSize?: number, recordTypes?: RecordType[]) => Promise<HealthDataType>;
     healthData: HealthDataType;
     insertHealthData: (data: HealthConnectRecord[]) => Promise<string[]>;
     requestPermissions: () => Promise<void>;
@@ -38,7 +39,7 @@ type HealthConnectAccessType = 'read' | 'write';
 
 const data = {
     latest: {
-        date: new Date().toISOString()
+        date: getCurrentTimestampISOString()
             .split('T')[0],
         fatPercentage: undefined,
         height: undefined,
@@ -123,11 +124,14 @@ export const checkIsHealthConnectedPermitted = async (accessType: HealthConnectA
     }
 };
 
-export const getHealthConnectData = async (pageSize: number = DEFAULT_PAGE_SIZE): Promise<HealthDataType> => {
+export const getHealthConnectData = async (
+    startTime: string,
+    endTime: string,
+    pageSize: number = DEFAULT_PAGE_SIZE): Promise<HealthDataType> => {
     const timeRangeFilter = {
-        endTime: new Date().toISOString(),
-        // TODO: use 'between'
-        operator: 'before',
+        endTime,
+        operator: 'between',
+        startTime,
     } as const;
 
     const grantedPermissions = await getGrantedPermissions();
@@ -217,7 +221,7 @@ const HealthConnectContext = createContext<HealthConnectContextValue>({
     checkReadIsPermitted: async (recordTypes?: RecordType[]) => false,
     checkWriteIsPermitted: async (recordTypes?: RecordType[]) => false,
     deleteHealthData: async (recordType: RecordType, dataIds: string[]): Promise<void> => {},
-    getHealthData: async (pageSize?: number, recordTypes?: RecordType[]) => data,
+    getHealthData: async (startTime: string, endTime: string, pageSize?: number, recordTypes?: RecordType[]) => data,
     healthData: data,
     insertHealthData: async (data: HealthConnectRecord[]): Promise<string[]> => Promise.resolve([]),
     requestPermissions: async () => {},
@@ -270,7 +274,7 @@ export const HealthConnectProvider = ({ children }: HealthConnectProviderProps) 
     }, []);
 
     const getHealthData = useCallback(
-        async (pageSize: number = DEFAULT_PAGE_SIZE, recordTypes?: RecordType[]): Promise<HealthDataType> => {
+        async (startTime: string, endTime: string, pageSize: number = DEFAULT_PAGE_SIZE, recordTypes?: RecordType[]): Promise<HealthDataType> => {
             try {
                 const isInitialized = await initialize();
                 if (!isInitialized) {
@@ -287,7 +291,7 @@ export const HealthConnectProvider = ({ children }: HealthConnectProviderProps) 
                     return healthData;
                 }
 
-                const newHealthData = await getHealthConnectData(pageSize);
+                const newHealthData = await getHealthConnectData(startTime, endTime, pageSize);
                 setHealthData(newHealthData);
 
                 return newHealthData;

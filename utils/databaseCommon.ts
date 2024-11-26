@@ -3,7 +3,7 @@ import { USER_METRICS_SOURCES } from '@/constants/healthConnect';
 import { EATING_PHASES, NUTRITION_TYPES } from '@/constants/nutrition';
 import { COMPLETED_STATUS } from '@/constants/storage';
 import i18n from '@/lang/lang';
-import { getCurrentTimestamp } from '@/utils/date';
+import { getCurrentTimestampISOString } from '@/utils/date';
 import { generateHash, normalizeName } from '@/utils/string';
 import {
     ChatInsertType,
@@ -74,7 +74,7 @@ export const getCommonFunctions = ({
                 const fitnessGoalMessage = user?.fitnessGoals ? i18n.t('goal_message', { fitnessGoals: i18n.t(user?.fitnessGoals) }) : '';
 
                 await addChatRaw({
-                    createdAt: getCurrentTimestamp(),
+                    createdAt: getCurrentTimestampISOString(),
                     message: `${i18n.t('greeting_message', { name: userName })}${fitnessGoalMessage} ${i18n.t('ending_message')}`,
                     misc: '',
                     sender: 'assistant',
@@ -166,7 +166,7 @@ export const getCommonFunctions = ({
                 let workoutId: number;
                 if (!foundWorkout) {
                     const workoutData: WorkoutInsertType = {
-                        createdAt: getCurrentTimestamp(),
+                        createdAt: getCurrentTimestampISOString(),
                         description: parsedWorkout.description || '',
                         title: parsedWorkout.title,
                         volumeCalculationType: VOLUME_CALCULATION_TYPES.NONE,
@@ -201,7 +201,7 @@ export const getCommonFunctions = ({
                 const user = await getUser();
                 await addWorkoutEvent({
                     bodyWeight: user?.metrics.weight || 0,
-                    createdAt: getCurrentTimestamp(),
+                    createdAt: getCurrentTimestampISOString(),
                     date: new Date(parsedWorkout.date).toISOString(),
                     description: existingWorkout?.description || '',
                     duration: Number(parsedWorkout.duration) || 60,
@@ -259,7 +259,7 @@ export const getCommonFunctions = ({
                         } else {
                             // New set
                             const newSet: SetInsertType = {
-                                createdAt: getCurrentTimestamp(),
+                                createdAt: getCurrentTimestampISOString(),
                                 exerciseId: exercise.exerciseId,
                                 isDropSet: set.isDropSet || false,
                                 reps: set.reps,
@@ -317,7 +317,7 @@ export const getCommonFunctions = ({
         try {
             for (const metric of parsedUserMetrics) {
                 await addUserMetrics({
-                    createdAt: getCurrentTimestamp(),
+                    createdAt: getCurrentTimestampISOString(),
                     dataId: generateHash(),
                     date: metric.date,
                     fatPercentage: metric.fatPercentage,

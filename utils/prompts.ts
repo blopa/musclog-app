@@ -21,7 +21,7 @@ import {
     getUserNutritionFromDate,
     getWorkoutWithExercisesRepsAndSetsDetails,
 } from '@/utils/database';
-import { formatDate } from '@/utils/date';
+import { formatDate, getCurrentTimestampISOString } from '@/utils/date';
 import { safeToFixed } from '@/utils/string';
 import { ExerciseVolumeType, UserWithMetricsType, WorkoutEventReturnType, WorkoutReturnType } from '@/utils/types';
 import { getUnit } from '@/utils/unit';
@@ -779,7 +779,7 @@ export const getChatMessagePromptContent = async (): Promise<string> => {
     // const bioData = await getAllBio();
     const recentWorkoutsData = await getRecentWorkouts();
     const user = await getUser();
-    const currentDate = new Date().toISOString().split('T')[0];
+    const currentDate = getCurrentTimestampISOString().split('T')[0];
     const { weightUnit } = await getUnit();
 
     const recentWorkoutDetails = await Promise.all(

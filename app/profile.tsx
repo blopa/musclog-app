@@ -18,7 +18,7 @@ import {
     getLatestUserMetrics,
     updateUserMetrics,
 } from '@/utils/database';
-import { getCurrentTimestamp, isValidDateParam } from '@/utils/date';
+import { getCurrentTimestampISOString, isValidDateParam } from '@/utils/date';
 import { formatFloatNumericInputText, generateHash, safeToFixed } from '@/utils/string';
 import { ActivityLevelType, EatingPhaseType, ExperienceLevelType } from '@/utils/types';
 import {
@@ -129,7 +129,7 @@ const Profile = ({ navigation }: { navigation: NavigationProp<any> }) => {
         const heightValue = getSaveFormattedHeight(parseFloat(height), isImperial);
 
         const userMetric = {
-            date: getCurrentTimestamp(),
+            date: getCurrentTimestampISOString(),
             eatingPhase,
             fatPercentage: parseFloat(fatPercentage),
             height: heightValue,

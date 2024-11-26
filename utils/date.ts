@@ -78,10 +78,16 @@ export const formatTime = (timeInMs: number, useMilliseconds: boolean = true) =>
     }
 };
 
-export const getCurrentTimestamp = () => new Date().toISOString();
+export const getCurrentTimestampISOString = () => new Date().toISOString();
 
 export const formatCreatedAt = (createdAt: Date | number): string => {
     return typeof createdAt === 'number'
         ? new Date(createdAt).toISOString()
         : createdAt.toISOString();
+};
+
+export const getDaysAgoTimestampISOString = (daysAgo: number): string => {
+    const date = new Date();
+    date.setDate(date.getDate() - daysAgo);
+    return date.toISOString();
 };

@@ -25,7 +25,7 @@ import {
     addUserNutrition,
     getLatestUser,
 } from '@/utils/database';
-import { getCurrentTimestamp, isValidDateParam } from '@/utils/date';
+import { getCurrentTimestampISOString, getDaysAgoTimestampISOString, isValidDateParam } from '@/utils/date';
 import { GoogleUserInfo, handleGoogleSignIn } from '@/utils/googleAuth';
 import { aggregateUserNutritionMetricsDataByDate } from '@/utils/healthConnect';
 import { formatFloatNumericInputText, generateHash } from '@/utils/string';
@@ -163,7 +163,9 @@ const Onboarding = ({ onFinish }: OnboardingProps) => {
                 value: 'true',
             });
 
-            const userHealthData = await getHealthData(1000, ['Height', 'Weight', 'BodyFat', 'Nutrition']);
+            const startTime = getDaysAgoTimestampISOString(1);
+            const endTime = getCurrentTimestampISOString();
+            const userHealthData = await getHealthData(startTime, endTime, 1000, ['Height', 'Weight', 'BodyFat', 'Nutrition']);
 
             if (userHealthData) {
                 await addOrUpdateUser({});
@@ -252,7 +254,7 @@ const Onboarding = ({ onFinish }: OnboardingProps) => {
 
                 await addUserMetrics({
                     dataId: generateHash(),
-                    date: getCurrentTimestamp(),
+                    date: getCurrentTimestampISOString(),
                     eatingPhase: form.eatingPhase as EatingPhaseType,
                     height: metricHeight,
                     source: USER_METRICS_SOURCES.USER_INPUT,

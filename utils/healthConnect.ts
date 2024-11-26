@@ -20,7 +20,7 @@ import {
     getUser,
     updateUserNutrition,
 } from '@/utils/database';
-import { isValidDateParam } from '@/utils/date';
+import { getCurrentTimestampISOString, getDaysAgoTimestampISOString, isValidDateParam } from '@/utils/date';
 import { generateHash } from '@/utils/string';
 import {
     HealthConnectBodyFatRecordData,
@@ -99,7 +99,7 @@ export const getLatestHealthConnectData = async () => {
 
     const lastRunDate = await AsyncStorage.getItem(LAST_RUN_KEY);
     const lastTimeUsed = await AsyncStorage.getItem(LAST_TIME_APP_USED);
-    const today = new Date().toISOString()
+    const today = getCurrentTimestampISOString()
         .split('T')[0];
 
     if (hours >= 5 && (!lastRunDate || lastRunDate !== today)) {
@@ -119,7 +119,10 @@ export const getLatestHealthConnectData = async () => {
         const lastTimeUsedDate = new Date(isValidDateParam(lastTimeUsed) ? lastTimeUsed : today);
         const daysSinceLastUse = Math.round(Math.abs(now.getTime() - lastTimeUsedDate.getTime()) / (1000 * 60 * 60 * 24));
 
-        const healthData = await getHealthConnectData(daysSinceLastUse + 1);
+        const startTime = getDaysAgoTimestampISOString(daysSinceLastUse);
+        const endTime = getCurrentTimestampISOString();
+
+        const healthData = await getHealthConnectData(startTime, endTime, daysSinceLastUse + 1);
         if (healthData) {
             const latestHeight = healthData?.heightRecords?.[0];
             const latestWeight = healthData?.weightRecords?.[0];
@@ -221,12 +224,14 @@ export const syncHealthConnectData = async (
     checkWriteIsPermitted: HealthConnectContextValue['checkWriteIsPermitted'],
     getHealthData: HealthConnectContextValue['getHealthData'],
     insertHealthData: HealthConnectContextValue['insertHealthData'],
+    startTime: string,
+    endTime: string,
     pageSize = DEFAULT_PAGE_SIZE
 ) => {
     const user = await getUser();
     const isReadPermitted = await checkReadIsPermitted(['BodyFat', 'Weight', 'Nutrition']);
     if (isReadPermitted) {
-        const healthData = await getHealthData(pageSize, ['BodyFat', 'Weight', 'Nutrition']);
+        const healthData = await getHealthData(startTime, endTime, pageSize, ['BodyFat', 'Weight', 'Nutrition']);
 
         const combinedData = await combineHeightAndWeightHealthData(
             healthData.bodyFatRecords,
@@ -347,7 +352,7 @@ export const syncHealthConnectData = async (
                     value: userNutrition.protein || 0,
                 },
                 recordType: 'Nutrition',
-                startTime: userNutrition.date || new Date().toISOString(),
+                startTime: userNutrition.date || getCurrentTimestampISOString(),
                 sugar: {
                     unit: 'grams',
                     value: userNutrition.sugar || 0,

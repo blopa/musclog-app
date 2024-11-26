@@ -19,6 +19,7 @@ import {
     getAllFoodsByIds,
     getUserNutritionBetweenDates,
 } from '@/utils/database';
+import { getCurrentTimestampISOString, getDaysAgoTimestampISOString } from '@/utils/date';
 import { fetchProductByEAN } from '@/utils/fetchFoodData';
 import { syncHealthConnectData } from '@/utils/healthConnect';
 import { getRecentFood } from '@/utils/storage';
@@ -127,7 +128,9 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
             checkWriteIsPermitted,
             getHealthData,
             insertHealthData,
-            300 // arbitrary page size to get food for today
+            getDaysAgoTimestampISOString(1),
+            getCurrentTimestampISOString(),
+            1000
         );
 
         await loadConsumed();

@@ -3,6 +3,7 @@ import CustomTextInput from '@/components/CustomTextInput';
 import { Screen } from '@/components/Screen';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { addFood } from '@/utils/database';
+import { getCurrentTimestampISOString } from '@/utils/date';
 import { updateRecentFood } from '@/utils/storage';
 import { formatFloatNumericInputText, generateHash } from '@/utils/string';
 import { GoogleFormFoodFoodLabelType } from '@/utils/types';
@@ -88,7 +89,7 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 if (field === 'data_id') {
                     urlParams.append(formatQuestionName(id), generateHash());
                 } else if (field === 'created_at') {
-                    urlParams.append(formatQuestionName(id), new Date().toISOString());
+                    urlParams.append(formatQuestionName(id), getCurrentTimestampISOString());
                 }
             }
         });
@@ -104,7 +105,7 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
             cholesterol: parseFloat(urlParams.get('entry.1733386302') || '0'),
             chromium: parseFloat(urlParams.get('entry.281656146') || '0'),
             copper: parseFloat(urlParams.get('entry.1049396127') || '0'),
-            createdAt: urlParams.get('entry.1917240265') || new Date().toISOString(),
+            createdAt: urlParams.get('entry.1917240265') || getCurrentTimestampISOString(),
             dataId: urlParams.get('entry.1025747995') || generateHash(),
             fiber: parseInt(urlParams.get('entry.1039537292') || '0', 10),
             folate: parseFloat(urlParams.get('entry.1243452339') || '0'),

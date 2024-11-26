@@ -33,6 +33,7 @@ import {
     updateSet,
     updateWorkoutSetsVolume,
 } from '@/utils/database';
+import { getCurrentTimestampISOString, getDaysAgoTimestampISOString } from '@/utils/date';
 import { generateHash } from '@/utils/string';
 import {
     CurrentWorkoutProgressType,
@@ -344,10 +345,16 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
 
                     const isPermitted = await checkReadIsPermitted(['Nutrition']);
                     if (isPermitted) {
-                        const healthData = await getHealthData(1000, ['Nutrition']);
+                        const healthData = await getHealthData(
+                            getDaysAgoTimestampISOString(1),
+                            getCurrentTimestampISOString(),
+                            1000,
+                            ['Nutrition']
+                        );
+
                         if (healthData) {
                             const todaysNutrition = healthData.nutritionRecords!.filter(
-                                ({ startTime }) => startTime.startsWith(new Date().toISOString().split('T')[0])
+                                ({ startTime }) => startTime.startsWith(getCurrentTimestampISOString().split('T')[0])
                             );
 
                             for (const nutrition of todaysNutrition) {
@@ -375,7 +382,7 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
                     }
 
                     const userNutritionFromToday = await getUserNutritionFromDate(
-                        new Date().toISOString().split('T')[0] + 'T00:00:00.000Z'
+                        getCurrentTimestampISOString().split('T')[0] + 'T00:00:00.000Z'
                     );
 
                     const totalCarbs = userNutritionFromToday.reduce((acc, item) => acc + item.carbohydrate, 0);
@@ -386,7 +393,7 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
                     const recentWorkout: WorkoutEventInsertType = {
                         calories: totalCalories,
                         carbohydrate: totalCarbs,
-                        date: new Date().toISOString(),
+                        date: getCurrentTimestampISOString(),
                         description: workout.description, // TODO: add option for user to add description
                         duration: Math.floor(duration / 60),
                         exerciseData: JSON.stringify(exerciseData),
