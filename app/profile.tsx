@@ -410,14 +410,23 @@ const Profile = ({ navigation }: { navigation: NavigationProp<any> }) => {
                                         </View>
                                     </Card.Content>
                                 </Card>
+                                <View style={styles.bottomButtonContainer}>
+                                    <Button
+                                        icon={() => <FontAwesome5 color={colors.surface} name="heartbeat" size={20} />}
+                                        mode="contained"
+                                        onPress={() => navigation.navigate('listFitnessGoals')}
+                                    >
+                                        {t('fitness_goals')}
+                                    </Button>
+                                </View>
                                 {showUserMetrics ? (
                                     <View style={styles.bottomButtonContainer}>
                                         <Button
-                                            icon={() => <FontAwesome5 color={colors.surface} name="heartbeat" size={20} />}
+                                            icon={() => <FontAwesome5 color={colors.surface} name="chart-bar" size={20} />}
                                             mode="contained"
-                                            onPress={() => navigation.navigate('listFitnessGoals')}
+                                            onPress={() => navigation.navigate('userMetricsCharts')}
                                         >
-                                            {t('fitness_goals')}
+                                            {t('user_metrics')}
                                         </Button>
                                     </View>
                                 ) : null}
