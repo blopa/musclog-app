@@ -889,7 +889,7 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
             checkWriteIsPermitted,
             getHealthData,
             insertHealthData,
-            startDate?.toISOString() || getDaysAgoTimestampISOString(1),
+            startDate?.toISOString() || getDaysAgoTimestampISOString(30),
             endDate?.toISOString() || getCurrentTimestampISOString(),
             1000
         );

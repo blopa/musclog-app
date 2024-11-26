@@ -248,7 +248,6 @@ export const syncHealthConnectData = async (
             ...combinedData.map((d) => d.createdAt),
         ].filter((date) => date) as string[];
 
-        // TODO: maybe simply get last 30 days of data
         if (currentHealthConnectNutritionDates.length > 0) {
             // Sort dates in ascending order
             currentHealthConnectNutritionDates.sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
@@ -261,7 +260,6 @@ export const syncHealthConnectData = async (
             const metricsStartDate = currentHealthConnectMetricsDates[0];
             const metricsEndDate = currentHealthConnectMetricsDates[currentHealthConnectMetricsDates.length - 1];
 
-            debugger;
             // Delete all existing Health Connect data in the date range
             await deleteHealthConnectUserNutritionBetweenDates(nutritionStartDate, nutritionEndDate);
             await deleteHealthConnectUserMetricsBetweenDates(metricsStartDate, metricsEndDate);
