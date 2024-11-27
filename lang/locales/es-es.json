@@ -64,7 +64,7 @@
     "sign_out": "Cerrar Sesión",
     "reauthenticate": "Reautenticar",
     "connect_your_account": "Conecta tu cuenta",
-    "sign_in_with_google_or_skip": "Inicia sesión con Google o salta",
+    "sign_in_with_google_or_skip": "Inicia sesión con Google o omite. Tus datos se guardan solo localmente.",
     "continue": "Continuar",
     "value_unit": "{{value}} ({{unit}})",
     "your_body_weight": "Su peso: {{weight}} ({{weightUnit}})",
