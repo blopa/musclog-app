@@ -1,5 +1,6 @@
 import AppHeader from '@/components/AppHeader';
 import CustomTextInput from '@/components/CustomTextInput';
+import { GoogleSignInButton } from '@/components/GoogleSignInButton';
 import { Screen } from '@/components/Screen';
 import ThemedModal from '@/components/ThemedModal';
 import { DARK, LIGHT, SYSTEM_DEFAULT } from '@/constants/colors';
@@ -882,14 +883,11 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
                             <Text style={styles.modalText}>
                                 {t('signed_in_as', { name: userInfo?.name || t('unknown') })}
                             </Text>
-                            <Button
+                            <GoogleSignInButton
                                 disabled={loading}
-                                mode="contained"
-                                onPress={handleGoogleSignInPress}
-                                style={styles.modalButton}
-                            >
-                                {t('reauthenticate')}
-                            </Button>
+                                onSignIn={handleGoogleSignInPress}
+                                variant="reauthenticate"
+                            />
                             <Button
                                 disabled={loading}
                                 mode="contained"
@@ -900,14 +898,7 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
                             </Button>
                         </>
                     ) : (
-                        <Button
-                            disabled={loading}
-                            mode="contained"
-                            onPress={handleGoogleSignInPress}
-                            style={styles.modalButton}
-                        >
-                            {t('sign_in_with_google')}
-                        </Button>
+                        <GoogleSignInButton disabled={loading} onSignIn={handleGoogleSignInPress} />
                     )}
                     {loading ? <ActivityIndicator color={colors.primary} style={styles.loadingIndicator} /> : null}
                 </View>
