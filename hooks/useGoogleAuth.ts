@@ -20,10 +20,8 @@ export const useGoogleAuth = (): UseGoogleAuthReturn => {
     const [request, response, promptAsync] = useAuthRequest({
         androidClientId: GOOGLE_CLIENT_ID,
         scopes: [
-            'openid',
             'profile',
             'https://www.googleapis.com/auth/cloud-vision',
-            'https://www.googleapis.com/auth/cloud-platform',
             'https://www.googleapis.com/auth/generative-language.retriever',
         ],
         webClientId: GOOGLE_CLIENT_ID,

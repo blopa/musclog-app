@@ -170,6 +170,10 @@ const WorkoutModal = ({ onClose, visible }: WorkoutModalProps) => {
         <ThemedModal
             onClose={handleClose}
             onConfirm={handleStartWorkout}
+            style={{
+                // TODO: omg fix this please
+                paddingBottom: 100,
+            }}
             visible={isVisible}
         >
             <View style={[styles.mainWrapper, { maxHeight: 'auto' }]}>

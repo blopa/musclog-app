@@ -24,7 +24,7 @@ export function GoogleSignInButton({
             contentStyle={styles.contentStyle}
             disabled={disabled}
             labelStyle={{
-                marginLeft: 5,
+                marginLeft: -2,
             }}
             mode="contained"
             onPress={onSignIn}
@@ -33,7 +33,7 @@ export function GoogleSignInButton({
             <View style={styles.innerContainer}>
                 <View style={styles.googleIconWrapper}>
                     <Image
-                        source={require('@/assets/google-icon.svg')}
+                        source={require('@/assets/google-icon.png')}
                         style={styles.googleIcon}
                     />
                 </View>
@@ -78,6 +78,7 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         alignItems: 'center',
         flexDirection: 'row',
         margin: 0,
+        paddingRight: 16,
     },
     text: {
         color: dark ? '#ffffff' : '#757575',

@@ -100,6 +100,10 @@ const CurrentWorkoutProgressModal: React.FC<PreviousSetDataModalProps> = ({
             cancelText={t('close')}
             confirmText=""
             onClose={onClose}
+            style={{
+                // TODO: omg fix this please
+                paddingBottom: 100,
+            }}
             title={t('current_workout_progress')}
             visible={isVisible}
         >

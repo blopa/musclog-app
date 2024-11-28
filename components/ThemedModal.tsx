@@ -2,6 +2,7 @@ import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import {
     Animated,
+    Dimensions,
     Easing,
     StyleSheet,
     TouchableWithoutFeedback,
@@ -16,8 +17,10 @@ interface ThemedModalProps {
     children?: React.ReactNode;
     closeOnTouchOutside?: boolean;
     confirmText?: string;
+    marginBottom?: number;
     onClose: (() => Promise<void>) | (() => void);
     onConfirm?: (() => Promise<void>) | (() => void);
+    overlayStyle?: ViewStyle;
     style?: ViewStyle;
     title?: string;
     visible: boolean;
@@ -29,8 +32,10 @@ const ThemedModal = ({
     children,
     closeOnTouchOutside = true,
     confirmText,
+    marginBottom = 0,
     onClose,
     onConfirm,
+    overlayStyle,
     style,
     title,
     visible,
@@ -98,7 +103,7 @@ const ThemedModal = ({
                 accessible={false}
                 onPress={handleDismissOnOverlayPress}
             >
-                <View style={styles.overlay}>
+                <View style={[styles.overlay, overlayStyle]}>
                     <TouchableWithoutFeedback accessible={false}>
                         <Animated.View
                             style={[
@@ -110,10 +115,10 @@ const ThemedModal = ({
                                 {title && (
                                     <Text style={styles.modalMessage}>{title}</Text>
                                 )}
-                                <View style={{ width: 'auto' }}>
+                                <View style={{ height: 'auto', width: 'auto' }}>
                                     {children}
                                 </View>
-                                <View style={styles.buttonContainer}>
+                                <View style={[styles.buttonContainer, { marginTop: -marginBottom }]}>
                                     {cancelText && (
                                         <Button
                                             disabled={isLoading}
@@ -157,8 +162,10 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         marginHorizontal: 5,
     },
     buttonContainer: {
+        display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-between',
+        // marginTop: -40,
         width: '100%',
     },
     modalContent: {
@@ -168,6 +175,7 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         borderColor: colors.shadow,
         borderRadius: 8,
         borderWidth: 1,
+        maxHeight: Dimensions.get('window').height - 200,
         padding: 16,
         width: '80%',
     },

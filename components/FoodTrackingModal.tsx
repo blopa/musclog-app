@@ -182,6 +182,8 @@ const FoodTrackingModal = ({
         <ThemedModal
             cancelText={t('cancel')}
             confirmText={userNutritionId ? t('update') : t('track')}
+            // TODO: omg fix this please
+            marginBottom={40}
             onClose={onClose}
             onConfirm={handleTrackFood}
             title={allowEditName ? '' : editableName}
