@@ -197,10 +197,11 @@ const WorkoutSession = ({
                 const existingProgress = await AsyncStorage.getItem(CURRENT_WORKOUT_PROGRESS);
                 const { completed: completedProgress = [], skipped = [] } = JSON.parse(existingProgress || '{}') as CurrentWorkoutProgressType;
 
-                const completedSetIds = new Set(completedProgress.map((set) => set.setId));
+                const completedSetIds = completedProgress.map((exercise) => exercise.setId);
+
                 const remainingExercises = workoutDetails.exercises.map((exercise) => ({
                     ...exercise,
-                    sets: exercise.sets.filter((set) => !completedSetIds.has(set.id) && !skippedSets.includes(set.id)),
+                    sets: exercise.sets.filter((set) => !completedSetIds.includes(set.id) && !skippedSets.includes(set.id)),
                 })).filter((exercise) => exercise.sets.length > 0);
 
                 setRemainingWorkoutData(remainingExercises);
@@ -533,7 +534,7 @@ const WorkoutSession = ({
                 />
             )}
             {!isResting && (
-                <View>
+                <View style={styles.buttonWrapper}>
                     <Button
                         disabled={loading}
                         mode="contained"
@@ -578,6 +579,12 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     buttonSpacing: {
         marginTop: 16,
         width: '100%',
+    },
+    buttonWrapper: {
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginTop: 16,
+        width: '80%',
     },
     closeButton: {
         position: 'absolute',

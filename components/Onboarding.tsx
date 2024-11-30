@@ -1,6 +1,7 @@
 import CustomPicker from '@/components/CustomPicker';
 import CustomTextInput from '@/components/CustomTextInput';
 import DatePickerModal from '@/components/DatePickerModal';
+import { GoogleSignInButton } from '@/components/GoogleSignInButton';
 import { ACTIVITY_LEVELS_VALUES, EXPERIENCE_LEVELS_VALUES } from '@/constants/exercises';
 import { USER_METRICS_SOURCES } from '@/constants/healthConnect';
 import { EATING_PHASES, NUTRITION_TYPES } from '@/constants/nutrition';
@@ -25,7 +26,7 @@ import {
     addUserNutrition,
     getLatestUser,
 } from '@/utils/database';
-import { getCurrentTimestampISOString, isValidDateParam } from '@/utils/date';
+import { getCurrentTimestampISOString, getDaysAgoTimestampISOString, isValidDateParam } from '@/utils/date';
 import { GoogleUserInfo, handleGoogleSignIn } from '@/utils/googleAuth';
 import { aggregateUserNutritionMetricsDataByDate } from '@/utils/healthConnect';
 import { formatFloatNumericInputText, generateHash } from '@/utils/string';
@@ -163,7 +164,9 @@ const Onboarding = ({ onFinish }: OnboardingProps) => {
                 value: 'true',
             });
 
-            const userHealthData = await getHealthData(1000, ['Height', 'Weight', 'BodyFat', 'Nutrition']);
+            const startTime = getDaysAgoTimestampISOString(1);
+            const endTime = getCurrentTimestampISOString();
+            const userHealthData = await getHealthData(startTime, endTime, 1000, ['Height', 'Weight', 'BodyFat', 'Nutrition']);
 
             if (userHealthData) {
                 await addOrUpdateUser({});
@@ -425,14 +428,7 @@ const Onboarding = ({ onFinish }: OnboardingProps) => {
                         </View>
                     ) : (
                         <View style={styles.submitButton}>
-                            <Button
-                                disabled={!request || isSigningIn}
-                                mode="contained"
-                                onPress={handleSignIn}
-                                style={styles.buttonSpacing}
-                            >
-                                {t('sign_in_with_google')}
-                            </Button>
+                            <GoogleSignInButton disabled={!request || isSigningIn} onSignIn={handleSignIn} />
                             <Button
                                 mode="outlined"
                                 onPress={handleNext}

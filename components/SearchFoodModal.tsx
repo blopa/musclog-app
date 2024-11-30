@@ -12,6 +12,7 @@ import { useFocusEffect } from 'expo-router';
 import React, { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
+    ActivityIndicator,
     Dimensions,
     TextInput as RNTextInput,
     StyleSheet,
@@ -43,6 +44,7 @@ const SearchFoodModal = ({
     const [showBarcodeCamera, setShowBarcodeCamera] = useState(false);
     const [showPhotoCamera, setShowPhotoCamera] = useState(false);
     const [scanned, setScanned] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [permission, requestPermission] = useCameraPermissions();
     const [photoMode, setPhotoMode] = useState<string>('meal');
     const [isAiEnabled, setIsAiEnabled] = useState(false);
@@ -68,6 +70,7 @@ const SearchFoodModal = ({
         async ({ data }: BarcodeScanningResult) => {
             setScanned(true);
             setShowBarcodeCamera(false);
+            setIsLoading(true);
 
             const foodInfo = await fetchProductByEAN(data);
 
@@ -78,6 +81,7 @@ const SearchFoodModal = ({
             }
 
             setScanned(false);
+            setIsLoading(false);
         },
         [onFoodSelected, t]
     );
@@ -107,6 +111,7 @@ const SearchFoodModal = ({
     }, [permission, requestPermission, t]);
 
     const handleTakePhoto = useCallback(async () => {
+        setIsLoading(true);
         if (photoCameraRef.current) {
             try {
                 // @ts-ignore
@@ -136,6 +141,7 @@ const SearchFoodModal = ({
                 console.error('Error taking photo:', error);
             }
         }
+        setIsLoading(false);
     }, [onFoodSelected, photoMode, t]);
 
     const handleFoodSearch = useCallback(() => {
@@ -200,29 +206,36 @@ const SearchFoodModal = ({
             title={t('search_food')}
             visible={visible}
         >
-            <View style={styles.searchContainer}>
-                <RNTextInput
-                    onChangeText={setSearchQuery}
-                    placeholder={t('search_food')}
-                    placeholderTextColor={colors.onSurfaceVariant}
-                    style={styles.searchInput}
-                    value={searchQuery}
-                />
-                <Button mode="outlined" onPress={handleFoodSearch} style={styles.iconButton}>
-                    <FontAwesome5 color={colors.primary} name="search" size={20} />
-                </Button>
-            </View>
-            <View style={styles.iconRow}>
-                <Button mode="outlined" onPress={openBarcodeCamera} style={styles.iconButton}>
-                    <FontAwesome5 color={colors.primary} name="barcode" size={20} />
-                </Button>
-                {isAiEnabled && (
-                    <Button mode="outlined" onPress={openPhotoCamera} style={styles.iconButton}>
-                        <FontAwesome5 color={colors.primary} name="camera" size={20} />
-                    </Button>
-                )}
-            </View>
-            {showBarcodeCamera && (
+            {(showBarcodeCamera || showPhotoCamera || isLoading) ? null : (
+                <>
+                    <View style={styles.searchContainer}>
+                        <RNTextInput
+                            onChangeText={setSearchQuery}
+                            placeholder={t('search_food')}
+                            placeholderTextColor={colors.onSurfaceVariant}
+                            style={styles.searchInput}
+                            value={searchQuery}
+                        />
+                        <Button mode="outlined" onPress={handleFoodSearch} style={styles.iconButton}>
+                            <FontAwesome5 color={colors.primary} name="search" size={20} />
+                        </Button>
+                    </View>
+                    <View style={styles.iconRow}>
+                        <Button mode="outlined" onPress={openBarcodeCamera} style={styles.iconButton}>
+                            <FontAwesome5 color={colors.primary} name="barcode" size={20} />
+                        </Button>
+                        {isAiEnabled && (
+                            <Button mode="outlined" onPress={openPhotoCamera} style={styles.iconButton}>
+                                <FontAwesome5 color={colors.primary} name="camera" size={20} />
+                            </Button>
+                        )}
+                    </View>
+                </>
+            )}
+            {isLoading ? (
+                <ActivityIndicator color={colors.primary} size="large" />
+            ) : null}
+            {showBarcodeCamera ? (
                 <View style={styles.cameraContainer}>
                     <CameraView
                         onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
@@ -237,14 +250,14 @@ const SearchFoodModal = ({
                         </View>
                     </CameraView>
                 </View>
-            )}
-            {showPhotoCamera && (
+            ) : null}
+            {showPhotoCamera ? (
                 <View style={styles.cameraContainer}>
                     <CameraView ref={photoCameraRef} style={styles.camera}>
                         {renderPhotoCameraOverlay()}
                     </CameraView>
                 </View>
-            )}
+            ) : null}
         </ThemedModal>
     );
 };

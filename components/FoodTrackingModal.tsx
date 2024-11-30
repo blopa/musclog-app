@@ -9,6 +9,7 @@ import useUnit from '@/hooks/useUnit';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { normalizeMacrosByGrams } from '@/utils/data';
 import { addFood, addUserNutrition, getFoodByNameAndMacros, updateUserNutrition } from '@/utils/database';
+import { getCurrentTimestampISOString } from '@/utils/date';
 import { updateRecentFood } from '@/utils/storage';
 import { generateHash, safeToFixed } from '@/utils/string';
 import { UserNutritionInsertType } from '@/utils/types';
@@ -111,7 +112,7 @@ const FoodTrackingModal = ({
             calories: calculatedValues.kcal,
             carbohydrate: calculatedValues.carbs,
             dataId: generateHash(),
-            date: new Date().toISOString(),
+            date: getCurrentTimestampISOString(),
             fat: calculatedValues.fat,
             grams: parseFloat(unitAmount),
             mealType: parseInt(mealType, 10),
