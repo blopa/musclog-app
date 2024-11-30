@@ -20,7 +20,7 @@ import {
     View,
     ViewStyle,
 } from 'react-native';
-import { Button, SegmentedButtons, Text, useTheme } from 'react-native-paper';
+import { Button, Portal, SegmentedButtons, Text, useTheme } from 'react-native-paper';
 
 interface SearchFoodModalProps {
     onClose: () => void;
@@ -235,29 +235,31 @@ const SearchFoodModal = ({
             {isLoading ? (
                 <ActivityIndicator color={colors.primary} size="large" />
             ) : null}
-            {showBarcodeCamera ? (
-                <View style={styles.cameraContainer}>
-                    <CameraView
-                        onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
-                        ratio="16:9"
-                        style={styles.camera}
-                    >
-                        {renderScannerOverlay()}
-                        <View style={styles.cameraOverlay}>
-                            <Button mode="contained" onPress={() => setShowBarcodeCamera(false)} style={styles.closeButton}>
-                                {t('close')}
-                            </Button>
-                        </View>
-                    </CameraView>
-                </View>
-            ) : null}
-            {showPhotoCamera ? (
-                <View style={styles.cameraContainer}>
-                    <CameraView ref={photoCameraRef} style={styles.camera}>
-                        {renderPhotoCameraOverlay()}
-                    </CameraView>
-                </View>
-            ) : null}
+            <Portal>
+                {showBarcodeCamera ? (
+                    <View style={styles.cameraContainer}>
+                        <CameraView
+                            onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
+                            ratio="16:9"
+                            style={styles.camera}
+                        >
+                            {renderScannerOverlay()}
+                            <View style={styles.cameraOverlay}>
+                                <Button mode="contained" onPress={() => setShowBarcodeCamera(false)} style={styles.closeButton}>
+                                    {t('close')}
+                                </Button>
+                            </View>
+                        </CameraView>
+                    </View>
+                ) : null}
+                {showPhotoCamera ? (
+                    <View style={styles.cameraContainer}>
+                        <CameraView ref={photoCameraRef} style={styles.camera}>
+                            {renderPhotoCameraOverlay()}
+                        </CameraView>
+                    </View>
+                ) : null}
+            </Portal>
         </ThemedModal>
     );
 };
