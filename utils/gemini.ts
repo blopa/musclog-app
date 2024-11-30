@@ -21,6 +21,8 @@ import {
 } from '@google/generative-ai';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Sentry from '@sentry/react-native';
+// import fetch from 'isomorphic-fetch';
+import { fetch } from 'expo/fetch';
 
 import {
     createWorkoutPlanPrompt,

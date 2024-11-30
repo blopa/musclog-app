@@ -6,6 +6,8 @@ import {
     PaginatedOpenFoodFactsApiFoodInfoType,
     PaginatedOpenFoodFactsApiFoodProductInfoType,
 } from '@/utils/types';
+// import fetch from 'isomorphic-fetch';
+import { fetch } from 'expo/fetch';
 import { read, utils } from 'xlsx';
 
 export const mapProductData = (product: PaginatedOpenFoodFactsApiFoodProductInfoType): MusclogApiFoodInfoType => {

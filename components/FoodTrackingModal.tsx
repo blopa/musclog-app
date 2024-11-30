@@ -181,10 +181,10 @@ const FoodTrackingModal = ({
     return (
         <ThemedModal
             cancelText={t('cancel')}
-            confirmText={userNutritionId ? t('update') : t('track')}
+            confirmText={isLoading ? undefined : (userNutritionId ? t('update') : t('track'))}
             onClose={onClose}
             onConfirm={handleTrackFood}
-            title={allowEditName ? '' : editableName}
+            title={allowEditName ? '' : editableName || food?.productTitle}
             visible={visible}
         >
             <ScrollView>

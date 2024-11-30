@@ -8,6 +8,7 @@ interface ThemedModalProps {
     children?: React.ReactNode;
     closeOnTouchOutside?: boolean;
     confirmText?: string;
+    disabled?: boolean;
     onClose: () => void;
     onConfirm?: () => (() => void) | Promise<void>;
     style?: ViewStyle;
@@ -20,6 +21,7 @@ const ThemedModal = ({
     children,
     closeOnTouchOutside = true,
     confirmText,
+    disabled = false,
     onClose,
     onConfirm,
     style,
@@ -52,7 +54,7 @@ const ThemedModal = ({
             {visible && (
                 <TouchableWithoutFeedback
                     accessible={false} // Prevent the overlay from interfering with accessibility
-                    onPress={handleDismissOnOverlayPress}
+                    // onPress={handleDismissOnOverlayPress}
                 >
                     <View style={styles.overlay}>
                         <Modal
@@ -61,14 +63,14 @@ const ThemedModal = ({
                             visible={visible}
                         >
                             <View style={styles.innerContent}>
-                                {title && (
+                                {title ? (
                                     <Text style={styles.modalMessage}>{title}</Text>
-                                )}
+                                ) : null}
                                 {children}
                                 <View style={styles.buttonContainer}>
                                     {cancelText && (
                                         <Button
-                                            disabled={isLoading}
+                                            disabled={isLoading || disabled}
                                             mode="outlined"
                                             onPress={handleOnClose}
                                             style={[
@@ -81,7 +83,7 @@ const ThemedModal = ({
                                     )}
                                     {confirmText && onConfirm && (
                                         <Button
-                                            disabled={isLoading}
+                                            disabled={isLoading || disabled}
                                             mode="contained"
                                             onPress={handleOnConfirm}
                                             style={styles.button}

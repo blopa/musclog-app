@@ -9,6 +9,8 @@ import {
 import { addOrUpdateSetting, getSetting } from '@/utils/database';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthSessionResult } from 'expo-auth-session';
+// import fetch from 'isomorphic-fetch';
+import { fetch } from 'expo/fetch';
 
 export interface GoogleUserInfo {
     email: string;
