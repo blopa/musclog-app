@@ -163,7 +163,7 @@ const rawFetchGeminiApi = async (model: string, accessToken: string, body: any) 
 };
 
 const configureBasicGenAI = async ({ accessToken, apiKey }: { accessToken?: string; apiKey?: string;}, systemParts?: Part[]) => {
-    const genAI = await getGenerativeAI({ apiKey });
+    const genAI = await getGenerativeAI({ accessToken, apiKey });
 
     return genAI.getGenerativeModel({
         model: GEMINI_MODEL,
@@ -231,7 +231,7 @@ export async function getNutritionInsights(startDate: string): Promise<string | 
             generationConfig,
         } as GenerateContentRequest);
 
-        if (result.response.promptFeedback && result.response.promptFeedback.blockReason) {
+        if (result.response?.promptFeedback?.blockReason) {
             console.log(`Blocked for ${result.response.promptFeedback.blockReason}`);
             return;
         }
@@ -251,7 +251,7 @@ export async function sendChatMessage(messages: any[]) {
         return;
     }
 
-    const genAI = await getGenerativeAI({ apiKey });
+    const genAI = await getGenerativeAI({ accessToken, apiKey });
 
     const conversationContent: Content[] = createConversationContent(messages);
 
@@ -302,7 +302,7 @@ export async function sendChatMessage(messages: any[]) {
 
         const result = await chatSession.sendMessage(latestMessage?.parts?.[0].text!);
 
-        if (result.response.promptFeedback && result.response.promptFeedback.blockReason) {
+        if (result.response?.promptFeedback?.blockReason) {
             console.log(`Blocked for ${result.response.promptFeedback.blockReason}`);
             return;
         }
@@ -328,7 +328,7 @@ async function createWorkoutPlan(messages: any[]) {
     }
 
     const messagesToSend = messages.length > 20 ? messages.slice(0, 20) : messages;
-    const genAI = await getGenerativeAI({ apiKey });
+    const genAI = await getGenerativeAI({ accessToken, apiKey });
     const prompt = await createWorkoutPlanPrompt(messagesToSend);
 
     const conversationContent: Content[] = createConversationContent(prompt);
@@ -367,7 +367,7 @@ async function createWorkoutPlan(messages: any[]) {
             },
         } as GenerateContentRequest);
 
-        if (result.response.promptFeedback && result.response.promptFeedback.blockReason) {
+        if (result.response?.promptFeedback?.blockReason) {
             console.log(`Blocked for ${result.response.promptFeedback.blockReason}`);
             return;
         }
@@ -391,7 +391,7 @@ export const calculateNextWorkoutVolume = async (workout: WorkoutReturnType) => 
         return;
     }
 
-    const genAI = await getGenerativeAI({ apiKey });
+    const genAI = await getGenerativeAI({ accessToken, apiKey });
     const prompt = await getCalculateNextWorkoutVolumePrompt(workout);
 
     const conversationContent: Content[] = createConversationContent(prompt);
@@ -430,7 +430,7 @@ export const calculateNextWorkoutVolume = async (workout: WorkoutReturnType) => 
             },
         } as GenerateContentRequest);
 
-        if (result.response.promptFeedback && result.response.promptFeedback.blockReason) {
+        if (result.response?.promptFeedback?.blockReason) {
             console.log(`Blocked for ${result.response.promptFeedback.blockReason}`);
             return;
         }
@@ -480,7 +480,7 @@ export const generateExerciseImage = async (exerciseName: string): Promise<strin
             generationConfig,
         } as GenerateContentRequest);
 
-        if (result.response.promptFeedback && result.response.promptFeedback.blockReason) {
+        if (result.response?.promptFeedback?.blockReason) {
             console.log(`Blocked for ${result.response.promptFeedback.blockReason}`);
             return 'https://via.placeholder.com/300';
         }
@@ -506,7 +506,7 @@ export const parsePastWorkouts = async (userMessage: string) => {
         return;
     }
 
-    const genAI = await getGenerativeAI({ apiKey });
+    const genAI = await getGenerativeAI({ accessToken, apiKey });
     const prompt = await getParsePastWorkoutsPrompt(userMessage);
 
     const conversationContent: Content[] = createConversationContent(prompt);
@@ -545,7 +545,7 @@ export const parsePastWorkouts = async (userMessage: string) => {
             },
         } as GenerateContentRequest);
 
-        if (result.response.promptFeedback && result.response.promptFeedback.blockReason) {
+        if (result.response?.promptFeedback?.blockReason) {
             console.log(`Blocked for ${result.response.promptFeedback.blockReason}`);
             return;
         }
@@ -568,7 +568,7 @@ export const parsePastNutrition = async (userMessage: string) => {
         return;
     }
 
-    const genAI = await getGenerativeAI({ apiKey });
+    const genAI = await getGenerativeAI({ accessToken, apiKey });
     const prompt = await getParsePastNutritionPrompt(userMessage);
 
     const conversationContent: Content[] = createConversationContent(prompt);
@@ -607,7 +607,7 @@ export const parsePastNutrition = async (userMessage: string) => {
             },
         } as GenerateContentRequest);
 
-        if (result.response.promptFeedback && result.response.promptFeedback.blockReason) {
+        if (result.response?.promptFeedback?.blockReason) {
             console.log(`Blocked for ${result.response.promptFeedback.blockReason}`);
             return;
         }
@@ -653,7 +653,7 @@ export const getRecentWorkoutInsights = async (workoutEventId: number): Promise<
             generationConfig,
         } as GenerateContentRequest);
 
-        if (result.response.promptFeedback && result.response.promptFeedback.blockReason) {
+        if (result.response?.promptFeedback?.blockReason) {
             console.log(`Blocked for ${result.response.promptFeedback.blockReason}`);
             return;
         }
@@ -696,7 +696,7 @@ export const getWorkoutInsights = async (workoutId: number): Promise<string | un
             generationConfig,
         } as GenerateContentRequest);
 
-        if (result.response.promptFeedback && result.response.promptFeedback.blockReason) {
+        if (result.response?.promptFeedback?.blockReason) {
             console.log(`Blocked for ${result.response.promptFeedback.blockReason}`);
             return;
         }
@@ -739,7 +739,7 @@ export const getWorkoutVolumeInsights = async (workoutId: number): Promise<strin
             generationConfig,
         } as GenerateContentRequest);
 
-        if (result.response.promptFeedback && result.response.promptFeedback.blockReason) {
+        if (result.response?.promptFeedback?.blockReason) {
             console.log(`Blocked for ${result.response.promptFeedback.blockReason}`);
             return;
         }
@@ -761,7 +761,7 @@ export async function estimateNutritionFromPhoto(photoUri: string) {
 
     const base64Image = await getBase64StringFromPhotoUri(await resizeImage(photoUri));
 
-    const genAI = await getGenerativeAI({ apiKey });
+    const genAI = await getGenerativeAI({ accessToken, apiKey });
 
     const functionDeclarations = getMacrosEstimationFunctions(
         'Extracts the macronutrients of a food label from a photo',
@@ -843,7 +843,7 @@ export async function extractMacrosFromLabelPhoto(photoUri: string) {
 
     const base64Image = await getBase64StringFromPhotoUri(await resizeImage(photoUri));
 
-    const genAI = await getGenerativeAI({ apiKey });
+    const genAI = await getGenerativeAI({ accessToken, apiKey });
 
     const functionDeclarations = getMacrosEstimationFunctions(
         'Extracts the macronutrients of a food label from a photo',
