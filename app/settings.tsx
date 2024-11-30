@@ -1,5 +1,6 @@
 import AppHeader from '@/components/AppHeader';
 import CustomTextInput from '@/components/CustomTextInput';
+import { GoogleSignInButton } from '@/components/GoogleSignInButton';
 import { Screen } from '@/components/Screen';
 import ThemedModal from '@/components/ThemedModal';
 import { DARK, LIGHT, SYSTEM_DEFAULT } from '@/constants/colors';
@@ -33,6 +34,7 @@ import { useSettings } from '@/storage/SettingsContext';
 import { isValidApiKey } from '@/utils/ai';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { addUserMetrics, addUserNutrition, getSetting, getUser } from '@/utils/database';
+import { getCurrentTimestampISOString, getDaysAgoTimestampISOString } from '@/utils/date';
 import { exportDatabase, importDatabase } from '@/utils/file';
 import { deleteAllData, GoogleUserInfo, handleGoogleSignIn } from '@/utils/googleAuth';
 import { aggregateUserNutritionMetricsDataByDate } from '@/utils/healthConnect';
@@ -362,7 +364,14 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
     const getHealthConnectData = useCallback(async () => {
         const isPermitted = await checkReadIsPermitted(['Height', 'Weight', 'BodyFat', 'Nutrition']);
         if (isPermitted) {
-            const healthData = await getHealthData(1000, ['Height', 'Weight', 'BodyFat', 'Nutrition']);
+            const startTime = getDaysAgoTimestampISOString(1);
+            const endTime = getCurrentTimestampISOString();
+            const healthData = await getHealthData(
+                startTime,
+                endTime,
+                1000,
+                ['Height', 'Weight', 'BodyFat', 'Nutrition']
+            );
 
             if (healthData) {
                 const latestHeight = healthData?.heightRecords?.[0];
@@ -874,14 +883,11 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
                             <Text style={styles.modalText}>
                                 {t('signed_in_as', { name: userInfo?.name || t('unknown') })}
                             </Text>
-                            <Button
+                            <GoogleSignInButton
                                 disabled={loading}
-                                mode="contained"
-                                onPress={handleGoogleSignInPress}
-                                style={styles.modalButton}
-                            >
-                                {t('reauthenticate')}
-                            </Button>
+                                onSignIn={handleGoogleSignInPress}
+                                variant="reauthenticate"
+                            />
                             <Button
                                 disabled={loading}
                                 mode="contained"
@@ -892,14 +898,7 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
                             </Button>
                         </>
                     ) : (
-                        <Button
-                            disabled={loading}
-                            mode="contained"
-                            onPress={handleGoogleSignInPress}
-                            style={styles.modalButton}
-                        >
-                            {t('sign_in_with_google')}
-                        </Button>
+                        <GoogleSignInButton disabled={loading} onSignIn={handleGoogleSignInPress} />
                     )}
                     {loading ? <ActivityIndicator color={colors.primary} style={styles.loadingIndicator} /> : null}
                 </View>

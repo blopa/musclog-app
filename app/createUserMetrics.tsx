@@ -8,7 +8,7 @@ import { IMPERIAL_SYSTEM, KILOGRAMS, POUNDS } from '@/constants/storage';
 import useUnit from '@/hooks/useUnit';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { addUserMetrics, getUser, getUserMetrics, updateUserMetrics } from '@/utils/database';
-import { getCurrentTimestamp } from '@/utils/date';
+import { getCurrentTimestampISOString } from '@/utils/date';
 import { formatFloatNumericInputText, generateHash, safeToFixed } from '@/utils/string';
 import { EatingPhaseType, UserMetricsInsertType } from '@/utils/types';
 import {
@@ -117,7 +117,7 @@ const CreateUserMetrics = ({ navigation }: { navigation: NavigationProp<any> }) 
         const user = await getUser();
         const metricData: UserMetricsInsertType = {
             dataId: generateHash(),
-            date: getCurrentTimestamp(),
+            date: getCurrentTimestampISOString(),
             eatingPhase,
             fatPercentage: fatPercentage ? Number(fatPercentage) : undefined,
             height: metricHeight,

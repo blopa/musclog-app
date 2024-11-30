@@ -7,7 +7,7 @@ import { GRAMS, IMPERIAL_SYSTEM, OUNCES } from '@/constants/storage';
 import useUnit from '@/hooks/useUnit';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { addUserNutrition, getUserNutrition, updateUserNutrition } from '@/utils/database';
-import { getCurrentTimestamp } from '@/utils/date';
+import { getCurrentTimestampISOString } from '@/utils/date';
 import { formatFloatNumericInputText, generateHash } from '@/utils/string';
 import { UserNutritionTypeType } from '@/utils/types';
 import { getDisplayFormattedWeight, getSaveFormattedWeight } from '@/utils/unit';
@@ -110,7 +110,7 @@ const CreateUserNutrition = ({ navigation }: { navigation: NavigationProp<any> }
             calories: parseFloat(calories),
             carbohydrate: getSaveFormattedWeight(parseFloat(carbohydrate), OUNCES, isImperial),
             dataId: generateHash(),
-            date: getCurrentTimestamp(), // TODO: add a date picker
+            date: getCurrentTimestampISOString(), // TODO: add a date picker
             fat: getSaveFormattedWeight(parseFloat(fat), OUNCES, isImperial),
             fiber: getSaveFormattedWeight(parseFloat(fiber), OUNCES, isImperial),
             monounsaturatedFat: getSaveFormattedWeight(parseFloat(monounsaturatedFat), OUNCES, isImperial),

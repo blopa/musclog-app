@@ -76,6 +76,10 @@ export default function Dashboard({ navigation }: {
     //     navigation.navigate('upcomingWorkouts');
     // }, [navigation]);
 
+    const handleCloseStartWorkoutModal = useCallback(() => {
+        setModalVisible(false);
+    }, []);
+
     const handleStartWorkout = useCallback(async () => {
         if (selectedUpcomingEvent) {
             try {
@@ -262,7 +266,7 @@ export default function Dashboard({ navigation }: {
                 <ThemedModal
                     cancelText={t('no')}
                     confirmText={t('yes')}
-                    onClose={() => setModalVisible(false)}
+                    onClose={handleCloseStartWorkoutModal}
                     onConfirm={handleStartWorkout}
                     title={t('confirm_start_workout')}
                     visible={modalVisible}

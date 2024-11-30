@@ -64,7 +64,7 @@
     "sign_out": "Uitloggen",
     "reauthenticate": "Opnieuw verifiëren",
     "connect_your_account": "Verbind uw account",
-    "sign_in_with_google_or_skip": "Log in met Google of sla over",
+    "sign_in_with_google_or_skip": "Log in met Google of sla over. Je gegevens worden alleen lokaal opgeslagen.",
     "continue": "Doorgaan",
     "value_unit": "{{value}} ({{unit}})",
     "your_body_weight": "Uw gewicht: {{weight}} ({{weightUnit}})",

@@ -73,7 +73,7 @@ import {
     getLatestUser,
     getUser,
 } from '@/utils/database';
-import { getCurrentTimestamp } from '@/utils/date';
+import { getCurrentTimestampISOString } from '@/utils/date';
 import { getEncryptionKey } from '@/utils/encryption';
 import { getLatestHealthConnectData } from '@/utils/healthConnect';
 import { getDecrypter } from '@/utils/storage';
@@ -275,7 +275,7 @@ function RootLayout() {
                         : '';
 
                     await addNewChat({
-                        createdAt: getCurrentTimestamp(),
+                        createdAt: getCurrentTimestampISOString(),
                         message: `${i18n.t('greeting_message', { name: userName })}${fitnessGoalMessage} ${i18n.t('ending_message')}`,
                         misc: '',
                         sender: 'assistant',
@@ -308,7 +308,7 @@ function RootLayout() {
             await addVersioning(packageJson.version);
             console.log(`Database schema updated to version ${packageJson.version}.`);
 
-            await AsyncStorage.setItem(LAST_TIME_APP_USED, getCurrentTimestamp().toString());
+            await AsyncStorage.setItem(LAST_TIME_APP_USED, getCurrentTimestampISOString());
         };
 
         initializeApp();

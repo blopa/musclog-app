@@ -4,7 +4,7 @@ import {
     getWorkoutWithExercisesRepsAndSetsDetails,
     restoreDatabase,
 } from '@/utils/database';
-import { getCurrentTimestamp } from '@/utils/date';
+import { getCurrentTimestampISOString } from '@/utils/date';
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
 import * as ImageManipulator from 'expo-image-manipulator';
@@ -24,7 +24,7 @@ export async function downloadAsyncToFileSystem (imageUrl: string, localFilePath
 }
 
 export async function exportDatabase(encryptionPhrase?: string) {
-    const timestamp = getCurrentTimestamp();
+    const timestamp = getCurrentTimestampISOString();
     const fileUri = `${FileSystem.cacheDirectory}${timestamp}-database_export.json`;
 
     try {
@@ -40,7 +40,7 @@ export async function exportDatabase(encryptionPhrase?: string) {
 }
 
 export async function exportRecentWorkout(recentWorkoutId: number) {
-    const timestamp = getCurrentTimestamp();
+    const timestamp = getCurrentTimestampISOString();
     const fileUri = `${FileSystem.cacheDirectory}${timestamp}-recent_workout_export.json`;
 
     try {
@@ -59,7 +59,7 @@ export async function exportRecentWorkout(recentWorkoutId: number) {
 }
 
 export async function exportWorkout(workoutId: number) {
-    const timestamp = getCurrentTimestamp();
+    const timestamp = getCurrentTimestampISOString();
     const fileUri = `${FileSystem.cacheDirectory}${timestamp}-workout_export.json`;
 
     try {

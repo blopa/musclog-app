@@ -3,7 +3,7 @@ import { FRIDAY, MONDAY, WEDNESDAY } from '@/constants/storage';
 import {
     formatTime,
     getCurrentDayOfWeek,
-    getCurrentTimestamp,
+    getCurrentTimestampISOString,
     getDayOfWeek,
     getNextDayOfWeekDate,
     isValidDate,
@@ -64,6 +64,6 @@ describe('Date Utils Functions', () => {
     });
 
     test('getCurrentTimestamp', () => {
-        expect(getCurrentTimestamp()).toBe('2023-07-12T12:00:00.000Z');
+        expect(getCurrentTimestampISOString()).toBe('2023-07-12T12:00:00.000Z');
     });
 });

@@ -11,7 +11,7 @@ import { useChatData } from '@/storage/ChatProvider';
 import { useUnreadMessages } from '@/storage/UnreadMessagesProvider';
 import { generateWorkoutPlan, sendChatMessage } from '@/utils/ai';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
-import { formatCreatedAt } from '@/utils/date';
+import { formatCreatedAt, getCurrentTimestampISOString } from '@/utils/date';
 // import { addBio } from '@/utils/database';
 import { getChatMessagePromptContent } from '@/utils/prompts';
 import { ChatInsertType } from '@/utils/types';
@@ -192,7 +192,7 @@ export default function Chat({ navigation }: { navigation: NavigationProp<any> }
             }
 
             const newWorkoutChat: ChatInsertType = {
-                createdAt: new Date().toISOString(),
+                createdAt: getCurrentTimestampISOString(),
                 message: text,
                 misc: '',
                 sender: 'assistant',
@@ -252,7 +252,7 @@ export default function Chat({ navigation }: { navigation: NavigationProp<any> }
                 }
 
                 const newWorkoutChat: ChatInsertType = {
-                    createdAt: new Date().toISOString(),
+                    createdAt: getCurrentTimestampISOString(),
                     message: text,
                     misc: '',
                     sender: 'assistant',
@@ -278,7 +278,7 @@ export default function Chat({ navigation }: { navigation: NavigationProp<any> }
 
             if (messageToUser) {
                 const newAssistantChat: ChatInsertType = {
-                    createdAt: new Date().toISOString(),
+                    createdAt: getCurrentTimestampISOString(),
                     message: messageToUser,
                     misc: '',
                     sender: 'assistant',
@@ -299,7 +299,7 @@ export default function Chat({ navigation }: { navigation: NavigationProp<any> }
             //     }
             //
             //     const newWorkoutChat: ChatInsertType = {
-            //         createdAt: new Date().toISOString(),
+            //         createdAt: getCurrentTimestampISOString(),
             //         message: text,
             //         misc: '',
             //         sender: 'assistant',
@@ -311,7 +311,7 @@ export default function Chat({ navigation }: { navigation: NavigationProp<any> }
         } catch (error) {
             console.error(t('error_calling_openai'), error);
             const newAssistantMessage: ChatInsertType = {
-                createdAt: new Date().toISOString(),
+                createdAt: getCurrentTimestampISOString(),
                 message: t('error_processing_request'),
                 misc: '',
                 sender: 'assistant',

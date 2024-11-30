@@ -78,7 +78,7 @@ export const formatTime = (timeInMs: number, useMilliseconds: boolean = true) =>
     }
 };
 
-export const getCurrentTimestamp = () => new Date().toISOString();
+export const getCurrentTimestampISOString = () => new Date().toISOString();
 
 export const formatCreatedAt = (createdAt: Date | number): string => {
     return typeof createdAt === 'number'

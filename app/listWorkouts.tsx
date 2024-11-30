@@ -58,7 +58,7 @@ export default function ListWorkouts({ navigation }: { navigation: NavigationPro
             workout: WorkoutReturnType;
         };
     }>({});
-    const [modalVisible, setModalVisible] = useState(false);
+    const [startWorkoutConfirmationModalVisible, setStartWorkoutConfirmationModalVisible] = useState(false);
     const [confirmationModalVisible, setConfirmationModalVisible] = useState(false);
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
     const [selectedWorkout, setSelectedWorkout] = useState<null | WorkoutReturnType>(null);
@@ -148,7 +148,7 @@ export default function ListWorkouts({ navigation }: { navigation: NavigationPro
     }, []);
 
     const resetScreenData = useCallback(() => {
-        setModalVisible(false);
+        setStartWorkoutConfirmationModalVisible(false);
         setConfirmationModalVisible(false);
         setSelectedWorkout(null);
         setSearchQuery('');
@@ -206,7 +206,7 @@ export default function ListWorkouts({ navigation }: { navigation: NavigationPro
             } catch (error) {
                 console.error(t('failed_save_current_workout'), error);
             } finally {
-                setModalVisible(false);
+                setStartWorkoutConfirmationModalVisible(false);
             }
         }
     }, [navigation, selectedWorkout, t]);
@@ -225,14 +225,14 @@ export default function ListWorkouts({ navigation }: { navigation: NavigationPro
                 console.error(t('failed_save_current_workout'), error);
             } finally {
                 setConfirmationModalVisible(false);
-                setModalVisible(false);
+                setStartWorkoutConfirmationModalVisible(false);
             }
         }
     }, [navigation, selectedWorkout, t]);
 
     const openStartWorkoutConfirmationModal = useCallback((workout: WorkoutReturnType) => {
         setSelectedWorkout(workout);
-        setModalVisible(true);
+        setStartWorkoutConfirmationModalVisible(true);
     }, []);
 
     const openDeleteWorkoutConfirmationModal = useCallback((workout: WorkoutReturnType) => {

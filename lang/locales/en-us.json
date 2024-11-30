@@ -64,7 +64,7 @@
     "sign_out": "Sign Out",
     "reauthenticate": "Reauthenticate",
     "connect_your_account": "Connect Your Account",
-    "sign_in_with_google_or_skip": "Sign in with Google or skip",
+    "sign_in_with_google_or_skip": "Sign in with Google or skip. Your data is stored locally only.",
     "continue": "Continue",
     "value_unit": "{{value}} ({{unit}})",
     "your_body_weight": "Your body weight: {{weight}} ({{weightUnit}})",
