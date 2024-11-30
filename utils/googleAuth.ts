@@ -6,6 +6,7 @@ import {
     GOOGLE_REFRESH_TOKEN_TYPE,
     GOOGLE_USER_INFO,
 } from '@/constants/storage';
+import i18n from '@/lang/lang';
 import { addOrUpdateSetting, getSetting } from '@/utils/database';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthSessionResult } from 'expo-auth-session';
@@ -76,6 +77,7 @@ export const getUserInfo = async (token: string): Promise<GoogleUserInfo | null>
 export const refreshAccessToken = async (): Promise<string> => {
     const refreshToken = await getSetting(GOOGLE_REFRESH_TOKEN_TYPE);
     if (!refreshToken?.value) {
+        alert(i18n.t('please_reauthenticate_google'));
         throw new Error('Refresh token is missing. Please sign in again.');
     }
 
@@ -155,8 +157,11 @@ export const getAccessToken = async (): Promise<string> => {
     const accessToken = await AsyncStorage.getItem(GOOGLE_ACCESS_TOKEN);
     const tokenExpirationTime = await AsyncStorage.getItem(GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE);
 
-    if (accessToken && tokenExpirationTime && new Date().getTime() < parseInt(tokenExpirationTime, 10)) {
-        return accessToken;
+    if (accessToken && tokenExpirationTime) {
+        const expirationTime = parseInt(tokenExpirationTime, 10);
+        if (!isNaN(expirationTime) && new Date().getTime() < expirationTime - 60 * 1000) {
+            return accessToken;
+        }
     }
 
     return await refreshAccessToken();

@@ -156,12 +156,12 @@ export const estimateNutritionFromPhoto = async (photo: string) => {
     const vendor = await getAiApiVendor();
 
     // return {
-    //     calories: 425,
-    //     carbs: 25,
-    //     fat: 25,
-    //     protein: 25,
-    //     grams: 250,
-    //     name: 'Some food idk',
+    //     calories: 0,
+    //     carbs: 0,
+    //     fat: 0,
+    //     grams: 0,
+    //     name: '',
+    //     protein: 0,
     // };
 
     if (vendor === OPENAI_API_KEY_TYPE) {

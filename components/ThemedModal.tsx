@@ -9,8 +9,8 @@ interface ThemedModalProps {
     closeOnTouchOutside?: boolean;
     confirmText?: string;
     disabled?: boolean;
-    onClose: () => void;
-    onConfirm?: () => (() => void) | Promise<void>;
+    onClose: (() => Promise<void>) | (() => void);
+    onConfirm?: (() => Promise<void>) | (() => void);
     style?: ViewStyle;
     title?: string;
     visible: boolean;

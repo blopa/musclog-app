@@ -1,10 +1,10 @@
 import type { ChatCompletionMessageParam } from 'openai/resources';
 
-import { EXERCISE_IMAGE_GENERATION_TYPE, GEMINI_API_KEY_TYPE, GOOGLE_ACCESS_TOKEN } from '@/constants/storage';
+import { EXERCISE_IMAGE_GENERATION_TYPE, GEMINI_API_KEY_TYPE } from '@/constants/storage';
 import i18n from '@/lang/lang';
 import { getSetting, processWorkoutPlan } from '@/utils/database';
 import { getBase64StringFromPhotoUri, resizeImage } from '@/utils/file';
-import { refreshAccessToken } from '@/utils/googleAuth';
+import { getAccessToken as getGoogleAccessToken, refreshAccessToken } from '@/utils/googleAuth';
 import { WorkoutPlan, WorkoutReturnType } from '@/utils/types';
 import {
     Content,
@@ -19,7 +19,6 @@ import {
     Tool,
     ToolConfig,
 } from '@google/generative-ai';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Sentry from '@sentry/react-native';
 // import fetch from 'isomorphic-fetch';
 import { fetch } from 'expo/fetch';
@@ -47,7 +46,7 @@ const GEMINI_MODEL = 'gemini-1.5-flash';
 export const getApiKey = async () =>
     (await getSetting(GEMINI_API_KEY_TYPE))?.value || process.env.EXPO_PUBLIC_FORCE_GEMINI_API_KEY;
 
-export const getAccessToken = async () => await AsyncStorage.getItem(GOOGLE_ACCESS_TOKEN) || undefined;
+export const getAccessToken = async () => await getGoogleAccessToken() || undefined;
 
 const safetySettings = [
     { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },

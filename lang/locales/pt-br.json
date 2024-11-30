@@ -419,6 +419,8 @@
     "create_user_nutrition": "Criar Nutrição do Usuário",
     "edit_user_nutrition": "Editar Nutrição do Usuário",
     "edit_macros": "Editar Macros",
+    "no_macros_found": "Nenhum macro encontrado",
+    "please_reauthenticate_google": "Por favor, reautentique com o Google",
     "full_day": "Dia Completo",
     "tracked_today": "Rastreado Hoje",
     "tracked": "Rastreado",

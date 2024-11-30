@@ -419,6 +419,8 @@
     "create_user_nutrition": "Gebruikersvoeding maken",
     "edit_user_nutrition": "Gebruikersvoeding bewerken",
     "edit_macros": "Macro's bewerken",
+    "no_macros_found": "Geen macro's gevonden",
+    "please_reauthenticate_google": "Log opnieuw in met Google om uw gegevens te synchroniseren.",
     "full_day": "Volledige dag",
     "tracked_today": "Vandaag gevolgd",
     "tracked": "Gevolgd",

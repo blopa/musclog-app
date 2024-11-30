@@ -419,6 +419,8 @@
     "create_user_nutrition": "Create User Nutrition",
     "edit_user_nutrition": "Edit User Nutrition",
     "edit_macros": "Edit Macros",
+    "no_macros_found": "No macros found",
+    "please_reauthenticate_google": "Please reauthenticate with Google",
     "full_day": "Full Day",
     "tracked_today": "Tracked Today",
     "tracked": "Tracked",
