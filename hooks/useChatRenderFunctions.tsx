@@ -8,6 +8,7 @@ import { sendChatMessage } from '@/utils/ai';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { isEmptyObject } from '@/utils/data';
 import { getRecentWorkoutById, getTotalWorkoutsCount, getWorkoutById } from '@/utils/database';
+import { getCurrentTimestampISOString } from '@/utils/date';
 import { getCalculateNextWorkoutVolumePrompt } from '@/utils/prompts';
 import { ChatInsertType } from '@/utils/types';
 import { useFocusEffect } from 'expo-router';
@@ -208,7 +209,7 @@ const useChatRenderFunctions = () => {
             case CANCEL_GENERATE_MY_WORKOUTS: {
                 await removeStoredIntention();
                 const newChat: ChatInsertType = {
-                    createdAt: new Date().toISOString(),
+                    createdAt: getCurrentTimestampISOString(),
                     message: t('never_mind'),
                     misc: '',
                     sender: 'user',
@@ -219,7 +220,7 @@ const useChatRenderFunctions = () => {
 
                 setTimeout(() => {
                     const newBotChat: ChatInsertType = {
-                        createdAt: new Date().toISOString(),
+                        createdAt: getCurrentTimestampISOString(),
                         message: t('no_worries_let_me_know'),
                         misc: '',
                         sender: 'assistant',
@@ -235,7 +236,7 @@ const useChatRenderFunctions = () => {
             case GENERATE_MY_WORKOUTS: {
                 await setStoredIntention(GENERATE_MY_WORKOUTS);
                 const newChat: ChatInsertType = {
-                    createdAt: new Date().toISOString(),
+                    createdAt: getCurrentTimestampISOString(),
                     message: t('can_you_generate_me_some_workouts'),
                     misc: '',
                     sender: 'user',
@@ -246,7 +247,7 @@ const useChatRenderFunctions = () => {
 
                 setTimeout(() => {
                     const newBotChat: ChatInsertType = {
-                        createdAt: new Date().toISOString(),
+                        createdAt: getCurrentTimestampISOString(),
                         message: t('sure_thing_anything_workout_details'),
                         misc: '',
                         sender: 'assistant',
@@ -269,7 +270,7 @@ const useChatRenderFunctions = () => {
 
                         if (workout) {
                             const newChat: ChatInsertType = {
-                                createdAt: new Date().toISOString(),
+                                createdAt: getCurrentTimestampISOString(),
                                 message: t('can_you_give_me_feedback_on', { pastWorkout: workoutEvent.title }),
                                 misc: '',
                                 sender: 'user',
@@ -289,7 +290,7 @@ const useChatRenderFunctions = () => {
 
                             if (messageToUser) {
                                 const newAssistantChat: ChatInsertType = {
-                                    createdAt: new Date().toISOString(),
+                                    createdAt: getCurrentTimestampISOString(),
                                     message: messageToUser,
                                     misc: '',
                                     sender: 'assistant',

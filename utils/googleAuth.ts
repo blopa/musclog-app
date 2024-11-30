@@ -30,19 +30,35 @@ export interface RefreshTokenResponse {
 export const GOOGLE_CLIENT_ID = '182653769964-letucboq7c5m25ckvgp9kuirrdm33fkc.apps.googleusercontent.com';
 
 /**
- * Fetch user info using the access token
+ * Fetch user info using the access token.
+ * Automatically refreshes the access token if the current one is invalid.
  */
 export const getUserInfo = async (token: string): Promise<GoogleUserInfo | null> => {
     if (!token) {
-        return null;
+        throw new Error('Access token is missing.');
     }
 
-    try {
-        const response = await fetch('https://www.googleapis.com/userinfo/v2/me', {
-            headers: { Authorization: `Bearer ${token}` },
+    const makeRequest = async (accessToken: string) => {
+        return fetch('https://www.googleapis.com/userinfo/v2/me', {
+            headers: { Authorization: `Bearer ${accessToken}` },
         });
+    };
+
+    try {
+        // First attempt
+        let response = await makeRequest(token);
+
+        if (response.status === 401) {
+            // Token is invalid, try refreshing it
+            console.warn('Access token is invalid. Attempting to refresh...');
+            const newAccessToken = await refreshAccessToken();
+
+            // Retry with the new access token
+            response = await makeRequest(newAccessToken);
+        }
+
         if (!response.ok) {
-            throw new Error('Failed to fetch user info');
+            throw new Error('Failed to fetch user info.');
         }
 
         return (await response.json()) as GoogleUserInfo;
@@ -75,6 +91,8 @@ export const refreshAccessToken = async (): Promise<string> => {
         });
 
         if (!response.ok) {
+            await deleteAllData();
+
             const errorData = await response.json();
             if (errorData.error === 'invalid_grant') {
                 throw new Error('Refresh token expired or invalid. Please sign in again.');
@@ -92,7 +110,38 @@ export const refreshAccessToken = async (): Promise<string> => {
 
         return data.access_token;
     } catch (error) {
+        await deleteAllData();
+
         console.error('Error refreshing access token:', error);
+        throw error;
+    }
+};
+
+/**
+ * Reauthenticate the user to get a new refresh token.
+ */
+export const reauthenticate = async (
+    promptAsync: () => Promise<AuthSessionResult>
+): Promise<string> => {
+    try {
+        const result = await promptAsync();
+        if (result.type === 'success' && result.authentication) {
+            const { refreshToken } = result.authentication;
+
+            if (!refreshToken) {
+                throw new Error('Failed to obtain a new refresh token. Please try again.');
+            }
+
+            await addOrUpdateSetting({
+                type: GOOGLE_REFRESH_TOKEN_TYPE,
+                value: refreshToken,
+            });
+
+            return refreshToken;
+        }
+        throw new Error('User reauthentication failed or was cancelled.');
+    } catch (error) {
+        console.error('Error reauthenticating user:', error);
         throw error;
     }
 };
@@ -115,7 +164,7 @@ export const getAccessToken = async (): Promise<string> => {
  * Save tokens and user info after sign-in
  */
 export const handleGoogleSignIn = async (
-    response:  AuthSessionResult | null
+    response: AuthSessionResult | null
 ): Promise<GoogleUserInfo | null> => {
     if (response?.type === 'success' && response.authentication) {
         const { accessToken, expiresIn, refreshToken } = response.authentication;

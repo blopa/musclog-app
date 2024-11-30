@@ -30,6 +30,8 @@
 - Make current workout buttons more cute
 - Add more feature to the chat
 - Add option to add macros when creating a recent workout
+- https://github.com/marketplace/actions/upload-android-release-to-play-store look into this
+- https://medium.com/@vontonnie/automating-success-github-actions-workflow-for-android-app-deployment-908095d53b97 <- this too
 
 ## Known Bugs
 - https://github.com/expo/expo/issues/16084

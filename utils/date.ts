@@ -85,3 +85,9 @@ export const formatCreatedAt = (createdAt: Date | number): string => {
         ? new Date(createdAt).toISOString()
         : createdAt.toISOString();
 };
+
+export const getDaysAgoTimestampISOString = (daysAgo: number): string => {
+    const date = new Date();
+    date.setDate(date.getDate() - daysAgo);
+    return date.toISOString();
+};

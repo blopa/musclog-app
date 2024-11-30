@@ -4,7 +4,7 @@ import * as openAiFunctions from '@/utils/openai';
 import { WorkoutReturnType } from '@/utils/types';
 
 export const getAiApiVendor = async () => {
-    if (await geminiFunctions.getApiKey()) {
+    if (await geminiFunctions.getApiKey() || await geminiFunctions.getAccessToken()) {
         return GEMINI_API_KEY_TYPE;
     } else if (await openAiFunctions.getApiKey()) {
         return OPENAI_API_KEY_TYPE;
