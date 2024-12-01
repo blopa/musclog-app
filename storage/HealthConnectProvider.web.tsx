@@ -1,5 +1,6 @@
 import type { HealthConnectRecord, RecordType } from 'react-native-health-connect/src/types';
 
+import { DEFAULT_PAGE_SIZE } from '@/constants/healthConnect';
 import { HealthDataType } from '@/utils/types';
 import React, { createContext, ReactNode, useContext } from 'react';
 
@@ -27,7 +28,12 @@ export const checkIsHealthConnectedPermitted = async (accessType: HealthConnectA
     return IS_PERMITTED;
 };
 
-export const getHealthConnectData = async (pageSize?: number): Promise<HealthDataType> => {
+export const getHealthConnectData = async (
+    startTime: string,
+    endTime: string,
+    pageSize: number = DEFAULT_PAGE_SIZE,
+    recordTypes?: RecordType[]
+): Promise<HealthDataType> => {
     return (IS_PERMITTED ? data : []) as unknown as HealthDataType;
 };
 

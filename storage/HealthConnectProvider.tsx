@@ -127,7 +127,9 @@ export const checkIsHealthConnectedPermitted = async (accessType: HealthConnectA
 export const getHealthConnectData = async (
     startTime: string,
     endTime: string,
-    pageSize: number = DEFAULT_PAGE_SIZE): Promise<HealthDataType> => {
+    pageSize: number = DEFAULT_PAGE_SIZE,
+    recordTypes?: RecordType[]
+): Promise<HealthDataType> => {
     const timeRangeFilter = {
         endTime,
         operator: 'between',
@@ -169,7 +171,7 @@ export const getHealthConnectData = async (
     const nutritionRecords = isReadPermissionGranted('Nutrition', grantedPermissions)
         ? (
             await readRecords('Nutrition', {
-                ascendingOrder: true,
+                ascendingOrder: false,
                 pageSize,
                 timeRangeFilter,
             })
@@ -291,7 +293,7 @@ export const HealthConnectProvider = ({ children }: HealthConnectProviderProps) 
                     return healthData;
                 }
 
-                const newHealthData = await getHealthConnectData(startTime, endTime, pageSize);
+                const newHealthData = await getHealthConnectData(startTime, endTime, pageSize, recordTypes);
                 setHealthData(newHealthData);
 
                 return newHealthData;

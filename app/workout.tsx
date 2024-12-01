@@ -33,7 +33,11 @@ import {
     updateSet,
     updateWorkoutSetsVolume,
 } from '@/utils/database';
-import { getCurrentTimestampISOString, getDaysAgoTimestampISOString } from '@/utils/date';
+import {
+    getCurrentTimestampISOString,
+    getDaysAgoTimestampISOString,
+    getStartOfDayTimestampISOString,
+} from '@/utils/date';
 import { generateHash } from '@/utils/string';
 import {
     CurrentWorkoutProgressType,
@@ -382,7 +386,7 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
                     }
 
                     const userNutritionFromToday = await getUserNutritionFromDate(
-                        getCurrentTimestampISOString().split('T')[0] + 'T00:00:00.000Z'
+                        getStartOfDayTimestampISOString(getCurrentTimestampISOString())
                     );
 
                     const totalCarbs = userNutritionFromToday.reduce((acc, item) => acc + item.carbohydrate, 0);

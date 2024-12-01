@@ -91,3 +91,21 @@ export const getDaysAgoTimestampISOString = (daysAgo: number): string => {
     date.setDate(date.getDate() - daysAgo);
     return date.toISOString();
 };
+
+export const getEndOfDayTimestampISOString = (dateString: string) => {
+    try {
+        return dateString.split('T')[0] + 'T23:59:59.000Z';
+    } catch (e) {
+        console.log(e);
+        return dateString;
+    }
+};
+
+export const getStartOfDayTimestampISOString = (dateString: string) => {
+    try {
+        return dateString.split('T')[0] + 'T00:00:00.000Z';
+    } catch (e) {
+        console.log(e);
+        return dateString;
+    }
+};

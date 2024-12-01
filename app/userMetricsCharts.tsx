@@ -49,7 +49,13 @@ import {
     getUserNutritionBetweenDates,
     getUserNutritionFromDate,
 } from '@/utils/database';
-import { formatDate, getCurrentTimestampISOString, getDaysAgoTimestampISOString } from '@/utils/date';
+import {
+    formatDate,
+    getCurrentTimestampISOString,
+    getDaysAgoTimestampISOString,
+    getEndOfDayTimestampISOString,
+    getStartOfDayTimestampISOString,
+} from '@/utils/date';
 import { syncHealthConnectData } from '@/utils/healthConnect';
 import { safeToFixed } from '@/utils/string';
 import {
@@ -889,8 +895,8 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
             checkWriteIsPermitted,
             getHealthData,
             insertHealthData,
-            startDate?.toISOString() || getDaysAgoTimestampISOString(30),
-            endDate?.toISOString() || getCurrentTimestampISOString(),
+            getStartOfDayTimestampISOString(startDate?.toISOString() || getDaysAgoTimestampISOString(30)),
+            getEndOfDayTimestampISOString(endDate?.toISOString() || getCurrentTimestampISOString()),
             1000
         );
 
