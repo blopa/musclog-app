@@ -19,7 +19,7 @@
   },
   {
     "name": "Schouderdruk",
-    "muscleGroup": "shoulders",
+    "muscleGroup": "anterior_deltoid",
     "type": "compound",
     "description": "Een schouderoefening waarbij je een gewicht boven je hoofd drukt terwijl je staat of zit."
   },
@@ -37,97 +37,97 @@
   },
   {
     "name": "Leg Extension Machine",
-    "muscleGroup": "legs",
+    "muscleGroup": "quadriceps",
     "type": "machine",
     "description": "Een machine oefening die de quadriceps richt door de benen vanuit een zittende positie te strekken."
   },
   {
     "name": "Squat",
-    "muscleGroup": "legs",
+    "muscleGroup": "quadriceps",
     "type": "compound",
     "description": "Een oefening voor de onderlichaam waarbij je je knieën en heupen buigt om je lichaam te laten zakken en vervolgens weer op te staan."
   },
   {
     "name": "Barbell Back Squat",
-    "muscleGroup": "legs",
+    "muscleGroup": "quadriceps",
     "type": "compound",
     "description": "Een oefening voor de onderlichaam waarbij je je knieën en heupen buigt om je lichaam te laten zakken, met een halter op je bovenrug, en vervolgens weer op te staan."
   },
   {
     "name": "Leg Press Machine",
-    "muscleGroup": "legs",
+    "muscleGroup": "quadriceps",
     "type": "machine",
     "description": "Een machine oefening waarbij je een gewicht van je af duwt met je benen."
   },
   {
     "name": "Lat Pulldown",
-    "muscleGroup": "back",
+    "muscleGroup": "lats",
     "type": "machine",
     "description": "Een machine oefening die de bovenrug richt door een stang naar je borst te trekken."
   },
   {
     "name": "Pull-Up",
-    "muscleGroup": "back",
+    "muscleGroup": "lats",
     "type": "bodyweight",
     "description": "Een oefening voor de bovenlichaam waarbij je je lichaam optrekt naar een stang met behulp van je rug- en armspieren."
   },
   {
     "name": "Seated Row",
-    "muscleGroup": "back",
+    "muscleGroup": "lats",
     "type": "machine",
     "description": "Een machine oefening die de rugspieren richt door een hendel naar je torso te trekken terwijl je zit."
   },
   {
     "name": "Bicep Curl",
-    "muscleGroup": "arms",
+    "muscleGroup": "biceps",
     "type": "isolation",
     "description": "Een armoefening die de biceps richt door een gewicht naar je schouder te tillen."
   },
   {
     "name": "Tricep Overhead Extension",
-    "muscleGroup": "arms",
+    "muscleGroup": "triceps",
     "type": "isolation",
     "description": "Een armoefening die de triceps richt door de arm bij de elleboog te strekken."
   },
   {
     "name": "Leg Curl Machine",
-    "muscleGroup": "legs",
+    "muscleGroup": "hamstrings",
     "type": "machine",
     "description": "Een machine oefening die de hamstrings richt door de benen naar de billen te buigen."
   },
   {
     "name": "Lateral Raise",
-    "muscleGroup": "shoulders",
+    "muscleGroup": "lateral_deltoid",
     "type": "isolation",
     "description": "Een schouderoefening waarbij je gewichten naar de zijkant van je lichaam tilt."
   },
   {
     "name": "Front Raise",
-    "muscleGroup": "shoulders",
+    "muscleGroup": "anterior_deltoid",
     "type": "isolation",
     "description": "Een schouderoefening waarbij je gewichten naar de voorkant van je lichaam tilt."
   },
   {
     "name": "Calf Raise",
-    "muscleGroup": "legs",
+    "muscleGroup": "calves",
     "type": "isolation",
     "description": "Een oefening voor de onderlichaam die de kuitspieren richt door de hielen van de grond te tillen."
   },
   {
     "name": "Hammer Curl",
-    "muscleGroup": "arms",
+    "muscleGroup": "brachialis",
     "type": "isolation",
     "description": "Een armoefening vergelijkbaar met de bicep curl, maar met een neutrale greep."
   },
   {
     "name": "Preacher Curl",
-    "muscleGroup": "arms",
+    "muscleGroup": "biceps",
     "type": "isolation",
     "description": "Een variatie van de bicep curl uitgevoerd op een preacher bank om de biceps te isoleren."
   },
   {
     "name": "Cable Tricep Pushdown",
-    "muscleGroup": "arms",
+    "muscleGroup": "triceps",
     "type": "isolation",
     "description": "Een armoefening die de triceps richt door een kabelattachment naar beneden te duwen."
   },
@@ -139,25 +139,25 @@
   },
   {
     "name": "Smith Machine Squat",
-    "muscleGroup": "legs",
+    "muscleGroup": "quadriceps",
     "type": "machine",
     "description": "Een variatie van de squat uitgevoerd op een Smith machine voor extra stabiliteit."
   },
   {
     "name": "T-Bar Row",
-    "muscleGroup": "back",
+    "muscleGroup": "lats",
     "type": "compound",
     "description": "Een rugoefening waarbij je een T-bar naar je torso trekt."
   },
   {
     "name": "Bent Over Row",
-    "muscleGroup": "back",
+    "muscleGroup": "lats",
     "type": "compound",
     "description": "Een rugoefening waarbij je voorover buigt en een gewicht naar je torso trekt."
   },
   {
     "name": "Upright Row",
-    "muscleGroup": "shoulders",
+    "muscleGroup": "upper_traps",
     "type": "compound",
     "description": "Een schouderoefening waarbij je een gewicht omhoog trekt langs de voorkant van je lichaam."
   },
@@ -175,13 +175,13 @@
   },
   {
     "name": "Machine Shoulder Press",
-    "muscleGroup": "shoulders",
+    "muscleGroup": "anterior_deltoid",
     "type": "machine",
     "description": "Een schouderoefening uitgevoerd op een machine die het drukken boven het hoofd nabootst."
   },
   {
     "name": "Reverse Pec Deck Fly",
-    "muscleGroup": "shoulders",
+    "muscleGroup": "posterior_deltoid",
     "type": "machine",
     "description": "Een machine oefening die de achterste schouderspieren richt door de beweging van een reverse fly na te bootsen."
   },
@@ -193,19 +193,19 @@
   },
   {
     "name": "Seated Calf Raise",
-    "muscleGroup": "legs",
+    "muscleGroup": "calves",
     "type": "isolation",
     "description": "Een kuit oefening uitgevoerd terwijl je zit, gericht op de soleus spier."
   },
   {
     "name": "Standing Calf Raise",
-    "muscleGroup": "legs",
+    "muscleGroup": "calves",
     "type": "isolation",
     "description": "Een kuit oefening uitgevoerd terwijl je staat, gericht op de gastrocnemius spier."
   },
   {
     "name": "Romanian Deadlift",
-    "muscleGroup": "legs",
+    "muscleGroup": "hamstrings",
     "type": "compound",
     "description": "Een variatie van de deadlift die de hamstrings en bilspieren richt."
   },
@@ -223,13 +223,13 @@
   },
   {
     "name": "Cable Bicep Curl",
-    "muscleGroup": "arms",
+    "muscleGroup": "biceps",
     "type": "isolation",
     "description": "Een armoefening die de biceps richt door een kabelattachment te buigen."
   },
   {
     "name": "Dumbbell Shoulder Press",
-    "muscleGroup": "shoulders",
+    "muscleGroup": "anterior_deltoid",
     "type": "compound",
     "description": "Een schouderoefening waarbij je halters boven je hoofd drukt."
   },
@@ -241,19 +241,19 @@
   },
   {
     "name": "Hack Squat",
-    "muscleGroup": "legs",
+    "muscleGroup": "quadriceps",
     "type": "machine",
     "description": "Een variatie van de squat uitgevoerd op een hack squat machine om de quadriceps te richten."
   },
   {
     "name": "Reverse Lunge",
-    "muscleGroup": "legs",
+    "muscleGroup": "quadriceps",
     "type": "compound",
     "description": "Een oefening voor de onderlichaam waarbij je naar achteren stapt in een lunge."
   },
   {
     "name": "Step-Up",
-    "muscleGroup": "legs",
+    "muscleGroup": "quadriceps",
     "type": "compound",
     "description": "Een oefening voor de onderlichaam waarbij je op een verhoogd platform stapt."
   },
@@ -265,31 +265,31 @@
   },
   {
     "name": "Goblet Squat",
-    "muscleGroup": "legs",
+    "muscleGroup": "quadriceps",
     "type": "compound",
     "description": "Een variatie van de squat uitgevoerd terwijl je een gewicht voor de borst houdt."
   },
   {
     "name": "Sumo Deadlift",
-    "muscleGroup": "legs",
+    "muscleGroup": "adductors",
     "type": "compound",
     "description": "Een variatie van de deadlift met een brede stand die de binnenkant van de dijen en de bilspieren richt."
   },
   {
     "name": "Hip Abduction Machine",
-    "muscleGroup": "legs",
+    "muscleGroup": "abductors",
     "type": "machine",
     "description": "Een machine oefening die de buitenkant van de dijen richt door de benen uit elkaar te bewegen."
   },
   {
     "name": "Hip Adduction Machine",
-    "muscleGroup": "legs",
+    "muscleGroup": "adductors",
     "type": "machine",
     "description": "Een machine oefening die de binnenkant van de dijen richt door de benen naar elkaar toe te bewegen."
   },
   {
     "name": "Cable Face Pull",
-    "muscleGroup": "shoulders",
+    "muscleGroup": "posterior_deltoid",
     "type": "isolation",
     "description": "Een schouderoefening die de achterste schouderspieren richt door een kabelattachment naar het gezicht te trekken."
   },
@@ -301,7 +301,7 @@
   },
   {
     "name": "Dips",
-    "muscleGroup": "arms",
+    "muscleGroup": "triceps",
     "type": "bodyweight",
     "description": "Een oefening voor de borst en triceps waarbij je je lichaam laat zakken en optilt met behulp van parallelle stangen."
   },
@@ -319,7 +319,7 @@
   },
   {
     "name": "Russian Twist",
-    "muscleGroup": "core",
+    "muscleGroup": "obliques",
     "type": "bodyweight",
     "description": "Een schuine oefening waarbij je je torso van de ene naar de andere kant draait terwijl je een gewicht vasthoudt."
   },
@@ -343,7 +343,7 @@
   },
   {
     "name": "Box Jump",
-    "muscleGroup": "legs",
+    "muscleGroup": "quadriceps",
     "type": "plyometric",
     "description": "Een plyometrische oefening voor de onderlichaam waarbij je op een verhoogd platform springt."
   },
@@ -385,31 +385,31 @@
   },
   {
     "name": "Chest Supported Row Machine",
-    "muscleGroup": "back",
+    "muscleGroup": "lats",
     "type": "machine",
     "description": "Een rugoefening uitgevoerd op een machine waarbij je roeit met je borst ondersteund op een pad, gericht op de boven- en middenrugspieren."
   },
   {
     "name": "Barbell Row",
-    "muscleGroup": "back",
+    "muscleGroup": "lats",
     "type": "compound",
     "description": "Een rugoefening waarbij je een halter naar je torso trekt terwijl je voorover buigt."
   },
   {
     "name": "Skull Crusher",
-    "muscleGroup": "arms",
+    "muscleGroup": "triceps",
     "type": "isolation",
     "description": "Een tricep oefening waarbij je een halter naar je voorhoofd laat zakken en weer omhoog strekt."
   },
   {
     "name": "Bulgarian Split Squat",
-    "muscleGroup": "legs",
+    "muscleGroup": "quadriceps",
     "type": "compound",
     "description": "Een oefening voor de onderlichaam waarbij je een split squat uitvoert met je achterste voet verhoogd op een bank."
   },
   {
     "name": "Pallof Press",
-    "muscleGroup": "core",
+    "muscleGroup": "obliques",
     "type": "isolation",
     "description": "Een core oefening waarbij je een kabel of weerstandsband van het lichaam weg duwt om rotatie te weerstaan."
   },
@@ -421,19 +421,19 @@
   },
   {
     "name": "Landmine Press",
-    "muscleGroup": "shoulders",
+    "muscleGroup": "anterior_deltoid",
     "type": "compound",
     "description": "Een schouderoefening waarbij je een halter drukt die aan één uiteinde is verankerd in een landmine attachment."
   },
   {
     "name": "Landmine Row",
-    "muscleGroup": "back",
+    "muscleGroup": "lats",
     "type": "compound",
     "description": "Een rugoefening waarbij je een halter trekt die aan één uiteinde is verankerd in een landmine attachment naar je torso."
   },
   {
     "name": "Donkey Calf Raise",
-    "muscleGroup": "legs",
+    "muscleGroup": "calves",
     "type": "isolation",
     "description": "Een kuit oefening waarbij je je hielen optilt terwijl je voorover buigt met gewicht op je onderrug."
   },
@@ -499,19 +499,19 @@
   },
   {
     "name": "Lat Pulldown met Smalle Greep",
-    "muscleGroup": "back",
+    "muscleGroup": "lats",
     "type": "machine",
     "description": "Een variatie van de lat pulldown waarbij je een smalle greep gebruikt om de binnenste rugspieren te richten."
   },
   {
     "name": "Lat Pulldown met Onderhandse Greep",
-    "muscleGroup": "back",
+    "muscleGroup": "lats",
     "type": "machine",
     "description": "Een variatie van de lat pulldown waarbij je een onderhandse greep gebruikt om de biceps en bovenrug te trainen."
   },
   {
     "name": "Kabel Pullover",
-    "muscleGroup": "back",
+    "muscleGroup": "lats",
     "type": "isolation",
     "description": "Een rugoefening waarbij je een kabelstang van boven je hoofd naar je heupen trekt, gericht op de lats."
   },
@@ -535,61 +535,61 @@
   },
   {
     "name": "Kabel Voorwaartse Heffing",
-    "muscleGroup": "shoulders",
+    "muscleGroup": "anterior_deltoid",
     "type": "isolation",
     "description": "Een schouderoefening waarbij je een kabelaccessoire naar voren heft, gericht op de voorste deltoïden."
   },
   {
     "name": "Kabel Zijwaartse Heffing",
-    "muscleGroup": "shoulders",
+    "muscleGroup": "lateral_deltoid",
     "type": "isolation",
     "description": "Een schouderoefening waarbij je een kabelaccessoire zijwaarts heft, gericht op de laterale deltoïden."
   },
   {
     "name": "Eenzijdige Halter Roei",
-    "muscleGroup": "back",
+    "muscleGroup": "lats",
     "type": "compound",
     "description": "Een rugoefening waarbij je een halter naar je torso trekt terwijl je gebogen staat, gericht op elke kant afzonderlijk."
   },
   {
     "name": "Halter Schouderophalen",
-    "muscleGroup": "shoulders",
+    "muscleGroup": "traps",
     "type": "isolation",
     "description": "Een schouderoefening die de trapezius traint door de schouders op te halen terwijl je halters vasthoudt."
   },
   {
     "name": "Liggende Been Curl",
-    "muscleGroup": "legs",
+    "muscleGroup": "hamstrings",
     "type": "machine",
     "description": "Een machine-oefening die de hamstrings traint door de benen richting de billen te krullen terwijl je op je buik ligt."
   },
   {
     "name": "Good Morning",
-    "muscleGroup": "legs",
+    "muscleGroup": "hamstrings",
     "type": "compound",
     "description": "Een onderlichaamsoefening waarbij je in de heup buigt om je torso te laten zakken, gericht op de hamstrings en billen."
   },
   {
     "name": "Zercher Squat",
-    "muscleGroup": "legs",
+    "muscleGroup": "quadriceps",
     "type": "compound",
     "description": "Een squat-variatie waarbij je de halter in de kromming van je ellebogen houdt, waarbij de quadriceps en de core worden benadrukt."
   },
   {
     "name": "Sissy Squat",
-    "muscleGroup": "legs",
+    "muscleGroup": "quadriceps",
     "type": "isolation",
     "description": "Een quad-gecentreerde squat-variatie uitgevoerd met een sissy squat-bank of door achterover te leunen op de bal van je voeten."
   },
   {
     "name": "Jefferson Deadlift",
-    "muscleGroup": "legs",
+    "muscleGroup": "glutes",
     "type": "compound",
     "description": "Een deadlift-variatie waarbij je de halter omcirkelt, gericht op de quadriceps, billen en core."
   },
   {
     "name": "Cossack Squat",
-    "muscleGroup": "legs",
+    "muscleGroup": "adductors",
     "type": "compound",
     "description": "Een onderlichaamsoefening waarbij je een diepe zijwaartse lunge maakt, gericht op de binnenste dijen en billen."
   },
@@ -619,7 +619,7 @@
   },
   {
     "name": "Pike Push-Up",
-    "muscleGroup": "shoulders",
+    "muscleGroup": "anterior_deltoid",
     "type": "bodyweight",
     "description": "Een schouderoefening waarbij je een push-up uitvoert in een pike-positie, gericht op de schouders."
   },

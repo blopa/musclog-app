@@ -19,7 +19,7 @@
   },
   {
     "name": "Press de Hombros",
-    "muscleGroup": "shoulders",
+    "muscleGroup": "anterior_deltoid",
     "type": "compound",
     "description": "Un ejercicio de hombros donde presionas un peso sobre la cabeza mientras estás de pie o sentado."
   },
@@ -37,97 +37,97 @@
   },
   {
     "name": "Extensión de Piernas",
-    "muscleGroup": "legs",
+    "muscleGroup": "quadriceps",
     "type": "machine",
     "description": "Un ejercicio en máquina que apunta a los cuádriceps al extender las piernas desde una posición sentada."
   },
   {
     "name": "Sentadilla",
-    "muscleGroup": "legs",
+    "muscleGroup": "quadriceps",
     "type": "compound",
     "description": "Un ejercicio de la parte inferior del cuerpo donde doblas las rodillas y las caderas para bajar el cuerpo y luego te levantas."
   },
   {
     "name": "Sentadilla con Barra",
-    "muscleGroup": "legs",
+    "muscleGroup": "quadriceps",
     "type": "compound",
     "description": "Un ejercicio de la parte inferior del cuerpo donde doblas las rodillas y las caderas para bajar el cuerpo con una barra colocada en la parte superior de la espalda, y luego te levantas."
   },
   {
     "name": "Prensa de Piernas",
-    "muscleGroup": "legs",
+    "muscleGroup": "quadriceps",
     "type": "machine",
     "description": "Un ejercicio en máquina donde empujas un peso lejos de ti usando las piernas."
   },
   {
     "name": "Jalón al Pecho",
-    "muscleGroup": "back",
+    "muscleGroup": "lats",
     "type": "machine",
     "description": "Un ejercicio en máquina que apunta a la parte superior de la espalda al tirar de una barra hacia el pecho."
   },
   {
     "name": "Dominadas",
-    "muscleGroup": "back",
+    "muscleGroup": "lats",
     "type": "bodyweight",
     "description": "Un ejercicio de la parte superior del cuerpo donde levantas tu cuerpo hasta una barra usando los músculos de la espalda y los brazos."
   },
   {
     "name": "Remo Sentado",
-    "muscleGroup": "back",
+    "muscleGroup": "lats",
     "type": "machine",
     "description": "Un ejercicio en máquina que apunta a los músculos de la espalda al tirar de un mango hacia tu torso mientras estás sentado."
   },
   {
     "name": "Curl de Bíceps",
-    "muscleGroup": "arms",
+    "muscleGroup": "biceps",
     "type": "isolation",
     "description": "Un ejercicio para los brazos que apunta a los bíceps al levantar un peso hacia tu hombro."
   },
   {
     "name": "Extensión de Tríceps por Encima de la Cabeza",
-    "muscleGroup": "arms",
+    "muscleGroup": "triceps",
     "type": "isolation",
     "description": "Un ejercicio para los brazos que apunta a los tríceps al extender el brazo en el codo."
   },
   {
     "name": "Curl de Piernas",
-    "muscleGroup": "legs",
+    "muscleGroup": "hamstrings",
     "type": "machine",
     "description": "Un ejercicio en máquina que apunta a los isquiotibiales al doblar las piernas hacia los glúteos."
   },
   {
     "name": "Elevación Lateral",
-    "muscleGroup": "shoulders",
+    "muscleGroup": "lateral_deltoid",
     "type": "isolation",
     "description": "Un ejercicio para los hombros donde levantas pesos hacia los lados de tu cuerpo."
   },
   {
     "name": "Elevación Frontal",
-    "muscleGroup": "shoulders",
+    "muscleGroup": "anterior_deltoid",
     "type": "isolation",
     "description": "Un ejercicio para los hombros donde levantas pesos hacia la parte frontal de tu cuerpo."
   },
   {
     "name": "Elevación de Gemelos",
-    "muscleGroup": "legs",
+    "muscleGroup": "calves",
     "type": "isolation",
     "description": "Un ejercicio de la parte inferior del cuerpo que apunta a los músculos de los gemelos al levantar los talones del suelo."
   },
   {
     "name": "Curl de Martillo",
-    "muscleGroup": "arms",
+    "muscleGroup": "brachialis",
     "type": "isolation",
     "description": "Un ejercicio para los brazos similar al curl de bíceps, pero con un agarre neutro."
   },
   {
     "name": "Curl Predicador",
-    "muscleGroup": "arms",
+    "muscleGroup": "biceps",
     "type": "isolation",
     "description": "Una variación del curl de bíceps realizada en un banco predicador para aislar los bíceps."
   },
   {
     "name": "Extensión de Tríceps en Polea",
-    "muscleGroup": "arms",
+    "muscleGroup": "triceps",
     "type": "isolation",
     "description": "Un ejercicio para los brazos que apunta a los tríceps al empujar un accesorio de polea hacia abajo."
   },
@@ -139,25 +139,25 @@
   },
   {
     "name": "Sentadilla en Máquina Smith",
-    "muscleGroup": "legs",
+    "muscleGroup": "quadriceps",
     "type": "machine",
     "description": "Una variación de la sentadilla realizada en una máquina Smith para mayor estabilidad."
   },
   {
     "name": "Remo con Barra T",
-    "muscleGroup": "back",
+    "muscleGroup": "lats",
     "type": "compound",
     "description": "Un ejercicio para la espalda donde tiras de una barra en forma de T hacia tu torso."
   },
   {
     "name": "Remo Inclinado",
-    "muscleGroup": "back",
+    "muscleGroup": "lats",
     "type": "compound",
     "description": "Un ejercicio para la espalda donde te inclinas hacia adelante y tiras de un peso hacia tu torso."
   },
   {
     "name": "Remo Vertical",
-    "muscleGroup": "shoulders",
+    "muscleGroup": "upper_traps",
     "type": "compound",
     "description": "Un ejercicio para los hombros donde tiras de un peso hacia arriba a lo largo de la parte frontal de tu cuerpo."
   },
@@ -175,13 +175,13 @@
   },
   {
     "name": "Press de Hombros en Máquina",
-    "muscleGroup": "shoulders",
+    "muscleGroup": "anterior_deltoid",
     "type": "machine",
     "description": "Un ejercicio para los hombros realizado en una máquina que imita el press por encima de la cabeza."
   },
   {
     "name": "Aperturas Invertidas en Máquina",
-    "muscleGroup": "shoulders",
+    "muscleGroup": "posterior_deltoid",
     "type": "machine",
     "description": "Un ejercicio en máquina que apunta a los deltoides posteriores al imitar el movimiento del fly inverso."
   },
@@ -193,19 +193,19 @@
   },
   {
     "name": "Elevación de Gemelos Sentado",
-    "muscleGroup": "legs",
+    "muscleGroup": "calves",
     "type": "isolation",
     "description": "Un ejercicio para los gemelos realizado mientras estás sentado, apuntando al músculo sóleo."
   },
   {
     "name": "Elevación de Gemelos de Pie",
-    "muscleGroup": "legs",
+    "muscleGroup": "calves",
     "type": "isolation",
     "description": "Un ejercicio para los gemelos realizado mientras estás de pie, apuntando al músculo gastrocnemio."
   },
   {
     "name": "Peso Muerto Rumano",
-    "muscleGroup": "legs",
+    "muscleGroup": "hamstrings",
     "type": "compound",
     "description": "Una variación del peso muerto que apunta a los isquiotibiales y los glúteos."
   },
@@ -223,13 +223,13 @@
   },
   {
     "name": "Curl de Bíceps en Polea",
-    "muscleGroup": "arms",
+    "muscleGroup": "biceps",
     "type": "isolation",
     "description": "Un ejercicio para los brazos que apunta a los bíceps al flexionar un accesorio de polea."
   },
   {
     "name": "Press de Hombros con Mancuernas",
-    "muscleGroup": "shoulders",
+    "muscleGroup": "anterior_deltoid",
     "type": "compound",
     "description": "Un ejercicio para los hombros donde empujas mancuernas sobre la cabeza."
   },
@@ -241,19 +241,19 @@
   },
   {
     "name": "Sentadilla Hack",
-    "muscleGroup": "legs",
+    "muscleGroup": "quadriceps",
     "type": "machine",
     "description": "Una variación de la sentadilla realizada en una máquina de sentadilla hack para apuntar a los cuádriceps."
   },
   {
     "name": "Zancada Inversa",
-    "muscleGroup": "legs",
+    "muscleGroup": "quadriceps",
     "type": "compound",
     "description": "Un ejercicio de la parte inferior del cuerpo donde das un paso hacia atrás en una zancada."
   },
   {
     "name": "Step-Up",
-    "muscleGroup": "legs",
+    "muscleGroup": "quadriceps",
     "type": "compound",
     "description": "Un ejercicio de la parte inferior del cuerpo donde subes a una plataforma elevada."
   },
@@ -265,31 +265,31 @@
   },
   {
     "name": "Sentadilla Goblet",
-    "muscleGroup": "legs",
+    "muscleGroup": "quadriceps",
     "type": "compound",
     "description": "Una variación de la sentadilla realizada mientras sostienes un peso frente al pecho."
   },
   {
     "name": "Peso Muerto Sumo",
-    "muscleGroup": "legs",
+    "muscleGroup": "adductors",
     "type": "compound",
     "description": "Una variación del peso muerto con una postura amplia que apunta a la parte interna de los muslos y los glúteos."
   },
   {
     "name": "Máquina de Abducción de Cadera",
-    "muscleGroup": "legs",
+    "muscleGroup": "abductors",
     "type": "machine",
     "description": "Un ejercicio en máquina que apunta a la parte externa de los muslos al abrir las piernas."
   },
   {
     "name": "Máquina de Aducción de Cadera",
-    "muscleGroup": "legs",
+    "muscleGroup": "adductors",
     "type": "machine",
     "description": "Un ejercicio en máquina que apunta a la parte interna de los muslos al cerrar las piernas."
   },
   {
     "name": "Face Pull",
-    "muscleGroup": "shoulders",
+    "muscleGroup": "posterior_deltoid",
     "type": "isolation",
     "description": "Un ejercicio para los hombros que apunta a los deltoides posteriores al tirar de un accesorio de polea hacia el rostro."
   },
@@ -301,7 +301,7 @@
   },
   {
     "name": "Fondos",
-    "muscleGroup": "arms",
+    "muscleGroup": "triceps",
     "type": "bodyweight",
     "description": "Un ejercicio para el pecho y los tríceps donde bajas y levantas tu cuerpo usando barras paralelas."
   },
@@ -319,7 +319,7 @@
   },
   {
     "name": "Giro Ruso",
-    "muscleGroup": "core",
+    "muscleGroup": "obliques",
     "type": "bodyweight",
     "description": "Un ejercicio oblicuo donde giras el torso de un lado a otro mientras sostienes un peso."
   },
@@ -343,7 +343,7 @@
   },
   {
     "name": "Salto al Cajón",
-    "muscleGroup": "legs",
+    "muscleGroup": "quadriceps",
     "type": "plyometric",
     "description": "Un ejercicio pliométrico de la parte inferior del cuerpo donde saltas a una plataforma elevada."
   },
@@ -385,31 +385,31 @@
   },
   {
     "name": "Remo en Máquina con Apoyo en el Pecho",
-    "muscleGroup": "back",
+    "muscleGroup": "lats",
     "type": "machine",
     "description": "Un ejercicio para la espalda realizado en una máquina donde remas con el pecho apoyado en un soporte, apuntando a los músculos de la espalda superior y media."
   },
   {
     "name": "Remo con Barra",
-    "muscleGroup": "back",
+    "muscleGroup": "lats",
     "type": "compound",
     "description": "Un ejercicio para la espalda donde tiras de una barra hacia tu torso mientras estás inclinado hacia adelante."
   },
   {
     "name": "Tríceps Francés",
-    "muscleGroup": "arms",
+    "muscleGroup": "triceps",
     "type": "isolation",
     "description": "Un ejercicio para los tríceps donde bajas una barra hacia tu frente y luego extiendes nuevamente."
   },
   {
     "name": "Sentadilla Búlgara",
-    "muscleGroup": "legs",
+    "muscleGroup": "quadriceps",
     "type": "compound",
     "description": "Un ejercicio de la parte inferior del cuerpo donde realizas una sentadilla con el pie trasero elevado en un banco."
   },
   {
     "name": "Pallof Press",
-    "muscleGroup": "core",
+    "muscleGroup": "obliques",
     "type": "isolation",
     "description": "Un ejercicio para el core que consiste en empujar un cable o banda de resistencia lejos del cuerpo para resistir la rotación."
   },
@@ -421,19 +421,19 @@
   },
   {
     "name": "Press de Hombros en Landmine",
-    "muscleGroup": "shoulders",
+    "muscleGroup": "anterior_deltoid",
     "type": "compound",
     "description": "Un ejercicio para los hombros donde empujas una barra anclada en un extremo en un accesorio de landmine."
   },
   {
     "name": "Remo en Landmine",
-    "muscleGroup": "back",
+    "muscleGroup": "lats",
     "type": "compound",
     "description": "Un ejercicio para la espalda donde tiras de una barra anclada en un extremo en un accesorio de landmine hacia tu torso."
   },
   {
     "name": "Elevación de Gemelos con Peso",
-    "muscleGroup": "legs",
+    "muscleGroup": "calves",
     "type": "isolation",
     "description": "Un ejercicio para los gemelos donde levantas los talones mientras estás inclinado hacia adelante con peso en la parte inferior de la espalda."
   },
@@ -499,19 +499,19 @@
   },
   {
     "name": "Jalón al Pecho con Agarre Estrecho",
-    "muscleGroup": "back",
+    "muscleGroup": "lats",
     "type": "machine",
     "description": "Una variación del jalón al pecho donde se usa un agarre estrecho para trabajar los músculos internos de la espalda."
   },
   {
     "name": "Jalón al Pecho con Agarre Supinado",
-    "muscleGroup": "back",
+    "muscleGroup": "lats",
     "type": "machine",
     "description": "Una variación del jalón al pecho donde se usa un agarre supinado para trabajar los bíceps y la parte superior de la espalda."
   },
   {
     "name": "Jalón de Cable",
-    "muscleGroup": "back",
+    "muscleGroup": "lats",
     "type": "isolation",
     "description": "Un ejercicio para la espalda en el que tiras de una barra de cable desde arriba de la cabeza hacia las caderas, enfocándote en los dorsales."
   },
@@ -535,61 +535,61 @@
   },
   {
     "name": "Elevación Frontal con Cable",
-    "muscleGroup": "shoulders",
+    "muscleGroup": "anterior_deltoid",
     "type": "isolation",
     "description": "Un ejercicio de hombros en el que levantas un accesorio de cable hacia el frente, enfocándote en los deltoides anteriores."
   },
   {
     "name": "Elevación Lateral con Cable",
-    "muscleGroup": "shoulders",
+    "muscleGroup": "lateral_deltoid",
     "type": "isolation",
     "description": "Un ejercicio de hombros en el que levantas un accesorio de cable hacia el lado, enfocándote en los deltoides laterales."
   },
   {
     "name": "Remo con Mancuerna a un Brazo",
-    "muscleGroup": "back",
+    "muscleGroup": "lats",
     "type": "compound",
     "description": "Un ejercicio para la espalda en el que remas una mancuerna hacia tu torso mientras estás inclinado, enfocándote en cada lado individualmente."
   },
   {
     "name": "Encogimiento de Hombros con Mancuernas",
-    "muscleGroup": "shoulders",
+    "muscleGroup": "traps",
     "type": "isolation",
     "description": "Un ejercicio de hombros que trabaja el trapecio al encoger los hombros mientras sostienes mancuernas."
   },
   {
     "name": "Curl de Piernas Acostado",
-    "muscleGroup": "legs",
+    "muscleGroup": "hamstrings",
     "type": "machine",
     "description": "Un ejercicio en máquina que trabaja los isquiotibiales al doblar las piernas hacia los glúteos mientras estás acostado boca abajo."
   },
   {
     "name": "Buenos Días",
-    "muscleGroup": "legs",
+    "muscleGroup": "hamstrings",
     "type": "compound",
     "description": "Un ejercicio para la parte inferior del cuerpo en el que flexionas la cadera para bajar el torso, trabajando los isquiotibiales y glúteos."
   },
   {
     "name": "Sentadilla Zercher",
-    "muscleGroup": "legs",
+    "muscleGroup": "quadriceps",
     "type": "compound",
     "description": "Una variación de la sentadilla donde sostienes la barra en la curva de los codos, enfatizando los cuádriceps y el core."
   },
   {
     "name": "Sentadilla Sissy",
-    "muscleGroup": "legs",
+    "muscleGroup": "quadriceps",
     "type": "isolation",
     "description": "Una variación de la sentadilla centrada en los cuádriceps, realizada con un banco sissy o inclinándote hacia atrás en la punta de los pies."
   },
   {
     "name": "Peso Muerto Jefferson",
-    "muscleGroup": "legs",
+    "muscleGroup": "glutes",
     "type": "compound",
     "description": "Una variación del peso muerto donde te colocas alrededor de la barra, enfocándote en los cuádriceps, glúteos y core."
   },
   {
     "name": "Sentadilla Cossack",
-    "muscleGroup": "legs",
+    "muscleGroup": "adductors",
     "type": "compound",
     "description": "Un ejercicio para la parte inferior del cuerpo en el que realizas una lunge lateral profunda, enfocándote en los músculos internos de los muslos y glúteos."
   },
@@ -619,7 +619,7 @@
   },
   {
     "name": "Flexiones Pike",
-    "muscleGroup": "shoulders",
+    "muscleGroup": "anterior_deltoid",
     "type": "bodyweight",
     "description": "Un ejercicio de hombros en el que realizas una flexión en posición pike, enfatizando los hombros."
   },
