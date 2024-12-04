@@ -5,6 +5,7 @@ import i18n from '@/lang/lang';
 import { getSetting, processWorkoutPlan } from '@/utils/database';
 import { getBase64StringFromPhotoUri, resizeImage } from '@/utils/file';
 import { getAccessToken as getGoogleAccessToken, refreshAccessToken } from '@/utils/googleAuth';
+import { captureMessage } from '@/utils/sentry';
 import { WorkoutPlan, WorkoutReturnType } from '@/utils/types';
 import {
     Content,
@@ -19,7 +20,6 @@ import {
     Tool,
     ToolConfig,
 } from '@google/generative-ai';
-import * as Sentry from '@sentry/react-native';
 // import fetch from 'isomorphic-fetch';
 import { fetch } from 'expo/fetch';
 
@@ -92,7 +92,7 @@ const getGenerativeAI = async ({ accessToken, apiKey }: { accessToken?: string; 
         getGenerativeModel: (modelParams: ModelParams) => {
             return {
                 generateContent: async (request: GenerateContentRequest) => {
-                    Sentry.captureMessage('No API key or access token provided for generative AI');
+                    captureMessage('No API key or access token provided for generative AI');
                     return {
                         response: null,
                         status: 401,
@@ -101,7 +101,7 @@ const getGenerativeAI = async ({ accessToken, apiKey }: { accessToken?: string; 
                 startChat: async (startChatParams: StartChatParams) => {
                     return {
                         sendMessage: async (request: string) => {
-                            Sentry.captureMessage('No API key or access token provided for generative AI');
+                            captureMessage('No API key or access token provided for generative AI');
                             return {
                                 response: {},
                                 status: 401,
@@ -934,7 +934,7 @@ export async function isAllowedLocation(apiKey: string): Promise<boolean> {
             return false;
         } else {
             // send notification to Sentry
-            Sentry.captureMessage(`Error in isAllowedLocation: ${error}`);
+            captureMessage(`Error in isAllowedLocation: ${error}`);
         }
 
         return false;

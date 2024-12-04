@@ -38,6 +38,7 @@ import {
     getDaysAgoTimestampISOString,
     getStartOfDayTimestampISOString,
 } from '@/utils/date';
+import { captureException } from '@/utils/sentry';
 import { generateHash } from '@/utils/string';
 import {
     CurrentWorkoutProgressType,
@@ -51,7 +52,6 @@ import { getDisplayFormattedWeight } from '@/utils/unit';
 import { calculateNextWorkoutRepsAndSets, resetWorkoutStorageData } from '@/utils/workout';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationProp } from '@react-navigation/native';
-import * as Sentry from '@sentry/react-native';
 import { useFocusEffect } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -450,7 +450,7 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
                                 }
                             } catch (error) {
                                 console.error('Failed to calculate next workout volume:', error);
-                                Sentry.captureException(error);
+                                captureException(error);
                             }
                         }, 10);
                     } else {

@@ -32,6 +32,7 @@ import { Screen } from '@/components/Screen';
 import { DARK, LIGHT, SYSTEM_DEFAULT } from '@/constants/colors';
 import {
     AI_SETTINGS_TYPE,
+    BUG_REPORT_TYPE,
     FIRST_BOOT,
     GEMINI_API_KEY_TYPE,
     HAS_COMPLETED_ONBOARDING,
@@ -76,11 +77,12 @@ import {
 import { getCurrentTimestampISOString } from '@/utils/date';
 import { getEncryptionKey } from '@/utils/encryption';
 import { getLatestHealthConnectData } from '@/utils/healthConnect';
+import { captureException, captureMessage } from '@/utils/sentry';
 import { getDecrypter } from '@/utils/storage';
 import { ExerciseInsertType } from '@/utils/types';
 import { FontAwesome } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import 'react-native-reanimated';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
     createDrawerNavigator,
     DrawerContentComponentProps,
@@ -186,6 +188,7 @@ function RootLayout() {
     const { theme: colorScheme } = useCustomTheme();
     const { addNewChat } = useChatData();
     const { increaseUnreadMessages } = useUnreadMessages();
+    const { getSettingByType } = useSettings();
 
     const [loaded, error] = useFonts({
         SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
@@ -233,13 +236,13 @@ function RootLayout() {
                                     value: key,
                                 });
                             } else {
-                                Sentry.captureMessage('Country not allowed!');
+                                captureMessage('Country not allowed!');
                             }
                         } else {
-                            Sentry.captureMessage('No GEMINI encrypted key found');
+                            captureMessage('No GEMINI encrypted key found');
                         }
                     } catch (error) {
-                        Sentry.captureException({
+                        captureException({
                             encryptedKey,
                             error,
                         });
@@ -253,6 +256,10 @@ function RootLayout() {
                     await addOrUpdateSetting({
                         type: LANGUAGE_CHOICE_TYPE,
                         value: i18n.language,
+                    });
+                    await addOrUpdateSetting({
+                        type: BUG_REPORT_TYPE,
+                        value: 'true',
                     });
                     // await addOrUpdateSetting({
                     //     type: USE_FAT_PERCENTAGE_TDEE_TYPE,
@@ -307,6 +314,23 @@ function RootLayout() {
             // update to latest version
             await addVersioning(packageJson.version);
             console.log(`Database schema updated to version ${packageJson.version}.`);
+
+            const shouldInitSentry = await getSettingByType(BUG_REPORT_TYPE);
+
+            if (shouldInitSentry) {
+                Sentry.init({
+                    _experiments: {
+                        replaysOnErrorSampleRate: 1.0,
+                        replaysSessionSampleRate: 1.0,
+                    },
+                    debug: __DEV__,
+                    dsn: 'https://e4a649f87e2cf7bc05e3e000cb9ce7ba@o4507421287972864.ingest.de.sentry.io/4507426322579536',
+                    environment: __DEV__ ? 'development' : 'production',
+                    integrations: [
+                        Sentry.mobileReplayIntegration(),
+                    ],
+                });
+            }
 
             await AsyncStorage.setItem(LAST_TIME_APP_USED, getCurrentTimestampISOString());
         };

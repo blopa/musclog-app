@@ -1,5 +1,5 @@
 import i18n from '@/lang/lang';
-import * as Sentry from '@sentry/react-native';
+import { captureException } from '@/utils/sentry';
 import * as Updates from 'expo-updates';
 import React from 'react';
 import { Image, StyleSheet, View } from 'react-native';
@@ -26,7 +26,7 @@ class CustomErrorBoundary extends React.Component<Props, State> {
 
     componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
         console.error('Uncaught error:', error, errorInfo);
-        Sentry.captureException(error);
+        captureException(error);
     }
 
     handleReset = async () => {

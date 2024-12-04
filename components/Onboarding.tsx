@@ -99,7 +99,7 @@ const Onboarding = ({ onFinish }: OnboardingProps) => {
             (
                 <Text key="terms">
                     {t('terms_and_conditions_notice_prefix')}
-                    <Text onPress={() => Linking.openURL('https://blopa.github.io/musclog-website/terms')} style={styles.link}>
+                    <Text onPress={() => Linking.openURL('https://werules.com/musclog/terms')} style={styles.link}>
                         {t('terms_and_conditions')}
                     </Text>
                 </Text>

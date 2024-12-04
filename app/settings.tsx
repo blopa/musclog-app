@@ -631,7 +631,7 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
     );
 
     const handleVisitOurWebsite = useCallback(() => {
-        Linking.openURL('https://blopa.github.io/musclog-website/');
+        Linking.openURL('https://werules.com/musclog/');
     }, []);
 
     return (
