@@ -696,6 +696,8 @@
     "add_your_fitness_goal": "Add your fitness goals",
     "delete_nutrition_confirmation": "Are you sure you want to delete this nutrition entry?",
     "delete_message_confirmation": "Are you sure you want to delete this message?",
+    "bug_report": "Bug Report",
+    "bug_report_description": "Enable or disable the bug reporting feature.",
     "langs": {
         "en-us": "English",
         "pt-br": "Português Brasileiro",

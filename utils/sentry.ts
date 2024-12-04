@@ -8,7 +8,7 @@ import * as Sentry from '@sentry/react-native';
 export const captureException = async (exception: any, hint?: ExclusiveEventHintOrCaptureContext) => {
     const sentryAllowed = await getSetting(BUG_REPORT_TYPE);
 
-    if (sentryAllowed) {
+    if (sentryAllowed?.value === 'true') {
         Sentry.captureException(exception, hint);
     }
 };
@@ -16,7 +16,7 @@ export const captureException = async (exception: any, hint?: ExclusiveEventHint
 export const captureMessage = async (message: string, captureContext?: CaptureContext | SeverityLevel) => {
     const sentryAllowed = await getSetting(BUG_REPORT_TYPE);
 
-    if (sentryAllowed) {
+    if (sentryAllowed?.value === 'true') {
         Sentry.captureMessage(message, captureContext);
     }
 };

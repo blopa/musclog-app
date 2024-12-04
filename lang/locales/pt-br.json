@@ -696,6 +696,8 @@
     "add_your_fitness_goal": "Adicione suas metas",
     "delete_nutrition_confirmation": "Você tem certeza que deseja deletar esta nutrição?",
     "delete_message_confirmation": "Você tem certeza que deseja deletar esta mensagem?",
+    "bug_report": "Relatório de Erros",
+    "bug_report_description": "Ative ou desative a função de relatório de erros.",
     "langs": {
         "en-us": "English",
         "pt-br": "Português Brasileiro",

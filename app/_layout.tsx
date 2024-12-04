@@ -316,8 +316,7 @@ function RootLayout() {
             console.log(`Database schema updated to version ${packageJson.version}.`);
 
             const shouldInitSentry = await getSettingByType(BUG_REPORT_TYPE);
-
-            if (shouldInitSentry) {
+            if (shouldInitSentry?.value === 'true') {
                 Sentry.init({
                     _experiments: {
                         replaysOnErrorSampleRate: 1.0,
@@ -336,7 +335,7 @@ function RootLayout() {
         };
 
         initializeApp();
-    }, [addNewChat, increaseUnreadMessages]);
+    }, [addNewChat, getSettingByType, increaseUnreadMessages]);
 
     if (!loaded) {
         return null;

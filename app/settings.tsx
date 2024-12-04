@@ -9,6 +9,7 @@ import { EATING_PHASES, NUTRITION_TYPES } from '@/constants/nutrition';
 import {
     ADVANCED_SETTINGS_TYPE,
     AI_SETTINGS_TYPE,
+    BUG_REPORT_TYPE,
     CSV_IMPORT_TYPE,
     EXERCISE_IMAGE_GENERATION_TYPE,
     GEMINI_API_KEY_TYPE,
@@ -110,6 +111,10 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
     const [refreshToken, setRefreshToken] = useState<null | string>(null);
     const [googleSignInModalVisible, setGoogleSignInModalVisible] = useState(false);
 
+    const [bugReportEnabled, setBugReportEnabled] = useState<boolean>(false);
+    const [tempBugReportEnabled, setTempBugReportEnabled] = useState<boolean>(false);
+    const [bugReportModalVisible, setBugReportModalVisible] = useState(false);
+
     const fetchSettings = useCallback(async () => {
         const apiKeyFromDb = await getSettingByType(OPENAI_API_KEY_TYPE);
         if (apiKeyFromDb) {
@@ -206,6 +211,13 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
         const storedUser = await AsyncStorage.getItem(GOOGLE_USER_INFO);
         if (storedUser) {
             setUserInfo(JSON.parse(storedUser));
+        }
+
+        const bugReportEnabledFromDb = await getSettingByType(BUG_REPORT_TYPE);
+        if (bugReportEnabledFromDb) {
+            const value = bugReportEnabledFromDb.value === 'true';
+            setBugReportEnabled(value);
+            setTempBugReportEnabled(value);
         }
     }, [i18n, getSettingByType]);
 
@@ -604,6 +616,15 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
         setLoading(false);
     }, [updateSettingWithLoadingState, tempCsvImportEnabled]);
 
+    const handleConfirmBugReportChange = useCallback(async () => {
+        setLoading(true);
+        await updateSettingWithLoadingState(BUG_REPORT_TYPE, tempBugReportEnabled.toString());
+
+        setBugReportEnabled(tempBugReportEnabled);
+        setBugReportModalVisible(false);
+        setLoading(false);
+    }, [updateSettingWithLoadingState, tempBugReportEnabled]);
+
     const resetScreenData = useCallback(() => {
         setOpenAiModalVisible(false);
         setOpenGeminiVisible(false);
@@ -620,6 +641,7 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
         setJsonImportModalVisible(false);
         setCsvImportModalVisible(false);
         setAppInfoModalVisible(false);
+        setBugReportModalVisible(false);
     }, []);
 
     useFocusEffect(
@@ -833,6 +855,17 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
                             )}
                             title={t('csv_import')}
                         />
+                        <List.Item
+                            description={t('bug_report_description')}
+                            onPress={() => setBugReportModalVisible(true)}
+                            right={() => (
+                                <View style={styles.rightContainer}>
+                                    <Text>{bugReportEnabled ? t('enabled') : t('disabled')}</Text>
+                                    <List.Icon icon="chevron-right" />
+                                </View>
+                            )}
+                            title={t('bug_report')}
+                        />
                     </List.Section>
                 ) : null}
                 <List.Section>
@@ -871,6 +904,26 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
                     />
                 </List.Section>
             </ScrollView>
+            <ThemedModal
+                cancelText={t('cancel')}
+                confirmText={t('confirm')}
+                onClose={() => setBugReportModalVisible(false)}
+                onConfirm={handleConfirmBugReportChange}
+                title={t('bug_report')}
+                visible={bugReportModalVisible}
+            >
+                <View style={styles.radioContainer}>
+                    <TouchableOpacity onPress={() => setTempBugReportEnabled(true)} style={styles.radio}>
+                        <Text style={styles.radioText}>{t('enabled')}</Text>
+                        <Text style={styles.radioText}>{tempBugReportEnabled ? '✔' : ''}</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => setTempBugReportEnabled(false)} style={styles.radio}>
+                        <Text style={styles.radioText}>{t('disabled')}</Text>
+                        <Text style={styles.radioText}>{!tempBugReportEnabled ? '✔' : ''}</Text>
+                    </TouchableOpacity>
+                    {loading ? <ActivityIndicator color={colors.surface} /> : null}
+                </View>
+            </ThemedModal>
             <ThemedModal
                 cancelText={t('cancel')}
                 onClose={() => setGoogleSignInModalVisible(false)}

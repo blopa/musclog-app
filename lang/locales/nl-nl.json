@@ -696,6 +696,8 @@
     "add_your_fitness_goal": "Voeg uw fitnessdoelen toe",
     "delete_nutrition_confirmation": "Weet u zeker dat u deze voeding wilt verwijderen?",
     "delete_message_confirmation": "Weet u zeker dat u dit bericht wilt verwijderen?",
+    "bug_report": "Foutenrapportage",
+    "bug_report_description": "Schakel de functie voor foutenrapportage in of uit.",
     "langs": {
         "en-us": "English",
         "pt-br": "Português Brasileiro",
