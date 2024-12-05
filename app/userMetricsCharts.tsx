@@ -49,7 +49,13 @@ import {
     getUserNutritionBetweenDates,
     getUserNutritionFromDate,
 } from '@/utils/database';
-import { formatDate } from '@/utils/date';
+import {
+    formatDate,
+    getCurrentTimestampISOString,
+    getDaysAgoTimestampISOString,
+    getEndOfDayTimestampISOString,
+    getStartOfDayTimestampISOString,
+} from '@/utils/date';
 import { syncHealthConnectData } from '@/utils/healthConnect';
 import { safeToFixed } from '@/utils/string';
 import {
@@ -888,12 +894,15 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
             checkReadIsPermitted,
             checkWriteIsPermitted,
             getHealthData,
-            insertHealthData
+            insertHealthData,
+            getStartOfDayTimestampISOString(startDate?.toISOString() || getDaysAgoTimestampISOString(30)),
+            getEndOfDayTimestampISOString(endDate?.toISOString() || getCurrentTimestampISOString()),
+            1000
         );
 
         await loadUserMetricsAndNutrition();
         setIsLoading(false);
-    }, [checkReadIsPermitted, checkWriteIsPermitted, getHealthData, loadUserMetricsAndNutrition, insertHealthData]);
+    }, [checkReadIsPermitted, checkWriteIsPermitted, getHealthData, insertHealthData, startDate, endDate, loadUserMetricsAndNutrition]);
 
     const foodLabels = [t('carbs'), t('fats'), t('proteins'), t('fibers')];
     const yAxisFood = useMemo(() => {

@@ -1,6 +1,6 @@
 import type { NutritionRecord } from 'react-native-health-connect/src/types/records.types';
 
-import { USER_METRICS_SOURCES } from '@/constants/healthConnect';
+import { DEFAULT_PAGE_SIZE, USER_METRICS_SOURCES } from '@/constants/healthConnect';
 import { EATING_PHASES, MEAL_TYPE, NUTRITION_TYPES } from '@/constants/nutrition';
 import { LAST_TIME_APP_USED, READ_HEALTH_CONNECT_TYPE } from '@/constants/storage';
 import { LAST_RUN_KEY } from '@/constants/tasks';
@@ -13,13 +13,14 @@ import {
     addOrUpdateSetting,
     addUserMetrics,
     addUserNutrition,
+    addUserNutritions,
     deleteHealthConnectUserMetricsBetweenDates,
     deleteHealthConnectUserNutritionBetweenDates,
     getAllUserNutritionBySource,
     getUser,
     updateUserNutrition,
 } from '@/utils/database';
-import { isValidDateParam } from '@/utils/date';
+import { getCurrentTimestampISOString, getDaysAgoTimestampISOString, isValidDateParam } from '@/utils/date';
 import { generateHash } from '@/utils/string';
 import {
     HealthConnectBodyFatRecordData,
@@ -98,7 +99,7 @@ export const getLatestHealthConnectData = async () => {
 
     const lastRunDate = await AsyncStorage.getItem(LAST_RUN_KEY);
     const lastTimeUsed = await AsyncStorage.getItem(LAST_TIME_APP_USED);
-    const today = new Date().toISOString()
+    const today = getCurrentTimestampISOString()
         .split('T')[0];
 
     if (hours >= 5 && (!lastRunDate || lastRunDate !== today)) {
@@ -118,7 +119,10 @@ export const getLatestHealthConnectData = async () => {
         const lastTimeUsedDate = new Date(isValidDateParam(lastTimeUsed) ? lastTimeUsed : today);
         const daysSinceLastUse = Math.round(Math.abs(now.getTime() - lastTimeUsedDate.getTime()) / (1000 * 60 * 60 * 24));
 
-        const healthData = await getHealthConnectData(daysSinceLastUse + 1);
+        const startTime = getDaysAgoTimestampISOString(daysSinceLastUse);
+        const endTime = getCurrentTimestampISOString();
+
+        const healthData = await getHealthConnectData(startTime, endTime, daysSinceLastUse + 1);
         if (healthData) {
             const latestHeight = healthData?.heightRecords?.[0];
             const latestWeight = healthData?.weightRecords?.[0];
@@ -219,63 +223,71 @@ export const syncHealthConnectData = async (
     checkReadIsPermitted: HealthConnectContextValue['checkReadIsPermitted'],
     checkWriteIsPermitted: HealthConnectContextValue['checkWriteIsPermitted'],
     getHealthData: HealthConnectContextValue['getHealthData'],
-    insertHealthData: HealthConnectContextValue['insertHealthData']
+    insertHealthData: HealthConnectContextValue['insertHealthData'],
+    startTime: string,
+    endTime: string,
+    pageSize = DEFAULT_PAGE_SIZE
 ) => {
     const user = await getUser();
     const isReadPermitted = await checkReadIsPermitted(['BodyFat', 'Weight', 'Nutrition']);
     if (isReadPermitted) {
-        const dataPointsCount = 1000;
-        const healthData = await getHealthData(dataPointsCount, ['BodyFat', 'Weight', 'Nutrition']);
+        const healthData = await getHealthConnectData(startTime, endTime, pageSize, ['BodyFat', 'Weight', 'Nutrition']);
 
         const combinedData = await combineHeightAndWeightHealthData(
             healthData.bodyFatRecords,
             healthData.weightRecords
         );
 
-        const currentHealthConnectDates = [
+        const currentHealthConnectNutritionDates = [
             ...(healthData.nutritionRecords?.map((n) => n.startTime) || []),
+        ].filter((date) => date) as string[];
+
+        const currentHealthConnectMetricsDates = [
             ...(healthData.weightRecords?.map((n) => n.time) || []),
             ...combinedData.map((d) => d.date),
             ...combinedData.map((d) => d.createdAt),
         ].filter((date) => date) as string[];
 
-        // TODO: maybe simply get last 30 days of data
-        if (currentHealthConnectDates.length > 0) {
+        if (currentHealthConnectNutritionDates.length > 0) {
             // Sort dates in ascending order
-            currentHealthConnectDates.sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+            currentHealthConnectNutritionDates.sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+            currentHealthConnectMetricsDates.sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
 
             // Get the first and last date
-            const startDate = currentHealthConnectDates[0];
-            const endDate = currentHealthConnectDates[currentHealthConnectDates.length - 1];
+            const nutritionStartDate = currentHealthConnectNutritionDates[0];
+            const nutritionEndDate = currentHealthConnectNutritionDates[currentHealthConnectNutritionDates.length - 1];
+
+            const metricsStartDate = currentHealthConnectMetricsDates[0];
+            const metricsEndDate = currentHealthConnectMetricsDates[currentHealthConnectMetricsDates.length - 1];
 
             // Delete all existing Health Connect data in the date range
-            await deleteHealthConnectUserNutritionBetweenDates(startDate, endDate);
-            await deleteHealthConnectUserMetricsBetweenDates(startDate, endDate);
+            await deleteHealthConnectUserNutritionBetweenDates(nutritionStartDate, nutritionEndDate);
+            await deleteHealthConnectUserMetricsBetweenDates(metricsStartDate, metricsEndDate);
         }
 
         if (healthData?.nutritionRecords?.length) {
-            for (const nutrition of healthData.nutritionRecords) {
-                await addUserNutrition({
-                    calories: nutrition.energy?.inKilocalories || 0,
-                    carbohydrate: nutrition.totalCarbohydrate?.inGrams || 0,
-                    createdAt: nutrition.startTime,
-                    dataId: nutrition?.metadata?.id || generateHash(),
-                    date: nutrition.startTime,
-                    fat: nutrition?.totalFat?.inGrams || 0,
-                    fiber: nutrition?.dietaryFiber?.inGrams || 0,
-                    mealType: nutrition.mealType || 0,
-                    monounsaturatedFat: nutrition?.monounsaturatedFat?.inGrams || 0,
-                    name: nutrition?.name || '',
-                    polyunsaturatedFat: nutrition?.polyunsaturatedFat?.inGrams || 0,
-                    protein: nutrition?.protein?.inGrams || 0,
-                    saturatedFat: nutrition?.saturatedFat?.inGrams || 0,
-                    source: USER_METRICS_SOURCES.HEALTH_CONNECT,
-                    sugar: nutrition?.sugar?.inGrams || 0,
-                    transFat: nutrition?.transFat?.inGrams || 0,
-                    type: NUTRITION_TYPES.MEAL,
-                    unsaturatedFat: nutrition?.unsaturatedFat?.inGrams || 0,
-                });
-            }
+            const userNutritions = healthData.nutritionRecords.map((nutrition) => ({
+                calories: nutrition.energy?.inKilocalories || 0,
+                carbohydrate: nutrition.totalCarbohydrate?.inGrams || 0,
+                createdAt: nutrition.startTime,
+                dataId: nutrition?.metadata?.id || generateHash(),
+                date: nutrition.startTime,
+                fat: nutrition?.totalFat?.inGrams || 0,
+                fiber: nutrition?.dietaryFiber?.inGrams || 0,
+                mealType: nutrition.mealType || 0,
+                monounsaturatedFat: nutrition?.monounsaturatedFat?.inGrams || 0,
+                name: nutrition?.name || '',
+                polyunsaturatedFat: nutrition?.polyunsaturatedFat?.inGrams || 0,
+                protein: nutrition?.protein?.inGrams || 0,
+                saturatedFat: nutrition?.saturatedFat?.inGrams || 0,
+                source: USER_METRICS_SOURCES.HEALTH_CONNECT,
+                sugar: nutrition?.sugar?.inGrams || 0,
+                transFat: nutrition?.transFat?.inGrams || 0,
+                type: NUTRITION_TYPES.MEAL,
+                unsaturatedFat: nutrition?.unsaturatedFat?.inGrams || 0,
+            }));
+
+            await addUserNutritions(userNutritions);
         }
 
         for (const data of combinedData) {
@@ -316,7 +328,7 @@ export const syncHealthConnectData = async (
                     value: userNutrition.protein || 0,
                 },
                 recordType: 'Nutrition',
-                startTime: userNutrition.date || new Date().toISOString(),
+                startTime: userNutrition.date || getCurrentTimestampISOString(),
                 sugar: {
                     unit: 'grams',
                     value: userNutrition.sugar || 0,

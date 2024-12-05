@@ -4,15 +4,16 @@ import CustomTextInput from '@/components/CustomTextInput';
 import ThemedModal from '@/components/ThemedModal';
 import { USER_METRICS_SOURCES } from '@/constants/healthConnect';
 import { MEAL_TYPE, NUTRITION_TYPES } from '@/constants/nutrition';
-import { GRAMS, IMPERIAL_SYSTEM, METRIC_SYSTEM, OUNCES, RECENT_FOOD } from '@/constants/storage';
+import { GRAMS, IMPERIAL_SYSTEM, METRIC_SYSTEM, OUNCES } from '@/constants/storage';
 import useUnit from '@/hooks/useUnit';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { normalizeMacrosByGrams } from '@/utils/data';
 import { addFood, addUserNutrition, getFoodByNameAndMacros, updateUserNutrition } from '@/utils/database';
+import { getCurrentTimestampISOString } from '@/utils/date';
+import { updateRecentFood } from '@/utils/storage';
 import { generateHash, safeToFixed } from '@/utils/string';
 import { UserNutritionInsertType } from '@/utils/types';
 import { getDisplayFormattedWeight } from '@/utils/unit';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, View } from 'react-native';
@@ -20,14 +21,17 @@ import { ActivityIndicator, Text, useTheme } from 'react-native-paper';
 
 export type FoodTrackingType = {
     carbs: number;
+    estimatedGrams?: number;
     fat: number;
     grams?: number;
     kcal: number;
+    productCode?: string;
     productTitle: string;
     protein: number;
 };
 
 type FoodTrackingModalProps = {
+    allowEditName?: boolean;
     food: FoodTrackingType | null;
     isLoading?: boolean;
     onClose: () => void;
@@ -39,6 +43,7 @@ type FoodTrackingModalProps = {
 const GRAM_BASE = 100;
 
 const FoodTrackingModal = ({
+    allowEditName = false,
     food,
     isLoading = false,
     onClose,
@@ -51,6 +56,7 @@ const FoodTrackingModal = ({
     const styles = makeStyles(colors, dark);
     const [unitAmount, setUnitAmount] = useState(GRAM_BASE.toString());
     const [mealType, setMealType] = useState('0');
+    const [editableName, setEditableName] = useState(food?.productTitle || '');
 
     const { unitSystem } = useUnit();
     const isImperial = unitSystem === IMPERIAL_SYSTEM;
@@ -106,11 +112,11 @@ const FoodTrackingModal = ({
             calories: calculatedValues.kcal,
             carbohydrate: calculatedValues.carbs,
             dataId: generateHash(),
-            date: new Date().toISOString(),
+            date: getCurrentTimestampISOString(),
             fat: calculatedValues.fat,
             grams: parseFloat(unitAmount),
             mealType: parseInt(mealType, 10),
-            name: food?.productTitle || t('unknown_food'),
+            name: editableName || t('unknown_food'),
             protein: calculatedValues.protein,
             source: USER_METRICS_SOURCES.USER_INPUT,
             type: NUTRITION_TYPES.MEAL,
@@ -129,50 +135,69 @@ const FoodTrackingModal = ({
                 protein: userNutrition.protein,
             });
 
-            const food = {
-                calories: normalizedMacros.calories,
-                name: normalizedMacros.name,
+            const updatedFood = {
+                calories: normalizedMacros.kcal,
+                name: userNutrition.name,
+                productCode: food?.productCode,
                 protein: normalizedMacros.protein,
-                totalCarbohydrate: normalizedMacros.carbohydrate,
+                totalCarbohydrate: normalizedMacros.carbs,
                 totalFat: normalizedMacros.fat,
                 // TODO: add the rest of the fields
-                // productCode: userNutrition.ean,
             };
 
             const existingFood = await getFoodByNameAndMacros(
-                food.name,
-                food.calories,
-                food.protein,
-                food.totalCarbohydrate,
-                food.totalFat
+                updatedFood.name,
+                updatedFood.calories,
+                updatedFood.protein,
+                updatedFood.totalCarbohydrate,
+                updatedFood.totalFat
             );
 
             let foodId = existingFood?.id;
             if (!existingFood) {
-                foodId = await addFood(food);
+                foodId = await addFood(updatedFood);
             }
 
             if (foodId) {
-                const recentFood: number[] = JSON.parse(await AsyncStorage.getItem(RECENT_FOOD) || '[]');
-                recentFood.push(foodId);
-                await AsyncStorage.setItem(RECENT_FOOD, JSON.stringify(recentFood));
+                await updateRecentFood(foodId);
             }
         }
+
         onClose();
-    }, [calculatedValues.kcal, calculatedValues.protein, calculatedValues.carbs, calculatedValues.fat, food?.productTitle, t, mealType, unitAmount, userNutritionId, onClose]);
+    }, [calculatedValues.kcal, calculatedValues.carbs, calculatedValues.fat, calculatedValues.protein, unitAmount, mealType, editableName, food?.productCode, t, userNutritionId, onClose]);
+
+    useEffect(() => {
+        if (food) {
+            if (allowEditName) {
+                setEditableName(food.productTitle);
+            }
+
+            if (food.estimatedGrams) {
+                handleSetUnitAmount(food.estimatedGrams.toString());
+            }
+        }
+    }, [allowEditName, food, handleSetUnitAmount]);
 
     return (
         <ThemedModal
             cancelText={t('cancel')}
-            confirmText={userNutritionId ? t('update') : t('track')}
+            confirmText={isLoading ? undefined : (userNutritionId ? t('update') : t('track'))}
             onClose={onClose}
             onConfirm={handleTrackFood}
-            title={food?.productTitle || ''}
+            title={allowEditName ? '' : editableName || food?.productTitle}
             visible={visible}
         >
             <ScrollView>
                 {food && !isLoading && (
                     <View style={styles.foodTrackingForm}>
+                        {allowEditName ? (
+                            <CustomTextInput
+                                label={t('name')}
+                                onChangeText={setEditableName}
+                                placeholder={t('enter_food_name')}
+                                value={editableName}
+                            />
+                        ) : null}
                         <CustomTextInput
                             keyboardType="numeric"
                             label={t('grams')}

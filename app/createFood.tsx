@@ -1,23 +1,25 @@
 import CompletionModal from '@/components/CompletionModal';
 import CustomTextInput from '@/components/CustomTextInput';
 import { Screen } from '@/components/Screen';
-import { RECENT_FOOD } from '@/constants/storage';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { addFood } from '@/utils/database';
+import { getCurrentTimestampISOString } from '@/utils/date';
+import { updateRecentFood } from '@/utils/storage';
 import { formatFloatNumericInputText, generateHash } from '@/utils/string';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { GoogleFormFoodFoodLabelType } from '@/utils/types';
 import { NavigationProp, useRoute } from '@react-navigation/native';
-import fetch from 'isomorphic-fetch';
+// import fetch from 'isomorphic-fetch';
+import { fetch } from 'expo/fetch';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { Appbar, Button, Text, useTheme } from 'react-native-paper';
 
-import form from '../data/form.json';
+import form from '../data/foodForm.json';
 
 const GOOGLE_FORMS_URL = 'https://docs.google.com/forms/d';
 
-const HIDDEN_FIELDS = ['data_id', 'created_at', 'deleted_at'];
+const HIDDEN_FIELDS = ['data_id', 'created_at', 'deleted_at'] as GoogleFormFoodFoodLabelType[];
 
 type RouteParams = {
     foodName?: string;
@@ -32,6 +34,7 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
+    const [foodId, setFoodId] = useState<number | undefined>(undefined);
 
     // Initialize form state based on fields from form.json
     const initialFormState = form.fields.reduce((acc, field) => {
@@ -41,10 +44,10 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
     const [formData, setFormData] = useState(initialFormState);
 
-    const handleModalClose = useCallback(() => {
+    const handleCloseConfirmationModal = useCallback(() => {
         setIsModalVisible(false);
-        navigation.navigate('foodSearch');
-    }, [navigation]);
+        navigation.navigate('foodSearch', { foodId });
+    }, [foodId, navigation]);
 
     useEffect(() => {
         if (foodName) {
@@ -70,7 +73,7 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
     const formatQuestionName = (id: string) => `entry.${id}`;
 
-    const submitForm = useCallback(async () => {
+    const handleSubmitForm = useCallback(async () => {
         setIsSaving(true);
 
         const urlParams = new URLSearchParams();
@@ -80,36 +83,77 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
             }
         });
 
-        HIDDEN_FIELDS.forEach((field) => {
+        HIDDEN_FIELDS.forEach((field: GoogleFormFoodFoodLabelType) => {
             const id = form.fields.find((f) => f.label === field)?.id;
 
             if (id) {
                 if (field === 'data_id') {
                     urlParams.append(formatQuestionName(id), generateHash());
                 } else if (field === 'created_at') {
-                    urlParams.append(formatQuestionName(id), new Date().toISOString());
+                    urlParams.append(formatQuestionName(id), getCurrentTimestampISOString());
                 }
             }
         });
 
         const food = {
             alcohol: parseInt(urlParams.get('entry.1665963898') || '0', 10),
+            biotin: parseFloat(urlParams.get('entry.1257288602') || '0'),
+            brand: urlParams.get('entry.825388453') || '',
+            caffeine: parseFloat(urlParams.get('entry.1688892088') || '0'),
+            calcium: parseFloat(urlParams.get('entry.995973121') || '0'),
             calories: parseInt(urlParams.get('entry.1848808507') || '0', 10),
-            createdAt: urlParams.get('entry.1917240265') || new Date().toISOString(),
+            chloride: parseFloat(urlParams.get('entry.946753782') || '0'),
+            cholesterol: parseFloat(urlParams.get('entry.1733386302') || '0'),
+            chromium: parseFloat(urlParams.get('entry.281656146') || '0'),
+            copper: parseFloat(urlParams.get('entry.1049396127') || '0'),
+            createdAt: urlParams.get('entry.1917240265') || getCurrentTimestampISOString(),
             dataId: urlParams.get('entry.1025747995') || generateHash(),
             fiber: parseInt(urlParams.get('entry.1039537292') || '0', 10),
+            folate: parseFloat(urlParams.get('entry.1243452339') || '0'),
+            folicAcid: parseFloat(urlParams.get('entry.670035765') || '0'),
+            iodine: parseFloat(urlParams.get('entry.1072580240') || '0'),
+            iron: parseFloat(urlParams.get('entry.1648646017') || '0'),
+            magnesium: parseFloat(urlParams.get('entry.1120455816') || '0'),
+            manganese: parseFloat(urlParams.get('entry.681293427') || '0'),
+            molybdenum: parseFloat(urlParams.get('entry.1402996') || '0'),
+            monounsaturatedFat: parseFloat(urlParams.get('entry.2003052366') || '0'),
             name: urlParams.get('entry.1515281433') || t('unnamed'),
+            niacin: parseFloat(urlParams.get('entry.396501138') || '0'),
+            pantothenicAcid: parseFloat(urlParams.get('entry.1055614332') || '0'),
+            phosphorus: parseFloat(urlParams.get('entry.555762242') || '0'),
+            polyunsaturatedFat: parseFloat(urlParams.get('entry.1663928689') || '0'),
+            potassium: parseFloat(urlParams.get('entry.22311928') || '0'),
+            productCode: urlParams.get('entry.589875398') || '',
             protein: parseInt(urlParams.get('entry.1811363356') || '0', 10),
+            riboflavin: parseFloat(urlParams.get('entry.281566105') || '0'),
+            saturatedFat: parseFloat(urlParams.get('entry.1321812725') || '0'),
+            selenium: parseFloat(urlParams.get('entry.630251394') || '0'),
+            servingSize: parseFloat(urlParams.get('entry.422897572') || '0'),
+            sodium: parseFloat(urlParams.get('entry.1491871504') || '0'),
             sugar: parseInt(urlParams.get('entry.231759517') || '0', 10),
+            thiamin: parseFloat(urlParams.get('entry.1862464253') || '0'),
             totalCarbohydrate: parseInt(urlParams.get('entry.919411420') || '0', 10),
             totalFat: parseInt(urlParams.get('entry.2114676271') || '0', 10),
+            transFat: parseFloat(urlParams.get('entry.648448017') || '0'),
+            unsaturatedFat: parseFloat(urlParams.get('entry.538006077') || '0'),
+            vitaminA: parseFloat(urlParams.get('entry.1285896543') || '0'),
+            vitaminB6: parseFloat(urlParams.get('entry.1650599429') || '0'),
+            vitaminB12: parseFloat(urlParams.get('entry.994462403') || '0'),
+            vitaminC: parseFloat(urlParams.get('entry.636273284') || '0'),
+            vitaminD: parseFloat(urlParams.get('entry.1168816410') || '0'),
+            vitaminE: parseFloat(urlParams.get('entry.1412584634') || '0'),
+            vitaminK: parseFloat(urlParams.get('entry.446901229') || '0'),
+            zinc: parseFloat(urlParams.get('entry.19181913') || '0'),
         };
 
         const foodId = await addFood(food);
+        await updateRecentFood(foodId);
 
-        const recentFood: number[] = JSON.parse(await AsyncStorage.getItem(RECENT_FOOD) || '[]');
-        recentFood.push(foodId);
-        await AsyncStorage.setItem(RECENT_FOOD, JSON.stringify(recentFood));
+        // only set the food id if the user came
+        // from the food search screen
+        if (foodName) {
+            setFoodId(foodId);
+        }
 
         try {
             fetch(
@@ -135,24 +179,20 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
         } finally {
             setIsSaving(false);
         }
-    }, [formData, t]);
+    }, [foodName, formData, t]);
 
-    const numericFields = [
-        'calories',
-        'total_carbohydrate',
-        'total_fat',
-        'protein',
-        'alcohol',
-        'fiber',
-        'sugar',
-    ];
+    const textFields = [
+        'name',
+        'product_code',
+        'brand',
+    ] as GoogleFormFoodFoodLabelType[];
 
     return (
         <Screen style={styles.container}>
             <CompletionModal
                 buttonText={t('ok')}
                 isModalVisible={isModalVisible}
-                onClose={handleModalClose}
+                onClose={handleCloseConfirmationModal}
                 title={t('form_submitted_successfully')}
             />
             <Appbar.Header
@@ -177,9 +217,9 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
             </Appbar.Header>
             <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
                 {form.fields
-                    .filter((field) => !HIDDEN_FIELDS.includes(field.label))
+                    .filter((field) => !HIDDEN_FIELDS.includes(field.label as GoogleFormFoodFoodLabelType))
                     .map((field) => {
-                        const isNumericField = numericFields.includes(field.label);
+                        const isNumericField = !textFields.includes(field.label as GoogleFormFoodFoodLabelType);
 
                         return (
                             <View key={field.id} style={styles.formGroup}>
@@ -205,7 +245,7 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 <Button
                     disabled={isSaving}
                     mode="contained"
-                    onPress={submitForm}
+                    onPress={handleSubmitForm}
                     style={styles.button}
                 >
                     {t('submit')}

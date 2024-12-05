@@ -286,7 +286,7 @@ export async function estimateNutritionFromPhoto(photoUri: string) {
         ) as OpenAI.Chat.ChatCompletionCreateParams.Function[],
         messages: [{
             content: [
-                'You are a very powerful AI, trained to estimate the macronutrients of a food / meal from a photo.',
+                'You are a very powerful AI, trained to estimate the macronutrients of a food/meal from the photo provided',
             ].join('\n'),
             role: 'system',
         }, {
@@ -344,7 +344,7 @@ export async function extractMacrosFromLabelPhoto(photoUri: string) {
         ) as OpenAI.Chat.ChatCompletionCreateParams.Function[],
         messages: [{
             content: [
-                'You are a very powerful AI, trained to extract the macronutrients of a food label from a photo.',
+                'You are a very powerful AI, trained to extract the macronutrients of a food label from the photo provided',
                 'Use OCR to extract the text from the image, then parse the text to extract the macronutrients.',
             ].join('\n'),
             role: 'system',

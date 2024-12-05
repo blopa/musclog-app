@@ -2,6 +2,7 @@ import FoodItem from '@/components/FoodItem';
 import FoodTrackingModal from '@/components/FoodTrackingModal';
 import { Screen } from '@/components/Screen';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
+import { getFood } from '@/utils/database';
 import { fetchFoodData } from '@/utils/fetchFoodData';
 import { MusclogApiFoodInfoType } from '@/utils/types';
 import { FontAwesome5 } from '@expo/vector-icons';
@@ -14,12 +15,13 @@ import { ActivityIndicator, Platform, StyleSheet, View } from 'react-native';
 import { Appbar, Button, Text, TextInput, useTheme } from 'react-native-paper';
 
 type RouteParams = {
+    foodId?: string;
     initialSearchQuery?: string;
 };
 
 const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const route = useRoute();
-    const { initialSearchQuery = '' } = (route.params as RouteParams) || {};
+    const { foodId, initialSearchQuery = '' } = (route.params as RouteParams) || {};
     const { t } = useTranslation();
     const { colors, dark } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors, dark);
@@ -33,7 +35,7 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const [selectedFood, setSelectedFood] = useState<MusclogApiFoodInfoType | null>(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
 
-    const loadInitialData = useCallback(async () => {
+    const loadInitialQuery = useCallback(async () => {
         setIsLoading(true);
 
         const { pageCount, products } = await fetchFoodData(initialSearchQuery, 1);
@@ -42,6 +44,25 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
         setIsLoading(false);
     }, [initialSearchQuery]);
+
+    const loadInitialFood = useCallback(async () => {
+        if (foodId) {
+            setIsLoading(true);
+            const food = await getFood(Number(foodId));
+            if (food) {
+                setSelectedFood({
+                    carbs: food.totalCarbohydrate,
+                    fat: food.totalFat,
+                    kcal: food.calories,
+                    productTitle: food.name,
+                    protein: food.protein,
+                });
+
+                setIsModalVisible(true);
+                setIsLoading(false);
+            }
+        }
+    }, [foodId]);
 
     const handleSearch = useCallback(async () => {
         setIsLoading(true);
@@ -81,11 +102,6 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
         setIsModalVisible(true);
     }, []);
 
-    const closeModal = useCallback(() => {
-        setIsModalVisible(false);
-        setSelectedFood(null);
-    }, []);
-
     const resetScreenData = useCallback(() => {
         setIsModalVisible(false);
         setSelectedFood(null);
@@ -97,16 +113,26 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
         setLoadMoreError(false);
     }, []);
 
+    const handleCloseTrackingModal = useCallback(() => {
+        setIsModalVisible(false);
+        setSelectedFood(null);
+
+        resetScreenData();
+        navigation.navigate('foodLog');
+    }, [navigation, resetScreenData]);
+
     useFocusEffect(
         useCallback(() => {
             if (initialSearchQuery) {
-                loadInitialData();
+                loadInitialQuery();
             }
+
+            loadInitialFood();
 
             return () => {
                 resetScreenData();
             };
-        }, [initialSearchQuery, loadInitialData, resetScreenData])
+        }, [initialSearchQuery, loadInitialFood, loadInitialQuery, resetScreenData])
     );
 
     const openAddNewFoodModal = useCallback(() => {
@@ -172,7 +198,7 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
             )}
             <FoodTrackingModal
                 food={selectedFood}
-                onClose={closeModal}
+                onClose={handleCloseTrackingModal}
                 visible={isModalVisible}
             />
         </Screen>

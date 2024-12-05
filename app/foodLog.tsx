@@ -5,8 +5,9 @@ import FoodTrackingModal, { FoodTrackingType } from '@/components/FoodTrackingMo
 import { Screen } from '@/components/Screen';
 import ThemedCard from '@/components/ThemedCard';
 import ThemedModal from '@/components/ThemedModal';
+import TodaysNutritionProgress from '@/components/TodaysNutritionProgress';
 import { MEAL_TYPE } from '@/constants/nutrition';
-import { AI_SETTINGS_TYPE, GRAMS, IMPERIAL_SYSTEM, OUNCES, RECENT_FOOD } from '@/constants/storage';
+import { AI_SETTINGS_TYPE, GRAMS, IMPERIAL_SYSTEM, OUNCES } from '@/constants/storage';
 import useUnit from '@/hooks/useUnit';
 import { useHealthConnect } from '@/storage/HealthConnectProvider';
 import { useSettings } from '@/storage/SettingsContext';
@@ -16,16 +17,16 @@ import { normalizeMacrosByGrams } from '@/utils/data';
 import {
     deleteUserNutrition,
     getAllFoodsByIds,
-    getLatestFitnessGoals,
     getUserNutritionBetweenDates,
 } from '@/utils/database';
+import { getCurrentTimestampISOString, getDaysAgoTimestampISOString } from '@/utils/date';
 import { fetchProductByEAN } from '@/utils/fetchFoodData';
 import { syncHealthConnectData } from '@/utils/healthConnect';
+import { getRecentFood } from '@/utils/storage';
 import { safeToFixed } from '@/utils/string';
-import { FitnessGoalsReturnType, MusclogApiFoodInfoType, UserNutritionDecryptedReturnType } from '@/utils/types';
+import { MusclogApiFoodInfoType, UserNutritionDecryptedReturnType } from '@/utils/types';
 import { getDisplayFormattedWeight } from '@/utils/unit';
 import { FontAwesome5 } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationProp } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
 import { CameraView, useCameraPermissions } from 'expo-camera';
@@ -56,12 +57,6 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
     const [index, setIndex] = useState(0);
     const [searchQuery, setSearchQuery] = useState('');
-    const [consumed, setConsumed] = useState({
-        calories: 0,
-        carbohydrate: 0,
-        fat: 0,
-        protein: 0,
-    });
     const [consumedFoods, setConsumedFoods] = useState<UserNutritionDecryptedReturnType[]>([]);
 
     const [routes] = useState([
@@ -75,6 +70,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const [showBarcodeCamera, setShowBarcodeCamera] = useState(false);
     const [showPhotoCamera, setShowPhotoCamera] = useState(false);
     const [isAiEnabled, setIsAiEnabled] = useState<boolean>(false);
+    const [allowEditName, setAllowEditName] = useState<boolean>(false);
 
     // Reference to the photo camera
     const photoCameraRef = useRef(null);
@@ -83,7 +79,6 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const [userNutritionId, setUserNutritionId] = useState<null | number>(null);
     const [isNutritionModalVisible, setIsNutritionModalVisible] = useState<boolean>(false);
     const [photoMode, setPhotoMode] = useState<string>('meal');
-    const [dailyGoals, setDailyGoals] = useState<null | Omit<FitnessGoalsReturnType, 'id'>>(null);
     const [recentTrackedFoods, setRecentTrackedFoods] = useState<MusclogApiFoodInfoType[]>([]);
 
     const { unitSystem } = useUnit();
@@ -99,33 +94,12 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         setIsAiEnabled(hasAiEnabled);
     }, [getSettingByType]);
 
-    const loadLatestFitnessGoal = useCallback(async () => {
-        try {
-            const latestGoal = await getLatestFitnessGoals();
-            if (latestGoal) {
-                setDailyGoals(latestGoal);
-            } else {
-                setDailyGoals(null);
-            }
-        } catch (error) {
-            console.error('Failed to load latest fitness goal:', error);
-        }
-    }, []);
-
     const mealCategories = useMemo(() => [
         { icon: '🍳', name: t('breakfast') },
         { icon: '🥪', name: t('lunch') },
         { icon: '🍽️', name: t('dinner') },
         { icon: '🍎', name: t('snacks') },
     ], [t]);
-
-    const calculatePercentage = (consumedAmount: number, goalAmount: number) => {
-        if (goalAmount === 0) {
-            return 0;
-        }
-
-        return Math.min(Math.round((consumedAmount / goalAmount) * 100), 100);
-    };
 
     const loadConsumed = useCallback(async () => {
         const startDate = new Date();
@@ -140,18 +114,6 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 endDate.toISOString()
             );
 
-            const consumed = consumedData.reduce(
-                (acc, item) => {
-                    acc.calories += item.calories || 0;
-                    acc.protein += item.protein || 0;
-                    acc.carbohydrate += item.carbohydrate || 0;
-                    acc.fat += item.fat || 0;
-                    return acc;
-                },
-                { calories: 0, carbohydrate: 0, fat: 0, protein: 0 }
-            );
-
-            setConsumed(consumed);
             setConsumedFoods(consumedData);
         } catch (error) {
             console.error('Error loading consumed data:', error);
@@ -165,7 +127,10 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
             checkReadIsPermitted,
             checkWriteIsPermitted,
             getHealthData,
-            insertHealthData
+            insertHealthData,
+            getDaysAgoTimestampISOString(1),
+            getCurrentTimestampISOString(),
+            1000
         );
 
         await loadConsumed();
@@ -173,7 +138,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     }, [checkReadIsPermitted, checkWriteIsPermitted, getHealthData, insertHealthData, loadConsumed]);
 
     const loadRecentFood = useCallback(async () => {
-        const recentFoodIds: number[] = JSON.parse(await AsyncStorage.getItem(RECENT_FOOD) || '[]');
+        const recentFoodIds = await getRecentFood();
 
         const foods = await getAllFoodsByIds(recentFoodIds);
 
@@ -192,71 +157,30 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const resetScreenData = useCallback(() => {
         setSearchQuery('');
         setIndex(0);
-        setConsumed({
-            calories: 0,
-            carbohydrate: 0,
-            fat: 0,
-            protein: 0,
-        });
         setConsumedFoods([]);
+        setAllowEditName(false);
     }, []);
 
     useFocusEffect(
         useCallback(() => {
             loadConsumed();
-            loadLatestFitnessGoal();
             checkApiKey();
             loadRecentFood();
 
             return () => {
                 resetScreenData();
             };
-        }, [checkApiKey, loadConsumed, loadLatestFitnessGoal, loadRecentFood, resetScreenData])
+        }, [checkApiKey, loadConsumed, loadRecentFood, resetScreenData])
     );
 
     const OverviewRoute = useCallback(() => {
-        const macros = dailyGoals ? [
-            { consumed: safeToFixed(consumed.calories), goal: dailyGoals.calories, name: t('calories'), unit: 'kcal' },
-            { consumed: safeToFixed(consumed.protein), goal: dailyGoals.protein, name: t('proteins'), unit: macroUnit },
-            { consumed: safeToFixed(consumed.carbohydrate), goal: dailyGoals.totalCarbohydrate, name: t('carbs'), unit: macroUnit },
-            { consumed: safeToFixed(consumed.fat), goal: dailyGoals.totalFat, name: t('fats'), unit: macroUnit },
-        ] : [];
-
         return (
             <Screen style={styles.container}>
                 <ScrollView>
-                    <ThemedCard>
-                        <View style={styles.cardContent}>
-                            <Text style={styles.cardTitle}>{t('todays_progress')}</Text>
-                            {dailyGoals ? (
-                                macros.map((macro) => (
-                                    <View key={macro.name} style={styles.macroContainer}>
-                                        <Text style={styles.metricDetail}>
-                                            {t('item_value_unit', { item: macro.name, value: `${macro.consumed} / ${macro.goal}`, weightUnit: macro.unit })}
-                                        </Text>
-                                        <View style={styles.progressBarContainer}>
-                                            <View
-                                                style={[
-                                                    styles.progressBar,
-                                                    {
-                                                        width: `${calculatePercentage(parseFloat(macro.consumed), macro.goal)}%`,
-                                                    },
-                                                ]}
-                                            />
-                                        </View>
-                                    </View>
-                                ))
-                            ) : (
-                                <Button
-                                    mode="contained"
-                                    onPress={() => navigation.navigate('createFitnessGoals')}
-                                    style={styles.addGoalButton}
-                                >
-                                    {t('add_your_fitness_goal')}
-                                </Button>
-                            )}
-                        </View>
-                    </ThemedCard>
+                    <TodaysNutritionProgress />
+                    {Platform.OS === 'web' ? (
+                        <View style={{ height: 40 }} />
+                    ) : null}
                     {recentTrackedFoods.length > 0 ? (
                         <FlashList
                             contentContainerStyle={styles.listContent}
@@ -264,23 +188,21 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                             estimatedItemSize={115}
                             keyExtractor={(item, index) => (item.productTitle || index).toString()}
                             onEndReachedThreshold={0.5}
-                            renderItem={
-                                ({ item }) => (
-                                    <FoodItem
-                                        food={item}
-                                        onAddFood={(food) => {
-                                            setSelectedFood(food);
-                                            setIsNutritionModalVisible(true);
-                                        }}
-                                    />
-                                )
-                            }
+                            renderItem={({ item }) => (
+                                <FoodItem
+                                    food={item}
+                                    onAddFood={(food) => {
+                                        setSelectedFood(food);
+                                        setIsNutritionModalVisible(true);
+                                    }}
+                                />
+                            )}
                         />
                     ) : null}
                 </ScrollView>
             </Screen>
         );
-    }, [consumed.calories, consumed.carbohydrate, consumed.fat, consumed.protein, dailyGoals, macroUnit, navigation, recentTrackedFoods, styles.addGoalButton, styles.cardContent, styles.cardTitle, styles.container, styles.listContent, styles.macroContainer, styles.metricDetail, styles.progressBar, styles.progressBarContainer, t]);
+    }, [recentTrackedFoods, styles.container, styles.listContent]);
 
     const handleEditNutrition = (userNutrition: UserNutritionDecryptedReturnType) => {
         setSelectedFood({
@@ -426,9 +348,11 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const renderTabBar = (props: any) => (
         <TabBar
             {...props}
-            indicatorStyle={{ backgroundColor: colors.primary }}
-            labelStyle={{ color: colors.onSurface }}
-            style={{ backgroundColor: colors.surface }}
+            activeColor={colors.onSurface}
+            inactiveColor={colors.onSurface}
+            indicatorStyle={{ backgroundColor: dark ? colors.primary : colors.surface }}
+            labelStyle={{ fontWeight: 'bold' }}
+            style={{ backgroundColor: dark ? colors.surface : colors.primaryContainer }}
         />
     );
 
@@ -484,26 +408,37 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 if (photoMode === 'meal') {
                     const macros = await estimateNutritionFromPhoto(photo.uri);
                     if (macros) {
-                        setSelectedFood(normalizeMacrosByGrams({
+                        const normalizedMacros = normalizeMacrosByGrams({
                             carbs: macros.carbs,
                             fat: macros.fat,
                             grams: macros.grams,
                             kcal: macros.calories,
-                            productTitle: macros.name,
                             protein: macros.protein,
-                        }));
+                        });
+
+                        setSelectedFood({
+                            ...normalizedMacros,
+                            estimatedGrams: macros.grams,
+                            productTitle: macros.name,
+                        });
+                        setAllowEditName(true);
                     }
                 } else {
                     const macros = await extractMacrosFromLabelPhoto(photo.uri);
                     if (macros) {
-                        setSelectedFood(normalizeMacrosByGrams({
+                        const normalizedMacros = normalizeMacrosByGrams({
                             carbs: macros.carbs,
                             fat: macros.fat,
                             grams: macros.grams,
                             kcal: macros.calories,
-                            productTitle: macros.name,
                             protein: macros.protein,
-                        }));
+                        });
+
+                        setSelectedFood({
+                            ...normalizedMacros,
+                            productTitle: macros.name,
+                        });
+                        setAllowEditName(true);
                     }
                 }
 
@@ -517,6 +452,15 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const handleFoodSearch = useCallback(() => {
         navigation.navigate('foodSearch', { initialSearchQuery: searchQuery });
     }, [navigation, searchQuery]);
+
+    const handleCloseTrackingModal = useCallback(() => {
+        setIsNutritionModalVisible(false);
+        setSelectedFood(null);
+        setUserNutritionId(null);
+        setAllowEditName(false);
+
+        loadConsumed();
+    }, [loadConsumed]);
 
     const renderScannerOverlay = useCallback(() => (
         <View style={styles.scannerOverlayContainer}>
@@ -640,14 +584,10 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 </View>
             ) : null}
             <FoodTrackingModal
+                allowEditName={allowEditName}
                 food={selectedFood}
                 isLoading={isLoading}
-                onClose={() => {
-                    setIsNutritionModalVisible(false);
-                    setSelectedFood(null);
-                    setUserNutritionId(null);
-                    loadConsumed();
-                }}
+                onClose={handleCloseTrackingModal}
                 userNutritionId={userNutritionId}
                 visible={isNutritionModalVisible}
             />

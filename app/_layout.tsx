@@ -22,6 +22,7 @@ import Profile from '@/app/profile';
 import RecentWorkoutDetails from '@/app/recentWorkoutDetails';
 import RecentWorkouts from '@/app/recentWorkouts';
 import Settings from '@/app/settings';
+// import TestScreen from '@/app/test';
 import UserMetricsCharts from '@/app/userMetricsCharts';
 import WorkoutDetails from '@/app/workoutDetails';
 import CustomErrorBoundary from '@/components/CustomErrorBoundary';
@@ -31,6 +32,7 @@ import { Screen } from '@/components/Screen';
 import { DARK, LIGHT, SYSTEM_DEFAULT } from '@/constants/colors';
 import {
     AI_SETTINGS_TYPE,
+    BUG_REPORT_TYPE,
     FIRST_BOOT,
     GEMINI_API_KEY_TYPE,
     HAS_COMPLETED_ONBOARDING,
@@ -72,12 +74,14 @@ import {
     getLatestUser,
     getUser,
 } from '@/utils/database';
-import { getCurrentTimestamp } from '@/utils/date';
+import { getCurrentTimestampISOString } from '@/utils/date';
 import { getEncryptionKey } from '@/utils/encryption';
 import { getLatestHealthConnectData } from '@/utils/healthConnect';
+import { captureException, captureMessage } from '@/utils/sentry';
 import { getDecrypter } from '@/utils/storage';
 import { ExerciseInsertType } from '@/utils/types';
 import { FontAwesome } from '@expo/vector-icons';
+import 'react-native-reanimated';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
     createDrawerNavigator,
@@ -86,7 +90,6 @@ import {
     DrawerItem,
     DrawerItemList,
 } from '@react-navigation/drawer';
-import 'react-native-reanimated';
 import * as Sentry from '@sentry/react-native';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
@@ -185,6 +188,7 @@ function RootLayout() {
     const { theme: colorScheme } = useCustomTheme();
     const { addNewChat } = useChatData();
     const { increaseUnreadMessages } = useUnreadMessages();
+    const { getSettingByType } = useSettings();
 
     const [loaded, error] = useFonts({
         SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
@@ -232,13 +236,13 @@ function RootLayout() {
                                     value: key,
                                 });
                             } else {
-                                Sentry.captureMessage('Country not allowed!');
+                                captureMessage('Country not allowed!');
                             }
                         } else {
-                            Sentry.captureMessage('No GEMINI encrypted key found');
+                            captureMessage('No GEMINI encrypted key found');
                         }
                     } catch (error) {
-                        Sentry.captureException({
+                        captureException({
                             encryptedKey,
                             error,
                         });
@@ -252,6 +256,10 @@ function RootLayout() {
                     await addOrUpdateSetting({
                         type: LANGUAGE_CHOICE_TYPE,
                         value: i18n.language,
+                    });
+                    await addOrUpdateSetting({
+                        type: BUG_REPORT_TYPE,
+                        value: 'true',
                     });
                     // await addOrUpdateSetting({
                     //     type: USE_FAT_PERCENTAGE_TDEE_TYPE,
@@ -274,7 +282,7 @@ function RootLayout() {
                         : '';
 
                     await addNewChat({
-                        createdAt: getCurrentTimestamp(),
+                        createdAt: getCurrentTimestampISOString(),
                         message: `${i18n.t('greeting_message', { name: userName })}${fitnessGoalMessage} ${i18n.t('ending_message')}`,
                         misc: '',
                         sender: 'assistant',
@@ -307,11 +315,27 @@ function RootLayout() {
             await addVersioning(packageJson.version);
             console.log(`Database schema updated to version ${packageJson.version}.`);
 
-            await AsyncStorage.setItem(LAST_TIME_APP_USED, getCurrentTimestamp().toString());
+            const shouldInitSentry = await getSettingByType(BUG_REPORT_TYPE);
+            if (shouldInitSentry?.value === 'true') {
+                Sentry.init({
+                    _experiments: {
+                        replaysOnErrorSampleRate: 1.0,
+                        replaysSessionSampleRate: 1.0,
+                    },
+                    debug: __DEV__,
+                    dsn: 'https://e4a649f87e2cf7bc05e3e000cb9ce7ba@o4507421287972864.ingest.de.sentry.io/4507426322579536',
+                    environment: __DEV__ ? 'development' : 'production',
+                    integrations: [
+                        Sentry.mobileReplayIntegration(),
+                    ],
+                });
+            }
+
+            await AsyncStorage.setItem(LAST_TIME_APP_USED, getCurrentTimestampISOString());
         };
 
         initializeApp();
-    }, [addNewChat, increaseUnreadMessages]);
+    }, [addNewChat, getSettingByType, increaseUnreadMessages]);
 
     if (!loaded) {
         return null;
@@ -380,6 +404,7 @@ function RootLayoutNav() {
         const routes = [
             // { component: UpcomingWorkouts, label: 'upcoming_workouts', name: 'upcomingWorkouts' },
             { component: Profile, label: 'profile', name: 'profile' },
+            // { component: TestScreen, label: 'test', name: 'test' },
             { component: ListWorkouts, label: 'workouts', name: 'listWorkouts' },
             { component: FoodLog, label: 'food_log', name: 'foodLog' },
             { component: RecentWorkouts, label: 'recent_workouts', name: 'recentWorkouts' },

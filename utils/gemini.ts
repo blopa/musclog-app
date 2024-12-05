@@ -1,7 +1,11 @@
+import type { ChatCompletionMessageParam } from 'openai/resources';
+
 import { EXERCISE_IMAGE_GENERATION_TYPE, GEMINI_API_KEY_TYPE } from '@/constants/storage';
 import i18n from '@/lang/lang';
 import { getSetting, processWorkoutPlan } from '@/utils/database';
-import { getBase64StringFromPhotoUri } from '@/utils/file';
+import { getBase64StringFromPhotoUri, resizeImage } from '@/utils/file';
+import { getAccessToken as getGoogleAccessToken, refreshAccessToken } from '@/utils/googleAuth';
+import { captureMessage } from '@/utils/sentry';
 import { WorkoutPlan, WorkoutReturnType } from '@/utils/types';
 import {
     Content,
@@ -10,17 +14,21 @@ import {
     GoogleGenerativeAI,
     HarmBlockThreshold,
     HarmCategory,
+    ModelParams,
     Part,
+    StartChatParams,
     Tool,
     ToolConfig,
 } from '@google/generative-ai';
-import * as Sentry from '@sentry/react-native';
+// import fetch from 'isomorphic-fetch';
+import { fetch } from 'expo/fetch';
 
 import {
     createWorkoutPlanPrompt,
     getCalculateNextWorkoutVolumeFunctions,
     getCalculateNextWorkoutVolumePrompt,
     getCreateWorkoutPlanFunctions,
+    getMacrosEstimationFunctions,
     getNutritionInsightsPrompt,
     getParsePastNutritionFunctions,
     getParsePastNutritionPrompt,
@@ -32,10 +40,13 @@ import {
     getWorkoutVolumeInsightsPrompt,
 } from './prompts';
 
-const GEMINI_MODEL = 'gemini-1.5-flash'; // or gemini-1.5-pro-latest
+const GEMINI_MODEL = 'gemini-1.5-flash';
+// const GEMINI_MODEL = 'gemini-1.5-pro-latest';
 
 export const getApiKey = async () =>
     (await getSetting(GEMINI_API_KEY_TYPE))?.value || process.env.EXPO_PUBLIC_FORCE_GEMINI_API_KEY;
+
+export const getAccessToken = async () => await getGoogleAccessToken() || undefined;
 
 const safetySettings = [
     { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
@@ -43,6 +54,135 @@ const safetySettings = [
     { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
     { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
 ];
+
+const getGenerativeAI = async ({ accessToken, apiKey }: { accessToken?: string; apiKey?: string;}): Promise<GoogleGenerativeAI> => {
+    if (accessToken) {
+        return {
+            getGenerativeModel: ({ model, ...modelParams }: ModelParams) => {
+                return {
+                    generateContent: async (request: GenerateContentRequest) => {
+                        return await rawFetchGeminiApi(model, accessToken, {
+                            ...modelParams,
+                            ...request,
+                        });
+                    },
+                    startChat: ({ history }: StartChatParams) => {
+                        return {
+                            sendMessage: async (request: string) => {
+                                return await rawFetchGeminiApi(model, accessToken, {
+                                    ...modelParams,
+                                    contents: [
+                                        ...(history || []),
+                                        { parts: [{ text: request } as Part], role: 'user' },
+                                    ],
+                                });
+                            },
+                        };
+                    },
+                };
+            },
+        } as unknown as GoogleGenerativeAI;
+    }
+
+    if (apiKey) {
+        return new GoogleGenerativeAI(apiKey);
+    }
+
+    return {
+        getGenerativeModel: (modelParams: ModelParams) => {
+            return {
+                generateContent: async (request: GenerateContentRequest) => {
+                    captureMessage('No API key or access token provided for generative AI');
+                    return {
+                        response: null,
+                        status: 401,
+                    };
+                },
+                startChat: async (startChatParams: StartChatParams) => {
+                    return {
+                        sendMessage: async (request: string) => {
+                            captureMessage('No API key or access token provided for generative AI');
+                            return {
+                                response: {},
+                                status: 401,
+                            };
+                        },
+                    };
+                },
+            };
+        },
+    } as unknown as GoogleGenerativeAI;
+};
+
+const rawFetchGeminiApi = async (model: string, accessToken: string, body: any) => {
+    const makeRequest = async (accessToken: string) => {
+        const result = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
+            {
+                body: JSON.stringify(body),
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json',
+                },
+                method: 'POST',
+            }
+        );
+
+        return result;
+    };
+
+    // First attempt
+    let result = await makeRequest(accessToken);
+
+    if (result.status === 401) {
+        try {
+            console.warn('Access token is invalid. Attempting to refresh...');
+            const newAccessToken = await refreshAccessToken();
+
+            // Retry with the new access token
+            result = await makeRequest(newAccessToken);
+        } catch (error) {
+            console.error('Error refreshing access token:', error);
+            throw new Error('Failed to refresh access token and retry the request.');
+        }
+    }
+
+    if (result.ok) {
+        const data = await result.json();
+
+        return {
+            response: data,
+            status: result.status,
+        };
+    }
+
+    return {
+        response: null,
+        status: result.status,
+    };
+};
+
+const configureBasicGenAI = async ({ accessToken, apiKey }: { accessToken?: string; apiKey?: string;}, systemParts?: Part[]) => {
+    const genAI = await getGenerativeAI({ accessToken, apiKey });
+
+    return genAI.getGenerativeModel({
+        model: GEMINI_MODEL,
+        safetySettings,
+        ... systemParts && {
+            systemInstruction: {
+                parts: systemParts,
+                role: 'system',
+            },
+        },
+    });
+};
+
+const createConversationContent = (messages: ChatCompletionMessageParam[]): Content[] =>
+    messages.filter((msg) => msg.role !== 'system')
+        .map((msg) => ({
+            parts: [{ text: msg.content } as Part],
+            role: msg.role === 'assistant' ? 'model' : msg.role,
+        }));
 
 export async function generateWorkoutPlan(messages: any[]): Promise<boolean> {
     const workoutPlanResponse = await createWorkoutPlan(messages);
@@ -62,26 +202,19 @@ export async function generateWorkoutPlan(messages: any[]): Promise<boolean> {
 
 export async function getNutritionInsights(startDate: string): Promise<string | undefined> {
     const apiKey = await getApiKey();
+    const accessToken = await getAccessToken();
 
-    if (!apiKey) {
+    if (!apiKey && !accessToken) {
         return;
     }
 
-    const genAI = new GoogleGenerativeAI(apiKey);
     const prompt = await getNutritionInsightsPrompt(startDate);
 
     const systemParts: Part[] = prompt
         .filter((msg) => msg.role === 'system')
         .map((msg) => ({ text: msg.content } as Part));
 
-    const model = genAI.getGenerativeModel({
-        model: GEMINI_MODEL,
-        safetySettings,
-        systemInstruction: {
-            parts: systemParts,
-            role: 'system',
-        },
-    });
+    const model = await configureBasicGenAI({ accessToken, apiKey }, systemParts);
 
     const generationConfig = {
         // maxOutputTokens: 2048,
@@ -90,12 +223,7 @@ export async function getNutritionInsights(startDate: string): Promise<string | 
         topP: 1,
     };
 
-    const conversationContent: Content[] = prompt
-        .filter((msg) => msg.role !== 'system')
-        .map((msg) => ({
-            parts: [{ text: msg.content } as Part],
-            role: msg.role === 'assistant' ? 'model' : msg.role,
-        }));
+    const conversationContent: Content[] = createConversationContent(prompt);
 
     try {
         const result = await model.generateContent({
@@ -103,7 +231,7 @@ export async function getNutritionInsights(startDate: string): Promise<string | 
             generationConfig,
         } as GenerateContentRequest);
 
-        if (result.response.promptFeedback && result.response.promptFeedback.blockReason) {
+        if (result.response?.promptFeedback?.blockReason) {
             console.log(`Blocked for ${result.response.promptFeedback.blockReason}`);
             return;
         }
@@ -117,19 +245,15 @@ export async function getNutritionInsights(startDate: string): Promise<string | 
 
 export async function sendChatMessage(messages: any[]) {
     const apiKey = await getApiKey();
+    const accessToken = await getAccessToken();
 
-    if (!apiKey) {
+    if (!apiKey && !accessToken) {
         return;
     }
 
-    const genAI = new GoogleGenerativeAI(apiKey);
+    const genAI = await getGenerativeAI({ accessToken, apiKey });
 
-    const conversationContent: Content[] = messages
-        .filter((msg) => msg.role !== 'system')
-        .map((msg) => ({
-            parts: [{ text: msg.content } as Part],
-            role: msg.role === 'assistant' ? 'model' : msg.role,
-        }));
+    const conversationContent: Content[] = createConversationContent(messages);
 
     const latestMessage = conversationContent.pop();
     const firstMessage = conversationContent.at(0);
@@ -178,7 +302,7 @@ export async function sendChatMessage(messages: any[]) {
 
         const result = await chatSession.sendMessage(latestMessage?.parts?.[0].text!);
 
-        if (result.response.promptFeedback && result.response.promptFeedback.blockReason) {
+        if (result.response?.promptFeedback?.blockReason) {
             console.log(`Blocked for ${result.response.promptFeedback.blockReason}`);
             return;
         }
@@ -197,21 +321,17 @@ export async function sendChatMessage(messages: any[]) {
 
 async function createWorkoutPlan(messages: any[]) {
     const apiKey = await getApiKey();
+    const accessToken = await getAccessToken();
 
-    if (!apiKey) {
+    if (!apiKey && !accessToken) {
         return;
     }
 
     const messagesToSend = messages.length > 20 ? messages.slice(0, 20) : messages;
-    const genAI = new GoogleGenerativeAI(apiKey);
+    const genAI = await getGenerativeAI({ accessToken, apiKey });
     const prompt = await createWorkoutPlanPrompt(messagesToSend);
 
-    const conversationContent: Content[] = prompt
-        .filter((msg) => msg.role !== 'system')
-        .map((msg) => ({
-            parts: [{ text: msg.content } as Part],
-            role: msg.role === 'assistant' ? 'model' : msg.role,
-        }));
+    const conversationContent: Content[] = createConversationContent(prompt);
 
     const systemParts: Part[] = prompt
         .filter((msg) => msg.role === 'system')
@@ -247,7 +367,7 @@ async function createWorkoutPlan(messages: any[]) {
             },
         } as GenerateContentRequest);
 
-        if (result.response.promptFeedback && result.response.promptFeedback.blockReason) {
+        if (result.response?.promptFeedback?.blockReason) {
             console.log(`Blocked for ${result.response.promptFeedback.blockReason}`);
             return;
         }
@@ -265,19 +385,16 @@ async function createWorkoutPlan(messages: any[]) {
 
 export const calculateNextWorkoutVolume = async (workout: WorkoutReturnType) => {
     const apiKey = await getApiKey();
-    if (!apiKey) {
+    const accessToken = await getAccessToken();
+
+    if (!apiKey && !accessToken) {
         return;
     }
 
-    const genAI = new GoogleGenerativeAI(apiKey);
+    const genAI = await getGenerativeAI({ accessToken, apiKey });
     const prompt = await getCalculateNextWorkoutVolumePrompt(workout);
 
-    const conversationContent: Content[] = prompt
-        .filter((msg) => msg.role !== 'system')
-        .map((msg) => ({
-            parts: [{ text: msg.content } as Part],
-            role: msg.role === 'assistant' ? 'model' : msg.role,
-        }));
+    const conversationContent: Content[] = createConversationContent(prompt);
 
     const systemParts: Part[] = prompt
         .filter((msg) => msg.role === 'system')
@@ -313,7 +430,7 @@ export const calculateNextWorkoutVolume = async (workout: WorkoutReturnType) => 
             },
         } as GenerateContentRequest);
 
-        if (result.response.promptFeedback && result.response.promptFeedback.blockReason) {
+        if (result.response?.promptFeedback?.blockReason) {
             console.log(`Blocked for ${result.response.promptFeedback.blockReason}`);
             return;
         }
@@ -336,17 +453,13 @@ export const generateExerciseImage = async (exerciseName: string): Promise<strin
     }
 
     const apiKey = await getApiKey();
+    const accessToken = await getAccessToken();
 
-    if (!apiKey) {
+    if (!apiKey && !accessToken) {
         return 'https://via.placeholder.com/300';
     }
 
-    const genAI = new GoogleGenerativeAI(apiKey);
-
-    const model = genAI.getGenerativeModel({
-        model: GEMINI_MODEL,
-        safetySettings,
-    });
+    const model = await configureBasicGenAI({ accessToken, apiKey });
 
     const generationConfig = {
         // maxOutputTokens: 2048,
@@ -367,7 +480,7 @@ export const generateExerciseImage = async (exerciseName: string): Promise<strin
             generationConfig,
         } as GenerateContentRequest);
 
-        if (result.response.promptFeedback && result.response.promptFeedback.blockReason) {
+        if (result.response?.promptFeedback?.blockReason) {
             console.log(`Blocked for ${result.response.promptFeedback.blockReason}`);
             return 'https://via.placeholder.com/300';
         }
@@ -387,19 +500,16 @@ export const generateExerciseImage = async (exerciseName: string): Promise<strin
 
 export const parsePastWorkouts = async (userMessage: string) => {
     const apiKey = await getApiKey();
-    if (!apiKey) {
+    const accessToken = await getAccessToken();
+
+    if (!apiKey && !accessToken) {
         return;
     }
 
-    const genAI = new GoogleGenerativeAI(apiKey);
+    const genAI = await getGenerativeAI({ accessToken, apiKey });
     const prompt = await getParsePastWorkoutsPrompt(userMessage);
 
-    const conversationContent: Content[] = prompt
-        .filter((msg) => msg.role !== 'system')
-        .map((msg) => ({
-            parts: [{ text: msg.content } as Part],
-            role: msg.role === 'assistant' ? 'model' : msg.role,
-        }));
+    const conversationContent: Content[] = createConversationContent(prompt);
 
     const systemParts: Part[] = prompt
         .filter((msg) => msg.role === 'system')
@@ -435,7 +545,7 @@ export const parsePastWorkouts = async (userMessage: string) => {
             },
         } as GenerateContentRequest);
 
-        if (result.response.promptFeedback && result.response.promptFeedback.blockReason) {
+        if (result.response?.promptFeedback?.blockReason) {
             console.log(`Blocked for ${result.response.promptFeedback.blockReason}`);
             return;
         }
@@ -452,19 +562,16 @@ export const parsePastWorkouts = async (userMessage: string) => {
 
 export const parsePastNutrition = async (userMessage: string) => {
     const apiKey = await getApiKey();
-    if (!apiKey) {
+    const accessToken = await getAccessToken();
+
+    if (!apiKey && !accessToken) {
         return;
     }
 
-    const genAI = new GoogleGenerativeAI(apiKey);
+    const genAI = await getGenerativeAI({ accessToken, apiKey });
     const prompt = await getParsePastNutritionPrompt(userMessage);
 
-    const conversationContent: Content[] = prompt
-        .filter((msg) => msg.role !== 'system')
-        .map((msg) => ({
-            parts: [{ text: msg.content } as Part],
-            role: msg.role === 'assistant' ? 'model' : msg.role,
-        }));
+    const conversationContent: Content[] = createConversationContent(prompt);
 
     const systemParts: Part[] = prompt
         .filter((msg) => msg.role === 'system')
@@ -500,7 +607,7 @@ export const parsePastNutrition = async (userMessage: string) => {
             },
         } as GenerateContentRequest);
 
-        if (result.response.promptFeedback && result.response.promptFeedback.blockReason) {
+        if (result.response?.promptFeedback?.blockReason) {
             console.log(`Blocked for ${result.response.promptFeedback.blockReason}`);
             return;
         }
@@ -517,26 +624,19 @@ export const parsePastNutrition = async (userMessage: string) => {
 
 export const getRecentWorkoutInsights = async (workoutEventId: number): Promise<string | undefined> => {
     const apiKey = await getApiKey();
+    const accessToken = await getAccessToken();
 
-    if (!apiKey) {
+    if (!apiKey && !accessToken) {
         return;
     }
 
-    const genAI = new GoogleGenerativeAI(apiKey);
     const prompt = await getRecentWorkoutInsightsPrompt(workoutEventId);
 
     const systemParts: Part[] = prompt
         .filter((msg) => msg.role === 'system')
         .map((msg) => ({ text: msg.content } as Part));
 
-    const model = genAI.getGenerativeModel({
-        model: GEMINI_MODEL,
-        safetySettings,
-        systemInstruction: {
-            parts: systemParts,
-            role: 'system',
-        },
-    });
+    const model = await configureBasicGenAI({ accessToken, apiKey }, systemParts);
 
     const generationConfig = {
         // maxOutputTokens: 2048,
@@ -545,12 +645,7 @@ export const getRecentWorkoutInsights = async (workoutEventId: number): Promise<
         topP: 1,
     };
 
-    const conversationContent: Content[] = prompt
-        .filter((msg) => msg.role !== 'system')
-        .map((msg) => ({
-            parts: [{ text: msg.content } as Part],
-            role: msg.role === 'assistant' ? 'model' : msg.role,
-        }));
+    const conversationContent: Content[] = createConversationContent(prompt);
 
     try {
         const result = await model.generateContent({
@@ -558,7 +653,7 @@ export const getRecentWorkoutInsights = async (workoutEventId: number): Promise<
             generationConfig,
         } as GenerateContentRequest);
 
-        if (result.response.promptFeedback && result.response.promptFeedback.blockReason) {
+        if (result.response?.promptFeedback?.blockReason) {
             console.log(`Blocked for ${result.response.promptFeedback.blockReason}`);
             return;
         }
@@ -572,26 +667,19 @@ export const getRecentWorkoutInsights = async (workoutEventId: number): Promise<
 
 export const getWorkoutInsights = async (workoutId: number): Promise<string | undefined> => {
     const apiKey = await getApiKey();
+    const accessToken = await getAccessToken();
 
-    if (!apiKey) {
+    if (!apiKey && !accessToken) {
         return;
     }
 
-    const genAI = new GoogleGenerativeAI(apiKey);
     const prompt = await getWorkoutInsightsPrompt(workoutId);
 
     const systemParts: Part[] = prompt
         .filter((msg) => msg.role === 'system')
         .map((msg) => ({ text: msg.content } as Part));
 
-    const model = genAI.getGenerativeModel({
-        model: GEMINI_MODEL,
-        safetySettings,
-        systemInstruction: {
-            parts: systemParts,
-            role: 'system',
-        },
-    });
+    const model = await configureBasicGenAI({ accessToken, apiKey }, systemParts);
 
     const generationConfig = {
         // maxOutputTokens: 2048,
@@ -600,12 +688,7 @@ export const getWorkoutInsights = async (workoutId: number): Promise<string | un
         topP: 1,
     };
 
-    const conversationContent: Content[] = prompt
-        .filter((msg) => msg.role !== 'system')
-        .map((msg) => ({
-            parts: [{ text: msg.content } as Part],
-            role: msg.role === 'assistant' ? 'model' : msg.role,
-        }));
+    const conversationContent: Content[] = createConversationContent(prompt);
 
     try {
         const result = await model.generateContent({
@@ -613,7 +696,7 @@ export const getWorkoutInsights = async (workoutId: number): Promise<string | un
             generationConfig,
         } as GenerateContentRequest);
 
-        if (result.response.promptFeedback && result.response.promptFeedback.blockReason) {
+        if (result.response?.promptFeedback?.blockReason) {
             console.log(`Blocked for ${result.response.promptFeedback.blockReason}`);
             return;
         }
@@ -627,26 +710,19 @@ export const getWorkoutInsights = async (workoutId: number): Promise<string | un
 
 export const getWorkoutVolumeInsights = async (workoutId: number): Promise<string | undefined> => {
     const apiKey = await getApiKey();
+    const accessToken = await getAccessToken();
 
-    if (!apiKey) {
+    if (!apiKey && !accessToken) {
         return;
     }
 
-    const genAI = new GoogleGenerativeAI(apiKey);
     const prompt = await getWorkoutVolumeInsightsPrompt(workoutId);
 
     const systemParts: Part[] = prompt
         .filter((msg) => msg.role === 'system')
         .map((msg) => ({ text: msg.content } as Part));
 
-    const model = genAI.getGenerativeModel({
-        model: GEMINI_MODEL,
-        safetySettings,
-        systemInstruction: {
-            parts: systemParts,
-            role: 'system',
-        },
-    });
+    const model = await configureBasicGenAI({ accessToken, apiKey }, systemParts);
 
     const generationConfig = {
         // maxOutputTokens: 2048,
@@ -655,12 +731,7 @@ export const getWorkoutVolumeInsights = async (workoutId: number): Promise<strin
         topP: 1,
     };
 
-    const conversationContent: Content[] = prompt
-        .filter((msg) => msg.role !== 'system')
-        .map((msg) => ({
-            parts: [{ text: msg.content } as Part],
-            role: msg.role === 'assistant' ? 'model' : msg.role,
-        }));
+    const conversationContent: Content[] = createConversationContent(prompt);
 
     try {
         const result = await model.generateContent({
@@ -668,7 +739,7 @@ export const getWorkoutVolumeInsights = async (workoutId: number): Promise<strin
             generationConfig,
         } as GenerateContentRequest);
 
-        if (result.response.promptFeedback && result.response.promptFeedback.blockReason) {
+        if (result.response?.promptFeedback?.blockReason) {
             console.log(`Blocked for ${result.response.promptFeedback.blockReason}`);
             return;
         }
@@ -681,49 +752,72 @@ export const getWorkoutVolumeInsights = async (workoutId: number): Promise<strin
 };
 
 export async function estimateNutritionFromPhoto(photoUri: string) {
-    // TODO: this is probably not the right way to do this, so fix it later
     const apiKey = await getApiKey();
+    const accessToken = await getAccessToken();
 
-    if (!apiKey) {
-        return Promise.resolve(null);
+    if (!apiKey && !accessToken) {
+        return;
     }
 
-    const genAI = new GoogleGenerativeAI(apiKey);
+    const base64Image = await getBase64StringFromPhotoUri(await resizeImage(photoUri));
+
+    const genAI = await getGenerativeAI({ accessToken, apiKey });
+
+    const functionDeclarations = getMacrosEstimationFunctions(
+        'Extracts the macronutrients of a food label from a photo',
+        'extracted'
+    ) as FunctionDeclaration[];
+    const tools: Tool[] = [{ functionDeclarations }];
 
     const model = genAI.getGenerativeModel({
         model: GEMINI_MODEL,
         safetySettings,
+        systemInstruction: {
+            parts: [{
+                text: [
+                    'You are a very powerful AI, trained to extract the macronutrients of a food label from the photo provided',
+                    'Use OCR to extract the text from the image, then parse the text to extract the macronutrients.',
+                ].join('\n'),
+            }],
+            role: 'system',
+        },
+        toolConfig: {
+            functionCallingConfig: {
+                allowedFunctionNames: functionDeclarations.map((f) => f.name),
+                mode: 'ANY',
+            },
+        } as ToolConfig,
+        tools,
     });
-
-    const generationConfig = {
-        // maxOutputTokens: 2048,
-        temperature: 0.9,
-        topK: 1,
-        topP: 1,
-    };
-
-    const base64Image = await getBase64StringFromPhotoUri(photoUri);
-
-    const conversationContent: Content[] = [{
-        parts: [{ text: 'Estimate the nutrition of the food in the image.' }],
-        role: 'user',
-    }];
 
     try {
         const result = await model.generateContent({
-            contents: conversationContent,
-            files: [{ content: base64Image, name: 'image.jpg' }],
-            generationConfig,
+            contents: [{
+                parts: [{
+                    text: [
+                        'Please estimate the macronutrients of the food/meal from the photo provided',
+                    ].join('\n'),
+                }, {
+                    inline_data: {
+                        data: base64Image,
+                        mime_type: 'image/jpeg',
+                    },
+                }],
+                role: 'user',
+            }],
+            generationConfig: {
+                maxOutputTokens: 1024,
+                temperature: 0.7,
+                topK: 1,
+                topP: 1,
+            },
         } as GenerateContentRequest);
 
-        if (result.response.promptFeedback && result.response.promptFeedback.blockReason) {
+        if (result.response.promptFeedback?.blockReason) {
             console.log(`Blocked for ${result.response.promptFeedback.blockReason}`);
-            return Promise.resolve(null);
-
+            return null;
         }
 
-        // return result.response.candidates?.[0]?.content?.parts[0]?.text;
-
         return {
             calories: 0,
             carbs: 0,
@@ -731,37 +825,99 @@ export async function estimateNutritionFromPhoto(photoUri: string) {
             grams: 0,
             name: '',
             protein: 0,
+            ...result?.response?.candidates?.[0]?.content?.parts?.[0]?.functionCall?.args,
         };
-    } catch (e) {
-        console.error(e);
-
-        return {
-            calories: 0,
-            carbs: 0,
-            fat: 0,
-            grams: 0,
-            name: '',
-            protein: 0,
-        };
+    } catch (error) {
+        console.error('Error estimating nutrition from photo:', error);
+        return null;
     }
 }
 
 export async function extractMacrosFromLabelPhoto(photoUri: string) {
-    return {
-        calories: 0,
-        carbs: 0,
-        fat: 0,
-        grams: 0,
-        name: '',
-        protein: 0,
-    };
+    const apiKey = await getApiKey();
+    const accessToken = await getAccessToken();
+
+    if (!apiKey && !accessToken) {
+        return;
+    }
+
+    const base64Image = await getBase64StringFromPhotoUri(await resizeImage(photoUri));
+
+    const genAI = await getGenerativeAI({ accessToken, apiKey });
+
+    const functionDeclarations = getMacrosEstimationFunctions(
+        'Extracts the macronutrients of a food label from a photo',
+        'extracted'
+    ) as FunctionDeclaration[];
+    const tools: Tool[] = [{ functionDeclarations }];
+
+    const model = genAI.getGenerativeModel({
+        model: GEMINI_MODEL,
+        safetySettings,
+        systemInstruction: {
+            parts: [{
+                text: [
+                    'You are a very powerful AI, trained to extract the macronutrients of a food label from the photo provided',
+                    'Use OCR to extract the text from the image, then parse the text to extract the macronutrients.',
+                ].join('\n'),
+            }],
+            role: 'system',
+        },
+        toolConfig: {
+            functionCallingConfig: {
+                allowedFunctionNames: functionDeclarations.map((f) => f.name),
+                mode: 'ANY',
+            },
+        } as ToolConfig,
+        tools,
+    });
+
+    try {
+        const result = await model.generateContent({
+            contents: [{
+                parts: [{
+                    text: [
+                        'Please extract the macronutrients of the food label from the photo provided.',
+                    ].join('\n'),
+                }, {
+                    inline_data: {
+                        data: base64Image,
+                        mime_type: 'image/jpeg',
+                    },
+                }],
+                role: 'user',
+            }],
+            generationConfig: {
+                maxOutputTokens: 1024,
+                temperature: 0.7,
+                topK: 1,
+                topP: 1,
+            },
+        } as GenerateContentRequest);
+
+        if (result.response.promptFeedback?.blockReason) {
+            console.log(`Blocked for ${result.response.promptFeedback.blockReason}`);
+            return null;
+        }
+
+        return {
+            calories: 0,
+            carbs: 0,
+            fat: 0,
+            grams: 0,
+            name: '',
+            protein: 0,
+            ...result?.response?.candidates?.[0]?.content?.parts?.[0]?.functionCall?.args,
+        };
+    } catch (error) {
+        console.error('Error extracting macros from label photo:', error);
+        return null;
+    }
 }
 
 export async function isAllowedLocation(apiKey: string): Promise<boolean> {
-    const genAI = new GoogleGenerativeAI(apiKey);
-
     try {
-        const model = genAI.getGenerativeModel({ model: GEMINI_MODEL });
+        const model = await configureBasicGenAI({ apiKey });
 
         await model.generateContent({
             contents: [{ parts: [{ text: 'hi' } as Part], role: 'user' }],
@@ -778,7 +934,7 @@ export async function isAllowedLocation(apiKey: string): Promise<boolean> {
             return false;
         } else {
             // send notification to Sentry
-            Sentry.captureMessage(`Error in isAllowedLocation: ${error}`);
+            captureMessage(`Error in isAllowedLocation: ${error}`);
         }
 
         return false;
@@ -786,10 +942,8 @@ export async function isAllowedLocation(apiKey: string): Promise<boolean> {
 }
 
 export async function isValidApiKey(apiKey: string): Promise<boolean> {
-    const genAI = new GoogleGenerativeAI(apiKey);
-
     try {
-        const model = genAI.getGenerativeModel({ model: GEMINI_MODEL });
+        const model = await configureBasicGenAI({ apiKey });
 
         await model.generateContent({
             contents: [{ parts: [{ text: 'hi' } as Part], role: 'user' }],

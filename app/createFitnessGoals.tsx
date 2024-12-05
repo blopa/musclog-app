@@ -16,7 +16,7 @@ import {
     getLatestUser,
     updateFitnessGoals,
 } from '@/utils/database';
-import { getCurrentTimestamp, isValidDateParam } from '@/utils/date';
+import { getCurrentTimestampISOString, isValidDateParam } from '@/utils/date';
 import { formatFloatNumericInputText } from '@/utils/string';
 import { FitnessGoalsInsertType } from '@/utils/types';
 import { getDisplayFormattedWeight } from '@/utils/unit';
@@ -243,7 +243,7 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
             bmi: bmi ? Number(bmi) : undefined,
             bodyFat: bodyFat ? Number(bodyFat) : undefined,
             calories,
-            createdAt: getCurrentTimestamp(),
+            createdAt: getCurrentTimestampISOString(),
             ffmi: ffmi ? Number(ffmi) : undefined,
             fiber: fiber ? Number(fiber) : undefined,
             protein,

@@ -3,7 +3,7 @@ import { USER_METRICS_SOURCES } from '@/constants/healthConnect';
 import { COMPLETED_STATUS, SCHEDULED_STATUS } from '@/constants/storage';
 import packageJson from '@/package.json';
 import { getCommonFunctions } from '@/utils/databaseCommon';
-import { getCurrentTimestamp } from '@/utils/date';
+import { getCurrentTimestampISOString } from '@/utils/date';
 import { decrypt, encrypt } from '@/utils/encryption';
 import { generateHash, normalizeName } from '@/utils/string';
 import {
@@ -409,7 +409,7 @@ export const listenToDatabaseChanges = (callback: () => void) => {
 // Create functions
 
 export const addUserMeasurements = async (userMeasurements: UserMeasurementsInsertType): Promise<number> => {
-    const createdAt = userMeasurements.createdAt || getCurrentTimestamp();
+    const createdAt = userMeasurements.createdAt || getCurrentTimestampISOString();
     return database.userMeasurements.add({
         ...userMeasurements,
         createdAt,
@@ -432,7 +432,7 @@ export const addVersioning = async (version: string): Promise<null | number> => 
 };
 
 export const addWorkout = async (workout: WorkoutInsertType): Promise<number> => {
-    const createdAt = workout.createdAt || getCurrentTimestamp();
+    const createdAt = workout.createdAt || getCurrentTimestampISOString();
     return database.workouts.add({
         ...workout,
         createdAt,
@@ -440,7 +440,7 @@ export const addWorkout = async (workout: WorkoutInsertType): Promise<number> =>
 };
 
 export const addWorkoutEvent = async (workoutEvent: WorkoutEventInsertType): Promise<number> => {
-    const createdAt = workoutEvent.createdAt || getCurrentTimestamp();
+    const createdAt = workoutEvent.createdAt || getCurrentTimestampISOString();
     const user = await getUser();
     let exerciseData = workoutEvent.exerciseData || '[]';
 
@@ -477,12 +477,12 @@ export const addWorkoutEvent = async (workoutEvent: WorkoutEventInsertType): Pro
 };
 
 export const addOneRepMax = async (exerciseId: number, weight: number, createdAt?: string): Promise<number> => {
-    const createdTimestamp = createdAt || getCurrentTimestamp();
+    const createdTimestamp = createdAt || getCurrentTimestampISOString();
     return database.oneRepMaxes.add({ createdAt: createdTimestamp, exerciseId, weight });
 };
 
 export const addBio = async (value: string, createdAt?: string): Promise<number> => {
-    const createdTimestamp = createdAt || getCurrentTimestamp();
+    const createdTimestamp = createdAt || getCurrentTimestampISOString();
     return database.bio.add({ createdAt: createdTimestamp, value });
 };
 
@@ -497,17 +497,17 @@ export const addOrUpdateSetting = async (setting: SettingsInsertType): Promise<n
 };
 
 export const addSetting = async (type: string, value: string, createdAt?: string): Promise<number> => {
-    const createdTimestamp = createdAt || getCurrentTimestamp();
+    const createdTimestamp = createdAt || getCurrentTimestampISOString();
     return database.settings.add({ createdAt: createdTimestamp, type, value });
 };
 
 export const addExercise = async (exercise: ExerciseInsertType): Promise<number> => {
-    const createdAt = exercise.createdAt || getCurrentTimestamp();
+    const createdAt = exercise.createdAt || getCurrentTimestampISOString();
     return database.exercises.add({ ...exercise, createdAt });
 };
 
 export const addSet = async (set: SetInsertType): Promise<number> => {
-    const createdAt = set.createdAt || getCurrentTimestamp();
+    const createdAt = set.createdAt || getCurrentTimestampISOString();
     return database.sets.add({
         ...set,
         createdAt,
@@ -533,7 +533,7 @@ export const addOrUpdateUser = async (user: UserInsertType, userMetrics?: UserMe
 };
 
 const addUser = async (user: UserInsertType, userMetrics?: UserMetricsInsertType): Promise<number> => {
-    const createdAt = user.createdAt || getCurrentTimestamp();
+    const createdAt = user.createdAt || getCurrentTimestampISOString();
     const userId = await database.users.add({ ...user, createdAt });
 
     if (userMetrics) {
@@ -544,7 +544,7 @@ const addUser = async (user: UserInsertType, userMetrics?: UserMetricsInsertType
 };
 
 export const addUserMetrics = async (userMetrics: UserMetricsInsertType): Promise<number> => {
-    const createdAt = userMetrics.createdAt || getCurrentTimestamp();
+    const createdAt = userMetrics.createdAt || getCurrentTimestampISOString();
     if (userMetrics.dataId) {
         const existingUserMetrics = await getUserMetricsByDataId(userMetrics.dataId);
 
@@ -570,12 +570,20 @@ export const addUserMetrics = async (userMetrics: UserMetricsInsertType): Promis
 };
 
 const addChatRaw = async (chat: ChatInsertType): Promise<number> => {
-    const createdAt = chat.createdAt || getCurrentTimestamp();
+    const createdAt = chat.createdAt || getCurrentTimestampISOString();
     return database.chats.add({ ...chat, createdAt });
 };
 
+export const addUserNutritions = async (userNutritions: UserNutritionInsertType[]): Promise<boolean> => {
+    for (const userNutrition of userNutritions) {
+        await addUserNutrition(userNutrition);
+    }
+
+    return true;
+};
+
 export const addUserNutrition = async (userNutrition: UserNutritionInsertType): Promise<number> => {
-    const createdAt = userNutrition.createdAt || getCurrentTimestamp();
+    const createdAt = userNutrition.createdAt || getCurrentTimestampISOString();
     const existingUserNutrition = await getUserNutritionByDataId(userNutrition.dataId);
 
     if (existingUserNutrition) {
@@ -602,7 +610,7 @@ export const addUserNutrition = async (userNutrition: UserNutritionInsertType): 
 };
 
 export const addFood = async (food: FoodInsertType): Promise<number> => {
-    const createdAt = food.createdAt || getCurrentTimestamp();
+    const createdAt = food.createdAt || getCurrentTimestampISOString();
     return database.food.add({
         ...food,
         createdAt,
@@ -610,7 +618,7 @@ export const addFood = async (food: FoodInsertType): Promise<number> => {
 };
 
 export const addFitnessGoals = async (fitnessGoals: FitnessGoalsInsertType): Promise<number> => {
-    const createdAt = fitnessGoals.createdAt || getCurrentTimestamp();
+    const createdAt = fitnessGoals.createdAt || getCurrentTimestampISOString();
     return database.fitnessGoals.add({
         ...fitnessGoals,
         createdAt,
@@ -618,7 +626,7 @@ export const addFitnessGoals = async (fitnessGoals: FitnessGoalsInsertType): Pro
 };
 
 export const createMigration = async (migration: string): Promise<number> => {
-    const createdAt = getCurrentTimestamp();
+    const createdAt = getCurrentTimestampISOString();
     return database.migrations.add({ createdAt, migration });
 };
 
@@ -654,7 +662,7 @@ export const getUserMeasurementsBetweenDates = async (startDate: string, endDate
 };
 
 export const getUserMeasurementsFromDate = async (startDate: string): Promise<(UserMeasurementsReturnType & { measurements: string })[]> => {
-    const todayDate = new Date().toISOString();
+    const todayDate = getCurrentTimestampISOString();
 
     const result = await database.userMeasurements
         .where('date')
@@ -784,7 +792,7 @@ export const getAllLatestMetricsForUser = async (userId: number): Promise<Metric
     }
 
     const latestMetrics: MetricsForUserType = {
-        date: getCurrentTimestamp(),
+        date: getCurrentTimestampISOString(),
         eatingPhase: undefined,
         fatPercentage: undefined,
         height: undefined,
@@ -903,7 +911,7 @@ export const getUserMetricsBetweenDates = async (startDate: string, endDate: str
 };
 
 export const getUserMetricsFromDate = async (startDate: string): Promise<UserMetricsDecryptedReturnType[]> => {
-    const todayDate = new Date().toISOString();
+    const todayDate = getCurrentTimestampISOString();
 
     const results = await database.userMetrics
         .where('date')
@@ -1152,7 +1160,7 @@ export const getRecentWorkoutsByWorkoutId = async (workoutId: number): Promise<W
 };
 
 export const getUpcomingWorkoutsByWorkoutId = async (workoutId: number): Promise<WorkoutEventReturnType[]> => {
-    const todayDate = new Date().toISOString();
+    const todayDate = getCurrentTimestampISOString();
     return database.workoutEvents
         .where('workoutId')
         .anyOf(workoutId)
@@ -1163,7 +1171,7 @@ export const getUpcomingWorkoutsByWorkoutId = async (workoutId: number): Promise
 };
 
 export const getUpcomingWorkouts = async (): Promise<WorkoutEventReturnType[]> => {
-    const todayDate = new Date().toISOString();
+    const todayDate = getCurrentTimestampISOString();
     return database.workoutEvents
         .where('status')
         .equals(SCHEDULED_STATUS)
@@ -1174,7 +1182,7 @@ export const getUpcomingWorkouts = async (): Promise<WorkoutEventReturnType[]> =
 };
 
 export const getTotalUpcomingWorkoutsCount = async (): Promise<number> => {
-    const todayDate = new Date().toISOString();
+    const todayDate = getCurrentTimestampISOString();
     return database.workoutEvents
         .where('status')
         .equals(SCHEDULED_STATUS)
@@ -1234,7 +1242,7 @@ export const getRecentWorkoutsBetweenDates = async (startDate: string, endDate: 
 };
 
 export const getRecentWorkoutsFromDate = async (startDate: string): Promise<WorkoutEventReturnType[]> => {
-    const todayDate = new Date().toISOString();
+    const todayDate = getCurrentTimestampISOString();
 
     return database.workoutEvents
         .where('date')
@@ -1527,7 +1535,7 @@ export const getUserNutritionBetweenDates = async (startDate: string, endDate: s
 };
 
 export const getUserNutritionFromDate = async (startDate: string): Promise<UserNutritionDecryptedReturnType[]> => {
-    const todayDate = new Date().toISOString();
+    const todayDate = getCurrentTimestampISOString();
 
     const results = await database.userNutrition
         .where('date')
@@ -1636,15 +1644,31 @@ export const getFoodByNameAndMacros = async (
     return food || null;
 };
 
+export const searchFoodByName = async (searchTerm: string): Promise<FoodReturnType[] | null> => {
+    const foods = await database.food
+        .filter((food) => food.name.toLowerCase().includes(searchTerm.toLowerCase()))
+        .toArray();
+
+    return foods || null;
+};
+
+export const getFoodByProductCode = async (productCode: string): Promise<FoodReturnType | null> => {
+    const food = await database.food
+        .where({ productCode })
+        .first();
+
+    return food || null;
+};
+
 // Update functions
 
 export const updateUserMeasurements = async (id: number, userMeasurements: UserMeasurementsInsertType): Promise<number> => {
     const existingUserMeasurements = await getUserMeasurements(id);
 
     const updatedUserMeasurements = {
-        createdAt: userMeasurements.createdAt || existingUserMeasurements?.createdAt || getCurrentTimestamp(),
+        createdAt: userMeasurements.createdAt || existingUserMeasurements?.createdAt || getCurrentTimestampISOString(),
         dataId: userMeasurements.dataId || existingUserMeasurements?.dataId || generateHash(),
-        date: userMeasurements.date || existingUserMeasurements?.date || getCurrentTimestamp(),
+        date: userMeasurements.date || existingUserMeasurements?.date || getCurrentTimestampISOString(),
         deletedAt: userMeasurements.deletedAt || existingUserMeasurements?.deletedAt || '',
         measurements: JSON.stringify(userMeasurements.measurements || existingUserMeasurements?.measurements || {}),
         source: userMeasurements.source || existingUserMeasurements?.source || USER_METRICS_SOURCES.USER_INPUT,
@@ -1772,7 +1796,7 @@ export const updateWorkoutEvent = async (id: number, workoutEvent: WorkoutEventI
 
     const updatedWorkoutEvent = {
         bodyWeight: workoutEvent.bodyWeight || existingWorkoutEvent?.bodyWeight || 0,
-        createdAt: workoutEvent.createdAt || existingWorkoutEvent?.createdAt || new Date().toISOString(),
+        createdAt: workoutEvent.createdAt || existingWorkoutEvent?.createdAt || getCurrentTimestampISOString(),
         date: workoutEvent.date,
         deletedAt: workoutEvent.deletedAt || existingWorkoutEvent?.deletedAt || '',
         description: workoutEvent.description || existingWorkoutEvent?.description || '',
@@ -1798,7 +1822,7 @@ export const updateFood = async (id: number, food: FoodInsertType): Promise<numb
     const updatedFood = {
         alcohol: food.alcohol || existingFood?.alcohol || 0,
         calories: food.calories || existingFood?.calories || 0,
-        createdAt: food.createdAt || existingFood?.createdAt || getCurrentTimestamp(),
+        createdAt: food.createdAt || existingFood?.createdAt || getCurrentTimestampISOString(),
         dataId: food.dataId || existingFood?.dataId || generateHash(),
         deletedAt: food.deletedAt || existingFood?.deletedAt || '',
         fiber: food.fiber || existingFood?.fiber || 0,
@@ -1821,7 +1845,7 @@ export const updateFitnessGoals = async (id: number, fitnessGoals: FitnessGoalsI
         bodyFat: fitnessGoals.bodyFat || existingFitnessGoals?.bodyFat || 0,
         calories: fitnessGoals.calories || existingFitnessGoals?.calories || 0,
         carbohydrate: fitnessGoals.totalCarbohydrate || existingFitnessGoals?.totalCarbohydrate || 0,
-        createdAt: fitnessGoals.createdAt || existingFitnessGoals?.createdAt || getCurrentTimestamp(),
+        createdAt: fitnessGoals.createdAt || existingFitnessGoals?.createdAt || getCurrentTimestampISOString(),
         deletedAt: fitnessGoals.deletedAt || existingFitnessGoals?.deletedAt || '',
         fat: fitnessGoals.totalFat || existingFitnessGoals?.totalFat || 0,
         ffmi: fitnessGoals.ffmi || existingFitnessGoals?.ffmi || 0,
@@ -1927,7 +1951,7 @@ export const processWorkoutPlan = async (workoutPlan: WorkoutPlan): Promise<void
 
     for (const workout of workoutPlan.workoutPlan) {
         const newWorkout: WorkoutInsertType = {
-            createdAt: getCurrentTimestamp(),
+            createdAt: getCurrentTimestampISOString(),
             description: workout.description || '',
             title: workout.title,
             volumeCalculationType: VOLUME_CALCULATION_TYPES.NONE,
@@ -1947,7 +1971,7 @@ export const processWorkoutPlan = async (workoutPlan: WorkoutPlan): Promise<void
                 exercise = exerciseMap[normalizedExerciseName];
             } else {
                 const exerciseId = await addExercise({
-                    createdAt: getCurrentTimestamp(),
+                    createdAt: getCurrentTimestampISOString(),
                     description: '',
                     image: '',
                     muscleGroup: '',
@@ -1974,7 +1998,7 @@ export const processWorkoutPlan = async (workoutPlan: WorkoutPlan): Promise<void
             // Add sets for the exercise
             for (let i = 0; i < sets; i++) {
                 const set: SetInsertType = {
-                    createdAt: getCurrentTimestamp(),
+                    createdAt: getCurrentTimestampISOString(),
                     exerciseId: exercise?.id!,
                     isDropSet: false, // Adjust if needed
                     reps,
@@ -2183,7 +2207,7 @@ export const createNewWorkoutTables = async (): Promise<void> => {
         }
 
         // Set 'deletedAt' for all existing workouts and sets where it is currently not set
-        const currentTimestamp = new Date().toISOString();
+        const currentTimestamp = getCurrentTimestampISOString();
 
         await database.transaction('rw', database.workouts, database.sets, async () => {
             // Update all workouts without a 'deletedAt' timestamp

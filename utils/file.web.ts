@@ -4,7 +4,7 @@ import {
     getWorkoutWithExercisesRepsAndSetsDetails,
     restoreDatabase,
 } from '@/utils/database';
-import { getCurrentTimestamp } from '@/utils/date';
+import { getCurrentTimestampISOString } from '@/utils/date';
 
 import jsonData from '../data/importJsonExample.json';
 
@@ -14,7 +14,7 @@ export function downloadAsyncToFileSystem (imageUrl: string, localFilePath: stri
 
 export async function exportDatabase(encryptionPhrase?: string) {
     const dbDump = await dumpDatabase(encryptionPhrase);
-    const fileName = `${getCurrentTimestamp()}-database_export.json`;
+    const fileName = `${getCurrentTimestampISOString()}-database_export.json`;
 
     const blob = new Blob([dbDump], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -29,7 +29,7 @@ export async function exportDatabase(encryptionPhrase?: string) {
 
 export async function exportRecentWorkout(recentWorkoutId: number) {
     const workoutWithDetails = await getRecentWorkoutById(recentWorkoutId);
-    const fileName = `${getCurrentTimestamp()}-recent_workout_export.json`;
+    const fileName = `${getCurrentTimestampISOString()}-recent_workout_export.json`;
     const jsonString = JSON.stringify({
         ...workoutWithDetails,
         exerciseData: JSON.parse(workoutWithDetails?.exerciseData || '[]'),
@@ -48,7 +48,7 @@ export async function exportRecentWorkout(recentWorkoutId: number) {
 
 export async function exportWorkout(workoutId: number) {
     const workoutWithDetails = await getWorkoutWithExercisesRepsAndSetsDetails(workoutId);
-    const fileName = `${getCurrentTimestamp()}-workout_export.json`;
+    const fileName = `${getCurrentTimestampISOString()}-workout_export.json`;
     const jsonString = JSON.stringify(workoutWithDetails);
 
     const blob = new Blob([jsonString], { type: 'application/json' });
@@ -112,6 +112,35 @@ export async function importJson() {
     };
 }
 
-export async function resizeImage(photoUri: string, width: number = 512): Promise<string> {
-    return photoUri;
+export async function resizeImage(photoUri: string, width: number = 256): Promise<string> {
+    try {
+        // eslint-disable-next-line no-undef
+        const image = new Image();
+        image.src = photoUri;
+
+        await new Promise<void>((resolve, reject) => {
+            image.onload = () => resolve();
+            image.onerror = (err) => reject(err);
+        });
+
+        const aspectRatio = image.height / image.width;
+        const newHeight = Math.round(width * aspectRatio);
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = newHeight;
+        const ctx = canvas.getContext('2d');
+
+        if (!ctx) {
+            throw new Error('Failed to get 2D context');
+        }
+
+        ctx.drawImage(image, 0, 0, width, newHeight);
+
+        return canvas.toDataURL();
+    } catch (error) {
+        console.error('Failed to resize image:', error);
+        throw new Error('Failed to resize image');
+    }
 }
+

@@ -1,7 +1,8 @@
 import type { HealthConnectRecord, RecordType } from 'react-native-health-connect/src/types';
 
-import { MANDATORY_PERMISSIONS, NEEDED_PERMISSIONS } from '@/constants/healthConnect';
+import { DEFAULT_PAGE_SIZE, MANDATORY_PERMISSIONS, NEEDED_PERMISSIONS } from '@/constants/healthConnect';
 import { METRIC_SYSTEM } from '@/constants/storage';
+import { getCurrentTimestampISOString } from '@/utils/date';
 import {
     HealthConnectBodyFatRecordData,
     HealthConnectWeightRecord,
@@ -10,6 +11,7 @@ import {
 } from '@/utils/types';
 import * as IntentLauncher from 'expo-intent-launcher';
 import React, { createContext, ReactNode, useCallback, useContext, useState } from 'react';
+import { PermissionsAndroid } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import {
     deleteRecordsByUuids,
@@ -27,7 +29,7 @@ export interface HealthConnectContextValue {
     checkReadIsPermitted: (recordTypes?: RecordType[]) => Promise<boolean>;
     checkWriteIsPermitted: (recordTypes?: RecordType[]) => Promise<boolean>;
     deleteHealthData: (recordType: RecordType, dataIds: string[]) => Promise<void>;
-    getHealthData: (pageSize?: number, recordTypes?: RecordType[]) => Promise<HealthDataType>;
+    getHealthData: (startTime: string, endTime: string, pageSize?: number, recordTypes?: RecordType[]) => Promise<HealthDataType>;
     healthData: HealthDataType;
     insertHealthData: (data: HealthConnectRecord[]) => Promise<string[]>;
     requestPermissions: () => Promise<void>;
@@ -37,7 +39,7 @@ type HealthConnectAccessType = 'read' | 'write';
 
 const data = {
     latest: {
-        date: new Date().toISOString()
+        date: getCurrentTimestampISOString()
             .split('T')[0],
         fatPercentage: undefined,
         height: undefined,
@@ -88,6 +90,19 @@ function isReadPermissionGranted(recordType: string, permissions: Permission[]) 
     );
 }
 
+function isWritePermissionGranted(recordType: string, permissions: Permission[]) {
+    return permissions.some(
+        (permission) => permission.recordType === recordType && permission.accessType === 'write'
+    );
+}
+
+export const hasAccessToHealthConnectDataHistory = async () => {
+    return await PermissionsAndroid.check(
+        // @ts-ignore permission exists but is not in the type definition
+        'android.permission.health.READ_HEALTH_DATA_HISTORY'
+    );
+};
+
 export const checkIsHealthConnectedPermitted = async (accessType: HealthConnectAccessType, recordTypes?: RecordType[]) => {
     try {
         const isInitialized = await initialize();
@@ -109,10 +124,16 @@ export const checkIsHealthConnectedPermitted = async (accessType: HealthConnectA
     }
 };
 
-export const getHealthConnectData = async (pageSize: number = 1000): Promise<HealthDataType> => {
+export const getHealthConnectData = async (
+    startTime: string,
+    endTime: string,
+    pageSize: number = DEFAULT_PAGE_SIZE,
+    recordTypes?: RecordType[]
+): Promise<HealthDataType> => {
     const timeRangeFilter = {
-        operator: 'after',
-        startTime: '2000-01-01T00:00:00.000Z',
+        endTime,
+        operator: 'between',
+        startTime,
     } as const;
 
     const grantedPermissions = await getGrantedPermissions();
@@ -150,7 +171,7 @@ export const getHealthConnectData = async (pageSize: number = 1000): Promise<Hea
     const nutritionRecords = isReadPermissionGranted('Nutrition', grantedPermissions)
         ? (
             await readRecords('Nutrition', {
-                ascendingOrder: true,
+                ascendingOrder: false,
                 pageSize,
                 timeRangeFilter,
             })
@@ -162,11 +183,7 @@ export const getHealthConnectData = async (pageSize: number = 1000): Promise<Hea
             await readRecords('TotalCaloriesBurned', {
                 ascendingOrder: false,
                 pageSize: 1,
-                timeRangeFilter: {
-                    ...timeRangeFilter,
-                    startTime: new Date().toISOString()
-                        .split('T')[0] + 'T00:00:00.000Z',
-                },
+                timeRangeFilter,
             })
         ).records
         : [];
@@ -206,7 +223,7 @@ const HealthConnectContext = createContext<HealthConnectContextValue>({
     checkReadIsPermitted: async (recordTypes?: RecordType[]) => false,
     checkWriteIsPermitted: async (recordTypes?: RecordType[]) => false,
     deleteHealthData: async (recordType: RecordType, dataIds: string[]): Promise<void> => {},
-    getHealthData: async (pageSize?: number, recordTypes?: RecordType[]) => data,
+    getHealthData: async (startTime: string, endTime: string, pageSize?: number, recordTypes?: RecordType[]) => data,
     healthData: data,
     insertHealthData: async (data: HealthConnectRecord[]): Promise<string[]> => Promise.resolve([]),
     requestPermissions: async () => {},
@@ -259,7 +276,7 @@ export const HealthConnectProvider = ({ children }: HealthConnectProviderProps) 
     }, []);
 
     const getHealthData = useCallback(
-        async (pageSize: number = 1000, recordTypes?: RecordType[]): Promise<HealthDataType> => {
+        async (startTime: string, endTime: string, pageSize: number = DEFAULT_PAGE_SIZE, recordTypes?: RecordType[]): Promise<HealthDataType> => {
             try {
                 const isInitialized = await initialize();
                 if (!isInitialized) {
@@ -276,7 +293,7 @@ export const HealthConnectProvider = ({ children }: HealthConnectProviderProps) 
                     return healthData;
                 }
 
-                const newHealthData = await getHealthConnectData(pageSize);
+                const newHealthData = await getHealthConnectData(startTime, endTime, pageSize, recordTypes);
                 setHealthData(newHealthData);
 
                 return newHealthData;

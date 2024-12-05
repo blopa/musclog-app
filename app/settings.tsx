@@ -1,5 +1,6 @@
 import AppHeader from '@/components/AppHeader';
 import CustomTextInput from '@/components/CustomTextInput';
+import { GoogleSignInButton } from '@/components/GoogleSignInButton';
 import { Screen } from '@/components/Screen';
 import ThemedModal from '@/components/ThemedModal';
 import { DARK, LIGHT, SYSTEM_DEFAULT } from '@/constants/colors';
@@ -8,9 +9,13 @@ import { EATING_PHASES, NUTRITION_TYPES } from '@/constants/nutrition';
 import {
     ADVANCED_SETTINGS_TYPE,
     AI_SETTINGS_TYPE,
+    BUG_REPORT_TYPE,
     CSV_IMPORT_TYPE,
     EXERCISE_IMAGE_GENERATION_TYPE,
     GEMINI_API_KEY_TYPE,
+    GOOGLE_OAUTH_GEMINI_ENABLED_TYPE,
+    GOOGLE_REFRESH_TOKEN_TYPE,
+    GOOGLE_USER_INFO,
     IMPERIAL_SYSTEM,
     JSON_IMPORT_TYPE,
     LANGUAGE_CHOICE_TYPE,
@@ -22,17 +27,21 @@ import {
     USE_FAT_PERCENTAGE_TDEE_TYPE,
     WRITE_HEALTH_CONNECT_TYPE,
 } from '@/constants/storage';
+import { useGoogleAuth } from '@/hooks/useGoogleAuth';
 import { AVAILABLE_LANGUAGES, EN_US } from '@/lang/lang';
 import { useCustomTheme } from '@/storage/CustomThemeProvider';
 import { useHealthConnect } from '@/storage/HealthConnectProvider';
 import { useSettings } from '@/storage/SettingsContext';
 import { isValidApiKey } from '@/utils/ai';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
-import { addUserMetrics, addUserNutrition, getUser } from '@/utils/database';
+import { addUserMetrics, addUserNutrition, getSetting, getUser } from '@/utils/database';
+import { getCurrentTimestampISOString, getDaysAgoTimestampISOString } from '@/utils/date';
 import { exportDatabase, importDatabase } from '@/utils/file';
+import { deleteAllData, GoogleUserInfo, handleGoogleSignIn } from '@/utils/googleAuth';
 import { aggregateUserNutritionMetricsDataByDate } from '@/utils/healthConnect';
 import { generateHash } from '@/utils/string';
 import { ThemeType } from '@/utils/types';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationProp } from '@react-navigation/native';
 import { useFocusEffect } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -46,6 +55,7 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
     const { i18n, t } = useTranslation();
     const { checkReadIsPermitted, getHealthData, requestPermissions } = useHealthConnect();
     const { addOrUpdateSettingValue, getSettingByType, updateSettingValue } = useSettings();
+    const { isSigningIn, promptAsync, request, response } = useGoogleAuth();
 
     const [apiKey, setApiKey] = useState<null | string>(null);
     const [googleGeminiApiKey, setGoogleGeminiApiKey] = useState<null | string>(null);
@@ -89,11 +99,21 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
     const [appInfoModalVisible, setAppInfoModalVisible] = useState(false);
     const [encryptionPhrase, setEncryptionPhrase] = useState('');
     const [decryptionPhrase, setDecryptionPhrase] = useState('');
+
     const [useFatPercentageTDEE, setUseFatPercentageTDEE] = useState<boolean | undefined>(undefined);
+    const [isGoogleOauthGeminiElabled, setIsGoogleOauthGeminiElabled] = useState<boolean | undefined>(undefined);
 
     const { colors, dark } = useTheme<CustomThemeType>();
     const { setTheme } = useCustomTheme();
     const styles = makeStyles(colors, dark);
+
+    const [userInfo, setUserInfo] = useState<GoogleUserInfo | null>(null);
+    const [refreshToken, setRefreshToken] = useState<null | string>(null);
+    const [googleSignInModalVisible, setGoogleSignInModalVisible] = useState(false);
+
+    const [bugReportEnabled, setBugReportEnabled] = useState<boolean>(false);
+    const [tempBugReportEnabled, setTempBugReportEnabled] = useState<boolean>(false);
+    const [bugReportModalVisible, setBugReportModalVisible] = useState(false);
 
     const fetchSettings = useCallback(async () => {
         const apiKeyFromDb = await getSettingByType(OPENAI_API_KEY_TYPE);
@@ -176,11 +196,36 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
             const value = useFatPercentageTDEEFromDb.value === 'true';
             setUseFatPercentageTDEE(value);
         }
+
+        const googleRefreshTokenFromDb = await getSettingByType(GOOGLE_REFRESH_TOKEN_TYPE);
+        if (googleRefreshTokenFromDb) {
+            setRefreshToken(googleRefreshTokenFromDb.value);
+        }
+
+        const googleOauthGeminiElabledFromDb = await getSettingByType(GOOGLE_OAUTH_GEMINI_ENABLED_TYPE);
+        if (googleOauthGeminiElabledFromDb) {
+            const value = googleOauthGeminiElabledFromDb.value === 'true';
+            setIsGoogleOauthGeminiElabled(value);
+        }
+
+        const storedUser = await AsyncStorage.getItem(GOOGLE_USER_INFO);
+        if (storedUser) {
+            setUserInfo(JSON.parse(storedUser));
+        }
+
+        const bugReportEnabledFromDb = await getSettingByType(BUG_REPORT_TYPE);
+        if (bugReportEnabledFromDb) {
+            const value = bugReportEnabledFromDb.value === 'true';
+            setBugReportEnabled(value);
+            setTempBugReportEnabled(value);
+        }
     }, [i18n, getSettingByType]);
 
-    useFocusEffect(useCallback(() => {
-        fetchSettings();
-    }, [fetchSettings]));
+    useFocusEffect(
+        useCallback(() => {
+            fetchSettings();
+        }, [fetchSettings])
+    );
 
     useFocusEffect(
         useCallback(() => {
@@ -203,6 +248,43 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
             return resolve(data);
         }, 0));
     }, [addOrUpdateSettingValue]);
+
+    const handleGoogleSignInPress = useCallback(async () => {
+        setLoading(true);
+        await promptAsync();
+        setLoading(false);
+    }, [promptAsync]);
+
+    const handleGoogleSignOut = useCallback(async () => {
+        setLoading(true);
+        await deleteAllData();
+        setUserInfo(null);
+        setRefreshToken(null);
+        await updateSettingValue(GOOGLE_REFRESH_TOKEN_TYPE, '');
+        setLoading(false);
+        setGoogleSignInModalVisible(false);
+    }, [updateSettingValue]);
+
+    useEffect(() => {
+        const handleGoogleSignInResponse = async () => {
+            if (response) {
+                setLoading(true);
+                const user = await handleGoogleSignIn(response);
+                if (user) {
+                    setUserInfo(user);
+                    const storedRefreshToken = await getSetting(GOOGLE_REFRESH_TOKEN_TYPE);
+
+                    if (storedRefreshToken?.value) {
+                        setRefreshToken(storedRefreshToken.value);
+                    }
+                }
+                setLoading(false);
+                setGoogleSignInModalVisible(false);
+            }
+        };
+
+        handleGoogleSignInResponse();
+    }, [response, updateSettingValue]);
 
     const handleSaveOpenAiKey = useCallback(async () => {
         setLoading(true);
@@ -294,7 +376,14 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
     const getHealthConnectData = useCallback(async () => {
         const isPermitted = await checkReadIsPermitted(['Height', 'Weight', 'BodyFat', 'Nutrition']);
         if (isPermitted) {
-            const healthData = await getHealthData(1000, ['Height', 'Weight', 'BodyFat', 'Nutrition']);
+            const startTime = getDaysAgoTimestampISOString(1);
+            const endTime = getCurrentTimestampISOString();
+            const healthData = await getHealthData(
+                startTime,
+                endTime,
+                1000,
+                ['Height', 'Weight', 'BodyFat', 'Nutrition']
+            );
 
             if (healthData) {
                 const latestHeight = healthData?.heightRecords?.[0];
@@ -433,6 +522,12 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
         setLoading(false);
     }, [useFatPercentageTDEE]);
 
+    const handleToggleGoogleOauthGeminiElabled = useCallback(async () => {
+        setLoading(true);
+        setIsGoogleOauthGeminiElabled(!isGoogleOauthGeminiElabled);
+        setLoading(false);
+    }, [isGoogleOauthGeminiElabled]);
+
     useEffect(() => {
         const saveAdvancedSettings = async () => {
             if (advancedSettingsEnabled !== undefined) {
@@ -465,6 +560,17 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
 
         saveUseFatPercentageTDEE();
     }, [useFatPercentageTDEE, updateSettingValue, updateSettingWithLoadingState]);
+
+    useEffect(() => {
+        const saveGoogleOauthGeminiElabled = async () => {
+            if (isGoogleOauthGeminiElabled !== undefined) {
+                const newValue = isGoogleOauthGeminiElabled.toString();
+                await updateSettingWithLoadingState(GOOGLE_OAUTH_GEMINI_ENABLED_TYPE, newValue);
+            }
+        };
+
+        saveGoogleOauthGeminiElabled();
+    }, [isGoogleOauthGeminiElabled, updateSettingWithLoadingState]);
 
     const handleExportDatabase = useCallback(async () => {
         setLoading(true);
@@ -510,6 +616,15 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
         setLoading(false);
     }, [updateSettingWithLoadingState, tempCsvImportEnabled]);
 
+    const handleConfirmBugReportChange = useCallback(async () => {
+        setLoading(true);
+        await updateSettingWithLoadingState(BUG_REPORT_TYPE, tempBugReportEnabled.toString());
+
+        setBugReportEnabled(tempBugReportEnabled);
+        setBugReportModalVisible(false);
+        setLoading(false);
+    }, [updateSettingWithLoadingState, tempBugReportEnabled]);
+
     const resetScreenData = useCallback(() => {
         setOpenAiModalVisible(false);
         setOpenGeminiVisible(false);
@@ -526,6 +641,7 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
         setJsonImportModalVisible(false);
         setCsvImportModalVisible(false);
         setAppInfoModalVisible(false);
+        setBugReportModalVisible(false);
     }, []);
 
     useFocusEffect(
@@ -537,7 +653,7 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
     );
 
     const handleVisitOurWebsite = useCallback(() => {
-        Linking.openURL('https://blopa.github.io/musclog-website/');
+        Linking.openURL('https://werules.com/musclog/');
     }, []);
 
     return (
@@ -580,6 +696,23 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
                         title={t('unit_system')}
                     />
                     <List.Item
+                        description={t('google_sign_in_description')}
+                        onPress={() => {
+                            setGoogleSignInModalVisible(true);
+                        }}
+                        right={() => (
+                            <View style={styles.rightContainer}>
+                                <Text>
+                                    {refreshToken
+                                        ? t('signed_in')
+                                        : t('not_signed_in')}
+                                </Text>
+                                <List.Icon icon="chevron-right" />
+                            </View>
+                        )}
+                        title={t('google_sign_in')}
+                    />
+                    <List.Item
                         description={t('health_connect_read_description')}
                         onPress={() => setReadHealthConnectModalVisible(true)}
                         right={() => (
@@ -614,6 +747,17 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
                     {aiSettingsEnabled ? (
                         <List.Section>
                             <List.Subheader>{t('ai_settings')}</List.Subheader>
+                            <List.Item
+                                description={t('google_gemini_oauth_description')}
+                                onPress={handleToggleGoogleOauthGeminiElabled}
+                                right={() => (
+                                    <View style={styles.rightContainer}>
+                                        <Text>{isGoogleOauthGeminiElabled ? t('enabled') : t('disabled')}</Text>
+                                        <List.Icon icon="chevron-right" />
+                                    </View>
+                                )}
+                                title={t('google_gemini_oauth')}
+                            />
                             <List.Item
                                 description={t('openai_key_description')}
                                 onPress={() => {
@@ -711,6 +855,17 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
                             )}
                             title={t('csv_import')}
                         />
+                        <List.Item
+                            description={t('bug_report_description')}
+                            onPress={() => setBugReportModalVisible(true)}
+                            right={() => (
+                                <View style={styles.rightContainer}>
+                                    <Text>{bugReportEnabled ? t('enabled') : t('disabled')}</Text>
+                                    <List.Icon icon="chevron-right" />
+                                </View>
+                            )}
+                            title={t('bug_report')}
+                        />
                     </List.Section>
                 ) : null}
                 <List.Section>
@@ -749,6 +904,58 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
                     />
                 </List.Section>
             </ScrollView>
+            <ThemedModal
+                cancelText={t('cancel')}
+                confirmText={t('confirm')}
+                onClose={() => setBugReportModalVisible(false)}
+                onConfirm={handleConfirmBugReportChange}
+                title={t('bug_report')}
+                visible={bugReportModalVisible}
+            >
+                <View style={styles.radioContainer}>
+                    <TouchableOpacity onPress={() => setTempBugReportEnabled(true)} style={styles.radio}>
+                        <Text style={styles.radioText}>{t('enabled')}</Text>
+                        <Text style={styles.radioText}>{tempBugReportEnabled ? '✔' : ''}</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => setTempBugReportEnabled(false)} style={styles.radio}>
+                        <Text style={styles.radioText}>{t('disabled')}</Text>
+                        <Text style={styles.radioText}>{!tempBugReportEnabled ? '✔' : ''}</Text>
+                    </TouchableOpacity>
+                    {loading ? <ActivityIndicator color={colors.surface} /> : null}
+                </View>
+            </ThemedModal>
+            <ThemedModal
+                cancelText={t('cancel')}
+                onClose={() => setGoogleSignInModalVisible(false)}
+                title={t('google_sign_in')}
+                visible={googleSignInModalVisible}
+            >
+                <View style={styles.modalContent}>
+                    {refreshToken ? (
+                        <>
+                            <Text style={styles.modalText}>
+                                {t('signed_in_as', { name: userInfo?.name || t('unknown') })}
+                            </Text>
+                            <GoogleSignInButton
+                                disabled={loading}
+                                onSignIn={handleGoogleSignInPress}
+                                variant="reauthenticate"
+                            />
+                            <Button
+                                disabled={loading}
+                                mode="contained"
+                                onPress={handleGoogleSignOut}
+                                style={styles.modalButton}
+                            >
+                                {t('sign_out')}
+                            </Button>
+                        </>
+                    ) : (
+                        <GoogleSignInButton disabled={loading} onSignIn={handleGoogleSignInPress} />
+                    )}
+                    {loading ? <ActivityIndicator color={colors.primary} style={styles.loadingIndicator} /> : null}
+                </View>
+            </ThemedModal>
             <ThemedModal
                 cancelText={t('cancel')}
                 confirmText={t('confirm')}
@@ -1073,9 +1280,23 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     deleteButtonContent: {
         color: colors.surface,
     },
+    loadingIndicator: {
+        marginTop: 16,
+    },
+    modalButton: {
+        marginVertical: 8,
+        width: '80%',
+    },
     modalContent: {
+        alignItems: 'center',
         backgroundColor: colors.background,
         padding: 16,
+    },
+    modalText: {
+        color: colors.onSurface,
+        fontSize: 16,
+        marginBottom: 16,
+        textAlign: 'center',
     },
     openAiModalContent: {
         backgroundColor: colors.background,

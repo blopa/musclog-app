@@ -33,6 +33,12 @@ import {
     updateSet,
     updateWorkoutSetsVolume,
 } from '@/utils/database';
+import {
+    getCurrentTimestampISOString,
+    getDaysAgoTimestampISOString,
+    getStartOfDayTimestampISOString,
+} from '@/utils/date';
+import { captureException } from '@/utils/sentry';
 import { generateHash } from '@/utils/string';
 import {
     CurrentWorkoutProgressType,
@@ -46,7 +52,6 @@ import { getDisplayFormattedWeight } from '@/utils/unit';
 import { calculateNextWorkoutRepsAndSets, resetWorkoutStorageData } from '@/utils/workout';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationProp } from '@react-navigation/native';
-import * as Sentry from '@sentry/react-native';
 import { useFocusEffect } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -104,6 +109,7 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
                             if (!supersetsMap[supersetName][set.exerciseId]) {
                                 supersetsMap[supersetName][set.exerciseId] = [];
                             }
+
                             supersetsMap[supersetName][set.exerciseId].push(set);
                         } else {
                             if (!standaloneSetsMap[set.exerciseId]) {
@@ -138,8 +144,14 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
                             (ex): ex is ExerciseReturnType => ex !== null && ex !== undefined
                         );
 
+                        const sortedValidExercises = validExercises.sort((a, b) => {
+                            const aFirstSetOrder = exercisesInSuperset[a.id][0]?.setOrder || 0;
+                            const bFirstSetOrder = exercisesInSuperset[b.id][0]?.setOrder || 0;
+                            return aFirstSetOrder - bFirstSetOrder;
+                        });
+
                         // Sort sets for each exercise by setOrder
-                        const sortedExerciseSets = validExercises.map((exercise) => ({
+                        const sortedExerciseSets = sortedValidExercises.map((exercise) => ({
                             exercise,
                             sets: exercisesInSuperset[exercise.id].sort((a, b) => a.setOrder - b.setOrder),
                         }));
@@ -337,10 +349,16 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
 
                     const isPermitted = await checkReadIsPermitted(['Nutrition']);
                     if (isPermitted) {
-                        const healthData = await getHealthData(1000, ['Nutrition']);
+                        const healthData = await getHealthData(
+                            getDaysAgoTimestampISOString(1),
+                            getCurrentTimestampISOString(),
+                            1000,
+                            ['Nutrition']
+                        );
+
                         if (healthData) {
                             const todaysNutrition = healthData.nutritionRecords!.filter(
-                                ({ startTime }) => startTime.startsWith(new Date().toISOString().split('T')[0])
+                                ({ startTime }) => startTime.startsWith(getCurrentTimestampISOString().split('T')[0])
                             );
 
                             for (const nutrition of todaysNutrition) {
@@ -368,7 +386,7 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
                     }
 
                     const userNutritionFromToday = await getUserNutritionFromDate(
-                        new Date().toISOString().split('T')[0] + 'T00:00:00.000Z'
+                        getStartOfDayTimestampISOString(getCurrentTimestampISOString())
                     );
 
                     const totalCarbs = userNutritionFromToday.reduce((acc, item) => acc + item.carbohydrate, 0);
@@ -379,7 +397,7 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
                     const recentWorkout: WorkoutEventInsertType = {
                         calories: totalCalories,
                         carbohydrate: totalCarbs,
-                        date: new Date().toISOString(),
+                        date: getCurrentTimestampISOString(),
                         description: workout.description, // TODO: add option for user to add description
                         duration: Math.floor(duration / 60),
                         exerciseData: JSON.stringify(exerciseData),
@@ -432,7 +450,7 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
                                 }
                             } catch (error) {
                                 console.error('Failed to calculate next workout volume:', error);
-                                Sentry.captureException(error);
+                                captureException(error);
                             }
                         }, 10);
                     } else {
@@ -492,7 +510,7 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
 
     if (exercise && exercises?.[currentExerciseIndex]?.sets.length) {
         return (
-            <Screen style={styles.container}>
+            <Screen>
                 <WorkoutSession
                     exercise={exercise}
                     isFirstExercise={currentExerciseIndex === 0}
@@ -537,7 +555,7 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
                         onPress={() => setModalVisible(true)}
                         style={styles.startLoggingButton}
                     >
-                        {t('start_logging')}
+                        {t('start_a_workout')}
                     </Button>
                 </View>
                 {loading ? (

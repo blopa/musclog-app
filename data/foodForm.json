@@ -1,0 +1,404 @@
+{
+  "fvv": 1,
+  "pageHistory": 0,
+  "fbzx": "7313234158721363990",
+  "action": "e/1FAIpQLSdzDj1kfBN8RA4syj0T8Q2SwecQZSUObZJ_hHRzRRo-f6njZA",
+  "title": "musclog-food-data",
+  "description": null,
+  "fields": [
+    {
+      "label": "name",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "1515281433",
+      "required": true
+    },
+    {
+      "label": "calories",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "1848808507",
+      "required": true
+    },
+    {
+      "label": "total_carbohydrate",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "919411420",
+      "required": true
+    },
+    {
+      "label": "total_fat",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "2114676271",
+      "required": true
+    },
+    {
+      "label": "protein",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "1811363356",
+      "required": true
+    },
+    {
+      "label": "alcohol",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "1665963898",
+      "required": false
+    },
+    {
+      "label": "fiber",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "1039537292",
+      "required": false
+    },
+    {
+      "label": "sugar",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "231759517",
+      "required": false
+    },
+    {
+      "label": "data_id",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "1025747995",
+      "required": true
+    },
+    {
+      "label": "created_at",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "1917240265",
+      "required": true
+    },
+    {
+      "label": "deleted_at",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "2012610317",
+      "required": false
+    },
+    {
+      "label": "product_code",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "589875398",
+      "required": false
+    },
+    {
+      "label": "brand",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "825388453",
+      "required": false
+    },
+    {
+      "label": "biotin",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "1257288602",
+      "required": false
+    },
+    {
+      "label": "caffeine",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "1688892088",
+      "required": false
+    },
+    {
+      "label": "calcium",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "995973121",
+      "required": false
+    },
+    {
+      "label": "chloride",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "946753782",
+      "required": false
+    },
+    {
+      "label": "cholesterol",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "1733386302",
+      "required": false
+    },
+    {
+      "label": "chromium",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "281656146",
+      "required": false
+    },
+    {
+      "label": "copper",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "1049396127",
+      "required": false
+    },
+    {
+      "label": "folate",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "1243452339",
+      "required": false
+    },
+    {
+      "label": "folic_acid",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "670035765",
+      "required": false
+    },
+    {
+      "label": "iodine",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "1072580240",
+      "required": false
+    },
+    {
+      "label": "iron",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "1648646017",
+      "required": false
+    },
+    {
+      "label": "magnesium",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "1120455816",
+      "required": false
+    },
+    {
+      "label": "manganese",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "681293427",
+      "required": false
+    },
+    {
+      "label": "molybdenum",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "1402996",
+      "required": false
+    },
+    {
+      "label": "monounsaturated_fat",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "2003052366",
+      "required": false
+    },
+    {
+      "label": "niacin",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "396501138",
+      "required": false
+    },
+    {
+      "label": "pantothenic_acid",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "1055614332",
+      "required": false
+    },
+    {
+      "label": "phosphorus",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "555762242",
+      "required": false
+    },
+    {
+      "label": "polyunsaturated_fat",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "1663928689",
+      "required": false
+    },
+    {
+      "label": "potassium",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "22311928",
+      "required": false
+    },
+    {
+      "label": "riboflavin",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "281566105",
+      "required": false
+    },
+    {
+      "label": "saturated_fat",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "1321812725",
+      "required": false
+    },
+    {
+      "label": "selenium",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "630251394",
+      "required": false
+    },
+    {
+      "label": "serving_size",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "422897572",
+      "required": false
+    },
+    {
+      "label": "sodium",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "1491871504",
+      "required": false
+    },
+    {
+      "label": "thiamin",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "1862464253",
+      "required": false
+    },
+    {
+      "label": "trans_fat",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "648448017",
+      "required": false
+    },
+    {
+      "label": "unsaturated_fat",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "538006077",
+      "required": false
+    },
+    {
+      "label": "vitamin_a",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "1285896543",
+      "required": false
+    },
+    {
+      "label": "vitamin_b6",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "1650599429",
+      "required": false
+    },
+    {
+      "label": "vitamin_b12",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "994462403",
+      "required": false
+    },
+    {
+      "label": "vitamin_c",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "636273284",
+      "required": false
+    },
+    {
+      "label": "vitamin_d",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "1168816410",
+      "required": false
+    },
+    {
+      "label": "vitamin_e",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "1412584634",
+      "required": false
+    },
+    {
+      "label": "vitamin_k",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "446901229",
+      "required": false
+    },
+    {
+      "label": "zinc",
+      "description": null,
+      "type": "SHORT_ANSWER",
+      "id": "19181913",
+      "required": false
+    }
+  ],
+  "fieldsOrder": {
+    "1402996": 26,
+    "19181913": 48,
+    "22311928": 32,
+    "231759517": 7,
+    "281566105": 33,
+    "281656146": 18,
+    "396501138": 28,
+    "422897572": 36,
+    "446901229": 47,
+    "538006077": 40,
+    "555762242": 30,
+    "589875398": 11,
+    "630251394": 35,
+    "636273284": 44,
+    "648448017": 39,
+    "670035765": 21,
+    "681293427": 25,
+    "825388453": 12,
+    "919411420": 2,
+    "946753782": 16,
+    "994462403": 43,
+    "995973121": 15,
+    "1025747995": 8,
+    "1039537292": 6,
+    "1049396127": 19,
+    "1055614332": 29,
+    "1072580240": 22,
+    "1120455816": 24,
+    "1168816410": 45,
+    "1243452339": 20,
+    "1257288602": 13,
+    "1285896543": 41,
+    "1321812725": 34,
+    "1412584634": 46,
+    "1491871504": 37,
+    "1515281433": 0,
+    "1648646017": 23,
+    "1650599429": 42,
+    "1663928689": 31,
+    "1665963898": 5,
+    "1688892088": 14,
+    "1733386302": 17,
+    "1811363356": 4,
+    "1848808507": 1,
+    "1862464253": 38,
+    "1917240265": 9,
+    "2003052366": 27,
+    "2012610317": 10,
+    "2114676271": 3
+  }
+}

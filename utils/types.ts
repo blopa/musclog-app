@@ -187,12 +187,65 @@ export type FoodInsertType = {
     vitaminD?: number;
     vitaminE?: number;
     vitaminK?: number;
-    // these are not used yet
     zinc?: number;
 };
 
 export type FoodReturnType = Omit<FoodInsertType, 'id'> & {
     id: number;
+};
+
+export type GoogleFormFoodFoodLabelType = keyof GoogleFormFoodType;
+
+export type GoogleFormFoodType = {
+    alcohol?: string;
+    biotin?: string;
+    brand?: string;
+    caffeine?: string;
+    calcium?: string;
+    calories: string;
+    chloride?: string;
+    cholesterol?: string;
+    chromium?: string;
+    copper?: string;
+    created_at: string;
+    data_id: string;
+    deleted_at?: string;
+    fiber?: string;
+    folate?: string;
+    folic_acid?: string;
+    iodine?: string;
+    iron?: string;
+    magnesium?: string;
+    manganese?: string;
+    molybdenum?: string;
+    monounsaturated_fat?: string;
+    name: string;
+    niacin?: string;
+    pantothenic_acid?: string;
+    phosphorus?: string;
+    polyunsaturated_fat?: string;
+    potassium?: string;
+    product_code?: string;
+    protein: string;
+    riboflavin?: string;
+    saturated_fat?: string;
+    selenium?: string;
+    serving_size?: string;
+    sodium?: string;
+    sugar?: string;
+    thiamin?: string;
+    total_carbohydrate: string;
+    total_fat: string;
+    trans_fat?: string;
+    unsaturated_fat?: string;
+    vitamin_a?: string;
+    vitamin_b6?: string;
+    vitamin_b12?: string;
+    vitamin_c?: string;
+    vitamin_d?: string;
+    vitamin_e?: string;
+    vitamin_k?: string;
+    zinc?: string;
 };
 
 export interface HealthConnectBodyFatRecordData {

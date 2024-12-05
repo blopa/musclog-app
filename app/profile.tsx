@@ -18,7 +18,7 @@ import {
     getLatestUserMetrics,
     updateUserMetrics,
 } from '@/utils/database';
-import { getCurrentTimestamp, isValidDateParam } from '@/utils/date';
+import { getCurrentTimestampISOString, isValidDateParam } from '@/utils/date';
 import { formatFloatNumericInputText, generateHash, safeToFixed } from '@/utils/string';
 import { ActivityLevelType, EatingPhaseType, ExperienceLevelType } from '@/utils/types';
 import {
@@ -129,7 +129,7 @@ const Profile = ({ navigation }: { navigation: NavigationProp<any> }) => {
         const heightValue = getSaveFormattedHeight(parseFloat(height), isImperial);
 
         const userMetric = {
-            date: getCurrentTimestamp(),
+            date: getCurrentTimestampISOString(),
             eatingPhase,
             fatPercentage: parseFloat(fatPercentage),
             height: heightValue,
@@ -410,14 +410,23 @@ const Profile = ({ navigation }: { navigation: NavigationProp<any> }) => {
                                         </View>
                                     </Card.Content>
                                 </Card>
+                                <View style={styles.bottomButtonContainer}>
+                                    <Button
+                                        icon={() => <FontAwesome5 color={colors.surface} name="heartbeat" size={20} />}
+                                        mode="contained"
+                                        onPress={() => navigation.navigate('listFitnessGoals')}
+                                    >
+                                        {t('fitness_goals')}
+                                    </Button>
+                                </View>
                                 {showUserMetrics ? (
                                     <View style={styles.bottomButtonContainer}>
                                         <Button
-                                            icon={() => <FontAwesome5 color={colors.surface} name="heartbeat" size={20} />}
+                                            icon={() => <FontAwesome5 color={colors.surface} name="chart-bar" size={20} />}
                                             mode="contained"
-                                            onPress={() => navigation.navigate('listFitnessGoals')}
+                                            onPress={() => navigation.navigate('userMetricsCharts')}
                                         >
-                                            {t('fitness_goals')}
+                                            {t('user_metrics')}
                                         </Button>
                                     </View>
                                 ) : null}

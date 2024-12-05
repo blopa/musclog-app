@@ -4,7 +4,7 @@ import * as openAiFunctions from '@/utils/openai';
 import { WorkoutReturnType } from '@/utils/types';
 
 export const getAiApiVendor = async () => {
-    if (await geminiFunctions.getApiKey()) {
+    if (await geminiFunctions.getApiKey() || await geminiFunctions.getAccessToken()) {
         return GEMINI_API_KEY_TYPE;
     } else if (await openAiFunctions.getApiKey()) {
         return OPENAI_API_KEY_TYPE;
@@ -156,12 +156,12 @@ export const estimateNutritionFromPhoto = async (photo: string) => {
     const vendor = await getAiApiVendor();
 
     // return {
-    //     calories: 425,
-    //     carbs: 25,
-    //     fat: 25,
-    //     protein: 25,
-    //     grams: 250,
-    //     name: 'Some food idk',
+    //     calories: 0,
+    //     carbs: 0,
+    //     fat: 0,
+    //     grams: 0,
+    //     name: '',
+    //     protein: 0,
     // };
 
     if (vendor === OPENAI_API_KEY_TYPE) {

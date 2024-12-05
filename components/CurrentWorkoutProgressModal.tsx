@@ -28,12 +28,18 @@ const CurrentWorkoutProgressModal: React.FC<PreviousSetDataModalProps> = ({
     const { weightUnit } = useUnit();
     const windowHeight = Dimensions.get('window').height;
 
+    const completedSetIds = useMemo(() => {
+        return completedWorkoutData.map((exercise) => exercise.setId);
+    }, [completedWorkoutData]);
+
     // Map remainingWorkoutData sets by their set IDs for quick lookup
     const remainingSetIds = useMemo(()=> {
         return new Set(
-            remainingWorkoutData.flatMap((exercise) => exercise.sets.map((set) => set.id))
+            remainingWorkoutData
+                .flatMap((exercise) => exercise.sets.map((set) => set.id))
+                .filter((setId) => !completedSetIds.includes(setId))
         );
-    }, [remainingWorkoutData]);
+    }, [remainingWorkoutData, completedSetIds]);
 
     // Group completedWorkoutData by supersetName and then by exerciseName
     const groupedCompletedData = useMemo(() => {
@@ -174,8 +180,8 @@ const CurrentWorkoutProgressModal: React.FC<PreviousSetDataModalProps> = ({
                                 {Object.keys(groupedRemainingData.supersets).map((supersetName) => (
                                     <View key={`remaining-superset-${supersetName}`} style={styles.supersetContainer}>
                                         <Text style={styles.supersetHeader}>{`${t('superset')}: ${supersetName}`}</Text>
-                                        {groupedRemainingData.supersets[supersetName].map((exercise) => (
-                                            <View key={`remaining-superset-${supersetName}-exercise-${exercise.id}`} style={styles.exerciseContainer}>
+                                        {groupedRemainingData.supersets[supersetName].map((exercise, idx) => (
+                                            <View key={`remaining-superset-${supersetName}-exercise-${exercise.id}-${idx}`} style={styles.exerciseContainer}>
                                                 <Text style={styles.exerciseName}>{exercise.name}</Text>
                                                 {exercise.sets.map((set, index) => (
                                                     <View key={index} style={styles.setData}>
@@ -196,8 +202,8 @@ const CurrentWorkoutProgressModal: React.FC<PreviousSetDataModalProps> = ({
                                         ))}
                                     </View>
                                 ))}
-                                {groupedRemainingData.standaloneExercises.map((exercise) => (
-                                    <View key={`remaining-standalone-${exercise.id}`} style={styles.exerciseContainer}>
+                                {groupedRemainingData.standaloneExercises.map((exercise, idx) => (
+                                    <View key={`remaining-standalone-${exercise.id}-${idx}`} style={styles.exerciseContainer}>
                                         <Text style={styles.exerciseName}>{exercise.name}</Text>
                                         {exercise.sets.map((set, index) => (
                                             <View key={index} style={styles.setData}>
