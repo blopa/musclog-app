@@ -459,19 +459,33 @@ type MacrosToNormalize = {
     fat: number;
     grams?: number;
     kcal: number;
+    kj?: number;
     protein: number;
 };
 
+const KCAL_KJ_RATIO = 4.184;
+
+const DEFAULT_GRAMS = 100;
+
+export const convertKcalToKj = (kcal: number): number => {
+    return kcal * KCAL_KJ_RATIO;
+};
+
+export const convertKjToKcal = (kj: number): number => {
+    return kj / KCAL_KJ_RATIO;
+};
+
 export const normalizeMacrosByGrams = (macros: MacrosToNormalize): MacrosToNormalize => {
-    const servingSize = macros.grams || 100;
-    const multiplier = 100 / servingSize;
+    const servingSize = macros.grams || DEFAULT_GRAMS;
+    const multiplier = DEFAULT_GRAMS / servingSize;
 
     return {
         ...macros,
         carbs: macros.carbs * multiplier,
         fat: macros.fat * multiplier,
-        grams: 100,
+        grams: DEFAULT_GRAMS,
         kcal: macros.kcal * multiplier,
+        kj: macros.kj ? macros.kj * multiplier : convertKcalToKj(macros.kcal),
         protein: macros.protein * multiplier,
     };
 };

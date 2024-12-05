@@ -412,7 +412,8 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                             carbs: macros.carbs,
                             fat: macros.fat,
                             grams: macros.grams,
-                            kcal: macros.calories,
+                            kcal: macros.kcal,
+                            kj: macros.kj,
                             protein: macros.protein,
                         });
 
@@ -430,7 +431,8 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                             carbs: macros.carbs,
                             fat: macros.fat,
                             grams: macros.grams,
-                            kcal: macros.calories,
+                            kcal: macros.kcal,
+                            kj: macros.kj,
                             protein: macros.protein,
                         });
 
