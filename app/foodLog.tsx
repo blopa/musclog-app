@@ -395,6 +395,78 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         setShowPhotoCamera(true);
     }, [permission?.granted, requestPermission, t]);
 
+    const handleLoadLocalFile = useCallback(() => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.style.display = 'none';
+
+        input.onchange = async (event) => {
+            // @ts-ignore it's fine, files exit.
+            const file = event.target?.files?.[0];
+            if (file) {
+                try {
+                    const reader = new FileReader();
+                    reader.onload = async () => {
+                        const imageUri = reader.result;
+                        if (typeof imageUri === 'string') {
+                            setIsLoading(true);
+                            setIsNutritionModalVisible(true);
+
+                            if (photoMode === 'meal') {
+                                const macros = await estimateNutritionFromPhoto(imageUri);
+                                if (macros) {
+                                    const normalizedMacros = normalizeMacrosByGrams({
+                                        carbs: macros.carbs,
+                                        fat: macros.fat,
+                                        grams: macros.grams,
+                                        kcal: macros.kcal,
+                                        kj: macros.kj,
+                                        protein: macros.protein,
+                                    });
+
+                                    setSelectedFood({
+                                        ...normalizedMacros,
+                                        estimatedGrams: macros.grams,
+                                        productTitle: macros.name,
+                                    });
+                                    setAllowEditName(true);
+                                }
+                            } else {
+                                const macros = await extractMacrosFromLabelPhoto(imageUri);
+                                if (macros) {
+                                    const normalizedMacros = normalizeMacrosByGrams({
+                                        carbs: macros.carbs,
+                                        fat: macros.fat,
+                                        grams: macros.grams,
+                                        kcal: macros.kcal,
+                                        kj: macros.kj,
+                                        protein: macros.protein,
+                                    });
+
+                                    setSelectedFood({
+                                        ...normalizedMacros,
+                                        productTitle: macros.name,
+                                    });
+                                    setAllowEditName(true);
+                                }
+                            }
+
+                            setIsLoading(false);
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                } catch (error) {
+                    console.error('Error loading local file:', error);
+                }
+            }
+        };
+
+        document.body.appendChild(input);
+        input.click();
+        document.body.removeChild(input);
+    }, [photoMode]);
+
     // Handler for taking a photo
     const handleTakePhoto = useCallback(async () => {
         if (photoCameraRef.current) {
@@ -497,6 +569,11 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 <TouchableOpacity onPress={() => setShowPhotoCamera(false)} style={styles.photoCloseButton}>
                     <Text style={styles.photoCloseText}>{t('close')}</Text>
                 </TouchableOpacity>
+                {Platform.OS === 'web' ? (
+                    <TouchableOpacity onPress={handleLoadLocalFile} style={styles.captureButton}>
+                        <FontAwesome5 color={colors.primary} name="file" size={30} />
+                    </TouchableOpacity>
+                ) : null}
                 <TouchableOpacity onPress={handleTakePhoto} style={styles.captureButton}>
                     <FontAwesome5 color={colors.primary} name="camera" size={30} />
                 </TouchableOpacity>
