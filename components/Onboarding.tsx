@@ -54,7 +54,7 @@ const Onboarding = ({ onFinish }: OnboardingProps) => {
     const { colors, dark } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors, dark);
     const { checkReadIsPermitted, getHealthData, requestPermissions } = useHealthConnect();
-    const { isSigningIn, promptAsync, request, response } = useGoogleAuth();
+    const { authData, isSigningIn, promptAsync } = useGoogleAuth();
 
     const [currentStep, setCurrentStep] = useState(0);
     const [form, setForm] = useState<{
@@ -296,10 +296,10 @@ const Onboarding = ({ onFinish }: OnboardingProps) => {
 
     useEffect(() => {
         const fetchUserInfo = async () => {
-            if (response) {
+            if (authData) {
                 setIsLoading(true);
 
-                const userInfo = await handleGoogleSignIn(response);
+                const userInfo = await handleGoogleSignIn(authData);
                 if (userInfo) {
                     setUserInfo(userInfo);
 
@@ -314,7 +314,7 @@ const Onboarding = ({ onFinish }: OnboardingProps) => {
         };
 
         fetchUserInfo();
-    }, [response]);
+    }, [authData]);
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
@@ -428,7 +428,7 @@ const Onboarding = ({ onFinish }: OnboardingProps) => {
                         </View>
                     ) : (
                         <View style={styles.submitButton}>
-                            <GoogleSignInButton disabled={!request || isSigningIn} onSignIn={handleSignIn} />
+                            <GoogleSignInButton disabled={isSigningIn} onSignIn={handleSignIn} />
                             <Button
                                 mode="outlined"
                                 onPress={handleNext}

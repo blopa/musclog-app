@@ -17,7 +17,7 @@ export default function App() {
     const [responseData, setResponseData] = useState<null | string>(null);
     const [error, setError] = useState<null | string>(null);
 
-    const { promptAsync, request, response } = useGoogleAuth();
+    const { authData, isSigningIn, promptAsync } = useGoogleAuth();
 
     const callGeminiApi = async (): Promise<void> => {
         try {
@@ -51,7 +51,7 @@ export default function App() {
 
     const signIn = async (): Promise<void> => {
         try {
-            const user = await handleGoogleSignIn(response!);
+            const user = await handleGoogleSignIn(authData!);
             setUserInfo(user);
         } catch (err) {
             console.error('Sign-in failed:', err);
@@ -69,10 +69,10 @@ export default function App() {
     };
 
     useEffect(() => {
-        if (response) {
+        if (authData) {
             signIn();
         }
-    }, [response, signIn]);
+    }, [authData, signIn]);
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
@@ -85,7 +85,7 @@ export default function App() {
                     <Button onPress={callGeminiApi} title="Call Gemini API" />
                 </View>
             ) : (
-                <Button disabled={!request} onPress={() => promptAsync()} title="Sign in with Google" />
+                <Button disabled={isSigningIn} onPress={() => promptAsync()} title="Sign in with Google" />
             )}
             {responseData && (
                 <View style={styles.result}>

@@ -6,6 +6,7 @@ import {
     GOOGLE_REFRESH_TOKEN_TYPE,
     GOOGLE_USER_INFO,
 } from '@/constants/storage';
+import { GoogleAuthData } from '@/hooks/useGoogleAuth';
 import { addOrUpdateSetting, getSetting } from '@/utils/database';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthSessionResult } from 'expo-auth-session';
@@ -171,10 +172,10 @@ export const getAccessToken = async (): Promise<string> => {
  * Save tokens and user info after sign-in
  */
 export const handleGoogleSignIn = async (
-    response: AuthSessionResult | null
+    response: GoogleAuthData | null
 ): Promise<GoogleUserInfo | null> => {
-    if (response?.type === 'success' && response.authentication) {
-        const { accessToken, expiresIn, refreshToken } = response.authentication;
+    if (response) {
+        const { access_token: accessToken, expires_in: expiresIn, refresh_token: refreshToken } = response;
 
         await AsyncStorage.setItem(GOOGLE_ACCESS_TOKEN, accessToken);
         if (refreshToken) {

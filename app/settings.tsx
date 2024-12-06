@@ -55,7 +55,7 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
     const { i18n, t } = useTranslation();
     const { checkReadIsPermitted, getHealthData, requestPermissions } = useHealthConnect();
     const { addOrUpdateSettingValue, getSettingByType, updateSettingValue } = useSettings();
-    const { isSigningIn, promptAsync, request, response } = useGoogleAuth();
+    const { authData, promptAsync } = useGoogleAuth();
 
     const [apiKey, setApiKey] = useState<null | string>(null);
     const [googleGeminiApiKey, setGoogleGeminiApiKey] = useState<null | string>(null);
@@ -267,9 +267,9 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
 
     useEffect(() => {
         const handleGoogleSignInResponse = async () => {
-            if (response) {
+            if (authData) {
                 setLoading(true);
-                const user = await handleGoogleSignIn(response);
+                const user = await handleGoogleSignIn(authData);
                 if (user) {
                     setUserInfo(user);
                     const storedRefreshToken = await getSetting(GOOGLE_REFRESH_TOKEN_TYPE);
@@ -284,7 +284,7 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
         };
 
         handleGoogleSignInResponse();
-    }, [response, updateSettingValue]);
+    }, [authData, updateSettingValue]);
 
     const handleSaveOpenAiKey = useCallback(async () => {
         setLoading(true);
