@@ -50,6 +50,7 @@ import { ExerciseInsertType } from '@/utils/types';
 import 'react-native-reanimated';
 import { FontAwesome } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { NavigationContainer } from '@react-navigation/native';
 import * as Sentry from '@sentry/react-native';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
@@ -74,7 +75,7 @@ export default function MasterRootLayout() {
     return (
         <CustomErrorBoundary>
             <LayoutReloaderProvider>
-                <>
+                <NavigationContainer>
                     <SettingsProvider>
                         <CustomThemeProvider>
                             <ChatProvider>
@@ -84,7 +85,7 @@ export default function MasterRootLayout() {
                             </ChatProvider>
                         </CustomThemeProvider>
                     </SettingsProvider>
-                </>
+                </NavigationContainer>
             </LayoutReloaderProvider>
         </CustomErrorBoundary>
     );
