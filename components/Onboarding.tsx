@@ -459,13 +459,23 @@ const Onboarding = ({ onFinish }: OnboardingProps) => {
                     </View>
                 ) : null}
                 {!steps[currentStep].form && currentStep === 1 && !isPermissionGranted && !showCheckPermissionButton && (
-                    <Button
-                        mode="contained"
-                        onPress={handleRequestPermission}
-                        style={styles.buttonSpacing}
-                    >
-                        {t('request_permission')}
-                    </Button>
+                    <>
+                        <Button
+                            mode="contained"
+                            onPress={handleRequestPermission}
+                            style={styles.buttonSpacing}
+                        >
+                            {t('request_permission')}
+                        </Button>
+                        <Button
+                            disabled={isLoading}
+                            mode="contained"
+                            onPress={handleNext}
+                            style={styles.buttonSpacing}
+                        >
+                            {t('skip')}
+                        </Button>
+                    </>
                 )}
                 {!steps[currentStep].form && currentStep === 1 && showCheckPermissionButton && (
                     <>
