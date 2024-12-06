@@ -49,6 +49,10 @@ const ThemedModal = ({
         }
     }, [closeOnTouchOutside, handleOnClose]);
 
+    if (!visible) {
+        return null;
+    }
+
     return (
         <Portal>
             {visible && (
