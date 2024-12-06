@@ -1,7 +1,7 @@
 {
   "name": "musclog-app",
   "main": "expo-router/entry",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "scripts": {
     "playwright": "node tests/run-tests.js",
     "typecheck": "tsc --noEmit --skipLibCheck",
