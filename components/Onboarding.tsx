@@ -38,7 +38,6 @@ import {
     getSaveFormattedWeight,
 } from '@/utils/unit';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Linking, ScrollView, StatusBar, StyleSheet, View } from 'react-native';
@@ -49,7 +48,6 @@ type OnboardingProps = {
 };
 
 const Onboarding = ({ onFinish }: OnboardingProps) => {
-    const navigation = useNavigation<NavigationProp<any>>();
     const { t } = useTranslation();
     const { colors, dark } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors, dark);
@@ -269,7 +267,6 @@ const Onboarding = ({ onFinish }: OnboardingProps) => {
             console.error('Failed to save user data:', error);
         } finally {
             onFinish();
-            // navigation.navigate('index');
         }
 
         setIsLoading(false);
