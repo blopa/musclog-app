@@ -273,7 +273,7 @@ const Onboarding = ({ onFinish }: OnboardingProps) => {
         }
 
         setIsLoading(false);
-    }, [form, navigation, onFinish, isImperial]);
+    }, [form, onFinish, isImperial]);
 
     const handleFormatNumericText = useCallback((text: string, key: 'height' | 'weight') => {
         if (!text) {

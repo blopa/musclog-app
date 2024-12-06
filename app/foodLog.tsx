@@ -579,7 +579,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 </TouchableOpacity>
             </View>
         </View>
-    ), [colors.primary, colors.secondaryContainer, colors.surface, handleTakePhoto, photoMode, styles.bottomControls, styles.captureButton, styles.photoCameraOverlay, styles.photoCloseButton, styles.photoCloseText, styles.segmentedButtons, t]);
+    ), [colors.primary, colors.secondaryContainer, colors.surface, handleLoadLocalFile, handleTakePhoto, photoMode, styles.bottomControls, styles.captureButton, styles.photoCameraOverlay, styles.photoCloseButton, styles.photoCloseText, styles.segmentedButtons, t]);
 
     return (
         <View style={styles.container}>

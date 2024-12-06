@@ -41,6 +41,7 @@ export const getUserInfo = async (token: string): Promise<GoogleUserInfo | null>
         throw new Error('Access token is missing.');
     }
 
+    // TODO
     const makeRequest = async (accessToken: string) => {
         return fetch('https://www.googleapis.com/userinfo/v2/me', {
             headers: { Authorization: `Bearer ${accessToken}` },
@@ -198,6 +199,7 @@ export const handleGoogleSignIn = async (
         const expirationTime = new Date().getTime() + (expiresIn ?? 0) * 1000;
         await AsyncStorage.setItem(GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE, expirationTime.toString());
 
+        // TODO
         const userInfo = await getUserInfo(accessToken);
         if (userInfo) {
             await AsyncStorage.setItem(GOOGLE_USER_INFO, JSON.stringify(userInfo));
