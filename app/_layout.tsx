@@ -90,6 +90,7 @@ import {
     DrawerItem,
     DrawerItemList,
 } from '@react-navigation/drawer';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import * as Sentry from '@sentry/react-native';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
@@ -142,6 +143,7 @@ function CustomDrawerContent(props: CustomDrawerContentProps) {
     const { colors, dark } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors, dark, currentRoute);
     const { t } = useTranslation();
+    const navigation = useNavigation<NavigationProp<any>>();
 
     return (
         <DrawerContentScrollView {...props} contentContainerStyle={styles.drawerContainer}>
@@ -155,7 +157,7 @@ function CustomDrawerContent(props: CustomDrawerContentProps) {
                             </Text>
                         </View>
                     )}
-                    onPress={() => props.navigation.navigate('index')}
+                    onPress={() => navigation.navigate('index')}
                 />
                 {props.isAiEnabled && (
                     <DrawerItem
@@ -172,7 +174,7 @@ function CustomDrawerContent(props: CustomDrawerContentProps) {
                                 )}
                             </View>
                         )}
-                        onPress={() => props.navigation.navigate('chat')}
+                        onPress={() => navigation.navigate('chat')}
                     />
                 )}
                 <DrawerItemList {...props} />

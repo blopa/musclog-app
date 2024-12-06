@@ -147,6 +147,8 @@ const Onboarding = ({ onFinish }: OnboardingProps) => {
     }, [requestPermissions]);
 
     const handleNext = useCallback(async () => {
+        setIsLoading(false);
+
         if (currentStep < steps.length - 1) {
             setCurrentStep(currentStep + 1);
         } else {
@@ -267,7 +269,7 @@ const Onboarding = ({ onFinish }: OnboardingProps) => {
             console.error('Failed to save user data:', error);
         } finally {
             onFinish();
-            navigation.navigate('index');
+            // navigation.navigate('index');
         }
 
         setIsLoading(false);

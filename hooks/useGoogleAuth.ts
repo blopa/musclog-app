@@ -1,7 +1,7 @@
-import type { EventType } from 'expo-linking/src/Linking.types';
 
 import { GOOGLE_CLIENT_ID } from '@/utils/googleAuth';
 import * as Linking from 'expo-linking';
+import * as WebBrowser from 'expo-web-browser';
 import { fetch } from 'expo/fetch';
 import { useEffect, useState } from 'react';
 import { Alert } from 'react-native';
@@ -67,7 +67,7 @@ export const useGoogleAuth = () => {
     const [authData, setAuthData] = useState<GoogleAuthData | null>(null);
 
     useEffect(() => {
-        const handleDeepLink = async (event: EventType) => {
+        const handleDeepLink = async (event: Linking.EventType) => {
             const { url } = event;
             const queryParams = Linking.parse(url);
 
@@ -92,9 +92,21 @@ export const useGoogleAuth = () => {
     const promptAsync = async () => {
         try {
             const authUrl = buildAuthUrl();
-            await Linking.openURL(authUrl);
+            const result = await WebBrowser.openAuthSessionAsync(authUrl, GOOGLE_REDIRECT_URI);
+
+            if (result.type === 'success' && result.url) {
+                const queryParams = Linking.parse(result.url);
+                const { code } = queryParams.queryParams || {};
+
+                if (code) {
+                    setIsSigningIn(true);
+                    const tokenData = await exchangeCodeForToken(code as string);
+                    setAuthData(tokenData);
+                    setIsSigningIn(false);
+                }
+            }
         } catch (error) {
-            console.error('Failed to open Google auth URL:', error);
+            console.error('Failed to open Google auth WebView:', error);
             Alert.alert('Error', 'Failed to initiate Google sign-in.');
         }
     };
