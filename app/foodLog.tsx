@@ -207,8 +207,11 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 <ScrollView>
                     <NutritionProgressBanner
                         consumed={consumed}
-                        // TODO: if it's today's date, don't pass the date prop
-                        date={formatDate(selectedDate.toISOString(), 'dd/MM/yyyy')}
+                        date={
+                            getEndOfDayTimestampISOString(selectedDate.toISOString()) === getEndOfDayTimestampISOString(getCurrentTimestampISOString())
+                                ? undefined
+                                : formatDate(selectedDate.toISOString(), 'dd/MM/yyyy')
+                        }
                     />
                     {Platform.OS === 'web' ? (
                         <View style={{ height: 40 }} />
