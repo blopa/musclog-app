@@ -551,6 +551,8 @@
     "form_submitted_successfully": "Formulier succesvol ingediend!",
     "todays_progress": "Vandaag's voortgang",
     "date_progress": "{{date}} voortgang",
+    "previous_day": "Vorige dag",
+    "next_day": "Volgende dag",
     "meal_type": "Maaltijdtype",
     "breakfast": "Ontbijt",
     "lunch": "Lunch",

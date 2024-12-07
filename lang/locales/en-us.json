@@ -551,6 +551,8 @@
     "form_submitted_successfully": "Form submitted successfully",
     "todays_progress": "Today's Progress",
     "date_progress": "Progress for {{date}}",
+    "previous_day": "Previous Day",
+    "next_day": "Next Day",
     "meal_type": "Meal Type",
     "breakfast": "Breakfast",
     "lunch": "Lunch",
