@@ -259,6 +259,12 @@
     "unset": "Não definido",
     "muscle_groups.": "Não definido",
     "muscle_groups": {
+        "anterior_deltoid": "Deltóide anterior",
+        "lateral_deltoid": "Deltóide lateral",
+        "posterior_deltoid": "Deltóide posterior",
+        "brachialis": "Braquial",
+        "upper_traps": "Trapézio superior",
+        "abductors": "Abdutores",
         "abdomen": "Abdômen",
         "adductors": "Adutores",
         "arms": "Braços",

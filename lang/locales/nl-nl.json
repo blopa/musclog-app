@@ -259,6 +259,12 @@
     "unset": "Niet ingesteld",
     "muscle_groups.": "Niet ingesteld",
     "muscle_groups": {
+        "anterior_deltoid": "Voorste deltaspier",
+        "lateral_deltoid": "Laterale deltaspier",
+        "posterior_deltoid": "Achterste deltaspier",
+        "brachialis": "Brachialis",
+        "upper_traps": "Bovenste trapezius",
+        "abductors": "Abductoren",
         "abdomen": "Buik",
         "adductors": "Adductoren",
         "arms": "Armen",
