@@ -11,7 +11,7 @@ import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { getRecentWorkoutsPaginated, getRecurringWorkouts } from '@/utils/database';
 import { formatDate } from '@/utils/date';
 import { MusclogApiFoodInfoType, WorkoutEventReturnType, WorkoutReturnType } from '@/utils/types';
-import { getSetsDoneThisWeek, resetWorkoutStorageData } from '@/utils/workout';
+import { getSetsDoneThisWeekText, resetWorkoutStorageData } from '@/utils/workout';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationProp } from '@react-navigation/native';
 import { useFocusEffect } from 'expo-router';
@@ -139,7 +139,8 @@ export default function Dashboard({ navigation }: {
     );
 
     const generateSetsDoneThisWeekText = useCallback(async () => {
-        const setsDoneThisWeek = await getSetsDoneThisWeek();
+        const setsDoneThisWeekText = await getSetsDoneThisWeekText();
+        setSetsCompletedThisWeekText(setsDoneThisWeekText);
     }, []);
 
     useFocusEffect(
