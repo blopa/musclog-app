@@ -29,7 +29,7 @@ export default function ArrowedDatePicker({ initialDate = new Date(), onChange }
                 style={styles.iconButton}
             />
             <Text accessibilityLiveRegion="polite" style={styles.dateText}>
-                {formatDate(currentDate.toISOString())}
+                {formatDate(currentDate.toISOString(), 'dd/MM/yyyy')}
             </Text>
             <IconButton
                 accessibilityLabel={t('next_day')}

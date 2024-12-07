@@ -550,6 +550,7 @@
     "set_order": "Set volgorde",
     "form_submitted_successfully": "Formulier succesvol ingediend!",
     "todays_progress": "Vandaag's voortgang",
+    "date_progress": "{{date}} voortgang",
     "meal_type": "Maaltijdtype",
     "breakfast": "Ontbijt",
     "lunch": "Lunch",

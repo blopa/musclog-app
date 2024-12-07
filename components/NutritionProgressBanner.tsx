@@ -2,7 +2,7 @@ import ThemedCard from '@/components/ThemedCard';
 import { GRAMS, IMPERIAL_SYSTEM, OUNCES } from '@/constants/storage';
 import useUnit from '@/hooks/useUnit';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
-import { getLatestFitnessGoals, getUserNutritionBetweenDates } from '@/utils/database';
+import { getLatestFitnessGoals } from '@/utils/database';
 import { safeToFixed } from '@/utils/string';
 import { FitnessGoalsReturnType } from '@/utils/types';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
@@ -11,20 +11,23 @@ import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 import { ActivityIndicator, Button, Text, useTheme } from 'react-native-paper';
 
-const TodaysNutritionProgress = () => {
+type NutritionProgressBannerProps = {
+    consumed: {
+        calories: number;
+        carbohydrate: number;
+        fat: number;
+        protein: number;
+    };
+    date?: string;
+};
+
+const NutritionProgressBanner = ({ consumed, date }: NutritionProgressBannerProps) => {
     const navigation = useNavigation<NavigationProp<any>>();
     const { t } = useTranslation();
     const { colors, dark } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors, dark);
 
     const [isLoading, setIsLoading] = useState(true);
-
-    const [consumed, setConsumed] = useState({
-        calories: 0,
-        carbohydrate: 0,
-        fat: 0,
-        protein: 0,
-    });
 
     const [dailyGoals, setDailyGoals] = useState<null | Omit<FitnessGoalsReturnType, 'id'>>(null);
 
@@ -53,46 +56,15 @@ const TodaysNutritionProgress = () => {
         return Math.min(Math.round((consumedAmount / goalAmount) * 100), 100);
     };
 
-    const loadConsumed = useCallback(async () => {
-        const startDate = new Date();
-        startDate.setHours(0, 0, 0, 0);
-
-        const endDate = new Date();
-        endDate.setHours(23, 59, 59, 999);
-
-        try {
-            const consumedData = await getUserNutritionBetweenDates(
-                startDate.toISOString(),
-                endDate.toISOString()
-            );
-
-            const consumed = consumedData.reduce(
-                (acc, item) => {
-                    acc.calories += item.calories || 0;
-                    acc.protein += item.protein || 0;
-                    acc.carbohydrate += item.carbohydrate || 0;
-                    acc.fat += item.fat || 0;
-                    return acc;
-                },
-                { calories: 0, carbohydrate: 0, fat: 0, protein: 0 }
-            );
-
-            setConsumed(consumed);
-        } catch (error) {
-            console.error('Error loading consumed data:', error);
-        }
-    }, []);
-
     useEffect(() => {
         const loadData = async () => {
             setIsLoading(true);
-            await loadConsumed();
             await loadLatestFitnessGoal();
             setIsLoading(false);
         };
 
         loadData();
-    }, [loadConsumed, loadLatestFitnessGoal]);
+    }, [loadLatestFitnessGoal]);
 
     const macros = dailyGoals ? [
         { consumed: safeToFixed(consumed.calories), goal: dailyGoals.calories, name: t('calories'), unit: 'kcal' },
@@ -106,7 +78,9 @@ const TodaysNutritionProgress = () => {
             {!isLoading ? (
                 <ThemedCard>
                     <View style={styles.cardContent}>
-                        <Text style={styles.cardTitle}>{t('todays_progress')}</Text>
+                        <Text style={styles.cardTitle}>
+                            {date ? t('date_progress', { date }) : t('todays_progress')}
+                        </Text>
                         {dailyGoals ? (
                             macros.map((macro) => (
                                 <View key={macro.name} style={styles.macroContainer}>
@@ -189,5 +163,4 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     },
 });
 
-export default memo(TodaysNutritionProgress);
-
+export default memo(NutritionProgressBanner);
