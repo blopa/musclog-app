@@ -223,16 +223,16 @@ function RootLayout() {
             const shouldInitSentry = await getSettingByType(BUG_REPORT_TYPE);
             if (shouldInitSentry?.value === 'true') {
                 Sentry.init({
-                    _experiments: {
-                        replaysOnErrorSampleRate: 1.0,
-                        replaysSessionSampleRate: 1.0,
-                    },
+                    // _experiments: {
+                    //     replaysOnErrorSampleRate: 1.0,
+                    //     replaysSessionSampleRate: 1.0,
+                    // },
                     debug: __DEV__,
                     dsn: 'https://e4a649f87e2cf7bc05e3e000cb9ce7ba@o4507421287972864.ingest.de.sentry.io/4507426322579536',
                     environment: __DEV__ ? 'development' : 'production',
-                    integrations: [
-                        Sentry.mobileReplayIntegration(),
-                    ],
+                    // integrations: [
+                    //     Sentry.mobileReplayIntegration(),
+                    // ],
                 });
             }
 
