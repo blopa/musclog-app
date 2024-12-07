@@ -2121,6 +2121,11 @@ export const restoreDatabase = async (dump: string, decryptionPhrase?: string): 
                     continue;
                 }
 
+                // // for debug
+                // if (sanitizedTableName === 'Exercise' || sanitizedTableName === 'exercises') {
+                //     continue;
+                // }
+
                 console.log(`Restoring table: ${sanitizedTableName}`);
                 await database.table(sanitizedTableName).clear();
 

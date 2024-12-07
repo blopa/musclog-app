@@ -34,7 +34,7 @@ export default function Dashboard({ navigation }: {
     const [upcomingWorkouts, setUpcomingWorkouts] = useState<WorkoutReturnType[]>([]);
     const [modalVisible, setModalVisible] = useState(false);
 
-    const [setsCompletedThisWeekText, setSetsCompletedThisWeekText] = useState<string>('');
+    const [setsCompletedThisWeekText, setSetsCompletedThisWeekText] = useState<null | string>(null);
     const [confirmationModalVisible, setConfirmationModalVisible] = useState(false);
     const [selectedUpcomingEvent, setSelectedUpcomingEvent] = useState<null | WorkoutReturnType>(null);
     const [selectedFood, setSelectedFood] = useState<MusclogApiFoodInfoType | null>(null);

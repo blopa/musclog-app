@@ -367,6 +367,10 @@ export const getSetsDoneThisWeekText = async () => {
     const setsDoneThisWeek = await getSetsDoneThisWeek();
     const entries = Object.entries(setsDoneThisWeek);
 
+    if (entries.length === 0) {
+        return null;
+    }
+
     // Handle the case where there's only one muscle group
     if (entries.length === 1) {
         const [muscleGroup, setsDone] = entries[0];
