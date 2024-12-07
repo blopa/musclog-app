@@ -1,5 +1,6 @@
 import type { BarcodeScanningResult } from 'expo-camera';
 
+import ArrowedDatePicker from '@/components/ArrowedDatePicker';
 import FoodItem from '@/components/FoodItem';
 import FoodTrackingModal, { FoodTrackingType } from '@/components/FoodTrackingModal';
 import { Screen } from '@/components/Screen';
@@ -387,6 +388,10 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         setShowBarcodeCamera(true);
     }, [permission?.granted, requestPermission, t]);
 
+    const handleChangeDate = useCallback((date: Date) => {
+        // TODO: implement date change
+    }, []);
+
     // Function to request camera permissions and show the photo camera
     const openPhotoCamera = useCallback(async () => {
         if (!permission?.granted) {
@@ -628,6 +633,10 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                         </>
                     )}
                 </View>
+                <ArrowedDatePicker
+                    initialDate={new Date()}
+                    onChange={handleChangeDate}
+                />
                 <TabView
                     initialLayout={{ width: Dimensions.get('window').width }}
                     navigationState={{ index, routes }}
