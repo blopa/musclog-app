@@ -19,7 +19,12 @@ import {
     getAllFoodsByIds,
     getUserNutritionBetweenDates,
 } from '@/utils/database';
-import { getCurrentTimestampISOString, getDaysAgoTimestampISOString } from '@/utils/date';
+import {
+    getCurrentTimestampISOString,
+    getDaysAgoTimestampISOString,
+    getEndOfDayTimestampISOString,
+    getStartOfDayTimestampISOString,
+} from '@/utils/date';
 import { fetchProductByEAN } from '@/utils/fetchFoodData';
 import { syncHealthConnectData } from '@/utils/healthConnect';
 import { getRecentFood } from '@/utils/storage';
@@ -126,16 +131,15 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         await syncHealthConnectData(
             checkReadIsPermitted,
             checkWriteIsPermitted,
-            getHealthData,
             insertHealthData,
-            getDaysAgoTimestampISOString(1),
-            getCurrentTimestampISOString(),
+            getStartOfDayTimestampISOString(getDaysAgoTimestampISOString(1)),
+            getEndOfDayTimestampISOString(getCurrentTimestampISOString()),
             1000
         );
 
         await loadConsumed();
         setIsLoading(false);
-    }, [checkReadIsPermitted, checkWriteIsPermitted, getHealthData, insertHealthData, loadConsumed]);
+    }, [checkReadIsPermitted, checkWriteIsPermitted, insertHealthData, loadConsumed]);
 
     const loadRecentFood = useCallback(async () => {
         const recentFoodIds = await getRecentFood();

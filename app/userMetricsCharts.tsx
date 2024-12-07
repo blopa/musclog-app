@@ -893,7 +893,6 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
         await syncHealthConnectData(
             checkReadIsPermitted,
             checkWriteIsPermitted,
-            getHealthData,
             insertHealthData,
             getStartOfDayTimestampISOString(startDate?.toISOString() || getDaysAgoTimestampISOString(30)),
             getEndOfDayTimestampISOString(endDate?.toISOString() || getCurrentTimestampISOString()),
@@ -902,7 +901,7 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
 
         await loadUserMetricsAndNutrition();
         setIsLoading(false);
-    }, [checkReadIsPermitted, checkWriteIsPermitted, getHealthData, insertHealthData, startDate, endDate, loadUserMetricsAndNutrition]);
+    }, [checkReadIsPermitted, checkWriteIsPermitted, insertHealthData, startDate, endDate, loadUserMetricsAndNutrition]);
 
     const foodLabels = [t('carbs'), t('fats'), t('proteins'), t('fibers')];
     const yAxisFood = useMemo(() => {

@@ -222,7 +222,6 @@ export function aggregateUserNutritionMetricsDataByDate(
 export const syncHealthConnectData = async (
     checkReadIsPermitted: HealthConnectContextValue['checkReadIsPermitted'],
     checkWriteIsPermitted: HealthConnectContextValue['checkWriteIsPermitted'],
-    getHealthData: HealthConnectContextValue['getHealthData'],
     insertHealthData: HealthConnectContextValue['insertHealthData'],
     startTime: string,
     endTime: string,
