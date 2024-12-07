@@ -386,11 +386,11 @@ export const getSetsDoneThisWeekText = async () => {
         }));
 
     // Extract the last item and apply "and_text" to it
-    const lastMuscle = entries.at(-1) as [string, number];
+    const [lastMuscleGroup, lastSetsDone] = entries.at(-1) as [string, number];
     const lastText = i18n.t('and_text', {
         text: i18n.t('sets_of_muscle_group', {
-            muscleGroup: i18n.t(`muscle_groups.${lastMuscle[0]}`).toLowerCase(),
-            sets: lastMuscle[1],
+            muscleGroup: i18n.t(`muscle_groups.${lastMuscleGroup}`).toLowerCase(),
+            sets: lastSetsDone,
         }),
     });
 

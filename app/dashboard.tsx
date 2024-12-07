@@ -180,7 +180,7 @@ export default function Dashboard({ navigation }: {
                 <View style={styles.section}>
                     <Text style={styles.header}>{t('track_your_fitness_journey')}</Text>
                     <Text style={styles.description}>
-                        {t('easily_log_your_workouts')}
+                        {t(setsCompletedThisWeekText ?? 'easily_log_your_workouts')}
                     </Text>
                     <Button
                         mode="contained"
@@ -198,13 +198,6 @@ export default function Dashboard({ navigation }: {
                     </Button>
                 </View>
                 <TodaysNutritionProgress />
-                {setsCompletedThisWeekText ? (
-                    <View style={styles.section}>
-                        <Text>
-                            {setsCompletedThisWeekText}
-                        </Text>
-                    </View>
-                ) : null}
                 <View style={styles.section}>
                     <View style={styles.sectionHeader}>
                         <Text style={styles.sectionTitle}>{t('upcoming_workouts')}</Text>
