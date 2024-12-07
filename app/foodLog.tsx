@@ -184,7 +184,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
     const resetScreenData = useCallback(() => {
         setSearchQuery('');
-        setIndex(0);
+        // Removed `setIndex(0)` so that the tab does not reset each time.
         setConsumedFoods([]);
         setAllowEditName(false);
     }, []);
