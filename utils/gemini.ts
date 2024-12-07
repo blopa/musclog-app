@@ -819,10 +819,11 @@ export async function estimateNutritionFromPhoto(photoUri: string) {
         }
 
         return {
-            calories: 0,
             carbs: 0,
             fat: 0,
             grams: 0,
+            kcal: 0,
+            kj: 0,
             name: '',
             protein: 0,
             ...result?.response?.candidates?.[0]?.content?.parts?.[0]?.functionCall?.args,
@@ -901,10 +902,11 @@ export async function extractMacrosFromLabelPhoto(photoUri: string) {
         }
 
         return {
-            calories: 0,
             carbs: 0,
             fat: 0,
             grams: 0,
+            kcal: 0,
+            kj: 0,
             name: '',
             protein: 0,
             ...result?.response?.candidates?.[0]?.content?.parts?.[0]?.functionCall?.args,
@@ -937,6 +939,24 @@ export async function isAllowedLocation(apiKey: string): Promise<boolean> {
             captureMessage(`Error in isAllowedLocation: ${error}`);
         }
 
+        return false;
+    }
+}
+
+export async function isValidAccessToken(accessToken: string): Promise<boolean> {
+    try {
+        const model = await configureBasicGenAI({ accessToken });
+
+        await model.generateContent({
+            contents: [{ parts: [{ text: 'hi' } as Part], role: 'user' }],
+            generationConfig: {
+                maxOutputTokens: 1,
+                temperature: 0.5,
+            },
+        } as GenerateContentRequest);
+
+        return true;
+    } catch (error) {
         return false;
     }
 }

@@ -27,7 +27,7 @@ import {
     getLatestUser,
 } from '@/utils/database';
 import { getCurrentTimestampISOString, getDaysAgoTimestampISOString, isValidDateParam } from '@/utils/date';
-import { GoogleUserInfo, handleGoogleSignIn } from '@/utils/googleAuth';
+import { handleGoogleSignIn } from '@/utils/googleAuth';
 import { aggregateUserNutritionMetricsDataByDate } from '@/utils/healthConnect';
 import { formatFloatNumericInputText, generateHash } from '@/utils/string';
 import { ActivityLevelType, EatingPhaseType, ExperienceLevelType } from '@/utils/types';
@@ -38,7 +38,6 @@ import {
     getSaveFormattedWeight,
 } from '@/utils/unit';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Linking, ScrollView, StatusBar, StyleSheet, View } from 'react-native';
@@ -49,12 +48,11 @@ type OnboardingProps = {
 };
 
 const Onboarding = ({ onFinish }: OnboardingProps) => {
-    const navigation = useNavigation<NavigationProp<any>>();
     const { t } = useTranslation();
     const { colors, dark } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors, dark);
     const { checkReadIsPermitted, getHealthData, requestPermissions } = useHealthConnect();
-    const { isSigningIn, promptAsync, request, response } = useGoogleAuth();
+    const { authData, isSigningIn, promptAsync } = useGoogleAuth();
 
     const [currentStep, setCurrentStep] = useState(0);
     const [form, setForm] = useState<{
@@ -85,7 +83,7 @@ const Onboarding = ({ onFinish }: OnboardingProps) => {
     const [isPermissionGranted, setIsPermissionGranted] = useState(false);
     const [showNoPermittedMessage, setShowNoPermittedMessage] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [userInfo, setUserInfo] = useState<GoogleUserInfo | null>(null);
+    const [hasAllowedGoogle, setHasAllowedGoogle] = useState<boolean>(false);
 
     const isImperial = form.unitSystem === IMPERIAL_SYSTEM;
     const heightUnit = isImperial ? FEET : METERS;
@@ -147,6 +145,8 @@ const Onboarding = ({ onFinish }: OnboardingProps) => {
     }, [requestPermissions]);
 
     const handleNext = useCallback(async () => {
+        setIsLoading(false);
+
         if (currentStep < steps.length - 1) {
             setCurrentStep(currentStep + 1);
         } else {
@@ -267,11 +267,10 @@ const Onboarding = ({ onFinish }: OnboardingProps) => {
             console.error('Failed to save user data:', error);
         } finally {
             onFinish();
-            navigation.navigate('index');
         }
 
         setIsLoading(false);
-    }, [form, navigation, onFinish, isImperial]);
+    }, [form, onFinish, isImperial]);
 
     const handleFormatNumericText = useCallback((text: string, key: 'height' | 'weight') => {
         if (!text) {
@@ -296,25 +295,18 @@ const Onboarding = ({ onFinish }: OnboardingProps) => {
 
     useEffect(() => {
         const fetchUserInfo = async () => {
-            if (response) {
+            if (authData) {
                 setIsLoading(true);
 
-                const userInfo = await handleGoogleSignIn(response);
-                if (userInfo) {
-                    setUserInfo(userInfo);
-
-                    setForm((prevForm) => ({
-                        ...prevForm,
-                        name: userInfo.given_name || userInfo.name || '',
-                    }));
-                }
+                const isAllowed = await handleGoogleSignIn(authData);
+                setHasAllowedGoogle(isAllowed);
 
                 setIsLoading(false);
             }
         };
 
         fetchUserInfo();
-    }, [response]);
+    }, [authData]);
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
@@ -419,16 +411,18 @@ const Onboarding = ({ onFinish }: OnboardingProps) => {
             ))}
             {!steps[currentStep].form && currentStep === 2 && (
                 <View style={styles.buttonContainer}>
-                    {userInfo ? (
+                    {hasAllowedGoogle ? (
                         <View style={styles.submitButton}>
-                            <Text style={styles.submitButtonText}>{t('signed_in_as', { name: userInfo.name })}</Text>
+                            <Text style={styles.submitButtonText}>
+                                {t('signed_in')}
+                            </Text>
                             <Button mode="elevated" onPress={handleNext} style={styles.buttonSpacing}>
                                 {t('continue')}
                             </Button>
                         </View>
                     ) : (
                         <View style={styles.submitButton}>
-                            <GoogleSignInButton disabled={!request || isSigningIn} onSignIn={handleSignIn} />
+                            <GoogleSignInButton disabled={isSigningIn} onSignIn={handleSignIn} />
                             <Button
                                 mode="outlined"
                                 onPress={handleNext}
@@ -457,13 +451,23 @@ const Onboarding = ({ onFinish }: OnboardingProps) => {
                     </View>
                 ) : null}
                 {!steps[currentStep].form && currentStep === 1 && !isPermissionGranted && !showCheckPermissionButton && (
-                    <Button
-                        mode="contained"
-                        onPress={handleRequestPermission}
-                        style={styles.buttonSpacing}
-                    >
-                        {t('request_permission')}
-                    </Button>
+                    <>
+                        <Button
+                            mode="contained"
+                            onPress={handleRequestPermission}
+                            style={styles.buttonSpacing}
+                        >
+                            {t('request_permission')}
+                        </Button>
+                        <Button
+                            disabled={isLoading}
+                            mode="contained"
+                            onPress={handleNext}
+                            style={styles.buttonSpacing}
+                        >
+                            {t('skip')}
+                        </Button>
+                    </>
                 )}
                 {!steps[currentStep].form && currentStep === 1 && showCheckPermissionButton && (
                     <>
@@ -579,6 +583,7 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     },
     submitButtonText: {
         marginBottom: 12,
+        textAlign: 'center',
     },
     title: {
         color: colors.onSurface,

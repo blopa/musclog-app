@@ -144,6 +144,14 @@ export const isValidApiKey = (key: string, vendor: string) => {
     return false;
 };
 
+export const isValidAccessToken = (token: string, vendor: string) => {
+    if (vendor === GEMINI_API_KEY_TYPE) {
+        return geminiFunctions.isValidAccessToken(token);
+    }
+
+    return false;
+};
+
 export const isAllowedLocation = async (key: string, vendor: string) => {
     if (key && vendor === GEMINI_API_KEY_TYPE) {
         return geminiFunctions.isAllowedLocation(key);
@@ -156,7 +164,8 @@ export const estimateNutritionFromPhoto = async (photo: string) => {
     const vendor = await getAiApiVendor();
 
     // return {
-    //     calories: 0,
+    //     kcal: 0,
+    //     kj: 0,
     //     carbs: 0,
     //     fat: 0,
     //     grams: 0,
@@ -177,7 +186,8 @@ export const extractMacrosFromLabelPhoto = async (photo: string) => {
     const vendor = await getAiApiVendor();
 
     // return {
-    //     calories: 425,
+    //     kcal: 425,
+    //     kj: 425 * 4,
     //     carbs: 25,
     //     fat: 25,
     //     protein: 25,

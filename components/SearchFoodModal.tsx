@@ -130,7 +130,7 @@ const SearchFoodModal = ({
                         carbs: macros.carbs,
                         fat: macros.fat,
                         grams: macros.grams,
-                        kcal: macros.calories,
+                        kcal: macros.kcal,
                         productTitle: macros.name,
                         protein: macros.protein,
                     });

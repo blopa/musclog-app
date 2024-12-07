@@ -2,7 +2,6 @@ import { useGoogleAuth } from '@/hooks/useGoogleAuth';
 import {
     deleteAllData,
     getAccessToken,
-    GoogleUserInfo,
     handleGoogleSignIn,
     refreshAccessToken,
 } from '@/utils/googleAuth';
@@ -13,11 +12,11 @@ import { Button, ScrollView, StyleSheet, Text, View } from 'react-native';
 WebBrowser.maybeCompleteAuthSession();
 
 export default function App() {
-    const [userInfo, setUserInfo] = useState<GoogleUserInfo | null>(null);
+    const [hasAllowed, setHasAllowed] = useState<boolean>(false);
     const [responseData, setResponseData] = useState<null | string>(null);
     const [error, setError] = useState<null | string>(null);
 
-    const { promptAsync, request, response } = useGoogleAuth();
+    const { authData, isSigningIn, promptAsync } = useGoogleAuth();
 
     const callGeminiApi = async (): Promise<void> => {
         try {
@@ -51,8 +50,8 @@ export default function App() {
 
     const signIn = async (): Promise<void> => {
         try {
-            const user = await handleGoogleSignIn(response!);
-            setUserInfo(user);
+            const isAllowed = await handleGoogleSignIn(authData!);
+            setHasAllowed(isAllowed);
         } catch (err) {
             console.error('Sign-in failed:', err);
             alert('Sign-in failed. Please try again.');
@@ -69,23 +68,22 @@ export default function App() {
     };
 
     useEffect(() => {
-        if (response) {
+        if (authData) {
             signIn();
         }
-    }, [response, signIn]);
+    }, [authData, signIn]);
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <Button onPress={getNewAccessToken} title="Get New Access Token" />
             <Button onPress={deleteAllData} title="Delete All Data" />
-            {userInfo ? (
+            {hasAllowed ? (
                 <View style={styles.info}>
-                    <Text style={styles.title}>Welcome, {userInfo.name}</Text>
-                    <Text>Email: {userInfo.email}</Text>
+                    <Text style={styles.title}>Welcome</Text>
                     <Button onPress={callGeminiApi} title="Call Gemini API" />
                 </View>
             ) : (
-                <Button disabled={!request} onPress={() => promptAsync()} title="Sign in with Google" />
+                <Button disabled={isSigningIn} onPress={() => promptAsync()} title="Sign in with Google" />
             )}
             {responseData && (
                 <View style={styles.result}>

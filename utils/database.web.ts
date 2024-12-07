@@ -2000,11 +2000,11 @@ export const processWorkoutPlan = async (workoutPlan: WorkoutPlan): Promise<void
                 const set: SetInsertType = {
                     createdAt: getCurrentTimestampISOString(),
                     exerciseId: exercise?.id!,
-                    isDropSet: false, // Adjust if needed
+                    isDropSet: false,
                     reps,
                     restTime,
                     setOrder: setOrder++,
-                    supersetName: '', // Adjust if needed
+                    supersetName: '',
                     weight: calculatedWeight,
                     workoutId: workoutId,
                 };

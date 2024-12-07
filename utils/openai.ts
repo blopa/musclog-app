@@ -302,10 +302,11 @@ export async function estimateNutritionFromPhoto(photoUri: string) {
     });
 
     let jsonResponse = {
-        calories: 0,
         carbs: 0,
         fat: 0,
         grams: 0,
+        kcal: 0,
+        kj: 0,
         name: '',
         protein: 0,
     };
@@ -361,10 +362,11 @@ export async function extractMacrosFromLabelPhoto(photoUri: string) {
     });
 
     let jsonResponse = {
-        calories: 0,
         carbs: 0,
         fat: 0,
         grams: 0,
+        kcal: 0,
+        kj: 0,
         name: '',
         protein: 0,
     };

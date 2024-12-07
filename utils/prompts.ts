@@ -615,10 +615,6 @@ export const getMacrosEstimationFunctions = (
         name: 'estimateMacros',
         parameters: {
             properties: {
-                calories: {
-                    description: `The ${mode} calories`,
-                    type: 'number',
-                },
                 carbs: {
                     description: `The ${mode} carbohydrates in grams`,
                     type: 'number',
@@ -631,6 +627,14 @@ export const getMacrosEstimationFunctions = (
                     description: `The ${mode} weight in grams`,
                     type: 'number',
                 },
+                kcal: {
+                    description: `The ${mode} kilocalories`,
+                    type: 'number',
+                },
+                kj: {
+                    description: `The ${mode} kilojoules`,
+                    type: 'number',
+                },
                 name: {
                     description: 'The name of the food / meal',
                     type: 'string',
@@ -640,7 +644,7 @@ export const getMacrosEstimationFunctions = (
                     type: 'number',
                 },
             },
-            required: ['protein', 'fat', 'carbs', 'calories', 'name', 'grams'],
+            required: ['protein', 'fat', 'carbs', 'kcal', 'kj', 'name', 'grams'],
             type: 'object',
         },
     }];

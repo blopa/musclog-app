@@ -15,7 +15,6 @@ import {
     GEMINI_API_KEY_TYPE,
     GOOGLE_OAUTH_GEMINI_ENABLED_TYPE,
     GOOGLE_REFRESH_TOKEN_TYPE,
-    GOOGLE_USER_INFO,
     IMPERIAL_SYSTEM,
     JSON_IMPORT_TYPE,
     LANGUAGE_CHOICE_TYPE,
@@ -37,11 +36,10 @@ import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { addUserMetrics, addUserNutrition, getSetting, getUser } from '@/utils/database';
 import { getCurrentTimestampISOString, getDaysAgoTimestampISOString } from '@/utils/date';
 import { exportDatabase, importDatabase } from '@/utils/file';
-import { deleteAllData, GoogleUserInfo, handleGoogleSignIn } from '@/utils/googleAuth';
+import { deleteAllData, handleGoogleSignIn } from '@/utils/googleAuth';
 import { aggregateUserNutritionMetricsDataByDate } from '@/utils/healthConnect';
 import { generateHash } from '@/utils/string';
 import { ThemeType } from '@/utils/types';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationProp } from '@react-navigation/native';
 import { useFocusEffect } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -55,7 +53,7 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
     const { i18n, t } = useTranslation();
     const { checkReadIsPermitted, getHealthData, requestPermissions } = useHealthConnect();
     const { addOrUpdateSettingValue, getSettingByType, updateSettingValue } = useSettings();
-    const { isSigningIn, promptAsync, request, response } = useGoogleAuth();
+    const { authData, promptAsync } = useGoogleAuth();
 
     const [apiKey, setApiKey] = useState<null | string>(null);
     const [googleGeminiApiKey, setGoogleGeminiApiKey] = useState<null | string>(null);
@@ -107,7 +105,6 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
     const { setTheme } = useCustomTheme();
     const styles = makeStyles(colors, dark);
 
-    const [userInfo, setUserInfo] = useState<GoogleUserInfo | null>(null);
     const [refreshToken, setRefreshToken] = useState<null | string>(null);
     const [googleSignInModalVisible, setGoogleSignInModalVisible] = useState(false);
 
@@ -208,11 +205,6 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
             setIsGoogleOauthGeminiElabled(value);
         }
 
-        const storedUser = await AsyncStorage.getItem(GOOGLE_USER_INFO);
-        if (storedUser) {
-            setUserInfo(JSON.parse(storedUser));
-        }
-
         const bugReportEnabledFromDb = await getSettingByType(BUG_REPORT_TYPE);
         if (bugReportEnabledFromDb) {
             const value = bugReportEnabledFromDb.value === 'true';
@@ -258,7 +250,6 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
     const handleGoogleSignOut = useCallback(async () => {
         setLoading(true);
         await deleteAllData();
-        setUserInfo(null);
         setRefreshToken(null);
         await updateSettingValue(GOOGLE_REFRESH_TOKEN_TYPE, '');
         setLoading(false);
@@ -267,24 +258,24 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
 
     useEffect(() => {
         const handleGoogleSignInResponse = async () => {
-            if (response) {
+            if (authData) {
                 setLoading(true);
-                const user = await handleGoogleSignIn(response);
-                if (user) {
-                    setUserInfo(user);
+                const isAllowed = await handleGoogleSignIn(authData);
+                if (isAllowed) {
                     const storedRefreshToken = await getSetting(GOOGLE_REFRESH_TOKEN_TYPE);
 
                     if (storedRefreshToken?.value) {
                         setRefreshToken(storedRefreshToken.value);
                     }
                 }
+
                 setLoading(false);
                 setGoogleSignInModalVisible(false);
             }
         };
 
         handleGoogleSignInResponse();
-    }, [response, updateSettingValue]);
+    }, [authData, updateSettingValue]);
 
     const handleSaveOpenAiKey = useCallback(async () => {
         setLoading(true);
@@ -934,7 +925,7 @@ export default function Settings({ navigation }: { navigation: NavigationProp<an
                     {refreshToken ? (
                         <>
                             <Text style={styles.modalText}>
-                                {t('signed_in_as', { name: userInfo?.name || t('unknown') })}
+                                {t('signed_in')}
                             </Text>
                             <GoogleSignInButton
                                 disabled={loading}

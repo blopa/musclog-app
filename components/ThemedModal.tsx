@@ -49,6 +49,10 @@ const ThemedModal = ({
         }
     }, [closeOnTouchOutside, handleOnClose]);
 
+    if (!visible) {
+        return null;
+    }
+
     return (
         <Portal>
             {visible && (
@@ -131,7 +135,7 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     },
     overlay: {
         alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent overlay
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
         flex: 1,
         justifyContent: 'center',
     },
