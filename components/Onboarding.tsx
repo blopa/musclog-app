@@ -588,6 +588,7 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     },
     submitButtonText: {
         marginBottom: 12,
+        textAlign: 'center',
     },
     title: {
         color: colors.onSurface,
