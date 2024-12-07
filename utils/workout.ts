@@ -15,13 +15,18 @@ import {
     addWorkoutEvent,
     getAllWorkouts,
     getExerciseById,
-    getLatestUserMetrics,
+    getLatestUserMetrics, getRecentWorkoutsBetweenDates,
     getSetsByWorkoutId,
     getUpcomingWorkoutsByWorkoutId,
     getUser,
     updateSet,
 } from '@/utils/database';
-import { formatDate, getNextDayOfWeekDate } from '@/utils/date';
+import {
+    formatDate,
+    getCurrentTimestampISOString,
+    getDaysAgoTimestampISOString,
+    getNextDayOfWeekDate,
+} from '@/utils/date';
 import {
     ExerciseVolumeType,
     SetReturnType,
@@ -330,3 +335,19 @@ async function getPastSetsForExercise(
         throw error;
     }
 }
+
+export const getSetsDoneThisWeek = async () => {
+    const recentWorkouts = await getRecentWorkoutsBetweenDates(
+        getDaysAgoTimestampISOString(7),
+        getCurrentTimestampISOString()
+    );
+
+    const result = recentWorkouts.reduce<SetReturnType[]>((acc, { exerciseData }) => {
+        return [
+            ...acc,
+            ...JSON.parse(exerciseData ?? '{}'),
+        ];
+    }, []);
+
+    debugger;
+};

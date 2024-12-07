@@ -11,7 +11,7 @@ import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { getRecentWorkoutsPaginated, getRecurringWorkouts } from '@/utils/database';
 import { formatDate } from '@/utils/date';
 import { MusclogApiFoodInfoType, WorkoutEventReturnType, WorkoutReturnType } from '@/utils/types';
-import { resetWorkoutStorageData } from '@/utils/workout';
+import { getSetsDoneThisWeek, resetWorkoutStorageData } from '@/utils/workout';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationProp } from '@react-navigation/native';
 import { useFocusEffect } from 'expo-router';
@@ -33,6 +33,8 @@ export default function Dashboard({ navigation }: {
     const [recentWorkouts, setRecentWorkouts] = useState<WorkoutEventReturnType[]>([]);
     const [upcomingWorkouts, setUpcomingWorkouts] = useState<WorkoutReturnType[]>([]);
     const [modalVisible, setModalVisible] = useState(false);
+
+    const [setsCompletedThisWeekText, setSetsCompletedThisWeekText] = useState<string>('');
     const [confirmationModalVisible, setConfirmationModalVisible] = useState(false);
     const [selectedUpcomingEvent, setSelectedUpcomingEvent] = useState<null | WorkoutReturnType>(null);
     const [selectedFood, setSelectedFood] = useState<MusclogApiFoodInfoType | null>(null);
@@ -136,6 +138,16 @@ export default function Dashboard({ navigation }: {
         }, [])
     );
 
+    const generateSetsDoneThisWeekText = useCallback(async () => {
+        const setsDoneThisWeek = await getSetsDoneThisWeek();
+    }, []);
+
+    useFocusEffect(
+        useCallback(() => {
+            generateSetsDoneThisWeekText();
+        }, [generateSetsDoneThisWeekText])
+    );
+
     const handleCloseFoodSearchModal = useCallback(() => {
         setFoodSearchModalVisible(false);
     }, []);
@@ -185,6 +197,13 @@ export default function Dashboard({ navigation }: {
                     </Button>
                 </View>
                 <TodaysNutritionProgress />
+                {setsCompletedThisWeekText ? (
+                    <View style={styles.section}>
+                        <Text>
+                            {setsCompletedThisWeekText}
+                        </Text>
+                    </View>
+                ) : null}
                 <View style={styles.section}>
                     <View style={styles.sectionHeader}>
                         <Text style={styles.sectionTitle}>{t('upcoming_workouts')}</Text>
