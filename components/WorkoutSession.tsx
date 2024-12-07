@@ -123,7 +123,7 @@ const WorkoutSession = ({
 
     useEffect(() => {
         if (currentSetIndex < sets.length) {
-            if (Number(globalWeightLifted) > 0) {
+            if (Number(globalWeightLifted) >= 0) {
                 setWeightLifted(globalWeightLifted);
             }
 
