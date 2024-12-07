@@ -687,12 +687,6 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
 };
 
 const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
-    addGoalButton: {
-        backgroundColor: colors.primary,
-        borderRadius: 8,
-        marginTop: 16,
-        paddingVertical: 12,
-    },
     appbarHeader: {
         backgroundColor: colors.primary,
         justifyContent: 'center',
@@ -783,9 +777,6 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         paddingBottom: 16,
         paddingHorizontal: 16,
     },
-    macroContainer: {
-        marginBottom: 12,
-    },
     mealContainer: {
         borderColor: colors.primary,
         borderRadius: 8,
@@ -833,16 +824,6 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     photoCloseText: {
         color: colors.onPrimary,
         fontSize: 16,
-    },
-    progressBar: {
-        backgroundColor: colors.primary,
-        height: '100%',
-    },
-    progressBarContainer: {
-        backgroundColor: colors.surfaceVariant,
-        borderRadius: 4,
-        height: 10,
-        overflow: 'hidden',
     },
     scannerFocusArea: {
         backgroundColor: 'transparent',
