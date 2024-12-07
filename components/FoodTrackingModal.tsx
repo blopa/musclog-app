@@ -32,6 +32,7 @@ export type FoodTrackingType = {
 
 type FoodTrackingModalProps = {
     allowEditName?: boolean;
+    date?: string;
     food: FoodTrackingType | null;
     isLoading?: boolean;
     onClose: () => void;
@@ -44,6 +45,7 @@ const GRAM_BASE = 100;
 
 const FoodTrackingModal = ({
     allowEditName = false,
+    date,
     food,
     isLoading = false,
     onClose,
@@ -112,7 +114,7 @@ const FoodTrackingModal = ({
             calories: calculatedValues.kcal,
             carbohydrate: calculatedValues.carbs,
             dataId: generateHash(),
-            date: getCurrentTimestampISOString(),
+            date: date || getCurrentTimestampISOString(),
             fat: calculatedValues.fat,
             grams: parseFloat(unitAmount),
             mealType: parseInt(mealType, 10),
@@ -164,7 +166,7 @@ const FoodTrackingModal = ({
         }
 
         onClose();
-    }, [calculatedValues.kcal, calculatedValues.carbs, calculatedValues.fat, calculatedValues.protein, unitAmount, mealType, editableName, food?.productCode, t, userNutritionId, onClose]);
+    }, [calculatedValues.kcal, calculatedValues.carbs, calculatedValues.fat, calculatedValues.protein, date, unitAmount, mealType, editableName, t, userNutritionId, onClose, food?.productCode]);
 
     useEffect(() => {
         if (food) {

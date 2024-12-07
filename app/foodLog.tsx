@@ -237,7 +237,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 </ScrollView>
             </Screen>
         );
-    }, [recentTrackedFoods, styles.container, styles.listContent]);
+    }, [consumed, recentTrackedFoods, selectedDate, styles.container, styles.listContent]);
 
     const handleEditNutrition = (userNutrition: UserNutritionDecryptedReturnType) => {
         setSelectedFood({
@@ -708,6 +708,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
             ) : null}
             <FoodTrackingModal
                 allowEditName={allowEditName}
+                date={selectedDate.toISOString()}
                 food={selectedFood}
                 isLoading={isLoading}
                 onClose={handleCloseTrackingModal}
