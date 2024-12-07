@@ -943,6 +943,24 @@ export async function isAllowedLocation(apiKey: string): Promise<boolean> {
     }
 }
 
+export async function isValidAccessToken(accessToken: string): Promise<boolean> {
+    try {
+        const model = await configureBasicGenAI({ accessToken });
+
+        await model.generateContent({
+            contents: [{ parts: [{ text: 'hi' } as Part], role: 'user' }],
+            generationConfig: {
+                maxOutputTokens: 1,
+                temperature: 0.5,
+            },
+        } as GenerateContentRequest);
+
+        return true;
+    } catch (error) {
+        return false;
+    }
+}
+
 export async function isValidApiKey(apiKey: string): Promise<boolean> {
     try {
         const model = await configureBasicGenAI({ apiKey });

@@ -1,12 +1,13 @@
 import {
     AI_SETTINGS_TYPE,
+    GEMINI_API_KEY_TYPE,
     GOOGLE_ACCESS_TOKEN,
     GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE,
     GOOGLE_OAUTH_GEMINI_ENABLED_TYPE,
     GOOGLE_REFRESH_TOKEN_TYPE,
-    GOOGLE_USER_INFO,
 } from '@/constants/storage';
 import { GoogleAuthData } from '@/hooks/useGoogleAuth';
+import { isValidAccessToken } from '@/utils/ai';
 import { addOrUpdateSetting, getSetting } from '@/utils/database';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthSessionResult } from 'expo-auth-session';
@@ -36,41 +37,40 @@ export const GOOGLE_CLIENT_ID = '182653769964-letucboq7c5m25ckvgp9kuirrdm33fkc.a
  * Fetch user info using the access token.
  * Automatically refreshes the access token if the current one is invalid.
  */
-export const getUserInfo = async (token: string): Promise<GoogleUserInfo | null> => {
-    if (!token) {
-        throw new Error('Access token is missing.');
-    }
-
-    // TODO
-    const makeRequest = async (accessToken: string) => {
-        return fetch('https://www.googleapis.com/userinfo/v2/me', {
-            headers: { Authorization: `Bearer ${accessToken}` },
-        });
-    };
-
-    try {
-        // First attempt
-        let response = await makeRequest(token);
-
-        if (response.status === 401) {
-            // Token is invalid, try refreshing it
-            console.warn('Access token is invalid. Attempting to refresh...');
-            const newAccessToken = await refreshAccessToken();
-
-            // Retry with the new access token
-            response = await makeRequest(newAccessToken);
-        }
-
-        if (!response.ok) {
-            throw new Error('Failed to fetch user info.');
-        }
-
-        return (await response.json()) as GoogleUserInfo;
-    } catch (error) {
-        console.error('Error fetching user info:', error);
-        throw error;
-    }
-};
+// export const getUserInfo = async (token: string): Promise<GoogleUserInfo | null> => {
+//     if (!token) {
+//         throw new Error('Access token is missing.');
+//     }
+//
+//     const makeRequest = async (accessToken: string) => {
+//         return fetch('https://www.googleapis.com/userinfo/v2/me', {
+//             headers: { Authorization: `Bearer ${accessToken}` },
+//         });
+//     };
+//
+//     try {
+//         // First attempt
+//         let response = await makeRequest(token);
+//
+//         if (response.status === 401) {
+//             // Token is invalid, try refreshing it
+//             console.warn('Access token is invalid. Attempting to refresh...');
+//             const newAccessToken = await refreshAccessToken();
+//
+//             // Retry with the new access token
+//             response = await makeRequest(newAccessToken);
+//         }
+//
+//         if (!response.ok) {
+//             throw new Error('Failed to fetch user info.');
+//         }
+//
+//         return (await response.json()) as GoogleUserInfo;
+//     } catch (error) {
+//         console.error('Error fetching user info:', error);
+//         throw error;
+//     }
+// };
 
 /**
  * Refresh the access token using the stored refresh token
@@ -174,7 +174,7 @@ export const getAccessToken = async (): Promise<string> => {
  */
 export const handleGoogleSignIn = async (
     response: GoogleAuthData | null
-): Promise<GoogleUserInfo | null> => {
+): Promise<boolean> => {
     if (response) {
         const { access_token: accessToken, expires_in: expiresIn, refresh_token: refreshToken } = response;
 
@@ -199,13 +199,8 @@ export const handleGoogleSignIn = async (
         const expirationTime = new Date().getTime() + (expiresIn ?? 0) * 1000;
         await AsyncStorage.setItem(GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE, expirationTime.toString());
 
-        // TODO
-        const userInfo = await getUserInfo(accessToken);
-        if (userInfo) {
-            await AsyncStorage.setItem(GOOGLE_USER_INFO, JSON.stringify(userInfo));
-        }
-
-        return userInfo;
+        console.log('THE ACCESS TOKEN IS', accessToken);
+        return isValidAccessToken(accessToken, GEMINI_API_KEY_TYPE);
     }
     throw new Error('Google sign-in failed or cancelled.');
 };
@@ -224,5 +219,5 @@ export const deleteAllData = async (): Promise<void> => {
         value: 'false',
     });
 
-    await AsyncStorage.multiRemove([GOOGLE_USER_INFO, GOOGLE_ACCESS_TOKEN, GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE]);
+    await AsyncStorage.multiRemove([GOOGLE_ACCESS_TOKEN, GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE]);
 };

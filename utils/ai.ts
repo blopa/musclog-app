@@ -144,6 +144,14 @@ export const isValidApiKey = (key: string, vendor: string) => {
     return false;
 };
 
+export const isValidAccessToken = (token: string, vendor: string) => {
+    if (vendor === GEMINI_API_KEY_TYPE) {
+        return geminiFunctions.isValidAccessToken(token);
+    }
+
+    return false;
+};
+
 export const isAllowedLocation = async (key: string, vendor: string) => {
     if (key && vendor === GEMINI_API_KEY_TYPE) {
         return geminiFunctions.isAllowedLocation(key);

@@ -27,7 +27,7 @@ import {
     getLatestUser,
 } from '@/utils/database';
 import { getCurrentTimestampISOString, getDaysAgoTimestampISOString, isValidDateParam } from '@/utils/date';
-import { GoogleUserInfo, handleGoogleSignIn } from '@/utils/googleAuth';
+import { handleGoogleSignIn } from '@/utils/googleAuth';
 import { aggregateUserNutritionMetricsDataByDate } from '@/utils/healthConnect';
 import { formatFloatNumericInputText, generateHash } from '@/utils/string';
 import { ActivityLevelType, EatingPhaseType, ExperienceLevelType } from '@/utils/types';
@@ -83,7 +83,7 @@ const Onboarding = ({ onFinish }: OnboardingProps) => {
     const [isPermissionGranted, setIsPermissionGranted] = useState(false);
     const [showNoPermittedMessage, setShowNoPermittedMessage] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [userInfo, setUserInfo] = useState<GoogleUserInfo | null>(null);
+    const [hasAllowedGoogle, setHasAllowedGoogle] = useState<boolean>(false);
 
     const isImperial = form.unitSystem === IMPERIAL_SYSTEM;
     const heightUnit = isImperial ? FEET : METERS;
@@ -298,15 +298,8 @@ const Onboarding = ({ onFinish }: OnboardingProps) => {
             if (authData) {
                 setIsLoading(true);
 
-                const userInfo = await handleGoogleSignIn(authData);
-                if (userInfo) {
-                    setUserInfo(userInfo);
-
-                    setForm((prevForm) => ({
-                        ...prevForm,
-                        name: userInfo.given_name || userInfo.name || '',
-                    }));
-                }
+                const isAllowed = await handleGoogleSignIn(authData);
+                setHasAllowedGoogle(isAllowed);
 
                 setIsLoading(false);
             }
@@ -418,9 +411,11 @@ const Onboarding = ({ onFinish }: OnboardingProps) => {
             ))}
             {!steps[currentStep].form && currentStep === 2 && (
                 <View style={styles.buttonContainer}>
-                    {userInfo ? (
+                    {hasAllowedGoogle ? (
                         <View style={styles.submitButton}>
-                            <Text style={styles.submitButtonText}>{t('signed_in_as', { name: userInfo.name })}</Text>
+                            <Text style={styles.submitButtonText}>
+                                {t('signed_in')}
+                            </Text>
                             <Button mode="elevated" onPress={handleNext} style={styles.buttonSpacing}>
                                 {t('continue')}
                             </Button>
