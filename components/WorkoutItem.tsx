@@ -58,6 +58,7 @@ const WorkoutItem: React.FC<WorkoutDetailsProps> = ({
     useEffect(() => {
         const getWorkoutVolume = async () => {
             if (details?.exercisesWithSets) {
+                // TODO: is it ok to not pass the body weight here?
                 const totalVolume = await calculateWorkoutVolume(
                     details.exercisesWithSets.map((exercise) => ({
                         exerciseId: exercise.id,

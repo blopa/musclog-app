@@ -555,7 +555,8 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
                 const exerciseData = JSON.parse(workout?.exerciseData || '[]') as { exerciseId: number, sets: SetReturnType[] }[];
 
                 const workoutVolume = parseFloat(workout.workoutVolume || '0') || await calculateWorkoutVolume(
-                    exerciseData
+                    exerciseData,
+                    workout.bodyWeight || 0
                 ) || 0;
 
                 recentWorkoutsChartData.push({
