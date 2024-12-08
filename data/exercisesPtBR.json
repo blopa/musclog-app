@@ -1,632 +1,107 @@
 [
-  {
-    "name": "Supino",
-    "muscleGroup": "chest",
-    "type": "compound",
-    "description": "Um exercício para o peito onde você empurra uma barra para cima enquanto está deitado em um banco."
-  },
-  {
-    "name": "Supino Inclinado",
-    "muscleGroup": "chest",
-    "type": "compound",
-    "description": "Uma variação do supino realizada em um banco inclinado para atingir a parte superior do peito."
-  },
-  {
-    "name": "Supino Declinado",
-    "muscleGroup": "chest",
-    "type": "compound",
-    "description": "Uma variação do supino realizada em um banco declinado para atingir a parte inferior do peito."
-  },
-  {
-    "name": "Desenvolvimento de Ombros",
-    "muscleGroup": "anterior_deltoid",
-    "type": "compound",
-    "description": "Um exercício para os ombros onde você empurra um peso acima da cabeça enquanto está em pé ou sentado."
-  },
-  {
-    "name": "Levantamento Terra",
-    "muscleGroup": "back",
-    "type": "compound",
-    "description": "Um exercício de corpo inteiro que envolve levantar uma barra do chão até a posição em pé."
-  },
-  {
-    "name": "Peck Deck",
-    "muscleGroup": "chest",
-    "type": "machine",
-    "description": "Um exercício em máquina que isola os músculos do peito, imitando o movimento do crucifixo."
-  },
-  {
-    "name": "Extensão de Pernas",
-    "muscleGroup": "quadriceps",
-    "type": "machine",
-    "description": "Um exercício em máquina que atinge os quadríceps ao estender as pernas a partir de uma posição sentada."
-  },
-  {
-    "name": "Agachamento",
-    "muscleGroup": "quadriceps",
-    "type": "compound",
-    "description": "Um exercício de membros inferiores onde você dobra os joelhos e quadris para abaixar o corpo e depois se levanta."
-  },
-  {
-    "name": "Agachamento com Barra",
-    "muscleGroup": "quadriceps",
-    "type": "compound",
-    "description": "Um exercício de membros inferiores onde você dobra os joelhos e quadris para abaixar o corpo, com uma barra colocada nas costas, e depois se levanta."
-  },
-  {
-    "name": "Leg Press",
-    "muscleGroup": "quadriceps",
-    "type": "machine",
-    "description": "Um exercício em máquina onde você empurra um peso para longe de você usando as pernas."
-  },
-  {
-    "name": "Puxada Alta",
-    "muscleGroup": "lats",
-    "type": "machine",
-    "description": "Um exercício em máquina que atinge a parte superior das costas ao puxar uma barra em direção ao peito."
-  },
-  {
-    "name": "Barra Fixa",
-    "muscleGroup": "lats",
-    "type": "bodyweight",
-    "description": "Um exercício de parte superior do corpo onde você levanta seu corpo até uma barra usando os músculos das costas e dos braços."
-  },
-  {
-    "name": "Remada Sentada",
-    "muscleGroup": "lats",
-    "type": "machine",
-    "description": "Um exercício em máquina que atinge os músculos das costas ao puxar uma alça em direção ao seu torso enquanto está sentado."
-  },
-  {
-    "name": "Rosca Bíceps",
-    "muscleGroup": "biceps",
-    "type": "isolation",
-    "description": "Um exercício para os braços que atinge os bíceps ao levantar um peso em direção ao ombro."
-  },
-  {
-    "name": "Extensão de Tríceps Acima da Cabeça",
-    "muscleGroup": "triceps",
-    "type": "isolation",
-    "description": "Um exercício para os braços que atinge os tríceps ao estender o braço no cotovelo."
-  },
-  {
-    "name": "Flexora",
-    "muscleGroup": "hamstrings",
-    "type": "machine",
-    "description": "Um exercício em máquina que atinge os isquiotibiais ao dobrar as pernas em direção às nádegas."
-  },
-  {
-    "name": "Elevação Lateral",
-    "muscleGroup": "lateral_deltoid",
-    "type": "isolation",
-    "description": "Um exercício para os ombros onde você levanta pesos para os lados do corpo."
-  },
-  {
-    "name": "Elevação Frontal",
-    "muscleGroup": "anterior_deltoid",
-    "type": "isolation",
-    "description": "Um exercício para os ombros onde você levanta pesos para a frente do corpo."
-  },
-  {
-    "name": "Elevação de Panturrilha",
-    "muscleGroup": "calves",
-    "type": "isolation",
-    "description": "Um exercício de membros inferiores que atinge os músculos da panturrilha ao levantar os calcanhares do chão."
-  },
-  {
-    "name": "Rosca Martelo",
-    "muscleGroup": "brachialis",
-    "type": "isolation",
-    "description": "Um exercício para os braços semelhante à rosca bíceps, mas com uma pegada neutra."
-  },
-  {
-    "name": "Rosca Scott",
-    "muscleGroup": "biceps",
-    "type": "isolation",
-    "description": "Uma variação da rosca bíceps realizada em um banco Scott para isolar os bíceps."
-  },
-  {
-    "name": "Tríceps na Polia",
-    "muscleGroup": "triceps",
-    "type": "isolation",
-    "description": "Um exercício para os braços que atinge os tríceps ao empurrar um acessório de polia para baixo."
-  },
-  {
-    "name": "Chest Press",
-    "muscleGroup": "chest",
-    "type": "machine",
-    "description": "Um exercício em máquina que imita o supino."
-  },
-  {
-    "name": "Agachamento no Smith",
-    "muscleGroup": "quadriceps",
-    "type": "machine",
-    "description": "Uma variação do agachamento realizada na máquina Smith para maior estabilidade."
-  },
-  {
-    "name": "Remada Cavalinho",
-    "muscleGroup": "lats",
-    "type": "compound",
-    "description": "Um exercício para as costas onde você puxa uma barra em forma de T em direção ao torso."
-  },
-  {
-    "name": "Remada Curvada",
-    "muscleGroup": "lats",
-    "type": "compound",
-    "description": "Um exercício para as costas onde você se inclina para a frente e puxa um peso em direção ao torso."
-  },
-  {
-    "name": "Elevação Upright",
-    "muscleGroup": "upper_traps",
-    "type": "compound",
-    "description": "Um exercício para os ombros onde você puxa um peso para cima ao longo da frente do corpo."
-  },
-  {
-    "name": "Crucifixo com Halteres",
-    "muscleGroup": "chest",
-    "type": "isolation",
-    "description": "Um exercício para o peito onde você abaixa e levanta halteres para os lados enquanto está deitado em um banco."
-  },
-  {
-    "name": "Supino Inclinado com Halteres",
-    "muscleGroup": "chest",
-    "type": "compound",
-    "description": "Um exercício para o peito semelhante ao supino inclinado, mas usando halteres."
-  },
-  {
-    "name": "Desenvolvimento de Ombros na Máquina",
-    "muscleGroup": "anterior_deltoid",
-    "type": "machine",
-    "description": "Um exercício para os ombros realizado em uma máquina que imita o desenvolvimento acima da cabeça."
-  },
-  {
-    "name": "Peck Deck Inverso",
-    "muscleGroup": "posterior_deltoid",
-    "type": "machine",
-    "description": "Um exercício em máquina que atinge os deltoides posteriores ao imitar o movimento do fly reverso."
-  },
-  {
-    "name": "Crossover",
-    "muscleGroup": "chest",
-    "type": "isolation",
-    "description": "Um exercício para o peito que atinge a parte interna do peito ao puxar cabos através do corpo."
-  },
-  {
-    "name": "Elevação de Panturrilha Sentado",
-    "muscleGroup": "calves",
-    "type": "isolation",
-    "description": "Um exercício para a panturrilha realizado enquanto sentado, atingindo o músculo sóleo."
-  },
-  {
-    "name": "Elevação de Panturrilha em Pé",
-    "muscleGroup": "calves",
-    "type": "isolation",
-    "description": "Um exercício para a panturrilha realizado enquanto em pé, atingindo o músculo gastrocnêmio."
-  },
-  {
-    "name": "Levantamento Terra Romeno",
-    "muscleGroup": "hamstrings",
-    "type": "compound",
-    "description": "Uma variação do levantamento terra que atinge os isquiotibiais e glúteos."
-  },
-  {
-    "name": "Ponte de Glúteos",
-    "muscleGroup": "glutes",
-    "type": "bodyweight",
-    "description": "Um exercício para os membros inferiores que atinge os glúteos ao levantar os quadris do chão enquanto está deitado de costas."
-  },
-  {
-    "name": "Elevação de Quadril",
-    "muscleGroup": "glutes",
-    "type": "compound",
-    "description": "Um exercício para os membros inferiores que atinge os glúteos ao levantar os quadris do chão com os ombros apoiados em um banco."
-  },
-  {
-    "name": "Rosca Bíceps na Polia",
-    "muscleGroup": "biceps",
-    "type": "isolation",
-    "description": "Um exercício para os braços que atinge os bíceps ao flexionar um acessório de polia."
-  },
-  {
-    "name": "Desenvolvimento de Ombros com Halteres",
-    "muscleGroup": "anterior_deltoid",
-    "type": "compound",
-    "description": "Um exercício para os ombros onde você empurra halteres acima da cabeça."
-  },
-  {
-    "name": "Supino no Smith",
-    "muscleGroup": "chest",
-    "type": "machine",
-    "description": "Uma variação do supino realizada na máquina Smith para maior estabilidade."
-  },
-  {
-    "name": "Hack Squat",
-    "muscleGroup": "quadriceps",
-    "type": "machine",
-    "description": "Uma variação do agachamento realizada na máquina Hack Squat para atingir os quadríceps."
-  },
-  {
-    "name": "Avanço Reverso",
-    "muscleGroup": "quadriceps",
-    "type": "compound",
-    "description": "Um exercício de membros inferiores onde você dá um passo para trás em um avanço."
-  },
-  {
-    "name": "Step-Up",
-    "muscleGroup": "quadriceps",
-    "type": "compound",
-    "description": "Um exercício de membros inferiores onde você sobe em uma plataforma elevada."
-  },
-  {
-    "name": "Swing com Kettlebell",
-    "muscleGroup": "full_body",
-    "type": "compound",
-    "description": "Um exercício de corpo inteiro que envolve balançar um kettlebell entre as pernas e até a altura dos ombros."
-  },
-  {
-    "name": "Goblet Squat",
-    "muscleGroup": "quadriceps",
-    "type": "compound",
-    "description": "Uma variação do agachamento realizada enquanto segura um peso em frente ao peito."
-  },
-  {
-    "name": "Levantamento Terra Sumo",
-    "muscleGroup": "adductors",
-    "type": "compound",
-    "description": "Uma variação do levantamento terra com uma postura ampla que atinge a parte interna das coxas e glúteos."
-  },
-  {
-    "name": "Máquina de Abdução de Quadril",
-    "muscleGroup": "abductors",
-    "type": "machine",
-    "description": "Um exercício em máquina que atinge a parte externa das coxas ao abrir as pernas."
-  },
-  {
-    "name": "Máquina de Adução de Quadril",
-    "muscleGroup": "adductors",
-    "type": "machine",
-    "description": "Um exercício em máquina que atinge a parte interna das coxas ao fechar as pernas."
-  },
-  {
-    "name": "Face Pull",
-    "muscleGroup": "posterior_deltoid",
-    "type": "isolation",
-    "description": "Um exercício para os ombros que atinge os deltoides posteriores ao puxar um acessório de polia em direção ao rosto."
-  },
-  {
-    "name": "Crucifixo Inclinado com Halteres",
-    "muscleGroup": "chest",
-    "type": "isolation",
-    "description": "Um exercício para o peito realizado em um banco inclinado que atinge a parte superior do peito."
-  },
-  {
-    "name": "Paralelas",
-    "muscleGroup": "triceps",
-    "type": "bodyweight",
-    "description": "Um exercício para o peito e tríceps onde você abaixa e levanta seu corpo usando barras paralelas."
-  },
-  {
-    "name": "Flexão",
-    "muscleGroup": "chest",
-    "type": "bodyweight",
-    "description": "Um exercício para peito, ombros e tríceps onde você empurra seu corpo para cima a partir do chão."
-  },
-  {
-    "name": "Prancha",
-    "muscleGroup": "core",
-    "type": "bodyweight",
-    "description": "Um exercício para o core onde você mantém a posição de flexão por um determinado tempo."
-  },
-  {
-    "name": "Russian Twist",
-    "muscleGroup": "obliques",
-    "type": "bodyweight",
-    "description": "Um exercício oblíquo onde você gira o torso de um lado para o outro enquanto segura um peso."
-  },
-  {
-    "name": "Elevação de Pernas na Barra",
-    "muscleGroup": "abdomen",
-    "type": "bodyweight",
-    "description": "Um exercício abdominal onde você levanta as pernas enquanto está pendurado em uma barra."
-  },
-  {
-    "name": "Escalador",
-    "muscleGroup": "full_body",
-    "type": "bodyweight",
-    "description": "Um exercício de corpo inteiro onde você realiza um movimento de corrida enquanto está em posição de prancha."
-  },
-  {
-    "name": "Burpees",
-    "muscleGroup": "full_body",
-    "type": "bodyweight",
-    "description": "Um exercício de corpo inteiro que envolve um agachamento, salto e flexão."
-  },
-  {
-    "name": "Pulo na Caixa",
-    "muscleGroup": "quadriceps",
-    "type": "plyometric",
-    "description": "Um exercício pliométrico de membros inferiores onde você salta em uma plataforma elevada."
-  },
-  {
-    "name": "Turkish Get-Up",
-    "muscleGroup": "full_body",
-    "type": "compound",
-    "description": "Um exercício de corpo inteiro que envolve a transição de deitado para em pé enquanto segura um peso acima da cabeça."
-  },
-  {
-    "name": "Caminhada do Fazendeiro",
-    "muscleGroup": "full_body",
-    "type": "compound",
-    "description": "Um exercício onde você caminha segurando pesos pesados em cada mão."
-  },
-  {
-    "name": "Arranco",
-    "muscleGroup": "full_body",
-    "type": "compound",
-    "description": "Um levantamento olímpico onde você levanta uma barra do chão até acima da cabeça em um único movimento."
-  },
-  {
-    "name": "Arremesso",
-    "muscleGroup": "full_body",
-    "type": "compound",
-    "description": "Um levantamento olímpico onde você levanta uma barra do chão até os ombros e depois acima da cabeça."
-  },
-  {
-    "name": "Batalha de Cordas",
-    "muscleGroup": "full_body",
-    "type": "compound",
-    "description": "Um exercício onde você cria ondas com cordas pesadas para desenvolver força e resistência."
-  },
-  {
-    "name": "Crunch na Máquina",
-    "muscleGroup": "abdomen",
-    "type": "machine",
-    "description": "Um exercício em máquina que atinge os músculos abdominais ao imitar o movimento de um crunch."
-  },
-  {
-    "name": "Remada com Apoio no Peito",
-    "muscleGroup": "lats",
-    "type": "machine",
-    "description": "Um exercício para as costas realizado em uma máquina onde você rema com o peito apoiado em um suporte, atingindo os músculos das costas superiores e médias."
-  },
-  {
-    "name": "Remada com Barra",
-    "muscleGroup": "lats",
-    "type": "compound",
-    "description": "Um exercício para as costas onde você puxa uma barra em direção ao torso enquanto está inclinado para frente."
-  },
-  {
-    "name": "Tríceps Testa",
-    "muscleGroup": "triceps",
-    "type": "isolation",
-    "description": "Um exercício para os tríceps onde você abaixa uma barra em direção à testa e depois estende novamente."
-  },
-  {
-    "name": "Agachamento Búlgaro",
-    "muscleGroup": "quadriceps",
-    "type": "compound",
-    "description": "Um exercício de membros inferiores onde você realiza um agachamento com o pé traseiro elevado em um banco."
-  },
-  {
-    "name": "Pallof Press",
-    "muscleGroup": "obliques",
-    "type": "isolation",
-    "description": "Um exercício para o core que envolve empurrar um cabo ou banda de resistência longe do corpo para resistir à rotação."
-  },
-  {
-    "name": "Elevação de Joelhos na Barra",
-    "muscleGroup": "abdomen",
-    "type": "bodyweight",
-    "description": "Um exercício abdominal onde você levanta os joelhos em direção ao peito enquanto está pendurado em uma barra."
-  },
-  {
-    "name": "Desenvolvimento de Ombros no Landmine",
-    "muscleGroup": "anterior_deltoid",
-    "type": "compound",
-    "description": "Um exercício para os ombros onde você empurra uma barra ancorada em uma extremidade em um acessório de landmine."
-  },
-  {
-    "name": "Remada no Landmine",
-    "muscleGroup": "lats",
-    "type": "compound",
-    "description": "Um exercício para as costas onde você puxa uma barra ancorada em uma extremidade em um acessório de landmine em direção ao torso."
-  },
-  {
-    "name": "Elevação de Panturrilha no Burro",
-    "muscleGroup": "calves",
-    "type": "isolation",
-    "description": "Um exercício para a panturrilha onde você levanta os calcanhares enquanto está inclinado para frente com peso na parte inferior das costas."
-  },
-  {
-    "name": "Pular Corda",
-    "muscleGroup": "full_body",
-    "type": "cardio",
-    "description": "Um exercício cardiovascular que envolve pular uma corda enquanto ela passa sob seus pés e sobre sua cabeça."
-  },
-  {
-    "name": "Corrida",
-    "muscleGroup": "legs",
-    "type": "cardio",
-    "description": "Um exercício cardiovascular que envolve correr ou sprintar por uma distância."
-  },
-  {
-    "name": "Ciclismo",
-    "muscleGroup": "legs",
-    "type": "cardio",
-    "description": "Um exercício cardiovascular que envolve andar de bicicleta, seja estacionária ou em movimento."
-  },
-  {
-    "name": "Remo na Máquina",
-    "muscleGroup": "full_body",
-    "type": "cardio",
-    "description": "Um exercício cardiovascular que imita a ação de remar um barco, usando uma máquina."
-  },
-  {
-    "name": "Elíptico",
-    "muscleGroup": "full_body",
-    "type": "cardio",
-    "description": "Um exercício cardiovascular realizado em uma máquina que imita caminhar ou correr sem causar pressão excessiva nas articulações."
-  },
-  {
-    "name": "Treinamento Intervalado de Alta Intensidade (HIIT)",
-    "muscleGroup": "full_body",
-    "type": "cardio",
-    "description": "Uma forma de exercício cardiovascular que alterna curtos períodos de exercício anaeróbico intenso com períodos de recuperação menos intensos."
-  },
-  {
-    "name": "Escada",
-    "muscleGroup": "legs",
-    "type": "cardio",
-    "description": "Um exercício cardiovascular realizado em uma máquina que imita o movimento de subir escadas."
-  },
-  {
-    "name": "Aeróbica",
-    "muscleGroup": "full_body",
-    "type": "cardio",
-    "description": "Uma forma de exercício cardiovascular que inclui atividades rítmicas, muitas vezes realizadas com música."
-  },
-  {
-    "name": "Dança Cardio",
-    "muscleGroup": "full_body",
-    "type": "cardio",
-    "description": "Um exercício cardiovascular que envolve vários movimentos e rotinas de dança para elevar a frequência cardíaca."
-  },
-  {
-    "name": "Sombra de Boxe",
-    "muscleGroup": "full_body",
-    "type": "cardio",
-    "description": "Um exercício cardiovascular que envolve lançar socos no ar para aumentar a frequência cardíaca e melhorar o condicionamento cardiovascular."
-  },
-  {
-    "name": "Puxada Alta com Pegada Fechada",
-    "muscleGroup": "lats",
-    "type": "machine",
-    "description": "Uma variação da puxada em que se usa uma pegada fechada para trabalhar os músculos internos das costas."
-  },
-  {
-    "name": "Puxada Alta com Pegada Supinada",
-    "muscleGroup": "lats",
-    "type": "machine",
-    "description": "Uma variação da puxada em que se usa uma pegada supinada para trabalhar os bíceps e a parte superior das costas."
-  },
-  {
-    "name": "Pulldown com Cabo",
-    "muscleGroup": "lats",
-    "type": "isolation",
-    "description": "Um exercício para as costas em que você puxa uma barra de cabo de cima da cabeça até os quadris, focando nos dorsais."
-  },
-  {
-    "name": "Pullover com Haltere",
-    "muscleGroup": "chest",
-    "type": "compound",
-    "description": "Um exercício versátil que trabalha o peito e os dorsais ao abaixar e levantar um haltere sobre a cabeça enquanto está deitado em um banco."
-  },
-  {
-    "name": "Supino com Pegada Invertida",
-    "muscleGroup": "chest",
-    "type": "compound",
-    "description": "Uma variação do supino onde você usa uma pegada invertida para enfatizar o peito superior e os tríceps."
-  },
-  {
-    "name": "Pressão de Peito com Cabo",
-    "muscleGroup": "chest",
-    "type": "isolation",
-    "description": "Um exercício de peito em que você empurra um acessório de cabo para a frente, semelhante ao supino, mas com tensão constante."
-  },
-  {
-    "name": "Elevação Frontal com Cabo",
-    "muscleGroup": "anterior_deltoid",
-    "type": "isolation",
-    "description": "Um exercício de ombros em que você levanta um acessório de cabo à frente, visando os deltoides anteriores."
-  },
-  {
-    "name": "Elevação Lateral com Cabo",
-    "muscleGroup": "lateral_deltoid",
-    "type": "isolation",
-    "description": "Um exercício de ombros em que você levanta um acessório de cabo para o lado, visando os deltoides laterais."
-  },
-  {
-    "name": "Remada com Haltere Unilateral",
-    "muscleGroup": "lats",
-    "type": "compound",
-    "description": "Um exercício para as costas em que você puxa um haltere em direção ao seu torso enquanto está inclinado, focando em cada lado individualmente."
-  },
-  {
-    "name": "Encolhimento com Halteres",
-    "muscleGroup": "traps",
-    "type": "isolation",
-    "description": "Um exercício de ombros que trabalha o trapézio ao encolher os ombros enquanto segura halteres."
-  },
-  {
-    "name": "Flexão de Pernas Deitado",
-    "muscleGroup": "hamstrings",
-    "type": "machine",
-    "description": "Um exercício em máquina que trabalha os isquiotibiais ao flexionar as pernas em direção aos glúteos enquanto está deitado de bruços."
-  },
-  {
-    "name": "Bom Dia",
-    "muscleGroup": "hamstrings",
-    "type": "compound",
-    "description": "Um exercício para a parte inferior do corpo onde você flexiona o quadril para abaixar o tronco, trabalhando os isquiotibiais e glúteos."
-  },
-  {
-    "name": "Agachamento Zercher",
-    "muscleGroup": "quadriceps",
-    "type": "compound",
-    "description": "Uma variação de agachamento onde você segura a barra na dobra dos cotovelos, enfatizando os quadríceps e o core."
-  },
-  {
-    "name": "Agachamento Sissy",
-    "muscleGroup": "quadriceps",
-    "type": "isolation",
-    "description": "Uma variação de agachamento focada nos quadríceps, realizada com um banco sissy ou inclinando-se para trás na ponta dos pés."
-  },
-  {
-    "name": "Levantamento Terra Jefferson",
-    "muscleGroup": "glutes",
-    "type": "compound",
-    "description": "Uma variação de levantamento terra onde você fica em torno da barra, focando nos quadríceps, glúteos e core."
-  },
-  {
-    "name": "Agachamento Cossaco",
-    "muscleGroup": "adductors",
-    "type": "compound",
-    "description": "Um exercício para a parte inferior do corpo onde você realiza uma lunge lateral profunda, visando os músculos internos das coxas e glúteos."
-  },
-  {
-    "name": "Dragon Flag",
-    "muscleGroup": "core",
-    "type": "bodyweight",
-    "description": "Um exercício avançado de core onde você abaixa e levanta o corpo em linha reta enquanto está deitado em um banco."
-  },
-  {
-    "name": "Posição de Corpo Oco",
-    "muscleGroup": "core",
-    "type": "bodyweight",
-    "description": "Um exercício de core onde você mantém uma posição oca, com as costas baixas pressionadas no chão e os braços e pernas estendidos."
-  },
-  {
-    "name": "Abdominal Reverso",
-    "muscleGroup": "abdomen",
-    "type": "bodyweight",
-    "description": "Um exercício abdominal onde você flexiona os quadris em direção ao peito, focando nos abdominais inferiores."
-  },
-  {
-    "name": "Rolo Abdominal",
-    "muscleGroup": "core",
-    "type": "bodyweight",
-    "description": "Um exercício de core que envolve rolar um rolo abdominal para longe do corpo enquanto mantém o core estável."
-  },
-  {
-    "name": "Flexão Pike",
-    "muscleGroup": "anterior_deltoid",
-    "type": "bodyweight",
-    "description": "Um exercício de ombros onde você realiza uma flexão na posição pike, enfatizando os ombros."
-  },
-  {
-    "name": "Crunch no Cabo",
-    "muscleGroup": "abdomen",
-    "type": "bodyweight",
-    "description": "Um exercício abdominal onde você faz um movimento de crunch com um cabo para adicionar resistência."
-  }
+  { "name": "Supino", "muscleGroup": "chest", "type": "compound", "description": "Um exercício para o peito onde você empurra uma barra para cima enquanto está deitado em um banco." },
+  { "name": "Supino Inclinado", "muscleGroup": "chest", "type": "compound", "description": "Uma variação do supino realizada em um banco inclinado para atingir a parte superior do peito." },
+  { "name": "Supino Declinado", "muscleGroup": "chest", "type": "compound", "description": "Uma variação do supino realizada em um banco declinado para atingir a parte inferior do peito." },
+  { "name": "Desenvolvimento de Ombros", "muscleGroup": "shoulders", "type": "compound", "description": "Um exercício para os ombros onde você empurra um peso acima da cabeça enquanto está em pé ou sentado." },
+  { "name": "Levantamento Terra", "muscleGroup": "back", "type": "compound", "description": "Um exercício de corpo inteiro que envolve levantar uma barra do chão até a posição em pé." },
+  { "name": "Peck Deck", "muscleGroup": "chest", "type": "machine", "description": "Um exercício em máquina que isola os músculos do peito, imitando o movimento do crucifixo." },
+  { "name": "Extensão de Pernas", "muscleGroup": "legs", "type": "machine", "description": "Um exercício em máquina que atinge os quadríceps ao estender as pernas a partir de uma posição sentada." },
+  { "name": "Agachamento", "muscleGroup": "legs", "type": "compound", "description": "Um exercício de membros inferiores onde você dobra os joelhos e quadris para abaixar o corpo e depois se levanta." },
+  { "name": "Agachamento com Barra", "muscleGroup": "legs", "type": "compound", "description": "Um exercício de membros inferiores onde você dobra os joelhos e quadris para abaixar o corpo, com uma barra colocada nas costas, e depois se levanta." },
+  { "name": "Leg Press", "muscleGroup": "legs", "type": "machine", "description": "Um exercício em máquina onde você empurra um peso para longe de você usando as pernas." },
+  { "name": "Puxada Alta", "muscleGroup": "back", "type": "machine", "description": "Um exercício em máquina que atinge a parte superior das costas ao puxar uma barra em direção ao peito." },
+  { "name": "Barra Fixa", "muscleGroup": "back", "type": "bodyweight", "description": "Um exercício de parte superior do corpo onde você levanta seu corpo até uma barra usando os músculos das costas e dos braços." },
+  { "name": "Remada Sentada", "muscleGroup": "back", "type": "machine", "description": "Um exercício em máquina que atinge os músculos das costas ao puxar uma alça em direção ao seu torso enquanto está sentado." },
+  { "name": "Rosca Bíceps", "muscleGroup": "arms", "type": "isolation", "description": "Um exercício para os braços que atinge os bíceps ao levantar um peso em direção ao ombro." },
+  { "name": "Extensão de Tríceps Acima da Cabeça", "muscleGroup": "arms", "type": "isolation", "description": "Um exercício para os braços que atinge os tríceps ao estender o braço no cotovelo." },
+  { "name": "Flexora", "muscleGroup": "legs", "type": "machine", "description": "Um exercício em máquina que atinge os isquiotibiais ao dobrar as pernas em direção às nádegas." },
+  { "name": "Elevação Lateral", "muscleGroup": "shoulders", "type": "isolation", "description": "Um exercício para os ombros onde você levanta pesos para os lados do corpo." },
+  { "name": "Elevação Frontal", "muscleGroup": "shoulders", "type": "isolation", "description": "Um exercício para os ombros onde você levanta pesos para a frente do corpo." },
+  { "name": "Elevação de Panturrilha", "muscleGroup": "legs", "type": "isolation", "description": "Um exercício de membros inferiores que atinge os músculos da panturrilha ao levantar os calcanhares do chão." },
+  { "name": "Rosca Martelo", "muscleGroup": "arms", "type": "isolation", "description": "Um exercício para os braços semelhante à rosca bíceps, mas com uma pegada neutra." },
+  { "name": "Rosca Scott", "muscleGroup": "arms", "type": "isolation", "description": "Uma variação da rosca bíceps realizada em um banco Scott para isolar os bíceps." },
+  { "name": "Tríceps na Polia", "muscleGroup": "arms", "type": "isolation", "description": "Um exercício para os braços que atinge os tríceps ao empurrar um acessório de polia para baixo." },
+  { "name": "Chest Press", "muscleGroup": "chest", "type": "machine", "description": "Um exercício em máquina que imita o supino." },
+  { "name": "Agachamento no Smith", "muscleGroup": "legs", "type": "machine", "description": "Uma variação do agachamento realizada na máquina Smith para maior estabilidade." },
+  { "name": "Remada Cavalinho", "muscleGroup": "back", "type": "compound", "description": "Um exercício para as costas onde você puxa uma barra em forma de T em direção ao torso." },
+  { "name": "Remada Curvada", "muscleGroup": "back", "type": "compound", "description": "Um exercício para as costas onde você se inclina para a frente e puxa um peso em direção ao torso." },
+  { "name": "Elevação Upright", "muscleGroup": "shoulders", "type": "compound", "description": "Um exercício para os ombros onde você puxa um peso para cima ao longo da frente do corpo." },
+  { "name": "Crucifixo com Halteres", "muscleGroup": "chest", "type": "isolation", "description": "Um exercício para o peito onde você abaixa e levanta halteres para os lados enquanto está deitado em um banco." },
+  { "name": "Supino Inclinado com Halteres", "muscleGroup": "chest", "type": "compound", "description": "Um exercício para o peito semelhante ao supino inclinado, mas usando halteres." },
+  { "name": "Desenvolvimento de Ombros na Máquina", "muscleGroup": "shoulders", "type": "machine", "description": "Um exercício para os ombros realizado em uma máquina que imita o desenvolvimento acima da cabeça." },
+  { "name": "Peck Deck Inverso", "muscleGroup": "shoulders", "type": "machine", "description": "Um exercício em máquina que atinge os deltoides posteriores ao imitar o movimento do fly reverso." },
+  { "name": "Crossover", "muscleGroup": "chest", "type": "isolation", "description": "Um exercício para o peito que atinge a parte interna do peito ao puxar cabos através do corpo." },
+  { "name": "Elevação de Panturrilha Sentado", "muscleGroup": "legs", "type": "isolation", "description": "Um exercício para a panturrilha realizado enquanto sentado, atingindo o músculo sóleo." },
+  { "name": "Elevação de Panturrilha em Pé", "muscleGroup": "legs", "type": "isolation", "description": "Um exercício para a panturrilha realizado enquanto em pé, atingindo o músculo gastrocnêmio." },
+  { "name": "Levantamento Terra Romeno", "muscleGroup": "legs", "type": "compound", "description": "Uma variação do levantamento terra que atinge os isquiotibiais e glúteos." },
+  { "name": "Ponte de Glúteos", "muscleGroup": "glutes", "type": "bodyweight", "description": "Um exercício para os membros inferiores que atinge os glúteos ao levantar os quadris do chão enquanto está deitado de costas." },
+  { "name": "Elevação de Quadril", "muscleGroup": "glutes", "type": "compound", "description": "Um exercício para os membros inferiores que atinge os glúteos ao levantar os quadris do chão com os ombros apoiados em um banco." },
+  { "name": "Rosca Bíceps na Polia", "muscleGroup": "arms", "type": "isolation", "description": "Um exercício para os braços que atinge os bíceps ao flexionar um acessório de polia." },
+  { "name": "Desenvolvimento de Ombros com Halteres", "muscleGroup": "shoulders", "type": "compound", "description": "Um exercício para os ombros onde você empurra halteres acima da cabeça." },
+  { "name": "Supino no Smith", "muscleGroup": "chest", "type": "machine", "description": "Uma variação do supino realizada na máquina Smith para maior estabilidade." },
+  { "name": "Hack Squat", "muscleGroup": "legs", "type": "machine", "description": "Uma variação do agachamento realizada na máquina Hack Squat para atingir os quadríceps." },
+  { "name": "Avanço Reverso", "muscleGroup": "legs", "type": "compound", "description": "Um exercício de membros inferiores onde você dá um passo para trás em um avanço." },
+  { "name": "Step-Up", "muscleGroup": "legs", "type": "compound", "description": "Um exercício de membros inferiores onde você sobe em uma plataforma elevada." },
+  { "name": "Swing com Kettlebell", "muscleGroup": "full_body", "type": "compound", "description": "Um exercício de corpo inteiro que envolve balançar um kettlebell entre as pernas e até a altura dos ombros." },
+  { "name": "Goblet Squat", "muscleGroup": "legs", "type": "compound", "description": "Uma variação do agachamento realizada enquanto segura um peso em frente ao peito." },
+  { "name": "Levantamento Terra Sumo", "muscleGroup": "legs", "type": "compound", "description": "Uma variação do levantamento terra com uma postura ampla que atinge a parte interna das coxas e glúteos." },
+  { "name": "Máquina de Abdução de Quadril", "muscleGroup": "legs", "type": "machine", "description": "Um exercício em máquina que atinge a parte externa das coxas ao abrir as pernas." },
+  { "name": "Máquina de Adução de Quadril", "muscleGroup": "legs", "type": "machine", "description": "Um exercício em máquina que atinge a parte interna das coxas ao fechar as pernas." },
+  { "name": "Face Pull", "muscleGroup": "shoulders", "type": "isolation", "description": "Um exercício para os ombros que atinge os deltoides posteriores ao puxar um acessório de polia em direção ao rosto." },
+  { "name": "Crucifixo Inclinado com Halteres", "muscleGroup": "chest", "type": "isolation", "description": "Um exercício para o peito realizado em um banco inclinado que atinge a parte superior do peito." },
+  { "name": "Paralelas", "muscleGroup": "arms", "type": "bodyweight", "description": "Um exercício para o peito e tríceps onde você abaixa e levanta seu corpo usando barras paralelas." },
+  { "name": "Flexão", "muscleGroup": "chest", "type": "bodyweight", "description": "Um exercício para peito, ombros e tríceps onde você empurra seu corpo para cima a partir do chão." },
+  { "name": "Prancha", "muscleGroup": "core", "type": "bodyweight", "description": "Um exercício para o core onde você mantém a posição de flexão por um determinado tempo." },
+  { "name": "Russian Twist", "muscleGroup": "core", "type": "bodyweight", "description": "Um exercício oblíquo onde você gira o torso de um lado para o outro enquanto segura um peso." },
+  { "name": "Elevação de Pernas na Barra", "muscleGroup": "abdomen", "type": "bodyweight", "description": "Um exercício abdominal onde você levanta as pernas enquanto está pendurado em uma barra." },
+  { "name": "Escalador", "muscleGroup": "full_body", "type": "bodyweight", "description": "Um exercício de corpo inteiro onde você realiza um movimento de corrida enquanto está em posição de prancha." },
+  { "name": "Burpees", "muscleGroup": "full_body", "type": "bodyweight", "description": "Um exercício de corpo inteiro que envolve um agachamento, salto e flexão." },
+  { "name": "Pulo na Caixa", "muscleGroup": "legs", "type": "plyometric", "description": "Um exercício pliométrico de membros inferiores onde você salta em uma plataforma elevada." },
+  { "name": "Turkish Get-Up", "muscleGroup": "full_body", "type": "compound", "description": "Um exercício de corpo inteiro que envolve a transição de deitado para em pé enquanto segura um peso acima da cabeça." },
+  { "name": "Caminhada do Fazendeiro", "muscleGroup": "full_body", "type": "compound", "description": "Um exercício onde você caminha segurando pesos pesados em cada mão." },
+  { "name": "Arranco", "muscleGroup": "full_body", "type": "compound", "description": "Um levantamento olímpico onde você levanta uma barra do chão até acima da cabeça em um único movimento." },
+  { "name": "Arremesso", "muscleGroup": "full_body", "type": "compound", "description": "Um levantamento olímpico onde você levanta uma barra do chão até os ombros e depois acima da cabeça." },
+  { "name": "Batalha de Cordas", "muscleGroup": "full_body", "type": "compound", "description": "Um exercício onde você cria ondas com cordas pesadas para desenvolver força e resistência." },
+  { "name": "Crunch na Máquina", "muscleGroup": "abdomen", "type": "machine", "description": "Um exercício em máquina que atinge os músculos abdominais ao imitar o movimento de um crunch." },
+  { "name": "Remada com Apoio no Peito", "muscleGroup": "back", "type": "machine", "description": "Um exercício para as costas realizado em uma máquina onde você rema com o peito apoiado em um suporte, atingindo os músculos das costas superiores e médias." },
+  { "name": "Remada com Barra", "muscleGroup": "back", "type": "compound", "description": "Um exercício para as costas onde você puxa uma barra em direção ao torso enquanto está inclinado para frente." },
+  { "name": "Tríceps Testa", "muscleGroup": "arms", "type": "isolation", "description": "Um exercício para os tríceps onde você abaixa uma barra em direção à testa e depois estende novamente." },
+  { "name": "Agachamento Búlgaro", "muscleGroup": "legs", "type": "compound", "description": "Um exercício de membros inferiores onde você realiza um agachamento com o pé traseiro elevado em um banco." },
+  { "name": "Pallof Press", "muscleGroup": "core", "type": "isolation", "description": "Um exercício para o core que envolve empurrar um cabo ou banda de resistência longe do corpo para resistir à rotação." },
+  { "name": "Elevação de Joelhos na Barra", "muscleGroup": "abdomen", "type": "bodyweight", "description": "Um exercício abdominal onde você levanta os joelhos em direção ao peito enquanto está pendurado em uma barra." },
+  { "name": "Desenvolvimento de Ombros no Landmine", "muscleGroup": "shoulders", "type": "compound", "description": "Um exercício para os ombros onde você empurra uma barra ancorada em uma extremidade em um acessório de landmine." },
+  { "name": "Remada no Landmine", "muscleGroup": "back", "type": "compound", "description": "Um exercício para as costas onde você puxa uma barra ancorada em uma extremidade em um acessório de landmine em direção ao torso." },
+  { "name": "Elevação de Panturrilha no Burro", "muscleGroup": "legs", "type": "isolation", "description": "Um exercício para a panturrilha onde você levanta os calcanhares enquanto está inclinado para frente com peso na parte inferior das costas." },
+  { "name": "Pular Corda", "muscleGroup": "full_body", "type": "cardio", "description": "Um exercício cardiovascular que envolve pular uma corda enquanto ela passa sob seus pés e sobre sua cabeça." },
+  { "name": "Corrida", "muscleGroup": "legs", "type": "cardio", "description": "Um exercício cardiovascular que envolve correr ou sprintar por uma distância." },
+  { "name": "Ciclismo", "muscleGroup": "legs", "type": "cardio", "description": "Um exercício cardiovascular que envolve andar de bicicleta, seja estacionária ou em movimento." },
+  { "name": "Remo na Máquina", "muscleGroup": "full_body", "type": "cardio", "description": "Um exercício cardiovascular que imita a ação de remar um barco, usando uma máquina." },
+  { "name": "Elíptico", "muscleGroup": "full_body", "type": "cardio", "description": "Um exercício cardiovascular realizado em uma máquina que imita caminhar ou correr sem causar pressão excessiva nas articulações." },
+  { "name": "Treinamento Intervalado de Alta Intensidade (HIIT)", "muscleGroup": "full_body", "type": "cardio", "description": "Uma forma de exercício cardiovascular que alterna curtos períodos de exercício anaeróbico intenso com períodos de recuperação menos intensos." },
+  { "name": "Escada", "muscleGroup": "legs", "type": "cardio", "description": "Um exercício cardiovascular realizado em uma máquina que imita o movimento de subir escadas." },
+  { "name": "Aeróbica", "muscleGroup": "full_body", "type": "cardio", "description": "Uma forma de exercício cardiovascular que inclui atividades rítmicas, muitas vezes realizadas com música." },
+  { "name": "Dança Cardio", "muscleGroup": "full_body", "type": "cardio", "description": "Um exercício cardiovascular que envolve vários movimentos e rotinas de dança para elevar a frequência cardíaca." },
+  { "name": "Sombra de Boxe", "muscleGroup": "full_body", "type": "cardio", "description": "Um exercício cardiovascular que envolve lançar socos no ar para aumentar a frequência cardíaca e melhorar o condicionamento cardiovascular." },
+  { "name": "Puxada Alta com Pegada Fechada", "muscleGroup": "back", "type": "machine", "description": "Uma variação da puxada em que se usa uma pegada fechada para trabalhar os músculos internos das costas." },
+  { "name": "Puxada Alta com Pegada Supinada", "muscleGroup": "back", "type": "machine", "description": "Uma variação da puxada em que se usa uma pegada supinada para trabalhar os bíceps e a parte superior das costas." },
+  { "name": "Pulldown com Cabo", "muscleGroup": "back", "type": "isolation", "description": "Um exercício para as costas em que você puxa uma barra de cabo de cima da cabeça até os quadris, focando nos dorsais." },
+  { "name": "Pullover com Haltere", "muscleGroup": "chest", "type": "compound", "description": "Um exercício versátil que trabalha o peito e os dorsais ao abaixar e levantar um haltere sobre a cabeça enquanto está deitado em um banco." },
+  { "name": "Supino com Pegada Invertida", "muscleGroup": "chest", "type": "compound", "description": "Uma variação do supino onde você usa uma pegada invertida para enfatizar o peito superior e os tríceps." },
+  { "name": "Pressão de Peito com Cabo", "muscleGroup": "chest", "type": "isolation", "description": "Um exercício de peito em que você empurra um acessório de cabo para a frente, semelhante ao supino, mas com tensão constante." },
+  { "name": "Elevação Frontal com Cabo", "muscleGroup": "shoulders", "type": "isolation", "description": "Um exercício de ombros em que você levanta um acessório de cabo à frente, visando os deltoides anteriores." },
+  { "name": "Elevação Lateral com Cabo", "muscleGroup": "shoulders", "type": "isolation", "description": "Um exercício de ombros em que você levanta um acessório de cabo para o lado, visando os deltoides laterais." },
+  { "name": "Remada com Haltere Unilateral", "muscleGroup": "back", "type": "compound", "description": "Um exercício para as costas em que você puxa um haltere em direção ao seu torso enquanto está inclinado, focando em cada lado individualmente." },
+  { "name": "Encolhimento com Halteres", "muscleGroup": "shoulders", "type": "isolation", "description": "Um exercício de ombros que trabalha o trapézio ao encolher os ombros enquanto segura halteres." },
+  { "name": "Flexão de Pernas Deitado", "muscleGroup": "legs", "type": "machine", "description": "Um exercício em máquina que trabalha os isquiotibiais ao flexionar as pernas em direção aos glúteos enquanto está deitado de bruços." },
+  { "name": "Bom Dia", "muscleGroup": "legs", "type": "compound", "description": "Um exercício para a parte inferior do corpo onde você flexiona o quadril para abaixar o tronco, trabalhando os isquiotibiais e glúteos." },
+  { "name": "Agachamento Zercher", "muscleGroup": "legs", "type": "compound", "description": "Uma variação de agachamento onde você segura a barra na dobra dos cotovelos, enfatizando os quadríceps e o core." },
+  { "name": "Agachamento Sissy", "muscleGroup": "legs", "type": "isolation", "description": "Uma variação de agachamento focada nos quadríceps, realizada com um banco sissy ou inclinando-se para trás na ponta dos pés." },
+  { "name": "Levantamento Terra Jefferson", "muscleGroup": "legs", "type": "compound", "description": "Uma variação de levantamento terra onde você fica em torno da barra, focando nos quadríceps, glúteos e core." },
+  { "name": "Agachamento Cossaco", "muscleGroup": "legs", "type": "compound", "description": "Um exercício para a parte inferior do corpo onde você realiza uma lunge lateral profunda, visando os músculos internos das coxas e glúteos." },
+  { "name": "Dragon Flag", "muscleGroup": "core", "type": "bodyweight", "description": "Um exercício avançado de core onde você abaixa e levanta o corpo em linha reta enquanto está deitado em um banco." },
+  { "name": "Posição de Corpo Oco", "muscleGroup": "core", "type": "bodyweight", "description": "Um exercício de core onde você mantém uma posição oca, com as costas baixas pressionadas no chão e os braços e pernas estendidos." },
+  { "name": "Abdominal Reverso", "muscleGroup": "abdomen", "type": "bodyweight", "description": "Um exercício abdominal onde você flexiona os quadris em direção ao peito, focando nos abdominais inferiores." },
+  { "name": "Rolo Abdominal", "muscleGroup": "core", "type": "bodyweight", "description": "Um exercício de core que envolve rolar um rolo abdominal para longe do corpo enquanto mantém o core estável." },
+  { "name": "Flexão Pike", "muscleGroup": "shoulders", "type": "bodyweight", "description": "Um exercício de ombros onde você realiza uma flexão na posição pike, enfatizando os ombros." },
+  { "name": "Crunch no Cabo", "muscleGroup": "abdomen", "type": "bodyweight", "description": "Um exercício abdominal onde você faz um movimento de crunch com um cabo para adicionar resistência." }
 ]
