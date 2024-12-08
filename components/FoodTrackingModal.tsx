@@ -1,6 +1,7 @@
 import PieChart from '@/components/Charts/PieChart';
 import CustomPicker from '@/components/CustomPicker';
 import CustomTextInput from '@/components/CustomTextInput';
+import DatePickerModal from '@/components/DatePickerModal';
 import ThemedModal from '@/components/ThemedModal';
 import { USER_METRICS_SOURCES } from '@/constants/healthConnect';
 import { MEAL_TYPE, NUTRITION_TYPES } from '@/constants/nutrition';
@@ -17,7 +18,7 @@ import { getDisplayFormattedWeight } from '@/utils/unit';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, View } from 'react-native';
-import { ActivityIndicator, Text, useTheme } from 'react-native-paper';
+import { ActivityIndicator, Button, Text, useTheme } from 'react-native-paper';
 
 export type FoodTrackingType = {
     carbs: number;
@@ -45,7 +46,7 @@ const GRAM_BASE = 100;
 
 const FoodTrackingModal = ({
     allowEditName = false,
-    date,
+    date = getCurrentTimestampISOString(),
     food,
     isLoading = false,
     onClose,
@@ -59,6 +60,8 @@ const FoodTrackingModal = ({
     const [unitAmount, setUnitAmount] = useState(GRAM_BASE.toString());
     const [mealType, setMealType] = useState('0');
     const [editableName, setEditableName] = useState(food?.productTitle || '');
+    const [selectedDate, setSelectedDate] = useState(date ? new Date(date) : new Date());
+    const [datePickerVisible, setDatePickerVisible] = useState(false);
 
     const { unitSystem } = useUnit();
     const isImperial = unitSystem === IMPERIAL_SYSTEM;
@@ -114,7 +117,7 @@ const FoodTrackingModal = ({
             calories: calculatedValues.kcal,
             carbohydrate: calculatedValues.carbs,
             dataId: generateHash(),
-            date: date || getCurrentTimestampISOString(),
+            date: selectedDate.toISOString(),
             fat: calculatedValues.fat,
             grams: parseFloat(unitAmount),
             mealType: parseInt(mealType, 10),
@@ -166,7 +169,7 @@ const FoodTrackingModal = ({
         }
 
         onClose();
-    }, [calculatedValues.kcal, calculatedValues.carbs, calculatedValues.fat, calculatedValues.protein, date, unitAmount, mealType, editableName, t, userNutritionId, onClose, food?.productCode]);
+    }, [calculatedValues.kcal, calculatedValues.carbs, calculatedValues.fat, calculatedValues.protein, selectedDate, unitAmount, mealType, editableName, t, userNutritionId, onClose, food?.productCode]);
 
     useEffect(() => {
         if (food) {
@@ -181,100 +184,125 @@ const FoodTrackingModal = ({
     }, [allowEditName, food, handleSetUnitAmount]);
 
     return (
-        <ThemedModal
-            cancelText={t('cancel')}
-            confirmText={isLoading ? undefined : (userNutritionId ? t('update') : t('track'))}
-            onClose={onClose}
-            onConfirm={handleTrackFood}
-            title={allowEditName ? '' : editableName || food?.productTitle}
-            visible={visible}
-        >
-            <ScrollView>
-                {food && !isLoading && (
-                    <View style={styles.foodTrackingForm}>
-                        {allowEditName ? (
+        <>
+            <ThemedModal
+                cancelText={t('cancel')}
+                confirmText={isLoading ? undefined : (userNutritionId ? t('update') : t('track'))}
+                onClose={onClose}
+                onConfirm={handleTrackFood}
+                title={allowEditName ? '' : editableName || food?.productTitle}
+                visible={visible}
+            >
+                <ScrollView>
+                    {food && !isLoading && (
+                        <View style={styles.foodTrackingForm}>
+                            {allowEditName ? (
+                                <CustomTextInput
+                                    label={t('name')}
+                                    onChangeText={setEditableName}
+                                    placeholder={t('enter_food_name')}
+                                    value={editableName}
+                                />
+                            ) : null}
+                            <Button
+                                onPress={() => setDatePickerVisible(true)}
+                                style={styles.datePickerButton}
+                            >
+                                {selectedDate.toLocaleDateString()}
+                            </Button>
                             <CustomTextInput
-                                label={t('name')}
-                                onChangeText={setEditableName}
-                                placeholder={t('enter_food_name')}
-                                value={editableName}
+                                keyboardType="numeric"
+                                label={t('grams')}
+                                onChangeText={handleGramsChange}
+                                placeholder={t('quantity')}
+                                value={unitAmount}
                             />
-                        ) : null}
-                        <CustomTextInput
-                            keyboardType="numeric"
-                            label={t('grams')}
-                            onChangeText={handleGramsChange}
-                            placeholder={t('quantity')}
-                            value={unitAmount}
-                        />
-                        <CustomPicker
-                            items={[
-                                ...Object.entries(MEAL_TYPE)
-                                    .filter(([_, mealType]) => mealType !== MEAL_TYPE.UNKNOWN)
-                                    .map(([mealTypeName, mealType]) => ({
-                                        label: t(mealTypeName.toLowerCase()),
-                                        value: mealType.toString(),
-                                    })),
-                            ]}
-                            label={t('meal_type')}
-                            onValueChange={(value) => setMealType(value)}
-                            selectedValue={mealType}
-                        />
-                        <View style={styles.metricRow}>
-                            <Text style={styles.metricDetail}>
-                                {t('item_value', {
-                                    item: t('calories'),
-                                    value: safeToFixed(calculatedValues.kcal),
-                                })}
-                            </Text>
-                            <Text style={styles.metricDetail}>
-                                {t('item_value_unit', {
-                                    item: t('carbs'),
-                                    value: getDisplayFormattedWeight(calculatedValues.carbs || 0, GRAMS, isImperial).toString(),
-                                    weightUnit: macroUnit,
-                                })}
-                            </Text>
+                            <CustomPicker
+                                items={[
+                                    ...Object.entries(MEAL_TYPE)
+                                        .filter(([_, mealType]) => mealType !== MEAL_TYPE.UNKNOWN)
+                                        .map(([mealTypeName, mealType]) => ({
+                                            label: t(mealTypeName.toLowerCase()),
+                                            value: mealType.toString(),
+                                        })),
+                                ]}
+                                label={t('meal_type')}
+                                onValueChange={(value) => setMealType(value)}
+                                selectedValue={mealType}
+                            />
+                            <View style={styles.metricRow}>
+                                <Text style={styles.metricDetail}>
+                                    {t('item_value', {
+                                        item: t('calories'),
+                                        value: safeToFixed(calculatedValues.kcal),
+                                    })}
+                                </Text>
+                                <Text style={styles.metricDetail}>
+                                    {t('item_value_unit', {
+                                        item: t('carbs'),
+                                        value: getDisplayFormattedWeight(calculatedValues.carbs || 0, GRAMS, isImperial).toString(),
+                                        weightUnit: macroUnit,
+                                    })}
+                                </Text>
+                            </View>
+                            <View style={styles.metricRow}>
+                                <Text style={styles.metricDetail}>
+                                    {t('item_value_unit', {
+                                        item: t('proteins'),
+                                        value: getDisplayFormattedWeight(calculatedValues.protein || 0, GRAMS, isImperial).toString(),
+                                        weightUnit: macroUnit,
+                                    })}
+                                </Text>
+                                <Text style={styles.metricDetail}>
+                                    {t('item_value_unit', {
+                                        item: t('fats'),
+                                        value: getDisplayFormattedWeight(calculatedValues.fat || 0, GRAMS, isImperial).toString(),
+                                        weightUnit: macroUnit,
+                                    })}
+                                </Text>
+                            </View>
                         </View>
-                        <View style={styles.metricRow}>
-                            <Text style={styles.metricDetail}>
-                                {t('item_value_unit', {
-                                    item: t('proteins'),
-                                    value: getDisplayFormattedWeight(calculatedValues.protein || 0, GRAMS, isImperial).toString(),
-                                    weightUnit: macroUnit,
-                                })}
-                            </Text>
-                            <Text style={styles.metricDetail}>
-                                {t('item_value_unit', {
-                                    item: t('fats'),
-                                    value: getDisplayFormattedWeight(calculatedValues.fat || 0, GRAMS, isImperial).toString(),
-                                    weightUnit: macroUnit,
-                                })}
-                            </Text>
+                    )}
+                    {(showChart && (calculatedValues.protein || calculatedValues.carbs || calculatedValues.fat)) ? (
+                        <View style={styles.pieChartContainer}>
+                            <PieChart
+                                data={[
+                                    { color: '#4CAF50', label: t('protein'), value: getDisplayFormattedWeight(calculatedValues.protein || 0, GRAMS, isImperial) },
+                                    { color: '#2196F3', label: t('carbohydrates'), value: getDisplayFormattedWeight(calculatedValues.carbs || 0, GRAMS, isImperial) },
+                                    { color: '#FF9800', label: t('fat'), value: getDisplayFormattedWeight(calculatedValues.fat || 0, GRAMS, isImperial) },
+                                ]}
+                                showLabels={false}
+                                showLegend={false}
+                                showShareImageButton={false}
+                                size={180}
+                            />
                         </View>
-                    </View>
-                )}
-                {(showChart && (calculatedValues.protein || calculatedValues.carbs || calculatedValues.fat)) ? (
-                    <View style={styles.pieChartContainer}>
-                        <PieChart
-                            data={[
-                                { color: '#4CAF50', label: t('protein'), value: getDisplayFormattedWeight(calculatedValues.protein || 0, GRAMS, isImperial) },
-                                { color: '#2196F3', label: t('carbohydrates'), value: getDisplayFormattedWeight(calculatedValues.carbs || 0, GRAMS, isImperial) },
-                                { color: '#FF9800', label: t('fat'), value: getDisplayFormattedWeight(calculatedValues.fat || 0, GRAMS, isImperial) },
-                            ]}
-                            showLabels={false}
-                            showLegend={false}
-                            showShareImageButton={false}
-                            size={180}
-                        />
-                    </View>
-                ) : null}
-            </ScrollView>
-            {isLoading && <ActivityIndicator color={colors.primary} size="large" />}
-        </ThemedModal>
+                    ) : null}
+                </ScrollView>
+                {isLoading && <ActivityIndicator color={colors.primary} size="large" />}
+            </ThemedModal>
+            <DatePickerModal
+                onChangeDate={setSelectedDate}
+                onClose={() => setDatePickerVisible(false)}
+                selectedDate={selectedDate}
+                visible={datePickerVisible}
+            />
+        </>
     );
 };
 
 const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
+    datePickerButton: {
+        backgroundColor: colors.surface,
+        borderColor: colors.onSurface,
+        borderRadius: 8,
+        borderWidth: 1,
+        color: colors.onSurface,
+        marginBottom: 16,
+        marginTop: 8,
+        paddingLeft: 10,
+        width: '100%',
+    },
     foodTrackingForm: {
         paddingBottom: 16,
     },
