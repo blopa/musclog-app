@@ -1077,7 +1077,72 @@ export const getAllUsers = async (): Promise<UserReturnType[]> => {
     }
 };
 
-export const getAllLatestMetricsForUser = async (userId: number): Promise<MetricsForUserType | undefined> => {
+export const getAllLatestMetricsForUser = async (userId: number): Promise<MetricsForUserType | null> => {
+    try {
+        const latestMetrics: MetricsForUserType = {
+            date: getCurrentTimestampISOString(),
+            eatingPhase: undefined,
+            fatPercentage: undefined,
+            height: undefined,
+            latestId: -1,
+            source: USER_METRICS_SOURCES.USER_INPUT,
+            weight: undefined,
+        };
+
+        const queries = [
+            'SELECT "id", "fatPercentage" FROM "UserMetrics" WHERE "userId" = ? AND "fatPercentage" IS NOT NULL AND "fatPercentage" <> \'\' AND ("deletedAt" IS NULL OR "deletedAt" = \'\') ORDER BY "date" DESC LIMIT 1',
+            'SELECT "id", "height" FROM "UserMetrics" WHERE "userId" = ? AND "height" IS NOT NULL AND "height" <> \'\' AND ("deletedAt" IS NULL OR "deletedAt" = \'\') ORDER BY "date" DESC LIMIT 1',
+            'SELECT "id", "weight" FROM "UserMetrics" WHERE "userId" = ? AND "weight" IS NOT NULL AND "weight" <> \'\' AND ("deletedAt" IS NULL OR "deletedAt" = \'\') ORDER BY "date" DESC LIMIT 1',
+            'SELECT "id", "eatingPhase" FROM "UserMetrics" WHERE "userId" = ? AND "eatingPhase" IS NOT NULL AND "eatingPhase" <> \'\' AND ("deletedAt" IS NULL OR "deletedAt" = \'\') ORDER BY "date" DESC LIMIT 1',
+        ];
+
+        const results = await Promise.all(
+            queries.map(
+                (query) => database.getFirstSync<UserMetricsEncryptedReturnType>(query, [userId])
+            )
+        );
+
+        const ids: number[] = [];
+
+        const updateMetric = <K extends keyof MetricsForUserType>(value: MetricsForUserType[K], key: K, id?: number) => {
+            if (value !== undefined && value !== '' && typeof value === 'number' && value > 0) {
+                latestMetrics[key] = value;
+                if (id !== undefined) {
+                    ids.push(id);
+                }
+            }
+        };
+
+        for (const encryptedResult of results) {
+            if (!encryptedResult) {
+                continue;
+            }
+
+            const result = {
+                ...encryptedResult,
+                fatPercentage: encryptedResult.fatPercentage ? parseFloat(await decryptDatabaseValue(encryptedResult.fatPercentage)) : undefined,
+                height: encryptedResult.height ? parseFloat(await decryptDatabaseValue(encryptedResult.height)) : undefined,
+                weight: encryptedResult.weight ? parseFloat(await decryptDatabaseValue(encryptedResult.weight)) : undefined,
+            };
+
+            updateMetric(result.eatingPhase, 'eatingPhase', result.id);
+            updateMetric(result.fatPercentage, 'fatPercentage', result.id);
+            updateMetric(result.height, 'height', result.id);
+            updateMetric(result.weight, 'weight', result.id);
+        }
+
+        latestMetrics.latestId = ids.length ? Math.max(...ids) : -1;
+        if (!ids.length) {
+            return null;
+        }
+
+        return latestMetrics;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const getAllLatestMetricsForUserOld = async (userId: number): Promise<MetricsForUserType | undefined> => {
     try {
         const latestMetrics: MetricsForUserType = {
             date: getCurrentTimestampISOString(),
