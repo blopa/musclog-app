@@ -9,6 +9,22 @@ export const EXERCISE_TYPES = {
 
 export const MUSCLE_GROUPS = {
     ABDOMEN: 'abdomen',
+    ARMS: 'arms',
+    BACK: 'back',
+    CALVES: 'calves',
+    CHEST: 'chest',
+    CORE: 'core',
+    FOREARMS: 'forearms',
+    FULL_BODY: 'full_body',
+    GLUTES: 'glutes',
+    LEGS: 'legs',
+    NECK: 'neck',
+    OBLIQUES: 'obliques',
+    SHOULDERS: 'shoulders',
+} as const;
+
+export const MUSCLES = {
+    ABDOMEN: 'abdomen',
     ABDUCTORS: 'abductors',
     ADDUCTOR_BREVIS: 'adductor_brevis',
     ADDUCTOR_LONGUS: 'adductor_longus',

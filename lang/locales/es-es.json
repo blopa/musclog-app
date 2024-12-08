@@ -273,6 +273,21 @@
     "failed_to_save_fitness_goal": "No se pudo guardar el objetivo de fitness",
     "muscle_groups.": "No definido",
     "muscle_groups": {
+        "abdomen": "Abdomen",
+        "arms": "Brazos",
+        "back": "Espalda",
+        "calves": "Pantorrillas",
+        "chest": "Pecho",
+        "core": "Núcleo",
+        "forearms": "Antebrazos",
+        "full_body": "Cuerpo Completo",
+        "glutes": "Glúteos",
+        "legs": "Piernas",
+        "neck": "Cuello",
+        "obliques": "Oblicuos",
+        "shoulders": "Hombros"
+    },
+    "muscles": {
         "anterior_deltoid": "Deltoides anterior",
         "lateral_deltoid": "Deltoides lateral",
         "posterior_deltoid": "Deltoides posterior",

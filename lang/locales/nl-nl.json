@@ -273,6 +273,21 @@
     "failed_to_save_fitness_goal": "Het opslaan van het fitnessdoel is mislukt",
     "muscle_groups.": "Niet ingesteld",
     "muscle_groups": {
+        "abdomen": "Buik",
+        "arms": "Armen",
+        "back": "Rug",
+        "calves": "Kuiten",
+        "chest": "Borst",
+        "core": "Core",
+        "forearms": "Onderarmen",
+        "full_body": "Hele lichaam",
+        "glutes": "Bilspieren",
+        "legs": "Benen",
+        "neck": "Nek",
+        "obliques": "Schuine buikspieren",
+        "shoulders": "Schouders"
+    },
+    "muscles": {
         "anterior_deltoid": "Voorste deltaspier",
         "lateral_deltoid": "Laterale deltaspier",
         "posterior_deltoid": "Achterste deltaspier",
