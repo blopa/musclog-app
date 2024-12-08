@@ -14,7 +14,7 @@
 		96905EF65AED1B983A6B3ABC /* libPods-MusclogLiftLogRepeat.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58EEBF8E8E6FB1BC6CAF49B5 /* libPods-MusclogLiftLogRepeat.a */; };
 		B18059E884C0ABDD17F3DC3D /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
-		BE64B2CE06014560997188AF /* noop-file.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1635C640041B42D3B76CC144 /* noop-file.swift */; };
+		FF0CD0A408A04EC7B17F29D0 /* noop-file.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5948827BBD48719595986C /* noop-file.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,8 +31,8 @@
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-MusclogLiftLogRepeat/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
-		1635C640041B42D3B76CC144 /* noop-file.swift */ = {isa = PBXFileReference; name = "noop-file.swift"; path = "MusclogLiftLogRepeat/noop-file.swift"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.swift; explicitFileType = undefined; includeInIndex = 0; };
-		6E97490D12A749A099390F6F /* MusclogLiftLogRepeat-Bridging-Header.h */ = {isa = PBXFileReference; name = "MusclogLiftLogRepeat-Bridging-Header.h"; path = "MusclogLiftLogRepeat/MusclogLiftLogRepeat-Bridging-Header.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		DB5948827BBD48719595986C /* noop-file.swift */ = {isa = PBXFileReference; name = "noop-file.swift"; path = "MusclogLiftLogRepeat/noop-file.swift"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.swift; explicitFileType = undefined; includeInIndex = 0; };
+		544555BBA0EC4CADB3D8A7CC /* MusclogLiftLogRepeat-Bridging-Header.h */ = {isa = PBXFileReference; name = "MusclogLiftLogRepeat-Bridging-Header.h"; path = "MusclogLiftLogRepeat/MusclogLiftLogRepeat-Bridging-Header.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,8 +57,8 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				13B07FB71A68108700A75B9A /* main.m */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
-				1635C640041B42D3B76CC144 /* noop-file.swift */,
-				6E97490D12A749A099390F6F /* MusclogLiftLogRepeat-Bridging-Header.h */,
+				DB5948827BBD48719595986C /* noop-file.swift */,
+				544555BBA0EC4CADB3D8A7CC /* MusclogLiftLogRepeat-Bridging-Header.h */,
 			);
 			name = MusclogLiftLogRepeat;
 			sourceTree = "<group>";
@@ -149,7 +149,7 @@
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */,
-				A331F914BE9940369D9D2505 /* Upload Debug Symbols to Sentry */,
+				E7B67025C1E54790AEBB1986 /* Upload Debug Symbols to Sentry */,
 			);
 			buildRules = (
 			);
@@ -199,7 +199,7 @@
 				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
-				34A659D6E9A04169934DFAF7 /* MusclogLiftLogRepeat-Bridging-Header.h in Resources */,
+				88A37ECB25FF4F2AA6AD0FE8 /* MusclogLiftLogRepeat-Bridging-Header.h in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -265,7 +265,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MusclogLiftLogRepeat/Pods-MusclogLiftLogRepeat-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		A331F914BE9940369D9D2505 /* Upload Debug Symbols to Sentry */ = {
+		E7B67025C1E54790AEBB1986 /* Upload Debug Symbols to Sentry */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -289,7 +289,7 @@
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 				B18059E884C0ABDD17F3DC3D /* ExpoModulesProvider.swift in Sources */,
-				BE64B2CE06014560997188AF /* noop-file.swift in Sources */,
+				FF0CD0A408A04EC7B17F29D0 /* noop-file.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

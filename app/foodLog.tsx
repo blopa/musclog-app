@@ -1,11 +1,12 @@
 import type { BarcodeScanningResult } from 'expo-camera';
 
+import ArrowedDatePicker from '@/components/ArrowedDatePicker';
 import FoodItem from '@/components/FoodItem';
 import FoodTrackingModal, { FoodTrackingType } from '@/components/FoodTrackingModal';
+import NutritionProgressBanner from '@/components/NutritionProgressBanner';
 import { Screen } from '@/components/Screen';
 import ThemedCard from '@/components/ThemedCard';
 import ThemedModal from '@/components/ThemedModal';
-import TodaysNutritionProgress from '@/components/TodaysNutritionProgress';
 import { MEAL_TYPE } from '@/constants/nutrition';
 import { AI_SETTINGS_TYPE, GRAMS, IMPERIAL_SYSTEM, OUNCES } from '@/constants/storage';
 import useUnit from '@/hooks/useUnit';
@@ -20,6 +21,7 @@ import {
     getUserNutritionBetweenDates,
 } from '@/utils/database';
 import {
+    formatDate,
     getCurrentTimestampISOString,
     getDaysAgoTimestampISOString,
     getEndOfDayTimestampISOString,
@@ -85,6 +87,14 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const [isNutritionModalVisible, setIsNutritionModalVisible] = useState<boolean>(false);
     const [photoMode, setPhotoMode] = useState<string>('meal');
     const [recentTrackedFoods, setRecentTrackedFoods] = useState<MusclogApiFoodInfoType[]>([]);
+    const [selectedDate, setSelectedDate] = useState(new Date());
+
+    const [consumed, setConsumed] = useState({
+        calories: 0,
+        carbohydrate: 0,
+        fat: 0,
+        protein: 0,
+    });
 
     const { unitSystem } = useUnit();
     const isImperial = unitSystem === IMPERIAL_SYSTEM;
@@ -106,11 +116,12 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         { icon: '🍎', name: t('snacks') },
     ], [t]);
 
-    const loadConsumed = useCallback(async () => {
-        const startDate = new Date();
+    const loadConsumed = useCallback(async (date?: Date) => {
+        const currentDate = date || selectedDate;
+        const startDate = new Date(currentDate);
         startDate.setHours(0, 0, 0, 0);
 
-        const endDate = new Date();
+        const endDate = new Date(currentDate);
         endDate.setHours(23, 59, 59, 999);
 
         try {
@@ -120,10 +131,23 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
             );
 
             setConsumedFoods(consumedData);
+
+            const consumed = consumedData.reduce(
+                (acc, item) => {
+                    acc.calories += item.calories || 0;
+                    acc.protein += item.protein || 0;
+                    acc.carbohydrate += item.carbohydrate || 0;
+                    acc.fat += item.fat || 0;
+                    return acc;
+                },
+                { calories: 0, carbohydrate: 0, fat: 0, protein: 0 }
+            );
+
+            setConsumed(consumed);
         } catch (error) {
             console.error('Error loading consumed data:', error);
         }
-    }, []);
+    }, [selectedDate]);
 
     const handleSyncHealthConnect = useCallback(async () => {
         setIsLoading(true);
@@ -160,7 +184,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
     const resetScreenData = useCallback(() => {
         setSearchQuery('');
-        setIndex(0);
+        // Removed `setIndex(0)` so that the tab does not reset each time.
         setConsumedFoods([]);
         setAllowEditName(false);
     }, []);
@@ -181,7 +205,14 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         return (
             <Screen style={styles.container}>
                 <ScrollView>
-                    <TodaysNutritionProgress />
+                    <NutritionProgressBanner
+                        consumed={consumed}
+                        date={
+                            getEndOfDayTimestampISOString(selectedDate.toISOString()) === getEndOfDayTimestampISOString(getCurrentTimestampISOString())
+                                ? undefined
+                                : formatDate(selectedDate.toISOString(), 'dd/MM/yyyy')
+                        }
+                    />
                     {Platform.OS === 'web' ? (
                         <View style={{ height: 40 }} />
                     ) : null}
@@ -206,7 +237,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 </ScrollView>
             </Screen>
         );
-    }, [recentTrackedFoods, styles.container, styles.listContent]);
+    }, [consumed, recentTrackedFoods, selectedDate, styles.container, styles.listContent]);
 
     const handleEditNutrition = (userNutrition: UserNutritionDecryptedReturnType) => {
         setSelectedFood({
@@ -387,6 +418,11 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         setShowBarcodeCamera(true);
     }, [permission?.granted, requestPermission, t]);
 
+    const handleChangeDate = useCallback((date: Date) => {
+        setSelectedDate(date);
+        loadConsumed(date);
+    }, [loadConsumed]);
+
     // Function to request camera permissions and show the photo camera
     const openPhotoCamera = useCallback(async () => {
         if (!permission?.granted) {
@@ -406,7 +442,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         input.style.display = 'none';
 
         input.onchange = async (event) => {
-            // @ts-ignore it's fine, files exit.
+            // @ts-ignore it's fine, files exist.
             const file = event.target?.files?.[0];
             if (file) {
                 try {
@@ -628,6 +664,10 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                         </>
                     )}
                 </View>
+                <ArrowedDatePicker
+                    initialDate={selectedDate}
+                    onChange={handleChangeDate}
+                />
                 <TabView
                     initialLayout={{ width: Dimensions.get('window').width }}
                     navigationState={{ index, routes }}
@@ -668,6 +708,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
             ) : null}
             <FoodTrackingModal
                 allowEditName={allowEditName}
+                date={selectedDate.toISOString()}
                 food={selectedFood}
                 isLoading={isLoading}
                 onClose={handleCloseTrackingModal}
@@ -687,12 +728,6 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
 };
 
 const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
-    addGoalButton: {
-        backgroundColor: colors.primary,
-        borderRadius: 8,
-        marginTop: 16,
-        paddingVertical: 12,
-    },
     appbarHeader: {
         backgroundColor: colors.primary,
         justifyContent: 'center',
@@ -783,9 +818,6 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         paddingBottom: 16,
         paddingHorizontal: 16,
     },
-    macroContainer: {
-        marginBottom: 12,
-    },
     mealContainer: {
         borderColor: colors.primary,
         borderRadius: 8,
@@ -833,16 +865,6 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     photoCloseText: {
         color: colors.onPrimary,
         fontSize: 16,
-    },
-    progressBar: {
-        backgroundColor: colors.primary,
-        height: '100%',
-    },
-    progressBarContainer: {
-        backgroundColor: colors.surfaceVariant,
-        borderRadius: 4,
-        height: 10,
-        overflow: 'hidden',
     },
     scannerFocusArea: {
         backgroundColor: 'transparent',

@@ -1,4 +1,4 @@
-import AnimatedSearchBar from '@/components/AnimatedSearch';
+import AnimatedSearchBar from '@/components/AnimatedSearchBar';
 import CompletionModal from '@/components/CompletionModal';
 import FABWrapper from '@/components/FABWrapper';
 import { Screen } from '@/components/Screen';

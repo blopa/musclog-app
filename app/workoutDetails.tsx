@@ -27,6 +27,7 @@ import {
 import { addTransparency, CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { calculatePastWorkoutsWeeklyAverages } from '@/utils/data';
 import {
+    getClosestWeightUserMetric,
     getExerciseById,
     getRecentWorkoutsByWorkoutId,
     getSetsByWorkoutId,
@@ -261,7 +262,8 @@ const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
                 if (selectedChartData === WHOLE_WORKOUT) {
                     workoutVolume = parseFloat(recentWorkout.workoutVolume || '0')
                         || (await calculateWorkoutVolume(
-                            exerciseData.filter((ex) => exercisesMap.has(ex.exerciseId))
+                            exerciseData.filter((ex) => exercisesMap.has(ex.exerciseId)),
+                            recentWorkout.bodyWeight || await getClosestWeightUserMetric(1, recentWorkout?.date) || 0
                         ))
                         || 0;
                 } else {
@@ -271,7 +273,10 @@ const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
                     );
 
                     if (selectedExerciseData) {
-                        workoutVolume = await calculateWorkoutVolume([selectedExerciseData], 0);
+                        workoutVolume = await calculateWorkoutVolume(
+                            [selectedExerciseData],
+                            recentWorkout.bodyWeight || await getClosestWeightUserMetric(1, recentWorkout?.date) || 0
+                        );
                     }
                 }
 

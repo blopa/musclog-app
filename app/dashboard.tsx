@@ -1,17 +1,17 @@
 import FoodTrackingModal, { FoodTrackingType } from '@/components/FoodTrackingModal';
+import NutritionProgressBanner from '@/components/NutritionProgressBanner';
 import { Screen } from '@/components/Screen';
 import SearchFoodModal from '@/components/SearchFoodModal';
 import StatusBadge from '@/components/StatusBadge';
 import ThemedCard from '@/components/ThemedCard';
 import ThemedModal from '@/components/ThemedModal';
-import TodaysNutritionProgress from '@/components/TodaysNutritionProgress';
 import WorkoutModal from '@/components/WorkoutModal';
 import { CURRENT_WORKOUT_ID, SCHEDULED_STATUS } from '@/constants/storage';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
-import { getRecentWorkoutsPaginated, getRecurringWorkouts } from '@/utils/database';
+import { getRecentWorkoutsPaginated, getRecurringWorkouts, getUserNutritionBetweenDates } from '@/utils/database';
 import { formatDate } from '@/utils/date';
 import { MusclogApiFoodInfoType, WorkoutEventReturnType, WorkoutReturnType } from '@/utils/types';
-import { resetWorkoutStorageData } from '@/utils/workout';
+import { getSetsDoneThisWeekText, resetWorkoutStorageData } from '@/utils/workout';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationProp } from '@react-navigation/native';
 import { useFocusEffect } from 'expo-router';
@@ -33,6 +33,8 @@ export default function Dashboard({ navigation }: {
     const [recentWorkouts, setRecentWorkouts] = useState<WorkoutEventReturnType[]>([]);
     const [upcomingWorkouts, setUpcomingWorkouts] = useState<WorkoutReturnType[]>([]);
     const [modalVisible, setModalVisible] = useState(false);
+
+    const [setsCompletedThisWeekText, setSetsCompletedThisWeekText] = useState<null | string>(null);
     const [confirmationModalVisible, setConfirmationModalVisible] = useState(false);
     const [selectedUpcomingEvent, setSelectedUpcomingEvent] = useState<null | WorkoutReturnType>(null);
     const [selectedFood, setSelectedFood] = useState<MusclogApiFoodInfoType | null>(null);
@@ -49,6 +51,43 @@ export default function Dashboard({ navigation }: {
         }
     }, []);
 
+    const [consumed, setConsumed] = useState({
+        calories: 0,
+        carbohydrate: 0,
+        fat: 0,
+        protein: 0,
+    });
+
+    const loadConsumed = useCallback(async () => {
+        const startDate = new Date();
+        startDate.setHours(0, 0, 0, 0);
+
+        const endDate = new Date();
+        endDate.setHours(23, 59, 59, 999);
+
+        try {
+            const consumedData = await getUserNutritionBetweenDates(
+                startDate.toISOString(),
+                endDate.toISOString()
+            );
+
+            const consumed = consumedData.reduce(
+                (acc, item) => {
+                    acc.calories += item.calories || 0;
+                    acc.protein += item.protein || 0;
+                    acc.carbohydrate += item.carbohydrate || 0;
+                    acc.fat += item.fat || 0;
+                    return acc;
+                },
+                { calories: 0, carbohydrate: 0, fat: 0, protein: 0 }
+            );
+
+            setConsumed(consumed);
+        } catch (error) {
+            console.error('Error loading consumed data:', error);
+        }
+    }, []);
+
     const resetScreenData = useCallback(() => {
         setUpcomingWorkouts([]);
         setModalVisible(false);
@@ -61,11 +100,12 @@ export default function Dashboard({ navigation }: {
     useFocusEffect(
         useCallback(() => {
             fetchWorkoutData();
+            loadConsumed();
 
             return () => {
                 resetScreenData();
             };
-        }, [fetchWorkoutData, resetScreenData])
+        }, [loadConsumed, fetchWorkoutData, resetScreenData])
     );
 
     const handleViewAllRecentWorkouts = useCallback(() => {
@@ -136,6 +176,17 @@ export default function Dashboard({ navigation }: {
         }, [])
     );
 
+    const generateSetsDoneThisWeekText = useCallback(async () => {
+        const setsDoneThisWeekText = await getSetsDoneThisWeekText();
+        setSetsCompletedThisWeekText(setsDoneThisWeekText);
+    }, []);
+
+    useFocusEffect(
+        useCallback(() => {
+            generateSetsDoneThisWeekText();
+        }, [generateSetsDoneThisWeekText])
+    );
+
     const handleCloseFoodSearchModal = useCallback(() => {
         setFoodSearchModalVisible(false);
     }, []);
@@ -167,7 +218,7 @@ export default function Dashboard({ navigation }: {
                 <View style={styles.section}>
                     <Text style={styles.header}>{t('track_your_fitness_journey')}</Text>
                     <Text style={styles.description}>
-                        {t('easily_log_your_workouts')}
+                        {t(setsCompletedThisWeekText ?? 'easily_log_your_workouts')}
                     </Text>
                     <Button
                         mode="contained"
@@ -184,7 +235,10 @@ export default function Dashboard({ navigation }: {
                         {t('track_food_intake')}
                     </Button>
                 </View>
-                <TodaysNutritionProgress />
+                <NutritionProgressBanner
+                    consumed={consumed}
+                    // date={formatDate(new Date().toISOString(), 'dd/MM/yyyy')}
+                />
                 <View style={styles.section}>
                     <View style={styles.sectionHeader}>
                         <Text style={styles.sectionTitle}>{t('upcoming_workouts')}</Text>

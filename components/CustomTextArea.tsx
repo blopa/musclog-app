@@ -1,30 +1,34 @@
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import React from 'react';
-import { Platform, StyleSheet, TextInput, View } from 'react-native';
+import { Platform, StyleSheet, TextInput, TextStyle, View, ViewStyle } from 'react-native';
 import { Text, useTheme } from 'react-native-paper';
 
 interface CustomTextAreaProps {
+    inputStyle?: TextStyle;
     keyboardType?: 'default' | 'email-address' | 'numeric' | 'phone-pad';
     label?: string;
     numberOfLines?: number;
     onChangeText: (text: string) => void;
     placeholder: string;
     value: string;
+    wrapperStyle?: ViewStyle;
 }
 
 const CustomTextArea: React.FC<CustomTextAreaProps> = ({
+    inputStyle,
     keyboardType = 'default',
     label,
     numberOfLines = 4,
     onChangeText,
     placeholder,
     value,
+    wrapperStyle,
 }) => {
     const { colors, dark } = useTheme<CustomThemeType>();
-    const styles = makeStyles(colors);
+    const styles = makeStyles(colors, numberOfLines);
 
     return (
-        <View style={styles.formGroup}>
+        <View style={[styles.formGroup, wrapperStyle]}>
             {label ? (
                 <Text style={styles.label}>{label}</Text>
             ) : null}
@@ -35,14 +39,14 @@ const CustomTextArea: React.FC<CustomTextAreaProps> = ({
                 onChangeText={onChangeText}
                 placeholder={placeholder}
                 placeholderTextColor={dark ? '#BDBDBD' : '#95a5a6'}
-                style={styles.textarea}
+                style={[styles.textarea, inputStyle]}
                 value={value}
             />
         </View>
     );
 };
 
-const makeStyles = (colors: CustomThemeColorsType) => StyleSheet.create({
+const makeStyles = (colors: CustomThemeColorsType, numberOfLines: number) => StyleSheet.create({
     formGroup: {
         marginBottom: 16,
         width: '100%',
@@ -58,8 +62,8 @@ const makeStyles = (colors: CustomThemeColorsType) => StyleSheet.create({
         borderRadius: 8,
         borderWidth: 1,
         color: colors.onSurface,
-        flex: 1,
-        marginRight: 8,
+        // height: (numberOfLines * 40) + 15,
+        height: 100,
         paddingLeft: 10,
         width: '100%',
         ...Platform.OS === 'web' && {

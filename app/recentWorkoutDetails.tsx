@@ -16,7 +16,12 @@ import { useSnackbar } from '@/storage/SnackbarProvider';
 import { useUnreadMessages } from '@/storage/UnreadMessagesProvider';
 import { getAiApiVendor, getRecentWorkoutInsights } from '@/utils/ai';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
-import { getExerciseById, getRecentWorkoutById, updateWorkoutEvent } from '@/utils/database';
+import {
+    getClosestWeightUserMetric,
+    getExerciseById,
+    getRecentWorkoutById,
+    updateWorkoutEvent,
+} from '@/utils/database';
 import { formatDate } from '@/utils/date';
 import { exportRecentWorkout } from '@/utils/file';
 import { safeToFixed } from '@/utils/string';
@@ -113,11 +118,11 @@ const RecentWorkoutDetails: React.FC<RecentWorkoutDetailsProps> = ({ navigation 
     const getWorkoutVolume = useCallback(async () => {
         const totalVolume = await calculateWorkoutVolume(
             exerciseVolumeData,
-            recentWorkout?.bodyWeight || 0
+            recentWorkout?.bodyWeight || await getClosestWeightUserMetric(1, recentWorkout?.date) || 0
         );
 
         setWorkoutVolume(totalVolume);
-    }, [exerciseVolumeData, recentWorkout?.bodyWeight]);
+    }, [exerciseVolumeData, recentWorkout?.bodyWeight, recentWorkout?.date]);
 
     useFocusEffect(
         useCallback(() => {

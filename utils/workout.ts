@@ -15,13 +15,18 @@ import {
     addWorkoutEvent,
     getAllWorkouts,
     getExerciseById,
-    getLatestUserMetrics,
+    getRecentWorkoutsBetweenDates,
     getSetsByWorkoutId,
     getUpcomingWorkoutsByWorkoutId,
     getUser,
     updateSet,
 } from '@/utils/database';
-import { formatDate, getNextDayOfWeekDate } from '@/utils/date';
+import {
+    formatDate,
+    getCurrentTimestampISOString,
+    getDaysAgoTimestampISOString,
+    getNextDayOfWeekDate,
+} from '@/utils/date';
 import {
     ExerciseVolumeType,
     SetReturnType,
@@ -99,8 +104,7 @@ export async function calculateWorkoutVolume(
             let addedWeight = 0;
 
             if (exercise?.type === EXERCISE_TYPES.BODY_WEIGHT) {
-                const userMetric = await getLatestUserMetrics();
-                addedWeight = bodyWeight || userMetric?.weight || 0;
+                addedWeight = bodyWeight || 0;
             }
 
             for (const set of sets) {
@@ -188,6 +192,10 @@ export const generateWorkoutSummary = async (
         console.error('Error generating workout summary:', error);
         throw error;
     }
+};
+
+type SetsDoneThisWeek = {
+    [exerciseId: number]: number;
 };
 
 export async function calculateNextWorkoutRepsAndSets(
@@ -330,3 +338,67 @@ async function getPastSetsForExercise(
         throw error;
     }
 }
+
+export const getSetsDoneThisWeek = async () => {
+    const recentWorkouts = await getRecentWorkoutsBetweenDates(
+        getDaysAgoTimestampISOString(7),
+        getCurrentTimestampISOString()
+    );
+
+    const exerciseSets = recentWorkouts.reduce<ExerciseVolumeType[]>(
+        (acc, { exerciseData }) => ([...acc, ...JSON.parse(exerciseData ?? '{}')]), []
+    ).reduce<SetsDoneThisWeek>((acc, curr) => {
+        return { ...acc, [curr.exerciseId]: (acc[curr.exerciseId] || 0) + curr.sets.length };
+    }, {});
+
+    const result = {} as { [muscleGroup: string]: number };
+    for (const [exerciseId, setsDone] of Object.entries(exerciseSets)) {
+        const exercise = await getExerciseById(Number(exerciseId));
+        const muscleGroup = exercise?.muscleGroup || 'unset';
+
+        result[muscleGroup] = (result[muscleGroup] || 0) + setsDone;
+    }
+
+    return result;
+};
+
+export const getSetsDoneThisWeekText = async () => {
+    const setsDoneThisWeek = await getSetsDoneThisWeek();
+    const entries = Object.entries(setsDoneThisWeek);
+
+    if (entries.length === 0) {
+        return null;
+    }
+
+    // Handle the case where there's only one muscle group
+    if (entries.length === 1) {
+        const [muscleGroup, setsDone] = entries[0];
+        return i18n.t('you_have_completed_sets', {
+            setsText: i18n.t('sets_of_muscle_group', {
+                muscleGroup: i18n.t(`muscle_groups.${muscleGroup}`).toLowerCase(),
+                sets: setsDone,
+            }),
+        });
+    }
+
+    // Extract all except the last item for regular formatting
+    const text = entries.slice(0, entries.length - 1)
+        .map(([muscleGroup, setsDone]) => i18n.t('sets_of_muscle_group', {
+            muscleGroup: i18n.t(`muscle_groups.${muscleGroup}`).toLowerCase(),
+            sets: setsDone,
+        }));
+
+    // Extract the last item and apply "and_text" to it
+    const [lastMuscleGroup, lastSetsDone] = entries.at(-1) as [string, number];
+    const lastText = i18n.t('and_text', {
+        text: i18n.t('sets_of_muscle_group', {
+            muscleGroup: i18n.t(`muscle_groups.${lastMuscleGroup}`).toLowerCase(),
+            sets: lastSetsDone,
+        }),
+    });
+
+    return i18n.t('you_have_completed_sets', {
+        setsText: `${text.join(', ')}${lastText}`,
+    });
+};
+

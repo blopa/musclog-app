@@ -1077,10 +1077,106 @@ export const getAllUsers = async (): Promise<UserReturnType[]> => {
     }
 };
 
-export const getAllLatestMetricsForUser = async (userId: number): Promise<MetricsForUserType | undefined> => {
+export const getClosestWeightUserMetric = async (
+    // TODO: remove this userId
+    userId: number = 1,
+    targetDate: string = getCurrentTimestampISOString()
+): Promise<MetricsForUserType['weight'] | undefined> => {
+    const query = `
+        SELECT "id", "weight" FROM "UserMetrics" 
+        WHERE "userId" = ? 
+        AND "weight" IS NOT NULL 
+        AND "weight" <> '' 
+        AND ("deletedAt" IS NULL OR "deletedAt" = '')
+        ORDER BY ABS((julianday("date") - julianday(?)) * 86400) ASC LIMIT 1
+    `;
+
+    const result = await database.getFirstSync<UserMetricsEncryptedReturnType>(query, [userId, targetDate]);
+
+    if (!result || !result.weight) {
+        return undefined;
+    }
+
+    return parseFloat(await decryptDatabaseValue(result.weight));
+};
+
+export const getClosestHeightUserMetric = async (
+    // TODO: remove this userId
+    userId: number = 1,
+    targetDate: string = getCurrentTimestampISOString()
+): Promise<MetricsForUserType['height'] | undefined> => {
+    const query = `
+        SELECT "id", "height" FROM "UserMetrics" 
+        WHERE "userId" = ? 
+        AND "height" IS NOT NULL 
+        AND "height" <> '' 
+        AND ("deletedAt" IS NULL OR "deletedAt" = '') 
+        ORDER BY ABS((julianday("date") - julianday(?)) * 86400) ASC LIMIT 1
+    `;
+
+    const result = await database.getFirstSync<UserMetricsEncryptedReturnType>(query, [userId, targetDate]);
+
+    if (!result || !result.height) {
+        return undefined;
+    }
+
+    return parseFloat(await decryptDatabaseValue(result.height));
+};
+
+export const getClosestFatPercentageUserMetric = async (
+    // TODO: remove this userId
+    userId: number = 1,
+    targetDate: string = getCurrentTimestampISOString()
+): Promise<MetricsForUserType['fatPercentage'] | undefined> => {
+    const query = `
+        SELECT "id", "fatPercentage" FROM "UserMetrics" 
+        WHERE "userId" = ? 
+        AND "fatPercentage" IS NOT NULL 
+        AND "fatPercentage" <> '' 
+        AND ("deletedAt" IS NULL OR "deletedAt" = '') 
+        ORDER BY ABS((julianday("date") - julianday(?)) * 86400) ASC LIMIT 1
+    `;
+
+    const result = await database.getFirstSync<UserMetricsEncryptedReturnType>(query, [userId, targetDate]);
+
+    if (!result || !result.fatPercentage) {
+        return undefined;
+    }
+
+    return parseFloat(await decryptDatabaseValue(result.fatPercentage));
+};
+
+export const getClosestEatingPhaseUserMetric = async (
+    // TODO: remove this userId
+    userId: number = 1,
+    targetDate: string = getCurrentTimestampISOString()
+): Promise<MetricsForUserType['eatingPhase'] | undefined> => {
+    const query = `
+        SELECT "id", "eatingPhase" FROM "UserMetrics" 
+        WHERE "userId" = ? 
+        AND "eatingPhase" IS NOT NULL 
+        AND "eatingPhase" <> '' 
+        AND ("deletedAt" IS NULL OR "deletedAt" = '') 
+        ORDER BY ABS((julianday("date") - julianday(?)) * 86400) ASC LIMIT 1
+    `;
+
+    const result = await database.getFirstSync<UserMetricsEncryptedReturnType>(query, [userId, targetDate]);
+
+    if (!result) {
+        return undefined;
+    }
+
+    return result.eatingPhase;
+};
+
+export const getAllLatestMetricsForUser = async (
+    // TODO: remove this userId
+    userId: number = 1,
+    targetDate: string = getCurrentTimestampISOString()
+): Promise<MetricsForUserType | null> => {
     try {
-        const latestMetrics: MetricsForUserType = {
-            date: getCurrentTimestampISOString(),
+        const closestMetrics: MetricsForUserType = {
+            date: targetDate,
             eatingPhase: undefined,
             fatPercentage: undefined,
             height: undefined,
@@ -1089,78 +1185,37 @@ export const getAllLatestMetricsForUser = async (userId: number): Promise<Metric
             weight: undefined,
         };
 
-        const queries = [
-            'SELECT "id", "fatPercentage" FROM "UserMetrics" WHERE "userId" = ? AND "fatPercentage" IS NOT NULL AND "fatPercentage" <> \'\' AND ("deletedAt" IS NULL OR "deletedAt" = \'\') ORDER BY "date" DESC LIMIT 1',
-            'SELECT "id", "height" FROM "UserMetrics" WHERE "userId" = ? AND "height" IS NOT NULL AND "height" <> \'\' AND ("deletedAt" IS NULL OR "deletedAt" = \'\') ORDER BY "date" DESC LIMIT 1',
-            'SELECT "id", "weight" FROM "UserMetrics" WHERE "userId" = ? AND "weight" IS NOT NULL AND "weight" <> \'\' AND ("deletedAt" IS NULL OR "deletedAt" = \'\') ORDER BY "date" DESC LIMIT 1',
-            'SELECT "id", "eatingPhase" FROM "UserMetrics" WHERE "userId" = ? AND "eatingPhase" IS NOT NULL AND "eatingPhase" <> \'\' AND ("deletedAt" IS NULL OR "deletedAt" = \'\') ORDER BY "date" DESC LIMIT 1',
-        ];
+        // Call each individual function to fetch each metric
+        const [weight, height, fatPercentage, eatingPhase] = await Promise.all([
+            getClosestWeightUserMetric(userId, targetDate),
+            getClosestHeightUserMetric(userId, targetDate),
+            getClosestFatPercentageUserMetric(userId, targetDate),
+            getClosestEatingPhaseUserMetric(userId, targetDate),
+        ]);
 
-        const ids: number[] = [];
-        for (const query of queries) {
-            const encryptedResult = database.getFirstSync<UserMetricsEncryptedReturnType>(query, [userId]);
-            if (encryptedResult) {
-                const result = {
-                    ...encryptedResult,
-                    fatPercentage: encryptedResult.fatPercentage ? parseFloat(await decryptDatabaseValue(encryptedResult.fatPercentage)) : undefined,
-                    height: encryptedResult.height ? parseFloat(await decryptDatabaseValue(encryptedResult.height)) : undefined,
-                    weight: encryptedResult.weight ? parseFloat(await decryptDatabaseValue(encryptedResult.weight)) : undefined,
-                } as UserMetricsDecryptedReturnType;
-
-                if (result.eatingPhase !== undefined && result.eatingPhase !== '') {
-                    latestMetrics.eatingPhase = result.eatingPhase;
-                    ids.push(result.id!);
-                }
-
-                if (result.fatPercentage !== undefined && result.fatPercentage > 0) {
-                    latestMetrics.fatPercentage = result.fatPercentage;
-                    ids.push(result.id!);
-                }
-
-                if (result.height !== undefined && result.height > 0) {
-                    latestMetrics.height = result.height;
-                    ids.push(result.id!);
-                }
-
-                if (result.weight !== undefined && result.weight > 0) {
-                    latestMetrics.weight = result.weight;
-                    ids.push(result.id!);
-                }
-            }
+        if (weight !== undefined) {
+            closestMetrics.weight = weight;
         }
 
-        latestMetrics.latestId = Math.max(...ids);
-        if (latestMetrics.latestId === -1) {
-            return undefined;
+        if (height !== undefined) {
+            closestMetrics.height = height;
         }
 
-        return latestMetrics;
-    } catch (error) {
-        throw error;
-    }
-};
+        if (fatPercentage !== undefined) {
+            closestMetrics.fatPercentage = fatPercentage;
+        }
 
-export const getAllUserMetricsByUserId = async (userId: number): Promise<UserMetricsDecryptedReturnType[]> => {
-    try {
-        const results = database.getAllSync<UserMetricsEncryptedReturnType>(
-            'SELECT * FROM "UserMetrics" WHERE "userId" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')',
-            [userId]
-        );
+        if (eatingPhase !== undefined) {
+            closestMetrics.eatingPhase = eatingPhase;
+        }
 
-        return (await Promise.all(results.map(async (row) => {
-            try {
-                return {
-                    ...row,
-                    fatPercentage: parseFloat(await decryptDatabaseValue(row.fatPercentage)) || 0,
-                    height: parseFloat(await decryptDatabaseValue(row.height)) || 0,
-                    weight: parseFloat(await decryptDatabaseValue(row.weight)) || 0,
-                } as unknown as UserMetricsDecryptedReturnType;
-            } catch (decryptionError) {
-                await deleteUserMetrics(row.id!);
-                console.error('Error decrypting data for row:', row, decryptionError);
-                return undefined;
-            }
-        }))).filter((row) => row !== undefined) as UserMetricsDecryptedReturnType[];
+        // If none of the metrics were found, return null
+        const hasMetrics = [weight, height, fatPercentage, eatingPhase].some((metric) => metric !== undefined);
+        if (!hasMetrics) {
+            return null;
+        }
+
+        return closestMetrics;
     } catch (error) {
         throw error;
     }
