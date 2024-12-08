@@ -1,7 +1,7 @@
 import { IMPERIAL_SYSTEM, KILOGRAMS } from '@/constants/storage';
 import useUnit from '@/hooks/useUnit';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
-import { getRecentWorkoutById } from '@/utils/database';
+import { getClosestWeightUserMetric, getRecentWorkoutById } from '@/utils/database';
 import { formatDate } from '@/utils/date';
 import { WorkoutEventReturnType } from '@/utils/types';
 import { getDisplayFormattedWeight } from '@/utils/unit';
@@ -51,14 +51,14 @@ const RecentWorkoutMessageCard = ({ recentWorkoutId }: { recentWorkoutId: number
         const getWorkoutVolume = async () => {
             const totalVolume = await calculateWorkoutVolume(
                 exerciseData,
-                recentWorkout?.bodyWeight || 0
+                recentWorkout?.bodyWeight || await getClosestWeightUserMetric(1, recentWorkout?.date) || 0
             );
 
             setWorkoutVolume(totalVolume);
         };
 
         getWorkoutVolume();
-    }, [exerciseData, recentWorkout?.bodyWeight]);
+    }, [exerciseData, recentWorkout?.bodyWeight, recentWorkout?.date]);
 
     return (
         <Card style={styles.card}>

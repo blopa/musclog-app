@@ -13,7 +13,6 @@ import {
 import i18n from '@/lang/lang';
 import {
     addWorkoutEvent,
-    getAllLatestMetricsForUser,
     getAllWorkouts,
     getExerciseById,
     getRecentWorkoutsBetweenDates,
@@ -105,9 +104,7 @@ export async function calculateWorkoutVolume(
             let addedWeight = 0;
 
             if (exercise?.type === EXERCISE_TYPES.BODY_WEIGHT) {
-                // TODO: get the latest body weight before/on the date of the workout and remove hardcoded number
-                const userMetric = await getAllLatestMetricsForUser(1);
-                addedWeight = bodyWeight || userMetric?.weight || 0;
+                addedWeight = bodyWeight || 0;
             }
 
             for (const set of sets) {

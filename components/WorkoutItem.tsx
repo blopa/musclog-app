@@ -1,5 +1,7 @@
 import useUnit from '@/hooks/useUnit';
 import { CustomThemeType } from '@/utils/colors';
+import { getClosestWeightUserMetric } from '@/utils/database';
+import { getCurrentTimestampISOString } from '@/utils/date';
 import {
     ExerciseWithSetsType,
     WorkoutReturnType,
@@ -58,13 +60,14 @@ const WorkoutItem: React.FC<WorkoutDetailsProps> = ({
     useEffect(() => {
         const getWorkoutVolume = async () => {
             if (details?.exercisesWithSets) {
-                // TODO: is it ok to not pass the body weight here?
                 const totalVolume = await calculateWorkoutVolume(
                     details.exercisesWithSets.map((exercise) => ({
                         exerciseId: exercise.id,
                         sets: exercise.sets,
-                    }))
+                    })),
+                    await getClosestWeightUserMetric(1, getCurrentTimestampISOString()) || 0
                 );
+
                 setWorkoutVolume(totalVolume);
             }
         };

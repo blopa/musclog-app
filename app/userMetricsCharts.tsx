@@ -39,6 +39,7 @@ import {
     calculateUserMetricsNutritionWeeklyAverages,
 } from '@/utils/data';
 import {
+    getClosestWeightUserMetric,
     getRecentWorkoutsBetweenDates,
     getRecentWorkoutsFromDate,
     getUser,
@@ -556,7 +557,7 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
 
                 const workoutVolume = parseFloat(workout.workoutVolume || '0') || await calculateWorkoutVolume(
                     exerciseData,
-                    workout.bodyWeight || 0
+                    workout.bodyWeight || await getClosestWeightUserMetric(1, workout?.date) || 0
                 ) || 0;
 
                 recentWorkoutsChartData.push({
