@@ -781,18 +781,116 @@ export const getAllUsers = async (): Promise<UserReturnType[]> => {
         .toArray();
 };
 
-export const getAllLatestMetricsForUser = async (userId: number): Promise<MetricsForUserType | undefined> => {
+export const getClosestWeightUserMetric = async (
+    // TODO: remove this userId
+    userId: number = 1,
+    targetDate: string = getCurrentTimestampISOString()
+): Promise<MetricsForUserType['weight'] | undefined> => {
     const metrics = await database.userMetrics
-        .orderBy('date')
-        .filter((userMetrics) => (!userMetrics.deletedAt) && userMetrics.userId === userId)
+        .filter((metric) => !metric.deletedAt && metric.userId === userId && metric.weight !== undefined)
         .toArray();
 
     if (metrics.length === 0) {
         return undefined;
     }
 
-    const latestMetrics: MetricsForUserType = {
-        date: getCurrentTimestampISOString(),
+    const closestMetric = metrics.reduce((closest, current) => {
+        const closestDiff = Math.abs(new Date(closest.date).getTime() - new Date(targetDate).getTime());
+        const currentDiff = Math.abs(new Date(current.date).getTime() - new Date(targetDate).getTime());
+        return currentDiff < closestDiff ? current : closest;
+    });
+
+    if (closestMetric.weight !== undefined) {
+        const weight = parseFloat(String(closestMetric.weight));
+        return !isNaN(weight) ? weight : undefined;
+    }
+
+    return undefined;
+};
+
+export const getClosestHeightUserMetric = async (
+    // TODO: remove this userId
+    userId: number = 1,
+    targetDate: string = getCurrentTimestampISOString()
+): Promise<MetricsForUserType['height'] | undefined> => {
+    const metrics = await database.userMetrics
+        .filter((metric) => !metric.deletedAt && metric.userId === userId && metric.height !== undefined)
+        .toArray();
+
+    if (metrics.length === 0) {
+        return undefined;
+    }
+
+    const closestMetric = metrics.reduce((closest, current) => {
+        const closestDiff = Math.abs(new Date(closest.date).getTime() - new Date(targetDate).getTime());
+        const currentDiff = Math.abs(new Date(current.date).getTime() - new Date(targetDate).getTime());
+        return currentDiff < closestDiff ? current : closest;
+    });
+
+    if (closestMetric.height !== undefined) {
+        const height = parseFloat(String(closestMetric.height));
+        return !isNaN(height) ? height : undefined;
+    }
+
+    return undefined;
+};
+
+export const getClosestFatPercentageUserMetric = async (
+    // TODO: remove this userId
+    userId: number = 1,
+    targetDate: string = getCurrentTimestampISOString()
+): Promise<MetricsForUserType['fatPercentage'] | undefined> => {
+    const metrics = await database.userMetrics
+        .filter((metric) => !metric.deletedAt && metric.userId === userId && metric.fatPercentage !== undefined)
+        .toArray();
+
+    if (metrics.length === 0) {
+        return undefined;
+    }
+
+    const closestMetric = metrics.reduce((closest, current) => {
+        const closestDiff = Math.abs(new Date(closest.date).getTime() - new Date(targetDate).getTime());
+        const currentDiff = Math.abs(new Date(current.date).getTime() - new Date(targetDate).getTime());
+        return currentDiff < closestDiff ? current : closest;
+    });
+
+    if (closestMetric.fatPercentage !== undefined) {
+        const fatPercentage = parseFloat(String(closestMetric.fatPercentage));
+        return !isNaN(fatPercentage) ? fatPercentage : undefined;
+    }
+
+    return undefined;
+};
+
+export const getClosestEatingPhaseUserMetric = async (
+    // TODO: remove this userId
+    userId: number = 1,
+    targetDate: string = getCurrentTimestampISOString()
+): Promise<MetricsForUserType['eatingPhase'] | undefined> => {
+    const metrics = await database.userMetrics
+        .filter((metric) => !metric.deletedAt && metric.userId === userId && metric.eatingPhase !== undefined)
+        .toArray();
+
+    if (metrics.length === 0) {
+        return undefined;
+    }
+
+    const closestMetric = metrics.reduce((closest, current) => {
+        const closestDiff = Math.abs(new Date(closest.date).getTime() - new Date(targetDate).getTime());
+        const currentDiff = Math.abs(new Date(current.date).getTime() - new Date(targetDate).getTime());
+        return currentDiff < closestDiff ? current : closest;
+    });
+
+    return closestMetric.eatingPhase;
+};
+
+export const getAllLatestMetricsForUser = async (
+    // TODO: remove this userId
+    userId: number = 1,
+    targetDate: string = getCurrentTimestampISOString()
+): Promise<MetricsForUserType | undefined> => {
+    const closestMetrics: MetricsForUserType = {
+        date: targetDate,
         eatingPhase: undefined,
         fatPercentage: undefined,
         height: undefined,
@@ -801,50 +899,35 @@ export const getAllLatestMetricsForUser = async (userId: number): Promise<Metric
         weight: undefined,
     };
 
-    const ids: number[] = [];
-    metrics.forEach((metric) => {
-        if (metric.eatingPhase && !latestMetrics.eatingPhase) {
-            latestMetrics.eatingPhase = metric.eatingPhase;
-            ids.push(metric.id!);
-        }
+    const [weight, height, fatPercentage, eatingPhase] = await Promise.all([
+        getClosestWeightUserMetric(userId, targetDate),
+        getClosestHeightUserMetric(userId, targetDate),
+        getClosestFatPercentageUserMetric(userId, targetDate),
+        getClosestEatingPhaseUserMetric(userId, targetDate),
+    ]);
 
-        if (metric.fatPercentage !== undefined && latestMetrics.fatPercentage === undefined) {
-            const newFatPercentage = parseFloat(String(metric.fatPercentage));
+    if (weight !== undefined) {
+        closestMetrics.weight = weight;
+    }
 
-            if (!isNaN(newFatPercentage)) {
-                latestMetrics.fatPercentage = newFatPercentage;
-            }
+    if (height !== undefined) {
+        closestMetrics.height = height;
+    }
 
-            ids.push(metric.id!);
-        }
+    if (fatPercentage !== undefined) {
+        closestMetrics.fatPercentage = fatPercentage;
+    }
 
-        if (metric.height !== undefined && latestMetrics.height === undefined) {
-            const newHeight = parseFloat(String(metric.height));
+    if (eatingPhase !== undefined) {
+        closestMetrics.eatingPhase = eatingPhase;
+    }
 
-            if (!isNaN(newHeight)) {
-                latestMetrics.height = newHeight;
-            }
-
-            ids.push(metric.id!);
-        }
-
-        if (metric.weight !== undefined && latestMetrics.weight === undefined) {
-            const newWeight = parseFloat(String(metric.weight));
-
-            if (!isNaN(newWeight)) {
-                latestMetrics.weight = newWeight;
-            }
-
-            ids.push(metric.id!);
-        }
-    });
-
-    latestMetrics.latestId = Math.max(...ids);
-    if (latestMetrics.latestId === -1) {
+    const hasMetrics = [weight, height, fatPercentage, eatingPhase].some((metric) => metric !== undefined);
+    if (!hasMetrics) {
         return undefined;
     }
 
-    return latestMetrics;
+    return closestMetrics;
 };
 
 export const getAllUserMetricsByUserId = async (userId: number): Promise<UserMetricsDecryptedReturnType[]> => {
