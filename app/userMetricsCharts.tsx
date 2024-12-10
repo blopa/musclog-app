@@ -70,7 +70,7 @@ import {
     UserNutritionDecryptedReturnType,
 } from '@/utils/types';
 import { getDisplayFormattedWeight } from '@/utils/unit';
-import { calculateWorkoutVolume, getSetsDoneThisWeek } from '@/utils/workout';
+import { calculateWorkoutVolume, getSetsDoneBetweenDates } from '@/utils/workout';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { NavigationProp, useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -846,7 +846,13 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
             const hasAiEnabled = Boolean(vendor) && isAiSettingsEnabled?.value === 'true';
             setIsAiEnabled(hasAiEnabled);
 
-            const setsDoneThisWeek = await getSetsDoneThisWeek();
+            // TODO: also aggragate by week if toggle is on
+            const setsDoneThisWeek = await (
+                (startDate && endDate)
+                    ? getSetsDoneBetweenDates(startDate.toISOString(), endDate.toISOString())
+                    : getSetsDoneBetweenDates(getDaysAgoTimestampISOString(Number(dateRange)), getCurrentTimestampISOString())
+            );
+
             setWeeklySets(setsDoneThisWeek);
 
             const weeklySetsEntries = Object.entries(setsDoneThisWeek);
@@ -1175,7 +1181,7 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
                                 weightData={weightData}
                             />
                         ) : null}
-                        {setsChartData ? (
+                        {(!showWeeklyAverages && setsChartData) ? (
                             <BarChart
                                 data={[setsChartData]}
                                 granularity={1}
