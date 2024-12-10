@@ -271,6 +271,7 @@
     "failed_to_load_fitness_goal": "Falha ao carregar a meta de condicionamento físico",
     "mandatory_fields_required": "Campos obrigatórios são necessários",
     "failed_to_save_fitness_goal": "Falha ao salvar a meta de condicionamento físico",
+    "muscle_groups_text": "Grupos Musculares",
     "muscle_groups.": "Não definido",
     "muscle_groups": {
         "abdomen": "Abdômen",
@@ -431,6 +432,7 @@
     "add_new_set": "Adicionar Nova Série",
     "edit_workout": "Editar Treino",
     "sets": "Séries",
+    "sets_per_muscle": "Séries por Músculo",
     "avg": "Méd",
     "your_latest_workout": "Seu último treino",
     "view_workout": "Ver Treino",

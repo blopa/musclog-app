@@ -271,6 +271,7 @@
     "failed_to_load_fitness_goal": "Het laden van het fitnessdoel is mislukt",
     "mandatory_fields_required": "Verplichte velden zijn vereist",
     "failed_to_save_fitness_goal": "Het opslaan van het fitnessdoel is mislukt",
+    "muscle_groups_text": "Spiergroepen",
     "muscle_groups.": "Niet ingesteld",
     "muscle_groups": {
         "abdomen": "Buikspieren",
@@ -431,6 +432,7 @@
     "add_new_set": "Nieuwe set toevoegen",
     "edit_workout": "Training bewerken",
     "sets": "Sets",
+    "sets_per_muscle": "Sets per spiergroep",
     "avg": "Gem",
     "your_latest_workout": "Uw laatste training",
     "view_workout": "Bekijk training",
