@@ -1,3 +1,4 @@
+import AISettings from '@/app/aiSettings';
 import Chat from '@/app/chat';
 import CreateExercise from '@/app/createExercise';
 import CreateFitnessGoals from '@/app/createFitnessGoals';
@@ -43,10 +44,10 @@ import {
     CustomThemeColorsType,
     CustomThemeType,
 } from '@/utils/colors';
+import 'react-native-reanimated';
 import {
     getLatestUser,
 } from '@/utils/database';
-import 'react-native-reanimated';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
     createDrawerNavigator,
@@ -143,6 +144,7 @@ export default function DrawerMenu() {
             { component: ListFitnessGoals, hidden: true, label: 'fitness_goals', name: 'listFitnessGoals' },
             { component: CreateFitnessGoals, hidden: true, label: 'create_fitness_goals', name: 'createFitnessGoals' },
             { component: ListExercises, hidden: true, label: 'exercises', name: 'listExercises' },
+            { component: AISettings, hidden: true, label: 'ai_settings', name: 'aiSettings' },
         ];
 
         return routes;
