@@ -8,7 +8,6 @@ import {
     GOOGLE_OAUTH_GEMINI_ENABLED_TYPE,
     GOOGLE_REFRESH_TOKEN_TYPE,
     OPENAI_API_KEY_TYPE,
-    USE_FAT_PERCENTAGE_TDEE_TYPE,
 } from '@/constants/storage';
 import { useGoogleAuth } from '@/hooks/useGoogleAuth';
 import { useSettings } from '@/storage/SettingsContext';
@@ -41,7 +40,6 @@ export default function AISettings({ navigation }: { navigation: NavigationProp<
 
     const [loading, setLoading] = useState(false);
 
-    const [useFatPercentageTDEE, setUseFatPercentageTDEE] = useState<boolean | undefined>(undefined);
     const [isGoogleOauthGeminiEnabled, setIsGoogleOauthGeminiEnabled] = useState<boolean | undefined>(undefined);
 
     const { colors, dark } = useTheme<CustomThemeType>();
@@ -66,12 +64,6 @@ export default function AISettings({ navigation }: { navigation: NavigationProp<
             const value = exerciseImageGenerationFromDb.value === 'true';
             setExerciseImageGeneration(value);
             setTempExerciseImageGeneration(value);
-        }
-
-        const useFatPercentageTDEEFromDb = await getSettingByType(USE_FAT_PERCENTAGE_TDEE_TYPE);
-        if (useFatPercentageTDEEFromDb) {
-            const value = useFatPercentageTDEEFromDb.value === 'true';
-            setUseFatPercentageTDEE(value);
         }
 
         const googleRefreshTokenFromDb = await getSettingByType(GOOGLE_REFRESH_TOKEN_TYPE);
@@ -216,17 +208,6 @@ export default function AISettings({ navigation }: { navigation: NavigationProp<
     }, [isGoogleOauthGeminiEnabled]);
 
     useEffect(() => {
-        const saveUseFatPercentageTDEE = async () => {
-            if (useFatPercentageTDEE !== undefined) {
-                const newValue = useFatPercentageTDEE.toString();
-                await updateSettingWithLoadingState(USE_FAT_PERCENTAGE_TDEE_TYPE, newValue);
-            }
-        };
-
-        saveUseFatPercentageTDEE();
-    }, [useFatPercentageTDEE, updateSettingValue, updateSettingWithLoadingState]);
-
-    useEffect(() => {
         const saveGoogleOauthGeminiElabled = async () => {
             if (isGoogleOauthGeminiEnabled !== undefined) {
                 const newValue = isGoogleOauthGeminiEnabled.toString();
@@ -269,7 +250,7 @@ export default function AISettings({ navigation }: { navigation: NavigationProp<
             </Appbar.Header>
             <ScrollView contentContainerStyle={styles.settingsContainer} keyboardShouldPersistTaps="handled">
                 <List.Section>
-                    <List.Subheader>{t('ai_settings')}</List.Subheader>
+                    <List.Subheader>{t('ai_provider_settings')}</List.Subheader>
                     <List.Item
                         description={t('google_gemini_oauth_description')}
                         onPress={handleToggleGoogleOauthGeminiElabled}
@@ -309,6 +290,9 @@ export default function AISettings({ navigation }: { navigation: NavigationProp<
                         )}
                         title={t('google_gemini_key')}
                     />
+                </List.Section>
+                <List.Section>
+                    <List.Subheader>{t('misc')}</List.Subheader>
                     <List.Item
                         description={t('exercise_image_generation_description')}
                         onPress={() => setExerciseImageModalVisible(true)}

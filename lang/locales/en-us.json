@@ -5,6 +5,8 @@
     "openai_key": "OpenAI API Key",
     "google_gemini_key": "Google Gemini API Key",
     "ai_settings": "AI Settings",
+    "ai_provider_settings": "AI Provider Settings",
+    "misc": "Miscellaneous",
     "theme": "Theme",
     "language": "Language",
     "unit_system": "Unit System",

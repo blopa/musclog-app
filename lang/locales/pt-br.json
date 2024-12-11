@@ -5,6 +5,8 @@
     "openai_key": "Chave da OpenAI",
     "google_gemini_key": "Chave do Google Gemini",
     "ai_settings": "Configurações de IA",
+    "ai_provider_settings": "Configurações do Provedor de IA",
+    "misc": "Diversos",
     "theme": "Tema",
     "language": "Idioma",
     "unit_system": "Sistema de Unidades",

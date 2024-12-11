@@ -5,6 +5,8 @@
     "openai_key": "OpenAI-sleutel",
     "google_gemini_key": "Google Gemini-sleutel",
     "ai_settings": "AI-instellingen",
+    "ai_provider_settings": "AI-providerinstellingen",
+    "misc": "Diversen",
     "theme": "Thema",
     "language": "Taal",
     "unit_system": "Eenhedenstelsel",
