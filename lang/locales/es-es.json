@@ -9,6 +9,8 @@
     "misc": "Misceláneo",
     "nutrition_insights": "Información nutricional",
     "nutrition_insights_description": "Obtén información nutricional diaria o semanal.",
+    "workout_insights": "Información de Entrenamiento",
+    "workout_insights_description": "Obtén información sobre tu progreso de entrenamiento.",
     "daily": "Diario",
     "weekly": "Semanal",
     "theme": "Tema",

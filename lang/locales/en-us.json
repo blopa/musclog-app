@@ -9,6 +9,8 @@
     "misc": "Miscellaneous",
     "nutrition_insights": "Nutrition Insights",
     "nutrition_insights_description": "Get daily or weekly nutrition insights.",
+    "workout_insights": "Workout Insights",
+    "workout_insights_description": "Get daily or weekly workout insights.",
     "daily": "Daily",
     "weekly": "Weekly",
     "theme": "Theme",

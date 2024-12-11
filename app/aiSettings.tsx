@@ -12,6 +12,10 @@ import {
     NUTRITION_INSIGHT_WEEKLY,
     NUTRITION_INSIGHTS_TYPE,
     OPENAI_API_KEY_TYPE,
+    WORKOUT_INSIGHT_DAILY,
+    WORKOUT_INSIGHT_DISABLED,
+    WORKOUT_INSIGHT_WEEKLY,
+    WORKOUT_INSIGHTS_TYPE,
 } from '@/constants/storage';
 import { useGoogleAuth } from '@/hooks/useGoogleAuth';
 import { useSettings } from '@/storage/SettingsContext';
@@ -27,6 +31,8 @@ import { BackHandler, Platform, ScrollView, StyleSheet, TouchableOpacity, View }
 import { ActivityIndicator, Appbar, Button, List, Text, useTheme } from 'react-native-paper';
 
 type AINutritionInsightsType = typeof NUTRITION_INSIGHT_DAILY | typeof NUTRITION_INSIGHT_DISABLED | typeof NUTRITION_INSIGHT_WEEKLY;
+
+type AIWorkoutInsightsType = typeof WORKOUT_INSIGHT_DAILY | typeof WORKOUT_INSIGHT_DISABLED | typeof WORKOUT_INSIGHT_WEEKLY;
 
 export default function AISettings({ navigation }: { navigation: NavigationProp<any> }) {
     const { t } = useTranslation();
@@ -56,6 +62,10 @@ export default function AISettings({ navigation }: { navigation: NavigationProp<
     const [nutritionInsights, setNutritionInsights] = useState<AINutritionInsightsType>(NUTRITION_INSIGHT_DISABLED);
     const [tempNutritionInsights, setTempNutritionInsights] = useState<AINutritionInsightsType>(NUTRITION_INSIGHT_DISABLED);
     const [nutritionInsightsModalVisible, setNutritionInsightsModalVisible] = useState(false);
+
+    const [workoutInsights, setWorkoutInsights] = useState<AIWorkoutInsightsType>(WORKOUT_INSIGHT_DISABLED);
+    const [tempWorkoutInsights, setTempWorkoutInsights] = useState<AIWorkoutInsightsType>(WORKOUT_INSIGHT_DISABLED);
+    const [workoutInsightsModalVisible, setWorkoutInsightsModalVisible] = useState(false);
 
     const fetchSettings = useCallback(async () => {
         const apiKeyFromDb = await getSettingByType(OPENAI_API_KEY_TYPE);
@@ -93,6 +103,15 @@ export default function AISettings({ navigation }: { navigation: NavigationProp<
         } else {
             setNutritionInsights(NUTRITION_INSIGHT_DISABLED);
             setTempNutritionInsights(NUTRITION_INSIGHT_DISABLED);
+        }
+
+        const workoutInsightsFromDb = await getSettingByType(WORKOUT_INSIGHTS_TYPE);
+        if (workoutInsightsFromDb && [WORKOUT_INSIGHT_DAILY, WORKOUT_INSIGHT_DISABLED, WORKOUT_INSIGHT_WEEKLY].includes(workoutInsightsFromDb.value)) {
+            setWorkoutInsights(workoutInsightsFromDb.value as AIWorkoutInsightsType);
+            setTempWorkoutInsights(workoutInsightsFromDb.value as AIWorkoutInsightsType);
+        } else {
+            setWorkoutInsights(WORKOUT_INSIGHT_DISABLED);
+            setTempWorkoutInsights(WORKOUT_INSIGHT_DISABLED);
         }
     }, [getSettingByType]);
 
@@ -241,6 +260,7 @@ export default function AISettings({ navigation }: { navigation: NavigationProp<
         setOpenGeminiVisible(false);
         setExerciseImageModalVisible(false);
         setNutritionInsightsModalVisible(false);
+        setWorkoutInsightsModalVisible(false);
     }, []);
 
     useFocusEffect(
@@ -258,6 +278,14 @@ export default function AISettings({ navigation }: { navigation: NavigationProp<
         setNutritionInsightsModalVisible(false);
         setLoading(false);
     }, [tempNutritionInsights, updateSettingWithLoadingState]);
+
+    const handleConfirmWorkoutInsightsChange = useCallback(async () => {
+        setLoading(true);
+        await updateSettingWithLoadingState(WORKOUT_INSIGHTS_TYPE, tempWorkoutInsights);
+        setWorkoutInsights(tempWorkoutInsights);
+        setWorkoutInsightsModalVisible(false);
+        setLoading(false);
+    }, [tempWorkoutInsights, updateSettingWithLoadingState]);
 
     return (
         <Screen style={styles.container}>
@@ -341,6 +369,17 @@ export default function AISettings({ navigation }: { navigation: NavigationProp<
                             </View>
                         )}
                         title={t('nutrition_insights')}
+                    />
+                    <List.Item
+                        description={t('workout_insights_description')}
+                        onPress={() => setWorkoutInsightsModalVisible(true)}
+                        right={() => (
+                            <View style={styles.rightContainer}>
+                                <Text>{t(workoutInsights)}</Text>
+                                <List.Icon icon="chevron-right" />
+                            </View>
+                        )}
+                        title={t('workout_insights')}
                     />
                 </List.Section>
             </ScrollView>
@@ -471,6 +510,29 @@ export default function AISettings({ navigation }: { navigation: NavigationProp<
                         >
                             <Text style={styles.radioText}>{t(option)}</Text>
                             <Text style={styles.radioText}>{tempNutritionInsights === option ? '✔' : ''}</Text>
+                        </TouchableOpacity>
+                    ))}
+                    {loading ? <ActivityIndicator color={colors.surface} /> : null}
+                </View>
+            </ThemedModal>
+            {/* New Modal for Workout Insights */}
+            <ThemedModal
+                cancelText={t('cancel')}
+                confirmText={t('confirm')}
+                onClose={() => setWorkoutInsightsModalVisible(false)}
+                onConfirm={handleConfirmWorkoutInsightsChange}
+                title={t('workout_insights')}
+                visible={workoutInsightsModalVisible}
+            >
+                <View style={styles.radioContainer}>
+                    {[WORKOUT_INSIGHT_DAILY, WORKOUT_INSIGHT_WEEKLY, WORKOUT_INSIGHT_DISABLED].map((option) => (
+                        <TouchableOpacity
+                            key={option}
+                            onPress={() => setTempWorkoutInsights(option as AIWorkoutInsightsType)}
+                            style={styles.radio}
+                        >
+                            <Text style={styles.radioText}>{t(option)}</Text>
+                            <Text style={styles.radioText}>{tempWorkoutInsights === option ? '✔' : ''}</Text>
                         </TouchableOpacity>
                     ))}
                     {loading ? <ActivityIndicator color={colors.surface} /> : null}
