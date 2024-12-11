@@ -60,7 +60,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
     const [selectedNutrition, setSelectedNutrition] = useState<null | UserNutritionDecryptedReturnType>(null);
-    const { checkReadIsPermitted, checkWriteIsPermitted, getHealthData, insertHealthData } = useHealthConnect();
+    const { checkReadIsPermitted, checkWriteIsPermitted, insertHealthData } = useHealthConnect();
 
     const [index, setIndex] = useState(0);
     const [searchQuery, setSearchQuery] = useState('');

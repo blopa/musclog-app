@@ -7,9 +7,17 @@ import ThemedCard from '@/components/ThemedCard';
 import ThemedModal from '@/components/ThemedModal';
 import WorkoutModal from '@/components/WorkoutModal';
 import { CURRENT_WORKOUT_ID, SCHEDULED_STATUS } from '@/constants/storage';
+import { useHealthConnect } from '@/storage/HealthConnectProvider';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { getRecentWorkoutsPaginated, getRecurringWorkouts, getUserNutritionBetweenDates } from '@/utils/database';
-import { formatDate } from '@/utils/date';
+import {
+    formatDate,
+    getCurrentTimestampISOString,
+    getDaysAgoTimestampISOString,
+    getEndOfDayTimestampISOString,
+    getStartOfDayTimestampISOString,
+} from '@/utils/date';
+import { syncHealthConnectData } from '@/utils/healthConnect';
 import { MusclogApiFoodInfoType, WorkoutEventReturnType, WorkoutReturnType } from '@/utils/types';
 import { getSetsDoneThisWeekText, resetWorkoutStorageData } from '@/utils/workout';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -39,6 +47,8 @@ export default function Dashboard({ navigation }: {
     const [selectedUpcomingEvent, setSelectedUpcomingEvent] = useState<null | WorkoutReturnType>(null);
     const [selectedFood, setSelectedFood] = useState<MusclogApiFoodInfoType | null>(null);
 
+    const { checkReadIsPermitted, checkWriteIsPermitted, insertHealthData } = useHealthConnect();
+
     const fetchWorkoutData = useCallback(async () => {
         try {
             const recentWorkoutsData = await getRecentWorkoutsPaginated(0, 3);
@@ -59,16 +69,22 @@ export default function Dashboard({ navigation }: {
     });
 
     const loadConsumed = useCallback(async () => {
-        const startDate = new Date();
-        startDate.setHours(0, 0, 0, 0);
+        const startDate = getStartOfDayTimestampISOString(getDaysAgoTimestampISOString(1));
+        const endDate = getEndOfDayTimestampISOString(getCurrentTimestampISOString());
 
-        const endDate = new Date();
-        endDate.setHours(23, 59, 59, 999);
+        await syncHealthConnectData(
+            checkReadIsPermitted,
+            checkWriteIsPermitted,
+            insertHealthData,
+            startDate,
+            endDate,
+            1000
+        );
 
         try {
             const consumedData = await getUserNutritionBetweenDates(
-                startDate.toISOString(),
-                endDate.toISOString()
+                startDate,
+                endDate
             );
 
             const consumed = consumedData.reduce(
@@ -86,7 +102,7 @@ export default function Dashboard({ navigation }: {
         } catch (error) {
             console.error('Error loading consumed data:', error);
         }
-    }, []);
+    }, [checkReadIsPermitted, checkWriteIsPermitted, insertHealthData]);
 
     const resetScreenData = useCallback(() => {
         setUpcomingWorkouts([]);
