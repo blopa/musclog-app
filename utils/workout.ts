@@ -339,16 +339,52 @@ async function getPastSetsForExercise(
     }
 }
 
-export const getSetsDoneThisWeek = async () => {
+// TODO: add charts for this data too
+export const getRepsDoneBetweenDates = async (startDate: string, endDate: string) => {
     const recentWorkouts = await getRecentWorkoutsBetweenDates(
-        getDaysAgoTimestampISOString(7),
-        getCurrentTimestampISOString()
+        startDate,
+        endDate
     );
 
-    const exerciseSets = recentWorkouts.reduce<ExerciseVolumeType[]>(
+    const exercisesVolume = recentWorkouts.reduce<ExerciseVolumeType[]>(
         (acc, { exerciseData }) => ([...acc, ...JSON.parse(exerciseData ?? '{}')]), []
-    ).reduce<SetsDoneThisWeek>((acc, curr) => {
-        return { ...acc, [curr.exerciseId]: (acc[curr.exerciseId] || 0) + curr.sets.length };
+    );
+
+    const exerciseReps = exercisesVolume.reduce<SetsDoneThisWeek>((acc, curr) => {
+        return {
+            ...acc,
+            [curr.exerciseId]: (acc[curr.exerciseId] || 0) + curr.sets.reduce(
+                (totalReps, set) => totalReps + set.reps, 0
+            ),
+        };
+    }, {});
+
+    const result = {} as { [muscleGroup: string]: number };
+    for (const [exerciseId, repsDone] of Object.entries(exerciseReps)) {
+        const exercise = await getExerciseById(Number(exerciseId));
+        const muscleGroup = exercise?.muscleGroup || 'unset';
+
+        result[muscleGroup] = (result[muscleGroup] || 0) + repsDone;
+    }
+
+    return result;
+};
+
+export const getSetsDoneBetweenDates = async (startDate: string, endDate: string) => {
+    const recentWorkouts = await getRecentWorkoutsBetweenDates(
+        startDate,
+        endDate
+    );
+
+    const exercisesVolume = recentWorkouts.reduce<ExerciseVolumeType[]>(
+        (acc, { exerciseData }) => ([...acc, ...JSON.parse(exerciseData ?? '{}')]), []
+    );
+
+    const exerciseSets = exercisesVolume.reduce<SetsDoneThisWeek>((acc, curr) => {
+        return {
+            ...acc,
+            [curr.exerciseId]: (acc[curr.exerciseId] || 0) + curr.sets.length,
+        };
     }, {});
 
     const result = {} as { [muscleGroup: string]: number };
@@ -363,7 +399,11 @@ export const getSetsDoneThisWeek = async () => {
 };
 
 export const getSetsDoneThisWeekText = async () => {
-    const setsDoneThisWeek = await getSetsDoneThisWeek();
+    const setsDoneThisWeek = await getSetsDoneBetweenDates(
+        getDaysAgoTimestampISOString(7),
+        getCurrentTimestampISOString()
+    );
+
     const entries = Object.entries(setsDoneThisWeek);
 
     if (entries.length === 0) {

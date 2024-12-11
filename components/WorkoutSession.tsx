@@ -76,8 +76,8 @@ const WorkoutSession = ({
     const [completedReps, setCompletedReps] = useState('0');
     const [tempWeightLifted, setTempWeightLifted] = useState('0');
     const [tempCompletedReps, setTempCompletedReps] = useState('0');
-    const [globalWeightLifted, setGlobalWeightLifted] = useState('0');
-    const [globalCompletedReps, setGlobalCompletedReps] = useState('0');
+    const [globalWeightLifted, setGlobalWeightLifted] = useState<string | undefined>('0');
+    const [globalCompletedReps, setGlobalCompletedReps] = useState<string | undefined>('0');
 
     const [isFinishWorkoutModalVisible, setIsFinishWorkoutModalVisible] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -123,11 +123,11 @@ const WorkoutSession = ({
 
     useEffect(() => {
         if (currentSetIndex < sets.length) {
-            if (Number(globalWeightLifted) >= 0) {
+            if (globalWeightLifted !== undefined && Number(globalWeightLifted) >= 0) {
                 setWeightLifted(globalWeightLifted);
             }
 
-            if (Number(globalCompletedReps) > 0) {
+            if (globalCompletedReps !== undefined && Number(globalCompletedReps) > 0) {
                 setCompletedReps(globalCompletedReps);
             }
         }
@@ -141,13 +141,13 @@ const WorkoutSession = ({
         if (weight) {
             setWeightLifted((getDisplayFormattedWeight(Number(weight), KILOGRAMS, isImperial)).toString());
             setTempWeightLifted((getDisplayFormattedWeight(Number(weight), KILOGRAMS, isImperial)).toString());
-            setGlobalWeightLifted('0');
+            setGlobalWeightLifted(undefined);
         }
 
         if (reps) {
             setCompletedReps(reps.toString());
             setTempCompletedReps(reps.toString());
-            setGlobalCompletedReps('0');
+            setGlobalCompletedReps(undefined);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isImperial, currentSetIndex, exercise?.id, sets]);

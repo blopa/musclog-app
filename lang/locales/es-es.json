@@ -271,6 +271,7 @@
     "failed_to_load_fitness_goal": "No se pudo cargar el objetivo de fitness",
     "mandatory_fields_required": "Los campos obligatorios son necesarios",
     "failed_to_save_fitness_goal": "No se pudo guardar el objetivo de fitness",
+    "muscle_groups_text": "Grupos Musculares",
     "muscle_groups.": "No definido",
     "muscle_groups": {
         "abdomen": "Abdomen",
@@ -431,6 +432,7 @@
     "add_new_set": "Añadir Nueva Serie",
     "edit_workout": "Editar Entrenamiento",
     "sets": "Series",
+    "sets_per_muscle": "Series por Músculo",
     "avg": "Prom",
     "your_latest_workout": "Su último entrenamiento",
     "view_workout": "Ver Entrenamiento",

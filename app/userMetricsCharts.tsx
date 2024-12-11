@@ -1,3 +1,4 @@
+import BarChart from '@/components/Charts/BarChart';
 import LineChart from '@/components/Charts/LineChart';
 import NutritionDetailedChart from '@/components/Charts/NutritionDetailedChart';
 import WeightLineChart from '@/components/Charts/WeightLineChart';
@@ -69,7 +70,7 @@ import {
     UserNutritionDecryptedReturnType,
 } from '@/utils/types';
 import { getDisplayFormattedWeight } from '@/utils/unit';
-import { calculateWorkoutVolume } from '@/utils/workout';
+import { calculateWorkoutVolume, getSetsDoneBetweenDates } from '@/utils/workout';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { NavigationProp, useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -91,6 +92,12 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
     const { unitSystem, weightUnit } = useUnit();
     const macroUnit = unitSystem === METRIC_SYSTEM ? GRAMS : OUNCES;
     const isImperial = unitSystem === IMPERIAL_SYSTEM;
+
+    const [setsChartData, setSetsChartData] = useState<null | {
+        label: string;
+        values: { marker: string; x: number; y: number }[];
+    }>(null);
+    const [weeklySets, setWeeklySets] = useState({});
 
     const [measurementsData, setMeasurementsData] = useState<Record<string, LineChartDataType[]>>({});
     const [measurementLabels, setMeasurementLabels] = useState<Record<string, string[]>>({});
@@ -839,6 +846,27 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
             const hasAiEnabled = Boolean(vendor) && isAiSettingsEnabled?.value === 'true';
             setIsAiEnabled(hasAiEnabled);
 
+            // TODO: also aggragate by week if toggle is on
+            const setsDoneThisWeek = await (
+                (startDate && endDate)
+                    ? getSetsDoneBetweenDates(startDate.toISOString(), endDate.toISOString())
+                    : getSetsDoneBetweenDates(getDaysAgoTimestampISOString(Number(dateRange)), getCurrentTimestampISOString())
+            );
+
+            setWeeklySets(setsDoneThisWeek);
+
+            const weeklySetsEntries = Object.entries(setsDoneThisWeek);
+            const weeklySetsData = weeklySetsEntries.map(([_, sets], index) => ({
+                marker: `${sets} sets`,
+                x: index,
+                y: sets as number,
+            }));
+
+            setSetsChartData({
+                label: t('sets_per_muscle'),
+                values: weeklySetsData,
+            });
+
             if (user?.metrics?.eatingPhase) {
                 setEatingPhase(user.metrics.eatingPhase);
             }
@@ -1151,6 +1179,24 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
                                 tdee={tdee}
                                 totalCaloriesLabel={totalCaloriesLabel}
                                 weightData={weightData}
+                            />
+                        ) : null}
+                        {(!showWeeklyAverages && setsChartData) ? (
+                            <BarChart
+                                data={[setsChartData]}
+                                granularity={1}
+                                labelLeftMargin={-30}
+                                labels={Object.keys(weeklySets).map((group) => t(`muscle_groups.${group}`))}
+                                padding={16}
+                                shareButtonPosition="bottom"
+                                showShareImageButton={true}
+                                title={t('sets')}
+                                xAxisLabel={t('muscle_groups_text')}
+                                yAxis={{
+                                    axisMaximum: Math.round(Math.max(...setsChartData.values.map((d) => d.y)) * 1.2),
+                                    axisMinimum: 0,
+                                }}
+                                yAxisLabel={t('sets')}
                             />
                         ) : null}
                         {recentWorkoutsData.length > 0 ? (
