@@ -47,6 +47,11 @@ export const USE_FAT_PERCENTAGE_TDEE_TYPE = 'use_fat_percentage_tdee_type';
 export const GOOGLE_REFRESH_TOKEN_TYPE = 'google_refresh_token_type';
 export const GOOGLE_OAUTH_GEMINI_ENABLED_TYPE = 'google_oauth_gemini_enabled_type';
 export const BUG_REPORT_TYPE = 'bug_report_type';
+export const NUTRITION_INSIGHTS_TYPE = 'nutrition_insights_type';
+
+export const NUTRITION_INSIGHT_DAILY = 'daily';
+export const NUTRITION_INSIGHT_WEEKLY = 'weekly';
+export const NUTRITION_INSIGHT_DISABLED = 'disabled';
 
 export const METRIC_SYSTEM = 'metric';
 export const IMPERIAL_SYSTEM = 'imperial';

@@ -7,6 +7,10 @@ import {
     GEMINI_API_KEY_TYPE,
     GOOGLE_OAUTH_GEMINI_ENABLED_TYPE,
     GOOGLE_REFRESH_TOKEN_TYPE,
+    NUTRITION_INSIGHT_DAILY,
+    NUTRITION_INSIGHT_DISABLED,
+    NUTRITION_INSIGHT_WEEKLY,
+    NUTRITION_INSIGHTS_TYPE,
     OPENAI_API_KEY_TYPE,
 } from '@/constants/storage';
 import { useGoogleAuth } from '@/hooks/useGoogleAuth';
@@ -22,9 +26,10 @@ import { useTranslation } from 'react-i18next';
 import { BackHandler, Platform, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { ActivityIndicator, Appbar, Button, List, Text, useTheme } from 'react-native-paper';
 
+type AINutritionInsightsType = typeof NUTRITION_INSIGHT_DAILY | typeof NUTRITION_INSIGHT_DISABLED | typeof NUTRITION_INSIGHT_WEEKLY;
 
 export default function AISettings({ navigation }: { navigation: NavigationProp<any> }) {
-    const { i18n, t } = useTranslation();
+    const { t } = useTranslation();
     const { addOrUpdateSettingValue, getSettingByType, updateSettingValue } = useSettings();
     const { authData, promptAsync } = useGoogleAuth();
 
@@ -47,6 +52,10 @@ export default function AISettings({ navigation }: { navigation: NavigationProp<
 
     const [refreshToken, setRefreshToken] = useState<null | string>(null);
     const [googleSignInModalVisible, setGoogleSignInModalVisible] = useState(false);
+
+    const [nutritionInsights, setNutritionInsights] = useState<AINutritionInsightsType>(NUTRITION_INSIGHT_DISABLED);
+    const [tempNutritionInsights, setTempNutritionInsights] = useState<AINutritionInsightsType>(NUTRITION_INSIGHT_DISABLED);
+    const [nutritionInsightsModalVisible, setNutritionInsightsModalVisible] = useState(false);
 
     const fetchSettings = useCallback(async () => {
         const apiKeyFromDb = await getSettingByType(OPENAI_API_KEY_TYPE);
@@ -75,6 +84,15 @@ export default function AISettings({ navigation }: { navigation: NavigationProp<
         if (googleOauthGeminiElabledFromDb) {
             const value = googleOauthGeminiElabledFromDb.value === 'true';
             setIsGoogleOauthGeminiEnabled(value);
+        }
+
+        const nutritionInsightsFromDb = await getSettingByType(NUTRITION_INSIGHTS_TYPE);
+        if (nutritionInsightsFromDb && [NUTRITION_INSIGHT_DAILY, NUTRITION_INSIGHT_DISABLED, NUTRITION_INSIGHT_WEEKLY].includes(nutritionInsightsFromDb.value)) {
+            setNutritionInsights(nutritionInsightsFromDb.value as AINutritionInsightsType);
+            setTempNutritionInsights(nutritionInsightsFromDb.value as AINutritionInsightsType);
+        } else {
+            setNutritionInsights(NUTRITION_INSIGHT_DISABLED);
+            setTempNutritionInsights(NUTRITION_INSIGHT_DISABLED);
         }
     }, [getSettingByType]);
 
@@ -222,6 +240,7 @@ export default function AISettings({ navigation }: { navigation: NavigationProp<
         setOpenAiModalVisible(false);
         setOpenGeminiVisible(false);
         setExerciseImageModalVisible(false);
+        setNutritionInsightsModalVisible(false);
     }, []);
 
     useFocusEffect(
@@ -231,6 +250,14 @@ export default function AISettings({ navigation }: { navigation: NavigationProp<
             };
         }, [resetScreenData])
     );
+
+    const handleConfirmNutritionInsightsChange = useCallback(async () => {
+        setLoading(true);
+        await updateSettingWithLoadingState(NUTRITION_INSIGHTS_TYPE, tempNutritionInsights);
+        setNutritionInsights(tempNutritionInsights);
+        setNutritionInsightsModalVisible(false);
+        setLoading(false);
+    }, [tempNutritionInsights, updateSettingWithLoadingState]);
 
     return (
         <Screen style={styles.container}>
@@ -303,6 +330,17 @@ export default function AISettings({ navigation }: { navigation: NavigationProp<
                             </View>
                         )}
                         title={t('exercise_image_generation')}
+                    />
+                    <List.Item
+                        description={t('nutrition_insights_description')}
+                        onPress={() => setNutritionInsightsModalVisible(true)}
+                        right={() => (
+                            <View style={styles.rightContainer}>
+                                <Text>{t(nutritionInsights)}</Text>
+                                <List.Icon icon="chevron-right" />
+                            </View>
+                        )}
+                        title={t('nutrition_insights')}
                     />
                 </List.Section>
             </ScrollView>
@@ -413,6 +451,28 @@ export default function AISettings({ navigation }: { navigation: NavigationProp<
                         <Text style={styles.radioText}>{t('disabled')}</Text>
                         <Text style={styles.radioText}>{!tempExerciseImageGeneration ? '✔' : ''}</Text>
                     </TouchableOpacity>
+                    {loading ? <ActivityIndicator color={colors.surface} /> : null}
+                </View>
+            </ThemedModal>
+            <ThemedModal
+                cancelText={t('cancel')}
+                confirmText={t('confirm')}
+                onClose={() => setNutritionInsightsModalVisible(false)}
+                onConfirm={handleConfirmNutritionInsightsChange}
+                title={t('nutrition_insights')}
+                visible={nutritionInsightsModalVisible}
+            >
+                <View style={styles.radioContainer}>
+                    {[NUTRITION_INSIGHT_DAILY, NUTRITION_INSIGHT_WEEKLY, NUTRITION_INSIGHT_DISABLED].map((option) => (
+                        <TouchableOpacity
+                            key={option}
+                            onPress={() => setTempNutritionInsights(option as AINutritionInsightsType)}
+                            style={styles.radio}
+                        >
+                            <Text style={styles.radioText}>{t(option)}</Text>
+                            <Text style={styles.radioText}>{tempNutritionInsights === option ? '✔' : ''}</Text>
+                        </TouchableOpacity>
+                    ))}
                     {loading ? <ActivityIndicator color={colors.surface} /> : null}
                 </View>
             </ThemedModal>
