@@ -20,6 +20,7 @@ import {
     getParsePastWorkoutsFunctions,
     getParsePastWorkoutsPrompt,
     getRecentWorkoutInsightsPrompt,
+    getRecentWorkoutsInsightsPrompt,
     getSendChatMessageFunctions,
     getWorkoutInsightsPrompt,
     getWorkoutVolumeInsightsPrompt,
@@ -64,6 +65,26 @@ export async function getNutritionInsights(startDate: string, endDate: string) {
     });
 
     return result?.choices?.[0].message.content;
+}
+
+export async function getRecentWorkoutsInsights(startDate: string, endDate: string): Promise<string | undefined> {
+    const apiKey = await getApiKey();
+
+    if (!apiKey) {
+        return;
+    }
+
+    const openai = new OpenAI({
+        apiKey: apiKey,
+        dangerouslyAllowBrowser: true,
+    });
+
+    const result = await openai.chat.completions.create({
+        messages: await getRecentWorkoutsInsightsPrompt(startDate, endDate),
+        model: OPENAI_MODEL,
+    });
+
+    return result?.choices?.[0].message.content || undefined;
 }
 
 export async function sendChatMessage(messages: any[]) {

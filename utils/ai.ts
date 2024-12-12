@@ -122,6 +122,18 @@ export const getRecentWorkoutInsights = async (workoutId: number) => {
     return;
 };
 
+export const getRecentWorkoutsInsights = async (startDate: string, endDate: string) => {
+    const vendor = await getAiApiVendor();
+
+    if (vendor === OPENAI_API_KEY_TYPE) {
+        return openAiFunctions.getRecentWorkoutsInsights(startDate, endDate);
+    } else if (vendor === GEMINI_API_KEY_TYPE) {
+        return geminiFunctions.getRecentWorkoutsInsights(startDate, endDate);
+    }
+
+    return;
+};
+
 export const getWorkoutVolumeInsights = async (workoutId: number) => {
     const vendor = await getAiApiVendor();
 
