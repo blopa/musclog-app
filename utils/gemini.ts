@@ -35,6 +35,7 @@ import {
     getParsePastWorkoutsFunctions,
     getParsePastWorkoutsPrompt,
     getRecentWorkoutInsightsPrompt,
+    getRecentWorkoutsInsightsPrompt,
     getSendChatMessageFunctions,
     getWorkoutInsightsPrompt,
     getWorkoutVolumeInsightsPrompt,
@@ -209,6 +210,49 @@ export async function getNutritionInsights(startDate: string, endDate: string): 
     }
 
     const prompt = await getNutritionInsightsPrompt(startDate, endDate);
+
+    const systemParts: Part[] = prompt
+        .filter((msg) => msg.role === 'system')
+        .map((msg) => ({ text: msg.content } as Part));
+
+    const model = await configureBasicGenAI({ accessToken, apiKey }, systemParts);
+
+    const generationConfig = {
+        // maxOutputTokens: 2048,
+        temperature: 0.9,
+        topK: 1,
+        topP: 1,
+    };
+
+    const conversationContent: Content[] = createConversationContent(prompt);
+
+    try {
+        const result = await model.generateContent({
+            contents: conversationContent,
+            generationConfig,
+        } as GenerateContentRequest);
+
+        if (result.response?.promptFeedback?.blockReason) {
+            console.log(`Blocked for ${result.response.promptFeedback.blockReason}`);
+            return;
+        }
+
+        return result.response.candidates?.[0]?.content?.parts[0]?.text;
+    } catch (e) {
+        console.error(e);
+        return;
+    }
+}
+
+export async function getRecentWorkoutsInsights(startDate: string, endDate: string): Promise<string | undefined> {
+    const apiKey = await getApiKey();
+    const accessToken = await getAccessToken();
+
+    if (!apiKey && !accessToken) {
+        return;
+    }
+
+    const prompt = await getRecentWorkoutsInsightsPrompt(startDate, endDate);
 
     const systemParts: Part[] = prompt
         .filter((msg) => msg.role === 'system')

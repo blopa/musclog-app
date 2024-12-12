@@ -14,6 +14,7 @@ import {
     getExerciseById,
     getRecentWorkoutById,
     getRecentWorkouts,
+    getRecentWorkoutsBetweenDates,
     getRecentWorkoutsByWorkoutId,
     getSetting,
     getUser, getUserMetricsBetweenDates, getUserNutritionBetweenDates,
@@ -332,6 +333,33 @@ export const getCreateWorkoutPlanFunctions = (): (FunctionDeclaration[] | OpenAI
     }];
 };
 
+export const getRecentWorkoutsInsightsPrompt = async (startDate: string, endDate: string): Promise<OpenAI.Chat.ChatCompletionMessageParam[]> => {
+    const { weightUnit } = await getUnit();
+    const user = await getUser();
+    const recentWorkouts = await getRecentWorkoutsBetweenDates(startDate, endDate);
+
+    const diffInDays = Math.floor((new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24));
+
+    return [
+        {
+            content: [
+                await getMainSystemPrompt(),
+                `Please provide insights about the user workouts in these ${diffInDays} days range, like if they are doing enough volume, if they are using the correct weights, etc. Base your analysis on their goal, eating phase, and activity level.`,
+                BE_CONCISE_PROMPT,
+                getUserDetailsPrompt(user, weightUnit),
+            ].join('\n'),
+            role: 'system',
+        },
+        {
+            content: [
+                `Please provide insights about my recent workouts in these ${diffInDays} days range:`,
+                '```json\n' + JSON.stringify(formatRecentWorkouts(recentWorkouts)) + '\n```',
+            ].join('\n'),
+            role: 'user',
+        },
+    ];
+};
+
 export const getNutritionInsightsPrompt = async (startDate: string, endDate: string): Promise<OpenAI.Chat.ChatCompletionMessageParam[]> => {
     const { unitSystem, weightUnit } = await getUnit();
     const foodWeightUnit = unitSystem === METRIC_SYSTEM ? GRAMS : OUNCES;
@@ -377,6 +405,64 @@ export const getNutritionInsightsPrompt = async (startDate: string, endDate: str
     ];
 };
 
+const formatRecentWorkouts = async (recentWorkouts: WorkoutEventReturnType[]) => {
+    const { weightUnit } = await getUnit();
+
+    const result = recentWorkouts.map((recentWorkout) => {
+        const filteredRecentWorkout = Object.fromEntries(
+            Object.entries(recentWorkout).filter(
+                ([key]) => [
+                    'alcohol',
+                    'bodyWeight',
+                    'calories',
+                    'carbohydrate',
+                    'createdAt',
+                    'date',
+                    'deletedAt',
+                    'description',
+                    'fat',
+                    'fatPercentage',
+                    'fiber',
+                    'id',
+                    'protein',
+                    'recurringOnWeek',
+                    'status',
+                    'workoutId',
+                    'workoutVolume',
+                ].includes(key)
+            )
+        ) as WorkoutEventReturnType;
+
+        return {
+            ...filteredRecentWorkout,
+            ...recentWorkout.fatPercentage && {
+                fatPercentage: `${safeToFixed(recentWorkout.fatPercentage)}%`,
+            },
+            ...recentWorkout.bodyWeight && {
+                bodyWeight: `${safeToFixed(recentWorkout.bodyWeight)}${weightUnit}`,
+            },
+            ...recentWorkout.workoutVolume && {
+                workoutVolume: recentWorkout.workoutVolume,
+            },
+            exerciseData: JSON.parse(filteredRecentWorkout.exerciseData || '[]').map((ed: ExerciseVolumeType) => {
+                return {
+                    ...ed,
+                    sets: ed.sets.map((set) => {
+                        return {
+                            ...set,
+                            difficultyLevel: `${set.difficultyLevel}/10`,
+                        };
+                    }),
+                };
+            }),
+            exhaustionLevel: `${recentWorkout.exhaustionLevel}/10`,
+            workoutScore: `${recentWorkout.workoutScore}/10`,
+        };
+    });
+
+    return result;
+};
+
 export const getCalculateNextWorkoutVolumePrompt = async (workout: WorkoutReturnType, calculateNextVolume = true): Promise<OpenAI.Chat.ChatCompletionMessageParam[]> => {
     const { weightUnit } = await getUnit();
     const user = await getUser();
@@ -416,24 +502,7 @@ export const getCalculateNextWorkoutVolumePrompt = async (workout: WorkoutReturn
                 // JSON.stringify(workoutsTable),
                 // '```',
                 '```json',
-                JSON.stringify(recentWorkouts.map((recentWorkout) => {
-                    return {
-                        ...recentWorkout,
-                        exerciseData: JSON.parse(recentWorkout.exerciseData || '[]').map((ed: ExerciseVolumeType) => {
-                            return {
-                                ...ed,
-                                sets: ed.sets.map((set) => {
-                                    return {
-                                        ...set,
-                                        difficultyLevel: `${set.difficultyLevel}/10`,
-                                    };
-                                }),
-                            };
-                        }),
-                        exhaustionLevel: `${recentWorkout.exhaustionLevel}/10`,
-                        workoutScore: `${recentWorkout.workoutScore}/10`,
-                    };
-                })),
+                JSON.stringify(formatRecentWorkouts(recentWorkouts)),
                 '```',
                 '\nAlso explain how the volume was calculated for the next workout.',
                 // 'If the user is bulking, increase the volume by at least 10%', // TODO: this is for debugging only
