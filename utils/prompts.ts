@@ -17,7 +17,9 @@ import {
     getRecentWorkoutsBetweenDates,
     getRecentWorkoutsByWorkoutId,
     getSetting,
-    getUser, getUserMetricsBetweenDates, getUserNutritionBetweenDates,
+    getUser,
+    getUserMetricsBetweenDates,
+    getUserNutritionBetweenDates,
     getWorkoutWithExercisesRepsAndSetsDetails,
 } from '@/utils/database';
 import { formatDate, getCurrentTimestampISOString } from '@/utils/date';
