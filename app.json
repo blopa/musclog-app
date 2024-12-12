@@ -52,7 +52,10 @@
         "android.permission.health.READ_HEALTH_DATA_HISTORY",
         "android.permission.health.READ_BASAL_METABOLIC_RATE",
         "android.permission.health.READ_NUTRITION",
-        "android.permission.health.WRITE_NUTRITION"
+        "android.permission.health.WRITE_NUTRITION",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.WAKE_LOCK"
       ]
     },
     "web": {

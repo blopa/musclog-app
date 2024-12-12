@@ -20,6 +20,7 @@ import { SettingsProvider, useSettings } from '@/storage/SettingsContext';
 import { SnackbarProvider } from '@/storage/SnackbarProvider';
 import { UnreadMessagesProvider, useUnreadMessages } from '@/storage/UnreadMessagesProvider';
 import { isAllowedLocation } from '@/utils/ai';
+import { startBackgroundFetch } from '@/utils/backgroundTasks';
 import {
     CustomDarkTheme,
     CustomLightTheme,
@@ -46,8 +47,8 @@ import { getEncryptionKey } from '@/utils/encryption';
 import { getLatestHealthConnectData } from '@/utils/healthConnect';
 import { captureException, captureMessage } from '@/utils/sentry';
 import { getDecrypter } from '@/utils/storage';
-import { ExerciseInsertType } from '@/utils/types';
 import 'react-native-reanimated';
+import { ExerciseInsertType } from '@/utils/types';
 import { FontAwesome } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Sentry from '@sentry/react-native';
@@ -70,7 +71,7 @@ export const unstable_settings = {
 
 SplashScreen.preventAutoHideAsync();
 
-export default function MasterRootLayout() {
+function MasterRootLayout() {
     return (
         <CustomErrorBoundary>
             <LayoutReloaderProvider>
@@ -265,3 +266,7 @@ function RootLayout() {
         </PaperProvider>
     );
 }
+
+startBackgroundFetch();
+
+export default Sentry.wrap(MasterRootLayout);

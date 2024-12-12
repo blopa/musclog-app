@@ -1041,7 +1041,7 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
                 showSnackbar(t('your_trainer_answered'), t('see_message'), () => navigation.navigate('chat'));
             }
         }, 500);
-    }, [dateRange, startDate, addNewChat, increaseUnreadMessages, showSnackbar, t, navigation]);
+    }, [dateRange, startDate, endDate, addNewChat, increaseUnreadMessages, showSnackbar, t, navigation]);
 
     const fabActions = useMemo(() => {
         const actions = [{

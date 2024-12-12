@@ -4,7 +4,6 @@ import { DARK, LIGHT } from '@/constants/colors';
 import { CustomThemeType } from '@/utils/colors';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import * as Sentry from '@sentry/react-native';
 import { useFocusEffect } from 'expo-router';
 import 'react-native-url-polyfill/auto';
 import React, { useCallback } from 'react';
@@ -76,4 +75,4 @@ function Index() {
     );
 }
 
-export default Sentry.wrap(Index);
+export default Index;

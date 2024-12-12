@@ -5,11 +5,11 @@ type UseAsyncStorageReturn<T> = {
     getValue: () => Promise<null | T>;
     removeValue: () => Promise<void>;
     setValue: (value: T) => Promise<void>;
-    value: null | T;
+    value: T;
 };
 
 const useAsyncStorage = <T,>(key: string, initialValue: T): UseAsyncStorageReturn<T> => {
-    const [storedValue, setStoredValue] = useState<null | T>(initialValue);
+    const [storedValue, setStoredValue] = useState<T>(initialValue);
 
     useEffect(() => {
         const loadStoredValue = async () => {
@@ -37,12 +37,12 @@ const useAsyncStorage = <T,>(key: string, initialValue: T): UseAsyncStorageRetur
 
     const removeValue = useCallback(async () => {
         try {
-            setStoredValue(null);
+            setStoredValue(initialValue);
             await AsyncStorage.removeItem(key);
         } catch (e) {
             console.error('Failed to remove value from AsyncStorage', e);
         }
-    }, [key]);
+    }, [initialValue, key]);
 
     const getValue = useCallback(async (): Promise<null | T> => {
         try {

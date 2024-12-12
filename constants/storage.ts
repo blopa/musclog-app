@@ -3,6 +3,7 @@ export const CURRENT_EXERCISE_INDEX = 'currentExerciseIndex';
 export const CURRENT_WORKOUT_PROGRESS = 'currentWorkoutProgress';
 export const WORKOUT_START_TIME = 'workoutStartTime';
 export const COUNTDOWN_START_TIME = 'countdownStartTime';
+export const UNREAD_MESSAGES_COUNT = 'unreadMessagesCount';
 
 export const GOOGLE_ACCESS_TOKEN = 'googleAccessToken';
 export const GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE = 'googleAccessTokenExpirationDate';
