@@ -14,6 +14,7 @@ import { getCurrentTimestampISOString, getDaysAgoTimestampISOString } from '@/ut
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as BackgroundFetch from 'expo-background-fetch';
 import * as TaskManager from 'expo-task-manager';
+import { Platform } from 'react-native';
 
 TaskManager.defineTask(DAILY_TASK, async () => {
     try {
@@ -63,6 +64,10 @@ TaskManager.defineTask(DAILY_TASK, async () => {
 });
 
 export const startBackgroundFetch = async () => {
+    if (Platform.OS === 'web') {
+        return;
+    }
+
     await BackgroundFetch.registerTaskAsync(DAILY_TASK, {
         minimumInterval: DAILY_TASK_INTERVAL,
         startOnBoot: true,
