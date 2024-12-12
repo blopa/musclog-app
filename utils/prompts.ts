@@ -405,13 +405,32 @@ export const getNutritionInsightsPrompt = async (startDate: string, endDate: str
     ];
 };
 
+type PromptWorkoutEventReturnType = Omit<WorkoutEventReturnType, 'date' | 'duration' | 'exerciseData' | 'exhaustionLevel' | 'id' | 'status' | 'title' | 'workoutId' | 'workoutScore'> & {
+    duration: string;
+    exerciseData: SimpleExerciseVolumeData[];
+    exhaustionLevel: string;
+    workoutScore: string;
+};
+
+type SimpleExerciseVolumeData = {
+    exercise: string;
+    sets: {
+        difficultyLevel: string,
+        reps: number,
+        restTime: string,
+        weight: string,
+    }[];
+};
+
 const formatRecentWorkouts = async (recentWorkouts: WorkoutEventReturnType[]) => {
     const { weightUnit } = await getUnit();
 
-    const result = recentWorkouts.map((recentWorkout) => {
+    const result: PromptWorkoutEventReturnType[] = [];
+
+    for (const recentWorkout of recentWorkouts) {
         const filteredRecentWorkout = Object.fromEntries(
             Object.entries(recentWorkout).filter(
-                ([key]) => [
+                ([key]) => ![
                     'alcohol',
                     'bodyWeight',
                     'calories',
@@ -433,32 +452,47 @@ const formatRecentWorkouts = async (recentWorkouts: WorkoutEventReturnType[]) =>
             )
         ) as WorkoutEventReturnType;
 
-        return {
+        const formattedWorkout = {
             ...filteredRecentWorkout,
-            ...recentWorkout.fatPercentage && {
+            ...(recentWorkout.fatPercentage && {
                 fatPercentage: `${safeToFixed(recentWorkout.fatPercentage)}%`,
-            },
-            ...recentWorkout.bodyWeight && {
-                bodyWeight: `${safeToFixed(recentWorkout.bodyWeight)}${weightUnit}`,
-            },
-            ...recentWorkout.workoutVolume && {
-                workoutVolume: recentWorkout.workoutVolume,
-            },
-            exerciseData: JSON.parse(filteredRecentWorkout.exerciseData || '[]').map((ed: ExerciseVolumeType) => {
-                return {
-                    ...ed,
-                    sets: ed.sets.map((set) => {
-                        return {
-                            ...set,
-                            difficultyLevel: `${set.difficultyLevel}/10`,
-                        };
-                    }),
-                };
             }),
+            ...(recentWorkout.bodyWeight && {
+                bodyWeight: `${safeToFixed(recentWorkout.bodyWeight)}${weightUnit}`,
+            }),
+            ...(recentWorkout.workoutVolume && {
+                workoutVolume: recentWorkout.workoutVolume,
+            }),
+            duration: `${recentWorkout.duration} ${i18n.t('minutes')}`,
+            exerciseData: [],
             exhaustionLevel: `${recentWorkout.exhaustionLevel}/10`,
             workoutScore: `${recentWorkout.workoutScore}/10`,
-        };
-    });
+        } as PromptWorkoutEventReturnType;
+
+        const parsedExerciseData = JSON.parse(filteredRecentWorkout.exerciseData || '[]');
+        for (const ed of parsedExerciseData) {
+            const exercise = await getExerciseById(ed.exerciseId);
+            const formattedExerciseData = {
+                exercise: exercise?.name || i18n.t('unknown'),
+                sets: [],
+            } as SimpleExerciseVolumeData;
+
+            for (const set of ed.sets) {
+                const formattedSet = {
+                    difficultyLevel: `${set.difficultyLevel}/10`,
+                    reps: set.reps,
+                    restTime: `${set.restTime} ${i18n.t('seconds')}`,
+                    weight: `${set.weight}${weightUnit}`,
+                };
+
+                formattedExerciseData.sets.push(formattedSet);
+            }
+
+            formattedWorkout.exerciseData.push(formattedExerciseData);
+        }
+
+        result.push(formattedWorkout);
+    }
 
     return result;
 };
