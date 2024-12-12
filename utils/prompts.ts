@@ -33,7 +33,7 @@ const getMainSystemPrompt = async () => {
     const language = await getSetting(LANGUAGE_CHOICE_TYPE);
 
     return [
-        'You are a friendly and knowledgeable personal trainer named "Chad". Your goal is to help users with their workouts, provide advice, and support their fitness journey.',
+        'You are a friendly and knowledgeable personal trainer named "Chad", with a PhD in exercises and nutrition. Your goal is to help users with their workouts, provide advice, and support their fitness journey.',
         `Your responses should be in a friendly and professional tone, using the "${(language?.value || EN_US)}" language, even if the rest of the conversation was in a different language.`,
         "Feel free to use colloquial language and emojis to make the conversation more engaging and fun, but don't overdo it.",
         'Try to act as least as possible as a robot/LLM, and more like a human personal trainer.',
@@ -339,26 +339,28 @@ export const getNutritionInsightsPrompt = async (startDate: string, endDate: str
     const userMetrics = await getUserMetricsBetweenDates(startDate, endDate);
     const userNutrition = await getUserNutritionBetweenDates(startDate, endDate);
 
+    const diffInDays = Math.floor((new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24));
+
     const fatAndWeight = userMetrics.map((userMetric) => ({
-        date: formatDate(userMetric.createdAt!, 'MMM d'),
+        date: formatDate(userMetric.createdAt!, 'MMM d, yy'),
         fatPercentage: userMetric.fatPercentage,
         weight: userMetric.weight,
     }));
 
-    const nutrition = Object.entries(aggregateNutritionData(userNutrition))
+    const nutrition = Object.entries(aggregateNutritionData(userNutrition, 'MMM d, yy'))
         .map(([date, data]) => ({
-            calories: `${data.calories}kcal`,
-            carbohydrate: `${data.carbohydrate}${foodWeightUnit}`,
+            calories: `${Math.round(data.calories)}kcal`,
+            carbohydrate: `${Math.round(data.carbohydrate)}${foodWeightUnit}`,
             date,
-            fat: `${data.fat}${foodWeightUnit}`,
-            protein: `${data.protein}${foodWeightUnit}`,
+            fat: `${Math.round(data.fat)}${foodWeightUnit}`,
+            protein: `${Math.round(data.protein)}${foodWeightUnit}`,
         }));
 
     return [
         {
             content: [
                 await getMainSystemPrompt(),
-                "Please provide insights about the user's nutrition, like if they are eating enough protein, if they are consuming too many calories, etc. Base your analysis on their goal, eating phase, and activity level.",
+                `Please provide insights about the user's nutrition in these ${diffInDays} days range, like if they are eating enough protein, if they are consuming too many calories, etc. Base your analysis on their goal, eating phase, and activity level.`,
                 BE_CONCISE_PROMPT,
                 getUserDetailsPrompt(user, weightUnit),
             ].join('\n'),
@@ -366,7 +368,7 @@ export const getNutritionInsightsPrompt = async (startDate: string, endDate: str
         },
         {
             content: [
-                'Please provide insights about my nutrition.',
+                `Please provide insights about my nutrition these ${diffInDays} days range:`,
                 fatAndWeight.length > 0 ? 'This is my historical data about my fat percentage and weight:\n```json\n' + JSON.stringify(fatAndWeight) + '\n```' : '',
                 nutrition.length > 0 ? 'And this is my historical data about my nutrition:```json\n' + JSON.stringify(nutrition) + '\n```' : '',
             ].join('\n'),

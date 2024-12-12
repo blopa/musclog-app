@@ -1,6 +1,6 @@
 import { NUTRITION_TYPES } from '@/constants/nutrition';
 import i18n from '@/lang/lang';
-import { formatDate } from '@/utils/date';
+import { formatDate, getCurrentTimestampISOString } from '@/utils/date';
 import { generateHash, safeToFixed } from '@/utils/string';
 import {
     AggregatedUserMetricsNutritionType,
@@ -69,9 +69,12 @@ export const calculateFFMI = (
     };
 };
 
-export const aggregateNutritionData = (data: UserNutritionDecryptedReturnType[]) => {
+export const aggregateNutritionData = (
+    data: UserNutritionDecryptedReturnType[],
+    formatStr: string = 'MMM d'
+) => {
     return data.reduce((acc, curr) => {
-        const date = formatDate(curr.createdAt || '', 'MMM d');
+        const date = formatDate(curr.createdAt || getCurrentTimestampISOString(), formatStr);
 
         if (curr.type === NUTRITION_TYPES.FULL_DAY) {
             acc[date] = {
