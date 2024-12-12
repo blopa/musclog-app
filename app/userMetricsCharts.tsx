@@ -1025,7 +1025,10 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
 
         setTimeout(async () => {
             setIsLoading(false);
-            const message = await getNutritionInsights((startDate || someDaysAgo).toISOString());
+            const message = await getNutritionInsights(
+                (startDate || someDaysAgo).toISOString(),
+                (endDate || new Date()).toISOString()
+            );
 
             if (message) {
                 await addNewChat({

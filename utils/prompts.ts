@@ -16,9 +16,7 @@ import {
     getRecentWorkouts,
     getRecentWorkoutsByWorkoutId,
     getSetting,
-    getUser,
-    getUserMetricsFromDate,
-    getUserNutritionFromDate,
+    getUser, getUserMetricsBetweenDates, getUserNutritionBetweenDates,
     getWorkoutWithExercisesRepsAndSetsDetails,
 } from '@/utils/database';
 import { formatDate, getCurrentTimestampISOString } from '@/utils/date';
@@ -334,12 +332,12 @@ export const getCreateWorkoutPlanFunctions = (): (FunctionDeclaration[] | OpenAI
     }];
 };
 
-export const getNutritionInsightsPrompt = async (startDate: string): Promise<OpenAI.Chat.ChatCompletionMessageParam[]> => {
+export const getNutritionInsightsPrompt = async (startDate: string, endDate: string): Promise<OpenAI.Chat.ChatCompletionMessageParam[]> => {
     const { unitSystem, weightUnit } = await getUnit();
     const foodWeightUnit = unitSystem === METRIC_SYSTEM ? GRAMS : OUNCES;
     const user = await getUser();
-    const userMetrics = await getUserMetricsFromDate(startDate);
-    const userNutrition = await getUserNutritionFromDate(startDate);
+    const userMetrics = await getUserMetricsBetweenDates(startDate, endDate);
+    const userNutrition = await getUserNutritionBetweenDates(startDate, endDate);
 
     const fatAndWeight = userMetrics.map((userMetric) => ({
         date: formatDate(userMetric.createdAt!, 'MMM d'),

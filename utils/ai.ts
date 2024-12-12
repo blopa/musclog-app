@@ -25,13 +25,13 @@ export const sendChatMessage = async (messages: any[]) => {
     return;
 };
 
-export const getNutritionInsights = async (startDate: string) => {
+export const getNutritionInsights = async (startDate: string, endDate: string) => {
     const vendor = await getAiApiVendor();
 
     if (vendor === OPENAI_API_KEY_TYPE) {
-        return openAiFunctions.getNutritionInsights(startDate);
+        return openAiFunctions.getNutritionInsights(startDate, endDate);
     } else if (vendor === GEMINI_API_KEY_TYPE) {
-        return geminiFunctions.getNutritionInsights(startDate);
+        return geminiFunctions.getNutritionInsights(startDate, endDate);
     }
 
     return;

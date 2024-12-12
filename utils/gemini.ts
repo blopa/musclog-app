@@ -200,7 +200,7 @@ export async function generateWorkoutPlan(messages: any[]): Promise<boolean> {
     return false;
 }
 
-export async function getNutritionInsights(startDate: string): Promise<string | undefined> {
+export async function getNutritionInsights(startDate: string, endDate: string): Promise<string | undefined> {
     const apiKey = await getApiKey();
     const accessToken = await getAccessToken();
 
@@ -208,7 +208,7 @@ export async function getNutritionInsights(startDate: string): Promise<string | 
         return;
     }
 
-    const prompt = await getNutritionInsightsPrompt(startDate);
+    const prompt = await getNutritionInsightsPrompt(startDate, endDate);
 
     const systemParts: Part[] = prompt
         .filter((msg) => msg.role === 'system')

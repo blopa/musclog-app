@@ -46,7 +46,7 @@ export async function generateWorkoutPlan(messages: any[]): Promise<boolean> {
     return false;
 }
 
-export async function getNutritionInsights(startDate: string) {
+export async function getNutritionInsights(startDate: string, endDate: string) {
     const apiKey = await getApiKey();
 
     if (!apiKey) {
@@ -59,7 +59,7 @@ export async function getNutritionInsights(startDate: string) {
     });
 
     const result = await openai.chat.completions.create({
-        messages: await getNutritionInsightsPrompt(startDate),
+        messages: await getNutritionInsightsPrompt(startDate, endDate),
         model: OPENAI_MODEL,
     });
 
