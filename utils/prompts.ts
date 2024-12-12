@@ -22,7 +22,7 @@ import {
 } from '@/utils/database';
 import { formatDate, getCurrentTimestampISOString } from '@/utils/date';
 import { safeToFixed } from '@/utils/string';
-import { ExerciseVolumeType, UserWithMetricsType, WorkoutEventReturnType, WorkoutReturnType } from '@/utils/types';
+import { UserWithMetricsType, WorkoutEventReturnType, WorkoutReturnType } from '@/utils/types';
 import { getUnit } from '@/utils/unit';
 import { FunctionDeclaration } from '@google/generative-ai';
 import OpenAI from 'openai';
@@ -131,7 +131,8 @@ export const getRecentWorkoutInsightsPrompt = async (workoutEventId: number): Pr
     const { weightUnit } = await getUnit();
     const user = await getUser();
     const recentWorkout = await getRecentWorkoutById(workoutEventId);
-    const workoutsTable = await workoutEventsToCsvTable(recentWorkout ? [recentWorkout] : []);
+    // const workoutsTable = await workoutEventsToCsvTable(recentWorkout ? [recentWorkout] : []);
+    const workoutsTable = await formatRecentWorkouts(recentWorkout ? [recentWorkout] : []);
 
     return [
         {
@@ -146,8 +147,8 @@ export const getRecentWorkoutInsightsPrompt = async (workoutEventId: number): Pr
         {
             content: [
                 'Please provide insights about my recent workouts:',
-                '```csv',
-                JSON.stringify(workoutsTable),
+                '```json',
+                JSON.stringify(workoutsTable[0] || '{}'),
                 '```',
             ].join('\n'),
             role: 'user',
@@ -199,7 +200,7 @@ export const getWorkoutVolumeInsightsPrompt = async (workoutId: number): Promise
         {
             content: [
                 'Please provide insights about my past workouts:',
-                '```json\n' + JSON.stringify(sortedWorkouts) + '\n```',
+                '```json\n' + JSON.stringify(await formatRecentWorkouts(sortedWorkouts)) + '\n```',
             ].join('\n'),
             role: 'user',
         },
@@ -353,7 +354,7 @@ export const getRecentWorkoutsInsightsPrompt = async (startDate: string, endDate
         {
             content: [
                 `Please provide insights about my recent workouts in these ${diffInDays} days range:`,
-                '```json\n' + JSON.stringify(formatRecentWorkouts(recentWorkouts)) + '\n```',
+                '```json\n' + JSON.stringify(await formatRecentWorkouts(recentWorkouts)) + '\n```',
             ].join('\n'),
             role: 'user',
         },
@@ -436,7 +437,6 @@ const formatRecentWorkouts = async (recentWorkouts: WorkoutEventReturnType[]) =>
                     'calories',
                     'carbohydrate',
                     'createdAt',
-                    'date',
                     'deletedAt',
                     'description',
                     'fat',
@@ -463,6 +463,10 @@ const formatRecentWorkouts = async (recentWorkouts: WorkoutEventReturnType[]) =>
             ...(recentWorkout.workoutVolume && {
                 workoutVolume: recentWorkout.workoutVolume,
             }),
+            ...(recentWorkout.eatingPhase && {
+                eatingPhase: recentWorkout.eatingPhase,
+            }),
+            date: recentWorkout.date.split('T')[0],
             duration: `${recentWorkout.duration} ${i18n.t('minutes')}`,
             exerciseData: [],
             exhaustionLevel: `${recentWorkout.exhaustionLevel}/10`,
@@ -536,7 +540,7 @@ export const getCalculateNextWorkoutVolumePrompt = async (workout: WorkoutReturn
                 // JSON.stringify(workoutsTable),
                 // '```',
                 '```json',
-                JSON.stringify(formatRecentWorkouts(recentWorkouts)),
+                JSON.stringify(await formatRecentWorkouts(recentWorkouts)),
                 '```',
                 '\nAlso explain how the volume was calculated for the next workout.',
                 // 'If the user is bulking, increase the volume by at least 10%', // TODO: this is for debugging only
@@ -843,45 +847,6 @@ export const getParsePastNutritionFunctions = (): (FunctionDeclaration[] | OpenA
     }];
 };
 
-const getRecentWorkoutDetails = async (recentWorkout: WorkoutEventReturnType, weightUnit: string) => {
-    const exerciseData = JSON.parse(recentWorkout.exerciseData || '[]');
-    const result: any = {
-        exhaustionLevel: `${recentWorkout.exhaustionLevel}/10`,
-        workoutScore: `${recentWorkout.workoutScore}/10`,
-    };
-
-    if (recentWorkout.bodyWeight) {
-        result.bodyWeight = `${safeToFixed(recentWorkout.bodyWeight)}${weightUnit}`;
-    }
-
-    if (recentWorkout.fatPercentage) {
-        result.fatPercentage = `${safeToFixed(recentWorkout.fatPercentage)}%`;
-    }
-
-    if (recentWorkout.eatingPhase) {
-        result.eatingPhase = recentWorkout.eatingPhase;
-    }
-
-    if (exerciseData.length) {
-        result.exerciseData = await Promise.all(exerciseData.map(async (exerciseData: ExerciseVolumeType) => {
-            const exercise = await getExerciseById(exerciseData.exerciseId);
-            return {
-                exercise: exercise?.name,
-                sets: exerciseData.sets.map((set) => ({
-                    difficultyLevel: `${set.difficultyLevel}/10`,
-                    reps: set.reps,
-                    restTime: `${set.restTime}s`,
-                    targetReps: set.targetReps,
-                    targetWeight: set.targetWeight,
-                    weight: set.weight,
-                })),
-            };
-        }));
-    }
-
-    return result;
-};
-
 export const getChatMessagePromptContent = async (): Promise<string> => {
     // const bioData = await getAllBio();
     const recentWorkoutsData = await getRecentWorkouts();
@@ -889,9 +854,7 @@ export const getChatMessagePromptContent = async (): Promise<string> => {
     const currentDate = getCurrentTimestampISOString().split('T')[0];
     const { weightUnit } = await getUnit();
 
-    const recentWorkoutDetails = await Promise.all(
-        recentWorkoutsData.slice(-4).map((data) => getRecentWorkoutDetails(data, weightUnit))
-    );
+    const recentWorkoutDetails = await formatRecentWorkouts(recentWorkoutsData.slice(-4));
 
     return [
         await getMainSystemPrompt(),
