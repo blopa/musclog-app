@@ -1,7 +1,8 @@
 import { OPENAI_MODELS } from '@/constants/ai';
 import {
     EXERCISE_IMAGE_GENERATION_TYPE,
-    OPENAI_API_KEY_TYPE, OPENAI_MODEL_TYPE,
+    OPENAI_API_KEY_TYPE,
+    OPENAI_MODEL_TYPE,
 } from '@/constants/storage';
 import i18n from '@/lang/lang';
 import { getSetting, processWorkoutPlan } from '@/utils/database';
