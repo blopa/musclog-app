@@ -519,6 +519,7 @@ export const generateExerciseImage = async (exerciseName: string): Promise<strin
         return 'https://via.placeholder.com/300';
     }
 
+    // TODO: must use gemini-2.0-flash-exp model for image generation
     const model = await configureBasicGenAI({ accessToken, apiKey });
 
     const generationConfig = {
