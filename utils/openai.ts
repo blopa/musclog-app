@@ -26,7 +26,7 @@ import {
     getWorkoutVolumeInsightsPrompt,
 } from './prompts';
 
-const OPENAI_MODEL = 'gpt-4o-mini';
+const DEFAULT_MODEL = 'gpt-4o-mini';
 
 export const getApiKey = async () =>
     (await getSetting(OPENAI_API_KEY_TYPE))?.value || process.env.EXPO_PUBLIC_FORCE_OPENAI_API_KEY;
@@ -61,7 +61,7 @@ export async function getNutritionInsights(startDate: string, endDate: string) {
 
     const result = await openai.chat.completions.create({
         messages: await getNutritionInsightsPrompt(startDate, endDate),
-        model: OPENAI_MODEL,
+        model: DEFAULT_MODEL,
     });
 
     return result?.choices?.[0].message.content;
@@ -81,7 +81,7 @@ export async function getRecentWorkoutsInsights(startDate: string, endDate: stri
 
     const result = await openai.chat.completions.create({
         messages: await getRecentWorkoutsInsightsPrompt(startDate, endDate),
-        model: OPENAI_MODEL,
+        model: DEFAULT_MODEL,
     });
 
     return result?.choices?.[0].message.content || undefined;
@@ -103,7 +103,7 @@ export async function sendChatMessage(messages: any[]) {
         function_call: { name: 'generateMessage' },
         functions: getSendChatMessageFunctions() as OpenAI.Chat.ChatCompletionCreateParams.Function[],
         messages,
-        model: OPENAI_MODEL,
+        model: DEFAULT_MODEL,
     });
 
     let jsonResponse = {
@@ -139,7 +139,7 @@ async function createWorkoutPlan(messages: any[]) {
         function_call: { name: 'generateWorkoutPlan' },
         functions: getCreateWorkoutPlanFunctions() as OpenAI.Chat.ChatCompletionCreateParams.Function[],
         messages: await createWorkoutPlanPrompt(messagesToSend),
-        model: OPENAI_MODEL,
+        model: DEFAULT_MODEL,
     });
 
     let jsonResponse = {
@@ -173,7 +173,7 @@ export const calculateNextWorkoutVolume = async (workout: WorkoutReturnType) => 
         function_call: { name: 'calculateNextWorkoutVolume' },
         functions: getCalculateNextWorkoutVolumeFunctions() as OpenAI.Chat.ChatCompletionCreateParams.Function[],
         messages: await getCalculateNextWorkoutVolumePrompt(workout),
-        model: OPENAI_MODEL,
+        model: DEFAULT_MODEL,
     });
 
     let jsonResponse = {
@@ -233,7 +233,7 @@ export const parsePastWorkouts = async (userMessage: string) => {
         function_call: { name: 'parsePastWorkouts' },
         functions: getParsePastWorkoutsFunctions() as OpenAI.Chat.ChatCompletionCreateParams.Function[],
         messages: await getParsePastWorkoutsPrompt(userMessage),
-        model: OPENAI_MODEL,
+        model: DEFAULT_MODEL,
     });
 
     let jsonResponse = {
@@ -266,7 +266,7 @@ export const parsePastNutrition = async (userMessage: string) => {
         function_call: { name: 'parsePastNutrition' },
         functions: getParsePastNutritionFunctions() as OpenAI.Chat.ChatCompletionCreateParams.Function[],
         messages: await getParsePastNutritionPrompt(userMessage),
-        model: OPENAI_MODEL,
+        model: DEFAULT_MODEL,
     });
 
     let jsonResponse = {
@@ -319,7 +319,7 @@ export async function estimateNutritionFromPhoto(photoUri: string) {
             }],
             role: 'user',
         }],
-        model: OPENAI_MODEL,
+        model: DEFAULT_MODEL,
     });
 
     let jsonResponse = {
@@ -379,7 +379,7 @@ export async function extractMacrosFromLabelPhoto(photoUri: string) {
             }],
             role: 'user',
         }],
-        model: OPENAI_MODEL,
+        model: DEFAULT_MODEL,
     });
 
     let jsonResponse = {
@@ -416,7 +416,7 @@ export async function getRecentWorkoutInsights(workoutEventId: number) {
 
     const result = await openai.chat.completions.create({
         messages: await getRecentWorkoutInsightsPrompt(workoutEventId),
-        model: OPENAI_MODEL,
+        model: DEFAULT_MODEL,
     });
 
     return result?.choices?.[0].message.content;
@@ -436,7 +436,7 @@ export async function getWorkoutInsights(workoutId: number) {
 
     const result = await openai.chat.completions.create({
         messages: await getWorkoutInsightsPrompt(workoutId),
-        model: OPENAI_MODEL,
+        model: DEFAULT_MODEL,
     });
 
     return result?.choices?.[0].message.content;
@@ -456,7 +456,7 @@ export async function getWorkoutVolumeInsights(workoutId: number) {
 
     const result = await openai.chat.completions.create({
         messages: await getWorkoutVolumeInsightsPrompt(workoutId),
-        model: OPENAI_MODEL,
+        model: DEFAULT_MODEL,
     });
 
     return result?.choices?.[0].message.content;
@@ -475,7 +475,7 @@ export async function isValidApiKey(apiKey: string) {
                 content: 'hi',
                 role: 'user',
             }],
-            model: OPENAI_MODEL,
+            model: DEFAULT_MODEL,
         });
 
         return true;
