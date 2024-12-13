@@ -380,19 +380,29 @@ export default function AISettings({ navigation }: { navigation: NavigationProp<
                 <List.Section>
                     <List.Subheader>{t('model_selection')}</List.Subheader>
                     <List.Item
-                        description={
-                            Object.values(GEMINI_MODELS)
-                                .find((m) => m.value === Number(geminiModel))?.model || t('not_set')
-                        }
+                        description={t('gemini_model_description')}
                         onPress={() => setGeminiModelModalVisible(true)}
+                        right={() => (
+                            <View style={styles.rightContainer}>
+                                <Text>
+                                    {Object.values(GEMINI_MODELS).find((m) => m.value === Number(geminiModel))?.model || t('not_set')}
+                                </Text>
+                                <List.Icon icon="chevron-right" />
+                            </View>
+                        )}
                         title={t('gemini_model')}
                     />
                     <List.Item
-                        description={
-                            Object.values(OPENAI_MODELS)
-                                .find((m) => m.value === Number(openAiModel))?.model || t('not_set')
-                        }
+                        description={t('openai_model_description')}
                         onPress={() => setOpenAiModelModalVisible(true)}
+                        right={() => (
+                            <View style={styles.rightContainer}>
+                                <Text>
+                                    {Object.values(OPENAI_MODELS).find((m) => m.value === Number(openAiModel))?.model || t('not_set')}
+                                </Text>
+                                <List.Icon icon="chevron-right" />
+                            </View>
+                        )}
                         title={t('openai_model')}
                     />
                 </List.Section>

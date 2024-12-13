@@ -4,6 +4,8 @@
     "general_settings": "Configuraciones Generales",
     "openai_key": "Clave de OpenAI",
     "google_gemini_key": "Clave de Google Gemini",
+    "gemini_model_description": "Elige el modelo de Gemini para usar en toda la generación de IA.",
+    "openai_model_description": "Elige el modelo de OpenAI para usar en toda la generación de IA.",
     "model_selection": "Selección de Modelo",
     "gemini_model": "Modelo de Gemini",
     "openai_model": "Modelo de OpenAI",
