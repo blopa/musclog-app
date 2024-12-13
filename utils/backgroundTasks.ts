@@ -7,7 +7,7 @@ import {
     WORKOUT_INSIGHT_DISABLED,
     WORKOUT_INSIGHTS_TYPE,
 } from '@/constants/storage';
-import { DAILY_TASK, DAILY_TASK_INTERVAL } from '@/constants/tasks';
+import { DAILY_TASK, DAILY_TASK_INTERVAL, LAST_DAILY_TASK_RUN_DATE } from '@/constants/tasks';
 import { getNutritionInsights, getRecentWorkoutsInsights } from '@/utils/ai';
 import { addChat, getSetting } from '@/utils/database';
 import { getCurrentTimestampISOString, getDaysAgoTimestampISOString } from '@/utils/date';
@@ -18,6 +18,18 @@ import { Platform } from 'react-native';
 
 TaskManager.defineTask(DAILY_TASK, async () => {
     try {
+        const currentDate = new Date();
+        const currentHour = currentDate.getHours();
+
+        // Ensure the task only runs between 3:00 - 3:10 am
+        if (currentHour < 3) {
+            console.log('Task not running, outside of 3am window.');
+            return BackgroundFetch.BackgroundFetchResult.NoData;
+        }
+
+        // TODO: check if it was already run today
+        const lastTimeRun = await AsyncStorage.getItem(LAST_DAILY_TASK_RUN_DATE);
+
         const nutritionInsightType = await getSetting(NUTRITION_INSIGHTS_TYPE);
         const workoutInsightType = await getSetting(WORKOUT_INSIGHTS_TYPE);
 
@@ -36,6 +48,8 @@ TaskManager.defineTask(DAILY_TASK, async () => {
 
                 const currentCount = await AsyncStorage.getItem(UNREAD_MESSAGES_COUNT) || '0';
                 await AsyncStorage.setItem(UNREAD_MESSAGES_COUNT, (parseInt(currentCount, 10) + 1).toString());
+            } else {
+                console.log('No workout insight message to add.');
             }
         }
 
@@ -54,26 +68,42 @@ TaskManager.defineTask(DAILY_TASK, async () => {
 
                 const currentCount = await AsyncStorage.getItem(UNREAD_MESSAGES_COUNT) || '0';
                 await AsyncStorage.setItem(UNREAD_MESSAGES_COUNT, (parseInt(currentCount, 10) + 1).toString());
+            } else {
+                console.log('No nutrition insight message to add.');
             }
         }
 
         return BackgroundFetch.BackgroundFetchResult.NewData;
     } catch (error) {
+        console.error('Error running daily task:', error);
         return BackgroundFetch.BackgroundFetchResult.Failed;
     }
 });
 
 export const startBackgroundFetch = async () => {
-    if (Platform.OS === 'web') {
-        return;
+    try {
+        if (Platform.OS === 'web') {
+            console.log('Background fetch is not available on the web.');
+            return;
+        }
+
+        await BackgroundFetch.registerTaskAsync(DAILY_TASK, {
+            minimumInterval: DAILY_TASK_INTERVAL, // Run every 5 hours
+            startOnBoot: true,
+            stopOnTerminate: false,
+        });
+
+        const status = await BackgroundFetch.getStatusAsync();
+        if (status === BackgroundFetch.BackgroundFetchStatus.Available) {
+            console.log('Background fetch is available and registered.');
+        } else if (status === BackgroundFetch.BackgroundFetchStatus.Restricted) {
+            console.log('Background fetch is restricted.');
+        } else if (status === BackgroundFetch.BackgroundFetchStatus.Denied) {
+            console.log('Background fetch is denied.');
+        } else {
+            console.log('Background fetch status:', status);
+        }
+    } catch (error) {
+        console.error('Error starting background fetch:', error);
     }
-
-    await BackgroundFetch.registerTaskAsync(DAILY_TASK, {
-        minimumInterval: DAILY_TASK_INTERVAL,
-        startOnBoot: true,
-        stopOnTerminate: false,
-    });
-
-    const status = await BackgroundFetch.getStatusAsync();
-    console.log('Background fetch status:', status);
 };

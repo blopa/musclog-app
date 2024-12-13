@@ -3,7 +3,7 @@ import type { NutritionRecord } from 'react-native-health-connect/src/types/reco
 import { DEFAULT_PAGE_SIZE, USER_METRICS_SOURCES } from '@/constants/healthConnect';
 import { EATING_PHASES, MEAL_TYPE, NUTRITION_TYPES } from '@/constants/nutrition';
 import { LAST_TIME_APP_USED, READ_HEALTH_CONNECT_TYPE } from '@/constants/storage';
-import { LAST_RUN_KEY } from '@/constants/tasks';
+import { LAST_HEALTH_CONNECT_SYNC_TIME } from '@/constants/tasks';
 import {
     checkIsHealthConnectedPermitted,
     getHealthConnectData,
@@ -97,7 +97,7 @@ export const getLatestHealthConnectData = async () => {
     const now = new Date();
     const hours = now.getHours();
 
-    const lastRunDate = await AsyncStorage.getItem(LAST_RUN_KEY);
+    const lastRunDate = await AsyncStorage.getItem(LAST_HEALTH_CONNECT_SYNC_TIME);
     const lastTimeUsed = await AsyncStorage.getItem(LAST_TIME_APP_USED);
     const today = getCurrentTimestampISOString()
         .split('T')[0];
@@ -107,7 +107,7 @@ export const getLatestHealthConnectData = async () => {
 
         const isPermitted = await checkIsHealthConnectedPermitted('read');
         if (!isPermitted) {
-            await AsyncStorage.setItem(LAST_RUN_KEY, today);
+            await AsyncStorage.setItem(LAST_HEALTH_CONNECT_SYNC_TIME, today);
             await addOrUpdateSetting({
                 type: READ_HEALTH_CONNECT_TYPE,
                 value: 'false',
@@ -174,7 +174,7 @@ export const getLatestHealthConnectData = async () => {
                 }
             }
 
-            await AsyncStorage.setItem(LAST_RUN_KEY, today);
+            await AsyncStorage.setItem(LAST_HEALTH_CONNECT_SYNC_TIME, today);
         }
     }
 };
