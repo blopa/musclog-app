@@ -171,7 +171,7 @@ const FoodTrackingModal = ({
         }
 
         onClose();
-    }, [calculatedValues.kcal, calculatedValues.carbs, calculatedValues.fat, calculatedValues.protein, selectedDate, unitAmount, mealType, editableName, t, userNutritionId, onClose, food?.productCode]);
+    }, [calculatedValues.kcal, calculatedValues.carbs, calculatedValues.fat, calculatedValues.protein, selectedDate, unitAmount, mealType, editableName, food?.productTitle, food?.productCode, t, userNutritionId, onClose, isFavoriteFood]);
 
     useEffect(() => {
         if (food) {

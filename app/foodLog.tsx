@@ -272,7 +272,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 </ScrollView>
             </Screen>
         );
-    }, [consumed, recentTrackedFoods, selectedDate, styles.container, styles.listContent]);
+    }, [consumed, foodHistory, foodHistoryType, selectedDate, styles.container, styles.listContent, styles.segmentedButtons, t]);
 
     const handleEditNutrition = (userNutrition: UserNutritionDecryptedReturnType) => {
         setSelectedFood({

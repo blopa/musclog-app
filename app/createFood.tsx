@@ -181,7 +181,7 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
         } finally {
             setIsSaving(false);
         }
-    }, [foodName, formData, t]);
+    }, [foodName, formData, isFavoriteFood, t]);
 
     const textFields = [
         'name',
