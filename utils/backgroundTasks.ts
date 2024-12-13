@@ -10,7 +10,11 @@ import {
 import { DAILY_TASK, DAILY_TASK_INTERVAL, LAST_DAILY_TASK_RUN_DATE } from '@/constants/tasks';
 import { getNutritionInsights, getRecentWorkoutsInsights } from '@/utils/ai';
 import { addChat, getSetting } from '@/utils/database';
-import { getCurrentTimestampISOString, getDaysAgoTimestampISOString } from '@/utils/date';
+import {
+    getCurrentTimestampISOString,
+    getDaysAgoTimestampISOString,
+    getStartOfDayTimestampISOString,
+} from '@/utils/date';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as BackgroundFetch from 'expo-background-fetch';
 import * as TaskManager from 'expo-task-manager';
@@ -22,20 +26,25 @@ TaskManager.defineTask(DAILY_TASK, async () => {
         const currentHour = currentDate.getHours();
 
         // Ensure the task only runs between 3:00 - 3:10 am
-        if (currentHour < 3) {
+        if (currentHour < 3 || currentHour > 3) {
             console.log('Task not running, outside of 3am window.');
             return BackgroundFetch.BackgroundFetchResult.NoData;
         }
 
-        // TODO: check if it was already run today
+        // Check if it was already run today
         const lastTimeRun = await AsyncStorage.getItem(LAST_DAILY_TASK_RUN_DATE);
+        const today = currentDate.toISOString().split('T')[0];
+        if (lastTimeRun === today) {
+            console.log('Task already ran today.');
+            return BackgroundFetch.BackgroundFetchResult.NoData;
+        }
 
         const nutritionInsightType = await getSetting(NUTRITION_INSIGHTS_TYPE);
         const workoutInsightType = await getSetting(WORKOUT_INSIGHTS_TYPE);
 
         if (workoutInsightType?.value && workoutInsightType.value !== WORKOUT_INSIGHT_DISABLED) {
-            const startDate = getDaysAgoTimestampISOString(workoutInsightType.value === WORKOUT_INSIGHT_DAILY ? 1 : 7);
-            const endDate = getCurrentTimestampISOString();
+            const startDate = getStartOfDayTimestampISOString(getDaysAgoTimestampISOString(workoutInsightType.value === WORKOUT_INSIGHT_DAILY ? 1 : 7));
+            const endDate = getStartOfDayTimestampISOString(getCurrentTimestampISOString());
             const message = await getRecentWorkoutsInsights(startDate, endDate);
 
             if (message) {
@@ -54,8 +63,8 @@ TaskManager.defineTask(DAILY_TASK, async () => {
         }
 
         if (nutritionInsightType?.value && nutritionInsightType.value !== NUTRITION_INSIGHT_DISABLED) {
-            const startDate = getDaysAgoTimestampISOString(nutritionInsightType.value === NUTRITION_INSIGHT_DAILY ? 1 : 7);
-            const endDate = getCurrentTimestampISOString();
+            const startDate = getStartOfDayTimestampISOString(getDaysAgoTimestampISOString(nutritionInsightType.value === NUTRITION_INSIGHT_DAILY ? 1 : 7));
+            const endDate = getStartOfDayTimestampISOString(getCurrentTimestampISOString());
             const message = await getNutritionInsights(startDate, endDate);
 
             if (message) {
@@ -72,6 +81,9 @@ TaskManager.defineTask(DAILY_TASK, async () => {
                 console.log('No nutrition insight message to add.');
             }
         }
+
+        // Update the last run date
+        await AsyncStorage.setItem(LAST_DAILY_TASK_RUN_DATE, today);
 
         return BackgroundFetch.BackgroundFetchResult.NewData;
     } catch (error) {
