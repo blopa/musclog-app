@@ -100,7 +100,7 @@ export const startBackgroundFetch = async () => {
         }
 
         await BackgroundFetch.registerTaskAsync(DAILY_TASK, {
-            minimumInterval: DAILY_TASK_INTERVAL, // Run every 5 hours
+            minimumInterval: DAILY_TASK_INTERVAL,
             startOnBoot: true,
             stopOnTerminate: false,
         });
