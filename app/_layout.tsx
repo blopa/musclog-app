@@ -172,11 +172,11 @@ function RootLayout() {
                     });
                     await addOrUpdateSetting({
                         type: GEMINI_MODEL_TYPE,
-                        value: GEMINI_MODELS.GEMINI_FLASH_1_5.model,
+                        value: GEMINI_MODELS.GEMINI_FLASH_1_5.value.toString(),
                     });
                     await addOrUpdateSetting({
                         type: OPENAI_MODEL_TYPE,
-                        value: OPENAI_MODELS.GPT_4O_MINI.model,
+                        value: OPENAI_MODELS.GPT_4O_MINI.value.toString(),
                     });
                     // await addOrUpdateSetting({
                     //     type: USE_FAT_PERCENTAGE_TDEE_TYPE,
