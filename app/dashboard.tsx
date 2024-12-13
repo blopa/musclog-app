@@ -69,22 +69,19 @@ export default function Dashboard({ navigation }: {
     });
 
     const loadConsumed = useCallback(async () => {
-        const startDate = getStartOfDayTimestampISOString(getDaysAgoTimestampISOString(1));
-        const endDate = getEndOfDayTimestampISOString(getCurrentTimestampISOString());
-
         await syncHealthConnectData(
             checkReadIsPermitted,
             checkWriteIsPermitted,
             insertHealthData,
-            startDate,
-            endDate,
+            getStartOfDayTimestampISOString(getDaysAgoTimestampISOString(1)),
+            getEndOfDayTimestampISOString(getCurrentTimestampISOString()),
             1000
         );
 
         try {
             const consumedData = await getUserNutritionBetweenDates(
-                startDate,
-                endDate
+                getStartOfDayTimestampISOString(getCurrentTimestampISOString()),
+                getEndOfDayTimestampISOString(getCurrentTimestampISOString())
             );
 
             const consumed = consumedData.reduce(

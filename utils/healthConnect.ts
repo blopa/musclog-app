@@ -273,7 +273,7 @@ export const syncHealthConnectData = async (
                 date: nutrition.startTime,
                 fat: nutrition?.totalFat?.inGrams || 0,
                 fiber: nutrition?.dietaryFiber?.inGrams || 0,
-                mealType: nutrition.mealType || 0,
+                mealType: nutrition.mealType || MEAL_TYPE.UNKNOWN,
                 monounsaturatedFat: nutrition?.monounsaturatedFat?.inGrams || 0,
                 name: nutrition?.name || '',
                 polyunsaturatedFat: nutrition?.polyunsaturatedFat?.inGrams || 0,

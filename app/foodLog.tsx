@@ -276,7 +276,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
     const MealsRoute = useCallback(() => {
         const mealGroups = consumedFoods.reduce((groups, food) => {
-            const mealType = food.mealType || '0';
+            const mealType = food.mealType || MEAL_TYPE.UNKNOWN;
             if (!groups[mealType]) {
                 groups[mealType] = [];
             }
@@ -299,72 +299,74 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 {consumedFoods.length === 0 ? (
                     <Text style={styles.noTrackedText}>{t('no_tracked_meals')}</Text>
                 ) : null}
-                {Object.entries(MEAL_TYPE).map(([mealTypeName, mealType]) => {
-                    const userNutritions = mealGroups[mealType];
-                    if (userNutritions && userNutritions.length > 0) {
-                        return (
-                            <View key={mealTypeName} style={styles.mealContainer}>
-                                <View style={styles.mealHeader}>
-                                    <Text style={styles.mealTitle}>
-                                        {mealCategories.find((m) => m.name === mealTypeName)?.icon} {t(mealTypeName)}
-                                    </Text>
-                                </View>
-                                {userNutritions.map((userNutrition, index) => (
-                                    <ThemedCard key={index} style={styles.foodItem}>
-                                        <Card.Content style={styles.cardContent}>
-                                            <View style={styles.cardHeader}>
-                                                <Text style={styles.cardTitle}>
-                                                    {userNutrition.name || t('unknown_food')}
-                                                </Text>
-                                                <View style={styles.iconContainer}>
-                                                    <TouchableOpacity onPress={() => handleEditNutrition(userNutrition)}>
-                                                        <FontAwesome5 color={colors.primary} name="edit" size={20} />
-                                                    </TouchableOpacity>
-                                                    <TouchableOpacity onPress={() => handleDeleteNutrition(userNutrition)}>
-                                                        <FontAwesome5 color={colors.primary} name="trash" size={20} />
-                                                    </TouchableOpacity>
+                {Object.entries(MEAL_TYPE)
+                    .sort(([_, mealTypeA], [__, mealTypeB]) => mealTypeA - mealTypeB)
+                    .map(([mealTypeName, mealType]) => {
+                        const userNutritions = mealGroups[mealType];
+                        if (userNutritions && userNutritions.length > 0) {
+                            return (
+                                <View key={mealTypeName} style={styles.mealContainer}>
+                                    <View style={styles.mealHeader}>
+                                        <Text style={styles.mealTitle}>
+                                            {mealCategories.find((m) => m.name === mealTypeName.toLowerCase())?.icon} {t(mealTypeName.toLowerCase())}
+                                        </Text>
+                                    </View>
+                                    {userNutritions.map((userNutrition, index) => (
+                                        <ThemedCard key={index} style={styles.foodItem}>
+                                            <Card.Content style={styles.cardContent}>
+                                                <View style={styles.cardHeader}>
+                                                    <Text style={styles.cardTitle}>
+                                                        {userNutrition.name || t('unknown_food')}
+                                                    </Text>
+                                                    <View style={styles.iconContainer}>
+                                                        <TouchableOpacity onPress={() => handleEditNutrition(userNutrition)}>
+                                                            <FontAwesome5 color={colors.primary} name="edit" size={20} />
+                                                        </TouchableOpacity>
+                                                        <TouchableOpacity onPress={() => handleDeleteNutrition(userNutrition)}>
+                                                            <FontAwesome5 color={colors.primary} name="trash" size={20} />
+                                                        </TouchableOpacity>
+                                                    </View>
                                                 </View>
-                                            </View>
-                                            <View style={styles.metricRow}>
-                                                <Text style={styles.metricDetail}>
-                                                    {t('item_value', {
-                                                        item: t('calories'),
-                                                        value: safeToFixed(userNutrition.calories),
-                                                    })}
-                                                </Text>
-                                                <Text style={styles.metricDetail}>
-                                                    {t('item_value_unit', {
-                                                        item: t('carbs'),
-                                                        value: getDisplayFormattedWeight(userNutrition.carbohydrate || 0, GRAMS, isImperial).toString(),
-                                                        weightUnit: macroUnit,
-                                                    })}
-                                                </Text>
-                                            </View>
-                                            <View style={styles.metricRow}>
-                                                <Text style={styles.metricDetail}>
-                                                    {t('item_value_unit', {
-                                                        item: t('fats'),
-                                                        value: getDisplayFormattedWeight(userNutrition.fat || 0, GRAMS, isImperial).toString(),
-                                                        weightUnit: macroUnit,
-                                                    })}
-                                                </Text>
-                                                <Text style={styles.metricDetail}>
-                                                    {t('item_value_unit', {
-                                                        item: t('proteins'),
-                                                        value: getDisplayFormattedWeight(userNutrition.protein || 0, GRAMS, isImperial).toString(),
-                                                        weightUnit: macroUnit,
-                                                    })}
-                                                </Text>
-                                            </View>
-                                        </Card.Content>
-                                    </ThemedCard>
-                                ))}
-                            </View>
-                        );
-                    } else {
-                        return null;
-                    }
-                })}
+                                                <View style={styles.metricRow}>
+                                                    <Text style={styles.metricDetail}>
+                                                        {t('item_value', {
+                                                            item: t('calories'),
+                                                            value: safeToFixed(userNutrition.calories),
+                                                        })}
+                                                    </Text>
+                                                    <Text style={styles.metricDetail}>
+                                                        {t('item_value_unit', {
+                                                            item: t('carbs'),
+                                                            value: getDisplayFormattedWeight(userNutrition.carbohydrate || 0, GRAMS, isImperial).toString(),
+                                                            weightUnit: macroUnit,
+                                                        })}
+                                                    </Text>
+                                                </View>
+                                                <View style={styles.metricRow}>
+                                                    <Text style={styles.metricDetail}>
+                                                        {t('item_value_unit', {
+                                                            item: t('fats'),
+                                                            value: getDisplayFormattedWeight(userNutrition.fat || 0, GRAMS, isImperial).toString(),
+                                                            weightUnit: macroUnit,
+                                                        })}
+                                                    </Text>
+                                                    <Text style={styles.metricDetail}>
+                                                        {t('item_value_unit', {
+                                                            item: t('proteins'),
+                                                            value: getDisplayFormattedWeight(userNutrition.protein || 0, GRAMS, isImperial).toString(),
+                                                            weightUnit: macroUnit,
+                                                        })}
+                                                    </Text>
+                                                </View>
+                                            </Card.Content>
+                                        </ThemedCard>
+                                    ))}
+                                </View>
+                            );
+                        } else {
+                            return null;
+                        }
+                    })}
             </ScrollView>
         );
     }, [consumedFoods, styles.mealsContent, styles.noTrackedText, styles.mealContainer, styles.mealHeader, styles.mealTitle, styles.foodItem, styles.cardContent, styles.cardHeader, styles.cardTitle, styles.iconContainer, styles.metricRow, styles.metricDetail, isLoading, handleSyncHealthConnect, colors.primary, t, mealCategories, isImperial, macroUnit, handleDeleteNutrition]);
