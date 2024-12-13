@@ -300,11 +300,7 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
     useFocusEffect(
         useCallback(() => {
             calculateTdee();
-
-            return () => {
-                resetScreenData();
-            };
-        }, [calculateTdee, resetScreenData])
+        }, [calculateTdee])
     );
 
     const handleModalClose = useCallback(() => {
