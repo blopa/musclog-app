@@ -50,6 +50,8 @@ export const GOOGLE_OAUTH_GEMINI_ENABLED_TYPE = 'google_oauth_gemini_enabled_typ
 export const BUG_REPORT_TYPE = 'bug_report_type';
 export const NUTRITION_INSIGHTS_TYPE = 'nutrition_insights_type';
 export const WORKOUT_INSIGHTS_TYPE = 'workout_insights_type';
+export const GEMINI_MODEL_TYPE = 'gemini_model_type';
+export const OPENAI_MODEL_TYPE = 'openai_model_type';
 
 export const NUTRITION_INSIGHT_DAILY = 'daily';
 export const NUTRITION_INSIGHT_WEEKLY = 'weekly';

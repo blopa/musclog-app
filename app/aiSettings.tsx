@@ -1,10 +1,13 @@
+import CustomPicker from '@/components/CustomPicker';
 import CustomTextInput from '@/components/CustomTextInput';
 import { GoogleSignInButton } from '@/components/GoogleSignInButton';
 import { Screen } from '@/components/Screen';
 import ThemedModal from '@/components/ThemedModal';
+import { GEMINI_MODELS, OPENAI_MODELS } from '@/constants/ai';
 import {
     EXERCISE_IMAGE_GENERATION_TYPE,
     GEMINI_API_KEY_TYPE,
+    GEMINI_MODEL_TYPE,
     GOOGLE_OAUTH_GEMINI_ENABLED_TYPE,
     GOOGLE_REFRESH_TOKEN_TYPE,
     NUTRITION_INSIGHT_DAILY,
@@ -12,6 +15,7 @@ import {
     NUTRITION_INSIGHT_WEEKLY,
     NUTRITION_INSIGHTS_TYPE,
     OPENAI_API_KEY_TYPE,
+    OPENAI_MODEL_TYPE,
     WORKOUT_INSIGHT_DAILY,
     WORKOUT_INSIGHT_DISABLED,
     WORKOUT_INSIGHT_WEEKLY,
@@ -55,6 +59,11 @@ export default function AISettings({ navigation }: { navigation: NavigationProp<
 
     const { colors, dark } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors, dark);
+
+    const [geminiModel, setGeminiModel] = useState<string>('');
+    const [openAiModel, setOpenAiModel] = useState<string>('');
+    const [geminiModelModalVisible, setGeminiModelModalVisible] = useState(false);
+    const [openAiModelModalVisible, setOpenAiModelModalVisible] = useState(false);
 
     const [refreshToken, setRefreshToken] = useState<null | string>(null);
     const [googleSignInModalVisible, setGoogleSignInModalVisible] = useState(false);
@@ -287,6 +296,18 @@ export default function AISettings({ navigation }: { navigation: NavigationProp<
         setLoading(false);
     }, [tempWorkoutInsights, updateSettingWithLoadingState]);
 
+    const handleConfirmGeminiModelChange = useCallback(async (selectedModel: string) => {
+        await addOrUpdateSettingValue(GEMINI_MODEL_TYPE, selectedModel);
+        setGeminiModel(selectedModel);
+        setGeminiModelModalVisible(false);
+    }, [addOrUpdateSettingValue]);
+
+    const handleConfirmOpenAiModelChange = useCallback(async (selectedModel: string) => {
+        await addOrUpdateSettingValue(OPENAI_MODEL_TYPE, selectedModel);
+        setOpenAiModel(selectedModel);
+        setOpenAiModelModalVisible(false);
+    }, [addOrUpdateSettingValue]);
+
     return (
         <Screen style={styles.container}>
             <Appbar.Header
@@ -344,6 +365,19 @@ export default function AISettings({ navigation }: { navigation: NavigationProp<
                             </View>
                         )}
                         title={t('google_gemini_key')}
+                    />
+                </List.Section>
+                <List.Section>
+                    <List.Subheader>{t('model_selection')}</List.Subheader>
+                    <List.Item
+                        description={geminiModel || t('not_set')}
+                        onPress={() => setGeminiModelModalVisible(true)}
+                        title={t('gemini_model')}
+                    />
+                    <List.Item
+                        description={openAiModel || t('not_set')}
+                        onPress={() => setOpenAiModelModalVisible(true)}
+                        title={t('openai_model')}
                     />
                 </List.Section>
                 <List.Section>
@@ -515,7 +549,6 @@ export default function AISettings({ navigation }: { navigation: NavigationProp<
                     {loading ? <ActivityIndicator color={colors.surface} /> : null}
                 </View>
             </ThemedModal>
-            {/* New Modal for Workout Insights */}
             <ThemedModal
                 cancelText={t('cancel')}
                 confirmText={t('confirm')}
@@ -537,6 +570,36 @@ export default function AISettings({ navigation }: { navigation: NavigationProp<
                     ))}
                     {loading ? <ActivityIndicator color={colors.surface} /> : null}
                 </View>
+            </ThemedModal>
+            <ThemedModal
+                cancelText={t('cancel')}
+                onClose={() => setGeminiModelModalVisible(false)}
+                title={t('gemini_model')}
+                visible={geminiModelModalVisible}
+            >
+                <CustomPicker
+                    items={Object.entries(GEMINI_MODELS).map(([key, value]) => ({
+                        label: key.toLowerCase(),
+                        value: value.value.toString(),
+                    }))}
+                    onValueChange={handleConfirmGeminiModelChange}
+                    selectedValue={geminiModel}
+                />
+            </ThemedModal>
+            <ThemedModal
+                cancelText={t('cancel')}
+                onClose={() => setOpenAiModelModalVisible(false)}
+                title={t('openai_model')}
+                visible={openAiModelModalVisible}
+            >
+                <CustomPicker
+                    items={Object.entries(OPENAI_MODELS).map(([key, value]) => ({
+                        label: key.toLowerCase(),
+                        value: value.value.toString(),
+                    }))}
+                    onValueChange={handleConfirmOpenAiModelChange}
+                    selectedValue={openAiModel}
+                />
             </ThemedModal>
         </Screen>
     );

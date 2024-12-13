@@ -1,5 +1,6 @@
 import type { ChatCompletionMessageParam } from 'openai/resources';
 
+import { GEMINI_MODELS } from '@/constants/ai';
 import { EXERCISE_IMAGE_GENERATION_TYPE, GEMINI_API_KEY_TYPE } from '@/constants/storage';
 import i18n from '@/lang/lang';
 import { getSetting, processWorkoutPlan } from '@/utils/database';
@@ -41,8 +42,7 @@ import {
     getWorkoutVolumeInsightsPrompt,
 } from './prompts';
 
-const DEFAULT_MODEL = 'gemini-1.5-flash';
-// const DEFAULT_MODEL = 'gemini-1.5-pro-latest';
+const DEFAULT_MODEL = GEMINI_MODELS.GEMINI_FLASH_1_5.model;
 
 export const getApiKey = async () =>
     (await getSetting(GEMINI_API_KEY_TYPE))?.value || process.env.EXPO_PUBLIC_FORCE_GEMINI_API_KEY;

@@ -1,3 +1,4 @@
+import { OPENAI_MODELS } from '@/constants/ai';
 import {
     EXERCISE_IMAGE_GENERATION_TYPE,
     OPENAI_API_KEY_TYPE,
@@ -26,7 +27,7 @@ import {
     getWorkoutVolumeInsightsPrompt,
 } from './prompts';
 
-const DEFAULT_MODEL = 'gpt-4o-mini';
+const DEFAULT_MODEL = OPENAI_MODELS.GPT_4O_MINI.model;
 
 export const getApiKey = async () =>
     (await getSetting(OPENAI_API_KEY_TYPE))?.value || process.env.EXPO_PUBLIC_FORCE_OPENAI_API_KEY;
