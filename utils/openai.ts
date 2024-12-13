@@ -1,7 +1,7 @@
 import { OPENAI_MODELS } from '@/constants/ai';
 import {
     EXERCISE_IMAGE_GENERATION_TYPE,
-    OPENAI_API_KEY_TYPE,
+    OPENAI_API_KEY_TYPE, OPENAI_MODEL_TYPE,
 } from '@/constants/storage';
 import i18n from '@/lang/lang';
 import { getSetting, processWorkoutPlan } from '@/utils/database';
@@ -27,7 +27,19 @@ import {
     getWorkoutVolumeInsightsPrompt,
 } from './prompts';
 
-const getModel = () => OPENAI_MODELS.GPT_4O_MINI.model;
+const getModel = async () => {
+    const defaultModel = OPENAI_MODELS.GPT_4O_MINI.model;
+    const savedModel = await getSetting(OPENAI_MODEL_TYPE);
+
+    if (!savedModel) {
+        return defaultModel;
+    }
+
+    const model = Object.values(OPENAI_MODELS)
+        .find((m) => m.value === Number(savedModel.value));
+
+    return model?.model || defaultModel;
+};
 
 export const getApiKey = async () =>
     (await getSetting(OPENAI_API_KEY_TYPE))?.value || process.env.EXPO_PUBLIC_FORCE_OPENAI_API_KEY;
@@ -62,7 +74,7 @@ export async function getNutritionInsights(startDate: string, endDate: string) {
 
     const result = await openai.chat.completions.create({
         messages: await getNutritionInsightsPrompt(startDate, endDate),
-        model: getModel(),
+        model: await getModel(),
     });
 
     return result?.choices?.[0].message.content;
@@ -82,7 +94,7 @@ export async function getRecentWorkoutsInsights(startDate: string, endDate: stri
 
     const result = await openai.chat.completions.create({
         messages: await getRecentWorkoutsInsightsPrompt(startDate, endDate),
-        model: getModel(),
+        model: await getModel(),
     });
 
     return result?.choices?.[0].message.content || undefined;
@@ -104,7 +116,7 @@ export async function sendChatMessage(messages: any[]) {
         function_call: { name: 'generateMessage' },
         functions: getSendChatMessageFunctions() as OpenAI.Chat.ChatCompletionCreateParams.Function[],
         messages,
-        model: getModel(),
+        model: await getModel(),
     });
 
     let jsonResponse = {
@@ -140,7 +152,7 @@ async function createWorkoutPlan(messages: any[]) {
         function_call: { name: 'generateWorkoutPlan' },
         functions: getCreateWorkoutPlanFunctions() as OpenAI.Chat.ChatCompletionCreateParams.Function[],
         messages: await createWorkoutPlanPrompt(messagesToSend),
-        model: getModel(),
+        model: await getModel(),
     });
 
     let jsonResponse = {
@@ -174,7 +186,7 @@ export const calculateNextWorkoutVolume = async (workout: WorkoutReturnType) => 
         function_call: { name: 'calculateNextWorkoutVolume' },
         functions: getCalculateNextWorkoutVolumeFunctions() as OpenAI.Chat.ChatCompletionCreateParams.Function[],
         messages: await getCalculateNextWorkoutVolumePrompt(workout),
-        model: getModel(),
+        model: await getModel(),
     });
 
     let jsonResponse = {
@@ -234,7 +246,7 @@ export const parsePastWorkouts = async (userMessage: string) => {
         function_call: { name: 'parsePastWorkouts' },
         functions: getParsePastWorkoutsFunctions() as OpenAI.Chat.ChatCompletionCreateParams.Function[],
         messages: await getParsePastWorkoutsPrompt(userMessage),
-        model: getModel(),
+        model: await getModel(),
     });
 
     let jsonResponse = {
@@ -267,7 +279,7 @@ export const parsePastNutrition = async (userMessage: string) => {
         function_call: { name: 'parsePastNutrition' },
         functions: getParsePastNutritionFunctions() as OpenAI.Chat.ChatCompletionCreateParams.Function[],
         messages: await getParsePastNutritionPrompt(userMessage),
-        model: getModel(),
+        model: await getModel(),
     });
 
     let jsonResponse = {
@@ -320,7 +332,7 @@ export async function estimateNutritionFromPhoto(photoUri: string) {
             }],
             role: 'user',
         }],
-        model: getModel(),
+        model: await getModel(),
     });
 
     let jsonResponse = {
@@ -380,7 +392,7 @@ export async function extractMacrosFromLabelPhoto(photoUri: string) {
             }],
             role: 'user',
         }],
-        model: getModel(),
+        model: await getModel(),
     });
 
     let jsonResponse = {
@@ -417,7 +429,7 @@ export async function getRecentWorkoutInsights(workoutEventId: number) {
 
     const result = await openai.chat.completions.create({
         messages: await getRecentWorkoutInsightsPrompt(workoutEventId),
-        model: getModel(),
+        model: await getModel(),
     });
 
     return result?.choices?.[0].message.content;
@@ -437,7 +449,7 @@ export async function getWorkoutInsights(workoutId: number) {
 
     const result = await openai.chat.completions.create({
         messages: await getWorkoutInsightsPrompt(workoutId),
-        model: getModel(),
+        model: await getModel(),
     });
 
     return result?.choices?.[0].message.content;
@@ -457,7 +469,7 @@ export async function getWorkoutVolumeInsights(workoutId: number) {
 
     const result = await openai.chat.completions.create({
         messages: await getWorkoutVolumeInsightsPrompt(workoutId),
-        model: getModel(),
+        model: await getModel(),
     });
 
     return result?.choices?.[0].message.content;
@@ -476,7 +488,7 @@ export async function isValidApiKey(apiKey: string) {
                 content: 'hi',
                 role: 'user',
             }],
-            model: getModel(),
+            model: await getModel(),
         });
 
         return true;

@@ -87,6 +87,16 @@ export default function AISettings({ navigation }: { navigation: NavigationProp<
             setGoogleGeminiApiKey(googleGeminiApiKeyFromDb.value);
         }
 
+        const googleGeminiModelFromDb = await getSettingByType(GEMINI_MODEL_TYPE);
+        if (googleGeminiModelFromDb) {
+            setGeminiModel(googleGeminiModelFromDb.value);
+        }
+
+        const openAiModelFromDb = await getSettingByType(OPENAI_MODEL_TYPE);
+        if (openAiModelFromDb) {
+            setOpenAiModel(openAiModelFromDb.value);
+        }
+
         const exerciseImageGenerationFromDb = await getSettingByType(EXERCISE_IMAGE_GENERATION_TYPE);
         if (exerciseImageGenerationFromDb) {
             const value = exerciseImageGenerationFromDb.value === 'true';
@@ -370,12 +380,18 @@ export default function AISettings({ navigation }: { navigation: NavigationProp<
                 <List.Section>
                     <List.Subheader>{t('model_selection')}</List.Subheader>
                     <List.Item
-                        description={geminiModel || t('not_set')}
+                        description={
+                            Object.values(GEMINI_MODELS)
+                                .find((m) => m.value === Number(geminiModel))?.model || t('not_set')
+                        }
                         onPress={() => setGeminiModelModalVisible(true)}
                         title={t('gemini_model')}
                     />
                     <List.Item
-                        description={openAiModel || t('not_set')}
+                        description={
+                            Object.values(OPENAI_MODELS)
+                                .find((m) => m.value === Number(openAiModel))?.model || t('not_set')
+                        }
                         onPress={() => setOpenAiModelModalVisible(true)}
                         title={t('openai_model')}
                     />

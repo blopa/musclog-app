@@ -1,7 +1,11 @@
 import type { ChatCompletionMessageParam } from 'openai/resources';
 
 import { GEMINI_MODELS } from '@/constants/ai';
-import { EXERCISE_IMAGE_GENERATION_TYPE, GEMINI_API_KEY_TYPE } from '@/constants/storage';
+import {
+    EXERCISE_IMAGE_GENERATION_TYPE,
+    GEMINI_API_KEY_TYPE,
+    GEMINI_MODEL_TYPE,
+} from '@/constants/storage';
 import i18n from '@/lang/lang';
 import { getSetting, processWorkoutPlan } from '@/utils/database';
 import { getBase64StringFromPhotoUri, resizeImage } from '@/utils/file';
@@ -42,7 +46,19 @@ import {
     getWorkoutVolumeInsightsPrompt,
 } from './prompts';
 
-const getModel = () => GEMINI_MODELS.GEMINI_FLASH_1_5.model;
+const getModel = async () => {
+    const defaultModel = GEMINI_MODELS.GEMINI_FLASH_1_5.model;
+    const savedModel = await getSetting(GEMINI_MODEL_TYPE);
+
+    if (!savedModel) {
+        return defaultModel;
+    }
+
+    const model = Object.values(GEMINI_MODELS)
+        .find((m) => m.value === Number(savedModel.value));
+
+    return model?.model || defaultModel;
+};
 
 export const getApiKey = async () =>
     (await getSetting(GEMINI_API_KEY_TYPE))?.value || process.env.EXPO_PUBLIC_FORCE_GEMINI_API_KEY;
@@ -167,7 +183,7 @@ const configureBasicGenAI = async ({ accessToken, apiKey }: { accessToken?: stri
     const genAI = await getGenerativeAI({ accessToken, apiKey });
 
     return genAI.getGenerativeModel({
-        model: getModel(),
+        model: await getModel(),
         safetySettings,
         ... systemParts && {
             systemInstruction: {
@@ -324,7 +340,7 @@ export async function sendChatMessage(messages: any[]) {
             topK: 1,
             topP: 1,
         },
-        model: getModel(),
+        model: await getModel(),
         safetySettings,
         systemInstruction: {
             parts: systemParts,
@@ -385,7 +401,7 @@ async function createWorkoutPlan(messages: any[]) {
     const tools: Tool[] = [{ functionDeclarations }];
 
     const model = genAI.getGenerativeModel({
-        model: getModel(),
+        model: await getModel(),
         safetySettings,
         systemInstruction: {
             parts: systemParts,
@@ -448,7 +464,7 @@ export const calculateNextWorkoutVolume = async (workout: WorkoutReturnType) => 
     const tools: Tool[] = [{ functionDeclarations }];
 
     const model = genAI.getGenerativeModel({
-        model: getModel(),
+        model: await getModel(),
         safetySettings,
         systemInstruction: {
             parts: systemParts,
@@ -563,7 +579,7 @@ export const parsePastWorkouts = async (userMessage: string) => {
     const tools: Tool[] = [{ functionDeclarations }];
 
     const model = genAI.getGenerativeModel({
-        model: getModel(),
+        model: await getModel(),
         safetySettings,
         systemInstruction: {
             parts: systemParts,
@@ -625,7 +641,7 @@ export const parsePastNutrition = async (userMessage: string) => {
     const tools: Tool[] = [{ functionDeclarations }];
 
     const model = genAI.getGenerativeModel({
-        model: getModel(),
+        model: await getModel(),
         safetySettings,
         systemInstruction: {
             parts: systemParts,
@@ -814,7 +830,7 @@ export async function estimateNutritionFromPhoto(photoUri: string) {
     const tools: Tool[] = [{ functionDeclarations }];
 
     const model = genAI.getGenerativeModel({
-        model: getModel(),
+        model: await getModel(),
         safetySettings,
         systemInstruction: {
             parts: [{
@@ -897,7 +913,7 @@ export async function extractMacrosFromLabelPhoto(photoUri: string) {
     const tools: Tool[] = [{ functionDeclarations }];
 
     const model = genAI.getGenerativeModel({
-        model: getModel(),
+        model: await getModel(),
         safetySettings,
         systemInstruction: {
             parts: [{
