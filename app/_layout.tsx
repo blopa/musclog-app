@@ -32,6 +32,7 @@ import {
     addAlcoholAndFiberMacroToWorkoutEventTable,
     addAlcoholMacroToUserNutritionTable,
     addExercise,
+    addIsFavoriteToFoodTable,
     addMacrosToWorkoutEventTable,
     addMealTypeGramsToUserNutritionTable,
     addOrUpdateSetting,
@@ -227,6 +228,7 @@ function RootLayout() {
             await createFoodTable();
             await createFitnessGoalsTable();
             await createMigrationsTable();
+            await addIsFavoriteToFoodTable();
 
             // update to latest version
             await addVersioning(packageJson.version);

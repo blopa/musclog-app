@@ -1654,6 +1654,12 @@ export const getFood = async (id: number): Promise<FoodReturnType | undefined> =
         .first();
 };
 
+export const getAllFavoriteFoods = async (): Promise<FoodReturnType[] | undefined> => {
+    return database.food
+        .filter((food) => Boolean(food.isFavorite) && !food.deletedAt)
+        .toArray();
+};
+
 export const getAllFoodsByIds = async (ids: number[]): Promise<FoodReturnType[] | undefined> => {
     return database.food
         .where('id')
@@ -2466,6 +2472,75 @@ export const addMacrosToWorkoutEventTable = async (): Promise<void> => {
                 'carbohydrate',
                 'fat',
                 'calories',
+            ].join(', '),
+        });
+
+        if (!database.isOpen()) {
+            database.open();
+        }
+    }
+};
+
+export const addIsFavoriteToFoodTable = async (): Promise<void> => {
+    const currentVersion = await getLatestVersion();
+    if (currentVersion && currentVersion < packageJson.version) {
+        if (database.isOpen()) {
+            database.close();
+        }
+
+        database.version(11).stores({
+            food: [
+                '++id',
+                'name',
+                'calories',
+                'protein',
+                'totalCarbohydrate',
+                'sugar',
+                'alcohol',
+                'fiber',
+                'totalFat',
+                'dataId',
+                'brand',
+                'servingSize',
+                'productCode',
+                'createdAt',
+                'deletedAt',
+                'zinc',
+                'vitaminK',
+                'vitaminC',
+                'vitaminB12',
+                'vitaminA',
+                'unsaturatedFat',
+                'vitaminE',
+                'thiamin',
+                'selenium',
+                'polyunsaturatedFat',
+                'vitaminB6',
+                'pantothenicAcid',
+                'niacin',
+                'monounsaturatedFat',
+                'calcium',
+                'iodine',
+                'molybdenum',
+                'vitaminD',
+                'manganese',
+                'magnesium',
+                'transFat',
+                'folicAcid',
+                'copper',
+                'iron',
+                'saturatedFat',
+                'chromium',
+                'caffeine',
+                'cholesterol',
+                'phosphorus',
+                'chloride',
+                'folate',
+                'biotin',
+                'sodium',
+                'riboflavin',
+                'potassium',
+                'isFavorite',
             ].join(', '),
         });
 
