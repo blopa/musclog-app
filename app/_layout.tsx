@@ -2,13 +2,16 @@
 import CustomErrorBoundary from '@/components/CustomErrorBoundary';
 import DrawerMenu from '@/components/DrawerMenu';
 import ForceInsetsUpdate from '@/components/ForceInsetsUpdate';
+import { GEMINI_MODELS, OPENAI_MODELS } from '@/constants/ai';
 import { DARK, SYSTEM_DEFAULT } from '@/constants/colors';
 import {
     BUG_REPORT_TYPE,
     FIRST_BOOT,
     GEMINI_API_KEY_TYPE,
+    GEMINI_MODEL_TYPE,
     LANGUAGE_CHOICE_TYPE,
     LAST_TIME_APP_USED,
+    OPENAI_MODEL_TYPE,
     THEME_CHOICE_TYPE,
 } from '@/constants/storage';
 import i18n, { getExerciseData, LanguageKeys } from '@/lang/lang';
@@ -46,8 +49,8 @@ import { getCurrentTimestampISOString } from '@/utils/date';
 import { getEncryptionKey } from '@/utils/encryption';
 import { getLatestHealthConnectData } from '@/utils/healthConnect';
 import { captureException, captureMessage } from '@/utils/sentry';
-import { getDecrypter } from '@/utils/storage';
 import 'react-native-reanimated';
+import { getDecrypter } from '@/utils/storage';
 import { ExerciseInsertType } from '@/utils/types';
 import { FontAwesome } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -166,6 +169,14 @@ function RootLayout() {
                     await addOrUpdateSetting({
                         type: BUG_REPORT_TYPE,
                         value: 'true',
+                    });
+                    await addOrUpdateSetting({
+                        type: GEMINI_MODEL_TYPE,
+                        value: GEMINI_MODELS.GEMINI_FLASH_1_5.model,
+                    });
+                    await addOrUpdateSetting({
+                        type: OPENAI_MODEL_TYPE,
+                        value: OPENAI_MODELS.GPT_4O_MINI.model,
                     });
                     // await addOrUpdateSetting({
                     //     type: USE_FAT_PERCENTAGE_TDEE_TYPE,
