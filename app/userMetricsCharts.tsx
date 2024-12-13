@@ -1024,21 +1024,28 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
         someDaysAgo.setDate(someDaysAgo.getDate() - days);
 
         setTimeout(async () => {
-            setIsLoading(false);
-            const message = await getNutritionInsights(
-                (startDate || someDaysAgo).toISOString(),
-                (endDate || new Date()).toISOString()
-            );
+            try {
+                setIsLoading(false);
+                const message = await getNutritionInsights(
+                    (startDate || someDaysAgo).toISOString(),
+                    (endDate || new Date()).toISOString()
+                );
 
-            if (message) {
-                await addNewChat({
-                    message,
-                    misc: '',
-                    sender: 'assistant',
-                    type: 'text',
-                });
-                increaseUnreadMessages(1);
-                showSnackbar(t('your_trainer_answered'), t('see_message'), () => navigation.navigate('chat'));
+                if (message) {
+                    await addNewChat({
+                        message,
+                        misc: '',
+                        sender: 'assistant',
+                        type: 'text',
+                    });
+                    increaseUnreadMessages(1);
+                    showSnackbar(t('your_trainer_answered'), t('see_message'), () => navigation.navigate('chat'));
+                } else {
+                    showSnackbar(t('failed_to_get_ai_insights'), t('retry'), handleGetAiInsights);
+                }
+            } catch (error) {
+                console.error('Failed to get AI insights:', error);
+                showSnackbar(t('failed_to_get_ai_insights'), t('retry'), handleGetAiInsights);
             }
         }, 500);
     }, [dateRange, startDate, endDate, addNewChat, increaseUnreadMessages, showSnackbar, t, navigation]);

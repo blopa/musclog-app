@@ -353,19 +353,28 @@ const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
 
         setTimeout(async () => {
             setLoading(false);
-            const message = await getWorkoutVolumeInsights(workout?.id!);
+            try {
+                const message = await getWorkoutVolumeInsights(workout?.id!);
 
-            if (message) {
-                await addNewChat({
-                    message,
-                    misc: '',
-                    sender: 'assistant',
-                    type: 'text',
-                });
-                increaseUnreadMessages(1);
-                showSnackbar(t('your_trainer_answered'), t('see_message'), () => {
-                    navigation.navigate('chat');
-                });
+                if (message) {
+                    await addNewChat({
+                        message,
+                        misc: '',
+                        sender: 'assistant',
+                        type: 'text',
+                    });
+
+                    increaseUnreadMessages(1);
+                    showSnackbar(t('your_trainer_answered'), t('see_message'), () => {
+                        navigation.navigate('chat');
+                    });
+                } else {
+                    showSnackbar(t('failed_to_get_workout_volume_insights'), t('retry'), handleGetWorkoutVolumeInsights);
+                }
+            } catch (error) {
+                console.error('Failed to get workout volume insights:', error);
+                showSnackbar(t('failed_to_get_workout_volume_insights'), t('retry'), handleGetWorkoutVolumeInsights);
+                return;
             }
         }, 500);
     }, [workout?.id, addNewChat, increaseUnreadMessages, showSnackbar, t, navigation]);
@@ -380,20 +389,28 @@ const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
         setLoading(true);
 
         setTimeout(async () => {
-            setLoading(false);
-            const message = await getWorkoutInsights(workout?.id!);
+            try {
+                setLoading(false);
+                const message = await getWorkoutInsights(workout?.id!);
 
-            if (message) {
-                await addNewChat({
-                    message,
-                    misc: '',
-                    sender: 'assistant',
-                    type: 'text',
-                });
-                increaseUnreadMessages(1);
-                showSnackbar(t('your_trainer_answered'), t('see_message'), () => {
-                    navigation.navigate('chat');
-                });
+                if (message) {
+                    await addNewChat({
+                        message,
+                        misc: '',
+                        sender: 'assistant',
+                        type: 'text',
+                    });
+                    increaseUnreadMessages(1);
+                    showSnackbar(t('your_trainer_answered'), t('see_message'), () => {
+                        navigation.navigate('chat');
+                    });
+                } else {
+                    showSnackbar(t('failed_to_get_workout_insights'), t('retry'), handleGetWorkoutInsights);
+                }
+            } catch (error) {
+                console.error('Failed to get workout insights:', error);
+                showSnackbar(t('failed_to_get_workout_insights'), t('retry'), handleGetWorkoutInsights);
+                return;
             }
         }, 500);
     }, [workout?.id, addNewChat, increaseUnreadMessages, showSnackbar, t, navigation]);

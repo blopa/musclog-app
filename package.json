@@ -100,7 +100,7 @@
     "react-dom": "18.3.1",
     "react-google-forms-hooks": "1.2.4",
     "react-i18next": "15.2.0",
-    "react-native": "0.76.3",
+    "react-native": "0.76.5",
     "react-native-app-auth": "8.0.1",
     "react-native-ble-plx": "3.2.1",
     "react-native-charts-wrapper": "0.6.0",

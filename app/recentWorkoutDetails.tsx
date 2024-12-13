@@ -227,21 +227,28 @@ const RecentWorkoutDetails: React.FC<RecentWorkoutDetailsProps> = ({ navigation 
         setLoading(true);
 
         setTimeout(async () => {
-            setLoading(false);
-            const message = await getRecentWorkoutInsights(recentWorkout?.id!);
+            try {
+                setLoading(false);
+                const message = await getRecentWorkoutInsights(recentWorkout?.id!);
 
-            if (message) {
-                await addNewChat({
-                    message,
-                    misc: '',
-                    sender: 'assistant',
-                    type: 'text',
-                });
+                if (message) {
+                    await addNewChat({
+                        message,
+                        misc: '',
+                        sender: 'assistant',
+                        type: 'text',
+                    });
 
-                increaseUnreadMessages(1);
-                showSnackbar(t('your_trainer_answered'), t('see_message'), () => {
-                    navigation.navigate('chat');
-                });
+                    increaseUnreadMessages(1);
+                    showSnackbar(t('your_trainer_answered'), t('see_message'), () => {
+                        navigation.navigate('chat');
+                    });
+                } else {
+                    showSnackbar(t('failed_to_get_workout_insights'), t('retry'), handleGetWorkoutInsights);
+                }
+            } catch (error) {
+                console.error('Failed to get workout insights:', error);
+                showSnackbar(t('failed_to_get_workout_insights'), t('retry'), handleGetWorkoutInsights);
             }
         }, 500);
     }, [recentWorkout?.id, addNewChat, increaseUnreadMessages, showSnackbar, t, navigation]);
