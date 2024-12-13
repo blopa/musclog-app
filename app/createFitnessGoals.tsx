@@ -135,15 +135,15 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
         [activeMacro]
     );
 
-    const nextMacro = () => {
+    const nextMacro = useCallback(() => {
         const currentIndex = macroOrder.indexOf(activeMacro);
         setActiveMacro(macroOrder[(currentIndex + 1) % macroOrder.length]);
-    };
+    }, [activeMacro, macroOrder]);
 
-    const prevMacro = () => {
+    const prevMacro = useCallback(() => {
         const currentIndex = macroOrder.indexOf(activeMacro);
         setActiveMacro(macroOrder[(currentIndex - 1 + macroOrder.length) % macroOrder.length]);
-    };
+    }, [activeMacro, macroOrder]);
 
     const loadFitnessGoal = useCallback(async () => {
         try {
@@ -337,7 +337,7 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
     );
 
     // Render functions for each tab
-    const renderDailyIntakeTab = () => {
+    const renderDailyIntakeTab = useCallback(() => {
         const calories = calculateCalories();
 
         const pieData = [
@@ -434,9 +434,9 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
                 </ScrollView>
             </Screen>
         );
-    };
+    }, [activeMacro, alcohol, calculateCalories, colors.primary, fiber, handleFormatNumericText, handleSliderChange, isImperial, maxMacros, nextMacro, prevMacro, protein, styles.activeMacroContainer, styles.activeMacroTitle, styles.activeMacroValue, styles.arrowButton, styles.container, styles.flexContainer, styles.macroAdjusterContainer, styles.macroSummaryItem, styles.macroSummaryTitle, styles.macroSummaryValue, styles.macrosSummary, styles.optionalFields, styles.title, sugar, t, totalCarbohydrate, totalFat]);
 
-    const renderLongTermTab = () => (
+    const renderLongTermTab = useCallback(() => (
         <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
             <CustomTextInput
                 keyboardType="numeric"
@@ -467,9 +467,9 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
                 value={ffmi}
             />
         </ScrollView>
-    );
+    ), [bmi, bodyFat, ffmi, handleFormatNumericText, styles.content, t, weight, weightUnit]);
 
-    const renderScene = ({ route }: { route: { key: string } }) => {
+    const renderScene = useCallback(({ route }: { route: { key: string } }) => {
         switch (route.key) {
             case 'dailyIntake':
                 return renderDailyIntakeTab();
@@ -478,16 +478,16 @@ const CreateFitnessGoals = ({ navigation }: { navigation: NavigationProp<any> })
             default:
                 return null;
         }
-    };
+    }, [renderDailyIntakeTab, renderLongTermTab]);
 
-    const renderTabBar = (props: any) => (
+    const renderTabBar = useCallback((props: any) => (
         <TabBar
             {...props}
             indicatorStyle={{ backgroundColor: colors.primary }}
             labelStyle={{ color: colors.onSurface }}
             style={{ backgroundColor: colors.surface }}
         />
-    );
+    ), [colors.onSurface, colors.primary, colors.surface]);
 
     return (
         <Screen style={styles.container}>
