@@ -826,7 +826,7 @@ export const addFood = async (food: FoodInsertType): Promise<number> => {
         food.alcohol || 0,
         food.fiber || 0,
         food.sugar || 0,
-        food.isFavorite || 0,
+        food.isFavorite ? 1 : 0,
         createdAt
         );
 
@@ -2420,7 +2420,8 @@ export const updateSet = async (id: number, set: SetInsertType): Promise<number>
             set.weight || existingSet?.weight || 0,
             set.restTime || existingSet?.restTime || 0,
             set.exerciseId || existingSet?.exerciseId || 0,
-            set.isDropSet ? 1 : (existingSet?.isDropSet ? 1 : 0),
+            // set.isDropSet ? 1 : (existingSet?.isDropSet ? 1 : 0),
+            set.isDropSet ?? existingSet?.isDropSet ?? 0,
             set.difficultyLevel || existingSet?.difficultyLevel || 5,
             set.workoutId || existingSet?.workoutId || 0,
             set.setOrder || existingSet?.setOrder || 0,
@@ -2631,7 +2632,8 @@ export const updateFood = async (id: number, food: FoodInsertType): Promise<numb
                 food.totalFat || existingFood?.totalFat || 0,
                 food.createdAt || existingFood?.createdAt || 0,
                 food.deletedAt || existingFood?.deletedAt || 0,
-                food.isFavorite || existingFood?.isFavorite || 0,
+                food.isFavorite ?? existingFood?.isFavorite ?? 0,
+                // food.isFavorite ? 1 : (existingFood?.isFavorite ? 1 : 0),
                 food.dataId || existingFood?.dataId || generateHash(),
                 id,
             ]

@@ -7,6 +7,7 @@
     "gemini_model_description": "Kies het Gemini-model dat voor alle AI-generatie wordt gebruikt.",
     "openai_model_description": "Kies het OpenAI-model dat voor alle AI-generatie wordt gebruikt.",
     "model_selection": "Modelselectie",
+    "favorite": "Favoriet",
     "gemini_model": "Gemini Model",
     "openai_model": "OpenAI Model",
     "ai_settings": "AI-instellingen",

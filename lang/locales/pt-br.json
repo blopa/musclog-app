@@ -7,6 +7,7 @@
     "gemini_model_description": "Escolha o modelo Gemini para usar em toda a geração de IA.",
     "openai_model_description": "Escolha o modelo OpenAI para usar em toda a geração de IA.",
     "model_selection": "Seleção de Modelo",
+    "favorite": "Favorito",
     "gemini_model": "Modelo Gemini",
     "openai_model": "Modelo OpenAI",
     "ai_settings": "Configurações de IA",

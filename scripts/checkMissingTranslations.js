@@ -40,7 +40,6 @@ const files = glob.sync('./**/*.{js,ts,jsx,tsx}', {
     ignore: './node_modules/**',
 });
 
-// Extract keys from t('string') usages
 const extractUsedKeys = (content) => {
     const regex = /[\s{(]t\(['"`]([^'"`]+)['"`]\)/g;
     const keys = new Set();
