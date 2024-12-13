@@ -12,8 +12,8 @@ import { NavigationProp, useRoute } from '@react-navigation/native';
 import { fetch } from 'expo/fetch';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Platform, ScrollView, StyleSheet, View } from 'react-native';
-import { Appbar, Button, Text, useTheme } from 'react-native-paper';
+import { Alert, Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Appbar, Button, Checkbox, Text, useTheme } from 'react-native-paper';
 
 import form from '../data/foodForm.json';
 
@@ -35,6 +35,7 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [foodId, setFoodId] = useState<number | undefined>(undefined);
+    const [isFavoriteFood, setIsFavoriteFood] = useState<boolean>(false);
 
     // Initialize form state based on fields from form.json
     const initialFormState = form.fields.reduce((acc, field) => {
@@ -113,6 +114,7 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
             folicAcid: parseFloat(urlParams.get('entry.670035765') || '0'),
             iodine: parseFloat(urlParams.get('entry.1072580240') || '0'),
             iron: parseFloat(urlParams.get('entry.1648646017') || '0'),
+            isFavorite: isFavoriteFood,
             magnesium: parseFloat(urlParams.get('entry.1120455816') || '0'),
             manganese: parseFloat(urlParams.get('entry.681293427') || '0'),
             molybdenum: parseFloat(urlParams.get('entry.1402996') || '0'),
@@ -179,7 +181,7 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
         } finally {
             setIsSaving(false);
         }
-    }, [foodName, formData, t]);
+    }, [foodName, formData, isFavoriteFood, t]);
 
     const textFields = [
         'name',
@@ -240,6 +242,19 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
                             </View>
                         );
                     })}
+                <View style={styles.checkboxContainer}>
+                    <Checkbox
+                        onPress={() => setIsFavoriteFood(!isFavoriteFood)}
+                        status={isFavoriteFood ? 'checked' : 'unchecked'}
+                    />
+                    <Pressable
+                        onPress={() => setIsFavoriteFood(!isFavoriteFood)}
+                    >
+                        <Text style={styles.checkboxLabel}>
+                            {t('favorite')}
+                        </Text>
+                    </Pressable>
+                </View>
             </ScrollView>
             <View style={styles.footer}>
                 <Button
@@ -267,6 +282,17 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     },
     button: {
         marginVertical: 10,
+    },
+    checkboxContainer: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        marginBottom: 12,
+        marginTop: 12,
+    },
+    checkboxLabel: {
+        color: colors.onBackground,
+        fontSize: 16,
+        marginLeft: 8,
     },
     container: {
         backgroundColor: colors.background,

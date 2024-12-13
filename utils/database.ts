@@ -116,6 +116,7 @@ const createTables = (database: SQLiteDatabase) => {
             "'sodium' REAL NULLABLE DEFAULT 0",
             "'riboflavin' REAL NULLABLE DEFAULT 0",
             "'potassium' REAL NULLABLE DEFAULT 0",
+            "'isFavorite' INTEGER DEFAULT 0",
         ],
         name: 'Food',
     },
@@ -813,8 +814,8 @@ export const addFood = async (food: FoodInsertType): Promise<number> => {
     const createdAt = food.createdAt || getCurrentTimestampISOString();
     try {
         const result = database.runSync(`
-            INSERT INTO "Food" ("dataId", "name", "calories", "totalCarbohydrate", "totalFat", "protein", "alcohol", "fiber", "sugar", "createdAt")
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO "Food" ("dataId", "name", "calories", "totalCarbohydrate", "totalFat", "protein", "alcohol", "fiber", "sugar", "isFavorite", ""createdAt")
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             `,
         food.dataId || generateHash(),
         food.name,
@@ -825,6 +826,7 @@ export const addFood = async (food: FoodInsertType): Promise<number> => {
         food.alcohol || 0,
         food.fiber || 0,
         food.sugar || 0,
+        food.isFavorite ? 1 : 0,
         createdAt
         );
 
@@ -2228,6 +2230,16 @@ export const getFood = async (id: number): Promise<FoodReturnType | undefined> =
     }
 };
 
+export const getAllFavoriteFoods = async (): Promise<FoodReturnType[] | undefined> => {
+    try {
+        return database.getAllSync<FoodReturnType>('SELECT * FROM "Food" WHERE "isFavorite" = 1 AND ("deletedAt" IS NULL OR "deletedAt" = \'\')');
+    } catch (error) {
+        console.log(error);
+    }
+
+    return undefined;
+};
+
 export const getAllFoodsByIds = async (ids: number[]): Promise<FoodReturnType[] | undefined> => {
     try {
         return database.getAllSync<FoodReturnType>(`
@@ -2348,7 +2360,7 @@ export const getFoodByProductCode = async (productCode: string): Promise<FoodRet
             [productCode]
         );
     } catch (error) {
-        throw error;
+        console.log(error);
     }
 
     return null;
@@ -2408,7 +2420,8 @@ export const updateSet = async (id: number, set: SetInsertType): Promise<number>
             set.weight || existingSet?.weight || 0,
             set.restTime || existingSet?.restTime || 0,
             set.exerciseId || existingSet?.exerciseId || 0,
-            set.isDropSet ? 1 : (existingSet?.isDropSet ? 1 : 0),
+            // set.isDropSet ? 1 : (existingSet?.isDropSet ? 1 : 0),
+            set.isDropSet ?? existingSet?.isDropSet ?? 0,
             set.difficultyLevel || existingSet?.difficultyLevel || 5,
             set.workoutId || existingSet?.workoutId || 0,
             set.setOrder || existingSet?.setOrder || 0,
@@ -2607,7 +2620,7 @@ export const updateFood = async (id: number, food: FoodInsertType): Promise<numb
 
     try {
         database.runSync(
-            'UPDATE "Food" SET "name" = ?, "calories" = ?, "protein" = ?, "alcohol" = ?, "totalCarbohydrate" = ?, "sugar" = ?, "fiber" = ?, "totalFat" = ?, "createdAt" = ?, "deletedAt" = ?, "dataId" = ? WHERE "id" = ?',
+            'UPDATE "Food" SET "name" = ?, "calories" = ?, "protein" = ?, "alcohol" = ?, "totalCarbohydrate" = ?, "sugar" = ?, "fiber" = ?, "totalFat" = ?, "createdAt" = ?, "deletedAt" = ?, "isFavorite" = ?, "dataId" = ? WHERE "id" = ?',
             [
                 food.name || existingFood?.name || '',
                 food.calories || existingFood?.calories || 0,
@@ -2619,6 +2632,8 @@ export const updateFood = async (id: number, food: FoodInsertType): Promise<numb
                 food.totalFat || existingFood?.totalFat || 0,
                 food.createdAt || existingFood?.createdAt || 0,
                 food.deletedAt || existingFood?.deletedAt || 0,
+                food.isFavorite ?? existingFood?.isFavorite ?? 0,
+                // food.isFavorite ? 1 : (existingFood?.isFavorite ? 1 : 0),
                 food.dataId || existingFood?.dataId || generateHash(),
                 id,
             ]
@@ -3497,6 +3512,15 @@ export const addMacrosToWorkoutEventTable = async (): Promise<void> => {
 
         if (!(await columnExists('WorkoutEvent', 'calories'))) {
             await database.execAsync('ALTER TABLE "WorkoutEvent" ADD COLUMN "calories" REAL DEFAULT 0');
+        }
+    }
+};
+
+export const addIsFavoriteToFoodTable = async (): Promise<void> => {
+    const currentVersion = await getLatestVersion();
+    if (currentVersion && currentVersion < packageJson.version) {
+        if (!(await columnExists('Food', 'isFavorite'))) {
+            await database.execAsync('ALTER TABLE "Food" ADD COLUMN "isFavorite" INTEGER DEFAULT 0');
         }
     }
 };

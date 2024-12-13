@@ -17,8 +17,8 @@ import { UserNutritionInsertType } from '@/utils/types';
 import { getDisplayFormattedWeight } from '@/utils/unit';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, StyleSheet, View } from 'react-native';
-import { ActivityIndicator, Button, Text, useTheme } from 'react-native-paper';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Button, Checkbox, Text, useTheme } from 'react-native-paper';
 
 export type FoodTrackingType = {
     carbs: number;
@@ -62,6 +62,7 @@ const FoodTrackingModal = ({
     const [editableName, setEditableName] = useState(food?.productTitle || '');
     const [selectedDate, setSelectedDate] = useState(date ? new Date(date) : new Date());
     const [datePickerVisible, setDatePickerVisible] = useState(false);
+    const [isFavoriteFood, setIsFavoriteFood] = useState<boolean>(false);
 
     const { unitSystem } = useUnit();
     const isImperial = unitSystem === IMPERIAL_SYSTEM;
@@ -121,7 +122,7 @@ const FoodTrackingModal = ({
             fat: calculatedValues.fat,
             grams: parseFloat(unitAmount),
             mealType: parseInt(mealType, 10),
-            name: editableName || t('unknown_food'),
+            name: editableName || food?.productTitle || t('unknown_food'),
             protein: calculatedValues.protein,
             source: USER_METRICS_SOURCES.USER_INPUT,
             type: NUTRITION_TYPES.MEAL,
@@ -142,6 +143,7 @@ const FoodTrackingModal = ({
 
             const updatedFood = {
                 calories: normalizedMacros.kcal,
+                isFavorite: isFavoriteFood,
                 name: userNutrition.name,
                 productCode: food?.productCode,
                 protein: normalizedMacros.protein,
@@ -169,7 +171,7 @@ const FoodTrackingModal = ({
         }
 
         onClose();
-    }, [calculatedValues.kcal, calculatedValues.carbs, calculatedValues.fat, calculatedValues.protein, selectedDate, unitAmount, mealType, editableName, t, userNutritionId, onClose, food?.productCode]);
+    }, [calculatedValues.kcal, calculatedValues.carbs, calculatedValues.fat, calculatedValues.protein, selectedDate, unitAmount, mealType, editableName, food?.productTitle, food?.productCode, t, userNutritionId, onClose, isFavoriteFood]);
 
     useEffect(() => {
         if (food) {
@@ -261,6 +263,19 @@ const FoodTrackingModal = ({
                                     })}
                                 </Text>
                             </View>
+                            <View style={styles.checkboxContainer}>
+                                <Checkbox
+                                    onPress={() => setIsFavoriteFood(!isFavoriteFood)}
+                                    status={isFavoriteFood ? 'checked' : 'unchecked'}
+                                />
+                                <Pressable
+                                    onPress={() => setIsFavoriteFood(!isFavoriteFood)}
+                                >
+                                    <Text style={styles.checkboxLabel}>
+                                        {t('favorite')}
+                                    </Text>
+                                </Pressable>
+                            </View>
                         </View>
                     )}
                     {(showChart && (calculatedValues.protein || calculatedValues.carbs || calculatedValues.fat)) ? (
@@ -292,6 +307,17 @@ const FoodTrackingModal = ({
 };
 
 const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
+    checkboxContainer: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        marginBottom: 12,
+        marginTop: 12,
+    },
+    checkboxLabel: {
+        color: colors.onBackground,
+        fontSize: 16,
+        marginLeft: 8,
+    },
     datePickerButton: {
         backgroundColor: colors.surface,
         borderColor: colors.onSurface,

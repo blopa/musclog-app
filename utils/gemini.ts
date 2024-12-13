@@ -179,11 +179,11 @@ const rawFetchGeminiApi = async (model: string, accessToken: string, body: any) 
     };
 };
 
-const configureBasicGenAI = async ({ accessToken, apiKey }: { accessToken?: string; apiKey?: string;}, systemParts?: Part[]) => {
+const configureBasicGenAI = async ({ accessToken, apiKey, model }: { accessToken?: string; apiKey?: string; model?: string; }, systemParts?: Part[]) => {
     const genAI = await getGenerativeAI({ accessToken, apiKey });
 
     return genAI.getGenerativeModel({
-        model: await getModel(),
+        model: model || await getModel(),
         safetySettings,
         ... systemParts && {
             systemInstruction: {
@@ -519,7 +519,11 @@ export const generateExerciseImage = async (exerciseName: string): Promise<strin
         return 'https://via.placeholder.com/300';
     }
 
-    const model = await configureBasicGenAI({ accessToken, apiKey });
+    const model = await configureBasicGenAI({
+        accessToken,
+        apiKey,
+        model: GEMINI_MODELS.GEMINI_FLASH_2_0.model,
+    });
 
     const generationConfig = {
         // maxOutputTokens: 2048,

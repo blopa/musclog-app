@@ -157,6 +157,7 @@ export type FoodInsertType = {
     id?: number;
     iodine?: number;
     iron?: number;
+    isFavorite?: boolean;
     magnesium?: number;
     manganese?: number;
     molybdenum?: number;
