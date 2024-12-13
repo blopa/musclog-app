@@ -122,7 +122,7 @@ const FoodTrackingModal = ({
             fat: calculatedValues.fat,
             grams: parseFloat(unitAmount),
             mealType: parseInt(mealType, 10),
-            name: editableName || t('unknown_food'),
+            name: editableName || food?.productTitle || t('unknown_food'),
             protein: calculatedValues.protein,
             source: USER_METRICS_SOURCES.USER_INPUT,
             type: NUTRITION_TYPES.MEAL,

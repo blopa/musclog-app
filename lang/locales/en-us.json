@@ -8,6 +8,7 @@
     "openai_model_description": "Choose the OpenAI model to use for all AI generation.",
     "model_selection": "Model Selection",
     "favorite": "Favorite",
+    "recent": "Recent",
     "gemini_model": "Gemini Model",
     "openai_model": "OpenAI Model",
     "ai_settings": "AI Settings",

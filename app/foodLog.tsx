@@ -17,6 +17,7 @@ import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { normalizeMacrosByGrams } from '@/utils/data';
 import {
     deleteUserNutrition,
+    getAllFavoriteFoods,
     getAllFoodsByIds,
     getUserNutritionBetweenDates,
 } from '@/utils/database';
@@ -86,7 +87,12 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const [userNutritionId, setUserNutritionId] = useState<null | number>(null);
     const [isNutritionModalVisible, setIsNutritionModalVisible] = useState<boolean>(false);
     const [photoMode, setPhotoMode] = useState<string>('meal');
-    const [recentTrackedFoods, setRecentTrackedFoods] = useState<MusclogApiFoodInfoType[]>([]);
+
+    const [recentTrackedFoods, setRecentTrackedFoods] = useState<(MusclogApiFoodInfoType & {id: number})[]>([]);
+    const [favoriteFoods, setFavoriteFoods] = useState<(MusclogApiFoodInfoType & {id: number})[]>([]);
+    const [foodHistoryType, setFoodHistoryType] = useState('recent');
+    const foodHistory = foodHistoryType === 'recent' ? recentTrackedFoods : favoriteFoods;
+
     const [selectedDate, setSelectedDate] = useState(new Date());
 
     const [consumed, setConsumed] = useState({
@@ -132,7 +138,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
             setConsumedFoods(consumedData);
 
-            const consumed = consumedData.reduce(
+            const consumedTotals = consumedData.reduce(
                 (acc, item) => {
                     acc.calories += item.calories || 0;
                     acc.protein += item.protein || 0;
@@ -143,7 +149,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 { calories: 0, carbohydrate: 0, fat: 0, protein: 0 }
             );
 
-            setConsumed(consumed);
+            setConsumed(consumedTotals);
         } catch (error) {
             console.error('Error loading consumed data:', error);
         }
@@ -175,6 +181,23 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 carbs: food.totalCarbohydrate,
                 ean: food.productCode,
                 fat: food.totalFat,
+                id: food.id,
+                kcal: food.calories,
+                productTitle: food.name,
+                protein: food.protein,
+            })));
+        }
+    }, []);
+
+    const loadFavoriteFood = useCallback(async () => {
+        const favFoodsData = await getAllFavoriteFoods();
+
+        if (favFoodsData) {
+            setFavoriteFoods(favFoodsData.map((food) => ({
+                carbs: food.totalCarbohydrate,
+                ean: food.productCode,
+                fat: food.totalFat,
+                id: food.id,
                 kcal: food.calories,
                 productTitle: food.name,
                 protein: food.protein,
@@ -194,11 +217,12 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
             loadConsumed();
             checkApiKey();
             loadRecentFood();
+            loadFavoriteFood();
 
             return () => {
                 resetScreenData();
             };
-        }, [checkApiKey, loadConsumed, loadRecentFood, resetScreenData])
+        }, [checkApiKey, loadConsumed, loadRecentFood, loadFavoriteFood, resetScreenData])
     );
 
     const OverviewRoute = useCallback(() => {
@@ -216,24 +240,35 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                     {Platform.OS === 'web' ? (
                         <View style={{ height: 40 }} />
                     ) : null}
-                    {recentTrackedFoods.length > 0 ? (
-                        <FlashList
-                            contentContainerStyle={styles.listContent}
-                            data={recentTrackedFoods}
-                            estimatedItemSize={115}
-                            keyExtractor={(item, index) => (item.productTitle || index).toString()}
-                            onEndReachedThreshold={0.5}
-                            renderItem={({ item }) => (
-                                <FoodItem
-                                    food={item}
-                                    onAddFood={(food) => {
-                                        setSelectedFood(food);
-                                        setIsNutritionModalVisible(true);
-                                    }}
-                                />
-                            )}
+                    <View>
+                        <SegmentedButtons
+                            buttons={[
+                                { label: t('recent'), value: 'recent' },
+                                { label: t('favorite'), value: 'favorite' },
+                            ]}
+                            onValueChange={setFoodHistoryType}
+                            style={styles.segmentedButtons}
+                            value={foodHistoryType}
                         />
-                    ) : null}
+                        {foodHistory.length > 0 ? (
+                            <FlashList
+                                contentContainerStyle={styles.listContent}
+                                data={foodHistory}
+                                estimatedItemSize={115}
+                                keyExtractor={(item, index) => (item.id || index).toString()}
+                                onEndReachedThreshold={0.5}
+                                renderItem={({ item }) => (
+                                    <FoodItem
+                                        food={item}
+                                        onAddFood={(food) => {
+                                            setSelectedFood(food);
+                                            setIsNutritionModalVisible(true);
+                                        }}
+                                    />
+                                )}
+                            />
+                        ) : null}
+                    </View>
                 </ScrollView>
             </Screen>
         );
