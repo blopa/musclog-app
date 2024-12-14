@@ -1,5 +1,5 @@
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
-import React, { createContext, ReactNode, useContext, useState } from 'react';
+import React, { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StatusBar, StyleSheet } from 'react-native';
 import { Snackbar, useTheme } from 'react-native-paper';
@@ -30,16 +30,23 @@ export const SnackbarProvider: React.FC<SnackbarProviderProps> = ({ children }) 
     const [snackbarLabel, setSnackbarLabel] = useState(t('ok'));
     const [snackbarOnPress, setSnackbarOnPress] = useState<() => void>(() => {});
 
-    const showSnackbar = (message: string, label: string = t('ok'), onPress: () => void = () => {}) => {
+    const showSnackbar = useCallback((message: string, label: string = t('ok'), onPress: () => void = () => {}) => {
         setSnackbarMessage(message);
         setSnackbarLabel(label);
         setSnackbarOnPress(() => onPress);
         setSnackbarVisible(true);
-    };
+    }, [t]);
 
-    const hideSnackbar = () => {
+    const hideSnackbar = useCallback(() => {
         setSnackbarVisible(false);
-    };
+    }, []);
+
+    useEffect(() => {
+        // @ts-ignore it's fine
+        global.showSnackbar = showSnackbar;
+        // @ts-ignore it's fine
+        global.hideSnackbar = hideSnackbar;
+    }, [hideSnackbar, showSnackbar]);
 
     return (
         <SnackbarContext.Provider value={{ hideSnackbar, showSnackbar }}>

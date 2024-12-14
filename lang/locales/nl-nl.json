@@ -7,6 +7,7 @@
     "gemini_model_description": "Kies het Gemini-model dat voor alle AI-generatie wordt gebruikt.",
     "openai_model_description": "Kies het OpenAI-model dat voor alle AI-generatie wordt gebruikt.",
     "model_selection": "Modelselectie",
+    "your_google_auth_expired_reauth": "Uw Google-authenticatie is verlopen. Log opnieuw in om uw gegevens te synchroniseren.",
     "favorite": "Favoriet",
     "recent": "Recent",
     "musclog_nutrition_insights": "Musclog - Voedingsinzichten",

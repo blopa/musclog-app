@@ -7,6 +7,7 @@
     "gemini_model_description": "Choose the Gemini model to use for all AI generation.",
     "openai_model_description": "Choose the OpenAI model to use for all AI generation.",
     "model_selection": "Model Selection",
+    "your_google_auth_expired_reauth": "Your Google authentication has expired. Please reauthenticate.",
     "favorite": "Favorite",
     "recent": "Recent",
     "musclog_nutrition_insights": "Musclog - Nutrition Insights",
