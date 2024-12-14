@@ -23,11 +23,12 @@ import { SettingsProvider, useSettings } from '@/storage/SettingsContext';
 import { SnackbarProvider } from '@/storage/SnackbarProvider';
 import { UnreadMessagesProvider, useUnreadMessages } from '@/storage/UnreadMessagesProvider';
 import { isAllowedLocation } from '@/utils/ai';
-import { startBackgroundFetch } from '@/utils/backgroundTasks';
 import {
     CustomDarkTheme,
     CustomLightTheme,
 } from '@/utils/colors';
+import { configureDailyTasks } from '@/utils/configureDailyTasks';
+import { configureNotifications } from '@/utils/configureNotifications';
 import {
     addAlcoholAndFiberMacroToWorkoutEventTable,
     addAlcoholMacroToUserNutritionTable,
@@ -49,8 +50,8 @@ import {
 import { getCurrentTimestampISOString } from '@/utils/date';
 import { getEncryptionKey } from '@/utils/encryption';
 import { getLatestHealthConnectData } from '@/utils/healthConnect';
-import { captureException, captureMessage } from '@/utils/sentry';
 import 'react-native-reanimated';
+import { captureException, captureMessage } from '@/utils/sentry';
 import { getDecrypter } from '@/utils/storage';
 import { ExerciseInsertType } from '@/utils/types';
 import { FontAwesome } from '@expo/vector-icons';
@@ -280,6 +281,7 @@ function RootLayout() {
     );
 }
 
-startBackgroundFetch();
+configureNotifications();
+configureDailyTasks();
 
 export default Sentry.wrap(MasterRootLayout);
