@@ -15,6 +15,7 @@ import {
     getDaysAgoTimestampISOString,
     getStartOfDayTimestampISOString,
 } from '@/utils/date';
+import { captureMessage } from '@/utils/sentry';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as BackgroundFetch from 'expo-background-fetch';
 import * as TaskManager from 'expo-task-manager';
@@ -23,19 +24,23 @@ import { Platform } from 'react-native';
 TaskManager.defineTask(DAILY_TASK, async () => {
     try {
         const currentDate = new Date();
-        const currentHour = currentDate.getHours();
+        // const currentHour = currentDate.getHours();
+        //
+        // // Ensure the task only runs before 3am
+        // if (currentHour < 3) {
+        //     console.log('Task not running, outside of 3am window.');
+        //     captureMessage('Task not running, outside of 3am window.');
+        //     return BackgroundFetch.BackgroundFetchResult.NoData;
+        // }
 
-        // Ensure the task only runs between 3:00 - 3:10 am
-        if (currentHour < 3 || currentHour > 3) {
-            console.log('Task not running, outside of 3am window.');
-            return BackgroundFetch.BackgroundFetchResult.NoData;
-        }
+        captureMessage('Running daily task.');
 
         // Check if it was already run today
         const lastTimeRun = await AsyncStorage.getItem(LAST_DAILY_TASK_RUN_DATE);
         const today = currentDate.toISOString().split('T')[0];
         if (lastTimeRun === today) {
             console.log('Task already ran today.');
+            captureMessage('Task already ran today.');
             return BackgroundFetch.BackgroundFetchResult.NoData;
         }
 
@@ -59,6 +64,7 @@ TaskManager.defineTask(DAILY_TASK, async () => {
                 await AsyncStorage.setItem(UNREAD_MESSAGES_COUNT, (parseInt(currentCount, 10) + 1).toString());
             } else {
                 console.log('No workout insight message to add.');
+                captureMessage('No workout insight message to add.');
             }
         }
 
@@ -79,6 +85,7 @@ TaskManager.defineTask(DAILY_TASK, async () => {
                 await AsyncStorage.setItem(UNREAD_MESSAGES_COUNT, (parseInt(currentCount, 10) + 1).toString());
             } else {
                 console.log('No nutrition insight message to add.');
+                captureMessage('No nutrition insight message to add.');
             }
         }
 
