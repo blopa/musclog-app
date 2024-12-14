@@ -1,11 +1,7 @@
 import type { ChatCompletionMessageParam } from 'openai/resources';
 
 import { GEMINI_MODELS } from '@/constants/ai';
-import {
-    EXERCISE_IMAGE_GENERATION_TYPE,
-    GEMINI_API_KEY_TYPE,
-    GEMINI_MODEL_TYPE,
-} from '@/constants/storage';
+import { EXERCISE_IMAGE_GENERATION_TYPE, GEMINI_API_KEY_TYPE, GEMINI_MODEL_TYPE } from '@/constants/storage';
 import i18n from '@/lang/lang';
 import { getSetting, processWorkoutPlan } from '@/utils/database';
 import { getBase64StringFromPhotoUri, resizeImage } from '@/utils/file';
@@ -59,6 +55,9 @@ const getModel = async () => {
 
     return model?.model || defaultModel;
 };
+
+// https://cloud.google.com/vertex-ai/generative-ai/docs/reference/python/latest/vertexai.generative_models.FinishReason
+const ACCEPTABLE_STOP_REASONS = ['MAX_TOKENS', 'STOP'];
 
 export const getApiKey = async () =>
     (await getSetting(GEMINI_API_KEY_TYPE))?.value || process.env.EXPO_PUBLIC_FORCE_GEMINI_API_KEY;
@@ -250,8 +249,13 @@ export async function getNutritionInsights(startDate: string, endDate: string): 
             generationConfig,
         } as GenerateContentRequest);
 
-        if (result.response?.promptFeedback?.blockReason) {
+        if (result?.response?.promptFeedback?.blockReason) {
             console.log(`Blocked for ${result.response.promptFeedback.blockReason}`);
+            return;
+        }
+
+        if (!ACCEPTABLE_STOP_REASONS.includes(result?.response?.candidates?.[0]?.finishReason || '')) {
+            console.log(`Blocked for ${result?.response?.candidates?.[0]?.finishReason}`);
             return;
         }
 
@@ -295,6 +299,11 @@ export async function getRecentWorkoutsInsights(startDate: string, endDate: stri
 
         if (result.response?.promptFeedback?.blockReason) {
             console.log(`Blocked for ${result.response.promptFeedback.blockReason}`);
+            return;
+        }
+
+        if (!ACCEPTABLE_STOP_REASONS.includes(result?.response?.candidates?.[0]?.finishReason || '')) {
+            console.log(`Blocked for ${result?.response?.candidates?.[0]?.finishReason}`);
             return;
         }
 
@@ -369,6 +378,11 @@ export async function sendChatMessage(messages: any[]) {
             return;
         }
 
+        if (!ACCEPTABLE_STOP_REASONS.includes(result?.response?.candidates?.[0]?.finishReason || '')) {
+            console.log(`Blocked for ${result?.response?.candidates?.[0]?.finishReason}`);
+            return;
+        }
+
         return {
             messageToBio: '',
             messageToUser: i18n.t('great'),
@@ -431,6 +445,11 @@ async function createWorkoutPlan(messages: any[]) {
 
         if (result.response?.promptFeedback?.blockReason) {
             console.log(`Blocked for ${result.response.promptFeedback.blockReason}`);
+            return;
+        }
+
+        if (!ACCEPTABLE_STOP_REASONS.includes(result?.response?.candidates?.[0]?.finishReason || '')) {
+            console.log(`Blocked for ${result?.response?.candidates?.[0]?.finishReason}`);
             return;
         }
 
@@ -497,8 +516,13 @@ export const calculateNextWorkoutVolume = async (workout: WorkoutReturnType) => 
             return;
         }
 
+        if (!ACCEPTABLE_STOP_REASONS.includes(result?.response?.candidates?.[0]?.finishReason || '')) {
+            console.log(`Blocked for ${result?.response?.candidates?.[0]?.finishReason}`);
+            return;
+        }
+
         return {
-            messageToUser: 'Next workout volume calculated successfully',
+            messageToUser: i18n.t('next_workout_calculated_successfully'),
             workoutVolume: [],
             ...result?.response?.candidates?.[0]?.content?.parts?.[0]?.functionCall?.args,
         };
@@ -548,6 +572,11 @@ export const generateExerciseImage = async (exerciseName: string): Promise<strin
 
         if (result.response?.promptFeedback?.blockReason) {
             console.log(`Blocked for ${result.response.promptFeedback.blockReason}`);
+            return 'https://via.placeholder.com/300';
+        }
+
+        if (!ACCEPTABLE_STOP_REASONS.includes(result?.response?.candidates?.[0]?.finishReason || '')) {
+            console.log(`Blocked for ${result?.response?.candidates?.[0]?.finishReason}`);
             return 'https://via.placeholder.com/300';
         }
 
@@ -616,6 +645,11 @@ export const parsePastWorkouts = async (userMessage: string) => {
             return;
         }
 
+        if (!ACCEPTABLE_STOP_REASONS.includes(result?.response?.candidates?.[0]?.finishReason || '')) {
+            console.log(`Blocked for ${result?.response?.candidates?.[0]?.finishReason}`);
+            return;
+        }
+
         return {
             pastWorkouts: [],
             ...result?.response?.candidates?.[0]?.content?.parts?.[0]?.functionCall?.args,
@@ -678,6 +712,11 @@ export const parsePastNutrition = async (userMessage: string) => {
             return;
         }
 
+        if (!ACCEPTABLE_STOP_REASONS.includes(result?.response?.candidates?.[0]?.finishReason || '')) {
+            console.log(`Blocked for ${result?.response?.candidates?.[0]?.finishReason}`);
+            return;
+        }
+
         return {
             pastNutrition: [],
             ...result?.response?.candidates?.[0]?.content?.parts?.[0]?.functionCall?.args,
@@ -724,6 +763,11 @@ export const getRecentWorkoutInsights = async (workoutEventId: number): Promise<
             return;
         }
 
+        if (!ACCEPTABLE_STOP_REASONS.includes(result?.response?.candidates?.[0]?.finishReason || '')) {
+            console.log(`Blocked for ${result?.response?.candidates?.[0]?.finishReason}`);
+            return;
+        }
+
         return result.response.candidates?.[0]?.content?.parts[0]?.text;
     } catch (e) {
         console.error(e);
@@ -767,6 +811,11 @@ export const getWorkoutInsights = async (workoutId: number): Promise<string | un
             return;
         }
 
+        if (!ACCEPTABLE_STOP_REASONS.includes(result?.response?.candidates?.[0]?.finishReason || '')) {
+            console.log(`Blocked for ${result?.response?.candidates?.[0]?.finishReason}`);
+            return;
+        }
+
         return result.response.candidates?.[0]?.content?.parts[0]?.text;
     } catch (e) {
         console.error(e);
@@ -807,6 +856,11 @@ export const getWorkoutVolumeInsights = async (workoutId: number): Promise<strin
 
         if (result.response?.promptFeedback?.blockReason) {
             console.log(`Blocked for ${result.response.promptFeedback.blockReason}`);
+            return;
+        }
+
+        if (!ACCEPTABLE_STOP_REASONS.includes(result?.response?.candidates?.[0]?.finishReason || '')) {
+            console.log(`Blocked for ${result?.response?.candidates?.[0]?.finishReason}`);
             return;
         }
 
