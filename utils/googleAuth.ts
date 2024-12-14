@@ -75,12 +75,13 @@ export const GOOGLE_CLIENT_ID = '182653769964-letucboq7c5m25ckvgp9kuirrdm33fkc.a
 /**
  * Refresh the access token using the stored refresh token
  */
-export const refreshAccessToken = async (): Promise<string> => {
+export const refreshAccessToken = async (): Promise<string | undefined> => {
     const refreshToken = await getSetting(GOOGLE_REFRESH_TOKEN_TYPE);
     if (!refreshToken?.value) {
         await deleteAllData();
         // alert(i18n.t('please_reauthenticate_google'));
-        throw new Error('Refresh token is missing. Please sign in again.');
+        // throw new Error('Refresh token is missing. Please sign in again.');
+        return;
     }
 
     try {
@@ -101,10 +102,10 @@ export const refreshAccessToken = async (): Promise<string> => {
 
             const errorData = await response.json();
             if (errorData.error === 'invalid_grant') {
-                throw new Error('Refresh token expired or invalid. Please sign in again.');
+                // throw new Error('Refresh token expired or invalid. Please sign in again.');
             }
 
-            throw new Error(errorData.error || 'Failed to refresh access token');
+            // throw new Error(errorData.error || 'Failed to refresh access token');
         }
 
         const data = (await response.json()) as RefreshTokenResponse;
@@ -118,8 +119,8 @@ export const refreshAccessToken = async (): Promise<string> => {
     } catch (error) {
         await deleteAllData();
 
-        console.error('Error refreshing access token:', error);
-        throw error;
+        // console.error('Error refreshing access token:', error);
+        // throw error;
     }
 };
 
@@ -155,7 +156,7 @@ export const reauthenticate = async (
 /**
  * Retrieve a valid access token (refresh if expired)
  */
-export const getAccessToken = async (): Promise<string> => {
+export const getAccessToken = async (): Promise<string | undefined> => {
     const accessToken = await AsyncStorage.getItem(GOOGLE_ACCESS_TOKEN);
     const tokenExpirationTime = await AsyncStorage.getItem(GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE);
 

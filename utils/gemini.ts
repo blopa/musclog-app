@@ -63,7 +63,7 @@ const getModel = async () => {
 export const getApiKey = async () =>
     (await getSetting(GEMINI_API_KEY_TYPE))?.value || process.env.EXPO_PUBLIC_FORCE_GEMINI_API_KEY;
 
-export const getAccessToken = async () => await getGoogleAccessToken() || undefined;
+export const getAccessToken = async () => await getGoogleAccessToken();
 
 const safetySettings = [
     { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
@@ -156,8 +156,10 @@ const rawFetchGeminiApi = async (model: string, accessToken: string, body: any) 
             console.warn('Access token is invalid. Attempting to refresh...');
             const newAccessToken = await refreshAccessToken();
 
-            // Retry with the new access token
-            result = await makeRequest(newAccessToken);
+            if (newAccessToken) {
+                // Retry with the new access token
+                result = await makeRequest(newAccessToken);
+            }
         } catch (error) {
             console.error('Error refreshing access token:', error);
             throw new Error('Failed to refresh access token and retry the request.');
