@@ -358,7 +358,8 @@ const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
 
                 if (message) {
                     await addNewChat({
-                        message,
+                        // Remove quotes from the message
+                        message: message.replace(/^"([^"]+)"$/, '$1'),
                         misc: '',
                         sender: 'assistant',
                         type: 'text',
@@ -395,7 +396,8 @@ const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
 
                 if (message) {
                     await addNewChat({
-                        message,
+                        // remove quotes
+                        message: message.replace(/^"([^"]+)"$/, '$1'),
                         misc: '',
                         sender: 'assistant',
                         type: 'text',
