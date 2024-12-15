@@ -23,6 +23,7 @@ import {
 import { Button, Portal, SegmentedButtons, Text, useTheme } from 'react-native-paper';
 
 interface SearchFoodModalProps {
+    defaultMealType?: string;
     onClose: () => void;
     onFoodSelected: (food: FoodTrackingType) => void;
     style?: ViewStyle;
@@ -30,6 +31,7 @@ interface SearchFoodModalProps {
 }
 
 const SearchFoodModal = ({
+    defaultMealType = '0',
     onClose,
     onFoodSelected,
     style,
@@ -146,8 +148,8 @@ const SearchFoodModal = ({
 
     const handleFoodSearch = useCallback(() => {
         onClose();
-        navigation.navigate('foodSearch', { initialSearchQuery: searchQuery });
-    }, [navigation, onClose, searchQuery]);
+        navigation.navigate('foodSearch', { defaultMealType, initialSearchQuery: searchQuery });
+    }, [defaultMealType, navigation, onClose, searchQuery]);
 
     const renderScannerOverlay = useCallback(
         () => (
