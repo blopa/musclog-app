@@ -240,35 +240,37 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                     {Platform.OS === 'web' ? (
                         <View style={{ height: 40 }} />
                     ) : null}
-                    <View>
-                        <SegmentedButtons
-                            buttons={[
-                                { label: t('recent'), value: 'recent' },
-                                { label: t('favorite'), value: 'favorite' },
-                            ]}
-                            onValueChange={setFoodHistoryType}
-                            style={styles.segmentedButtons}
-                            value={foodHistoryType}
-                        />
-                        {foodHistory.length > 0 ? (
-                            <FlashList
-                                contentContainerStyle={styles.listContent}
-                                data={foodHistory}
-                                estimatedItemSize={115}
-                                keyExtractor={(item, index) => (item.id || index).toString()}
-                                onEndReachedThreshold={0.5}
-                                renderItem={({ item }) => (
-                                    <FoodItem
-                                        food={item}
-                                        onAddFood={(food) => {
-                                            setSelectedFood(food);
-                                            setIsNutritionModalVisible(true);
-                                        }}
-                                    />
-                                )}
+                    {(recentTrackedFoods.length > 0 || favoriteFoods.length > 0) ? (
+                        <View>
+                            <SegmentedButtons
+                                buttons={[
+                                    { label: t('recent'), value: 'recent' },
+                                    { label: t('favorite'), value: 'favorite' },
+                                ]}
+                                onValueChange={setFoodHistoryType}
+                                style={styles.segmentedButtons}
+                                value={foodHistoryType}
                             />
-                        ) : null}
-                    </View>
+                            {foodHistory.length > 0 ? (
+                                <FlashList
+                                    contentContainerStyle={styles.listContent}
+                                    data={foodHistory}
+                                    estimatedItemSize={115}
+                                    keyExtractor={(item, index) => (item.id || index).toString()}
+                                    onEndReachedThreshold={0.5}
+                                    renderItem={({ item }) => (
+                                        <FoodItem
+                                            food={item}
+                                            onAddFood={(food) => {
+                                                setSelectedFood(food);
+                                                setIsNutritionModalVisible(true);
+                                            }}
+                                        />
+                                    )}
+                                />
+                            ) : t('no_data')}
+                        </View>
+                    ) : null}
                 </ScrollView>
             </Screen>
         );
