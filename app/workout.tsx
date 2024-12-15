@@ -439,7 +439,8 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
 
                                     if (messageToUser) {
                                         await addNewChat({
-                                            message: messageToUser,
+                                            // remove quote
+                                            message: messageToUser.replace(/^"([^"]+)"$/, '$1'),
                                             misc: '',
                                             sender: 'assistant',
                                             type: 'text',

@@ -191,7 +191,7 @@ export const calculateNextWorkoutVolume = async (workout: WorkoutReturnType) => 
     });
 
     let jsonResponse = {
-        messageToUser: '',
+        messageToUser: i18n.t('next_workout_calculated_successfully'),
         workoutVolume: [],
     };
 

@@ -1033,7 +1033,8 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
 
                 if (message) {
                     await addNewChat({
-                        message,
+                        // remove quotes
+                        message: message.replace(/^"([^"]+)"$/, '$1'),
                         misc: '',
                         sender: 'assistant',
                         type: 'text',

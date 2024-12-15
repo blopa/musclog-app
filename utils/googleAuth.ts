@@ -5,8 +5,10 @@ import {
     GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE,
     GOOGLE_OAUTH_GEMINI_ENABLED_TYPE,
     GOOGLE_REFRESH_TOKEN_TYPE,
+    LAST_TIME_GOOGLE_AUTH_ERROR_WAS_SHOWN,
 } from '@/constants/storage';
 import { GoogleAuthData } from '@/hooks/useGoogleAuth';
+import i18n from '@/lang/lang';
 import { isValidAccessToken } from '@/utils/ai';
 import { addOrUpdateSetting, getSetting } from '@/utils/database';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -32,6 +34,20 @@ export interface RefreshTokenResponse {
 }
 
 export const GOOGLE_CLIENT_ID = '182653769964-letucboq7c5m25ckvgp9kuirrdm33fkc.apps.googleusercontent.com';
+
+const handleGoogleAuthError = async () => {
+    const lastTimeRun = await AsyncStorage.getItem(LAST_TIME_GOOGLE_AUTH_ERROR_WAS_SHOWN);
+    const today = (new Date()).toISOString().split('T')[0];
+
+    if (lastTimeRun === today) {
+        console.log('Error already shown today.');
+        return;
+    }
+
+    // @ts-ignore it's fine
+    global.showSnackbar(i18n.t('your_google_auth_expired_reauth'), i18n.t('ok'), () => {});
+    await AsyncStorage.setItem(LAST_TIME_GOOGLE_AUTH_ERROR_WAS_SHOWN, today);
+};
 
 /**
  * Fetch user info using the access token.
@@ -75,12 +91,14 @@ export const GOOGLE_CLIENT_ID = '182653769964-letucboq7c5m25ckvgp9kuirrdm33fkc.a
 /**
  * Refresh the access token using the stored refresh token
  */
-export const refreshAccessToken = async (): Promise<string> => {
+export const refreshAccessToken = async (): Promise<string | undefined> => {
     const refreshToken = await getSetting(GOOGLE_REFRESH_TOKEN_TYPE);
     if (!refreshToken?.value) {
         await deleteAllData();
         // alert(i18n.t('please_reauthenticate_google'));
-        throw new Error('Refresh token is missing. Please sign in again.');
+        // throw new Error('Refresh token is missing. Please sign in again.');
+        handleGoogleAuthError();
+        return;
     }
 
     try {
@@ -101,10 +119,11 @@ export const refreshAccessToken = async (): Promise<string> => {
 
             const errorData = await response.json();
             if (errorData.error === 'invalid_grant') {
-                throw new Error('Refresh token expired or invalid. Please sign in again.');
+                // throw new Error('Refresh token expired or invalid. Please sign in again.');
             }
 
-            throw new Error(errorData.error || 'Failed to refresh access token');
+            // throw new Error(errorData.error || 'Failed to refresh access token');
+            handleGoogleAuthError();
         }
 
         const data = (await response.json()) as RefreshTokenResponse;
@@ -118,8 +137,10 @@ export const refreshAccessToken = async (): Promise<string> => {
     } catch (error) {
         await deleteAllData();
 
-        console.error('Error refreshing access token:', error);
-        throw error;
+        handleGoogleAuthError();
+
+        // console.error('Error refreshing access token:', error);
+        // throw error;
     }
 };
 
@@ -128,14 +149,16 @@ export const refreshAccessToken = async (): Promise<string> => {
  */
 export const reauthenticate = async (
     promptAsync: () => Promise<AuthSessionResult>
-): Promise<string> => {
+): Promise<string | undefined> => {
     try {
         const result = await promptAsync();
         if (result.type === 'success' && result.authentication) {
             const { refreshToken } = result.authentication;
 
             if (!refreshToken) {
-                throw new Error('Failed to obtain a new refresh token. Please try again.');
+                handleGoogleAuthError();
+                return;
+                // throw new Error('Failed to obtain a new refresh token. Please try again.');
             }
 
             await addOrUpdateSetting({
@@ -145,17 +168,20 @@ export const reauthenticate = async (
 
             return refreshToken;
         }
-        throw new Error('User reauthentication failed or was cancelled.');
+
+        handleGoogleAuthError();
+        // throw new Error('User reauthentication failed or was cancelled.');
     } catch (error) {
-        console.error('Error reauthenticating user:', error);
-        throw error;
+        // console.error('Error reauthenticating user:', error);
+        // throw error;
+        handleGoogleAuthError();
     }
 };
 
 /**
  * Retrieve a valid access token (refresh if expired)
  */
-export const getAccessToken = async (): Promise<string> => {
+export const getAccessToken = async (): Promise<string | undefined> => {
     const accessToken = await AsyncStorage.getItem(GOOGLE_ACCESS_TOKEN);
     const tokenExpirationTime = await AsyncStorage.getItem(GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE);
 

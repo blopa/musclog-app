@@ -233,7 +233,8 @@ const RecentWorkoutDetails: React.FC<RecentWorkoutDetailsProps> = ({ navigation 
 
                 if (message) {
                     await addNewChat({
-                        message,
+                        // remove double quote
+                        message: message.replace(/^"([^"]+)"$/, '$1'),
                         misc: '',
                         sender: 'assistant',
                         type: 'text',

@@ -291,7 +291,8 @@ const useChatRenderFunctions = () => {
                             if (messageToUser) {
                                 const newAssistantChat: ChatInsertType = {
                                     createdAt: getCurrentTimestampISOString(),
-                                    message: messageToUser,
+                                    // Remove quotes from the message
+                                    message: messageToUser.replace(/^"([^"]+)"$/, '$1'),
                                     misc: '',
                                     sender: 'assistant',
                                     type: 'text',

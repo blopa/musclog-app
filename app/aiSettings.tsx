@@ -109,9 +109,9 @@ export default function AISettings({ navigation }: { navigation: NavigationProp<
             setRefreshToken(googleRefreshTokenFromDb.value);
         }
 
-        const googleOauthGeminiElabledFromDb = await getSettingByType(GOOGLE_OAUTH_GEMINI_ENABLED_TYPE);
-        if (googleOauthGeminiElabledFromDb) {
-            const value = googleOauthGeminiElabledFromDb.value === 'true';
+        const googleOauthGeminiEnabledFromDb = await getSettingByType(GOOGLE_OAUTH_GEMINI_ENABLED_TYPE);
+        if (googleOauthGeminiEnabledFromDb) {
+            const value = googleOauthGeminiEnabledFromDb.value === 'true';
             setIsGoogleOauthGeminiEnabled(value);
         }
 
@@ -257,21 +257,21 @@ export default function AISettings({ navigation }: { navigation: NavigationProp<
         setLoading(false);
     }, [updateSettingWithLoadingState, tempExerciseImageGeneration]);
 
-    const handleToggleGoogleOauthGeminiElabled = useCallback(async () => {
+    const handleToggleGoogleOauthGeminiEnabled = useCallback(async () => {
         setLoading(true);
         setIsGoogleOauthGeminiEnabled(!isGoogleOauthGeminiEnabled);
         setLoading(false);
     }, [isGoogleOauthGeminiEnabled]);
 
     useEffect(() => {
-        const saveGoogleOauthGeminiElabled = async () => {
+        const saveGoogleOauthGeminiEnabled = async () => {
             if (isGoogleOauthGeminiEnabled !== undefined) {
                 const newValue = isGoogleOauthGeminiEnabled.toString();
                 await updateSettingWithLoadingState(GOOGLE_OAUTH_GEMINI_ENABLED_TYPE, newValue);
             }
         };
 
-        saveGoogleOauthGeminiElabled();
+        saveGoogleOauthGeminiEnabled();
     }, [isGoogleOauthGeminiEnabled, updateSettingWithLoadingState]);
 
     const resetScreenData = useCallback(() => {
@@ -338,8 +338,25 @@ export default function AISettings({ navigation }: { navigation: NavigationProp<
                 <List.Section>
                     <List.Subheader>{t('ai_provider_settings')}</List.Subheader>
                     <List.Item
+                        description={t('google_sign_in_description')}
+                        onPress={() => {
+                            setGoogleSignInModalVisible(true);
+                        }}
+                        right={() => (
+                            <View style={styles.rightContainer}>
+                                <Text>
+                                    {refreshToken
+                                        ? t('signed_in')
+                                        : t('not_signed_in')}
+                                </Text>
+                                <List.Icon icon="chevron-right" />
+                            </View>
+                        )}
+                        title={t('google_sign_in')}
+                    />
+                    <List.Item
                         description={t('google_gemini_oauth_description')}
-                        onPress={handleToggleGoogleOauthGeminiElabled}
+                        onPress={handleToggleGoogleOauthGeminiEnabled}
                         right={() => (
                             <View style={styles.rightContainer}>
                                 <Text>{isGoogleOauthGeminiEnabled ? t('enabled') : t('disabled')}</Text>

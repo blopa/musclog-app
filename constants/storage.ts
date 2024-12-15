@@ -71,3 +71,5 @@ export const CENTIMETERS = 'cm';
 export const FEET = 'ft';
 export const METERS = 'm';
 export const INCHES = 'in';
+
+export const LAST_TIME_GOOGLE_AUTH_ERROR_WAS_SHOWN = 'lastTimeGoogleAuthErrorWasShown';

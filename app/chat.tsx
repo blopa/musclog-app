@@ -279,7 +279,8 @@ export default function Chat({ navigation }: { navigation: NavigationProp<any> }
             if (messageToUser) {
                 const newAssistantChat: ChatInsertType = {
                     createdAt: getCurrentTimestampISOString(),
-                    message: messageToUser,
+                    // remove quotes from the message
+                    message: messageToUser.replace(/^"([^"]+)"$/, '$1'),
                     misc: '',
                     sender: 'assistant',
                     type: 'text',
