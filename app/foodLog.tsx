@@ -66,7 +66,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const [selectedNutrition, setSelectedNutrition] = useState<null | UserNutritionDecryptedReturnType>(null);
     const { checkReadIsPermitted, checkWriteIsPermitted, insertHealthData } = useHealthConnect();
 
-    const [index, setIndex] = useState(0);
+    const [tabIndex, setTabIndex] = useState(0);
     const [searchQuery, setSearchQuery] = useState('');
     const [consumedFoods, setConsumedFoods] = useState<UserNutritionDecryptedReturnType[]>([]);
     const [preSelectedMealType, setPreSelectedMealType] = useState('0');
@@ -120,10 +120,6 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         setIsAiEnabled(hasAiEnabled);
     }, [getSettingByType]);
 
-    const handleCloseFoodSearchModal = useCallback(() => {
-        setFoodSearchModalVisible(false);
-    }, []);
-
     const handleOnFoodSelected = useCallback((food: FoodTrackingType) => {
         setSelectedFood(food);
         setIsNutritionModalVisible(true);
@@ -168,6 +164,11 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
             console.error('Error loading consumed data:', error);
         }
     }, [selectedDate]);
+
+    const handleCloseFoodSearchModal = useCallback(() => {
+        setFoodSearchModalVisible(false);
+        loadConsumed();
+    }, [loadConsumed]);
 
     const handleSyncHealthConnect = useCallback(async () => {
         setIsLoading(true);
@@ -221,7 +222,8 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
     const resetScreenData = useCallback(() => {
         setSearchQuery('');
-        // Removed `setIndex(0)` so that the tab does not reset each time.
+        // Removed so that the tab does not reset each time.
+        // setTabIndex(0);
         setConsumedFoods([]);
         setAllowEditName(false);
     }, []);
@@ -758,8 +760,8 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                     />
                     <TabView
                         initialLayout={{ width: Dimensions.get('window').width }}
-                        navigationState={{ index, routes }}
-                        onIndexChange={setIndex}
+                        navigationState={{ index: tabIndex, routes }}
+                        onIndexChange={setTabIndex}
                         renderScene={renderScene}
                         renderTabBar={renderTabBar}
                     />
@@ -808,6 +810,9 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                     defaultMealType={preSelectedMealType}
                     onClose={handleCloseFoodSearchModal}
                     onFoodSelected={handleOnFoodSelected}
+                    showLastTracked={consumedFoods.filter(
+                        (food) => food.mealType?.toString() === preSelectedMealType
+                    ).length === 0}
                     visible={foodSearchModalVisible}
                 />
                 <ThemedModal

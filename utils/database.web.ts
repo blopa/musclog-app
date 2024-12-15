@@ -3,7 +3,11 @@ import { USER_METRICS_SOURCES } from '@/constants/healthConnect';
 import { COMPLETED_STATUS, SCHEDULED_STATUS } from '@/constants/storage';
 import packageJson from '@/package.json';
 import { getCommonFunctions } from '@/utils/databaseCommon';
-import { getCurrentTimestampISOString } from '@/utils/date';
+import {
+    getCurrentTimestampISOString,
+    getEndOfDayTimestampISOString,
+    getStartOfDayTimestampISOString,
+} from '@/utils/date';
 import { decrypt, encrypt } from '@/utils/encryption';
 import { generateHash, normalizeName } from '@/utils/string';
 import {
@@ -938,9 +942,9 @@ export const getAllUserMetricsByUserId = async (userId: number): Promise<UserMet
 
     return results.map((userMetrics) => ({
         ...userMetrics,
-        fatPercentage: parseFloat(String(userMetrics.fatPercentage)),
-        height: parseFloat(String(userMetrics.height)),
-        weight: parseFloat(String(userMetrics.weight)),
+        fatPercentage: parseFloat(String(userMetrics.fatPercentage)) || 0,
+        height: parseFloat(String(userMetrics.height)) || 0,
+        weight: parseFloat(String(userMetrics.weight)) || 0,
     }));
 };
 
@@ -953,9 +957,9 @@ export const getUserMetrics = async (id: number): Promise<undefined | UserMetric
     if (userMetrics) {
         return {
             ...userMetrics,
-            fatPercentage: parseFloat(String(userMetrics.fatPercentage)),
-            height: parseFloat(String(userMetrics.height)),
-            weight: parseFloat(String(userMetrics.weight)),
+            fatPercentage: parseFloat(String(userMetrics.fatPercentage)) || 0,
+            height: parseFloat(String(userMetrics.height)) || 0,
+            weight: parseFloat(String(userMetrics.weight)) || 0,
         };
     }
     return undefined;
@@ -972,9 +976,9 @@ export const getUserMetricsPaginated = async (offset = 0, limit = 20): Promise<U
 
     return results.map((userMetrics) => ({
         ...userMetrics,
-        fatPercentage: parseFloat(String(userMetrics.fatPercentage)),
-        height: parseFloat(String(userMetrics.height)),
-        weight: parseFloat(String(userMetrics.weight)),
+        fatPercentage: parseFloat(String(userMetrics.fatPercentage)) || 0,
+        height: parseFloat(String(userMetrics.height)) || 0,
+        weight: parseFloat(String(userMetrics.weight)) || 0,
     }));
 };
 
@@ -987,9 +991,9 @@ export const getUserMetricsBetweenDates = async (startDate: string, endDate: str
 
     return results.map((userMetrics) => ({
         ...userMetrics,
-        fatPercentage: parseFloat(String(userMetrics.fatPercentage)),
-        height: parseFloat(String(userMetrics.height)),
-        weight: parseFloat(String(userMetrics.weight)),
+        fatPercentage: parseFloat(String(userMetrics.fatPercentage)) || 0,
+        height: parseFloat(String(userMetrics.height)) || 0,
+        weight: parseFloat(String(userMetrics.weight)) || 0,
     }));
 };
 
@@ -1005,9 +1009,9 @@ export const getUserMetricsFromDate = async (startDate: string): Promise<UserMet
 
     return results.map((userMetrics) => ({
         ...userMetrics,
-        fatPercentage: parseFloat(String(userMetrics.fatPercentage)),
-        height: parseFloat(String(userMetrics.height)),
-        weight: parseFloat(String(userMetrics.weight)),
+        fatPercentage: parseFloat(String(userMetrics.fatPercentage)) || 0,
+        height: parseFloat(String(userMetrics.height)) || 0,
+        weight: parseFloat(String(userMetrics.weight)) || 0,
     }));
 };
 
@@ -1022,9 +1026,9 @@ export const getAllUserMetrics = async (): Promise<UserMetricsDecryptedReturnTyp
 
     return results.map((userMetrics) => ({
         ...userMetrics,
-        fatPercentage: parseFloat(String(userMetrics.fatPercentage)),
-        height: parseFloat(String(userMetrics.height)),
-        weight: parseFloat(String(userMetrics.weight)),
+        fatPercentage: parseFloat(String(userMetrics.fatPercentage)) || 0,
+        height: parseFloat(String(userMetrics.height)) || 0,
+        weight: parseFloat(String(userMetrics.weight)) || 0,
     }));
 };
 
@@ -1035,17 +1039,17 @@ export const getAllUserNutrition = async (): Promise<UserNutritionDecryptedRetur
 
     return results.map((userNutrition) => ({
         ...userNutrition,
-        calories: parseFloat(String(userNutrition.calories)),
-        carbohydrate: parseFloat(String(userNutrition.carbohydrate)),
-        fat: parseFloat(String(userNutrition.fat)),
+        calories: parseFloat(String(userNutrition.calories)) || 0,
+        carbohydrate: parseFloat(String(userNutrition.carbohydrate)) || 0,
+        fat: parseFloat(String(userNutrition.fat)) || 0,
         fiber: parseFloat(String(userNutrition.fiber)),
-        monounsaturatedFat: parseFloat(String(userNutrition.monounsaturatedFat)),
-        polyunsaturatedFat: parseFloat(String(userNutrition.polyunsaturatedFat)),
-        protein: parseFloat(String(userNutrition.protein)),
-        saturatedFat: parseFloat(String(userNutrition.saturatedFat)),
-        sugar: parseFloat(String(userNutrition.sugar)),
-        transFat: parseFloat(String(userNutrition.transFat)),
-        unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat)),
+        monounsaturatedFat: parseFloat(String(userNutrition.monounsaturatedFat)) || 0,
+        polyunsaturatedFat: parseFloat(String(userNutrition.polyunsaturatedFat)) || 0,
+        protein: parseFloat(String(userNutrition.protein)) || 0,
+        saturatedFat: parseFloat(String(userNutrition.saturatedFat)) || 0,
+        sugar: parseFloat(String(userNutrition.sugar)) || 0,
+        transFat: parseFloat(String(userNutrition.transFat)) || 0,
+        unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat)) || 0,
     }));
 };
 
@@ -1058,9 +1062,9 @@ export const getUserMetricsByDataId = async (dataId: string): Promise<undefined 
     if (userMetrics) {
         return {
             ...userMetrics,
-            fatPercentage: parseFloat(String(userMetrics.fatPercentage)),
-            height: parseFloat(String(userMetrics.height)),
-            weight: parseFloat(String(userMetrics.weight)),
+            fatPercentage: parseFloat(String(userMetrics.fatPercentage)) || 0,
+            height: parseFloat(String(userMetrics.height)) || 0,
+            weight: parseFloat(String(userMetrics.weight)) || 0,
         };
     }
     return undefined;
@@ -1075,9 +1079,9 @@ export const getLatestUserMetrics = async (): Promise<undefined | UserMetricsDec
     if (userMetrics) {
         return {
             ...userMetrics,
-            fatPercentage: parseFloat(String(userMetrics.fatPercentage)),
-            height: parseFloat(String(userMetrics.height)),
-            weight: parseFloat(String(userMetrics.weight)),
+            fatPercentage: parseFloat(String(userMetrics.fatPercentage)) || 0,
+            height: parseFloat(String(userMetrics.height)) || 0,
+            weight: parseFloat(String(userMetrics.weight)) || 0,
         };
     }
     return undefined;
@@ -1459,17 +1463,17 @@ export const getUserNutrition = async (id: number): Promise<undefined | UserNutr
     if (userNutrition) {
         return {
             ...userNutrition,
-            calories: parseFloat(String(userNutrition.calories)),
-            carbohydrate: parseFloat(String(userNutrition.carbohydrate)),
-            fat: parseFloat(String(userNutrition.fat)),
-            fiber: parseFloat(String(userNutrition.fiber)),
-            monounsaturatedFat: parseFloat(String(userNutrition.monounsaturatedFat)),
-            polyunsaturatedFat: parseFloat(String(userNutrition.polyunsaturatedFat)),
-            protein: parseFloat(String(userNutrition.protein)),
-            saturatedFat: parseFloat(String(userNutrition.saturatedFat)),
-            sugar: parseFloat(String(userNutrition.sugar)),
-            transFat: parseFloat(String(userNutrition.transFat)),
-            unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat)),
+            calories: parseFloat(String(userNutrition.calories)) || 0,
+            carbohydrate: parseFloat(String(userNutrition.carbohydrate)) || 0,
+            fat: parseFloat(String(userNutrition.fat)) || 0,
+            fiber: parseFloat(String(userNutrition.fiber)) || 0,
+            monounsaturatedFat: parseFloat(String(userNutrition.monounsaturatedFat)) || 0,
+            polyunsaturatedFat: parseFloat(String(userNutrition.polyunsaturatedFat)) || 0,
+            protein: parseFloat(String(userNutrition.protein)) || 0,
+            saturatedFat: parseFloat(String(userNutrition.saturatedFat)) || 0,
+            sugar: parseFloat(String(userNutrition.sugar)) || 0,
+            transFat: parseFloat(String(userNutrition.transFat)) || 0,
+            unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat)) || 0,
         };
     }
     return undefined;
@@ -1484,17 +1488,17 @@ export const getLatestUserNutritionByUserId = async (userId: number): Promise<un
     if (userNutrition) {
         return {
             ...userNutrition,
-            calories: parseFloat(String(userNutrition.calories)),
-            carbohydrate: parseFloat(String(userNutrition.carbohydrate)),
-            fat: parseFloat(String(userNutrition.fat)),
-            fiber: parseFloat(String(userNutrition.fiber)),
-            monounsaturatedFat: parseFloat(String(userNutrition.monounsaturatedFat)),
-            polyunsaturatedFat: parseFloat(String(userNutrition.polyunsaturatedFat)),
-            protein: parseFloat(String(userNutrition.protein)),
-            saturatedFat: parseFloat(String(userNutrition.saturatedFat)),
-            sugar: parseFloat(String(userNutrition.sugar)),
-            transFat: parseFloat(String(userNutrition.transFat)),
-            unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat)),
+            calories: parseFloat(String(userNutrition.calories)) || 0,
+            carbohydrate: parseFloat(String(userNutrition.carbohydrate)) || 0,
+            fat: parseFloat(String(userNutrition.fat)) || 0,
+            fiber: parseFloat(String(userNutrition.fiber)) || 0,
+            monounsaturatedFat: parseFloat(String(userNutrition.monounsaturatedFat)) || 0,
+            polyunsaturatedFat: parseFloat(String(userNutrition.polyunsaturatedFat)) || 0,
+            protein: parseFloat(String(userNutrition.protein)) || 0,
+            saturatedFat: parseFloat(String(userNutrition.saturatedFat)) || 0,
+            sugar: parseFloat(String(userNutrition.sugar)) || 0,
+            transFat: parseFloat(String(userNutrition.transFat)) || 0,
+            unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat)) || 0,
         };
     }
     return undefined;
@@ -1508,17 +1512,17 @@ export const getAllUserNutritionByUserId = async (userId: number): Promise<UserN
 
     return results.map((userNutrition) => ({
         ...userNutrition,
-        calories: parseFloat(String(userNutrition.calories)),
-        carbohydrate: parseFloat(String(userNutrition.carbohydrate)),
-        fat: parseFloat(String(userNutrition.fat)),
-        fiber: parseFloat(String(userNutrition.fiber)),
-        monounsaturatedFat: parseFloat(String(userNutrition.monounsaturatedFat)),
-        polyunsaturatedFat: parseFloat(String(userNutrition.polyunsaturatedFat)),
-        protein: parseFloat(String(userNutrition.protein)),
-        saturatedFat: parseFloat(String(userNutrition.saturatedFat)),
-        sugar: parseFloat(String(userNutrition.sugar)),
-        transFat: parseFloat(String(userNutrition.transFat)),
-        unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat)),
+        calories: parseFloat(String(userNutrition.calories)) || 0,
+        carbohydrate: parseFloat(String(userNutrition.carbohydrate)) || 0,
+        fat: parseFloat(String(userNutrition.fat)) || 0,
+        fiber: parseFloat(String(userNutrition.fiber)) || 0,
+        monounsaturatedFat: parseFloat(String(userNutrition.monounsaturatedFat)) || 0,
+        polyunsaturatedFat: parseFloat(String(userNutrition.polyunsaturatedFat)) || 0,
+        protein: parseFloat(String(userNutrition.protein)) || 0,
+        saturatedFat: parseFloat(String(userNutrition.saturatedFat)) || 0,
+        sugar: parseFloat(String(userNutrition.sugar)) || 0,
+        transFat: parseFloat(String(userNutrition.transFat)) || 0,
+        unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat)) || 0,
     }));
 };
 
@@ -1530,17 +1534,17 @@ export const getAllUserNutritionBySource = async (source: string): Promise<UserN
 
     return results.map((userNutrition) => ({
         ...userNutrition,
-        calories: parseFloat(String(userNutrition.calories)),
-        carbohydrate: parseFloat(String(userNutrition.carbohydrate)),
-        fat: parseFloat(String(userNutrition.fat)),
-        fiber: parseFloat(String(userNutrition.fiber)),
-        monounsaturatedFat: parseFloat(String(userNutrition.monounsaturatedFat)),
-        polyunsaturatedFat: parseFloat(String(userNutrition.polyunsaturatedFat)),
-        protein: parseFloat(String(userNutrition.protein)),
-        saturatedFat: parseFloat(String(userNutrition.saturatedFat)),
-        sugar: parseFloat(String(userNutrition.sugar)),
-        transFat: parseFloat(String(userNutrition.transFat)),
-        unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat)),
+        calories: parseFloat(String(userNutrition.calories)) || 0,
+        carbohydrate: parseFloat(String(userNutrition.carbohydrate)) || 0,
+        fat: parseFloat(String(userNutrition.fat)) || 0,
+        fiber: parseFloat(String(userNutrition.fiber)) || 0,
+        monounsaturatedFat: parseFloat(String(userNutrition.monounsaturatedFat)) || 0,
+        polyunsaturatedFat: parseFloat(String(userNutrition.polyunsaturatedFat)) || 0,
+        protein: parseFloat(String(userNutrition.protein)) || 0,
+        saturatedFat: parseFloat(String(userNutrition.saturatedFat)) || 0,
+        sugar: parseFloat(String(userNutrition.sugar)) || 0,
+        transFat: parseFloat(String(userNutrition.transFat)) || 0,
+        unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat)) || 0,
     }));
 };
 
@@ -1553,17 +1557,17 @@ export const getUserNutritionByDataId = async (dataId: string): Promise<undefine
     if (userNutrition) {
         return {
             ...userNutrition,
-            calories: parseFloat(String(userNutrition.calories)),
-            carbohydrate: parseFloat(String(userNutrition.carbohydrate)),
-            fat: parseFloat(String(userNutrition.fat)),
-            fiber: parseFloat(String(userNutrition.fiber)),
-            monounsaturatedFat: parseFloat(String(userNutrition.monounsaturatedFat)),
-            polyunsaturatedFat: parseFloat(String(userNutrition.polyunsaturatedFat)),
-            protein: parseFloat(String(userNutrition.protein)),
-            saturatedFat: parseFloat(String(userNutrition.saturatedFat)),
-            sugar: parseFloat(String(userNutrition.sugar)),
-            transFat: parseFloat(String(userNutrition.transFat)),
-            unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat)),
+            calories: parseFloat(String(userNutrition.calories)) || 0,
+            carbohydrate: parseFloat(String(userNutrition.carbohydrate)) || 0,
+            fat: parseFloat(String(userNutrition.fat)) || 0,
+            fiber: parseFloat(String(userNutrition.fiber)) || 0,
+            monounsaturatedFat: parseFloat(String(userNutrition.monounsaturatedFat)) || 0,
+            polyunsaturatedFat: parseFloat(String(userNutrition.polyunsaturatedFat)) || 0,
+            protein: parseFloat(String(userNutrition.protein)) || 0,
+            saturatedFat: parseFloat(String(userNutrition.saturatedFat)) || 0,
+            sugar: parseFloat(String(userNutrition.sugar)) || 0,
+            transFat: parseFloat(String(userNutrition.transFat)) || 0,
+            unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat)) || 0,
         };
     }
     return undefined;
@@ -1580,17 +1584,17 @@ export const getUserNutritionPaginated = async (offset = 0, limit = 20, order: '
 
     return results.map((userNutrition) => ({
         ...userNutrition,
-        calories: parseFloat(String(userNutrition.calories)),
-        carbohydrate: parseFloat(String(userNutrition.carbohydrate)),
-        fat: parseFloat(String(userNutrition.fat)),
-        fiber: parseFloat(String(userNutrition.fiber)),
-        monounsaturatedFat: parseFloat(String(userNutrition.monounsaturatedFat)),
-        polyunsaturatedFat: parseFloat(String(userNutrition.polyunsaturatedFat)),
-        protein: parseFloat(String(userNutrition.protein)),
-        saturatedFat: parseFloat(String(userNutrition.saturatedFat)),
-        sugar: parseFloat(String(userNutrition.sugar)),
-        transFat: parseFloat(String(userNutrition.transFat)),
-        unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat)),
+        calories: parseFloat(String(userNutrition.calories)) || 0,
+        carbohydrate: parseFloat(String(userNutrition.carbohydrate)) || 0,
+        fat: parseFloat(String(userNutrition.fat)) || 0,
+        fiber: parseFloat(String(userNutrition.fiber)) || 0,
+        monounsaturatedFat: parseFloat(String(userNutrition.monounsaturatedFat)) || 0,
+        polyunsaturatedFat: parseFloat(String(userNutrition.polyunsaturatedFat)) || 0,
+        protein: parseFloat(String(userNutrition.protein)) || 0,
+        saturatedFat: parseFloat(String(userNutrition.saturatedFat)) || 0,
+        sugar: parseFloat(String(userNutrition.sugar)) || 0,
+        transFat: parseFloat(String(userNutrition.transFat)) || 0,
+        unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat)) || 0,
     }));
 };
 
@@ -1603,18 +1607,25 @@ export const getUserNutritionBetweenDates = async (startDate: string, endDate: s
 
     return results.map((userNutrition) => ({
         ...userNutrition,
-        calories: parseFloat(String(userNutrition.calories)),
-        carbohydrate: parseFloat(String(userNutrition.carbohydrate)),
-        fat: parseFloat(String(userNutrition.fat)),
-        fiber: parseFloat(String(userNutrition.fiber)),
-        monounsaturatedFat: parseFloat(String(userNutrition.monounsaturatedFat)),
-        polyunsaturatedFat: parseFloat(String(userNutrition.polyunsaturatedFat)),
-        protein: parseFloat(String(userNutrition.protein)),
-        saturatedFat: parseFloat(String(userNutrition.saturatedFat)),
-        sugar: parseFloat(String(userNutrition.sugar)),
-        transFat: parseFloat(String(userNutrition.transFat)),
-        unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat)),
+        calories: parseFloat(String(userNutrition.calories)) || 0,
+        carbohydrate: parseFloat(String(userNutrition.carbohydrate)) || 0,
+        fat: parseFloat(String(userNutrition.fat)) || 0,
+        fiber: parseFloat(String(userNutrition.fiber)) || 0,
+        monounsaturatedFat: parseFloat(String(userNutrition.monounsaturatedFat)) || 0,
+        polyunsaturatedFat: parseFloat(String(userNutrition.polyunsaturatedFat)) || 0,
+        protein: parseFloat(String(userNutrition.protein)) || 0,
+        saturatedFat: parseFloat(String(userNutrition.saturatedFat)) || 0,
+        sugar: parseFloat(String(userNutrition.sugar)) || 0,
+        transFat: parseFloat(String(userNutrition.transFat)) || 0,
+        unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat)) || 0,
     }));
+};
+
+export const getUserNutritionOnDate = async (date: string): Promise<UserNutritionDecryptedReturnType[]> => {
+    return getUserNutritionBetweenDates(
+        getStartOfDayTimestampISOString(date),
+        getEndOfDayTimestampISOString(date)
+    );
 };
 
 export const getUserNutritionFromDate = async (startDate: string): Promise<UserNutritionDecryptedReturnType[]> => {
@@ -1629,17 +1640,17 @@ export const getUserNutritionFromDate = async (startDate: string): Promise<UserN
 
     return results.map((userNutrition) => ({
         ...userNutrition,
-        calories: parseFloat(String(userNutrition.calories)),
-        carbohydrate: parseFloat(String(userNutrition.carbohydrate)),
-        fat: parseFloat(String(userNutrition.fat)),
-        fiber: parseFloat(String(userNutrition.fiber)),
-        monounsaturatedFat: parseFloat(String(userNutrition.monounsaturatedFat)),
-        polyunsaturatedFat: parseFloat(String(userNutrition.polyunsaturatedFat)),
-        protein: parseFloat(String(userNutrition.protein)),
-        saturatedFat: parseFloat(String(userNutrition.saturatedFat)),
-        sugar: parseFloat(String(userNutrition.sugar)),
-        transFat: parseFloat(String(userNutrition.transFat)),
-        unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat)),
+        calories: parseFloat(String(userNutrition.calories)) || 0,
+        carbohydrate: parseFloat(String(userNutrition.carbohydrate)) || 0,
+        fat: parseFloat(String(userNutrition.fat)) || 0,
+        fiber: parseFloat(String(userNutrition.fiber)) || 0,
+        monounsaturatedFat: parseFloat(String(userNutrition.monounsaturatedFat)) || 0,
+        polyunsaturatedFat: parseFloat(String(userNutrition.polyunsaturatedFat)) || 0,
+        protein: parseFloat(String(userNutrition.protein)) || 0,
+        saturatedFat: parseFloat(String(userNutrition.saturatedFat)) || 0,
+        sugar: parseFloat(String(userNutrition.sugar)) || 0,
+        transFat: parseFloat(String(userNutrition.transFat)) || 0,
+        unsaturatedFat: parseFloat(String(userNutrition.unsaturatedFat)) || 0,
     }));
 };
 

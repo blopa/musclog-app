@@ -6,7 +6,11 @@ import { EATING_PHASES, NUTRITION_TYPES } from '@/constants/nutrition';
 import { COMPLETED_STATUS, GEMINI_API_KEY_TYPE, OPENAI_API_KEY_TYPE, SCHEDULED_STATUS } from '@/constants/storage';
 import packageJson from '@/package.json';
 import { getCommonFunctions } from '@/utils/databaseCommon';
-import { getCurrentTimestampISOString } from '@/utils/date';
+import {
+    getCurrentTimestampISOString,
+    getEndOfDayTimestampISOString,
+    getStartOfDayTimestampISOString,
+} from '@/utils/date';
 import { decrypt, decryptDatabaseValue, encrypt, encryptDatabaseValue } from '@/utils/encryption';
 import { generateHash, normalizeName } from '@/utils/string';
 import {
@@ -2166,6 +2170,13 @@ export const getUserNutritionBetweenDates = async (startDate: string, endDate: s
     } catch (error) {
         throw error;
     }
+};
+
+export const getUserNutritionOnDate = async (date: string): Promise<UserNutritionDecryptedReturnType[]> => {
+    return getUserNutritionBetweenDates(
+        getStartOfDayTimestampISOString(date),
+        getEndOfDayTimestampISOString(date)
+    );
 };
 
 export const getUserNutritionFromDate = async (startDate: string): Promise<UserNutritionDecryptedReturnType[]> => {

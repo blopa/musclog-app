@@ -1,10 +1,16 @@
 import { FoodTrackingType } from '@/components/FoodTrackingModal';
+import ThemedCard from '@/components/ThemedCard';
 import ThemedModal from '@/components/ThemedModal';
 import { AI_SETTINGS_TYPE } from '@/constants/storage';
+import { FAB_ICON_SIZE } from '@/constants/ui';
 import { useSettings } from '@/storage/SettingsContext';
 import { estimateNutritionFromPhoto, extractMacrosFromLabelPhoto, getAiApiVendor } from '@/utils/ai';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
+import { addUserNutritions, getUserNutritionOnDate } from '@/utils/database';
+import { getCurrentTimestampISOString, getDaysAgoTimestampISOString } from '@/utils/date';
 import { fetchProductByEAN } from '@/utils/fetchFoodData';
+import { exerptlizeString } from '@/utils/string';
+import { UserNutritionDecryptedReturnType } from '@/utils/types';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { BarcodeScanningResult, CameraView, useCameraPermissions } from 'expo-camera';
@@ -20,12 +26,13 @@ import {
     View,
     ViewStyle,
 } from 'react-native';
-import { Button, Portal, SegmentedButtons, Text, useTheme } from 'react-native-paper';
+import { Button, Card, IconButton, Portal, SegmentedButtons, Text, useTheme } from 'react-native-paper';
 
 interface SearchFoodModalProps {
     defaultMealType?: string;
     onClose: () => void;
     onFoodSelected: (food: FoodTrackingType) => void;
+    showLastTracked?: boolean;
     style?: ViewStyle;
     visible: boolean;
 }
@@ -34,6 +41,7 @@ const SearchFoodModal = ({
     defaultMealType = '0',
     onClose,
     onFoodSelected,
+    showLastTracked = false,
     style,
     visible,
 }: SearchFoodModalProps) => {
@@ -51,6 +59,8 @@ const SearchFoodModal = ({
     const [photoMode, setPhotoMode] = useState<string>('meal');
     const [isAiEnabled, setIsAiEnabled] = useState(false);
 
+    const [lastTrackedFoods, setLastTrackedFoods] = useState<UserNutritionDecryptedReturnType[]>([]);
+
     const photoCameraRef = useRef(null);
 
     const { getSettingByType } = useSettings();
@@ -62,10 +72,20 @@ const SearchFoodModal = ({
         setIsAiEnabled(hasAiEnabled);
     }, [getSettingByType]);
 
+    const fetchLastTrackedFoods = useCallback(async () => {
+        if (showLastTracked && visible) {
+            const userNutritionFromYesterday = await getUserNutritionOnDate(getDaysAgoTimestampISOString(1));
+            setLastTrackedFoods(
+                userNutritionFromYesterday.filter(({ mealType }) => mealType?.toString() === defaultMealType)
+            );
+        }
+    }, [visible, defaultMealType, showLastTracked]);
+
     useFocusEffect(
         useCallback(() => {
             checkApiKey();
-        }, [checkApiKey])
+            fetchLastTrackedFoods();
+        }, [checkApiKey, fetchLastTrackedFoods])
     );
 
     const handleBarCodeScanned = useCallback(
@@ -145,6 +165,18 @@ const SearchFoodModal = ({
         }
         setIsLoading(false);
     }, [onFoodSelected, photoMode, t]);
+
+    const handleTrackSameAsYesterday = useCallback(async () => {
+        setIsLoading(true);
+
+        await addUserNutritions(lastTrackedFoods.map((userNutrition) => ({
+            ...userNutrition,
+            date: getCurrentTimestampISOString(),
+        })));
+
+        setIsLoading(false);
+        onClose();
+    }, [lastTrackedFoods, onClose]);
 
     const handleFoodSearch = useCallback(() => {
         onClose();
@@ -262,6 +294,29 @@ const SearchFoodModal = ({
                     </View>
                 ) : null}
             </Portal>
+            {!isLoading && lastTrackedFoods.length > 0 ? (
+                <ThemedCard style={styles.cardContainer}>
+                    <Card.Content style={styles.cardContent}>
+                        <View style={styles.cardHeader}>
+                            <Text style={styles.cardTitle}>
+                                {t('same_as_yesterday')}
+                            </Text>
+                            <Text>
+                                {exerptlizeString(lastTrackedFoods.map(
+                                    (food) => food.name
+                                ).join(', '), 70)}
+                            </Text>
+                        </View>
+                        <View style={styles.cardActions}>
+                            <IconButton
+                                icon="plus"
+                                onPress={handleTrackSameAsYesterday}
+                                size={FAB_ICON_SIZE}
+                            />
+                        </View>
+                    </Card.Content>
+                </ThemedCard>
+            ) : null}
         </ThemedModal>
     );
 };
@@ -298,6 +353,27 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     },
     captureButton: {
         backgroundColor: 'transparent',
+    },
+    cardActions: {
+        alignItems: 'center',
+        flexDirection: 'row',
+    },
+    cardContainer: {
+        marginBottom: 16,
+    },
+    cardContent: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    cardHeader: {
+        flex: 1,
+    },
+    cardTitle: {
+        color: colors.onSurface,
+        fontSize: 14,
+        fontWeight: 'bold',
+        marginBottom: 4,
     },
     closeButton: {
         backgroundColor: colors.primary,
