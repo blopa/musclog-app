@@ -15,6 +15,7 @@ import {
     getDaysAgoTimestampISOString,
     getStartOfDayTimestampISOString,
 } from '@/utils/date';
+import { openPlayStore } from '@/utils/navigation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fetch } from 'expo/fetch';
 import i18n from 'i18next';
@@ -98,14 +99,17 @@ export async function configureDailyTasks() {
 
 export async function configureWeeklyTasks() {
     try {
-        const currentDate = new Date();
-        const thisWeek = currentDate.toISOString().split('T')[0];
+        const sevenDaysDiff = 7 * 24 * 60 * 60 * 1000;
+        const currentDateTimestamp = Date.now();
 
         // Check if weekly tasks ran this week
         const lastWeeklyRun = await AsyncStorage.getItem(LAST_WEEKLY_TASK_RUN_DATE);
-        if (lastWeeklyRun === thisWeek) {
-            console.log('Weekly tasks already ran this week.');
-            return;
+        if (lastWeeklyRun) {
+            const lastRunDate = parseInt(lastWeeklyRun, 10) || Date.now();
+            if (lastRunDate + sevenDaysDiff < currentDateTimestamp) {
+                console.log('Weekly tasks already ran this week.');
+                return;
+            }
         }
 
         const nutritionInsightType = await getSetting(NUTRITION_INSIGHTS_TYPE);
@@ -173,8 +177,7 @@ export async function configureWeeklyTasks() {
                     i18n.t('new_version_available', { version: json.version }),
                     i18n.t('update'),
                     () => {
-                        // TODO: open play store link
-
+                        openPlayStore();
                     }
                 );
             }
@@ -183,7 +186,7 @@ export async function configureWeeklyTasks() {
         }
 
         // Update the last weekly run date
-        await AsyncStorage.setItem(LAST_WEEKLY_TASK_RUN_DATE, thisWeek);
+        await AsyncStorage.setItem(LAST_WEEKLY_TASK_RUN_DATE, currentDateTimestamp.toString());
         console.log('Weekly tasks completed successfully.');
     } catch (error) {
         console.error('Error running weekly tasks:', error);
