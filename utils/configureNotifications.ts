@@ -73,8 +73,9 @@ async function scheduleInsightsNotification() {
 }
 
 Notifications.addNotificationResponseReceivedListener((response) => {
-    console.log('User tapped the notification:', response.notification.request.content.data);
-    configureDailyTasks();
+    if (['daily-insights', 'weekly-insights'].includes(response.notification.request.content.data.triggeredBy)) {
+        configureDailyTasks();
+    }
 });
 
 export const configureNotifications = async () => {

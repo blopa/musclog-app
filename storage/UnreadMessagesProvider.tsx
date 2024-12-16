@@ -1,6 +1,6 @@
 import { UNREAD_MESSAGES_COUNT } from '@/constants/storage';
 import useAsyncStorage from '@/hooks/useAsyncStorage';
-import React, { createContext, ReactNode, useCallback, useContext } from 'react';
+import React, { createContext, ReactNode, useCallback, useContext, useEffect } from 'react';
 
 interface UnreadMessagesContextValue {
     emptyUnreadMessages: () => void;
@@ -36,6 +36,13 @@ export const UnreadMessagesProvider: React.FC<UnreadMessagesProviderProps> = ({ 
     const emptyUnreadMessages = useCallback(() => {
         setUnreadMessages(0);
     }, [setUnreadMessages]);
+
+    useEffect(() => {
+        // @ts-ignore it's fine
+        global.increaseUnreadMessages = increaseUnreadMessages;
+        // @ts-ignore it's fine
+        global.emptyUnreadMessages = emptyUnreadMessages;
+    }, [emptyUnreadMessages, increaseUnreadMessages]);
 
     return (
         <UnreadMessagesContext.Provider

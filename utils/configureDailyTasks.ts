@@ -2,13 +2,13 @@ import {
     NUTRITION_INSIGHT_DAILY,
     NUTRITION_INSIGHT_DISABLED,
     NUTRITION_INSIGHTS_TYPE,
-    UNREAD_MESSAGES_COUNT,
     WORKOUT_INSIGHT_DAILY,
     WORKOUT_INSIGHT_DISABLED,
     WORKOUT_INSIGHTS_TYPE,
 } from '@/constants/storage';
 import { LAST_DAILY_TASK_RUN_DATE } from '@/constants/tasks';
 import { getNutritionInsights, getRecentWorkoutsInsights } from '@/utils/ai';
+import { increaseUnreadMessages } from '@/utils/alert';
 import { addChat, getSetting } from '@/utils/database';
 import {
     getDaysAgoTimestampISOString,
@@ -53,8 +53,7 @@ export async function configureDailyTasks() {
                     type: 'text',
                 });
 
-                const currentCount = (await AsyncStorage.getItem(UNREAD_MESSAGES_COUNT)) || '0';
-                await AsyncStorage.setItem(UNREAD_MESSAGES_COUNT, (parseInt(currentCount, 10) + 1).toString());
+                await increaseUnreadMessages(1);
             } else {
                 console.log('No workout insight message to add.');
             }
@@ -77,8 +76,7 @@ export async function configureDailyTasks() {
                     type: 'text',
                 });
 
-                const currentCount = (await AsyncStorage.getItem(UNREAD_MESSAGES_COUNT)) || '0';
-                await AsyncStorage.setItem(UNREAD_MESSAGES_COUNT, (parseInt(currentCount, 10) + 1).toString());
+                await increaseUnreadMessages(1);
             } else {
                 console.log('No nutrition insight message to add.');
             }
