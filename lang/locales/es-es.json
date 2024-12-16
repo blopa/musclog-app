@@ -618,6 +618,7 @@
     "same_as_yesterday": "¿Igual que ayer?",
     "add_new_food": "Añadir Nueva Comida",
     "search_results": "Resultados de la Búsqueda",
+    "new_version_available": "Nueva versión {{version}} disponible",
     "no_results_found": "No se encontraron resultados",
     "no_items_added_yet": "Aún no se han agregado elementos",
     "food_log": "Registro de Comida",

@@ -6,7 +6,7 @@ import {
     WORKOUT_INSIGHTS_TYPE,
 } from '@/constants/storage';
 import i18n from '@/lang/lang';
-import { configureDailyTasks } from '@/utils/configureDailyTasks';
+import { configureDailyTasks, configureWeeklyTasks } from '@/utils/configureDailyTasks';
 import { getSetting } from '@/utils/database';
 import * as Notifications from 'expo-notifications';
 import { SchedulableTriggerInputTypes } from 'expo-notifications';
@@ -75,6 +75,7 @@ async function scheduleInsightsNotification() {
 Notifications.addNotificationResponseReceivedListener((response) => {
     if (['daily-insights', 'weekly-insights'].includes(response.notification.request.content.data.triggeredBy)) {
         configureDailyTasks();
+        configureWeeklyTasks();
     }
 });
 

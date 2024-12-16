@@ -27,7 +27,7 @@ import {
     CustomDarkTheme,
     CustomLightTheme,
 } from '@/utils/colors';
-import { configureDailyTasks } from '@/utils/configureDailyTasks';
+import { configureDailyTasks, configureWeeklyTasks } from '@/utils/configureDailyTasks';
 import { configureNotifications } from '@/utils/configureNotifications';
 import {
     addAlcoholAndFiberMacroToWorkoutEventTable,
@@ -283,5 +283,6 @@ function RootLayout() {
 
 configureNotifications();
 configureDailyTasks();
+configureWeeklyTasks();
 
 export default Sentry.wrap(MasterRootLayout);
