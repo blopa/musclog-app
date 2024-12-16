@@ -15,13 +15,14 @@ import { ActivityIndicator, Platform, StyleSheet, View } from 'react-native';
 import { Appbar, Button, Text, TextInput, useTheme } from 'react-native-paper';
 
 type RouteParams = {
+    defaultMealType?: string;
     foodId?: string;
     initialSearchQuery?: string;
 };
 
 const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const route = useRoute();
-    const { foodId, initialSearchQuery = '' } = (route.params as RouteParams) || {};
+    const { defaultMealType = '0', foodId, initialSearchQuery = '' } = (route.params as RouteParams) || {};
     const { t } = useTranslation();
     const { colors, dark } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors, dark);
@@ -197,6 +198,7 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 />
             )}
             <FoodTrackingModal
+                defaultMealType={defaultMealType}
                 food={selectedFood}
                 onClose={handleCloseTrackingModal}
                 visible={isModalVisible}

@@ -1,14 +1,17 @@
 import type { BarcodeScanningResult } from 'expo-camera';
 
 import ArrowedDatePicker from '@/components/ArrowedDatePicker';
+import FABWrapper from '@/components/FABWrapper';
 import FoodItem from '@/components/FoodItem';
 import FoodTrackingModal, { FoodTrackingType } from '@/components/FoodTrackingModal';
 import NutritionProgressBanner from '@/components/NutritionProgressBanner';
 import { Screen } from '@/components/Screen';
+import SearchFoodModal from '@/components/SearchFoodModal';
 import ThemedCard from '@/components/ThemedCard';
 import ThemedModal from '@/components/ThemedModal';
 import { MEAL_TYPE } from '@/constants/nutrition';
 import { AI_SETTINGS_TYPE, GRAMS, IMPERIAL_SYSTEM, OUNCES } from '@/constants/storage';
+import { FAB_ICON_SIZE } from '@/constants/ui';
 import useUnit from '@/hooks/useUnit';
 import { useHealthConnect } from '@/storage/HealthConnectProvider';
 import { useSettings } from '@/storage/SettingsContext';
@@ -63,9 +66,11 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const [selectedNutrition, setSelectedNutrition] = useState<null | UserNutritionDecryptedReturnType>(null);
     const { checkReadIsPermitted, checkWriteIsPermitted, insertHealthData } = useHealthConnect();
 
-    const [index, setIndex] = useState(0);
+    const [tabIndex, setTabIndex] = useState(0);
     const [searchQuery, setSearchQuery] = useState('');
     const [consumedFoods, setConsumedFoods] = useState<UserNutritionDecryptedReturnType[]>([]);
+    const [preSelectedMealType, setPreSelectedMealType] = useState('0');
+    const [foodSearchModalVisible, setFoodSearchModalVisible] = useState(false);
 
     const [routes] = useState([
         { key: 'overview', title: t('overview') },
@@ -115,6 +120,11 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         setIsAiEnabled(hasAiEnabled);
     }, [getSettingByType]);
 
+    const handleOnFoodSelected = useCallback((food: FoodTrackingType) => {
+        setSelectedFood(food);
+        setIsNutritionModalVisible(true);
+    }, []);
+
     const mealCategories = useMemo(() => [
         { icon: '🍳', name: t('breakfast') },
         { icon: '🥪', name: t('lunch') },
@@ -154,6 +164,11 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
             console.error('Error loading consumed data:', error);
         }
     }, [selectedDate]);
+
+    const handleCloseFoodSearchModal = useCallback(() => {
+        setFoodSearchModalVisible(false);
+        loadConsumed();
+    }, [loadConsumed]);
 
     const handleSyncHealthConnect = useCallback(async () => {
         setIsLoading(true);
@@ -207,7 +222,8 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
     const resetScreenData = useCallback(() => {
         setSearchQuery('');
-        // Removed `setIndex(0)` so that the tab does not reset each time.
+        // Removed so that the tab does not reset each time.
+        // setTabIndex(0);
         setConsumedFoods([]);
         setAllowEditName(false);
     }, []);
@@ -240,39 +256,41 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                     {Platform.OS === 'web' ? (
                         <View style={{ height: 40 }} />
                     ) : null}
-                    <View>
-                        <SegmentedButtons
-                            buttons={[
-                                { label: t('recent'), value: 'recent' },
-                                { label: t('favorite'), value: 'favorite' },
-                            ]}
-                            onValueChange={setFoodHistoryType}
-                            style={styles.segmentedButtons}
-                            value={foodHistoryType}
-                        />
-                        {foodHistory.length > 0 ? (
-                            <FlashList
-                                contentContainerStyle={styles.listContent}
-                                data={foodHistory}
-                                estimatedItemSize={115}
-                                keyExtractor={(item, index) => (item.id || index).toString()}
-                                onEndReachedThreshold={0.5}
-                                renderItem={({ item }) => (
-                                    <FoodItem
-                                        food={item}
-                                        onAddFood={(food) => {
-                                            setSelectedFood(food);
-                                            setIsNutritionModalVisible(true);
-                                        }}
-                                    />
-                                )}
+                    {(recentTrackedFoods.length > 0 || favoriteFoods.length > 0) ? (
+                        <View>
+                            <SegmentedButtons
+                                buttons={[
+                                    { label: t('recent'), value: 'recent' },
+                                    { label: t('favorite'), value: 'favorite' },
+                                ]}
+                                onValueChange={setFoodHistoryType}
+                                style={styles.segmentedButtons}
+                                value={foodHistoryType}
                             />
-                        ) : null}
-                    </View>
+                            {foodHistory.length > 0 ? (
+                                <FlashList
+                                    contentContainerStyle={styles.listContent}
+                                    data={foodHistory}
+                                    estimatedItemSize={115}
+                                    keyExtractor={(item, index) => (item.id || index).toString()}
+                                    onEndReachedThreshold={0.5}
+                                    renderItem={({ item }) => (
+                                        <FoodItem
+                                            food={item}
+                                            onAddFood={(food) => {
+                                                setSelectedFood(food);
+                                                setIsNutritionModalVisible(true);
+                                            }}
+                                        />
+                                    )}
+                                />
+                            ) : t('no_data')}
+                        </View>
+                    ) : null}
                 </ScrollView>
             </Screen>
         );
-    }, [consumed, foodHistory, foodHistoryType, selectedDate, styles.container, styles.listContent, styles.segmentedButtons, t]);
+    }, [consumed, favoriteFoods.length, foodHistory, foodHistoryType, recentTrackedFoods.length, selectedDate, styles.container, styles.listContent, styles.segmentedButtons, t]);
 
     const handleEditNutrition = (userNutrition: UserNutritionDecryptedReturnType) => {
         setSelectedFood({
@@ -601,7 +619,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     }, [photoMode]);
 
     const handleFoodSearch = useCallback(() => {
-        navigation.navigate('foodSearch', { initialSearchQuery: searchQuery });
+        navigation.navigate('foodSearch', { defaultMealType: preSelectedMealType, initialSearchQuery: searchQuery });
     }, [navigation, searchQuery]);
 
     const handleCloseTrackingModal = useCallback(() => {
@@ -658,109 +676,155 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         </View>
     ), [colors.primary, colors.secondaryContainer, colors.surface, handleLoadLocalFile, handleTakePhoto, photoMode, styles.bottomControls, styles.captureButton, styles.photoCameraOverlay, styles.photoCloseButton, styles.photoCloseText, styles.segmentedButtons, t]);
 
+    const fabActions = useMemo(() => [{
+        icon: () => <FontAwesome5 color={colors.primary} name="bread-slice" size={FAB_ICON_SIZE} />,
+        label: t('track_breakfast'),
+        onPress: () => {
+            setFoodSearchModalVisible(true);
+            setPreSelectedMealType('1');
+        },
+        style: { backgroundColor: colors.surface },
+    }, {
+        icon: () => <FontAwesome5 color={colors.primary} name="hamburger" size={FAB_ICON_SIZE} />,
+        label: t('track_lunch'),
+        onPress: () => {
+            setFoodSearchModalVisible(true);
+            setPreSelectedMealType('2');
+        },
+        style: { backgroundColor: colors.surface },
+    }, {
+        icon: () => <FontAwesome5 color={colors.primary} name="drumstick-bite" size={FAB_ICON_SIZE} />,
+        label: t('track_dinner'),
+        onPress: () => {
+            setFoodSearchModalVisible(true);
+            setPreSelectedMealType('3');
+        },
+        style: { backgroundColor: colors.surface },
+    }, {
+        icon: () => <FontAwesome5 color={colors.primary} name="apple-alt" size={FAB_ICON_SIZE} />,
+        label: t('track_snacks'),
+        onPress: () => {
+            setFoodSearchModalVisible(true);
+            setPreSelectedMealType('4');
+        },
+        style: { backgroundColor: colors.surface },
+    }], [colors.primary, colors.surface, t]);
+
     return (
-        <View style={styles.container}>
-            <Appbar.Header mode="small" statusBarHeight={0} style={styles.appbarHeader}>
-                <Appbar.Content title={t('macro_tracker')} titleStyle={styles.appbarTitle} />
-            </Appbar.Header>
-            <View style={styles.content}>
-                <View style={styles.searchContainer}>
-                    <TextInput
-                        mode="outlined"
-                        onChangeText={setSearchQuery}
-                        placeholder={t('search_food')}
-                        style={styles.searchInput}
-                        value={searchQuery}
-                    />
-                    {searchQuery ? (
-                        <Button
+        <FABWrapper actions={fabActions} icon="plus" visible>
+            <View style={styles.container}>
+                <Appbar.Header mode="small" statusBarHeight={0} style={styles.appbarHeader}>
+                    <Appbar.Content title={t('macro_tracker')} titleStyle={styles.appbarTitle} />
+                </Appbar.Header>
+                <View style={styles.content}>
+                    <View style={styles.searchContainer}>
+                        <TextInput
                             mode="outlined"
-                            onPress={handleFoodSearch}
-                            style={styles.iconButton}
-                        >
-                            <FontAwesome5 color={colors.primary} name="search" size={20} />
-                        </Button>
-                    ) : (
-                        <>
+                            onChangeText={setSearchQuery}
+                            placeholder={t('search_food')}
+                            style={styles.searchInput}
+                            value={searchQuery}
+                        />
+                        {searchQuery ? (
                             <Button
                                 mode="outlined"
-                                onPress={openBarcodeCamera}
+                                onPress={handleFoodSearch}
                                 style={styles.iconButton}
                             >
-                                <FontAwesome5 color={colors.primary} name="barcode" size={20} />
+                                <FontAwesome5 color={colors.primary} name="search" size={20} />
                             </Button>
-                            {isAiEnabled ? (
+                        ) : (
+                            <>
                                 <Button
                                     mode="outlined"
-                                    onPress={openPhotoCamera}
+                                    onPress={openBarcodeCamera}
                                     style={styles.iconButton}
                                 >
-                                    <FontAwesome5 color={colors.primary} name="camera" size={20} />
+                                    <FontAwesome5 color={colors.primary} name="barcode" size={20} />
                                 </Button>
-                            ) : null}
-                        </>
-                    )}
+                                {isAiEnabled ? (
+                                    <Button
+                                        mode="outlined"
+                                        onPress={openPhotoCamera}
+                                        style={styles.iconButton}
+                                    >
+                                        <FontAwesome5 color={colors.primary} name="camera" size={20} />
+                                    </Button>
+                                ) : null}
+                            </>
+                        )}
+                    </View>
+                    <ArrowedDatePicker
+                        initialDate={selectedDate}
+                        onChange={handleChangeDate}
+                    />
+                    <TabView
+                        initialLayout={{ width: Dimensions.get('window').width }}
+                        navigationState={{ index: tabIndex, routes }}
+                        onIndexChange={setTabIndex}
+                        renderScene={renderScene}
+                        renderTabBar={renderTabBar}
+                    />
                 </View>
-                <ArrowedDatePicker
-                    initialDate={selectedDate}
-                    onChange={handleChangeDate}
+                {showBarcodeCamera ? (
+                    <View style={styles.cameraContainer}>
+                        <CameraView
+                            onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
+                            ratio="16:9"
+                            style={styles.camera}
+                        >
+                            {renderScannerOverlay()}
+                            <View style={styles.cameraOverlay}>
+                                <Button
+                                    mode="contained"
+                                    onPress={() => setShowBarcodeCamera(false)}
+                                    style={styles.closeButton}
+                                >
+                                    {t('close')}
+                                </Button>
+                            </View>
+                        </CameraView>
+                    </View>
+                ) : null}
+                {showPhotoCamera ? (
+                    <View style={styles.cameraContainer}>
+                        <CameraView
+                            ref={photoCameraRef}
+                            style={styles.camera}
+                        >
+                            {renderPhotoCameraOverlay()}
+                        </CameraView>
+                    </View>
+                ) : null}
+                <FoodTrackingModal
+                    allowEditName={allowEditName}
+                    date={selectedDate.toISOString()}
+                    defaultMealType={preSelectedMealType}
+                    food={selectedFood}
+                    isLoading={isLoading}
+                    onClose={handleCloseTrackingModal}
+                    userNutritionId={userNutritionId}
+                    visible={isNutritionModalVisible}
                 />
-                <TabView
-                    initialLayout={{ width: Dimensions.get('window').width }}
-                    navigationState={{ index, routes }}
-                    onIndexChange={setIndex}
-                    renderScene={renderScene}
-                    renderTabBar={renderTabBar}
+                <SearchFoodModal
+                    defaultMealType={preSelectedMealType}
+                    onClose={handleCloseFoodSearchModal}
+                    onFoodSelected={handleOnFoodSelected}
+                    showLastTracked={consumedFoods.filter(
+                        (food) => food.mealType?.toString() === preSelectedMealType
+                    ).length === 0}
+                    visible={foodSearchModalVisible}
+                />
+                <ThemedModal
+                    cancelText={t('no')}
+                    confirmText={t('yes')}
+                    onClose={() => setDeleteModalVisible(false)}
+                    onConfirm={handleConfirmDeleteNutrition}
+                    title={selectedNutrition ? t('delete_nutrition_confirmation', { title: selectedNutrition.name }) : t('delete_confirmation_generic')}
+                    visible={deleteModalVisible}
                 />
             </View>
-            {showBarcodeCamera ? (
-                <View style={styles.cameraContainer}>
-                    <CameraView
-                        onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
-                        ratio="16:9"
-                        style={styles.camera}
-                    >
-                        {renderScannerOverlay()}
-                        <View style={styles.cameraOverlay}>
-                            <Button
-                                mode="contained"
-                                onPress={() => setShowBarcodeCamera(false)}
-                                style={styles.closeButton}
-                            >
-                                {t('close')}
-                            </Button>
-                        </View>
-                    </CameraView>
-                </View>
-            ) : null}
-            {showPhotoCamera ? (
-                <View style={styles.cameraContainer}>
-                    <CameraView
-                        ref={photoCameraRef}
-                        style={styles.camera}
-                    >
-                        {renderPhotoCameraOverlay()}
-                    </CameraView>
-                </View>
-            ) : null}
-            <FoodTrackingModal
-                allowEditName={allowEditName}
-                date={selectedDate.toISOString()}
-                food={selectedFood}
-                isLoading={isLoading}
-                onClose={handleCloseTrackingModal}
-                userNutritionId={userNutritionId}
-                visible={isNutritionModalVisible}
-            />
-            <ThemedModal
-                cancelText={t('no')}
-                confirmText={t('yes')}
-                onClose={() => setDeleteModalVisible(false)}
-                onConfirm={handleConfirmDeleteNutrition}
-                title={selectedNutrition ? t('delete_nutrition_confirmation', { title: selectedNutrition.name }) : t('delete_confirmation_generic')}
-                visible={deleteModalVisible}
-            />
-        </View>
+        </FABWrapper>
     );
 };
 

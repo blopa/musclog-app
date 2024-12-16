@@ -34,6 +34,7 @@ export type FoodTrackingType = {
 type FoodTrackingModalProps = {
     allowEditName?: boolean;
     date?: string;
+    defaultMealType?: string;
     food: FoodTrackingType | null;
     isLoading?: boolean;
     onClose: () => void;
@@ -47,6 +48,7 @@ const GRAM_BASE = 100;
 const FoodTrackingModal = ({
     allowEditName = false,
     date = getCurrentTimestampISOString(),
+    defaultMealType = '0',
     food,
     isLoading = false,
     onClose,
@@ -58,7 +60,7 @@ const FoodTrackingModal = ({
     const { colors, dark } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors, dark);
     const [unitAmount, setUnitAmount] = useState(GRAM_BASE.toString());
-    const [mealType, setMealType] = useState('0');
+    const [mealType, setMealType] = useState(defaultMealType);
     const [editableName, setEditableName] = useState(food?.productTitle || '');
     const [selectedDate, setSelectedDate] = useState(date ? new Date(date) : new Date());
     const [datePickerVisible, setDatePickerVisible] = useState(false);

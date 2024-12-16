@@ -10,6 +10,7 @@ import {
 import { GoogleAuthData } from '@/hooks/useGoogleAuth';
 import i18n from '@/lang/lang';
 import { isValidAccessToken } from '@/utils/ai';
+import { showAlert } from '@/utils/alert';
 import { addOrUpdateSetting, getSetting } from '@/utils/database';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthSessionResult } from 'expo-auth-session';
@@ -44,8 +45,7 @@ const handleGoogleAuthError = async () => {
         return;
     }
 
-    // @ts-ignore it's fine
-    global.showSnackbar(i18n.t('your_google_auth_expired_reauth'), i18n.t('ok'), () => {});
+    showAlert(i18n.t('your_google_auth_expired_reauth'), i18n.t('ok'), () => {});
     await AsyncStorage.setItem(LAST_TIME_GOOGLE_AUTH_ERROR_WAS_SHOWN, today);
 };
 

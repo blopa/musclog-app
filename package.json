@@ -1,7 +1,7 @@
 {
   "name": "musclog-app",
   "main": "expo-router/entry",
-  "version": "1.6.1",
+  "version": "1.6.3",
   "scripts": {
     "playwright": "node tests/run-tests.js",
     "typecheck": "tsc --noEmit --skipLibCheck",
@@ -44,8 +44,8 @@
     "@react-native-community/slider": "4.5.5",
     "@react-native-picker/picker": "2.10.2",
     "@react-navigation/core": "7.1.2",
-    "@react-navigation/drawer": "7.0.14",
-    "@react-navigation/native": "7.0.9",
+    "@react-navigation/drawer": "7.0.19",
+    "@react-navigation/native": "7.0.14",
     "@sentry/react-native": "6.4.0",
     "@shopify/flash-list": "1.7.2",
     "chart.js": "4.4.7",

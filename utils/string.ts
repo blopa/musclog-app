@@ -94,3 +94,7 @@ export const normalizeText = (text: string): string => {
         .toLowerCase()
         .replace(/[^a-z0-9]/g, '');
 };
+
+export const exerptlizeString = (text: string, length: number = 100): string => {
+    return text.length > length ? `${text.substring(0, length)}...` : text;
+};
