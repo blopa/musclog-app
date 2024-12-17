@@ -592,7 +592,7 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
                 console.error('Failed to replace exercise:', error);
             }
         },
-        [exercise?.id, workout?.id]
+        [exercise, workout?.id]
     );
 
     useEffect(() => {

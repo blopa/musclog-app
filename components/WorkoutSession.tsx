@@ -331,6 +331,7 @@ const WorkoutSession = ({
         setSetDifficulty(5);
         setLoading(false);
     }, [
+        exercise?.isReplacement,
         handleStartCountdown,
         handleFinishExercise,
         currentSetIndex,

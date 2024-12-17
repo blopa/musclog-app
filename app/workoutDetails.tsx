@@ -328,7 +328,7 @@ const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
         if (recentWorkouts.length > 1) {
             getChartData();
         }
-    }, [recentWorkouts, timeRange, showWeeklyAverages, t, weightUnit, isImperial, selectedChartData, exercisesMap]);
+    }, [recentWorkouts, timeRange, showWeeklyAverages, t, weightUnit, isImperial, selectedChartData, exercisesMap, exercisesPicker]);
 
     const chartLabels = useMemo(() => {
         const filteredWorkouts = recentWorkouts.slice(-parseInt(timeRange));

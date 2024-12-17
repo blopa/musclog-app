@@ -620,7 +620,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
     const handleFoodSearch = useCallback(() => {
         navigation.navigate('foodSearch', { defaultMealType: preSelectedMealType, initialSearchQuery: searchQuery });
-    }, [navigation, searchQuery]);
+    }, [navigation, preSelectedMealType, searchQuery]);
 
     const handleCloseTrackingModal = useCallback(() => {
         setIsNutritionModalVisible(false);
