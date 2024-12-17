@@ -9,7 +9,8 @@ import {
     COMPLETED_STATUS,
     CURRENT_EXERCISE_INDEX,
     CURRENT_WORKOUT_ID,
-    CURRENT_WORKOUT_PROGRESS, EXERCISE_REPLACEMENTS,
+    CURRENT_WORKOUT_PROGRESS,
+    EXERCISE_REPLACEMENTS,
     IMPERIAL_SYSTEM,
     POUNDS,
     WORKOUT_START_TIME,
@@ -58,11 +59,50 @@ import { useTranslation } from 'react-i18next';
 import { BackHandler, ScrollView, StyleSheet, View } from 'react-native';
 import { ActivityIndicator, Button, Text, useTheme } from 'react-native-paper';
 
+const getCurrentExercises = async (
+    originalExercises: ExerciseReturnType[],
+    workoutId: number
+): Promise<(ExerciseReturnType | undefined)[]> => {
+    try {
+        const newExercises = originalExercises.map(async (exercise) => {
+            return await getCurrentExercise(exercise, workoutId);
+        });
+
+        return Promise.all(newExercises);
+    } catch (error) {
+        console.error('Error fetching current exercise:', error);
+        return originalExercises;
+    }
+};
+
+const getCurrentExercise = async (
+    originalExercise: ExerciseReturnType,
+    workoutId: number
+): Promise<ExerciseReturnType | undefined> => {
+    try {
+        // Fetch replacements from AsyncStorage
+        const storedReplacements = await AsyncStorage.getItem(EXERCISE_REPLACEMENTS);
+        const replacements = storedReplacements ? JSON.parse(storedReplacements) : {};
+
+        // Check if there's a replacement for the current exercise
+        const newExerciseId = replacements[workoutId]?.[originalExercise.id];
+        if (newExerciseId) {
+            return await getExerciseById(newExerciseId);
+        }
+
+        return originalExercise;
+    } catch (error) {
+        console.error('Error fetching current exercise:', error);
+        return originalExercise;
+    }
+};
+
 const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const { t } = useTranslation();
     const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
     const [exercise, setExercise] = useState<ExerciseReturnType | null>(null);
     const [exercises, setExercises] = useState<{ exercise: ExerciseReturnType; sets: SetReturnType[] }[]>([]);
+    const [orderedExercises, setOrderedExercises] = useState<{ exercise: ExerciseReturnType; sets: SetReturnType[] }[]>([]);
     const [modalVisible, setModalVisible] = useState(false);
     const [startTime, setStartTime] = useState<null | number>(null);
     const [workoutDuration, setWorkoutDuration] = useState(0);
@@ -77,6 +117,20 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
     const { unitSystem } = useUnit();
     const { getSettingByType } = useSettings();
     const { checkReadIsPermitted, getHealthData } = useHealthConnect();
+
+    useEffect(() => {
+        const fetchNewExercisesList = async () => {
+            const newExercises = await getCurrentExercises(exercises.map((ex) => ex.exercise), workout?.id || 0);
+            setOrderedExercises(
+                exercises.map((ex, index) => ({
+                    exercise: newExercises[index] || ex.exercise,
+                    sets: ex.sets,
+                }))
+            );
+        };
+
+        fetchNewExercisesList();
+    }, [exercises, workout?.id]);
 
     const isImperial = unitSystem === IMPERIAL_SYSTEM;
 
@@ -234,8 +288,14 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
                         }
 
                         setCurrentExerciseIndex(currentIndex);
+
                         const currentExercise = orderedExercises[currentIndex];
-                        setExercise(currentExercise.exercise);
+                        const fetchedExercise = await getCurrentExercise(currentExercise.exercise, workoutId);
+                        if (fetchedExercise) {
+                            setExercise(fetchedExercise);
+                        } else {
+                            setExercise(currentExercise.exercise);
+                        }
 
                         // Persist the current exercise index
                         await AsyncStorage.setItem(
@@ -288,9 +348,15 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
             setWorkoutDuration(duration);
 
             if (currentExerciseIndex + 1 < exercises.length) {
-                const nextExercise = exercises[currentExerciseIndex + 1].exercise;
                 setCurrentExerciseIndex(currentExerciseIndex + 1);
-                setExercise(nextExercise);
+
+                const nextExercise = exercises[currentExerciseIndex + 1].exercise;
+                if (workout?.id) {
+                    setExercise(await getCurrentExercise(nextExercise, workout.id) || nextExercise);
+                } else {
+                    setExercise(nextExercise);
+                }
+
                 await AsyncStorage.setItem(CURRENT_EXERCISE_INDEX, (currentExerciseIndex + 1).toString());
             } else {
                 // Finish the workout
@@ -502,11 +568,17 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
                     },
                 };
 
-                // Save the updated replacements back to AsyncStorage
+                // Save the updated replacements
                 await AsyncStorage.setItem(
                     EXERCISE_REPLACEMENTS,
                     JSON.stringify(updatedReplacements)
                 );
+
+                // Refresh the current exercise
+                const newExercise = await getCurrentExercise(exercise, workout.id);
+                if (newExercise) {
+                    setExercise(newExercise);
+                }
 
                 console.log('Exercise replaced successfully:', updatedReplacements);
             } catch (error) {
@@ -550,13 +622,13 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
             <Screen>
                 <WorkoutSession
                     exercise={exercise}
-                    handleReplaceExercise={handleReplaceExercise}
                     isFirstExercise={currentExerciseIndex === 0}
                     isLastExercise={currentExerciseIndex === exercises.length - 1}
                     key={workout?.id}
                     onCancel={handleCancelWorkout}
                     onFinish={handleFinishExercise}
-                    orderedExercises={exercises}
+                    onReplaceExercise={handleReplaceExercise}
+                    orderedExercises={orderedExercises}
                     sets={exercises[currentExerciseIndex].sets}
                     startTime={startTime}
                     workoutDuration={workoutDuration}

@@ -43,11 +43,11 @@ import { Portal, Text, useTheme } from 'react-native-paper';
 
 type WorkoutSessionProps = {
     exercise?: ExerciseReturnType;
-    handleReplaceExercise: (exerciseId: number) => void;
     isFirstExercise?: boolean;
     isLastExercise?: boolean;
     onCancel: () => void;
     onFinish: (workoutScore?: number, exhaustionLevel?: number) => Promise<void>;
+    onReplaceExercise: (exerciseId: number) => void;
     orderedExercises: { exercise: ExerciseReturnType; sets: SetReturnType[] }[];
     sets: SetReturnType[];
     startTime: null | number;
@@ -57,11 +57,11 @@ type WorkoutSessionProps = {
 
 const WorkoutSession = ({
     exercise,
-    handleReplaceExercise,
     isFirstExercise,
     isLastExercise,
     onCancel,
     onFinish,
+    onReplaceExercise,
     orderedExercises,
     sets,
     startTime,
@@ -136,6 +136,11 @@ const WorkoutSession = ({
             }
         }
     }, [currentSetIndex, globalWeightLifted, globalCompletedReps, sets.length]);
+
+    const handleReplaceExercise = useCallback(async (exerciseId: number) => {
+        onReplaceExercise(exerciseId);
+        setIsExerciseModalOpen(false);
+    }, [onReplaceExercise]);
 
     const updateNewSetData = useCallback(async () => {
         const currentSet = sets[currentSetIndex];
@@ -521,6 +526,7 @@ const WorkoutSession = ({
             />
             <Portal>
                 <AddExerciseModal
+                    defaultSelectedMuscleGroup={exercise?.muscleGroup}
                     isVisible={isExerciseModalOpen}
                     onClose={() => setIsExerciseModalOpen(false)}
                     onExerciseSelected={handleReplaceExercise}
