@@ -582,16 +582,6 @@ const WorkoutSession = ({
 };
 
 const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
-    buttonSpacing: {
-        marginTop: 16,
-        width: '100%',
-    },
-    buttonWrapper: {
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        marginTop: 16,
-        width: '80%',
-    },
     closeButton: {
         position: 'absolute',
         right: 16,
