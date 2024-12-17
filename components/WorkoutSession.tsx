@@ -38,7 +38,7 @@ import { useKeepAwake } from 'expo-keep-awake';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Animated, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { Button, Text, useTheme } from 'react-native-paper';
+import { Text, useTheme } from 'react-native-paper';
 
 type WorkoutSessionProps = {
     exercise?: ExerciseReturnType;
@@ -365,6 +365,8 @@ const WorkoutSession = ({
         await resetRestTime();
     }, [resetRestTime]);
 
+    const handleReplaceExercise = useCallback(() => {}, []);
+
     const handleOpenEditModal = useCallback(() => {
         setTempWeightLifted(weightLifted);
         setTempCompletedReps(completedReps);
@@ -534,31 +536,35 @@ const WorkoutSession = ({
                 />
             )}
             {!isResting && (
-                <View style={styles.buttonWrapper}>
-                    <Button
+                <View style={styles.iconGrid}>
+                    <TouchableOpacity
                         disabled={loading}
-                        mode="contained"
                         onPress={handleSkipSet}
-                        style={styles.buttonSpacing}
+                        style={styles.iconButton}
                     >
-                        {t('skip_set')}
-                    </Button>
-                    <Button
+                        <Ionicons color={colors.primary} name="play-skip-forward" size={50} />
+                    </TouchableOpacity>
+                    <TouchableOpacity
                         disabled={loading}
-                        mode="contained"
                         onPress={handleOpenEditModal}
-                        style={styles.buttonSpacing}
+                        style={styles.iconButton}
                     >
-                        {t('edit_set')}
-                    </Button>
-                    <Button
+                        <Ionicons color={colors.primary} name="pencil" size={50} />
+                    </TouchableOpacity>
+                    <TouchableOpacity
                         disabled={loading}
-                        mode="contained"
-                        onPress={handleFinishSet}
-                        style={styles.buttonSpacing}
+                        onPress={handleReplaceExercise}
+                        style={styles.iconButton}
                     >
-                        {finishButtonText}
-                    </Button>
+                        <Ionicons color={colors.primary} name="refresh-circle" size={50} />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        disabled={loading}
+                        onPress={handleFinishSet}
+                        style={styles.iconButton}
+                    >
+                        <Ionicons color={colors.primary} name="checkmark-circle" size={50} />
+                    </TouchableOpacity>
                 </View>
             )}
             {isResting ? (
@@ -598,6 +604,24 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         flexGrow: 1,
         justifyContent: 'center',
         padding: 16,
+    },
+    iconButton: {
+        alignItems: 'center',
+        aspectRatio: 1,
+        backgroundColor: colors.surface,
+        borderRadius: 10,
+        elevation: 2,
+        justifyContent: 'center',
+        marginVertical: 10,
+        width: '20%',
+    },
+    iconGrid: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-around',
+        marginTop: 20,
+        width: '80%',
     },
     infoButton: {
         left: 16,
