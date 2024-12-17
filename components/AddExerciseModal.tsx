@@ -16,22 +16,24 @@ import {
 
 type AddExerciseModalProps = {
     addExerciseToWorkout: (exerciseId: number) => void;
+    defaultSelectedMuscleGroup?: string;
     isVisible: boolean;
     onClose: () => void;
 };
 
-export default function AddExerciseModal({ addExerciseToWorkout, isVisible, onClose }: AddExerciseModalProps) {
+export default function AddExerciseModal({ addExerciseToWorkout, defaultSelectedMuscleGroup, isVisible, onClose }: AddExerciseModalProps) {
     const { t } = useTranslation();
     const { colors, dark } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors, dark);
 
-    const [selectedMuscleGroup, setSelectedMuscleGroup] = useState<null | string>(null);
+    const [selectedMuscleGroup, setSelectedMuscleGroup] = useState<string | undefined>(defaultSelectedMuscleGroup);
+    const [allExercises, setAllExercises] = useState<ExerciseReturnType[]>([]);
     const [isLoading, setIsLoading] = useState(false);
 
-    const [allExercises, setAllExercises] = useState<ExerciseReturnType[]>([]);
-
     const resetScreenData = useCallback(() => {
-        setSelectedMuscleGroup(null);
+        setSelectedMuscleGroup(undefined);
+        setIsLoading(false);
+        setAllExercises([]);
     }, []);
 
     useFocusEffect(
