@@ -405,6 +405,7 @@
     "total_workout_time": "Tempo Total do Treino: {{time}}",
     "finish_workout": "Finalizar Treino",
     "finish_exercise": "Finalizar Exercício",
+    "replace_exercise": "Substituir Exercício",
     "finish_set": "Finalizar Série",
     "well_done": "Bom trabalho no treino!",
     "lets_go": "BOOOORAAA!!!",

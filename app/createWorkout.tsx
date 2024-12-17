@@ -1,3 +1,4 @@
+import AddExerciseModal from '@/components/AddExerciseModal';
 import CompletionModal from '@/components/CompletionModal';
 import CustomPicker from '@/components/CustomPicker';
 import CustomTextArea from '@/components/CustomTextArea';
@@ -99,7 +100,6 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
     const [workoutDetails, setWorkoutDetails] = useState<null | { exercisesWithSets: ExerciseWithSetsType[]; workout: WorkoutReturnType; }>(null);
     const [supersetName, setSupersetName] = useState('');
     const [selectedExercises, setSelectedExercises] = useState<number[]>([]);
-    const [selectedMuscleGroup, setSelectedMuscleGroup] = useState<null | string>(null);
     const [isExerciseModalOpen, setIsExerciseModalOpen] = useState(false);
     const [isSupersetModalOpen, setIsSupersetModalOpen] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
@@ -165,7 +165,6 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
         setWorkout([]);
         setSupersetName('');
         setSelectedExercises([]);
-        setSelectedMuscleGroup(null);
         setWorkoutTitle('');
         setWorkoutDescription('');
         setRecurringOnWeek('');
@@ -213,10 +212,6 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
         }, [t])
     );
 
-    const muscleGroups = Array.from(
-        new Set(allExercises.map((ex) => ex.muscleGroup))
-    ) as string[];
-
     const addExerciseToWorkout = (exerciseId: number) => {
         const exercise = allExercises.find((ex) => ex.id === exerciseId);
         if (exercise) {
@@ -226,7 +221,6 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
             ]);
         }
         setIsExerciseModalOpen(false);
-        setSelectedMuscleGroup(null);
     };
 
     const addSetToExercise = (exerciseIndex: number) => {
@@ -809,57 +803,12 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
                     {t('cancel')}
                 </Button>
             </Appbar.Header>
-
             <Portal>
-                <Dialog
-                    onDismiss={() => setIsExerciseModalOpen(false)}
-                    visible={isExerciseModalOpen}
-                >
-                    <Dialog.Title>{t('add_exercise')}</Dialog.Title>
-                    <Dialog.Content>
-                        <CustomPicker
-                            items={[
-                                {
-                                    label: t('select_muscle_group'),
-                                    value: '',
-                                },
-                                ...muscleGroups.map((group) => ({
-                                    label: t(`muscle_groups.${group}`),
-                                    value: group,
-                                })),
-                            ]}
-                            label={t('muscle_group')}
-                            onValueChange={(value) => setSelectedMuscleGroup(value)}
-                            selectedValue={selectedMuscleGroup || ''}
-                        />
-                        {selectedMuscleGroup ? (
-                            <CustomPicker
-                                items={[
-                                    { label: t('select_exercise'), value: '' },
-                                    ...allExercises
-                                        .filter(
-                                            (ex) => ex.muscleGroup === selectedMuscleGroup
-                                        )
-                                        .map((exercise) => ({
-                                            label: exercise.name,
-                                            value: exercise.id.toString(),
-                                        })),
-                                ]}
-                                label={t('exercise')}
-                                onValueChange={(value) => {
-                                    const exerciseId = Number(value);
-                                    addExerciseToWorkout(exerciseId);
-                                }}
-                                selectedValue=""
-                            />
-                        ) : null}
-                    </Dialog.Content>
-                    <Dialog.Actions>
-                        <Button onPress={() => setIsExerciseModalOpen(false)}>
-                            {t('cancel')}
-                        </Button>
-                    </Dialog.Actions>
-                </Dialog>
+                <AddExerciseModal
+                    isVisible={isExerciseModalOpen}
+                    onClose={() => setIsExerciseModalOpen(false)}
+                    onExerciseSelected={addExerciseToWorkout}
+                />
                 <Dialog
                     onDismiss={() => setIsSupersetModalOpen(false)}
                     visible={isSupersetModalOpen}

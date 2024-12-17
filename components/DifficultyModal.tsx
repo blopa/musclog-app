@@ -1,7 +1,9 @@
 import ThemedModal from '@/components/ThemedModal';
+import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button } from 'react-native-paper';
+import { StyleSheet } from 'react-native';
+import { Button, useTheme } from 'react-native-paper';
 
 import SliderWithButtons from './SliderWithButtons';
 
@@ -23,6 +25,8 @@ const DifficultyModal = ({
     visible,
 }: DifficultyModalProps) => {
     const { t } = useTranslation();
+    const { colors, dark } = useTheme<CustomThemeType>();
+    const styles = makeStyles(colors, dark);
 
     return (
         <ThemedModal
@@ -35,11 +39,20 @@ const DifficultyModal = ({
                 onValueChange={setSetDifficulty}
                 value={setDifficulty}
             />
-            <Button disabled={loading} mode="contained" onPress={handleSaveSetDifficulty}>
+            <Button disabled={loading} mode="contained" onPress={handleSaveSetDifficulty} style={styles.button}>
                 {t('save')}
+            </Button>
+            <Button disabled={loading} mode="outlined" onPress={onClose} style={styles.button}>
+                {t('close')}
             </Button>
         </ThemedModal>
     );
 };
+
+const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
+    button: {
+        marginVertical: 5,
+    },
+});
 
 export default DifficultyModal;
