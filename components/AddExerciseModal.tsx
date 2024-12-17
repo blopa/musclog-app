@@ -3,7 +3,7 @@ import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { getAllExercises } from '@/utils/database';
 import { ExerciseReturnType } from '@/utils/types';
 import { useFocusEffect } from '@react-navigation/native';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, StyleSheet, View } from 'react-native';
 import {
@@ -15,13 +15,13 @@ import {
 } from 'react-native-paper';
 
 type AddExerciseModalProps = {
-    addExerciseToWorkout: (exerciseId: number) => void;
     defaultSelectedMuscleGroup?: string;
     isVisible: boolean;
     onClose: () => void;
+    onExerciseSelected: (exerciseId: number) => void;
 };
 
-export default function AddExerciseModal({ addExerciseToWorkout, defaultSelectedMuscleGroup, isVisible, onClose }: AddExerciseModalProps) {
+export default function AddExerciseModal({ defaultSelectedMuscleGroup, isVisible, onClose, onExerciseSelected }: AddExerciseModalProps) {
     const { t } = useTranslation();
     const { colors, dark } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors, dark);
@@ -29,6 +29,12 @@ export default function AddExerciseModal({ addExerciseToWorkout, defaultSelected
     const [selectedMuscleGroup, setSelectedMuscleGroup] = useState<string | undefined>(defaultSelectedMuscleGroup);
     const [allExercises, setAllExercises] = useState<ExerciseReturnType[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        if (defaultSelectedMuscleGroup) {
+            setSelectedMuscleGroup(defaultSelectedMuscleGroup);
+        }
+    }, [defaultSelectedMuscleGroup]);
 
     const resetScreenData = useCallback(() => {
         setSelectedMuscleGroup(undefined);
@@ -111,7 +117,7 @@ export default function AddExerciseModal({ addExerciseToWorkout, defaultSelected
                             label={t('exercise')}
                             onValueChange={(value) => {
                                 const exerciseId = Number(value);
-                                addExerciseToWorkout(exerciseId);
+                                onExerciseSelected(exerciseId);
                             }}
                             selectedValue=""
                         />

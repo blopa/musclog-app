@@ -1,3 +1,4 @@
+import AddExerciseModal from '@/components/AddExerciseModal';
 import CompletionModal from '@/components/CompletionModal';
 import CurrentWorkoutProgressModal from '@/components/CurrentWorkoutProgressModal';
 import DifficultyModal from '@/components/DifficultyModal';
@@ -35,10 +36,10 @@ import { resetWorkoutStorageData } from '@/utils/workout';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useKeepAwake } from 'expo-keep-awake';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Animated, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { Text, useTheme } from 'react-native-paper';
+import { Portal, Text, useTheme } from 'react-native-paper';
 
 type WorkoutSessionProps = {
     exercise?: ExerciseReturnType;
@@ -83,6 +84,7 @@ const WorkoutSession = ({
     const [loading, setLoading] = useState(false);
     const [isEditModalVisible, setIsEditModalVisible] = useState(false);
     const [isDifficultyModalVisible, setIsDifficultyModalVisible] = useState(false);
+    const [isExerciseModalOpen, setIsExerciseModalOpen] = useState(false);
     const [isCancelConfirmVisible, setIsCancelConfirmVisible] = useState(false);
     const [workoutScore, setWorkoutScore] = useState<number>(5);
     const [exhaustionLevel, setExhaustionLevel] = useState<number>(5);
@@ -365,7 +367,11 @@ const WorkoutSession = ({
         await resetRestTime();
     }, [resetRestTime]);
 
-    const handleReplaceExercise = useCallback(() => {}, []);
+    const handleReplaceExercise = useCallback((exerciseId: number) => {
+        // TODO: get the current exercise and replace it by the one selected
+        // then save it to the storage key EXERCISE_REPLACEMENTS
+        // which has the format { workoutId: { exerciseId: newExerciseId } }
+    }, [exercise, workoutId]);
 
     const handleOpenEditModal = useCallback(() => {
         setTempWeightLifted(weightLifted);
@@ -517,6 +523,13 @@ const WorkoutSession = ({
                 orderedExercises={orderedExercises}
                 remainingWorkoutData={remainingWorkoutData}
             />
+            <Portal>
+                <AddExerciseModal
+                    isVisible={isExerciseModalOpen}
+                    onClose={() => setIsExerciseModalOpen(false)}
+                    onExerciseSelected={handleReplaceExercise}
+                />
+            </Portal>
             {isResting ? (
                 <RestTimer
                     onAddTime={handleAddTime}
@@ -553,7 +566,7 @@ const WorkoutSession = ({
                     </TouchableOpacity>
                     <TouchableOpacity
                         disabled={loading}
-                        onPress={handleReplaceExercise}
+                        onPress={() => setIsExerciseModalOpen(true)}
                         style={styles.iconButton}
                     >
                         <Ionicons color={colors.primary} name="refresh-circle" size={50} />

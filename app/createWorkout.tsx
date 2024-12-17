@@ -100,7 +100,6 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
     const [workoutDetails, setWorkoutDetails] = useState<null | { exercisesWithSets: ExerciseWithSetsType[]; workout: WorkoutReturnType; }>(null);
     const [supersetName, setSupersetName] = useState('');
     const [selectedExercises, setSelectedExercises] = useState<number[]>([]);
-    const [selectedMuscleGroup, setSelectedMuscleGroup] = useState<null | string>(null);
     const [isExerciseModalOpen, setIsExerciseModalOpen] = useState(false);
     const [isSupersetModalOpen, setIsSupersetModalOpen] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
@@ -166,7 +165,6 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
         setWorkout([]);
         setSupersetName('');
         setSelectedExercises([]);
-        setSelectedMuscleGroup(null);
         setWorkoutTitle('');
         setWorkoutDescription('');
         setRecurringOnWeek('');
@@ -214,10 +212,6 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
         }, [t])
     );
 
-    const muscleGroups = Array.from(
-        new Set(allExercises.map((ex) => ex.muscleGroup))
-    ) as string[];
-
     const addExerciseToWorkout = (exerciseId: number) => {
         const exercise = allExercises.find((ex) => ex.id === exerciseId);
         if (exercise) {
@@ -227,7 +221,6 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
             ]);
         }
         setIsExerciseModalOpen(false);
-        setSelectedMuscleGroup(null);
     };
 
     const addSetToExercise = (exerciseIndex: number) => {
@@ -812,9 +805,9 @@ export default function CreateWorkout({ navigation }: { navigation: NavigationPr
             </Appbar.Header>
             <Portal>
                 <AddExerciseModal
-                    addExerciseToWorkout={addExerciseToWorkout}
                     isVisible={isExerciseModalOpen}
                     onClose={() => setIsExerciseModalOpen(false)}
+                    onExerciseSelected={addExerciseToWorkout}
                 />
                 <Dialog
                     onDismiss={() => setIsSupersetModalOpen(false)}
