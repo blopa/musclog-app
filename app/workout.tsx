@@ -9,7 +9,7 @@ import {
     COMPLETED_STATUS,
     CURRENT_EXERCISE_INDEX,
     CURRENT_WORKOUT_ID,
-    CURRENT_WORKOUT_PROGRESS,
+    CURRENT_WORKOUT_PROGRESS, EXERCISE_REPLACEMENTS,
     IMPERIAL_SYSTEM,
     POUNDS,
     WORKOUT_START_TIME,
@@ -480,6 +480,42 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
         }
     }, [startTime, currentExerciseIndex, exercises, workout, checkReadIsPermitted, t, isAiEnabled, isImperial, unitSystem, getHealthData, addNewChat, increaseUnreadMessages]);
 
+    const handleReplaceExercise = useCallback(
+        async (newExerciseId: number) => {
+            if (!workout?.id || !exercise?.id) {
+                return;
+            }
+
+            try {
+                // Get the existing replacements from AsyncStorage
+                const existingReplacements = await AsyncStorage.getItem(EXERCISE_REPLACEMENTS);
+                const parsedReplacements = existingReplacements
+                    ? JSON.parse(existingReplacements)
+                    : {};
+
+                // Update the replacements with the new exercise
+                const updatedReplacements = {
+                    ...parsedReplacements,
+                    [workout.id]: {
+                        ...parsedReplacements[workout.id],
+                        [exercise.id]: newExerciseId,
+                    },
+                };
+
+                // Save the updated replacements back to AsyncStorage
+                await AsyncStorage.setItem(
+                    EXERCISE_REPLACEMENTS,
+                    JSON.stringify(updatedReplacements)
+                );
+
+                console.log('Exercise replaced successfully:', updatedReplacements);
+            } catch (error) {
+                console.error('Failed to replace exercise:', error);
+            }
+        },
+        [exercise?.id, workout?.id]
+    );
+
     useEffect(() => {
         const checkStartingTime = async () => {
             const storedStartTime = Number(await AsyncStorage.getItem(WORKOUT_START_TIME));
@@ -514,6 +550,7 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
             <Screen>
                 <WorkoutSession
                     exercise={exercise}
+                    handleReplaceExercise={handleReplaceExercise}
                     isFirstExercise={currentExerciseIndex === 0}
                     isLastExercise={currentExerciseIndex === exercises.length - 1}
                     key={workout?.id}

@@ -43,6 +43,7 @@ import { Portal, Text, useTheme } from 'react-native-paper';
 
 type WorkoutSessionProps = {
     exercise?: ExerciseReturnType;
+    handleReplaceExercise: (exerciseId: number) => void;
     isFirstExercise?: boolean;
     isLastExercise?: boolean;
     onCancel: () => void;
@@ -56,6 +57,7 @@ type WorkoutSessionProps = {
 
 const WorkoutSession = ({
     exercise,
+    handleReplaceExercise,
     isFirstExercise,
     isLastExercise,
     onCancel,
@@ -366,12 +368,6 @@ const WorkoutSession = ({
     const handleSkipRest = useCallback(async () => {
         await resetRestTime();
     }, [resetRestTime]);
-
-    const handleReplaceExercise = useCallback((exerciseId: number) => {
-        // TODO: get the current exercise and replace it by the one selected
-        // then save it to the storage key EXERCISE_REPLACEMENTS
-        // which has the format { workoutId: { exerciseId: newExerciseId } }
-    }, [exercise, workoutId]);
 
     const handleOpenEditModal = useCallback(() => {
         setTempWeightLifted(weightLifted);
