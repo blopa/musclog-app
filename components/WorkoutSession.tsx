@@ -24,9 +24,9 @@ import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { getWorkoutWithExercisesRepsAndSetsDetails } from '@/utils/database';
 import { formatTime } from '@/utils/date';
 import {
+    CurrentWorkoutExercise,
     CurrentWorkoutProgressType,
     ExerciseProgressType,
-    ExerciseReturnType,
     ExerciseWithSetsType,
     SetReturnType,
     WorkoutWithExercisesRepsAndSetsDetailsReturnType,
@@ -42,13 +42,13 @@ import { Animated, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-
 import { Portal, Text, useTheme } from 'react-native-paper';
 
 type WorkoutSessionProps = {
-    exercise?: ExerciseReturnType;
+    exercise?: CurrentWorkoutExercise;
     isFirstExercise?: boolean;
     isLastExercise?: boolean;
     onCancel: () => void;
     onFinish: (workoutScore?: number, exhaustionLevel?: number) => Promise<void>;
     onReplaceExercise: (exerciseId: number) => void;
-    orderedExercises: { exercise: ExerciseReturnType; sets: SetReturnType[] }[];
+    orderedExercises: { exercise: CurrentWorkoutExercise; sets: SetReturnType[] }[];
     sets: SetReturnType[];
     startTime: null | number;
     workoutDuration?: number;
@@ -284,6 +284,7 @@ const WorkoutSession = ({
         const setData = {
             difficultyLevel: setDifficulty,
             exerciseId: exercise?.id,
+            isReplacement: exercise?.isReplacement,
             name: exercise?.name,
             reps: Number(completedReps),
             restTime: currentSet.restTime,

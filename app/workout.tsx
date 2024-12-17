@@ -42,6 +42,7 @@ import {
 import { captureException } from '@/utils/sentry';
 import { generateHash } from '@/utils/string';
 import {
+    CurrentWorkoutExercise,
     CurrentWorkoutProgressType,
     ExerciseReturnType,
     ExerciseVolumeType,
@@ -60,9 +61,9 @@ import { BackHandler, ScrollView, StyleSheet, View } from 'react-native';
 import { ActivityIndicator, Button, Text, useTheme } from 'react-native-paper';
 
 const getCurrentExercises = async (
-    originalExercises: ExerciseReturnType[],
+    originalExercises: CurrentWorkoutExercise[],
     workoutId: number
-): Promise<(ExerciseReturnType | undefined)[]> => {
+): Promise<(CurrentWorkoutExercise | undefined)[]> => {
     try {
         const newExercises = originalExercises.map(async (exercise) => {
             return await getCurrentExercise(exercise, workoutId);
@@ -76,9 +77,9 @@ const getCurrentExercises = async (
 };
 
 const getCurrentExercise = async (
-    originalExercise: ExerciseReturnType,
+    originalExercise: CurrentWorkoutExercise,
     workoutId: number
-): Promise<ExerciseReturnType | undefined> => {
+): Promise<CurrentWorkoutExercise> => {
     try {
         // Fetch replacements from AsyncStorage
         const storedReplacements = await AsyncStorage.getItem(EXERCISE_REPLACEMENTS);
@@ -87,7 +88,12 @@ const getCurrentExercise = async (
         // Check if there's a replacement for the current exercise
         const newExerciseId = replacements[workoutId]?.[originalExercise.id];
         if (newExerciseId) {
-            return await getExerciseById(newExerciseId);
+            const newExercise = await getExerciseById(newExerciseId);
+            if (newExercise) {
+                return { ...newExercise, isReplacement: true };
+            }
+
+            return originalExercise;
         }
 
         return originalExercise;
@@ -100,9 +106,9 @@ const getCurrentExercise = async (
 const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const { t } = useTranslation();
     const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
-    const [exercise, setExercise] = useState<ExerciseReturnType | null>(null);
-    const [exercises, setExercises] = useState<{ exercise: ExerciseReturnType; sets: SetReturnType[] }[]>([]);
-    const [orderedExercises, setOrderedExercises] = useState<{ exercise: ExerciseReturnType; sets: SetReturnType[] }[]>([]);
+    const [exercise, setExercise] = useState<CurrentWorkoutExercise | null>(null);
+    const [exercises, setExercises] = useState<{ exercise: CurrentWorkoutExercise; sets: SetReturnType[] }[]>([]);
+    const [orderedExercises, setOrderedExercises] = useState<{ exercise: CurrentWorkoutExercise; sets: SetReturnType[] }[]>([]);
     const [modalVisible, setModalVisible] = useState(false);
     const [startTime, setStartTime] = useState<null | number>(null);
     const [workoutDuration, setWorkoutDuration] = useState(0);
@@ -387,6 +393,7 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
                         if (!exercise) {
                             exercise = {
                                 exerciseId: item.exerciseId!,
+                                isReplacement: item.isReplacement,
                                 sets: [],
                             };
 

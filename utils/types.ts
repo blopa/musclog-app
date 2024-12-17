@@ -49,6 +49,8 @@ export type ChatReturnType = Omit<ChatInsertType, 'id'> & {
     id: number;
 };
 
+export type CurrentWorkoutExercise = ExerciseReturnType & { isReplacement?: boolean; };
+
 export type CurrentWorkoutProgressType = {
     completed: ExerciseProgressType[];
     skipped?: ExerciseProgressType[];
@@ -76,6 +78,7 @@ export type ExerciseProgressType = {
     difficultyLevel: number;
     exerciseId?: number;
     isDropSet?: boolean;
+    isReplacement?: boolean;
     name: string;
     reps: number;
     restTime: number;
@@ -103,6 +106,7 @@ export type ExerciseVolumeSetType = (SetReturnType & {
 
 export type ExerciseVolumeType = {
     exerciseId: number;
+    isReplacement?: boolean;
     sets: ExerciseVolumeSetType[];
 };
 
