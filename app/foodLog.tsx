@@ -619,6 +619,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                         try {
                             const barcodes = await detectBarcodes(imageUri, [
                                 BarcodeFormat.EAN_13,
+                                BarcodeFormat.EAN_8,
                             ]);
 
                             if (barcodes.length > 0) {
