@@ -795,7 +795,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     }], [colors.primary, colors.surface, t]);
 
     return (
-        <FABWrapper actions={fabActions} icon="plus" visible={!showPhotoCamera}>
+        <FABWrapper actions={fabActions} icon="plus" visible={!showPhotoCamera && !showBarcodeCamera}>
             <View style={styles.container}>
                 <Appbar.Header mode="small" statusBarHeight={0} style={styles.appbarHeader}>
                     <Appbar.Content title={t('macro_tracker')} titleStyle={styles.appbarTitle} />
