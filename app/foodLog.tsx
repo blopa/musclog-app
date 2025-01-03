@@ -37,6 +37,7 @@ import { getRecentFood } from '@/utils/storage';
 import { safeToFixed } from '@/utils/string';
 import { MusclogApiFoodInfoType, UserNutritionDecryptedReturnType } from '@/utils/types';
 import { getDisplayFormattedWeight } from '@/utils/unit';
+import Quagga from '@ericblade/quagga2';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { NavigationProp } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
@@ -450,7 +451,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         />
     );
 
-    const handleBarCodeScanned = useCallback(async ({ data, type }: { data: BarcodeScanningResult['data'], type: BarcodeScanningResult['type'] }) => {
+    const handleBarCodeScanned = useCallback(async ({ data, type }: { data: BarcodeScanningResult['data'], type?: BarcodeScanningResult['type'] }) => {
         setScanned(true);
         setShowBarcodeCamera(false);
 
@@ -557,7 +558,26 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                                 if (type === 'photo') {
                                     await handlePhoto(imageUri);
                                 } else if (type === 'barcode') {
-                                    // TODO: detect barcodes from image using quagga2
+                                    Quagga.decodeSingle({
+                                        decoder: {
+                                            readers: ['ean_reader', 'ean_8_reader'],
+                                        },
+                                        inputStream: { size: 800 },
+                                        src: imageUri,
+                                    },
+                                    (result) => {
+                                        if (result?.codeResult) {
+                                            if (result.codeResult.code) {
+                                                handleBarCodeScanned({
+                                                    data: result.codeResult.code,
+                                                    type: result.codeResult.format,
+                                                });
+                                            }
+                                        } else {
+                                            alert(t('no_barcodes_detected'));
+                                        }
+                                    }
+                                    );
                                 }
 
                                 setIsLoading(false);
@@ -603,7 +623,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
                             if (barcodes.length > 0) {
                                 const firstBarcode = barcodes[0];
-                                if (firstBarcode.rawValue && firstBarcode.format) {
+                                if (firstBarcode.rawValue) {
                                     await handleBarCodeScanned({
                                         data: firstBarcode.rawValue,
                                         type: firstBarcode.format as unknown as string,
