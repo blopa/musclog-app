@@ -726,7 +726,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 </View>
             </View>
             <View style={styles.scannerOverlayBottom}>
-                <View style={[styles.photoControls, styles.scannerControls]}>
+                <View style={[styles.controls, styles.scannerControls]}>
                     <TouchableOpacity
                         onPress={() => setShowBarcodeCamera(false)}
                         style={styles.photoControlButton}
@@ -742,7 +742,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 </View>
             </View>
         </View>
-    ), [colors.onPrimary, handleLoadLocalFile, styles.focusBorder, styles.photoControlButton, styles.photoControls, styles.scannerControls, styles.scannerFocusArea, styles.scannerOverlayBottom, styles.scannerOverlayContainer, styles.scannerOverlayMiddle, styles.scannerOverlayTop]);
+    ), [colors.onPrimary, handleLoadLocalFile, styles.focusBorder, styles.photoControlButton, styles.controls, styles.scannerControls, styles.scannerFocusArea, styles.scannerOverlayBottom, styles.scannerOverlayContainer, styles.scannerOverlayMiddle, styles.scannerOverlayTop]);
 
     const renderPhotoCameraOverlay = useCallback(() => (
         <View style={styles.photoCameraOverlay}>
@@ -767,7 +767,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 style={styles.segmentedButtons}
                 value={photoMode}
             />
-            <View style={styles.photoControls}>
+            <View style={[styles.controls, styles.photoControls]}>
                 <TouchableOpacity
                     onPress={() => setShowPhotoCamera(false)}
                     style={styles.photoControlButton}
@@ -780,17 +780,15 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 >
                     <View style={styles.captureButtonCircle} />
                 </TouchableOpacity>
-                {Platform.OS === 'web' && (
-                    <TouchableOpacity
-                        onPress={() => handleLoadLocalFile('photo')}
-                        style={styles.photoControlButton}
-                    >
-                        <FontAwesome5 color={colors.onPrimary} name="file-upload" size={30} />
-                    </TouchableOpacity>
-                )}
+                <TouchableOpacity
+                    onPress={() => handleLoadLocalFile('photo')}
+                    style={styles.photoControlButton}
+                >
+                    <FontAwesome5 color={colors.onPrimary} name="file-upload" size={30} />
+                </TouchableOpacity>
             </View>
         </View>
-    ), [colors.onPrimary, colors.secondaryContainer, colors.surface, handleLoadLocalFile, handleTakePhoto, photoMode, styles.captureButton, styles.captureButtonCircle, styles.photoCameraOverlay, styles.photoControlButton, styles.photoControls, styles.segmentedButtons, t]);
+    ), [colors.onPrimary, colors.secondaryContainer, colors.surface, handleLoadLocalFile, handleTakePhoto, photoMode, styles.captureButton, styles.captureButtonCircle, styles.photoCameraOverlay, styles.photoControlButton, styles.controls, styles.segmentedButtons, t]);
 
     const fabActions = useMemo(() => [{
         icon: () => <FontAwesome5 color={colors.primary} name="bread-slice" size={FAB_ICON_SIZE} />,
@@ -982,7 +980,6 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         borderRadius: 30,
         borderWidth: 5,
         height: 60,
-        marginBottom: 50,
         opacity: 0.7,
         width: 60,
     },
@@ -1012,6 +1009,13 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     content: {
         flex: 1,
         padding: 16,
+    },
+    controls: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingBottom: 40,
+        paddingHorizontal: 20,
     },
     focusBorder: {
         borderColor: colors.primary,
@@ -1098,14 +1102,14 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         width: 50,
     },
     photoControls: {
-        alignItems: 'center',
-        flexDirection: 'row',
+        bottom: 20,
+        display: 'flex',
         justifyContent: 'space-between',
-        paddingBottom: 40,
-        paddingHorizontal: 20,
+        position: 'absolute',
+        width: '100%',
     },
     scannerControls: {
-        bottom: 120,
+        bottom: 20,
         display: 'flex',
         justifyContent: 'space-between',
         position: 'absolute',
