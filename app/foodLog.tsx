@@ -54,6 +54,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
+import { BarcodeFormat, detectBarcodes } from 'react-native-barcodes-detector';
 import { Appbar, Button, Card, SegmentedButtons, Text, TextInput, useTheme } from 'react-native-paper';
 import { TabBar, TabView } from 'react-native-tab-view';
 
@@ -449,7 +450,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         />
     );
 
-    const handleBarCodeScanned = useCallback(async ({ data, type }: BarcodeScanningResult) => {
+    const handleBarCodeScanned = useCallback(async ({ data, type }: { data: BarcodeScanningResult['data'], type: BarcodeScanningResult['type'] }) => {
         setScanned(true);
         setShowBarcodeCamera(false);
 
@@ -555,8 +556,8 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
                                 if (type === 'photo') {
                                     await handlePhoto(imageUri);
-                                } else {
-                                    // TODO: use the react-native-barcodes-detector package and the handleBarCodeScanned function somehow
+                                } else if (type === 'barcode') {
+                                    // TODO: detect barcodes from image using quagga2
                                 }
 
                                 setIsLoading(false);
@@ -571,8 +572,8 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
             document.body.appendChild(input);
             input.click();
-            document.body.removeChild(input);} else {
-
+            document.body.removeChild(input);
+        } else {
             try {
                 const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
                 if (status !== 'granted') {
@@ -594,8 +595,29 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
                     if (type === 'photo') {
                         await handlePhoto(imageUri);
-                    } else {
-                        // TODO: use the react-native-barcodes-detector package and the handleBarCodeScanned function somehow
+                    } else if (type === 'barcode') {
+                        try {
+                            const barcodes = await detectBarcodes(imageUri, [
+                                BarcodeFormat.EAN_13,
+                            ]);
+
+                            if (barcodes.length > 0) {
+                                const firstBarcode = barcodes[0];
+                                if (firstBarcode.rawValue && firstBarcode.format) {
+                                    await handleBarCodeScanned({
+                                        data: firstBarcode.rawValue,
+                                        type: firstBarcode.format as unknown as string,
+                                    });
+                                } else {
+                                    alert(t('no_barcodes_detected'));
+                                }
+                            } else {
+                                alert(t('no_barcodes_detected'));
+                            }
+                        } catch (error) {
+                            console.error('Error detecting barcodes:', error);
+                            alert(t('barcode_detection_error'));
+                        }
                     }
 
                     setIsLoading(false);
@@ -604,7 +626,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 console.error('Error loading local file:', error);
             }
         }
-    }, [handlePhoto, t]);
+    }, [handlePhoto, handleBarCodeScanned, t]);
 
     // Handler for taking a photo
     const handleTakePhoto = useCallback(async () => {
