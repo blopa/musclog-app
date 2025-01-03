@@ -556,7 +556,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                                 if (type === 'photo') {
                                     await handlePhoto(imageUri);
                                 } else {
-                                    // TODO: use the handleBarCodeScanned somehow
+                                    // TODO: use the react-native-barcodes-detector package and the handleBarCodeScanned function somehow
                                 }
 
                                 setIsLoading(false);
@@ -595,7 +595,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                     if (type === 'photo') {
                         await handlePhoto(imageUri);
                     } else {
-                        // TODO: use the handleBarCodeScanned somehow
+                        // TODO: use the react-native-barcodes-detector package and the handleBarCodeScanned function somehow
                     }
 
                     setIsLoading(false);
