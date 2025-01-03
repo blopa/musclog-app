@@ -493,7 +493,48 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         setShowPhotoCamera(true);
     }, [permission?.granted, requestPermission, t]);
 
-    const handleLoadLocalFile = useCallback(async () => {
+    const handlePhoto = useCallback(async (imageUri: string) => {
+        if (photoMode === 'meal') {
+            const macros = await estimateNutritionFromPhoto(imageUri);
+            if (macros) {
+                const normalizedMacros = normalizeMacrosByGrams({
+                    carbs: macros.carbs,
+                    fat: macros.fat,
+                    grams: macros.grams,
+                    kcal: macros.kcal,
+                    kj: macros.kj,
+                    protein: macros.protein,
+                });
+
+                setSelectedFood({
+                    ...normalizedMacros,
+                    estimatedGrams: macros.grams,
+                    productTitle: macros.name,
+                });
+                setAllowEditName(true);
+            }
+        } else {
+            const macros = await extractMacrosFromLabelPhoto(imageUri);
+            if (macros) {
+                const normalizedMacros = normalizeMacrosByGrams({
+                    carbs: macros.carbs,
+                    fat: macros.fat,
+                    grams: macros.grams,
+                    kcal: macros.kcal,
+                    kj: macros.kj,
+                    protein: macros.protein,
+                });
+
+                setSelectedFood({
+                    ...normalizedMacros,
+                    productTitle: macros.name,
+                });
+                setAllowEditName(true);
+            }
+        }
+    }, [photoMode]);
+
+    const handleLoadLocalFile = useCallback(async (type: 'barcode' | 'photo') => {
         if (Platform.OS === 'web') {
             const input = document.createElement('input');
             input.type = 'file';
@@ -512,43 +553,10 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                                 setIsLoading(true);
                                 setIsNutritionModalVisible(true);
 
-                                if (photoMode === 'meal') {
-                                    const macros = await estimateNutritionFromPhoto(imageUri);
-                                    if (macros) {
-                                        const normalizedMacros = normalizeMacrosByGrams({
-                                            carbs: macros.carbs,
-                                            fat: macros.fat,
-                                            grams: macros.grams,
-                                            kcal: macros.kcal,
-                                            kj: macros.kj,
-                                            protein: macros.protein,
-                                        });
-
-                                        setSelectedFood({
-                                            ...normalizedMacros,
-                                            estimatedGrams: macros.grams,
-                                            productTitle: macros.name,
-                                        });
-                                        setAllowEditName(true);
-                                    }
+                                if (type === 'photo') {
+                                    await handlePhoto(imageUri);
                                 } else {
-                                    const macros = await extractMacrosFromLabelPhoto(imageUri);
-                                    if (macros) {
-                                        const normalizedMacros = normalizeMacrosByGrams({
-                                            carbs: macros.carbs,
-                                            fat: macros.fat,
-                                            grams: macros.grams,
-                                            kcal: macros.kcal,
-                                            kj: macros.kj,
-                                            protein: macros.protein,
-                                        });
-
-                                        setSelectedFood({
-                                            ...normalizedMacros,
-                                            productTitle: macros.name,
-                                        });
-                                        setAllowEditName(true);
-                                    }
+                                    // TODO: use the handleBarCodeScanned somehow
                                 }
 
                                 setIsLoading(false);
@@ -584,43 +592,10 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                     setIsLoading(true);
                     setIsNutritionModalVisible(true);
 
-                    if (photoMode === 'meal') {
-                        const macros = await estimateNutritionFromPhoto(imageUri);
-                        if (macros) {
-                            const normalizedMacros = normalizeMacrosByGrams({
-                                carbs: macros.carbs,
-                                fat: macros.fat,
-                                grams: macros.grams,
-                                kcal: macros.kcal,
-                                kj: macros.kj,
-                                protein: macros.protein,
-                            });
-
-                            setSelectedFood({
-                                ...normalizedMacros,
-                                estimatedGrams: macros.grams,
-                                productTitle: macros.name,
-                            });
-                            setAllowEditName(true);
-                        }
+                    if (type === 'photo') {
+                        await handlePhoto(imageUri);
                     } else {
-                        const macros = await extractMacrosFromLabelPhoto(imageUri);
-                        if (macros) {
-                            const normalizedMacros = normalizeMacrosByGrams({
-                                carbs: macros.carbs,
-                                fat: macros.fat,
-                                grams: macros.grams,
-                                kcal: macros.kcal,
-                                kj: macros.kj,
-                                protein: macros.protein,
-                            });
-
-                            setSelectedFood({
-                                ...normalizedMacros,
-                                productTitle: macros.name,
-                            });
-                            setAllowEditName(true);
-                        }
+                        // TODO: use the handleBarCodeScanned somehow
                     }
 
                     setIsLoading(false);
@@ -629,7 +604,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 console.error('Error loading local file:', error);
             }
         }
-    }, [photoMode, t]);
+    }, [handlePhoto, t]);
 
     // Handler for taking a photo
     const handleTakePhoto = useCallback(async () => {
@@ -708,9 +683,24 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                     <View style={styles.focusBorder} />
                 </View>
             </View>
-            <View style={styles.scannerOverlayBottom} />
+            <View style={styles.scannerOverlayBottom}>
+                <View style={[styles.photoControls, styles.scannerControls]}>
+                    <TouchableOpacity
+                        onPress={() => setShowBarcodeCamera(false)}
+                        style={styles.photoControlButton}
+                    >
+                        <FontAwesome5 color={colors.onPrimary} name="times-circle" size={30} />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={() => handleLoadLocalFile('barcode')}
+                        style={styles.photoControlButton}
+                    >
+                        <FontAwesome5 color={colors.onPrimary} name="file-upload" size={30} />
+                    </TouchableOpacity>
+                </View>
+            </View>
         </View>
-    ), [styles.focusBorder, styles.scannerFocusArea, styles.scannerOverlayBottom, styles.scannerOverlayContainer, styles.scannerOverlayMiddle, styles.scannerOverlayTop]);
+    ), [colors.onPrimary, handleLoadLocalFile, styles.focusBorder, styles.photoControlButton, styles.photoControls, styles.scannerControls, styles.scannerFocusArea, styles.scannerOverlayBottom, styles.scannerOverlayContainer, styles.scannerOverlayMiddle, styles.scannerOverlayTop]);
 
     const renderPhotoCameraOverlay = useCallback(() => (
         <View style={styles.photoCameraOverlay}>
@@ -750,7 +740,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 </TouchableOpacity>
                 {Platform.OS === 'web' && (
                     <TouchableOpacity
-                        onPress={handleLoadLocalFile}
+                        onPress={() => handleLoadLocalFile('photo')}
                         style={styles.photoControlButton}
                     >
                         <FontAwesome5 color={colors.onPrimary} name="file-upload" size={30} />
@@ -858,15 +848,6 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                             style={styles.camera}
                         >
                             {renderScannerOverlay()}
-                            <View style={styles.cameraOverlay}>
-                                <Button
-                                    mode="contained"
-                                    onPress={() => setShowBarcodeCamera(false)}
-                                    style={styles.closeButton}
-                                >
-                                    {t('close')}
-                                </Button>
-                            </View>
                         </CameraView>
                     </View>
                 ) : null}
@@ -1080,6 +1061,13 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         justifyContent: 'space-between',
         paddingBottom: 40,
         paddingHorizontal: 20,
+    },
+    scannerControls: {
+        bottom: 120,
+        display: 'flex',
+        justifyContent: 'space-between',
+        position: 'absolute',
+        width: '100%',
     },
     scannerFocusArea: {
         backgroundColor: 'transparent',
