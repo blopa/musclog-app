@@ -554,6 +554,8 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                             if (typeof imageUri === 'string') {
                                 setIsLoading(true);
                                 setIsNutritionModalVisible(true);
+                                setShowBarcodeCamera(false);
+                                setShowPhotoCamera(false);
 
                                 if (type === 'photo') {
                                     await handlePhoto(imageUri);
@@ -612,6 +614,8 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
                     setIsLoading(true);
                     setIsNutritionModalVisible(true);
+                    setShowBarcodeCamera(false);
+                    setShowPhotoCamera(false);
 
                     if (type === 'photo') {
                         await handlePhoto(imageUri);

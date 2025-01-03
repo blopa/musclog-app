@@ -168,7 +168,7 @@ const SearchFoodModal = ({
                 };
 
                 if (photoMode === 'meal') {
-                    (food as any).estimatedGrams = macros.grams;
+                    food.estimatedGrams = macros.grams;
                 }
 
                 onFoodSelected(food);
@@ -198,6 +198,8 @@ const SearchFoodModal = ({
                             const imageUri = reader.result as string;
                             setIsLoading(true);
                             setIsLoading(true);
+                            setShowBarcodeCamera(false);
+                            setShowPhotoCamera(false);
 
                             if (type === 'photo') {
                                 await handlePhoto(imageUri);
@@ -247,7 +249,10 @@ const SearchFoodModal = ({
 
                 if (!result.canceled && result.assets?.length > 0) {
                     const imageUri = result.assets[0].uri;
+
                     setIsLoading(true);
+                    setShowBarcodeCamera(false);
+                    setShowPhotoCamera(false);
 
                     if (type === 'photo') {
                         await handlePhoto(imageUri);
