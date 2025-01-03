@@ -226,6 +226,8 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         // setTabIndex(0);
         setConsumedFoods([]);
         setAllowEditName(false);
+        setShowBarcodeCamera(false);
+        setShowPhotoCamera(false);
     }, []);
 
     useFocusEffect(
@@ -646,35 +648,50 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const renderPhotoCameraOverlay = useCallback(() => (
         <View style={styles.photoCameraOverlay}>
             <SegmentedButtons
-                buttons={[{
-                    label: t('meal'),
-                    style: { backgroundColor: photoMode === 'meal' ? colors.secondaryContainer : colors.surface },
-                    value: 'meal',
-                },
-                {
-                    label: t('food_label'),
-                    style: { backgroundColor: photoMode === 'label' ? colors.secondaryContainer : colors.surface },
-                    value: 'label',
-                }]}
+                buttons={[
+                    {
+                        label: t('meal'),
+                        style: {
+                            backgroundColor: photoMode === 'meal' ? colors.secondaryContainer : colors.surface,
+                        },
+                        value: 'meal',
+                    },
+                    {
+                        label: t('food_label'),
+                        style: {
+                            backgroundColor: photoMode === 'label' ? colors.secondaryContainer : colors.surface,
+                        },
+                        value: 'label',
+                    },
+                ]}
                 onValueChange={setPhotoMode}
                 style={styles.segmentedButtons}
                 value={photoMode}
             />
-            <View style={styles.bottomControls}>
-                <TouchableOpacity onPress={() => setShowPhotoCamera(false)} style={styles.photoCloseButton}>
-                    <Text style={styles.photoCloseText}>{t('close')}</Text>
+            <View style={styles.photoControls}>
+                <TouchableOpacity
+                    onPress={() => setShowPhotoCamera(false)}
+                    style={styles.photoControlButton}
+                >
+                    <FontAwesome5 color={colors.onPrimary} name="times-circle" size={30} />
                 </TouchableOpacity>
-                {Platform.OS === 'web' ? (
-                    <TouchableOpacity onPress={handleLoadLocalFile} style={styles.captureButton}>
-                        <FontAwesome5 color={colors.primary} name="file" size={30} />
+                <TouchableOpacity
+                    onPress={handleTakePhoto}
+                    style={styles.captureButton}
+                >
+                    <View style={styles.captureButtonCircle} />
+                </TouchableOpacity>
+                {Platform.OS === 'web' && (
+                    <TouchableOpacity
+                        onPress={handleLoadLocalFile}
+                        style={styles.photoControlButton}
+                    >
+                        <FontAwesome5 color={colors.onPrimary} name="file-upload" size={30} />
                     </TouchableOpacity>
-                ) : null}
-                <TouchableOpacity onPress={handleTakePhoto} style={styles.captureButton}>
-                    <FontAwesome5 color={colors.primary} name="camera" size={30} />
-                </TouchableOpacity>
+                )}
             </View>
         </View>
-    ), [colors.primary, colors.secondaryContainer, colors.surface, handleLoadLocalFile, handleTakePhoto, photoMode, styles.bottomControls, styles.captureButton, styles.photoCameraOverlay, styles.photoCloseButton, styles.photoCloseText, styles.segmentedButtons, t]);
+    ), [colors.onPrimary, colors.secondaryContainer, colors.surface, handleLoadLocalFile, handleTakePhoto, photoMode, styles.captureButton, styles.captureButtonCircle, styles.photoCameraOverlay, styles.photoControlButton, styles.photoControls, styles.segmentedButtons, t]);
 
     const fabActions = useMemo(() => [{
         icon: () => <FontAwesome5 color={colors.primary} name="bread-slice" size={FAB_ICON_SIZE} />,
@@ -711,7 +728,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     }], [colors.primary, colors.surface, t]);
 
     return (
-        <FABWrapper actions={fabActions} icon="plus" visible>
+        <FABWrapper actions={fabActions} icon="plus" visible={!showPhotoCamera}>
             <View style={styles.container}>
                 <Appbar.Header mode="small" statusBarHeight={0} style={styles.appbarHeader}>
                     <Appbar.Content title={t('macro_tracker')} titleStyle={styles.appbarTitle} />
@@ -862,7 +879,22 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         paddingBottom: 40,
     },
     captureButton: {
+        alignItems: 'center',
         backgroundColor: 'transparent',
+        borderRadius: 35,
+        height: 70,
+        justifyContent: 'center',
+        width: 70,
+    },
+    captureButtonCircle: {
+        backgroundColor: 'white',
+        borderColor: colors.onSurface,
+        borderRadius: 30,
+        borderWidth: 5,
+        height: 60,
+        marginBottom: 50,
+        opacity: 0.7,
+        width: 60,
     },
     cardContent: {
         padding: 16,
@@ -966,6 +998,21 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     photoCloseText: {
         color: colors.onPrimary,
         fontSize: 16,
+    },
+    photoControlButton: {
+        alignItems: 'center',
+        backgroundColor: colors.primary,
+        borderRadius: 25,
+        height: 50,
+        justifyContent: 'center',
+        width: 50,
+    },
+    photoControls: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingBottom: 40,
+        paddingHorizontal: 20,
     },
     scannerFocusArea: {
         backgroundColor: 'transparent',
