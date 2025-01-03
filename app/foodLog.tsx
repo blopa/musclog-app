@@ -41,6 +41,7 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import { NavigationProp } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
 import { CameraView, useCameraPermissions } from 'expo-camera';
+import * as ImagePicker from 'expo-image-picker';
 import { useFocusEffect } from 'expo-router';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -492,77 +493,143 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         setShowPhotoCamera(true);
     }, [permission?.granted, requestPermission, t]);
 
-    const handleLoadLocalFile = useCallback(() => {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = 'image/*';
-        input.style.display = 'none';
+    const handleLoadLocalFile = useCallback(async () => {
+        if (Platform.OS === 'web') {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.style.display = 'none';
 
-        input.onchange = async (event) => {
-            // @ts-ignore it's fine, files exist.
-            const file = event.target?.files?.[0];
-            if (file) {
-                try {
-                    const reader = new FileReader();
-                    reader.onload = async () => {
-                        const imageUri = reader.result;
-                        if (typeof imageUri === 'string') {
-                            setIsLoading(true);
-                            setIsNutritionModalVisible(true);
+            input.onchange = async (event) => {
+                // @ts-ignore it's fine, files exist.
+                const file = event.target?.files?.[0];
+                if (file) {
+                    try {
+                        const reader = new FileReader();
+                        reader.onload = async () => {
+                            const imageUri = reader.result;
+                            if (typeof imageUri === 'string') {
+                                setIsLoading(true);
+                                setIsNutritionModalVisible(true);
 
-                            if (photoMode === 'meal') {
-                                const macros = await estimateNutritionFromPhoto(imageUri);
-                                if (macros) {
-                                    const normalizedMacros = normalizeMacrosByGrams({
-                                        carbs: macros.carbs,
-                                        fat: macros.fat,
-                                        grams: macros.grams,
-                                        kcal: macros.kcal,
-                                        kj: macros.kj,
-                                        protein: macros.protein,
-                                    });
+                                if (photoMode === 'meal') {
+                                    const macros = await estimateNutritionFromPhoto(imageUri);
+                                    if (macros) {
+                                        const normalizedMacros = normalizeMacrosByGrams({
+                                            carbs: macros.carbs,
+                                            fat: macros.fat,
+                                            grams: macros.grams,
+                                            kcal: macros.kcal,
+                                            kj: macros.kj,
+                                            protein: macros.protein,
+                                        });
 
-                                    setSelectedFood({
-                                        ...normalizedMacros,
-                                        estimatedGrams: macros.grams,
-                                        productTitle: macros.name,
-                                    });
-                                    setAllowEditName(true);
+                                        setSelectedFood({
+                                            ...normalizedMacros,
+                                            estimatedGrams: macros.grams,
+                                            productTitle: macros.name,
+                                        });
+                                        setAllowEditName(true);
+                                    }
+                                } else {
+                                    const macros = await extractMacrosFromLabelPhoto(imageUri);
+                                    if (macros) {
+                                        const normalizedMacros = normalizeMacrosByGrams({
+                                            carbs: macros.carbs,
+                                            fat: macros.fat,
+                                            grams: macros.grams,
+                                            kcal: macros.kcal,
+                                            kj: macros.kj,
+                                            protein: macros.protein,
+                                        });
+
+                                        setSelectedFood({
+                                            ...normalizedMacros,
+                                            productTitle: macros.name,
+                                        });
+                                        setAllowEditName(true);
+                                    }
                                 }
-                            } else {
-                                const macros = await extractMacrosFromLabelPhoto(imageUri);
-                                if (macros) {
-                                    const normalizedMacros = normalizeMacrosByGrams({
-                                        carbs: macros.carbs,
-                                        fat: macros.fat,
-                                        grams: macros.grams,
-                                        kcal: macros.kcal,
-                                        kj: macros.kj,
-                                        protein: macros.protein,
-                                    });
 
-                                    setSelectedFood({
-                                        ...normalizedMacros,
-                                        productTitle: macros.name,
-                                    });
-                                    setAllowEditName(true);
-                                }
+                                setIsLoading(false);
                             }
-
-                            setIsLoading(false);
-                        }
-                    };
-                    reader.readAsDataURL(file);
-                } catch (error) {
-                    console.error('Error loading local file:', error);
+                        };
+                        reader.readAsDataURL(file);
+                    } catch (error) {
+                        console.error('Error loading local file:', error);
+                    }
                 }
-            }
-        };
+            };
 
-        document.body.appendChild(input);
-        input.click();
-        document.body.removeChild(input);
-    }, [photoMode]);
+            document.body.appendChild(input);
+            input.click();
+            document.body.removeChild(input);} else {
+
+            try {
+                const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+                if (status !== 'granted') {
+                    alert(t('media_library_permission_denied'));
+                    return;
+                }
+
+                const result = await ImagePicker.launchImageLibraryAsync({
+                    allowsEditing: false,
+                    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                    quality: 1,
+                });
+
+                if (!result.canceled && result.assets?.length > 0) {
+                    const imageUri = result.assets[0].uri;
+
+                    setIsLoading(true);
+                    setIsNutritionModalVisible(true);
+
+                    if (photoMode === 'meal') {
+                        const macros = await estimateNutritionFromPhoto(imageUri);
+                        if (macros) {
+                            const normalizedMacros = normalizeMacrosByGrams({
+                                carbs: macros.carbs,
+                                fat: macros.fat,
+                                grams: macros.grams,
+                                kcal: macros.kcal,
+                                kj: macros.kj,
+                                protein: macros.protein,
+                            });
+
+                            setSelectedFood({
+                                ...normalizedMacros,
+                                estimatedGrams: macros.grams,
+                                productTitle: macros.name,
+                            });
+                            setAllowEditName(true);
+                        }
+                    } else {
+                        const macros = await extractMacrosFromLabelPhoto(imageUri);
+                        if (macros) {
+                            const normalizedMacros = normalizeMacrosByGrams({
+                                carbs: macros.carbs,
+                                fat: macros.fat,
+                                grams: macros.grams,
+                                kcal: macros.kcal,
+                                kj: macros.kj,
+                                protein: macros.protein,
+                            });
+
+                            setSelectedFood({
+                                ...normalizedMacros,
+                                productTitle: macros.name,
+                            });
+                            setAllowEditName(true);
+                        }
+                    }
+
+                    setIsLoading(false);
+                }
+            } catch (error) {
+                console.error('Error loading local file:', error);
+            }
+        }
+    }, [photoMode, t]);
 
     // Handler for taking a photo
     const handleTakePhoto = useCallback(async () => {
