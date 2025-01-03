@@ -398,6 +398,7 @@
     "save_schedule": "Salvar Agendamento",
     "workout_must_be_selected": "O treino deve ser selecionado",
     "success": "Sucesso",
+    "media_library_permission_denied": "Permissão da biblioteca de mídia negada",
     "workout_scheduled_successfully": "Treino agendado com sucesso!",
     "failed_to_load_workouts": "Falha ao carregar treinos",
     "failed_to_schedule_workout": "Falha ao agendar treino",

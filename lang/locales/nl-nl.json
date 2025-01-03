@@ -398,6 +398,7 @@
     "save_schedule": "Schema opslaan",
     "workout_must_be_selected": "De training moet worden geselecteerd",
     "success": "Succes",
+    "media_library_permission_denied": "Toegang tot de mediabibliotheek geweigerd",
     "workout_scheduled_successfully": "Training succesvol gepland!",
     "failed_to_load_workouts": "Kon trainingen niet laden",
     "failed_to_schedule_workout": "Kon training niet plannen",

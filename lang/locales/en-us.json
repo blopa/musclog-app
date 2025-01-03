@@ -398,6 +398,7 @@
     "save_schedule": "Save Schedule",
     "workout_must_be_selected": "Workout must be selected.",
     "success": "Success",
+    "media_library_permission_denied": "Media Library permission denied",
     "workout_scheduled_successfully": "Workout scheduled successfully!",
     "failed_to_load_workouts": "Failed to load workouts",
     "failed_to_schedule_workout": "Failed to schedule workout",
