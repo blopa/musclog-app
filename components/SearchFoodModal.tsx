@@ -198,38 +198,55 @@ const SearchFoodModal = ({
         [styles]
     );
 
-    const renderPhotoCameraOverlay = useCallback(
-        () => (
-            <View style={styles.photoCameraOverlay}>
-                <SegmentedButtons
-                    buttons={[
-                        {
-                            label: t('meal'),
-                            style: { backgroundColor: photoMode === 'meal' ? colors.secondaryContainer : colors.surface },
-                            value: 'meal',
+    const handleLoadLocalFile = useCallback(async () => {
+        // TODO
+    }, []);
+
+    const renderPhotoCameraOverlay = useCallback(() => (
+        <View style={styles.photoCameraOverlay}>
+            <SegmentedButtons
+                buttons={[
+                    {
+                        label: t('meal'),
+                        style: {
+                            backgroundColor: photoMode === 'meal' ? colors.secondaryContainer : colors.surface,
                         },
-                        {
-                            label: t('food_label'),
-                            style: { backgroundColor: photoMode === 'label' ? colors.secondaryContainer : colors.surface },
-                            value: 'label',
+                        value: 'meal',
+                    },
+                    {
+                        label: t('food_label'),
+                        style: {
+                            backgroundColor: photoMode === 'label' ? colors.secondaryContainer : colors.surface,
                         },
-                    ]}
-                    onValueChange={setPhotoMode}
-                    style={styles.segmentedButtons}
-                    value={photoMode}
-                />
-                <View style={styles.bottomControls}>
-                    <TouchableOpacity onPress={() => setShowPhotoCamera(false)} style={styles.photoCloseButton}>
-                        <Text style={styles.photoCloseText}>{t('close')}</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={handleTakePhoto} style={styles.captureButton}>
-                        <FontAwesome5 color={colors.primary} name="camera" size={30} />
-                    </TouchableOpacity>
-                </View>
+                        value: 'label',
+                    },
+                ]}
+                onValueChange={setPhotoMode}
+                style={styles.segmentedButtons}
+                value={photoMode}
+            />
+            <View style={[styles.controls, styles.photoControls]}>
+                <TouchableOpacity
+                    onPress={() => setShowPhotoCamera(false)}
+                    style={styles.photoControlButton}
+                >
+                    <FontAwesome5 color={colors.onPrimary} name="times-circle" size={30} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                    onPress={handleTakePhoto}
+                    style={styles.captureButton}
+                >
+                    <View style={styles.captureButtonCircle} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                    onPress={handleLoadLocalFile}
+                    style={styles.photoControlButton}
+                >
+                    <FontAwesome5 color={colors.onPrimary} name="file-upload" size={30} />
+                </TouchableOpacity>
             </View>
-        ),
-        [colors.primary, colors.secondaryContainer, colors.surface, handleTakePhoto, photoMode, styles, t]
-    );
+        </View>
+    ), [colors.onPrimary, colors.secondaryContainer, colors.surface, handleTakePhoto, photoMode, styles.captureButton, styles.captureButtonCircle, styles.photoCameraOverlay, styles.photoControlButton, styles.controls, styles.segmentedButtons, t]);
 
     return (
         <ThemedModal
@@ -352,7 +369,21 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         paddingBottom: 40,
     },
     captureButton: {
+        alignItems: 'center',
         backgroundColor: 'transparent',
+        borderRadius: 35,
+        height: 70,
+        justifyContent: 'center',
+        width: 70,
+    },
+    captureButtonCircle: {
+        backgroundColor: 'white',
+        borderColor: colors.onSurface,
+        borderRadius: 30,
+        borderWidth: 5,
+        height: 60,
+        opacity: 0.7,
+        width: 60,
     },
     cardActions: {
         alignItems: 'center',
@@ -378,6 +409,14 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     closeButton: {
         backgroundColor: colors.primary,
         padding: 8,
+    },
+    controls: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 50,
+        paddingBottom: 40,
+        paddingHorizontal: 20,
     },
     focusBorder: {
         borderColor: colors.primary,
@@ -413,6 +452,21 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     photoCloseText: {
         color: colors.onPrimary,
         fontSize: 16,
+    },
+    photoControlButton: {
+        alignItems: 'center',
+        backgroundColor: colors.primary,
+        borderRadius: 25,
+        height: 50,
+        justifyContent: 'center',
+        width: 50,
+    },
+    photoControls: {
+        bottom: 20,
+        display: 'flex',
+        justifyContent: 'space-between',
+        position: 'absolute',
+        width: '100%',
     },
     scannerFocusArea: {
         backgroundColor: 'transparent',
