@@ -793,7 +793,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 </TouchableOpacity>
             </View>
         </View>
-    ), [colors.onPrimary, colors.secondaryContainer, colors.surface, handleLoadLocalFile, handleTakePhoto, photoMode, styles.captureButton, styles.captureButtonCircle, styles.photoCameraOverlay, styles.photoControlButton, styles.controls, styles.segmentedButtons, t]);
+    ), [styles.photoCameraOverlay, styles.segmentedButtons, styles.controls, styles.photoControls, styles.photoControlButton, styles.captureButton, styles.captureButtonCircle, t, photoMode, colors.secondaryContainer, colors.surface, colors.onPrimary, handleTakePhoto, handleLoadLocalFile]);
 
     const fabActions = useMemo(() => [{
         icon: () => <FontAwesome5 color={colors.primary} name="bread-slice" size={FAB_ICON_SIZE} />,

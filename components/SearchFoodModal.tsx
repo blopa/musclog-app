@@ -412,7 +412,7 @@ const SearchFoodModal = ({
                 </View>
             </View>
         ),
-        [colors.onPrimary, handleLoadLocalFile, handleTakePhoto, photoMode, styles, t]
+        [colors.onPrimary, colors.secondaryContainer, colors.surface, handleLoadLocalFile, handleTakePhoto, photoMode, styles.captureButton, styles.captureButtonCircle, styles.controls, styles.photoCameraOverlay, styles.photoControlButton, styles.photoControls, styles.segmentedButtons, t]
     );
 
     return (
