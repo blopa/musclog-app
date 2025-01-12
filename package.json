@@ -49,6 +49,7 @@
     "@react-navigation/native": "7.0.14",
     "@sentry/react-native": "6.5.0",
     "@shopify/flash-list": "1.7.2",
+    "buffer": "^6.0.3",
     "chart.js": "4.4.7",
     "crypto-js": "4.2.0",
     "date-fns": "4.1.0",

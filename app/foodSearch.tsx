@@ -40,6 +40,7 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
         setIsLoading(true);
 
         const { pageCount, products } = await fetchFoodData(initialSearchQuery, 1);
+        console.log('THE PRODUCTS', products);
         setSearchResults(products);
         setTotalPages(pageCount);
 
@@ -180,7 +181,7 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
                     contentContainerStyle={styles.listContent}
                     data={searchResults}
                     estimatedItemSize={115}
-                    keyExtractor={(item, index) => (item.productTitle || index).toString()}
+                    keyExtractor={(item, index) => (item.ean || index).toString()}
                     ListFooterComponent={
                         isLoading ? (
                             <ActivityIndicator color={colors.primary} size="large" />
