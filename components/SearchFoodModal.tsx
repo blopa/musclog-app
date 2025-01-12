@@ -333,6 +333,7 @@ const SearchFoodModal = ({
 
     const handleFoodSearch = useCallback(() => {
         onClose();
+        setSearchQuery('');
         navigation.navigate('foodSearch', { defaultMealType, initialSearchQuery: searchQuery });
     }, [defaultMealType, navigation, onClose, searchQuery]);
 

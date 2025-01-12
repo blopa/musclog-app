@@ -38,9 +38,9 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
     const loadInitialQuery = useCallback(async () => {
         setIsLoading(true);
+        setSearchQuery(initialSearchQuery);
 
         const { pageCount, products } = await fetchFoodData(initialSearchQuery, 1);
-        console.log('THE PRODUCTS', products);
         setSearchResults(products);
         setTotalPages(pageCount);
 
