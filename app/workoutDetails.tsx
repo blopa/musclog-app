@@ -37,6 +37,7 @@ import { formatDate } from '@/utils/date';
 import { exportWorkout } from '@/utils/file';
 import {
     ExerciseReturnType,
+    ExerciseVolumeType,
     ExtendedLineChartDataType,
     LineChartDataType,
     SetReturnType,
@@ -76,6 +77,8 @@ const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
     const [workout, setWorkout] = useState<undefined | WorkoutReturnType>();
     const [exerciseGroups, setExerciseGroups] = useState<ExerciseGroup[]>([]);
     const [exercisesMap, setExercisesMap] = useState<Map<number, ExerciseReturnType>>(new Map());
+    const [exercisesPicker, setExercisesPicker] = useState<{ label: string; value: string }[]>([]);
+
     const [recentWorkouts, setRecentWorkouts] = useState<WorkoutEventReturnType[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [modalVisible, setModalVisible] = useState(false);
@@ -137,16 +140,23 @@ const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
             // Fetch all exercises involved in these sets
             const exerciseIds = Array.from(new Set(sets.map((set) => set.exerciseId)));
             const exercisesPromises = exerciseIds.map((exerciseId) => getExerciseById(exerciseId));
-            const exercisesData = await Promise.all(exercisesPromises);
+            const exercises = await Promise.all(exercisesPromises);
 
             const newExercisesMap = new Map<number, ExerciseReturnType>();
-            exercisesData.forEach((exercise) => {
+            exercises.forEach((exercise) => {
                 if (exercise) {
                     newExercisesMap.set(exercise.id!, exercise);
                 }
             });
 
             setExercisesMap(newExercisesMap);
+            setExercisesPicker([
+                { label: t('whole_workout'), value: WHOLE_WORKOUT },
+                ...Array.from(newExercisesMap.values()).map((ex) => ({
+                    label: ex.name || '',
+                    value: ex.id!.toString() || '',
+                })),
+            ]);
 
             // Group sets by exerciseId
             const exerciseSetsMap: { [exerciseId: number]: SetReturnType[] } = {};
@@ -256,7 +266,27 @@ const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
             const data: ExtendedLineChartDataType[] = [];
 
             for (const [index, recentWorkout] of filteredWorkouts.entries()) {
-                const exerciseData = JSON.parse(recentWorkout?.exerciseData || '[]') as { exerciseId: number, sets: SetReturnType[] }[];
+                const exerciseData = JSON.parse(recentWorkout?.exerciseData || '[]') as ExerciseVolumeType[];
+                const replacementExercises = exerciseData.filter((ex) => ex.isReplacement);
+
+                for (const replacementExerciseVol of replacementExercises) {
+                    const replacementExerciseData = await getExerciseById(replacementExerciseVol.exerciseId);
+                    if (replacementExerciseData) {
+                        // check if exercisesMap already has this exercise
+                        if (!exercisesMap.has(replacementExerciseData.id!)) {
+                            exercisesMap.set(replacementExerciseData.id!, replacementExerciseData);
+                            setExercisesMap(new Map(exercisesMap));
+
+                            setExercisesPicker((prevState) => [
+                                ...prevState,
+                                {
+                                    label: replacementExerciseData.name || '',
+                                    value: replacementExerciseData.id!.toString() || '',
+                                },
+                            ]);
+                        }
+                    }
+                }
 
                 let workoutVolume = 0;
                 if (selectedChartData === WHOLE_WORKOUT) {
@@ -549,13 +579,7 @@ const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
                                     timeRange={timeRange}
                                 />
                                 <CustomPicker
-                                    items={[
-                                        { label: t('whole_workout'), value: WHOLE_WORKOUT },
-                                        ...Array.from(exercisesMap.values()).map((ex) => ({
-                                            label: ex.name || '',
-                                            value: ex.id!.toString() || '',
-                                        })),
-                                    ]}
+                                    items={exercisesPicker}
                                     label={t('select_metric')}
                                     onValueChange={setSelectedChartData}
                                     selectedValue={selectedChartData}

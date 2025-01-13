@@ -38,6 +38,7 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
     const loadInitialQuery = useCallback(async () => {
         setIsLoading(true);
+        setSearchQuery(initialSearchQuery);
 
         const { pageCount, products } = await fetchFoodData(initialSearchQuery, 1);
         setSearchResults(products);
@@ -180,7 +181,7 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
                     contentContainerStyle={styles.listContent}
                     data={searchResults}
                     estimatedItemSize={115}
-                    keyExtractor={(item, index) => (item.productTitle || index).toString()}
+                    keyExtractor={(item, index) => (item.ean || index).toString()}
                     ListFooterComponent={
                         isLoading ? (
                             <ActivityIndicator color={colors.primary} size="large" />

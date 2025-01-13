@@ -5,6 +5,7 @@ import {
     CURRENT_EXERCISE_INDEX,
     CURRENT_WORKOUT_ID,
     CURRENT_WORKOUT_PROGRESS,
+    EXERCISE_REPLACEMENTS,
     IMPERIAL_SYSTEM,
     KILOGRAMS,
     SCHEDULED_STATUS,
@@ -151,11 +152,14 @@ export const scheduleNextWorkout = async () => {
 
 export const resetWorkoutStorageData = async () => {
     try {
-        await AsyncStorage.removeItem(CURRENT_EXERCISE_INDEX);
-        await AsyncStorage.removeItem(CURRENT_WORKOUT_ID);
-        await AsyncStorage.removeItem(CURRENT_WORKOUT_PROGRESS);
-        await AsyncStorage.removeItem(WORKOUT_START_TIME);
-        await AsyncStorage.removeItem(COUNTDOWN_START_TIME);
+        await AsyncStorage.multiRemove([
+            CURRENT_EXERCISE_INDEX,
+            CURRENT_WORKOUT_ID,
+            EXERCISE_REPLACEMENTS,
+            CURRENT_WORKOUT_PROGRESS,
+            WORKOUT_START_TIME,
+            COUNTDOWN_START_TIME,
+        ]);
     } catch (error) {
         console.error('Error resetting workout storage data:', error);
         throw error;

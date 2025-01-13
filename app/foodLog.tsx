@@ -37,10 +37,12 @@ import { getRecentFood } from '@/utils/storage';
 import { safeToFixed } from '@/utils/string';
 import { MusclogApiFoodInfoType, UserNutritionDecryptedReturnType } from '@/utils/types';
 import { getDisplayFormattedWeight } from '@/utils/unit';
+import Quagga from '@ericblade/quagga2';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { NavigationProp } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
 import { CameraView, useCameraPermissions } from 'expo-camera';
+import * as ImagePicker from 'expo-image-picker';
 import { useFocusEffect } from 'expo-router';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -53,6 +55,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
+import { BarcodeFormat, detectBarcodes } from 'react-native-barcodes-detector';
 import { Appbar, Button, Card, SegmentedButtons, Text, TextInput, useTheme } from 'react-native-paper';
 import { TabBar, TabView } from 'react-native-tab-view';
 
@@ -226,6 +229,8 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         // setTabIndex(0);
         setConsumedFoods([]);
         setAllowEditName(false);
+        setShowBarcodeCamera(false);
+        setShowPhotoCamera(false);
     }, []);
 
     useFocusEffect(
@@ -446,7 +451,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         />
     );
 
-    const handleBarCodeScanned = useCallback(async ({ data, type }: BarcodeScanningResult) => {
+    const handleBarCodeScanned = useCallback(async ({ data, type }: { data: BarcodeScanningResult['data'], type?: BarcodeScanningResult['type'] }) => {
         setScanned(true);
         setShowBarcodeCamera(false);
 
@@ -490,77 +495,163 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         setShowPhotoCamera(true);
     }, [permission?.granted, requestPermission, t]);
 
-    const handleLoadLocalFile = useCallback(() => {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = 'image/*';
-        input.style.display = 'none';
+    const handlePhoto = useCallback(async (imageUri: string) => {
+        if (photoMode === 'meal') {
+            const macros = await estimateNutritionFromPhoto(imageUri);
+            if (macros) {
+                const normalizedMacros = normalizeMacrosByGrams({
+                    carbs: macros.carbs,
+                    fat: macros.fat,
+                    grams: macros.grams,
+                    kcal: macros.kcal,
+                    kj: macros.kj,
+                    protein: macros.protein,
+                });
 
-        input.onchange = async (event) => {
-            // @ts-ignore it's fine, files exist.
-            const file = event.target?.files?.[0];
-            if (file) {
-                try {
-                    const reader = new FileReader();
-                    reader.onload = async () => {
-                        const imageUri = reader.result;
-                        if (typeof imageUri === 'string') {
-                            setIsLoading(true);
-                            setIsNutritionModalVisible(true);
+                setSelectedFood({
+                    ...normalizedMacros,
+                    estimatedGrams: macros.grams,
+                    productTitle: macros.name,
+                });
+                setAllowEditName(true);
+            }
+        } else {
+            const macros = await extractMacrosFromLabelPhoto(imageUri);
+            if (macros) {
+                const normalizedMacros = normalizeMacrosByGrams({
+                    carbs: macros.carbs,
+                    fat: macros.fat,
+                    grams: macros.grams,
+                    kcal: macros.kcal,
+                    kj: macros.kj,
+                    protein: macros.protein,
+                });
 
-                            if (photoMode === 'meal') {
-                                const macros = await estimateNutritionFromPhoto(imageUri);
-                                if (macros) {
-                                    const normalizedMacros = normalizeMacrosByGrams({
-                                        carbs: macros.carbs,
-                                        fat: macros.fat,
-                                        grams: macros.grams,
-                                        kcal: macros.kcal,
-                                        kj: macros.kj,
-                                        protein: macros.protein,
+                setSelectedFood({
+                    ...normalizedMacros,
+                    productTitle: macros.name,
+                });
+                setAllowEditName(true);
+            }
+        }
+    }, [photoMode]);
+
+    const handleLoadLocalFile = useCallback(async (type: 'barcode' | 'photo') => {
+        if (Platform.OS === 'web') {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.style.display = 'none';
+
+            input.onchange = async (event) => {
+                // @ts-ignore it's fine, files exist.
+                const file = event.target?.files?.[0];
+                if (file) {
+                    try {
+                        const reader = new FileReader();
+                        reader.onload = async () => {
+                            const imageUri = reader.result;
+                            if (typeof imageUri === 'string') {
+                                setIsLoading(true);
+                                setIsNutritionModalVisible(true);
+                                setShowBarcodeCamera(false);
+                                setShowPhotoCamera(false);
+
+                                if (type === 'photo') {
+                                    await handlePhoto(imageUri);
+                                } else if (type === 'barcode') {
+                                    Quagga.decodeSingle({
+                                        decoder: {
+                                            readers: ['ean_reader', 'ean_8_reader'],
+                                        },
+                                        inputStream: { size: 800 },
+                                        src: imageUri,
+                                    },
+                                    (result) => {
+                                        if (result?.codeResult) {
+                                            if (result.codeResult.code) {
+                                                handleBarCodeScanned({
+                                                    data: result.codeResult.code,
+                                                    type: result.codeResult.format,
+                                                });
+                                            }
+                                        } else {
+                                            alert(t('no_barcodes_detected'));
+                                        }
+                                    }
+                                    );
+                                }
+
+                                setIsLoading(false);
+                            }
+                        };
+                        reader.readAsDataURL(file);
+                    } catch (error) {
+                        console.error('Error loading local file:', error);
+                    }
+                }
+            };
+
+            document.body.appendChild(input);
+            input.click();
+            document.body.removeChild(input);
+        } else {
+            try {
+                const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+                if (status !== 'granted') {
+                    alert(t('media_library_permission_denied'));
+                    return;
+                }
+
+                const result = await ImagePicker.launchImageLibraryAsync({
+                    allowsEditing: false,
+                    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                    quality: 1,
+                });
+
+                if (!result.canceled && result.assets?.length > 0) {
+                    const imageUri = result.assets[0].uri;
+
+                    setIsLoading(true);
+                    setIsNutritionModalVisible(true);
+                    setShowBarcodeCamera(false);
+                    setShowPhotoCamera(false);
+
+                    if (type === 'photo') {
+                        await handlePhoto(imageUri);
+                    } else if (type === 'barcode') {
+                        try {
+                            const barcodes = await detectBarcodes(imageUri, [
+                                BarcodeFormat.EAN_13,
+                                BarcodeFormat.EAN_8,
+                            ]);
+
+                            if (barcodes.length > 0) {
+                                const firstBarcode = barcodes[0];
+                                if (firstBarcode.rawValue) {
+                                    await handleBarCodeScanned({
+                                        data: firstBarcode.rawValue,
+                                        type: firstBarcode.format as unknown as string,
                                     });
-
-                                    setSelectedFood({
-                                        ...normalizedMacros,
-                                        estimatedGrams: macros.grams,
-                                        productTitle: macros.name,
-                                    });
-                                    setAllowEditName(true);
+                                } else {
+                                    alert(t('no_barcodes_detected'));
                                 }
                             } else {
-                                const macros = await extractMacrosFromLabelPhoto(imageUri);
-                                if (macros) {
-                                    const normalizedMacros = normalizeMacrosByGrams({
-                                        carbs: macros.carbs,
-                                        fat: macros.fat,
-                                        grams: macros.grams,
-                                        kcal: macros.kcal,
-                                        kj: macros.kj,
-                                        protein: macros.protein,
-                                    });
-
-                                    setSelectedFood({
-                                        ...normalizedMacros,
-                                        productTitle: macros.name,
-                                    });
-                                    setAllowEditName(true);
-                                }
+                                alert(t('no_barcodes_detected'));
                             }
-
-                            setIsLoading(false);
+                        } catch (error) {
+                            console.error('Error detecting barcodes:', error);
+                            alert(t('barcode_detection_error'));
                         }
-                    };
-                    reader.readAsDataURL(file);
-                } catch (error) {
-                    console.error('Error loading local file:', error);
-                }
-            }
-        };
+                    }
 
-        document.body.appendChild(input);
-        input.click();
-        document.body.removeChild(input);
-    }, [photoMode]);
+                    setIsLoading(false);
+                }
+            } catch (error) {
+                console.error('Error loading local file:', error);
+            }
+        }
+    }, [handlePhoto, handleBarCodeScanned, t]);
 
     // Handler for taking a photo
     const handleTakePhoto = useCallback(async () => {
@@ -620,7 +711,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
     const handleFoodSearch = useCallback(() => {
         navigation.navigate('foodSearch', { defaultMealType: preSelectedMealType, initialSearchQuery: searchQuery });
-    }, [navigation, searchQuery]);
+    }, [navigation, preSelectedMealType, searchQuery]);
 
     const handleCloseTrackingModal = useCallback(() => {
         setIsNutritionModalVisible(false);
@@ -639,42 +730,70 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                     <View style={styles.focusBorder} />
                 </View>
             </View>
-            <View style={styles.scannerOverlayBottom} />
+            <View style={styles.scannerOverlayBottom}>
+                <View style={[styles.controls, styles.scannerControls]}>
+                    <TouchableOpacity
+                        onPress={() => setShowBarcodeCamera(false)}
+                        style={styles.photoControlButton}
+                    >
+                        <FontAwesome5 color={colors.onPrimary} name="times-circle" size={30} />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={() => handleLoadLocalFile('barcode')}
+                        style={styles.photoControlButton}
+                    >
+                        <FontAwesome5 color={colors.onPrimary} name="file-upload" size={30} />
+                    </TouchableOpacity>
+                </View>
+            </View>
         </View>
-    ), [styles.focusBorder, styles.scannerFocusArea, styles.scannerOverlayBottom, styles.scannerOverlayContainer, styles.scannerOverlayMiddle, styles.scannerOverlayTop]);
+    ), [colors.onPrimary, handleLoadLocalFile, styles.focusBorder, styles.photoControlButton, styles.controls, styles.scannerControls, styles.scannerFocusArea, styles.scannerOverlayBottom, styles.scannerOverlayContainer, styles.scannerOverlayMiddle, styles.scannerOverlayTop]);
 
     const renderPhotoCameraOverlay = useCallback(() => (
         <View style={styles.photoCameraOverlay}>
             <SegmentedButtons
-                buttons={[{
-                    label: t('meal'),
-                    style: { backgroundColor: photoMode === 'meal' ? colors.secondaryContainer : colors.surface },
-                    value: 'meal',
-                },
-                {
-                    label: t('food_label'),
-                    style: { backgroundColor: photoMode === 'label' ? colors.secondaryContainer : colors.surface },
-                    value: 'label',
-                }]}
+                buttons={[
+                    {
+                        label: t('meal'),
+                        style: {
+                            backgroundColor: photoMode === 'meal' ? colors.secondaryContainer : colors.surface,
+                        },
+                        value: 'meal',
+                    },
+                    {
+                        label: t('food_label'),
+                        style: {
+                            backgroundColor: photoMode === 'label' ? colors.secondaryContainer : colors.surface,
+                        },
+                        value: 'label',
+                    },
+                ]}
                 onValueChange={setPhotoMode}
                 style={styles.segmentedButtons}
                 value={photoMode}
             />
-            <View style={styles.bottomControls}>
-                <TouchableOpacity onPress={() => setShowPhotoCamera(false)} style={styles.photoCloseButton}>
-                    <Text style={styles.photoCloseText}>{t('close')}</Text>
+            <View style={[styles.controls, styles.photoControls]}>
+                <TouchableOpacity
+                    onPress={() => setShowPhotoCamera(false)}
+                    style={styles.photoControlButton}
+                >
+                    <FontAwesome5 color={colors.onPrimary} name="times-circle" size={30} />
                 </TouchableOpacity>
-                {Platform.OS === 'web' ? (
-                    <TouchableOpacity onPress={handleLoadLocalFile} style={styles.captureButton}>
-                        <FontAwesome5 color={colors.primary} name="file" size={30} />
-                    </TouchableOpacity>
-                ) : null}
-                <TouchableOpacity onPress={handleTakePhoto} style={styles.captureButton}>
-                    <FontAwesome5 color={colors.primary} name="camera" size={30} />
+                <TouchableOpacity
+                    onPress={handleTakePhoto}
+                    style={styles.captureButton}
+                >
+                    <View style={styles.captureButtonCircle} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                    onPress={() => handleLoadLocalFile('photo')}
+                    style={styles.photoControlButton}
+                >
+                    <FontAwesome5 color={colors.onPrimary} name="file-upload" size={30} />
                 </TouchableOpacity>
             </View>
         </View>
-    ), [colors.primary, colors.secondaryContainer, colors.surface, handleLoadLocalFile, handleTakePhoto, photoMode, styles.bottomControls, styles.captureButton, styles.photoCameraOverlay, styles.photoCloseButton, styles.photoCloseText, styles.segmentedButtons, t]);
+    ), [styles.photoCameraOverlay, styles.segmentedButtons, styles.controls, styles.photoControls, styles.photoControlButton, styles.captureButton, styles.captureButtonCircle, t, photoMode, colors.secondaryContainer, colors.surface, colors.onPrimary, handleTakePhoto, handleLoadLocalFile]);
 
     const fabActions = useMemo(() => [{
         icon: () => <FontAwesome5 color={colors.primary} name="bread-slice" size={FAB_ICON_SIZE} />,
@@ -711,7 +830,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     }], [colors.primary, colors.surface, t]);
 
     return (
-        <FABWrapper actions={fabActions} icon="plus" visible>
+        <FABWrapper actions={fabActions} icon="plus" visible={!showPhotoCamera && !showBarcodeCamera}>
             <View style={styles.container}>
                 <Appbar.Header mode="small" statusBarHeight={0} style={styles.appbarHeader}>
                     <Appbar.Content title={t('macro_tracker')} titleStyle={styles.appbarTitle} />
@@ -774,15 +893,6 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                             style={styles.camera}
                         >
                             {renderScannerOverlay()}
-                            <View style={styles.cameraOverlay}>
-                                <Button
-                                    mode="contained"
-                                    onPress={() => setShowBarcodeCamera(false)}
-                                    style={styles.closeButton}
-                                >
-                                    {t('close')}
-                                </Button>
-                            </View>
                         </CameraView>
                     </View>
                 ) : null}
@@ -862,7 +972,21 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         paddingBottom: 40,
     },
     captureButton: {
+        alignItems: 'center',
         backgroundColor: 'transparent',
+        borderRadius: 35,
+        height: 70,
+        justifyContent: 'center',
+        width: 70,
+    },
+    captureButtonCircle: {
+        backgroundColor: 'white',
+        borderColor: colors.onSurface,
+        borderRadius: 30,
+        borderWidth: 5,
+        height: 60,
+        opacity: 0.7,
+        width: 60,
     },
     cardContent: {
         padding: 16,
@@ -890,6 +1014,13 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     content: {
         flex: 1,
         padding: 16,
+    },
+    controls: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingBottom: 40,
+        paddingHorizontal: 20,
     },
     focusBorder: {
         borderColor: colors.primary,
@@ -966,6 +1097,28 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     photoCloseText: {
         color: colors.onPrimary,
         fontSize: 16,
+    },
+    photoControlButton: {
+        alignItems: 'center',
+        backgroundColor: colors.primary,
+        borderRadius: 25,
+        height: 50,
+        justifyContent: 'center',
+        width: 50,
+    },
+    photoControls: {
+        bottom: 20,
+        display: 'flex',
+        justifyContent: 'space-between',
+        position: 'absolute',
+        width: '100%',
+    },
+    scannerControls: {
+        bottom: 20,
+        display: 'flex',
+        justifyContent: 'space-between',
+        position: 'absolute',
+        width: '100%',
     },
     scannerFocusArea: {
         backgroundColor: 'transparent',

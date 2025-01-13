@@ -85,7 +85,11 @@ const NutritionProgressBanner = ({ consumed, date }: NutritionProgressBannerProp
                             macros.map((macro) => (
                                 <View key={macro.name} style={styles.macroContainer}>
                                     <Text style={styles.metricDetail}>
-                                        {t('item_value_unit', { item: macro.name, value: `${macro.consumed} / ${macro.goal}`, weightUnit: macro.unit })}
+                                        {t('item_value_unit', {
+                                            item: macro.name,
+                                            value: `${macro.consumed} / ${macro.goal} (${calculatePercentage(parseFloat(macro.consumed), macro.goal)}%)`,
+                                            weightUnit: macro.unit,
+                                        })}
                                     </Text>
                                     <View style={styles.progressBarContainer}>
                                         <View

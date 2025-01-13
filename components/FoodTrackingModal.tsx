@@ -172,6 +172,7 @@ const FoodTrackingModal = ({
             }
         }
 
+        setUnitAmount(GRAM_BASE.toString());
         onClose();
     }, [calculatedValues.kcal, calculatedValues.carbs, calculatedValues.fat, calculatedValues.protein, selectedDate, unitAmount, mealType, editableName, food?.productTitle, food?.productCode, t, userNutritionId, onClose, isFavoriteFood]);
 
@@ -182,10 +183,10 @@ const FoodTrackingModal = ({
             }
 
             if (food.estimatedGrams) {
-                handleSetUnitAmount(food.estimatedGrams.toString());
+                handleGramsChange(food.estimatedGrams.toString());
             }
         }
-    }, [allowEditName, food, handleSetUnitAmount]);
+    }, [allowEditName, food, handleGramsChange]);
 
     return (
         <>

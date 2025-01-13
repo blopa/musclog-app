@@ -1,3 +1,4 @@
+import AddExerciseModal from '@/components/AddExerciseModal';
 import CompletionModal from '@/components/CompletionModal';
 import CurrentWorkoutProgressModal from '@/components/CurrentWorkoutProgressModal';
 import DifficultyModal from '@/components/DifficultyModal';
@@ -23,9 +24,9 @@ import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { getWorkoutWithExercisesRepsAndSetsDetails } from '@/utils/database';
 import { formatTime } from '@/utils/date';
 import {
+    CurrentWorkoutExercise,
     CurrentWorkoutProgressType,
     ExerciseProgressType,
-    ExerciseReturnType,
     ExerciseWithSetsType,
     SetReturnType,
     WorkoutWithExercisesRepsAndSetsDetailsReturnType,
@@ -35,18 +36,19 @@ import { resetWorkoutStorageData } from '@/utils/workout';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useKeepAwake } from 'expo-keep-awake';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Animated, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { Button, Text, useTheme } from 'react-native-paper';
+import { Portal, Text, useTheme } from 'react-native-paper';
 
 type WorkoutSessionProps = {
-    exercise?: ExerciseReturnType;
+    exercise?: CurrentWorkoutExercise;
     isFirstExercise?: boolean;
     isLastExercise?: boolean;
     onCancel: () => void;
     onFinish: (workoutScore?: number, exhaustionLevel?: number) => Promise<void>;
-    orderedExercises: { exercise: ExerciseReturnType; sets: SetReturnType[] }[];
+    onReplaceExercise: (exerciseId: number) => void;
+    orderedExercises: { exercise: CurrentWorkoutExercise; sets: SetReturnType[] }[];
     sets: SetReturnType[];
     startTime: null | number;
     workoutDuration?: number;
@@ -59,6 +61,7 @@ const WorkoutSession = ({
     isLastExercise,
     onCancel,
     onFinish,
+    onReplaceExercise,
     orderedExercises,
     sets,
     startTime,
@@ -83,6 +86,7 @@ const WorkoutSession = ({
     const [loading, setLoading] = useState(false);
     const [isEditModalVisible, setIsEditModalVisible] = useState(false);
     const [isDifficultyModalVisible, setIsDifficultyModalVisible] = useState(false);
+    const [isExerciseModalOpen, setIsExerciseModalOpen] = useState(false);
     const [isCancelConfirmVisible, setIsCancelConfirmVisible] = useState(false);
     const [workoutScore, setWorkoutScore] = useState<number>(5);
     const [exhaustionLevel, setExhaustionLevel] = useState<number>(5);
@@ -132,6 +136,11 @@ const WorkoutSession = ({
             }
         }
     }, [currentSetIndex, globalWeightLifted, globalCompletedReps, sets.length]);
+
+    const handleReplaceExercise = useCallback(async (exerciseId: number) => {
+        onReplaceExercise(exerciseId);
+        setIsExerciseModalOpen(false);
+    }, [onReplaceExercise]);
 
     const updateNewSetData = useCallback(async () => {
         const currentSet = sets[currentSetIndex];
@@ -275,6 +284,7 @@ const WorkoutSession = ({
         const setData = {
             difficultyLevel: setDifficulty,
             exerciseId: exercise?.id,
+            isReplacement: exercise?.isReplacement,
             name: exercise?.name,
             reps: Number(completedReps),
             restTime: currentSet.restTime,
@@ -321,6 +331,7 @@ const WorkoutSession = ({
         setSetDifficulty(5);
         setLoading(false);
     }, [
+        exercise?.isReplacement,
         handleStartCountdown,
         handleFinishExercise,
         currentSetIndex,
@@ -515,6 +526,14 @@ const WorkoutSession = ({
                 orderedExercises={orderedExercises}
                 remainingWorkoutData={remainingWorkoutData}
             />
+            <Portal>
+                <AddExerciseModal
+                    defaultSelectedMuscleGroup={exercise?.muscleGroup}
+                    isVisible={isExerciseModalOpen}
+                    onClose={() => setIsExerciseModalOpen(false)}
+                    onExerciseSelected={handleReplaceExercise}
+                />
+            </Portal>
             {isResting ? (
                 <RestTimer
                     onAddTime={handleAddTime}
@@ -534,31 +553,35 @@ const WorkoutSession = ({
                 />
             )}
             {!isResting && (
-                <View style={styles.buttonWrapper}>
-                    <Button
+                <View style={styles.iconGrid}>
+                    <TouchableOpacity
                         disabled={loading}
-                        mode="contained"
                         onPress={handleSkipSet}
-                        style={styles.buttonSpacing}
+                        style={styles.iconButton}
                     >
-                        {t('skip_set')}
-                    </Button>
-                    <Button
+                        <Ionicons color={colors.primary} name="play-skip-forward" size={50} />
+                    </TouchableOpacity>
+                    <TouchableOpacity
                         disabled={loading}
-                        mode="contained"
                         onPress={handleOpenEditModal}
-                        style={styles.buttonSpacing}
+                        style={styles.iconButton}
                     >
-                        {t('edit_set')}
-                    </Button>
-                    <Button
+                        <Ionicons color={colors.primary} name="pencil" size={50} />
+                    </TouchableOpacity>
+                    <TouchableOpacity
                         disabled={loading}
-                        mode="contained"
-                        onPress={handleFinishSet}
-                        style={styles.buttonSpacing}
+                        onPress={() => setIsExerciseModalOpen(true)}
+                        style={styles.iconButton}
                     >
-                        {finishButtonText}
-                    </Button>
+                        <Ionicons color={colors.primary} name="refresh-circle" size={50} />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        disabled={loading}
+                        onPress={handleFinishSet}
+                        style={styles.iconButton}
+                    >
+                        <Ionicons color={colors.primary} name="checkmark-circle" size={50} />
+                    </TouchableOpacity>
                 </View>
             )}
             {isResting ? (
@@ -576,16 +599,6 @@ const WorkoutSession = ({
 };
 
 const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.create({
-    buttonSpacing: {
-        marginTop: 16,
-        width: '100%',
-    },
-    buttonWrapper: {
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        marginTop: 16,
-        width: '80%',
-    },
     closeButton: {
         position: 'absolute',
         right: 16,
@@ -598,6 +611,24 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         flexGrow: 1,
         justifyContent: 'center',
         padding: 16,
+    },
+    iconButton: {
+        alignItems: 'center',
+        aspectRatio: 1,
+        backgroundColor: colors.surface,
+        borderRadius: 10,
+        elevation: 2,
+        justifyContent: 'center',
+        marginVertical: 10,
+        width: '20%',
+    },
+    iconGrid: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-around',
+        marginTop: 20,
+        width: '80%',
     },
     infoButton: {
         left: 16,

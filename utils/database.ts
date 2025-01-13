@@ -818,7 +818,7 @@ export const addFood = async (food: FoodInsertType): Promise<number> => {
     const createdAt = food.createdAt || getCurrentTimestampISOString();
     try {
         const result = database.runSync(`
-            INSERT INTO "Food" ("dataId", "name", "calories", "totalCarbohydrate", "totalFat", "protein", "alcohol", "fiber", "sugar", "isFavorite", ""createdAt")
+            INSERT INTO "Food" ("dataId", "name", "calories", "totalCarbohydrate", "totalFat", "protein", "alcohol", "fiber", "sugar", "isFavorite", "createdAt")
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             `,
         food.dataId || generateHash(),

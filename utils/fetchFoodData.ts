@@ -1,14 +1,13 @@
 import { getFoodByProductCode, searchFoodByName } from '@/utils/database';
+import { fetchFoodSpreadsheet } from '@/utils/fetchSpreadsheetFoodData';
 import { normalizeText } from '@/utils/string';
 import {
-    GoogleFormFoodType,
     MusclogApiFoodInfoType,
     PaginatedOpenFoodFactsApiFoodInfoType,
     PaginatedOpenFoodFactsApiFoodProductInfoType,
 } from '@/utils/types';
-// import fetch from 'isomorphic-fetch';
 import { fetch } from 'expo/fetch';
-import { read, utils } from 'xlsx';
+import i18n from 'i18next';
 
 export const mapProductData = (product: PaginatedOpenFoodFactsApiFoodProductInfoType): MusclogApiFoodInfoType => {
     return {
@@ -16,7 +15,109 @@ export const mapProductData = (product: PaginatedOpenFoodFactsApiFoodProductInfo
         ean: product.code,
         fat: product.nutriments.fat_100g || 0,
         kcal: product.nutriments['energy-kcal_100g'] || 0,
-        productTitle: product.product_name || 'Unknown Food',
+        productTitle:
+            product.product_name
+            || product.product_name_en
+            || product.product_name_de
+            || product.product_name_fr
+            || product.product_name_es
+            || product.product_name_it
+            || product.product_name_sr
+            || product.product_name_pt
+            || product.product_name_nl
+            || product.product_name_pl
+            || product.product_name_sv
+            || product.product_name_cs
+            || product.product_name_hu
+            || product.product_name_hr
+            || product.product_name_sk
+            || product.product_name_sl
+            || product.product_name_lt
+            || product.product_name_lv
+            || product.product_name_et
+            || product.product_name_el
+            || product.product_name_bg
+            || product.product_name_ro
+            || product.product_name_da
+            || product.product_name_fi
+            || product.product_name_mt
+            || product.product_name_tr
+            || product.product_name_ar
+            || product.product_name_zh
+            || product.product_name_ja
+            || product.product_name_ko
+            || product.product_name_he
+            || product.product_name_id
+            || product.product_name_th
+            || product.product_name_vi
+            || product.product_name_cz
+            || product.product_name_br
+            || product.product_name_ca
+            || product.product_name_gl
+            || product.product_name_eu
+            || product.product_name_ru
+            || product.product_name_sr
+            || product.product_name_uk
+            || product.product_name_be
+            || product.product_name_mk
+            || product.product_name_bs
+            || product.product_name_is
+            || product.product_name_ga
+            || product.product_name_sq
+            || product.product_name_hy
+            || product.product_name_ka
+            || product.product_name_az
+            || product.product_name_uz
+            || product.product_name_kk
+            || product.product_name_tg
+            || product.product_name_tk
+            || product.product_name_mn
+            || product.product_name_hy
+            || product.product_name_si
+            || product.product_name_am
+            || product.product_name_ti
+            || product.product_name_or
+            || product.product_name_my
+            || product.product_name_kh
+            || product.product_name_lo
+            || product.product_name_vi
+            || product.product_name_tl
+            || product.product_name_jw
+            || product.product_name_su
+            || product.product_name_ms
+            || product.product_name_ha
+            || product.product_name_sw
+            || product.product_name_so
+            || product.product_name_st
+            || product.product_name_zu
+            || product.product_name_xh
+            || product.product_name_nso
+            || product.product_name_tn
+            || product.product_name_ss
+            || product.product_name_ve
+            || product.product_name_af
+            || product.product_name_nr
+            || product.product_name_dv
+            || product.product_name_sq
+            || product.product_name_bs
+            || product.product_name_hr
+            || product.product_name_sl
+            || product.product_name_sk
+            || product.product_name_cs
+            || product.product_name_hu
+            || product.product_name_ro
+            || product.product_name_bg
+            || product.product_name_el
+            || product.product_name_et
+            || product.product_name_lv
+            || product.product_name_lt
+            || product.product_name_mt
+            || product.product_name_fi
+            || product.product_name_da
+            || product.product_name_nl
+            || product.product_name_pt
+            || product.product_name_pl
+            || i18n.t('unknown_food'),
         protein: product.nutriments.proteins_100g || 0,
     };
 };
@@ -147,24 +248,4 @@ export const fetchProductByEAN = async (ean: string): Promise<MusclogApiFoodInfo
         console.error('Error fetching product:', error);
         return null;
     }
-};
-
-export const fetchFoodSpreadsheet = async (): Promise<GoogleFormFoodType[] | null> => {
-    try {
-        const response = await fetch(
-            'https://docs.google.com/spreadsheets/d/e/2PACX-1vTYLaltSaS2LdWXbApHjpnLbD5ImC2_adKAAkn-Djykegi2OdNOAdtxt0mO7gbAJa5VaLRBVXxbmjNK/pub?output=xlsx'
-        );
-
-        const blob = await response.blob();
-
-        const workbook = read(await blob.arrayBuffer(), { type: 'array' });
-        const sheetName = workbook.SheetNames[0];
-        const foodSpreadsheetData: GoogleFormFoodType[] = utils.sheet_to_json(workbook.Sheets[sheetName], { raw: false });
-
-        return foodSpreadsheetData;
-    } catch (error) {
-        console.error('Error fetching food spreadsheet:', error);
-    }
-
-    return null;
 };
