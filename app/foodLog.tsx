@@ -416,6 +416,22 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                                                         })}
                                                     </Text>
                                                 </View>
+                                                <View style={styles.metricRow}>
+                                                    <Text style={styles.metricDetail}>
+                                                        {t('item_value_unit', {
+                                                            item: t('fiber'),
+                                                            value: getDisplayFormattedWeight(userNutrition.fiber || 0, GRAMS, isImperial).toString(),
+                                                            weightUnit: macroUnit,
+                                                        })}
+                                                    </Text>
+                                                    <Text style={styles.metricDetail}>
+                                                        {t('item_value_unit', {
+                                                            item: t('grams'),
+                                                            value: getDisplayFormattedWeight(userNutrition.grams || 0, GRAMS, isImperial).toString(),
+                                                            weightUnit: macroUnit,
+                                                        })}
+                                                    </Text>
+                                                </View>
                                             </Card.Content>
                                         </ThemedCard>
                                     ))}
