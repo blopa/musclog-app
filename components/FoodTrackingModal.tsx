@@ -115,6 +115,24 @@ const FoodTrackingModal = ({
         updateCalculatedValues(gramsValue);
     }, [handleSetUnitAmount, updateCalculatedValues]);
 
+    const resetModalData = useCallback(() => {
+        setEditableName('');
+        setUnitAmount(GRAM_BASE.toString());
+        setMealType(defaultMealType);
+        setIsFavoriteFood(false);
+        setCalculatedValues({
+            carbs: 0,
+            fat: 0,
+            kcal: 0,
+            protein: 0,
+        });
+    }, [defaultMealType]);
+
+    const handleOnClose = useCallback(() => {
+        resetModalData();
+        onClose();
+    }, [onClose, resetModalData]);
+
     const handleTrackFood = useCallback(async () => {
         const userNutrition = {
             calories: calculatedValues.kcal,
@@ -173,8 +191,8 @@ const FoodTrackingModal = ({
         }
 
         setUnitAmount(GRAM_BASE.toString());
-        onClose();
-    }, [calculatedValues.kcal, calculatedValues.carbs, calculatedValues.fat, calculatedValues.protein, selectedDate, unitAmount, mealType, editableName, food?.productTitle, food?.productCode, t, userNutritionId, onClose, isFavoriteFood]);
+        handleOnClose();
+    }, [calculatedValues.kcal, calculatedValues.carbs, calculatedValues.fat, calculatedValues.protein, selectedDate, unitAmount, mealType, editableName, food?.productTitle, food?.productCode, t, userNutritionId, handleOnClose, isFavoriteFood]);
 
     useEffect(() => {
         if (food) {
@@ -193,7 +211,7 @@ const FoodTrackingModal = ({
             <ThemedModal
                 cancelText={t('cancel')}
                 confirmText={isLoading ? undefined : (userNutritionId ? t('update') : t('track'))}
-                onClose={onClose}
+                onClose={handleOnClose}
                 onConfirm={handleTrackFood}
                 title={allowEditName ? '' : editableName || food?.productTitle}
                 visible={visible}
