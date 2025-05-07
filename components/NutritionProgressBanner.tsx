@@ -87,7 +87,8 @@ const NutritionProgressBanner = ({ consumed, date }: NutritionProgressBannerProp
                                     <Text style={styles.metricDetail}>
                                         {t('item_value_unit', {
                                             item: macro.name,
-                                            value: `${macro.consumed} / ${macro.goal} (${calculatePercentage(parseFloat(macro.consumed), macro.goal)}%)`,
+                                            percent: calculatePercentage(parseFloat(macro.consumed), macro.goal),
+                                            value: `${macro.consumed} / ${macro.goal}`,
                                             weightUnit: macro.unit,
                                         })}
                                     </Text>
