@@ -21,8 +21,14 @@ import { openPlayStore } from '@/utils/navigation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fetch } from 'expo/fetch';
 import i18n from 'i18next';
+import { Platform } from 'react-native';
 
 export async function configureDailyTasks() {
+    if (Platform.OS === 'web') {
+        console.log('Daily tasks are not configured for web platform.');
+        return;
+    }
+
     try {
         const currentDate = new Date();
         const today = currentDate.toISOString().split('T')[0];
@@ -100,6 +106,11 @@ export async function configureDailyTasks() {
 }
 
 export async function configureWeeklyTasks() {
+    if (Platform.OS === 'web') {
+        console.log('Weekly tasks are not configured for web platform.');
+        return;
+    }
+
     try {
         const sevenDaysDiff = 7 * 24 * 60 * 60 * 1000;
         const currentDateTimestamp = Date.now();
