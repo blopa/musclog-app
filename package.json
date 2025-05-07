@@ -1,5 +1,6 @@
 {
   "name": "musclog-app",
+  "homepage": ".",
   "main": "expo-router/entry",
   "version": "1.7.0",
   "scripts": {

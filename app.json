@@ -117,7 +117,8 @@
       "./withAuthAndroidFix.js"
     ],
     "experiments": {
-      "typedRoutes": true
+      "typedRoutes": true,
+      "baseUrl": "/musclog-app"
     },
     "extra": {
       "router": {
