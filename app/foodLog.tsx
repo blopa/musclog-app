@@ -916,6 +916,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                             onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
                             ratio="16:9"
                             style={styles.camera}
+                            autoFocus={Platform.OS === 'web' ? 'off' : undefined}
                         >
                             {renderScannerOverlay()}
                         </CameraView>
