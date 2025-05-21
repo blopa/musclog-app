@@ -741,19 +741,29 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
 
             setAggregatedNutritionAndWeightData(aggregatedNutritionAndWeightData);
 
-            const weightMin = Math.min(...weightDataToShow.map((d) => d.y));
-            const weightMax = Math.max(...weightDataToShow.map((d) => d.y));
-            setYAxisWeight({
-                axisMaximum: Math.round(weightMax * 1.05),
-                axisMinimum: Math.round(weightMin * 0.95),
-            });
+            if (weightDataToShow.length > 0) {
+                const weightValues = weightDataToShow.map((d) => d.y);
+                const weightMin = Math.min(...weightValues);
+                const weightMax = Math.max(...weightValues);
+                setYAxisWeight({
+                    axisMaximum: Math.round(weightMax * 1.05),
+                    axisMinimum: Math.round(weightMin * 0.95),
+                });
+            } else {
+                setYAxisWeight({ axisMaximum: 100, axisMinimum: 0 }); // Default values
+            }
 
-            const fatMin = Math.min(...fatPercentageDataToShow.map((d) => d.y));
-            const fatMax = Math.max(...fatPercentageDataToShow.map((d) => d.y));
-            setYAxisFat({
-                axisMaximum: Math.round(fatMax * 1.05),
-                axisMinimum: Math.round(fatMin * 0.95),
-            });
+            if (fatPercentageDataToShow.length > 0) {
+                const fatValues = fatPercentageDataToShow.map((d) => d.y);
+                const fatMin = Math.min(...fatValues);
+                const fatMax = Math.max(...fatValues);
+                setYAxisFat({
+                    axisMaximum: Math.round(fatMax * 1.05),
+                    axisMinimum: Math.round(fatMin * 0.95),
+                });
+            } else {
+                setYAxisFat({ axisMaximum: 100, axisMinimum: 0 }); // Default values
+            }
 
             // Calculate TDEE
             const aggregatedUserMetricsNutrition = aggregateUserMetricsNutrition(
@@ -835,7 +845,14 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
                     );
 
                     setFFMI(ffmi);
+                } else {
+                    setFFMI(undefined); // Reset FFMI if latest metrics are insufficient
                 }
+            } else {
+                // Clear FFMI related states if user height is not available
+                setFFMIData([]);
+                setFFMILabels([]);
+                setFFMI(undefined);
             }
 
             setTDEE(tdee);
@@ -903,11 +920,13 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
             };
 
             loadData();
-            // eslint-disable-next-line react-hooks/exhaustive-deps
         }, [
-            showWeeklyAverages,
+            loadUserMetricsAndNutrition,
             shouldReloadData,
-            dateRange,
+            // startDate, // Covered by loadUserMetricsAndNutrition
+            // endDate, // Covered by loadUserMetricsAndNutrition
+            // dateRange, // Covered by loadUserMetricsAndNutrition
+            // showWeeklyAverages, // Covered by loadUserMetricsAndNutrition
         ])
     );
 
