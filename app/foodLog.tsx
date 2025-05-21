@@ -47,6 +47,7 @@ import { useFocusEffect } from 'expo-router';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
+    Alert,
     Dimensions,
     Platform,
     RefreshControl,
@@ -460,10 +461,12 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         if (foodInfo) {
             setSelectedFood(foodInfo);
             setIsNutritionModalVisible(true);
+        } else {
+            Alert.alert(t('food_not_found_barcode'));
         }
 
         setScanned(false);
-    }, []);
+    }, [t, setSelectedFood, setIsNutritionModalVisible]);
 
     // Function to request camera permissions and show the barcode scanner
     const openBarcodeCamera = useCallback(async () => {
@@ -508,12 +511,11 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                     protein: macros.protein,
                 });
 
-                setSelectedFood({
+                return {
                     ...normalizedMacros,
                     estimatedGrams: macros.grams,
                     productTitle: macros.name,
-                });
-                setAllowEditName(true);
+                };
             }
         } else {
             const macros = await extractMacrosFromLabelPhoto(imageUri);
@@ -526,14 +528,13 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                     kj: macros.kj,
                     protein: macros.protein,
                 });
-
-                setSelectedFood({
+                return {
                     ...normalizedMacros,
                     productTitle: macros.name,
-                });
-                setAllowEditName(true);
+                };
             }
         }
+        return null;
     }, [photoMode]);
 
     const handleLoadLocalFile = useCallback(async (type: 'barcode' | 'photo') => {
@@ -553,41 +554,56 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                             const imageUri = reader.result;
                             if (typeof imageUri === 'string') {
                                 setIsLoading(true);
-                                setIsNutritionModalVisible(true);
                                 setShowBarcodeCamera(false);
                                 setShowPhotoCamera(false);
+                                // setIsNutritionModalVisible(true); // Removed: Premature call
 
-                                if (type === 'photo') {
-                                    await handlePhoto(imageUri);
-                                } else if (type === 'barcode') {
-                                    Quagga.decodeSingle({
-                                        decoder: {
-                                            readers: ['ean_reader', 'ean_8_reader'],
-                                        },
-                                        inputStream: { size: 800 },
-                                        src: imageUri,
-                                    },
-                                    (result) => {
-                                        if (result?.codeResult) {
-                                            if (result.codeResult.code) {
-                                                handleBarCodeScanned({
-                                                    data: result.codeResult.code,
-                                                    type: result.codeResult.format,
-                                                });
-                                            }
+                                try {
+                                    if (type === 'photo') {
+                                        const foodData = await handlePhoto(imageUri);
+                                        if (foodData) {
+                                            setSelectedFood(foodData);
+                                            setAllowEditName(true);
+                                            setIsNutritionModalVisible(true); // Moved here
                                         } else {
-                                            alert(t('no_barcodes_detected'));
+                                            Alert.alert(t('failed_to_process_photo'));
+                                            setIsNutritionModalVisible(false);
                                         }
+                                    } else if (type === 'barcode') {
+                                        // Barcode processing for web
+                                        Quagga.decodeSingle({
+                                            decoder: { readers: ['ean_reader', 'ean_8_reader'] },
+                                            inputStream: { size: 800 },
+                                            src: imageUri,
+                                        }, async (result) => {
+                                            if (result?.codeResult?.code) {
+                                                const foodInfo = await fetchProductByEAN(result.codeResult.code);
+                                                if (foodInfo) {
+                                                    setSelectedFood(foodInfo);
+                                                    setIsNutritionModalVisible(true); // Moved here
+                                                } else {
+                                                    Alert.alert(t('food_not_found_barcode'));
+                                                    setIsNutritionModalVisible(false);
+                                                }
+                                            } else {
+                                                Alert.alert(t('no_barcodes_detected'));
+                                                setIsNutritionModalVisible(false);
+                                            }
+                                        });
                                     }
-                                    );
+                                } catch (e) {
+                                    console.error('Error processing local file:', e);
+                                    Alert.alert(t('generic_error_message')); // Or a more specific one
+                                    setIsNutritionModalVisible(false);
+                                } finally {
+                                    setIsLoading(false);
                                 }
-
-                                setIsLoading(false);
                             }
                         };
                         reader.readAsDataURL(file);
                     } catch (error) {
                         console.error('Error loading local file:', error);
+                        setIsLoading(false); // Ensure loading is stopped on early error
                     }
                 }
             };
@@ -613,101 +629,89 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                     const imageUri = result.assets[0].uri;
 
                     setIsLoading(true);
-                    setIsNutritionModalVisible(true);
                     setShowBarcodeCamera(false);
                     setShowPhotoCamera(false);
+                    // setIsNutritionModalVisible(true); // Removed: Premature call
 
-                    if (type === 'photo') {
-                        await handlePhoto(imageUri);
-                    } else if (type === 'barcode') {
-                        try {
-                            const barcodes = await detectBarcodes(imageUri, [
-                                BarcodeFormat.EAN_13,
-                                BarcodeFormat.EAN_8,
-                            ]);
-
-                            if (barcodes.length > 0) {
-                                const firstBarcode = barcodes[0];
-                                if (firstBarcode.rawValue) {
-                                    await handleBarCodeScanned({
-                                        data: firstBarcode.rawValue,
-                                        type: firstBarcode.format as unknown as string,
-                                    });
-                                } else {
-                                    alert(t('no_barcodes_detected'));
-                                }
+                    try {
+                        if (type === 'photo') {
+                            const foodData = await handlePhoto(imageUri);
+                            if (foodData) {
+                                setSelectedFood(foodData);
+                                setAllowEditName(true);
+                                setIsNutritionModalVisible(true); // Moved here
                             } else {
-                                alert(t('no_barcodes_detected'));
+                                Alert.alert(t('failed_to_process_photo'));
+                                setIsNutritionModalVisible(false);
                             }
-                        } catch (error) {
-                            console.error('Error detecting barcodes:', error);
-                            alert(t('barcode_detection_error'));
-                        }
-                    }
+                        } else if (type === 'barcode') {
+                            try {
+                                const barcodes = await detectBarcodes(imageUri, [
+                                    BarcodeFormat.EAN_13,
+                                    BarcodeFormat.EAN_8,
+                                ]);
 
-                    setIsLoading(false);
+                                if (barcodes.length > 0 && barcodes[0].rawValue) {
+                                    const foodInfo = await fetchProductByEAN(barcodes[0].rawValue);
+                                    if (foodInfo) {
+                                        setSelectedFood(foodInfo);
+                                        setIsNutritionModalVisible(true); // Moved here
+                                    } else {
+                                        Alert.alert(t('food_not_found_barcode'));
+                                        setIsNutritionModalVisible(false);
+                                    }
+                                } else {
+                                    Alert.alert(t('no_barcodes_detected'));
+                                    setIsNutritionModalVisible(false);
+                                }
+                            } catch (error) {
+                                console.error('Error detecting barcodes:', error);
+                                Alert.alert(t('barcode_detection_error'));
+                                setIsNutritionModalVisible(false);
+                            }
+                        }
+                    } catch (e) {
+                        console.error('Error processing local file:', e);
+                        Alert.alert(t('generic_error_message'));
+                        setIsNutritionModalVisible(false);
+                    } finally {
+                        setIsLoading(false);
+                    }
                 }
             } catch (error) {
                 console.error('Error loading local file:', error);
+                setIsLoading(false); // Ensure loading is stopped on early error
             }
         }
-    }, [handlePhoto, handleBarCodeScanned, t]);
+    }, [t, handlePhoto, setSelectedFood, setAllowEditName, setIsNutritionModalVisible]);
 
     // Handler for taking a photo
     const handleTakePhoto = useCallback(async () => {
         if (photoCameraRef.current) {
+            setIsLoading(true); // Moved up
             try {
                 // @ts-ignore
                 const photo = await (photoCameraRef.current as typeof CameraView).takePictureAsync();
-                setIsLoading(true);
                 setShowPhotoCamera(false);
-                setIsNutritionModalVisible(true);
 
-                if (photoMode === 'meal') {
-                    const macros = await estimateNutritionFromPhoto(photo.uri);
-                    if (macros) {
-                        const normalizedMacros = normalizeMacrosByGrams({
-                            carbs: macros.carbs,
-                            fat: macros.fat,
-                            grams: macros.grams,
-                            kcal: macros.kcal,
-                            kj: macros.kj,
-                            protein: macros.protein,
-                        });
-
-                        setSelectedFood({
-                            ...normalizedMacros,
-                            estimatedGrams: macros.grams,
-                            productTitle: macros.name,
-                        });
-                        setAllowEditName(true);
-                    }
+                const foodData = await handlePhoto(photo.uri);
+                if (foodData) {
+                    setSelectedFood(foodData);
+                    setAllowEditName(true);
+                    setIsNutritionModalVisible(true);
                 } else {
-                    const macros = await extractMacrosFromLabelPhoto(photo.uri);
-                    if (macros) {
-                        const normalizedMacros = normalizeMacrosByGrams({
-                            carbs: macros.carbs,
-                            fat: macros.fat,
-                            grams: macros.grams,
-                            kcal: macros.kcal,
-                            kj: macros.kj,
-                            protein: macros.protein,
-                        });
-
-                        setSelectedFood({
-                            ...normalizedMacros,
-                            productTitle: macros.name,
-                        });
-                        setAllowEditName(true);
-                    }
+                    Alert.alert(t('failed_to_process_photo'));
+                    setIsNutritionModalVisible(false);
                 }
-
-                setIsLoading(false);
             } catch (error) {
                 console.error('Error taking photo:', error);
+                Alert.alert(t('error_taking_photo')); // Added alert
+                setIsNutritionModalVisible(false);
+            } finally {
+                setIsLoading(false); // Moved to finally
             }
         }
-    }, [photoMode]);
+    }, [photoMode, handlePhoto, t, setSelectedFood, setAllowEditName, setIsNutritionModalVisible]);
 
     const handleFoodSearch = useCallback(() => {
         navigation.navigate('foodSearch', { defaultMealType: preSelectedMealType, initialSearchQuery: searchQuery });
