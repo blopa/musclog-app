@@ -35,7 +35,7 @@ jobs:
       - name: Build web application
         run: |
           npm run build-android-web
-          touch build/.nojekyll
+          touch dist/.nojekyll
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
