@@ -3,22 +3,22 @@ name: Build and Deploy to GitHub Pages
 on:
   push:
     branches:
-      - fix/empty-food-modal
+      - main
   workflow_dispatch: # Allows manual triggering from the Actions tab
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Needed to push to gh-pages branch
+      contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18.x # Using LTS version 18.x as a default
+          node-version: '20'
 
       - name: Cache node_modules
         id: cache-npm
@@ -36,11 +36,9 @@ jobs:
         run: npm run build-android-web
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./build
-          publish_branch: gh-pages # Default branch for GitHub Pages
-          user_name: 'github-actions[bot]'
-          user_email: 'github-actions[bot]@users.noreply.github.com'
-          commit_message: Automated deployment to GitHub Pages # Optional: Custom commit message
+          publish_branch: gh-pages
+          force_orphan: true
