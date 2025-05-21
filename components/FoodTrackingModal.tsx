@@ -35,7 +35,7 @@ type FoodTrackingModalProps = {
     allowEditName?: boolean;
     date?: string;
     defaultMealType?: string;
-    food: FoodTrackingType & { wasHandled?: boolean }| null;
+    food: FoodTrackingType | null;
     isLoading?: boolean;
     onClose: () => void;
     showChart?: boolean;
@@ -60,7 +60,6 @@ const FoodTrackingModal = ({
     const { colors, dark } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors, dark);
     const [unitAmount, setUnitAmount] = useState(GRAM_BASE.toString());
-    const [gramsBase, setGramsBase] = useState<number>(GRAM_BASE);
     const [mealType, setMealType] = useState(defaultMealType);
     const [editableName, setEditableName] = useState(food?.productTitle || '');
     const [selectedDate, setSelectedDate] = useState(date ? new Date(date) : new Date());
@@ -91,7 +90,7 @@ const FoodTrackingModal = ({
 
     const updateCalculatedValues = useCallback((gramsValue: number) => {
         if (food) {
-            const factor = gramsValue / gramsBase;
+            const factor = gramsValue / GRAM_BASE;
 
             setCalculatedValues({
                 carbs: factor * food.carbs,
@@ -100,7 +99,13 @@ const FoodTrackingModal = ({
                 protein: factor * food.protein,
             });
         }
-    }, [food, gramsBase]);
+    }, [food]);
+
+    useEffect(() => {
+        if (food) {
+            updateCalculatedValues(GRAM_BASE);
+        }
+    }, [food, updateCalculatedValues]);
 
     const handleGramsChange = useCallback((text: string) => {
         const formattedText = text.replace(/\D/g, '');
@@ -109,50 +114,6 @@ const FoodTrackingModal = ({
         const gramsValue = parseFloat(formattedText) || 0;
         updateCalculatedValues(gramsValue);
     }, [handleSetUnitAmount, updateCalculatedValues]);
-
-    const resetModalData = useCallback(() => {
-        setEditableName('');
-        setUnitAmount(GRAM_BASE.toString());
-        setMealType(defaultMealType);
-        setIsFavoriteFood(false);
-        setCalculatedValues({
-            carbs: 0,
-            fat: 0,
-            kcal: 0,
-            protein: 0,
-        });
-
-        if (food) {
-            food.wasHandled = false;
-        }
-    }, [defaultMealType, food]);
-
-    useEffect(() => {
-        resetModalData();
-    }, [resetModalData, visible]);
-
-    useEffect(() => {
-        if (food && !food.wasHandled) {
-            resetModalData();
-            food.wasHandled = true;
-            setEditableName(food.productTitle);
-            setUnitAmount((food.grams || GRAM_BASE).toString());
-            setMealType(defaultMealType);
-            setGramsBase(food.grams || GRAM_BASE);
-            setCalculatedValues({
-                carbs: food?.carbs || 0,
-                fat: food?.fat || 0,
-                kcal: food?.kcal || 0,
-                protein: food?.protein || 0,
-            });
-            // updateCalculatedValues(food.grams || GRAM_BASE);
-        }
-    }, [defaultMealType, food, resetModalData, updateCalculatedValues]);
-
-    const handleOnClose = useCallback(() => {
-        resetModalData();
-        onClose();
-    }, [onClose, resetModalData]);
 
     const handleTrackFood = useCallback(async () => {
         const userNutrition = {
@@ -212,8 +173,8 @@ const FoodTrackingModal = ({
         }
 
         setUnitAmount(GRAM_BASE.toString());
-        handleOnClose();
-    }, [calculatedValues.kcal, calculatedValues.carbs, calculatedValues.fat, calculatedValues.protein, selectedDate, unitAmount, mealType, editableName, food?.productTitle, food?.productCode, t, userNutritionId, handleOnClose, isFavoriteFood]);
+        onClose();
+    }, [calculatedValues.kcal, calculatedValues.carbs, calculatedValues.fat, calculatedValues.protein, selectedDate, unitAmount, mealType, editableName, food?.productTitle, food?.productCode, t, userNutritionId, onClose, isFavoriteFood]);
 
     useEffect(() => {
         if (food) {
@@ -232,7 +193,7 @@ const FoodTrackingModal = ({
             <ThemedModal
                 cancelText={t('cancel')}
                 confirmText={isLoading ? undefined : (userNutritionId ? t('update') : t('track'))}
-                onClose={handleOnClose}
+                onClose={onClose}
                 onConfirm={handleTrackFood}
                 title={allowEditName ? '' : editableName || food?.productTitle}
                 visible={visible}
