@@ -671,6 +671,7 @@
     "ffmi": "FFMI",
     "item_value": "{{item}}: {{value}}",
     "item_value_unit": "{{item}}: {{value}}{{weightUnit}}",
+    "item_value_unit_percent": "{{item}}: {{value}}{{weightUnit}} ({{percent}}%)",
     "your_normalized_ffmi": "Tu FFMI Normalizado",
     "your_muscle_fat_difference": "Tu cambio de músculo es de {{muscle}}{{weightUnit}} y tu diferencia de grasa es de {{fat}}{{weightUnit}}.",
     "you_have_gained_muscle_lost_fat": "Has ganado {{muscle}}{{weightUnit}} de músculo y perdido {{fat}}{{weightUnit}} de grasa.",
