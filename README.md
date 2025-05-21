@@ -30,6 +30,8 @@ Musclog is a mobile application designed to elevate your fitness journey by prov
 
 ## Read the [blog post](https://pablo.gg/en/blog/coding/musclog-leveraging-my-reactjs-experience-to-build-a-react-native-app/) about how this app came to be.
 
+### Access a [demo](https://blopa.github.io/musclog-app/) of the app on the web.
+
 ## Key Features
 
 ### 🏋️‍♂️ Track Workouts
