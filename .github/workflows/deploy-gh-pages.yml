@@ -33,12 +33,14 @@ jobs:
         run: npm ci
 
       - name: Build web application
-        run: npm run build-android-web
+        run: |
+          npm run build-android-web
+          touch build/.nojekyll
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build
+          publish_dir: ./dist
           publish_branch: gh-pages
           force_orphan: true
