@@ -40,6 +40,7 @@ import { getDisplayFormattedWeight } from '@/utils/unit';
 import Quagga from '@ericblade/quagga2';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { NavigationProp } from '@react-navigation/native';
+import { useWebTapToFocus } from '@/hooks/useWebTapToFocus';
 import { FlashList } from '@shopify/flash-list';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
@@ -53,7 +54,7 @@ import {
     RefreshControl,
     ScrollView,
     StyleSheet,
-    TouchableOpacity,
+    TouchableOpacity, // Ensure TouchableOpacity is imported
     View,
 } from 'react-native';
 import { BarcodeFormat, detectBarcodes } from 'react-native-barcodes-detector';
@@ -65,6 +66,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const { colors, dark } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors, dark);
 
+    const { focusState, handleTapToFocus } = useWebTapToFocus();
     const [isLoading, setIsLoading] = useState(false);
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
     const [selectedNutrition, setSelectedNutrition] = useState<null | UserNutritionDecryptedReturnType>(null);
@@ -910,12 +912,24 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                         renderTabBar={renderTabBar}
                     />
                 </View>
-                {showBarcodeCamera ? (
+                {showBarcodeCamera && Platform.OS === 'web' ? (
+                    <TouchableOpacity onPress={handleTapToFocus} style={styles.cameraContainerTouchable}>
+                        <CameraView
+                            onBarcodeScanned={undefined} // Web uses Quagga via file upload
+                            ratio="16:9"
+                            style={styles.camera}
+                            autoFocus={focusState === 'focusing' ? 'off' : 'on'}
+                        >
+                            {renderScannerOverlay()}
+                        </CameraView>
+                    </TouchableOpacity>
+                ) : showBarcodeCamera ? ( // For native platforms
                     <View style={styles.cameraContainer}>
                         <CameraView
                             onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
                             ratio="16:9"
                             style={styles.camera}
+                            // autoFocus prop can be undefined or platform specific for native
                         >
                             {renderScannerOverlay()}
                         </CameraView>
@@ -984,6 +998,11 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         flex: 1,
     },
     cameraContainer: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'black',
+        justifyContent: 'center',
+    },
+    cameraContainerTouchable: { // Added for tap-to-focus on web
         ...StyleSheet.absoluteFillObject,
         backgroundColor: 'black',
         justifyContent: 'center',
