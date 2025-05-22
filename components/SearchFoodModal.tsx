@@ -460,7 +460,7 @@ const SearchFoodModal = ({
                 {showBarcodeCamera ? (
                     <View style={styles.cameraContainer}>
                         <CameraView
-                            autoFocus={(Platform.OS === 'web' ? 'off' : 'on') as FocusMode}
+                            autofocus={(Platform.OS === 'web' ? 'off' : undefined) as FocusMode}
                             onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
                             ratio="16:9"
                             style={styles.camera}
