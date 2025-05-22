@@ -1,3 +1,5 @@
+import type { FocusMode } from 'expo-camera/build/Camera.types';
+
 import { FoodTrackingType } from '@/components/FoodTrackingModal';
 import ThemedCard from '@/components/ThemedCard';
 import ThemedModal from '@/components/ThemedModal';
@@ -458,6 +460,7 @@ const SearchFoodModal = ({
                 {showBarcodeCamera ? (
                     <View style={styles.cameraContainer}>
                         <CameraView
+                            autoFocus={(Platform.OS === 'web' ? 'off' : 'on') as FocusMode}
                             onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
                             ratio="16:9"
                             style={styles.camera}

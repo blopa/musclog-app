@@ -1,4 +1,5 @@
 import type { BarcodeScanningResult } from 'expo-camera';
+import type { FocusMode } from 'expo-camera/build/Camera.types';
 
 import ArrowedDatePicker from '@/components/ArrowedDatePicker';
 import FABWrapper from '@/components/FABWrapper';
@@ -913,6 +914,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 {showBarcodeCamera ? (
                     <View style={styles.cameraContainer}>
                         <CameraView
+                            autoFocus={(Platform.OS === 'web' ? 'off' : 'on') as FocusMode}
                             onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
                             ratio="16:9"
                             style={styles.camera}
@@ -1197,11 +1199,11 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     },
     webGuidanceText: {
         color: colors.onPrimary, // Assuming onPrimary is visible on the overlay
-        textAlign: 'center',
-        paddingHorizontal: 20,
-        paddingBottom: 10, // Add some padding below the controls
         fontSize: 12,
-    }
+        paddingBottom: 10, // Add some padding below the controls
+        paddingHorizontal: 20,
+        textAlign: 'center',
+    },
 });
 
 export default FoodLog;
