@@ -1,13 +1,14 @@
-import CustomTextInput from '@/components/CustomTextInput';
-import ThemedModal from '@/components/ThemedModal';
-import useUnit from '@/hooks/useUnit';
-import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
-import { formatFloatNumericInputText, formatIntegerNumericInputText } from '@/utils/string';
 import { FontAwesome } from '@expo/vector-icons';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useTheme } from 'react-native-paper';
+
+import CustomTextInput from '@/components/CustomTextInput';
+import ThemedModal from '@/components/ThemedModal';
+import useUnit from '@/hooks/useUnit';
+import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
+import { formatFloatNumericInputText, formatIntegerNumericInputText } from '@/utils/string';
 
 type EditSetModalProps = {
     handleCloseEditModal: () => void;

@@ -1,7 +1,8 @@
-import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { Card, CardProps, useTheme } from 'react-native-paper';
+
+import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 
 const ThemeCard = ({ children, style, ...props }: CardProps) => {
     const { colors, dark } = useTheme<CustomThemeType>();

@@ -1,14 +1,5 @@
 import type { HealthConnectRecord, RecordType } from 'react-native-health-connect/src/types';
 
-import { DEFAULT_PAGE_SIZE, MANDATORY_PERMISSIONS, NEEDED_PERMISSIONS } from '@/constants/healthConnect';
-import { METRIC_SYSTEM } from '@/constants/storage';
-import { getCurrentTimestampISOString } from '@/utils/date';
-import {
-    HealthConnectBodyFatRecordData,
-    HealthConnectWeightRecord,
-    HealthDataType,
-    TotalMacrosType,
-} from '@/utils/types';
 import * as IntentLauncher from 'expo-intent-launcher';
 import React, { createContext, ReactNode, useCallback, useContext, useState } from 'react';
 import { PermissionsAndroid } from 'react-native';
@@ -22,6 +13,16 @@ import {
     requestPermission,
 } from 'react-native-health-connect';
 import { Permission } from 'react-native-health-connect/lib/typescript/types';
+
+import { DEFAULT_PAGE_SIZE, MANDATORY_PERMISSIONS, NEEDED_PERMISSIONS } from '@/constants/healthConnect';
+import { METRIC_SYSTEM } from '@/constants/storage';
+import { getCurrentTimestampISOString } from '@/utils/date';
+import {
+    HealthConnectBodyFatRecordData,
+    HealthConnectWeightRecord,
+    HealthDataType,
+    TotalMacrosType,
+} from '@/utils/types';
 
 const packageName = DeviceInfo.getBundleId();
 

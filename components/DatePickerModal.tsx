@@ -1,11 +1,12 @@
-import { addTransparency, CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import React from 'react';
 import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
 import { useTranslation } from 'react-i18next';
+import 'react-datepicker/dist/react-datepicker.css';
 import { Modal, Platform, Pressable, StyleSheet, View } from 'react-native';
 import { Button, useTheme } from 'react-native-paper';
+
+import { addTransparency, CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 
 type DatePickerModalProps = {
     onChangeDate: (date: Date) => void;

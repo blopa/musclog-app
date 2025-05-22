@@ -1,3 +1,9 @@
+import { useFocusEffect } from '@react-navigation/native';
+import React, { useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { StyleSheet, View } from 'react-native';
+import { Text, useTheme } from 'react-native-paper';
+
 import BarChart from '@/components/Charts/BarChart';
 import CustomCombinedChart from '@/components/Charts/CustomCombinedChart';
 import PieChart from '@/components/Charts/PieChart';
@@ -17,11 +23,6 @@ import {
     NutritionStackedBarChartDataType,
 } from '@/utils/types';
 import { getDisplayFormattedWeight } from '@/utils/unit';
-import { useFocusEffect } from '@react-navigation/native';
-import React, { useCallback, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { StyleSheet, View } from 'react-native';
-import { Text, useTheme } from 'react-native-paper';
 
 type NutritionDetailedChartProps = {
     aggregatedNutritionAndWeightData: {

@@ -1,3 +1,10 @@
+import { NavigationProp } from '@react-navigation/native';
+import { useFocusEffect } from 'expo-router';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { BackHandler, Platform, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Appbar, Button, List, Text, useTheme } from 'react-native-paper';
+
 import CustomPicker from '@/components/CustomPicker';
 import CustomTextInput from '@/components/CustomTextInput';
 import { GoogleSignInButton } from '@/components/GoogleSignInButton';
@@ -27,12 +34,6 @@ import { isValidApiKey } from '@/utils/ai';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { getSetting } from '@/utils/database';
 import { deleteAllData, handleGoogleSignIn } from '@/utils/googleAuth';
-import { NavigationProp } from '@react-navigation/native';
-import { useFocusEffect } from 'expo-router';
-import React, { useCallback, useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { BackHandler, Platform, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { ActivityIndicator, Appbar, Button, List, Text, useTheme } from 'react-native-paper';
 
 type AINutritionInsightsType = typeof NUTRITION_INSIGHT_DAILY | typeof NUTRITION_INSIGHT_DISABLED | typeof NUTRITION_INSIGHT_WEEKLY;
 

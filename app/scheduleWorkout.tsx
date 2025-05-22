@@ -1,3 +1,10 @@
+import { NavigationProp } from '@react-navigation/native';
+import { useFocusEffect } from 'expo-router';
+import React, { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Alert, BackHandler, Platform, ScrollView, StyleSheet, View } from 'react-native';
+import { Appbar, Button, Text, useTheme } from 'react-native-paper';
+
 import CustomPicker from '@/components/CustomPicker';
 import DatePickerModal from '@/components/DatePickerModal';
 import { Screen } from '@/components/Screen';
@@ -5,12 +12,6 @@ import { SCHEDULED_STATUS } from '@/constants/storage';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { addWorkoutEvent, getAllWorkouts } from '@/utils/database';
 import { WorkoutEventInsertType, WorkoutReturnType } from '@/utils/types';
-import { NavigationProp } from '@react-navigation/native';
-import { useFocusEffect } from 'expo-router';
-import React, { useCallback, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Alert, BackHandler, Platform, ScrollView, StyleSheet, View } from 'react-native';
-import { Appbar, Button, Text, useTheme } from 'react-native-paper';
 
 function ScheduleWorkout({ navigation }: { navigation: NavigationProp<any> }) {
     const { t } = useTranslation();

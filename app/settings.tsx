@@ -1,3 +1,10 @@
+import { NavigationProp } from '@react-navigation/native';
+import { useFocusEffect } from 'expo-router';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { BackHandler, Linking, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Button, List, Switch, Text, useTheme } from 'react-native-paper';
+
 import AppHeader from '@/components/AppHeader';
 import CustomTextInput from '@/components/CustomTextInput';
 import { Screen } from '@/components/Screen';
@@ -31,12 +38,6 @@ import { exportDatabase, importDatabase } from '@/utils/file';
 import { aggregateUserNutritionMetricsDataByDate } from '@/utils/healthConnect';
 import { generateHash } from '@/utils/string';
 import { ThemeType } from '@/utils/types';
-import { NavigationProp } from '@react-navigation/native';
-import { useFocusEffect } from 'expo-router';
-import React, { useCallback, useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { BackHandler, Linking, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { ActivityIndicator, Button, List, Switch, Text, useTheme } from 'react-native-paper';
 
 import packageJson from '../package.json';
 

@@ -1,3 +1,9 @@
+import { FontAwesome5 } from '@expo/vector-icons';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { StyleSheet, View } from 'react-native';
+import { Text, useTheme } from 'react-native-paper';
+
 import ThemedCard from '@/components/ThemedCard';
 import { GRAMS, IMPERIAL_SYSTEM, METRIC_SYSTEM, OUNCES } from '@/constants/storage';
 import { ICON_SIZE } from '@/constants/ui';
@@ -6,11 +12,6 @@ import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { safeToFixed } from '@/utils/string';
 import { MusclogApiFoodInfoType } from '@/utils/types';
 import { getDisplayFormattedWeight } from '@/utils/unit';
-import { FontAwesome5 } from '@expo/vector-icons';
-import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { StyleSheet, View } from 'react-native';
-import { Text, useTheme } from 'react-native-paper';
 
 type FoodItemProps = {
     food: MusclogApiFoodInfoType;

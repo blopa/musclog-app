@@ -1,3 +1,11 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { NavigationProp } from '@react-navigation/native';
+import { useFocusEffect } from 'expo-router';
+import React, { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { BackHandler, ScrollView, StyleSheet, View } from 'react-native';
+import { Button, Card, Text, useTheme } from 'react-native-paper';
+
 import FoodTrackingModal, { FoodTrackingType } from '@/components/FoodTrackingModal';
 import NutritionProgressBanner from '@/components/NutritionProgressBanner';
 import { Screen } from '@/components/Screen';
@@ -20,13 +28,6 @@ import {
 import { syncHealthConnectData } from '@/utils/healthConnect';
 import { MusclogApiFoodInfoType, WorkoutEventReturnType, WorkoutReturnType } from '@/utils/types';
 import { getSetsDoneThisWeekText, resetWorkoutStorageData } from '@/utils/workout';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { NavigationProp } from '@react-navigation/native';
-import { useFocusEffect } from 'expo-router';
-import React, { useCallback, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { BackHandler, ScrollView, StyleSheet, View } from 'react-native';
-import { Button, Card, Text, useTheme } from 'react-native-paper';
 
 export default function Dashboard({ navigation }: {
     navigation: NavigationProp<any>,

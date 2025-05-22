@@ -1,9 +1,10 @@
-import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { FontAwesome5 } from '@expo/vector-icons';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 import { Button, TextInput, useTheme } from 'react-native-paper';
+
+import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 
 type InputBarProps = {
     handleSend: () => void;

@@ -1,7 +1,8 @@
-import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import React, { memo, useCallback, useState } from 'react';
 import { StyleSheet, TouchableWithoutFeedback, View, ViewStyle } from 'react-native';
 import { Button, Modal, Portal, Text, useTheme } from 'react-native-paper';
+
+import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 
 interface ThemedModalProps {
     cancelText?: string;

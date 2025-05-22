@@ -1,3 +1,11 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
+import { FlashList } from '@shopify/flash-list';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Dimensions, ScrollView, StyleSheet, View } from 'react-native';
+import { Button, Card, Text, useTheme } from 'react-native-paper';
+
 import ThemeCard from '@/components/ThemedCard';
 import ThemedModal from '@/components/ThemedModal';
 import {
@@ -11,13 +19,6 @@ import { getAllExercises, getAllWorkouts, getWorkoutDetails } from '@/utils/data
 import { ExerciseReturnType, SetReturnType, WorkoutReturnType } from '@/utils/types';
 import { getDisplayFormattedWeight } from '@/utils/unit';
 import { resetWorkoutStorageData } from '@/utils/workout';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
-import { FlashList } from '@shopify/flash-list';
-import React, { useCallback, useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Dimensions, ScrollView, StyleSheet, View } from 'react-native';
-import { Button, Card, Text, useTheme } from 'react-native-paper';
 
 type WorkoutModalProps = {
     onClose: () => void;

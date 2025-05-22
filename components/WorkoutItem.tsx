@@ -1,3 +1,8 @@
+import React, { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { StyleSheet, View } from 'react-native';
+import { Text, useTheme } from 'react-native-paper';
+
 import useUnit from '@/hooks/useUnit';
 import { CustomThemeType } from '@/utils/colors';
 import { getClosestWeightUserMetric } from '@/utils/database';
@@ -7,10 +12,6 @@ import {
     WorkoutReturnType,
 } from '@/utils/types';
 import { calculateWorkoutVolume } from '@/utils/workout';
-import React, { useEffect, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { StyleSheet, View } from 'react-native';
-import { Text, useTheme } from 'react-native-paper';
 
 interface WorkoutDetailsProps {
     workoutDetails: {

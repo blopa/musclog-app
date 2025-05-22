@@ -1,7 +1,8 @@
-import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import React from 'react';
 import { StyleSheet, TextInput, TextStyle, View, ViewStyle } from 'react-native';
 import { Text, useTheme } from 'react-native-paper';
+
+import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 
 interface CustomTextInputProps {
     inputStyle?: TextStyle;

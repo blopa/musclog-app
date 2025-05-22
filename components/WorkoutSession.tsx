@@ -1,3 +1,11 @@
+import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useKeepAwake } from 'expo-keep-awake';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Animated, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Portal, Text, useTheme } from 'react-native-paper';
+
 import AddExerciseModal from '@/components/AddExerciseModal';
 import CompletionModal from '@/components/CompletionModal';
 import CurrentWorkoutProgressModal from '@/components/CurrentWorkoutProgressModal';
@@ -33,13 +41,6 @@ import {
 } from '@/utils/types';
 import { getDisplayFormattedWeight, getSaveFormattedWeight } from '@/utils/unit';
 import { resetWorkoutStorageData } from '@/utils/workout';
-import { Ionicons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useKeepAwake } from 'expo-keep-awake';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Animated, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { Portal, Text, useTheme } from 'react-native-paper';
 
 type WorkoutSessionProps = {
     exercise?: CurrentWorkoutExercise;

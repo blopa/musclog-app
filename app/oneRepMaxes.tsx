@@ -1,3 +1,11 @@
+import { FontAwesome5 } from '@expo/vector-icons';
+import { NavigationProp } from '@react-navigation/native';
+import { useFocusEffect } from 'expo-router';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Alert, Animated, BackHandler, Platform, ScrollView, StyleSheet, View } from 'react-native';
+import { Appbar, Button, Card, Text, useTheme } from 'react-native-paper';
+
 import AnimatedSearchBar from '@/components/AnimatedSearchBar';
 import CustomTextInput from '@/components/CustomTextInput';
 import { Screen } from '@/components/Screen';
@@ -10,13 +18,6 @@ import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { addOneRepMax, getAllExercises, getOneRepMax, updateOneRepMax } from '@/utils/database';
 import { ExerciseReturnType } from '@/utils/types';
 import { getDisplayFormattedWeight, getSaveFormattedWeight } from '@/utils/unit';
-import { FontAwesome5 } from '@expo/vector-icons';
-import { NavigationProp } from '@react-navigation/native';
-import { useFocusEffect } from 'expo-router';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Alert, Animated, BackHandler, Platform, ScrollView, StyleSheet, View } from 'react-native';
-import { Appbar, Button, Card, Text, useTheme } from 'react-native-paper';
 
 export default function OneRepMaxes({ navigation }: { navigation: NavigationProp<any> }) {
     const { t } = useTranslation();

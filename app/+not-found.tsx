@@ -1,8 +1,9 @@
-import { Screen } from '@/components/Screen';
 import { Link, Stack } from 'expo-router';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { Text } from 'react-native-paper';
+
+import { Screen } from '@/components/Screen';
 
 export default function NotFoundScreen() {
     return (

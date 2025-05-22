@@ -1,3 +1,11 @@
+import { FontAwesome5 } from '@expo/vector-icons';
+import { NavigationProp, useRoute } from '@react-navigation/native';
+import { useFocusEffect } from 'expo-router';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { BackHandler, ScrollView, Share, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Text, useTheme } from 'react-native-paper';
+
 import AppHeader from '@/components/AppHeader';
 import EditMacrosModal from '@/components/EditMacrosModal';
 import EditSetModal from '@/components/EditSetModal';
@@ -28,13 +36,6 @@ import { safeToFixed } from '@/utils/string';
 import { ExerciseReturnType, ExerciseVolumeType, WorkoutEventInsertType, WorkoutEventReturnType } from '@/utils/types';
 import { getDisplayFormattedWeight } from '@/utils/unit';
 import { calculateWorkoutVolume, generateWorkoutSummary } from '@/utils/workout';
-import { FontAwesome5 } from '@expo/vector-icons';
-import { NavigationProp, useRoute } from '@react-navigation/native';
-import { useFocusEffect } from 'expo-router';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { BackHandler, ScrollView, Share, StyleSheet, View } from 'react-native';
-import { ActivityIndicator, Text, useTheme } from 'react-native-paper';
 
 interface RecentWorkoutDetailsProps {
     navigation: NavigationProp<any>;

@@ -1,10 +1,11 @@
-import ThemedModal from '@/components/ThemedModal';
-import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { FontAwesome5 } from '@expo/vector-icons';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 import { ActivityIndicator, Button, Text, useTheme } from 'react-native-paper';
+
+import ThemedModal from '@/components/ThemedModal';
+import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 
 type CompletionModalProps = {
     buttonText: string,

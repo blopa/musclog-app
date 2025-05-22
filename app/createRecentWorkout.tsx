@@ -1,3 +1,10 @@
+import { NavigationProp, useRoute } from '@react-navigation/native';
+import { useFocusEffect } from 'expo-router';
+import React, { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Alert, BackHandler, Platform, ScrollView, StyleSheet, View } from 'react-native';
+import { Appbar, Button, Switch, Text, useTheme } from 'react-native-paper';
+
 import CompletionModal from '@/components/CompletionModal';
 import CustomTextInput from '@/components/CustomTextInput';
 import DatePickerModal from '@/components/DatePickerModal';
@@ -17,12 +24,6 @@ import {
 } from '@/utils/database';
 import { formatFloatNumericInputText, formatIntegerNumericInputText } from '@/utils/string';
 import { ExerciseVolumeSetType, ExerciseVolumeType, WorkoutEventInsertType, WorkoutReturnType } from '@/utils/types';
-import { NavigationProp, useRoute } from '@react-navigation/native';
-import { useFocusEffect } from 'expo-router';
-import React, { useCallback, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Alert, BackHandler, Platform, ScrollView, StyleSheet, View } from 'react-native';
-import { Appbar, Button, Switch, Text, useTheme } from 'react-native-paper';
 
 type LocalStateSetType = {
     exerciseId: number;

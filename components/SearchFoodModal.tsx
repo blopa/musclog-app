@@ -1,19 +1,5 @@
 import type { FocusMode } from 'expo-camera/build/Camera.types';
 
-import { FoodTrackingType } from '@/components/FoodTrackingModal';
-import ThemedCard from '@/components/ThemedCard';
-import ThemedModal from '@/components/ThemedModal';
-import { AI_SETTINGS_TYPE } from '@/constants/storage';
-import { FAB_ICON_SIZE } from '@/constants/ui';
-import { useSettings } from '@/storage/SettingsContext';
-import { estimateNutritionFromPhoto, extractMacrosFromLabelPhoto, getAiApiVendor } from '@/utils/ai';
-import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
-import { normalizeMacrosByGrams } from '@/utils/data';
-import { addUserNutritions, getUserNutritionOnDate } from '@/utils/database';
-import { getCurrentTimestampISOString, getDaysAgoTimestampISOString } from '@/utils/date';
-import { fetchProductByEAN } from '@/utils/fetchFoodData';
-import { exerptlizeString } from '@/utils/string';
-import { UserNutritionDecryptedReturnType } from '@/utils/types';
 import Quagga from '@ericblade/quagga2';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
@@ -35,6 +21,21 @@ import {
 } from 'react-native';
 import { BarcodeFormat, detectBarcodes } from 'react-native-barcodes-detector';
 import { Button, Card, IconButton, Portal, SegmentedButtons, Text, useTheme } from 'react-native-paper';
+
+import { FoodTrackingType } from '@/components/FoodTrackingModal';
+import ThemedCard from '@/components/ThemedCard';
+import ThemedModal from '@/components/ThemedModal';
+import { AI_SETTINGS_TYPE } from '@/constants/storage';
+import { FAB_ICON_SIZE } from '@/constants/ui';
+import { useSettings } from '@/storage/SettingsContext';
+import { estimateNutritionFromPhoto, extractMacrosFromLabelPhoto, getAiApiVendor } from '@/utils/ai';
+import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
+import { normalizeMacrosByGrams } from '@/utils/data';
+import { addUserNutritions, getUserNutritionOnDate } from '@/utils/database';
+import { getCurrentTimestampISOString, getDaysAgoTimestampISOString } from '@/utils/date';
+import { fetchProductByEAN } from '@/utils/fetchFoodData';
+import { exerptlizeString } from '@/utils/string';
+import { UserNutritionDecryptedReturnType } from '@/utils/types';
 
 interface SearchFoodModalProps {
     defaultMealType?: string;

@@ -1,7 +1,8 @@
-import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useTheme } from 'react-native-paper';
+
+import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 
 type BotAvatarProps = {
     height?: number;

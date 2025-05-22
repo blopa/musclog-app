@@ -1,8 +1,9 @@
-import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { Button, SegmentedButtons, Switch, Text, useTheme } from 'react-native-paper';
+
+import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 
 import DatePickerModal from './DatePickerModal';
 

@@ -1,3 +1,10 @@
+import { NavigationProp, useRoute } from '@react-navigation/native';
+import { useFocusEffect } from 'expo-router';
+import React, { useCallback, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Alert, Animated, Platform, ScrollView, StyleSheet, View } from 'react-native';
+import { Appbar, Button, IconButton, Text, useTheme } from 'react-native-paper';
+
 import CompletionModal from '@/components/CompletionModal';
 import CustomTextInput from '@/components/CustomTextInput';
 import DatePickerModal from '@/components/DatePickerModal';
@@ -8,12 +15,6 @@ import { addUserMeasurements, getUser, getUserMeasurements, updateUserMeasuremen
 import { formatDate } from '@/utils/date';
 import { formatFloatNumericInputText, generateHash } from '@/utils/string';
 import { UserMeasurementsInsertType } from '@/utils/types';
-import { NavigationProp, useRoute } from '@react-navigation/native';
-import { useFocusEffect } from 'expo-router';
-import React, { useCallback, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Alert, Animated, Platform, ScrollView, StyleSheet, View } from 'react-native';
-import { Appbar, Button, IconButton, Text, useTheme } from 'react-native-paper';
 
 type RouteParams = {
     id?: string;

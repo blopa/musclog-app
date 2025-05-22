@@ -1,7 +1,3 @@
-import CustomPicker from '@/components/CustomPicker';
-import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
-import { getAllExercises } from '@/utils/database';
-import { ExerciseReturnType } from '@/utils/types';
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -13,6 +9,11 @@ import {
     Portal,
     useTheme,
 } from 'react-native-paper';
+
+import CustomPicker from '@/components/CustomPicker';
+import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
+import { getAllExercises } from '@/utils/database';
+import { ExerciseReturnType } from '@/utils/types';
 
 type AddExerciseModalProps = {
     defaultSelectedMuscleGroup?: string;

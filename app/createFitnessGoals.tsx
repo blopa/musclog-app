@@ -1,3 +1,21 @@
+import { FontAwesome5 } from '@expo/vector-icons';
+import { NavigationProp, useRoute } from '@react-navigation/native';
+import { useFocusEffect } from 'expo-router';
+import React, { useCallback, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import {
+    Alert,
+    Animated,
+    BackHandler,
+    Dimensions,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    View,
+} from 'react-native';
+import { Appbar, Button, Text, useTheme } from 'react-native-paper';
+import { TabBar, TabView } from 'react-native-tab-view';
+
 import PieChart from '@/components/Charts/PieChart';
 import CompletionModal from '@/components/CompletionModal';
 import CustomTextInput from '@/components/CustomTextInput';
@@ -20,23 +38,6 @@ import { getCurrentTimestampISOString, isValidDateParam } from '@/utils/date';
 import { formatFloatNumericInputText } from '@/utils/string';
 import { FitnessGoalsInsertType } from '@/utils/types';
 import { getDisplayFormattedWeight } from '@/utils/unit';
-import { FontAwesome5 } from '@expo/vector-icons';
-import { NavigationProp, useRoute } from '@react-navigation/native';
-import { useFocusEffect } from 'expo-router';
-import React, { useCallback, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import {
-    Alert,
-    Animated,
-    BackHandler,
-    Dimensions,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    View,
-} from 'react-native';
-import { Appbar, Button, Text, useTheme } from 'react-native-paper';
-import { TabBar, TabView } from 'react-native-tab-view';
 
 type RouteParams = {
     id?: string;

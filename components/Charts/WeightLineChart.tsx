@@ -1,3 +1,7 @@
+import { useFocusEffect } from '@react-navigation/native';
+import React, { useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
 import LineChart from '@/components/Charts/LineChart';
 import WeightAndFatMetricsInfo from '@/components/WeightAndFatMetricsInfo';
 import { BULKING_GAIN_WEIGHT_RATIO, CUTTING_LOSS_WEIGHT_RATIO } from '@/constants/healthConnect';
@@ -8,9 +12,6 @@ import { getUser } from '@/utils/database';
 import { safeToFixed } from '@/utils/string';
 import { EatingPhaseType } from '@/utils/types';
 import { getDisplayFormattedWeight } from '@/utils/unit';
-import { useFocusEffect } from '@react-navigation/native';
-import React, { useCallback, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 
 type WeightLineChartProps = {
     metricsAverages: any,

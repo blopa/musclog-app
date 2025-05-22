@@ -1,3 +1,8 @@
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import { Text, useTheme } from 'react-native-paper';
+
 import BarChart from '@/components/Charts/BarChart';
 import CustomCombinedChart from '@/components/Charts/CustomCombinedChart';
 import LineChart from '@/components/Charts/LineChart';
@@ -10,10 +15,6 @@ import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { safeToFixed } from '@/utils/string';
 import { ExtendedLineChartDataType, LineChartDataType, NutritionStackedBarChartDataType } from '@/utils/types';
 import { getDisplayFormattedWeight } from '@/utils/unit';
-import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { ScrollView, StyleSheet, View } from 'react-native';
-import { Text, useTheme } from 'react-native-paper';
 
 type UserFitnessReportProps = {
     aggregatedNutritionAndWeightData: {

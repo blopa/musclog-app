@@ -1,3 +1,9 @@
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import React, { memo, useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Button, Text, useTheme } from 'react-native-paper';
+
 import ThemedCard from '@/components/ThemedCard';
 import { GRAMS, IMPERIAL_SYSTEM, OUNCES } from '@/constants/storage';
 import useUnit from '@/hooks/useUnit';
@@ -5,11 +11,6 @@ import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { getLatestFitnessGoals } from '@/utils/database';
 import { safeToFixed } from '@/utils/string';
 import { FitnessGoalsReturnType } from '@/utils/types';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
-import React, { memo, useCallback, useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { StyleSheet, View } from 'react-native';
-import { ActivityIndicator, Button, Text, useTheme } from 'react-native-paper';
 
 type NutritionProgressBannerProps = {
     consumed: {

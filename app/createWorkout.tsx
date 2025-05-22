@@ -1,3 +1,29 @@
+import { NavigationProp, useFocusEffect, useRoute } from '@react-navigation/native';
+import React, { useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import {
+    Alert,
+    BackHandler,
+    Platform,
+    TextInput as RNTextInput,
+    ScrollView,
+    StyleSheet,
+    View,
+} from 'react-native';
+import {
+    ActivityIndicator,
+    Appbar,
+    Button,
+    Checkbox,
+    Dialog,
+    IconButton,
+    List,
+    Portal,
+    Switch,
+    Text,
+    useTheme,
+} from 'react-native-paper';
+
 import AddExerciseModal from '@/components/AddExerciseModal';
 import CompletionModal from '@/components/CompletionModal';
 import CustomPicker from '@/components/CustomPicker';
@@ -25,31 +51,6 @@ import {
     WorkoutInsertType,
     WorkoutReturnType,
 } from '@/utils/types';
-import { NavigationProp, useFocusEffect, useRoute } from '@react-navigation/native';
-import React, { useCallback, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import {
-    Alert,
-    BackHandler,
-    Platform,
-    TextInput as RNTextInput,
-    ScrollView,
-    StyleSheet,
-    View,
-} from 'react-native';
-import {
-    ActivityIndicator,
-    Appbar,
-    Button,
-    Checkbox,
-    Dialog,
-    IconButton,
-    List,
-    Portal,
-    Switch,
-    Text,
-    useTheme,
-} from 'react-native-paper';
 
 type SetLocalType = {
     exerciseId: number;

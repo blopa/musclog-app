@@ -1,3 +1,11 @@
+import { NavigationProp, useRoute } from '@react-navigation/native';
+import { useFocusEffect } from 'expo-router';
+import React, { useCallback, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Alert, Animated, BackHandler, Platform, ScrollView, StyleSheet, View } from 'react-native';
+import { launchImageLibrary } from 'react-native-image-picker';
+import { ActivityIndicator, Appbar, Button, useTheme } from 'react-native-paper';
+
 import CompletionModal from '@/components/CompletionModal';
 import CustomPicker from '@/components/CustomPicker';
 import CustomTextArea from '@/components/CustomTextArea';
@@ -6,13 +14,6 @@ import { Screen } from '@/components/Screen';
 import { EXERCISE_TYPES, MUSCLE_GROUPS } from '@/constants/exercises';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { addExercise, getExerciseById, updateExercise } from '@/utils/database';
-import { NavigationProp, useRoute } from '@react-navigation/native';
-import { useFocusEffect } from 'expo-router';
-import React, { useCallback, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Alert, Animated, BackHandler, Platform, ScrollView, StyleSheet, View } from 'react-native';
-import { launchImageLibrary } from 'react-native-image-picker';
-import { ActivityIndicator, Appbar, Button, useTheme } from 'react-native-paper';
 
 type RouteParams = {
     id?: string;

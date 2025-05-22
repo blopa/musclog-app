@@ -1,8 +1,9 @@
-import { formatDate } from '@/utils/date';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 import { IconButton, Text } from 'react-native-paper';
+
+import { formatDate } from '@/utils/date';
 
 interface ArrowedDatePickerProps {
     initialDate?: Date;

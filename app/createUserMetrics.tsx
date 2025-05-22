@@ -1,3 +1,10 @@
+import { NavigationProp, useRoute } from '@react-navigation/native';
+import { useFocusEffect } from 'expo-router';
+import React, { useCallback, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Alert, Animated, BackHandler, Platform, ScrollView, StyleSheet, View } from 'react-native';
+import { Appbar, Button, Text, useTheme } from 'react-native-paper';
+
 import CompletionModal from '@/components/CompletionModal';
 import CustomPicker from '@/components/CustomPicker';
 import CustomTextInput from '@/components/CustomTextInput';
@@ -17,12 +24,6 @@ import {
     getSaveFormattedHeight,
     getSaveFormattedWeight,
 } from '@/utils/unit';
-import { NavigationProp, useRoute } from '@react-navigation/native';
-import { useFocusEffect } from 'expo-router';
-import React, { useCallback, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Alert, Animated, BackHandler, Platform, ScrollView, StyleSheet, View } from 'react-native';
-import { Appbar, Button, Text, useTheme } from 'react-native-paper';
 
 type RouteParams = {
     id?: string;

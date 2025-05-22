@@ -1,3 +1,18 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {
+    createDrawerNavigator,
+    DrawerContentComponentProps,
+    DrawerContentScrollView,
+    DrawerItem,
+    DrawerItemList,
+} from '@react-navigation/drawer';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, useTheme } from 'react-native-paper';
+import SystemNavigationBar from 'react-native-system-navigation-bar';
+
 import AISettings from '@/app/aiSettings';
 import Chat from '@/app/chat';
 import CreateExercise from '@/app/createExercise';
@@ -27,6 +42,9 @@ import Settings from '@/app/settings';
 import UserMetricsCharts from '@/app/userMetricsCharts';
 import WorkoutDetails from '@/app/workoutDetails';
 import Onboarding from '@/components/Onboarding';
+
+import 'react-native-reanimated';
+
 import { Screen } from '@/components/Screen';
 import { DARK, LIGHT } from '@/constants/colors';
 import {
@@ -44,24 +62,9 @@ import {
     CustomThemeColorsType,
     CustomThemeType,
 } from '@/utils/colors';
-import 'react-native-reanimated';
 import {
     getLatestUser,
 } from '@/utils/database';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {
-    createDrawerNavigator,
-    DrawerContentComponentProps,
-    DrawerContentScrollView,
-    DrawerItem,
-    DrawerItemList,
-} from '@react-navigation/drawer';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { StyleSheet, Text, View } from 'react-native';
-import { ActivityIndicator, useTheme } from 'react-native-paper';
-import SystemNavigationBar from 'react-native-system-navigation-bar';
 
 import packageJson from '../package.json';
 

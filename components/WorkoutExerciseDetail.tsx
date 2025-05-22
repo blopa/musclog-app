@@ -1,10 +1,11 @@
-import { ICON_SIZE } from '@/constants/ui';
-import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
-import { ExerciseReturnType, ExerciseVolumeType } from '@/utils/types';
 import { FontAwesome5 } from '@expo/vector-icons';
 import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Text, useTheme } from 'react-native-paper';
+
+import { ICON_SIZE } from '@/constants/ui';
+import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
+import { ExerciseReturnType, ExerciseVolumeType } from '@/utils/types';
 
 import ExerciseSetDetails from './ExerciseSetDetails';
 

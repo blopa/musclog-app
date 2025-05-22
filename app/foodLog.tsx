@@ -1,6 +1,29 @@
 import type { BarcodeScanningResult } from 'expo-camera';
 import type { FocusMode } from 'expo-camera/build/Camera.types';
 
+import Quagga from '@ericblade/quagga2';
+import { FontAwesome5 } from '@expo/vector-icons';
+import { NavigationProp } from '@react-navigation/native';
+import { FlashList } from '@shopify/flash-list';
+import { CameraView, useCameraPermissions } from 'expo-camera';
+import * as ImagePicker from 'expo-image-picker';
+import { useFocusEffect } from 'expo-router';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import {
+    Alert,
+    Dimensions,
+    Platform,
+    RefreshControl,
+    ScrollView,
+    StyleSheet,
+    TouchableOpacity,
+    View,
+} from 'react-native';
+import { BarcodeFormat, detectBarcodes } from 'react-native-barcodes-detector';
+import { Appbar, Button, Card, SegmentedButtons, Text, TextInput, useTheme } from 'react-native-paper';
+import { TabBar, TabView } from 'react-native-tab-view';
+
 import ArrowedDatePicker from '@/components/ArrowedDatePicker';
 import FABWrapper from '@/components/FABWrapper';
 import FoodItem from '@/components/FoodItem';
@@ -38,28 +61,6 @@ import { getRecentFood } from '@/utils/storage';
 import { safeToFixed } from '@/utils/string';
 import { MusclogApiFoodInfoType, UserNutritionDecryptedReturnType } from '@/utils/types';
 import { getDisplayFormattedWeight } from '@/utils/unit';
-import Quagga from '@ericblade/quagga2';
-import { FontAwesome5 } from '@expo/vector-icons';
-import { NavigationProp } from '@react-navigation/native';
-import { FlashList } from '@shopify/flash-list';
-import { CameraView, useCameraPermissions } from 'expo-camera';
-import * as ImagePicker from 'expo-image-picker';
-import { useFocusEffect } from 'expo-router';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import {
-    Alert,
-    Dimensions,
-    Platform,
-    RefreshControl,
-    ScrollView,
-    StyleSheet,
-    TouchableOpacity,
-    View,
-} from 'react-native';
-import { BarcodeFormat, detectBarcodes } from 'react-native-barcodes-detector';
-import { Appbar, Button, Card, SegmentedButtons, Text, TextInput, useTheme } from 'react-native-paper';
-import { TabBar, TabView } from 'react-native-tab-view';
 
 const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const { t } = useTranslation();

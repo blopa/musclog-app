@@ -1,3 +1,10 @@
+import { FontAwesome5 } from '@expo/vector-icons';
+import { NavigationProp, useFocusEffect, useRoute } from '@react-navigation/native';
+import React, { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { ActivityIndicator, Platform, StyleSheet, View } from 'react-native';
+import { Appbar, Button, HelperText, Text, TextInput, useTheme } from 'react-native-paper';
+
 import CustomPicker from '@/components/CustomPicker';
 import { Screen } from '@/components/Screen';
 import ThemedCard from '@/components/ThemedCard';
@@ -7,12 +14,6 @@ import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { getFood } from '@/utils/database';
 import { safeToFixed } from '@/utils/string';
 import { getDisplayFormattedWeight } from '@/utils/unit';
-import { FontAwesome5 } from '@expo/vector-icons';
-import { NavigationProp, useFocusEffect, useRoute } from '@react-navigation/native';
-import React, { useCallback, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Platform, StyleSheet, View } from 'react-native';
-import { Appbar, Button, HelperText, Text, TextInput, useTheme } from 'react-native-paper';
 
 type RouteParams = {
     id?: string;

@@ -1,12 +1,13 @@
-import { IMPERIAL_SYSTEM } from '@/constants/storage';
-import useUnit from '@/hooks/useUnit';
-import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
-import { ExerciseReturnType } from '@/utils/types';
 import { FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, StyleSheet, View } from 'react-native';
 import { Text, useTheme } from 'react-native-paper';
+
+import { IMPERIAL_SYSTEM } from '@/constants/storage';
+import useUnit from '@/hooks/useUnit';
+import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
+import { ExerciseReturnType } from '@/utils/types';
 
 type SetInfoProps = {
     completedReps: string;

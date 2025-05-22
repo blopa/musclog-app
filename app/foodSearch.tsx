@@ -1,10 +1,3 @@
-import FoodItem from '@/components/FoodItem';
-import FoodTrackingModal from '@/components/FoodTrackingModal';
-import { Screen } from '@/components/Screen';
-import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
-import { getFood } from '@/utils/database';
-import { fetchFoodData } from '@/utils/fetchFoodData';
-import { MusclogApiFoodInfoType } from '@/utils/types';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { NavigationProp, useRoute } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
@@ -13,6 +6,14 @@ import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Platform, StyleSheet, View } from 'react-native';
 import { Appbar, Button, Text, TextInput, useTheme } from 'react-native-paper';
+
+import FoodItem from '@/components/FoodItem';
+import FoodTrackingModal from '@/components/FoodTrackingModal';
+import { Screen } from '@/components/Screen';
+import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
+import { getFood } from '@/utils/database';
+import { fetchFoodData } from '@/utils/fetchFoodData';
+import { MusclogApiFoodInfoType } from '@/utils/types';
 
 type RouteParams = {
     defaultMealType?: string;

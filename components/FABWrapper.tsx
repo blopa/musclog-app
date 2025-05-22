@@ -1,9 +1,10 @@
-import { FAB_ICON_SIZE } from '@/constants/ui';
-import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { FontAwesome5 } from '@expo/vector-icons';
 import React, { useCallback, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { FAB, FABGroupProps, useTheme } from 'react-native-paper';
+
+import { FAB_ICON_SIZE } from '@/constants/ui';
+import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 
 interface FABWrapperProps {
     actions: FABGroupProps['actions'];

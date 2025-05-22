@@ -1,10 +1,11 @@
 
-import { GOOGLE_CLIENT_ID } from '@/utils/googleAuth';
 import * as Linking from 'expo-linking';
 import * as WebBrowser from 'expo-web-browser';
 import { fetch } from 'expo/fetch';
 import { useEffect, useState } from 'react';
 import { Alert } from 'react-native';
+
+import { GOOGLE_CLIENT_ID } from '@/utils/googleAuth';
 
 const GOOGLE_AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
 const GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token';

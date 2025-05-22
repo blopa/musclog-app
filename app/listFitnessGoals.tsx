@@ -1,3 +1,12 @@
+import { FontAwesome5 } from '@expo/vector-icons';
+import { NavigationProp } from '@react-navigation/native';
+import { FlashList } from '@shopify/flash-list';
+import { useFocusEffect } from 'expo-router';
+import React, { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { BackHandler, Platform, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Appbar, Card, Text, useTheme } from 'react-native-paper';
+
 import PieChart from '@/components/Charts/PieChart';
 import FABWrapper from '@/components/FABWrapper';
 import { Screen } from '@/components/Screen';
@@ -18,14 +27,6 @@ import { formatDate } from '@/utils/date';
 import { safeToFixed } from '@/utils/string';
 import { FitnessGoalsInsertType } from '@/utils/types';
 import { getDisplayFormattedWeight } from '@/utils/unit';
-import { FontAwesome5 } from '@expo/vector-icons';
-import { NavigationProp } from '@react-navigation/native';
-import { FlashList } from '@shopify/flash-list';
-import { useFocusEffect } from 'expo-router';
-import React, { useCallback, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { BackHandler, Platform, StyleSheet, View } from 'react-native';
-import { ActivityIndicator, Appbar, Card, Text, useTheme } from 'react-native-paper';
 
 export default function ListFitnessGoals({ navigation }: { navigation: NavigationProp<any> }) {
     const { t } = useTranslation();

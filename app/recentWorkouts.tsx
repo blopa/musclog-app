@@ -1,3 +1,12 @@
+import { FontAwesome5 } from '@expo/vector-icons';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { FlashList } from '@shopify/flash-list';
+import { useFocusEffect } from 'expo-router';
+import React, { useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { BackHandler, Platform, ScrollView, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Appbar, Button, Card, Text, useTheme } from 'react-native-paper';
+
 import AnimatedSearchBar from '@/components/AnimatedSearchBar';
 import CustomTextArea from '@/components/CustomTextArea';
 import FABWrapper from '@/components/FABWrapper';
@@ -17,14 +26,6 @@ import { formatDate } from '@/utils/date';
 import { importJson } from '@/utils/file';
 import { ParsedRecentWorkout, WorkoutEventReturnType } from '@/utils/types';
 import { validateParsedRecentWorkouts } from '@/utils/validation';
-import { FontAwesome5 } from '@expo/vector-icons';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { FlashList } from '@shopify/flash-list';
-import { useFocusEffect } from 'expo-router';
-import React, { useCallback, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { BackHandler, Platform, ScrollView, StyleSheet, View } from 'react-native';
-import { ActivityIndicator, Appbar, Button, Card, Text, useTheme } from 'react-native-paper';
 
 export default function RecentWorkouts() {
     const { t } = useTranslation();

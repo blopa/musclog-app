@@ -1,9 +1,10 @@
-import i18n from '@/lang/lang';
-import { captureException } from '@/utils/sentry';
 import * as Updates from 'expo-updates';
 import React from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 import { Button, Text } from 'react-native-paper';
+
+import i18n from '@/lang/lang';
+import { captureException } from '@/utils/sentry';
 
 interface Props {
     children: React.ReactNode;

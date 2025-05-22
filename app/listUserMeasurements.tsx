@@ -1,3 +1,12 @@
+import { FontAwesome5 } from '@expo/vector-icons';
+import { NavigationProp } from '@react-navigation/native';
+import { FlashList } from '@shopify/flash-list';
+import { useFocusEffect } from 'expo-router';
+import React, { useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { BackHandler, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Appbar, Card, Text, useTheme } from 'react-native-paper';
+
 import AnimatedSearchBar from '@/components/AnimatedSearchBar';
 import FABWrapper from '@/components/FABWrapper';
 import { Screen } from '@/components/Screen';
@@ -8,14 +17,6 @@ import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { deleteUserMeasurements, getTotalUserMeasurementsCount, getUserMeasurementsPaginated } from '@/utils/database';
 import { formatDate } from '@/utils/date';
 import { UserMeasurementsReturnType } from '@/utils/types';
-import { FontAwesome5 } from '@expo/vector-icons';
-import { NavigationProp } from '@react-navigation/native';
-import { FlashList } from '@shopify/flash-list';
-import { useFocusEffect } from 'expo-router';
-import React, { useCallback, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { BackHandler, StyleSheet, View } from 'react-native';
-import { ActivityIndicator, Appbar, Card, Text, useTheme } from 'react-native-paper';
 
 export default function ListUserMeasurements({ navigation }: { navigation: NavigationProp<any> }) {
     const { t } = useTranslation();

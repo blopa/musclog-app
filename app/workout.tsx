@@ -1,3 +1,11 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { NavigationProp } from '@react-navigation/native';
+import { useFocusEffect } from 'expo-router';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { BackHandler, ScrollView, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Button, Text, useTheme } from 'react-native-paper';
+
 import { Screen } from '@/components/Screen';
 import WorkoutModal from '@/components/WorkoutModal';
 import WorkoutSession from '@/components/WorkoutSession';
@@ -52,13 +60,6 @@ import {
 } from '@/utils/types';
 import { getDisplayFormattedWeight } from '@/utils/unit';
 import { calculateNextWorkoutRepsAndSets, resetWorkoutStorageData } from '@/utils/workout';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { NavigationProp } from '@react-navigation/native';
-import { useFocusEffect } from 'expo-router';
-import React, { useCallback, useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { BackHandler, ScrollView, StyleSheet, View } from 'react-native';
-import { ActivityIndicator, Button, Text, useTheme } from 'react-native-paper';
 
 const getCurrentExercises = async (
     originalExercises: CurrentWorkoutExercise[],

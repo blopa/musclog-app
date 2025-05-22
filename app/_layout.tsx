@@ -1,3 +1,13 @@
+import { FontAwesome } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Sentry from '@sentry/react-native';
+import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
+import React, { useEffect } from 'react';
+import { I18nextProvider } from 'react-i18next';
+import { PaperProvider } from 'react-native-paper';
+import { initialWindowMetrics, SafeAreaProvider } from 'react-native-safe-area-context';
+
 // import TestScreen from '@/app/test';
 import CustomErrorBoundary from '@/components/CustomErrorBoundary';
 import DrawerMenu from '@/components/DrawerMenu';
@@ -21,6 +31,9 @@ import { HealthConnectProvider } from '@/storage/HealthConnectProvider';
 import { LayoutReloaderProvider } from '@/storage/LayoutReloaderProvider';
 import { SettingsProvider, useSettings } from '@/storage/SettingsContext';
 import { SnackbarProvider } from '@/storage/SnackbarProvider';
+
+import 'react-native-reanimated';
+
 import { UnreadMessagesProvider, useUnreadMessages } from '@/storage/UnreadMessagesProvider';
 import { isAllowedLocation } from '@/utils/ai';
 import {
@@ -50,19 +63,9 @@ import {
 import { getCurrentTimestampISOString } from '@/utils/date';
 import { getEncryptionKey } from '@/utils/encryption';
 import { getLatestHealthConnectData } from '@/utils/healthConnect';
-import 'react-native-reanimated';
 import { captureException, captureMessage } from '@/utils/sentry';
 import { getDecrypter } from '@/utils/storage';
 import { ExerciseInsertType } from '@/utils/types';
-import { FontAwesome } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as Sentry from '@sentry/react-native';
-import { useFonts } from 'expo-font';
-import * as SplashScreen from 'expo-splash-screen';
-import React, { useEffect } from 'react';
-import { I18nextProvider } from 'react-i18next';
-import { PaperProvider } from 'react-native-paper';
-import { initialWindowMetrics, SafeAreaProvider } from 'react-native-safe-area-context';
 
 import packageJson from '../package.json';
 

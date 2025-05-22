@@ -1,8 +1,9 @@
-import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { Picker } from '@react-native-picker/picker';
 import React from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { Text, useTheme } from 'react-native-paper';
+
+import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 
 interface CustomPickerProps {
     items: { label: string; value: string }[];

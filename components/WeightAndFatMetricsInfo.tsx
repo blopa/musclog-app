@@ -1,7 +1,8 @@
-import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 import { Text, useTheme } from 'react-native-paper';
+
+import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 
 interface WeightAndFatMetricsInfoProps {
     bodyFatExamplesMessage?: string;

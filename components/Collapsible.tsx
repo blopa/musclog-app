@@ -1,8 +1,9 @@
-import { CustomThemeType } from '@/utils/colors';
 import { Ionicons } from '@expo/vector-icons';
 import React, { PropsWithChildren, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Text, useTheme } from 'react-native-paper';
+
+import { CustomThemeType } from '@/utils/colors';
 
 export function Collapsible({ children, title }: PropsWithChildren & { title: string }) {
     const [isOpen, setIsOpen] = useState(false);

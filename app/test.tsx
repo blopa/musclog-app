@@ -1,3 +1,7 @@
+import * as WebBrowser from 'expo-web-browser';
+import React, { useEffect, useState } from 'react';
+import { Button, ScrollView, StyleSheet, Text, View } from 'react-native';
+
 import { useGoogleAuth } from '@/hooks/useGoogleAuth';
 import {
     deleteAllData,
@@ -5,9 +9,6 @@ import {
     handleGoogleSignIn,
     refreshAccessToken,
 } from '@/utils/googleAuth';
-import * as WebBrowser from 'expo-web-browser';
-import React, { useEffect, useState } from 'react';
-import { Button, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 WebBrowser.maybeCompleteAuthSession();
 

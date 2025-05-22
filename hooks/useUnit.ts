@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+
 import {
     FEET,
     KILOGRAMS,
@@ -8,7 +10,6 @@ import {
 } from '@/constants/storage';
 import { useLayoutReloader } from '@/storage/LayoutReloaderProvider';
 import { useSettings } from '@/storage/SettingsContext';
-import { useEffect, useState } from 'react';
 
 const useUnit = () => {
     const [unitSystem, setUnitSystem] = useState(METRIC_SYSTEM);

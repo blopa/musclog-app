@@ -1,9 +1,10 @@
+import React, { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react';
+import { useColorScheme as useOriginalUseColorScheme } from 'react-native';
+
 import { SYSTEM_DEFAULT } from '@/constants/colors';
 import { THEME_CHOICE_TYPE } from '@/constants/storage';
 import { getSetting } from '@/utils/database';
 import { ThemeType } from '@/utils/types';
-import React, { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react';
-import { useColorScheme as useOriginalUseColorScheme } from 'react-native';
 
 interface CustomThemeContextValue {
     setTheme: (themeName: ThemeType) => void;

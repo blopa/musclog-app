@@ -1,3 +1,11 @@
+import { NavigationProp, useRoute } from '@react-navigation/native';
+// import fetch from 'isomorphic-fetch';
+import { fetch } from 'expo/fetch';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Alert, Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Appbar, Button, Checkbox, Text, useTheme } from 'react-native-paper';
+
 import CompletionModal from '@/components/CompletionModal';
 import CustomTextInput from '@/components/CustomTextInput';
 import { Screen } from '@/components/Screen';
@@ -7,13 +15,6 @@ import { getCurrentTimestampISOString } from '@/utils/date';
 import { updateRecentFood } from '@/utils/storage';
 import { formatFloatNumericInputText, generateHash } from '@/utils/string';
 import { GoogleFormFoodFoodLabelType } from '@/utils/types';
-import { NavigationProp, useRoute } from '@react-navigation/native';
-// import fetch from 'isomorphic-fetch';
-import { fetch } from 'expo/fetch';
-import React, { useCallback, useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Alert, Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
-import { Appbar, Button, Checkbox, Text, useTheme } from 'react-native-paper';
 
 import form from '../data/foodForm.json';
 

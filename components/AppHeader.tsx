@@ -1,7 +1,8 @@
-import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import React from 'react';
 import { Platform, StyleSheet } from 'react-native';
 import { Appbar, useTheme } from 'react-native-paper';
+
+import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 
 const AppHeader = ({ title } : {title: string}) => {
     const { colors, dark } = useTheme<CustomThemeType>();

@@ -1,9 +1,10 @@
-import { addTransparency, CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal, Platform, Pressable, StyleSheet, View } from 'react-native';
 import { Button, useTheme } from 'react-native-paper';
+
+import { addTransparency, CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 
 type TimePickerModalProps = {
     onChangeTime: (time: Date) => void;

@@ -1,3 +1,10 @@
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { useFocusEffect } from 'expo-router';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { StyleSheet, View } from 'react-native';
+import { Button, Card, Text, useTheme } from 'react-native-paper';
+
 import { IMPERIAL_SYSTEM, KILOGRAMS } from '@/constants/storage';
 import useUnit from '@/hooks/useUnit';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
@@ -6,12 +13,6 @@ import { formatDate } from '@/utils/date';
 import { WorkoutEventReturnType } from '@/utils/types';
 import { getDisplayFormattedWeight } from '@/utils/unit';
 import { calculateWorkoutVolume } from '@/utils/workout';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { useFocusEffect } from 'expo-router';
-import React, { useCallback, useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { StyleSheet, View } from 'react-native';
-import { Button, Card, Text, useTheme } from 'react-native-paper';
 
 const RecentWorkoutMessageCard = ({ recentWorkoutId }: { recentWorkoutId: number }) => {
     const navigation = useNavigation<NavigationProp<any>>();

@@ -1,8 +1,9 @@
-import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import React, { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StatusBar, StyleSheet } from 'react-native';
 import { Snackbar, useTheme } from 'react-native-paper';
+
+import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 
 interface SnackbarContextValue {
     hideSnackbar: () => void;

@@ -1,11 +1,12 @@
-import ThemedModal from '@/components/ThemedModal';
-import useUnit from '@/hooks/useUnit';
-import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
-import { ExerciseProgressType, ExerciseReturnType, ExerciseWithSetsType, SetReturnType } from '@/utils/types';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Dimensions, ScrollView, StyleSheet, View } from 'react-native';
 import { Text, useTheme } from 'react-native-paper';
+
+import ThemedModal from '@/components/ThemedModal';
+import useUnit from '@/hooks/useUnit';
+import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
+import { ExerciseProgressType, ExerciseReturnType, ExerciseWithSetsType, SetReturnType } from '@/utils/types';
 
 interface PreviousSetDataModalProps {
     completedWorkoutData: ExerciseProgressType[];

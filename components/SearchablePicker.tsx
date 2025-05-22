@@ -1,10 +1,11 @@
-import CustomTextInput from '@/components/CustomTextInput';
-import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { FlashList } from '@shopify/flash-list';
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Animated, Modal, Pressable, StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { Button, Text, useTheme } from 'react-native-paper';
+
+import CustomTextInput from '@/components/CustomTextInput';
+import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 
 interface SearchablePickerProps {
     items: { label: string; value: string }[];

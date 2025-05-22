@@ -1,10 +1,11 @@
-import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { FontAwesome5 } from '@expo/vector-icons';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Keyboard, StyleSheet, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { useTheme } from 'react-native-paper';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+
+import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 
 export default function AnimatedSearchBar({ isOpen: forceOpen = false, searchQuery, setSearchQuery }: { isOpen?: boolean, searchQuery: string; setSearchQuery: (query: string) => void }) {
     const { t } = useTranslation();

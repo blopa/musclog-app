@@ -1,16 +1,17 @@
-import Dashboard from '@/app/dashboard';
-import CurrentWorkout from '@/app/workout';
-import { DARK, LIGHT } from '@/constants/colors';
-import { CustomThemeType } from '@/utils/colors';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useFocusEffect } from 'expo-router';
-import 'react-native-url-polyfill/auto';
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BackHandler } from 'react-native';
 import { useTheme } from 'react-native-paper';
+import 'react-native-url-polyfill/auto';
 import SystemNavigationBar from 'react-native-system-navigation-bar';
+
+import Dashboard from '@/app/dashboard';
+import CurrentWorkout from '@/app/workout';
+import { DARK, LIGHT } from '@/constants/colors';
+import { CustomThemeType } from '@/utils/colors';
 
 const Tab = createBottomTabNavigator();
 

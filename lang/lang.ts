@@ -1,7 +1,3 @@
-import exercisesEnUSData from '@/data/exercisesEnUS.json';
-import exercisesEsData from '@/data/exercisesEs.json';
-import exercisesNlData from '@/data/exercisesNl.json';
-import exercisesPtBRData from '@/data/exercisesPtBR.json';
 import {
     enUS as localeEnUS,
     es as localeEs,
@@ -10,8 +6,14 @@ import {
 } from 'date-fns/locale';
 import * as Localization from 'expo-localization';
 import i18n from 'i18next';
-import 'intl-pluralrules';
 import { initReactI18next } from 'react-i18next';
+
+import exercisesEnUSData from '@/data/exercisesEnUS.json';
+import exercisesEsData from '@/data/exercisesEs.json';
+import exercisesNlData from '@/data/exercisesNl.json';
+import exercisesPtBRData from '@/data/exercisesPtBR.json';
+
+import 'intl-pluralrules';
 
 import enUs from './locales/en-us.json';
 import es from './locales/es-es.json';

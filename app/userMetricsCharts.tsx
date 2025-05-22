@@ -1,3 +1,10 @@
+import { FontAwesome5 } from '@expo/vector-icons';
+import { NavigationProp, useFocusEffect } from '@react-navigation/native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { BackHandler, Platform, ScrollView, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Appbar, Button, useTheme } from 'react-native-paper';
+
 import BarChart from '@/components/Charts/BarChart';
 import LineChart from '@/components/Charts/LineChart';
 import NutritionDetailedChart from '@/components/Charts/NutritionDetailedChart';
@@ -71,12 +78,6 @@ import {
 } from '@/utils/types';
 import { getDisplayFormattedWeight } from '@/utils/unit';
 import { calculateWorkoutVolume, getSetsDoneBetweenDates } from '@/utils/workout';
-import { FontAwesome5 } from '@expo/vector-icons';
-import { NavigationProp, useFocusEffect } from '@react-navigation/native';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { BackHandler, Platform, ScrollView, StyleSheet, View } from 'react-native';
-import { ActivityIndicator, Appbar, Button, useTheme } from 'react-native-paper';
 
 const DATE_FORMAT = 'MMM d';
 

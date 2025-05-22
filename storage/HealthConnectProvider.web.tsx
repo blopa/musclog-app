@@ -1,8 +1,9 @@
 import type { HealthConnectRecord, RecordType } from 'react-native-health-connect/src/types';
 
+import React, { createContext, ReactNode, useContext } from 'react';
+
 import { DEFAULT_PAGE_SIZE } from '@/constants/healthConnect';
 import { HealthDataType } from '@/utils/types';
-import React, { createContext, ReactNode, useContext } from 'react';
 
 import data from '../data/healthDataExample.json';
 

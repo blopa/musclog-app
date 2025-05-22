@@ -1,6 +1,7 @@
-import { WORKOUT_START_TIME } from '@/constants/storage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
+
+import { WORKOUT_START_TIME } from '@/constants/storage';
 
 // TODO: maybe use useAsyncStorage here
 const useWorkoutTimer = (startTime: null | number) => {

@@ -1,3 +1,15 @@
+import { FontAwesome5 } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { NavigationProp } from '@react-navigation/native';
+import { FlashList } from '@shopify/flash-list';
+import * as Calendar from 'expo-calendar';
+import { useFocusEffect } from 'expo-router';
+import { createEvent } from 'ics';
+import React, { useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { BackHandler, Platform, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Appbar, Card, Text, useTheme } from 'react-native-paper';
+
 import AnimatedSearchBar from '@/components/AnimatedSearchBar';
 import CompletionModal from '@/components/CompletionModal';
 import FABWrapper from '@/components/FABWrapper';
@@ -16,17 +28,6 @@ import {
 import { formatDate } from '@/utils/date';
 import { WorkoutEventReturnType } from '@/utils/types';
 import { resetWorkoutStorageData } from '@/utils/workout';
-import { FontAwesome5 } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { NavigationProp } from '@react-navigation/native';
-import { FlashList } from '@shopify/flash-list';
-import * as Calendar from 'expo-calendar';
-import { useFocusEffect } from 'expo-router';
-import { createEvent } from 'ics';
-import React, { useCallback, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { BackHandler, Platform, StyleSheet, View } from 'react-native';
-import { ActivityIndicator, Appbar, Card, Text, useTheme } from 'react-native-paper';
 
 type Callback = () => void;
 

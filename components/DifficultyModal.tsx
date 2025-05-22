@@ -1,9 +1,10 @@
-import ThemedModal from '@/components/ThemedModal';
-import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet } from 'react-native';
 import { Button, useTheme } from 'react-native-paper';
+
+import ThemedModal from '@/components/ThemedModal';
+import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 
 import SliderWithButtons from './SliderWithButtons';
 

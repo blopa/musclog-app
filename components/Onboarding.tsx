@@ -1,3 +1,9 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Linking, ScrollView, StatusBar, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Button, SegmentedButtons, Text, useTheme } from 'react-native-paper';
+
 import CustomPicker from '@/components/CustomPicker';
 import CustomTextInput from '@/components/CustomTextInput';
 import DatePickerModal from '@/components/DatePickerModal';
@@ -37,11 +43,6 @@ import {
     getSaveFormattedHeight,
     getSaveFormattedWeight,
 } from '@/utils/unit';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Linking, ScrollView, StatusBar, StyleSheet, View } from 'react-native';
-import { ActivityIndicator, Button, SegmentedButtons, Text, useTheme } from 'react-native-paper';
 
 type OnboardingProps = {
     onFinish: () => void;

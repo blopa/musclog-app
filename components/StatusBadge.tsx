@@ -1,9 +1,10 @@
-import { COMPLETED_STATUS, INPROGRESS_STATUS, MISSED_STATUS, SCHEDULED_STATUS } from '@/constants/storage';
-import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { Text, useTheme } from 'react-native-paper';
+
+import { COMPLETED_STATUS, INPROGRESS_STATUS, MISSED_STATUS, SCHEDULED_STATUS } from '@/constants/storage';
+import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 
 interface StatusBadgeProps {
     status: string;

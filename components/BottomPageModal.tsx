@@ -1,7 +1,8 @@
-import { addTransparency, CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import React, { useEffect, useRef } from 'react';
 import { Animated, Modal, Pressable, StyleSheet } from 'react-native';
 import { useTheme } from 'react-native-paper';
+
+import { addTransparency, CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 
 type BottomPageModalProps = {
     children: React.ReactNode;

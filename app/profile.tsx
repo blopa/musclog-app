@@ -1,3 +1,11 @@
+import { FontAwesome, FontAwesome5, FontAwesome6, MaterialCommunityIcons } from '@expo/vector-icons';
+import { NavigationProp } from '@react-navigation/native';
+import { useFocusEffect } from 'expo-router';
+import React, { useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { BackHandler, ScrollView, StyleSheet, View } from 'react-native';
+import { Avatar, Button, Card, Text, useTheme } from 'react-native-paper';
+
 import AppHeader from '@/components/AppHeader';
 import CustomPicker from '@/components/CustomPicker';
 import CustomTextInput from '@/components/CustomTextInput';
@@ -27,13 +35,6 @@ import {
     getSaveFormattedHeight,
     getSaveFormattedWeight,
 } from '@/utils/unit';
-import { FontAwesome, FontAwesome5, FontAwesome6, MaterialCommunityIcons } from '@expo/vector-icons';
-import { NavigationProp } from '@react-navigation/native';
-import { useFocusEffect } from 'expo-router';
-import React, { useCallback, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { BackHandler, ScrollView, StyleSheet, View } from 'react-native';
-import { Avatar, Button, Card, Text, useTheme } from 'react-native-paper';
 
 const Profile = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const { t } = useTranslation();

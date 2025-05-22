@@ -1,9 +1,10 @@
+import { Asset } from 'expo-asset';
+import { useEffect, useState } from 'react';
+
 import { generateExerciseImage } from '@/utils/ai';
 import exerciseImages from '@/utils/exerciseImages';
 import { downloadAsyncToFileSystem, getFileInfoForExerciseId, getFileUriForExerciseId } from '@/utils/file';
 import { ExerciseReturnType } from '@/utils/types';
-import { Asset } from 'expo-asset';
-import { useEffect, useState } from 'react';
 
 const useWorkoutImage = (exercise?: ExerciseReturnType) => {
     const [imageUrl, setImageUrl] = useState('https://via.placeholder.com/300');

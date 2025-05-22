@@ -1,9 +1,10 @@
-import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { FontAwesome } from '@expo/vector-icons';
 import Slider from '@react-native-community/slider';
 import React from 'react';
 import { StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { Text, useTheme } from 'react-native-paper';
+
+import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 
 type SliderWithButtonsProps = {
     label: string;

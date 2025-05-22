@@ -1,3 +1,12 @@
+import { useFocusEffect } from 'expo-router';
+import React, { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { StyleSheet, TextStyle, View } from 'react-native';
+import { AvatarProps, IMessage, Message, MessageProps, MessageTextProps, Reply } from 'react-native-gifted-chat';
+import { QuickReplies } from 'react-native-gifted-chat/lib/QuickReplies';
+import Markdown from 'react-native-markdown-display';
+import { ActivityIndicator, useTheme } from 'react-native-paper';
+
 import BotAvatar from '@/components/BotAvatar';
 import RecentWorkoutMessageCard from '@/components/RecentWorkoutMessageCard';
 import { CANCEL_GENERATE_MY_WORKOUTS, GENERATE_MY_WORKOUTS, GET_WORKOUT_FEEDBACK } from '@/constants/chat';
@@ -11,14 +20,6 @@ import { getRecentWorkoutById, getTotalWorkoutsCount, getWorkoutById } from '@/u
 import { getCurrentTimestampISOString } from '@/utils/date';
 import { getCalculateNextWorkoutVolumePrompt } from '@/utils/prompts';
 import { ChatInsertType } from '@/utils/types';
-import { useFocusEffect } from 'expo-router';
-import React, { useCallback, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { StyleSheet, TextStyle, View } from 'react-native';
-import { AvatarProps, IMessage, Message, MessageProps, MessageTextProps, Reply } from 'react-native-gifted-chat';
-import { QuickReplies } from 'react-native-gifted-chat/lib/QuickReplies';
-import Markdown from 'react-native-markdown-display';
-import { ActivityIndicator, useTheme } from 'react-native-paper';
 
 export type AIJsonResponseType = {
     messageToBio?: string;

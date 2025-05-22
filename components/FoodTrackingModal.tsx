@@ -1,3 +1,8 @@
+import React, { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Button, Checkbox, Text, useTheme } from 'react-native-paper';
+
 import PieChart from '@/components/Charts/PieChart';
 import CustomPicker from '@/components/CustomPicker';
 import CustomTextInput from '@/components/CustomTextInput';
@@ -15,10 +20,6 @@ import { updateRecentFood } from '@/utils/storage';
 import { generateHash, safeToFixed } from '@/utils/string';
 import { UserNutritionInsertType } from '@/utils/types';
 import { getDisplayFormattedWeight } from '@/utils/unit';
-import React, { useCallback, useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
-import { ActivityIndicator, Button, Checkbox, Text, useTheme } from 'react-native-paper';
 
 export type FoodTrackingType = {
     carbs: number;

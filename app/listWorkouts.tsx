@@ -1,3 +1,20 @@
+import { FontAwesome5 } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { NavigationProp } from '@react-navigation/native';
+import { FlashList } from '@shopify/flash-list';
+import { useFocusEffect } from 'expo-router';
+import React, { useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { BackHandler, Platform, StyleSheet, View } from 'react-native';
+import {
+    ActivityIndicator,
+    Appbar,
+    Card,
+    Switch,
+    Text,
+    useTheme,
+} from 'react-native-paper';
+
 import AnimatedSearchBar from '@/components/AnimatedSearchBar';
 import CustomTextInput from '@/components/CustomTextInput';
 import FABWrapper from '@/components/FABWrapper';
@@ -28,22 +45,6 @@ import {
 } from '@/utils/types';
 import { getDisplayFormattedWeight } from '@/utils/unit';
 import { resetWorkoutStorageData } from '@/utils/workout';
-import { FontAwesome5 } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { NavigationProp } from '@react-navigation/native';
-import { FlashList } from '@shopify/flash-list';
-import { useFocusEffect } from 'expo-router';
-import React, { useCallback, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { BackHandler, Platform, StyleSheet, View } from 'react-native';
-import {
-    ActivityIndicator,
-    Appbar,
-    Card,
-    Switch,
-    Text,
-    useTheme,
-} from 'react-native-paper';
 
 export default function ListWorkouts({ navigation }: { navigation: NavigationProp<any> }) {
     const { t } = useTranslation();
