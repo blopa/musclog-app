@@ -1,19 +1,65 @@
 import { CameraView as ExpoCameraView, PermissionResponse, useCameraPermissions as useExpoCameraPermissions } from 'expo-camera';
-import { ReactNode } from 'react';
-import { Platform } from 'react-native';
+import { ReactNode, RefObject } from 'react';
+import { Platform, StyleProp, View, ViewStyle } from 'react-native';
+import { useZxing } from 'react-zxing';
 
 type CameraViewProps = {
     [key: string]: any;
     children?: ReactNode;
+    onBarcodeScanned?: (event: { data: string; type: string; }) => void;
+    style?: StyleProp<ViewStyle>;
 };
 
-export const CameraView = ({ children, ...otherProps }: CameraViewProps) => {
-    if (Platform.OS === 'web' && otherProps.onBarcodeScanned) {
-        // TODO: Implement web camera view
-        // for some reason, the web camera view from expo-camera is not
-        // properly focusing the camera when the camera is opened
-        // so we need to use a custom camera view for web that can properly focus
-        // to be able to scan barcodes and then call the onBarcodeScanned prop
+/** Web-only camera that uses react-zxing under the hood */
+const WebCameraView = ({
+    children,
+    onBarcodeScanned,
+    style,
+    ...otherProps
+}: CameraViewProps) => {
+    const { ref } = useZxing({
+        constraints: {
+            audio: false,
+            video: { facingMode: 'environment' },
+        },
+        onDecodeResult: (result) => {
+            onBarcodeScanned?.({
+                data: result.getText(),
+                type: result.getBarcodeFormat().toString(),
+            });
+        },
+    });
+
+    return (
+        <View style={[{ flex: 1 }, style]}>
+            <video
+                autoPlay
+                muted
+                playsInline
+                ref={ref as RefObject<HTMLVideoElement>}
+                style={{ height: '100%', width: '100%' }}
+            />
+            {children}
+        </View>
+    );
+};
+
+export const CameraView = ({
+    children,
+    onBarcodeScanned,
+    style,
+    ...otherProps
+}: CameraViewProps) => {
+    if (Platform.OS === 'web' && onBarcodeScanned) {
+        return (
+            <WebCameraView
+                onBarcodeScanned={onBarcodeScanned}
+                style={style}
+                {...otherProps}
+            >
+                {children}
+            </WebCameraView>
+        );
     }
 
     return (

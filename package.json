@@ -51,6 +51,7 @@
     "@react-navigation/native": "7.0.14",
     "@sentry/react-native": "6.9.1",
     "@shopify/flash-list": "1.8.0",
+    "@zxing/library": "^0.21.3",
     "buffer": "6.0.3",
     "chart.js": "4.4.9",
     "crypto-js": "4.2.0",
@@ -130,6 +131,7 @@
     "react-native-url-polyfill": "2.0.0",
     "react-native-view-shot": "4.0.3",
     "react-native-web": "0.19.13",
+    "react-zxing": "^2.1.0",
     "simple-git": "3.27.0",
     "turtle-cli": "0.28.1",
     "xlsx": "0.18.5"

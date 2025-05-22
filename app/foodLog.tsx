@@ -767,11 +767,6 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                         <FontAwesome5 color={colors.onPrimary} name="file-upload" size={30} />
                     </TouchableOpacity>
                 </View>
-                {Platform.OS === 'web' && (
-                    <Text style={styles.webGuidanceText}>
-                        {t('web_barcode_focus_guidance')}
-                    </Text>
-                )}
             </View>
         </View>
     ), [colors.onPrimary, handleLoadLocalFile, styles.focusBorder, styles.photoControlButton, styles.controls, styles.scannerControls, styles.scannerFocusArea, styles.scannerOverlayBottom, styles.scannerOverlayContainer, styles.scannerOverlayMiddle, styles.scannerOverlayTop, styles.webGuidanceText, t]);
