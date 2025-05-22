@@ -5,7 +5,6 @@ import Quagga from '@ericblade/quagga2';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { NavigationProp } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
-import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { useFocusEffect } from 'expo-router';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
@@ -25,6 +24,7 @@ import { Appbar, Button, Card, SegmentedButtons, Text, TextInput, useTheme } fro
 import { TabBar, TabView } from 'react-native-tab-view';
 
 import ArrowedDatePicker from '@/components/ArrowedDatePicker';
+import { CameraView, useCameraPermissions } from '@/components/CameraView';
 import FABWrapper from '@/components/FABWrapper';
 import FoodItem from '@/components/FoodItem';
 import FoodTrackingModal, { FoodTrackingType } from '@/components/FoodTrackingModal';

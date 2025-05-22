@@ -1,3 +1,5 @@
+import OpenAI from 'openai';
+
 import { OPENAI_MODELS } from '@/constants/ai';
 import {
     EXERCISE_IMAGE_GENERATION_TYPE,
@@ -8,7 +10,6 @@ import i18n from '@/lang/lang';
 import { getSetting, processWorkoutPlan } from '@/utils/database';
 import { getBase64StringFromPhotoUri, resizeImage } from '@/utils/file';
 import { WorkoutPlan, WorkoutReturnType } from '@/utils/types';
-import OpenAI from 'openai';
 
 import {
     createWorkoutPlanPrompt,
@@ -228,7 +229,7 @@ export const generateExerciseImage = async (exerciseName: string) => {
         size: '1024x1024',
     });
 
-    return response.data[0].url;
+    return response?.data?.[0]?.url || 'https://via.placeholder.com/300';
 };
 
 export const parsePastWorkouts = async (userMessage: string) => {
