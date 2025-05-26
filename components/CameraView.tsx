@@ -1,7 +1,6 @@
 import { CameraView as ExpoCameraView, PermissionResponse, useCameraPermissions as useExpoCameraPermissions } from 'expo-camera';
-import { ReactNode, RefObject } from 'react';
-import { Platform, StyleProp, View, ViewStyle } from 'react-native';
-import { useZxing } from 'react-zxing';
+import { ReactNode } from 'react';
+import { StyleProp, ViewStyle } from 'react-native';
 
 type CameraViewProps = {
     [key: string]: any;
@@ -10,58 +9,12 @@ type CameraViewProps = {
     style?: StyleProp<ViewStyle>;
 };
 
-/** Web-only camera that uses react-zxing under the hood */
-const WebCameraView = ({
-    children,
-    onBarcodeScanned,
-    style,
-    ...otherProps
-}: CameraViewProps) => {
-    const { ref } = useZxing({
-        constraints: {
-            audio: false,
-            video: { facingMode: 'environment' },
-        },
-        onDecodeResult: (result) => {
-            onBarcodeScanned?.({
-                data: result.getText(),
-                type: result.getBarcodeFormat().toString(),
-            });
-        },
-    });
-
-    return (
-        <View style={[{ flex: 1 }, style]}>
-            <video
-                autoPlay
-                muted
-                playsInline
-                ref={ref as RefObject<HTMLVideoElement>}
-                style={{ height: '100%', width: '100%' }}
-            />
-            {children}
-        </View>
-    );
-};
-
 export const CameraView = ({
     children,
     onBarcodeScanned,
     style,
     ...otherProps
 }: CameraViewProps) => {
-    if (Platform.OS === 'web' && onBarcodeScanned) {
-        return (
-            <WebCameraView
-                onBarcodeScanned={onBarcodeScanned}
-                style={style}
-                {...otherProps}
-            >
-                {children}
-            </WebCameraView>
-        );
-    }
-
     return (
         <ExpoCameraView
             {...otherProps}
