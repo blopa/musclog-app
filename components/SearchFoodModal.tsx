@@ -3,7 +3,7 @@ import type { FocusMode } from 'expo-camera/build/Camera.types';
 import Quagga from '@ericblade/quagga2';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { BarcodeScanningResult, CameraView, useCameraPermissions } from 'expo-camera';
+import { BarcodeScanningResult } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { useFocusEffect } from 'expo-router';
 import React, { useCallback, useRef, useState } from 'react';
@@ -36,6 +36,8 @@ import { getCurrentTimestampISOString, getDaysAgoTimestampISOString } from '@/ut
 import { fetchProductByEAN } from '@/utils/fetchFoodData';
 import { exerptlizeString } from '@/utils/string';
 import { UserNutritionDecryptedReturnType } from '@/utils/types';
+
+import { CameraView, useCameraPermissions } from './CameraView';
 
 interface SearchFoodModalProps {
     defaultMealType?: string;
@@ -70,7 +72,7 @@ const SearchFoodModal = ({
 
     const [lastTrackedFoods, setLastTrackedFoods] = useState<UserNutritionDecryptedReturnType[]>([]);
 
-    const photoCameraRef = useRef<CameraView>(null);
+    const photoCameraRef = useRef<any>(null);
 
     const { getSettingByType } = useSettings();
     const checkApiKey = useCallback(async () => {
