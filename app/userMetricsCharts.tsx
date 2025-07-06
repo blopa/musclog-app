@@ -44,7 +44,7 @@ import {
     calculateFFMI,
     calculatePastWorkoutsWeeklyAverages,
     calculateTDEE,
-    calculateUserMetricsNutritionWeeklyAverages,
+    computeNutritionMetricsPeriodStats,
 } from '@/utils/data';
 import {
     getClosestWeightUserMetric,
@@ -766,7 +766,7 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
                 setYAxisFat({ axisMaximum: 100, axisMinimum: 0 }); // Default values
             }
 
-            // Calculate TDEE
+            // Prepare aggregated data and compute period stats
             const aggregatedUserMetricsNutrition = aggregateUserMetricsNutrition(
                 loadedUserNutrition,
                 loadedUserMetrics,
@@ -774,25 +774,20 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
             );
 
             const {
+                finalFatPercentage,
+                finalWeight,
+                initialFatPercentage,
+                initialWeight,
+                totalCalories,
                 totalDays,
-                weeklyAverages: userMetricsNutritionWeeklyAverages,
-            } = calculateUserMetricsNutritionWeeklyAverages(
-                aggregatedUserMetricsNutrition
-            );
-
-            // Calculate calories with reduce
-            const totalCalories = userMetricsNutritionWeeklyAverages.reduce((sum, item) => sum + item.averageCalories, 0);
-            const initialWeight = userMetricsNutritionWeeklyAverages?.at(0)?.averageWeight || 0;
-            const finalWeight = userMetricsNutritionWeeklyAverages?.at(-1)?.averageWeight || 0;
-            const initialFatPercentage = userMetricsNutritionWeeklyAverages?.at(0)?.averageFatPercentage || 0;
-            const finalFatPercentage = userMetricsNutritionWeeklyAverages?.at(-1)?.averageFatPercentage || 0;
+            } = computeNutritionMetricsPeriodStats(aggregatedUserMetricsNutrition, loadedUserMetrics);
 
             const useFatPercentageTDEESetting = await getSettingByType(USE_FAT_PERCENTAGE_TDEE_TYPE);
             const useFatPercentageTDEE = useFatPercentageTDEESetting?.value === 'true';
             const user = await getUser();
 
-            const tdee = calculateTDEE(
-                (totalCalories / userMetricsNutritionWeeklyAverages.length) * totalDays,
+            const calculatedTdee = calculateTDEE(
+                totalCalories,
                 totalDays,
                 initialWeight,
                 finalWeight,
@@ -856,8 +851,12 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
                 setFFMI(undefined);
             }
 
-            setTDEE(tdee);
-            setAverageCalories(totalCalories / userMetricsNutritionWeeklyAverages.length);
+            // Calculate average calories per day by dividing total calories by number of days
+            const daysInPeriod = totalDays;
+            const avgCalories = totalCalories / daysInPeriod;
+
+            setTDEE(calculatedTdee);
+            setAverageCalories(avgCalories);
 
             const vendor = await getAiApiVendor();
             const isAiSettingsEnabled = await getSettingByType(AI_SETTINGS_TYPE);
