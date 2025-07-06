@@ -1211,7 +1211,7 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
                                 weightData={weightData}
                             />
                         ) : null}
-                        {(!showWeeklyAverages && setsChartData) ? (
+                        {(!showWeeklyAverages && setsChartData && setsChartData.values.length > 1) ? (
                             <BarChart
                                 data={[setsChartData]}
                                 granularity={1}
