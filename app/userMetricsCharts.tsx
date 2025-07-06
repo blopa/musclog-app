@@ -742,7 +742,7 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
 
             setAggregatedNutritionAndWeightData(aggregatedNutritionAndWeightData);
 
-            if (weightDataToShow.length > 0) {
+            if (weightDataToShow.length > 1) {
                 const weightValues = weightDataToShow.map((d) => d.y);
                 const weightMin = Math.min(...weightValues);
                 const weightMax = Math.max(...weightValues);
@@ -754,7 +754,7 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
                 setYAxisWeight({ axisMaximum: 100, axisMinimum: 0 }); // Default values
             }
 
-            if (fatPercentageDataToShow.length > 0) {
+            if (fatPercentageDataToShow.length > 1) {
                 const fatValues = fatPercentageDataToShow.map((d) => d.y);
                 const fatMin = Math.min(...fatValues);
                 const fatMax = Math.max(...fatValues);
@@ -1159,7 +1159,7 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
                         timeRange={dateRange}
                     />
                     <ScrollView contentContainerStyle={styles.scrollViewContainer} style={styles.scrollView}>
-                        {fatPercentageData.length > 0 ? (
+                        {fatPercentageData.length > 1 ? (
                             <LineChart
                                 data={fatPercentageData}
                                 granularity={showWeeklyAverages ? 1 : 3}
@@ -1171,7 +1171,7 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
                                 yAxisLabel={t('fat_percentage')}
                             />
                         ) : null}
-                        {weightData.length > 0 ? (
+                        {weightData.length > 1 ? (
                             <WeightLineChart
                                 metricsAverages={metricsAverages}
                                 showWeeklyAverages={showWeeklyAverages}
@@ -1180,7 +1180,7 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
                                 yAxisConfig={yAxisWeight}
                             />
                         ) : null}
-                        {ffmiData.length > 0 ? (
+                        {ffmiData.length > 1 ? (
                             <LineChart
                                 data={ffmiData}
                                 granularity={showWeeklyAverages ? 1 : 3}
@@ -1195,7 +1195,7 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
                                 yAxisLabel={t('ffmi')}
                             />
                         ) : null}
-                        {foodChartData.length > 0 ? (
+                        {foodChartData.length > 1 ? (
                             <NutritionDetailedChart
                                 aggregatedNutritionAndWeightData={aggregatedNutritionAndWeightData}
                                 averageCalories={averageCalories}
@@ -1229,7 +1229,7 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
                                 yAxisLabel={t('sets')}
                             />
                         ) : null}
-                        {recentWorkoutsData.length > 0 ? (
+                        {recentWorkoutsData.length > 1 ? (
                             <LineChart
                                 data={recentWorkoutsData}
                                 granularity={showWeeklyAverages ? 1 : 3}
