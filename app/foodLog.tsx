@@ -391,7 +391,6 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                                     {userNutritions.map((userNutrition, index) => (
                                         <ThemedCard key={index} style={styles.foodItem}>
                                             <Card.Content style={styles.cardContent}>
-                                                {/* TODO: somewhere here */}
                                                 <View style={styles.cardHeader}>
                                                     <Text style={styles.cardTitle}>
                                                         {userNutrition.name || t('unknown_food')}
