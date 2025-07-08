@@ -11,6 +11,7 @@ export const GEMINI_MODELS = {
 } as const;
 
 // https://platform.openai.com/docs/models/gp
+// https://github.com/openai/openai-node/blob/master/src/resources/shared.ts#L18
 export const OPENAI_MODELS = {
     GPT_4: { model: 'gpt-4', value: 1 },
     GPT_4_1: { model: 'gpt-4.1', value: 2 },
