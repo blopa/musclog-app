@@ -368,9 +368,25 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                             return (
                                 <View key={mealTypeName} style={styles.mealContainer}>
                                     <View style={styles.mealHeader}>
-                                        <Text style={styles.mealTitle}>
-                                            {mealCategories.find((m) => m.name === mealTypeName.toLowerCase())?.icon} {t(mealTypeName.toLowerCase())}
-                                        </Text>
+                                        <View>
+                                            <Text style={styles.mealTitle}>
+                                                {mealCategories.find((m) => m.name === mealTypeName.toLowerCase())?.icon} {t(mealTypeName.toLowerCase())}
+                                            </Text>
+                                            <View style={styles.mealMacroSummary}>
+                                                <Text style={styles.macroText}>
+                                                    {t('calories_short')}: {t('value_kcal', { value: userNutritions.reduce((sum, item) => sum + (item.calories || 0), 0).toFixed(0) })}
+                                                </Text>
+                                                <Text style={styles.macroText}>
+                                                    {t('protein_short')}: {userNutritions.reduce((sum, item) => sum + (item.protein || 0), 0).toFixed(1)}{macroUnit}
+                                                </Text>
+                                                <Text style={styles.macroText}>
+                                                    {t('carbs_short')}: {userNutritions.reduce((sum, item) => sum + (item.carbohydrate || 0), 0).toFixed(1)}{macroUnit}
+                                                </Text>
+                                                <Text style={styles.macroText}>
+                                                    {t('fat_short')}: {userNutritions.reduce((sum, item) => sum + (item.fat || 0), 0).toFixed(1)}{macroUnit}
+                                                </Text>
+                                            </View>
+                                        </View>
                                     </View>
                                     {userNutritions.map((userNutrition, index) => (
                                         <ThemedCard key={index} style={styles.foodItem}>
@@ -1073,6 +1089,10 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         paddingBottom: 16,
         paddingHorizontal: 16,
     },
+    macroText: {
+        color: colors.onSurfaceVariant,
+        fontSize: 13,
+    },
     mealContainer: {
         borderColor: colors.primary,
         borderRadius: 8,
@@ -1086,6 +1106,11 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         justifyContent: 'space-between',
         marginBottom: 8,
     },
+    mealMacroSummary: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 12,
+    },
     mealsContent: {
         padding: 16,
     },
@@ -1093,6 +1118,7 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         color: colors.onSurface,
         fontSize: 16,
         fontWeight: '600',
+        marginBottom: 4,
     },
     metricDetail: {
         color: colors.onSurface,
