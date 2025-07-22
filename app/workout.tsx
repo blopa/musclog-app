@@ -472,7 +472,7 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
                         calories: totalCalories,
                         carbohydrate: totalCarbs,
                         date: getCurrentTimestampISOString(),
-                        description: workout.description, // TODO: add option for user to add description
+                        description: workout.description, // TODO: add option for user to add description [prio-0]
                         duration: Math.floor(duration / 60),
                         exerciseData: JSON.stringify(exerciseData),
                         exhaustionLevel,

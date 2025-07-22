@@ -111,7 +111,7 @@ const CreateUserNutrition = ({ navigation }: { navigation: NavigationProp<any> }
             calories: parseFloat(calories),
             carbohydrate: getSaveFormattedWeight(parseFloat(carbohydrate), OUNCES, isImperial),
             dataId: generateHash(),
-            date: getCurrentTimestampISOString(), // TODO: add a date picker
+            date: getCurrentTimestampISOString(), // TODO: add a date picker [prio-0]
             fat: getSaveFormattedWeight(parseFloat(fat), OUNCES, isImperial),
             fiber: getSaveFormattedWeight(parseFloat(fiber), OUNCES, isImperial),
             monounsaturatedFat: getSaveFormattedWeight(parseFloat(monounsaturatedFat), OUNCES, isImperial),

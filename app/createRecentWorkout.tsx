@@ -313,7 +313,7 @@ export default function CreateRecentWorkout({ navigation }: { navigation: Naviga
     const handleModalClose = useCallback(() => {
         setIsSaveModalVisible(false);
 
-        // TODO: Navigate to the workout details screen instead
+        // TODO: Navigate to the workout details screen instead [prio-0]
         navigation.navigate('recentWorkouts');
     }, [navigation]);
 
