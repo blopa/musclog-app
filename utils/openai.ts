@@ -325,6 +325,7 @@ export async function estimateNutritionFromPhoto(photoUri: string) {
         messages: [{
             content: [
                 'You are a very powerful AI, trained to estimate the macronutrients of a food/meal from the photo provided',
+                'Respond ONLY with the function call. Do NOT include any explanatory text, commentary, or greetings.',
             ].join('\n'),
             role: 'system',
         }, {
@@ -385,6 +386,7 @@ export async function extractMacrosFromLabelPhoto(photoUri: string) {
             content: [
                 'You are a very powerful AI, trained to extract the macronutrients of a food label from the photo provided',
                 'Use OCR to extract the text from the image, then parse the text to extract the macronutrients.',
+                'Respond ONLY with the function call. Do NOT include any explanatory text, commentary, or greetings.',
             ].join('\n'),
             role: 'system',
         }, {

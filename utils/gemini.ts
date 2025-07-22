@@ -900,6 +900,7 @@ export async function estimateNutritionFromPhoto(photoUri: string) {
                 text: [
                     'You are a very powerful AI, trained to extract the macronutrients of a food label from the photo provided',
                     'Use OCR to extract the text from the image, then parse the text to extract the macronutrients.',
+                    'Respond ONLY with the function call. Do NOT include any explanatory text, commentary, or greetings.',
                 ].join('\n'),
             }],
             role: 'system',
@@ -918,7 +919,7 @@ export async function estimateNutritionFromPhoto(photoUri: string) {
             contents: [{
                 parts: [{
                     text: [
-                        'Please estimate the macronutrients of the food/meal from the photo provided',
+                        'Please estimate the macronutrients of the food/meal from the photo provided. Respond ONLY with the function call - no explanatory text.',
                     ].join('\n'),
                 }, {
                     inline_data: {
@@ -983,6 +984,7 @@ export async function extractMacrosFromLabelPhoto(photoUri: string) {
                 text: [
                     'You are a very powerful AI, trained to extract the macronutrients of a food label from the photo provided',
                     'Use OCR to extract the text from the image, then parse the text to extract the macronutrients.',
+                    'Respond ONLY with the function call. Do NOT include any explanatory text, commentary, or greetings.',
                 ].join('\n'),
             }],
             role: 'system',
@@ -1001,7 +1003,7 @@ export async function extractMacrosFromLabelPhoto(photoUri: string) {
             contents: [{
                 parts: [{
                     text: [
-                        'Please extract the macronutrients of the food label from the photo provided.',
+                        'Please extract the macronutrients of the food label from the photo provided. Respond ONLY with the function call - no explanatory text.',
                     ].join('\n'),
                 }, {
                     inline_data: {
