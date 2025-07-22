@@ -1,7 +1,8 @@
-import { UNREAD_MESSAGES_COUNT } from '@/constants/storage';
-import i18n from '@/lang/lang';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from 'react-native';
+
+import { UNREAD_MESSAGES_COUNT } from '@/constants/storage';
+import i18n from '@/lang/lang';
 
 export const showAlert = (
     message: string,

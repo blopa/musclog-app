@@ -33,8 +33,14 @@ function walk(dir, depth = 0, isRoot = false) {
 
     entries.sort((a, b) => {
         // Directories first, then files; both sorted alphabetically
-        if (a.isDirectory() && !b.isDirectory()) {return -1;}
-        if (!a.isDirectory() && b.isDirectory()) {return 1;}
+        if (a.isDirectory() && !b.isDirectory()) {
+            return -1;
+        }
+
+        if (!a.isDirectory() && b.isDirectory()) {
+            return 1;
+        }
+
         return a.name.localeCompare(b.name);
     });
 

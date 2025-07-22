@@ -24,6 +24,8 @@ import {
     getParsePastWorkoutsPrompt,
     getRecentWorkoutInsightsPrompt,
     getRecentWorkoutsInsightsPrompt,
+    getRetrospectiveNutritionFunctions,
+    getRetrospectiveNutritionPrompt,
     getSendChatMessageFunctions,
     getWorkoutInsightsPrompt,
     getWorkoutVolumeInsightsPrompt,
@@ -323,6 +325,7 @@ export async function estimateNutritionFromPhoto(photoUri: string) {
         messages: [{
             content: [
                 'You are a very powerful AI, trained to estimate the macronutrients of a food/meal from the photo provided',
+                'Respond ONLY with the function call. Do NOT include any explanatory text, commentary, or greetings.',
             ].join('\n'),
             role: 'system',
         }, {
@@ -383,6 +386,7 @@ export async function extractMacrosFromLabelPhoto(photoUri: string) {
             content: [
                 'You are a very powerful AI, trained to extract the macronutrients of a food label from the photo provided',
                 'Use OCR to extract the text from the image, then parse the text to extract the macronutrients.',
+                'Respond ONLY with the function call. Do NOT include any explanatory text, commentary, or greetings.',
             ].join('\n'),
             role: 'system',
         }, {
@@ -498,3 +502,36 @@ export async function isValidApiKey(apiKey: string) {
         return false;
     }
 }
+
+export const parseRetrospectiveNutrition = async (userMessage: string, targetDate: string) => {
+    const apiKey = await getApiKey();
+
+    if (!apiKey) {
+        return Promise.resolve();
+    }
+
+    const openai = new OpenAI({
+        apiKey: apiKey,
+        dangerouslyAllowBrowser: true,
+    });
+
+    const result = await openai.chat.completions.create({
+        function_call: { name: 'parseRetrospectiveNutrition' },
+        functions: getRetrospectiveNutritionFunctions() as OpenAI.Chat.ChatCompletionCreateParams.Function[],
+        messages: await getRetrospectiveNutritionPrompt(userMessage, targetDate),
+        model: await getModel(),
+    });
+
+    let jsonResponse = {
+        nutritionEntries: [],
+    };
+
+    try {
+        // @ts-expect-error
+        jsonResponse = JSON.parse(result?.choices?.[0]?.message?.function_call?.arguments);
+    } catch (error) {
+        console.log('Error parsing JSON response:', error);
+    }
+
+    return jsonResponse;
+};

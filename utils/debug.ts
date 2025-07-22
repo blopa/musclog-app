@@ -1,7 +1,8 @@
-import { getAllDataFromTables, getTableNames } from '@/utils/database';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import { Alert } from 'react-native';
+
+import { getAllDataFromTables, getTableNames } from '@/utils/database';
 
 export const dumpDatabase = async (): Promise<string> => {
     try {

@@ -1,3 +1,5 @@
+import Dexie from 'dexie';
+
 import { VOLUME_CALCULATION_TYPES } from '@/constants/exercises';
 import { USER_METRICS_SOURCES } from '@/constants/healthConnect';
 import { COMPLETED_STATUS, SCHEDULED_STATUS } from '@/constants/storage';
@@ -53,7 +55,6 @@ import {
     WorkoutReturnType,
     WorkoutWithExercisesRepsAndSetsDetailsReturnType,
 } from '@/utils/types';
-import Dexie from 'dexie';
 
 interface IDatabase {
     bio: {

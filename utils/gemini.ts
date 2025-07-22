@@ -1,13 +1,5 @@
 import type { ChatCompletionMessageParam } from 'openai/resources';
 
-import { GEMINI_MODELS } from '@/constants/ai';
-import { EXERCISE_IMAGE_GENERATION_TYPE, GEMINI_API_KEY_TYPE, GEMINI_MODEL_TYPE } from '@/constants/storage';
-import i18n from '@/lang/lang';
-import { getSetting, processWorkoutPlan } from '@/utils/database';
-import { getBase64StringFromPhotoUri, resizeImage } from '@/utils/file';
-import { getAccessToken as getGoogleAccessToken, refreshAccessToken } from '@/utils/googleAuth';
-import { captureMessage } from '@/utils/sentry';
-import { WorkoutPlan, WorkoutReturnType } from '@/utils/types';
 import {
     Content,
     FunctionDeclaration,
@@ -24,6 +16,15 @@ import {
 // import fetch from 'isomorphic-fetch';
 import { fetch } from 'expo/fetch';
 
+import { GEMINI_MODELS } from '@/constants/ai';
+import { EXERCISE_IMAGE_GENERATION_TYPE, GEMINI_API_KEY_TYPE, GEMINI_MODEL_TYPE } from '@/constants/storage';
+import i18n from '@/lang/lang';
+import { getSetting, processWorkoutPlan } from '@/utils/database';
+import { getBase64StringFromPhotoUri, resizeImage } from '@/utils/file';
+import { getAccessToken as getGoogleAccessToken, refreshAccessToken } from '@/utils/googleAuth';
+import { captureMessage } from '@/utils/sentry';
+import { WorkoutPlan, WorkoutReturnType } from '@/utils/types';
+
 import {
     createWorkoutPlanPrompt,
     getCalculateNextWorkoutVolumeFunctions,
@@ -37,13 +38,15 @@ import {
     getParsePastWorkoutsPrompt,
     getRecentWorkoutInsightsPrompt,
     getRecentWorkoutsInsightsPrompt,
+    getRetrospectiveNutritionFunctions,
+    getRetrospectiveNutritionPrompt,
     getSendChatMessageFunctions,
     getWorkoutInsightsPrompt,
     getWorkoutVolumeInsightsPrompt,
 } from './prompts';
 
 const getModel = async () => {
-    const defaultModel = GEMINI_MODELS.GEMINI_FLASH_1_5.model;
+    const defaultModel = GEMINI_MODELS.GEMINI_2_5_FLASH.model;
     const savedModel = await getSetting(GEMINI_MODEL_TYPE);
 
     if (!savedModel) {
@@ -71,7 +74,7 @@ const safetySettings = [
     { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
 ];
 
-const getGenerativeAI = async ({ accessToken, apiKey }: { accessToken?: string; apiKey?: string;}): Promise<GoogleGenerativeAI> => {
+const getGenerativeAI = async ({ accessToken, apiKey }: { accessToken?: string; apiKey?: string; }): Promise<GoogleGenerativeAI> => {
     if (accessToken) {
         return {
             getGenerativeModel: ({ model, ...modelParams }: ModelParams) => {
@@ -548,7 +551,7 @@ export const generateExerciseImage = async (exerciseName: string): Promise<strin
     const model = await configureBasicGenAI({
         accessToken,
         apiKey,
-        model: GEMINI_MODELS.GEMINI_FLASH_2_0.model,
+        model: GEMINI_MODELS.GEMINI_2_5_FLASH.model,
     });
 
     const generationConfig = {
@@ -897,6 +900,7 @@ export async function estimateNutritionFromPhoto(photoUri: string) {
                 text: [
                     'You are a very powerful AI, trained to extract the macronutrients of a food label from the photo provided',
                     'Use OCR to extract the text from the image, then parse the text to extract the macronutrients.',
+                    'Respond ONLY with the function call. Do NOT include any explanatory text, commentary, or greetings.',
                 ].join('\n'),
             }],
             role: 'system',
@@ -915,7 +919,7 @@ export async function estimateNutritionFromPhoto(photoUri: string) {
             contents: [{
                 parts: [{
                     text: [
-                        'Please estimate the macronutrients of the food/meal from the photo provided',
+                        'Please estimate the macronutrients of the food/meal from the photo provided. Respond ONLY with the function call - no explanatory text.',
                     ].join('\n'),
                 }, {
                     inline_data: {
@@ -980,6 +984,7 @@ export async function extractMacrosFromLabelPhoto(photoUri: string) {
                 text: [
                     'You are a very powerful AI, trained to extract the macronutrients of a food label from the photo provided',
                     'Use OCR to extract the text from the image, then parse the text to extract the macronutrients.',
+                    'Respond ONLY with the function call. Do NOT include any explanatory text, commentary, or greetings.',
                 ].join('\n'),
             }],
             role: 'system',
@@ -998,7 +1003,7 @@ export async function extractMacrosFromLabelPhoto(photoUri: string) {
             contents: [{
                 parts: [{
                     text: [
-                        'Please extract the macronutrients of the food label from the photo provided.',
+                        'Please extract the macronutrients of the food label from the photo provided. Respond ONLY with the function call - no explanatory text.',
                     ].join('\n'),
                 }, {
                     inline_data: {
@@ -1098,3 +1103,45 @@ export async function isValidApiKey(apiKey: string): Promise<boolean> {
         return false;
     }
 }
+
+export const parseRetrospectiveNutrition = async (userMessage: string, targetDate: string) => {
+    const apiKey = await getApiKey();
+
+    if (!apiKey) {
+        return Promise.resolve();
+    }
+
+    const genAI = new GoogleGenerativeAI(apiKey);
+
+    const model = genAI.getGenerativeModel({
+        model: await getModel(),
+    });
+
+    const prompt = await getRetrospectiveNutritionPrompt(userMessage, targetDate);
+    const promptContent = prompt.map((p) => p.content).join('\n');
+
+    const functionDeclarations = getRetrospectiveNutritionFunctions() as FunctionDeclaration[];
+
+    try {
+        const result = await model.generateContent({
+            contents: [{ parts: [{ text: promptContent }], role: 'user' }],
+            tools: [{ functionDeclarations }],
+        });
+
+        const { response } = result;
+        const calls = response.functionCalls();
+
+        if (calls && calls.length > 0) {
+            const call = calls[0];
+            if (call.name === 'parseRetrospectiveNutrition') {
+                return call.args as any;
+            }
+        }
+    } catch (error) {
+        console.log('Error parsing retrospective nutrition with Gemini:', error);
+    }
+
+    return {
+        nutritionEntries: [],
+    };
+};

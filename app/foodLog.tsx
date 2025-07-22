@@ -29,20 +29,23 @@ import FABWrapper from '@/components/FABWrapper';
 import FoodItem from '@/components/FoodItem';
 import FoodTrackingModal, { FoodTrackingType } from '@/components/FoodTrackingModal';
 import NutritionProgressBanner from '@/components/NutritionProgressBanner';
+import RetrospectiveFoodTrackingModal, { RetrospectiveNutritionData } from '@/components/RetrospectiveFoodTrackingModal';
 import { Screen } from '@/components/Screen';
 import SearchFoodModal from '@/components/SearchFoodModal';
 import ThemedCard from '@/components/ThemedCard';
 import ThemedModal from '@/components/ThemedModal';
+import { USER_METRICS_SOURCES } from '@/constants/healthConnect';
 import { MEAL_TYPE } from '@/constants/nutrition';
 import { AI_SETTINGS_TYPE, GRAMS, IMPERIAL_SYSTEM, OUNCES } from '@/constants/storage';
 import { FAB_ICON_SIZE } from '@/constants/ui';
 import useUnit from '@/hooks/useUnit';
 import { useHealthConnect } from '@/storage/HealthConnectProvider';
 import { useSettings } from '@/storage/SettingsContext';
-import { estimateNutritionFromPhoto, extractMacrosFromLabelPhoto, getAiApiVendor } from '@/utils/ai';
+import { estimateNutritionFromPhoto, extractMacrosFromLabelPhoto, getAiApiVendor, parseRetrospectiveNutrition } from '@/utils/ai';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { normalizeMacrosByGrams } from '@/utils/data';
 import {
+    addUserNutrition,
     deleteUserNutrition,
     getAllFavoriteFoods,
     getAllFoodsByIds,
@@ -96,6 +99,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
     const [selectedFood, setSelectedFood] = useState<FoodTrackingType | null>(null);
     const [userNutritionId, setUserNutritionId] = useState<null | number>(null);
+    const [retrospectiveModalVisible, setRetrospectiveModalVisible] = useState(false);
     const [isNutritionModalVisible, setIsNutritionModalVisible] = useState<boolean>(false);
     const [photoMode, setPhotoMode] = useState<string>('meal');
 
@@ -334,6 +338,60 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
             setSelectedNutrition(null);
         }
     }, [selectedNutrition, loadConsumed, t]);
+
+    const handleRetrospectiveSubmit = useCallback(async (data: {
+        date: string;
+        description: string;
+    }) => {
+        // TODO: if this returns an empty array, we need to show a button so the user can retry
+        // the request
+        const result = await parseRetrospectiveNutrition(data.description, data.date);
+
+        // Transform the API response to match our expected format
+        const nutritionEntries: RetrospectiveNutritionData[] = result?.nutritionEntries?.map((entry: any) => ({
+            calories: entry.calories || 0,
+            carbs: entry.carbs || 0,
+            date: data.date,
+            fat: entry.fat || 0,
+            fiber: entry.fiber || 0,
+            mealType: entry.mealType || 0,
+            productTitle: entry.productTitle || 'Unknown Food',
+            protein: entry.protein || 0,
+            sodium: entry.sodium || 0,
+            sugar: entry.sugar || 0,
+        })) || [];
+
+        return nutritionEntries;
+    }, []);
+
+    const handleRetrospectiveConfirm = useCallback(async (nutritionData: RetrospectiveNutritionData[]) => {
+        try {
+            // Save each nutrition entry to the database
+            for (const entry of nutritionData) {
+                await addUserNutrition({
+                    calories: entry.calories,
+                    carbohydrate: entry.carbs,
+                    dataId: `retro_${Date.now()}_${Math.random()}`,
+                    date: entry.date,
+                    fat: entry.fat,
+                    fiber: entry.fiber,
+                    mealType: entry.mealType,
+                    name: entry.productTitle,
+                    protein: entry.protein,
+                    sodium: entry.sodium,
+                    source: USER_METRICS_SOURCES.USER_INPUT,
+                    sugar: entry.sugar,
+                    type: 'meal',
+                });
+            }
+
+            // Refresh the nutrition data
+            loadConsumed();
+        } catch (error) {
+            console.error('Error saving retrospective nutrition:', error);
+            throw error;
+        }
+    }, [loadConsumed]);
 
     const MealsRoute = useCallback(() => {
         const mealGroups = consumedFoods.reduce((groups, food) => {
@@ -865,6 +923,13 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
             setPreSelectedMealType('4');
         },
         style: { backgroundColor: colors.surface },
+    }, {
+        icon: () => <FontAwesome5 color={colors.primary} name="robot" size={FAB_ICON_SIZE} />,
+        label: t('track_with_ai'),
+        onPress: () => {
+            setRetrospectiveModalVisible(true);
+        },
+        style: { backgroundColor: colors.surface },
     }], [colors.primary, colors.surface, t]);
 
     return (
@@ -954,6 +1019,12 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                     onClose={handleCloseTrackingModal}
                     userNutritionId={userNutritionId}
                     visible={isNutritionModalVisible}
+                />
+                <RetrospectiveFoodTrackingModal
+                    onClose={() => setRetrospectiveModalVisible(false)}
+                    onConfirm={handleRetrospectiveConfirm}
+                    onSubmit={handleRetrospectiveSubmit}
+                    visible={retrospectiveModalVisible}
                 />
                 <SearchFoodModal
                     defaultMealType={preSelectedMealType}

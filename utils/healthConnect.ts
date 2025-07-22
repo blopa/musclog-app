@@ -1,5 +1,8 @@
 import type { NutritionRecord } from 'react-native-health-connect/src/types/records.types';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
+
 import { DEFAULT_PAGE_SIZE, USER_METRICS_SOURCES } from '@/constants/healthConnect';
 import { EATING_PHASES, MEAL_TYPE, NUTRITION_TYPES } from '@/constants/nutrition';
 import { LAST_TIME_APP_USED, READ_HEALTH_CONNECT_TYPE } from '@/constants/storage';
@@ -28,8 +31,6 @@ import {
     HealthConnectWeightRecord,
     UserMetricsInsertType,
 } from '@/utils/types';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Platform } from 'react-native';
 
 export const combineHeightAndWeightHealthData = async (
     bodyFatRecords?: HealthConnectBodyFatRecordData[],

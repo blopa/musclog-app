@@ -1,3 +1,8 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { AuthSessionResult } from 'expo-auth-session';
+// import fetch from 'isomorphic-fetch';
+import { fetch } from 'expo/fetch';
+
 import {
     AI_SETTINGS_TYPE,
     GEMINI_API_KEY_TYPE,
@@ -12,10 +17,6 @@ import i18n from '@/lang/lang';
 import { isValidAccessToken } from '@/utils/ai';
 import { showAlert } from '@/utils/alert';
 import { addOrUpdateSetting, getSetting } from '@/utils/database';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AuthSessionResult } from 'expo-auth-session';
-// import fetch from 'isomorphic-fetch';
-import { fetch } from 'expo/fetch';
 
 export interface GoogleUserInfo {
     email: string;

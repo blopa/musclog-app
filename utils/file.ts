@@ -1,3 +1,10 @@
+import * as DocumentPicker from 'expo-document-picker';
+import * as FileSystem from 'expo-file-system';
+import * as ImageManipulator from 'expo-image-manipulator';
+import * as Sharing from 'expo-sharing';
+import * as Updates from 'expo-updates';
+import Papa from 'papaparse';
+
 import {
     dumpDatabase,
     getRecentWorkoutById,
@@ -5,12 +12,6 @@ import {
     restoreDatabase,
 } from '@/utils/database';
 import { getCurrentTimestampISOString } from '@/utils/date';
-import * as DocumentPicker from 'expo-document-picker';
-import * as FileSystem from 'expo-file-system';
-import * as ImageManipulator from 'expo-image-manipulator';
-import * as Sharing from 'expo-sharing';
-import * as Updates from 'expo-updates';
-import Papa from 'papaparse';
 
 export async function downloadAsyncToFileSystem (imageUrl: string, localFilePath: string) {
     try {
