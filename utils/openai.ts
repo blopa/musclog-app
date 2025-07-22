@@ -24,6 +24,8 @@ import {
     getParsePastWorkoutsPrompt,
     getRecentWorkoutInsightsPrompt,
     getRecentWorkoutsInsightsPrompt,
+    getRetrospectiveNutritionFunctions,
+    getRetrospectiveNutritionPrompt,
     getSendChatMessageFunctions,
     getWorkoutInsightsPrompt,
     getWorkoutVolumeInsightsPrompt,
@@ -497,4 +499,38 @@ export async function isValidApiKey(apiKey: string) {
     } catch (error) {
         return false;
     }
+};
+
+export const parseRetrospectiveNutrition = async (userMessage: string, targetDate: string) => {
+    const apiKey = await getApiKey();
+
+    if (!apiKey) {
+        return Promise.resolve();
+    }
+
+    const openai = new OpenAI({
+        apiKey: apiKey,
+        dangerouslyAllowBrowser: true,
+    });
+
+    const result = await openai.chat.completions.create({
+        function_call: { name: 'parseRetrospectiveNutrition' },
+        functions: getRetrospectiveNutritionFunctions() as OpenAI.Chat.ChatCompletionCreateParams.Function[],
+        messages: await getRetrospectiveNutritionPrompt(userMessage, targetDate),
+        model: await getModel(),
+    });
+
+    let jsonResponse = {
+        nutritionEntries: [],
+    };
+
+    try {
+        // @ts-expect-error
+        jsonResponse = JSON.parse(result?.choices?.[0]?.message?.function_call?.arguments);
+    } catch (error) {
+        console.log('Error parsing JSON response:', error);
+    }
+
+    return jsonResponse;
+};
 }

@@ -7,6 +7,7 @@ import { BackHandler, ScrollView, StyleSheet, View } from 'react-native';
 import { Button, Card, Text, useTheme } from 'react-native-paper';
 
 import FoodTrackingModal, { FoodTrackingType } from '@/components/FoodTrackingModal';
+import RetrospectiveFoodTrackingModal, { RetrospectiveNutritionData } from '@/components/RetrospectiveFoodTrackingModal';
 import NutritionProgressBanner from '@/components/NutritionProgressBanner';
 import { Screen } from '@/components/Screen';
 import SearchFoodModal from '@/components/SearchFoodModal';
@@ -17,7 +18,8 @@ import WorkoutModal from '@/components/WorkoutModal';
 import { CURRENT_WORKOUT_ID, SCHEDULED_STATUS } from '@/constants/storage';
 import { useHealthConnect } from '@/storage/HealthConnectProvider';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
-import { getRecentWorkoutsPaginated, getRecurringWorkouts, getUserNutritionBetweenDates } from '@/utils/database';
+import { parseRetrospectiveNutrition } from '@/utils/ai';
+import { addUserNutrition, getRecentWorkoutsPaginated, getRecurringWorkouts, getUserNutritionBetweenDates } from '@/utils/database';
 import {
     formatDate,
     getCurrentTimestampISOString,
@@ -39,6 +41,7 @@ export default function Dashboard({ navigation }: {
     const [workoutModalVisible, setWorkoutModalVisible] = useState(false);
     const [foodSearchModalVisible, setFoodSearchModalVisible] = useState(false);
     const [foodTrackingModalVisible, setFoodTrackingModalVisible] = useState(false);
+    const [retrospectiveModalVisible, setRetrospectiveModalVisible] = useState(false);
     const [recentWorkouts, setRecentWorkouts] = useState<WorkoutEventReturnType[]>([]);
     const [upcomingWorkouts, setUpcomingWorkouts] = useState<WorkoutReturnType[]>([]);
     const [modalVisible, setModalVisible] = useState(false);
@@ -215,6 +218,57 @@ export default function Dashboard({ navigation }: {
         setFoodSearchModalVisible(false);
     }, []);
 
+    const handleRetrospectiveSubmit = useCallback(async (data: {
+        date: string;
+        description: string;
+    }) => {
+        const result = await parseRetrospectiveNutrition(data.description, data.date);
+        
+        // Transform the API response to match our expected format
+        const nutritionEntries: RetrospectiveNutritionData[] = result?.nutritionEntries?.map((entry: any) => ({
+            calories: entry.calories || 0,
+            carbs: entry.carbs || 0,
+            date: data.date,
+            fat: entry.fat || 0,
+            fiber: entry.fiber || 0,
+            mealType: entry.mealType || 0,
+            productTitle: entry.productTitle || 'Unknown Food',
+            protein: entry.protein || 0,
+            sodium: entry.sodium || 0,
+            sugar: entry.sugar || 0,
+        })) || [];
+
+        return nutritionEntries;
+    }, []);
+
+    const handleRetrospectiveConfirm = useCallback(async (nutritionData: RetrospectiveNutritionData[]) => {
+        try {
+            // Save each nutrition entry to the database
+            for (const entry of nutritionData) {
+                await addUserNutrition({
+                    calories: entry.calories,
+                    carbohydrate: entry.carbs,
+                    dataId: `retro_${Date.now()}_${Math.random()}`,
+                    date: entry.date,
+                    fat: entry.fat,
+                    fiber: entry.fiber,
+                    mealType: entry.mealType.toString(),
+                    name: entry.productTitle,
+                    protein: entry.protein,
+                    sodium: entry.sodium,
+                    sugar: entry.sugar,
+                    type: 'meal',
+                });
+            }
+            
+            // Refresh the nutrition data
+            loadConsumed();
+        } catch (error) {
+            console.error('Error saving retrospective nutrition:', error);
+            throw error;
+        }
+    }, [loadConsumed]);
+
     return (
         <Screen style={styles.container}>
             <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
@@ -228,6 +282,12 @@ export default function Dashboard({ navigation }: {
                     food={selectedFood}
                     onClose={handleCloseTrackingModal}
                     visible={foodTrackingModalVisible}
+                />
+                <RetrospectiveFoodTrackingModal
+                    onClose={() => setRetrospectiveModalVisible(false)}
+                    onConfirm={handleRetrospectiveConfirm}
+                    onSubmit={handleRetrospectiveSubmit}
+                    visible={retrospectiveModalVisible}
                 />
                 <View style={styles.section}>
                     <Text style={styles.header}>{t('track_your_fitness_journey')}</Text>
@@ -247,6 +307,13 @@ export default function Dashboard({ navigation }: {
                         style={styles.startLoggingButton}
                     >
                         {t('track_food_intake')}
+                    </Button>
+                    <Button
+                        mode="outlined"
+                        onPress={() => setRetrospectiveModalVisible(true)}
+                        style={styles.startLoggingButton}
+                    >
+                        🤖 {t('retrospective_food_tracking_title')}
                     </Button>
                 </View>
                 <NutritionProgressBanner

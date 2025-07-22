@@ -37,6 +37,8 @@ import {
     getParsePastWorkoutsPrompt,
     getRecentWorkoutInsightsPrompt,
     getRecentWorkoutsInsightsPrompt,
+    getRetrospectiveNutritionFunctions,
+    getRetrospectiveNutritionPrompt,
     getSendChatMessageFunctions,
     getWorkoutInsightsPrompt,
     getWorkoutVolumeInsightsPrompt,
@@ -1098,3 +1100,45 @@ export async function isValidApiKey(apiKey: string): Promise<boolean> {
         return false;
     }
 }
+
+export const parseRetrospectiveNutrition = async (userMessage: string, targetDate: string) => {
+    const apiKey = await getApiKey();
+
+    if (!apiKey) {
+        return Promise.resolve();
+    }
+
+    const genAI = new GoogleGenerativeAI(apiKey);
+
+    const model = genAI.getGenerativeModel({
+        model: await getModel(),
+    });
+
+    const prompt = await getRetrospectiveNutritionPrompt(userMessage, targetDate);
+    const promptContent = prompt.map((p) => p.content).join('\n');
+
+    const functionDeclarations = getRetrospectiveNutritionFunctions() as FunctionDeclaration[];
+
+    try {
+        const result = await model.generateContent({
+            contents: [{ parts: [{ text: promptContent }], role: 'user' }],
+            tools: [{ functionDeclarations }],
+        });
+
+        const response = result.response;
+        const calls = response.functionCalls();
+
+        if (calls && calls.length > 0) {
+            const call = calls[0];
+            if (call.name === 'parseRetrospectiveNutrition') {
+                return call.args as any;
+            }
+        }
+    } catch (error) {
+        console.log('Error parsing retrospective nutrition with Gemini:', error);
+    }
+
+    return {
+        nutritionEntries: [],
+    };
+};

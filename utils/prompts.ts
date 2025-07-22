@@ -850,6 +850,89 @@ export const getParsePastNutritionFunctions = (): (FunctionDeclaration[] | OpenA
     }];
 };
 
+export const getRetrospectiveNutritionPrompt = async (userMessage: string, targetDate: string): Promise<OpenAI.Chat.ChatCompletionMessageParam[]> => {
+    return [
+        {
+            content: [
+                await getMainSystemPrompt(),
+                'Parse the retrospective nutrition data from the user\'s description and return it in a JSON format.',
+                'The user is describing what they ate on a specific date in natural language.',
+                'Break down the description into individual food items and categorize them by meal type.',
+                `The target date for this nutrition data is: ${targetDate}`,
+                'Estimate reasonable portions and nutritional values based on common serving sizes.',
+                'Categorize foods into appropriate meal types: 1=Breakfast, 2=Lunch, 3=Dinner, 4=Snack.',
+                'If the user mentions specific meal times or contexts, use that information for categorization.',
+                'Create separate entries for each distinct food item mentioned.',
+                'Provide realistic estimates for calories and macronutrients.',
+            ].join('\n'),
+            role: 'system',
+        },
+        {
+            content: userMessage,
+            role: 'user',
+        },
+    ];
+};
+
+export const getRetrospectiveNutritionFunctions = (): (FunctionDeclaration[] | OpenAI.Chat.ChatCompletionCreateParams.Function[]) => {
+    return [{
+        description: 'Parses retrospective nutrition data from natural language and returns structured food entries.',
+        name: 'parseRetrospectiveNutrition',
+        parameters: {
+            properties: {
+                nutritionEntries: {
+                    description: 'The list of parsed nutrition entries from the user description',
+                    items: {
+                        properties: {
+                            calories: {
+                                description: 'Estimated calories for this food item',
+                                type: 'number',
+                            },
+                            carbs: {
+                                description: 'Estimated carbohydrates in grams',
+                                type: 'number',
+                            },
+                            fat: {
+                                description: 'Estimated fat in grams',
+                                type: 'number',
+                            },
+                            fiber: {
+                                description: 'Estimated fiber in grams',
+                                type: 'number',
+                            },
+                            mealType: {
+                                description: 'Meal type: 0=Unknown, 1=Breakfast, 2=Lunch, 3=Dinner, 4=Snack',
+                                type: 'number',
+                            },
+                            productTitle: {
+                                description: 'Name/description of the food item',
+                                type: 'string',
+                            },
+                            protein: {
+                                description: 'Estimated protein in grams',
+                                type: 'number',
+                            },
+                            sodium: {
+                                description: 'Estimated sodium in milligrams',
+                                type: 'number',
+                            },
+                            sugar: {
+                                description: 'Estimated sugar in grams',
+                                type: 'number',
+                            },
+                        },
+                        required: ['productTitle', 'calories', 'carbs', 'fat', 'protein', 'mealType'],
+                        type: 'object',
+                    },
+                    type: 'array',
+                },
+            },
+            required: ['nutritionEntries'],
+            type: 'object',
+        },
+    }];
+};
+
 export const getChatMessagePromptContent = async (): Promise<string> => {
     // const bioData = await getAllBio();
     const recentWorkoutsData = await getRecentWorkouts();

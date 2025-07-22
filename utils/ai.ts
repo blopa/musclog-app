@@ -97,6 +97,18 @@ export const parsePastNutrition = async (userMessage: string) => {
     return;
 };
 
+export const parseRetrospectiveNutrition = async (userMessage: string, targetDate: string) => {
+    const vendor = await getAiApiVendor();
+
+    if (vendor === OPENAI_API_KEY_TYPE) {
+        return openAiFunctions.parseRetrospectiveNutrition(userMessage, targetDate);
+    } else if (vendor === GEMINI_API_KEY_TYPE) {
+        return geminiFunctions.parseRetrospectiveNutrition(userMessage, targetDate);
+    }
+
+    return;
+};
+
 export const getWorkoutInsights = async (workoutId: number) => {
     const vendor = await getAiApiVendor();
 
