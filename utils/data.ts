@@ -1,3 +1,5 @@
+import { endOfWeek, formatISO, parseISO, startOfWeek } from 'date-fns';
+
 import { NUTRITION_TYPES } from '@/constants/nutrition';
 import i18n from '@/lang/lang';
 import { formatDate, getCurrentTimestampISOString } from '@/utils/date';
@@ -8,7 +10,6 @@ import {
     UserMetricsDecryptedReturnType,
     UserNutritionDecryptedReturnType,
 } from '@/utils/types';
-import { endOfWeek, formatISO, parseISO, startOfWeek } from 'date-fns';
 
 const CALORIES_STORED_KG_FAT = 7730;
 const CALORIES_BUILD_KG_FAT = 8840;
@@ -492,6 +493,33 @@ export const normalizeMacrosByGrams = (macros: MacrosToNormalize): MacrosToNorma
         protein: macros.protein * multiplier,
     };
 };
+
+export function computeNutritionMetricsPeriodStats(
+    aggregatedUserMetricsNutrition: AggregatedUserMetricsNutritionType,
+    metricsData: UserMetricsDecryptedReturnType[]
+) {
+    const nutritionDays = Object.values(aggregatedUserMetricsNutrition);
+    const totalDays = nutritionDays.length;
+    const totalCalories = nutritionDays.reduce((sum, item) => sum + item.totalCalories, 0);
+
+    const sortedMetrics = aggregateMetricsByDate(metricsData).sort(
+        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
+
+    const initialWeight = sortedMetrics.at(0)?.weight || 0;
+    const finalWeight = sortedMetrics.at(-1)?.weight || 0;
+    const initialFatPercentage = sortedMetrics.at(0)?.fatPercentage;
+    const finalFatPercentage = sortedMetrics.at(-1)?.fatPercentage;
+
+    return {
+        finalFatPercentage,
+        finalWeight,
+        initialFatPercentage,
+        initialWeight,
+        totalCalories,
+        totalDays,
+    };
+}
 
 export const calculateBMR = (
     weight: number,

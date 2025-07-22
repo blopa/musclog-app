@@ -44,7 +44,7 @@ import {
     calculateFFMI,
     calculatePastWorkoutsWeeklyAverages,
     calculateTDEE,
-    calculateUserMetricsNutritionWeeklyAverages,
+    computeNutritionMetricsPeriodStats,
 } from '@/utils/data';
 import {
     getClosestWeightUserMetric,
@@ -742,7 +742,7 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
 
             setAggregatedNutritionAndWeightData(aggregatedNutritionAndWeightData);
 
-            if (weightDataToShow.length > 0) {
+            if (weightDataToShow.length > 1) {
                 const weightValues = weightDataToShow.map((d) => d.y);
                 const weightMin = Math.min(...weightValues);
                 const weightMax = Math.max(...weightValues);
@@ -754,7 +754,7 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
                 setYAxisWeight({ axisMaximum: 100, axisMinimum: 0 }); // Default values
             }
 
-            if (fatPercentageDataToShow.length > 0) {
+            if (fatPercentageDataToShow.length > 1) {
                 const fatValues = fatPercentageDataToShow.map((d) => d.y);
                 const fatMin = Math.min(...fatValues);
                 const fatMax = Math.max(...fatValues);
@@ -766,7 +766,7 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
                 setYAxisFat({ axisMaximum: 100, axisMinimum: 0 }); // Default values
             }
 
-            // Calculate TDEE
+            // Prepare aggregated data and compute period stats
             const aggregatedUserMetricsNutrition = aggregateUserMetricsNutrition(
                 loadedUserNutrition,
                 loadedUserMetrics,
@@ -774,25 +774,20 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
             );
 
             const {
+                finalFatPercentage,
+                finalWeight,
+                initialFatPercentage,
+                initialWeight,
+                totalCalories,
                 totalDays,
-                weeklyAverages: userMetricsNutritionWeeklyAverages,
-            } = calculateUserMetricsNutritionWeeklyAverages(
-                aggregatedUserMetricsNutrition
-            );
-
-            // Calculate calories with reduce
-            const totalCalories = userMetricsNutritionWeeklyAverages.reduce((sum, item) => sum + item.averageCalories, 0);
-            const initialWeight = userMetricsNutritionWeeklyAverages?.at(0)?.averageWeight || 0;
-            const finalWeight = userMetricsNutritionWeeklyAverages?.at(-1)?.averageWeight || 0;
-            const initialFatPercentage = userMetricsNutritionWeeklyAverages?.at(0)?.averageFatPercentage || 0;
-            const finalFatPercentage = userMetricsNutritionWeeklyAverages?.at(-1)?.averageFatPercentage || 0;
+            } = computeNutritionMetricsPeriodStats(aggregatedUserMetricsNutrition, loadedUserMetrics);
 
             const useFatPercentageTDEESetting = await getSettingByType(USE_FAT_PERCENTAGE_TDEE_TYPE);
             const useFatPercentageTDEE = useFatPercentageTDEESetting?.value === 'true';
             const user = await getUser();
 
-            const tdee = calculateTDEE(
-                (totalCalories / userMetricsNutritionWeeklyAverages.length) * totalDays,
+            const calculatedTdee = calculateTDEE(
+                totalCalories,
                 totalDays,
                 initialWeight,
                 finalWeight,
@@ -856,8 +851,12 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
                 setFFMI(undefined);
             }
 
-            setTDEE(tdee);
-            setAverageCalories(totalCalories / userMetricsNutritionWeeklyAverages.length);
+            // Calculate average calories per day by dividing total calories by number of days
+            const daysInPeriod = totalDays;
+            const avgCalories = totalCalories / daysInPeriod;
+
+            setTDEE(calculatedTdee);
+            setAverageCalories(avgCalories);
 
             const vendor = await getAiApiVendor();
             const isAiSettingsEnabled = await getSettingByType(AI_SETTINGS_TYPE);
@@ -1160,7 +1159,7 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
                         timeRange={dateRange}
                     />
                     <ScrollView contentContainerStyle={styles.scrollViewContainer} style={styles.scrollView}>
-                        {fatPercentageData.length > 0 ? (
+                        {fatPercentageData.length > 1 ? (
                             <LineChart
                                 data={fatPercentageData}
                                 granularity={showWeeklyAverages ? 1 : 3}
@@ -1172,7 +1171,7 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
                                 yAxisLabel={t('fat_percentage')}
                             />
                         ) : null}
-                        {weightData.length > 0 ? (
+                        {weightData.length > 1 ? (
                             <WeightLineChart
                                 metricsAverages={metricsAverages}
                                 showWeeklyAverages={showWeeklyAverages}
@@ -1181,7 +1180,7 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
                                 yAxisConfig={yAxisWeight}
                             />
                         ) : null}
-                        {ffmiData.length > 0 ? (
+                        {ffmiData.length > 1 ? (
                             <LineChart
                                 data={ffmiData}
                                 granularity={showWeeklyAverages ? 1 : 3}
@@ -1196,7 +1195,7 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
                                 yAxisLabel={t('ffmi')}
                             />
                         ) : null}
-                        {foodChartData.length > 0 ? (
+                        {foodChartData.length > 1 ? (
                             <NutritionDetailedChart
                                 aggregatedNutritionAndWeightData={aggregatedNutritionAndWeightData}
                                 averageCalories={averageCalories}
@@ -1212,7 +1211,7 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
                                 weightData={weightData}
                             />
                         ) : null}
-                        {(!showWeeklyAverages && setsChartData) ? (
+                        {(!showWeeklyAverages && setsChartData && setsChartData.values.length > 1) ? (
                             <BarChart
                                 data={[setsChartData]}
                                 granularity={1}
@@ -1230,7 +1229,7 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
                                 yAxisLabel={t('sets')}
                             />
                         ) : null}
-                        {recentWorkoutsData.length > 0 ? (
+                        {recentWorkoutsData.length > 1 ? (
                             <LineChart
                                 data={recentWorkoutsData}
                                 granularity={showWeeklyAverages ? 1 : 3}

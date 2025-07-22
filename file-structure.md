@@ -1,0 +1,288 @@
+# 📂 File Structure for musclog-app
+
+- 📁 .github
+  - 📁 workflows
+    - 📄 deploy-gh-pages.yml
+- 📁 app
+  - 📄 _layout.tsx
+  - 📄 +html.tsx
+  - 📄 +not-found.tsx
+  - 📄 aiSettings.tsx
+  - 📄 chat.tsx
+  - 📄 createExercise.tsx
+  - 📄 createFitnessGoals.tsx
+  - 📄 createFood.tsx
+  - 📄 createRecentWorkout.tsx
+  - 📄 createUserMeasurements.tsx
+  - 📄 createUserMetrics.tsx
+  - 📄 createUserNutrition.tsx
+  - 📄 createWorkout.tsx
+  - 📄 dashboard.tsx
+  - 📄 foodDetails.tsx
+  - 📄 foodLog.tsx
+  - 📄 foodSearch.tsx
+  - 📄 index.tsx
+  - 📄 listExercises.tsx
+  - 📄 listFitnessGoals.tsx
+  - 📄 listUserMeasurements.tsx
+  - 📄 listUserMetrics.tsx
+  - 📄 listUserNutrition.tsx
+  - 📄 listWorkouts.tsx
+  - 📄 oneRepMaxes.tsx
+  - 📄 profile.tsx
+  - 📄 recentWorkoutDetails.tsx
+  - 📄 recentWorkouts.tsx
+  - 📄 scheduleWorkout.tsx
+  - 📄 settings.tsx
+  - 📄 test.tsx
+  - 📄 upcomingWorkouts.tsx
+  - 📄 userMetricsCharts.tsx
+  - 📄 workout.tsx
+  - 📄 workoutDetails.tsx
+- 📁 assets
+  - 📁 exercises
+    - 📄 1.webp
+    - 📄 10.webp
+    - 📄 11.webp
+    - 📄 12.webp
+    - 📄 13.webp
+    - 📄 14.webp
+    - 📄 15.webp
+    - 📄 17.webp
+    - 📄 2.webp
+    - 📄 20.webp
+    - 📄 23.webp
+    - 📄 3.webp
+    - 📄 30.webp
+    - 📄 39.webp
+    - 📄 4.webp
+    - 📄 49.webp
+    - 📄 5.webp
+    - 📄 51.webp
+    - 📄 52.webp
+    - 📄 53.webp
+    - 📄 6.webp
+    - 📄 64.webp
+    - 📄 65.webp
+    - 📄 7.webp
+    - 📄 8.webp
+    - 📄 84.webp
+    - 📄 85.webp
+    - 📄 86.webp
+    - 📄 9.webp
+    - 📄 fallback.webp
+  - 📁 fonts
+    - 📄 SpaceMono-Regular.ttf
+  - 📁 images
+    - 📄 adaptive-icon.png
+    - 📄 banner-blank.png
+    - 📄 banner.png
+    - 📄 favicon.png
+    - 📄 gym-closed.png
+    - 📄 icon.png
+    - 📄 logo.png
+    - 📄 notification-icon.png
+    - 📄 splash-icon.png
+    - 📄 splash.png
+  - 📄 chad.svg
+  - 📄 exercises.html
+  - 📄 google-icon.png
+- 📁 components
+  - 📁 __tests__
+    - 📁 __snapshots__
+  - 📁 Charts
+    - 📄 BarChart.tsx
+    - 📄 BarChart.web.tsx
+    - 📄 CustomCombinedChart.tsx
+    - 📄 CustomCombinedChart.web.tsx
+    - 📄 CustomCombinedStackedChart.tsx
+    - 📄 CustomCombinedStackedChart.web.tsx
+    - 📄 LineChart.tsx
+    - 📄 LineChart.web.tsx
+    - 📄 NutritionDetailedChart.tsx
+    - 📄 PieChart.tsx
+    - 📄 PieChart.web.tsx
+    - 📄 StackedBarChart.tsx
+    - 📄 StackedBarChart.web.tsx
+    - 📄 UserFitnessReport.tsx
+    - 📄 WeightLineChart.tsx
+  - 📁 navigation
+    - 📄 TabBarIcon.tsx
+  - 📄 AddExerciseModal.tsx
+  - 📄 AnimatedSearchBar.tsx
+  - 📄 AppHeader.tsx
+  - 📄 ArrowedDatePicker.tsx
+  - 📄 BotAvatar.tsx
+  - 📄 BotAvatar.web.tsx
+  - 📄 BottomPageModal.tsx
+  - 📄 CameraView.tsx
+  - 📄 CameraView.web.tsx
+  - 📄 ChatInputBar.tsx
+  - 📄 ChatMessageActions.tsx
+  - 📄 Collapsible.tsx
+  - 📄 CompletionModal.tsx
+  - 📄 CurrentWorkoutProgressModal.tsx
+  - 📄 CustomErrorBoundary.tsx
+  - 📄 CustomPicker.tsx
+  - 📄 CustomTextArea.tsx
+  - 📄 CustomTextInput.tsx
+  - 📄 DatePickerModal.tsx
+  - 📄 DifficultyModal.tsx
+  - 📄 DrawerMenu.tsx
+  - 📄 EditMacrosModal.tsx
+  - 📄 EditSetModal.tsx
+  - 📄 ExerciseSetDetails.tsx
+  - 📄 FABWrapper.tsx
+  - 📄 Filters.tsx
+  - 📄 FoodItem.tsx
+  - 📄 FoodTrackingModal.tsx
+  - 📄 ForceInsetsUpdate.tsx
+  - 📄 GoogleSignInButton.tsx
+  - 📄 NextSetPreview.tsx
+  - 📄 NutritionProgressBanner.tsx
+  - 📄 Onboarding.tsx
+  - 📄 RecentWorkoutMessageCard.tsx
+  - 📄 RestTimer.tsx
+  - 📄 Screen.tsx
+  - 📄 SearchablePicker.tsx
+  - 📄 SearchFoodModal.tsx
+  - 📄 SetInfo.tsx
+  - 📄 SliderWithButtons.tsx
+  - 📄 StatusBadge.tsx
+  - 📄 ThemedCard.tsx
+  - 📄 ThemedModal.tsx
+  - 📄 TimePickerModal.tsx
+  - 📄 WeightAndFatMetricsInfo.tsx
+  - 📄 WorkoutExerciseDetail.tsx
+  - 📄 WorkoutGeneratedSuccessModal.tsx
+  - 📄 WorkoutItem.tsx
+  - 📄 WorkoutModal.tsx
+  - 📄 WorkoutSession.tsx
+- 📁 constants
+  - 📄 ai.ts
+  - 📄 chat.ts
+  - 📄 colors.ts
+  - 📄 exercises.ts
+  - 📄 healthConnect.ts
+  - 📄 nutrition.ts
+  - 📄 storage.ts
+  - 📄 tasks.ts
+  - 📄 ui.ts
+- 📁 data
+  - 📄 4056489564768.json
+  - 📄 exercisesEnUS.json
+  - 📄 exercisesEs.json
+  - 📄 exercisesNl.json
+  - 📄 exercisesPtBR.json
+  - 📄 foodForm.json
+  - 📄 healthDataExample.json
+  - 📄 importJsonExample.json
+  - 📄 userMetrics.json
+- 📁 hooks
+  - 📄 useAsyncStorage.test.ts
+  - 📄 useAsyncStorage.ts
+  - 📄 useChatRenderFunctions.tsx
+  - 📄 useGoogleAuth.ts
+  - 📄 useRestTimer.test.ts
+  - 📄 useRestTimer.ts
+  - 📄 useUnit.test.ts
+  - 📄 useUnit.ts
+  - 📄 useWorkoutImage.test.ts
+  - 📄 useWorkoutImage.ts
+  - 📄 useWorkoutTimer.test.ts
+  - 📄 useWorkoutTimer.ts
+- 📁 lang
+  - 📁 locales
+    - 📄 en-us.json
+    - 📄 es-es.json
+    - 📄 nl-nl.json
+    - 📄 pt-br.json
+  - 📄 lang.ts
+- 📁 scripts
+  - 📄 buildExercisesPreviewPage.js
+  - 📄 bump.js
+  - 📄 calculateWorkHours.js
+  - 📄 checkMissingTranslations.js
+  - 📄 checkUnusedStyles.js
+  - 📄 compareTranslations.js
+  - 📄 convertLifesumToUserNutrition.js
+  - 📄 dbChecksum.js
+  - 📄 generateFoodFormData.js
+  - 📄 generateImageImports.js
+  - 📄 generateLanguagesConfigFile.js
+  - 📄 generateNewLanguage.js
+  - 📄 reset-project.js
+- 📁 storage
+  - 📄 ChatProvider.tsx
+  - 📄 CustomThemeProvider.tsx
+  - 📄 HealthConnectProvider.tsx
+  - 📄 HealthConnectProvider.web.tsx
+  - 📄 LayoutReloaderProvider.tsx
+  - 📄 SettingsContext.tsx
+  - 📄 SnackbarProvider.tsx
+  - 📄 UnreadMessagesProvider.tsx
+- 📁 utils
+  - 📁 database
+  - 📄 ai.ts
+  - 📄 alert.ts
+  - 📄 colors.ts
+  - 📄 configureDailyTasks.ts
+  - 📄 configureNotifications.ts
+  - 📄 data.test.ts
+  - 📄 data.ts
+  - 📄 database.ts
+  - 📄 database.web.ts
+  - 📄 databaseCommon.ts
+  - 📄 date.test.ts
+  - 📄 date.ts
+  - 📄 debug.ts
+  - 📄 encryption.ts
+  - 📄 exerciseImages.ts
+  - 📄 fetchFoodData.ts
+  - 📄 fetchSpreadsheetFoodData.ts
+  - 📄 fetchSpreadsheetFoodData.web.ts
+  - 📄 file.ts
+  - 📄 file.web.ts
+  - 📄 gemini.ts
+  - 📄 googleAuth.ts
+  - 📄 healthConnect.test.ts
+  - 📄 healthConnect.ts
+  - 📄 navigation.ts
+  - 📄 openai.ts
+  - 📄 prompts.ts
+  - 📄 sentry.ts
+  - 📄 storage.ts
+  - 📄 string.test.ts
+  - 📄 string.ts
+  - 📄 types.ts
+  - 📄 unit.test.ts
+  - 📄 unit.ts
+  - 📄 validation.test.ts
+  - 📄 validation.ts
+  - 📄 workout.test.ts
+  - 📄 workout.ts
+- 📄 .env
+- 📄 .gitignore
+- 📄 .nvmrc
+- 📄 app.json
+- 📄 babel.config.js
+- 📄 dev-notes.md
+- 📄 eas.json
+- 📄 eslint.config.js
+- 📄 expo-env.d.ts
+- 📄 file-structure.md
+- 📄 generate-file-structure.js
+- 📄 LICENSE
+- 📄 musclog-316d75352408.json
+- 📄 package-lock.json
+- 📄 package.json
+- 📄 playwright.config.js
+- 📄 README.md
+- 📄 script.js
+- 📄 temp.js
+- 📄 tsconfig.json
+- 📄 types.ts
+- 📄 withAuthAndroidFix.js
+- 📄 withCustomGradleConfig.js
+- 📄 withCustomManifest.js
+- 📄 withNotifeeAndroidFix.js
