@@ -315,7 +315,7 @@ export default function Dashboard({ navigation }: {
                         onPress={() => setRetrospectiveModalVisible(true)}
                         style={styles.startLoggingButton}
                     >
-                        🤖 {t('retrospective_food_tracking_title')}
+                        🤖 {t('track_with_ai')}
                     </Button>
                 </View>
                 <NutritionProgressBanner

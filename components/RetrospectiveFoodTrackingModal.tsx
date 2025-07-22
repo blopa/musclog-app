@@ -1,8 +1,8 @@
+import { FlashList } from '@shopify/flash-list';
 import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Dimensions, ScrollView, StyleSheet, View } from 'react-native';
 import { ActivityIndicator, Button, Text, TextInput, useTheme } from 'react-native-paper';
-import { FlashList } from '@shopify/flash-list';
 
 import DatePickerModal from '@/components/DatePickerModal';
 import ThemedModal from '@/components/ThemedModal';
@@ -25,69 +25,77 @@ export type RetrospectiveNutritionData = {
 const { height: screenHeight } = Dimensions.get('window');
 
 type NutritionItemProps = {
-    item: RetrospectiveNutritionData;
     colors: any;
+    item: RetrospectiveNutritionData;
     t: (key: string) => string;
 };
 
-const NutritionItem: React.FC<NutritionItemProps> = ({ item, colors, t }) => (
-    <View style={{
-        backgroundColor: colors.surfaceVariant,
-        borderRadius: 8,
-        marginBottom: 12,
-        marginHorizontal: 16,
-        padding: 16,
-    }}>
-        <Text style={{
-            color: colors.onSurface,
-            fontSize: 18,
-            fontWeight: 'bold',
-            marginBottom: 4,
+const NutritionItem: React.FC<NutritionItemProps> = ({ colors, item, t }) => (
+    <View
+        style={{
+            backgroundColor: colors.surfaceVariant,
+            borderRadius: 8,
+            marginBottom: 12,
+            marginHorizontal: 16,
+            padding: 16,
         }}>
+        <Text
+            style={{
+                color: colors.onSurface,
+                fontSize: 18,
+                fontWeight: 'bold',
+                marginBottom: 4,
+            }}>
             {item.productTitle}
         </Text>
-        <Text style={{
-            color: colors.primary,
-            fontSize: 14,
-            fontWeight: '600',
-            marginBottom: 8,
-        }}>
+        <Text
+            style={{
+                color: colors.primary,
+                fontSize: 14,
+                fontWeight: '600',
+                marginBottom: 8,
+            }}>
             {t(`meal_type_${item.mealType}`)}
         </Text>
-        <View style={{
-            flexDirection: 'row',
-            flexWrap: 'wrap',
-        }}>
-            <Text style={{
-                color: colors.onSurfaceVariant,
-                fontSize: 14,
-                marginBottom: 4,
-                marginRight: 16,
+        <View
+            style={{
+                flexDirection: 'row',
+                flexWrap: 'wrap',
             }}>
+            <Text
+                style={{
+                    color: colors.onSurfaceVariant,
+                    fontSize: 14,
+                    marginBottom: 4,
+                    marginRight: 16,
+                }}>
                 {t('calories')}: {Math.round(item.calories)}
             </Text>
-            <Text style={{
-                color: colors.onSurfaceVariant,
-                fontSize: 14,
-                marginBottom: 4,
-                marginRight: 16,
-            }}>
+            <Text
+                style={{
+                    color: colors.onSurfaceVariant,
+                    fontSize: 14,
+                    marginBottom: 4,
+                    marginRight: 16,
+                }}>
                 {t('protein')}: {Math.round(item.protein)}g
             </Text>
-            <Text style={{
-                color: colors.onSurfaceVariant,
-                fontSize: 14,
-                marginBottom: 4,
-                marginRight: 16,
-            }}>
+            <Text
+                style={{
+                    color: colors.onSurfaceVariant,
+                    fontSize: 14,
+                    marginBottom: 4,
+                    marginRight: 16,
+                }}>
                 {t('carbs')}: {Math.round(item.carbs)}g
             </Text>
-            <Text style={{
-                color: colors.onSurfaceVariant,
-                fontSize: 14,
-                marginBottom: 4,
-                marginRight: 16,
-            }}>
+            <Text
+                style={{
+                    color: colors.onSurfaceVariant,
+                    fontSize: 14,
+                    marginBottom: 4,
+                    marginRight: 16,
+                }}>
                 {t('fat')}: {Math.round(item.fat)}g
             </Text>
         </View>
@@ -183,8 +191,8 @@ const RetrospectiveFoodTrackingModal: React.FC<RetrospectiveFoodTrackingModalPro
             <View style={[styles.container, { maxHeight: screenHeight * 0.9 }]}>
                 <Text style={styles.title}>
                     {showPreview
-                        ? t('confirm_ai_nutrition_tracking')
-                        : t('retrospective_food_tracking_title')
+                        ? t('confirm')
+                        : t('track_with_ai')
                     }
                 </Text>
 
@@ -235,7 +243,7 @@ const RetrospectiveFoodTrackingModal: React.FC<RetrospectiveFoodTrackingModalPro
                                 {isProcessing ? (
                                     <ActivityIndicator color={colors.onPrimary} size="small" />
                                 ) : (
-                                    t('analyze_with_ai')
+                                    t('analyze')
                                 )}
                             </Button>
                         </View>
@@ -252,7 +260,7 @@ const RetrospectiveFoodTrackingModal: React.FC<RetrospectiveFoodTrackingModalPro
                                 estimatedItemSize={160}
                                 keyExtractor={(item, index) => `nutrition-${index}`}
                                 renderItem={({ item }) => (
-                                    <NutritionItem 
+                                    <NutritionItem
                                         colors={colors}
                                         item={item}
                                         t={t}
@@ -279,7 +287,7 @@ const RetrospectiveFoodTrackingModal: React.FC<RetrospectiveFoodTrackingModalPro
                                 {isProcessing ? (
                                     <ActivityIndicator color={colors.onPrimary} size="small" />
                                 ) : (
-                                    t('confirm_and_save')
+                                    t('confirm')
                                 )}
                             </Button>
                         </View>

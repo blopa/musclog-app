@@ -923,7 +923,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         style: { backgroundColor: colors.surface },
     }, {
         icon: () => <FontAwesome5 color={colors.primary} name="robot" size={FAB_ICON_SIZE} />,
-        label: t('retrospective_food_tracking_title'),
+        label: t('track_with_ai'),
         onPress: () => {
             setRetrospectiveModalVisible(true);
         },
