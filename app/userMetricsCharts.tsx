@@ -498,7 +498,7 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
     }, [t, weightUnit]);
 
     const loadUserMetricsAndNutrition = useCallback(async () => {
-        // TODO: only reloads the data if the time range changes to a bigger value
+        // TODO: only reloads the data if the time range changes to a bigger value [prio-0]
         try {
             let loadedUserMetrics;
             let loadedUserNutrition;
@@ -803,7 +803,7 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
 
                 // Use the calculateWeeklyAverages function for FFMI
                 const ffmiDataToShow = showWeeklyAverages
-                    // TODO doesn't really matter if we use 'weight' or 'fatPercentage' here
+                    // TODO doesn't really matter if we use 'weight' or 'fatPercentage' here [prio-0]
                     ? calculateWeeklyAverages(aggregatedMetrics, 'weight', true, userHeight, isImperial)
                     : aggregatedMetrics
                         .filter((metric) => metric.weight && metric.fatPercentage)
@@ -863,7 +863,7 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
             const hasAiEnabled = Boolean(vendor) && isAiSettingsEnabled?.value === 'true';
             setIsAiEnabled(hasAiEnabled);
 
-            // TODO: also aggragate by week if toggle is on
+            // TODO: also aggragate by week if toggle is on [prio-0]
             const setsDoneThisWeek = await (
                 (startDate && endDate)
                     ? getSetsDoneBetweenDates(startDate.toISOString(), endDate.toISOString())

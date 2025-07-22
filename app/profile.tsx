@@ -143,7 +143,7 @@ const Profile = ({ navigation }: { navigation: NavigationProp<any> }) => {
             const latestUserMetrics = await getLatestUserMetrics();
 
             if (latestUserMetrics?.id) {
-                // TODO mark old one as deleted and create new one
+                // TODO mark old one as deleted and create new one [prio-0]
                 if (
                     latestUserMetrics?.eatingPhase !== userMetric.eatingPhase
                     || latestUserMetrics?.fatPercentage !== userMetric.fatPercentage

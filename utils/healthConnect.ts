@@ -295,7 +295,7 @@ export const syncHealthConnectData = async (
                 createdAt: data.createdAt,
                 dataId: data.dataId,
                 date: data.date,
-                // TODO: get eating phase from that date
+                // TODO: get eating phase from that date [prio-0]
                 eatingPhase: user?.metrics?.eatingPhase || EATING_PHASES.MAINTENANCE,
                 fatPercentage: data.fatPercentage,
                 height: data.height,

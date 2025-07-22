@@ -191,7 +191,7 @@ const FoodTrackingModal = ({
                 protein: normalizedMacros.protein,
                 totalCarbohydrate: normalizedMacros.carbs,
                 totalFat: normalizedMacros.fat,
-                // TODO: add the rest of the fields
+                // TODO: add the rest of the fields [prio-0]
             };
 
             const existingFood = await getFoodByNameAndMacros(

@@ -453,11 +453,11 @@ const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
     }, [navigation, workout]);
 
     const handleDeleteSet = useCallback((exerciseId: number) => (setIndex: number, setId?: number) => {
-        // TODO this is just a nice to have
+        // TODO this is just a nice to have [prio-0]
     }, []);
 
     const handleEditSet = useCallback((exerciseId: number) => (setIndex: number, setId?: number) => {
-        // TODO this is just a nice to have
+        // TODO this is just a nice to have [prio-0]
     }, []);
 
     const fabActions = useMemo(() => {
