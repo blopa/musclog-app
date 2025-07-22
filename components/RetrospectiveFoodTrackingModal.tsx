@@ -130,6 +130,8 @@ const RetrospectiveFoodTrackingModal: React.FC<RetrospectiveFoodTrackingModalPro
     const [parsedNutrition, setParsedNutrition] = useState<null | RetrospectiveNutritionData[]>(null);
     const [isProcessing, setIsProcessing] = useState(false);
     const [showPreview, setShowPreview] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [showError, setShowError] = useState(false);
 
     const handleDateSelect = useCallback((date: Date) => {
         setSelectedDate(date);
@@ -142,15 +144,28 @@ const RetrospectiveFoodTrackingModal: React.FC<RetrospectiveFoodTrackingModalPro
         }
 
         setIsProcessing(true);
+        setError(null);
+        setShowError(false);
+        
         try {
             const result = await onSubmit({
                 date: selectedDate.toISOString(),
                 description: description.trim(),
             });
+            
+            if (!result || !result.length) {
+                throw new Error('No nutrition data could be parsed from your description. Please try rephrasing your text or adding more details.');
+            }
+            
             setParsedNutrition(result);
             setShowPreview(true);
         } catch (error) {
             console.error('Error processing retrospective nutrition:', error);
+            const errorMessage = error instanceof Error 
+                ? error.message 
+                : 'Failed to analyze your food description. Please try again or rephrase your text.';
+            setError(errorMessage);
+            setShowError(true);
         } finally {
             setIsProcessing(false);
         }
@@ -160,6 +175,9 @@ const RetrospectiveFoodTrackingModal: React.FC<RetrospectiveFoodTrackingModalPro
         if (!parsedNutrition) {return;}
 
         setIsProcessing(true);
+        setError(null);
+        setShowError(false);
+        
         try {
             await onConfirm(parsedNutrition);
             // Reset state
@@ -169,20 +187,36 @@ const RetrospectiveFoodTrackingModal: React.FC<RetrospectiveFoodTrackingModalPro
             onClose();
         } catch (error) {
             console.error('Error saving retrospective nutrition:', error);
+            const errorMessage = error instanceof Error 
+                ? error.message 
+                : 'Failed to save nutrition data. Please try again.';
+            setError(errorMessage);
+            setShowError(true);
         } finally {
             setIsProcessing(false);
         }
     }, [parsedNutrition, onConfirm, onClose]);
 
+    const handleRetry = useCallback(() => {
+        setError(null);
+        setShowError(false);
+        // Keep the description and date - just retry the parsing
+        handleSubmit();
+    }, [handleSubmit]);
+
     const handleBack = useCallback(() => {
         setShowPreview(false);
         setParsedNutrition(null);
+        setError(null);
+        setShowError(false);
     }, []);
 
     const handleCloseModal = useCallback(() => {
         setDescription('');
         setParsedNutrition(null);
         setShowPreview(false);
+        setError(null);
+        setShowError(false);
         onClose();
     }, [onClose]);
 
@@ -226,6 +260,12 @@ const RetrospectiveFoodTrackingModal: React.FC<RetrospectiveFoodTrackingModalPro
                             />
                         </View>
 
+                        {showError && error && (
+                            <View style={styles.errorContainer}>
+                                <Text style={styles.errorText}>{error}</Text>
+                            </View>
+                        )}
+
                         <View style={styles.buttonContainer}>
                             <Button
                                 mode="outlined"
@@ -234,18 +274,33 @@ const RetrospectiveFoodTrackingModal: React.FC<RetrospectiveFoodTrackingModalPro
                             >
                                 {t('cancel')}
                             </Button>
-                            <Button
-                                disabled={!description.trim() || isProcessing}
-                                mode="contained"
-                                onPress={handleSubmit}
-                                style={styles.submitButton}
-                            >
-                                {isProcessing ? (
-                                    <ActivityIndicator color={colors.onPrimary} size="small" />
-                                ) : (
-                                    t('analyze')
-                                )}
-                            </Button>
+                            {showError ? (
+                                <Button
+                                    disabled={!description.trim() || isProcessing}
+                                    mode="contained"
+                                    onPress={handleRetry}
+                                    style={styles.submitButton}
+                                >
+                                    {isProcessing ? (
+                                        <ActivityIndicator color={colors.onPrimary} size="small" />
+                                    ) : (
+                                        t('retry')
+                                    )}
+                                </Button>
+                            ) : (
+                                <Button
+                                    disabled={!description.trim() || isProcessing}
+                                    mode="contained"
+                                    onPress={handleSubmit}
+                                    style={styles.submitButton}
+                                >
+                                    {isProcessing ? (
+                                        <ActivityIndicator color={colors.onPrimary} size="small" />
+                                    ) : (
+                                        t('analyze')
+                                    )}
+                                </Button>
+                            )}
                         </View>
                     </ScrollView>
                 ) : (
@@ -270,6 +325,12 @@ const RetrospectiveFoodTrackingModal: React.FC<RetrospectiveFoodTrackingModalPro
                             />
                         </View>
 
+                        {showError && error && (
+                            <View style={styles.errorContainer}>
+                                <Text style={styles.errorText}>{error}</Text>
+                            </View>
+                        )}
+
                         <View style={styles.buttonContainer}>
                             <Button
                                 mode="outlined"
@@ -278,18 +339,33 @@ const RetrospectiveFoodTrackingModal: React.FC<RetrospectiveFoodTrackingModalPro
                             >
                                 {t('back')}
                             </Button>
-                            <Button
-                                disabled={isProcessing}
-                                mode="contained"
-                                onPress={handleConfirm}
-                                style={styles.submitButton}
-                            >
-                                {isProcessing ? (
-                                    <ActivityIndicator color={colors.onPrimary} size="small" />
-                                ) : (
-                                    t('confirm')
-                                )}
-                            </Button>
+                            {showError ? (
+                                <Button
+                                    disabled={isProcessing}
+                                    mode="contained"
+                                    onPress={handleConfirm}
+                                    style={styles.submitButton}
+                                >
+                                    {isProcessing ? (
+                                        <ActivityIndicator color={colors.onPrimary} size="small" />
+                                    ) : (
+                                        t('retry')
+                                    )}
+                                </Button>
+                            ) : (
+                                <Button
+                                    disabled={isProcessing}
+                                    mode="contained"
+                                    onPress={handleConfirm}
+                                    style={styles.submitButton}
+                                >
+                                    {isProcessing ? (
+                                        <ActivityIndicator color={colors.onPrimary} size="small" />
+                                    ) : (
+                                        t('confirm')
+                                    )}
+                                </Button>
+                            )}
                         </View>
                     </View>
                 )}
@@ -328,6 +404,18 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) =>
             fontSize: 16,
             lineHeight: 22,
             marginBottom: 24,
+            textAlign: 'center',
+        },
+        errorContainer: {
+            backgroundColor: colors.errorContainer,
+            borderRadius: 8,
+            marginBottom: 16,
+            padding: 12,
+        },
+        errorText: {
+            color: colors.onErrorContainer,
+            fontSize: 14,
+            lineHeight: 20,
             textAlign: 'center',
         },
         flashListContainer: {
