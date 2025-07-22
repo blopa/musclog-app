@@ -1,8 +1,9 @@
+import { fetch } from 'expo/fetch';
+import { read, utils } from 'xlsx';
+
 import {
     GoogleFormFoodType,
 } from '@/utils/types';
-import { fetch } from 'expo/fetch';
-import { read, utils } from 'xlsx';
 
 export const fetchFoodSpreadsheet = async (): Promise<GoogleFormFoodType[] | null> => {
     try {

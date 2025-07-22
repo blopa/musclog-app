@@ -1,3 +1,8 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { fetch } from 'expo/fetch';
+import i18n from 'i18next';
+import { Platform } from 'react-native';
+
 import {
     NUTRITION_INSIGHT_DAILY,
     NUTRITION_INSIGHT_DISABLED,
@@ -18,10 +23,6 @@ import {
     getStartOfDayTimestampISOString,
 } from '@/utils/date';
 import { openPlayStore } from '@/utils/navigation';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { fetch } from 'expo/fetch';
-import i18n from 'i18next';
-import { Platform } from 'react-native';
 
 export async function configureDailyTasks() {
     if (Platform.OS === 'web') {

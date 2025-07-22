@@ -1,9 +1,10 @@
-import {
-    GoogleFormFoodType,
-} from '@/utils/types';
 import { Buffer } from 'buffer';
 import * as FileSystem from 'expo-file-system';
 import { read, utils } from 'xlsx';
+
+import {
+    GoogleFormFoodType,
+} from '@/utils/types';
 
 export const fetchFoodSpreadsheet = async (): Promise<GoogleFormFoodType[] | null> => {
     try {

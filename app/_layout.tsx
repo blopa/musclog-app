@@ -177,7 +177,7 @@ function RootLayout() {
                     });
                     await addOrUpdateSetting({
                         type: GEMINI_MODEL_TYPE,
-                        value: GEMINI_MODELS.GEMINI_FLASH_1_5.value.toString(),
+                        value: GEMINI_MODELS.GEMINI_2_5_FLASH.value.toString(),
                     });
                     await addOrUpdateSetting({
                         type: OPENAI_MODEL_TYPE,

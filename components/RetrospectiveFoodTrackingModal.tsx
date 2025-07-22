@@ -6,7 +6,7 @@ import { ActivityIndicator, Button, Text, TextInput, useTheme } from 'react-nati
 import DatePickerModal from '@/components/DatePickerModal';
 import ThemedModal from '@/components/ThemedModal';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
-import { formatDate, getCurrentTimestampISOString } from '@/utils/date';
+import { formatDate } from '@/utils/date';
 
 export type RetrospectiveNutritionData = {
     calories: number;
@@ -22,22 +22,22 @@ export type RetrospectiveNutritionData = {
 };
 
 type RetrospectiveFoodTrackingModalProps = {
-    visible: boolean;
+    isLoading?: boolean;
     onClose: () => void;
+    onConfirm: (nutritionData: RetrospectiveNutritionData[]) => Promise<void>;
     onSubmit: (data: {
         date: string;
         description: string;
     }) => Promise<RetrospectiveNutritionData[]>;
-    onConfirm: (nutritionData: RetrospectiveNutritionData[]) => Promise<void>;
-    isLoading?: boolean;
+    visible: boolean;
 };
 
 const RetrospectiveFoodTrackingModal: React.FC<RetrospectiveFoodTrackingModalProps> = ({
-    visible,
-    onClose,
-    onSubmit,
-    onConfirm,
     isLoading = false,
+    onClose,
+    onConfirm,
+    onSubmit,
+    visible,
 }) => {
     const { t } = useTranslation();
     const { colors, dark } = useTheme<CustomThemeType>();
@@ -46,7 +46,7 @@ const RetrospectiveFoodTrackingModal: React.FC<RetrospectiveFoodTrackingModalPro
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [datePickerVisible, setDatePickerVisible] = useState(false);
     const [description, setDescription] = useState('');
-    const [parsedNutrition, setParsedNutrition] = useState<RetrospectiveNutritionData[] | null>(null);
+    const [parsedNutrition, setParsedNutrition] = useState<null | RetrospectiveNutritionData[]>(null);
     const [isProcessing, setIsProcessing] = useState(false);
     const [showPreview, setShowPreview] = useState(false);
 
@@ -76,7 +76,7 @@ const RetrospectiveFoodTrackingModal: React.FC<RetrospectiveFoodTrackingModalPro
     }, [description, selectedDate, onSubmit]);
 
     const handleConfirm = useCallback(async () => {
-        if (!parsedNutrition) return;
+        if (!parsedNutrition) {return;}
 
         setIsProcessing(true);
         try {
@@ -109,12 +109,12 @@ const RetrospectiveFoodTrackingModal: React.FC<RetrospectiveFoodTrackingModalPro
         <ThemedModal onClose={handleCloseModal} visible={visible}>
             <ScrollView contentContainerStyle={styles.container}>
                 <Text style={styles.title}>
-                    {showPreview 
+                    {showPreview
                         ? t('confirm_ai_nutrition_tracking')
                         : t('retrospective_food_tracking_title')
                     }
                 </Text>
-                
+
                 {!showPreview ? (
                     <>
                         <Text style={styles.description}>
@@ -138,10 +138,10 @@ const RetrospectiveFoodTrackingModal: React.FC<RetrospectiveFoodTrackingModalPro
                                 mode="outlined"
                                 multiline
                                 numberOfLines={6}
-                                placeholder={t('retrospective_food_tracking_placeholder')}
-                                value={description}
                                 onChangeText={setDescription}
+                                placeholder={t('retrospective_food_tracking_placeholder')}
                                 style={styles.textArea}
+                                value={description}
                             />
                         </View>
 
@@ -154,13 +154,13 @@ const RetrospectiveFoodTrackingModal: React.FC<RetrospectiveFoodTrackingModalPro
                                 {t('cancel')}
                             </Button>
                             <Button
+                                disabled={!description.trim() || isProcessing}
                                 mode="contained"
                                 onPress={handleSubmit}
-                                disabled={!description.trim() || isProcessing}
                                 style={styles.submitButton}
                             >
                                 {isProcessing ? (
-                                    <ActivityIndicator size="small" color={colors.onPrimary} />
+                                    <ActivityIndicator color={colors.onPrimary} size="small" />
                                 ) : (
                                     t('analyze_with_ai')
                                 )}
@@ -207,13 +207,13 @@ const RetrospectiveFoodTrackingModal: React.FC<RetrospectiveFoodTrackingModalPro
                                 {t('back')}
                             </Button>
                             <Button
+                                disabled={isProcessing}
                                 mode="contained"
                                 onPress={handleConfirm}
-                                disabled={isProcessing}
                                 style={styles.submitButton}
                             >
                                 {isProcessing ? (
-                                    <ActivityIndicator size="small" color={colors.onPrimary} />
+                                    <ActivityIndicator color={colors.onPrimary} size="small" />
                                 ) : (
                                     t('confirm_and_save')
                                 )}
@@ -235,46 +235,6 @@ const RetrospectiveFoodTrackingModal: React.FC<RetrospectiveFoodTrackingModalPro
 
 const makeStyles = (colors: CustomThemeColorsType, dark: boolean) =>
     StyleSheet.create({
-        container: {
-            padding: 20,
-            minHeight: 400,
-        },
-        title: {
-            fontSize: 24,
-            fontWeight: 'bold',
-            marginBottom: 16,
-            textAlign: 'center',
-            color: colors.onSurface,
-        },
-        description: {
-            fontSize: 16,
-            marginBottom: 24,
-            textAlign: 'center',
-            color: colors.onSurfaceVariant,
-            lineHeight: 22,
-        },
-        previewDescription: {
-            fontSize: 16,
-            marginBottom: 20,
-            textAlign: 'center',
-            color: colors.onSurfaceVariant,
-        },
-        section: {
-            marginBottom: 20,
-        },
-        label: {
-            fontSize: 16,
-            fontWeight: '600',
-            marginBottom: 8,
-            color: colors.onSurface,
-        },
-        dateButton: {
-            marginBottom: 8,
-        },
-        textArea: {
-            minHeight: 120,
-            textAlignVertical: 'top',
-        },
         buttonContainer: {
             flexDirection: 'row',
             justifyContent: 'space-between',
@@ -284,40 +244,80 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) =>
             flex: 1,
             marginRight: 8,
         },
-        submitButton: {
-            flex: 1,
-            marginLeft: 8,
+        container: {
+            minHeight: 400,
+            padding: 20,
         },
-        previewContainer: {
-            marginBottom: 20,
-        },
-        nutritionItem: {
-            backgroundColor: colors.surfaceVariant,
-            padding: 16,
-            borderRadius: 8,
-            marginBottom: 12,
-        },
-        nutritionTitle: {
-            fontSize: 18,
-            fontWeight: 'bold',
-            marginBottom: 4,
-            color: colors.onSurface,
-        },
-        nutritionMealType: {
-            fontSize: 14,
-            color: colors.primary,
+        dateButton: {
             marginBottom: 8,
+        },
+        description: {
+            color: colors.onSurfaceVariant,
+            fontSize: 16,
+            lineHeight: 22,
+            marginBottom: 24,
+            textAlign: 'center',
+        },
+        label: {
+            color: colors.onSurface,
+            fontSize: 16,
             fontWeight: '600',
+            marginBottom: 8,
         },
         macroContainer: {
             flexDirection: 'row',
             flexWrap: 'wrap',
         },
         macroText: {
-            fontSize: 14,
             color: colors.onSurfaceVariant,
-            marginRight: 16,
+            fontSize: 14,
             marginBottom: 4,
+            marginRight: 16,
+        },
+        nutritionItem: {
+            backgroundColor: colors.surfaceVariant,
+            borderRadius: 8,
+            marginBottom: 12,
+            padding: 16,
+        },
+        nutritionMealType: {
+            color: colors.primary,
+            fontSize: 14,
+            fontWeight: '600',
+            marginBottom: 8,
+        },
+        nutritionTitle: {
+            color: colors.onSurface,
+            fontSize: 18,
+            fontWeight: 'bold',
+            marginBottom: 4,
+        },
+        previewContainer: {
+            marginBottom: 20,
+        },
+        previewDescription: {
+            color: colors.onSurfaceVariant,
+            fontSize: 16,
+            marginBottom: 20,
+            textAlign: 'center',
+        },
+        section: {
+            marginBottom: 20,
+        },
+        submitButton: {
+            flex: 1,
+            marginLeft: 8,
+        },
+        textArea: {
+            minHeight: 120,
+            textAlignVertical: 'top',
+        },
+        title: {
+            color: colors.onSurface,
+            fontSize: 24,
+            fontWeight: 'bold',
+            marginBottom: 16,
+            textAlign: 'center',
         },
     });
 

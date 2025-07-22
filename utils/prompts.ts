@@ -1,3 +1,6 @@
+import { FunctionDeclaration } from '@google/generative-ai';
+import OpenAI from 'openai';
+
 import {
     GRAMS,
     KILOGRAMS,
@@ -26,8 +29,6 @@ import { formatDate, getCurrentTimestampISOString } from '@/utils/date';
 import { safeToFixed } from '@/utils/string';
 import { UserWithMetricsType, WorkoutEventReturnType, WorkoutReturnType } from '@/utils/types';
 import { getUnit } from '@/utils/unit';
-import { FunctionDeclaration } from '@google/generative-ai';
-import OpenAI from 'openai';
 
 export const WORDS_SOFT_LIMIT = 100;
 export const BE_CONCISE_PROMPT = `Be concise and limit your message to ${WORDS_SOFT_LIMIT} words.`;

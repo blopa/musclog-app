@@ -1,3 +1,5 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { EXERCISE_TYPES, EXPERIENCE_LEVELS } from '@/constants/exercises';
 import { EATING_PHASES } from '@/constants/nutrition';
 import {
@@ -35,7 +37,6 @@ import {
     WorkoutReturnType,
 } from '@/utils/types';
 import { getDisplayFormattedWeight } from '@/utils/unit';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export function calculate1RM(weight: number, reps: number, formula: string, rir: number = 0) {
     const adjustedReps = reps + rir;

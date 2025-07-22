@@ -1,3 +1,6 @@
+import { fetch } from 'expo/fetch';
+import i18n from 'i18next';
+
 import { getFoodByProductCode, searchFoodByName } from '@/utils/database';
 import { fetchFoodSpreadsheet } from '@/utils/fetchSpreadsheetFoodData';
 import { normalizeText } from '@/utils/string';
@@ -6,8 +9,6 @@ import {
     PaginatedOpenFoodFactsApiFoodInfoType,
     PaginatedOpenFoodFactsApiFoodProductInfoType,
 } from '@/utils/types';
-import { fetch } from 'expo/fetch';
-import i18n from 'i18next';
 
 export const mapProductData = (product: PaginatedOpenFoodFactsApiFoodProductInfoType): MusclogApiFoodInfoType => {
     return {

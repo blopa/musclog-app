@@ -7,8 +7,8 @@ import { BackHandler, ScrollView, StyleSheet, View } from 'react-native';
 import { Button, Card, Text, useTheme } from 'react-native-paper';
 
 import FoodTrackingModal, { FoodTrackingType } from '@/components/FoodTrackingModal';
-import RetrospectiveFoodTrackingModal, { RetrospectiveNutritionData } from '@/components/RetrospectiveFoodTrackingModal';
 import NutritionProgressBanner from '@/components/NutritionProgressBanner';
+import RetrospectiveFoodTrackingModal, { RetrospectiveNutritionData } from '@/components/RetrospectiveFoodTrackingModal';
 import { Screen } from '@/components/Screen';
 import SearchFoodModal from '@/components/SearchFoodModal';
 import StatusBadge from '@/components/StatusBadge';
@@ -17,8 +17,8 @@ import ThemedModal from '@/components/ThemedModal';
 import WorkoutModal from '@/components/WorkoutModal';
 import { CURRENT_WORKOUT_ID, SCHEDULED_STATUS } from '@/constants/storage';
 import { useHealthConnect } from '@/storage/HealthConnectProvider';
-import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { parseRetrospectiveNutrition } from '@/utils/ai';
+import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import { addUserNutrition, getRecentWorkoutsPaginated, getRecurringWorkouts, getUserNutritionBetweenDates } from '@/utils/database';
 import {
     formatDate,
@@ -223,7 +223,7 @@ export default function Dashboard({ navigation }: {
         description: string;
     }) => {
         const result = await parseRetrospectiveNutrition(data.description, data.date);
-        
+
         // Transform the API response to match our expected format
         const nutritionEntries: RetrospectiveNutritionData[] = result?.nutritionEntries?.map((entry: any) => ({
             calories: entry.calories || 0,
@@ -260,7 +260,7 @@ export default function Dashboard({ navigation }: {
                     type: 'meal',
                 });
             }
-            
+
             // Refresh the nutrition data
             loadConsumed();
         } catch (error) {

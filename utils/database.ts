@@ -1,5 +1,7 @@
 import type { DatabaseChangeEvent, SQLiteDatabase } from 'expo-sqlite';
 
+import { addDatabaseChangeListener, openDatabaseSync } from 'expo-sqlite';
+
 import { VOLUME_CALCULATION_TYPES } from '@/constants/exercises';
 import { USER_METRICS_SOURCES } from '@/constants/healthConnect';
 import { EATING_PHASES, NUTRITION_TYPES } from '@/constants/nutrition';
@@ -51,7 +53,6 @@ import {
     WorkoutReturnType,
     WorkoutWithExercisesRepsAndSetsDetailsReturnType,
 } from '@/utils/types';
-import { addDatabaseChangeListener, openDatabaseSync } from 'expo-sqlite';
 
 const createTables = (database: SQLiteDatabase) => {
     const tables = [{

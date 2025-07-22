@@ -499,7 +499,7 @@ export async function isValidApiKey(apiKey: string) {
     } catch (error) {
         return false;
     }
-};
+}
 
 export const parseRetrospectiveNutrition = async (userMessage: string, targetDate: string) => {
     const apiKey = await getApiKey();
@@ -533,4 +533,3 @@ export const parseRetrospectiveNutrition = async (userMessage: string, targetDat
 
     return jsonResponse;
 };
-}

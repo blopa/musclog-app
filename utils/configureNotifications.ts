@@ -1,3 +1,7 @@
+import * as Notifications from 'expo-notifications';
+import { SchedulableTriggerInputTypes } from 'expo-notifications';
+import { Platform } from 'react-native';
+
 import {
     NUTRITION_INSIGHT_WEEKLY,
     NUTRITION_INSIGHTS_TYPE,
@@ -8,9 +12,6 @@ import {
 import i18n from '@/lang/lang';
 import { configureDailyTasks, configureWeeklyTasks } from '@/utils/configureDailyTasks';
 import { getSetting } from '@/utils/database';
-import * as Notifications from 'expo-notifications';
-import { SchedulableTriggerInputTypes } from 'expo-notifications';
-import { Platform } from 'react-native';
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({

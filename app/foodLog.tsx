@@ -28,8 +28,8 @@ import { CameraView, useCameraPermissions } from '@/components/CameraView';
 import FABWrapper from '@/components/FABWrapper';
 import FoodItem from '@/components/FoodItem';
 import FoodTrackingModal, { FoodTrackingType } from '@/components/FoodTrackingModal';
-import RetrospectiveFoodTrackingModal, { RetrospectiveNutritionData } from '@/components/RetrospectiveFoodTrackingModal';
 import NutritionProgressBanner from '@/components/NutritionProgressBanner';
+import RetrospectiveFoodTrackingModal, { RetrospectiveNutritionData } from '@/components/RetrospectiveFoodTrackingModal';
 import { Screen } from '@/components/Screen';
 import SearchFoodModal from '@/components/SearchFoodModal';
 import ThemedCard from '@/components/ThemedCard';
@@ -343,7 +343,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         description: string;
     }) => {
         const result = await parseRetrospectiveNutrition(data.description, data.date);
-        
+
         // Transform the API response to match our expected format
         const nutritionEntries: RetrospectiveNutritionData[] = result?.nutritionEntries?.map((entry: any) => ({
             calories: entry.calories || 0,
@@ -380,7 +380,7 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                     type: 'meal',
                 });
             }
-            
+
             // Refresh the nutrition data
             loadConsumed();
         } catch (error) {

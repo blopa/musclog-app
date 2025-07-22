@@ -1,5 +1,6 @@
-import { RECENT_FOOD } from '@/constants/storage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import { RECENT_FOOD } from '@/constants/storage';
 
 export const getDecrypter = () => {
     // @ts-expect-error eslint-disable-next-line

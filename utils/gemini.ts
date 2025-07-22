@@ -1,13 +1,5 @@
 import type { ChatCompletionMessageParam } from 'openai/resources';
 
-import { GEMINI_MODELS } from '@/constants/ai';
-import { EXERCISE_IMAGE_GENERATION_TYPE, GEMINI_API_KEY_TYPE, GEMINI_MODEL_TYPE } from '@/constants/storage';
-import i18n from '@/lang/lang';
-import { getSetting, processWorkoutPlan } from '@/utils/database';
-import { getBase64StringFromPhotoUri, resizeImage } from '@/utils/file';
-import { getAccessToken as getGoogleAccessToken, refreshAccessToken } from '@/utils/googleAuth';
-import { captureMessage } from '@/utils/sentry';
-import { WorkoutPlan, WorkoutReturnType } from '@/utils/types';
 import {
     Content,
     FunctionDeclaration,
@@ -23,6 +15,15 @@ import {
 } from '@google/generative-ai';
 // import fetch from 'isomorphic-fetch';
 import { fetch } from 'expo/fetch';
+
+import { GEMINI_MODELS } from '@/constants/ai';
+import { EXERCISE_IMAGE_GENERATION_TYPE, GEMINI_API_KEY_TYPE, GEMINI_MODEL_TYPE } from '@/constants/storage';
+import i18n from '@/lang/lang';
+import { getSetting, processWorkoutPlan } from '@/utils/database';
+import { getBase64StringFromPhotoUri, resizeImage } from '@/utils/file';
+import { getAccessToken as getGoogleAccessToken, refreshAccessToken } from '@/utils/googleAuth';
+import { captureMessage } from '@/utils/sentry';
+import { WorkoutPlan, WorkoutReturnType } from '@/utils/types';
 
 import {
     createWorkoutPlanPrompt,
@@ -45,7 +46,7 @@ import {
 } from './prompts';
 
 const getModel = async () => {
-    const defaultModel = GEMINI_MODELS.GEMINI_FLASH_1_5.model;
+    const defaultModel = GEMINI_MODELS.GEMINI_2_5_FLASH.model;
     const savedModel = await getSetting(GEMINI_MODEL_TYPE);
 
     if (!savedModel) {
@@ -550,7 +551,7 @@ export const generateExerciseImage = async (exerciseName: string): Promise<strin
     const model = await configureBasicGenAI({
         accessToken,
         apiKey,
-        model: GEMINI_MODELS.GEMINI_FLASH_2_0.model,
+        model: GEMINI_MODELS.GEMINI_2_5_FLASH.model,
     });
 
     const generationConfig = {
@@ -1125,7 +1126,7 @@ export const parseRetrospectiveNutrition = async (userMessage: string, targetDat
             tools: [{ functionDeclarations }],
         });
 
-        const response = result.response;
+        const { response } = result;
         const calls = response.functionCalls();
 
         if (calls && calls.length > 0) {
