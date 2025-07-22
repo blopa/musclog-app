@@ -343,6 +343,8 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
         date: string;
         description: string;
     }) => {
+        // TODO: if this returns an empty array, we need to show a button so the user can retry
+        // the request
         const result = await parseRetrospectiveNutrition(data.description, data.date);
 
         // Transform the API response to match our expected format
