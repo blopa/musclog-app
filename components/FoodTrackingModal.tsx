@@ -178,20 +178,33 @@ const FoodTrackingModal = ({
             const normalizedMacros = normalizeMacrosByGrams({
                 carbs: userNutrition.carbohydrate,
                 fat: userNutrition.fat,
+                fiber: userNutrition.fiber || 0,
                 grams: userNutrition.grams,
                 kcal: userNutrition.calories,
+                monounsaturatedFat: userNutrition.monounsaturatedFat || 0,
+                polyunsaturatedFat: userNutrition.polyunsaturatedFat || 0,
                 protein: userNutrition.protein,
+                saturatedFat: userNutrition.saturatedFat || 0,
+                sugar: userNutrition.sugar || 0,
+                transFat: userNutrition.transFat || 0,
+                unsaturatedFat: userNutrition.unsaturatedFat || 0,
             });
 
             const updatedFood = {
                 calories: normalizedMacros.kcal,
+                fiber: normalizedMacros.fiber || 0,
                 isFavorite: isFavoriteFood,
+                monounsaturatedFat: normalizedMacros.monounsaturatedFat || 0,
                 name: userNutrition.name,
+                polyunsaturatedFat: normalizedMacros.polyunsaturatedFat || 0,
                 productCode: food?.productCode,
                 protein: normalizedMacros.protein,
+                saturatedFat: normalizedMacros.saturatedFat || 0,
+                sugar: normalizedMacros.sugar || 0,
                 totalCarbohydrate: normalizedMacros.carbs,
                 totalFat: normalizedMacros.fat,
-                // TODO: add the rest of the fields [prio-0]
+                transFat: normalizedMacros.transFat || 0,
+                unsaturatedFat: normalizedMacros.unsaturatedFat || 0,
             };
 
             const existingFood = await getFoodByNameAndMacros(

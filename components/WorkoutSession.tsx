@@ -9,6 +9,7 @@ import { Portal, Text, useTheme } from 'react-native-paper';
 import AddExerciseModal from '@/components/AddExerciseModal';
 import CompletionModal from '@/components/CompletionModal';
 import CurrentWorkoutProgressModal from '@/components/CurrentWorkoutProgressModal';
+import CustomTextInput from '@/components/CustomTextInput';
 import DifficultyModal from '@/components/DifficultyModal';
 import EditSetModal from '@/components/EditSetModal';
 import NextSetPreview from '@/components/NextSetPreview';
@@ -47,7 +48,7 @@ type WorkoutSessionProps = {
     isFirstExercise?: boolean;
     isLastExercise?: boolean;
     onCancel: () => void;
-    onFinish: (workoutScore?: number, exhaustionLevel?: number) => Promise<void>;
+    onFinish: (workoutScore?: number, exhaustionLevel?: number, customDescription?: string) => Promise<void>;
     onReplaceExercise: (exerciseId: number) => void;
     orderedExercises: { exercise: CurrentWorkoutExercise; sets: SetReturnType[] }[];
     sets: SetReturnType[];
@@ -91,6 +92,7 @@ const WorkoutSession = ({
     const [isCancelConfirmVisible, setIsCancelConfirmVisible] = useState(false);
     const [workoutScore, setWorkoutScore] = useState<number>(5);
     const [exhaustionLevel, setExhaustionLevel] = useState<number>(5);
+    const [customDescription, setCustomDescription] = useState<string>('');
     const [setDifficulty, setSetDifficulty] = useState<number>(5);
     const [skippedSets, setSkippedSets] = useState<number[]>([]);
     const [remainingWorkoutData, setRemainingWorkoutData] = useState<ExerciseWithSetsType[]>([]);
@@ -228,9 +230,9 @@ const WorkoutSession = ({
     }, [forceStartCountdown, sets]);
 
     const finishExercise = useCallback(async () => {
-        await onFinish(workoutScore, exhaustionLevel);
+        await onFinish(workoutScore, exhaustionLevel, customDescription);
         await handleStartCountdown(0);
-    }, [onFinish, workoutScore, exhaustionLevel, handleStartCountdown]);
+    }, [onFinish, workoutScore, exhaustionLevel, customDescription, handleStartCountdown]);
 
     const handleFinishExercise = useCallback(async () => {
         setLoading(true);
@@ -484,6 +486,12 @@ const WorkoutSession = ({
                         label={t('exhaustion_level_out_of', { level: exhaustionLevel })}
                         onValueChange={setExhaustionLevel}
                         value={exhaustionLevel}
+                    />
+                    <CustomTextInput
+                        label={t('custom_description')}
+                        onChangeText={setCustomDescription}
+                        placeholder={t('add_custom_description_optional')}
+                        value={customDescription}
                     />
                 </View>
             </CompletionModal>
