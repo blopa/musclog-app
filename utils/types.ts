@@ -1264,6 +1264,7 @@ export type UserNutritionInsertType = {
     polyunsaturatedFat?: number;
     protein: number;
     saturatedFat?: number;
+    sodium?: number;
     source: UserMetricSourceType;
     sugar?: number;
     transFat?: number;
