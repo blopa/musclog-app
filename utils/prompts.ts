@@ -865,6 +865,7 @@ export const getRetrospectiveNutritionPrompt = async (userMessage: string, targe
                 'If the user mentions specific meal times or contexts, use that information for categorization.',
                 'Create separate entries for each distinct food item mentioned.',
                 'Provide realistic estimates for calories and macronutrients.',
+                'Given these instructions, call the tool parseRetrospectiveNutrition NOW',
             ].join('\n'),
             role: 'system',
         },
