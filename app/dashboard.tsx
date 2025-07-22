@@ -217,7 +217,15 @@ export default function Dashboard({ navigation }: {
     const handleCloseTrackingModal = useCallback(() => {
         setFoodTrackingModalVisible(false);
         setFoodSearchModalVisible(false);
-    }, []);
+        // Refresh macro data when modal is closed
+        loadConsumed();
+    }, [loadConsumed]);
+
+    const handleCloseRetrospectiveModal = useCallback(() => {
+        setRetrospectiveModalVisible(false);
+        // Refresh macro data when retrospective modal is closed
+        loadConsumed();
+    }, [loadConsumed]);
 
     const handleRetrospectiveSubmit = useCallback(async (data: {
         date: string;
@@ -286,7 +294,7 @@ export default function Dashboard({ navigation }: {
                     visible={foodTrackingModalVisible}
                 />
                 <RetrospectiveFoodTrackingModal
-                    onClose={() => setRetrospectiveModalVisible(false)}
+                    onClose={handleCloseRetrospectiveModal}
                     onConfirm={handleRetrospectiveConfirm}
                     onSubmit={handleRetrospectiveSubmit}
                     visible={retrospectiveModalVisible}
