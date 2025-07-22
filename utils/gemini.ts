@@ -74,7 +74,7 @@ const safetySettings = [
     { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
 ];
 
-const getGenerativeAI = async ({ accessToken, apiKey }: { accessToken?: string; apiKey?: string;}): Promise<GoogleGenerativeAI> => {
+const getGenerativeAI = async ({ accessToken, apiKey }: { accessToken?: string; apiKey?: string; }): Promise<GoogleGenerativeAI> => {
     if (accessToken) {
         return {
             getGenerativeModel: ({ model, ...modelParams }: ModelParams) => {

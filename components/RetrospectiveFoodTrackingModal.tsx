@@ -130,7 +130,7 @@ const RetrospectiveFoodTrackingModal: React.FC<RetrospectiveFoodTrackingModalPro
     const [parsedNutrition, setParsedNutrition] = useState<null | RetrospectiveNutritionData[]>(null);
     const [isProcessing, setIsProcessing] = useState(false);
     const [showPreview, setShowPreview] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const [error, setError] = useState<null | string>(null);
     const [showError, setShowError] = useState(false);
 
     const handleDateSelect = useCallback((date: Date) => {
@@ -146,23 +146,23 @@ const RetrospectiveFoodTrackingModal: React.FC<RetrospectiveFoodTrackingModalPro
         setIsProcessing(true);
         setError(null);
         setShowError(false);
-        
+
         try {
             const result = await onSubmit({
                 date: selectedDate.toISOString(),
                 description: description.trim(),
             });
-            
+
             if (!result || !result.length) {
                 throw new Error('No nutrition data could be parsed from your description. Please try rephrasing your text or adding more details.');
             }
-            
+
             setParsedNutrition(result);
             setShowPreview(true);
         } catch (error) {
             console.error('Error processing retrospective nutrition:', error);
-            const errorMessage = error instanceof Error 
-                ? error.message 
+            const errorMessage = error instanceof Error
+                ? error.message
                 : 'Failed to analyze your food description. Please try again or rephrase your text.';
             setError(errorMessage);
             setShowError(true);
@@ -172,12 +172,14 @@ const RetrospectiveFoodTrackingModal: React.FC<RetrospectiveFoodTrackingModalPro
     }, [description, selectedDate, onSubmit]);
 
     const handleConfirm = useCallback(async () => {
-        if (!parsedNutrition) {return;}
+        if (!parsedNutrition) {
+            return;
+        }
 
         setIsProcessing(true);
         setError(null);
         setShowError(false);
-        
+
         try {
             await onConfirm(parsedNutrition);
             // Reset state
@@ -187,8 +189,8 @@ const RetrospectiveFoodTrackingModal: React.FC<RetrospectiveFoodTrackingModalPro
             onClose();
         } catch (error) {
             console.error('Error saving retrospective nutrition:', error);
-            const errorMessage = error instanceof Error 
-                ? error.message 
+            const errorMessage = error instanceof Error
+                ? error.message
                 : 'Failed to save nutrition data. Please try again.';
             setError(errorMessage);
             setShowError(true);
