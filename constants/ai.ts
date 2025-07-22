@@ -2,12 +2,11 @@
 
 // https://ai.google.dev/gemini-api/docs/models/gemini
 export const GEMINI_MODELS = {
-    GEMINI_1_5_FLASH: { model: 'gemini-1.5-flash', value: 1 },
-    GEMINI_1_5_PRO: { model: 'gemini-1.5-pro', value: 2 },
-    GEMINI_2_0_FLASH: { model: 'gemini-2.0-flash', value: 3 },
-    GEMINI_2_0_FLASH_LITE: { model: 'gemini-2.0-flash-lite', value: 4 },
-    GEMINI_2_5_FLASH: { model: 'gemini-2.5-flash', value: 5 },
-    GEMINI_2_5_PRO: { model: 'gemini-2.5-pro', value: 6 },
+    GEMINI_2_0_FLASH: { model: 'gemini-2.0-flash', value: 1 },
+    GEMINI_2_0_FLASH_LITE: { model: 'gemini-2.0-flash-lite', value: 2 },
+    GEMINI_2_5_FLASH: { model: 'gemini-2.5-flash', value: 3 },
+    GEMINI_2_5_FLASH_LITE: { model: 'gemini-2.5-flash-lite', value: 4 },
+    GEMINI_2_5_PRO: { model: 'gemini-2.5-pro', value: 5 },
 } as const;
 
 // https://platform.openai.com/docs/models/gp
