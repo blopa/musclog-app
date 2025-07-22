@@ -7,6 +7,7 @@ import { Appbar, Button, SegmentedButtons, Text, useTheme } from 'react-native-p
 
 import CompletionModal from '@/components/CompletionModal';
 import CustomTextInput from '@/components/CustomTextInput';
+import DatePickerModal from '@/components/DatePickerModal';
 import { Screen } from '@/components/Screen';
 import { USER_METRICS_SOURCES } from '@/constants/healthConnect';
 import { NUTRITION_TYPES } from '@/constants/nutrition';
@@ -44,6 +45,8 @@ const CreateUserNutrition = ({ navigation }: { navigation: NavigationProp<any> }
     const [source, setSource] = useState<string>(USER_METRICS_SOURCES.USER_INPUT);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
+    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
 
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const slideAnim = useRef(new Animated.Value(300)).current;
@@ -71,6 +74,7 @@ const CreateUserNutrition = ({ navigation }: { navigation: NavigationProp<any> }
                 setUnsaturatedFat(getDisplayFormattedWeight(nutrition.unsaturatedFat || 0, GRAMS, isImperial).toString());
                 setNutritionType(nutrition.type || NUTRITION_TYPES.FULL_DAY);
                 setSource(nutrition.source || USER_METRICS_SOURCES.USER_INPUT);
+                setSelectedDate(new Date(nutrition.date || getCurrentTimestampISOString()));
             }
         } catch (error) {
             console.error(t('failed_to_load_user_nutrition'), error);
@@ -111,7 +115,7 @@ const CreateUserNutrition = ({ navigation }: { navigation: NavigationProp<any> }
             calories: parseFloat(calories),
             carbohydrate: getSaveFormattedWeight(parseFloat(carbohydrate), OUNCES, isImperial),
             dataId: generateHash(),
-            date: getCurrentTimestampISOString(), // TODO: add a date picker [prio-0]
+            date: selectedDate.toISOString(),
             fat: getSaveFormattedWeight(parseFloat(fat), OUNCES, isImperial),
             fiber: getSaveFormattedWeight(parseFloat(fiber), OUNCES, isImperial),
             monounsaturatedFat: getSaveFormattedWeight(parseFloat(monounsaturatedFat), OUNCES, isImperial),
@@ -177,6 +181,8 @@ const CreateUserNutrition = ({ navigation }: { navigation: NavigationProp<any> }
         setUnsaturatedFat('');
         setNutritionType(NUTRITION_TYPES.FULL_DAY);
         setSource(USER_METRICS_SOURCES.USER_INPUT);
+        setSelectedDate(new Date());
+        setIsDatePickerVisible(false);
     }, []);
 
     useFocusEffect(
@@ -301,6 +307,16 @@ const CreateUserNutrition = ({ navigation }: { navigation: NavigationProp<any> }
                         placeholder={t('name')}
                         value={name}
                     />
+                </View>
+                <View style={styles.formGroup}>
+                    <Text style={styles.label}>{t('date')} <Text style={styles.required}>*</Text></Text>
+                    <Button
+                        mode="outlined"
+                        onPress={() => setIsDatePickerVisible(true)}
+                        style={styles.datePickerButton}
+                    >
+                        {selectedDate.toLocaleDateString()}
+                    </Button>
                 </View>
                 <View style={styles.formGroup}>
                     <Text style={styles.label}>{t('calories')} <Text style={styles.required}>*</Text></Text>
@@ -430,6 +446,12 @@ const CreateUserNutrition = ({ navigation }: { navigation: NavigationProp<any> }
                     {t('save')}
                 </Button>
             </View>
+            <DatePickerModal
+                onChangeDate={setSelectedDate}
+                onClose={() => setIsDatePickerVisible(false)}
+                selectedDate={selectedDate}
+                visible={isDatePickerVisible}
+            />
         </Screen>
     );
 };
@@ -454,6 +476,15 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
     },
     content: {
         padding: 16,
+    },
+    datePickerButton: {
+        backgroundColor: colors.surface,
+        borderColor: colors.onSurface,
+        borderRadius: 8,
+        borderWidth: 1,
+        color: colors.onSurface,
+        paddingLeft: 10,
+        width: '100%',
     },
     footer: {
         alignItems: 'center',

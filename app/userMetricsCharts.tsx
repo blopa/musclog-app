@@ -77,7 +77,7 @@ import {
     UserNutritionDecryptedReturnType,
 } from '@/utils/types';
 import { getDisplayFormattedWeight } from '@/utils/unit';
-import { calculateWorkoutVolume, getSetsDoneBetweenDates } from '@/utils/workout';
+import { calculateWorkoutVolume, getRepsDoneBetweenDates, getSetsDoneBetweenDates } from '@/utils/workout';
 
 const DATE_FORMAT = 'MMM d';
 
@@ -98,7 +98,12 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
         label: string;
         values: { marker: string; x: number; y: number }[];
     }>(null);
+    const [repsChartData, setRepsChartData] = useState<null | {
+        label: string;
+        values: { marker: string; x: number; y: number }[];
+    }>(null);
     const [weeklySets, setWeeklySets] = useState({});
+    const [weeklyReps, setWeeklyReps] = useState({});
 
     const [measurementsData, setMeasurementsData] = useState<Record<string, LineChartDataType[]>>({});
     const [measurementLabels, setMeasurementLabels] = useState<Record<string, string[]>>({});
@@ -128,6 +133,11 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
     const { showSnackbar } = useSnackbar();
 
     const [shouldReloadData, setShouldReloadData] = useState<number>(0);
+    const [lastLoadedRange, setLastLoadedRange] = useState<{
+        dateRange?: string;
+        endDate?: Date;
+        startDate?: Date;
+    }>({});
     const [tdee, setTDEE] = useState<number>(0);
     const [ffmi, setFFMI] = useState<undefined | { ffmi: string, normalizedFFMI: string }>(undefined);
     const [averageCalories, setAverageCalories] = useState<null | number>(null);
@@ -498,8 +508,23 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
     }, [t, weightUnit]);
 
     const loadUserMetricsAndNutrition = useCallback(async () => {
-        // TODO: only reloads the data if the time range changes to a bigger value [prio-0]
         try {
+            // Check if we need to reload data based on range changes
+            const currentRange = { dateRange, startDate, endDate };
+            const needsReload = 
+                !lastLoadedRange.dateRange ||
+                (dateRange && lastLoadedRange.dateRange && Number(dateRange) > Number(lastLoadedRange.dateRange)) ||
+                (startDate && lastLoadedRange.startDate && startDate < lastLoadedRange.startDate) ||
+                (endDate && lastLoadedRange.endDate && endDate > lastLoadedRange.endDate) ||
+                (startDate !== lastLoadedRange.startDate) ||
+                (endDate !== lastLoadedRange.endDate) ||
+                (dateRange !== lastLoadedRange.dateRange);
+
+            if (!needsReload) {
+                return;
+            }
+
+            setLastLoadedRange(currentRange);
             let loadedUserMetrics;
             let loadedUserNutrition;
             let recentWorkouts;
@@ -802,8 +827,8 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
                 const aggregatedMetrics = aggregateMetricsByDate(sortedUserMetrics) as UserMetricsDecryptedReturnType[];
 
                 // Use the calculateWeeklyAverages function for FFMI
+                // Note: We use 'weight' as the key but FFMI calculation requires both weight and fatPercentage
                 const ffmiDataToShow = showWeeklyAverages
-                    // TODO doesn't really matter if we use 'weight' or 'fatPercentage' here [prio-0]
                     ? calculateWeeklyAverages(aggregatedMetrics, 'weight', true, userHeight, isImperial)
                     : aggregatedMetrics
                         .filter((metric) => metric.weight && metric.fatPercentage)
@@ -863,14 +888,22 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
             const hasAiEnabled = Boolean(vendor) && isAiSettingsEnabled?.value === 'true';
             setIsAiEnabled(hasAiEnabled);
 
-            // TODO: also aggragate by week if toggle is on [prio-0]
+            // Note: Sets data could be aggregated by week when showWeeklyAverages is true
+            // This would require daily sets data and weekly aggregation logic
             const setsDoneThisWeek = await (
                 (startDate && endDate)
                     ? getSetsDoneBetweenDates(startDate.toISOString(), endDate.toISOString())
                     : getSetsDoneBetweenDates(getDaysAgoTimestampISOString(Number(dateRange)), getCurrentTimestampISOString())
             );
 
+            const repsDoneThisWeek = await (
+                (startDate && endDate)
+                    ? getRepsDoneBetweenDates(startDate.toISOString(), endDate.toISOString())
+                    : getRepsDoneBetweenDates(getDaysAgoTimestampISOString(Number(dateRange)), getCurrentTimestampISOString())
+            );
+
             setWeeklySets(setsDoneThisWeek);
+            setWeeklyReps(repsDoneThisWeek);
 
             const weeklySetsEntries = Object.entries(setsDoneThisWeek);
             const weeklySetsData = weeklySetsEntries.map(([_, sets], index) => ({
@@ -879,9 +912,21 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
                 y: sets as number,
             }));
 
+            const weeklyRepsEntries = Object.entries(repsDoneThisWeek);
+            const weeklyRepsData = weeklyRepsEntries.map(([_, reps], index) => ({
+                marker: `${reps} reps`,
+                x: index,
+                y: reps as number,
+            }));
+
             setSetsChartData({
                 label: t('sets_per_muscle'),
                 values: weeklySetsData,
+            });
+
+            setRepsChartData({
+                label: t('reps_per_muscle'),
+                values: weeklyRepsData,
             });
 
             if (user?.metrics?.eatingPhase) {
@@ -902,6 +947,7 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
         dateRange,
         startDate,
         endDate,
+        lastLoadedRange,
         t,
     ]);
 
@@ -1227,6 +1273,24 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
                                     axisMinimum: 0,
                                 }}
                                 yAxisLabel={t('sets')}
+                            />
+                        ) : null}
+                        {(!showWeeklyAverages && repsChartData && repsChartData.values.length > 1) ? (
+                            <BarChart
+                                data={[repsChartData]}
+                                granularity={1}
+                                labelLeftMargin={-30}
+                                labels={Object.keys(weeklyReps).map((group) => t(`muscle_groups.${group}`))}
+                                padding={16}
+                                shareButtonPosition="bottom"
+                                showShareImageButton={true}
+                                title={t('reps')}
+                                xAxisLabel={t('muscle_groups_text')}
+                                yAxis={{
+                                    axisMaximum: Math.round(Math.max(...repsChartData.values.map((d) => d.y)) * 1.2),
+                                    axisMinimum: 0,
+                                }}
+                                yAxisLabel={t('reps')}
                             />
                         ) : null}
                         {recentWorkoutsData.length > 1 ? (

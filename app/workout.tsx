@@ -348,7 +348,7 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
         }, [navigation])
     );
 
-    const handleFinishExercise = useCallback(async (workoutScore?: number, exhaustionLevel?: number) => {
+    const handleFinishExercise = useCallback(async (workoutScore?: number, exhaustionLevel?: number, customDescription?: string) => {
         try {
             const endTime = Date.now();
             const duration = (endTime - startTime!) / 1000;
@@ -472,7 +472,7 @@ const CurrentWorkout = ({ navigation }: { navigation: NavigationProp<any> }) => 
                         calories: totalCalories,
                         carbohydrate: totalCarbs,
                         date: getCurrentTimestampISOString(),
-                        description: workout.description, // TODO: add option for user to add description [prio-0]
+                        description: customDescription || workout.description || '',
                         duration: Math.floor(duration / 60),
                         exerciseData: JSON.stringify(exerciseData),
                         exhaustionLevel,

@@ -20,6 +20,7 @@ import {
     deleteHealthConnectUserMetricsBetweenDates,
     deleteHealthConnectUserNutritionBetweenDates,
     getAllUserNutritionBySource,
+    getEatingPhaseFromDate,
     getUser,
     updateUserNutrition,
 } from '@/utils/database';
@@ -291,12 +292,12 @@ export const syncHealthConnectData = async (
         }
 
         for (const data of combinedData) {
+            const eatingPhaseForDate = await getEatingPhaseFromDate(data.date);
             await addUserMetrics({
                 createdAt: data.createdAt,
                 dataId: data.dataId,
                 date: data.date,
-                // TODO: get eating phase from that date [prio-0]
-                eatingPhase: user?.metrics?.eatingPhase || EATING_PHASES.MAINTENANCE,
+                eatingPhase: eatingPhaseForDate,
                 fatPercentage: data.fatPercentage,
                 height: data.height,
                 source: USER_METRICS_SOURCES.HEALTH_CONNECT,

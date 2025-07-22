@@ -19,6 +19,7 @@ import {
     BioReturnType,
     ChatInsertType,
     ChatReturnType,
+    EatingPhaseType,
     ExerciseInsertType,
     ExerciseReturnType,
     ExerciseVolumeType,
@@ -1302,6 +1303,34 @@ export const getUserMetricsBetweenDates = async (startDate: string, endDate: str
         }))).filter((row) => row !== undefined) as UserMetricsDecryptedReturnType[];
     } catch (error) {
         throw error;
+    }
+};
+
+export const getEatingPhaseFromDate = async (targetDate: string): Promise<EatingPhaseType> => {
+    try {
+        // Get the user metrics closest to the target date (within 30 days before or after)
+        const thirtyDaysAfter = new Date(targetDate);
+        thirtyDaysAfter.setDate(thirtyDaysAfter.getDate() + 30);
+        
+        const thirtyDaysBefore = new Date(targetDate);
+        thirtyDaysBefore.setDate(thirtyDaysBefore.getDate() - 30);
+
+        const results = database.getAllSync<UserMetricsEncryptedReturnType>(`
+            SELECT * FROM "UserMetrics"
+            WHERE ("deletedAt" IS NULL OR "deletedAt" = '') AND "date" BETWEEN ? AND ?
+            ORDER BY ABS(julianday(?) - julianday("date")) ASC
+            LIMIT 1
+        `, [thirtyDaysBefore.toISOString(), thirtyDaysAfter.toISOString(), targetDate]);
+
+        if (results.length > 0) {
+            return results[0].eatingPhase || EATING_PHASES.MAINTENANCE;
+        }
+
+        // If no metrics found in range, return default eating phase
+        return EATING_PHASES.MAINTENANCE;
+    } catch (error) {
+        console.error('Error getting eating phase from date:', error);
+        return EATING_PHASES.MAINTENANCE;
     }
 };
 

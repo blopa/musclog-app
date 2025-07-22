@@ -344,7 +344,6 @@ async function getPastSetsForExercise(
     }
 }
 
-// TODO: add charts for this data too [prio-0]
 export const getRepsDoneBetweenDates = async (startDate: string, endDate: string) => {
     const recentWorkouts = await getRecentWorkoutsBetweenDates(
         startDate,
