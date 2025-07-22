@@ -1,7 +1,8 @@
 import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { Dimensions, ScrollView, StyleSheet, View } from 'react-native';
 import { ActivityIndicator, Button, Text, TextInput, useTheme } from 'react-native-paper';
+import { FlashList } from '@shopify/flash-list';
 
 import DatePickerModal from '@/components/DatePickerModal';
 import ThemedModal from '@/components/ThemedModal';
@@ -20,6 +21,78 @@ export type RetrospectiveNutritionData = {
     sodium: number;
     sugar: number;
 };
+
+const { height: screenHeight } = Dimensions.get('window');
+
+type NutritionItemProps = {
+    item: RetrospectiveNutritionData;
+    colors: any;
+    t: (key: string) => string;
+};
+
+const NutritionItem: React.FC<NutritionItemProps> = ({ item, colors, t }) => (
+    <View style={{
+        backgroundColor: colors.surfaceVariant,
+        borderRadius: 8,
+        marginBottom: 12,
+        marginHorizontal: 16,
+        padding: 16,
+    }}>
+        <Text style={{
+            color: colors.onSurface,
+            fontSize: 18,
+            fontWeight: 'bold',
+            marginBottom: 4,
+        }}>
+            {item.productTitle}
+        </Text>
+        <Text style={{
+            color: colors.primary,
+            fontSize: 14,
+            fontWeight: '600',
+            marginBottom: 8,
+        }}>
+            {t(`meal_type_${item.mealType}`)}
+        </Text>
+        <View style={{
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+        }}>
+            <Text style={{
+                color: colors.onSurfaceVariant,
+                fontSize: 14,
+                marginBottom: 4,
+                marginRight: 16,
+            }}>
+                {t('calories')}: {Math.round(item.calories)}
+            </Text>
+            <Text style={{
+                color: colors.onSurfaceVariant,
+                fontSize: 14,
+                marginBottom: 4,
+                marginRight: 16,
+            }}>
+                {t('protein')}: {Math.round(item.protein)}g
+            </Text>
+            <Text style={{
+                color: colors.onSurfaceVariant,
+                fontSize: 14,
+                marginBottom: 4,
+                marginRight: 16,
+            }}>
+                {t('carbs')}: {Math.round(item.carbs)}g
+            </Text>
+            <Text style={{
+                color: colors.onSurfaceVariant,
+                fontSize: 14,
+                marginBottom: 4,
+                marginRight: 16,
+            }}>
+                {t('fat')}: {Math.round(item.fat)}g
+            </Text>
+        </View>
+    </View>
+);
 
 type RetrospectiveFoodTrackingModalProps = {
     isLoading?: boolean;
@@ -107,7 +180,7 @@ const RetrospectiveFoodTrackingModal: React.FC<RetrospectiveFoodTrackingModalPro
 
     return (
         <ThemedModal onClose={handleCloseModal} visible={visible}>
-            <ScrollView contentContainerStyle={styles.container}>
+            <View style={[styles.container, { maxHeight: screenHeight * 0.9 }]}>
                 <Text style={styles.title}>
                     {showPreview
                         ? t('confirm_ai_nutrition_tracking')
@@ -116,7 +189,7 @@ const RetrospectiveFoodTrackingModal: React.FC<RetrospectiveFoodTrackingModalPro
                 </Text>
 
                 {!showPreview ? (
-                    <>
+                    <ScrollView contentContainerStyle={styles.scrollContent}>
                         <Text style={styles.description}>
                             {t('retrospective_food_tracking_description')}
                         </Text>
@@ -166,36 +239,27 @@ const RetrospectiveFoodTrackingModal: React.FC<RetrospectiveFoodTrackingModalPro
                                 )}
                             </Button>
                         </View>
-                    </>
+                    </ScrollView>
                 ) : (
-                    <>
+                    <View style={styles.previewSection}>
                         <Text style={styles.previewDescription}>
                             {t('ai_nutrition_preview_description')}
                         </Text>
 
-                        <View style={styles.previewContainer}>
-                            {parsedNutrition?.map((item, index) => (
-                                <View key={index} style={styles.nutritionItem}>
-                                    <Text style={styles.nutritionTitle}>{item.productTitle}</Text>
-                                    <Text style={styles.nutritionMealType}>
-                                        {t(`meal_type_${item.mealType}`)}
-                                    </Text>
-                                    <View style={styles.macroContainer}>
-                                        <Text style={styles.macroText}>
-                                            {t('calories')}: {Math.round(item.calories)}
-                                        </Text>
-                                        <Text style={styles.macroText}>
-                                            {t('protein')}: {Math.round(item.protein)}g
-                                        </Text>
-                                        <Text style={styles.macroText}>
-                                            {t('carbs')}: {Math.round(item.carbs)}g
-                                        </Text>
-                                        <Text style={styles.macroText}>
-                                            {t('fat')}: {Math.round(item.fat)}g
-                                        </Text>
-                                    </View>
-                                </View>
-                            ))}
+                        <View style={styles.flashListContainer}>
+                            <FlashList
+                                data={parsedNutrition || []}
+                                estimatedItemSize={160}
+                                keyExtractor={(item, index) => `nutrition-${index}`}
+                                renderItem={({ item }) => (
+                                    <NutritionItem 
+                                        colors={colors}
+                                        item={item}
+                                        t={t}
+                                    />
+                                )}
+                                showsVerticalScrollIndicator={true}
+                            />
                         </View>
 
                         <View style={styles.buttonContainer}>
@@ -219,7 +283,7 @@ const RetrospectiveFoodTrackingModal: React.FC<RetrospectiveFoodTrackingModalPro
                                 )}
                             </Button>
                         </View>
-                    </>
+                    </View>
                 )}
 
                 <DatePickerModal
@@ -228,7 +292,7 @@ const RetrospectiveFoodTrackingModal: React.FC<RetrospectiveFoodTrackingModalPro
                     selectedDate={selectedDate}
                     visible={datePickerVisible}
                 />
-            </ScrollView>
+            </View>
         </ThemedModal>
     );
 };
@@ -245,7 +309,7 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) =>
             marginRight: 8,
         },
         container: {
-            minHeight: 400,
+            flex: 1,
             padding: 20,
         },
         dateButton: {
@@ -258,48 +322,29 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) =>
             marginBottom: 24,
             textAlign: 'center',
         },
+        flashListContainer: {
+            flex: 1,
+            minHeight: 200,
+        },
         label: {
             color: colors.onSurface,
             fontSize: 16,
             fontWeight: '600',
             marginBottom: 8,
         },
-        macroContainer: {
-            flexDirection: 'row',
-            flexWrap: 'wrap',
-        },
-        macroText: {
-            color: colors.onSurfaceVariant,
-            fontSize: 14,
-            marginBottom: 4,
-            marginRight: 16,
-        },
-        nutritionItem: {
-            backgroundColor: colors.surfaceVariant,
-            borderRadius: 8,
-            marginBottom: 12,
-            padding: 16,
-        },
-        nutritionMealType: {
-            color: colors.primary,
-            fontSize: 14,
-            fontWeight: '600',
-            marginBottom: 8,
-        },
-        nutritionTitle: {
-            color: colors.onSurface,
-            fontSize: 18,
-            fontWeight: 'bold',
-            marginBottom: 4,
-        },
-        previewContainer: {
-            marginBottom: 20,
-        },
+
         previewDescription: {
             color: colors.onSurfaceVariant,
             fontSize: 16,
             marginBottom: 20,
             textAlign: 'center',
+        },
+        previewSection: {
+            flex: 1,
+        },
+        scrollContent: {
+            flexGrow: 1,
+            paddingBottom: 20,
         },
         section: {
             marginBottom: 20,
