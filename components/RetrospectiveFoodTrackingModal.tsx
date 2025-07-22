@@ -223,9 +223,9 @@ const RetrospectiveFoodTrackingModal: React.FC<RetrospectiveFoodTrackingModalPro
                 )}
 
                 <DatePickerModal
-                    date={selectedDate}
-                    onConfirm={handleDateSelect}
-                    onDismiss={() => setDatePickerVisible(false)}
+                    onChangeDate={handleDateSelect}
+                    onClose={() => setDatePickerVisible(false)}
+                    selectedDate={selectedDate}
                     visible={datePickerVisible}
                 />
             </ScrollView>

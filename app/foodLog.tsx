@@ -34,6 +34,7 @@ import { Screen } from '@/components/Screen';
 import SearchFoodModal from '@/components/SearchFoodModal';
 import ThemedCard from '@/components/ThemedCard';
 import ThemedModal from '@/components/ThemedModal';
+import { USER_METRICS_SOURCES } from '@/constants/healthConnect';
 import { MEAL_TYPE } from '@/constants/nutrition';
 import { AI_SETTINGS_TYPE, GRAMS, IMPERIAL_SYSTEM, OUNCES } from '@/constants/storage';
 import { FAB_ICON_SIZE } from '@/constants/ui';
@@ -372,10 +373,11 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
                     date: entry.date,
                     fat: entry.fat,
                     fiber: entry.fiber,
-                    mealType: entry.mealType.toString(),
+                    mealType: entry.mealType,
                     name: entry.productTitle,
                     protein: entry.protein,
                     sodium: entry.sodium,
+                    source: USER_METRICS_SOURCES.USER_INPUT,
                     sugar: entry.sugar,
                     type: 'meal',
                 });
