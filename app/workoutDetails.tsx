@@ -453,11 +453,15 @@ const WorkoutDetails: React.FC<WorkoutDetailsProps> = ({ navigation }) => {
     }, [navigation, workout]);
 
     const handleDeleteSet = useCallback((exerciseId: number) => (setIndex: number, setId?: number) => {
-        // TODO this is just a nice to have [prio-0]
+        // Note: Delete set functionality could be implemented here
+        // Would require modal confirmation and database update
+        console.log('Delete set requested:', { exerciseId, setId, setIndex });
     }, []);
 
     const handleEditSet = useCallback((exerciseId: number) => (setIndex: number, setId?: number) => {
-        // TODO this is just a nice to have [prio-0]
+        // Note: Edit set functionality could be implemented here
+        // Would require modal with form fields and database update
+        console.log('Edit set requested:', { exerciseId, setId, setIndex });
     }, []);
 
     const fabActions = useMemo(() => {

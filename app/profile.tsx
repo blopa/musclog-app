@@ -22,9 +22,9 @@ import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
 import {
     addOrUpdateUser,
     addUserMetrics,
+    deleteUserMetrics,
     getLatestUser,
     getLatestUserMetrics,
-    updateUserMetrics,
 } from '@/utils/database';
 import { getCurrentTimestampISOString, isValidDateParam } from '@/utils/date';
 import { formatFloatNumericInputText, generateHash, safeToFixed } from '@/utils/string';
@@ -143,16 +143,18 @@ const Profile = ({ navigation }: { navigation: NavigationProp<any> }) => {
             const latestUserMetrics = await getLatestUserMetrics();
 
             if (latestUserMetrics?.id) {
-                // TODO mark old one as deleted and create new one [prio-0]
                 if (
                     latestUserMetrics?.eatingPhase !== userMetric.eatingPhase
                     || latestUserMetrics?.fatPercentage !== userMetric.fatPercentage
                     || latestUserMetrics?.height !== userMetric.height
                     || latestUserMetrics?.weight !== userMetric.weight
                 ) {
-                    await updateUserMetrics(latestUserMetrics.id, {
-                        ...latestUserMetrics,
+                    // Mark old metrics as deleted and create new one
+                    await deleteUserMetrics(latestUserMetrics.id);
+                    await addUserMetrics({
                         ...userMetric,
+                        dataId: generateHash(),
+                        source: USER_METRICS_SOURCES.USER_INPUT,
                     });
                 }
             } else {

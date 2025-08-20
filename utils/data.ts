@@ -461,10 +461,17 @@ export const calculatePastWorkoutsWeeklyAverages = (data: ExtendedLineChartDataT
 type MacrosToNormalize = {
     carbs: number;
     fat: number;
+    fiber?: number;
     grams?: number;
     kcal: number;
     kj?: number;
+    monounsaturatedFat?: number;
+    polyunsaturatedFat?: number;
     protein: number;
+    saturatedFat?: number;
+    sugar?: number;
+    transFat?: number;
+    unsaturatedFat?: number;
 };
 
 const KCAL_KJ_RATIO = 4.184;
@@ -487,10 +494,17 @@ export const normalizeMacrosByGrams = (macros: MacrosToNormalize): MacrosToNorma
         ...macros,
         carbs: macros.carbs * multiplier,
         fat: macros.fat * multiplier,
+        fiber: macros.fiber ? macros.fiber * multiplier : undefined,
         grams: DEFAULT_GRAMS,
         kcal: macros.kcal * multiplier,
         kj: macros.kj ? macros.kj * multiplier : convertKcalToKj(macros.kcal),
+        monounsaturatedFat: macros.monounsaturatedFat ? macros.monounsaturatedFat * multiplier : undefined,
+        polyunsaturatedFat: macros.polyunsaturatedFat ? macros.polyunsaturatedFat * multiplier : undefined,
         protein: macros.protein * multiplier,
+        saturatedFat: macros.saturatedFat ? macros.saturatedFat * multiplier : undefined,
+        sugar: macros.sugar ? macros.sugar * multiplier : undefined,
+        transFat: macros.transFat ? macros.transFat * multiplier : undefined,
+        unsaturatedFat: macros.unsaturatedFat ? macros.unsaturatedFat * multiplier : undefined,
     };
 };
 
