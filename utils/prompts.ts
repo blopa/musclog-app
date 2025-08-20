@@ -63,6 +63,22 @@ export const getSendChatMessageFunctions = (): (FunctionDeclaration[] | OpenAI.C
                     ].join('\n'),
                     type: 'string',
                 },
+                summarizedAnswer: {
+                    description: [
+                        'A brief, concise summary of your response (maximum 50 words).',
+                        'This will be used for conversation history to reduce API payload size.',
+                        'Capture only the main points and advice given.',
+                    ].join('\n'),
+                    type: 'string',
+                },
+                summarizedQuestion: {
+                    description: [
+                        'A brief, concise summary of the user\'s original question or request (maximum 50 words).',
+                        'This will be used for conversation history to reduce API payload size.',
+                        'Capture only the essential intent and key details.',
+                    ].join('\n'),
+                    type: 'string',
+                },
                 // shouldGenerateWorkout: {
                 //     description: [
                 //         'Whether to generate a workout plan for the user or not. Try to infer this from the conversation.',
@@ -71,7 +87,7 @@ export const getSendChatMessageFunctions = (): (FunctionDeclaration[] | OpenAI.C
                 //     type: 'boolean',
                 // },
             },
-            required: ['messageToUser'],
+            required: ['messageToUser', 'summarizedQuestion', 'summarizedAnswer'],
             type: 'object',
         },
     }];

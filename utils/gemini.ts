@@ -389,6 +389,8 @@ export async function sendChatMessage(messages: any[]) {
         return {
             messageToBio: '',
             messageToUser: i18n.t('great'),
+            summarizedAnswer: '',
+            summarizedQuestion: '',
             // shouldGenerateWorkout: false,
             ...result?.response?.candidates?.[0]?.content?.parts?.[0]?.functionCall?.args,
         };

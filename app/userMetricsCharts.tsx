@@ -510,15 +510,14 @@ const UserMetricsCharts = ({ navigation }: { navigation: NavigationProp<any> }) 
     const loadUserMetricsAndNutrition = useCallback(async () => {
         try {
             // Check if we need to reload data based on range changes
-            const currentRange = { dateRange, startDate, endDate };
-            const needsReload = 
-                !lastLoadedRange.dateRange ||
-                (dateRange && lastLoadedRange.dateRange && Number(dateRange) > Number(lastLoadedRange.dateRange)) ||
-                (startDate && lastLoadedRange.startDate && startDate < lastLoadedRange.startDate) ||
-                (endDate && lastLoadedRange.endDate && endDate > lastLoadedRange.endDate) ||
-                (startDate !== lastLoadedRange.startDate) ||
-                (endDate !== lastLoadedRange.endDate) ||
-                (dateRange !== lastLoadedRange.dateRange);
+            const currentRange = { dateRange, endDate, startDate };
+            const needsReload =                 !lastLoadedRange.dateRange
+                || (dateRange && lastLoadedRange.dateRange && Number(dateRange) > Number(lastLoadedRange.dateRange))
+                || (startDate && lastLoadedRange.startDate && startDate < lastLoadedRange.startDate)
+                || (endDate && lastLoadedRange.endDate && endDate > lastLoadedRange.endDate)
+                || (startDate !== lastLoadedRange.startDate)
+                || (endDate !== lastLoadedRange.endDate)
+                || (dateRange !== lastLoadedRange.dateRange);
 
             if (!needsReload) {
                 return;

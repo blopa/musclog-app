@@ -195,6 +195,7 @@ const createTables = (database: SQLiteDatabase) => {
             "'sender' TEXT",
             "'misc' TEXT",
             "'type' TEXT",
+            "'summarizedMessage' TEXT NULLABLE",
             "'createdAt' TEXT DEFAULT CURRENT_TIMESTAMP",
             "'deletedAt' TEXT NULLABLE",
         ],
@@ -652,20 +653,56 @@ const addChatRaw = async (chat: ChatInsertType): Promise<number> => {
     const createdAt = chat.createdAt || getCurrentTimestampISOString();
     try {
         const result = database.runSync(`
-            INSERT INTO "Chat" ("message", "sender", "misc", "type", "createdAt")
-            VALUES (?, ?, ?, ?, ?)
+            INSERT INTO "Chat" ("message", "sender", "misc", "type", "summarizedMessage", "createdAt")
+            VALUES (?, ?, ?, ?, ?, ?)
         `,
         [
             chat.message,
             chat.sender,
             chat.misc,
             chat.type,
+            chat.summarizedMessage || null,
             createdAt,
         ]
         );
 
         return result.lastInsertRowId;
     } catch (error) {
+        throw error;
+    }
+};
+
+export const updateChatMessage = async (id: number, updates: Partial<ChatInsertType>): Promise<void> => {
+    try {
+        const setParts = [];
+        const values = [];
+
+        if (updates.summarizedMessage !== undefined) {
+            setParts.push('"summarizedMessage" = ?');
+            values.push(updates.summarizedMessage);
+        }
+
+        if (updates.message !== undefined) {
+            setParts.push('"message" = ?');
+            values.push(updates.message);
+        }
+
+        if (updates.misc !== undefined) {
+            setParts.push('"misc" = ?');
+            values.push(updates.misc);
+        }
+
+        if (setParts.length === 0) {
+            return;
+        }
+
+        values.push(id);
+
+        await database.runSync(`
+            UPDATE "Chat" SET ${setParts.join(', ')} WHERE "id" = ?
+        `, values);
+    } catch (error) {
+        console.error('Error updating chat message:', error);
         throw error;
     }
 };
@@ -1311,7 +1348,7 @@ export const getEatingPhaseFromDate = async (targetDate: string): Promise<Eating
         // Get the user metrics closest to the target date (within 30 days before or after)
         const thirtyDaysAfter = new Date(targetDate);
         thirtyDaysAfter.setDate(thirtyDaysAfter.getDate() + 30);
-        
+
         const thirtyDaysBefore = new Date(targetDate);
         thirtyDaysBefore.setDate(thirtyDaysBefore.getDate() - 30);
 
@@ -3212,6 +3249,21 @@ const columnExists = async (tableName: string, columnName: string): Promise<bool
         return result.some((column) => column.name.toLowerCase() === columnName.toLowerCase());
     } catch (error) {
         console.error(`Error checking if column "${columnName}" exists in table "${tableName}":`, error);
+        throw error;
+    }
+};
+
+export const runMigrations = async (): Promise<void> => {
+    try {
+        // Migration: Add summarizedMessage column to Chat table
+        const hasSummarizedMessage = await columnExists('Chat', 'summarizedMessage');
+        if (!hasSummarizedMessage) {
+            console.log('Adding summarizedMessage column to Chat table...');
+            await database.runSync('ALTER TABLE "Chat" ADD COLUMN "summarizedMessage" TEXT NULLABLE;');
+            console.log('Successfully added summarizedMessage column to Chat table.');
+        }
+    } catch (error) {
+        console.error('Error running migrations:', error);
         throw error;
     }
 };

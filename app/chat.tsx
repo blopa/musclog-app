@@ -21,8 +21,8 @@ import { useChatData } from '@/storage/ChatProvider';
 import { useUnreadMessages } from '@/storage/UnreadMessagesProvider';
 import { generateWorkoutPlan, sendChatMessage } from '@/utils/ai';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
+import { updateChatMessage } from '@/utils/database';
 import { formatCreatedAt, getCurrentTimestampISOString } from '@/utils/date';
-// import { addBio } from '@/utils/database';
 import { getChatMessagePromptContent } from '@/utils/prompts';
 import { ChatInsertType } from '@/utils/types';
 
@@ -225,7 +225,7 @@ export default function Chat({ navigation }: { navigation: NavigationProp<any> }
             type: 'text',
         };
 
-        await addNewChat(newChat);
+        const userChatId = await addNewChat(newChat);
         setWaitingForResponse(true);
 
         try {
@@ -235,7 +235,7 @@ export default function Chat({ navigation }: { navigation: NavigationProp<any> }
                 ...[newChat, ...messagesToSend]
                     .filter((msg) => msg.type === 'text')
                     .map((msg) => ({
-                        content: msg.message,
+                        content: msg.summarizedMessage || msg.message,
                         role: msg.sender as 'assistant' | 'system' | 'user',
                     }))
                     .reverse(),
@@ -270,6 +270,8 @@ export default function Chat({ navigation }: { navigation: NavigationProp<any> }
             const {
                 // messageToBio,
                 messageToUser,
+                summarizedAnswer,
+                summarizedQuestion,
                 // shouldGenerateWorkout,
             } = jsonResponse as AIJsonResponseType;
 
@@ -284,10 +286,16 @@ export default function Chat({ navigation }: { navigation: NavigationProp<any> }
                     message: messageToUser.replace(/^"([^"]+)"$/, '$1'),
                     misc: '',
                     sender: 'assistant',
+                    summarizedMessage: summarizedAnswer,
                     type: 'text',
                 };
 
                 await addNewChat(newAssistantChat);
+            }
+
+            // Update the most recent user message with its summarized version
+            if (summarizedQuestion && userChatId) {
+                await updateChatMessage(userChatId, { summarizedMessage: summarizedQuestion });
             }
 
             // if (shouldGenerateWorkout) {
