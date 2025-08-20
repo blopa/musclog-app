@@ -24,6 +24,8 @@ import { ChatInsertType } from '@/utils/types';
 export type AIJsonResponseType = {
     messageToBio?: string;
     messageToUser: string;
+    summarizedAnswer: string;
+    summarizedQuestion: string;
     // shouldGenerateWorkout: boolean;
 };
 
