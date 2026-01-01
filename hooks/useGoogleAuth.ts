@@ -18,7 +18,23 @@ const getWebRedirectUri = () => {
         // Use the current page URL as redirect URI for web
         // This allows Google to redirect back to the same page with query parameters
         if (typeof window !== 'undefined') {
-            return window.location.origin + window.location.pathname;
+            // Normalize the redirect URI: always remove trailing slash
+            // Google requires exact match, and typically expects no trailing slash
+            let { pathname } = window.location;
+            // Remove trailing slash (including for root path)
+            if (pathname.endsWith('/') && pathname.length > 1) {
+                pathname = pathname.slice(0, -1);
+            }
+            // For root path, use empty string (no trailing slash)
+            const redirectUri = window.location.origin + (pathname === '/' ? '' : pathname);
+
+            // Debug logging - remove in production if needed
+            console.log('[Google Auth] Redirect URI:', redirectUri);
+            console.log('[Google Auth] Full URL:', window.location.href);
+            console.log('[Google Auth] Origin:', window.location.origin);
+            console.log('[Google Auth] Pathname:', window.location.pathname);
+
+            return redirectUri;
         }
 
         return '';
@@ -94,8 +110,10 @@ export const useGoogleAuth = () => {
                 const error = urlParams.get('error');
 
                 if (error) {
-                    console.error('OAuth error:', error);
-                    Alert.alert('Error', 'Failed to sign in with Google.');
+                    console.error('[Google Auth] OAuth error:', error);
+                    console.error('[Google Auth] Error description:', urlParams.get('error_description'));
+                    console.error('[Google Auth] Current URL:', window.location.href);
+                    Alert.alert('Error', `Failed to sign in with Google: ${error}`);
                     // Clean up URL
                     window.history.replaceState({}, document.title, window.location.pathname);
                     return;
@@ -158,7 +176,16 @@ export const useGoogleAuth = () => {
     const promptAsync = async () => {
         try {
             const redirectUri = getWebRedirectUri();
+            const clientId = getGoogleClientId();
+
+            // Debug logging
+            console.log('[Google Auth] Starting OAuth flow');
+            console.log('[Google Auth] Client ID:', clientId);
+            console.log('[Google Auth] Redirect URI:', redirectUri);
+
             const authUrl = buildAuthUrl(redirectUri);
+            console.log('[Google Auth] Auth URL:', authUrl);
+
             const result = await WebBrowser.openAuthSessionAsync(authUrl, redirectUri);
 
             if (result.type === 'success' && result.url) {
