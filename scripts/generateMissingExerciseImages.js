@@ -134,8 +134,9 @@ async function generateExerciseImage(exerciseName, index) {
 }
 
 // Function to check if image exists for an exercise index
+// Note: images are 1-indexed (exercise at index 0 has image 1.webp)
 function imageExists(index) {
-    const imagePath = path.join(EXERCISES_DIR, `${index}.webp`);
+    const imagePath = path.join(EXERCISES_DIR, `${index + 1}.webp`);
     return fs.existsSync(imagePath);
 }
 
@@ -173,7 +174,7 @@ async function main() {
 
     console.log(`Found ${missingImages.length} exercises missing images:\n`);
     missingImages.forEach(({ index, name }) => {
-        console.log(`  [${index}] ${name}`);
+        console.log(`  [${index + 1}.webp] ${name}`);
     });
     console.log('');
 
@@ -186,8 +187,8 @@ async function main() {
             // Generate image
             const imageUri = await generateExerciseImage(name, index);
 
-            // Download and save image
-            const outputPath = path.join(EXERCISES_DIR, `${index}.webp`);
+            // Download and save image (images are 1-indexed)
+            const outputPath = path.join(EXERCISES_DIR, `${index + 1}.webp`);
             await downloadImage(imageUri, outputPath);
 
             successCount++;
