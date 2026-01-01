@@ -42,6 +42,7 @@ export type ChatInsertType = {
     message: string;
     misc?: any;
     sender: string;
+    summarizedMessage?: string;
     type: string;
 };
 
