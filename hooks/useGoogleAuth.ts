@@ -27,6 +27,7 @@ export type GoogleAuthData = {
 
 const buildAuthUrl = (redirectUri: string) => {
     const clientId = getGoogleClientId();
+
     const params = new URLSearchParams({
         client_id: clientId,
         redirect_uri: redirectUri,
@@ -104,18 +105,9 @@ export const useGoogleAuth = () => {
 
     const promptAsync = async () => {
         try {
-            const redirectUri = GOOGLE_REDIRECT_URI_MOBILE;
-            const clientId = getGoogleClientId();
+            const authUrl = buildAuthUrl(GOOGLE_REDIRECT_URI_MOBILE);
 
-            // Debug logging
-            console.log('[Google Auth Mobile] Starting OAuth flow');
-            console.log('[Google Auth Mobile] Client ID:', clientId);
-            console.log('[Google Auth Mobile] Redirect URI:', redirectUri);
-
-            const authUrl = buildAuthUrl(redirectUri);
-            console.log('[Google Auth Mobile] Auth URL:', authUrl);
-
-            const result = await WebBrowser.openAuthSessionAsync(authUrl, redirectUri);
+            const result = await WebBrowser.openAuthSessionAsync(authUrl, GOOGLE_REDIRECT_URI_MOBILE);
 
             if (result.type === 'success' && result.url) {
                 const queryParams = Linking.parse(result.url);
@@ -125,16 +117,16 @@ export const useGoogleAuth = () => {
                     // Handle case where code might be an array (shouldn't happen, but TypeScript requires it)
                     const authCode = Array.isArray(code) ? code[0] : code;
                     setIsSigningIn(true);
-                    const tokenData = await exchangeCodeForToken(authCode, redirectUri);
+                    const tokenData = await exchangeCodeForToken(authCode, GOOGLE_REDIRECT_URI_MOBILE);
                     setAuthData(tokenData);
                     setIsSigningIn(false);
                 }
             } else if (result.type === 'dismiss') {
                 // User canceled the auth flow
-                console.log('[Google Auth Mobile] User cancelled Google sign-in');
+                // console.log('[Google Auth Mobile] User cancelled Google sign-in');
             }
         } catch (error) {
-            console.error('[Google Auth Mobile] Failed to open Google auth WebView:', error);
+            // console.error('[Google Auth Mobile] Failed to open Google auth WebView:', error);
             Alert.alert('Error', 'Failed to initiate Google sign-in.');
         }
     };
