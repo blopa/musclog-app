@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthSessionResult } from 'expo-auth-session';
 // import fetch from 'isomorphic-fetch';
 import { fetch } from 'expo/fetch';
+import { Platform } from 'react-native';
 
 import {
     AI_SETTINGS_TYPE,
@@ -36,7 +37,19 @@ export interface RefreshTokenResponse {
     refresh_token: string;
 }
 
-export const GOOGLE_CLIENT_ID = '182653769964-letucboq7c5m25ckvgp9kuirrdm33fkc.apps.googleusercontent.com';
+// Mobile (Android/iOS) OAuth Client ID
+const GOOGLE_CLIENT_ID_MOBILE = '182653769964-letucboq7c5m25ckvgp9kuirrdm33fkc.apps.googleusercontent.com';
+
+// Web OAuth Client ID
+const GOOGLE_CLIENT_ID_WEB = '182653769964-19v2egl06jrj6650ci08bj97qeq5ilon.apps.googleusercontent.com';
+
+// Get the appropriate client ID based on platform
+export const getGoogleClientId = (): string => {
+    return Platform.OS === 'web' ? GOOGLE_CLIENT_ID_WEB : GOOGLE_CLIENT_ID_MOBILE;
+};
+
+// Export the mobile client ID for backward compatibility (used in refresh token flow)
+export const GOOGLE_CLIENT_ID = GOOGLE_CLIENT_ID_MOBILE;
 
 const handleGoogleAuthError = async () => {
     // Don't show auth errors before onboarding is complete
@@ -111,9 +124,13 @@ export const refreshAccessToken = async (): Promise<string | undefined> => {
     }
 
     try {
+        // Use platform-specific client ID for refresh
+        // Note: Refresh tokens are tied to the client that issued them,
+        // so web and mobile tokens are not interchangeable
+        const clientId = getGoogleClientId();
         const response = await fetch('https://oauth2.googleapis.com/token', {
             body: new URLSearchParams({
-                client_id: GOOGLE_CLIENT_ID,
+                client_id: clientId,
                 grant_type: 'refresh_token',
                 refresh_token: refreshToken.value,
             }).toString(),
