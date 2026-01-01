@@ -10,6 +10,7 @@ import {
     GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE,
     GOOGLE_OAUTH_GEMINI_ENABLED_TYPE,
     GOOGLE_REFRESH_TOKEN_TYPE,
+    HAS_COMPLETED_ONBOARDING,
     LAST_TIME_GOOGLE_AUTH_ERROR_WAS_SHOWN,
 } from '@/constants/storage';
 import { GoogleAuthData } from '@/hooks/useGoogleAuth';
@@ -38,6 +39,13 @@ export interface RefreshTokenResponse {
 export const GOOGLE_CLIENT_ID = '182653769964-letucboq7c5m25ckvgp9kuirrdm33fkc.apps.googleusercontent.com';
 
 const handleGoogleAuthError = async () => {
+    // Don't show auth errors before onboarding is complete
+    const hasCompletedOnboarding = await AsyncStorage.getItem(HAS_COMPLETED_ONBOARDING);
+    if (hasCompletedOnboarding !== 'true') {
+        // console.log('Skipping Google auth error - onboarding not completed yet.');
+        return;
+    }
+
     const lastTimeRun = await AsyncStorage.getItem(LAST_TIME_GOOGLE_AUTH_ERROR_WAS_SHOWN);
     const today = (new Date()).toISOString().split('T')[0];
 
