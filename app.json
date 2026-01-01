@@ -113,8 +113,7 @@
       "./withCustomManifest.js",
       "./withCustomGradleConfig.js",
       "./withNotifeeAndroidFix.js",
-      "./withAuthAndroidFix.js",
-      "./with16KBPageSize.js"
+      "./withAuthAndroidFix.js"
     ],
     "experiments": {
       "typedRoutes": true,

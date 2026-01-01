@@ -26,7 +26,9 @@ export const NEEDED_PERMISSIONS = [
     // { accessType: 'read', recordType: 'OvulationTest' },
     // "android.permission.health.READ_BASAL_METABOLIC_RATE"
     // { accessType: 'read', recordType: 'BasalMetabolicRate' },
-    // { accessType: 'read', recordType: 'DataHistory' }, // TODO what is the type of this record?
+    // "android.permission.health.PERMISSION_READ_HEALTH_DATA_IN_BACKGROUND"
+    // { accessType: 'read', recordType: 'BackgroundAccessPermission' },
+    // { accessType: 'read', recordType: 'ReadHealthDataHistory' }, // TODO: update package to version 3.5.0 to get this
 ] as Permission[];
 
 export const MANDATORY_PERMISSIONS: string[] = [
