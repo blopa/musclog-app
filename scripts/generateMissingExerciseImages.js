@@ -114,12 +114,14 @@ async function main() {
     const genAI = new GoogleGenerativeAI(EXPO_PUBLIC_GEMINI_API_KEY);
 
     // Generate images for missing exercises
+    // IMPORTANT: Processing sequentially (one at a time) to respect rate limits
     let successCount = 0;
     let failCount = 0;
 
     for (const { index, name } of missingImages) {
         try {
             // Generate image (returns base64 data)
+            // This await ensures we wait for each image before processing the next one
             const imageData = await generateExerciseImage(genAI, name, index);
 
             // Save image directly from base64 (images are 1-indexed)
@@ -127,14 +129,26 @@ async function main() {
             // eslint-disable-next-line no-undef
             const buffer = Buffer.from(imageData, 'base64');
             fs.writeFileSync(outputPath, buffer);
-            console.log(`  Saved to ${outputPath}`);
+            console.log(`  ✓ Saved to ${outputPath}`);
 
             successCount++;
 
-            // Add a small delay between requests to avoid rate limiting
-            await new Promise((resolve) => setTimeout(resolve, 1000));
+            // Add a delay between requests to avoid rate limiting
+            // Processing one image at a time with a delay ensures we stay within quota limits
+            const delayMs = 2000; // 2 seconds between requests
+            console.log(`  Waiting ${delayMs / 1000}s before next request...\n`);
+            await new Promise((resolve) => setTimeout(resolve, delayMs));
         } catch (error) {
-            console.error(`  Failed to generate image for ${name}: ${error.message}`);
+            console.error(`  ✗ Failed to generate image for ${name}: ${error.message}`);
+
+            // If it's a rate limit error, wait longer before continuing
+            if (error.message.includes('429') || error.message.includes('Quota exceeded')) {
+                const retryMatch = error.message.match(/Please retry in ([\d.]+)s/);
+                const waitSeconds = retryMatch ? Math.ceil(parseFloat(retryMatch[1])) : 60;
+                console.log(`  Rate limit hit. Waiting ${waitSeconds}s before continuing...\n`);
+                await new Promise((resolve) => setTimeout(resolve, waitSeconds * 1000));
+            }
+
             failCount++;
         }
     }
