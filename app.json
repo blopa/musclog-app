@@ -3,7 +3,7 @@
     "name": "Musclog - Lift, Log, Repeat",
     "slug": "logger",
     "jsEngine": "hermes",
-    "version": "1.8.1",
+    "version": "1.8.2",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "musclog",
@@ -20,12 +20,12 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.werules.logger",
-      "buildNumber": "119"
+      "buildNumber": "120"
     },
     "android": {
       "softwareKeyboardLayoutMode": "resize",
       "package": "com.werules.logger",
-      "versionCode": 119,
+      "versionCode": 120,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -90,7 +90,12 @@
           "android": {
             "compileSdkVersion": 35,
             "targetSdkVersion": 35,
-            "minSdkVersion": 35
+            "minSdkVersion": 35,
+            "packagingOptions": {
+              "jniLibs": {
+                "useLegacyPackaging": false
+              }
+            }
           }
         }
       ],
@@ -114,7 +119,8 @@
       "./withCustomManifest.js",
       "./withCustomGradleConfig.js",
       "./withNotifeeAndroidFix.js",
-      "./withAuthAndroidFix.js"
+      "./withAuthAndroidFix.js",
+      "./with16KBPageSize.js"
     ],
     "experiments": {
       "typedRoutes": true,
