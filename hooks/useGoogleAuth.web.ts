@@ -31,6 +31,7 @@ const getWebRedirectUri = () => {
     if (typeof window === 'undefined') {
         return '';
     }
+
     // Normalize the redirect URI: always remove trailing slash
     let { pathname } = window.location;
     if (pathname.endsWith('/') && pathname.length > 1) {
@@ -70,7 +71,7 @@ const parseTokenFromUrl = (url: string): GoogleAuthData | null => {
             token_type: tokenType || 'Bearer',
         };
     } catch (error) {
-        console.error('[Google Auth Web] Error parsing token from URL:', error);
+        // console.error('[Google Auth Web] Error parsing token from URL:', error);
         return null;
     }
 };
@@ -116,11 +117,6 @@ export const useGoogleAuth = () => {
 
             const authUrl = `${GOOGLE_AUTH_URL}?${params.toString()}`;
 
-            console.log('[Google Auth Web] Starting implicit grant OAuth flow');
-            console.log('[Google Auth Web] Client ID:', clientId);
-            console.log('[Google Auth Web] Redirect URI:', redirectUri);
-            console.log('[Google Auth Web] Auth URL:', authUrl);
-
             // Open auth session - token will be in the redirect URL fragment
             const result = await WebBrowser.openAuthSessionAsync(authUrl, redirectUri);
 
@@ -140,10 +136,9 @@ export const useGoogleAuth = () => {
                     throw new Error('Failed to parse access token from response');
                 }
             } else if (result.type === 'dismiss') {
-                console.log('[Google Auth Web] User cancelled Google sign-in');
+                // console.log('[Google Auth Web] User cancelled Google sign-in');
             }
         } catch (error) {
-            console.error('[Google Auth Web] Failed to initiate Google sign-in:', error);
             const errorMessage = error instanceof Error ? error.message : 'Unknown error';
             Alert.alert('Error', `Failed to sign in with Google: ${errorMessage}`);
         } finally {

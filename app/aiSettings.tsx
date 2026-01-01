@@ -32,8 +32,7 @@ import { useGoogleAuth } from '@/hooks/useGoogleAuth';
 import { useSettings } from '@/storage/SettingsContext';
 import { isValidApiKey } from '@/utils/ai';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
-import { getSetting } from '@/utils/database';
-import { deleteAllData, handleGoogleSignIn } from '@/utils/googleAuth';
+import { deleteAllData, handleGoogleSignIn, isGoogleSignedIn } from '@/utils/googleAuth';
 
 type AINutritionInsightsType = typeof NUTRITION_INSIGHT_DAILY | typeof NUTRITION_INSIGHT_DISABLED | typeof NUTRITION_INSIGHT_WEEKLY;
 
@@ -66,7 +65,7 @@ export default function AISettings({ navigation }: { navigation: NavigationProp<
     const [geminiModelModalVisible, setGeminiModelModalVisible] = useState(false);
     const [openAiModelModalVisible, setOpenAiModelModalVisible] = useState(false);
 
-    const [refreshToken, setRefreshToken] = useState<null | string>(null);
+    const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
     const [googleSignInModalVisible, setGoogleSignInModalVisible] = useState(false);
 
     const [nutritionInsights, setNutritionInsights] = useState<AINutritionInsightsType>(NUTRITION_INSIGHT_DISABLED);
@@ -105,10 +104,9 @@ export default function AISettings({ navigation }: { navigation: NavigationProp<
             setTempExerciseImageGeneration(value);
         }
 
-        const googleRefreshTokenFromDb = await getSettingByType(GOOGLE_REFRESH_TOKEN_TYPE);
-        if (googleRefreshTokenFromDb) {
-            setRefreshToken(googleRefreshTokenFromDb.value);
-        }
+        // Check if user is signed in by checking for valid access token
+        const signedIn = await isGoogleSignedIn();
+        setIsSignedIn(signedIn);
 
         const googleOauthGeminiEnabledFromDb = await getSettingByType(GOOGLE_OAUTH_GEMINI_ENABLED_TYPE);
         if (googleOauthGeminiEnabledFromDb) {
@@ -172,7 +170,7 @@ export default function AISettings({ navigation }: { navigation: NavigationProp<
     const handleGoogleSignOut = useCallback(async () => {
         setLoading(true);
         await deleteAllData();
-        setRefreshToken(null);
+        setIsSignedIn(false);
         await updateSettingValue(GOOGLE_REFRESH_TOKEN_TYPE, '');
         setLoading(false);
         setGoogleSignInModalVisible(false);
@@ -184,11 +182,9 @@ export default function AISettings({ navigation }: { navigation: NavigationProp<
                 setLoading(true);
                 const isAllowed = await handleGoogleSignIn(authData);
                 if (isAllowed) {
-                    const storedRefreshToken = await getSetting(GOOGLE_REFRESH_TOKEN_TYPE);
-
-                    if (storedRefreshToken?.value) {
-                        setRefreshToken(storedRefreshToken.value);
-                    }
+                    // Check sign-in status and get refresh token if available
+                    const signedIn = await isGoogleSignedIn();
+                    setIsSignedIn(signedIn);
                 }
 
                 setLoading(false);
@@ -346,7 +342,7 @@ export default function AISettings({ navigation }: { navigation: NavigationProp<
                         right={() => (
                             <View style={styles.rightContainer}>
                                 <Text>
-                                    {refreshToken
+                                    {isSignedIn
                                         ? t('signed_in')
                                         : t('not_signed_in')}
                                 </Text>
@@ -468,7 +464,7 @@ export default function AISettings({ navigation }: { navigation: NavigationProp<
                 visible={googleSignInModalVisible}
             >
                 <View style={styles.modalContent}>
-                    {refreshToken ? (
+                    {isSignedIn ? (
                         <>
                             <Text style={styles.modalText}>
                                 {t('signed_in')}

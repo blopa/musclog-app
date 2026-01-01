@@ -205,6 +205,26 @@ export const reauthenticate = async (
 };
 
 /**
+ * Check if user is signed in with Google (has valid access token)
+ */
+export const isGoogleSignedIn = async (): Promise<boolean> => {
+    const accessToken = await AsyncStorage.getItem(GOOGLE_ACCESS_TOKEN);
+    const tokenExpirationTime = await AsyncStorage.getItem(GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE);
+
+    if (!accessToken || !tokenExpirationTime) {
+        return false;
+    }
+
+    const expirationTime = parseInt(tokenExpirationTime, 10);
+    if (isNaN(expirationTime)) {
+        return false;
+    }
+
+    // Check if token is still valid (with 60 second buffer)
+    return new Date().getTime() < expirationTime - 60 * 1000;
+};
+
+/**
  * Retrieve a valid access token (refresh if expired)
  */
 export const getAccessToken = async (): Promise<string | undefined> => {
@@ -231,12 +251,17 @@ export const handleGoogleSignIn = async (
         const { access_token: accessToken, expires_in: expiresIn, refresh_token: refreshToken } = response;
 
         await AsyncStorage.setItem(GOOGLE_ACCESS_TOKEN, accessToken);
+
+        // Only save refresh token if it exists (mobile has it, web implicit flow doesn't)
         if (refreshToken) {
             await addOrUpdateSetting({
                 type: GOOGLE_REFRESH_TOKEN_TYPE,
                 value: refreshToken,
             });
+        }
 
+        if (accessToken) {
+            // Enable OAuth Gemini and AI settings if we have an access token
             await addOrUpdateSetting({
                 type: GOOGLE_OAUTH_GEMINI_ENABLED_TYPE,
                 value: 'true',
@@ -251,7 +276,6 @@ export const handleGoogleSignIn = async (
         const expirationTime = new Date().getTime() + (expiresIn ?? 0) * 1000;
         await AsyncStorage.setItem(GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE, expirationTime.toString());
 
-        console.log('THE ACCESS TOKEN IS', accessToken);
         return isValidAccessToken(accessToken, GEMINI_API_KEY_TYPE);
     }
     throw new Error('Google sign-in failed or cancelled.');
