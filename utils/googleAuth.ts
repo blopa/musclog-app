@@ -48,9 +48,6 @@ export const getGoogleClientId = (): string => {
     return Platform.OS === 'web' ? GOOGLE_CLIENT_ID_WEB : GOOGLE_CLIENT_ID_MOBILE;
 };
 
-// Export the mobile client ID for backward compatibility (used in refresh token flow)
-export const GOOGLE_CLIENT_ID = GOOGLE_CLIENT_ID_MOBILE;
-
 const handleGoogleAuthError = async () => {
     // Don't show auth errors before onboarding is complete
     const hasCompletedOnboarding = await AsyncStorage.getItem(HAS_COMPLETED_ONBOARDING);
