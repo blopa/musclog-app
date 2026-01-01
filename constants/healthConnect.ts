@@ -1,15 +1,20 @@
 import { Permission } from 'react-native-health-connect/lib/typescript/types';
 
 export const NEEDED_PERMISSIONS = [
-    { accessType: 'read', recordType: 'ActiveCaloriesBurned' },
+    // "android.permission.health.READ_ACTIVE_CALORIES_BURNED"
+    // { accessType: 'read', recordType: 'ActiveCaloriesBurned' },
     { accessType: 'read', recordType: 'BodyFat' },
-    { accessType: 'read', recordType: 'HeartRate' },
+    // "android.permission.health.READ_HEART_RATE"
+    // { accessType: 'read', recordType: 'HeartRate' },
     { accessType: 'read', recordType: 'Height' },
-    { accessType: 'read', recordType: 'LeanBodyMass' },
+    // "android.permission.health.READ_LEAN_BODY_MASS"
+    // { accessType: 'read', recordType: 'LeanBodyMass' },
     { accessType: 'read', recordType: 'Nutrition' },
     { accessType: 'write', recordType: 'Nutrition' },
-    { accessType: 'read', recordType: 'StepsCadence' },
-    { accessType: 'read', recordType: 'Steps' },
+    // "android.permission.health.READ_STEPS_CADENCE"
+    // { accessType: 'read', recordType: 'StepsCadence' },
+    // "android.permission.health.READ_STEPS"
+    // { accessType: 'read', recordType: 'Steps' },
     { accessType: 'read', recordType: 'TotalCaloriesBurned' },
     { accessType: 'read', recordType: 'Weight' },
     // TODO enable when menstrual tracking is implemented:
@@ -19,7 +24,8 @@ export const NEEDED_PERMISSIONS = [
     // { accessType: 'read', recordType: 'MenstruationFlow' },
     // { accessType: 'read', recordType: 'MenstruationPeriod' },
     // { accessType: 'read', recordType: 'OvulationTest' },
-    { accessType: 'read', recordType: 'BasalMetabolicRate' },
+    // "android.permission.health.READ_BASAL_METABOLIC_RATE"
+    // { accessType: 'read', recordType: 'BasalMetabolicRate' },
     // { accessType: 'read', recordType: 'DataHistory' }, // TODO what is the type of this record?
 ] as Permission[];
 
