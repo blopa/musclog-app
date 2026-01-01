@@ -1,7 +1,7 @@
-// This script generates images for exercises that are missing them using Gemini
+// This script generates images for exercises that are missing them using Gemini native SDK
 require('dotenv').config();
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 const fs = require('fs');
-const https = require('https');
 const path = require('path');
 
 const DIRNAME = __dirname;
@@ -19,118 +19,50 @@ if (!EXPO_PUBLIC_GEMINI_API_KEY) {
     process.exit(1);
 }
 
-// Function to download image from URL and save as webp
-async function downloadImage(imageUrl, outputPath) {
-    return new Promise((resolve, reject) => {
-        // Construct the download URL with API key
-        const downloadUrl = `${imageUrl}?key=${EXPO_PUBLIC_GEMINI_API_KEY}`;
-
-        https.get(downloadUrl, (res) => {
-            if (res.statusCode !== 200) {
-                reject(new Error(`Failed to download image: ${res.statusCode}`));
-                return;
-            }
-
-            const fileStream = fs.createWriteStream(outputPath);
-            res.pipe(fileStream);
-
-            fileStream.on('finish', () => {
-                fileStream.close();
-                console.log(`  Saved to ${outputPath}`);
-                resolve();
-            });
-
-            fileStream.on('error', (error) => {
-                fs.unlink(outputPath, () => {}); // Delete partial file
-                reject(error);
-            });
-        }).on('error', (error) => {
-            reject(error);
-        });
-    });
-}
-
-// Function to generate image using Gemini REST API
-async function generateExerciseImage(exerciseName, index) {
+// Function to generate image using Gemini native SDK
+// Based on: https://ai.google.dev/gemini-api/docs/image-generation#javascript
+async function generateExerciseImage(genAI, exerciseName, index) {
     console.log(`Generating image for exercise ${index}: ${exerciseName}...`);
 
     const prompt = `Generate a flat design image, with only grayscale colors, showing a person performing the "${exerciseName}" exercise.`;
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${EXPO_PUBLIC_GEMINI_API_KEY}`;
+    try {
+        // Use gemini-2.5-flash-image model for image generation
+        const model = genAI.getGenerativeModel({
+            model: 'gemini-2.5-flash-image',
+        });
 
-    const requestBody = JSON.stringify({
-        contents: [{
-            parts: [{
-                text: prompt,
+        const result = await model.generateContent({
+            contents: [{
+                parts: [{
+                    text: prompt,
+                }],
+                role: 'user',
             }],
-        }],
-        generationConfig: {
-            responseMimeType: 'image/jpeg',
-            temperature: 0.9,
-            topK: 1,
-            topP: 1,
-        },
-    });
-
-    return new Promise((resolve, reject) => {
-        const options = {
-            headers: {
-                // eslint-disable-next-line no-undef
-                'Content-Length': Buffer.byteLength(requestBody),
-                'Content-Type': 'application/json',
-            },
-            method: 'POST',
-        };
-
-        const req = https.request(url, options, (res) => {
-            let data = '';
-
-            res.on('data', (chunk) => {
-                data += chunk;
-            });
-
-            res.on('end', () => {
-                try {
-                    const response = JSON.parse(data);
-
-                    if (response.error) {
-                        console.error(`  Error: ${response.error.message}`);
-                        reject(new Error(response.error.message));
-                        return;
-                    }
-
-                    // Check if we got a valid response
-                    const candidate = response.candidates?.[0];
-                    if (!candidate) {
-                        console.error('  No candidates in response');
-                        reject(new Error('No candidates in response'));
-                        return;
-                    }
-
-                    // Get the file URI from the response
-                    const fileUri = candidate.content?.parts?.[0]?.fileData?.fileUri;
-
-                    if (fileUri) {
-                        resolve(fileUri);
-                    } else {
-                        console.error('  No fileUri found in response');
-                        reject(new Error('No fileUri in response'));
-                    }
-                } catch (error) {
-                    console.error(`  Error parsing response: ${error.message}`);
-                    reject(error);
-                }
-            });
         });
 
-        req.on('error', (error) => {
-            console.error(`  Request error: ${error.message}`);
-            reject(error);
-        });
+        if (result.response?.promptFeedback?.blockReason) {
+            throw new Error(`Blocked: ${result.response.promptFeedback.blockReason}`);
+        }
 
-        req.write(requestBody);
-        req.end();
-    });
+        const candidate = result.response?.candidates?.[0];
+        if (!candidate) {
+            throw new Error('No candidates in response');
+        }
+
+        // Get the image data from inlineData (as per official docs)
+        const parts = candidate.content?.parts || [];
+        for (const part of parts) {
+            if (part.inlineData) {
+                // Return base64 image data
+                return part.inlineData.data;
+            }
+        }
+
+        throw new Error('No image data found in response');
+    } catch (error) {
+        throw error;
+    }
 }
 
 // Function to check if image exists for an exercise index
@@ -178,18 +110,24 @@ async function main() {
     });
     console.log('');
 
+    // Initialize Gemini AI with native SDK
+    const genAI = new GoogleGenerativeAI(EXPO_PUBLIC_GEMINI_API_KEY);
+
     // Generate images for missing exercises
     let successCount = 0;
     let failCount = 0;
 
     for (const { index, name } of missingImages) {
         try {
-            // Generate image
-            const imageUri = await generateExerciseImage(name, index);
+            // Generate image (returns base64 data)
+            const imageData = await generateExerciseImage(genAI, name, index);
 
-            // Download and save image (images are 1-indexed)
+            // Save image directly from base64 (images are 1-indexed)
             const outputPath = path.join(EXERCISES_DIR, `${index + 1}.webp`);
-            await downloadImage(imageUri, outputPath);
+            // eslint-disable-next-line no-undef
+            const buffer = Buffer.from(imageData, 'base64');
+            fs.writeFileSync(outputPath, buffer);
+            console.log(`  Saved to ${outputPath}`);
 
             successCount++;
 
