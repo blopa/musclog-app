@@ -233,6 +233,7 @@ function RootLayout() {
             await createFitnessGoalsTable();
             await createMigrationsTable();
             await addIsFavoriteToFoodTable();
+            // await runMigrations();
 
             // update to latest version
             await addVersioning(packageJson.version);

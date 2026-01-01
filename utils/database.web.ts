@@ -173,6 +173,7 @@ export class WorkoutLoggerDatabase extends Dexie implements IDatabase {
                 'sender',
                 'type',
                 'misc',
+                'summarizedMessage',
                 'createdAt',
                 'deletedAt',
             ].join(', '),
@@ -577,6 +578,15 @@ export const addUserMetrics = async (userMetrics: UserMetricsInsertType): Promis
 const addChatRaw = async (chat: ChatInsertType): Promise<number> => {
     const createdAt = chat.createdAt || getCurrentTimestampISOString();
     return database.chats.add({ ...chat, createdAt });
+};
+
+export const updateChatMessage = async (id: number, updates: Partial<ChatInsertType>): Promise<void> => {
+    try {
+        await database.chats.update(id, updates);
+    } catch (error) {
+        console.error('Error updating chat message:', error);
+        throw error;
+    }
 };
 
 export const addUserNutritions = async (userNutritions: UserNutritionInsertType[]): Promise<boolean> => {

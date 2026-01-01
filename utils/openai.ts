@@ -126,6 +126,8 @@ export async function sendChatMessage(messages: any[]) {
     let jsonResponse = {
         messageToBio: '',
         messageToUser: i18n.t('great'),
+        summarizedAnswer: '',
+        summarizedQuestion: '',
         // shouldGenerateWorkout: false,
     };
 

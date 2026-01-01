@@ -40,6 +40,7 @@ interface CommonFunctionsParams {
     getSetsByWorkoutId: (workoutId: number) => Promise<SetReturnType[]>;
     getUser: () => Promise<any>;
     getWorkoutByIdWithTrashed: (id: number) => Promise<undefined | WorkoutReturnType>;
+    updateChatMessage: (id: number, updates: Partial<ChatInsertType>) => Promise<void>;
     updateSet: (id: number, set: SetInsertType) => Promise<number>;
     updateWorkout: (id: number, workout: WorkoutInsertType) => Promise<number>;
 }
@@ -62,6 +63,7 @@ export const getCommonFunctions = ({
     getSetsByWorkoutId,
     getUser,
     getWorkoutByIdWithTrashed,
+    updateChatMessage,
     updateSet,
     updateWorkout,
 }: CommonFunctionsParams) => {
