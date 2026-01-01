@@ -1,9 +1,8 @@
-
 import * as Linking from 'expo-linking';
 import * as WebBrowser from 'expo-web-browser';
 import { fetch } from 'expo/fetch';
 import { useEffect, useState } from 'react';
-import { Alert, Platform } from 'react-native';
+import { Alert } from 'react-native';
 
 import { getGoogleClientId } from '@/utils/googleAuth';
 
@@ -12,36 +11,6 @@ const GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token';
 
 // Mobile redirect URI (custom scheme)
 const GOOGLE_REDIRECT_URI_MOBILE = 'com.werules.logger://';
-// Web redirect URI - will be constructed dynamically based on current origin
-const getWebRedirectUri = () => {
-    if (Platform.OS === 'web') {
-        // Use the current page URL as redirect URI for web
-        // This allows Google to redirect back to the same page with query parameters
-        if (typeof window !== 'undefined') {
-            // Normalize the redirect URI: always remove trailing slash
-            // Google requires exact match, and typically expects no trailing slash
-            let { pathname } = window.location;
-            // Remove trailing slash (including for root path)
-            if (pathname.endsWith('/') && pathname.length > 1) {
-                pathname = pathname.slice(0, -1);
-            }
-            // For root path, use empty string (no trailing slash)
-            const redirectUri = window.location.origin + (pathname === '/' ? '' : pathname);
-
-            // Debug logging - remove in production if needed
-            console.log('[Google Auth] Redirect URI:', redirectUri);
-            console.log('[Google Auth] Full URL:', window.location.href);
-            console.log('[Google Auth] Origin:', window.location.origin);
-            console.log('[Google Auth] Pathname:', window.location.pathname);
-
-            return redirectUri;
-        }
-
-        return '';
-    }
-
-    return GOOGLE_REDIRECT_URI_MOBILE;
-};
 
 const GOOGLE_SCOPES = [
     'https://www.googleapis.com/auth/cloud-vision',
@@ -102,42 +71,6 @@ export const useGoogleAuth = () => {
     const [authData, setAuthData] = useState<GoogleAuthData | null>(null);
 
     useEffect(() => {
-        // Handle OAuth callback on web by checking URL parameters
-        if (Platform.OS === 'web') {
-            const handleWebCallback = async () => {
-                const urlParams = new URLSearchParams(window.location.search);
-                const code = urlParams.get('code');
-                const error = urlParams.get('error');
-
-                if (error) {
-                    console.error('[Google Auth] OAuth error:', error);
-                    console.error('[Google Auth] Error description:', urlParams.get('error_description'));
-                    console.error('[Google Auth] Current URL:', window.location.href);
-                    Alert.alert('Error', `Failed to sign in with Google: ${error}`);
-                    // Clean up URL
-                    window.history.replaceState({}, document.title, window.location.pathname);
-                    return;
-                }
-
-                if (code) {
-                    try {
-                        setIsSigningIn(true);
-                        const redirectUri = getWebRedirectUri();
-                        const tokenData = await exchangeCodeForToken(code, redirectUri);
-                        setAuthData(tokenData);
-                        // Clean up URL after successful auth
-                        window.history.replaceState({}, document.title, window.location.pathname);
-                    } catch (error) {
-                        console.error('Google sign-in failed:', error);
-                    } finally {
-                        setIsSigningIn(false);
-                    }
-                }
-            };
-
-            handleWebCallback();
-        }
-
         // Handle deep links on mobile
         const handleDeepLink = async (event: Linking.EventType) => {
             const { url } = event;
@@ -150,8 +83,7 @@ export const useGoogleAuth = () => {
 
                 try {
                     setIsSigningIn(true);
-                    const redirectUri = GOOGLE_REDIRECT_URI_MOBILE;
-                    const tokenData = await exchangeCodeForToken(authCode, redirectUri);
+                    const tokenData = await exchangeCodeForToken(authCode, GOOGLE_REDIRECT_URI_MOBILE);
                     setAuthData(tokenData);
                 } catch (error) {
                     console.error('Google sign-in failed:', error);
@@ -161,10 +93,7 @@ export const useGoogleAuth = () => {
             }
         };
 
-        let subscription: null | { remove: () => void } = null;
-        if (Platform.OS !== 'web') {
-            subscription = Linking.addEventListener('url', handleDeepLink);
-        }
+        const subscription = Linking.addEventListener('url', handleDeepLink);
 
         return () => {
             if (subscription) {
@@ -175,16 +104,16 @@ export const useGoogleAuth = () => {
 
     const promptAsync = async () => {
         try {
-            const redirectUri = getWebRedirectUri();
+            const redirectUri = GOOGLE_REDIRECT_URI_MOBILE;
             const clientId = getGoogleClientId();
 
             // Debug logging
-            console.log('[Google Auth] Starting OAuth flow');
-            console.log('[Google Auth] Client ID:', clientId);
-            console.log('[Google Auth] Redirect URI:', redirectUri);
+            console.log('[Google Auth Mobile] Starting OAuth flow');
+            console.log('[Google Auth Mobile] Client ID:', clientId);
+            console.log('[Google Auth Mobile] Redirect URI:', redirectUri);
 
             const authUrl = buildAuthUrl(redirectUri);
-            console.log('[Google Auth] Auth URL:', authUrl);
+            console.log('[Google Auth Mobile] Auth URL:', authUrl);
 
             const result = await WebBrowser.openAuthSessionAsync(authUrl, redirectUri);
 
@@ -201,11 +130,11 @@ export const useGoogleAuth = () => {
                     setIsSigningIn(false);
                 }
             } else if (result.type === 'dismiss') {
-                // User cancelled the auth flow
-                console.log('User cancelled Google sign-in');
+                // User canceled the auth flow
+                console.log('[Google Auth Mobile] User cancelled Google sign-in');
             }
         } catch (error) {
-            console.error('Failed to open Google auth WebView:', error);
+            console.error('[Google Auth Mobile] Failed to open Google auth WebView:', error);
             Alert.alert('Error', 'Failed to initiate Google sign-in.');
         }
     };
