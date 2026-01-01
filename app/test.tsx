@@ -23,7 +23,7 @@ export default function App() {
         try {
             const accessToken = await getAccessToken();
 
-            const result = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent', {
+            const result = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent', {
                 body: JSON.stringify({
                     'contents': [{ 'parts': [{ 'text': 'Generate a motivational sentence :)' }], 'role': 'user' }],
                     'generationConfig': { 'temperature': 0.9, topK: 1, topP: 1 },
