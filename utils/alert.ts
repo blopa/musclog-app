@@ -3,16 +3,16 @@ import { Alert } from 'react-native';
 
 import { UNREAD_MESSAGES_COUNT } from '@/constants/storage';
 import i18n from '@/lang/lang';
+import { getShowSnackbar } from '@/storage/SnackbarProvider';
 
 export const showAlert = (
     message: string,
     buttonText: string = i18n.t('ok'),
     onPress: () => void = () => {}
 ) => {
-    // @ts-ignore it's fine
-    if (global?.showSnackbar) {
-        // @ts-ignore it's fine
-        global.showSnackbar(message, buttonText, onPress);
+    const showSnackbar = getShowSnackbar();
+    if (showSnackbar) {
+        showSnackbar(message, buttonText, onPress);
     } else {
         Alert.alert(message);
     }

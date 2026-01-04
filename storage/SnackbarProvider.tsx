@@ -17,6 +17,16 @@ const SnackbarContext = createContext<SnackbarContextValue>({
 
 export const useSnackbar = () => useContext(SnackbarContext);
 
+// Module-level refs to store snackbar functions for access outside React components
+const snackbarRef = {
+    hideSnackbar: () => {},
+    showSnackbar: (_message: string, _label?: string, _onPress?: () => void) => {},
+};
+
+// Export helper functions to access snackbar from outside React components
+export const getShowSnackbar = () => snackbarRef.showSnackbar;
+export const getHideSnackbar = () => snackbarRef.hideSnackbar;
+
 interface SnackbarProviderProps {
     children: ReactNode;
 }
@@ -43,10 +53,9 @@ export const SnackbarProvider: React.FC<SnackbarProviderProps> = ({ children }) 
     }, []);
 
     useEffect(() => {
-        // @ts-ignore it's fine
-        global.showSnackbar = showSnackbar;
-        // @ts-ignore it's fine
-        global.hideSnackbar = hideSnackbar;
+        // Update module-level refs for access outside React components
+        snackbarRef.showSnackbar = showSnackbar;
+        snackbarRef.hideSnackbar = hideSnackbar;
     }, [hideSnackbar, showSnackbar]);
 
     return (
