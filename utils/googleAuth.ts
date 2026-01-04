@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthSessionResult } from 'expo-auth-session';
 // import fetch from 'isomorphic-fetch';
 import { fetch } from 'expo/fetch';
+import { Platform } from 'react-native';
 
 import {
     AI_SETTINGS_TYPE,
@@ -10,6 +11,7 @@ import {
     GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE,
     GOOGLE_OAUTH_GEMINI_ENABLED_TYPE,
     GOOGLE_REFRESH_TOKEN_TYPE,
+    HAS_COMPLETED_ONBOARDING,
     LAST_TIME_GOOGLE_AUTH_ERROR_WAS_SHOWN,
 } from '@/constants/storage';
 import { GoogleAuthData } from '@/hooks/useGoogleAuth';
@@ -35,9 +37,25 @@ export interface RefreshTokenResponse {
     refresh_token: string;
 }
 
-export const GOOGLE_CLIENT_ID = '182653769964-letucboq7c5m25ckvgp9kuirrdm33fkc.apps.googleusercontent.com';
+// Mobile (Android/iOS) OAuth Client ID
+const GOOGLE_CLIENT_ID_MOBILE = '182653769964-letucboq7c5m25ckvgp9kuirrdm33fkc.apps.googleusercontent.com';
+
+// Web OAuth Client ID
+const GOOGLE_CLIENT_ID_WEB = '182653769964-19v2egl06jrj6650ci08bj97qeq5ilon.apps.googleusercontent.com';
+
+// Get the appropriate client ID based on platform
+export const getGoogleClientId = (): string => {
+    return Platform.OS === 'web' ? GOOGLE_CLIENT_ID_WEB : GOOGLE_CLIENT_ID_MOBILE;
+};
 
 const handleGoogleAuthError = async () => {
+    // Don't show auth errors before onboarding is complete
+    const hasCompletedOnboarding = await AsyncStorage.getItem(HAS_COMPLETED_ONBOARDING);
+    if (hasCompletedOnboarding !== 'true') {
+        // console.log('Skipping Google auth error - onboarding not completed yet.');
+        return;
+    }
+
     const lastTimeRun = await AsyncStorage.getItem(LAST_TIME_GOOGLE_AUTH_ERROR_WAS_SHOWN);
     const today = (new Date()).toISOString().split('T')[0];
 
@@ -103,9 +121,13 @@ export const refreshAccessToken = async (): Promise<string | undefined> => {
     }
 
     try {
+        // Use platform-specific client ID for refresh
+        // Note: Refresh tokens are tied to the client that issued them,
+        // so web and mobile tokens are not interchangeable
+        const clientId = getGoogleClientId();
         const response = await fetch('https://oauth2.googleapis.com/token', {
             body: new URLSearchParams({
-                client_id: GOOGLE_CLIENT_ID,
+                client_id: clientId,
                 grant_type: 'refresh_token',
                 refresh_token: refreshToken.value,
             }).toString(),
@@ -180,6 +202,26 @@ export const reauthenticate = async (
 };
 
 /**
+ * Check if user is signed in with Google (has valid access token)
+ */
+export const isGoogleSignedIn = async (): Promise<boolean> => {
+    const accessToken = await AsyncStorage.getItem(GOOGLE_ACCESS_TOKEN);
+    const tokenExpirationTime = await AsyncStorage.getItem(GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE);
+
+    if (!accessToken || !tokenExpirationTime) {
+        return false;
+    }
+
+    const expirationTime = parseInt(tokenExpirationTime, 10);
+    if (isNaN(expirationTime)) {
+        return false;
+    }
+
+    // Check if token is still valid (with 60 second buffer)
+    return new Date().getTime() < expirationTime - 60 * 1000;
+};
+
+/**
  * Retrieve a valid access token (refresh if expired)
  */
 export const getAccessToken = async (): Promise<string | undefined> => {
@@ -206,12 +248,17 @@ export const handleGoogleSignIn = async (
         const { access_token: accessToken, expires_in: expiresIn, refresh_token: refreshToken } = response;
 
         await AsyncStorage.setItem(GOOGLE_ACCESS_TOKEN, accessToken);
+
+        // Only save refresh token if it exists (mobile has it, web implicit flow doesn't)
         if (refreshToken) {
             await addOrUpdateSetting({
                 type: GOOGLE_REFRESH_TOKEN_TYPE,
                 value: refreshToken,
             });
+        }
 
+        if (accessToken) {
+            // Enable OAuth Gemini and AI settings if we have an access token
             await addOrUpdateSetting({
                 type: GOOGLE_OAUTH_GEMINI_ENABLED_TYPE,
                 value: 'true',
@@ -226,7 +273,6 @@ export const handleGoogleSignIn = async (
         const expirationTime = new Date().getTime() + (expiresIn ?? 0) * 1000;
         await AsyncStorage.setItem(GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE, expirationTime.toString());
 
-        console.log('THE ACCESS TOKEN IS', accessToken);
         return isValidAccessToken(accessToken, GEMINI_API_KEY_TYPE);
     }
     throw new Error('Google sign-in failed or cancelled.');

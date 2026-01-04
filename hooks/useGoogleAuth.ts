@@ -1,16 +1,17 @@
-
 import * as Linking from 'expo-linking';
 import * as WebBrowser from 'expo-web-browser';
 import { fetch } from 'expo/fetch';
 import { useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 
-import { GOOGLE_CLIENT_ID } from '@/utils/googleAuth';
+import { getGoogleClientId } from '@/utils/googleAuth';
 
 const GOOGLE_AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
 const GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token';
 
-const GOOGLE_REDIRECT_URI = 'com.werules.logger://';
+// Mobile redirect URI (custom scheme)
+const GOOGLE_REDIRECT_URI_MOBILE = 'com.werules.logger://';
+
 const GOOGLE_SCOPES = [
     'https://www.googleapis.com/auth/cloud-vision',
     'https://www.googleapis.com/auth/generative-language.retriever',
@@ -24,10 +25,12 @@ export type GoogleAuthData = {
     token_type: string;
 };
 
-const buildAuthUrl = () => {
+const buildAuthUrl = (redirectUri: string) => {
+    const clientId = getGoogleClientId();
+
     const params = new URLSearchParams({
-        client_id: GOOGLE_CLIENT_ID,
-        redirect_uri: GOOGLE_REDIRECT_URI,
+        client_id: clientId,
+        redirect_uri: redirectUri,
         response_type: 'code',
         scope: GOOGLE_SCOPES,
     });
@@ -35,13 +38,14 @@ const buildAuthUrl = () => {
     return `${GOOGLE_AUTH_URL}?${params.toString()}`;
 };
 
-const exchangeCodeForToken = async (code: string) => {
+const exchangeCodeForToken = async (code: string, redirectUri: string) => {
     try {
+        const clientId = getGoogleClientId();
         const body = new URLSearchParams({
-            client_id: GOOGLE_CLIENT_ID,
+            client_id: clientId,
             code,
             grant_type: 'authorization_code',
-            redirect_uri: GOOGLE_REDIRECT_URI,
+            redirect_uri: redirectUri,
         });
 
         const response = await fetch(GOOGLE_TOKEN_URL, {
@@ -68,16 +72,19 @@ export const useGoogleAuth = () => {
     const [authData, setAuthData] = useState<GoogleAuthData | null>(null);
 
     useEffect(() => {
+        // Handle deep links on mobile
         const handleDeepLink = async (event: Linking.EventType) => {
             const { url } = event;
             const queryParams = Linking.parse(url);
 
             if (queryParams.queryParams?.code) {
                 const { code } = queryParams.queryParams;
+                // Handle case where code might be an array (shouldn't happen, but TypeScript requires it)
+                const authCode = Array.isArray(code) ? code[0] : code;
 
                 try {
                     setIsSigningIn(true);
-                    const tokenData = await exchangeCodeForToken(code as string);
+                    const tokenData = await exchangeCodeForToken(authCode, GOOGLE_REDIRECT_URI_MOBILE);
                     setAuthData(tokenData);
                 } catch (error) {
                     console.error('Google sign-in failed:', error);
@@ -87,27 +94,39 @@ export const useGoogleAuth = () => {
             }
         };
 
-        Linking.addEventListener('url', handleDeepLink);
+        const subscription = Linking.addEventListener('url', handleDeepLink);
+
+        return () => {
+            if (subscription) {
+                subscription.remove();
+            }
+        };
     }, []);
 
     const promptAsync = async () => {
         try {
-            const authUrl = buildAuthUrl();
-            const result = await WebBrowser.openAuthSessionAsync(authUrl, GOOGLE_REDIRECT_URI);
+            const authUrl = buildAuthUrl(GOOGLE_REDIRECT_URI_MOBILE);
+
+            const result = await WebBrowser.openAuthSessionAsync(authUrl, GOOGLE_REDIRECT_URI_MOBILE);
 
             if (result.type === 'success' && result.url) {
                 const queryParams = Linking.parse(result.url);
                 const { code } = queryParams.queryParams || {};
 
                 if (code) {
+                    // Handle case where code might be an array (shouldn't happen, but TypeScript requires it)
+                    const authCode = Array.isArray(code) ? code[0] : code;
                     setIsSigningIn(true);
-                    const tokenData = await exchangeCodeForToken(code as string);
+                    const tokenData = await exchangeCodeForToken(authCode, GOOGLE_REDIRECT_URI_MOBILE);
                     setAuthData(tokenData);
                     setIsSigningIn(false);
                 }
+            } else if (result.type === 'dismiss') {
+                // User canceled the auth flow
+                // console.log('[Google Auth Mobile] User cancelled Google sign-in');
             }
         } catch (error) {
-            console.error('Failed to open Google auth WebView:', error);
+            // console.error('[Google Auth Mobile] Failed to open Google auth WebView:', error);
             Alert.alert('Error', 'Failed to initiate Google sign-in.');
         }
     };

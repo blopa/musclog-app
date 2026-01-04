@@ -3,7 +3,7 @@
     "name": "Musclog - Lift, Log, Repeat",
     "slug": "logger",
     "jsEngine": "hermes",
-    "version": "1.8.1",
+    "version": "1.8.3",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "musclog",
@@ -20,12 +20,12 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.werules.logger",
-      "buildNumber": "119"
+      "buildNumber": "121"
     },
     "android": {
       "softwareKeyboardLayoutMode": "resize",
       "package": "com.werules.logger",
-      "versionCode": 119,
+      "versionCode": 121,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -40,17 +40,11 @@
         "android.permission.VIBRATE",
         "android.permission.WRITE_CALENDAR",
         "android.permission.WRITE_EXTERNAL_STORAGE",
-        "android.permission.health.READ_ACTIVE_CALORIES_BURNED",
         "android.permission.health.READ_TOTAL_CALORIES_BURNED",
         "android.permission.health.READ_WEIGHT",
         "android.permission.health.READ_HEIGHT",
-        "android.permission.health.READ_STEPS",
-        "android.permission.health.READ_STEPS_CADENCE",
-        "android.permission.health.READ_HEART_RATE",
-        "android.permission.health.READ_LEAN_BODY_MASS",
         "android.permission.health.READ_BODY_FAT",
         "android.permission.health.READ_HEALTH_DATA_HISTORY",
-        "android.permission.health.READ_BASAL_METABOLIC_RATE",
         "android.permission.health.READ_NUTRITION",
         "android.permission.health.WRITE_NUTRITION",
         "android.permission.FOREGROUND_SERVICE",
@@ -90,7 +84,12 @@
           "android": {
             "compileSdkVersion": 35,
             "targetSdkVersion": 35,
-            "minSdkVersion": 35
+            "minSdkVersion": 35,
+            "packagingOptions": {
+              "jniLibs": {
+                "useLegacyPackaging": false
+              }
+            }
           }
         }
       ],
