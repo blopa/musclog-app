@@ -2395,6 +2395,14 @@ export const getFood = async (id: number): Promise<FoodReturnType | undefined> =
     }
 };
 
+export const getAllFoods = async (): Promise<FoodReturnType[]> => {
+    try {
+        return database.getAllSync<FoodReturnType>('SELECT * FROM "Food" WHERE ("deletedAt" IS NULL OR "deletedAt" = \'\')');
+    } catch (error) {
+        throw error;
+    }
+};
+
 export const getAllFavoriteFoods = async (): Promise<FoodReturnType[] | undefined> => {
     try {
         return database.getAllSync<FoodReturnType>('SELECT * FROM "Food" WHERE "isFavorite" = 1 AND ("deletedAt" IS NULL OR "deletedAt" = \'\')');

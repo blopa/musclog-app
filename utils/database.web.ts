@@ -1810,6 +1810,12 @@ export const getFood = async (id: number): Promise<FoodReturnType | undefined> =
         .first();
 };
 
+export const getAllFoods = async (): Promise<FoodReturnType[]> => {
+    return database.food
+        .filter((food) => !food.deletedAt)
+        .toArray();
+};
+
 export const getAllFavoriteFoods = async (): Promise<FoodReturnType[] | undefined> => {
     return database.food
         .filter((food) => Boolean(food.isFavorite) && !food.deletedAt)

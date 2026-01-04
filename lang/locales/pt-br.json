@@ -531,6 +531,9 @@
     "meal_macros": "Macros da Refeição",
     "track_meal": "Rastrear Refeição",
     "no_meals_saved": "Nenhuma refeição salva",
+    "select_food": "Selecionar Alimento",
+    "search_online": "Buscar Online",
+    "no_foods_saved": "Nenhum alimento salvo",
     "meal_foods_count": "{{count}} alimentos",
     "edit_meal": "Editar Refeição",
     "delete_meal": "Excluir Refeição",
@@ -546,6 +549,8 @@
     "no_user_found": "Nenhum usuário encontrado",
     "food_not_found_in_database_message": "Este alimento não está em sua base de dados. Deseja criá-lo?",
     "failed_to_find_food": "Falha ao encontrar alimento",
+    "failed_to_save_food": "Falha ao salvar alimento",
+    "food_saved_to_database": "Alimento salvo na base de dados",
     "google_form": {
         "calories": "Calorias",
         "total_carbohydrate": "Carboidratos Totais",

@@ -531,6 +531,9 @@
     "meal_macros": "Meal Macros",
     "track_meal": "Track Meal",
     "no_meals_saved": "No meals saved",
+    "select_food": "Select Food",
+    "search_online": "Search Online",
+    "no_foods_saved": "No foods saved",
     "meal_foods_count": "{{count}} food items",
     "edit_meal": "Edit Meal",
     "delete_meal": "Delete Meal",
@@ -546,6 +549,8 @@
     "no_user_found": "No user found",
     "food_not_found_in_database_message": "This food is not in your database. Would you like to create it?",
     "failed_to_find_food": "Failed to find food",
+    "failed_to_save_food": "Failed to save food",
+    "food_saved_to_database": "Food saved to database",
     "google_form": {
         "calories": "Calories",
         "total_carbohydrate": "Total Carbohydrate",

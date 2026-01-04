@@ -10,6 +10,7 @@ import CustomTextInput from '@/components/CustomTextInput';
 import MealFoodItem from '@/components/MealFoodItem';
 import MealMacroSummary from '@/components/MealMacroSummary';
 import { Screen } from '@/components/Screen';
+import SelectFoodModal from '@/components/SelectFoodModal';
 import { GRAMS, IMPERIAL_SYSTEM, METRIC_SYSTEM, OUNCES } from '@/constants/storage';
 import useUnit from '@/hooks/useUnit';
 import { useSnackbar } from '@/storage/SnackbarProvider';
@@ -51,6 +52,7 @@ export default function CreateMeal({ navigation }: { navigation: NavigationProp<
     const [isSaving, setIsSaving] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const [isSelectFoodModalVisible, setIsSelectFoodModalVisible] = useState(false);
     const [editingMealFood, setEditingMealFood] = useState<MealFoodLocalType | null>(null);
     const [editingGrams, setEditingGrams] = useState('');
 
@@ -131,34 +133,22 @@ export default function CreateMeal({ navigation }: { navigation: NavigationProp<
     );
 
     const handleAddFood = useCallback(() => {
-        navigation.navigate('foodSearch', {
-            returnFoodId: true,
-        });
-    }, [navigation]);
+        setIsSelectFoodModalVisible(true);
+    }, []);
 
-    // Listen for food selection when returning from foodSearch
-    useFocusEffect(
-        useCallback(() => {
-            const checkForSelectedFood = async () => {
-                const routeParams = route.params as { selectedFoodId?: number };
-                if (routeParams?.selectedFoodId) {
-                    const food = await getFood(routeParams.selectedFoodId);
-                    if (food && !mealFoods.some((mf) => mf.food.id === food.id)) {
-                        setMealFoods((prev) => [
-                            ...prev,
-                            {
-                                food,
-                                grams: 100, // Default to 100g
-                            },
-                        ]);
-                    }
-                    // Clear the param to avoid re-adding
-                    navigation.setParams({ selectedFoodId: undefined });
-                }
-            };
-            checkForSelectedFood();
-        }, [navigation, route.params, mealFoods])
-    );
+    const handleFoodSelected = useCallback(async (foodId: number) => {
+        const food = await getFood(foodId);
+        if (food && !mealFoods.some((mf) => mf.food.id === food.id)) {
+            setMealFoods((prev) => [
+                ...prev,
+                {
+                    food,
+                    grams: 100, // Default to 100g
+                },
+            ]);
+        }
+        setIsSelectFoodModalVisible(false);
+    }, [mealFoods]);
 
     const handleEditMealFoodGrams = useCallback((mealFood: MealFoodLocalType) => {
         setEditingMealFood(mealFood);
@@ -265,6 +255,11 @@ export default function CreateMeal({ navigation }: { navigation: NavigationProp<
                 isModalVisible={isModalVisible}
                 onClose={handleCloseModal}
                 title={t('meal_saved')}
+            />
+            <SelectFoodModal
+                onClose={() => setIsSelectFoodModalVisible(false)}
+                onFoodSelected={handleFoodSelected}
+                visible={isSelectFoodModalVisible}
             />
             <Appbar.Header mode="small" statusBarHeight={0} style={styles.appbarHeader}>
                 <Appbar.Content

@@ -11,7 +11,7 @@ import FoodItem from '@/components/FoodItem';
 import FoodTrackingModal from '@/components/FoodTrackingModal';
 import { Screen } from '@/components/Screen';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
-import { getFood, getFoodByProductCode } from '@/utils/database';
+import { addFood, getFood, getFoodByNameAndMacros, getFoodByProductCode } from '@/utils/database';
 import { fetchFoodData } from '@/utils/fetchFoodData';
 import { MusclogApiFoodInfoType } from '@/utils/types';
 
@@ -105,34 +105,53 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const handleAddFood = useCallback(async (food: MusclogApiFoodInfoType) => {
         const routeParams = route.params as RouteParams;
         if (routeParams?.returnFoodId) {
-            // If we're in "return food ID" mode, find the food in database and return its ID
+            // If we're in "return food ID" mode, find the food in database or create it
             try {
                 let dbFood;
+                // First try to find by product code
                 if (food.ean) {
                     dbFood = await getFoodByProductCode(food.ean);
                 }
+
+                // If not found, try to find by name and macros
                 if (!dbFood) {
-                    // Try to find by name - we'll need to search all foods
-                    // For now, just navigate back with a message that food needs to be created
-                    Alert.alert(
-                        t('food_not_found'),
-                        t('food_not_found_in_database_message'),
-                        [
-                            { style: 'cancel', text: t('cancel') },
-                            {
-                                onPress: () => navigation.navigate('createFood', { foodName: food.productTitle }),
-                                text: t('create_food'),
-                            },
-                        ]
+                    dbFood = await getFoodByNameAndMacros(
+                        food.productTitle,
+                        food.kcal,
+                        food.protein,
+                        food.carbs || 0,
+                        food.fat || 0
                     );
+                }
+
+                // If still not found, create it automatically
+                if (!dbFood) {
+                    const foodToSave = {
+                        calories: food.kcal,
+                        name: food.productTitle,
+                        productCode: food.ean,
+                        protein: food.protein,
+                        totalCarbohydrate: food.carbs || 0,
+                        totalFat: food.fat || 0,
+                        // Macros are already per 100g from search results
+                    };
+
+                    const newFoodId = await addFood(foodToSave);
+                    if (newFoodId) {
+                        navigation.navigate('createMeal', { selectedFoodId: newFoodId });
+                    } else {
+                        Alert.alert(t('error'), t('failed_to_save_food'));
+                    }
                     return;
                 }
+
+                // Food exists, navigate back with its ID
                 if (dbFood) {
                     navigation.navigate('createMeal', { selectedFoodId: dbFood.id });
                 }
             } catch (error) {
-                console.error('Error finding food in database:', error);
-                Alert.alert(t('error'), t('failed_to_find_food'));
+                console.error('Error finding/saving food in database:', error);
+                Alert.alert(t('error'), t('failed_to_save_food'));
             }
             return;
         }
@@ -163,6 +182,16 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
         useCallback(() => {
             if (initialSearchQuery) {
                 loadInitialQuery();
+            } else {
+                // If no initial query, load all foods from database
+                const loadAllFoods = async () => {
+                    setIsLoading(true);
+                    const { pageCount, products } = await fetchFoodData('', 1);
+                    setSearchResults(products);
+                    setTotalPages(pageCount);
+                    setIsLoading(false);
+                };
+                loadAllFoods();
             }
 
             loadInitialFood();

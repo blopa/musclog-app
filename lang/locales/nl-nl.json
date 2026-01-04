@@ -531,6 +531,9 @@
     "meal_macros": "Maaltijd Macros",
     "track_meal": "Maaltijd Volgen",
     "no_meals_saved": "Geen maaltijden opgeslagen",
+    "select_food": "Selecteer Voedsel",
+    "search_online": "Online Zoeken",
+    "no_foods_saved": "Geen voedsel opgeslagen",
     "meal_foods_count": "{{count}} voedingsmiddelen",
     "edit_meal": "Maaltijd Bewerken",
     "delete_meal": "Maaltijd Verwijderen",
@@ -546,6 +549,8 @@
     "no_user_found": "Geen gebruiker gevonden",
     "food_not_found_in_database_message": "Dit voedsel staat niet in uw database. Wilt u het aanmaken?",
     "failed_to_find_food": "Fout bij zoeken voedsel",
+    "failed_to_save_food": "Fout bij opslaan voedsel",
+    "food_saved_to_database": "Voedsel opgeslagen in database",
     "google_form": {
         "calories": "Calorieën",
         "total_carbohydrate": "Totale Koolhydraten",
