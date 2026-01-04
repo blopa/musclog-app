@@ -4,14 +4,14 @@ import { FlashList } from '@shopify/flash-list';
 import { useFocusEffect } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Platform, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Alert, Platform, StyleSheet, View } from 'react-native';
 import { Appbar, Button, Text, TextInput, useTheme } from 'react-native-paper';
 
 import FoodItem from '@/components/FoodItem';
 import FoodTrackingModal from '@/components/FoodTrackingModal';
 import { Screen } from '@/components/Screen';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
-import { getFood } from '@/utils/database';
+import { getFood, getFoodByProductCode } from '@/utils/database';
 import { fetchFoodData } from '@/utils/fetchFoodData';
 import { MusclogApiFoodInfoType } from '@/utils/types';
 
@@ -19,6 +19,8 @@ type RouteParams = {
     defaultMealType?: string;
     foodId?: string;
     initialSearchQuery?: string;
+    onFoodSelected?: (foodId: number) => void;
+    returnFoodId?: boolean;
 };
 
 const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
@@ -100,10 +102,43 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
         }
     }, [currentPage, totalPages, isLoading, searchQuery]);
 
-    const handleAddFood = useCallback((food: MusclogApiFoodInfoType) => {
+    const handleAddFood = useCallback(async (food: MusclogApiFoodInfoType) => {
+        const routeParams = route.params as RouteParams;
+        if (routeParams?.returnFoodId) {
+            // If we're in "return food ID" mode, find the food in database and return its ID
+            try {
+                let dbFood;
+                if (food.ean) {
+                    dbFood = await getFoodByProductCode(food.ean);
+                }
+                if (!dbFood) {
+                    // Try to find by name - we'll need to search all foods
+                    // For now, just navigate back with a message that food needs to be created
+                    Alert.alert(
+                        t('food_not_found'),
+                        t('food_not_found_in_database_message'),
+                        [
+                            { style: 'cancel', text: t('cancel') },
+                            {
+                                onPress: () => navigation.navigate('createFood', { foodName: food.productTitle }),
+                                text: t('create_food'),
+                            },
+                        ]
+                    );
+                    return;
+                }
+                if (dbFood) {
+                    navigation.navigate('createMeal', { selectedFoodId: dbFood.id });
+                }
+            } catch (error) {
+                console.error('Error finding food in database:', error);
+                Alert.alert(t('error'), t('failed_to_find_food'));
+            }
+            return;
+        }
         setSelectedFood(food);
         setIsModalVisible(true);
-    }, []);
+    }, [route.params, navigation, t]);
 
     const resetScreenData = useCallback(() => {
         setIsModalVisible(false);

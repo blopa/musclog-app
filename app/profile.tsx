@@ -24,6 +24,7 @@ import {
     addUserMetrics,
     getLatestUser,
     getLatestUserMetrics,
+    updateUserMetrics,
 } from '@/utils/database';
 import { getCurrentTimestampISOString, isValidDateParam } from '@/utils/date';
 import { formatFloatNumericInputText, generateHash, safeToFixed } from '@/utils/string';

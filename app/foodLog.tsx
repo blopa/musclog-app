@@ -928,7 +928,14 @@ const FoodLog = ({ navigation }: { navigation: NavigationProp<any> }) => {
             setRetrospectiveModalVisible(true);
         },
         style: { backgroundColor: colors.surface },
-    }], [colors.primary, colors.surface, t]);
+    }, {
+        icon: () => <FontAwesome5 color={colors.primary} name="utensils" size={FAB_ICON_SIZE} />,
+        label: t('track_meal'),
+        onPress: () => {
+            navigation.navigate('listMeals');
+        },
+        style: { backgroundColor: colors.surface },
+    }], [colors.primary, colors.surface, t, navigation]);
 
     return (
         <FABWrapper actions={fabActions} icon="plus" visible={!showPhotoCamera && !showBarcodeCamera}>

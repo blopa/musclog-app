@@ -26,6 +26,11 @@ import {
     FitnessGoalsReturnType,
     FoodInsertType,
     FoodReturnType,
+    MealFoodInsertType,
+    MealFoodReturnType,
+    MealInsertType,
+    MealReturnType,
+    MealWithFoodsType,
     MetricsForUserType,
     MigrationInsertType,
     MigrationReturnType,
@@ -80,6 +85,20 @@ interface IDatabase {
     };
     fitnessGoals: {},
     food: {},
+    meal: {
+        add: (meal: MealInsertType) => Promise<number>;
+        clear: () => Promise<void>;
+        get: (id: number) => Promise<MealReturnType | undefined>;
+        toArray: () => Promise<MealReturnType[]>;
+        update: (id: number, meal: MealInsertType) => Promise<number>;
+        where: (query: any) => any;
+    };
+    mealFood: {
+        add: (mealFood: MealFoodInsertType) => Promise<number>;
+        clear: () => Promise<void>;
+        toArray: () => Promise<MealFoodReturnType[]>;
+        where: (query: any) => any;
+    };
     migrations: {},
     oneRepMaxes: {
         add: (oneRepMax: OneRepMaxInsertType) => Promise<number>;
@@ -145,6 +164,8 @@ export class WorkoutLoggerDatabase extends Dexie implements IDatabase {
     exercises!: Dexie.Table<ExerciseReturnType, number, ExerciseInsertType>;
     fitnessGoals!: Dexie.Table<FitnessGoalsReturnType, number, FitnessGoalsInsertType>;
     food!: Dexie.Table<FoodReturnType, number, FoodInsertType>;
+    meal!: Dexie.Table<MealReturnType, number, MealInsertType>;
+    mealFood!: Dexie.Table<MealFoodReturnType, number, MealFoodInsertType>;
     migrations!: Dexie.Table<MigrationReturnType, number, MigrationInsertType>;
     oneRepMaxes!: Dexie.Table<OneRepMaxReturnType, number, OneRepMaxInsertType>;
     sets!: Dexie.Table<SetReturnType, number, SetInsertType>;
@@ -254,6 +275,21 @@ export class WorkoutLoggerDatabase extends Dexie implements IDatabase {
                 'sodium',
                 'riboflavin',
                 'potassium',
+            ].join(', '),
+            meal: [
+                '++id',
+                'userId',
+                'name',
+                'createdAt',
+                'deletedAt',
+            ].join(', '),
+            mealFood: [
+                '++id',
+                'mealId',
+                'foodId',
+                'grams',
+                'createdAt',
+                'deletedAt',
             ].join(', '),
             migrations: [
                 '++id',
@@ -620,6 +656,22 @@ export const addUserNutrition = async (userNutrition: UserNutritionInsertType): 
 
     return database.userNutrition.add({
         ...userNutrition,
+        createdAt,
+    });
+};
+
+export const addMeal = async (meal: MealInsertType): Promise<number> => {
+    const createdAt = meal.createdAt || getCurrentTimestampISOString();
+    return database.meal.add({
+        ...meal,
+        createdAt,
+    });
+};
+
+export const addMealFood = async (mealFood: MealFoodInsertType): Promise<number> => {
+    const createdAt = mealFood.createdAt || getCurrentTimestampISOString();
+    return database.mealFood.add({
+        ...mealFood,
         createdAt,
     });
 };
@@ -1669,6 +1721,88 @@ export const getTotalUserNutritionCount = async (): Promise<number> => {
     return database.userNutrition.count();
 };
 
+export const getMeal = async (id: number): Promise<MealReturnType | undefined> => {
+    return database.meal
+        .where({ id })
+        .filter((meal) => !meal.deletedAt)
+        .first();
+};
+
+export const getAllMealsByUserId = async (userId: number): Promise<MealReturnType[]> => {
+    return database.meal
+        .where({ userId })
+        .filter((meal) => !meal.deletedAt)
+        .sortBy('createdAt')
+        .then((meals) => meals.reverse());
+};
+
+export const getMealFoodsByMealId = async (mealId: number): Promise<MealFoodReturnType[]> => {
+    return database.mealFood
+        .where({ mealId })
+        .filter((mealFood) => !mealFood.deletedAt)
+        .toArray();
+};
+
+export const getMealWithFoods = async (mealId: number): Promise<MealWithFoodsType | undefined> => {
+    const meal = await getMeal(mealId);
+    if (!meal) {
+        return undefined;
+    }
+
+    const mealFoods = await getMealFoodsByMealId(mealId);
+    const foodIds = mealFoods.map((mf) => mf.foodId);
+    const foods = await getAllFoodsByIds(foodIds);
+
+    if (!foods) {
+        return undefined;
+    }
+
+    const foodsMap = new Map(foods.map((f) => [f.id, f]));
+    const foodsWithMacros = mealFoods.map((mealFood) => {
+        const food = foodsMap.get(mealFood.foodId);
+        if (!food) {
+            throw new Error(`Food with id ${mealFood.foodId} not found`);
+        }
+
+        // Calculate macros for the specified grams (food macros are per 100g)
+        const factor = mealFood.grams / 100;
+        const calculatedMacros = {
+            calories: food.calories * factor,
+            carbohydrate: food.totalCarbohydrate * factor,
+            fat: food.totalFat * factor,
+            protein: food.protein * factor,
+        };
+
+        return {
+            ...mealFood,
+            calculatedMacros,
+            food,
+        };
+    });
+
+    const totalMacros = foodsWithMacros.reduce(
+        (acc, item) => ({
+            calories: acc.calories + item.calculatedMacros.calories,
+            carbohydrate: acc.carbohydrate + item.calculatedMacros.carbohydrate,
+            fat: acc.fat + item.calculatedMacros.fat,
+            protein: acc.protein + item.calculatedMacros.protein,
+        }),
+        { calories: 0, carbohydrate: 0, fat: 0, protein: 0 }
+    );
+
+    return {
+        ...meal,
+        foods: foodsWithMacros,
+        totalMacros,
+    };
+};
+
+export const getAllMealsWithFoodsByUserId = async (userId: number): Promise<MealWithFoodsType[]> => {
+    const meals = await getAllMealsByUserId(userId);
+    const mealsWithFoods = await Promise.all(meals.map((meal) => getMealWithFoods(meal.id)));
+    return mealsWithFoods.filter((meal): meal is MealWithFoodsType => meal !== undefined);
+};
+
 export const getFood = async (id: number): Promise<FoodReturnType | undefined> => {
     return database.food
         .where({ id })
@@ -1927,6 +2061,22 @@ export const updateWorkoutEvent = async (id: number, workoutEvent: WorkoutEventI
     return database.workoutEvents.update(id, updatedWorkoutEvent);
 };
 
+export const updateMeal = async (id: number, meal: MealInsertType): Promise<number> => {
+    const existingMeal = await getMeal(id);
+    if (!existingMeal) {
+        throw new Error('Meal not found');
+    }
+
+    return database.meal.update(id, {
+        ...meal,
+        createdAt: existingMeal.createdAt,
+    });
+};
+
+export const updateMealFood = async (id: number, mealFood: MealFoodInsertType): Promise<number> => {
+    return database.mealFood.update(id, mealFood);
+};
+
 export const updateFood = async (id: number, food: FoodInsertType): Promise<number> => {
     const existingFood = await getFood(id);
 
@@ -1977,6 +2127,19 @@ export const deleteUserMeasurements = async (id: number): Promise<void> => {
 
 export const deleteSetOnly = async (id: number): Promise<void> => {
     await database.sets.delete(id);
+};
+
+export const deleteMeal = async (id: number): Promise<void> => {
+    const deletedAt = getCurrentTimestampISOString();
+    await database.meal.update(id, { deletedAt });
+    // Also soft delete all meal foods
+    await deleteMealFoodsByMealId(id);
+};
+
+export const deleteMealFoodsByMealId = async (mealId: number): Promise<void> => {
+    const deletedAt = getCurrentTimestampISOString();
+    const mealFoods = await getMealFoodsByMealId(mealId);
+    await Promise.all(mealFoods.map((mealFood) => database.mealFood.update(mealFood.id, { deletedAt })));
 };
 
 export const deleteUserNutrition = async (id: number): Promise<void> => {
@@ -2602,6 +2765,54 @@ export const createFoodTable = async (): Promise<void> => {
     }
 };
 
+export const createMealTable = async (): Promise<void> => {
+    const currentVersion = await getLatestVersion();
+    if (currentVersion && currentVersion < packageJson.version) {
+        if (database.isOpen()) {
+            database.close();
+        }
+
+        // Note: version numbers must be sequential, adjust if needed
+        database.version(8).stores({
+            meal: [
+                '++id',
+                'userId',
+                'name',
+                'createdAt',
+                'deletedAt',
+            ].join(', '),
+        });
+
+        if (!database.isOpen()) {
+            database.open();
+        }
+    }
+};
+
+export const createMealFoodTable = async (): Promise<void> => {
+    const currentVersion = await getLatestVersion();
+    if (currentVersion && currentVersion < packageJson.version) {
+        if (database.isOpen()) {
+            database.close();
+        }
+
+        database.version(11).stores({
+            mealFood: [
+                '++id',
+                'mealId',
+                'foodId',
+                'grams',
+                'createdAt',
+                'deletedAt',
+            ].join(', '),
+        });
+
+        if (!database.isOpen()) {
+            database.open();
+        }
+    }
+};
+
 export const createFitnessGoalsTable = async (): Promise<void> => {
     const currentVersion = await getLatestVersion();
     if (currentVersion && currentVersion < packageJson.version) {
@@ -2678,6 +2889,7 @@ const commonFunctions = getCommonFunctions({
     getSetsByWorkoutId,
     getUser,
     getWorkoutByIdWithTrashed,
+    updateChatMessage,
     updateSet,
     updateWorkout,
 });

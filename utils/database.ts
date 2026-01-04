@@ -19,6 +19,7 @@ import {
     BioReturnType,
     ChatInsertType,
     ChatReturnType,
+    EatingPhaseType,
     ExerciseInsertType,
     ExerciseReturnType,
     ExerciseVolumeType,
@@ -27,6 +28,11 @@ import {
     FitnessGoalsReturnType,
     FoodInsertType,
     FoodReturnType,
+    MealFoodInsertType,
+    MealFoodReturnType,
+    MealInsertType,
+    MealReturnType,
+    MealWithFoodsType,
     MetricsForUserType,
     MigrationReturnType,
     OneRepMaxReturnType,
@@ -329,6 +335,27 @@ const createTables = (database: SQLiteDatabase) => {
             "'deletedAt' TEXT NULLABLE",
         ],
         name: 'UserNutrition',
+    },
+    {
+        columns: [
+            "'id' INTEGER PRIMARY KEY AUTOINCREMENT",
+            "'userId' INTEGER",
+            "'name' TEXT",
+            "'createdAt' TEXT DEFAULT CURRENT_TIMESTAMP",
+            "'deletedAt' TEXT NULLABLE",
+        ],
+        name: 'Meal',
+    },
+    {
+        columns: [
+            "'id' INTEGER PRIMARY KEY AUTOINCREMENT",
+            "'mealId' INTEGER",
+            "'foodId' INTEGER",
+            "'grams' REAL",
+            "'createdAt' TEXT DEFAULT CURRENT_TIMESTAMP",
+            "'deletedAt' TEXT NULLABLE",
+        ],
+        name: 'MealFood',
     }];
 
     const createTableStatements = tables.map(
@@ -869,6 +896,43 @@ export const addFood = async (food: FoodInsertType): Promise<number> => {
         food.fiber || 0,
         food.sugar || 0,
         food.isFavorite ? 1 : 0,
+        createdAt
+        );
+
+        return result.lastInsertRowId;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const addMeal = async (meal: MealInsertType): Promise<number> => {
+    const createdAt = meal.createdAt || getCurrentTimestampISOString();
+    try {
+        const result = database.runSync(`
+            INSERT INTO "Meal" ("userId", "name", "createdAt")
+            VALUES (?, ?, ?)
+            `,
+        meal.userId,
+        meal.name,
+        createdAt
+        );
+
+        return result.lastInsertRowId;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const addMealFood = async (mealFood: MealFoodInsertType): Promise<number> => {
+    const createdAt = mealFood.createdAt || getCurrentTimestampISOString();
+    try {
+        const result = database.runSync(`
+            INSERT INTO "MealFood" ("mealId", "foodId", "grams", "createdAt")
+            VALUES (?, ?, ?, ?)
+            `,
+        mealFood.mealId,
+        mealFood.foodId,
+        mealFood.grams,
         createdAt
         );
 
@@ -2299,6 +2363,30 @@ export const getTotalUserNutritionCount = async (): Promise<number> => {
     }
 };
 
+export const getMeal = async (id: number): Promise<MealReturnType | undefined> => {
+    try {
+        return database.getFirstSync<MealReturnType>('SELECT * FROM "Meal" WHERE "id" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')', [id]) ?? undefined;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const getAllMealsByUserId = async (userId: number): Promise<MealReturnType[]> => {
+    try {
+        return database.getAllSync<MealReturnType>('SELECT * FROM "Meal" WHERE "userId" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\') ORDER BY "createdAt" DESC', [userId]);
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const getMealFoodsByMealId = async (mealId: number): Promise<MealFoodReturnType[]> => {
+    try {
+        return database.getAllSync<MealFoodReturnType>('SELECT * FROM "MealFood" WHERE "mealId" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')', [mealId]);
+    } catch (error) {
+        throw error;
+    }
+};
+
 export const getFood = async (id: number): Promise<FoodReturnType | undefined> => {
     try {
         return database.getFirstSync<FoodReturnType>('SELECT * FROM "Food" WHERE "id" = ? AND ("deletedAt" IS NULL OR "deletedAt" = \'\')', [id]) ?? undefined;
@@ -2324,6 +2412,74 @@ export const getAllFoodsByIds = async (ids: number[]): Promise<FoodReturnType[] 
             WHERE "id" IN (${ids.join(',')})
             AND ("deletedAt" IS NULL OR "deletedAt" = '')
         `);
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const getMealWithFoods = async (mealId: number): Promise<MealWithFoodsType | undefined> => {
+    try {
+        const meal = await getMeal(mealId);
+        if (!meal) {
+            return undefined;
+        }
+
+        const mealFoods = await getMealFoodsByMealId(mealId);
+        const foodIds = mealFoods.map((mf) => mf.foodId);
+        const foods = await getAllFoodsByIds(foodIds);
+
+        if (!foods) {
+            return undefined;
+        }
+
+        const foodsMap = new Map(foods.map((f) => [f.id, f]));
+        const foodsWithMacros = mealFoods.map((mealFood) => {
+            const food = foodsMap.get(mealFood.foodId);
+            if (!food) {
+                throw new Error(`Food with id ${mealFood.foodId} not found`);
+            }
+
+            // Calculate macros for the specified grams (food macros are per 100g)
+            const factor = mealFood.grams / 100;
+            const calculatedMacros = {
+                calories: food.calories * factor,
+                carbohydrate: food.totalCarbohydrate * factor,
+                fat: food.totalFat * factor,
+                protein: food.protein * factor,
+            };
+
+            return {
+                ...mealFood,
+                calculatedMacros,
+                food,
+            };
+        });
+
+        const totalMacros = foodsWithMacros.reduce(
+            (acc, item) => ({
+                calories: acc.calories + item.calculatedMacros.calories,
+                carbohydrate: acc.carbohydrate + item.calculatedMacros.carbohydrate,
+                fat: acc.fat + item.calculatedMacros.fat,
+                protein: acc.protein + item.calculatedMacros.protein,
+            }),
+            { calories: 0, carbohydrate: 0, fat: 0, protein: 0 }
+        );
+
+        return {
+            ...meal,
+            foods: foodsWithMacros,
+            totalMacros,
+        };
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const getAllMealsWithFoodsByUserId = async (userId: number): Promise<MealWithFoodsType[]> => {
+    try {
+        const meals = await getAllMealsByUserId(userId);
+        const mealsWithFoods = await Promise.all(meals.map((meal) => getMealWithFoods(meal.id)));
+        return mealsWithFoods.filter((meal): meal is MealWithFoodsType => meal !== undefined);
     } catch (error) {
         throw error;
     }
@@ -2692,6 +2848,33 @@ export const updateWorkoutEvent = async (
     }
 };
 
+export const updateMeal = async (id: number, meal: MealInsertType): Promise<number> => {
+    const existingMeal = await getMeal(id);
+    if (!existingMeal) {
+        throw new Error('Meal not found');
+    }
+
+    try {
+        database.runSync(`
+            UPDATE "Meal" SET "name" = ?, "userId" = ? WHERE "id" = ?
+        `, [meal.name, meal.userId, id]);
+        return id;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const updateMealFood = async (id: number, mealFood: MealFoodInsertType): Promise<number> => {
+    try {
+        database.runSync(`
+            UPDATE "MealFood" SET "mealId" = ?, "foodId" = ?, "grams" = ? WHERE "id" = ?
+        `, [mealFood.mealId, mealFood.foodId, mealFood.grams, id]);
+        return id;
+    } catch (error) {
+        throw error;
+    }
+};
+
 export const updateFood = async (id: number, food: FoodInsertType): Promise<number> => {
     const existingFood = await getFood(id);
 
@@ -2761,6 +2944,26 @@ export const deleteUserMeasurements = async (id: number): Promise<void> => {
 
 export const deleteSetOnly = async (id: number): Promise<void> => {
     database.runSync('DELETE FROM "Set" WHERE "id" = ?', [id]);
+};
+
+export const deleteMeal = async (id: number): Promise<void> => {
+    try {
+        const deletedAt = getCurrentTimestampISOString();
+        database.runSync('UPDATE "Meal" SET "deletedAt" = ? WHERE "id" = ?', [deletedAt, id]);
+        // Also soft delete all meal foods
+        await deleteMealFoodsByMealId(id);
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const deleteMealFoodsByMealId = async (mealId: number): Promise<void> => {
+    try {
+        const deletedAt = getCurrentTimestampISOString();
+        database.runSync('UPDATE "MealFood" SET "deletedAt" = ? WHERE "mealId" = ?', [deletedAt, mealId]);
+    } catch (error) {
+        throw error;
+    }
 };
 
 export const deleteUserNutrition = async (id: number): Promise<void> => {
@@ -3679,6 +3882,41 @@ export const createFoodTable = async (): Promise<void> => {
     }
 };
 
+export const createMealTable = async (): Promise<void> => {
+    const currentVersion = await getLatestVersion();
+    if (currentVersion && currentVersion < packageJson.version) {
+        if (!(await tableExists('Meal'))) {
+            await database.execAsync(`
+                CREATE TABLE "Meal" (
+                    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+                    "userId" INTEGER,
+                    "name" TEXT,
+                    "createdAt" TEXT DEFAULT CURRENT_TIMESTAMP,
+                    "deletedAt" TEXT
+                );
+            `);
+        }
+    }
+};
+
+export const createMealFoodTable = async (): Promise<void> => {
+    const currentVersion = await getLatestVersion();
+    if (currentVersion && currentVersion < packageJson.version) {
+        if (!(await tableExists('MealFood'))) {
+            await database.execAsync(`
+                CREATE TABLE "MealFood" (
+                    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+                    "mealId" INTEGER,
+                    "foodId" INTEGER,
+                    "grams" REAL,
+                    "createdAt" TEXT DEFAULT CURRENT_TIMESTAMP,
+                    "deletedAt" TEXT
+                );
+            `);
+        }
+    }
+};
+
 export const createFitnessGoalsTable = async (): Promise<void> => {
     const currentVersion = await getLatestVersion();
     if (currentVersion && currentVersion < packageJson.version) {
@@ -3743,6 +3981,7 @@ const commonFunctions = getCommonFunctions({
     getSetsByWorkoutId,
     getUser,
     getWorkoutByIdWithTrashed,
+    updateChatMessage,
     updateSet,
     updateWorkout,
 });

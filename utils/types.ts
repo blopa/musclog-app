@@ -320,6 +320,49 @@ export type LineChartDataType = {
     y: number;
 };
 
+export type MealFoodInsertType = {
+    createdAt?: string;
+    deletedAt?: string;
+    foodId: number;
+    grams: number;
+    id?: number;
+    mealId: number;
+};
+
+export type MealFoodReturnType = Omit<MealFoodInsertType, 'id'> & {
+    id: number;
+};
+
+export type MealInsertType = {
+    createdAt?: string;
+    deletedAt?: string;
+    id?: number;
+    name: string;
+    userId: number;
+};
+
+export type MealReturnType = Omit<MealInsertType, 'id'> & {
+    id: number;
+};
+
+export type MealWithFoodsType = MealReturnType & {
+    foods: (MealFoodReturnType & {
+        calculatedMacros: {
+            calories: number;
+            carbohydrate: number;
+            fat: number;
+            protein: number;
+        };
+        food: FoodReturnType;
+    })[];
+    totalMacros: {
+        calories: number;
+        carbohydrate: number;
+        fat: number;
+        protein: number;
+    };
+};
+
 export type MetricsForUserType = Omit<UserMetricsDecryptedReturnType, 'createdAt' | 'dataId' | 'deletedAt' | 'id' | 'userId'> & {
     latestId: number;
 };
