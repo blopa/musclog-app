@@ -56,6 +56,8 @@ import {
     countExercises,
     createFitnessGoalsTable,
     createFoodTable,
+    createMealFoodTable,
+    createMealTable,
     createMigrationsTable,
     createNewWorkoutTables,
     getUser,
@@ -231,6 +233,8 @@ function RootLayout() {
             await addMealTypeGramsToUserNutritionTable();
             await createFoodTable();
             await createFitnessGoalsTable();
+            await createMealTable();
+            await createMealFoodTable();
             await createMigrationsTable();
             await addIsFavoriteToFoodTable();
             // await runMigrations();

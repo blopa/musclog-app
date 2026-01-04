@@ -1,7 +1,7 @@
 import { fetch } from 'expo/fetch';
 import i18n from 'i18next';
 
-import { getFoodByProductCode, searchFoodByName } from '@/utils/database';
+import { getAllFoods, getFoodByProductCode, searchFoodByName } from '@/utils/database';
 import { fetchFoodSpreadsheet } from '@/utils/fetchSpreadsheetFoodData';
 import { normalizeText } from '@/utils/string';
 import {
@@ -131,8 +131,11 @@ export const fetchFoodData = async (query: string, page: number): Promise<{ page
 
     try {
         if (page === 1) {
-            const savedFood = await searchFoodByName(query);
-            if (savedFood) {
+            // If query is empty, get all foods; otherwise search by name
+            const savedFood = query.trim() === ''
+                ? await getAllFoods()
+                : await searchFoodByName(query);
+            if (savedFood && savedFood.length > 0) {
                 result.products = [
                     ...result.products,
                     ...savedFood.map((food) => ({

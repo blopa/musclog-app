@@ -18,7 +18,7 @@ async function listModels() {
     try {
         console.log('Fetching available models...\n');
         const models = await openai.models.list();
-        
+
         console.log('Available models:');
         for await (const model of models) {
             console.log(`  - ${model.id}`);

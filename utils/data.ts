@@ -7,6 +7,7 @@ import { generateHash, safeToFixed } from '@/utils/string';
 import {
     AggregatedUserMetricsNutritionType,
     ExtendedLineChartDataType,
+    TotalMacrosType,
     UserMetricsDecryptedReturnType,
     UserNutritionDecryptedReturnType,
 } from '@/utils/types';
@@ -492,6 +493,49 @@ export const normalizeMacrosByGrams = (macros: MacrosToNormalize): MacrosToNorma
         kj: macros.kj ? macros.kj * multiplier : convertKcalToKj(macros.kcal),
         protein: macros.protein * multiplier,
     };
+};
+
+export const calculateMealFoodMacros = (food: { calories: number; protein: number; totalCarbohydrate: number; totalFat: number }, grams: number): {
+    calories: number;
+    carbohydrate: number;
+    fat: number;
+    protein: number;
+} => {
+    // Food macros are per 100g, so calculate factor
+    const factor = grams / 100;
+    return {
+        calories: food.calories * factor,
+        carbohydrate: food.totalCarbohydrate * factor,
+        fat: food.totalFat * factor,
+        protein: food.protein * factor,
+    };
+};
+
+export const calculateMealMacros = (
+    mealFoods: Array<{ foodId: number; grams: number }>,
+    foods: Array<{ calories: number; id: number; protein: number; totalCarbohydrate: number; totalFat: number }>
+): TotalMacrosType => {
+    const foodsMap = new Map(foods.map((f) => [f.id, f]));
+
+    return mealFoods.reduce(
+        (acc, mealFood) => {
+            const food = foodsMap.get(mealFood.foodId);
+            if (!food) {
+                return acc;
+            }
+
+            const macros = calculateMealFoodMacros(food, mealFood.grams);
+            return {
+                totalCalories: acc.totalCalories + macros.calories,
+                totalCarbs: acc.totalCarbs + macros.carbohydrate,
+                totalFats: acc.totalFats + macros.fat,
+                totalProteins: acc.totalProteins + macros.protein,
+                totalSaturatedFats: acc.totalSaturatedFats,
+                totalTransFats: acc.totalTransFats,
+            };
+        },
+        { totalCalories: 0, totalCarbs: 0, totalFats: 0, totalProteins: 0, totalSaturatedFats: 0, totalTransFats: 0 }
+    );
 };
 
 export function computeNutritionMetricsPeriodStats(

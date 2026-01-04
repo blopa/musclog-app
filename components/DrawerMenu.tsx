@@ -18,6 +18,7 @@ import Chat from '@/app/chat';
 import CreateExercise from '@/app/createExercise';
 import CreateFitnessGoals from '@/app/createFitnessGoals';
 import CreateFood from '@/app/createFood';
+import CreateMeal from '@/app/createMeal';
 import CreateRecentWorkout from '@/app/createRecentWorkout';
 import CreateUserMeasurements from '@/app/createUserMeasurements';
 import CreateUserMetrics from '@/app/createUserMetrics';
@@ -29,6 +30,7 @@ import FoodSearch from '@/app/foodSearch';
 import Index from '@/app/index';
 import ListExercises from '@/app/listExercises';
 import ListFitnessGoals from '@/app/listFitnessGoals';
+import ListMeals from '@/app/listMeals';
 import ListUserMeasurements from '@/app/listUserMeasurements';
 import ListUserMetrics from '@/app/listUserMetrics';
 import ListUserNutrition from '@/app/listUserNutrition';
@@ -121,6 +123,7 @@ export default function DrawerMenu() {
             // { component: TestScreen, label: 'test', name: 'test' },
             { component: ListWorkouts, label: 'workouts', name: 'listWorkouts' },
             { component: FoodLog, label: 'food_log', name: 'foodLog' },
+            { component: ListMeals, label: 'track_meals', name: 'listMeals' },
             { component: RecentWorkouts, label: 'recent_workouts', name: 'recentWorkouts' },
             { component: UserMetricsCharts, hidden: !showUserMetrics, label: 'user_metrics_charts', name: 'userMetricsCharts' },
             { component: Settings, label: 'settings', name: 'settings' },
@@ -144,6 +147,7 @@ export default function DrawerMenu() {
             { component: FoodSearch, hidden: true, label: 'food_search', name: 'foodSearch' },
             { component: FoodDetails, hidden: true, label: 'food_details', name: 'foodDetails' },
             { component: CreateFood, hidden: true, label: 'create_food', name: 'createFood' },
+            { component: CreateMeal, hidden: true, label: 'create_meal', name: 'createMeal' },
             { component: ListFitnessGoals, hidden: true, label: 'fitness_goals', name: 'listFitnessGoals' },
             { component: CreateFitnessGoals, hidden: true, label: 'create_fitness_goals', name: 'createFitnessGoals' },
             { component: ListExercises, hidden: true, label: 'exercises', name: 'listExercises' },
