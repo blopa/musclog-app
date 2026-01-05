@@ -1,5 +1,5 @@
 import { View, Text, ScrollView, Pressable } from 'react-native';
-import { ChevronLeft, ChevronRight, Calendar, Plus, ScanLine, Grid3x3 } from 'lucide-react-native';
+import { ChevronLeft, ChevronRight, Calendar, ScanLine, Grid3x3 } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
@@ -9,6 +9,7 @@ import { MasterLayout } from '../components/MasterLayout';
 import { MacroCard } from '../components/MacroCard';
 import { FoodItemCard } from '../components/FoodItemCard';
 import { MealSection } from '../components/MealSection';
+import { FloatingActionButton } from '../components/FloatingActionButton';
 
 const FOOD_DATA = {
   date: 'Today, Oct 24',
@@ -219,16 +220,8 @@ export default function FoodScreen() {
           </View>
         </ScrollView>
 
-        {/* Floating Add Button */}
-        <Pressable className="absolute bottom-28 right-6 h-16 w-16 rounded-full shadow-lg">
-          <LinearGradient
-            colors={theme.colors.gradients.accent}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            className="h-full w-full items-center justify-center rounded-full shadow-lg shadow-emerald-500/50">
-            <Plus size={theme.iconSize.lg} color="#000000" strokeWidth={3} />
-          </LinearGradient>
-        </Pressable>
+        {/* Floating Action Button */}
+        <FloatingActionButton position="right" bottom={120} />
       </View>
     </MasterLayout>
   );

@@ -115,7 +115,7 @@ export default function WorkoutsScreen() {
         </ScrollView>
 
         {/* Floating Action Button */}
-        <FloatingActionButton position="right" bottom={100} />
+        <FloatingActionButton position="right" bottom={120} />
       </View>
     </MasterLayout>
   );
