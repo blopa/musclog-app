@@ -1,5 +1,5 @@
 {
-  "name": "my-expo-app",
+  "name": "musclog",
   "version": "1.0.0",
   "scripts": {
     "android": "expo start --android",
@@ -26,9 +26,10 @@
     "eslint": "^9.25.1",
     "eslint-config-expo": "~10.0.0",
     "eslint-config-prettier": "^10.1.2",
+    "npm-check-updates": "^19.3.0",
     "prettier": "^3.2.5",
-    "tailwindcss": "^3.4.0",
     "prettier-plugin-tailwindcss": "^0.5.11",
+    "tailwindcss": "^3.4.0",
     "typescript": "~5.9.2"
   },
   "main": "node_modules/expo/AppEntry.js",
