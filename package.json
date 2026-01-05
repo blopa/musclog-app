@@ -30,8 +30,11 @@
   "dependencies": {
     "date-fns": "^4.1.0",
     "expo": "^54.0.30",
+    "expo-camera": "~17.0.10",
+    "expo-health-connect": "^0.1.1",
     "expo-linear-gradient": "^15.0.8",
     "expo-localization": "~17.0.8",
+    "expo-router": "~6.0.21",
     "expo-status-bar": "~3.0.9",
     "i18next": "^25.7.3",
     "intl-pluralrules": "^2.0.1",
