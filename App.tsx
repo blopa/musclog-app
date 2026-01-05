@@ -1,8 +1,9 @@
 import { View, Text, Image, Pressable, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Bell, Dumbbell, UtensilsCrossed, ChevronRight, Flame } from 'lucide-react-native';
+import { Bell, Dumbbell, UtensilsCrossed, Flame } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { MasterLayout } from './components/MasterLayout';
+import { CircularArrow } from './components/CircularArrow';
 
 import './lang/lang';
 import './global.css';
@@ -233,9 +234,7 @@ export default function App() {
                     )}
                   </View>
                 </View>
-                <View className="h-8 w-8 items-center justify-center rounded-full bg-[#243d37]">
-                  <ChevronRight size={18} color="#9ca3af" />
-                </View>
+                <CircularArrow />
               </Pressable>
             ))}
           </View>
@@ -278,9 +277,7 @@ export default function App() {
                     </Text>
                   </View>
                 </View>
-                <View className="h-8 w-8 items-center justify-center rounded-full bg-[#243d37]">
-                  <ChevronRight size={18} color="#9ca3af" />
-                </View>
+                <CircularArrow />
               </Pressable>
             ))}
           </View>
