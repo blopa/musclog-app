@@ -1,11 +1,11 @@
 import { View, Text, Image, Pressable, ScrollView } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Bell } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { MasterLayout } from './components/MasterLayout';
 import { RecentWorkoutsCard } from './components/RecentWorkoutsCard';
 import { CircularArrow } from './components/CircularArrow';
 import { ActionButton } from './components/ActionButton';
+import { DailySummaryCard } from './components/DailySummaryCard';
 
 import './lang/lang';
 import './global.css';
@@ -77,10 +77,6 @@ export default function App() {
   const { t } = useTranslation();
   const { user, dailySummary, recentWorkouts, recentFoods } = PAGE_DATA;
 
-  // Calculate progress percentages
-  const caloriesProgress = (dailySummary.calories.consumed / dailySummary.calories.goal) * 100;
-  const activityProgress = (dailySummary.activity.minutes / dailySummary.activity.goal) * 100;
-
   return (
     <MasterLayout>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
@@ -107,66 +103,11 @@ export default function App() {
         </View>
 
         {/* Daily Summary Card */}
-        <View className="mx-6 mb-6">
-          <LinearGradient
-            colors={dailySummary.gradientColors}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            style={{ borderRadius: 24, padding: 24 }}>
-            <View className="mb-6 flex-row items-start justify-between">
-              <Text className="text-sm font-semibold tracking-wide text-white/90">
-                {t('home.dailySummary.title')}
-              </Text>
-              <View className="rounded-full bg-white/25 px-4 py-1.5">
-                <Text className="text-xs font-medium text-white">{t('common.today')}</Text>
-              </View>
-            </View>
-
-            <View className="flex-row gap-8">
-              {/* Calories */}
-              <View className="flex-1">
-                <View className="mb-2 flex-row items-baseline gap-1">
-                  <Text className="text-5xl font-bold text-white">
-                    {dailySummary.calories.consumed.toLocaleString()}
-                  </Text>
-                  <Text className="text-sm uppercase text-white/70">{t('common.kcal')}</Text>
-                </View>
-                <View className="mb-2">
-                  <View className="h-2 overflow-hidden rounded-full bg-white/30">
-                    <View
-                      className="h-full rounded-full bg-white"
-                      style={{ width: `${caloriesProgress}%` }}
-                    />
-                  </View>
-                </View>
-                <Text className="text-sm text-white/70">
-                  {dailySummary.calories.remaining} {t('common.remaining')}
-                </Text>
-              </View>
-
-              {/* Activity Minutes */}
-              <View className="flex-1">
-                <View className="mb-2 flex-row items-baseline gap-1">
-                  <Text className="text-5xl font-bold text-white">
-                    {dailySummary.activity.minutes}
-                  </Text>
-                  <Text className="text-sm uppercase text-white/70">{t('common.min')}</Text>
-                </View>
-                <View className="mb-2">
-                  <View className="h-2 overflow-hidden rounded-full bg-white/30">
-                    <View
-                      className="h-full rounded-full bg-white"
-                      style={{ width: `${activityProgress}%` }}
-                    />
-                  </View>
-                </View>
-                <Text className="text-sm text-white/70">
-                  {t('common.goal')}: {dailySummary.activity.goal} {t('common.min')}
-                </Text>
-              </View>
-            </View>
-          </LinearGradient>
-        </View>
+        <DailySummaryCard
+          calories={dailySummary.calories}
+          activity={dailySummary.activity}
+          gradientColors={dailySummary.gradientColors}
+        />
 
         {/* Action Buttons */}
         <View className="mx-6 mb-8 flex-row gap-4">
