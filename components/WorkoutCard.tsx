@@ -32,7 +32,9 @@ export function WorkoutCard({
             {exerciseCount} Exercises • {duration}
           </Text>
         </View>
-        <View className="ml-4 h-20 w-20 overflow-hidden rounded-2xl bg-[#1a3d35]">
+        <View
+          className="ml-4 h-20 w-20 overflow-hidden rounded-2xl"
+          style={{ backgroundColor: theme.colors.background.iconDark }}>
           <Image source={image} className="h-full w-full" resizeMode="cover" />
         </View>
       </View>

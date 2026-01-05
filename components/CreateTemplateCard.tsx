@@ -11,7 +11,9 @@ export function CreateTemplateCard({ onPress }: CreateTemplateCardProps) {
     <Pressable
       className="mt-6 items-center justify-center gap-4 rounded-3xl border-2 border-dashed border-gray-600/40 p-8"
       onPress={onPress}>
-      <View className="h-12 w-12 items-center justify-center rounded-full bg-[#1a3d35]">
+      <View
+        className="h-12 w-12 items-center justify-center rounded-full"
+        style={{ backgroundColor: theme.colors.background.iconDark }}>
         <Plus size={theme.iconSize.md} color={theme.colors.text.secondary} />
       </View>
       <Text className="text-center text-text-secondary">Create from Empty Template</Text>

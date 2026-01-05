@@ -18,6 +18,13 @@ export const theme = {
       screen: '#0a1f1a', // Screen backgrounds
       overlay: '#1a2f2a', // Overlay backgrounds
       filterTab: '#0f2f27', // Filter tab background
+      iconDark: '#1a3d35', // Dark icon backgrounds
+      iconDarker: '#243d37', // Darker icon backgrounds
+      iconDarkest: '#1a2420', // Darkest icon backgrounds
+      workoutIcon: '#16a34a', // Workout action button icon background
+      imageLight: '#d4b5a0', // Light image background
+      imageMedium: '#8b7d6b', // Medium image background
+      notificationCard: '#1a3d2f', // Notification card gradient start
     },
 
     // Text colors
@@ -66,6 +73,8 @@ export const theme = {
       card: ['#1a2520', '#0f1812'] as const,
       button: ['#1a3530', '#0f1f1a'] as const,
       progress: ['#6366f1', '#2dd4bf', '#34d399'] as const,
+      workoutsTitle: ['#a78bfa', '#60a5fa', '#34d399'] as const,
+      notification: ['#1a3d2f', '#0f2419'] as const,
     },
   },
 

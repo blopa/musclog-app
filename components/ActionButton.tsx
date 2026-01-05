@@ -13,7 +13,7 @@ type ActionButtonProps = {
 const variantConfig = {
   workout: {
     bgColor: 'bg-accent-primary',
-    iconBgColor: 'bg-[#16a34a]',
+    iconBgColor: theme.colors.background.workoutIcon,
     icon: Dumbbell,
     iconColor: theme.colors.background.primary,
     textColor: 'text-bg-primary',
@@ -21,7 +21,7 @@ const variantConfig = {
   },
   food: {
     bgColor: 'bg-bg-overlay',
-    iconBgColor: 'bg-[#243d37]',
+    iconBgColor: theme.colors.background.iconDarker,
     icon: UtensilsCrossed,
     iconColor: theme.colors.text.primary,
     textColor: 'text-text-primary',
@@ -37,7 +37,9 @@ export function ActionButton({ variant, label, onPress }: ActionButtonProps) {
     <Pressable
       className={`relative min-h-[180px] flex-1 justify-between overflow-hidden rounded-3xl ${config.bgColor} p-6`}
       onPress={onPress}>
-      <View className={`h-12 w-12 items-center justify-center rounded-full ${config.iconBgColor}`}>
+      <View
+        className="h-12 w-12 items-center justify-center rounded-full"
+        style={{ backgroundColor: config.iconBgColor }}>
         <Icon size={24} color={config.iconColor} strokeWidth={2.5} />
       </View>
       <Text className={`text-2xl font-bold leading-tight ${config.textColor}`}>{label}</Text>

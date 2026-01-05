@@ -4,7 +4,9 @@ import { theme } from '../theme';
 
 export function CircularArrow() {
   return (
-    <View className="h-8 w-8 items-center justify-center rounded-full bg-[#243d37]">
+    <View
+      className="h-8 w-8 items-center justify-center rounded-full"
+      style={{ backgroundColor: theme.colors.background.iconDarker }}>
       <ChevronRight size={18} color={theme.colors.text.secondary} />
     </View>
   );

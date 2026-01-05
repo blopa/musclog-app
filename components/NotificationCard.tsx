@@ -32,7 +32,8 @@ export function NotificationCard({
     <View className="flex-row gap-4">
       {/* Icon */}
       <View
-        className={`${iconBg} h-14 w-14 flex-shrink-0 items-center justify-center rounded-full`}>
+        className="h-14 w-14 flex-shrink-0 items-center justify-center rounded-full"
+        style={{ backgroundColor: iconBg }}>
         {icon}
       </View>
 
@@ -71,7 +72,7 @@ export function NotificationCard({
   if (isAiInsight) {
     return (
       <LinearGradient
-        colors={['#1a3d2f', theme.colors.background.cardDark]}
+        colors={theme.colors.gradients.notification}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         className="rounded-3xl border-2 border-border-accent p-5">

@@ -26,7 +26,7 @@ const PAGE_DATA = {
       minutes: 45,
       goal: 90,
     },
-    gradientColors: ['#5b7cf5', '#4a9d8f', '#47d9ba'] as const,
+    gradientColors: theme.colors.gradients.primary,
   },
   recentWorkouts: [
     {
@@ -37,7 +37,7 @@ const PAGE_DATA = {
       calories: 450,
       prs: 4,
       image: require('../assets/icon.png'),
-      imageBgColor: '#d4b5a0',
+      imageBgColor: theme.colors.background.imageLight,
     },
     {
       id: '2',
@@ -47,7 +47,7 @@ const PAGE_DATA = {
       calories: 310,
       prs: null,
       image: require('../assets/icon.png'),
-      imageBgColor: '#8b7d6b',
+      imageBgColor: theme.colors.background.imageMedium,
     },
   ],
   recentFoods: [
@@ -84,7 +84,9 @@ export default function HomeScreen() {
         <View className="flex-row items-center justify-between px-6 py-6">
           <View className="flex-row items-center gap-3">
             <View className="relative">
-              <View className="h-14 w-14 overflow-hidden rounded-full border-4 border-accent-primary bg-[#d4b5a0]">
+              <View
+                className="h-14 w-14 overflow-hidden rounded-full border-4 border-accent-primary"
+                style={{ backgroundColor: theme.colors.background.imageLight }}>
                 <Image source={user.avatar} className="h-full w-full" resizeMode="cover" />
               </View>
               <View className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-bg-primary bg-accent-primary" />

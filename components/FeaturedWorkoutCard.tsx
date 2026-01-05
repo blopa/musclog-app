@@ -35,7 +35,9 @@ export function FeaturedWorkoutCard({
             {exerciseCount} Exercises • {duration}
           </Text>
         </View>
-        <View className="ml-4 h-20 w-20 overflow-hidden rounded-2xl bg-[#1a3d35]">
+        <View
+          className="ml-4 h-20 w-20 overflow-hidden rounded-2xl"
+          style={{ backgroundColor: theme.colors.background.iconDark }}>
           <Image source={image} className="h-full w-full opacity-70" resizeMode="cover" />
         </View>
       </View>
@@ -43,7 +45,8 @@ export function FeaturedWorkoutCard({
       <View className="flex-row gap-3">
         <StartWorkoutButton variant="primary" onPress={onStart} />
         <Pressable
-          className="w-14 items-center justify-center rounded-2xl bg-[#1a3d35]"
+          className="w-14 items-center justify-center rounded-2xl"
+          style={{ backgroundColor: theme.colors.background.iconDark }}
           onPress={onMore}>
           <MoreVertical size={theme.iconSize.sm} color={theme.colors.text.secondary} />
         </Pressable>

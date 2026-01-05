@@ -18,7 +18,7 @@ export default function NotificationsScreen() {
         id: 1,
         type: 'ai-insight' as const,
         icon: <Sparkles size={theme.iconSize.md} color={theme.colors.text.primary} />,
-        iconBg: 'bg-blue-600',
+        iconBg: theme.colors.status.info,
         title: 'AI Insight',
         description:
           'Based on your recent lifts, try increasing your protein intake by 15g today for optimal recovery.',
@@ -29,7 +29,7 @@ export default function NotificationsScreen() {
         id: 2,
         type: 'workout-reminder' as const,
         icon: <Dumbbell size={theme.iconSize.md} color={theme.colors.status.warning} />,
-        iconBg: 'bg-[#1a2420]',
+        iconBg: theme.colors.background.iconDarkest,
         title: 'Workout Reminder',
         description: (
           <Text className="text-[15px] leading-relaxed text-gray-300">
@@ -49,7 +49,7 @@ export default function NotificationsScreen() {
         id: 3,
         type: 'workout-completed' as const,
         icon: <CheckCircle2 size={theme.iconSize.md} color={theme.colors.accent.secondary} />,
-        iconBg: 'bg-[#1a2420]',
+        iconBg: theme.colors.background.iconDarkest,
         title: 'Workout Completed!',
         description: (
           <Text className="text-[15px] leading-relaxed text-gray-300">
@@ -63,7 +63,7 @@ export default function NotificationsScreen() {
         id: 4,
         type: 'kudos' as const,
         icon: <ThumbsUp size={theme.iconSize.md} color={theme.colors.status.info} />,
-        iconBg: 'bg-[#1a2420]',
+        iconBg: theme.colors.background.iconDarkest,
         title: 'Kudos Received',
         description: (
           <Text className="text-[15px] leading-relaxed text-gray-300">
@@ -82,7 +82,7 @@ export default function NotificationsScreen() {
         id: 5,
         type: 'weekly-report' as const,
         icon: <Clock size={theme.iconSize.md} color={theme.colors.status.purple} />,
-        iconBg: 'bg-[#1a2420]',
+        iconBg: theme.colors.background.iconDarkest,
         title: 'Weekly Report Ready',
         description: 'Your progress report for last week is available. Check your stats.',
         time: 'Mon, 9:00 AM',
