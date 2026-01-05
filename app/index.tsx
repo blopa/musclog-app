@@ -6,6 +6,7 @@ import { RecentWorkoutsCard } from '../components/RecentWorkoutsCard';
 import { CircularArrow } from '../components/CircularArrow';
 import { ActionButton } from '../components/ActionButton';
 import { DailySummaryCard } from '../components/DailySummaryCard';
+import { useRouter } from 'expo-router';
 
 const PAGE_DATA = {
   user: {
@@ -72,6 +73,7 @@ const PAGE_DATA = {
 
 export default function HomeScreen() {
   const { t } = useTranslation();
+  const router = useRouter();
   const { user, dailySummary, recentWorkouts, recentFoods } = PAGE_DATA;
 
   return (
@@ -91,7 +93,9 @@ export default function HomeScreen() {
               <Text className="text-xl font-bold text-white">{user.name}</Text>
             </View>
           </View>
-          <Pressable className="relative rounded-full bg-[#1a2f2a] p-3">
+          <Pressable
+            className="relative rounded-full bg-[#1a2f2a] p-3"
+            onPress={() => router.push('/notifications')}>
             <Bell size={24} color="#ffffff" />
             {user.hasNotifications && (
               <View className="absolute right-2 top-2 h-2.5 w-2.5 rounded-full bg-red-500" />
