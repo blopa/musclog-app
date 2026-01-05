@@ -28,13 +28,16 @@ export function MasterLayout({ children }: MasterLayoutProps) {
           <View className="flex-row items-center justify-around px-6 py-4">
             {/* Home */}
             <Pressable className="items-center gap-1" onPress={() => router.push('/')}>
-              {isActive('/') ? (
-                <View className="rounded-lg bg-[#0f2419] px-4 py-2">
-                  <Home size={24} color="#22c55e" strokeWidth={2.5} />
-                </View>
-              ) : (
-                <Home size={24} color="#4b5563" strokeWidth={2} />
-              )}
+              <View
+                className={`h-10 w-16 items-center justify-center rounded-lg ${
+                  isActive('/') ? 'bg-[#0f2419]' : ''
+                }`}>
+                <Home
+                  size={24}
+                  color={isActive('/') ? '#22c55e' : '#4b5563'}
+                  strokeWidth={isActive('/') ? 2.5 : 2}
+                />
+              </View>
               <Text
                 className={`text-xs font-medium ${isActive('/') ? 'text-[#22c55e]' : 'text-gray-600'}`}>
                 {t('home.navigation.home')}
@@ -43,13 +46,16 @@ export function MasterLayout({ children }: MasterLayoutProps) {
 
             {/* Workouts */}
             <Pressable className="items-center gap-1" onPress={() => router.push('/workouts')}>
-              {isActive('/workouts') ? (
-                <View className="rounded-lg bg-[#0f2419] px-4 py-2">
-                  <Dumbbell size={24} color="#22c55e" strokeWidth={2.5} />
-                </View>
-              ) : (
-                <Dumbbell size={24} color="#4b5563" strokeWidth={2} />
-              )}
+              <View
+                className={`h-10 w-16 items-center justify-center rounded-lg ${
+                  isActive('/workouts') ? 'bg-[#0f2419]' : ''
+                }`}>
+                <Dumbbell
+                  size={24}
+                  color={isActive('/workouts') ? '#22c55e' : '#4b5563'}
+                  strokeWidth={isActive('/workouts') ? 2.5 : 2}
+                />
+              </View>
               <Text
                 className={`text-xs font-medium ${
                   isActive('/workouts') ? 'text-[#22c55e]' : 'text-gray-600'
@@ -67,13 +73,17 @@ export function MasterLayout({ children }: MasterLayoutProps) {
 
             {/* Food */}
             <Pressable className="items-center gap-1">
-              <UtensilsCrossed size={24} color="#4b5563" strokeWidth={2} />
+              <View className="h-10 w-16 items-center justify-center">
+                <UtensilsCrossed size={24} color="#4b5563" strokeWidth={2} />
+              </View>
               <Text className="text-xs text-gray-600">Food</Text>
             </Pressable>
 
             {/* Progress */}
             <Pressable className="items-center gap-1">
-              <BarChart3 size={24} color="#4b5563" strokeWidth={2} />
+              <View className="h-10 w-16 items-center justify-center">
+                <BarChart3 size={24} color="#4b5563" strokeWidth={2} />
+              </View>
               <Text className="text-xs text-gray-600">{t('home.navigation.progress')}</Text>
             </Pressable>
           </View>
