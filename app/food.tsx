@@ -4,6 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 import i18n, { LOCALE_MAP, LanguageKeys } from '../lang/lang';
+import { theme } from '../theme';
 import { MasterLayout } from '../components/MasterLayout';
 import { MacroCard } from '../components/MacroCard';
 import { FoodItemCard } from '../components/FoodItemCard';
@@ -80,21 +81,21 @@ export default function FoodScreen() {
 
   return (
     <MasterLayout>
-      <View className="flex-1 bg-[#0a0f0d]">
+      <View className="flex-1 bg-bg-primary">
         {/* Header with Date Navigation */}
-        <View className="border-b border-gray-800/50 bg-[#0a0f0d]">
+        <View className="border-b border-border-dark bg-bg-primary">
           <View className="flex-row items-center justify-between px-4 py-4">
             <Pressable>
-              <ChevronLeft size={24} color="#ffffff" />
+              <ChevronLeft size={theme.iconSize.md} color={theme.colors.text.primary} />
             </Pressable>
             <View className="flex-row items-center gap-2">
-              <Text className="text-xl font-semibold text-white">
+              <Text className="text-xl font-semibold text-text-primary">
                 {t('food.header.today')}, {formattedDate}
               </Text>
-              <Calendar size={20} color="#34d399" />
+              <Calendar size={theme.iconSize.sm} color={theme.colors.accent.secondary} />
             </View>
             <Pressable>
-              <ChevronRight size={24} color="#ffffff" />
+              <ChevronRight size={theme.iconSize.md} color={theme.colors.text.primary} />
             </Pressable>
           </View>
         </View>
@@ -104,10 +105,10 @@ export default function FoodScreen() {
           <View className="gap-6 px-4 pt-6">
             {/* Calories Remaining Card */}
             <LinearGradient
-              colors={['#1a2520', '#0f1812']}
+              colors={theme.colors.gradients.card}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              className="rounded-3xl border border-gray-800/50 p-6">
+              className="rounded-3xl border border-border-default p-6">
               <View className="mb-6">
                 <Text className="mb-2 text-sm text-gray-400">{t('food.caloriesRemaining')}</Text>
                 <View className="mb-1 flex-row items-baseline gap-2">
@@ -126,7 +127,7 @@ export default function FoodScreen() {
               {/* Progress Bar */}
               <View className="mb-6 h-3 overflow-hidden rounded-full bg-gray-800/50">
                 <LinearGradient
-                  colors={['#6366f1', '#2dd4bf', '#34d399']}
+                  colors={theme.colors.gradients.progress}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 0 }}
                   className="h-full rounded-full"
@@ -162,22 +163,22 @@ export default function FoodScreen() {
 
             {/* Scan Buttons */}
             <View className="flex-row gap-4">
-              <Pressable className="flex-1 flex-row items-center justify-center gap-3 rounded-2xl border border-gray-800/50 bg-[#141a17] py-4">
-                <ScanLine size={24} color="#34d399" />
-                <Text className="text-lg font-semibold text-white">
+              <Pressable className="flex-1 flex-row items-center justify-center gap-3 rounded-2xl border border-border-default bg-bg-overlay py-4">
+                <ScanLine size={theme.iconSize.md} color={theme.colors.accent.secondary} />
+                <Text className="text-lg font-semibold text-text-primary">
                   {t('food.actions.scanBarcode')}
                 </Text>
               </Pressable>
 
               <Pressable className="relative flex-1 flex-row items-center justify-center gap-3 rounded-2xl border border-emerald-900/30 py-4">
                 <LinearGradient
-                  colors={['#1a3530', '#0f1f1a']}
+                  colors={theme.colors.gradients.button}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 1 }}
                   className="absolute inset-0 rounded-2xl"
                 />
-                <Grid3x3 size={24} color="#ffffff" />
-                <Text className="text-lg font-semibold text-white">
+                <Grid3x3 size={theme.iconSize.md} color={theme.colors.text.primary} />
+                <Text className="text-lg font-semibold text-text-primary">
                   {t('food.actions.aiCamera')}
                 </Text>
               </Pressable>
@@ -221,11 +222,11 @@ export default function FoodScreen() {
         {/* Floating Add Button */}
         <Pressable className="absolute bottom-28 right-6 h-16 w-16 rounded-full shadow-lg">
           <LinearGradient
-            colors={['#34d399', '#14b8a6']}
+            colors={theme.colors.gradients.accent}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             className="h-full w-full items-center justify-center rounded-full shadow-lg shadow-emerald-500/50">
-            <Plus size={32} color="#000000" strokeWidth={3} />
+            <Plus size={theme.iconSize.lg} color="#000000" strokeWidth={3} />
           </LinearGradient>
         </Pressable>
       </View>

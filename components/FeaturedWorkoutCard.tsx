@@ -1,5 +1,6 @@
 import { View, Text, Image, Pressable, ImageSourcePropType } from 'react-native';
 import { MoreVertical, Clock } from 'lucide-react-native';
+import { theme } from '../theme';
 import { StartWorkoutButton } from './StartWorkoutButton';
 
 type FeaturedWorkoutCardProps = {
@@ -22,15 +23,15 @@ export function FeaturedWorkoutCard({
   onMore,
 }: FeaturedWorkoutCardProps) {
   return (
-    <View className="rounded-3xl border-2 border-blue-500/40 bg-[#0f2f27] p-5">
+    <View className="rounded-3xl border-2 border-blue-500/40 bg-bg-filterTab p-5">
       <View className="mb-4 flex-row items-start justify-between">
         <View className="flex-1">
-          <View className="mb-3 inline-flex flex-row items-center gap-1.5 self-start rounded-full bg-[#22c55e]/20 px-3 py-1">
-            <Clock size={14} color="#22c55e" />
-            <Text className="text-xs font-bold uppercase text-[#22c55e]">{lastCompleted}</Text>
+          <View className="mb-3 inline-flex flex-row items-center gap-1.5 self-start rounded-full bg-accent-primary/20 px-3 py-1">
+            <Clock size={14} color={theme.colors.accent.primary} />
+            <Text className="text-xs font-bold uppercase text-accent-primary">{lastCompleted}</Text>
           </View>
-          <Text className="mb-2 text-2xl font-bold text-white">{name}</Text>
-          <Text className="text-sm text-gray-400">
+          <Text className="mb-2 text-2xl font-bold text-text-primary">{name}</Text>
+          <Text className="text-sm text-text-secondary">
             {exerciseCount} Exercises • {duration}
           </Text>
         </View>
@@ -44,7 +45,7 @@ export function FeaturedWorkoutCard({
         <Pressable
           className="w-14 items-center justify-center rounded-2xl bg-[#1a3d35]"
           onPress={onMore}>
-          <MoreVertical size={20} color="#9ca3af" />
+          <MoreVertical size={theme.iconSize.sm} color={theme.colors.text.secondary} />
         </Pressable>
       </View>
     </View>

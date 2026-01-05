@@ -1,5 +1,6 @@
 import { Stack } from 'expo-router';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { theme } from '../theme';
 
 import '../lang/lang';
 import '../global.css';
@@ -10,7 +11,7 @@ export default function RootLayout() {
       <Stack
         screenOptions={{
           headerShown: false,
-          contentStyle: { backgroundColor: '#0a1f1a' },
+          contentStyle: { backgroundColor: theme.colors.background.primary },
         }}
       />
     </SafeAreaProvider>

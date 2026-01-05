@@ -1,6 +1,7 @@
 import { View, Text, Pressable } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ReactNode } from 'react';
+import { theme } from '../theme';
 
 type NotificationCardProps = {
   type: 'ai-insight' | 'workout-reminder' | 'workout-completed' | 'kudos' | 'weekly-report';
@@ -38,9 +39,9 @@ export function NotificationCard({
       {/* Content */}
       <View className="min-w-0 flex-1">
         <View className="mb-2 flex-row items-start justify-between gap-2">
-          <Text className="text-lg font-semibold text-white">{title}</Text>
+          <Text className="text-lg font-semibold text-text-primary">{title}</Text>
           {unread && (
-            <View className="mt-1.5 h-2.5 w-2.5 flex-shrink-0 rounded-full bg-emerald-400" />
+            <View className="mt-1.5 h-2.5 w-2.5 flex-shrink-0 rounded-full bg-accent-secondary" />
           )}
         </View>
         <View className="mb-3">
@@ -70,14 +71,14 @@ export function NotificationCard({
   if (isAiInsight) {
     return (
       <LinearGradient
-        colors={['#1a3d2f', '#0f2419']}
+        colors={['#1a3d2f', theme.colors.background.cardDark]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        className="rounded-3xl border-2 border-[#2a4d3f] p-5">
+        className="rounded-3xl border-2 border-border-accent p-5">
         {content}
       </LinearGradient>
     );
   }
 
-  return <View className="rounded-3xl bg-[#0f2419] p-5">{content}</View>;
+  return <View className="rounded-3xl bg-bg-cardDark p-5">{content}</View>;
 }

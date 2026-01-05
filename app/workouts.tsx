@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { View, ScrollView, Pressable } from 'react-native';
 import { Search, SlidersHorizontal } from 'lucide-react-native';
+import { theme } from '../theme';
 import { MasterLayout } from '../components/MasterLayout';
 import { WorkoutCard } from '../components/WorkoutCard';
 import { FeaturedWorkoutCard } from '../components/FeaturedWorkoutCard';
@@ -69,10 +70,10 @@ export default function WorkoutsScreen() {
               </GradientText>
               <View className="ml-4 flex-row gap-4">
                 <Pressable className="rounded-lg p-2">
-                  <Search size={24} color="#ffffff" />
+                  <Search size={theme.iconSize.md} color={theme.colors.text.primary} />
                 </Pressable>
                 <Pressable className="rounded-lg p-2">
-                  <SlidersHorizontal size={24} color="#ffffff" />
+                  <SlidersHorizontal size={theme.iconSize.md} color={theme.colors.text.primary} />
                 </Pressable>
               </View>
             </View>

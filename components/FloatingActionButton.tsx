@@ -1,6 +1,7 @@
 import { Pressable } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Plus } from 'lucide-react-native';
+import { theme } from '../theme';
 
 type FloatingActionButtonProps = {
   onPress?: () => void;
@@ -21,11 +22,11 @@ export function FloatingActionButton({
       style={{ bottom }}
       onPress={onPress}>
       <LinearGradient
-        colors={['#a78bfa', '#34d399']}
+        colors={[theme.colors.status.purple, theme.colors.accent.secondary]}
         start={{ x: 0, y: 0 }}
         end={{ x: 0, y: 1 }}
         style={{
-          borderRadius: 16,
+          borderRadius: theme.borderRadius.lg,
           height: 64,
           width: 64,
           alignItems: 'center',

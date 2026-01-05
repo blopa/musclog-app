@@ -1,10 +1,11 @@
 import { View } from 'react-native';
 import { ChevronRight } from 'lucide-react-native';
+import { theme } from '../theme';
 
 export function CircularArrow() {
   return (
     <View className="h-8 w-8 items-center justify-center rounded-full bg-[#243d37]">
-      <ChevronRight size={18} color="#9ca3af" />
+      <ChevronRight size={18} color={theme.colors.text.secondary} />
     </View>
   );
 }

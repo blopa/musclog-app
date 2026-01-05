@@ -2,6 +2,7 @@ import { View, Text, ScrollView, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Sparkles, Dumbbell, CheckCircle2, ThumbsUp, Clock } from 'lucide-react-native';
+import { theme } from '../theme';
 import { MasterLayout } from '../components/MasterLayout';
 import { NotificationCard } from '../components/NotificationCard';
 
@@ -16,7 +17,7 @@ export default function NotificationsScreen() {
       {
         id: 1,
         type: 'ai-insight' as const,
-        icon: <Sparkles size={24} color="#ffffff" />,
+        icon: <Sparkles size={theme.iconSize.md} color={theme.colors.text.primary} />,
         iconBg: 'bg-blue-600',
         title: 'AI Insight',
         description:
@@ -27,7 +28,7 @@ export default function NotificationsScreen() {
       {
         id: 2,
         type: 'workout-reminder' as const,
-        icon: <Dumbbell size={24} color="#f97316" />,
+        icon: <Dumbbell size={theme.iconSize.md} color={theme.colors.status.warning} />,
         iconBg: 'bg-[#1a2420]',
         title: 'Workout Reminder',
         description: (
@@ -47,7 +48,7 @@ export default function NotificationsScreen() {
       {
         id: 3,
         type: 'workout-completed' as const,
-        icon: <CheckCircle2 size={24} color="#34d399" />,
+        icon: <CheckCircle2 size={theme.iconSize.md} color={theme.colors.accent.secondary} />,
         iconBg: 'bg-[#1a2420]',
         title: 'Workout Completed!',
         description: (
@@ -61,7 +62,7 @@ export default function NotificationsScreen() {
       {
         id: 4,
         type: 'kudos' as const,
-        icon: <ThumbsUp size={24} color="#3b82f6" />,
+        icon: <ThumbsUp size={theme.iconSize.md} color={theme.colors.status.info} />,
         iconBg: 'bg-[#1a2420]',
         title: 'Kudos Received',
         description: (
@@ -80,7 +81,7 @@ export default function NotificationsScreen() {
       {
         id: 5,
         type: 'weekly-report' as const,
-        icon: <Clock size={24} color="#a855f7" />,
+        icon: <Clock size={theme.iconSize.md} color={theme.colors.status.purple} />,
         iconBg: 'bg-[#1a2420]',
         title: 'Weekly Report Ready',
         description: 'Your progress report for last week is available. Check your stats.',
@@ -94,16 +95,16 @@ export default function NotificationsScreen() {
     <MasterLayout>
       <View className="flex-1">
         {/* Header */}
-        <View className="border-b border-[#1a2f2a] bg-[#0a1f1a]">
+        <View className="border-b border-border-dark bg-bg-primary">
           <View className="flex-row items-center justify-between p-4">
             <View className="flex-row items-center gap-4">
               <Pressable onPress={() => router.back()}>
-                <ArrowLeft size={24} color="#ffffff" />
+                <ArrowLeft size={theme.iconSize.md} color={theme.colors.text.primary} />
               </Pressable>
-              <Text className="text-2xl font-bold text-white">{t('notifications.header.title')}</Text>
+              <Text className="text-2xl font-bold text-text-primary">{t('notifications.header.title')}</Text>
             </View>
             <Pressable>
-              <Text className="text-sm font-semibold text-[#22c55e]">{t('notifications.header.clearAll')}</Text>
+              <Text className="text-sm font-semibold text-text-accent">{t('notifications.header.clearAll')}</Text>
             </Pressable>
           </View>
         </View>

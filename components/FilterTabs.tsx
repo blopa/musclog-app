@@ -1,4 +1,5 @@
 import { View, Text, Pressable } from 'react-native';
+import { theme } from '../theme';
 
 type FilterTab = {
   id: string;
@@ -20,7 +21,7 @@ export function FilterTabs({ tabs, activeTab, onTabChange }: FilterTabsProps) {
           <Pressable
             key={tab.id}
             className={`rounded-full px-6 py-2.5 ${
-              isActive ? 'bg-[#22c55e]' : 'border border-gray-700/30 bg-[#0f2f27]'
+              isActive ? 'bg-accent-primary' : 'border border-border-light bg-bg-filterTab'
             }`}
             onPress={() => onTabChange(tab.id)}>
             <Text

@@ -2,6 +2,7 @@ import { View, Text, Pressable } from 'react-native';
 import { Plus } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { ReactNode } from 'react';
+import { theme } from '../theme';
 
 type MealSectionProps = {
   title: string;
@@ -16,8 +17,8 @@ export function MealSection({ title, totalCalories, children, onAddFood }: MealS
   return (
     <View>
       <View className="mb-4 flex-row items-center justify-between">
-        <Text className="text-2xl font-bold text-white">{title}</Text>
-        <Text className="text-lg text-gray-400">
+        <Text className="text-2xl font-bold text-text-primary">{title}</Text>
+        <Text className="text-lg text-text-secondary">
           {totalCalories} {t('food.common.kcal')}
         </Text>
       </View>
@@ -27,10 +28,10 @@ export function MealSection({ title, totalCalories, children, onAddFood }: MealS
 
         {/* Add Food Button */}
         <Pressable
-          className="w-full flex-row items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-gray-700 py-4"
+          className="w-full flex-row items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-border-dashed py-4"
           onPress={onAddFood}>
-          <Plus size={20} color="#9ca3af" />
-          <Text className="font-medium text-gray-400">{t('food.meals.addFood')}</Text>
+          <Plus size={theme.iconSize.sm} color={theme.colors.text.secondary} />
+          <Text className="font-medium text-text-secondary">{t('food.meals.addFood')}</Text>
         </Pressable>
       </View>
     </View>

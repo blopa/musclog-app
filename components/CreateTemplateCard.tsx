@@ -1,5 +1,6 @@
 import { View, Text, Pressable } from 'react-native';
 import { Plus } from 'lucide-react-native';
+import { theme } from '../theme';
 
 type CreateTemplateCardProps = {
   onPress?: () => void;
@@ -11,9 +12,9 @@ export function CreateTemplateCard({ onPress }: CreateTemplateCardProps) {
       className="mt-6 items-center justify-center gap-4 rounded-3xl border-2 border-dashed border-gray-600/40 p-8"
       onPress={onPress}>
       <View className="h-12 w-12 items-center justify-center rounded-full bg-[#1a3d35]">
-        <Plus size={24} color="#9ca3af" />
+        <Plus size={theme.iconSize.md} color={theme.colors.text.secondary} />
       </View>
-      <Text className="text-center text-gray-400">Create from Empty Template</Text>
+      <Text className="text-center text-text-secondary">Create from Empty Template</Text>
     </Pressable>
   );
 }

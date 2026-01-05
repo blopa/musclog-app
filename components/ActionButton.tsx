@@ -1,5 +1,6 @@
 import { View, Text, Pressable } from 'react-native';
 import { Dumbbell, UtensilsCrossed } from 'lucide-react-native';
+import { theme } from '../theme';
 
 type ActionButtonVariant = 'workout' | 'food';
 
@@ -11,20 +12,20 @@ type ActionButtonProps = {
 
 const variantConfig = {
   workout: {
-    bgColor: 'bg-[#22c55e]',
+    bgColor: 'bg-accent-primary',
     iconBgColor: 'bg-[#16a34a]',
     icon: Dumbbell,
-    iconColor: '#0a1f1a',
-    textColor: 'text-[#0a1f1a]',
-    backgroundIconColor: '#0a1f1a',
+    iconColor: theme.colors.background.primary,
+    textColor: 'text-bg-primary',
+    backgroundIconColor: theme.colors.background.primary,
   },
   food: {
-    bgColor: 'bg-[#1a2f2a]',
+    bgColor: 'bg-bg-overlay',
     iconBgColor: 'bg-[#243d37]',
     icon: UtensilsCrossed,
-    iconColor: '#ffffff',
-    textColor: 'text-white',
-    backgroundIconColor: '#6b7280',
+    iconColor: theme.colors.text.primary,
+    textColor: 'text-text-primary',
+    backgroundIconColor: theme.colors.text.muted,
   },
 };
 
