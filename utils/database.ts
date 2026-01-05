@@ -2584,11 +2584,11 @@ export const searchFoodByName = async (searchTerm: string): Promise<FoodReturnTy
     try {
         const query = `
             SELECT * FROM "Food"
-            WHERE "name" LIKE ? 
+            WHERE ("name" LIKE ? OR "productCode" LIKE ?)
             AND ("deletedAt" IS NULL OR "deletedAt" = '')
         `;
         const searchPattern = `%${searchTerm}%`;
-        return database.getAllSync<FoodReturnType>(query, [searchPattern]);
+        return database.getAllSync<FoodReturnType>(query, [searchPattern, searchPattern]);
     } catch (error) {
         throw error;
     }

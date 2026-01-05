@@ -1896,8 +1896,12 @@ export const getFoodByNameAndMacros = async (
 };
 
 export const searchFoodByName = async (searchTerm: string): Promise<FoodReturnType[] | null> => {
+    const searchLower = searchTerm.toLowerCase();
     const foods = await database.food
-        .filter((food) => food.name.toLowerCase().includes(searchTerm.toLowerCase()))
+        .filter((food) =>
+            food.name.toLowerCase().includes(searchLower)
+            || Boolean(food.productCode && food.productCode.toLowerCase().includes(searchLower))
+        )
         .toArray();
 
     return foods || null;
