@@ -61,6 +61,6 @@
     "tailwindcss": "^3.4.17",
     "typescript": "~5.9.3"
   },
-  "main": "node_modules/expo/AppEntry.js",
+  "main": "expo-router/entry",
   "private": true
 }
