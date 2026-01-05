@@ -167,18 +167,24 @@ export default function App() {
 
         {/* Action Buttons */}
         <View className="mx-6 mb-8 flex-row gap-4">
-            <Pressable className="min-h-[180px] flex-1 justify-between rounded-3xl bg-[#22c55e] p-6">
+            <Pressable className="relative min-h-[180px] flex-1 justify-between overflow-hidden rounded-3xl bg-[#22c55e] p-6">
               <Dumbbell size={40} color="#0a1f1a" strokeWidth={2.5} />
               <Text className="text-2xl font-bold leading-tight text-[#0a1f1a]">
                 {t('home.actions.startWorkout')}
               </Text>
+              <View className="absolute bottom-0 right-0 opacity-20">
+                <Dumbbell size={120} color="#0a1f1a" strokeWidth={1} />
+              </View>
             </Pressable>
 
-            <Pressable className="min-h-[180px] flex-1 justify-between rounded-3xl bg-[#1a2f2a] p-6">
+            <Pressable className="relative min-h-[180px] flex-1 justify-between overflow-hidden rounded-3xl bg-[#1a2f2a] p-6">
               <UtensilsCrossed size={40} color="#ffffff" strokeWidth={2.5} />
               <Text className="text-2xl font-bold leading-tight text-white">
                 {t('home.actions.trackFood')}
               </Text>
+              <View className="absolute bottom-0 right-0 opacity-20">
+                <UtensilsCrossed size={120} color="#ffffff" strokeWidth={1} />
+              </View>
             </Pressable>
         </View>
 
