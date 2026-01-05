@@ -67,6 +67,7 @@ const SelectFoodModal = ({ onClose, onFoodSelected, visible }: SelectFoodModalPr
             setFilteredFoods(
                 foods.filter((food) =>
                     food.name.toLowerCase().includes(query)
+                    || (food.productCode && food.productCode.toLowerCase().includes(query))
                 )
             );
         }

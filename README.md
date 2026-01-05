@@ -37,6 +37,7 @@ Musclog is a mobile application designed to elevate your fitness journey by prov
 ### 🏋️‍♂️ Track Workouts
 - Effortlessly log your workouts, track progress, and stay motivated.
 - View detailed statistics and progress graphs to monitor your lifting volume over time.
+- Calculate one-rep max estimates and track strength progression.
 
 ### 📅 Schedule Workouts
 - Plan and schedule your workouts on a weekly basis to ensure consistency.
@@ -45,21 +46,44 @@ Musclog is a mobile application designed to elevate your fitness journey by prov
 ### 🔧 Create Workouts & Exercises
 - Customize your workout plans by creating specific exercises tailored to your goals.
 - Save your favorite workouts for quick and easy access.
+- Build comprehensive exercise library with custom exercises and muscle group categorization.
 
 ### 📈 Progress Insights
 - Visualize your fitness journey with comprehensive graphs and charts.
 - Analyze your performance to identify strengths and areas for improvement.
+- Track user metrics, body measurements, and fitness goals over time.
+
+### 🍎 Food Tracking & Nutrition
+- **Daily Food Logging**: Track your meals and nutrition throughout the day with an intuitive food log interface.
+- **Barcode Scanning**: Quickly add foods by scanning product barcodes using your device camera.
+- **Food Search**: Search through a comprehensive branded food database to find nutritional information.
+- **Meal Planning**: Create and manage meal plans with custom meals and favorite foods.
+- **Custom Foods**: Add your own custom food items with precise nutritional information.
+- **Nutrition Progress**: Monitor daily macro and calorie intake with visual progress indicators.
+- **Retrospective Tracking**: Log meals retroactively for past dates.
+- **AI-Powered Nutrition**: Use AI to estimate nutrition from food photos and extract macros from nutrition labels.
+
+### 🎯 Fitness Goals
+- Set and track personalized fitness goals with BMR calculations.
+- Monitor progress toward your health and fitness objectives.
+- Get insights based on your activity level and goals.
 
 ### 🍎 Health Integration
 - Sync with Google Health Connect to import nutrition and weight data.
 - Track your diet and body metrics alongside your workout progress.
+- Seamlessly integrate health data from various sources.
 
 ### 🔄 Import & Export Workouts
 - Seamlessly import and export workout data to share with friends or transition between devices.
+- Support for multiple data formats including JSON and CSV.
 
 ### 🧠 AI Insights & Chat
-- Integrate your own OpenAI key to receive personalized AI insights on your workouts.
-- Engage with our in-app chat to discuss workouts, share tips, and stay motivated.
+- **Dual AI Support**: Choose between OpenAI (GPT-4, GPT-4o, O1, O3 models) or Google Gemini (Gemini 2.0/2.5 models) for AI-powered features.
+- **Personalized Insights**: Receive daily or weekly AI insights on your workouts and nutrition.
+- **In-App Chat**: Engage with an AI coach to discuss workouts, get nutrition advice, and stay motivated.
+- **Photo Analysis**: Use AI vision capabilities to analyze food photos and estimate nutritional content.
+- **Workout Generation**: Get AI-generated workout plans tailored to your goals and preferences.
+- **Flexible Configuration**: Customize AI settings including model selection, insight frequency, and API keys.
 
 ## Why Musclog?
 
@@ -87,7 +111,11 @@ Musclog isn’t just another workout tracker; it’s your personal fitness compa
 
 ##  Technical Overview
 
-The **Musclog** software project is an interactive fitness application designed to enhance user engagement and streamline the workout experience through a range of intuitive components. At its core, Musclog offers functionalities that include customizable theming with components like ThemedCard, which ensures a visually appealing and consistent interface across the application. The CustomPicker and SearchablePicker components provide users with flexible selection options, improving interaction and navigation as they choose their fitness preferences and goals. Furthermore, the WeightAndFatMetricsInfo component enhances users understanding of their fitness journey by presenting key metrics related to weight and body fat in an engaging manner. The onboarding process is designed to facilitate seamless workout creation and management, reinforcing the applications value proposition as a comprehensive tool for individuals seeking to improve their health and wellness. Overall, Musclog focuses on providing a user-friendly, visually appealing, and personalized fitness experience, making it an invaluable asset for fitness enthusiasts.
+The **Musclog** software project is an interactive fitness application designed to enhance user engagement and streamline the workout experience through a range of intuitive components. At its core, Musclog offers functionalities that include customizable theming with components like ThemedCard, which ensures a visually appealing and consistent interface across the application. The CustomPicker and SearchablePicker components provide users with flexible selection options, improving interaction and navigation as they choose their fitness preferences and goals. Furthermore, the WeightAndFatMetricsInfo component enhances users understanding of their fitness journey by presenting key metrics related to weight and body fat in an engaging manner.
+
+Musclog features comprehensive food tracking capabilities with barcode scanning, meal planning, and AI-powered nutrition estimation. The application integrates advanced AI capabilities supporting both OpenAI and Google Gemini models, enabling personalized workout and nutrition insights. With camera integration for barcode scanning and photo-based nutrition analysis, users can effortlessly track their dietary intake. The onboarding process is designed to facilitate seamless workout creation and management, while the food logging system provides detailed macro tracking and progress visualization.
+
+The application leverages React Native and Expo for cross-platform development, ensuring a consistent experience across iOS, Android, and web platforms. With features like Health Connect integration, custom exercise creation, fitness goal tracking, and comprehensive data visualization, Musclog serves as a complete fitness companion. Overall, Musclog focuses on providing a user-friendly, visually appealing, and personalized fitness experience, making it an invaluable asset for fitness enthusiasts.
 
 ---
 
@@ -98,12 +126,12 @@ The **Musclog** software project is an interactive fitness application designed 
 | ⚙️  | **Architecture**  | This project follows a component-based architecture, utilizing React and TypeScript for enhanced type safety. It encourages reusability and separation of concerns, allowing for easier maintenance and scalability. |
 | 🔩 | **Code Quality**  | The code adheres to best practices, with a focus on readability and consistency. TypeScript ensures type safety, enhancing overall code reliability and maintainability. |
 | 📄 | **Documentation** | The documentation includes component descriptions and usage examples, facilitating ease of understanding. However, it could be expanded to include API references and setup instructions for better onboarding. |
-| 🔌 | **Integrations**  | Key integrations include customizable theming for UI components and real-time interaction features, enhancing user engagement. The project seamlessly interacts with various frontend libraries. |
+| 🔌 | **Integrations**  | Key integrations include customizable theming for UI components, real-time interaction features, Google Health Connect for health data, OpenAI and Google Gemini for AI features, barcode scanning libraries, and camera APIs for food tracking. The project seamlessly interacts with various frontend libraries and external services. |
 | 🧩 | **Modularity**    | The codebase is modular, featuring distinct components like `ThemedCard`, `CustomPicker`, and `Onboarding`. This design promotes reusability and simplifies testing and updates. |
 | 🧪 | **Testing**       | Tools such as Jest and React Testing Library are utilized for unit and integration testing, ensuring high test coverage and code reliability throughout development. |
 | ⚡️  | **Performance**   | The project prioritizes efficient rendering and reactivity, leveraging React's Virtual DOM. Performance optimizations focus on minimal re-renders and efficient data handling for a smooth user experience. |
 | 🛡️ | **Security**      | Security measures include user authentication and data validation to protect personal metrics. Component-level access control ensures sensitive data is secure from unauthorized access. |
-| 📦 | **Dependencies**  | Key dependencies include React, TypeScript, and several utility libraries for state management and UI components, enabling a robust development ecosystem. |
+| 📦 | **Dependencies**  | Key dependencies include React Native, Expo, TypeScript, OpenAI SDK, Google Generative AI, barcode scanning libraries (@ericblade/quagga2, @zxing/library), camera APIs (expo-camera), chart libraries (chart.js, react-native-charts-wrapper), and several utility libraries for state management and UI components, enabling a robust development ecosystem. |
 | 🚀 | **Scalability**   | The component-based design and use of state management libraries position the application to scale effectively. The architecture supports increased traffic and user interactions without significant degradation in performance. |
 
 ---
@@ -116,16 +144,25 @@ The **Musclog** software project is an interactive fitness application designed 
     │   ├── +html.tsx
     │   ├── +not-found.tsx
     │   ├── _layout.tsx
+    │   ├── aiSettings.tsx
     │   ├── chat.tsx
     │   ├── createExercise.tsx
+    │   ├── createFitnessGoals.tsx
+    │   ├── createFood.tsx
+    │   ├── createMeal.tsx
     │   ├── createRecentWorkout.tsx
     │   ├── createUserMeasurements.tsx
     │   ├── createUserMetrics.tsx
     │   ├── createUserNutrition.tsx
     │   ├── createWorkout.tsx
     │   ├── dashboard.tsx
+    │   ├── foodDetails.tsx
+    │   ├── foodLog.tsx
+    │   ├── foodSearch.tsx
     │   ├── index.tsx
     │   ├── listExercises.tsx
+    │   ├── listFitnessGoals.tsx
+    │   ├── listMeals.tsx
     │   ├── listUserMeasurements.tsx
     │   ├── listUserMetrics.tsx
     │   ├── listUserNutrition.tsx
@@ -141,11 +178,15 @@ The **Musclog** software project is an interactive fitness application designed 
     │   ├── workout.tsx
     │   └── workoutDetails.tsx
     ├── components
-    │   ├── AnimatedSearch.tsx
+    │   ├── AddExerciseModal.tsx
+    │   ├── AnimatedSearchBar.tsx
     │   ├── AppHeader.tsx
+    │   ├── ArrowedDatePicker.tsx
     │   ├── BotAvatar.tsx
     │   ├── BotAvatar.web.tsx
     │   ├── BottomPageModal.tsx
+    │   ├── CameraView.tsx
+    │   ├── CameraView.web.tsx
     │   ├── Charts
     │   ├── ChatInputBar.tsx
     │   ├── ChatMessageActions.tsx
@@ -158,16 +199,27 @@ The **Musclog** software project is an interactive fitness application designed 
     │   ├── CustomTextInput.tsx
     │   ├── DatePickerModal.tsx
     │   ├── DifficultyModal.tsx
+    │   ├── DrawerMenu.tsx
     │   ├── EditMacrosModal.tsx
     │   ├── EditSetModal.tsx
     │   ├── ExerciseSetDetails.tsx
     │   ├── FABWrapper.tsx
     │   ├── Filters.tsx
+    │   ├── FoodItem.tsx
+    │   ├── FoodTrackingModal.tsx
+    │   ├── GoogleSignInButton.tsx
+    │   ├── MealFoodItem.tsx
+    │   ├── MealItem.tsx
+    │   ├── MealMacroSummary.tsx
     │   ├── NextSetPreview.tsx
+    │   ├── NutritionProgressBanner.tsx
     │   ├── Onboarding.tsx
     │   ├── RecentWorkoutMessageCard.tsx
     │   ├── RestTimer.tsx
+    │   ├── RetrospectiveFoodTrackingModal.tsx
     │   ├── SearchablePicker.tsx
+    │   ├── SearchFoodModal.tsx
+    │   ├── SelectFoodModal.tsx
     │   ├── SetInfo.tsx
     │   ├── SliderWithButtons.tsx
     │   ├── StatusBadge.tsx
@@ -183,6 +235,7 @@ The **Musclog** software project is an interactive fitness application designed 
     │   ├── __tests__
     │   └── navigation
     ├── constants
+    │   ├── ai.ts
     │   ├── chat.ts
     │   ├── colors.ts
     │   ├── exercises.ts
@@ -363,8 +416,17 @@ The **Musclog** software project is an interactive fitness application designed 
 
 | File | Summary |
 | --- | --- |
+| [aiSettings.tsx](https://github.com/blopa/musclog-app/app/aiSettings.tsx) | Provides a comprehensive settings screen for configuring AI features, including API key management for both OpenAI and Google Gemini, model selection, insight frequency settings, and Google OAuth integration for Gemini. Enables users to customize their AI experience with flexible vendor selection and personalized AI-powered workout and nutrition insights. |
 | [workoutDetails.tsx](https://github.com/blopa/musclog-app/app/workoutDetails.tsx) | Workout ManagementThe code facilitates the creation and listing of workouts and exercises, helping users organize their fitness routines effectively. 2. **User ProfilesIt supports user-specific functionalities, allowing individuals to manage their nutrition, metrics, and measurements, which are crucial for tracking progress.3. **Data VisualizationBy providing user metrics charts, the application empowers users to visualize their fitness data, fostering better decision-making regarding their workouts.4. **Real-time InteractionComponents like the chat interface enhance engagement, allowing users to communicate or receive support within the app.Overall, this code file integrates seamlessly with the overall architecture of the repository, focusing on user-centric features that promote a comprehensive fitness tracking and management experience. |
 | [_layout.tsx](https://github.com/blopa/musclog-app/app/_layout.tsx) | Workout ManagementUsers can create, schedule, and view workouts, making it easier to plan their fitness activities.2. **Personal TrackingThe system allows users to input and track metrics related to their personal health, including nutrition and exercise data, fostering a personalized fitness experience.3. **User InteractionComponents for chat and community engagement, such as messages and user profiles, enhance social interaction among users, promoting motivation and support.4. **Data VisualizationThe incorporation of charts and user metrics visualizations aids in tracking progress, helping users visualize their improvements over time.Overall, this code file integrates seamlessly into the larger architecture of the Musclog repository, contributing crucial functionality that enhances user experience and engagement with the fitness platform. |
+| [createFitnessGoals.tsx](https://github.com/blopa/musclog-app/app/createFitnessGoals.tsx) | Facilitates the creation and management of personalized fitness goals with BMR calculations based on activity level, body composition, and target metrics. Enables users to set and track fitness objectives with visual progress indicators and goal-based insights, integrating seamlessly with the overall fitness tracking architecture. |
+| [createFood.tsx](https://github.com/blopa/musclog-app/app/createFood.tsx) | Allows users to create custom food items with precise nutritional information including macros and calories. Enables personalized food database management, supporting users in tracking their unique dietary preferences and homemade meals within the comprehensive nutrition tracking system. |
+| [createMeal.tsx](https://github.com/blopa/musclog-app/app/createMeal.tsx) | Enables users to create and save meal plans by combining multiple food items. Facilitates meal planning and quick meal tracking, allowing users to build reusable meal templates for efficient nutrition logging and dietary management. |
+| [foodDetails.tsx](https://github.com/blopa/musclog-app/app/foodDetails.tsx) | Displays detailed nutritional information for individual food items, including macro breakdown, calories, and serving size information. Provides comprehensive food data visualization to help users make informed dietary choices within the nutrition tracking system. |
+| [foodLog.tsx](https://github.com/blopa/musclog-app/app/foodLog.tsx) | Comprehensive daily food logging interface featuring meal tracking, macro progress visualization, barcode scanning, photo-based nutrition estimation, and retrospective food tracking. Integrates with Health Connect for seamless data synchronization and provides an intuitive interface for managing daily nutrition intake. |
+| [foodSearch.tsx](https://github.com/blopa/musclog-app/app/foodSearch.tsx) | Search interface for querying a branded food database, enabling users to find nutritional information for packaged foods. Supports barcode scanning and text search, facilitating quick food entry and comprehensive nutrition tracking. |
+| [listFitnessGoals.tsx](https://github.com/blopa/musclog-app/app/listFitnessGoals.tsx) | Displays a list of user-created fitness goals with the ability to view, edit, and track progress. Provides an overview of all fitness objectives, enabling users to monitor their journey toward achieving their health and fitness targets. |
+| [listMeals.tsx](https://github.com/blopa/musclog-app/app/listMeals.tsx) | Lists all saved meal plans with the ability to view meal details, track meals to specific dates, and manage meal templates. Facilitates efficient meal planning and quick nutrition logging by providing access to pre-configured meal combinations. |
 | [recentWorkouts.tsx](https://github.com/blopa/musclog-app/app/recentWorkouts.tsx) | User-Centric InterfacesPages such as `createWorkout.tsx` and `dashboard.tsx` facilitate seamless interaction for users to design and monitor their workouts, ensuring an engaging experience tailored to individual fitness goals.2. **Data ManagementThe presence of components like `createUserMetrics.tsx` and `listUserNutrition.tsx` highlights a focus on comprehensive user data management, allowing users to track various aspects of their health and fitness.3. **Visual RepresentationThe repository includes components dedicated to visualizing data, such as `userMetricsCharts.tsx`, which aids in the understanding of personal progress through graphical insights.4. **Real-Time InteractionComponents like `chat.tsx` and `ChatInputBar.tsx` emphasize community interaction, enabling users to communicate in real-time, share experiences, and motivate one another.Overall, this code file is integral to the architecture of the repository, which aims to create an all-encompassing platform for workout management while promoting user interaction and data-centric decision-making in fitness journeys. |
 | [index.tsx](https://github.com/blopa/musclog-app/app/index.tsx) | Facilitates navigation within the Musclog application by implementing a bottom tab navigator, allowing seamless transitions between the Dashboard and Current Workout screens. Additionally, it enhances user experience through error tracking via Sentry, ensuring reliable performance and easy navigation that aligns with the overall architecture of the repository. |
 | [+not-found.tsx](https://github.com/blopa/musclog-app/app/+not-found.tsx) | Facilitates user navigation when encountering a non-existent screen by presenting a friendly error message and a link to return to the home screen. This component enhances the overall user experience within the Musclog application, ensuring smooth transitions and clear communication in case of navigation errors. |
@@ -449,6 +511,7 @@ The **Musclog** software project is an interactive fitness application designed 
 
 | File | Summary |
 | --- | --- |
+| [ai.ts](https://github.com/blopa/musclog-app/constants/ai.ts) | Defines constants for AI model configurations, supporting both OpenAI (GPT-4, GPT-4o, O1, O3 models) and Google Gemini (Gemini 2.0/2.5 models). These constants enable flexible AI vendor selection and model configuration throughout the application, enhancing the AI-powered features for workouts and nutrition insights. |
 | [chat.ts](https://github.com/blopa/musclog-app/constants/chat.ts) | Defines constants for chat functionality related to workout generation and feedback in the Musclog repository. These constants facilitate communication between components, ensuring a seamless user experience in managing workout creation and receiving feedback, thereby enhancing the applications overall architecture and workflow. |
 | [exercises.ts](https://github.com/blopa/musclog-app/constants/exercises.ts) | Defines fundamental constants for the Musclog repository, categorizing exercise types, muscle groups, activity levels, experience levels, and volume calculation types. These constants facilitate standardization across the application, ensuring consistent data handling and enhancing the overall architecture by supporting various components related to fitness tracking and user metrics. |
 | [healthConnect.ts](https://github.com/blopa/musclog-app/constants/healthConnect.ts) | Establishes critical constants for health-related permissions and metrics within the Musclog application. It defines required permissions for health data access, mandates essential health metrics, and outlines caloric values for various macronutrients, contributing to comprehensive user health tracking and integration with health data sources. |

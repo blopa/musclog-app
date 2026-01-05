@@ -123,6 +123,13 @@ export const mapProductData = (product: PaginatedOpenFoodFactsApiFoodProductInfo
     };
 };
 
+// Check if query is a barcode/EAN (only numbers, typically 8-14 digits)
+const isBarcodeQuery = (query: string): boolean => {
+    const trimmed = query.trim();
+    // EAN codes are typically 8, 13, or 14 digits, but we'll accept any numeric string
+    return /^\d+$/.test(trimmed) && trimmed.length >= 4;
+};
+
 export const fetchFoodData = async (query: string, page: number): Promise<{ pageCount: number; products: MusclogApiFoodInfoType[], }> => {
     const result = {
         pageCount: 1,
@@ -162,6 +169,25 @@ export const fetchFoodData = async (query: string, page: number): Promise<{ page
                         protein: parseInt(food.protein, 10),
                     })),
                 ];
+            }
+
+            // If query is a barcode/EAN, use the same search method as barcode scanning
+            if (isBarcodeQuery(query)) {
+                const ean = query.trim();
+                const productByEAN = await fetchProductByEAN(ean);
+                if (productByEAN) {
+                    // Check if product is not already in results (avoid duplicates)
+                    const isDuplicate = result.products.some(
+                        (p) => p.ean === productByEAN.ean
+                    );
+
+                    if (!isDuplicate) {
+                        result.products = [productByEAN, ...result.products];
+                    }
+                }
+
+                // Return early for barcode queries since we've already searched by EAN
+                return result;
             }
         }
 

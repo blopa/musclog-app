@@ -1,16 +1,17 @@
 import { NavigationProp, useRoute } from '@react-navigation/native';
+import { useFocusEffect } from 'expo-router';
 // import fetch from 'isomorphic-fetch';
 import { fetch } from 'expo/fetch';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
-import { Appbar, Button, Checkbox, Text, useTheme } from 'react-native-paper';
+import { ActivityIndicator, Appbar, Button, Checkbox, Text, useTheme } from 'react-native-paper';
 
 import CompletionModal from '@/components/CompletionModal';
 import CustomTextInput from '@/components/CustomTextInput';
 import { Screen } from '@/components/Screen';
 import { CustomThemeColorsType, CustomThemeType } from '@/utils/colors';
-import { addFood } from '@/utils/database';
+import { addFood, getFood, updateFood } from '@/utils/database';
 import { getCurrentTimestampISOString } from '@/utils/date';
 import { updateRecentFood } from '@/utils/storage';
 import { formatFloatNumericInputText, generateHash } from '@/utils/string';
@@ -24,17 +25,20 @@ const HIDDEN_FIELDS = ['data_id', 'created_at', 'deleted_at'] as GoogleFormFoodF
 
 type RouteParams = {
     foodName?: string;
+    id?: string;
+    productCode?: string;
 };
 
 const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const route = useRoute();
-    const { foodName = '' } = (route.params as RouteParams) || {};
+    const { foodName = '', id, productCode = '' } = (route.params as RouteParams) || {};
     const { t } = useTranslation();
     const { colors, dark } = useTheme<CustomThemeType>();
     const styles = makeStyles(colors, dark);
 
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
+    const [isLoading, setIsLoading] = useState(!!id);
     const [foodId, setFoodId] = useState<number | undefined>(undefined);
     const [isFavoriteFood, setIsFavoriteFood] = useState<boolean>(false);
 
@@ -46,19 +50,88 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
     const [formData, setFormData] = useState(initialFormState);
 
+    const loadFood = useCallback(async () => {
+        if (!id) {
+            setIsLoading(false);
+            return;
+        }
+
+        try {
+            setIsLoading(true);
+            const food = await getFood(Number(id));
+            if (food) {
+                // Map food data to form fields
+                const fieldMap: { [key: string]: string } = {};
+                form.fields.forEach((field) => {
+                    const { label } = field;
+                    let value = '';
+
+                    if (label === 'name') {
+                        value = food.name || '';
+                    } else if (label === 'product_code') {
+                        value = food.productCode || '';
+                    } else if (label === 'brand') {
+                        value = food.brand || '';
+                    } else if (label === 'calories') {
+                        value = food.calories?.toString() || '';
+                    } else if (label === 'protein') {
+                        value = food.protein?.toString() || '';
+                    } else if (label === 'total_carbohydrate') {
+                        value = food.totalCarbohydrate?.toString() || '';
+                    } else if (label === 'total_fat') {
+                        value = food.totalFat?.toString() || '';
+                    } else if (label === 'sugar') {
+                        value = food.sugar?.toString() || '';
+                    } else if (label === 'fiber') {
+                        value = food.fiber?.toString() || '';
+                    } else if (label === 'alcohol') {
+                        value = food.alcohol?.toString() || '';
+                    }
+
+                    if (value) {
+                        fieldMap[field.id] = value;
+                    }
+                });
+
+                setFormData((prevData) => ({ ...prevData, ...fieldMap }));
+                setIsFavoriteFood(food.isFavorite || false);
+            }
+        } catch (error) {
+            console.error('Failed to load food:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [id]);
+
+    useFocusEffect(
+        useCallback(() => {
+            loadFood();
+        }, [loadFood])
+    );
+
     const handleCloseConfirmationModal = useCallback(() => {
         setIsModalVisible(false);
-        navigation.navigate('foodSearch', { foodId });
-    }, [foodId, navigation]);
+        if (id) {
+            navigation.navigate('listFoods');
+        } else {
+            navigation.navigate('foodSearch', { foodId });
+        }
+    }, [foodId, id, navigation]);
 
     useEffect(() => {
-        if (foodName) {
+        if (foodName && !id) {
             setFormData((prevData) => ({
                 ...prevData,
                 [form.fields.find((f) => f.label === 'name')?.id || '']: foodName,
             }));
         }
-    }, [foodName]);
+        if (productCode && !id) {
+            setFormData((prevData) => ({
+                ...prevData,
+                [form.fields.find((f) => f.label === 'product_code')?.id || '']: productCode,
+            }));
+        }
+    }, [foodName, productCode, id]);
 
     // Update the form data on text input change
     const handleInputChange = useCallback((id: string, value: string) => {
@@ -149,13 +222,18 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
             zinc: parseFloat(urlParams.get('entry.19181913') || '0'),
         };
 
-        const foodId = await addFood(food);
-        await updateRecentFood(foodId);
-
-        // only set the food id if the user came
-        // from the food search screen
-        if (foodName) {
-            setFoodId(foodId);
+        if (id) {
+            // Update existing food
+            await updateFood(Number(id), food);
+            setFoodId(Number(id));
+        } else {
+            // Create new food
+            const newFoodId = await addFood(food);
+            await updateRecentFood(newFoodId);
+            // only set the food id if the user came from the food search screen
+            if (foodName) {
+                setFoodId(newFoodId);
+            }
         }
 
         try {
@@ -192,81 +270,93 @@ const CreateFood = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
     return (
         <Screen style={styles.container}>
-            <CompletionModal
-                buttonText={t('ok')}
-                isModalVisible={isModalVisible}
-                onClose={handleCloseConfirmationModal}
-                title={t('form_submitted_successfully')}
-            />
-            <Appbar.Header
-                mode="small"
-                statusBarHeight={0}
-                style={styles.appbarHeader}
-            >
-                <Appbar.Content
-                    title={t('create_food')}
-                    titleStyle={styles.appbarTitle}
-                />
-                <Button
-                    mode="outlined"
-                    onPress={() => {
-                        resetScreenData();
-                        navigation.navigate('foodSearch');
-                    }}
-                    textColor={colors.onPrimary}
-                >
-                    {t('cancel')}
-                </Button>
-            </Appbar.Header>
-            <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-                {form.fields
-                    .filter((field) => !HIDDEN_FIELDS.includes(field.label as GoogleFormFoodFoodLabelType))
-                    .map((field) => {
-                        const isNumericField = !textFields.includes(field.label as GoogleFormFoodFoodLabelType);
-
-                        return (
-                            <View key={field.id} style={styles.formGroup}>
-                                <Text style={styles.label}>
-                                    {t(`google_form.${field.label}`)} {field.required ? <Text style={styles.required}>*</Text> : null}
-                                </Text>
-                                <CustomTextInput
-                                    keyboardType={isNumericField ? 'numeric' : 'default'}
-                                    onChangeText={(text) => {
-                                        const formattedText = isNumericField ? formatFloatNumericInputText(text) : text;
-                                        if (formattedText) {
-                                            handleInputChange(field.id, formattedText);
-                                        }
-                                    }}
-                                    placeholder={t(`google_form.${field.label}`)}
-                                    value={formData[field.id]}
-                                />
-                            </View>
-                        );
-                    })}
-                <View style={styles.checkboxContainer}>
-                    <Checkbox
-                        onPress={() => setIsFavoriteFood(!isFavoriteFood)}
-                        status={isFavoriteFood ? 'checked' : 'unchecked'}
-                    />
-                    <Pressable
-                        onPress={() => setIsFavoriteFood(!isFavoriteFood)}
-                    >
-                        <Text style={styles.checkboxLabel}>
-                            {t('favorite')}
-                        </Text>
-                    </Pressable>
+            {isLoading ? (
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator color={colors.primary} size="large" />
                 </View>
-            </ScrollView>
-            <View style={styles.footer}>
-                <Button
-                    disabled={isSaving}
-                    mode="contained"
-                    onPress={handleSubmitForm}
-                    style={styles.button}
-                >
-                    {t('submit')}
-                </Button>
-            </View>
+            ) : (
+                <>
+                    <CompletionModal
+                        buttonText={t('ok')}
+                        isModalVisible={isModalVisible}
+                        onClose={handleCloseConfirmationModal}
+                        title={id ? t('food_updated_successfully') : t('form_submitted_successfully')}
+                    />
+                    <Appbar.Header
+                        mode="small"
+                        statusBarHeight={0}
+                        style={styles.appbarHeader}
+                    >
+                        <Appbar.Content
+                            title={id ? t('edit_food') : t('create_food')}
+                            titleStyle={styles.appbarTitle}
+                        />
+                        <Button
+                            mode="outlined"
+                            onPress={() => {
+                                resetScreenData();
+                                if (id) {
+                                    navigation.navigate('listFoods');
+                                } else {
+                                    navigation.navigate('foodSearch');
+                                }
+                            }}
+                            textColor={colors.onPrimary}
+                        >
+                            {t('cancel')}
+                        </Button>
+                    </Appbar.Header>
+                    <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+                        {form.fields
+                            .filter((field) => !HIDDEN_FIELDS.includes(field.label as GoogleFormFoodFoodLabelType))
+                            .map((field) => {
+                                const isNumericField = !textFields.includes(field.label as GoogleFormFoodFoodLabelType);
+
+                                return (
+                                    <View key={field.id} style={styles.formGroup}>
+                                        <Text style={styles.label}>
+                                            {t(`google_form.${field.label}`)} {field.required ? <Text style={styles.required}>*</Text> : null}
+                                        </Text>
+                                        <CustomTextInput
+                                            keyboardType={isNumericField ? 'numeric' : 'default'}
+                                            onChangeText={(text) => {
+                                                const formattedText = isNumericField ? formatFloatNumericInputText(text) : text;
+                                                if (formattedText) {
+                                                    handleInputChange(field.id, formattedText);
+                                                }
+                                            }}
+                                            placeholder={t(`google_form.${field.label}`)}
+                                            value={formData[field.id]}
+                                        />
+                                    </View>
+                                );
+                            })}
+                        <View style={styles.checkboxContainer}>
+                            <Checkbox
+                                onPress={() => setIsFavoriteFood(!isFavoriteFood)}
+                                status={isFavoriteFood ? 'checked' : 'unchecked'}
+                            />
+                            <Pressable
+                                onPress={() => setIsFavoriteFood(!isFavoriteFood)}
+                            >
+                                <Text style={styles.checkboxLabel}>
+                                    {t('favorite')}
+                                </Text>
+                            </Pressable>
+                        </View>
+                    </ScrollView>
+                    <View style={styles.footer}>
+                        <Button
+                            disabled={isSaving}
+                            mode="contained"
+                            onPress={handleSubmitForm}
+                            style={styles.button}
+                        >
+                            {isSaving ? t('saving') : (id ? t('update') : t('submit'))}
+                        </Button>
+                    </View>
+                </>
+            )}
         </Screen>
     );
 };
@@ -315,6 +405,11 @@ const makeStyles = (colors: CustomThemeColorsType, dark: boolean) => StyleSheet.
         fontSize: 16,
         fontWeight: '600',
         marginBottom: 8,
+    },
+    loadingContainer: {
+        alignItems: 'center',
+        flex: 1,
+        justifyContent: 'center',
     },
     required: {
         color: colors.error,

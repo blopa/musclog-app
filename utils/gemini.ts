@@ -974,7 +974,8 @@ export async function extractMacrosFromLabelPhoto(photoUri: string) {
 
     const functionDeclarations = getMacrosEstimationFunctions(
         'Extracts the macronutrients of a food label from a photo',
-        'extracted'
+        'extracted',
+        true // Include barcode for label extraction
     ) as FunctionDeclaration[];
     const tools: Tool[] = [{ functionDeclarations }];
 
@@ -986,6 +987,7 @@ export async function extractMacrosFromLabelPhoto(photoUri: string) {
                 text: [
                     'You are a very powerful AI, trained to extract the macronutrients of a food label from the photo provided',
                     'Use OCR to extract the text from the image, then parse the text to extract the macronutrients.',
+                    'If a barcode/EAN code is visible on the label, extract it as well (typically 8-14 digits).',
                     'Respond ONLY with the function call. Do NOT include any explanatory text, commentary, or greetings.',
                 ].join('\n'),
             }],
@@ -1029,6 +1031,7 @@ export async function extractMacrosFromLabelPhoto(photoUri: string) {
         }
 
         return {
+            barcode: '',
             carbs: 0,
             fat: 0,
             grams: 0,

@@ -187,7 +187,7 @@ const FoodTrackingModal = ({
                 calories: normalizedMacros.kcal,
                 isFavorite: isFavoriteFood,
                 name: userNutrition.name,
-                productCode: food?.productCode,
+                productCode: food?.productCode || (food as any)?.ean || undefined,
                 protein: normalizedMacros.protein,
                 totalCarbohydrate: normalizedMacros.carbs,
                 totalFat: normalizedMacros.fat,
@@ -214,7 +214,7 @@ const FoodTrackingModal = ({
 
         setUnitAmount(GRAM_BASE.toString());
         handleOnClose();
-    }, [calculatedValues.kcal, calculatedValues.carbs, calculatedValues.fat, calculatedValues.protein, selectedDate, unitAmount, mealType, editableName, food?.productTitle, food?.productCode, t, userNutritionId, handleOnClose, isFavoriteFood]);
+    }, [calculatedValues.kcal, calculatedValues.carbs, calculatedValues.fat, calculatedValues.protein, selectedDate, unitAmount, mealType, editableName, food?.productTitle, food?.productCode || (food as any)?.ean, t, userNutritionId, handleOnClose, isFavoriteFood]);
 
     useEffect(() => {
         if (food) {

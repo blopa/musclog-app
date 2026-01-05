@@ -57,11 +57,13 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
             if (food) {
                 setSelectedFood({
                     carbs: food.totalCarbohydrate,
+                    ean: food.productCode,
                     fat: food.totalFat,
                     kcal: food.calories,
+                    productCode: food.productCode,
                     productTitle: food.name,
                     protein: food.protein,
-                });
+                } as any);
 
                 setIsModalVisible(true);
                 setIsLoading(false);
@@ -155,7 +157,11 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
             }
             return;
         }
-        setSelectedFood(food);
+        // Convert MusclogApiFoodInfoType to FoodTrackingType format
+        setSelectedFood({
+            ...food,
+            productCode: food.ean,
+        } as any);
         setIsModalVisible(true);
     }, [route.params, navigation, t]);
 
@@ -204,7 +210,12 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
     const openAddNewFoodModal = useCallback(() => {
         resetScreenData();
-        navigation.navigate('createFood', { foodName: searchQuery });
+        // Check if search query is a barcode (only numbers)
+        const isBarcode = /^\d+$/.test(searchQuery.trim()) && searchQuery.trim().length >= 4;
+        navigation.navigate('createFood', {
+            foodName: isBarcode ? '' : searchQuery,
+            productCode: isBarcode ? searchQuery.trim() : '',
+        });
     }, [navigation, resetScreenData, searchQuery]);
 
     return (

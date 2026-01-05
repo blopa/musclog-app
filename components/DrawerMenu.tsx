@@ -6,7 +6,7 @@ import {
     DrawerItem,
     DrawerItemList,
 } from '@react-navigation/drawer';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { NavigationContainer, NavigationProp, useNavigation } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View } from 'react-native';
@@ -30,6 +30,7 @@ import FoodSearch from '@/app/foodSearch';
 import Index from '@/app/index';
 import ListExercises from '@/app/listExercises';
 import ListFitnessGoals from '@/app/listFitnessGoals';
+import ListFoods from '@/app/listFoods';
 import ListMeals from '@/app/listMeals';
 import ListUserMeasurements from '@/app/listUserMeasurements';
 import ListUserMetrics from '@/app/listUserMetrics';
@@ -124,6 +125,7 @@ export default function DrawerMenu() {
             { component: ListWorkouts, label: 'workouts', name: 'listWorkouts' },
             { component: FoodLog, label: 'food_log', name: 'foodLog' },
             { component: ListMeals, label: 'track_meals', name: 'listMeals' },
+            { component: ListFoods, label: 'manage_foods', name: 'listFoods' },
             { component: RecentWorkouts, label: 'recent_workouts', name: 'recentWorkouts' },
             { component: UserMetricsCharts, hidden: !showUserMetrics, label: 'user_metrics_charts', name: 'userMetricsCharts' },
             { component: Settings, label: 'settings', name: 'settings' },
@@ -199,46 +201,48 @@ export default function DrawerMenu() {
     }
 
     return (
-        <Drawer.Navigator
-            drawerContent={(props) => (
-                <CustomDrawerContent
-                    {...props}
-                    isAiEnabled={isAiEnabled}
-                    unreadMessages={unreadMessages}
-                />
-            )}
-            initialRouteName="index"
-            screenOptions={{
-                headerBackground: () => (
-                    <View
-                        style={{
-                            backgroundColor: theme.colors.background,
-                            // height: StatusBar.currentHeight || 0,
+        <NavigationContainer>
+            <Drawer.Navigator
+                drawerContent={(props) => (
+                    <CustomDrawerContent
+                        {...props}
+                        isAiEnabled={isAiEnabled}
+                        unreadMessages={unreadMessages}
+                    />
+                )}
+                initialRouteName="index"
+                screenOptions={{
+                    headerBackground: () => (
+                        <View
+                            style={{
+                                backgroundColor: theme.colors.background,
+                                // height: StatusBar.currentHeight || 0,
+                            }}
+                        />
+                    ),
+                    headerBackgroundContainerStyle: {
+                        backgroundColor: theme.colors.background,
+                    },
+                    headerTintColor: theme.colors.onBackground,
+                    headerTitleStyle: {
+                        fontWeight: 'bold',
+                    },
+                }}
+            >
+                {routes.map((route) => (
+                    <Drawer.Screen
+                        component={route.component}
+                        key={route.name}
+                        name={route.name}
+                        options={{
+                            drawerItemStyle: route.hidden ? { display: 'none' } : undefined,
+                            drawerLabel: t(route.label),
+                            headerTitle: '',
                         }}
                     />
-                ),
-                headerBackgroundContainerStyle: {
-                    backgroundColor: theme.colors.background,
-                },
-                headerTintColor: theme.colors.onBackground,
-                headerTitleStyle: {
-                    fontWeight: 'bold',
-                },
-            }}
-        >
-            {routes.map((route) => (
-                <Drawer.Screen
-                    component={route.component}
-                    key={route.name}
-                    name={route.name}
-                    options={{
-                        drawerItemStyle: route.hidden ? { display: 'none' } : undefined,
-                        drawerLabel: t(route.label),
-                        headerTitle: '',
-                    }}
-                />
-            ))}
-        </Drawer.Navigator>
+                ))}
+            </Drawer.Navigator>
+        </NavigationContainer>
     );
 }
 

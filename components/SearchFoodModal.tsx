@@ -169,6 +169,7 @@ const SearchFoodModal = ({
 
                 const food: FoodTrackingType = {
                     ...normalizedMacros,
+                    productCode: ('barcode' in macros && typeof macros.barcode === 'string' && macros.barcode) ? macros.barcode : undefined,
                     productTitle: macros.name,
                 };
 

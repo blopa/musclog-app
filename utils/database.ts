@@ -2584,11 +2584,11 @@ export const searchFoodByName = async (searchTerm: string): Promise<FoodReturnTy
     try {
         const query = `
             SELECT * FROM "Food"
-            WHERE "name" LIKE ? 
+            WHERE ("name" LIKE ? OR "productCode" LIKE ?)
             AND ("deletedAt" IS NULL OR "deletedAt" = '')
         `;
         const searchPattern = `%${searchTerm}%`;
-        return database.getAllSync<FoodReturnType>(query, [searchPattern]);
+        return database.getAllSync<FoodReturnType>(query, [searchPattern, searchPattern]);
     } catch (error) {
         throw error;
     }
@@ -2888,7 +2888,7 @@ export const updateFood = async (id: number, food: FoodInsertType): Promise<numb
 
     try {
         database.runSync(
-            'UPDATE "Food" SET "name" = ?, "calories" = ?, "protein" = ?, "alcohol" = ?, "totalCarbohydrate" = ?, "sugar" = ?, "fiber" = ?, "totalFat" = ?, "createdAt" = ?, "deletedAt" = ?, "isFavorite" = ?, "dataId" = ? WHERE "id" = ?',
+            'UPDATE "Food" SET "name" = ?, "calories" = ?, "protein" = ?, "alcohol" = ?, "totalCarbohydrate" = ?, "sugar" = ?, "fiber" = ?, "totalFat" = ?, "createdAt" = ?, "deletedAt" = ?, "isFavorite" = ?, "dataId" = ?, "productCode" = ?, "brand" = ? WHERE "id" = ?',
             [
                 food.name || existingFood?.name || '',
                 food.calories || existingFood?.calories || 0,
@@ -2903,6 +2903,8 @@ export const updateFood = async (id: number, food: FoodInsertType): Promise<numb
                 food.isFavorite ?? existingFood?.isFavorite ?? 0,
                 // food.isFavorite ? 1 : (existingFood?.isFavorite ? 1 : 0),
                 food.dataId || existingFood?.dataId || generateHash(),
+                food.productCode !== undefined ? food.productCode : (existingFood?.productCode || ''),
+                food.brand !== undefined ? food.brand : (existingFood?.brand || ''),
                 id,
             ]
         );
