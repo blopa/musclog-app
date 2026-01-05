@@ -82,19 +82,41 @@ export function MasterLayout({ children }: MasterLayoutProps) {
             </Pressable>
 
             {/* Food */}
-            <Pressable className="items-center gap-1">
-              <View className="h-10 w-16 items-center justify-center">
-                <UtensilsCrossed size={24} color="#4b5563" strokeWidth={2} />
+            <Pressable className="items-center gap-1" onPress={() => router.push('/food')}>
+              <View
+                className={`h-10 w-16 items-center justify-center rounded-lg ${
+                  isActive('/food') ? 'bg-[#0f2419]' : ''
+                }`}>
+                <UtensilsCrossed
+                  size={24}
+                  color={isActive('/food') ? '#22c55e' : '#4b5563'}
+                  strokeWidth={isActive('/food') ? 2.5 : 2}
+                />
               </View>
-              <Text className="text-xs text-gray-600">Food</Text>
+              <Text
+                className={`text-xs font-medium ${isActive('/food') ? 'text-[#22c55e]' : 'text-gray-600'}`}>
+                {t('home.navigation.food')}
+              </Text>
             </Pressable>
 
             {/* Progress */}
-            <Pressable className="items-center gap-1">
-              <View className="h-10 w-16 items-center justify-center">
-                <BarChart3 size={24} color="#4b5563" strokeWidth={2} />
+            <Pressable className="items-center gap-1" onPress={() => router.push('/progress')}>
+              <View
+                className={`h-10 w-16 items-center justify-center rounded-lg ${
+                  isActive('/progress') ? 'bg-[#0f2419]' : ''
+                }`}>
+                <BarChart3
+                  size={24}
+                  color={isActive('/progress') ? '#22c55e' : '#4b5563'}
+                  strokeWidth={isActive('/progress') ? 2.5 : 2}
+                />
               </View>
-              <Text className="text-xs text-gray-600">{t('home.navigation.progress')}</Text>
+              <Text
+                className={`text-xs font-medium ${
+                  isActive('/progress') ? 'text-[#22c55e]' : 'text-gray-600'
+                }`}>
+                {t('home.navigation.progress')}
+              </Text>
             </Pressable>
           </View>
         </SafeAreaView>
