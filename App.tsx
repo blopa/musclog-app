@@ -1,10 +1,11 @@
 import { View, Text, Image, Pressable, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Bell, Dumbbell, UtensilsCrossed } from 'lucide-react-native';
+import { Bell } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { MasterLayout } from './components/MasterLayout';
 import { RecentWorkoutsCard } from './components/RecentWorkoutsCard';
 import { CircularArrow } from './components/CircularArrow';
+import { ActionButton } from './components/ActionButton';
 
 import './lang/lang';
 import './global.css';
@@ -169,29 +170,8 @@ export default function App() {
 
         {/* Action Buttons */}
         <View className="mx-6 mb-8 flex-row gap-4">
-          <Pressable className="relative min-h-[180px] flex-1 justify-between overflow-hidden rounded-3xl bg-[#22c55e] p-6">
-            <View className="h-12 w-12 items-center justify-center rounded-full bg-[#16a34a]">
-              <Dumbbell size={24} color="#0a1f1a" strokeWidth={2.5} />
-            </View>
-            <Text className="text-2xl font-bold leading-tight text-[#0a1f1a]">
-              {t('home.actions.startWorkout')}
-            </Text>
-            <View className="absolute -bottom-6 -right-6 opacity-[0.08]">
-              <Dumbbell size={160} color="#0a1f1a" strokeWidth={1} />
-            </View>
-          </Pressable>
-
-          <Pressable className="relative min-h-[180px] flex-1 justify-between overflow-hidden rounded-3xl bg-[#1a2f2a] p-6">
-            <View className="h-12 w-12 items-center justify-center rounded-full bg-[#243d37]">
-              <UtensilsCrossed size={24} color="#ffffff" strokeWidth={2.5} />
-            </View>
-            <Text className="text-2xl font-bold leading-tight text-white">
-              {t('home.actions.trackFood')}
-            </Text>
-            <View className="absolute -bottom-6 -right-6 opacity-[0.08]">
-              <UtensilsCrossed size={160} color="#6b7280" strokeWidth={1} />
-            </View>
-          </Pressable>
+          <ActionButton variant="workout" label={t('home.actions.startWorkout')} />
+          <ActionButton variant="food" label={t('home.actions.trackFood')} />
         </View>
 
         {/* Recent Workouts */}
