@@ -60,26 +60,27 @@ export default function WorkoutsScreen() {
       <View className="flex-1">
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
           {/* Header */}
-          <View className="flex-row items-center justify-between px-6 pb-6 pt-8">
-            <View className="flex-1">
+          <View className="px-6 pt-8">
+            <View className="flex-row items-center justify-between">
               <GradientText
                 colors={['#a78bfa', '#60a5fa', '#34d399']}
                 style={{ fontSize: 36, fontWeight: 'bold' }}>
                 My Workouts
               </GradientText>
+              <View className="ml-4 flex-row gap-4">
+                <Pressable className="rounded-lg p-2">
+                  <Search size={24} color="#ffffff" />
+                </Pressable>
+                <Pressable className="rounded-lg p-2">
+                  <SlidersHorizontal size={24} color="#ffffff" />
+                </Pressable>
+              </View>
             </View>
-            <View className="flex-row gap-4">
-              <Pressable className="rounded-lg p-2">
-                <Search size={24} color="#ffffff" />
-              </Pressable>
-              <Pressable className="rounded-lg p-2">
-                <SlidersHorizontal size={24} color="#ffffff" />
-              </Pressable>
-            </View>
+            {/* Add spacing below header */}
+            <View style={{ height: 20 }} />
+            {/* Filter Tabs */}
+            <FilterTabs tabs={FILTER_TABS} activeTab={activeFilter} onTabChange={setActiveFilter} />
           </View>
-
-          {/* Filter Tabs */}
-          <FilterTabs tabs={FILTER_TABS} activeTab={activeFilter} onTabChange={setActiveFilter} />
 
           {/* Workouts List */}
           <View className="mx-6 mb-8 gap-4">
