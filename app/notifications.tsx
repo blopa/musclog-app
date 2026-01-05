@@ -124,8 +124,8 @@ export default function NotificationsScreen() {
                       title={notification.title}
                       description={notification.description}
                       time={notification.time}
-                      unread={notification.unread}
-                      hasAction={notification.hasAction}
+                      unread={'unread' in notification ? notification.unread : undefined}
+                      hasAction={'hasAction' in notification ? notification.hasAction : undefined}
                       onActionPress={() => {
                         // Handle start workout action
                       }}
