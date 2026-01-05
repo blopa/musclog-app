@@ -206,17 +206,17 @@ export default function App() {
                   <Text className="mb-2 text-sm text-gray-400">
                     {workout.date} • {workout.duration}
                   </Text>
-                  <View className="flex-row items-center gap-3">
-                    <View className="flex-row items-center gap-1">
-                      <Flame size={16} color="#f97316" />
-                      <Text className="text-sm font-medium text-orange-500">
+                  <View className="flex-row items-center gap-2">
+                    <View className="flex-row items-center gap-1 rounded-full bg-[#0f251f] px-2.5 py-1">
+                      <Flame size={14} color="#f97316" />
+                      <Text className="text-xs font-medium text-orange-500">
                         {workout.calories}
                       </Text>
                     </View>
                     {workout.prs !== null && (
-                      <View className="flex-row items-center gap-1">
+                      <View className="flex-row items-center gap-1 rounded-full bg-[#0f251f] px-2.5 py-1">
                         <Text className="text-xs">💪</Text>
-                        <Text className="text-sm font-medium text-[#22c55e]">
+                        <Text className="text-xs font-medium text-[#22c55e]">
                           {workout.prs} PRS
                         </Text>
                       </View>
