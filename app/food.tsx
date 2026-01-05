@@ -1,6 +1,9 @@
 import { View, Text, ScrollView, Pressable } from 'react-native';
 import { ChevronLeft, ChevronRight, Calendar, Plus, ScanLine, Grid3x3 } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useTranslation } from 'react-i18next';
+import { format } from 'date-fns';
+import i18n, { LOCALE_MAP, LanguageKeys } from '../lang/lang';
 import { MasterLayout } from '../components/MasterLayout';
 import { MacroCard } from '../components/MacroCard';
 import { FoodItemCard } from '../components/FoodItemCard';
@@ -69,6 +72,12 @@ const FOOD_DATA = {
 };
 
 export default function FoodScreen() {
+  const { t } = useTranslation();
+  const currentLanguage = (i18n.language || 'en-US') as LanguageKeys;
+  const locale = LOCALE_MAP[currentLanguage] || LOCALE_MAP['en-US'];
+  const today = new Date();
+  const formattedDate = format(today, 'MMM d', { locale });
+
   return (
     <MasterLayout>
       <View className="flex-1 bg-[#0a0f0d]">
@@ -79,7 +88,9 @@ export default function FoodScreen() {
               <ChevronLeft size={24} color="#ffffff" />
             </Pressable>
             <View className="flex-row items-center gap-2">
-              <Text className="text-xl font-semibold text-white">{FOOD_DATA.date}</Text>
+              <Text className="text-xl font-semibold text-white">
+                {t('food.header.today')}, {formattedDate}
+              </Text>
               <Calendar size={20} color="#34d399" />
             </View>
             <Pressable>
@@ -98,7 +109,7 @@ export default function FoodScreen() {
               end={{ x: 1, y: 1 }}
               className="rounded-3xl border border-gray-800/50 p-6">
               <View className="mb-6">
-                <Text className="mb-2 text-sm text-gray-400">Calories Remaining</Text>
+                <Text className="mb-2 text-sm text-gray-400">{t('food.caloriesRemaining')}</Text>
                 <View className="mb-1 flex-row items-baseline gap-2">
                   <Text className="text-6xl font-bold text-white">
                     {FOOD_DATA.calories.remaining.toLocaleString()}
@@ -126,21 +137,21 @@ export default function FoodScreen() {
               {/* Macros */}
               <View className="flex-row gap-3">
                 <MacroCard
-                  name="Protein"
+                  name={t('food.macros.protein')}
                   percentage={FOOD_DATA.macros.protein.percentage}
                   amount={FOOD_DATA.macros.protein.amount}
                   color={FOOD_DATA.macros.protein.color}
                   progressColor={FOOD_DATA.macros.protein.progressColor}
                 />
                 <MacroCard
-                  name="Carbs"
+                  name={t('food.macros.carbs')}
                   percentage={FOOD_DATA.macros.carbs.percentage}
                   amount={FOOD_DATA.macros.carbs.amount}
                   color={FOOD_DATA.macros.carbs.color}
                   progressColor={FOOD_DATA.macros.carbs.progressColor}
                 />
                 <MacroCard
-                  name="Fat"
+                  name={t('food.macros.fat')}
                   percentage={FOOD_DATA.macros.fat.percentage}
                   amount={FOOD_DATA.macros.fat.amount}
                   color={FOOD_DATA.macros.fat.color}
@@ -153,7 +164,9 @@ export default function FoodScreen() {
             <View className="flex-row gap-4">
               <Pressable className="flex-1 flex-row items-center justify-center gap-3 rounded-2xl border border-gray-800/50 bg-[#141a17] py-4">
                 <ScanLine size={24} color="#34d399" />
-                <Text className="text-lg font-semibold text-white">Scan Barcode</Text>
+                <Text className="text-lg font-semibold text-white">
+                  {t('food.actions.scanBarcode')}
+                </Text>
               </Pressable>
 
               <Pressable className="relative flex-1 flex-row items-center justify-center gap-3 rounded-2xl border border-emerald-900/30 py-4">
@@ -164,12 +177,16 @@ export default function FoodScreen() {
                   className="absolute inset-0 rounded-2xl"
                 />
                 <Grid3x3 size={24} color="#ffffff" />
-                <Text className="text-lg font-semibold text-white">AI Camera</Text>
+                <Text className="text-lg font-semibold text-white">
+                  {t('food.actions.aiCamera')}
+                </Text>
               </Pressable>
             </View>
 
             {/* Breakfast Section */}
-            <MealSection title="Breakfast" totalCalories={FOOD_DATA.meals.breakfast.totalCalories}>
+            <MealSection
+              title={t('food.meals.breakfast')}
+              totalCalories={FOOD_DATA.meals.breakfast.totalCalories}>
               {FOOD_DATA.meals.breakfast.items.map((item) => (
                 <FoodItemCard
                   key={item.id}
@@ -182,7 +199,9 @@ export default function FoodScreen() {
             </MealSection>
 
             {/* Lunch Section */}
-            <MealSection title="Lunch" totalCalories={FOOD_DATA.meals.lunch.totalCalories}>
+            <MealSection
+              title={t('food.meals.lunch')}
+              totalCalories={FOOD_DATA.meals.lunch.totalCalories}>
               {FOOD_DATA.meals.lunch.items.map((item) => (
                 <FoodItemCard
                   key={item.id}

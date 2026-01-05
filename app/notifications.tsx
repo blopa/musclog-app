@@ -1,12 +1,17 @@
 import { View, Text, ScrollView, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Sparkles, Dumbbell, CheckCircle2, ThumbsUp, Clock } from 'lucide-react-native';
 import { MasterLayout } from '../components/MasterLayout';
 import { NotificationCard } from '../components/NotificationCard';
 
-const NOTIFICATIONS_DATA = [
-  {
-    section: 'TODAY',
+export default function NotificationsScreen() {
+  const router = useRouter();
+  const { t } = useTranslation();
+
+  const NOTIFICATIONS_DATA = [
+    {
+      section: t('notifications.sections.today'),
     items: [
       {
         id: 1,
@@ -37,7 +42,7 @@ const NOTIFICATIONS_DATA = [
     ],
   },
   {
-    section: 'YESTERDAY',
+    section: t('notifications.sections.yesterday'),
     items: [
       {
         id: 3,
@@ -70,7 +75,7 @@ const NOTIFICATIONS_DATA = [
     ],
   },
   {
-    section: 'EARLIER',
+    section: t('notifications.sections.earlier'),
     items: [
       {
         id: 5,
@@ -85,9 +90,6 @@ const NOTIFICATIONS_DATA = [
   },
 ];
 
-export default function NotificationsScreen() {
-  const router = useRouter();
-
   return (
     <MasterLayout>
       <View className="flex-1">
@@ -98,10 +100,10 @@ export default function NotificationsScreen() {
               <Pressable onPress={() => router.back()}>
                 <ArrowLeft size={24} color="#ffffff" />
               </Pressable>
-              <Text className="text-2xl font-bold text-white">Notifications</Text>
+              <Text className="text-2xl font-bold text-white">{t('notifications.header.title')}</Text>
             </View>
             <Pressable>
-              <Text className="text-sm font-semibold text-[#22c55e]">CLEAR ALL</Text>
+              <Text className="text-sm font-semibold text-[#22c55e]">{t('notifications.header.clearAll')}</Text>
             </Pressable>
           </View>
         </View>

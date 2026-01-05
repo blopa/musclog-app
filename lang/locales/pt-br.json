@@ -27,6 +27,7 @@
     "navigation": {
       "home": "Início",
       "workouts": "Treinos",
+      "food": "Comida",
       "progress": "Progresso",
       "schedule": "Agenda",
       "profile": "Perfil"
@@ -35,6 +36,42 @@
       "protein": "{{value}}G P",
       "carbs": "{{value}}G C",
       "fat": "{{value}}G G"
+    }
+  },
+  "food": {
+    "header": {
+      "today": "Hoje"
+    },
+    "caloriesRemaining": "Calorias Restantes",
+    "macros": {
+      "protein": "Proteína",
+      "carbs": "Carboidratos",
+      "fat": "Gordura"
+    },
+    "actions": {
+      "scanBarcode": "Escanear Código",
+      "aiCamera": "Câmera IA"
+    },
+    "meals": {
+      "breakfast": "Café da Manhã",
+      "lunch": "Almoço",
+      "dinner": "Jantar",
+      "snacks": "Lanches",
+      "addFood": "Adicionar Comida"
+    },
+    "common": {
+      "kcal": "kcal"
+    }
+  },
+  "notifications": {
+    "header": {
+      "title": "Notificações",
+      "clearAll": "LIMPAR TUDO"
+    },
+    "sections": {
+      "today": "HOJE",
+      "yesterday": "ONTEM",
+      "earlier": "ANTES"
     }
   }
 }

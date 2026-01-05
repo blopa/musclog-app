@@ -27,6 +27,7 @@
     "navigation": {
       "home": "Home",
       "workouts": "Workouts",
+      "food": "Food",
       "progress": "Progress",
       "schedule": "Schedule",
       "profile": "Profile"
@@ -35,6 +36,42 @@
       "protein": "{{value}}G P",
       "carbs": "{{value}}G C",
       "fat": "{{value}}G F"
+    }
+  },
+  "food": {
+    "header": {
+      "today": "Today"
+    },
+    "caloriesRemaining": "Calories Remaining",
+    "macros": {
+      "protein": "Protein",
+      "carbs": "Carbs",
+      "fat": "Fat"
+    },
+    "actions": {
+      "scanBarcode": "Scan Barcode",
+      "aiCamera": "AI Camera"
+    },
+    "meals": {
+      "breakfast": "Breakfast",
+      "lunch": "Lunch",
+      "dinner": "Dinner",
+      "snacks": "Snacks",
+      "addFood": "Add Food"
+    },
+    "common": {
+      "kcal": "kcal"
+    }
+  },
+  "notifications": {
+    "header": {
+      "title": "Notifications",
+      "clearAll": "CLEAR ALL"
+    },
+    "sections": {
+      "today": "TODAY",
+      "yesterday": "YESTERDAY",
+      "earlier": "EARLIER"
     }
   }
 }

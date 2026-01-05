@@ -27,6 +27,7 @@
     "navigation": {
       "home": "Home",
       "workouts": "Trainingen",
+      "food": "Voedsel",
       "progress": "Voortgang",
       "schedule": "Schema",
       "profile": "Profiel"
@@ -35,6 +36,42 @@
       "protein": "{{value}}G E",
       "carbs": "{{value}}G K",
       "fat": "{{value}}G V"
+    }
+  },
+  "food": {
+    "header": {
+      "today": "Vandaag"
+    },
+    "caloriesRemaining": "Resterende Calorieën",
+    "macros": {
+      "protein": "Eiwit",
+      "carbs": "Koolhydraten",
+      "fat": "Vet"
+    },
+    "actions": {
+      "scanBarcode": "Barcode Scannen",
+      "aiCamera": "AI Camera"
+    },
+    "meals": {
+      "breakfast": "Ontbijt",
+      "lunch": "Lunch",
+      "dinner": "Diner",
+      "snacks": "Tussendoortjes",
+      "addFood": "Voedsel Toevoegen"
+    },
+    "common": {
+      "kcal": "kcal"
+    }
+  },
+  "notifications": {
+    "header": {
+      "title": "Meldingen",
+      "clearAll": "ALLES WISSEN"
+    },
+    "sections": {
+      "today": " VANDAAG",
+      "yesterday": "GISTEREN",
+      "earlier": "EERDER"
     }
   }
 }
