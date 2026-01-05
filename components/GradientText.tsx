@@ -1,4 +1,4 @@
-import { Text, StyleSheet } from 'react-native';
+import { Platform, StyleSheet, Text } from 'react-native';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -9,6 +9,33 @@ type GradientTextProps = {
 };
 
 export function GradientText({ colors, style, children }: GradientTextProps) {
+  // For web, use a CSS-based approach with inline styles
+  if (Platform.OS === 'web') {
+    // const gradientId = `gradient-${Math.random().toString(36).substr(2, 9)}`;
+    const gradientStops = colors
+      .map((color, index) => {
+        const offset = (index / (colors.length - 1)) * 100;
+        return `${color} ${offset}%`;
+      })
+      .join(', ');
+
+    return (
+      <Text
+        style={[
+          style,
+          {
+            background: `linear-gradient(to right, ${gradientStops})`,
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+          },
+        ]}>
+        {children}
+      </Text>
+    );
+  }
+
+  // For native platforms, use MaskedView
   return (
     <MaskedView
       style={StyleSheet.flatten([{ flexDirection: 'row' }, style])}

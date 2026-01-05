@@ -13,7 +13,7 @@ type FilterTabsProps = {
 
 export function FilterTabs({ tabs, activeTab, onTabChange }: FilterTabsProps) {
   return (
-    <View className="mb-6 flex-row gap-3 px-5">
+    <View className="mb-6 flex-row gap-3 px-6">
       {tabs.map((tab) => {
         const isActive = activeTab === tab.id;
         return (

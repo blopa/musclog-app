@@ -60,7 +60,7 @@ export default function WorkoutsScreen() {
       <View className="flex-1">
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
           {/* Header */}
-          <View className="flex-row items-center justify-between px-5 pb-6 pt-8">
+          <View className="flex-row items-center justify-between px-6 pb-6 pt-8">
             <View className="flex-1">
               <GradientText
                 colors={['#a78bfa', '#60a5fa', '#34d399']}
@@ -82,7 +82,7 @@ export default function WorkoutsScreen() {
           <FilterTabs tabs={FILTER_TABS} activeTab={activeFilter} onTabChange={setActiveFilter} />
 
           {/* Workouts List */}
-          <View className="mb-6 gap-4 px-5">
+          <View className="mx-6 mb-8 gap-4">
             {/* Featured Workout */}
             <FeaturedWorkoutCard
               name={WORKOUTS_DATA.featured.name}
