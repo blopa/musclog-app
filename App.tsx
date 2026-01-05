@@ -233,7 +233,9 @@ export default function App() {
                     )}
                   </View>
                 </View>
-                <ChevronRight size={24} color="#4b5563" />
+                <View className="h-8 w-8 items-center justify-center rounded-full bg-[#243d37]">
+                  <ChevronRight size={18} color="#9ca3af" />
+                </View>
               </Pressable>
             ))}
           </View>
@@ -245,36 +247,41 @@ export default function App() {
 
           <View className="gap-3">
             {recentFoods.map((food) => (
-              <View key={food.id} className="rounded-2xl bg-[#1a2f2a] p-5">
-                <View className="mb-3 flex-row items-start justify-between">
-                  <View className="flex-row items-center gap-3">
-                    <Text className="text-4xl">{food.emoji}</Text>
-                    <View>
-                      <Text className="text-lg font-bold text-white">{food.name}</Text>
-                      <View className="mt-2 flex-row gap-2">
-                        <View className="rounded-full bg-[#0f251f] px-2.5 py-1">
-                          <Text className="text-xs text-gray-400">
-                            {t('home.macros.protein', { value: food.protein })}
-                          </Text>
-                        </View>
-                        <View className="rounded-full bg-[#0f251f] px-2.5 py-1">
-                          <Text className="text-xs text-gray-400">
-                            {t('home.macros.carbs', { value: food.carbs })}
-                          </Text>
-                        </View>
-                        <View className="rounded-full bg-[#0f251f] px-2.5 py-1">
-                          <Text className="text-xs text-gray-400">
-                            {t('home.macros.fat', { value: food.fat })}
-                          </Text>
+              <Pressable key={food.id} className="flex-row items-center gap-4 rounded-2xl bg-[#1a2f2a] p-5">
+                <View className="flex-1">
+                  <View className="mb-3 flex-row items-start justify-between">
+                    <View className="flex-row items-center gap-3">
+                      <Text className="text-4xl">{food.emoji}</Text>
+                      <View>
+                        <Text className="text-lg font-bold text-white">{food.name}</Text>
+                        <View className="mt-2 flex-row gap-2">
+                          <View className="rounded-full bg-[#0f251f] px-2.5 py-1">
+                            <Text className="text-xs text-gray-400">
+                              {t('home.macros.protein', { value: food.protein })}
+                            </Text>
+                          </View>
+                          <View className="rounded-full bg-[#0f251f] px-2.5 py-1">
+                            <Text className="text-xs text-gray-400">
+                              {t('home.macros.carbs', { value: food.carbs })}
+                            </Text>
+                          </View>
+                          <View className="rounded-full bg-[#0f251f] px-2.5 py-1">
+                            <Text className="text-xs text-gray-400">
+                              {t('home.macros.fat', { value: food.fat })}
+                            </Text>
+                          </View>
                         </View>
                       </View>
                     </View>
+                    <Text className="text-lg font-bold text-white">
+                      {food.calories} {t('common.kcal')}
+                    </Text>
                   </View>
-                  <Text className="text-lg font-bold text-white">
-                    {food.calories} {t('common.kcal')}
-                  </Text>
                 </View>
-              </View>
+                <View className="h-8 w-8 items-center justify-center rounded-full bg-[#243d37]">
+                  <ChevronRight size={18} color="#9ca3af" />
+                </View>
+              </Pressable>
             ))}
           </View>
         </View>
