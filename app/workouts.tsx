@@ -60,7 +60,7 @@ export default function WorkoutsScreen() {
       <View className="flex-1">
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
           {/* Header */}
-          <View className="px-6 pt-8">
+          <View className="px-6 py-6">
             <View className="flex-row items-center justify-between">
               <GradientText
                 colors={['#a78bfa', '#60a5fa', '#34d399']}
