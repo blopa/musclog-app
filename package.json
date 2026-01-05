@@ -42,6 +42,7 @@
     "i18next": "^25.7.3",
     "intl-pluralrules": "^2.0.1",
     "lucide-react-native": "^0.562.0",
+    "modern-screenshot": "^4.6.7",
     "nativewind": "latest",
     "react": "19.1.0",
     "react-dom": "19.1.0",
