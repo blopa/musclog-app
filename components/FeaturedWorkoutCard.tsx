@@ -1,5 +1,6 @@
 import { View, Text, Image, Pressable, ImageSourcePropType } from 'react-native';
-import { Play, MoreVertical, Clock } from 'lucide-react-native';
+import { MoreVertical, Clock } from 'lucide-react-native';
+import { StartWorkoutButton } from './StartWorkoutButton';
 
 type FeaturedWorkoutCardProps = {
   name: string;
@@ -39,12 +40,7 @@ export function FeaturedWorkoutCard({
       </View>
 
       <View className="flex-row gap-3">
-        <Pressable
-          className="flex-1 flex-row items-center justify-center gap-2 rounded-2xl bg-[#22c55e] py-4"
-          onPress={onStart}>
-          <Play size={20} color="#000000" fill="#000000" />
-          <Text className="font-bold text-black">Start Workout</Text>
-        </Pressable>
+        <StartWorkoutButton variant="primary" onPress={onStart} />
         <Pressable
           className="w-14 items-center justify-center rounded-2xl bg-[#1a3d35]"
           onPress={onMore}>

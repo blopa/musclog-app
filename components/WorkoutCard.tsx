@@ -1,5 +1,6 @@
 import { View, Text, Image, Pressable, ImageSourcePropType } from 'react-native';
-import { Archive, ArrowRight } from 'lucide-react-native';
+import { Archive } from 'lucide-react-native';
+import { StartWorkoutButton } from './StartWorkoutButton';
 
 type WorkoutCardProps = {
   name: string;
@@ -40,10 +41,7 @@ export function WorkoutCard({
           <Archive size={16} color="#9ca3af" />
           <Text className="text-sm text-gray-400">Archive</Text>
         </Pressable>
-        <Pressable className="flex-row items-center gap-2" onPress={onStart}>
-          <Text className="font-semibold text-[#22c55e]">Start</Text>
-          <ArrowRight size={20} color="#22c55e" />
-        </Pressable>
+        <StartWorkoutButton variant="secondary" onPress={onStart} />
       </View>
     </View>
   );
