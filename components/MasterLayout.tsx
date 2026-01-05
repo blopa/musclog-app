@@ -23,7 +23,7 @@ export function MasterLayout({ children }: MasterLayoutProps) {
       <View className="flex-1">{children}</View>
 
       {/* Bottom Navigation */}
-      <View className="absolute bottom-0 left-0 right-0 z-10 border-t border-[#1a2f2a] bg-[#0f251f]">
+      <View className="absolute bottom-0 left-0 right-0 border-t border-[#1a2f2a] bg-[#0f251f]">
         <SafeAreaView edges={['bottom']}>
           <View className="flex-row items-center justify-around px-6 py-4">
             <Pressable className="items-center gap-1" onPress={() => router.push('/')}>

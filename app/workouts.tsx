@@ -7,7 +7,7 @@ import { FeaturedWorkoutCard } from '../components/FeaturedWorkoutCard';
 import { FilterTabs } from '../components/FilterTabs';
 import { CreateTemplateCard } from '../components/CreateTemplateCard';
 import { GradientText } from '../components/GradientText';
-import FloatingActionButton from '../components/FloatingActionButton';
+import { FloatingActionButton } from '../components/FloatingActionButton';
 
 const WORKOUTS_DATA = {
   featured: {
@@ -57,7 +57,7 @@ export default function WorkoutsScreen() {
 
   return (
     <MasterLayout>
-      <View className="flex-1 relative">
+      <View className="flex-1">
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
           {/* Header */}
           <View className="flex-row items-center justify-between px-5 pb-6 pt-8">
@@ -113,7 +113,7 @@ export default function WorkoutsScreen() {
         </ScrollView>
 
         {/* Floating Action Button */}
-        <FloatingActionButton />
+        <FloatingActionButton position="right" bottom={100} />
       </View>
     </MasterLayout>
   );
