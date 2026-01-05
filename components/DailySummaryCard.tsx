@@ -1,6 +1,7 @@
 import { View, Text } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
+import { ProgressMetric } from './ProgressMetric';
 
 type DailySummaryCardProps = {
   calories: {
@@ -39,45 +40,19 @@ export function DailySummaryCard({ calories, activity, gradientColors }: DailySu
         </View>
 
         <View className="flex-row gap-8">
-          {/* Calories */}
-          <View className="flex-1">
-            <View className="mb-2 flex-row items-baseline gap-1">
-              <Text className="text-5xl font-bold text-white">
-                {calories.consumed.toLocaleString()}
-              </Text>
-              <Text className="text-sm uppercase text-white/70">{t('common.kcal')}</Text>
-            </View>
-            <View className="mb-2">
-              <View className="h-2 overflow-hidden rounded-full bg-white/30">
-                <View
-                  className="h-full rounded-full bg-white"
-                  style={{ width: `${caloriesProgress}%` }}
-                />
-              </View>
-            </View>
-            <Text className="text-sm text-white/70">
-              {calories.remaining} {t('common.remaining')}
-            </Text>
-          </View>
-
-          {/* Activity Minutes */}
-          <View className="flex-1">
-            <View className="mb-2 flex-row items-baseline gap-1">
-              <Text className="text-5xl font-bold text-white">{activity.minutes}</Text>
-              <Text className="text-sm uppercase text-white/70">{t('common.min')}</Text>
-            </View>
-            <View className="mb-2">
-              <View className="h-2 overflow-hidden rounded-full bg-white/30">
-                <View
-                  className="h-full rounded-full bg-white"
-                  style={{ width: `${activityProgress}%` }}
-                />
-              </View>
-            </View>
-            <Text className="text-sm text-white/70">
-              {t('common.goal')}: {activity.goal} {t('common.min')}
-            </Text>
-          </View>
+          <ProgressMetric
+            value={calories.consumed}
+            unit={t('common.kcal')}
+            progress={caloriesProgress}
+            bottomText={`${calories.remaining} ${t('common.remaining')}`}
+            formatValue={(v) => v.toLocaleString()}
+          />
+          <ProgressMetric
+            value={activity.minutes}
+            unit={t('common.min')}
+            progress={activityProgress}
+            bottomText={`${t('common.goal')}: ${activity.goal} ${t('common.min')}`}
+          />
         </View>
       </LinearGradient>
     </View>
