@@ -1,0 +1,40 @@
+{
+  "common": {
+    "today": "VANDAAG",
+    "seeAll": "Alles bekijken",
+    "remaining": "over",
+    "goal": "Doel",
+    "kcal": "kcal",
+    "min": "min"
+  },
+  "home": {
+    "greeting": {
+      "goodMorning": "Goedemorgen",
+      "goodAfternoon": "Goedemiddag",
+      "goodEvening": "Goedenavond"
+    },
+    "dailySummary": {
+      "title": "DAGELIJKSE SAMENVATTING"
+    },
+    "actions": {
+      "startWorkout": "Start\nTraining",
+      "trackFood": "Registreer\nVoedsel"
+    },
+    "sections": {
+      "recentWorkouts": "Recente Trainingen",
+      "recentFoods": "Recente Maaltijden"
+    },
+    "navigation": {
+      "home": "Home",
+      "workouts": "Trainingen",
+      "progress": "Voortgang",
+      "schedule": "Schema",
+      "profile": "Profiel"
+    },
+    "macros": {
+      "protein": "{{value}}G E",
+      "carbs": "{{value}}G K",
+      "fat": "{{value}}G V"
+    }
+  }
+}

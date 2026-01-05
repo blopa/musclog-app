@@ -1,0 +1,40 @@
+{
+  "common": {
+    "today": "HOY",
+    "seeAll": "Ver todo",
+    "remaining": "restantes",
+    "goal": "Objetivo",
+    "kcal": "kcal",
+    "min": "min"
+  },
+  "home": {
+    "greeting": {
+      "goodMorning": "Buenos Días",
+      "goodAfternoon": "Buenas Tardes",
+      "goodEvening": "Buenas Noches"
+    },
+    "dailySummary": {
+      "title": "RESUMEN DIARIO"
+    },
+    "actions": {
+      "startWorkout": "Iniciar\nEntrenamiento",
+      "trackFood": "Registrar\nComida"
+    },
+    "sections": {
+      "recentWorkouts": "Entrenamientos Recientes",
+      "recentFoods": "Comidas Recientes"
+    },
+    "navigation": {
+      "home": "Inicio",
+      "workouts": "Entrenamientos",
+      "progress": "Progreso",
+      "schedule": "Calendario",
+      "profile": "Perfil"
+    },
+    "macros": {
+      "protein": "{{value}}G P",
+      "carbs": "{{value}}G C",
+      "fat": "{{value}}G F"
+    }
+  }
+}

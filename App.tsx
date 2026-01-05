@@ -1,8 +1,10 @@
 import { View, Text, Image, Pressable, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Bell, Dumbbell, UtensilsCrossed, ChevronRight, Flame } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import { MasterLayout } from './components/MasterLayout';
 
+import './lang/lang';
 import './global.css';
 
 const PAGE_DATA = {
@@ -69,6 +71,7 @@ const PAGE_DATA = {
 };
 
 export default function App() {
+  const { t } = useTranslation();
   const { user, dailySummary, recentWorkouts, recentFoods } = PAGE_DATA;
 
   // Calculate progress percentages
@@ -88,7 +91,7 @@ export default function App() {
               <View className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-[#0a1f1a] bg-[#22c55e]" />
             </View>
             <View>
-              <Text className="text-sm text-gray-400">{user.greeting}</Text>
+              <Text className="text-sm text-gray-400">{t('home.greeting.goodEvening')}</Text>
               <Text className="text-xl font-bold text-white">{user.name}</Text>
             </View>
           </View>
@@ -109,10 +112,10 @@ export default function App() {
             style={{ borderRadius: 24, padding: 24 }}>
             <View className="mb-6 flex-row items-start justify-between">
               <Text className="text-sm font-semibold tracking-wide text-white/90">
-                DAILY SUMMARY
+                {t('home.dailySummary.title')}
               </Text>
               <View className="rounded-full bg-white/25 px-4 py-1.5">
-                <Text className="text-xs font-medium text-white">TODAY</Text>
+                <Text className="text-xs font-medium text-white">{t('common.today')}</Text>
               </View>
             </View>
 
@@ -123,7 +126,7 @@ export default function App() {
                   <Text className="text-5xl font-bold text-white">
                     {dailySummary.calories.consumed.toLocaleString()}
                   </Text>
-                  <Text className="text-sm uppercase text-white/70">kcal</Text>
+                  <Text className="text-sm uppercase text-white/70">{t('common.kcal')}</Text>
                 </View>
                 <View className="mb-2">
                   <View className="h-2 overflow-hidden rounded-full bg-white/30">
@@ -134,7 +137,7 @@ export default function App() {
                   </View>
                 </View>
                 <Text className="text-sm text-white/70">
-                  {dailySummary.calories.remaining} remaining
+                  {dailySummary.calories.remaining} {t('common.remaining')}
                 </Text>
               </View>
 
@@ -144,7 +147,7 @@ export default function App() {
                   <Text className="text-5xl font-bold text-white">
                     {dailySummary.activity.minutes}
                   </Text>
-                  <Text className="text-sm uppercase text-white/70">min</Text>
+                    <Text className="text-sm uppercase text-white/70">{t('common.min')}</Text>
                 </View>
                 <View className="mb-2">
                   <View className="h-2 overflow-hidden rounded-full bg-white/30">
@@ -155,7 +158,7 @@ export default function App() {
                   </View>
                 </View>
                 <Text className="text-sm text-white/70">
-                  Goal: {dailySummary.activity.goal} min
+                  {t('common.goal')}: {dailySummary.activity.goal} {t('common.min')}
                 </Text>
               </View>
             </View>
@@ -164,27 +167,29 @@ export default function App() {
 
         {/* Action Buttons */}
         <View className="mx-6 mb-8 flex-row gap-4">
-          <Pressable className="min-h-[180px] flex-1 justify-between rounded-3xl bg-[#22c55e] p-6">
-            <Dumbbell size={40} color="#0a1f1a" strokeWidth={2.5} />
-            <Text className="text-2xl font-bold leading-tight text-[#0a1f1a]">
-              Start{'\n'}Workout
-            </Text>
-          </Pressable>
+            <Pressable className="min-h-[180px] flex-1 justify-between rounded-3xl bg-[#22c55e] p-6">
+              <Dumbbell size={40} color="#0a1f1a" strokeWidth={2.5} />
+              <Text className="text-2xl font-bold leading-tight text-[#0a1f1a]">
+                {t('home.actions.startWorkout')}
+              </Text>
+            </Pressable>
 
-          <Pressable className="min-h-[180px] flex-1 justify-between rounded-3xl bg-[#1a2f2a] p-6">
-            <UtensilsCrossed size={40} color="#ffffff" strokeWidth={2.5} />
-            <Text className="text-2xl font-bold leading-tight text-white">Track{'\n'}Food</Text>
-          </Pressable>
+            <Pressable className="min-h-[180px] flex-1 justify-between rounded-3xl bg-[#1a2f2a] p-6">
+              <UtensilsCrossed size={40} color="#ffffff" strokeWidth={2.5} />
+              <Text className="text-2xl font-bold leading-tight text-white">
+                {t('home.actions.trackFood')}
+              </Text>
+            </Pressable>
         </View>
 
         {/* Recent Workouts */}
         <View className="mx-6 mb-8">
-          <View className="mb-4 flex-row items-center justify-between">
-            <Text className="text-2xl font-bold text-white">Recent Workouts</Text>
-            <Pressable>
-              <Text className="text-sm font-medium text-[#22c55e]">See all</Text>
-            </Pressable>
-          </View>
+            <View className="mb-4 flex-row items-center justify-between">
+              <Text className="text-2xl font-bold text-white">{t('home.sections.recentWorkouts')}</Text>
+              <Pressable>
+                <Text className="text-sm font-medium text-[#22c55e]">{t('common.seeAll')}</Text>
+              </Pressable>
+            </View>
 
           <View className="gap-3">
             {recentWorkouts.map((workout) => (
@@ -224,9 +229,9 @@ export default function App() {
           </View>
         </View>
 
-        {/* Recent Foods */}
-        <View className="mx-6 mb-8">
-          <Text className="mb-4 text-2xl font-bold text-white">Recent Foods</Text>
+          {/* Recent Foods */}
+          <View className="mx-6 mb-8">
+            <Text className="mb-4 text-2xl font-bold text-white">{t('home.sections.recentFoods')}</Text>
 
           <View className="gap-3">
             {recentFoods.map((food) => (
@@ -238,18 +243,26 @@ export default function App() {
                       <Text className="text-lg font-bold text-white">{food.name}</Text>
                       <View className="mt-2 flex-row gap-2">
                         <View className="rounded-full bg-[#0f251f] px-2.5 py-1">
-                          <Text className="text-xs text-gray-400">{food.protein}G P</Text>
+                          <Text className="text-xs text-gray-400">
+                            {t('home.macros.protein', { value: food.protein })}
+                          </Text>
                         </View>
                         <View className="rounded-full bg-[#0f251f] px-2.5 py-1">
-                          <Text className="text-xs text-gray-400">{food.carbs}G C</Text>
+                          <Text className="text-xs text-gray-400">
+                            {t('home.macros.carbs', { value: food.carbs })}
+                          </Text>
                         </View>
                         <View className="rounded-full bg-[#0f251f] px-2.5 py-1">
-                          <Text className="text-xs text-gray-400">{food.fat}G F</Text>
+                          <Text className="text-xs text-gray-400">
+                            {t('home.macros.fat', { value: food.fat })}
+                          </Text>
                         </View>
                       </View>
                     </View>
                   </View>
-                  <Text className="text-lg font-bold text-white">{food.calories} kcal</Text>
+                  <Text className="text-lg font-bold text-white">
+                    {food.calories} {t('common.kcal')}
+                  </Text>
                 </View>
               </View>
             ))}
