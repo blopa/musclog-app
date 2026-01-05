@@ -25,7 +25,7 @@ export function MasterLayout({ children }: MasterLayoutProps) {
       {/* Bottom Navigation */}
       <View className="absolute bottom-0 left-0 right-0 border-t border-[#1a2f2a] bg-[#0f251f]">
         <SafeAreaView edges={['bottom']}>
-          <View className="flex-row items-center justify-around px-6 py-4">
+          <View className="relative flex-row items-center justify-around px-6 py-4">
             {/* Home */}
             <Pressable className="items-center gap-1" onPress={() => router.push('/')}>
               <View
@@ -64,10 +64,20 @@ export function MasterLayout({ children }: MasterLayoutProps) {
               </Text>
             </Pressable>
 
+            {/* Spacer for camera button */}
+            <View className="w-20" />
+
             {/* Camera - Central Action Button */}
-            <Pressable className="items-center">
-              <View className="h-14 w-14 items-center justify-center rounded-full bg-[#22c55e] shadow-lg shadow-[#22c55e]/50">
-                <Camera size={24} color="#000000" strokeWidth={2.5} />
+            <Pressable
+              className="absolute items-center justify-center"
+              style={{
+                top: -32,
+                left: '50%',
+                transform: [{ translateX: -40 }],
+              }}
+              hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
+              <View className="h-20 w-20 items-center justify-center rounded-full bg-[#22c55e] shadow-lg shadow-[#22c55e]/50">
+                <Camera size={32} color="#000000" strokeWidth={2.5} />
               </View>
             </Pressable>
 
