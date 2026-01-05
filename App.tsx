@@ -1,8 +1,9 @@
 import { View, Text, Image, Pressable, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Bell, Dumbbell, UtensilsCrossed, Flame } from 'lucide-react-native';
+import { Bell, Dumbbell, UtensilsCrossed } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { MasterLayout } from './components/MasterLayout';
+import { RecentWorkoutsCard } from './components/RecentWorkoutsCard';
 import { CircularArrow } from './components/CircularArrow';
 
 import './lang/lang';
@@ -148,7 +149,7 @@ export default function App() {
                   <Text className="text-5xl font-bold text-white">
                     {dailySummary.activity.minutes}
                   </Text>
-                    <Text className="text-sm uppercase text-white/70">{t('common.min')}</Text>
+                  <Text className="text-sm uppercase text-white/70">{t('common.min')}</Text>
                 </View>
                 <View className="mb-2">
                   <View className="h-2 overflow-hidden rounded-full bg-white/30">
@@ -168,85 +169,69 @@ export default function App() {
 
         {/* Action Buttons */}
         <View className="mx-6 mb-8 flex-row gap-4">
-            <Pressable className="relative min-h-[180px] flex-1 justify-between overflow-hidden rounded-3xl bg-[#22c55e] p-6">
-              <View className="h-12 w-12 items-center justify-center rounded-full bg-[#16a34a]">
-                <Dumbbell size={24} color="#0a1f1a" strokeWidth={2.5} />
-              </View>
-              <Text className="text-2xl font-bold leading-tight text-[#0a1f1a]">
-                {t('home.actions.startWorkout')}
-              </Text>
-              <View className="absolute -bottom-6 -right-6 opacity-[0.08]">
-                <Dumbbell size={160} color="#0a1f1a" strokeWidth={1} />
-              </View>
-            </Pressable>
+          <Pressable className="relative min-h-[180px] flex-1 justify-between overflow-hidden rounded-3xl bg-[#22c55e] p-6">
+            <View className="h-12 w-12 items-center justify-center rounded-full bg-[#16a34a]">
+              <Dumbbell size={24} color="#0a1f1a" strokeWidth={2.5} />
+            </View>
+            <Text className="text-2xl font-bold leading-tight text-[#0a1f1a]">
+              {t('home.actions.startWorkout')}
+            </Text>
+            <View className="absolute -bottom-6 -right-6 opacity-[0.08]">
+              <Dumbbell size={160} color="#0a1f1a" strokeWidth={1} />
+            </View>
+          </Pressable>
 
-            <Pressable className="relative min-h-[180px] flex-1 justify-between overflow-hidden rounded-3xl bg-[#1a2f2a] p-6">
-              <View className="h-12 w-12 items-center justify-center rounded-full bg-[#243d37]">
-                <UtensilsCrossed size={24} color="#ffffff" strokeWidth={2.5} />
-              </View>
-              <Text className="text-2xl font-bold leading-tight text-white">
-                {t('home.actions.trackFood')}
-              </Text>
-              <View className="absolute -bottom-6 -right-6 opacity-[0.08]">
-                <UtensilsCrossed size={160} color="#6b7280" strokeWidth={1} />
-              </View>
-            </Pressable>
+          <Pressable className="relative min-h-[180px] flex-1 justify-between overflow-hidden rounded-3xl bg-[#1a2f2a] p-6">
+            <View className="h-12 w-12 items-center justify-center rounded-full bg-[#243d37]">
+              <UtensilsCrossed size={24} color="#ffffff" strokeWidth={2.5} />
+            </View>
+            <Text className="text-2xl font-bold leading-tight text-white">
+              {t('home.actions.trackFood')}
+            </Text>
+            <View className="absolute -bottom-6 -right-6 opacity-[0.08]">
+              <UtensilsCrossed size={160} color="#6b7280" strokeWidth={1} />
+            </View>
+          </Pressable>
         </View>
 
         {/* Recent Workouts */}
         <View className="mx-6 mb-8">
-            <View className="mb-4 flex-row items-center justify-between">
-              <Text className="text-2xl font-bold text-white">{t('home.sections.recentWorkouts')}</Text>
-              <Pressable>
-                <Text className="text-sm font-medium text-[#22c55e]">{t('common.seeAll')}</Text>
-              </Pressable>
-            </View>
+          <View className="mb-4 flex-row items-center justify-between">
+            <Text className="text-2xl font-bold text-white">
+              {t('home.sections.recentWorkouts')}
+            </Text>
+            <Pressable>
+              <Text className="text-sm font-medium text-[#22c55e]">{t('common.seeAll')}</Text>
+            </Pressable>
+          </View>
 
           <View className="gap-3">
             {recentWorkouts.map((workout) => (
-              <Pressable
+              <RecentWorkoutsCard
                 key={workout.id}
-                className="flex-row items-center gap-4 rounded-2xl bg-[#1a2f2a] p-4">
-                <View
-                  className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl"
-                  style={{ backgroundColor: workout.imageBgColor }}>
-                  <Image source={workout.image} className="h-full w-full" resizeMode="cover" />
-                </View>
-                <View className="flex-1">
-                  <Text className="mb-1 text-lg font-bold text-white">{workout.name}</Text>
-                  <Text className="mb-2 text-sm text-gray-400">
-                    {workout.date} • {workout.duration}
-                  </Text>
-                  <View className="flex-row items-center gap-2">
-                    <View className="flex-row items-center gap-1 rounded-full bg-[#0f251f] px-2.5 py-1">
-                      <Flame size={14} color="#f97316" />
-                      <Text className="text-xs font-medium text-orange-500">
-                        {workout.calories}
-                      </Text>
-                    </View>
-                    {workout.prs !== null && (
-                      <View className="flex-row items-center gap-1 rounded-full bg-[#0f251f] px-2.5 py-1">
-                        <Text className="text-xs">💪</Text>
-                        <Text className="text-xs font-medium text-[#22c55e]">
-                          {workout.prs} PRS
-                        </Text>
-                      </View>
-                    )}
-                  </View>
-                </View>
-                <CircularArrow />
-              </Pressable>
+                name={workout.name}
+                date={workout.date}
+                duration={workout.duration}
+                calories={workout.calories}
+                prs={workout.prs}
+                image={workout.image}
+                imageBgColor={workout.imageBgColor}
+              />
             ))}
           </View>
         </View>
 
-          {/* Recent Foods */}
-          <View className="mx-6 mb-8">
-            <Text className="mb-4 text-2xl font-bold text-white">{t('home.sections.recentFoods')}</Text>
+        {/* Recent Foods */}
+        <View className="mx-6 mb-8">
+          <Text className="mb-4 text-2xl font-bold text-white">
+            {t('home.sections.recentFoods')}
+          </Text>
 
           <View className="gap-3">
             {recentFoods.map((food) => (
-              <Pressable key={food.id} className="flex-row items-center gap-4 rounded-2xl bg-[#1a2f2a] p-5">
+              <Pressable
+                key={food.id}
+                className="flex-row items-center gap-4 rounded-2xl bg-[#1a2f2a] p-5">
                 <View className="flex-1">
                   <View className="mb-3 flex-row items-start justify-between">
                     <View className="flex-row items-center gap-3">
