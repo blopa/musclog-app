@@ -2092,12 +2092,15 @@ export const updateFood = async (id: number, food: FoodInsertType): Promise<numb
 
     const updatedFood = {
         alcohol: food.alcohol || existingFood?.alcohol || 0,
+        brand: food.brand !== undefined ? food.brand : (existingFood?.brand || ''),
         calories: food.calories || existingFood?.calories || 0,
         createdAt: food.createdAt || existingFood?.createdAt || getCurrentTimestampISOString(),
         dataId: food.dataId || existingFood?.dataId || generateHash(),
         deletedAt: food.deletedAt || existingFood?.deletedAt || '',
         fiber: food.fiber || existingFood?.fiber || 0,
+        isFavorite: food.isFavorite ?? existingFood?.isFavorite ?? false,
         name: food.name || existingFood?.name || '',
+        productCode: food.productCode !== undefined ? food.productCode : (existingFood?.productCode || ''),
         protein: food.protein || existingFood?.protein || 0,
         sugar: food.sugar || existingFood?.sugar || 0,
         totalCarbohydrate: food.totalCarbohydrate || existingFood?.totalCarbohydrate || 0,

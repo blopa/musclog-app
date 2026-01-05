@@ -204,7 +204,12 @@ const FoodSearch = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
     const openAddNewFoodModal = useCallback(() => {
         resetScreenData();
-        navigation.navigate('createFood', { foodName: searchQuery });
+        // Check if search query is a barcode (only numbers)
+        const isBarcode = /^\d+$/.test(searchQuery.trim()) && searchQuery.trim().length >= 4;
+        navigation.navigate('createFood', {
+            foodName: isBarcode ? '' : searchQuery,
+            productCode: isBarcode ? searchQuery.trim() : '',
+        });
     }, [navigation, resetScreenData, searchQuery]);
 
     return (

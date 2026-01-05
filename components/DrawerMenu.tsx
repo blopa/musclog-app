@@ -30,6 +30,7 @@ import FoodSearch from '@/app/foodSearch';
 import Index from '@/app/index';
 import ListExercises from '@/app/listExercises';
 import ListFitnessGoals from '@/app/listFitnessGoals';
+import ListFoods from '@/app/listFoods';
 import ListMeals from '@/app/listMeals';
 import ListUserMeasurements from '@/app/listUserMeasurements';
 import ListUserMetrics from '@/app/listUserMetrics';
@@ -124,6 +125,7 @@ export default function DrawerMenu() {
             { component: ListWorkouts, label: 'workouts', name: 'listWorkouts' },
             { component: FoodLog, label: 'food_log', name: 'foodLog' },
             { component: ListMeals, label: 'track_meals', name: 'listMeals' },
+            { component: ListFoods, label: 'manage_foods', name: 'listFoods' },
             { component: RecentWorkouts, label: 'recent_workouts', name: 'recentWorkouts' },
             { component: UserMetricsCharts, hidden: !showUserMetrics, label: 'user_metrics_charts', name: 'userMetricsCharts' },
             { component: Settings, label: 'settings', name: 'settings' },

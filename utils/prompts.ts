@@ -735,43 +735,55 @@ export const getParsePastWorkoutsFunctions = (): (FunctionDeclaration[] | OpenAI
 
 export const getMacrosEstimationFunctions = (
     description: string,
-    mode: 'estimated' | 'extracted' = 'estimated'
+    mode: 'estimated' | 'extracted' = 'estimated',
+    includeBarcode: boolean = false
 ): (FunctionDeclaration[] | OpenAI.Chat.ChatCompletionCreateParams.Function[]) => {
+    const properties: any = {
+        carbs: {
+            description: `The ${mode} carbohydrates in grams`,
+            type: 'number',
+        },
+        fat: {
+            description: `The ${mode} fat in grams`,
+            type: 'number',
+        },
+        grams: {
+            description: `The ${mode} weight in grams`,
+            type: 'number',
+        },
+        kcal: {
+            description: `The ${mode} kilocalories`,
+            type: 'number',
+        },
+        kj: {
+            description: `The ${mode} kilojoules`,
+            type: 'number',
+        },
+        name: {
+            description: 'The name of the food / meal',
+            type: 'string',
+        },
+        protein: {
+            description: `The ${mode} protein in grams`,
+            type: 'number',
+        },
+    };
+
+    if (includeBarcode) {
+        properties.barcode = {
+            description: 'The barcode/EAN code of the product if visible on the label (typically 8-14 digits)',
+            type: 'string',
+        };
+    }
+
+    const required = ['protein', 'fat', 'carbs', 'kcal', 'kj', 'name', 'grams'];
+
     return [{
         description,
         name: 'estimateMacros',
         parameters: {
-            properties: {
-                carbs: {
-                    description: `The ${mode} carbohydrates in grams`,
-                    type: 'number',
-                },
-                fat: {
-                    description: `The ${mode} fat in grams`,
-                    type: 'number',
-                },
-                grams: {
-                    description: `The ${mode} weight in grams`,
-                    type: 'number',
-                },
-                kcal: {
-                    description: `The ${mode} kilocalories`,
-                    type: 'number',
-                },
-                kj: {
-                    description: `The ${mode} kilojoules`,
-                    type: 'number',
-                },
-                name: {
-                    description: 'The name of the food / meal',
-                    type: 'string',
-                },
-                protein: {
-                    description: `The ${mode} protein in grams`,
-                    type: 'number',
-                },
-            },
-            required: ['protein', 'fat', 'carbs', 'kcal', 'kj', 'name', 'grams'],
+            properties,
+            required,
             type: 'object',
         },
     }];

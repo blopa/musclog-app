@@ -382,12 +382,14 @@ export async function extractMacrosFromLabelPhoto(photoUri: string) {
         function_call: { name: 'estimateMacros' },
         functions: getMacrosEstimationFunctions(
             'Extracts the macronutrients of a food label from a photo',
-            'extracted'
+            'extracted',
+            true // Include barcode for label extraction
         ) as OpenAI.Chat.ChatCompletionCreateParams.Function[],
         messages: [{
             content: [
                 'You are a very powerful AI, trained to extract the macronutrients of a food label from the photo provided',
                 'Use OCR to extract the text from the image, then parse the text to extract the macronutrients.',
+                'If a barcode/EAN code is visible on the label, extract it as well (typically 8-14 digits).',
                 'Respond ONLY with the function call. Do NOT include any explanatory text, commentary, or greetings.',
             ].join('\n'),
             role: 'system',
@@ -404,6 +406,7 @@ export async function extractMacrosFromLabelPhoto(photoUri: string) {
     });
 
     let jsonResponse = {
+        barcode: '',
         carbs: 0,
         fat: 0,
         grams: 0,
