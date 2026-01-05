@@ -6,7 +6,7 @@ import {
     DrawerItem,
     DrawerItemList,
 } from '@react-navigation/drawer';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { NavigationContainer, NavigationProp, useNavigation } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View } from 'react-native';
@@ -199,46 +199,48 @@ export default function DrawerMenu() {
     }
 
     return (
-        <Drawer.Navigator
-            drawerContent={(props) => (
-                <CustomDrawerContent
-                    {...props}
-                    isAiEnabled={isAiEnabled}
-                    unreadMessages={unreadMessages}
-                />
-            )}
-            initialRouteName="index"
-            screenOptions={{
-                headerBackground: () => (
-                    <View
-                        style={{
-                            backgroundColor: theme.colors.background,
-                            // height: StatusBar.currentHeight || 0,
+        <NavigationContainer>
+            <Drawer.Navigator
+                drawerContent={(props) => (
+                    <CustomDrawerContent
+                        {...props}
+                        isAiEnabled={isAiEnabled}
+                        unreadMessages={unreadMessages}
+                    />
+                )}
+                initialRouteName="index"
+                screenOptions={{
+                    headerBackground: () => (
+                        <View
+                            style={{
+                                backgroundColor: theme.colors.background,
+                                // height: StatusBar.currentHeight || 0,
+                            }}
+                        />
+                    ),
+                    headerBackgroundContainerStyle: {
+                        backgroundColor: theme.colors.background,
+                    },
+                    headerTintColor: theme.colors.onBackground,
+                    headerTitleStyle: {
+                        fontWeight: 'bold',
+                    },
+                }}
+            >
+                {routes.map((route) => (
+                    <Drawer.Screen
+                        component={route.component}
+                        key={route.name}
+                        name={route.name}
+                        options={{
+                            drawerItemStyle: route.hidden ? { display: 'none' } : undefined,
+                            drawerLabel: t(route.label),
+                            headerTitle: '',
                         }}
                     />
-                ),
-                headerBackgroundContainerStyle: {
-                    backgroundColor: theme.colors.background,
-                },
-                headerTintColor: theme.colors.onBackground,
-                headerTitleStyle: {
-                    fontWeight: 'bold',
-                },
-            }}
-        >
-            {routes.map((route) => (
-                <Drawer.Screen
-                    component={route.component}
-                    key={route.name}
-                    name={route.name}
-                    options={{
-                        drawerItemStyle: route.hidden ? { display: 'none' } : undefined,
-                        drawerLabel: t(route.label),
-                        headerTitle: '',
-                    }}
-                />
-            ))}
-        </Drawer.Navigator>
+                ))}
+            </Drawer.Navigator>
+        </NavigationContainer>
     );
 }
 
