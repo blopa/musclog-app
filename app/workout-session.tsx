@@ -8,6 +8,7 @@ import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { WorkoutOptionsModal } from '../components/WorkoutOptionsModal';
+import { EndWorkoutModal } from '../components/EndWorkoutModal';
 
 export default function WorkoutSessionScreen() {
   const { t } = useTranslation();
@@ -16,6 +17,7 @@ export default function WorkoutSessionScreen() {
   const [reps, setReps] = useState(10);
   const [time, setTime] = useState({ hours: 0, minutes: 45, seconds: 12 });
   const [isOptionsModalVisible, setIsOptionsModalVisible] = useState(false);
+  const [isEndWorkoutModalVisible, setIsEndWorkoutModalVisible] = useState(false);
 
   // Timer effect
   useEffect(() => {
@@ -82,7 +84,7 @@ export default function WorkoutSessionScreen() {
           <View className="flex-row items-center justify-between p-4">
             <Pressable
               className="h-12 w-12 items-center justify-center"
-              onPress={() => router.back()}>
+              onPress={() => setIsEndWorkoutModalVisible(true)}>
               <X size={theme.iconSize.xl} color={theme.colors.text.primary} />
             </Pressable>
             <View className="items-center">
@@ -201,7 +203,21 @@ export default function WorkoutSessionScreen() {
         onPreviewWorkout={() => router.push('/workout-preview')}
         onWorkoutSettings={() => router.push('/workout-settings')}
         onEndWorkout={() => {
-          // Handle end workout logic
+          setIsOptionsModalVisible(false);
+          setIsEndWorkoutModalVisible(true);
+        }}
+      />
+
+      {/* End Workout Confirmation Modal */}
+      <EndWorkoutModal
+        visible={isEndWorkoutModalVisible}
+        onClose={() => setIsEndWorkoutModalVisible(false)}
+        onFinishAndSave={() => {
+          // Handle save workout logic
+          router.back();
+        }}
+        onFinishAndDiscard={() => {
+          // Handle discard workout logic
           router.back();
         }}
       />

@@ -104,6 +104,12 @@
     "endWorkout": "Training Beëindigen",
     "endWorkoutDesc": "Afronden en voortgang opslaan"
   },
+  "endWorkout": {
+    "title": "Training Beëindigen",
+    "confirmation": "Weet je zeker dat je de huidige trainingssessie wilt beëindigen?",
+    "finishAndSave": "Afronden en Opslaan",
+    "finishAndDiscard": "Afronden en Verwijderen"
+  },
   "profile": {
     "header": {
       "title": "Profiel"

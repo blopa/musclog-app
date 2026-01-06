@@ -104,6 +104,12 @@
     "endWorkout": "Finalizar Entrenamiento",
     "endWorkoutDesc": "Terminar y guardar progreso"
   },
+  "endWorkout": {
+    "title": "Finalizar Entrenamiento",
+    "confirmation": "¿Estás seguro de que quieres finalizar la sesión de entrenamiento actual?",
+    "finishAndSave": "Finalizar y Guardar",
+    "finishAndDiscard": "Finalizar y Descartar"
+  },
   "profile": {
     "header": {
       "title": "Perfil"
