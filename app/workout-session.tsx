@@ -1,49 +1,23 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { View, Text, Pressable, ScrollView, ImageBackground } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { X, MoreVertical, SkipForward, Edit, Repeat, CheckCircle } from 'lucide-react-native';
+import { SkipForward, Edit, Repeat, CheckCircle } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { WorkoutOptionsModal } from '../components/WorkoutOptionsModal';
 import { EndWorkoutModal } from '../components/EndWorkoutModal';
+import { WorkoutTimeTracker } from '../components/WorkoutTimeTracker';
 
 export default function WorkoutSessionScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const [weight, setWeight] = useState(24);
   const [reps, setReps] = useState(10);
-  const [time, setTime] = useState({ hours: 0, minutes: 45, seconds: 12 });
   const [isOptionsModalVisible, setIsOptionsModalVisible] = useState(false);
   const [isEndWorkoutModalVisible, setIsEndWorkoutModalVisible] = useState(false);
-
-  // Timer effect
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTime((prev) => {
-        let newSeconds = prev.seconds + 1;
-        let newMinutes = prev.minutes;
-        let newHours = prev.hours;
-
-        if (newSeconds >= 60) {
-          newSeconds = 0;
-          newMinutes += 1;
-        }
-        if (newMinutes >= 60) {
-          newMinutes = 0;
-          newHours += 1;
-        }
-
-        return { hours: newHours, minutes: newMinutes, seconds: newSeconds };
-      });
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const formatTime = (value: number) => String(value).padStart(2, '0');
 
   const exerciseData = {
     name: 'Incline Dumbbell Press',
@@ -82,26 +56,11 @@ export default function WorkoutSessionScreen() {
         {/* Content */}
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
           {/* Header */}
-          <View className="flex-row items-center justify-between p-4">
-            <Pressable
-              className="h-12 w-12 items-center justify-center"
-              onPress={() => setIsEndWorkoutModalVisible(true)}>
-              <X size={theme.iconSize.xl} color={theme.colors.text.primary} />
-            </Pressable>
-            <View className="items-center">
-              <Text className="text-5xl font-bold tracking-tight text-text-primary">
-                {formatTime(time.hours)}:{formatTime(time.minutes)}:{formatTime(time.seconds)}
-              </Text>
-              <Text className="text-sm font-semibold tracking-wider mt-1 text-accent-primary">
-                {t('workoutSession.totalTime')}
-              </Text>
-            </View>
-            <Pressable
-              className="h-12 w-12 items-center justify-center"
-              onPress={() => setIsOptionsModalVisible(true)}>
-              <MoreVertical size={theme.iconSize.lg} color={theme.colors.text.primary} />
-            </Pressable>
-          </View>
+          <WorkoutTimeTracker
+            onClose={() => setIsEndWorkoutModalVisible(true)}
+            onOptionsPress={() => setIsOptionsModalVisible(true)}
+            initialTime={{ hours: 0, minutes: 45, seconds: 12 }}
+          />
 
           {/* Exercise Info */}
           <View className="px-6 mt-48">
