@@ -227,12 +227,7 @@ export default function RestTimerScreen() {
                 strokeLinecap="round"
                 strokeDasharray={circumference}
                 strokeDashoffset={strokeDashoffset}
-                style={{
-                  shadowColor: theme.colors.accent.secondary,
-                  shadowOffset: { width: 0, height: 0 },
-                  shadowOpacity: 0.5,
-                  shadowRadius: 15,
-                }}
+                opacity={1}
               />
             </Svg>
           </View>
