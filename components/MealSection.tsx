@@ -1,8 +1,7 @@
-import { View, Text, Pressable } from 'react-native';
-import { Plus } from 'lucide-react-native';
+import { View, Text } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { ReactNode } from 'react';
-import { theme } from '../theme';
+import { AddFoodButton } from './AddFoodButton';
 
 type MealSectionProps = {
   title: string;
@@ -27,12 +26,7 @@ export function MealSection({ title, totalCalories, children, onAddFood }: MealS
         {children}
 
         {/* Add Food Button */}
-        <Pressable
-          className="w-full flex-row items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-border-dashed py-4"
-          onPress={onAddFood}>
-          <Plus size={theme.iconSize.sm} color={theme.colors.text.secondary} />
-          <Text className="font-medium text-text-secondary">{t('food.meals.addFood')}</Text>
-        </Pressable>
+        <AddFoodButton onPress={onAddFood} />
       </View>
     </View>
   );
