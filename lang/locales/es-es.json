@@ -94,5 +94,30 @@
     "edit": "EDITAR",
     "replace": "REEMPLAZAR",
     "completeSet": "COMPLETAR SERIE"
+  },
+  "profile": {
+    "header": {
+      "title": "Perfil"
+    },
+    "goal": "Objetivo",
+    "currentStats": "Estadísticas Actuales",
+    "history": "Historial",
+    "management": "Gestión",
+    "stats": {
+      "weight": "Peso",
+      "height": "Altura",
+      "bodyFat": "Grasa Corporal",
+      "bmi": "IMC",
+      "age": "Edad",
+      "gender": "Género"
+    },
+    "managementItems": {
+      "editPersonal": "Editar Información Personal",
+      "editPersonalDesc": "Nombre, Email, Cumpleaños",
+      "editFitness": "Editar Detalles de Fitness",
+      "editFitnessDesc": "Objetivos, Nivel de Experiencia",
+      "appPreferences": "Preferencias de la App",
+      "appPreferencesDesc": "Unidades, Notificaciones, Privacidad"
+    }
   }
 }

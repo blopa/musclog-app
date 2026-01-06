@@ -94,5 +94,30 @@
     "edit": "EDIT",
     "replace": "REPLACE",
     "completeSet": "COMPLETE SET"
+  },
+  "profile": {
+    "header": {
+      "title": "Profile"
+    },
+    "goal": "Goal",
+    "currentStats": "Current Stats",
+    "history": "History",
+    "management": "Management",
+    "stats": {
+      "weight": "Weight",
+      "height": "Height",
+      "bodyFat": "Body Fat",
+      "bmi": "BMI",
+      "age": "Age",
+      "gender": "Gender"
+    },
+    "managementItems": {
+      "editPersonal": "Edit Personal Information",
+      "editPersonalDesc": "Name, Email, Birthday",
+      "editFitness": "Edit Fitness Details",
+      "editFitnessDesc": "Goals, Experience Level",
+      "appPreferences": "App Preferences",
+      "appPreferencesDesc": "Units, Notifications, Privacy"
+    }
   }
 }

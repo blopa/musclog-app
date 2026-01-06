@@ -94,5 +94,30 @@
     "edit": "BEWERKEN",
     "replace": "VERVANGEN",
     "completeSet": "SET VOLTOOIEN"
+  },
+  "profile": {
+    "header": {
+      "title": "Profiel"
+    },
+    "goal": "Doel",
+    "currentStats": "Huidige Statistieken",
+    "history": "Geschiedenis",
+    "management": "Beheer",
+    "stats": {
+      "weight": "Gewicht",
+      "height": "Lengte",
+      "bodyFat": "Vetpercentage",
+      "bmi": "BMI",
+      "age": "Leeftijd",
+      "gender": "Geslacht"
+    },
+    "managementItems": {
+      "editPersonal": "Persoonlijke Informatie Bewerken",
+      "editPersonalDesc": "Naam, Email, Verjaardag",
+      "editFitness": "Fitness Details Bewerken",
+      "editFitnessDesc": "Doelen, Ervaring Niveau",
+      "appPreferences": "App Voorkeuren",
+      "appPreferencesDesc": "Eenheden, Meldingen, Privacy"
+    }
   }
 }
