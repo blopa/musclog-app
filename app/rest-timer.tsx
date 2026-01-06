@@ -236,19 +236,20 @@ export default function RestTimerScreen() {
         <View className="flex-row items-center justify-between px-2">
           <View className="flex-row items-center gap-2">
             <CheckCircle size={18} color={theme.colors.accent.primary} />
-            <Text className="text-sm text-text-secondary">
+            <Text className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.5)' }}>
               {t('restTimer.done')}:{' '}
-              <Text className="font-medium text-text-primary">{exerciseData.completed.name}</Text>
+              <Text className="font-medium text-white">{exerciseData.completed.name}</Text>
             </Text>
           </View>
-          <Text className="font-medium text-text-secondary">
-            {exerciseData.completed.weight}kg <Text className="text-text-tertiary">×</Text>{' '}
+          <Text className="font-medium" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+            {exerciseData.completed.weight}kg{' '}
+            <Text style={{ color: 'rgba(255, 255, 255, 0.3)' }}>×</Text>{' '}
             {exerciseData.completed.reps} {t('restTimer.reps')}
           </Text>
         </View>
 
         {/* Next Exercise Card */}
-        <Pressable className="relative overflow-hidden rounded-xl active:opacity-90">
+        <Pressable className="relative rounded-xl active:opacity-90">
           {/* Gradient border effect */}
           <View className="absolute -inset-[1px] overflow-hidden rounded-[13px]">
             <LinearGradient
@@ -260,53 +261,63 @@ export default function RestTimerScreen() {
           </View>
 
           <View className="relative flex-row items-center gap-4 rounded-xl bg-bg-card p-4">
-            {/* Exercise Image */}
-            <View className="relative h-20 w-20 overflow-hidden rounded-lg bg-bg-overlay">
-              <Image
-                source={exerciseData.next.image}
-                className="h-full w-full"
-                resizeMode="cover"
-              />
-              <LinearGradient
-                colors={['transparent', 'rgba(0,0,0,0.6)']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 0, y: 1 }}
-                style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
-              />
-            </View>
-
-            {/* Exercise Info */}
-            <View className="min-w-0 flex-1 gap-1">
-              <View className="w-fit rounded-full border border-accent-primary/20 bg-accent-primary/10 px-2 py-0.5">
-                <Text className="text-[10px] font-bold uppercase tracking-widest text-accent-primary">
-                  {t('restTimer.upNext')}
-                </Text>
+              {/* Exercise Image */}
+              <View className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-bg-overlay">
+                <Image
+                  source={exerciseData.next.image}
+                  className="h-full w-full"
+                  resizeMode="cover"
+                />
+                <LinearGradient
+                  colors={['transparent', 'rgba(0,0,0,0.6)']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 0, y: 1 }}
+                  style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+                />
               </View>
 
-              <Text className="mt-1 truncate text-lg font-bold text-text-primary">
-                {exerciseData.next.name}
-              </Text>
-
-              <View className="mt-1 flex-row items-center gap-3">
-                <View className="flex-row items-center gap-1">
-                  <Dumbbell size={16} color={theme.colors.text.secondary} />
-                  <Text className="text-sm text-text-secondary">{exerciseData.next.weight}kg</Text>
+              {/* Exercise Info */}
+              <View className="min-w-0 flex-1 gap-1">
+                <View className="flex-row items-start justify-between">
+                  <View className="flex-1" />
+                  <View className="rounded-full border border-accent-primary/20 bg-accent-primary/10 px-2 py-0.5">
+                    <Text className="text-[10px] font-bold uppercase tracking-widest text-accent-primary">
+                      {t('restTimer.upNext')}
+                    </Text>
+                  </View>
                 </View>
-                <View className="h-1 w-1 rounded-full bg-white/20" />
-                <View className="flex-row items-center gap-1">
-                  <Repeat size={16} color={theme.colors.text.secondary} />
-                  <Text className="text-sm text-text-secondary">
-                    {exerciseData.next.reps} {t('restTimer.reps')}
+
+                <Text className="mt-1 truncate text-lg font-bold leading-tight text-white">
+                  {exerciseData.next.name}
+                </Text>
+
+                <View className="mt-1 flex-row items-center gap-3">
+                  <View className="flex-row items-center gap-1">
+                    <Dumbbell size={16} color={theme.colors.text.secondary} />
+                    <Text className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.6)' }}>
+                      {exerciseData.next.weight}kg
+                    </Text>
+                  </View>
+                  <View className="h-1 w-1 rounded-full bg-white/20" />
+                  <View className="flex-row items-center gap-1">
+                    <Repeat size={16} color={theme.colors.text.secondary} />
+                    <Text className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.6)' }}>
+                      {exerciseData.next.reps} {t('restTimer.reps')}
+                    </Text>
+                  </View>
+                  <View className="h-1 w-1 rounded-full bg-white/20" />
+                  <Text
+                    className="text-sm font-medium"
+                    style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+                    {exerciseData.next.sets} {t('restTimer.sets')}
                   </Text>
                 </View>
-                <View className="h-1 w-1 rounded-full bg-white/20" />
-                <Text className="text-sm font-medium text-white/80">
-                  {exerciseData.next.sets} {t('restTimer.sets')}
-                </Text>
               </View>
-            </View>
 
-            <ChevronRight size={theme.iconSize.md} color={theme.colors.text.tertiary} />
+               {/* Chevron */}
+               <View className="self-center">
+                 <ChevronRight size={theme.iconSize.md} color={theme.colors.text.tertiary} />
+               </View>
           </View>
         </Pressable>
       </View>
