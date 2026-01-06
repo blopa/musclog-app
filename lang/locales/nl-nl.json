@@ -74,5 +74,11 @@
       "yesterday": "GISTEREN",
       "earlier": "EERDER"
     }
+  },
+  "userMenu": {
+    "greeting": "Account",
+    "profile": "Profiel",
+    "settings": "Instellingen",
+    "progress": "Voortgang"
   }
 }

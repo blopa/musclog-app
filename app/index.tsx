@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { View, Text, Image, Pressable, ScrollView } from 'react-native';
 import { Bell } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
@@ -7,6 +8,7 @@ import { RecentWorkoutsCard } from '../components/RecentWorkoutsCard';
 import { CircularArrow } from '../components/CircularArrow';
 import { ActionButton } from '../components/ActionButton';
 import { DailySummaryCard } from '../components/DailySummaryCard';
+import { UserMenuModal } from '../components/UserMenuModal';
 import { useRouter } from 'expo-router';
 
 const PAGE_DATA = {
@@ -76,13 +78,16 @@ export default function HomeScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const { user, dailySummary, recentWorkouts, recentFoods } = PAGE_DATA;
+  const [isUserMenuVisible, setIsUserMenuVisible] = useState(false);
 
   return (
     <MasterLayout>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View className="flex-row items-center justify-between px-6 py-6">
-          <View className="flex-row items-center gap-3">
+          <Pressable
+            className="flex-row items-center gap-3"
+            onPress={() => setIsUserMenuVisible(true)}>
             <View className="relative">
               <View
                 className="h-14 w-14 overflow-hidden rounded-full border-4 border-accent-primary"
@@ -95,7 +100,7 @@ export default function HomeScreen() {
               <Text className="text-sm text-text-secondary">{t('home.greeting.goodEvening')}</Text>
               <Text className="text-xl font-bold text-text-primary">{user.name}</Text>
             </View>
-          </View>
+          </Pressable>
           <Pressable
             className="relative rounded-full bg-bg-overlay p-3"
             onPress={() => router.push('/notifications')}>
@@ -196,6 +201,16 @@ export default function HomeScreen() {
         {/* Bottom spacing for navigation */}
         <View className="h-24" />
       </ScrollView>
+
+      {/* User Menu Modal */}
+      <UserMenuModal
+        visible={isUserMenuVisible}
+        onClose={() => setIsUserMenuVisible(false)}
+        user={user}
+        onProfilePress={() => router.push('/profile')}
+        onSettingsPress={() => router.push('/settings')}
+        onProgressPress={() => router.push('/progress')}
+      />
     </MasterLayout>
   );
 }

@@ -74,5 +74,11 @@
       "yesterday": "ONTEM",
       "earlier": "ANTES"
     }
+  },
+  "userMenu": {
+    "greeting": "Conta",
+    "profile": "Perfil",
+    "settings": "Configurações",
+    "progress": "Progresso"
   }
 }
