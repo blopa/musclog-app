@@ -87,18 +87,18 @@ export function UserMenuModal({
                 }}
               />
               <MenuItem
-                icon={<Settings size={theme.iconSize.md} color={theme.colors.text.secondary} />}
-                label={t('userMenu.settings')}
-                onPress={() => {
-                  onSettingsPress?.();
-                  onClose();
-                }}
-              />
-              <MenuItem
                 icon={<BarChart3 size={theme.iconSize.md} color={theme.colors.accent.secondary} />}
                 label={t('userMenu.progress')}
                 onPress={() => {
                   onProgressPress?.();
+                  onClose();
+                }}
+              />
+              <MenuItem
+                icon={<Settings size={theme.iconSize.md} color={theme.colors.text.secondary} />}
+                label={t('userMenu.settings')}
+                onPress={() => {
+                  onSettingsPress?.();
                   onClose();
                 }}
               />
