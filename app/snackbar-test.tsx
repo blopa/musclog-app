@@ -3,42 +3,24 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useRouter } from 'expo-router';
 import { ChevronLeft, CheckCircle, AlertTriangle } from 'lucide-react-native';
-import { useState } from 'react';
 import { theme } from '../theme';
-import { Snackbar, type SnackbarType } from '../components/Snackbar';
+import { useSnackbar } from '../components/SnackbarContext';
 
 export default function SnackbarTestScreen() {
   const router = useRouter();
-  const [snackbars, setSnackbars] = useState<SnackbarType[]>([]);
+  const { showSnackbar } = useSnackbar();
 
-  const showSnackbar = (type: 'success' | 'error') => {
-    const id = Date.now();
-    const newSnackbar: SnackbarType =
-      type === 'success'
-        ? {
-            id,
-            type: 'success',
-            message: 'Workout saved successfully!',
-            action: 'VIEW',
-          }
-        : {
-            id,
-            type: 'error',
-            message: 'Failed to save workout',
-            subtitle: 'Please check your connection and try again.',
-            action: 'RETRY',
-          };
-
-    setSnackbars((prev) => [...prev, newSnackbar]);
-
-    // Auto-dismiss after 5 seconds
-    setTimeout(() => {
-      setSnackbars((prev) => prev.filter((s) => s.id !== id));
-    }, 5000);
+  const triggerSuccessSnackbar = () => {
+    showSnackbar('success', 'Workout saved successfully!', {
+      action: 'VIEW',
+    });
   };
 
-  const dismissSnackbar = (id: number) => {
-    setSnackbars((prev) => prev.filter((s) => s.id !== id));
+  const triggerErrorSnackbar = () => {
+    showSnackbar('error', 'Failed to save workout', {
+      subtitle: 'Please check your connection and try again.',
+      action: 'RETRY',
+    });
   };
 
   return (
@@ -73,7 +55,7 @@ export default function SnackbarTestScreen() {
             <View className="gap-4 pt-4">
               {/* Success Button */}
               <Pressable
-                onPress={() => showSnackbar('success')}
+                onPress={triggerSuccessSnackbar}
                 className="flex-row items-center gap-4 rounded-2xl bg-[#1a3530] p-6 active:bg-[#1f4039]">
                 <View className="h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-[#22c55e]/20">
                   <CheckCircle size={24} color="#22c55e" />
@@ -90,7 +72,7 @@ export default function SnackbarTestScreen() {
 
               {/* Error Button */}
               <Pressable
-                onPress={() => showSnackbar('error')}
+                onPress={triggerErrorSnackbar}
                 className="flex-row items-center gap-4 rounded-2xl bg-[#1a3530] p-6 active:bg-[#1f4039]">
                 <View className="h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-500/20">
                   <AlertTriangle size={24} color="#ef4444" />
@@ -126,13 +108,6 @@ export default function SnackbarTestScreen() {
         {/* Bottom spacing for snackbars */}
         <View className="h-64" />
       </ScrollView>
-
-      {/* Snackbars Container */}
-      <View className="absolute bottom-0 left-0 right-0 pb-8" pointerEvents="box-none">
-        {snackbars.map((snackbar) => (
-          <Snackbar key={snackbar.id} snackbar={snackbar} onDismiss={dismissSnackbar} />
-        ))}
-      </View>
     </SafeAreaView>
   );
 }
