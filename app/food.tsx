@@ -1,6 +1,5 @@
 import { View, Text, ScrollView, Pressable } from 'react-native';
 import { ChevronLeft, ChevronRight, Calendar, ScanLine, Grid3x3 } from 'lucide-react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 import i18n, { LOCALE_MAP, LanguageKeys } from '../lang/lang';
@@ -10,6 +9,7 @@ import { CaloriesRemainingCard } from '../components/CaloriesRemainingCard';
 import { FoodItemCard } from '../components/FoodItemCard';
 import { MealSection } from '../components/MealSection';
 import { FloatingActionButton } from '../components/FloatingActionButton';
+import { ScanButton } from '../components/ScanButton';
 
 const FOOD_DATA = {
   date: 'Today, Oct 24',
@@ -109,25 +109,22 @@ export default function FoodScreen() {
 
             {/* Scan Buttons */}
             <View className="flex-row gap-4">
-              <Pressable className="flex-1 flex-row items-center justify-center gap-3 rounded-2xl border border-border-default bg-bg-overlay py-4">
-                <ScanLine size={theme.iconSize.md} color={theme.colors.accent.secondary} />
-                <Text className="text-lg font-semibold text-text-primary">
-                  {t('food.actions.scanBarcode')}
-                </Text>
-              </Pressable>
-
-              <Pressable className="relative flex-1 flex-row items-center justify-center gap-3 rounded-2xl border border-emerald-900/30 py-4">
-                <LinearGradient
-                  colors={theme.colors.gradients.button}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 1 }}
-                  className="absolute inset-0 rounded-2xl"
-                />
-                <Grid3x3 size={theme.iconSize.md} color={theme.colors.text.primary} />
-                <Text className="text-lg font-semibold text-text-primary">
-                  {t('food.actions.aiCamera')}
-                </Text>
-              </Pressable>
+              <ScanButton
+                icon={ScanLine}
+                label={t('food.actions.scanBarcode')}
+                variant="default"
+                onPress={() => {
+                  // Handle scan barcode action
+                }}
+              />
+              <ScanButton
+                icon={Grid3x3}
+                label={t('food.actions.aiCamera')}
+                variant="gradient"
+                onPress={() => {
+                  // Handle AI camera action
+                }}
+              />
             </View>
 
             {/* Breakfast Section */}
