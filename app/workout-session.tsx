@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { View, Text, Pressable, ScrollView, ImageBackground } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { SkipForward, Edit, Repeat, CheckCircle } from 'lucide-react-native';
+import { SkipForward, Edit, Repeat } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -10,6 +10,9 @@ import { theme } from '../theme';
 import { WorkoutOptionsModal } from '../components/WorkoutOptionsModal';
 import { EndWorkoutModal } from '../components/EndWorkoutModal';
 import { WorkoutTimeTracker } from '../components/WorkoutTimeTracker';
+import { WorkoutStatCard } from '../components/WorkoutStatCard';
+import { WorkoutActionButton } from '../components/WorkoutActionButton';
+import { CompleteSetButton } from '../components/CompleteSetButton';
 
 export default function WorkoutSessionScreen() {
   const { t } = useTranslation();
@@ -77,27 +80,28 @@ export default function WorkoutSessionScreen() {
 
           {/* Stats Cards */}
           <View className="px-6 mt-8 flex-row gap-3">
-            <Pressable className="flex-1 bg-bg-overlay/80 border border-border-accent rounded-3xl p-6 items-center">
-              <Text className="text-text-secondary text-sm font-medium mb-2">
-                {t('workoutSession.weight')}
-              </Text>
-              <Text className="text-5xl font-bold text-text-primary">{weight}</Text>
-              <Text className="text-text-secondary text-lg mt-1">{t('workoutSession.kg')}</Text>
-            </Pressable>
-
-            <Pressable className="flex-1 bg-bg-overlay/80 border border-border-accent rounded-3xl p-6 items-center">
-              <Text className="text-text-secondary text-sm font-medium mb-2">
-                {t('workoutSession.reps')}
-              </Text>
-              <Text className="text-5xl font-bold text-text-primary">{reps}</Text>
-            </Pressable>
-
-            <Pressable className="flex-1 bg-bg-overlay/80 border border-border-accent rounded-3xl p-6 items-center">
-              <Text className="text-text-secondary text-sm font-medium mb-2">
-                {t('workoutSession.partials')}
-              </Text>
-              <Text className="text-5xl font-bold text-text-tertiary">-</Text>
-            </Pressable>
+            <WorkoutStatCard
+              title={t('workoutSession.weight')}
+              value={weight}
+              unit={t('workoutSession.kg')}
+              onPress={() => {
+                // Handle weight adjustment
+              }}
+            />
+            <WorkoutStatCard
+              title={t('workoutSession.reps')}
+              value={reps}
+              onPress={() => {
+                // Handle reps adjustment
+              }}
+            />
+            <WorkoutStatCard
+              title={t('workoutSession.partials')}
+              value="-"
+              onPress={() => {
+                // Handle partials adjustment
+              }}
+            />
           </View>
 
           {/* Previous & History */}
@@ -117,41 +121,35 @@ export default function WorkoutSessionScreen() {
           {/* Action Buttons */}
           <View className="px-6 mt-8 pb-32">
             <View className="flex-row gap-6 mb-6">
-              <Pressable className="flex-1 items-center gap-2">
-                <View className="h-20 w-20 bg-bg-overlay/80 border border-border-accent rounded-full items-center justify-center">
-                  <SkipForward size={theme.iconSize.lg} color={theme.colors.text.secondary} />
-                </View>
-                <Text className="text-text-secondary text-sm font-medium">
-                  {t('workoutSession.skip')}
-                </Text>
-              </Pressable>
-
-              <Pressable className="flex-1 items-center gap-2">
-                <View className="h-20 w-20 bg-bg-overlay/80 border border-border-accent rounded-full items-center justify-center">
-                  <Edit size={theme.iconSize.lg} color={theme.colors.text.secondary} />
-                </View>
-                <Text className="text-text-secondary text-sm font-medium">
-                  {t('workoutSession.edit')}
-                </Text>
-              </Pressable>
-
-              <Pressable className="flex-1 items-center gap-2">
-                <View className="h-20 w-20 bg-bg-overlay/80 border border-border-accent rounded-full items-center justify-center">
-                  <Repeat size={theme.iconSize.lg} color={theme.colors.text.secondary} />
-                </View>
-                <Text className="text-text-secondary text-sm font-medium">
-                  {t('workoutSession.replace')}
-                </Text>
-              </Pressable>
+              <WorkoutActionButton
+                icon={SkipForward}
+                label={t('workoutSession.skip')}
+                onPress={() => {
+                  // Handle skip action
+                }}
+              />
+              <WorkoutActionButton
+                icon={Edit}
+                label={t('workoutSession.edit')}
+                onPress={() => {
+                  // Handle edit action
+                }}
+              />
+              <WorkoutActionButton
+                icon={Repeat}
+                label={t('workoutSession.replace')}
+                onPress={() => {
+                  // Handle replace action
+                }}
+              />
             </View>
 
             {/* Complete Button */}
-            <Pressable className="w-full bg-accent-primary py-5 rounded-3xl flex-row items-center justify-center gap-3">
-              <CheckCircle size={theme.iconSize.lg} color={theme.colors.text.black} />
-              <Text className="text-text-black font-bold text-xl">
-                {t('workoutSession.completeSet')}
-              </Text>
-            </Pressable>
+            <CompleteSetButton
+              onPress={() => {
+                // Handle complete set action
+              }}
+            />
           </View>
         </ScrollView>
       </View>
