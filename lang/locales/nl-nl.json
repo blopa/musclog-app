@@ -95,6 +95,17 @@
     "replace": "VERVANGEN",
     "completeSet": "SET VOLTOOIEN"
   },
+  "restTimer": {
+    "totalDuration": "TOTALE DUUR",
+    "resting": "Rusten...",
+    "minus5s": "- 5s",
+    "plus5s": "+ 5s",
+    "skipRest": "RUST OVERSLAAN",
+    "done": "Klaar",
+    "reps": "herhalingen",
+    "sets": "Sets",
+    "upNext": "VOLGENDE"
+  },
   "workoutOptions": {
     "title": "Training Opties",
     "previewWorkout": "Volledige Training Bekijken",

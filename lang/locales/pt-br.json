@@ -95,6 +95,17 @@
     "replace": "SUBSTITUIR",
     "completeSet": "COMPLETAR SÉRIE"
   },
+  "restTimer": {
+    "totalDuration": "DURAÇÃO TOTAL",
+    "resting": "Descansando...",
+    "minus5s": "- 5s",
+    "plus5s": "+ 5s",
+    "skipRest": "PULAR DESCANSO",
+    "done": "Feito",
+    "reps": "rep",
+    "sets": "Séries",
+    "upNext": "PRÓXIMO"
+  },
   "workoutOptions": {
     "title": "Opções de Treino",
     "previewWorkout": "Visualizar Treino Completo",
