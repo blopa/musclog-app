@@ -3,8 +3,6 @@ import { View, Text, Pressable, Image, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import {
-  ChevronDown,
-  MoreVertical,
   SkipForward,
   CheckCircle,
   Dumbbell,
@@ -13,19 +11,18 @@ import {
   Activity,
 } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { BlurView } from 'expo-blur';
 import Svg, { Circle } from 'react-native-svg';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { WorkoutOptionsModal } from '../components/WorkoutOptionsModal';
 import { EndWorkoutModal } from '../components/EndWorkoutModal';
+import { WorkoutTimeTracker } from '../components/WorkoutTimeTracker';
 
 export default function RestTimerScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const [restTime, setRestTime] = useState(90); // 1:30 in seconds
-  const [totalDuration, setTotalDuration] = useState({ hours: 0, minutes: 45, seconds: 12 });
   const [isOptionsModalVisible, setIsOptionsModalVisible] = useState(false);
   const [isEndWorkoutModalVisible, setIsEndWorkoutModalVisible] = useState(false);
   const rotationAnim = useRef(new Animated.Value(0)).current;
@@ -47,30 +44,6 @@ export default function RestTimerScreen() {
     }
   }, [restTime]);
 
-  // Total duration timer
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTotalDuration((prev) => {
-        let newSeconds = prev.seconds + 1;
-        let newMinutes = prev.minutes;
-        let newHours = prev.hours;
-
-        if (newSeconds >= 60) {
-          newSeconds = 0;
-          newMinutes += 1;
-        }
-        if (newMinutes >= 60) {
-          newMinutes = 0;
-          newHours += 1;
-        }
-
-        return { hours: newHours, minutes: newMinutes, seconds: newSeconds };
-      });
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
-
   // Spinning loader animation
   useEffect(() => {
     Animated.loop(
@@ -80,7 +53,7 @@ export default function RestTimerScreen() {
         useNativeDriver: true,
       })
     ).start();
-  }, []);
+  }, [rotationAnim]);
 
   const formatTime = (value: number) => String(value).padStart(2, '0');
   const formatRestTime = (seconds: number) => {
@@ -161,28 +134,12 @@ export default function RestTimerScreen() {
         }}></View>
 
       {/* Header */}
-      <View className="relative z-20 flex-row items-center justify-between px-4 pb-4 pt-4">
-        <Pressable
-          className="h-10 w-10 items-center justify-center rounded-full bg-white/5 active:bg-white/10"
-          onPress={() => router.back()}>
-          <ChevronDown size={theme.iconSize.md} color={theme.colors.text.primary} />
-        </Pressable>
-
-        <View className="items-center">
-          <Text className="text-xs font-semibold uppercase tracking-widest text-accent-primary opacity-80">
-            {t('restTimer.totalDuration')}
-          </Text>
-          <Text className="text-lg font-bold tabular-nums tracking-tight text-text-primary">
-            {formatTime(totalDuration.hours)}:{formatTime(totalDuration.minutes)}:
-            {formatTime(totalDuration.seconds)}
-          </Text>
-        </View>
-
-        <Pressable
-          className="h-10 w-10 items-center justify-center rounded-full bg-white/5 active:bg-white/10"
-          onPress={() => setIsOptionsModalVisible(true)}>
-          <MoreVertical size={theme.iconSize.md} color={theme.colors.text.primary} />
-        </Pressable>
+      <View className="relative z-20">
+        <WorkoutTimeTracker
+          onClose={() => router.back()}
+          onOptionsPress={() => setIsOptionsModalVisible(true)}
+          initialTime={{ hours: 0, minutes: 45, seconds: 12 }}
+        />
       </View>
 
       {/* Main Content */}
