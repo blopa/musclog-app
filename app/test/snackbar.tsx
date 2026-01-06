@@ -3,8 +3,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useRouter } from 'expo-router';
 import { ChevronLeft, CheckCircle, AlertTriangle } from 'lucide-react-native';
-import { theme } from '../theme';
-import { useSnackbar } from '../components/SnackbarContext';
+import { theme } from '../../theme';
+import { useSnackbar } from '../../components/SnackbarContext';
 
 export default function SnackbarTestScreen() {
   const router = useRouter();
