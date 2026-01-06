@@ -104,9 +104,10 @@ export function WorkoutOptionsModal({
         <View className="flex-1 justify-end">
           {/* Modal Content */}
           <Animated.View
-            className="rounded-t-3xl border-t border-border-dark bg-bg-card"
+            className="rounded-t-3xl border-t border-border-dark"
             style={{
               transform: [{ translateY: slideAnim }],
+              backgroundColor: theme.colors.background.cardElevated,
             }}>
             {/* Header */}
             <View className="flex-row items-center justify-between border-b border-border-dark p-6">
