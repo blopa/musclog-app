@@ -1,13 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
-import { View, Text, Pressable, Image, Animated } from 'react-native';
+import { View, Text, Pressable, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import {
   SkipForward,
   CheckCircle,
-  Dumbbell,
-  Repeat,
-  ChevronRight,
   Activity,
 } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -18,6 +15,7 @@ import { theme } from '../theme';
 import { WorkoutOptionsModal } from '../components/WorkoutOptionsModal';
 import { EndWorkoutModal } from '../components/EndWorkoutModal';
 import { WorkoutTimeTracker } from '../components/WorkoutTimeTracker';
+import { UpNextExerciseCard } from '../components/UpNextExerciseCard';
 
 export default function RestTimerScreen() {
   const { t } = useTranslation();
@@ -249,77 +247,12 @@ export default function RestTimerScreen() {
         </View>
 
         {/* Next Exercise Card */}
-        <Pressable className="relative rounded-xl active:opacity-90">
-          {/* Gradient border effect */}
-          <View className="absolute -inset-[1px] overflow-hidden rounded-[13px]">
-            <LinearGradient
-              colors={[theme.colors.status.purple, theme.colors.accent.primary]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={{ flex: 1, opacity: 0.4 }}
-            />
-          </View>
-
-          <View className="relative flex-row items-center gap-4 rounded-xl bg-bg-card p-4">
-              {/* Exercise Image */}
-              <View className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-bg-overlay">
-                <Image
-                  source={exerciseData.next.image}
-                  className="h-full w-full"
-                  resizeMode="cover"
-                />
-                <LinearGradient
-                  colors={['transparent', 'rgba(0,0,0,0.6)']}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 0, y: 1 }}
-                  style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
-                />
-              </View>
-
-              {/* Exercise Info */}
-              <View className="min-w-0 flex-1 gap-1">
-                <View className="flex-row items-start justify-between">
-                  <View className="flex-1" />
-                  <View className="rounded-full border border-accent-primary/20 bg-accent-primary/10 px-2 py-0.5">
-                    <Text className="text-[10px] font-bold uppercase tracking-widest text-accent-primary">
-                      {t('restTimer.upNext')}
-                    </Text>
-                  </View>
-                </View>
-
-                <Text className="mt-1 truncate text-lg font-bold leading-tight text-white">
-                  {exerciseData.next.name}
-                </Text>
-
-                <View className="mt-1 flex-row items-center gap-3">
-                  <View className="flex-row items-center gap-1">
-                    <Dumbbell size={16} color={theme.colors.text.secondary} />
-                    <Text className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.6)' }}>
-                      {exerciseData.next.weight}kg
-                    </Text>
-                  </View>
-                  <View className="h-1 w-1 rounded-full bg-white/20" />
-                  <View className="flex-row items-center gap-1">
-                    <Repeat size={16} color={theme.colors.text.secondary} />
-                    <Text className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.6)' }}>
-                      {exerciseData.next.reps} {t('restTimer.reps')}
-                    </Text>
-                  </View>
-                  <View className="h-1 w-1 rounded-full bg-white/20" />
-                  <Text
-                    className="text-sm font-medium"
-                    style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
-                    {exerciseData.next.sets} {t('restTimer.sets')}
-                  </Text>
-                </View>
-              </View>
-
-               {/* Chevron */}
-               <View className="self-center">
-                 <ChevronRight size={theme.iconSize.md} color={theme.colors.text.tertiary} />
-               </View>
-          </View>
-        </Pressable>
+        <UpNextExerciseCard
+          exercise={exerciseData.next}
+          onPress={() => {
+            // Handle navigation to exercise details or start exercise
+          }}
+        />
       </View>
 
       {/* Workout Options Modal */}
