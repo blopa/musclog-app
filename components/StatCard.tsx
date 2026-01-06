@@ -1,0 +1,57 @@
+import React from 'react';
+import { View, Text } from 'react-native';
+import { TrendingUp } from 'lucide-react-native';
+import { theme } from '../theme';
+
+type StatCardProps = {
+  title: string | React.ReactNode;
+  value: string;
+  unit?: string;
+  change?: string;
+  changeType?: 'positive' | 'warning';
+  icon: React.ComponentType<{ size: number; color: string }>;
+  iconColor: string;
+};
+
+export function StatCard({
+  title,
+  value,
+  unit,
+  change,
+  changeType,
+  icon: Icon,
+  iconColor,
+}: StatCardProps) {
+  return (
+    <View className="rounded-2xl border border-border-default bg-bg-overlay p-4">
+      <View className="mb-2 flex-row items-start justify-between">
+        <Text className="text-sm text-text-secondary">{title}</Text>
+        <Icon size={theme.iconSize.sm} color={iconColor} />
+      </View>
+      <View className="mb-1 flex-row items-baseline gap-1">
+        <Text className="text-3xl font-bold text-text-primary">{value}</Text>
+        {unit && <Text className="text-lg text-text-secondary">{unit}</Text>}
+      </View>
+      {change && (
+        <View className="flex-row items-center gap-1">
+          <TrendingUp
+            size={theme.iconSize.xs}
+            color={
+              changeType === 'positive' ? theme.colors.accent.primary : theme.colors.status.warning
+            }
+          />
+          <Text
+            className="text-xs font-medium"
+            style={{
+              color:
+                changeType === 'positive'
+                  ? theme.colors.accent.primary
+                  : theme.colors.status.warning,
+            }}>
+            {change}
+          </Text>
+        </View>
+      )}
+    </View>
+  );
+}

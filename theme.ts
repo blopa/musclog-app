@@ -35,6 +35,7 @@ export const theme = {
       muted: '#6b7280', // Muted text
       accent: '#22c55e', // Accent text (green)
       accentLight: '#34d399', // Light accent text (emerald)
+      black: '#000000', // Black text (for icons on light backgrounds)
     },
 
     // Accent colors

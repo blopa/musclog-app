@@ -1,19 +1,12 @@
 import React from 'react';
 import { View, Text, ScrollView, Pressable, Image } from 'react-native';
-import {
-  Settings,
-  Edit,
-  TrendingUp,
-  CheckCircle,
-  User,
-  Dumbbell,
-  List,
-  ChevronRight,
-} from 'lucide-react-native';
+import { Settings, Edit, TrendingUp, CheckCircle, User, Dumbbell, List } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { MasterLayout } from '../components/MasterLayout';
+import { StatCard } from '../components/StatCard';
+import { ManagementItem } from '../components/ManagementItem';
 
 const PROFILE_DATA = {
   user: {
@@ -100,94 +93,6 @@ const PROFILE_DATA = {
     },
   ],
 };
-
-type StatCardProps = {
-  title: string | React.ReactNode;
-  value: string;
-  unit?: string;
-  change?: string;
-  changeType?: 'positive' | 'warning';
-  status?: string;
-  statusColor?: string;
-  icon: React.ComponentType<{ size: number; color: string }>;
-  iconColor: string;
-};
-
-function StatCard({
-  title,
-  value,
-  unit,
-  change,
-  changeType,
-  icon: Icon,
-  iconColor,
-}: StatCardProps) {
-  return (
-    <View className="rounded-2xl border border-border-default bg-bg-overlay p-4">
-      <View className="mb-2 flex-row items-start justify-between">
-        <Text className="text-sm text-text-secondary">{title}</Text>
-        <Icon size={theme.iconSize.sm} color={iconColor} />
-      </View>
-      <View className="mb-1 flex-row items-baseline gap-1">
-        <Text className="text-3xl font-bold text-text-primary">{value}</Text>
-        {unit && <Text className="text-lg text-text-secondary">{unit}</Text>}
-      </View>
-      {change && (
-        <View className="flex-row items-center gap-1">
-          <TrendingUp
-            size={theme.iconSize.xs}
-            color={
-              changeType === 'positive' ? theme.colors.accent.primary : theme.colors.status.warning
-            }
-          />
-          <Text
-            className="text-xs font-medium"
-            style={{
-              color:
-                changeType === 'positive'
-                  ? theme.colors.accent.primary
-                  : theme.colors.status.warning,
-            }}>
-            {change}
-          </Text>
-        </View>
-      )}
-    </View>
-  );
-}
-
-type ManagementItemProps = {
-  title: string;
-  description: string;
-  icon: React.ComponentType<{ size: number; color: string }>;
-  iconColor: string;
-  onPress?: () => void;
-};
-
-function ManagementItem({
-  title,
-  description,
-  icon: Icon,
-  iconColor,
-  onPress,
-}: ManagementItemProps) {
-  return (
-    <Pressable
-      className="active:bg-bg-card-elevated flex-row items-center gap-4 rounded-2xl border border-border-default bg-bg-overlay p-4"
-      onPress={onPress}>
-      <View
-        className="h-12 w-12 items-center justify-center rounded-xl"
-        style={{ backgroundColor: `${iconColor}20` }}>
-        <Icon size={theme.iconSize.md} color={iconColor} />
-      </View>
-      <View className="flex-1">
-        <Text className="text-lg font-semibold text-text-primary">{title}</Text>
-        <Text className="mt-0.5 text-sm text-text-secondary">{description}</Text>
-      </View>
-      <ChevronRight size={theme.iconSize.md} color={theme.colors.text.secondary} />
-    </Pressable>
-  );
-}
 
 export default function ProfileScreen() {
   const { t } = useTranslation();
