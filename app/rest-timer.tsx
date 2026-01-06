@@ -1,8 +1,17 @@
 import { useState, useEffect, useRef } from 'react';
-import { View, Text, Pressable, Image } from 'react-native';
+import { View, Text, Pressable, Image, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { ChevronDown, MoreVertical, SkipForward, CheckCircle, Dumbbell, Repeat, ChevronRight, Activity } from 'lucide-react-native';
+import {
+  ChevronDown,
+  MoreVertical,
+  SkipForward,
+  CheckCircle,
+  Dumbbell,
+  Repeat,
+  ChevronRight,
+  Activity,
+} from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import Svg, { Circle } from 'react-native-svg';
@@ -11,7 +20,6 @@ import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { WorkoutOptionsModal } from '../components/WorkoutOptionsModal';
 import { EndWorkoutModal } from '../components/EndWorkoutModal';
-import { Animated } from 'react-native';
 
 export default function RestTimerScreen() {
   const { t } = useTranslation();
@@ -129,47 +137,31 @@ export default function RestTimerScreen() {
   return (
     <SafeAreaView className="flex-1 bg-bg-primary" edges={['top']}>
       <StatusBar style="light" />
-      
+
       {/* Ambient Background Gradients */}
-      <View 
-        className="absolute top-[-20%] right-[-10%] w-[80%] h-[50%] rounded-full overflow-hidden"
+      <View
+        className="absolute right-[-40%] top-[-20%] h-[20%] w-[110%] overflow-hidden rounded-full"
         style={{
           shadowColor: theme.colors.status.purple,
           shadowOffset: { width: 0, height: 0 },
           shadowOpacity: 0.8,
           shadowRadius: 200,
           elevation: 0,
-        }}>
-        <BlurView intensity={100} tint="dark" style={{ flex: 1, borderRadius: 9999 }}>
-          <LinearGradient
-            colors={[`${theme.colors.status.purple}20`, `${theme.colors.status.purple}10`, 'transparent']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={{ flex: 1, borderRadius: 9999 }}
-          />
-        </BlurView>
-      </View>
-      <View 
-        className="absolute bottom-[-10%] left-[-20%] w-[90%] h-[50%] rounded-full overflow-hidden"
+          backgroundColor: '#3d3162',
+        }}></View>
+      <View
+        className="absolute bottom-[-40%] left-[-20%] h-[50%] w-[110%] overflow-hidden rounded-full"
         style={{
           shadowColor: theme.colors.accent.primary,
           shadowOffset: { width: 0, height: 0 },
           shadowOpacity: 0.8,
           shadowRadius: 200,
           elevation: 0,
-        }}>
-        <BlurView intensity={100} tint="dark" style={{ flex: 1, borderRadius: 9999 }}>
-          <LinearGradient
-            colors={[`${theme.colors.accent.primary}15`, `${theme.colors.accent.primary}08`, 'transparent']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={{ flex: 1, borderRadius: 9999 }}
-          />
-        </BlurView>
-      </View>
+          backgroundColor: '#125630',
+        }}></View>
 
       {/* Header */}
-      <View className="flex-row items-center justify-between px-4 pt-4 pb-4 z-20 relative">
+      <View className="relative z-20 flex-row items-center justify-between px-4 pb-4 pt-4">
         <Pressable
           className="h-10 w-10 items-center justify-center rounded-full bg-white/5 active:bg-white/10"
           onPress={() => router.back()}>
@@ -177,11 +169,12 @@ export default function RestTimerScreen() {
         </Pressable>
 
         <View className="items-center">
-          <Text className="text-xs font-semibold text-accent-primary uppercase tracking-widest opacity-80">
+          <Text className="text-xs font-semibold uppercase tracking-widest text-accent-primary opacity-80">
             {t('restTimer.totalDuration')}
           </Text>
-          <Text className="text-lg font-bold tracking-tight tabular-nums text-text-primary">
-            {formatTime(totalDuration.hours)}:{formatTime(totalDuration.minutes)}:{formatTime(totalDuration.seconds)}
+          <Text className="text-lg font-bold tabular-nums tracking-tight text-text-primary">
+            {formatTime(totalDuration.hours)}:{formatTime(totalDuration.minutes)}:
+            {formatTime(totalDuration.seconds)}
           </Text>
         </View>
 
@@ -193,11 +186,11 @@ export default function RestTimerScreen() {
       </View>
 
       {/* Main Content */}
-      <View className="flex-1 items-center justify-center gap-10 px-6 z-10">
+      <View className="z-10 flex-1 items-center justify-center gap-10 px-6">
         {/* Timer */}
-        <View className="relative items-center justify-center w-full max-w-[400px] aspect-square">
+        <View className="relative aspect-square w-full max-w-[400px] items-center justify-center">
           {/* Background glow */}
-          <View className="absolute inset-4 rounded-full overflow-hidden">
+          <View className="absolute inset-4 overflow-hidden rounded-full">
             <LinearGradient
               colors={[`${theme.colors.accent.primary}33`, `${theme.colors.status.purple}33`]}
               start={{ x: 0, y: 0 }}
@@ -207,8 +200,12 @@ export default function RestTimerScreen() {
           </View>
 
           {/* SVG Circular Progress */}
-          <View className="w-full h-full items-center justify-center">
-            <Svg width="100%" height="100%" viewBox="0 0 100 100" style={{ transform: [{ rotate: '-90deg' }] }}>
+          <View className="h-full w-full items-center justify-center">
+            <Svg
+              width="100%"
+              height="100%"
+              viewBox="0 0 100 100"
+              style={{ transform: [{ rotate: '-90deg' }] }}>
               {/* Background circle */}
               <Circle
                 cx="50"
@@ -242,14 +239,14 @@ export default function RestTimerScreen() {
 
           {/* Timer Text */}
           <View className="absolute inset-0 items-center justify-center">
-            <Text className="text-[80px] font-bold tracking-tighter leading-none tabular-nums text-text-primary">
+            <Text className="text-[80px] font-bold tabular-nums leading-none tracking-tighter text-text-primary">
               {formatRestTime(restTime)}
             </Text>
-            <View className="flex-row items-center gap-2 mt-2">
+            <View className="mt-2 flex-row items-center gap-2">
               <Animated.View style={{ transform: [{ rotate: spin }] }}>
                 <Activity size={20} color={theme.colors.text.secondary} />
               </Animated.View>
-              <Text className="text-text-secondary font-medium text-lg tracking-wide">
+              <Text className="text-lg font-medium tracking-wide text-text-secondary">
                 {t('restTimer.resting')}
               </Text>
             </View>
@@ -257,24 +254,24 @@ export default function RestTimerScreen() {
         </View>
 
         {/* Controls */}
-        <View className="flex-row items-center gap-4 w-full max-w-sm justify-center">
+        <View className="w-full max-w-sm flex-row items-center justify-center gap-4">
           <Pressable
-            className="h-12 min-w-[72px] rounded-xl bg-bg-overlay/80 border border-white/5 items-center justify-center active:bg-bg-card-elevated active:scale-95"
+            className="active:bg-bg-card-elevated h-12 min-w-[72px] items-center justify-center rounded-xl border border-white/5 bg-bg-overlay/80 active:scale-95"
             onPress={handleMinus5s}>
             <Text className="text-sm font-bold text-text-primary">{t('restTimer.minus5s')}</Text>
           </Pressable>
 
           <Pressable
-            className="h-14 flex-1 rounded-xl bg-accent-primary items-center justify-center flex-row gap-2 active:opacity-90 active:scale-95"
+            className="h-14 flex-1 flex-row items-center justify-center gap-2 rounded-xl bg-accent-primary active:scale-95 active:opacity-90"
             onPress={handleSkipRest}>
             <SkipForward size={theme.iconSize.md} color={theme.colors.text.black} />
-            <Text className="uppercase tracking-wide font-bold text-text-black">
+            <Text className="text-text-black font-bold uppercase tracking-wide">
               {t('restTimer.skipRest')}
             </Text>
           </Pressable>
 
           <Pressable
-            className="h-12 min-w-[72px] rounded-xl bg-bg-overlay/80 border border-white/5 items-center justify-center active:bg-bg-card-elevated active:scale-95"
+            className="active:bg-bg-card-elevated h-12 min-w-[72px] items-center justify-center rounded-xl border border-white/5 bg-bg-overlay/80 active:scale-95"
             onPress={handlePlus5s}>
             <Text className="text-sm font-bold text-text-primary">{t('restTimer.plus5s')}</Text>
           </Pressable>
@@ -282,24 +279,26 @@ export default function RestTimerScreen() {
       </View>
 
       {/* Footer */}
-      <View className="w-full px-4 pb-8 z-10 gap-4 max-w-lg mx-auto">
+      <View className="z-10 mx-auto w-full max-w-lg gap-4 px-4 pb-8">
         {/* Completed Exercise */}
         <View className="flex-row items-center justify-between px-2">
           <View className="flex-row items-center gap-2">
             <CheckCircle size={18} color={theme.colors.accent.primary} />
             <Text className="text-sm text-text-secondary">
-              {t('restTimer.done')}: <Text className="text-text-primary font-medium">{exerciseData.completed.name}</Text>
+              {t('restTimer.done')}:{' '}
+              <Text className="font-medium text-text-primary">{exerciseData.completed.name}</Text>
             </Text>
           </View>
           <Text className="font-medium text-text-secondary">
-            {exerciseData.completed.weight}kg <Text className="text-text-tertiary">×</Text> {exerciseData.completed.reps} {t('restTimer.reps')}
+            {exerciseData.completed.weight}kg <Text className="text-text-tertiary">×</Text>{' '}
+            {exerciseData.completed.reps} {t('restTimer.reps')}
           </Text>
         </View>
 
         {/* Next Exercise Card */}
-        <Pressable className="relative rounded-xl overflow-hidden active:opacity-90">
+        <Pressable className="relative overflow-hidden rounded-xl active:opacity-90">
           {/* Gradient border effect */}
-          <View className="absolute -inset-[1px] rounded-[13px] overflow-hidden">
+          <View className="absolute -inset-[1px] overflow-hidden rounded-[13px]">
             <LinearGradient
               colors={[theme.colors.status.purple, theme.colors.accent.primary]}
               start={{ x: 0, y: 0 }}
@@ -308,12 +307,12 @@ export default function RestTimerScreen() {
             />
           </View>
 
-          <View className="relative bg-bg-card rounded-xl p-4 flex-row gap-4 items-center">
+          <View className="relative flex-row items-center gap-4 rounded-xl bg-bg-card p-4">
             {/* Exercise Image */}
-            <View className="w-20 h-20 rounded-lg bg-bg-overlay overflow-hidden relative">
+            <View className="relative h-20 w-20 overflow-hidden rounded-lg bg-bg-overlay">
               <Image
                 source={exerciseData.next.image}
-                className="w-full h-full"
+                className="h-full w-full"
                 resizeMode="cover"
               />
               <LinearGradient
@@ -325,29 +324,33 @@ export default function RestTimerScreen() {
             </View>
 
             {/* Exercise Info */}
-            <View className="flex-1 min-w-0 gap-1">
-              <View className="bg-accent-primary/10 px-2 py-0.5 rounded-full border border-accent-primary/20 w-fit">
-                <Text className="text-[10px] font-bold text-accent-primary uppercase tracking-widest">
+            <View className="min-w-0 flex-1 gap-1">
+              <View className="w-fit rounded-full border border-accent-primary/20 bg-accent-primary/10 px-2 py-0.5">
+                <Text className="text-[10px] font-bold uppercase tracking-widest text-accent-primary">
                   {t('restTimer.upNext')}
                 </Text>
               </View>
 
-              <Text className="text-lg font-bold truncate mt-1 text-text-primary">
+              <Text className="mt-1 truncate text-lg font-bold text-text-primary">
                 {exerciseData.next.name}
               </Text>
 
-              <View className="flex-row items-center gap-3 mt-1">
+              <View className="mt-1 flex-row items-center gap-3">
                 <View className="flex-row items-center gap-1">
                   <Dumbbell size={16} color={theme.colors.text.secondary} />
                   <Text className="text-sm text-text-secondary">{exerciseData.next.weight}kg</Text>
                 </View>
-                <View className="w-1 h-1 rounded-full bg-white/20" />
+                <View className="h-1 w-1 rounded-full bg-white/20" />
                 <View className="flex-row items-center gap-1">
                   <Repeat size={16} color={theme.colors.text.secondary} />
-                  <Text className="text-sm text-text-secondary">{exerciseData.next.reps} {t('restTimer.reps')}</Text>
+                  <Text className="text-sm text-text-secondary">
+                    {exerciseData.next.reps} {t('restTimer.reps')}
+                  </Text>
                 </View>
-                <View className="w-1 h-1 rounded-full bg-white/20" />
-                <Text className="text-white/80 font-medium text-sm">{exerciseData.next.sets} {t('restTimer.sets')}</Text>
+                <View className="h-1 w-1 rounded-full bg-white/20" />
+                <Text className="text-sm font-medium text-white/80">
+                  {exerciseData.next.sets} {t('restTimer.sets')}
+                </Text>
               </View>
             </View>
 
@@ -379,4 +382,3 @@ export default function RestTimerScreen() {
     </SafeAreaView>
   );
 }
-
