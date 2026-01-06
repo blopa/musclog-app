@@ -2,7 +2,7 @@ import { View, Pressable, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useRouter, usePathname } from 'expo-router';
-import { Home, Dumbbell, BarChart3, Camera, UtensilsCrossed } from 'lucide-react-native';
+import { Home, Dumbbell, MessageSquare, Camera, UtensilsCrossed } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { ReactNode } from 'react';
 import { theme } from '../theme';
@@ -94,7 +94,9 @@ export function MasterLayout({ children }: MasterLayoutProps) {
                 }`}>
                 <UtensilsCrossed
                   size={theme.iconSize.md}
-                  color={isActive('/food') ? theme.colors.accent.primary : theme.colors.text.tertiary}
+                  color={
+                    isActive('/food') ? theme.colors.accent.primary : theme.colors.text.tertiary
+                  }
                   strokeWidth={isActive('/food') ? 2.5 : 2}
                 />
               </View>
@@ -104,25 +106,25 @@ export function MasterLayout({ children }: MasterLayoutProps) {
               </Text>
             </Pressable>
 
-            {/* Progress */}
-            <Pressable className="items-center gap-1" onPress={() => router.push('/progress')}>
+            {/* Coach */}
+            <Pressable className="items-center gap-1" onPress={() => router.push('/coach')}>
               <View
                 className={`h-10 w-16 items-center justify-center rounded-lg ${
-                  isActive('/progress') ? 'bg-bg-navActive' : ''
+                  isActive('/coach') ? 'bg-bg-navActive' : ''
                 }`}>
-                <BarChart3
+                <MessageSquare
                   size={theme.iconSize.md}
                   color={
-                    isActive('/progress') ? theme.colors.accent.primary : theme.colors.text.tertiary
+                    isActive('/coach') ? theme.colors.accent.primary : theme.colors.text.tertiary
                   }
-                  strokeWidth={isActive('/progress') ? 2.5 : 2}
+                  strokeWidth={isActive('/coach') ? 2.5 : 2}
                 />
               </View>
               <Text
                 className={`text-xs font-medium ${
-                  isActive('/progress') ? 'text-text-accent' : 'text-text-tertiary'
+                  isActive('/coach') ? 'text-text-accent' : 'text-text-tertiary'
                 }`}>
-                {t('home.navigation.progress')}
+                {t('home.navigation.coach')}
               </Text>
             </Pressable>
           </View>
