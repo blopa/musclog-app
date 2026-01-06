@@ -1,12 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
-import { View, Text, Pressable, Animated } from 'react-native';
+import { View, Text, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import {
-  SkipForward,
-  CheckCircle,
-  Activity,
-} from 'lucide-react-native';
+import { CheckCircle, Activity } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { Circle } from 'react-native-svg';
 import { useRouter } from 'expo-router';
@@ -16,6 +12,7 @@ import { WorkoutOptionsModal } from '../components/WorkoutOptionsModal';
 import { EndWorkoutModal } from '../components/EndWorkoutModal';
 import { WorkoutTimeTracker } from '../components/WorkoutTimeTracker';
 import { UpNextExerciseCard } from '../components/UpNextExerciseCard';
+import { RestTimerControls } from '../components/RestTimerControls';
 
 export default function RestTimerScreen() {
   const { t } = useTranslation();
@@ -204,28 +201,11 @@ export default function RestTimerScreen() {
         </View>
 
         {/* Controls */}
-        <View className="w-full max-w-sm flex-row items-center justify-center gap-4">
-          <Pressable
-            className="active:bg-bg-card-elevated h-12 min-w-[72px] items-center justify-center rounded-xl border border-white/5 bg-bg-overlay/80 active:scale-95"
-            onPress={handleMinus5s}>
-            <Text className="text-sm font-bold text-text-primary">{t('restTimer.minus5s')}</Text>
-          </Pressable>
-
-          <Pressable
-            className="h-14 flex-1 flex-row items-center justify-center gap-2 rounded-xl bg-accent-primary active:scale-95 active:opacity-90"
-            onPress={handleSkipRest}>
-            <SkipForward size={theme.iconSize.md} color={theme.colors.text.black} />
-            <Text className="text-text-black font-bold uppercase tracking-wide">
-              {t('restTimer.skipRest')}
-            </Text>
-          </Pressable>
-
-          <Pressable
-            className="active:bg-bg-card-elevated h-12 min-w-[72px] items-center justify-center rounded-xl border border-white/5 bg-bg-overlay/80 active:scale-95"
-            onPress={handlePlus5s}>
-            <Text className="text-sm font-bold text-text-primary">{t('restTimer.plus5s')}</Text>
-          </Pressable>
-        </View>
+        <RestTimerControls
+          onMinus5s={handleMinus5s}
+          onSkipRest={handleSkipRest}
+          onPlus5s={handlePlus5s}
+        />
       </View>
 
       {/* Footer */}
