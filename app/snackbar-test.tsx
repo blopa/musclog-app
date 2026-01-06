@@ -1,0 +1,256 @@
+import { View, Text, Pressable, ScrollView, Animated, PanResponder } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { StatusBar } from 'expo-status-bar';
+import { useRouter } from 'expo-router';
+import { ChevronLeft, CheckCircle, AlertTriangle } from 'lucide-react-native';
+import { useState, useRef, useEffect } from 'react';
+import { theme } from '../theme';
+
+type SnackbarType = {
+  id: number;
+  type: 'success' | 'error';
+  message: string;
+  subtitle?: string;
+  action: string;
+};
+
+function SnackbarItem({
+  snackbar,
+  onDismiss,
+}: {
+  snackbar: SnackbarType;
+  onDismiss: (id: number) => void;
+}) {
+  const pan = useRef(new Animated.ValueXY()).current;
+  const opacity = useRef(new Animated.Value(1)).current;
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (_, gestureState) => {
+        return Math.abs(gestureState.dx) > 5;
+      },
+      onPanResponderMove: (_, gestureState) => {
+        pan.setValue({ x: gestureState.dx, y: 0 });
+        // Update opacity based on swipe distance
+        const newOpacity = 1 - Math.abs(gestureState.dx) / 200;
+        opacity.setValue(Math.max(0, Math.min(1, newOpacity)));
+      },
+      onPanResponderRelease: (_, gestureState) => {
+        if (Math.abs(gestureState.dx) > 100) {
+          // Swipe threshold met - dismiss
+          Animated.parallel([
+            Animated.timing(pan.x, {
+              toValue: gestureState.dx > 0 ? 400 : -400,
+              duration: 200,
+              useNativeDriver: true,
+            }),
+            Animated.timing(opacity, {
+              toValue: 0,
+              duration: 200,
+              useNativeDriver: true,
+            }),
+          ]).start(() => onDismiss(snackbar.id));
+        } else {
+          // Snap back to position
+          Animated.parallel([
+            Animated.spring(pan, {
+              toValue: { x: 0, y: 0 },
+              useNativeDriver: true,
+            }),
+            Animated.timing(opacity, {
+              toValue: 1,
+              duration: 200,
+              useNativeDriver: true,
+            }),
+          ]).start();
+        }
+      },
+    })
+  ).current;
+
+  const isSuccess = snackbar.type === 'success';
+
+  return (
+    <Animated.View
+      {...panResponder.panHandlers}
+      style={{
+        transform: [{ translateX: pan.x }],
+        opacity,
+      }}>
+      <View
+        className={`mx-4 mb-3 flex-row items-center gap-4 rounded-2xl p-4 ${
+          isSuccess ? 'bg-[#0d3520]' : 'bg-[#3d1515]'
+        }`}
+        style={{
+          borderLeftWidth: 5,
+          borderLeftColor: isSuccess ? theme.colors.status.success : theme.colors.status.error,
+          ...theme.shadows.lg,
+        }}>
+        {/* Icon */}
+        <View
+          className={`h-10 w-10 flex-shrink-0 items-center justify-center rounded-full ${
+            isSuccess ? 'bg-[#22c55e]' : 'bg-[#ef4444]'
+          }`}>
+          {isSuccess ? (
+            <CheckCircle size={24} color="#0d3520" />
+          ) : (
+            <AlertTriangle size={20} color="#ffffff" />
+          )}
+        </View>
+
+        {/* Content */}
+        <View className="min-w-0 flex-1">
+          <Text className="font-semibold text-white">{snackbar.message}</Text>
+          {snackbar.subtitle && (
+            <Text className="mt-0.5 text-sm text-gray-400">{snackbar.subtitle}</Text>
+          )}
+        </View>
+
+        {/* Action Button */}
+        <Pressable
+          onPress={() => onDismiss(snackbar.id)}
+          className={`flex-shrink-0 rounded-lg px-3 py-1 ${
+            isSuccess ? 'active:bg-[#22c55e]/10' : 'active:bg-red-500/10'
+          }`}>
+          <Text
+            className={`text-sm font-bold ${
+              isSuccess ? 'text-[#22c55e]' : 'text-red-500'
+            }`}>
+            {snackbar.action}
+          </Text>
+        </Pressable>
+      </View>
+    </Animated.View>
+  );
+}
+
+export default function SnackbarTestScreen() {
+  const router = useRouter();
+  const [snackbars, setSnackbars] = useState<SnackbarType[]>([]);
+
+  const showSnackbar = (type: 'success' | 'error') => {
+    const id = Date.now();
+    const newSnackbar: SnackbarType =
+      type === 'success'
+        ? {
+            id,
+            type: 'success',
+            message: 'Workout saved successfully!',
+            action: 'VIEW',
+          }
+        : {
+            id,
+            type: 'error',
+            message: 'Failed to save workout',
+            subtitle: 'Please check your connection and try again.',
+            action: 'RETRY',
+          };
+
+    setSnackbars((prev) => [...prev, newSnackbar]);
+
+    // Auto-dismiss after 5 seconds
+    setTimeout(() => {
+      setSnackbars((prev) => prev.filter((s) => s.id !== id));
+    }, 5000);
+  };
+
+  const dismissSnackbar = (id: number) => {
+    setSnackbars((prev) => prev.filter((s) => s.id !== id));
+  };
+
+  return (
+    <SafeAreaView className="flex-1 bg-bg-primary" edges={['top']}>
+      <StatusBar style="light" />
+
+      {/* Header */}
+      <View className="border-b border-[#1a3530] bg-bg-primary">
+        <View className="relative flex-row items-center justify-center px-4 py-4">
+          <Pressable
+            onPress={() => router.back()}
+            className="absolute left-0 -ml-2 rounded-full p-2 active:bg-white/5">
+            <ChevronLeft size={24} color={theme.colors.text.primary} />
+          </Pressable>
+          <Text className="text-xl font-bold text-white">Snackbar Examples</Text>
+        </View>
+      </View>
+
+      {/* Content */}
+      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+        <View className="space-y-8 px-4 py-8">
+          {/* Feedback States Section */}
+          <View className="gap-6">
+            <Text className="text-4xl font-bold text-white">Feedback States</Text>
+
+            <Text className="text-lg leading-relaxed text-gray-400">
+              Tap the buttons below to trigger the success and error feedback notifications. These
+              non-intrusive messages appear at the bottom of the screen.
+            </Text>
+
+            {/* Buttons */}
+            <View className="gap-4 pt-4">
+              {/* Success Button */}
+              <Pressable
+                onPress={() => showSnackbar('success')}
+                className="flex-row items-center gap-4 rounded-2xl bg-[#1a3530] p-6 active:bg-[#1f4039]">
+                <View className="h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-[#22c55e]/20">
+                  <CheckCircle size={24} color="#22c55e" />
+                </View>
+                <Text className="flex-1 text-left text-xl font-semibold text-white">
+                  Simulate Successful Save
+                </Text>
+                <ChevronLeft
+                  size={24}
+                  color={theme.colors.text.tertiary}
+                  style={{ transform: [{ rotate: '180deg' }] }}
+                />
+              </Pressable>
+
+              {/* Error Button */}
+              <Pressable
+                onPress={() => showSnackbar('error')}
+                className="flex-row items-center gap-4 rounded-2xl bg-[#1a3530] p-6 active:bg-[#1f4039]">
+                <View className="h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-500/20">
+                  <AlertTriangle size={24} color="#ef4444" />
+                </View>
+                <Text className="flex-1 text-left text-xl font-semibold text-white">
+                  Simulate Sync Error
+                </Text>
+                <ChevronLeft
+                  size={24}
+                  color={theme.colors.text.tertiary}
+                  style={{ transform: [{ rotate: '180deg' }] }}
+                />
+              </Pressable>
+            </View>
+          </View>
+
+          {/* Live Preview Section */}
+          <View className="gap-4 pt-8">
+            <View className="flex-row items-center gap-4">
+              <View className="h-px flex-1 bg-gray-700" />
+              <Text className="text-sm font-semibold tracking-wider text-gray-500">
+                LIVE PREVIEW
+              </Text>
+              <View className="h-px flex-1 bg-gray-700" />
+            </View>
+
+            <Text className="text-center text-gray-400">
+              Active snackbars are displayed below.{'\n'}Swipe to dismiss.
+            </Text>
+          </View>
+        </View>
+
+        {/* Bottom spacing for snackbars */}
+        <View className="h-64" />
+      </ScrollView>
+
+      {/* Snackbars Container */}
+      <View className="absolute bottom-0 left-0 right-0 pb-8" pointerEvents="box-none">
+        {snackbars.map((snackbar) => (
+          <SnackbarItem key={snackbar.id} snackbar={snackbar} onDismiss={dismissSnackbar} />
+        ))}
+      </View>
+    </SafeAreaView>
+  );
+}
+
