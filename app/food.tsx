@@ -6,7 +6,7 @@ import { format } from 'date-fns';
 import i18n, { LOCALE_MAP, LanguageKeys } from '../lang/lang';
 import { theme } from '../theme';
 import { MasterLayout } from '../components/MasterLayout';
-import { MacroCard } from '../components/MacroCard';
+import { CaloriesRemainingCard } from '../components/CaloriesRemainingCard';
 import { FoodItemCard } from '../components/FoodItemCard';
 import { MealSection } from '../components/MealSection';
 import { FloatingActionButton } from '../components/FloatingActionButton';
@@ -105,62 +105,7 @@ export default function FoodScreen() {
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
           <View className="gap-6 px-4 pt-6">
             {/* Calories Remaining Card */}
-            <LinearGradient
-              colors={theme.colors.gradients.card}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              className="rounded-3xl border border-border-default p-6">
-              <View className="mb-6">
-                <Text className="mb-2 text-sm text-gray-400">{t('food.caloriesRemaining')}</Text>
-                <View className="mb-1 flex-row items-baseline gap-2">
-                  <Text className="text-6xl font-bold text-white">
-                    {FOOD_DATA.calories.remaining.toLocaleString()}
-                  </Text>
-                  <Text className="text-2xl text-gray-400">
-                    / {FOOD_DATA.calories.total.toLocaleString()}
-                  </Text>
-                  <Text className="ml-auto text-3xl font-semibold text-emerald-400">
-                    {FOOD_DATA.calories.percentage}%
-                  </Text>
-                </View>
-              </View>
-
-              {/* Progress Bar */}
-              <View className="mb-6 h-3 overflow-hidden rounded-full bg-gray-800/50">
-                <LinearGradient
-                  colors={theme.colors.gradients.progress}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 0 }}
-                  className="h-full rounded-full"
-                  style={{ width: `${FOOD_DATA.calories.percentage}%` }}
-                />
-              </View>
-
-              {/* Macros */}
-              <View className="flex-row gap-3">
-                <MacroCard
-                  name={t('food.macros.protein')}
-                  percentage={FOOD_DATA.macros.protein.percentage}
-                  amount={FOOD_DATA.macros.protein.amount}
-                  color={FOOD_DATA.macros.protein.color}
-                  progressColor={FOOD_DATA.macros.protein.progressColor}
-                />
-                <MacroCard
-                  name={t('food.macros.carbs')}
-                  percentage={FOOD_DATA.macros.carbs.percentage}
-                  amount={FOOD_DATA.macros.carbs.amount}
-                  color={FOOD_DATA.macros.carbs.color}
-                  progressColor={FOOD_DATA.macros.carbs.progressColor}
-                />
-                <MacroCard
-                  name={t('food.macros.fat')}
-                  percentage={FOOD_DATA.macros.fat.percentage}
-                  amount={FOOD_DATA.macros.fat.amount}
-                  color={FOOD_DATA.macros.fat.color}
-                  progressColor={FOOD_DATA.macros.fat.progressColor}
-                />
-              </View>
-            </LinearGradient>
+            <CaloriesRemainingCard calories={FOOD_DATA.calories} macros={FOOD_DATA.macros} />
 
             {/* Scan Buttons */}
             <View className="flex-row gap-4">
