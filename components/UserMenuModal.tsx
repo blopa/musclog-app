@@ -53,9 +53,9 @@ export function UserMenuModal({
       statusBarTranslucent>
       {/* Backdrop */}
       <Pressable className="flex-1 bg-black/60" onPress={onClose}>
-        <View className="flex-1 justify-end">
+        <View className="flex-1 justify-start">
           {/* Modal Content */}
-          <View className="rounded-t-3xl border-t border-border-dark bg-bg-card">
+          <View className="rounded-b-3xl border-b border-border-dark bg-bg-card">
             {/* Header */}
             <View className="flex-row items-center justify-between border-b border-border-dark p-6">
               <View className="flex-row items-center gap-4">
@@ -104,7 +104,7 @@ export function UserMenuModal({
               />
             </View>
 
-            {/* Bottom safe area spacing */}
+            {/* Top safe area spacing */}
             <View className="h-8" />
           </View>
         </View>
