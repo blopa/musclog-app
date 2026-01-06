@@ -95,6 +95,15 @@
     "replace": "REPLACE",
     "completeSet": "COMPLETE SET"
   },
+  "workoutOptions": {
+    "title": "Workout Options",
+    "previewWorkout": "Preview Full Workout",
+    "previewWorkoutDesc": "See all exercises in this plan",
+    "workoutSettings": "Workout Settings",
+    "workoutSettingsDesc": "Timers, audio, and preferences",
+    "endWorkout": "End Workout",
+    "endWorkoutDesc": "Finish and save progress"
+  },
   "profile": {
     "header": {
       "title": "Profile"

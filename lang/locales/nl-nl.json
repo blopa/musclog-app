@@ -95,6 +95,15 @@
     "replace": "VERVANGEN",
     "completeSet": "SET VOLTOOIEN"
   },
+  "workoutOptions": {
+    "title": "Training Opties",
+    "previewWorkout": "Volledige Training Bekijken",
+    "previewWorkoutDesc": "Bekijk alle oefeningen in dit plan",
+    "workoutSettings": "Training Instellingen",
+    "workoutSettingsDesc": "Timers, audio en voorkeuren",
+    "endWorkout": "Training Beëindigen",
+    "endWorkoutDesc": "Afronden en voortgang opslaan"
+  },
   "profile": {
     "header": {
       "title": "Profiel"

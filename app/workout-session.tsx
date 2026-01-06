@@ -7,6 +7,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
+import { WorkoutOptionsModal } from '../components/WorkoutOptionsModal';
 
 export default function WorkoutSessionScreen() {
   const { t } = useTranslation();
@@ -14,6 +15,7 @@ export default function WorkoutSessionScreen() {
   const [weight, setWeight] = useState(24);
   const [reps, setReps] = useState(10);
   const [time, setTime] = useState({ hours: 0, minutes: 45, seconds: 12 });
+  const [isOptionsModalVisible, setIsOptionsModalVisible] = useState(false);
 
   // Timer effect
   useEffect(() => {
@@ -91,7 +93,9 @@ export default function WorkoutSessionScreen() {
                 {t('workoutSession.totalTime')}
               </Text>
             </View>
-            <Pressable className="h-12 w-12 items-center justify-center">
+            <Pressable
+              className="h-12 w-12 items-center justify-center"
+              onPress={() => setIsOptionsModalVisible(true)}>
               <MoreVertical size={theme.iconSize.lg} color={theme.colors.text.primary} />
             </Pressable>
           </View>
@@ -189,6 +193,18 @@ export default function WorkoutSessionScreen() {
           </View>
         </ScrollView>
       </View>
+
+      {/* Workout Options Modal */}
+      <WorkoutOptionsModal
+        visible={isOptionsModalVisible}
+        onClose={() => setIsOptionsModalVisible(false)}
+        onPreviewWorkout={() => router.push('/workout-preview')}
+        onWorkoutSettings={() => router.push('/workout-settings')}
+        onEndWorkout={() => {
+          // Handle end workout logic
+          router.back();
+        }}
+      />
     </SafeAreaView>
   );
 }

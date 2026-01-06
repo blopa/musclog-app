@@ -95,6 +95,15 @@
     "replace": "SUBSTITUIR",
     "completeSet": "COMPLETAR SÉRIE"
   },
+  "workoutOptions": {
+    "title": "Opções de Treino",
+    "previewWorkout": "Visualizar Treino Completo",
+    "previewWorkoutDesc": "Ver todos os exercícios neste plano",
+    "workoutSettings": "Configurações do Treino",
+    "workoutSettingsDesc": "Temporizadores, áudio e preferências",
+    "endWorkout": "Finalizar Treino",
+    "endWorkoutDesc": "Terminar e salvar progresso"
+  },
   "profile": {
     "header": {
       "title": "Perfil"
