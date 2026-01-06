@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, Pressable, Modal } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { View, Text, Pressable, Modal, Animated } from 'react-native';
 import { X, List, Settings, Square } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
@@ -71,19 +71,43 @@ export function WorkoutOptionsModal({
   onEndWorkout,
 }: WorkoutOptionsModalProps) {
   const { t } = useTranslation();
+  const slideAnim = useRef(new Animated.Value(300)).current; // Start off-screen
+
+  useEffect(() => {
+    if (visible) {
+      // Slide up when modal becomes visible
+      Animated.spring(slideAnim, {
+        toValue: 0,
+        useNativeDriver: true,
+        tension: 65,
+        friction: 11,
+      }).start();
+    } else {
+      // Slide down when modal is hidden
+      Animated.timing(slideAnim, {
+        toValue: 300,
+        duration: 250,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [visible, slideAnim]);
 
   return (
     <Modal
       visible={visible}
       transparent
-      animationType="slide"
+      animationType="fade"
       onRequestClose={onClose}
       statusBarTranslucent>
       {/* Backdrop */}
       <Pressable className="flex-1 bg-black/60" onPress={onClose}>
         <View className="flex-1 justify-end">
           {/* Modal Content */}
-          <View className="rounded-t-3xl border-t border-border-dark bg-bg-card">
+          <Animated.View
+            className="rounded-t-3xl border-t border-border-dark bg-bg-card"
+            style={{
+              transform: [{ translateY: slideAnim }],
+            }}>
             {/* Header */}
             <View className="flex-row items-center justify-between border-b border-border-dark p-6">
               <Text className="text-2xl font-bold text-text-primary">
@@ -141,7 +165,7 @@ export function WorkoutOptionsModal({
                 MUSCLOG
               </Text>
             </View>
-          </View>
+          </Animated.View>
         </View>
       </Pressable>
     </Modal>
