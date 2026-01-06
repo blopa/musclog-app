@@ -80,5 +80,19 @@
     "profile": "Profile",
     "settings": "Settings",
     "progress": "Progress"
+  },
+  "workoutSession": {
+    "totalTime": "TOTAL TIME",
+    "setOf": "SET {{current}} OF {{total}}",
+    "weight": "WEIGHT",
+    "reps": "REPS",
+    "partials": "PARTIALS",
+    "kg": "kg",
+    "previous": "Previous",
+    "history": "History",
+    "skip": "SKIP",
+    "edit": "EDIT",
+    "replace": "REPLACE",
+    "completeSet": "COMPLETE SET"
   }
 }

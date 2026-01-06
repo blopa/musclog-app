@@ -80,5 +80,19 @@
     "profile": "Profiel",
     "settings": "Instellingen",
     "progress": "Voortgang"
+  },
+  "workoutSession": {
+    "totalTime": "TOTALE TIJD",
+    "setOf": "SET {{current}} VAN {{total}}",
+    "weight": "GEWICHT",
+    "reps": "HERHALINGEN",
+    "partials": "GEDEELTELIJK",
+    "kg": "kg",
+    "previous": "Vorige",
+    "history": "Geschiedenis",
+    "skip": "OVERSLAAN",
+    "edit": "BEWERKEN",
+    "replace": "VERVANGEN",
+    "completeSet": "SET VOLTOOIEN"
   }
 }
