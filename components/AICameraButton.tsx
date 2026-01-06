@@ -1,5 +1,5 @@
 import { View, Text, Pressable } from 'react-native';
-import { Grid3x3 } from 'lucide-react-native';
+import { Sparkles } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
@@ -22,7 +22,7 @@ export function AICameraButton({ onPress }: AICameraButtonProps) {
         className="absolute inset-0 rounded-2xl"
       />
       <View className="flex-row items-center justify-center gap-3">
-        <Grid3x3 size={theme.iconSize.md} color={theme.colors.text.primary} />
+        <Sparkles size={theme.iconSize.md} color={theme.colors.accent.secondary} />
         <Text className="text-lg font-semibold text-text-primary">
           {t('food.actions.aiCamera')}
         </Text>
