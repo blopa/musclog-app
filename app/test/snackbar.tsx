@@ -28,7 +28,9 @@ export default function SnackbarTestScreen() {
       <StatusBar style="light" />
 
       {/* Header */}
-      <View className="border-b border-[#1a3530] bg-bg-primary">
+      <View
+        className="border-b bg-bg-primary"
+        style={{ borderColor: theme.colors.background.buttonCard }}>
         <View className="relative flex-row items-center justify-center px-4 py-4">
           <Pressable
             onPress={() => router.back()}
@@ -46,7 +48,9 @@ export default function SnackbarTestScreen() {
           <View className="gap-6">
             <Text className="text-4xl font-bold text-white">Feedback States</Text>
 
-            <Text className="text-lg leading-relaxed text-gray-400">
+            <Text
+              className="text-lg leading-relaxed"
+              style={{ color: theme.colors.text.secondary }}>
               Tap the buttons below to trigger the success and error feedback notifications. These
               non-intrusive messages appear at the bottom of the screen.
             </Text>
@@ -56,9 +60,16 @@ export default function SnackbarTestScreen() {
               {/* Success Button */}
               <Pressable
                 onPress={triggerSuccessSnackbar}
-                className="flex-row items-center gap-4 rounded-2xl bg-[#1a3530] p-6 active:bg-[#1f4039]">
-                <View className="h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-[#22c55e]/20">
-                  <CheckCircle size={24} color="#22c55e" />
+                className="flex-row items-center gap-4 rounded-2xl p-6"
+                style={{
+                  backgroundColor: theme.colors.background.buttonCard,
+                }}>
+                <View
+                  className="h-12 w-12 flex-shrink-0 items-center justify-center rounded-full"
+                  style={{
+                    backgroundColor: `${theme.colors.status.success}33`, // 20% opacity
+                  }}>
+                  <CheckCircle size={24} color={theme.colors.status.success} />
                 </View>
                 <Text className="flex-1 text-left text-xl font-semibold text-white">
                   Simulate Successful Save
@@ -73,9 +84,16 @@ export default function SnackbarTestScreen() {
               {/* Error Button */}
               <Pressable
                 onPress={triggerErrorSnackbar}
-                className="flex-row items-center gap-4 rounded-2xl bg-[#1a3530] p-6 active:bg-[#1f4039]">
-                <View className="h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-500/20">
-                  <AlertTriangle size={24} color="#ef4444" />
+                className="flex-row items-center gap-4 rounded-2xl p-6"
+                style={{
+                  backgroundColor: theme.colors.background.buttonCard,
+                }}>
+                <View
+                  className="h-12 w-12 flex-shrink-0 items-center justify-center rounded-full"
+                  style={{
+                    backgroundColor: `${theme.colors.status.error}33`, // 20% opacity
+                  }}>
+                  <AlertTriangle size={24} color={theme.colors.status.error} />
                 </View>
                 <Text className="flex-1 text-left text-xl font-semibold text-white">
                   Simulate Sync Error
@@ -92,14 +110,24 @@ export default function SnackbarTestScreen() {
           {/* Live Preview Section */}
           <View className="gap-4 pt-8">
             <View className="flex-row items-center gap-4">
-              <View className="h-px flex-1 bg-gray-700" />
-              <Text className="text-sm font-semibold tracking-wider text-gray-500">
+              <View
+                className="h-px flex-1"
+                style={{ backgroundColor: theme.colors.border.dashed }}
+              />
+              <Text
+                className="text-sm font-semibold tracking-wider"
+                style={{ color: theme.colors.text.tertiary }}>
                 LIVE PREVIEW
               </Text>
-              <View className="h-px flex-1 bg-gray-700" />
+              <View
+                className="h-px flex-1"
+                style={{ backgroundColor: theme.colors.border.dashed }}
+              />
             </View>
 
-            <Text className="text-center text-gray-400">
+            <Text
+              className="text-center"
+              style={{ color: theme.colors.text.secondary }}>
               Active snackbars are displayed below.{'\n'}Swipe to dismiss.
             </Text>
           </View>

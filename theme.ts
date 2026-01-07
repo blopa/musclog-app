@@ -32,6 +32,11 @@ export const theme = {
       overlayDark: 'rgba(0, 0, 0, 0.6)', // Black overlay with 60% opacity
       purpleBlob: '#3d3162', // Purple blob background
       greenBlob: '#125630', // Green blob background
+      snackbarSuccess: '#0d3520', // Success snackbar background
+      snackbarError: '#3d1515', // Error snackbar background
+      buttonCard: '#1a3530', // Button/card background
+      buttonCardActive: '#1f4039', // Active button/card background
+      separatorLight: '#e5e7eb', // Light separator (gray-200)
     },
 
     // Text colors

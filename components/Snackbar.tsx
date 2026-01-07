@@ -74,41 +74,54 @@ export function Snackbar({ snackbar, onDismiss }: SnackbarProps) {
         opacity,
       }}>
       <View
-        className={`mx-4 mb-3 flex-row items-center gap-4 rounded-2xl p-4 ${
-          isSuccess ? 'bg-[#0d3520]' : 'bg-[#3d1515]'
-        }`}
+        className="mx-4 mb-3 flex-row items-center gap-4 rounded-2xl p-4"
         style={{
+          backgroundColor: isSuccess
+            ? theme.colors.background.snackbarSuccess
+            : theme.colors.background.snackbarError,
           borderLeftWidth: 5,
           borderLeftColor: isSuccess ? theme.colors.status.success : theme.colors.status.error,
           ...theme.shadows.lg,
         }}>
         {/* Icon */}
         <View
-          className={`h-10 w-10 flex-shrink-0 items-center justify-center rounded-full ${
-            isSuccess ? 'bg-[#22c55e]' : 'bg-[#ef4444]'
-          }`}>
+          className="h-10 w-10 flex-shrink-0 items-center justify-center rounded-full"
+          style={{
+            backgroundColor: isSuccess ? theme.colors.status.success : theme.colors.status.error,
+          }}>
           {isSuccess ? (
-            <CheckCircle size={24} color="#0d3520" />
+            <CheckCircle size={24} color={theme.colors.background.snackbarSuccess} />
           ) : (
-            <AlertTriangle size={20} color="#ffffff" />
+            <AlertTriangle size={20} color={theme.colors.text.white} />
           )}
         </View>
 
         {/* Content */}
         <View className="min-w-0 flex-1">
-          <Text className="font-semibold text-white">{snackbar.message}</Text>
+          <Text className="font-semibold" style={{ color: theme.colors.text.white }}>
+            {snackbar.message}
+          </Text>
           {snackbar.subtitle && (
-            <Text className="mt-0.5 text-sm text-gray-400">{snackbar.subtitle}</Text>
+            <Text
+              className="mt-0.5 text-sm"
+              style={{ color: theme.colors.text.secondary }}>
+              {snackbar.subtitle}
+            </Text>
           )}
         </View>
 
         {/* Action Button */}
         <Pressable
           onPress={() => onDismiss(snackbar.id)}
-          className={`flex-shrink-0 rounded-lg px-3 py-1 ${
-            isSuccess ? 'active:bg-[#22c55e]/10' : 'active:bg-red-500/10'
-          }`}>
-          <Text className={`text-sm font-bold ${isSuccess ? 'text-[#22c55e]' : 'text-red-500'}`}>
+          className="flex-shrink-0 rounded-lg px-3 py-1"
+          style={{
+            backgroundColor: 'transparent',
+          }}>
+          <Text
+            className="text-sm font-bold"
+            style={{
+              color: isSuccess ? theme.colors.status.success : theme.colors.status.error,
+            }}>
             {snackbar.action}
           </Text>
         </Pressable>

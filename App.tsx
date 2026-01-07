@@ -99,14 +99,21 @@ export default function App() {
               />
             </View>
             <View>
-              <Text className="text-sm text-gray-400">{t('home.greeting.goodEvening')}</Text>
+              <Text
+                className="text-sm"
+                style={{ color: theme.colors.text.secondary }}>
+                {t('home.greeting.goodEvening')}
+              </Text>
               <Text className="text-xl font-bold text-white">{user.name}</Text>
             </View>
           </View>
           <Pressable className="relative rounded-full bg-bg-overlay p-3">
             <Bell size={theme.iconSize.md} color={theme.colors.text.primary} />
             {user.hasNotifications && (
-              <View className="absolute right-2 top-2 h-2.5 w-2.5 rounded-full bg-red-500" />
+              <View
+                className="absolute right-2 top-2 h-2.5 w-2.5 rounded-full"
+                style={{ backgroundColor: theme.colors.status.notificationBadge }}
+              />
             )}
           </Pressable>
         </View>
@@ -170,17 +177,23 @@ export default function App() {
                         <Text className="text-lg font-bold text-white">{food.name}</Text>
                         <View className="mt-2 flex-row gap-2">
                           <View className="rounded-full bg-bg-secondary px-2.5 py-1">
-                            <Text className="text-xs text-gray-400">
+                            <Text
+                              className="text-xs"
+                              style={{ color: theme.colors.text.secondary }}>
                               {t('home.macros.protein', { value: food.protein })}
                             </Text>
                           </View>
                           <View className="rounded-full bg-bg-secondary px-2.5 py-1">
-                            <Text className="text-xs text-gray-400">
+                            <Text
+                              className="text-xs"
+                              style={{ color: theme.colors.text.secondary }}>
                               {t('home.macros.carbs', { value: food.carbs })}
                             </Text>
                           </View>
                           <View className="rounded-full bg-bg-secondary px-2.5 py-1">
-                            <Text className="text-xs text-gray-400">
+                            <Text
+                              className="text-xs"
+                              style={{ color: theme.colors.text.secondary }}>
                               {t('home.macros.fat', { value: food.fat })}
                             </Text>
                           </View>
