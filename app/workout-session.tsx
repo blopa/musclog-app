@@ -95,14 +95,14 @@ export default function WorkoutSessionScreen() {
               value={weight}
               unit={t('workoutSession.kg')}
               onPress={() => {
-                // Handle weight adjustment
+                setIsEditSetModalVisible(true);
               }}
             />
             <WorkoutStatCard
               title={t('workoutSession.reps')}
               value={reps}
               onPress={() => {
-                // Handle reps adjustment
+                setIsEditSetModalVisible(true);
               }}
             />
             <WorkoutStatCard

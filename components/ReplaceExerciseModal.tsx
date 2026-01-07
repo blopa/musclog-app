@@ -81,21 +81,38 @@ export function ReplaceExerciseModal({
       visible={visible}
       onClose={onClose}
       title="Replace Exercise"
+      maxHeight="85%"
       footer={
         <View className="flex-row gap-3">
           <Pressable
-            className="flex-1 rounded-xl border border-border-light py-3.5"
-            style={{ backgroundColor: theme.colors.background.overlay }}
+            className="flex-1 rounded-xl border border-border-light"
+            style={{
+              backgroundColor: theme.colors.background.overlay,
+              paddingVertical: theme.spacing.padding.lg,
+            }}
             onPress={onClose}>
-            <Text className="text-center text-sm font-bold uppercase tracking-wide text-text-secondary">
+            <Text
+              className="text-center uppercase tracking-wide text-text-secondary"
+              style={{
+                fontSize: theme.typography.fontSize.base,
+                fontWeight: theme.typography.fontWeight.bold,
+              }}>
               Cancel
             </Text>
           </Pressable>
           <Pressable
-            className="flex-[2] flex-row items-center justify-center gap-2 rounded-xl bg-accent-primary py-3.5"
+            className="flex-[2] flex-row items-center justify-center gap-2 rounded-xl bg-accent-primary"
+            style={{
+              paddingVertical: theme.spacing.padding.lg,
+            }}
             onPress={handleReplace}>
-            <Repeat size={theme.iconSize.sm} color={theme.colors.text.black} />
-            <Text className="text-text-black text-sm font-bold uppercase tracking-wide">
+            <Repeat size={theme.iconSize.md} color={theme.colors.text.black} />
+            <Text
+              className="text-text-black uppercase tracking-wide"
+              style={{
+                fontSize: theme.typography.fontSize.base,
+                fontWeight: theme.typography.fontWeight.bold,
+              }}>
               Replace
             </Text>
           </Pressable>
@@ -114,10 +131,10 @@ export function ReplaceExerciseModal({
           {/* Search Input */}
           <View className="relative">
             <View
-              className="absolute inset-y-0 left-0 z-10 items-center justify-center pl-3"
+              className="absolute inset-y-0 left-0 z-10 items-center justify-center pl-4"
               pointerEvents="none">
               <Search
-                size={theme.iconSize.md}
+                size={theme.iconSize.lg}
                 color={searchQuery ? theme.colors.accent.primary : theme.colors.text.secondary}
               />
             </View>
@@ -126,14 +143,15 @@ export function ReplaceExerciseModal({
               placeholderTextColor={theme.colors.text.secondary}
               value={searchQuery}
               onChangeText={setSearchQuery}
-              className="w-full rounded-xl py-3 pl-10 pr-3"
+              className="w-full rounded-xl pl-12 pr-4"
               style={{
                 backgroundColor: theme.colors.background.cardDark,
                 borderWidth: searchQuery ? 2 : 0,
                 borderColor: searchQuery ? theme.colors.accent.primary : 'transparent',
                 color: theme.colors.text.primary,
-                fontSize: theme.typography.fontSize.sm,
+                fontSize: theme.typography.fontSize.base,
                 borderRadius: theme.borderRadius.xl,
+                paddingVertical: theme.spacing.padding.md,
               }}
             />
           </View>
@@ -150,7 +168,7 @@ export function ReplaceExerciseModal({
                 <Pressable
                   key={group}
                   onPress={() => setSelectedFilter(group)}
-                  className="rounded-lg border px-3 py-1.5"
+                  className="rounded-lg border"
                   style={{
                     backgroundColor: isActive
                       ? `${theme.colors.accent.primary}33` // 20% opacity
@@ -159,10 +177,12 @@ export function ReplaceExerciseModal({
                       ? `${theme.colors.accent.primary}66` // 40% opacity
                       : 'transparent',
                     borderRadius: theme.borderRadius.lg,
+                    paddingHorizontal: theme.spacing.padding.md,
+                    paddingVertical: theme.spacing.padding.sm,
                   }}>
                   <Text
                     style={{
-                      fontSize: theme.typography.fontSize.xs,
+                      fontSize: theme.typography.fontSize.sm,
                       fontWeight: theme.typography.fontWeight.semibold,
                       color: isActive ? theme.colors.accent.primary : theme.colors.text.secondary,
                     }}>
@@ -194,7 +214,7 @@ export function ReplaceExerciseModal({
                 <Pressable
                   key={exercise.id}
                   onPress={() => setSelectedExercise(exercise.id)}
-                  className="w-full flex-row items-center justify-between p-3"
+                  className="w-full flex-row items-center justify-between"
                   style={{
                     backgroundColor: isSelected
                       ? `${theme.colors.accent.primary}1A` // 10% opacity
@@ -204,13 +224,18 @@ export function ReplaceExerciseModal({
                       ? `${theme.colors.accent.primary}66` // 40% opacity
                       : 'transparent',
                     borderRadius: theme.borderRadius.xl,
+                    padding: theme.spacing.padding.base,
                     ...theme.shadows.sm,
                   }}>
                   <View className="flex-1 flex-row items-center gap-3">
                     {/* Exercise Image/Icon */}
                     <View
-                      className="h-10 w-10 items-center justify-center rounded-lg"
-                      style={{ backgroundColor: theme.colors.background.iconDark }}>
+                      className="items-center justify-center rounded-lg"
+                      style={{
+                        backgroundColor: theme.colors.background.iconDark,
+                        width: 48,
+                        height: 48,
+                      }}>
                       {exercise.image ? (
                         <Image
                           source={exercise.image}
@@ -225,17 +250,18 @@ export function ReplaceExerciseModal({
                     {/* Exercise Info */}
                     <View className="flex-1">
                       <Text
-                        className="font-bold"
                         style={{
-                          fontSize: theme.typography.fontSize.sm,
+                          fontSize: theme.typography.fontSize.base,
+                          fontWeight: theme.typography.fontWeight.bold,
                           color: isSelected ? theme.colors.text.primary : theme.colors.text.primary,
                         }}>
                         {exercise.name}
                       </Text>
                       <Text
                         style={{
-                          fontSize: theme.typography.fontSize.xs,
+                          fontSize: theme.typography.fontSize.sm,
                           color: theme.colors.text.secondary,
+                          marginTop: theme.spacing.gap.xs / 2,
                         }}>
                         {exercise.muscleGroup} • {exercise.type}
                       </Text>
@@ -245,9 +271,13 @@ export function ReplaceExerciseModal({
                   {/* Selection Indicator */}
                   {isSelected && (
                     <View
-                      className="h-5 w-5 items-center justify-center rounded-full"
-                      style={{ backgroundColor: theme.colors.accent.primary }}>
-                      <Check size={12} color={theme.colors.text.black} strokeWidth={3} />
+                      className="items-center justify-center rounded-full"
+                      style={{
+                        backgroundColor: theme.colors.accent.primary,
+                        width: 24,
+                        height: 24,
+                      }}>
+                      <Check size={14} color={theme.colors.text.black} strokeWidth={3} />
                     </View>
                   )}
                 </Pressable>
