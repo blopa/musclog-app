@@ -219,7 +219,7 @@ export function ReplaceExerciseModal({
                     backgroundColor: isSelected
                       ? theme.colors.accent.primary10
                       : theme.colors.background.cardDark,
-                    borderWidth: 1,
+                    borderWidth: theme.borderWidth.thin,
                     borderColor: isSelected
                       ? theme.colors.accent.primary40
                       : 'transparent',
@@ -233,8 +233,8 @@ export function ReplaceExerciseModal({
                       className="items-center justify-center rounded-lg"
                       style={{
                         backgroundColor: theme.colors.background.iconDark,
-                        width: 48,
-                        height: 48,
+                        width: theme.iconSize['2xl'],
+                        height: theme.iconSize['2xl'],
                       }}>
                       {exercise.image ? (
                         <Image
@@ -274,8 +274,8 @@ export function ReplaceExerciseModal({
                       className="items-center justify-center rounded-full"
                       style={{
                         backgroundColor: theme.colors.accent.primary,
-                        width: 24,
-                        height: 24,
+                        width: theme.iconSize.md,
+                        height: theme.iconSize.md,
                       }}>
                       <Check size={14} color={theme.colors.text.black} strokeWidth={3} />
                     </View>

@@ -75,7 +75,7 @@ export function EndWorkoutModal({
                 transform: [{ scale: scaleAnim }],
                 opacity: opacityAnim,
                 borderRadius: theme.borderRadius['3xl'],
-                borderWidth: 1,
+                borderWidth: theme.borderWidth.thin,
                 borderColor: theme.colors.border.dark,
                 overflow: 'hidden',
                 width: '100%',

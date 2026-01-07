@@ -65,7 +65,7 @@ export default function WorkoutsScreen() {
             <View className="flex-row items-center justify-between">
               <GradientText
                 colors={theme.colors.gradients.workoutsTitle}
-                style={{ fontSize: 36, fontWeight: 'bold' }}>
+                style={{ fontSize: theme.typography.fontSize['4xl'], fontWeight: theme.typography.fontWeight.bold }}>
                 My Workouts
               </GradientText>
               <View className="ml-4 flex-row gap-4">
@@ -78,7 +78,7 @@ export default function WorkoutsScreen() {
               </View>
             </View>
             {/* Add spacing below header */}
-            <View style={{ height: 20 }} />
+            <View style={{ height: theme.spacing.gap.lg }} />
             {/* Filter Tabs */}
             <FilterTabs tabs={FILTER_TABS} activeTab={activeFilter} onTabChange={setActiveFilter} />
           </View>

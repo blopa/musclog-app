@@ -34,7 +34,7 @@ export function UpNextExerciseCard({ exercise, onPress }: UpNextExerciseCardProp
         colors={theme.colors.gradients.upNextCard}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        style={{ borderRadius: 12, padding: 16 }}>
+        style={{ borderRadius: theme.borderRadius.md, padding: theme.spacing.padding.base }}>
         <View className="flex-row items-center gap-4">
           {/* Exercise Image */}
           <View className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-bg-overlay">

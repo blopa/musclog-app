@@ -224,6 +224,13 @@ export const theme = {
     full: 9999,
   },
 
+  // Border widths
+  borderWidth: {
+    thin: 1,
+    medium: 2,
+    thick: 3,
+  },
+
   shadows: {
     sm: {
       shadowColor: '#000000', // Using theme.colors.text.black value
@@ -262,6 +269,7 @@ export const theme = {
     md: 24,
     lg: 32,
     xl: 40,
+    '2xl': 48,
   },
 
   // Component-specific sizes
@@ -282,6 +290,15 @@ export const theme = {
     card: {
       padding: 16,
       borderRadius: 24,
+    },
+    floatingActionButton: {
+      size: 64,
+    },
+    exerciseImage: {
+      size: 48,
+    },
+    progressBar: {
+      height: 48,
     },
   },
 } as const;

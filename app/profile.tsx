@@ -149,7 +149,7 @@ export default function ProfileScreen() {
               </Text>
             </Pressable>
           </View>
-          <View className="flex-row flex-wrap" style={{ gap: 12 }}>
+          <View className="flex-row flex-wrap" style={{ gap: theme.spacing.gap.md }}>
             {stats.map((stat) => (
               <View key={stat.id} style={{ width: '31%' }}>
                 <StatCard

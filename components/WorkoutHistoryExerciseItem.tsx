@@ -124,7 +124,7 @@ export function ExerciseItem({ exercise, isLast }: ExerciseItemProps) {
               className="flex-row items-end gap-1 border-t px-4 pb-3 pt-1"
               style={{
                 borderTopColor: theme.colors.border.light,
-                height: 48,
+                height: theme.components.progressBar.height,
               }}>
               {exercise.setProgress.map((progress, index) => {
                 const isCurrent = exercise.sets[index]?.isCurrent;

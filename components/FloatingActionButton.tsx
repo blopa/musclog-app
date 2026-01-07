@@ -27,8 +27,8 @@ export function FloatingActionButton({
         end={{ x: 0, y: 1 }}
         style={{
           borderRadius: theme.borderRadius.lg,
-          height: 64,
-          width: 64,
+          height: theme.components.floatingActionButton.size,
+          width: theme.components.floatingActionButton.size,
           alignItems: 'center',
           justifyContent: 'center',
         }}>

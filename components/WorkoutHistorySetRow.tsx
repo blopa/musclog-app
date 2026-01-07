@@ -22,10 +22,10 @@ export function SetRow({ set }: SetRowProps) {
     <View
       className="flex-row items-center rounded py-1.5"
       style={{
-        paddingVertical: 6,
-        borderRadius: 8,
+        paddingVertical: theme.spacing.padding.xs + 2, // 6px (xs is 4, so 4+2=6)
+        borderRadius: theme.borderRadius.sm,
         backgroundColor: isCurrent ? theme.colors.accent.primary10 : 'transparent',
-        borderWidth: isCurrent ? 1 : 0,
+        borderWidth: isCurrent ? theme.borderWidth.thin : 0,
         borderColor: isCurrent ? theme.colors.accent.primary20 : 'transparent',
       }}>
       {/* Set Number */}

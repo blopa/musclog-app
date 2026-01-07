@@ -39,7 +39,7 @@ export function RestTimer({ restTime, rotationAnim }: RestTimerProps) {
           colors={[theme.colors.accent.primary20, theme.colors.status.purple20]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
-          style={{ flex: 1, borderRadius: 9999 }}
+          style={{ flex: 1, borderRadius: theme.borderRadius.full }}
         />
       </View>
 
