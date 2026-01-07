@@ -9,6 +9,7 @@ import { CircularArrow } from '../components/CircularArrow';
 import { ActionButton } from '../components/ActionButton';
 import { DailySummaryCard } from '../components/DailySummaryCard';
 import { UserMenuModal } from '../components/UserMenuModal';
+import { NotificationsModal } from '../components/NotificationsModal';
 import { useRouter } from 'expo-router';
 
 const PAGE_DATA = {
@@ -79,6 +80,7 @@ export default function HomeScreen() {
   const router = useRouter();
   const { user, dailySummary, recentWorkouts, recentFoods } = PAGE_DATA;
   const [isUserMenuVisible, setIsUserMenuVisible] = useState(false);
+  const [isNotificationsVisible, setIsNotificationsVisible] = useState(false);
 
   return (
     <MasterLayout>
@@ -103,7 +105,7 @@ export default function HomeScreen() {
           </Pressable>
           <Pressable
             className="relative rounded-full bg-bg-overlay p-3"
-            onPress={() => router.push('/notifications')}>
+            onPress={() => setIsNotificationsVisible(true)}>
             <Bell size={theme.iconSize.md} color={theme.colors.text.primary} />
             {user.hasNotifications && (
               <View
@@ -213,6 +215,16 @@ export default function HomeScreen() {
         onProfilePress={() => router.push('/profile')}
         onSettingsPress={() => router.push('/settings')}
         onProgressPress={() => router.push('/progress')}
+      />
+
+      {/* Notifications Modal */}
+      <NotificationsModal
+        visible={isNotificationsVisible}
+        onClose={() => setIsNotificationsVisible(false)}
+        onClearAll={() => {
+          // Handle clear all notifications
+          console.log('Clear all notifications');
+        }}
       />
     </MasterLayout>
   );
