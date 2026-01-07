@@ -8,7 +8,7 @@ type ThemeButtonSize = 'sm' | 'md' | 'lg';
 
 type ThemeButtonWidth = 'full' | 'flex-1' | 'flex-2' | 'auto';
 
-type ThemeButtonVariant = 'accent' | 'discard' | 'outline' | 'secondary' | 'secondaryGradient' | 'dashed';
+type ThemeButtonVariant = 'accent' | 'discard' | 'outline' | 'secondary' | 'secondaryGradient' | 'dashed' | 'gradientCta';
 
 type ThemeButtonProps = {
   label: string;
@@ -79,10 +79,13 @@ export function Button({
   const isSecondaryVariant = variant === 'secondary';
   const isSecondaryGradientVariant = variant === 'secondaryGradient';
   const isDashedVariant = variant === 'dashed';
+  const isGradientCtaVariant = variant === 'gradientCta';
   const isDisabled = disabled;
   
   const gradientColors: readonly [string, string, ...string[]] = isDisabled
     ? ([theme.colors.background.white10, theme.colors.background.white10] as const)
+    : isGradientCtaVariant
+    ? theme.colors.gradients.cta
     : isRedVariant
     ? ([theme.colors.rose.brand, theme.colors.rose.brand] as const)
     : isSecondaryGradientVariant
@@ -97,6 +100,8 @@ export function Button({
     ? theme.colors.text.gray300
     : isDashedVariant
     ? theme.colors.text.secondary
+    : isGradientCtaVariant
+    ? theme.colors.text.white
     : isSecondaryVariant || isSecondaryGradientVariant
     ? theme.colors.text.primary
     : isRedVariant
@@ -109,13 +114,15 @@ export function Button({
     ? theme.colors.text.gray300
     : isDashedVariant
     ? theme.colors.text.secondary
+    : isGradientCtaVariant
+    ? theme.colors.text.white
     : isSecondaryVariant || isSecondaryGradientVariant
     ? theme.colors.accent.secondary
     : isRedVariant
     ? theme.colors.text.white
     : theme.colors.text.black;
   
-  const shadow = isDisabled || isOutlineVariant || isSecondaryVariant || isSecondaryGradientVariant || isDashedVariant ? theme.shadows.none : isRedVariant ? theme.shadows.roseGlow : config.shadow;
+  const shadow = isDisabled || isOutlineVariant || isSecondaryVariant || isSecondaryGradientVariant || isDashedVariant ? theme.shadows.none : isGradientCtaVariant ? theme.shadows.none : isRedVariant ? theme.shadows.roseGlow : config.shadow;
 
   const buttonContent = (
     <>
@@ -128,6 +135,8 @@ export function Button({
             ? 'text-gray-300'
             : isDashedVariant
             ? 'text-text-secondary'
+            : isGradientCtaVariant
+            ? 'text-white'
             : isSecondaryVariant || isSecondaryGradientVariant
             ? 'text-text-primary'
             : isRedVariant
@@ -197,20 +206,35 @@ export function Button({
           {buttonContent}
         </View>
       ) : (
-      <LinearGradient
-          colors={gradientColors}
-          start={{ x: isSecondaryGradientVariant ? 0 : 0, y: isSecondaryGradientVariant ? 0 : 0 }}
-          end={{ x: isSecondaryGradientVariant ? 1 : 1, y: isSecondaryGradientVariant ? 1 : 0 }}
-        style={{
-          borderRadius: config.borderRadius,
-          paddingVertical: config.paddingVertical,
-          paddingHorizontal: theme.spacing.padding.base,
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}>
-          {buttonContent}
-      </LinearGradient>
+        <View style={{ position: 'relative', borderRadius: config.borderRadius, overflow: 'hidden' }}>
+          <LinearGradient
+            colors={gradientColors}
+            start={{ x: isSecondaryGradientVariant || isGradientCtaVariant ? 0 : 0, y: isSecondaryGradientVariant ? 0 : 0 }}
+            end={{ x: isSecondaryGradientVariant || isGradientCtaVariant ? 1 : 1, y: isSecondaryGradientVariant ? 1 : 0 }}
+            style={{
+              borderRadius: config.borderRadius,
+              paddingVertical: config.paddingVertical,
+              paddingHorizontal: theme.spacing.padding.base,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+            {buttonContent}
+          </LinearGradient>
+          {isGradientCtaVariant && isPressed && !isDisabled && (
+            <View
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                borderRadius: config.borderRadius,
+              }}
+            />
+          )}
+        </View>
       )}
     </Pressable>
   );

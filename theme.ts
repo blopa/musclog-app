@@ -170,6 +170,7 @@ export const theme = {
       workoutsTitle: ['#a78bfa', '#60a5fa', '#34d399'] as const,
       notification: ['#1a3d2f', '#0f2419'] as const,
       upNextCard: ['#1a2f2a', '#141a17', '#1a2520'] as const,
+      cta: ['#4f46e5', '#29e08e'] as const, // Indigo to primary green gradient
       workoutSessionOverlay: [
         'rgba(10, 31, 26, 0.95)',
         'rgba(10, 31, 26, 0.85)',
