@@ -92,13 +92,13 @@ export function EditSetDetailsModal({
       subtitle={t('editSetDetails.subtitle', { setLabel })}
       footer={
         <View className="flex-row gap-3">
-          <Pressable
-            className="flex-1 rounded-lg border border-border-light bg-bg-card py-3"
-            onPress={onClose}>
-            <Text className="text-center text-sm font-bold uppercase tracking-wide text-text-primary">
-              {t('editSetDetails.cancel')}
-            </Text>
-          </Pressable>
+          <Button
+            label={t('editSetDetails.cancel')}
+            variant="outline"
+            size="sm"
+            width="flex-1"
+            onPress={onClose}
+          />
           <Button
             label={t('editSetDetails.saveChanges')}
             size="sm"

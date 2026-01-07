@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, Pressable, Modal } from 'react-native';
 import { theme } from '../theme';
+import { Button } from './theme/Button';
 
 export type ConfirmationModalVariant = 'destructive' | 'primary' | 'default';
 
@@ -103,24 +104,13 @@ export function ConfirmationModal({
 
             {/* Buttons */}
             <View className="flex-row" style={{ gap: theme.spacing.gap.md }}>
-              <Pressable
-                className="flex-1"
-                style={{
-                  backgroundColor: theme.colors.overlay.white20,
-                  borderRadius: theme.borderRadius.lg,
-                  paddingVertical: theme.spacing.padding.base,
-                }}
-                onPress={onClose}>
-                <Text
-                  className="text-center"
-                  style={{
-                    fontSize: theme.typography.fontSize.sm,
-                    fontWeight: theme.typography.fontWeight.semibold,
-                    color: theme.colors.text.secondary,
-                  }}>
-                  {cancelLabel}
-                </Text>
-              </Pressable>
+              <Button
+                label={cancelLabel}
+                variant="outline"
+                size="sm"
+                width="flex-1"
+                onPress={onClose}
+              />
               <Pressable
                 className="flex-1"
                 style={{

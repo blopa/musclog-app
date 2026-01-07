@@ -85,22 +85,13 @@ export function ReplaceExerciseModal({
       maxHeight="85%"
       footer={
         <View className="flex-row gap-3">
-          <Pressable
-            className="flex-1 rounded-xl border border-border-light"
-            style={{
-              backgroundColor: theme.colors.background.overlay,
-              paddingVertical: theme.spacing.padding.lg,
-            }}
-            onPress={onClose}>
-            <Text
-              className="text-center uppercase tracking-wide text-text-secondary"
-              style={{
-                fontSize: theme.typography.fontSize.base,
-                fontWeight: theme.typography.fontWeight.bold,
-              }}>
-              Cancel
-            </Text>
-          </Pressable>
+          <Button
+            label="Cancel"
+            variant="outline"
+            size="md"
+            width="flex-1"
+            onPress={onClose}
+          />
           <Button
             label="Replace"
             icon={Repeat}

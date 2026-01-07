@@ -95,14 +95,13 @@ export function LogSetPerformanceModal({
 
   const footer = (
     <View className="flex-row gap-3">
-      <Pressable
-        className="flex-1 rounded-xl border border-border-light py-3.5"
-        style={{ backgroundColor: theme.colors.background.overlay }}
-        onPress={onClose}>
-        <Text className="text-center text-sm font-bold uppercase tracking-wide text-text-secondary">
-          {t('logSetPerformance.cancel')}
-        </Text>
-      </Pressable>
+      <Button
+        label={t('logSetPerformance.cancel')}
+        variant="outline"
+        size="sm"
+        width="flex-1"
+        onPress={onClose}
+      />
       <Button
         label={t('logSetPerformance.logSet')}
         icon={Save}
