@@ -24,9 +24,9 @@ export function SetRow({ set }: SetRowProps) {
       style={{
         paddingVertical: 6,
         borderRadius: 8,
-        backgroundColor: isCurrent ? `${theme.colors.accent.primary}1A` : 'transparent',
+        backgroundColor: isCurrent ? theme.colors.accent.primary10 : 'transparent',
         borderWidth: isCurrent ? 1 : 0,
-        borderColor: isCurrent ? `${theme.colors.accent.primary}33` : 'transparent',
+        borderColor: isCurrent ? theme.colors.accent.primary20 : 'transparent',
       }}>
       {/* Set Number */}
       <View className="w-8 items-center">

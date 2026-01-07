@@ -56,6 +56,9 @@ export const theme = {
       gray400: '#9ca3af', // Gray-400
       gray500: '#6b7280', // Gray-500
       white: '#ffffff', // White
+      // Text colors with opacity
+      primary12: 'rgba(255, 255, 255, 0.125)', // Primary with 12.5% opacity
+      primary20: 'rgba(255, 255, 255, 0.2)', // Primary with 20% opacity
     },
 
     // Accent colors
@@ -72,6 +75,8 @@ export const theme = {
       primary20: 'rgba(34, 197, 94, 0.2)', // Primary with 20% opacity
       primary40: 'rgba(34, 197, 94, 0.4)', // Primary with 40% opacity
       primary5: 'rgba(34, 197, 94, 0.05)', // Primary with 5% opacity
+      secondary10: 'rgba(52, 211, 153, 0.1)', // Secondary with 10% opacity
+      secondary20: 'rgba(52, 211, 153, 0.2)', // Secondary with 20% opacity
     },
 
     // Border colors
@@ -98,7 +103,10 @@ export const theme = {
       success20: 'rgba(34, 197, 94, 0.2)', // Success with 20% opacity
       error8: 'rgba(239, 68, 68, 0.08)', // Error with 8% opacity
       error20: 'rgba(239, 68, 68, 0.2)', // Error with 20% opacity
+      error12: 'rgba(239, 68, 68, 0.125)', // Error with 12.5% opacity
       info20: 'rgba(59, 130, 246, 0.2)', // Info with 20% opacity
+      purple40: 'rgba(168, 85, 247, 0.4)', // Purple with 40% opacity
+      purple20: 'rgba(168, 85, 247, 0.2)', // Purple with 20% opacity
     },
 
     // Macro colors

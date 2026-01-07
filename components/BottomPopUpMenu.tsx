@@ -128,8 +128,8 @@ export function BottomPopUpMenu({
             {/* Header */}
             <LinearGradient
               colors={[
-                `${theme.colors.status.purple}66`,
-                `${theme.colors.accent.secondary}1A`,
+                theme.colors.status.purple40,
+                theme.colors.accent.secondary10,
                 'transparent',
               ]}
               start={{ x: 0, y: 0 }}
