@@ -36,22 +36,8 @@ export function ConfirmationModal({
     onClose();
   };
 
-  const getConfirmButtonStyle = () => {
-    switch (variant) {
-      case 'destructive':
-        return {
-          backgroundColor: theme.colors.status.error,
-          ...theme.shadows.error,
-        };
-      case 'primary':
-        return {
-          backgroundColor: theme.colors.accent.primary,
-        };
-      default:
-        return {
-          backgroundColor: theme.colors.accent.primary,
-        };
-    }
+  const getConfirmButtonVariant = (): 'accent' | 'discard' => {
+    return variant === 'destructive' ? 'discard' : 'accent';
   };
 
   // Use backdrop overlay color from theme
@@ -111,23 +97,13 @@ export function ConfirmationModal({
                 width="flex-1"
                 onPress={onClose}
               />
-              <Pressable
-                className="flex-1"
-                style={{
-                  ...getConfirmButtonStyle(),
-                  borderRadius: theme.borderRadius.lg,
-                  paddingVertical: theme.spacing.padding.base,
-                }}
-                onPress={handleConfirm}>
-                <Text
-                  className="text-center text-text-primary"
-                  style={{
-                    fontSize: theme.typography.fontSize.sm,
-                    fontWeight: theme.typography.fontWeight.bold,
-                  }}>
-                  {confirmLabel}
-                </Text>
-              </Pressable>
+              <Button
+                label={confirmLabel}
+                variant={getConfirmButtonVariant()}
+                size="sm"
+                width="flex-1"
+                onPress={handleConfirm}
+              />
             </View>
           </View>
         </Pressable>
