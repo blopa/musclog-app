@@ -8,7 +8,7 @@ type ThemeButtonSize = 'sm' | 'md' | 'lg';
 
 type ThemeButtonWidth = 'full' | 'flex-1' | 'flex-2' | 'auto';
 
-type ThemeButtonVariant = 'accent' | 'discard' | 'outline';
+type ThemeButtonVariant = 'accent' | 'discard' | 'outline' | 'secondary';
 
 type ThemeButtonProps = {
   label: string;
@@ -76,18 +76,23 @@ export function Button({
   // Determine colors and styles based on variant and disabled state
   const isRedVariant = variant === 'discard';
   const isOutlineVariant = variant === 'outline';
+  const isSecondaryVariant = variant === 'secondary';
   const isDisabled = disabled;
   
   const gradientColors: readonly [string, string, ...string[]] = isDisabled
     ? ([theme.colors.background.white10, theme.colors.background.white10] as const)
     : isRedVariant
     ? ([theme.colors.rose.brand, theme.colors.rose.brand] as const)
+    : isSecondaryVariant
+    ? ([theme.colors.background.overlay, theme.colors.background.overlay] as const)
     : theme.colors.gradients.accent;
   
   const textColor = isDisabled
     ? theme.colors.text.primary30
     : isOutlineVariant
     ? theme.colors.text.gray300
+    : isSecondaryVariant
+    ? theme.colors.text.primary
     : isRedVariant
     ? theme.colors.text.white
     : theme.colors.text.black;
@@ -96,11 +101,13 @@ export function Button({
     ? theme.colors.text.primary30
     : isOutlineVariant
     ? theme.colors.text.gray300
+    : isSecondaryVariant
+    ? theme.colors.accent.secondary
     : isRedVariant
     ? theme.colors.text.white
     : theme.colors.text.black;
   
-  const shadow = isDisabled || isOutlineVariant ? theme.shadows.none : isRedVariant ? theme.shadows.roseGlow : config.shadow;
+  const shadow = isDisabled || isOutlineVariant || isSecondaryVariant ? theme.shadows.none : isRedVariant ? theme.shadows.roseGlow : config.shadow;
 
   const buttonContent = (
     <>
@@ -111,6 +118,8 @@ export function Button({
             ? 'text-white/30'
             : isOutlineVariant
             ? 'text-gray-300'
+            : isSecondaryVariant
+            ? 'text-text-primary'
             : isRedVariant
             ? 'text-white'
             : 'text-text-black'
@@ -141,8 +150,12 @@ export function Button({
           ...shadow,
           opacity: isDisabled ? 1 : undefined,
           backgroundColor: outlineBackgroundColor,
-          borderWidth: isOutlineVariant ? 2 : 0,
-          borderColor: isOutlineVariant ? theme.colors.background.white10 : 'transparent',
+          borderWidth: isOutlineVariant || isSecondaryVariant ? (isOutlineVariant ? 2 : 1) : 0,
+          borderColor: isOutlineVariant
+            ? theme.colors.background.white10
+            : isSecondaryVariant
+            ? theme.colors.border.default
+            : 'transparent',
         },
         style,
       ]}
@@ -150,7 +163,7 @@ export function Button({
       onPressIn={() => !isDisabled && setIsPressed(true)}
       onPressOut={() => setIsPressed(false)}
       disabled={isDisabled}>
-      {isOutlineVariant ? (
+      {isOutlineVariant || isSecondaryVariant ? (
         <View
           style={{
             borderRadius: config.borderRadius,
@@ -159,6 +172,7 @@ export function Button({
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'center',
+            backgroundColor: isSecondaryVariant && !isDisabled ? theme.colors.background.overlay : undefined,
           }}>
           {buttonContent}
         </View>

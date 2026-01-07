@@ -1,5 +1,5 @@
 import { View, Text, ScrollView, Pressable } from 'react-native';
-import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react-native';
+import { ChevronLeft, ChevronRight, Calendar, ScanLine } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 import i18n, { LOCALE_MAP, LanguageKeys } from '../lang/lang';
@@ -9,9 +9,9 @@ import { CaloriesRemainingCard } from '../components/CaloriesRemainingCard';
 import { FoodItemCard } from '../components/FoodItemCard';
 import { MealSection } from '../components/MealSection';
 import { FloatingActionButton } from '../components/FloatingActionButton';
-import { ScanBarcodeButton } from '../components/ScanBarcodeButton';
 import { AICameraButton } from '../components/AICameraButton';
 import { MoreFoodOptionsButton } from '../components/MoreFoodOptionsButton';
+import { Button } from '../components/theme/Button';
 
 const FOOD_DATA = {
   date: 'Today, Oct 24',
@@ -112,7 +112,12 @@ export default function FoodScreen() {
             {/* Scan Buttons */}
             <View className="gap-4">
               <View className="flex-row gap-4">
-                <ScanBarcodeButton
+                <Button
+                  label={t('food.actions.scanBarcode')}
+                  icon={ScanLine}
+                  variant="secondary"
+                  size="md"
+                  width="flex-1"
                   onPress={() => {
                     // Handle scan barcode action
                   }}
