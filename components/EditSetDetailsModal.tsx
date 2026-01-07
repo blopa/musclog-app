@@ -49,6 +49,7 @@ function NumberBox({ value, onChange }: NumberBoxProps) {
         keyboardType="numeric"
         className="w-full bg-transparent px-4 py-3 text-center text-lg font-bold text-text-primary"
         style={{ color: theme.colors.text.primary }}
+        placeholderTextColor={theme.colors.text.secondary}
       />
     </View>
   );
@@ -100,7 +101,7 @@ export function EditSetDetailsModal({
           style={{ backgroundColor: theme.colors.background.cardElevated }}
           onPress={(e) => e.stopPropagation()}>
           {/* Header */}
-          <View className="flex-row items-center justify-between border-b border-border-dark bg-bg-overlay px-6 py-5">
+          <View className="flex-row items-center justify-between border-b border-border-dark bg-bg-overlay/50 px-6 py-5">
             <View className="flex-1">
               <Text className="text-xl font-bold text-text-primary">
                 {t('editSetDetails.title')}
@@ -128,6 +129,7 @@ export function EditSetDetailsModal({
                   keyboardType="decimal-pad"
                   className="flex-1 bg-transparent py-3 pl-4 pr-12 text-lg font-bold text-text-primary"
                   style={{ color: theme.colors.text.primary }}
+                  placeholderTextColor={theme.colors.text.secondary}
                 />
                 <View className="absolute right-0 flex items-center pr-4" pointerEvents="none">
                   <Text className="text-sm font-semibold text-text-secondary">
@@ -153,11 +155,11 @@ export function EditSetDetailsModal({
           </View>
 
           {/* Footer */}
-          <View className="flex-row gap-3 border-t border-border-dark bg-bg-overlay px-6 py-4">
+          <View className="flex-row gap-3 border-t border-border-dark bg-bg-overlay/50 px-6 py-4">
             <Pressable
-              className="flex-1 rounded-lg border border-border-light bg-bg-overlay py-3"
+              className="flex-1 rounded-lg border border-border-light bg-bg-card py-3"
               onPress={onClose}>
-              <Text className="text-center text-sm font-bold uppercase tracking-wide text-text-secondary">
+              <Text className="text-center text-sm font-bold uppercase tracking-wide text-text-primary">
                 {t('editSetDetails.cancel')}
               </Text>
             </Pressable>
