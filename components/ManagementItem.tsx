@@ -24,7 +24,7 @@ export function ManagementItem({
       onPress={onPress}>
       <View
         className="h-12 w-12 items-center justify-center rounded-xl"
-        style={{ backgroundColor: addOpacityToHex(iconColor, 0.125) }}>
+        style={{ backgroundColor: addOpacityToHex(iconColor, theme.colors.opacity.iconBackground) }}>
         <Icon size={theme.iconSize.md} color={iconColor} />
       </View>
       <View className="flex-1">

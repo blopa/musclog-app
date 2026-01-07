@@ -43,7 +43,7 @@ export function WorkoutCard({
 
       <View className="flex-row items-center justify-between">
         <Pressable className="flex-row items-center gap-2" onPress={onArchive}>
-          <Archive size={16} color={theme.colors.text.secondary} />
+          <Archive size={theme.iconSize.sm} color={theme.colors.text.secondary} />
           <Text className="text-sm text-text-secondary">Archive</Text>
         </Pressable>
         <StartWorkoutButton variant="secondary" onPress={onStart} />

@@ -97,11 +97,7 @@ export default function RestTimerScreen() {
       <View
         className="absolute bottom-[-40%] left-[-20%] h-[50%] w-[110%] overflow-hidden rounded-full"
         style={{
-          shadowColor: theme.colors.accent.primary,
-          shadowOffset: theme.shadows.none.shadowOffset,
-          shadowOpacity: 0.8,
-          shadowRadius: 200,
-          elevation: 0,
+          ...theme.shadows.purpleGlow,
           backgroundColor: theme.colors.background.greenBlob,
         }}></View>
 
@@ -132,7 +128,7 @@ export default function RestTimerScreen() {
         {/* Completed Exercise */}
         <View className="flex-row items-center justify-between px-2">
           <View className="flex-row items-center gap-2">
-            <CheckCircle size={18} color={theme.colors.accent.primary} />
+            <CheckCircle size={theme.iconSize.md} color={theme.colors.accent.primary} />
             <Text className="text-sm" style={{ color: theme.colors.overlay.white50 }}>
               {t('restTimer.done')}:{' '}
               <Text className="font-medium text-text-primary">{exerciseData.completed.name}</Text>

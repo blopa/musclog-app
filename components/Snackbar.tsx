@@ -79,7 +79,7 @@ export function Snackbar({ snackbar, onDismiss }: SnackbarProps) {
           backgroundColor: isSuccess
             ? theme.colors.background.snackbarSuccess
             : theme.colors.background.snackbarError,
-          borderLeftWidth: 5,
+          borderLeftWidth: theme.borderWidth.accent,
           borderLeftColor: isSuccess ? theme.colors.status.success : theme.colors.status.error,
           ...theme.shadows.lg,
         }}>
@@ -90,9 +90,9 @@ export function Snackbar({ snackbar, onDismiss }: SnackbarProps) {
             backgroundColor: isSuccess ? theme.colors.status.success : theme.colors.status.error,
           }}>
           {isSuccess ? (
-            <CheckCircle size={24} color={theme.colors.background.snackbarSuccess} />
+            <CheckCircle size={theme.iconSize.xl} color={theme.colors.background.snackbarSuccess} />
           ) : (
-            <AlertTriangle size={20} color={theme.colors.text.white} />
+            <AlertTriangle size={theme.iconSize.lg} color={theme.colors.text.white} />
           )}
         </View>
 

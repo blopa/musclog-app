@@ -138,6 +138,17 @@ export const theme = {
       black60Opacity: 'rgba(0, 0, 0, 0.6)', // Black with 60% opacity (for gradients)
       backdrop: 'rgba(10, 31, 26, 0.8)', // Background primary with 80% opacity (for modals)
     },
+    
+    // Opacity values (for use in style objects)
+    opacity: {
+      light: 0.4,
+      medium: 0.5,
+      heavy: 0.6,
+      veryHeavy: 0.8,
+      full: 1.0,
+      // Specific opacity values
+      iconBackground: 0.125, // 12.5% for icon backgrounds
+    },
 
     // Gradient colors
     gradients: {
@@ -201,6 +212,7 @@ export const theme = {
       '2xl': 32,
       '3xl': 48,
       // Additional padding values for fractional spacing
+      '1half': 6, // 1.5 * 4 = 6px
       '2half': 10, // 2.5 * 4 = 10px
       '3half': 14, // 3.5 * 4 = 14px
       '4half': 18, // 4.5 * 4 = 18px
@@ -237,6 +249,15 @@ export const theme = {
   borderWidth: {
     thin: 1,
     medium: 2,
+    thick: 3,
+    // Additional border widths
+    accent: 5, // For accent borders like snackbar
+  },
+  
+  // Stroke widths (for icons and SVG)
+  strokeWidth: {
+    thin: 1,
+    normal: 2.5,
     thick: 3,
   },
 
@@ -277,6 +298,14 @@ export const theme = {
       shadowRadius: 0,
       elevation: 0,
     },
+    // Custom shadow for sliders
+    slider: {
+      shadowColor: '#000000',
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0.4,
+      shadowRadius: 6,
+      elevation: 5,
+    },
     accentGlow: {
       shadowColor: '#22c55e', // Using theme.colors.accent.primary value
       shadowOffset: { width: 0, height: 0 },
@@ -309,12 +338,17 @@ export const theme = {
 
   // Icon sizes
   iconSize: {
-    xs: 16,
-    sm: 20,
-    md: 24,
-    lg: 32,
-    xl: 40,
-    '2xl': 48,
+    xs: 14,
+    sm: 16,
+    md: 18,
+    lg: 20,
+    xl: 24,
+    '2xl': 28,
+    '3xl': 32,
+    '4xl': 40,
+    '5xl': 48,
+    // Large background icons
+    background: 160,
   },
 
   // Common sizes (for width, height, etc.)

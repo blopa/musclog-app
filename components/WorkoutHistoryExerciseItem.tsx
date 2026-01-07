@@ -44,7 +44,7 @@ export function ExerciseItem({ exercise, isLast }: ExerciseItemProps) {
             backgroundColor: theme.colors.background.primary,
           }}>
           <Check
-            size={20}
+            size={theme.iconSize.lg}
             color={hasCurrentSet ? theme.colors.accent.primary : theme.colors.text.tertiary}
           />
         </View>

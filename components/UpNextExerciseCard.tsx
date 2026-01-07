@@ -26,7 +26,7 @@ export function UpNextExerciseCard({ exercise, onPress }: UpNextExerciseCardProp
           colors={[theme.colors.status.purple, theme.colors.accent.primary]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
-          style={{ flex: 1, opacity: 0.4 }}
+          style={{ flex: 1, opacity: theme.colors.opacity.light }}
         />
       </View>
 
@@ -66,7 +66,7 @@ export function UpNextExerciseCard({ exercise, onPress }: UpNextExerciseCardProp
 
             <View className="mt-1 flex-row items-center gap-3">
               <View className="flex-row items-center gap-1">
-                <Dumbbell size={16} color={theme.colors.text.secondary} />
+                <Dumbbell size={theme.iconSize.sm} color={theme.colors.text.secondary} />
                 <Text className="text-sm" style={{ color: theme.colors.overlay.white60 }}>
                   {exercise.weight}kg
                 </Text>
@@ -76,7 +76,7 @@ export function UpNextExerciseCard({ exercise, onPress }: UpNextExerciseCardProp
                 style={{ backgroundColor: theme.colors.overlay.white20 }}
               />
               <View className="flex-row items-center gap-1">
-                <Repeat size={16} color={theme.colors.text.secondary} />
+                <Repeat size={theme.iconSize.sm} color={theme.colors.text.secondary} />
                 <Text className="text-sm" style={{ color: theme.colors.overlay.white60 }}>
                   {exercise.reps} {t('restTimer.reps')}
                 </Text>

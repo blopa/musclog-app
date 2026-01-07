@@ -57,7 +57,7 @@ export function RestTimer({ restTime, rotationAnim }: RestTimerProps) {
             r="46"
             fill="none"
             stroke={theme.colors.border.accent}
-            strokeOpacity={0.5}
+            strokeOpacity={theme.colors.opacity.medium}
             strokeWidth="4"
           />
           {/* Progress circle */}
@@ -85,7 +85,7 @@ export function RestTimer({ restTime, rotationAnim }: RestTimerProps) {
         </Text>
         <View className="mt-2 flex-row items-center gap-2">
           <Animated.View style={{ transform: [{ rotate: spin }] }}>
-            <Activity size={20} color={theme.colors.text.secondary} />
+            <Activity size={theme.iconSize.lg} color={theme.colors.text.secondary} />
           </Animated.View>
           <Text className="text-lg font-medium tracking-wide text-text-secondary">
             {t('restTimer.resting')}

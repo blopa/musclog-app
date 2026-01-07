@@ -277,7 +277,7 @@ export function ReplaceExerciseModal({
                         width: theme.iconSize.md,
                         height: theme.iconSize.md,
                       }}>
-                      <Check size={14} color={theme.colors.text.black} strokeWidth={3} />
+                      <Check size={theme.iconSize.xs} color={theme.colors.text.black} strokeWidth={theme.strokeWidth.thick} />
                     </View>
                   )}
                 </Pressable>

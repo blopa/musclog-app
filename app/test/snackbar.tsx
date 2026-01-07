@@ -36,7 +36,7 @@ export default function SnackbarTestScreen() {
             onPress={() => router.back()}
             className="absolute left-0 -ml-2 rounded-full p-2"
             style={{ backgroundColor: theme.colors.overlay.white5 }}>
-            <ChevronLeft size={24} color={theme.colors.text.primary} />
+            <ChevronLeft size={theme.iconSize.xl} color={theme.colors.text.primary} />
           </Pressable>
           <Text className="text-xl font-bold text-text-primary">Snackbar Examples</Text>
         </View>
@@ -70,13 +70,13 @@ export default function SnackbarTestScreen() {
                   style={{
                     backgroundColor: theme.colors.status.success20,
                   }}>
-                  <CheckCircle size={24} color={theme.colors.status.success} />
+                  <CheckCircle size={theme.iconSize.xl} color={theme.colors.status.success} />
                 </View>
                 <Text className="flex-1 text-left text-xl font-semibold text-text-primary">
                   Simulate Successful Save
                 </Text>
                 <ChevronLeft
-                  size={24}
+                  size={theme.iconSize.xl}
                   color={theme.colors.text.tertiary}
                   style={{ transform: [{ rotate: '180deg' }] }}
                 />
@@ -94,13 +94,13 @@ export default function SnackbarTestScreen() {
                   style={{
                     backgroundColor: theme.colors.status.error20,
                   }}>
-                  <AlertTriangle size={24} color={theme.colors.status.error} />
+                  <AlertTriangle size={theme.iconSize.xl} color={theme.colors.status.error} />
                 </View>
                 <Text className="flex-1 text-left text-xl font-semibold text-text-primary">
                   Simulate Sync Error
                 </Text>
                 <ChevronLeft
-                  size={24}
+                  size={theme.iconSize.xl}
                   color={theme.colors.text.tertiary}
                   style={{ transform: [{ rotate: '180deg' }] }}
                 />

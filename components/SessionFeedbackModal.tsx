@@ -71,11 +71,7 @@ function RatingSlider({ label, value, onChange, leftLabel, rightLabel }: RatingS
               backgroundColor: theme.colors.background.white,
               borderColor: theme.colors.accent.primary,
               borderWidth: theme.borderWidth.medium,
-              shadowColor: theme.shadows.md.shadowColor,
-              shadowOffset: theme.shadows.md.shadowOffset,
-              shadowOpacity: 0.4,
-              shadowRadius: 6,
-              elevation: 5,
+              ...theme.shadows.slider,
             }}
           />
         </Pressable>

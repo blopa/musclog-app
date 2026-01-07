@@ -40,11 +40,11 @@ export function ActionButton({ variant, label, onPress }: ActionButtonProps) {
       <View
         className="h-12 w-12 items-center justify-center rounded-full"
         style={{ backgroundColor: config.iconBgColor }}>
-        <Icon size={24} color={config.iconColor} strokeWidth={2.5} />
+        <Icon size={theme.iconSize.xl} color={config.iconColor} strokeWidth={theme.strokeWidth.normal} />
       </View>
       <Text className={`text-2xl font-bold leading-tight ${config.textColor}`}>{label}</Text>
       <View className="absolute -bottom-6 -right-6 opacity-[0.08]">
-        <Icon size={160} color={config.backgroundIconColor} strokeWidth={1} />
+        <Icon size={theme.iconSize.background} color={config.backgroundIconColor} strokeWidth={theme.strokeWidth.thin} />
       </View>
     </Pressable>
   );
