@@ -3,16 +3,16 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { LucideIcon } from 'lucide-react-native';
 import { theme } from '../theme';
 
-type ConfirmationButtonSize = 'sm' | 'md' | 'lg';
+type StandardButtonSize = 'sm' | 'md' | 'lg';
 
-type ConfirmationButtonWidth = 'full' | 'flex-1' | 'flex-2' | 'auto';
+type StandardButtonWidth = 'full' | 'flex-1' | 'flex-2' | 'auto';
 
-type ConfirmationButtonProps = {
+type StandardButtonProps = {
   label: string;
   onPress?: () => void;
   icon?: LucideIcon;
-  size?: ConfirmationButtonSize;
-  width?: ConfirmationButtonWidth;
+  size?: StandardButtonSize;
+  width?: StandardButtonWidth;
   className?: string;
   style?: ViewStyle;
 };
@@ -54,14 +54,14 @@ const widthClasses = {
   auto: '',
 };
 
-export function ConfirmationButton({
+export function StandardButton({
   label,
   onPress,
   icon: Icon,
   size = 'md',
   width = 'auto',
   style,
-}: ConfirmationButtonProps) {
+}: StandardButtonProps) {
   const config = sizeConfig[size];
   const widthClass = widthClasses[width];
 

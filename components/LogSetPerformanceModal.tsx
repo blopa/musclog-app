@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { BottomPopUpMenu } from './BottomPopUpMenu';
 import { EditSetDetailsModal } from './EditSetDetailsModal';
-import { ConfirmationButton } from './ConfirmationButton';
+import { StandardButton } from './StandardButton';
 
 type LogSetPerformanceModalProps = {
   visible: boolean;
@@ -103,7 +103,7 @@ export function LogSetPerformanceModal({
           {t('logSetPerformance.cancel')}
         </Text>
       </Pressable>
-      <ConfirmationButton
+      <StandardButton
         label={t('logSetPerformance.logSet')}
         icon={Save}
         size="sm"
