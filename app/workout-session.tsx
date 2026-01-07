@@ -16,6 +16,7 @@ import { CompleteSetButton } from '../components/CompleteSetButton';
 import { LogSetPerformanceModal } from '../components/LogSetPerformanceModal';
 import { EditSetDetailsModal } from '../components/EditSetDetailsModal';
 import { ConfirmationModal } from '../components/ConfirmationModal';
+import { ReplaceExerciseModal, Exercise } from '../components/ReplaceExerciseModal';
 
 export default function WorkoutSessionScreen() {
   const { t } = useTranslation();
@@ -28,6 +29,7 @@ export default function WorkoutSessionScreen() {
   const [isLogSetModalVisible, setIsLogSetModalVisible] = useState(false);
   const [isEditSetModalVisible, setIsEditSetModalVisible] = useState(false);
   const [isSkipSetModalVisible, setIsSkipSetModalVisible] = useState(false);
+  const [isReplaceExerciseModalVisible, setIsReplaceExerciseModalVisible] = useState(false);
 
   const exerciseData = {
     name: 'Incline Dumbbell Press',
@@ -71,12 +73,15 @@ export default function WorkoutSessionScreen() {
           />
 
           {/* Exercise Info */}
-          <View className="px-6 mt-48">
-            <Text className="text-5xl font-bold mb-3 text-text-primary">{exerciseData.name}</Text>
-            <View className="flex-row items-center gap-3 mb-2">
-              <View className="bg-accent-primary px-4 py-1.5 rounded-full">
-                <Text className="text-sm font-bold text-text-black">
-                  {t('workoutSession.setOf', { current: exerciseData.set, total: exerciseData.totalSets })}
+          <View className="mt-48 px-6">
+            <Text className="mb-3 text-5xl font-bold text-text-primary">{exerciseData.name}</Text>
+            <View className="mb-2 flex-row items-center gap-3">
+              <View className="rounded-full bg-accent-primary px-4 py-1.5">
+                <Text className="text-text-black text-sm font-bold">
+                  {t('workoutSession.setOf', {
+                    current: exerciseData.set,
+                    total: exerciseData.totalSets,
+                  })}
                 </Text>
               </View>
               <Text className="text-lg text-text-secondary">{exerciseData.category}</Text>
@@ -84,7 +89,7 @@ export default function WorkoutSessionScreen() {
           </View>
 
           {/* Stats Cards */}
-          <View className="px-6 mt-8 flex-row gap-3">
+          <View className="mt-8 flex-row gap-3 px-6">
             <WorkoutStatCard
               title={t('workoutSession.weight')}
               value={weight}
@@ -110,22 +115,25 @@ export default function WorkoutSessionScreen() {
           </View>
 
           {/* Previous & History */}
-          <View className="px-6 mt-6 flex-row items-center justify-between">
+          <View className="mt-6 flex-row items-center justify-between px-6">
             <Text className="text-text-secondary">
               {t('workoutSession.previous')}:{' '}
               <Text className="text-text-primary">
                 {exerciseData.previousSet.weight}
-                {t('workoutSession.kg')} × {exerciseData.previousSet.reps} {t('workoutSession.reps')}
+                {t('workoutSession.kg')} × {exerciseData.previousSet.reps}{' '}
+                {t('workoutSession.reps')}
               </Text>
             </Text>
             <Pressable onPress={() => router.push('/workout-history')}>
-              <Text className="text-accent-primary font-semibold">{t('workoutSession.history')}</Text>
+              <Text className="font-semibold text-accent-primary">
+                {t('workoutSession.history')}
+              </Text>
             </Pressable>
           </View>
 
           {/* Action Buttons */}
-          <View className="px-6 mt-8 pb-32">
-            <View className="flex-row gap-6 mb-6">
+          <View className="mt-8 px-6 pb-32">
+            <View className="mb-6 flex-row gap-6">
               <WorkoutActionButton
                 icon={SkipForward}
                 label={t('workoutSession.skip')}
@@ -144,7 +152,7 @@ export default function WorkoutSessionScreen() {
                 icon={Repeat}
                 label={t('workoutSession.replace')}
                 onPress={() => {
-                  // Handle replace action
+                  setIsReplaceExerciseModalVisible(true);
                 }}
               />
             </View>
@@ -244,7 +252,18 @@ export default function WorkoutSessionScreen() {
         cancelLabel={t('workoutSession.skipSet.cancel')}
         variant="destructive"
       />
+
+      {/* Replace Exercise Modal */}
+      <ReplaceExerciseModal
+        visible={isReplaceExerciseModalVisible}
+        onClose={() => setIsReplaceExerciseModalVisible(false)}
+        onReplace={(exercise: Exercise) => {
+          // Handle replace exercise logic
+          console.log('Exercise replaced:', exercise);
+          // You can update the exercise data here
+        }}
+        currentExercise={exerciseData.name}
+      />
     </SafeAreaView>
   );
 }
-

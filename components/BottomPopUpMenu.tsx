@@ -134,7 +134,7 @@ export function BottomPopUpMenu({
 
             {/* Content */}
             {children ? (
-              <View className="p-6">{children}</View>
+              <View className="flex-1">{children}</View>
             ) : items ? (
               <View className="gap-3 p-6">
                 {items.map((item, index) => (
