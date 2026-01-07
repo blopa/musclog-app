@@ -3,6 +3,7 @@ import { View, Text, Pressable, TextInput } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { CenteredModal } from './CenteredModal';
+import { ConfirmationButton } from './ConfirmationButton';
 
 type EditSetDetailsModalProps = {
   visible: boolean;
@@ -98,11 +99,12 @@ export function EditSetDetailsModal({
               {t('editSetDetails.cancel')}
             </Text>
           </Pressable>
-          <Pressable className="flex-1 rounded-lg bg-accent-primary py-3" onPress={handleSave}>
-            <Text className="text-text-black text-center text-sm font-bold uppercase tracking-wide">
-              {t('editSetDetails.saveChanges')}
-            </Text>
-          </Pressable>
+          <ConfirmationButton
+            label={t('editSetDetails.saveChanges')}
+            size="sm"
+            width="flex-1"
+            onPress={handleSave}
+          />
         </View>
       }>
       <View className="gap-5">

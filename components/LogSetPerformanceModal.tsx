@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { BottomPopUpMenu } from './BottomPopUpMenu';
 import { EditSetDetailsModal } from './EditSetDetailsModal';
+import { ConfirmationButton } from './ConfirmationButton';
 
 type LogSetPerformanceModalProps = {
   visible: boolean;
@@ -102,14 +103,13 @@ export function LogSetPerformanceModal({
           {t('logSetPerformance.cancel')}
         </Text>
       </Pressable>
-      <Pressable
-        className="flex-[2] flex-row items-center justify-center gap-2 rounded-xl bg-accent-primary py-3.5"
-        onPress={handleConfirm}>
-        <Save size={theme.iconSize.sm} color={theme.colors.text.black} />
-        <Text className="text-text-black text-sm font-bold uppercase tracking-wide">
-          {t('logSetPerformance.logSet')}
-        </Text>
-      </Pressable>
+      <ConfirmationButton
+        label={t('logSetPerformance.logSet')}
+        icon={Save}
+        size="sm"
+        width="flex-2"
+        onPress={handleConfirm}
+      />
     </View>
   );
 

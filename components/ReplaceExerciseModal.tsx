@@ -4,6 +4,7 @@ import { Search, Check, Repeat } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { BottomPopUpMenu } from './BottomPopUpMenu';
+import { ConfirmationButton } from './ConfirmationButton';
 
 export type Exercise = {
   id: string;
@@ -100,22 +101,13 @@ export function ReplaceExerciseModal({
               Cancel
             </Text>
           </Pressable>
-          <Pressable
-            className="flex-[2] flex-row items-center justify-center gap-2 rounded-xl bg-accent-primary"
-            style={{
-              paddingVertical: theme.spacing.padding.lg,
-            }}
-            onPress={handleReplace}>
-            <Repeat size={theme.iconSize.md} color={theme.colors.text.black} />
-            <Text
-              className="text-text-black uppercase tracking-wide"
-              style={{
-                fontSize: theme.typography.fontSize.base,
-                fontWeight: theme.typography.fontWeight.bold,
-              }}>
-              Replace
-            </Text>
-          </Pressable>
+          <ConfirmationButton
+            label="Replace"
+            icon={Repeat}
+            size="md"
+            width="flex-2"
+            onPress={handleReplace}
+          />
         </View>
       }>
       <View className="flex-1">

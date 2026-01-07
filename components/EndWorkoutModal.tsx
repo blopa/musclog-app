@@ -4,6 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { X, Flag, Save, Trash2 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
+import { ConfirmationButton } from './ConfirmationButton';
 
 type EndWorkoutModalProps = {
   visible: boolean;
@@ -122,17 +123,16 @@ export function EndWorkoutModal({
 
                 {/* Action Buttons */}
                 <View className="gap-3 px-6 pb-6">
-                  <Pressable
-                    className="flex-row items-center justify-center gap-3 rounded-2xl bg-accent-primary py-4 active:opacity-90"
+                  <ConfirmationButton
+                    label={t('endWorkout.finishAndSave')}
+                    icon={Save}
+                    size="md"
+                    width="full"
                     onPress={() => {
                       onFinishAndSave?.();
                       onClose();
-                    }}>
-                    <Save size={theme.iconSize.md} color={theme.colors.text.primary} />
-                    <Text className="text-lg font-semibold text-text-primary">
-                      {t('endWorkout.finishAndSave')}
-                    </Text>
-                  </Pressable>
+                    }}
+                  />
 
                   <Pressable
                     className="border-status-error flex-row items-center justify-center gap-3 rounded-2xl border py-4 active:opacity-90"
