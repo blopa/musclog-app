@@ -1,5 +1,12 @@
 import { View, Text, ScrollView, Pressable } from 'react-native';
-import { ChevronLeft, ChevronRight, Calendar, ScanLine, Sparkles } from 'lucide-react-native';
+import {
+  ChevronLeft,
+  ChevronRight,
+  Calendar,
+  ScanLine,
+  Sparkles,
+  ListPlus,
+} from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 import i18n, { LOCALE_MAP, LanguageKeys } from '../lang/lang';
@@ -9,7 +16,6 @@ import { CaloriesRemainingCard } from '../components/CaloriesRemainingCard';
 import { FoodItemCard } from '../components/FoodItemCard';
 import { MealSection } from '../components/MealSection';
 import { FloatingActionButton } from '../components/FloatingActionButton';
-import { MoreFoodOptionsButton } from '../components/MoreFoodOptionsButton';
 import { Button } from '../components/theme/Button';
 
 const FOOD_DATA = {
@@ -132,7 +138,12 @@ export default function FoodScreen() {
                   }}
                 />
               </View>
-              <MoreFoodOptionsButton
+              <Button
+                label={t('food.actions.moreFoodOptions')}
+                icon={ListPlus}
+                variant="secondaryGradient"
+                size="md"
+                width="full"
                 onPress={() => {
                   // Handle more food options action
                 }}
