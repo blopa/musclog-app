@@ -63,7 +63,10 @@ export function EndWorkoutModal({
       onRequestClose={onClose}
       statusBarTranslucent>
       {/* Backdrop */}
-      <Pressable className="flex-1 bg-black/60" onPress={onClose}>
+      <Pressable
+        className="flex-1"
+        style={{ backgroundColor: theme.colors.overlay.black60 }}
+        onPress={onClose}>
         <View className="flex-1 items-center justify-center px-6">
           {/* Modal Content */}
           <View>

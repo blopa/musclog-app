@@ -25,9 +25,10 @@ export function FilterTabs({ tabs, activeTab, onTabChange }: FilterTabsProps) {
             }`}
             onPress={() => onTabChange(tab.id)}>
             <Text
-              className={`text-sm font-medium ${
-                isActive ? 'font-semibold text-black' : 'text-gray-300'
-              }`}>
+              className={`text-sm font-medium ${isActive ? 'font-semibold' : ''}`}
+              style={{
+                color: isActive ? theme.colors.text.black : theme.colors.text.gray300,
+              }}>
               {tab.label}
             </Text>
           </Pressable>

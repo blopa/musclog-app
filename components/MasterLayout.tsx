@@ -82,7 +82,7 @@ export function MasterLayout({ children }: MasterLayoutProps) {
               }}
               hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
               <View className="h-20 w-20 items-center justify-center rounded-full bg-accent-primary shadow-lg shadow-accent-primary/50">
-                <Camera size={theme.iconSize.lg} color="#000000" strokeWidth={2.5} />
+                <Camera size={theme.iconSize.lg} color={theme.colors.text.black} strokeWidth={2.5} />
               </View>
             </Pressable>
 

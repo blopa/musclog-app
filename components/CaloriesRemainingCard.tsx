@@ -42,20 +42,22 @@ export function CaloriesRemainingCard({ calories, macros }: CaloriesRemainingCar
       end={{ x: 1, y: 1 }}
       className="rounded-3xl border border-border-default p-6">
       <View className="mb-6">
-        <Text className="mb-2 text-sm text-gray-400">{t('food.caloriesRemaining')}</Text>
+        <Text className="mb-2 text-sm text-text-secondary">{t('food.caloriesRemaining')}</Text>
         <View className="mb-1 flex-row items-baseline gap-2">
-          <Text className="text-6xl font-bold text-white">
+          <Text className="text-6xl font-bold text-text-primary">
             {calories.remaining.toLocaleString()}
           </Text>
-          <Text className="text-2xl text-gray-400">/ {calories.total.toLocaleString()}</Text>
-          <Text className="ml-auto text-3xl font-semibold text-emerald-400">
+          <Text className="text-2xl text-text-secondary">/ {calories.total.toLocaleString()}</Text>
+          <Text className="ml-auto text-3xl font-semibold" style={{ color: theme.colors.accent.secondary }}>
             {calories.percentage}%
           </Text>
         </View>
       </View>
 
       {/* Progress Bar */}
-      <View className="mb-6 h-3 overflow-hidden rounded-full bg-gray-800/50">
+      <View
+        className="mb-6 h-3 overflow-hidden rounded-full"
+        style={{ backgroundColor: theme.colors.background.gray800Opacity50 }}>
         <LinearGradient
           colors={theme.colors.gradients.progress}
           start={{ x: 0, y: 0 }}

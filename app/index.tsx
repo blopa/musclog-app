@@ -106,7 +106,10 @@ export default function HomeScreen() {
             onPress={() => router.push('/notifications')}>
             <Bell size={theme.iconSize.md} color={theme.colors.text.primary} />
             {user.hasNotifications && (
-              <View className="absolute right-2 top-2 h-2.5 w-2.5 rounded-full bg-red-500" />
+              <View
+                className="absolute right-2 top-2 h-2.5 w-2.5 rounded-full"
+                style={{ backgroundColor: theme.colors.status.notificationBadge }}
+              />
             )}
           </Pressable>
         </View>
@@ -127,7 +130,7 @@ export default function HomeScreen() {
         {/* Recent Workouts */}
         <View className="mx-6 mb-8">
           <View className="mb-4 flex-row items-center justify-between">
-            <Text className="text-2xl font-bold text-white">
+            <Text className="text-2xl font-bold text-text-primary">
               {t('home.sections.recentWorkouts')}
             </Text>
             <Pressable>
@@ -153,7 +156,7 @@ export default function HomeScreen() {
 
         {/* Recent Foods */}
         <View className="mx-6 mb-8">
-          <Text className="mb-4 text-2xl font-bold text-white">
+          <Text className="mb-4 text-2xl font-bold text-text-primary">
             {t('home.sections.recentFoods')}
           </Text>
 
@@ -167,27 +170,27 @@ export default function HomeScreen() {
                     <View className="flex-row items-center gap-3">
                       <Text className="text-4xl">{food.emoji}</Text>
                       <View>
-                        <Text className="text-lg font-bold text-white">{food.name}</Text>
+                        <Text className="text-lg font-bold text-text-primary">{food.name}</Text>
                         <View className="mt-2 flex-row gap-2">
                           <View className="rounded-full bg-bg-secondary px-2.5 py-1">
-                            <Text className="text-xs text-gray-400">
+                            <Text className="text-xs text-text-secondary">
                               {t('home.macros.protein', { value: food.protein })}
                             </Text>
                           </View>
                           <View className="rounded-full bg-bg-secondary px-2.5 py-1">
-                            <Text className="text-xs text-gray-400">
+                            <Text className="text-xs text-text-secondary">
                               {t('home.macros.carbs', { value: food.carbs })}
                             </Text>
                           </View>
                           <View className="rounded-full bg-bg-secondary px-2.5 py-1">
-                            <Text className="text-xs text-gray-400">
+                            <Text className="text-xs text-text-secondary">
                               {t('home.macros.fat', { value: food.fat })}
                             </Text>
                           </View>
                         </View>
                       </View>
                     </View>
-                    <Text className="text-lg font-bold text-white">
+                    <Text className="text-lg font-bold text-text-primary">
                       {food.calories} {t('common.kcal')}
                     </Text>
                   </View>

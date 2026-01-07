@@ -26,7 +26,9 @@ export function WorkoutCard({
     <View className="rounded-3xl border border-border-light bg-bg-overlay p-5">
       <View className="mb-4 flex-row items-start justify-between">
         <View className="flex-1">
-          <Text className="mb-2 text-sm text-gray-500">Last: {lastCompleted}</Text>
+          <Text className="mb-2 text-sm" style={{ color: theme.colors.text.gray500 }}>
+            Last: {lastCompleted}
+          </Text>
           <Text className="mb-2 text-2xl font-bold text-text-primary">{name}</Text>
           <Text className="text-sm text-text-secondary">
             {exerciseCount} Exercises • {duration}

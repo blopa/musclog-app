@@ -1,6 +1,7 @@
 import { View, Text } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
+import { theme } from '../theme';
 import { ProgressMetric } from './ProgressMetric';
 
 type DailySummaryCardProps = {
@@ -31,11 +32,13 @@ export function DailySummaryCard({ calories, activity, gradientColors }: DailySu
         end={{ x: 1, y: 0 }}
         style={{ borderRadius: 24, padding: 24 }}>
         <View className="mb-6 flex-row items-start justify-between">
-          <Text className="text-sm font-semibold tracking-wide text-white/90">
+          <Text className="text-sm font-semibold tracking-wide" style={{ color: theme.colors.overlay.white80 }}>
             {t('home.dailySummary.title')}
           </Text>
-          <View className="rounded-full bg-white/25 px-4 py-1.5">
-            <Text className="text-xs font-medium text-white">{t('common.today')}</Text>
+          <View
+            className="rounded-full px-4 py-1.5"
+            style={{ backgroundColor: theme.colors.overlay.white30 }}>
+            <Text className="text-xs font-medium text-text-primary">{t('common.today')}</Text>
           </View>
         </View>
 

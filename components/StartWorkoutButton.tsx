@@ -13,8 +13,14 @@ export function StartWorkoutButton({ variant = 'primary', onPress }: StartWorkou
       <Pressable
         className="flex-1 flex-row items-center justify-center gap-2 rounded-2xl bg-accent-primary py-4"
         onPress={onPress}>
-        <Play size={theme.iconSize.sm} color="#000000" fill="#000000" />
-        <Text className="font-bold text-black">Start Workout</Text>
+        <Play
+          size={theme.iconSize.sm}
+          color={theme.colors.text.black}
+          fill={theme.colors.text.black}
+        />
+        <Text className="font-bold" style={{ color: theme.colors.text.black }}>
+          Start Workout
+        </Text>
       </Pressable>
     );
   }

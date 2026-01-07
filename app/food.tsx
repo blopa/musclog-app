@@ -23,20 +23,20 @@ const FOOD_DATA = {
     protein: {
       percentage: 40,
       amount: '120g',
-      color: 'text-indigo-400',
-      progressColor: 'bg-indigo-500',
+      color: theme.colors.macros.protein.text,
+      progressColor: theme.colors.macros.protein.bg,
     },
     carbs: {
       percentage: 45,
       amount: '150g',
-      color: 'text-emerald-400',
-      progressColor: 'bg-emerald-400',
+      color: theme.colors.macros.carbs.text,
+      progressColor: theme.colors.macros.carbs.bg,
     },
     fat: {
       percentage: 25,
       amount: '60g',
-      color: 'text-amber-400',
-      progressColor: 'bg-amber-400',
+      color: theme.colors.macros.fat.text,
+      progressColor: theme.colors.macros.fat.bg,
     },
   },
   meals: {

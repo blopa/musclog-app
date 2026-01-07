@@ -47,7 +47,9 @@ export function NotificationCard({
         </View>
         <View className="mb-3">
           {typeof description === 'string' ? (
-            <Text className="text-[15px] leading-relaxed text-gray-300">{description}</Text>
+            <Text className="text-[15px] leading-relaxed" style={{ color: theme.colors.text.gray300 }}>
+              {description}
+            </Text>
           ) : (
             description
           )}
@@ -56,13 +58,22 @@ export function NotificationCard({
         <View className="flex-row items-center justify-between">
           {hasAction ? (
             <>
-              <Pressable className="rounded-full bg-white px-6 py-2.5" onPress={onActionPress}>
-                <Text className="text-sm font-semibold text-black">Start Now</Text>
+              <Pressable
+                className="rounded-full px-6 py-2.5"
+                style={{ backgroundColor: theme.colors.background.white }}
+                onPress={onActionPress}>
+                <Text className="text-sm font-semibold" style={{ color: theme.colors.text.black }}>
+                  Start Now
+                </Text>
               </Pressable>
-              <Text className="text-sm text-gray-500">{time}</Text>
+              <Text className="text-sm" style={{ color: theme.colors.text.gray500 }}>
+                {time}
+              </Text>
             </>
           ) : (
-            <Text className="text-sm text-gray-500">{time}</Text>
+            <Text className="text-sm" style={{ color: theme.colors.text.gray500 }}>
+              {time}
+            </Text>
           )}
         </View>
       </View>

@@ -25,6 +25,13 @@ export const theme = {
       imageLight: '#d4b5a0', // Light image background
       imageMedium: '#8b7d6b', // Medium image background
       notificationCard: '#1a3d2f', // Notification card gradient start
+      gray700: '#374151', // Gray-700
+      gray800: '#1f2937', // Gray-800
+      gray800Opacity50: 'rgba(31, 41, 55, 0.5)', // Gray-800/50
+      white: '#ffffff', // White background
+      overlayDark: 'rgba(0, 0, 0, 0.6)', // Black overlay with 60% opacity
+      purpleBlob: '#3d3162', // Purple blob background
+      greenBlob: '#125630', // Green blob background
     },
 
     // Text colors
@@ -36,6 +43,10 @@ export const theme = {
       accent: '#22c55e', // Accent text (green)
       accentLight: '#34d399', // Light accent text (emerald)
       black: '#000000', // Black text (for icons on light backgrounds)
+      gray300: '#d1d5db', // Gray-300
+      gray400: '#9ca3af', // Gray-400
+      gray500: '#6b7280', // Gray-500
+      white: '#ffffff', // White
     },
 
     // Accent colors
@@ -65,6 +76,35 @@ export const theme = {
       error: '#ef4444', // Red
       info: '#3b82f6', // Blue
       purple: '#a855f7', // Purple
+      notificationBadge: '#ef4444', // Red notification badge (same as error)
+    },
+
+    // Macro colors
+    macros: {
+      protein: {
+        text: '#818cf8', // Indigo-400
+        bg: '#6366f1', // Indigo-500
+      },
+      carbs: {
+        text: '#34d399', // Emerald-400
+        bg: '#34d399', // Emerald-400
+      },
+      fat: {
+        text: '#fbbf24', // Amber-400
+        bg: '#fbbf24', // Amber-400
+      },
+    },
+
+    // Overlay and opacity colors
+    overlay: {
+      black60: 'rgba(0, 0, 0, 0.6)', // Black with 60% opacity
+      white50: 'rgba(255, 255, 255, 0.5)', // White with 50% opacity
+      white60: 'rgba(255, 255, 255, 0.6)', // White with 60% opacity
+      white70: 'rgba(255, 255, 255, 0.7)', // White with 70% opacity
+      white80: 'rgba(255, 255, 255, 0.8)', // White with 80% opacity
+      white30: 'rgba(255, 255, 255, 0.3)', // White with 30% opacity
+      white20: 'rgba(255, 255, 255, 0.2)', // White with 20% opacity
+      black60Opacity: 'rgba(0, 0, 0, 0.6)', // Black with 60% opacity (for gradients)
     },
 
     // Gradient colors
@@ -76,6 +116,12 @@ export const theme = {
       progress: ['#6366f1', '#2dd4bf', '#34d399'] as const,
       workoutsTitle: ['#a78bfa', '#60a5fa', '#34d399'] as const,
       notification: ['#1a3d2f', '#0f2419'] as const,
+      upNextCard: ['#1a2f2a', '#141a17', '#1a2520'] as const,
+      workoutSessionOverlay: [
+        'rgba(10, 31, 26, 0.95)',
+        'rgba(10, 31, 26, 0.85)',
+        'rgba(10, 31, 26, 0.7)',
+      ] as const,
     },
   },
 

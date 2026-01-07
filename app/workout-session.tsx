@@ -46,9 +46,7 @@ export default function WorkoutSessionScreen() {
           resizeMode="cover">
           <LinearGradient
             colors={[
-              'rgba(10, 31, 26, 0.95)',
-              'rgba(10, 31, 26, 0.85)',
-              'rgba(10, 31, 26, 0.7)',
+              ...theme.colors.gradients.workoutSessionOverlay,
               theme.colors.background.primary,
             ]}
             locations={[0, 0.2, 0.5, 1]}

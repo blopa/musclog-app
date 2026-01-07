@@ -31,7 +31,7 @@ export function UpNextExerciseCard({ exercise, onPress }: UpNextExerciseCardProp
       </View>
 
       <LinearGradient
-        colors={['#1a2f2a', '#141a17', '#1a2520']}
+        colors={theme.colors.gradients.upNextCard}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={{ borderRadius: 12, padding: 16 }}>
@@ -40,7 +40,7 @@ export function UpNextExerciseCard({ exercise, onPress }: UpNextExerciseCardProp
           <View className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-bg-overlay">
             <Image source={exercise.image} className="h-full w-full" resizeMode="cover" />
             <LinearGradient
-              colors={['transparent', 'rgba(0,0,0,0.6)']}
+              colors={['transparent', theme.colors.overlay.black60]}
               start={{ x: 0, y: 0 }}
               end={{ x: 0, y: 1 }}
               style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
@@ -58,26 +58,32 @@ export function UpNextExerciseCard({ exercise, onPress }: UpNextExerciseCardProp
               </View>
             </View>
 
-            <Text className="mt-1 truncate text-lg font-bold leading-tight text-white">
+            <Text className="mt-1 truncate text-lg font-bold leading-tight text-text-primary">
               {exercise.name}
             </Text>
 
             <View className="mt-1 flex-row items-center gap-3">
               <View className="flex-row items-center gap-1">
                 <Dumbbell size={16} color={theme.colors.text.secondary} />
-                <Text className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.6)' }}>
+                <Text className="text-sm" style={{ color: theme.colors.overlay.white60 }}>
                   {exercise.weight}kg
                 </Text>
               </View>
-              <View className="h-1 w-1 rounded-full bg-white/20" />
+              <View
+                className="h-1 w-1 rounded-full"
+                style={{ backgroundColor: theme.colors.overlay.white20 }}
+              />
               <View className="flex-row items-center gap-1">
                 <Repeat size={16} color={theme.colors.text.secondary} />
-                <Text className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.6)' }}>
+                <Text className="text-sm" style={{ color: theme.colors.overlay.white60 }}>
                   {exercise.reps} {t('restTimer.reps')}
                 </Text>
               </View>
-              <View className="h-1 w-1 rounded-full bg-white/20" />
-              <Text className="text-sm font-medium" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+              <View
+                className="h-1 w-1 rounded-full"
+                style={{ backgroundColor: theme.colors.overlay.white20 }}
+              />
+              <Text className="text-sm font-medium" style={{ color: theme.colors.overlay.white80 }}>
                 {exercise.sets} {t('restTimer.sets')}
               </Text>
             </View>

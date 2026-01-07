@@ -52,7 +52,10 @@ export function UserMenuModal({
       onRequestClose={onClose}
       statusBarTranslucent>
       {/* Backdrop */}
-      <Pressable className="flex-1 bg-black/60" onPress={onClose}>
+      <Pressable
+        className="flex-1"
+        style={{ backgroundColor: theme.colors.overlay.black60 }}
+        onPress={onClose}>
         <View className="flex-1 justify-start">
           {/* Modal Content */}
           <View className="rounded-b-3xl border-b border-border-dark bg-bg-card">

@@ -32,7 +32,7 @@ export default function NotificationsScreen() {
         iconBg: theme.colors.background.iconDarkest,
         title: 'Workout Reminder',
         description: (
-          <Text className="text-[15px] leading-relaxed text-gray-300">
+          <Text className="text-[15px] leading-relaxed" style={{ color: theme.colors.text.gray300 }}>
             Ready for <Text className="font-semibold">Upper Body Power</Text>?{'\n'}Scheduled for
             6:00 PM today.
           </Text>
@@ -52,7 +52,7 @@ export default function NotificationsScreen() {
         iconBg: theme.colors.background.iconDarkest,
         title: 'Workout Completed!',
         description: (
-          <Text className="text-[15px] leading-relaxed text-gray-300">
+          <Text className="text-[15px] leading-relaxed" style={{ color: theme.colors.text.gray300 }}>
             Great job crushing <Text className="font-semibold">Morning Run</Text>. You burned 310
             kcal.
           </Text>
@@ -66,7 +66,7 @@ export default function NotificationsScreen() {
         iconBg: theme.colors.background.iconDarkest,
         title: 'Kudos Received',
         description: (
-          <Text className="text-[15px] leading-relaxed text-gray-300">
+          <Text className="text-[15px] leading-relaxed" style={{ color: theme.colors.text.gray300 }}>
             Sarah and 3 others liked your recent milestone:{' '}
             <Text className="italic">{'"New Squat PR!"'}</Text>
           </Text>
@@ -114,7 +114,7 @@ export default function NotificationsScreen() {
           <View className="gap-8 p-4">
             {NOTIFICATIONS_DATA.map((section) => (
               <View key={section.section} className="gap-4">
-                <Text className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+                <Text className="text-xs font-semibold uppercase tracking-wider text-text-secondary">
                   {section.section}
                 </Text>
                 <View className="gap-3">

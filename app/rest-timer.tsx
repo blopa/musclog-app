@@ -96,7 +96,7 @@ export default function RestTimerScreen() {
           shadowOpacity: 0.8,
           shadowRadius: 200,
           elevation: 0,
-          backgroundColor: '#3d3162',
+          backgroundColor: theme.colors.background.purpleBlob,
         }}></View>
       <View
         className="absolute bottom-[-40%] left-[-20%] h-[50%] w-[110%] overflow-hidden rounded-full"
@@ -106,7 +106,7 @@ export default function RestTimerScreen() {
           shadowOpacity: 0.8,
           shadowRadius: 200,
           elevation: 0,
-          backgroundColor: '#125630',
+          backgroundColor: theme.colors.background.greenBlob,
         }}></View>
 
       {/* Header */}
@@ -137,14 +137,14 @@ export default function RestTimerScreen() {
         <View className="flex-row items-center justify-between px-2">
           <View className="flex-row items-center gap-2">
             <CheckCircle size={18} color={theme.colors.accent.primary} />
-            <Text className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.5)' }}>
+            <Text className="text-sm" style={{ color: theme.colors.overlay.white50 }}>
               {t('restTimer.done')}:{' '}
-              <Text className="font-medium text-white">{exerciseData.completed.name}</Text>
+              <Text className="font-medium text-text-primary">{exerciseData.completed.name}</Text>
             </Text>
           </View>
-          <Text className="font-medium" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+          <Text className="font-medium" style={{ color: theme.colors.overlay.white70 }}>
             {exerciseData.completed.weight}kg{' '}
-            <Text style={{ color: 'rgba(255, 255, 255, 0.3)' }}>×</Text>{' '}
+            <Text style={{ color: theme.colors.overlay.white30 }}>×</Text>{' '}
             {exerciseData.completed.reps} {t('restTimer.reps')}
           </Text>
         </View>
