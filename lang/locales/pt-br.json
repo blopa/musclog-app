@@ -93,7 +93,13 @@
     "skip": "PULAR",
     "edit": "EDITAR",
     "replace": "SUBSTITUIR",
-    "completeSet": "COMPLETAR SÉRIE"
+    "completeSet": "COMPLETAR SÉRIE",
+    "skipSet": {
+      "title": "Pular Série?",
+      "message": "Tem certeza de que deseja pular esta série?",
+      "cancel": "Cancelar",
+      "confirm": "Sim, Pular"
+    }
   },
   "logSetPerformance": {
     "title": "Registrar Desempenho da Série",

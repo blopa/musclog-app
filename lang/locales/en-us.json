@@ -93,7 +93,13 @@
     "skip": "SKIP",
     "edit": "EDIT",
     "replace": "REPLACE",
-    "completeSet": "COMPLETE SET"
+    "completeSet": "COMPLETE SET",
+    "skipSet": {
+      "title": "Skip Set?",
+      "message": "Are you sure you want to skip this set?",
+      "cancel": "Cancel",
+      "confirm": "Yes, Skip"
+    }
   },
   "logSetPerformance": {
     "title": "Log Set Performance",

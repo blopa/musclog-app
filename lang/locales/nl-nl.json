@@ -93,7 +93,13 @@
     "skip": "OVERSLAAN",
     "edit": "BEWERKEN",
     "replace": "VERVANGEN",
-    "completeSet": "SET VOLTOOIEN"
+    "completeSet": "SET VOLTOOIEN",
+    "skipSet": {
+      "title": "Set Overslaan?",
+      "message": "Weet je zeker dat je deze set wilt overslaan?",
+      "cancel": "Annuleren",
+      "confirm": "Ja, Overslaan"
+    }
   },
   "logSetPerformance": {
     "title": "Set Prestatie Registreren",

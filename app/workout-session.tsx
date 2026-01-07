@@ -15,6 +15,7 @@ import { WorkoutActionButton } from '../components/WorkoutActionButton';
 import { CompleteSetButton } from '../components/CompleteSetButton';
 import { LogSetPerformanceModal } from '../components/LogSetPerformanceModal';
 import { EditSetDetailsModal } from '../components/EditSetDetailsModal';
+import { ConfirmationModal } from '../components/ConfirmationModal';
 
 export default function WorkoutSessionScreen() {
   const { t } = useTranslation();
@@ -26,6 +27,7 @@ export default function WorkoutSessionScreen() {
   const [isEndWorkoutModalVisible, setIsEndWorkoutModalVisible] = useState(false);
   const [isLogSetModalVisible, setIsLogSetModalVisible] = useState(false);
   const [isEditSetModalVisible, setIsEditSetModalVisible] = useState(false);
+  const [isSkipSetModalVisible, setIsSkipSetModalVisible] = useState(false);
 
   const exerciseData = {
     name: 'Incline Dumbbell Press',
@@ -128,7 +130,7 @@ export default function WorkoutSessionScreen() {
                 icon={SkipForward}
                 label={t('workoutSession.skip')}
                 onPress={() => {
-                  // Handle skip action
+                  setIsSkipSetModalVisible(true);
                 }}
               />
               <WorkoutActionButton
@@ -226,6 +228,21 @@ export default function WorkoutSessionScreen() {
         initialWeight={weight}
         initialReps={reps}
         initialPartials={partials}
+      />
+
+      {/* Skip Set Confirmation Modal */}
+      <ConfirmationModal
+        visible={isSkipSetModalVisible}
+        onClose={() => setIsSkipSetModalVisible(false)}
+        onConfirm={() => {
+          // Handle skip set logic
+          console.log('Set skipped');
+        }}
+        title={t('workoutSession.skipSet.title')}
+        message={t('workoutSession.skipSet.message')}
+        confirmLabel={t('workoutSession.skipSet.confirm')}
+        cancelLabel={t('workoutSession.skipSet.cancel')}
+        variant="destructive"
       />
     </SafeAreaView>
   );

@@ -93,7 +93,13 @@
     "skip": "SALTAR",
     "edit": "EDITAR",
     "replace": "REEMPLAZAR",
-    "completeSet": "COMPLETAR SERIE"
+    "completeSet": "COMPLETAR SERIE",
+    "skipSet": {
+      "title": "¿Saltar Serie?",
+      "message": "¿Estás seguro de que quieres saltar esta serie?",
+      "cancel": "Cancelar",
+      "confirm": "Sí, Saltar"
+    }
   },
   "logSetPerformance": {
     "title": "Registrar Rendimiento de Serie",
