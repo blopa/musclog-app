@@ -185,17 +185,16 @@ export function LogSetPerformanceModal({
                 />
                 {/* Thumb */}
                 <View
-                  className="absolute top-1/2 h-[22px] w-[22px] -translate-y-[11px] rounded-full border-2"
+                  className="absolute top-1/2 -translate-y-[11px] rounded-full border-2"
                   style={{
                     left: `${rpePercentage}%`,
-                    marginLeft: -11,
+                    marginLeft: -theme.size['2half'],
+                    width: theme.size['22'],
+                    height: theme.size['22'],
                     backgroundColor: theme.colors.background.white,
                     borderColor: theme.colors.accent.primary,
-                    shadowColor: theme.colors.accent.primary,
-                    shadowOffset: { width: 0, height: 0 },
-                    shadowOpacity: 0.4,
-                    shadowRadius: 10,
-                    elevation: 5,
+                    borderWidth: theme.borderWidth.medium,
+                    ...theme.shadows.accentGlowLarge,
                   }}
                 />
               </Pressable>
@@ -203,13 +202,19 @@ export function LogSetPerformanceModal({
 
             {/* RPE Labels */}
             <View className="flex-row justify-between">
-              <Text className="text-[10px] font-medium uppercase tracking-wider text-text-secondary">
+              <Text
+                className="font-medium uppercase tracking-wider text-text-secondary"
+                style={{ fontSize: theme.typography.fontSize.xs }}>
                 {t('logSetPerformance.easy')}
               </Text>
-              <Text className="text-[10px] font-medium uppercase tracking-wider text-text-secondary">
+              <Text
+                className="font-medium uppercase tracking-wider text-text-secondary"
+                style={{ fontSize: theme.typography.fontSize.xs }}>
                 {t('logSetPerformance.moderate')}
               </Text>
-              <Text className="text-[10px] font-medium uppercase tracking-wider text-text-secondary">
+              <Text
+                className="font-medium uppercase tracking-wider text-text-secondary"
+                style={{ fontSize: theme.typography.fontSize.xs }}>
                 {t('logSetPerformance.failure')}
               </Text>
             </View>

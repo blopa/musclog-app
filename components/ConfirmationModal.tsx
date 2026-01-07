@@ -28,7 +28,7 @@ export function ConfirmationModal({
   maxWidth,
 }: ConfirmationModalProps) {
   // Default maxWidth is 30% larger than 320px (416px)
-  const modalMaxWidth = maxWidth || theme.spacing.padding['2xl'] * 13;
+  const modalMaxWidth = maxWidth || theme.components.modal.confirmationMaxWidth;
 
   const handleConfirm = () => {
     onConfirm();
@@ -40,11 +40,7 @@ export function ConfirmationModal({
       case 'destructive':
         return {
           backgroundColor: theme.colors.status.error,
-          shadowColor: theme.colors.status.error,
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.3,
-          shadowRadius: 12,
-          elevation: 4,
+          ...theme.shadows.error,
         };
       case 'primary':
         return {

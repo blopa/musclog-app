@@ -91,18 +91,14 @@ export default function RestTimerScreen() {
       <View
         className="absolute right-[-40%] top-[-20%] h-[20%] w-[110%] overflow-hidden rounded-full"
         style={{
-          shadowColor: theme.colors.status.purple,
-          shadowOffset: { width: 0, height: 0 },
-          shadowOpacity: 0.8,
-          shadowRadius: 200,
-          elevation: 0,
+          ...theme.shadows.purpleGlow,
           backgroundColor: theme.colors.background.purpleBlob,
         }}></View>
       <View
         className="absolute bottom-[-40%] left-[-20%] h-[50%] w-[110%] overflow-hidden rounded-full"
         style={{
           shadowColor: theme.colors.accent.primary,
-          shadowOffset: { width: 0, height: 0 },
+          shadowOffset: theme.shadows.none.shadowOffset,
           shadowOpacity: 0.8,
           shadowRadius: 200,
           elevation: 0,

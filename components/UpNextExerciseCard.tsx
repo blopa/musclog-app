@@ -52,7 +52,9 @@ export function UpNextExerciseCard({ exercise, onPress }: UpNextExerciseCardProp
             <View className="flex-row items-start justify-between">
               <View className="flex-1" />
               <View className="rounded-full border border-accent-primary/20 bg-accent-primary/10 px-2 py-0.5">
-                <Text className="text-[10px] font-bold uppercase tracking-widest text-accent-primary">
+                <Text
+                  className="font-bold uppercase tracking-widest text-accent-primary"
+                  style={{ fontSize: theme.typography.fontSize.xs }}>
                   {t('restTimer.upNext')}
                 </Text>
               </View>

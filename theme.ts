@@ -170,6 +170,7 @@ export const theme = {
       '4xl': 36,
       '5xl': 48,
       '6xl': 60,
+      '7xl': 80,
     },
 
     // Font weights
@@ -199,6 +200,10 @@ export const theme = {
       xl: 24,
       '2xl': 32,
       '3xl': 48,
+      // Additional padding values for fractional spacing
+      '2half': 10, // 2.5 * 4 = 10px
+      '3half': 14, // 3.5 * 4 = 14px
+      '4half': 18, // 4.5 * 4 = 18px
     },
 
     // Margin/Gap
@@ -211,6 +216,10 @@ export const theme = {
       xl: 24,
       '2xl': 32,
       '3xl': 48,
+      // Additional gap values for fractional spacing
+      '2half': 10, // 2.5 * 4 = 10px
+      '3half': 14, // 3.5 * 4 = 14px
+      '4half': 18, // 4.5 * 4 = 18px
     },
   },
 
@@ -260,6 +269,42 @@ export const theme = {
       shadowRadius: 8,
       elevation: 5,
     },
+    // Additional shadow variants
+    none: {
+      shadowColor: '#000000',
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0,
+      shadowRadius: 0,
+      elevation: 0,
+    },
+    accentGlow: {
+      shadowColor: '#22c55e', // Using theme.colors.accent.primary value
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0.3,
+      shadowRadius: 15,
+      elevation: 5,
+    },
+    error: {
+      shadowColor: '#ef4444', // Using theme.colors.status.error value
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.3,
+      shadowRadius: 12,
+      elevation: 4,
+    },
+    purpleGlow: {
+      shadowColor: '#a855f7', // Using theme.colors.status.purple value
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0.8,
+      shadowRadius: 200,
+      elevation: 0,
+    },
+    accentGlowLarge: {
+      shadowColor: '#22c55e', // Using theme.colors.accent.primary value
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0.4,
+      shadowRadius: 10,
+      elevation: 5,
+    },
   },
 
   // Icon sizes
@@ -270,6 +315,48 @@ export const theme = {
     lg: 32,
     xl: 40,
     '2xl': 48,
+  },
+
+  // Common sizes (for width, height, etc.)
+  size: {
+    xs: 4,
+    sm: 8,
+    md: 12,
+    base: 16,
+    lg: 20,
+    xl: 24,
+    '2xl': 32,
+    '3xl': 48,
+    '4xl': 64,
+    '5xl': 80,
+    // Specific sizes (matching Tailwind scale)
+    '1': 4,
+    '2': 8,
+    '3': 12,
+    '4': 16,
+    '5': 20,
+    '6': 24,
+    '8': 32,
+    '10': 40,
+    '12': 48,
+    '14': 56,
+    '16': 64,
+    '20': 80,
+    '22': 88,
+    '24': 96,
+    '32': 128,
+    // Fractional sizes (using valid keys)
+    half: 2, // 0.5 * 4 = 2px
+    '1half': 6, // 1.5 * 4 = 6px
+    '2half': 10, // 2.5 * 4 = 10px
+    '3half': 14, // 3.5 * 4 = 14px
+  },
+
+  // Max widths
+  maxWidth: {
+    sm: 384,
+    md: 416,
+    lg: 520,
   },
 
   // Component-specific sizes
@@ -299,6 +386,14 @@ export const theme = {
     },
     progressBar: {
       height: 48,
+    },
+    modal: {
+      defaultMaxWidth: 384,
+      confirmationMaxWidth: 416,
+      bottomSheetInitialOffset: 300, // Initial offset for bottom sheet animations
+    },
+    workoutSession: {
+      heroImageHeight: 520,
     },
   },
 } as const;

@@ -37,8 +37,11 @@ export function NotificationsModal({ visible, onClose, onClearAll }: Notificatio
           title: 'Workout Reminder',
           description: (
             <Text
-              className="text-[15px] leading-relaxed"
-              style={{ color: theme.colors.text.gray300 }}>
+              className="leading-relaxed"
+              style={{
+                fontSize: theme.typography.fontSize.base,
+                color: theme.colors.text.gray300,
+              }}>
               Ready for <Text className="font-semibold">Upper Body Power</Text>?{'\n'}Scheduled for
               6:00 PM today.
             </Text>
@@ -59,8 +62,11 @@ export function NotificationsModal({ visible, onClose, onClearAll }: Notificatio
           title: 'Workout Completed!',
           description: (
             <Text
-              className="text-[15px] leading-relaxed"
-              style={{ color: theme.colors.text.gray300 }}>
+              className="leading-relaxed"
+              style={{
+                fontSize: theme.typography.fontSize.base,
+                color: theme.colors.text.gray300,
+              }}>
               Great job crushing <Text className="font-semibold">Morning Run</Text>. You burned 310
               kcal.
             </Text>
@@ -75,8 +81,11 @@ export function NotificationsModal({ visible, onClose, onClearAll }: Notificatio
           title: 'Kudos Received',
           description: (
             <Text
-              className="text-[15px] leading-relaxed"
-              style={{ color: theme.colors.text.gray300 }}>
+              className="leading-relaxed"
+              style={{
+                fontSize: theme.typography.fontSize.base,
+                color: theme.colors.text.gray300,
+              }}>
               Sarah and 3 others liked your recent milestone:{' '}
               <Text className="italic">{'"New Squat PR!"'}</Text>
             </Text>

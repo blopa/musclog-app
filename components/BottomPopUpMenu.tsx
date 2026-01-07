@@ -80,7 +80,7 @@ export function BottomPopUpMenu({
   maxHeight,
   headerIcon,
 }: BottomPopUpMenuProps) {
-  const slideAnim = useRef(new Animated.Value(300)).current; // Start off-screen
+  const slideAnim = useRef(new Animated.Value(theme.components.modal.bottomSheetInitialOffset)).current; // Start off-screen
 
   useEffect(() => {
     if (visible) {
@@ -94,7 +94,7 @@ export function BottomPopUpMenu({
     } else {
       // Slide down when modal is hidden
       Animated.timing(slideAnim, {
-        toValue: 300,
+        toValue: theme.components.modal.bottomSheetInitialOffset,
         duration: 250,
         useNativeDriver: true,
       }).start();

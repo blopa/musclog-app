@@ -78,7 +78,9 @@ export function RestTimer({ restTime, rotationAnim }: RestTimerProps) {
 
       {/* Timer Text */}
       <View className="absolute inset-0 items-center justify-center">
-        <Text className="text-[80px] font-bold tabular-nums leading-none tracking-tighter text-text-primary">
+        <Text
+          className="font-bold tabular-nums leading-none tracking-tighter text-text-primary"
+          style={{ fontSize: theme.typography.fontSize['7xl'] }}>
           {formatRestTime(restTime)}
         </Text>
         <View className="mt-2 flex-row items-center gap-2">

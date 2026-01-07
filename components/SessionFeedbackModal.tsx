@@ -67,12 +67,12 @@ function RatingSlider({ label, value, onChange, leftLabel, rightLabel }: RatingS
             className="absolute top-1/2 h-6 w-6 -translate-y-3 rounded-full border-2"
             style={{
               left: `${percentage}%`,
-              marginLeft: -12,
+              marginLeft: -theme.size['3'],
               backgroundColor: theme.colors.background.white,
               borderColor: theme.colors.accent.primary,
               borderWidth: theme.borderWidth.medium,
               shadowColor: theme.shadows.md.shadowColor,
-              shadowOffset: { width: 0, height: 2 },
+              shadowOffset: theme.shadows.md.shadowOffset,
               shadowOpacity: 0.4,
               shadowRadius: 6,
               elevation: 5,
@@ -83,10 +83,14 @@ function RatingSlider({ label, value, onChange, leftLabel, rightLabel }: RatingS
 
       {/* Labels */}
       <View className="flex-row justify-between">
-        <Text className="text-[10px] font-medium uppercase tracking-wider text-text-secondary">
+        <Text
+          className="font-medium uppercase tracking-wider text-text-secondary"
+          style={{ fontSize: theme.typography.fontSize.xs }}>
           {leftLabel}
         </Text>
-        <Text className="text-[10px] font-medium uppercase tracking-wider text-text-secondary">
+        <Text
+          className="font-medium uppercase tracking-wider text-text-secondary"
+          style={{ fontSize: theme.typography.fontSize.xs }}>
           {rightLabel}
         </Text>
       </View>
@@ -109,13 +113,7 @@ export function SessionFeedbackModal({ visible, onClose, onSubmit }: SessionFeed
     <View className="gap-3">
       <Pressable
         className="relative w-full overflow-hidden rounded-xl bg-accent-primary px-6 py-4 active:scale-[0.98]"
-        style={{
-          shadowColor: theme.colors.accent.primary,
-          shadowOffset: { width: 0, height: 0 },
-          shadowOpacity: 0.3,
-          shadowRadius: 15,
-          elevation: 5,
-        }}
+        style={theme.shadows.accentGlow}
         onPress={handleSubmit}>
         <View className="flex-row items-center justify-center gap-2">
           <Text className="text-text-black text-base font-bold uppercase tracking-tight">

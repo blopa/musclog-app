@@ -47,7 +47,12 @@ export function NotificationCard({
         </View>
         <View className="mb-3">
           {typeof description === 'string' ? (
-            <Text className="text-[15px] leading-relaxed" style={{ color: theme.colors.text.gray300 }}>
+            <Text
+              className="leading-relaxed"
+              style={{
+                fontSize: theme.typography.fontSize.base,
+                color: theme.colors.text.gray300,
+              }}>
               {description}
             </Text>
           ) : (

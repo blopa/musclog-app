@@ -20,7 +20,7 @@ export function CenteredModal({
   subtitle,
   children,
   footer,
-  maxWidth = 384, // max-w-sm equivalent
+  maxWidth = theme.components.modal.defaultMaxWidth, // max-w-sm equivalent
 }: CenteredModalProps) {
   return (
     <Modal
