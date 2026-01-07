@@ -127,6 +127,20 @@
     "exercise": "Exercício {{number}}",
     "set": "Série {{number}}"
   },
+  "sessionFeedback": {
+    "title": "Feedback da Sessão",
+    "subtitle": "Avalie seu desempenho",
+    "difficulty": "Dificuldade",
+    "exhaustion": "Exaustão",
+    "enjoyment": "Prazer",
+    "easy": "Fácil",
+    "extreme": "Extremo",
+    "fresh": "Fresco",
+    "drained": "Esgotado",
+    "disliked": "Não gostei",
+    "loved": "Amei",
+    "submit": "ENVIAR FEEDBACK"
+  },
   "restTimer": {
     "totalDuration": "DURAÇÃO TOTAL",
     "resting": "Descansando...",

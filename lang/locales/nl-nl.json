@@ -127,6 +127,20 @@
     "exercise": "Oefening {{number}}",
     "set": "Set {{number}}"
   },
+  "sessionFeedback": {
+    "title": "Sessie Feedback",
+    "subtitle": "Beoordeel je prestaties",
+    "difficulty": "Moeilijkheid",
+    "exhaustion": "Uitputting",
+    "enjoyment": "Genot",
+    "easy": "Makkelijk",
+    "extreme": "Extreem",
+    "fresh": "Fris",
+    "drained": "Uitgeput",
+    "disliked": "Niet leuk",
+    "loved": "Geweldig",
+    "submit": "FEEDBACK VERSTUREN"
+  },
   "restTimer": {
     "totalDuration": "TOTALE DUUR",
     "resting": "Rusten...",

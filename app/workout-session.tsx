@@ -18,6 +18,7 @@ import { EditSetDetailsModal } from '../components/EditSetDetailsModal';
 import { ConfirmationModal } from '../components/ConfirmationModal';
 import { ReplaceExerciseModal, Exercise } from '../components/ReplaceExerciseModal';
 import { WorkoutHistoryModal } from '../components/WorkoutHistoryModal';
+import { SessionFeedbackModal } from '../components/SessionFeedbackModal';
 
 export default function WorkoutSessionScreen() {
   const { t } = useTranslation();
@@ -32,6 +33,7 @@ export default function WorkoutSessionScreen() {
   const [isSkipSetModalVisible, setIsSkipSetModalVisible] = useState(false);
   const [isReplaceExerciseModalVisible, setIsReplaceExerciseModalVisible] = useState(false);
   const [isHistoryModalVisible, setIsHistoryModalVisible] = useState(false);
+  const [isSessionFeedbackModalVisible, setIsSessionFeedbackModalVisible] = useState(false);
 
   const exerciseData = {
     name: 'Incline Dumbbell Press',
@@ -186,11 +188,25 @@ export default function WorkoutSessionScreen() {
         visible={isEndWorkoutModalVisible}
         onClose={() => setIsEndWorkoutModalVisible(false)}
         onFinishAndSave={() => {
-          // Handle save workout logic
-          router.back();
+          setIsEndWorkoutModalVisible(false);
+          setIsSessionFeedbackModalVisible(true);
         }}
         onFinishAndDiscard={() => {
           // Handle discard workout logic
+          router.back();
+        }}
+      />
+
+      {/* Session Feedback Modal */}
+      <SessionFeedbackModal
+        visible={isSessionFeedbackModalVisible}
+        onClose={() => {
+          setIsSessionFeedbackModalVisible(false);
+          router.back();
+        }}
+        onSubmit={(data) => {
+          // Handle feedback submission
+          console.log('Feedback submitted:', data);
           router.back();
         }}
       />
