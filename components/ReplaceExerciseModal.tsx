@@ -4,7 +4,7 @@ import { Search, Check, Repeat } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { BottomPopUpMenu } from './BottomPopUpMenu';
-import { StandardButton } from './StandardButton';
+import { Button } from './theme/Button';
 
 export type Exercise = {
   id: string;
@@ -101,7 +101,7 @@ export function ReplaceExerciseModal({
               Cancel
             </Text>
           </Pressable>
-          <StandardButton
+          <Button
             label="Replace"
             icon={Repeat}
             size="md"

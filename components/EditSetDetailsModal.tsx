@@ -3,7 +3,7 @@ import { View, Text, Pressable, TextInput } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { CenteredModal } from './CenteredModal';
-import { StandardButton } from './StandardButton';
+import { Button } from './theme/Button';
 
 type EditSetDetailsModalProps = {
   visible: boolean;
@@ -99,7 +99,7 @@ export function EditSetDetailsModal({
               {t('editSetDetails.cancel')}
             </Text>
           </Pressable>
-          <StandardButton
+          <Button
             label={t('editSetDetails.saveChanges')}
             size="sm"
             width="flex-1"

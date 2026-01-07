@@ -1,6 +1,6 @@
 import { CheckCircle } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { StandardButton } from './StandardButton';
+import { Button } from './theme/Button';
 
 type CompleteSetButtonProps = {
   onPress?: () => void;
@@ -10,7 +10,7 @@ export function CompleteSetButton({ onPress }: CompleteSetButtonProps) {
   const { t } = useTranslation();
 
   return (
-    <StandardButton
+    <Button
       label={t('workoutSession.completeSet')}
       icon={CheckCircle}
       size="lg"

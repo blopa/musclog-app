@@ -1,18 +1,18 @@
 import { Text, Pressable, ViewStyle } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { LucideIcon } from 'lucide-react-native';
-import { theme } from '../theme';
+import { theme } from '../../theme';
 
-type StandardButtonSize = 'sm' | 'md' | 'lg';
+type ThemeButtonSize = 'sm' | 'md' | 'lg';
 
-type StandardButtonWidth = 'full' | 'flex-1' | 'flex-2' | 'auto';
+type ThemeButtonWidth = 'full' | 'flex-1' | 'flex-2' | 'auto';
 
-type StandardButtonProps = {
+type ThemeButtonProps = {
   label: string;
   onPress?: () => void;
   icon?: LucideIcon;
-  size?: StandardButtonSize;
-  width?: StandardButtonWidth;
+  size?: ThemeButtonSize;
+  width?: ThemeButtonWidth;
   className?: string;
   style?: ViewStyle;
 };
@@ -54,14 +54,14 @@ const widthClasses = {
   auto: '',
 };
 
-export function StandardButton({
+export function Button({
   label,
   onPress,
   icon: Icon,
   size = 'md',
   width = 'auto',
   style,
-}: StandardButtonProps) {
+}: ThemeButtonProps) {
   const config = sizeConfig[size];
   const widthClass = widthClasses[width];
 
