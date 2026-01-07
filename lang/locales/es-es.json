@@ -51,14 +51,16 @@
     },
     "actions": {
       "scanBarcode": "Escanear Código",
-      "aiCamera": "Cámara IA"
+      "aiCamera": "Cámara IA",
+      "moreFoodOptions": "Más Opciones de Comida"
     },
     "meals": {
       "breakfast": "Desayuno",
       "lunch": "Almuerzo",
       "dinner": "Cena",
       "snacks": "Meriendas",
-      "addFood": "Agregar Comida"
+      "addFood": "Agregar Comida",
+      "addFoodTo": "Agregar comida a {{meal}}"
     },
     "common": {
       "kcal": "kcal"

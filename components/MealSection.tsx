@@ -26,7 +26,7 @@ export function MealSection({ title, totalCalories, children, onAddFood }: MealS
         {children}
 
         {/* Add Food Button */}
-        <AddFoodButton onPress={onAddFood} />
+        <AddFoodButton mealName={title} onPress={onAddFood} />
       </View>
     </View>
   );

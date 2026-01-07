@@ -11,6 +11,7 @@ import { MealSection } from '../components/MealSection';
 import { FloatingActionButton } from '../components/FloatingActionButton';
 import { ScanBarcodeButton } from '../components/ScanBarcodeButton';
 import { AICameraButton } from '../components/AICameraButton';
+import { MoreFoodOptionsButton } from '../components/MoreFoodOptionsButton';
 
 const FOOD_DATA = {
   date: 'Today, Oct 24',
@@ -109,15 +110,22 @@ export default function FoodScreen() {
             <CaloriesRemainingCard calories={FOOD_DATA.calories} macros={FOOD_DATA.macros} />
 
             {/* Scan Buttons */}
-            <View className="flex-row gap-4">
-              <ScanBarcodeButton
+            <View className="gap-4">
+              <View className="flex-row gap-4">
+                <ScanBarcodeButton
+                  onPress={() => {
+                    // Handle scan barcode action
+                  }}
+                />
+                <AICameraButton
+                  onPress={() => {
+                    // Handle AI camera action
+                  }}
+                />
+              </View>
+              <MoreFoodOptionsButton
                 onPress={() => {
-                  // Handle scan barcode action
-                }}
-              />
-              <AICameraButton
-                onPress={() => {
-                  // Handle AI camera action
+                  // Handle more food options action
                 }}
               />
             </View>

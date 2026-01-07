@@ -51,14 +51,16 @@
     },
     "actions": {
       "scanBarcode": "Barcode Scannen",
-      "aiCamera": "AI Camera"
+      "aiCamera": "AI Camera",
+      "moreFoodOptions": "Meer Voedingsopties"
     },
     "meals": {
       "breakfast": "Ontbijt",
       "lunch": "Lunch",
       "dinner": "Diner",
       "snacks": "Tussendoortjes",
-      "addFood": "Voedsel Toevoegen"
+      "addFood": "Voedsel Toevoegen",
+      "addFoodTo": "Voedsel toevoegen aan {{meal}}"
     },
     "common": {
       "kcal": "kcal"
