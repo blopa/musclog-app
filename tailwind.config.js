@@ -30,6 +30,7 @@ module.exports = {
           muted: theme.colors.text.muted,
           accent: theme.colors.text.accent,
           accentLight: theme.colors.text.accentLight,
+          black: theme.colors.text.black,
         },
         // Accent colors
         accent: {

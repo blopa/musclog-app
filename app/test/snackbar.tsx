@@ -34,7 +34,8 @@ export default function SnackbarTestScreen() {
         <View className="relative flex-row items-center justify-center px-4 py-4">
           <Pressable
             onPress={() => router.back()}
-            className="absolute left-0 -ml-2 rounded-full p-2 active:bg-white/5">
+            className="absolute left-0 -ml-2 rounded-full p-2"
+            style={{ backgroundColor: theme.colors.overlay.white5 }}>
             <ChevronLeft size={24} color={theme.colors.text.primary} />
           </Pressable>
           <Text className="text-xl font-bold text-text-primary">Snackbar Examples</Text>

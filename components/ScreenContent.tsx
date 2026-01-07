@@ -24,7 +24,7 @@ export const ScreenContent = ({ title, path, children }: ScreenContentProps) => 
 };
 
 const styles = {
-  container: `items-center flex-1 justify-center bg-white`,
+  container: `items-center flex-1 justify-center bg-bg-primary`,
   separator: `h-[1px] my-7 w-4/5`,
   title: `text-xl font-bold`,
 };

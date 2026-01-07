@@ -112,6 +112,7 @@ export const theme = {
       white80: 'rgba(255, 255, 255, 0.8)', // White with 80% opacity
       white30: 'rgba(255, 255, 255, 0.3)', // White with 30% opacity
       white20: 'rgba(255, 255, 255, 0.2)', // White with 20% opacity
+      white5: 'rgba(255, 255, 255, 0.05)', // White with 5% opacity
       black60Opacity: 'rgba(0, 0, 0, 0.6)', // Black with 60% opacity (for gradients)
       backdrop: 'rgba(10, 31, 26, 0.8)', // Background primary with 80% opacity (for modals)
     },
