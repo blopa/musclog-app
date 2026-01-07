@@ -1,7 +1,8 @@
 import { View, Text } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { ReactNode } from 'react';
-import { AddFoodButton } from './AddFoodButton';
+import { Button } from './theme/Button';
+import { Plus } from 'lucide-react-native';
 
 type MealSectionProps = {
   title: string;
@@ -9,6 +10,29 @@ type MealSectionProps = {
   children: ReactNode;
   onAddFood?: () => void;
 };
+
+type AddFoodButtonProps = {
+  mealName?: string;
+  onPress?: () => void;
+};
+
+function AddFoodButton({ mealName, onPress }: AddFoodButtonProps) {
+  const { t } = useTranslation();
+  const buttonText = mealName
+    ? t('food.meals.addFoodTo', { meal: mealName })
+    : t('food.meals.addFood');
+
+  return (
+    <Button
+      label={buttonText}
+      icon={Plus}
+      variant="dashed"
+      size="md"
+      width="full"
+      onPress={onPress}
+    />
+  );
+}
 
 export function MealSection({ title, totalCalories, children, onAddFood }: MealSectionProps) {
   const { t } = useTranslation();

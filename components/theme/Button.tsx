@@ -8,7 +8,7 @@ type ThemeButtonSize = 'sm' | 'md' | 'lg';
 
 type ThemeButtonWidth = 'full' | 'flex-1' | 'flex-2' | 'auto';
 
-type ThemeButtonVariant = 'accent' | 'discard' | 'outline' | 'secondary' | 'secondaryGradient';
+type ThemeButtonVariant = 'accent' | 'discard' | 'outline' | 'secondary' | 'secondaryGradient' | 'dashed';
 
 type ThemeButtonProps = {
   label: string;
@@ -78,6 +78,7 @@ export function Button({
   const isOutlineVariant = variant === 'outline';
   const isSecondaryVariant = variant === 'secondary';
   const isSecondaryGradientVariant = variant === 'secondaryGradient';
+  const isDashedVariant = variant === 'dashed';
   const isDisabled = disabled;
   
   const gradientColors: readonly [string, string, ...string[]] = isDisabled
@@ -94,6 +95,8 @@ export function Button({
     ? theme.colors.text.primary30
     : isOutlineVariant
     ? theme.colors.text.gray300
+    : isDashedVariant
+    ? theme.colors.text.secondary
     : isSecondaryVariant || isSecondaryGradientVariant
     ? theme.colors.text.primary
     : isRedVariant
@@ -104,13 +107,15 @@ export function Button({
     ? theme.colors.text.primary30
     : isOutlineVariant
     ? theme.colors.text.gray300
+    : isDashedVariant
+    ? theme.colors.text.secondary
     : isSecondaryVariant || isSecondaryGradientVariant
     ? theme.colors.accent.secondary
     : isRedVariant
     ? theme.colors.text.white
     : theme.colors.text.black;
   
-  const shadow = isDisabled || isOutlineVariant || isSecondaryVariant || isSecondaryGradientVariant ? theme.shadows.none : isRedVariant ? theme.shadows.roseGlow : config.shadow;
+  const shadow = isDisabled || isOutlineVariant || isSecondaryVariant || isSecondaryGradientVariant || isDashedVariant ? theme.shadows.none : isRedVariant ? theme.shadows.roseGlow : config.shadow;
 
   const buttonContent = (
     <>
@@ -121,6 +126,8 @@ export function Button({
             ? 'text-white/30'
             : isOutlineVariant
             ? 'text-gray-300'
+            : isDashedVariant
+            ? 'text-text-secondary'
             : isSecondaryVariant || isSecondaryGradientVariant
             ? 'text-text-primary'
             : isRedVariant
@@ -144,6 +151,9 @@ export function Button({
     ? 'transparent'
     : undefined;
 
+  // Determine border style for dashed variant
+  const borderStyle = isDashedVariant ? 'dashed' : 'solid';
+
   return (
     <Pressable
       className={`${widthClass} ${isDisabled ? '' : 'active:scale-[0.98]'}`}
@@ -153,9 +163,14 @@ export function Button({
           ...shadow,
           opacity: isDisabled ? 1 : undefined,
           backgroundColor: outlineBackgroundColor,
-          borderWidth: isOutlineVariant || isSecondaryVariant || isSecondaryGradientVariant ? (isOutlineVariant ? 2 : 1) : 0,
+          borderWidth: isOutlineVariant || isSecondaryVariant || isSecondaryGradientVariant || isDashedVariant 
+            ? (isOutlineVariant || isDashedVariant ? 2 : 1) 
+            : 0,
+          borderStyle: borderStyle,
           borderColor: isOutlineVariant
             ? theme.colors.background.white10
+            : isDashedVariant
+            ? theme.colors.border.dashed
             : isSecondaryGradientVariant
             ? theme.colors.border.emerald
             : isSecondaryVariant
@@ -168,7 +183,7 @@ export function Button({
       onPressIn={() => !isDisabled && setIsPressed(true)}
       onPressOut={() => setIsPressed(false)}
       disabled={isDisabled}>
-      {isOutlineVariant || isSecondaryVariant ? (
+      {isOutlineVariant || isSecondaryVariant || isDashedVariant ? (
         <View
           style={{
             borderRadius: config.borderRadius,
