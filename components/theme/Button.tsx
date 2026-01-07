@@ -1,13 +1,14 @@
-import { Text, Pressable, ViewStyle } from 'react-native';
+import { Text, Pressable, ViewStyle, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { LucideIcon } from 'lucide-react-native';
+import { useState } from 'react';
 import { theme } from '../../theme';
 
 type ThemeButtonSize = 'sm' | 'md' | 'lg';
 
 type ThemeButtonWidth = 'full' | 'flex-1' | 'flex-2' | 'auto';
 
-type ThemeButtonVariant = 'accent' | 'discard';
+type ThemeButtonVariant = 'accent' | 'discard' | 'outline';
 
 type ThemeButtonProps = {
   label: string;
@@ -70,9 +71,11 @@ export function Button({
 }: ThemeButtonProps) {
   const config = sizeConfig[size];
   const widthClass = widthClasses[width];
+  const [isPressed, setIsPressed] = useState(false);
 
   // Determine colors and styles based on variant and disabled state
   const isRedVariant = variant === 'discard';
+  const isOutlineVariant = variant === 'outline';
   const isDisabled = disabled;
   
   const gradientColors: readonly [string, string, ...string[]] = isDisabled
@@ -83,55 +86,98 @@ export function Button({
   
   const textColor = isDisabled
     ? theme.colors.text.primary30
+    : isOutlineVariant
+    ? theme.colors.text.gray300
     : isRedVariant
     ? theme.colors.text.white
     : theme.colors.text.black;
   
   const iconColor = isDisabled
     ? theme.colors.text.primary30
+    : isOutlineVariant
+    ? theme.colors.text.gray300
     : isRedVariant
     ? theme.colors.text.white
     : theme.colors.text.black;
   
-  const shadow = isDisabled ? theme.shadows.none : isRedVariant ? theme.shadows.roseGlow : config.shadow;
+  const shadow = isDisabled || isOutlineVariant ? theme.shadows.none : isRedVariant ? theme.shadows.roseGlow : config.shadow;
+
+  const buttonContent = (
+    <>
+      {Icon && <Icon size={config.iconSize} color={iconColor} />}
+      <Text
+        className={`uppercase tracking-wide ${
+          isDisabled
+            ? 'text-white/30'
+            : isOutlineVariant
+            ? 'text-gray-300'
+            : isRedVariant
+            ? 'text-white'
+            : 'text-text-black'
+        }`}
+        style={{
+          fontSize: config.fontSize,
+          fontWeight: config.fontWeight,
+          marginLeft: Icon ? theme.spacing.gap.md : 0,
+          color: textColor,
+        }}>
+        {label}
+      </Text>
+    </>
+  );
+
+  const outlineBackgroundColor = isOutlineVariant && !isDisabled && isPressed
+    ? theme.colors.background.white5
+    : isOutlineVariant && !isDisabled
+    ? 'transparent'
+    : undefined;
 
   return (
     <Pressable
-      className={`${widthClass} ${isDisabled ? '' : 'active:scale-[0.98] active:opacity-90'}`}
+      className={`${widthClass} ${isDisabled ? '' : 'active:scale-[0.98]'}`}
       style={[
         {
           borderRadius: config.borderRadius,
           ...shadow,
           opacity: isDisabled ? 1 : undefined,
+          backgroundColor: outlineBackgroundColor,
+          borderWidth: isOutlineVariant ? 2 : 0,
+          borderColor: isOutlineVariant ? theme.colors.background.white10 : 'transparent',
         },
         style,
       ]}
       onPress={isDisabled ? undefined : onPress}
+      onPressIn={() => !isDisabled && setIsPressed(true)}
+      onPressOut={() => setIsPressed(false)}
       disabled={isDisabled}>
-      <LinearGradient
-        colors={gradientColors}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
-        style={{
-          borderRadius: config.borderRadius,
-          paddingVertical: config.paddingVertical,
-          paddingHorizontal: theme.spacing.padding.base,
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}>
-        {Icon && <Icon size={config.iconSize} color={iconColor} />}
-        <Text
-          className={`uppercase tracking-wide ${isDisabled ? 'text-white/30' : isRedVariant ? 'text-white' : 'text-text-black'}`}
+      {isOutlineVariant ? (
+        <View
           style={{
-            fontSize: config.fontSize,
-            fontWeight: config.fontWeight,
-            marginLeft: Icon ? theme.spacing.gap.md : 0,
-            color: textColor,
+            borderRadius: config.borderRadius,
+            paddingVertical: config.paddingVertical,
+            paddingHorizontal: theme.spacing.padding.base,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}>
-          {label}
-        </Text>
-      </LinearGradient>
+          {buttonContent}
+        </View>
+      ) : (
+        <LinearGradient
+          colors={gradientColors}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={{
+            borderRadius: config.borderRadius,
+            paddingVertical: config.paddingVertical,
+            paddingHorizontal: theme.spacing.padding.base,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+          {buttonContent}
+        </LinearGradient>
+      )}
     </Pressable>
   );
 }
