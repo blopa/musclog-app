@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable, TextInput, ScrollView, Image } from 'react-native';
-import { Search, Check } from 'lucide-react-native';
+import { Search, Check, Repeat } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { BottomPopUpMenu } from './BottomPopUpMenu';
@@ -84,36 +84,18 @@ export function ReplaceExerciseModal({
       footer={
         <View className="flex-row gap-3">
           <Pressable
-            className="flex-1 rounded-xl border py-3"
-            style={{
-              borderColor: theme.colors.overlay.white20,
-              backgroundColor: theme.colors.overlay.white20,
-            }}
+            className="flex-1 rounded-xl border border-border-light py-3.5"
+            style={{ backgroundColor: theme.colors.background.overlay }}
             onPress={onClose}>
-            <Text
-              className="text-center"
-              style={{
-                fontSize: theme.typography.fontSize.sm,
-                fontWeight: theme.typography.fontWeight.semibold,
-                color: theme.colors.text.primary,
-              }}>
+            <Text className="text-center text-sm font-bold uppercase tracking-wide text-text-secondary">
               Cancel
             </Text>
           </Pressable>
           <Pressable
-            className="flex-1 rounded-xl py-3"
-            style={{
-              backgroundColor: theme.colors.accent.primary,
-              ...theme.shadows.lg,
-            }}
+            className="flex-[2] flex-row items-center justify-center gap-2 rounded-xl bg-accent-primary py-3.5"
             onPress={handleReplace}>
-            <Text
-              className="text-center"
-              style={{
-                fontSize: theme.typography.fontSize.sm,
-                fontWeight: theme.typography.fontWeight.bold,
-                color: theme.colors.text.black,
-              }}>
+            <Repeat size={theme.iconSize.sm} color={theme.colors.text.black} />
+            <Text className="text-text-black text-sm font-bold uppercase tracking-wide">
               Replace
             </Text>
           </Pressable>

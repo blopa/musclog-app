@@ -120,7 +120,12 @@ export function LogSetPerformanceModal({
       title={t('logSetPerformance.title')}
       subtitle={`${setLabel} • ${exerciseName}`}
       footer={footer}>
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+      <ScrollView
+        className="flex-1"
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          padding: theme.spacing.padding['2xl'],
+        }}>
         <View className="gap-6">
           {/* Stats Cards */}
           <View className="flex-row gap-3">
