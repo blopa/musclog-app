@@ -1,6 +1,7 @@
 import { Pressable, Text } from 'react-native';
 import { Play, ArrowRight } from 'lucide-react-native';
 import { theme } from '../theme';
+import { Button } from './theme/Button';
 
 type StartWorkoutButtonProps = {
   variant?: 'primary' | 'secondary';
@@ -10,18 +11,13 @@ type StartWorkoutButtonProps = {
 export function StartWorkoutButton({ variant = 'primary', onPress }: StartWorkoutButtonProps) {
   if (variant === 'primary') {
     return (
-      <Pressable
-        className="flex-1 flex-row items-center justify-center gap-2 rounded-2xl bg-accent-primary py-4"
-        onPress={onPress}>
-        <Play
-          size={theme.iconSize.sm}
-          color={theme.colors.text.black}
-          fill={theme.colors.text.black}
-        />
-        <Text className="font-bold" style={{ color: theme.colors.text.black }}>
-          Start Workout
-        </Text>
-      </Pressable>
+      <Button
+        label="Start Workout"
+        icon={Play}
+        size="md"
+        width="flex-1"
+        onPress={onPress}
+      />
     );
   }
 
