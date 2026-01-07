@@ -109,6 +109,14 @@ export const theme = {
       purple20: 'rgba(168, 85, 247, 0.2)', // Purple with 20% opacity
     },
 
+    // Rose colors (for red button variant)
+    rose: {
+      brand: '#e11d48', // Rose-600 (deep fuchsia/hot pink)
+      dark: '#be123c', // Rose-700 (darker variant)
+      // Rose colors with opacity
+      brand20: 'rgba(225, 29, 72, 0.2)', // Rose-brand with 20% opacity
+    },
+
     // Macro colors
     macros: {
       protein: {
@@ -332,6 +340,13 @@ export const theme = {
       shadowOffset: { width: 0, height: 0 },
       shadowOpacity: 0.4,
       shadowRadius: 10,
+      elevation: 5,
+    },
+    roseGlow: {
+      shadowColor: '#e11d48', // Using theme.colors.rose.brand value
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.2,
+      shadowRadius: 8,
       elevation: 5,
     },
   },

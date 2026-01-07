@@ -7,12 +7,15 @@ type ThemeButtonSize = 'sm' | 'md' | 'lg';
 
 type ThemeButtonWidth = 'full' | 'flex-1' | 'flex-2' | 'auto';
 
+type ThemeButtonVariant = 'accent' | 'discard';
+
 type ThemeButtonProps = {
   label: string;
   onPress?: () => void;
   icon?: LucideIcon;
   size?: ThemeButtonSize;
   width?: ThemeButtonWidth;
+  variant?: ThemeButtonVariant;
   className?: string;
   style?: ViewStyle;
 };
@@ -60,10 +63,20 @@ export function Button({
   icon: Icon,
   size = 'md',
   width = 'auto',
+  variant = 'accent',
   style,
 }: ThemeButtonProps) {
   const config = sizeConfig[size];
   const widthClass = widthClasses[width];
+
+  // Determine colors and styles based on variant
+  const isRedVariant = variant === 'discard';
+  const gradientColors: readonly [string, string, ...string[]] = isRedVariant
+    ? ([theme.colors.rose.brand, theme.colors.rose.brand] as const)
+    : theme.colors.gradients.accent;
+  const textColor = isRedVariant ? theme.colors.text.white : theme.colors.text.black;
+  const iconColor = isRedVariant ? theme.colors.text.white : theme.colors.text.black;
+  const shadow = isRedVariant ? theme.shadows.roseGlow : config.shadow;
 
   return (
     <Pressable
@@ -71,13 +84,13 @@ export function Button({
       style={[
         {
           borderRadius: config.borderRadius,
-          ...config.shadow,
+          ...shadow,
         },
         style,
       ]}
       onPress={onPress}>
       <LinearGradient
-        colors={theme.colors.gradients.accent}
+        colors={gradientColors}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
         style={{
@@ -88,13 +101,14 @@ export function Button({
           alignItems: 'center',
           justifyContent: 'center',
         }}>
-        {Icon && <Icon size={config.iconSize} color={theme.colors.text.black} />}
+        {Icon && <Icon size={config.iconSize} color={iconColor} />}
         <Text
-          className="uppercase tracking-wide text-text-black"
+          className={`uppercase tracking-wide ${isRedVariant ? 'text-white' : 'text-text-black'}`}
           style={{
             fontSize: config.fontSize,
             fontWeight: config.fontWeight,
             marginLeft: Icon ? theme.spacing.gap.md : 0,
+            color: textColor,
           }}>
           {label}
         </Text>
