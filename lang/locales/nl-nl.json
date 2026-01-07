@@ -105,6 +105,13 @@
     "cancel": "ANNULEREN",
     "logSet": "SET REGISTREREN"
   },
+  "editSetDetails": {
+    "title": "Set Details Bewerken",
+    "subtitle": "Doelen wijzigen voor {{setLabel}}",
+    "partialReps": "GEDEELTELIJKE HERHALINGEN",
+    "cancel": "ANNULEREN",
+    "saveChanges": "WIJZIGINGEN OPSLAAN"
+  },
   "restTimer": {
     "totalDuration": "TOTALE DUUR",
     "resting": "Rusten...",

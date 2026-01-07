@@ -105,6 +105,13 @@
     "cancel": "CANCELAR",
     "logSet": "REGISTRAR SERIE"
   },
+  "editSetDetails": {
+    "title": "Editar Detalles de Serie",
+    "subtitle": "Modificar objetivos para {{setLabel}}",
+    "partialReps": "REP PARCIALES",
+    "cancel": "CANCELAR",
+    "saveChanges": "GUARDAR CAMBIOS"
+  },
   "restTimer": {
     "totalDuration": "DURACIÓN TOTAL",
     "resting": "Descansando...",

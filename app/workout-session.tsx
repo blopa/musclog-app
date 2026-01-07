@@ -198,10 +198,11 @@ export default function WorkoutSessionScreen() {
           console.log('Set logged with RPE:', data.rpe);
           // You can update state, save to database, etc.
         }}
-        onEditSetDetails={() => {
-          // Handle edit set details
-          setIsLogSetModalVisible(false);
-          // Navigate to edit screen or show edit modal
+        onEditSetDetails={(data) => {
+          // Update weight and reps from edit modal
+          setWeight(data.weight);
+          setReps(data.reps);
+          // Handle partials if needed
         }}
       />
     </SafeAreaView>

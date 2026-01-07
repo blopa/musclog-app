@@ -4,6 +4,7 @@ import { Edit, Save } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { BottomPopUpMenu } from './BottomPopUpMenu';
+import { EditSetDetailsModal } from './EditSetDetailsModal';
 
 type LogSetPerformanceModalProps = {
   visible: boolean;
@@ -15,7 +16,7 @@ type LogSetPerformanceModalProps = {
   partials?: string | number;
   initialRpe?: number;
   onConfirm?: (data: { rpe: number }) => void;
-  onEditSetDetails?: () => void;
+  onEditSetDetails?: (data: { weight: number; reps: number; partials: number }) => void;
 };
 
 type StatCardProps = {
@@ -48,16 +49,32 @@ export function LogSetPerformanceModal({
   onClose,
   exerciseName,
   setLabel,
-  weight,
-  reps,
-  partials = '-',
+  weight: initialWeight,
+  reps: initialReps,
+  partials: initialPartials = '-',
   initialRpe = 8,
   onConfirm,
   onEditSetDetails,
 }: LogSetPerformanceModalProps) {
   const { t } = useTranslation();
   const [rpe, setRpe] = useState(initialRpe);
+  const [weight, setWeight] = useState(initialWeight);
+  const [reps, setReps] = useState(initialReps);
+  const [partials, setPartials] = useState(
+    typeof initialPartials === 'number' ? initialPartials : 0
+  );
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const sliderWidthRef = useRef(0);
+
+  // Update local state when props change
+  React.useEffect(() => {
+    if (visible) {
+      setWeight(initialWeight);
+      setReps(initialReps);
+      setPartials(typeof initialPartials === 'number' ? initialPartials : 0);
+      setRpe(initialRpe);
+    }
+  }, [visible, initialWeight, initialReps, initialPartials, initialRpe]);
 
   const rpePercentage = ((rpe - 1) / 9) * 100;
 
@@ -113,14 +130,18 @@ export function LogSetPerformanceModal({
               suffix={t('workoutSession.kg')}
             />
             <StatCard label={t('workoutSession.reps')} value={reps} />
-            <StatCard label={t('workoutSession.partials')} value={partials} muted />
+            <StatCard
+              label={t('workoutSession.partials')}
+              value={partials === 0 ? '-' : partials}
+              muted={partials === 0}
+            />
           </View>
 
           {/* Edit Set Details Button */}
           <Pressable
             className="-mt-2 flex-row items-center justify-center gap-2 rounded-lg border border-dashed border-accent-primary/30 py-2.5"
             style={{ backgroundColor: `${theme.colors.accent.primary}0D` }}
-            onPress={onEditSetDetails}>
+            onPress={() => setIsEditModalVisible(true)}>
             <Edit size={theme.iconSize.xs} color={theme.colors.accent.primary} />
             <Text className="text-sm font-bold" style={{ color: theme.colors.accent.primary }}>
               {t('logSetPerformance.editSetDetails')}
@@ -190,6 +211,23 @@ export function LogSetPerformanceModal({
           </View>
         </View>
       </ScrollView>
+
+      {/* Edit Set Details Modal */}
+      <EditSetDetailsModal
+        visible={isEditModalVisible}
+        onClose={() => setIsEditModalVisible(false)}
+        onSave={(data) => {
+          setWeight(data.weight);
+          setReps(data.reps);
+          setPartials(data.partials);
+          setIsEditModalVisible(false);
+          onEditSetDetails?.(data);
+        }}
+        setLabel={setLabel}
+        initialWeight={weight}
+        initialReps={reps}
+        initialPartials={partials}
+      />
     </BottomPopUpMenu>
   );
 }
