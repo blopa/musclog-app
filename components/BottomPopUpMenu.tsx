@@ -22,6 +22,7 @@ type BottomPopUpMenuProps = {
   items?: BottomPopUpMenuItem[];
   children?: ReactNode;
   footer?: ReactNode;
+  maxHeight?: number | 'auto' | `${number}%`;
 };
 
 type OptionItemProps = BottomPopUpMenuItem;
@@ -74,6 +75,7 @@ export function BottomPopUpMenu({
   items,
   children,
   footer,
+  maxHeight,
 }: BottomPopUpMenuProps) {
   const slideAnim = useRef(new Animated.Value(300)).current; // Start off-screen
 
@@ -118,6 +120,7 @@ export function BottomPopUpMenu({
               overflow: 'hidden',
               borderTopLeftRadius: theme.borderRadius['3xl'],
               borderTopRightRadius: theme.borderRadius['3xl'],
+              maxHeight: maxHeight || '90%',
             }}>
             {/* Header */}
             <View className="flex-row items-center justify-between border-b border-border-dark p-6">
