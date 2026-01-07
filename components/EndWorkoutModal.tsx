@@ -149,13 +149,6 @@ export function EndWorkoutModal({
                     </Text>
                   </Pressable>
                 </View>
-
-                {/* Footer */}
-                <View className="items-center pb-6">
-                  <Text className="text-sm font-medium" style={{ color: theme.colors.status.info }}>
-                    MUSCLOG
-                  </Text>
-                </View>
               </LinearGradient>
             </Animated.View>
           </View>
