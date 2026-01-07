@@ -118,6 +118,15 @@
     "cancel": "ANNULEREN",
     "saveChanges": "WIJZIGINGEN OPSLAAN"
   },
+  "workoutHistory": {
+    "title": "Sessie Geschiedenis",
+    "workoutInProgress": "TRAINING BEZIG",
+    "duration": "Duur",
+    "volume": "Vol",
+    "setsDone": "Sets Voltooid",
+    "exercise": "Oefening {{number}}",
+    "set": "Set {{number}}"
+  },
   "restTimer": {
     "totalDuration": "TOTALE DUUR",
     "resting": "Rusten...",

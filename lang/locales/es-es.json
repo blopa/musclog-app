@@ -118,6 +118,15 @@
     "cancel": "CANCELAR",
     "saveChanges": "GUARDAR CAMBIOS"
   },
+  "workoutHistory": {
+    "title": "Historial de Sesión",
+    "workoutInProgress": "ENTRENAMIENTO EN PROGRESO",
+    "duration": "Duración",
+    "volume": "Vol",
+    "setsDone": "Series Completadas",
+    "exercise": "Ejercicio {{number}}",
+    "set": "Serie {{number}}"
+  },
   "restTimer": {
     "totalDuration": "DURACIÓN TOTAL",
     "resting": "Descansando...",
