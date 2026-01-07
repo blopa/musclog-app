@@ -11,7 +11,7 @@ type MacroCardProps = {
 
 export function MacroCard({ name, percentage, amount, color, progressColor }: MacroCardProps) {
   return (
-    <View className="rounded-2xl border border-border-default bg-bg-overlay p-4">
+    <View className="flex-1 rounded-2xl border border-border-default bg-bg-overlay p-4">
       <View className="mb-1 flex-row items-baseline gap-1">
         <Text className="text-sm text-text-secondary">{name}</Text>
         <Text className="text-sm font-semibold" style={{ color }}>
