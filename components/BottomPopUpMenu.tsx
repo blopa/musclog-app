@@ -2,6 +2,7 @@ import React, { useEffect, useRef, ReactNode } from 'react';
 import { View, Text, Pressable, Modal, Animated } from 'react-native';
 import { X } from 'lucide-react-native';
 import { theme } from '../theme';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export type BottomPopUpMenuItem = {
   icon: React.ComponentType<{ size: number; color: string }>;
@@ -23,6 +24,7 @@ type BottomPopUpMenuProps = {
   children?: ReactNode;
   footer?: ReactNode;
   maxHeight?: number | 'auto' | `${number}%`;
+  headerIcon?: ReactNode;
 };
 
 type OptionItemProps = BottomPopUpMenuItem;
@@ -76,6 +78,7 @@ export function BottomPopUpMenu({
   children,
   footer,
   maxHeight,
+  headerIcon,
 }: BottomPopUpMenuProps) {
   const slideAnim = useRef(new Animated.Value(300)).current; // Start off-screen
 
@@ -123,21 +126,36 @@ export function BottomPopUpMenu({
               maxHeight: maxHeight || '90%',
             }}>
             {/* Header */}
-            <View className="flex-row items-center justify-between border-b border-border-dark p-6">
-              <View className="flex-1">
-                <Text className="text-2xl font-bold text-text-primary">{title}</Text>
-                {subtitle && <Text className="mt-1 text-sm text-text-secondary">{subtitle}</Text>}
+            <LinearGradient
+              colors={[
+                `${theme.colors.status.purple}66`,
+                `${theme.colors.accent.secondary}1A`,
+                'transparent',
+              ]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              className="border-b border-border-dark">
+              <View className="flex-row items-center justify-between p-6">
+                <View className="flex-1 flex-row items-center gap-3">
+                  {headerIcon && <View>{headerIcon}</View>}
+                  <View className="flex-1">
+                    <Text className="text-2xl font-bold text-text-primary">{title}</Text>
+                    {subtitle && (
+                      <Text className="mt-1 text-sm text-text-secondary">{subtitle}</Text>
+                    )}
+                  </View>
+                </View>
+                <Pressable
+                  className="active:bg-bg-card-elevated h-10 w-10 items-center justify-center rounded-full bg-bg-overlay"
+                  onPress={onClose}>
+                  <X size={theme.iconSize.md} color={theme.colors.text.secondary} />
+                </Pressable>
               </View>
-              <Pressable
-                className="active:bg-bg-card-elevated h-10 w-10 items-center justify-center rounded-full bg-bg-overlay"
-                onPress={onClose}>
-                <X size={theme.iconSize.md} color={theme.colors.text.secondary} />
-              </Pressable>
-            </View>
+            </LinearGradient>
 
             {/* Content */}
             {children ? (
-              <View className="flex-1">{children}</View>
+              <View className="flex-1 p-6">{children}</View>
             ) : items ? (
               <View className="gap-3 p-6">
                 {items.map((item, index) => (
