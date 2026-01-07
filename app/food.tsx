@@ -1,5 +1,5 @@
 import { View, Text, ScrollView, Pressable } from 'react-native';
-import { ChevronLeft, ChevronRight, Calendar, ScanLine } from 'lucide-react-native';
+import { ChevronLeft, ChevronRight, Calendar, ScanLine, Sparkles } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 import i18n, { LOCALE_MAP, LanguageKeys } from '../lang/lang';
@@ -9,7 +9,6 @@ import { CaloriesRemainingCard } from '../components/CaloriesRemainingCard';
 import { FoodItemCard } from '../components/FoodItemCard';
 import { MealSection } from '../components/MealSection';
 import { FloatingActionButton } from '../components/FloatingActionButton';
-import { AICameraButton } from '../components/AICameraButton';
 import { MoreFoodOptionsButton } from '../components/MoreFoodOptionsButton';
 import { Button } from '../components/theme/Button';
 
@@ -122,7 +121,12 @@ export default function FoodScreen() {
                     // Handle scan barcode action
                   }}
                 />
-                <AICameraButton
+                <Button
+                  label={t('food.actions.aiCamera')}
+                  icon={Sparkles}
+                  variant="secondaryGradient"
+                  size="md"
+                  width="flex-1"
                   onPress={() => {
                     // Handle AI camera action
                   }}

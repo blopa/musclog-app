@@ -8,7 +8,7 @@ type ThemeButtonSize = 'sm' | 'md' | 'lg';
 
 type ThemeButtonWidth = 'full' | 'flex-1' | 'flex-2' | 'auto';
 
-type ThemeButtonVariant = 'accent' | 'discard' | 'outline' | 'secondary';
+type ThemeButtonVariant = 'accent' | 'discard' | 'outline' | 'secondary' | 'secondaryGradient';
 
 type ThemeButtonProps = {
   label: string;
@@ -77,12 +77,15 @@ export function Button({
   const isRedVariant = variant === 'discard';
   const isOutlineVariant = variant === 'outline';
   const isSecondaryVariant = variant === 'secondary';
+  const isSecondaryGradientVariant = variant === 'secondaryGradient';
   const isDisabled = disabled;
   
   const gradientColors: readonly [string, string, ...string[]] = isDisabled
     ? ([theme.colors.background.white10, theme.colors.background.white10] as const)
     : isRedVariant
     ? ([theme.colors.rose.brand, theme.colors.rose.brand] as const)
+    : isSecondaryGradientVariant
+    ? theme.colors.gradients.button
     : isSecondaryVariant
     ? ([theme.colors.background.overlay, theme.colors.background.overlay] as const)
     : theme.colors.gradients.accent;
@@ -91,7 +94,7 @@ export function Button({
     ? theme.colors.text.primary30
     : isOutlineVariant
     ? theme.colors.text.gray300
-    : isSecondaryVariant
+    : isSecondaryVariant || isSecondaryGradientVariant
     ? theme.colors.text.primary
     : isRedVariant
     ? theme.colors.text.white
@@ -101,13 +104,13 @@ export function Button({
     ? theme.colors.text.primary30
     : isOutlineVariant
     ? theme.colors.text.gray300
-    : isSecondaryVariant
+    : isSecondaryVariant || isSecondaryGradientVariant
     ? theme.colors.accent.secondary
     : isRedVariant
     ? theme.colors.text.white
     : theme.colors.text.black;
   
-  const shadow = isDisabled || isOutlineVariant || isSecondaryVariant ? theme.shadows.none : isRedVariant ? theme.shadows.roseGlow : config.shadow;
+  const shadow = isDisabled || isOutlineVariant || isSecondaryVariant || isSecondaryGradientVariant ? theme.shadows.none : isRedVariant ? theme.shadows.roseGlow : config.shadow;
 
   const buttonContent = (
     <>
@@ -118,7 +121,7 @@ export function Button({
             ? 'text-white/30'
             : isOutlineVariant
             ? 'text-gray-300'
-            : isSecondaryVariant
+            : isSecondaryVariant || isSecondaryGradientVariant
             ? 'text-text-primary'
             : isRedVariant
             ? 'text-white'
@@ -150,9 +153,11 @@ export function Button({
           ...shadow,
           opacity: isDisabled ? 1 : undefined,
           backgroundColor: outlineBackgroundColor,
-          borderWidth: isOutlineVariant || isSecondaryVariant ? (isOutlineVariant ? 2 : 1) : 0,
+          borderWidth: isOutlineVariant || isSecondaryVariant || isSecondaryGradientVariant ? (isOutlineVariant ? 2 : 1) : 0,
           borderColor: isOutlineVariant
             ? theme.colors.background.white10
+            : isSecondaryGradientVariant
+            ? theme.colors.border.emerald
             : isSecondaryVariant
             ? theme.colors.border.default
             : 'transparent',
@@ -179,8 +184,8 @@ export function Button({
       ) : (
         <LinearGradient
           colors={gradientColors}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
+          start={{ x: isSecondaryGradientVariant ? 0 : 0, y: isSecondaryGradientVariant ? 0 : 0 }}
+          end={{ x: isSecondaryGradientVariant ? 1 : 1, y: isSecondaryGradientVariant ? 1 : 0 }}
           style={{
             borderRadius: config.borderRadius,
             paddingVertical: config.paddingVertical,
