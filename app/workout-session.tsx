@@ -14,15 +14,18 @@ import { WorkoutStatCard } from '../components/WorkoutStatCard';
 import { WorkoutActionButton } from '../components/WorkoutActionButton';
 import { CompleteSetButton } from '../components/CompleteSetButton';
 import { LogSetPerformanceModal } from '../components/LogSetPerformanceModal';
+import { EditSetDetailsModal } from '../components/EditSetDetailsModal';
 
 export default function WorkoutSessionScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const [weight, setWeight] = useState(24);
   const [reps, setReps] = useState(10);
+  const [partials, setPartials] = useState(0);
   const [isOptionsModalVisible, setIsOptionsModalVisible] = useState(false);
   const [isEndWorkoutModalVisible, setIsEndWorkoutModalVisible] = useState(false);
   const [isLogSetModalVisible, setIsLogSetModalVisible] = useState(false);
+  const [isEditSetModalVisible, setIsEditSetModalVisible] = useState(false);
 
   const exerciseData = {
     name: 'Incline Dumbbell Press',
@@ -97,9 +100,9 @@ export default function WorkoutSessionScreen() {
             />
             <WorkoutStatCard
               title={t('workoutSession.partials')}
-              value="-"
+              value={partials === 0 ? '-' : partials}
               onPress={() => {
-                // Handle partials adjustment
+                setIsEditSetModalVisible(true);
               }}
             />
           </View>
@@ -132,7 +135,7 @@ export default function WorkoutSessionScreen() {
                 icon={Edit}
                 label={t('workoutSession.edit')}
                 onPress={() => {
-                  // Handle edit action
+                  setIsEditSetModalVisible(true);
                 }}
               />
               <WorkoutActionButton
@@ -202,8 +205,27 @@ export default function WorkoutSessionScreen() {
           // Update weight and reps from edit modal
           setWeight(data.weight);
           setReps(data.reps);
-          // Handle partials if needed
+          setPartials(data.partials);
         }}
+      />
+
+      {/* Edit Set Details Modal */}
+      <EditSetDetailsModal
+        visible={isEditSetModalVisible}
+        onClose={() => setIsEditSetModalVisible(false)}
+        onSave={(data) => {
+          setWeight(data.weight);
+          setReps(data.reps);
+          setPartials(data.partials);
+          setIsEditSetModalVisible(false);
+        }}
+        setLabel={t('workoutSession.setOf', {
+          current: exerciseData.set,
+          total: exerciseData.totalSets,
+        })}
+        initialWeight={weight}
+        initialReps={reps}
+        initialPartials={partials}
       />
     </SafeAreaView>
   );
