@@ -13,6 +13,7 @@ import { WorkoutTimeTracker } from '../components/WorkoutTimeTracker';
 import { WorkoutStatCard } from '../components/WorkoutStatCard';
 import { WorkoutActionButton } from '../components/WorkoutActionButton';
 import { CompleteSetButton } from '../components/CompleteSetButton';
+import { LogSetPerformanceModal } from '../components/LogSetPerformanceModal';
 
 export default function WorkoutSessionScreen() {
   const { t } = useTranslation();
@@ -21,6 +22,7 @@ export default function WorkoutSessionScreen() {
   const [reps, setReps] = useState(10);
   const [isOptionsModalVisible, setIsOptionsModalVisible] = useState(false);
   const [isEndWorkoutModalVisible, setIsEndWorkoutModalVisible] = useState(false);
+  const [isLogSetModalVisible, setIsLogSetModalVisible] = useState(false);
 
   const exerciseData = {
     name: 'Incline Dumbbell Press',
@@ -145,7 +147,7 @@ export default function WorkoutSessionScreen() {
             {/* Complete Button */}
             <CompleteSetButton
               onPress={() => {
-                // Handle complete set action
+                setIsLogSetModalVisible(true);
               }}
             />
           </View>
@@ -175,6 +177,31 @@ export default function WorkoutSessionScreen() {
         onFinishAndDiscard={() => {
           // Handle discard workout logic
           router.back();
+        }}
+      />
+
+      {/* Log Set Performance Modal */}
+      <LogSetPerformanceModal
+        visible={isLogSetModalVisible}
+        onClose={() => setIsLogSetModalVisible(false)}
+        exerciseName={exerciseData.name}
+        setLabel={t('workoutSession.setOf', {
+          current: exerciseData.set,
+          total: exerciseData.totalSets,
+        })}
+        weight={weight}
+        reps={reps}
+        partials="-"
+        initialRpe={8}
+        onConfirm={(data) => {
+          // Handle log set with RPE
+          console.log('Set logged with RPE:', data.rpe);
+          // You can update state, save to database, etc.
+        }}
+        onEditSetDetails={() => {
+          // Handle edit set details
+          setIsLogSetModalVisible(false);
+          // Navigate to edit screen or show edit modal
         }}
       />
     </SafeAreaView>

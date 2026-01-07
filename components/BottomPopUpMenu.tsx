@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, ReactNode } from 'react';
 import { View, Text, Pressable, Modal, Animated } from 'react-native';
 import { X } from 'lucide-react-native';
 import { theme } from '../theme';
@@ -18,7 +18,10 @@ type BottomPopUpMenuProps = {
   visible: boolean;
   onClose: () => void;
   title: string;
-  items: BottomPopUpMenuItem[];
+  subtitle?: string;
+  items?: BottomPopUpMenuItem[];
+  children?: ReactNode;
+  footer?: ReactNode;
 };
 
 type OptionItemProps = BottomPopUpMenuItem;
@@ -63,7 +66,15 @@ function OptionItem({
   );
 }
 
-export function BottomPopUpMenu({ visible, onClose, title, items }: BottomPopUpMenuProps) {
+export function BottomPopUpMenu({
+  visible,
+  onClose,
+  title,
+  subtitle,
+  items,
+  children,
+  footer,
+}: BottomPopUpMenuProps) {
   const slideAnim = useRef(new Animated.Value(300)).current; // Start off-screen
 
   useEffect(() => {
@@ -110,7 +121,10 @@ export function BottomPopUpMenu({ visible, onClose, title, items }: BottomPopUpM
             }}>
             {/* Header */}
             <View className="flex-row items-center justify-between border-b border-border-dark p-6">
-              <Text className="text-2xl font-bold text-text-primary">{title}</Text>
+              <View className="flex-1">
+                <Text className="text-2xl font-bold text-text-primary">{title}</Text>
+                {subtitle && <Text className="mt-1 text-sm text-text-secondary">{subtitle}</Text>}
+              </View>
               <Pressable
                 className="active:bg-bg-card-elevated h-10 w-10 items-center justify-center rounded-full bg-bg-overlay"
                 onPress={onClose}>
@@ -118,25 +132,32 @@ export function BottomPopUpMenu({ visible, onClose, title, items }: BottomPopUpM
               </Pressable>
             </View>
 
-            {/* Options List */}
-            <View className="gap-3 p-6">
-              {items.map((item, index) => (
-                <OptionItem
-                  key={index}
-                  icon={item.icon}
-                  iconColor={item.iconColor}
-                  iconBgColor={item.iconBgColor}
-                  title={item.title}
-                  description={item.description}
-                  titleColor={item.titleColor}
-                  descriptionColor={item.descriptionColor}
-                  onPress={() => {
-                    item.onPress();
-                    onClose();
-                  }}
-                />
-              ))}
-            </View>
+            {/* Content */}
+            {children ? (
+              <View className="p-6">{children}</View>
+            ) : items ? (
+              <View className="gap-3 p-6">
+                {items.map((item, index) => (
+                  <OptionItem
+                    key={index}
+                    icon={item.icon}
+                    iconColor={item.iconColor}
+                    iconBgColor={item.iconBgColor}
+                    title={item.title}
+                    description={item.description}
+                    titleColor={item.titleColor}
+                    descriptionColor={item.descriptionColor}
+                    onPress={() => {
+                      item.onPress();
+                      onClose();
+                    }}
+                  />
+                ))}
+              </View>
+            ) : null}
+
+            {/* Footer */}
+            {footer && <View className="border-t border-border-dark px-6 pb-6 pt-2">{footer}</View>}
           </Animated.View>
         </View>
       </Pressable>

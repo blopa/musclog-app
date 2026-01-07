@@ -1,0 +1,195 @@
+import React, { useState, useRef } from 'react';
+import { View, Text, Pressable, ScrollView } from 'react-native';
+import { Edit, Save } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
+import { theme } from '../theme';
+import { BottomPopUpMenu } from './BottomPopUpMenu';
+
+type LogSetPerformanceModalProps = {
+  visible: boolean;
+  onClose: () => void;
+  exerciseName: string;
+  setLabel: string;
+  weight: number;
+  reps: number;
+  partials?: string | number;
+  initialRpe?: number;
+  onConfirm?: (data: { rpe: number }) => void;
+  onEditSetDetails?: () => void;
+};
+
+type StatCardProps = {
+  label: string;
+  value: string | number;
+  suffix?: string;
+  muted?: boolean;
+};
+
+function StatCard({ label, value, suffix, muted }: StatCardProps) {
+  return (
+    <View className="flex-1 rounded-xl border border-border-accent bg-bg-overlay p-4">
+      <Text className="mb-1 text-xs font-semibold uppercase tracking-wider text-text-secondary">
+        {label}
+      </Text>
+      <View className="flex-row items-baseline gap-1">
+        <Text
+          className="text-3xl font-bold tracking-tight"
+          style={{ color: muted ? theme.colors.text.tertiary : theme.colors.text.primary }}>
+          {value}
+        </Text>
+        {suffix && <Text className="text-sm font-medium text-text-secondary">{suffix}</Text>}
+      </View>
+    </View>
+  );
+}
+
+export function LogSetPerformanceModal({
+  visible,
+  onClose,
+  exerciseName,
+  setLabel,
+  weight,
+  reps,
+  partials = '-',
+  initialRpe = 8,
+  onConfirm,
+  onEditSetDetails,
+}: LogSetPerformanceModalProps) {
+  const { t } = useTranslation();
+  const [rpe, setRpe] = useState(initialRpe);
+  const sliderWidthRef = useRef(0);
+
+  const rpePercentage = ((rpe - 1) / 9) * 100;
+
+  const handleSliderPress = (event: any) => {
+    const { locationX } = event.nativeEvent;
+    if (sliderWidthRef.current > 0) {
+      const percentage = Math.max(0, Math.min(100, (locationX / sliderWidthRef.current) * 100));
+      const newRpe = Math.round(1 + (percentage / 100) * 9);
+      setRpe(Math.max(1, Math.min(10, newRpe)));
+    }
+  };
+
+  const handleConfirm = () => {
+    onConfirm?.({ rpe });
+    onClose();
+  };
+
+  const footer = (
+    <View className="flex-row gap-3">
+      <Pressable
+        className="flex-1 rounded-xl border border-border-light py-3.5"
+        style={{ backgroundColor: theme.colors.background.overlay }}
+        onPress={onClose}>
+        <Text className="text-center text-sm font-bold uppercase tracking-wide text-text-secondary">
+          {t('logSetPerformance.cancel')}
+        </Text>
+      </Pressable>
+      <Pressable
+        className="flex-[2] flex-row items-center justify-center gap-2 rounded-xl bg-accent-primary py-3.5"
+        onPress={handleConfirm}>
+        <Save size={theme.iconSize.sm} color={theme.colors.text.black} />
+        <Text className="text-text-black text-sm font-bold uppercase tracking-wide">
+          {t('logSetPerformance.logSet')}
+        </Text>
+      </Pressable>
+    </View>
+  );
+
+  return (
+    <BottomPopUpMenu
+      visible={visible}
+      onClose={onClose}
+      title={t('logSetPerformance.title')}
+      subtitle={`${setLabel} • ${exerciseName}`}
+      footer={footer}>
+      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+        <View className="gap-6">
+          {/* Stats Cards */}
+          <View className="flex-row gap-3">
+            <StatCard
+              label={t('workoutSession.weight')}
+              value={weight}
+              suffix={t('workoutSession.kg')}
+            />
+            <StatCard label={t('workoutSession.reps')} value={reps} />
+            <StatCard label={t('workoutSession.partials')} value={partials} muted />
+          </View>
+
+          {/* Edit Set Details Button */}
+          <Pressable
+            className="-mt-2 flex-row items-center justify-center gap-2 rounded-lg border border-dashed border-accent-primary/30 py-2.5"
+            style={{ backgroundColor: `${theme.colors.accent.primary}0D` }}
+            onPress={onEditSetDetails}>
+            <Edit size={theme.iconSize.xs} color={theme.colors.accent.primary} />
+            <Text className="text-sm font-bold" style={{ color: theme.colors.accent.primary }}>
+              {t('logSetPerformance.editSetDetails')}
+            </Text>
+          </Pressable>
+
+          {/* RPE Section */}
+          <View className="rounded-xl border border-border-accent bg-bg-overlay p-5">
+            <View className="mb-4 flex-row items-center justify-between">
+              <Text className="text-sm font-bold uppercase tracking-wide text-text-secondary">
+                {t('logSetPerformance.difficulty')}
+              </Text>
+              <Text
+                className="text-2xl font-bold tabular-nums"
+                style={{ color: theme.colors.accent.primary }}>
+                {rpe}
+              </Text>
+            </View>
+
+            {/* Custom Slider */}
+            <View className="mb-2">
+              <Pressable
+                className="relative h-1 w-full rounded-full"
+                style={{ backgroundColor: theme.colors.background.cardDark }}
+                onPress={handleSliderPress}
+                onLayout={(event) => {
+                  sliderWidthRef.current = event.nativeEvent.layout.width;
+                }}>
+                {/* Filled portion */}
+                <View
+                  className="absolute left-0 top-0 h-full rounded-full"
+                  style={{
+                    width: `${rpePercentage}%`,
+                    backgroundColor: theme.colors.accent.primary,
+                  }}
+                />
+                {/* Thumb */}
+                <View
+                  className="absolute top-1/2 h-[22px] w-[22px] -translate-y-[11px] rounded-full border-2"
+                  style={{
+                    left: `${rpePercentage}%`,
+                    marginLeft: -11,
+                    backgroundColor: theme.colors.background.white,
+                    borderColor: theme.colors.accent.primary,
+                    shadowColor: theme.colors.accent.primary,
+                    shadowOffset: { width: 0, height: 0 },
+                    shadowOpacity: 0.4,
+                    shadowRadius: 10,
+                    elevation: 5,
+                  }}
+                />
+              </Pressable>
+            </View>
+
+            {/* RPE Labels */}
+            <View className="flex-row justify-between">
+              <Text className="text-[10px] font-medium uppercase tracking-wider text-text-secondary">
+                {t('logSetPerformance.easy')}
+              </Text>
+              <Text className="text-[10px] font-medium uppercase tracking-wider text-text-secondary">
+                {t('logSetPerformance.moderate')}
+              </Text>
+              <Text className="text-[10px] font-medium uppercase tracking-wider text-text-secondary">
+                {t('logSetPerformance.failure')}
+              </Text>
+            </View>
+          </View>
+        </View>
+      </ScrollView>
+    </BottomPopUpMenu>
+  );
+}

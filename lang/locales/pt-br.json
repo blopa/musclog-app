@@ -95,6 +95,16 @@
     "replace": "SUBSTITUIR",
     "completeSet": "COMPLETAR SÉRIE"
   },
+  "logSetPerformance": {
+    "title": "Registrar Desempenho da Série",
+    "editSetDetails": "Editar Detalhes da Série",
+    "difficulty": "DIFICULDADE (RPE)",
+    "easy": "FÁCIL",
+    "moderate": "MODERADO",
+    "failure": "FALHA",
+    "cancel": "CANCELAR",
+    "logSet": "REGISTRAR SÉRIE"
+  },
   "restTimer": {
     "totalDuration": "DURAÇÃO TOTAL",
     "resting": "Descansando...",

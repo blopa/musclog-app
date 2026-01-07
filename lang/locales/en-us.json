@@ -95,6 +95,16 @@
     "replace": "REPLACE",
     "completeSet": "COMPLETE SET"
   },
+  "logSetPerformance": {
+    "title": "Log Set Performance",
+    "editSetDetails": "Edit Set Details",
+    "difficulty": "DIFFICULTY (RPE)",
+    "easy": "EASY",
+    "moderate": "MODERATE",
+    "failure": "FAILURE",
+    "cancel": "CANCEL",
+    "logSet": "LOG SET"
+  },
   "restTimer": {
     "totalDuration": "TOTAL DURATION",
     "resting": "Resting...",

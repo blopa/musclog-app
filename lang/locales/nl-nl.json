@@ -95,6 +95,16 @@
     "replace": "VERVANGEN",
     "completeSet": "SET VOLTOOIEN"
   },
+  "logSetPerformance": {
+    "title": "Set Prestatie Registreren",
+    "editSetDetails": "Set Details Bewerken",
+    "difficulty": "MOEILIJKHEIDSGRAAD (RPE)",
+    "easy": "MAKKELIJK",
+    "moderate": "MATIG",
+    "failure": "FALEN",
+    "cancel": "ANNULEREN",
+    "logSet": "SET REGISTREREN"
+  },
   "restTimer": {
     "totalDuration": "TOTALE DUUR",
     "resting": "Rusten...",
