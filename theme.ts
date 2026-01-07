@@ -111,7 +111,7 @@ export const theme = {
 
     // Rose colors (for red button variant)
     rose: {
-      brand: '#be123c', // Rose-700 (darker, less bright)
+      brand: '#da2552', // Rose-700 (darker, less bright)
       dark: '#9f1239', // Rose-800 (darker variant)
       // Rose colors with opacity
       brand20: 'rgba(190, 18, 60, 0.2)', // Rose-brand with 20% opacity
