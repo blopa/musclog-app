@@ -17,6 +17,7 @@ import { LogSetPerformanceModal } from '../components/LogSetPerformanceModal';
 import { EditSetDetailsModal } from '../components/EditSetDetailsModal';
 import { ConfirmationModal } from '../components/ConfirmationModal';
 import { ReplaceExerciseModal, Exercise } from '../components/ReplaceExerciseModal';
+import { WorkoutHistoryModal } from '../components/WorkoutHistoryModal';
 
 export default function WorkoutSessionScreen() {
   const { t } = useTranslation();
@@ -30,6 +31,7 @@ export default function WorkoutSessionScreen() {
   const [isEditSetModalVisible, setIsEditSetModalVisible] = useState(false);
   const [isSkipSetModalVisible, setIsSkipSetModalVisible] = useState(false);
   const [isReplaceExerciseModalVisible, setIsReplaceExerciseModalVisible] = useState(false);
+  const [isHistoryModalVisible, setIsHistoryModalVisible] = useState(false);
 
   const exerciseData = {
     name: 'Incline Dumbbell Press',
@@ -124,7 +126,7 @@ export default function WorkoutSessionScreen() {
                 {t('workoutSession.reps')}
               </Text>
             </Text>
-            <Pressable onPress={() => router.push('/workout-history')}>
+            <Pressable onPress={() => setIsHistoryModalVisible(true)}>
               <Text className="font-semibold text-accent-primary">
                 {t('workoutSession.history')}
               </Text>
@@ -263,6 +265,13 @@ export default function WorkoutSessionScreen() {
           // You can update the exercise data here
         }}
         currentExercise={exerciseData.name}
+      />
+
+      {/* Workout History Modal */}
+      <WorkoutHistoryModal
+        visible={isHistoryModalVisible}
+        onClose={() => setIsHistoryModalVisible(false)}
+        exerciseName={exerciseData.name}
       />
     </SafeAreaView>
   );
