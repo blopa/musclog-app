@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, Text, Pressable, Modal, ScrollView } from 'react-native';
-import { ArrowLeft, Share2, Weight, Dumbbell } from 'lucide-react-native';
+import { View, Text, Pressable } from 'react-native';
+import { Share2, Weight, Dumbbell } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { ExerciseItem, ExerciseData } from './WorkoutHistoryExerciseItem';
+import { FullScreenModal } from './FullScreenModal';
 
 export type { SetData } from './WorkoutHistorySetRow';
 
@@ -70,96 +71,79 @@ export function WorkoutHistoryModal({
   const { t } = useTranslation();
 
   return (
-    <Modal
+    <FullScreenModal
       visible={visible}
-      transparent={false}
-      animationType="slide"
-      onRequestClose={onClose}
-      statusBarTranslucent>
-      <View className="flex-1 bg-bg-primary">
-        {/* Header */}
-        <View className="flex-row items-center gap-4 border-b border-border-light bg-bg-primary px-4 py-4">
-          <Pressable className="-ml-2 rounded-full p-2" onPress={onClose}>
-            <ArrowLeft size={theme.iconSize.md} color={theme.colors.text.primary} />
-          </Pressable>
-          <View className="flex-1">
-            <Text className="text-xl font-bold tracking-tight text-text-primary">
-              {t('workoutHistory.title')}
-            </Text>
+      onClose={onClose}
+      title={t('workoutHistory.title')}
+      headerRight={
+        <Pressable className="rounded-full p-2">
+          <Share2 size={theme.iconSize.md} color={theme.colors.text.secondary} />
+        </Pressable>
+      }>
+      <View className="gap-6 px-4 pb-8 pt-4">
+        {/* Workout Summary */}
+        <View className="gap-2">
+          <View className="flex-row items-center justify-between">
+            <View className="flex-1">
+              <Text
+                className="mb-0.5 block text-sm font-bold uppercase tracking-wider"
+                style={{ color: theme.colors.accent.primary }}>
+                {t('workoutHistory.workoutInProgress')}
+              </Text>
+              <Text className="text-3xl font-bold leading-tight text-text-primary">
+                {workoutName}
+              </Text>
+            </View>
+            <View className="items-end">
+              <Text className="font-mono text-3xl font-bold tabular-nums tracking-tight text-text-primary">
+                {duration}
+              </Text>
+              <Text className="text-sm font-medium text-text-secondary">
+                {t('workoutHistory.duration')}
+              </Text>
+            </View>
           </View>
-          <Pressable className="-mr-2 rounded-full p-2">
-            <Share2 size={theme.iconSize.md} color={theme.colors.text.secondary} />
-          </Pressable>
+
+          {/* Stats Pills */}
+          <View className="mt-1 flex-row items-center gap-3">
+            <View
+              className="flex-row items-center gap-1.5 rounded-lg px-3 py-1.5"
+              style={{ backgroundColor: `${theme.colors.status.info}33` }}>
+              <Weight size={18} color={theme.colors.status.info} />
+              <Text
+                className="text-sm font-semibold"
+                style={{ color: theme.colors.status.info }}>
+                {totalVolume.toLocaleString()}kg {t('workoutHistory.volume')}
+              </Text>
+            </View>
+            <View
+              className="flex-row items-center gap-1.5 rounded-lg px-3 py-1.5"
+              style={{ backgroundColor: `${theme.colors.background.white}0D` }}>
+              <Dumbbell size={18} color={theme.colors.text.secondary} />
+              <Text className="text-sm font-semibold text-text-secondary">
+                {totalSets} {t('workoutHistory.setsDone')}
+              </Text>
+            </View>
+          </View>
         </View>
 
-        {/* Content */}
-        <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-          <View className="gap-6 px-4 pb-8 pt-4">
-            {/* Workout Summary */}
-            <View className="gap-2">
-              <View className="flex-row items-center justify-between">
-                <View className="flex-1">
-                  <Text
-                    className="mb-0.5 block text-sm font-bold uppercase tracking-wider"
-                    style={{ color: theme.colors.accent.primary }}>
-                    {t('workoutHistory.workoutInProgress')}
-                  </Text>
-                  <Text className="text-3xl font-bold leading-tight text-text-primary">
-                    {workoutName}
-                  </Text>
-                </View>
-                <View className="items-end">
-                  <Text className="font-mono text-3xl font-bold tabular-nums tracking-tight text-text-primary">
-                    {duration}
-                  </Text>
-                  <Text className="text-sm font-medium text-text-secondary">
-                    {t('workoutHistory.duration')}
-                  </Text>
-                </View>
-              </View>
+        {/* Divider */}
+        <View className="h-px" style={{ backgroundColor: theme.colors.border.light }} />
 
-              {/* Stats Pills */}
-              <View className="mt-1 flex-row items-center gap-3">
-                <View
-                  className="flex-row items-center gap-1.5 rounded-lg px-3 py-1.5"
-                  style={{ backgroundColor: `${theme.colors.status.info}33` }}>
-                  <Weight size={18} color={theme.colors.status.info} />
-                  <Text
-                    className="text-sm font-semibold"
-                    style={{ color: theme.colors.status.info }}>
-                    {totalVolume.toLocaleString()}kg {t('workoutHistory.volume')}
-                  </Text>
-                </View>
-                <View
-                  className="flex-row items-center gap-1.5 rounded-lg px-3 py-1.5"
-                  style={{ backgroundColor: `${theme.colors.background.white}0D` }}>
-                  <Dumbbell size={18} color={theme.colors.text.secondary} />
-                  <Text className="text-sm font-semibold text-text-secondary">
-                    {totalSets} {t('workoutHistory.setsDone')}
-                  </Text>
-                </View>
-              </View>
-            </View>
+        {/* Exercises List */}
+        <View className="flex-col gap-3">
+          {exercises.map((exercise, index) => (
+            <ExerciseItem
+              key={exercise.id}
+              exercise={exercise}
+              isLast={index === exercises.length - 1}
+            />
+          ))}
+        </View>
 
-            {/* Divider */}
-            <View className="h-px" style={{ backgroundColor: theme.colors.border.light }} />
-
-            {/* Exercises List */}
-            <View className="flex-col gap-3">
-              {exercises.map((exercise, index) => (
-                <ExerciseItem
-                  key={exercise.id}
-                  exercise={exercise}
-                  isLast={index === exercises.length - 1}
-                />
-              ))}
-            </View>
-
-            {/* Bottom spacing */}
-            <View className="h-8" />
-          </View>
-        </ScrollView>
+        {/* Bottom spacing */}
+        <View className="h-8" />
       </View>
-    </Modal>
+    </FullScreenModal>
   );
 }
