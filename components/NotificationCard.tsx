@@ -1,7 +1,8 @@
-import { View, Text, Pressable } from 'react-native';
+import { View, Text } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ReactNode } from 'react';
 import { theme } from '../theme';
+import { Button } from './theme/Button';
 
 type NotificationCardProps = {
   type: 'ai-insight' | 'workout-reminder' | 'workout-completed' | 'kudos' | 'weekly-report';
@@ -63,14 +64,12 @@ export function NotificationCard({
         <View className="flex-row items-center justify-between">
           {hasAction ? (
             <>
-              <Pressable
-                className="rounded-full px-6 py-2.5"
-                style={{ backgroundColor: theme.colors.background.white }}
-                onPress={onActionPress}>
-                <Text className="text-sm font-semibold" style={{ color: theme.colors.text.black }}>
-                  Start Now
-                </Text>
-              </Pressable>
+              <Button
+                label="Start Now"
+                size="sm"
+                width="auto"
+                onPress={onActionPress}
+              />
               <Text className="text-sm" style={{ color: theme.colors.text.gray500 }}>
                 {time}
               </Text>

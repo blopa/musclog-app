@@ -182,20 +182,20 @@ export function Button({
           {buttonContent}
         </View>
       ) : (
-        <LinearGradient
+      <LinearGradient
           colors={gradientColors}
           start={{ x: isSecondaryGradientVariant ? 0 : 0, y: isSecondaryGradientVariant ? 0 : 0 }}
           end={{ x: isSecondaryGradientVariant ? 1 : 1, y: isSecondaryGradientVariant ? 1 : 0 }}
-          style={{
-            borderRadius: config.borderRadius,
-            paddingVertical: config.paddingVertical,
-            paddingHorizontal: theme.spacing.padding.base,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
+        style={{
+          borderRadius: config.borderRadius,
+          paddingVertical: config.paddingVertical,
+          paddingHorizontal: theme.spacing.padding.base,
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
           {buttonContent}
-        </LinearGradient>
+      </LinearGradient>
       )}
     </Pressable>
   );
