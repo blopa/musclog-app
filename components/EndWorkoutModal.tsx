@@ -134,20 +134,17 @@ export function EndWorkoutModal({
                     }}
                   />
 
-                  <Pressable
-                    className="border-status-error flex-row items-center justify-center gap-3 rounded-2xl border py-4 active:opacity-90"
-                    style={{ backgroundColor: theme.colors.status.error8 }}
+                  <Button
+                    label={t('endWorkout.finishAndDiscard')}
+                    icon={Trash2}
+                    variant="discard"
+                    size="md"
+                    width="full"
                     onPress={() => {
                       onFinishAndDiscard?.();
                       onClose();
-                    }}>
-                    <Trash2 size={theme.iconSize.md} color={theme.colors.status.error} />
-                    <Text
-                      className="text-lg font-semibold"
-                      style={{ color: theme.colors.status.error }}>
-                      {t('endWorkout.finishAndDiscard')}
-                    </Text>
-                  </Pressable>
+                    }}
+                  />
                 </View>
               </LinearGradient>
             </Animated.View>

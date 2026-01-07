@@ -111,10 +111,10 @@ export const theme = {
 
     // Rose colors (for red button variant)
     rose: {
-      brand: '#e11d48', // Rose-600 (deep fuchsia/hot pink)
-      dark: '#be123c', // Rose-700 (darker variant)
+      brand: '#be123c', // Rose-700 (darker, less bright)
+      dark: '#9f1239', // Rose-800 (darker variant)
       // Rose colors with opacity
-      brand20: 'rgba(225, 29, 72, 0.2)', // Rose-brand with 20% opacity
+      brand20: 'rgba(190, 18, 60, 0.2)', // Rose-brand with 20% opacity
     },
 
     // Macro colors
@@ -343,7 +343,7 @@ export const theme = {
       elevation: 5,
     },
     roseGlow: {
-      shadowColor: '#e11d48', // Using theme.colors.rose.brand value
+      shadowColor: '#be123c', // Using theme.colors.rose.brand value
       shadowOffset: { width: 0, height: 4 },
       shadowOpacity: 0.2,
       shadowRadius: 8,
