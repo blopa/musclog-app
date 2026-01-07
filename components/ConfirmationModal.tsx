@@ -25,8 +25,11 @@ export function ConfirmationModal({
   confirmLabel,
   cancelLabel = 'Cancel',
   variant = 'default',
-  maxWidth = 320,
+  maxWidth,
 }: ConfirmationModalProps) {
+  // Default maxWidth is 30% larger than 320px (416px)
+  const modalMaxWidth = maxWidth || theme.spacing.padding['2xl'] * 13;
+
   const handleConfirm = () => {
     onConfirm();
     onClose();
@@ -36,8 +39,8 @@ export function ConfirmationModal({
     switch (variant) {
       case 'destructive':
         return {
-          backgroundColor: '#ef4444', // red-500
-          shadowColor: '#ef4444',
+          backgroundColor: theme.colors.status.error,
+          shadowColor: theme.colors.status.error,
           shadowOffset: { width: 0, height: 4 },
           shadowOpacity: 0.3,
           shadowRadius: 12,
@@ -54,6 +57,10 @@ export function ConfirmationModal({
     }
   };
 
+  // Calculate backdrop color from theme background.primary with 80% opacity
+  // Convert hex to rgba: #0a1f1a = rgb(10, 31, 26)
+  const backdropColor = 'rgba(10, 31, 26, 0.8)';
+
   return (
     <Modal
       visible={visible}
@@ -64,46 +71,77 @@ export function ConfirmationModal({
       {/* Backdrop */}
       <Pressable
         className="flex-1 items-center justify-center p-4"
-        style={{ backgroundColor: 'rgba(17, 33, 26, 0.8)' }} // background-dark/80
+        style={{ backgroundColor: backdropColor }}
         onPress={onClose}>
         {/* Modal */}
         <Pressable
-          className="w-full rounded-xl border border-border-dark"
+          className="w-full border border-border-dark"
           style={{
-            backgroundColor: theme.colors.background.cardDark, // card-dark
-            maxWidth,
-            borderColor: theme.colors.border.accent, // card-border
+            backgroundColor: theme.colors.background.cardDark,
+            maxWidth: modalMaxWidth,
+            borderColor: theme.colors.border.accent,
+            borderRadius: theme.borderRadius.xl,
           }}
           onPress={(e) => e.stopPropagation()}>
           {/* Content */}
-          <View className="gap-6 p-6">
+          <View
+            className="gap-6"
+            style={{
+              padding: theme.spacing.padding['2xl'],
+            }}>
             {/* Title and Message */}
-            <View className="gap-2">
-              <Text className="text-lg font-bold tracking-tight text-text-primary">{title}</Text>
+            <View style={{ gap: theme.spacing.gap.md }}>
               <Text
-                className="text-sm leading-relaxed"
-                style={{ color: theme.colors.text.secondary }}>
+                className="font-bold tracking-tight text-text-primary"
+                style={{ fontSize: theme.typography.fontSize.lg }}>
+                {title}
+              </Text>
+              <Text
+                className="leading-relaxed"
+                style={{
+                  fontSize: theme.typography.fontSize.sm,
+                  color: theme.colors.text.secondary,
+                }}>
                 {message}
               </Text>
             </View>
 
             {/* Buttons */}
-            <View className="flex-row gap-3">
+            <View className="flex-row" style={{ gap: theme.spacing.gap.md }}>
               <Pressable
-                className="flex-1 rounded-lg py-3"
-                style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)' }} // bg-white/5
+                className="flex-1"
+                style={{
+                  backgroundColor: theme.colors.overlay.white20,
+                  borderRadius: theme.borderRadius.lg,
+                  paddingVertical: theme.spacing.padding.base,
+                }}
                 onPress={onClose}>
                 <Text
-                  className="text-center text-sm font-semibold"
-                  style={{ color: theme.colors.text.secondary }}>
+                  className="text-center"
+                  style={{
+                    fontSize: theme.typography.fontSize.sm,
+                    fontWeight: theme.typography.fontWeight.semibold,
+                    color: theme.colors.text.secondary,
+                  }}>
                   {cancelLabel}
                 </Text>
               </Pressable>
               <Pressable
-                className="flex-1 rounded-lg py-3"
-                style={getConfirmButtonStyle()}
+                className="flex-1"
+                style={{
+                  ...getConfirmButtonStyle(),
+                  borderRadius: theme.borderRadius.lg,
+                  paddingVertical: theme.spacing.padding.base,
+                }}
                 onPress={handleConfirm}>
-                <Text className="text-center text-sm font-bold text-white">{confirmLabel}</Text>
+                <Text
+                  className="text-center text-white"
+                  style={{
+                    fontSize: theme.typography.fontSize.sm,
+                    fontWeight: theme.typography.fontWeight.bold,
+                  }}>
+                  {confirmLabel}
+                </Text>
               </Pressable>
             </View>
           </View>
