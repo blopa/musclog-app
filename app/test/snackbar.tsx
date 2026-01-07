@@ -68,7 +68,7 @@ export default function SnackbarTestScreen() {
                 <View
                   className="h-12 w-12 flex-shrink-0 items-center justify-center rounded-full"
                   style={{
-                    backgroundColor: `${theme.colors.status.success}33`, // 20% opacity
+                    backgroundColor: theme.colors.status.success20,
                   }}>
                   <CheckCircle size={24} color={theme.colors.status.success} />
                 </View>
@@ -92,7 +92,7 @@ export default function SnackbarTestScreen() {
                 <View
                   className="h-12 w-12 flex-shrink-0 items-center justify-center rounded-full"
                   style={{
-                    backgroundColor: `${theme.colors.status.error}33`, // 20% opacity
+                    backgroundColor: theme.colors.status.error20,
                   }}>
                   <AlertTriangle size={24} color={theme.colors.status.error} />
                 </View>

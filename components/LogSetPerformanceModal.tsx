@@ -145,7 +145,7 @@ export function LogSetPerformanceModal({
           {/* Edit Set Details Button */}
           <Pressable
             className="-mt-2 flex-row items-center justify-center gap-2 rounded-lg border border-dashed border-accent-primary/30 py-2.5"
-            style={{ backgroundColor: `${theme.colors.accent.primary}0D` }}
+            style={{ backgroundColor: theme.colors.accent.primary5 }}
             onPress={() => setIsEditModalVisible(true)}>
             <Edit size={theme.iconSize.xs} color={theme.colors.accent.primary} />
             <Text className="text-sm font-bold" style={{ color: theme.colors.accent.primary }}>

@@ -130,7 +130,7 @@ export function SessionFeedbackModal({ visible, onClose, onSubmit }: SessionFeed
   const headerIcon = (
     <View
       className="h-10 w-10 items-center justify-center rounded-full"
-      style={{ backgroundColor: `${theme.colors.accent.primary}1A` }}>
+      style={{ backgroundColor: theme.colors.accent.primary10 }}>
       <ThumbsUp size={theme.iconSize.md} color={theme.colors.accent.primary} />
     </View>
   );

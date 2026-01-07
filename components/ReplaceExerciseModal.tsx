@@ -171,10 +171,10 @@ export function ReplaceExerciseModal({
                   className="rounded-lg border"
                   style={{
                     backgroundColor: isActive
-                      ? `${theme.colors.accent.primary}33` // 20% opacity
+                      ? theme.colors.accent.primary20
                       : theme.colors.background.cardDark,
                     borderColor: isActive
-                      ? `${theme.colors.accent.primary}66` // 40% opacity
+                      ? theme.colors.accent.primary40
                       : 'transparent',
                     borderRadius: theme.borderRadius.lg,
                     paddingHorizontal: theme.spacing.padding.md,
@@ -217,11 +217,11 @@ export function ReplaceExerciseModal({
                   className="w-full flex-row items-center justify-between"
                   style={{
                     backgroundColor: isSelected
-                      ? `${theme.colors.accent.primary}1A` // 10% opacity
+                      ? theme.colors.accent.primary10
                       : theme.colors.background.cardDark,
                     borderWidth: 1,
                     borderColor: isSelected
-                      ? `${theme.colors.accent.primary}66` // 40% opacity
+                      ? theme.colors.accent.primary40
                       : 'transparent',
                     borderRadius: theme.borderRadius.xl,
                     padding: theme.spacing.padding.base,

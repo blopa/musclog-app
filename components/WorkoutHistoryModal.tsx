@@ -108,7 +108,7 @@ export function WorkoutHistoryModal({
           <View className="mt-1 flex-row items-center gap-3">
             <View
               className="flex-row items-center gap-1.5 rounded-lg px-3 py-1.5"
-              style={{ backgroundColor: `${theme.colors.status.info}33` }}>
+              style={{ backgroundColor: theme.colors.status.info20 }}>
               <Weight size={18} color={theme.colors.status.info} />
               <Text
                 className="text-sm font-semibold"
@@ -118,7 +118,7 @@ export function WorkoutHistoryModal({
             </View>
             <View
               className="flex-row items-center gap-1.5 rounded-lg px-3 py-1.5"
-              style={{ backgroundColor: `${theme.colors.background.white}0D` }}>
+              style={{ backgroundColor: theme.colors.background.white5 }}>
               <Dumbbell size={18} color={theme.colors.text.secondary} />
               <Text className="text-sm font-semibold text-text-secondary">
                 {totalSets} {t('workoutHistory.setsDone')}

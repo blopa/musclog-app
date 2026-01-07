@@ -85,7 +85,7 @@ export function ExerciseItem({ exercise, isLast }: ExerciseItemProps) {
             className="flex-row border-b"
             style={{
               borderBottomColor: theme.colors.border.light,
-              backgroundColor: `${theme.colors.background.white}08`,
+              backgroundColor: theme.colors.background.white3,
             }}>
             <View className="w-8 items-center py-2">
               <Text className="text-sm font-semibold uppercase tracking-wider text-text-secondary">

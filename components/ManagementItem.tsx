@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { ChevronRight } from 'lucide-react-native';
-import { theme } from '../theme';
+import { theme, addOpacityToHex } from '../theme';
 
 type ManagementItemProps = {
   title: string;
@@ -24,7 +24,7 @@ export function ManagementItem({
       onPress={onPress}>
       <View
         className="h-12 w-12 items-center justify-center rounded-xl"
-        style={{ backgroundColor: `${iconColor}20` }}>
+        style={{ backgroundColor: addOpacityToHex(iconColor, 0.125) }}>
         <Icon size={theme.iconSize.md} color={iconColor} />
       </View>
       <View className="flex-1">

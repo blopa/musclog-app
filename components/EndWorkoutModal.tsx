@@ -136,7 +136,7 @@ export function EndWorkoutModal({
 
                   <Pressable
                     className="border-status-error flex-row items-center justify-center gap-3 rounded-2xl border py-4 active:opacity-90"
-                    style={{ backgroundColor: `${theme.colors.status.error}15` }}
+                    style={{ backgroundColor: theme.colors.status.error8 }}
                     onPress={() => {
                       onFinishAndDiscard?.();
                       onClose();

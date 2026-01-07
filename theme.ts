@@ -37,6 +37,10 @@ export const theme = {
       buttonCard: '#1a3530', // Button/card background
       buttonCardActive: '#1f4039', // Active button/card background
       separatorLight: '#e5e7eb', // Light separator (gray-200)
+      // White background with opacity
+      white3: 'rgba(255, 255, 255, 0.03)', // White with ~3% opacity
+      white5: 'rgba(255, 255, 255, 0.05)', // White with 5% opacity
+      white12: 'rgba(255, 255, 255, 0.125)', // White with ~12.5% opacity
     },
 
     // Text colors
@@ -63,6 +67,11 @@ export const theme = {
         start: '#34d399',
         end: '#14b8a6',
       },
+      // Accent colors with opacity
+      primary10: 'rgba(34, 197, 94, 0.1)', // Primary with 10% opacity
+      primary20: 'rgba(34, 197, 94, 0.2)', // Primary with 20% opacity
+      primary40: 'rgba(34, 197, 94, 0.4)', // Primary with 40% opacity
+      primary5: 'rgba(34, 197, 94, 0.05)', // Primary with 5% opacity
     },
 
     // Border colors
@@ -85,6 +94,11 @@ export const theme = {
       info: '#3b82f6', // Blue
       purple: '#a855f7', // Purple
       notificationBadge: '#ef4444', // Red notification badge (same as error)
+      // Status colors with opacity
+      success20: 'rgba(34, 197, 94, 0.2)', // Success with 20% opacity
+      error8: 'rgba(239, 68, 68, 0.08)', // Error with 8% opacity
+      error20: 'rgba(239, 68, 68, 0.2)', // Error with 20% opacity
+      info20: 'rgba(59, 130, 246, 0.2)', // Info with 20% opacity
     },
 
     // Macro colors
@@ -204,28 +218,28 @@ export const theme = {
 
   shadows: {
     sm: {
-      shadowColor: '#000',
+      shadowColor: '#000000', // Using theme.colors.text.black value
       shadowOffset: { width: 0, height: 1 },
       shadowOpacity: 0.05,
       shadowRadius: 2,
       elevation: 1,
     },
     md: {
-      shadowColor: '#000',
+      shadowColor: '#000000', // Using theme.colors.text.black value
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.1,
       shadowRadius: 4,
       elevation: 3,
     },
     lg: {
-      shadowColor: '#000',
+      shadowColor: '#000000', // Using theme.colors.text.black value
       shadowOffset: { width: 0, height: 4 },
       shadowOpacity: 0.15,
       shadowRadius: 8,
       elevation: 5,
     },
     accent: {
-      shadowColor: '#22c55e',
+      shadowColor: '#22c55e', // Using theme.colors.accent.primary value
       shadowOffset: { width: 0, height: 4 },
       shadowOpacity: 0.3,
       shadowRadius: 8,
@@ -309,6 +323,24 @@ export function getFontSize(size: keyof typeof theme.typography.fontSize): numbe
  */
 export function getBorderRadius(size: keyof typeof theme.borderRadius): number {
   return theme.borderRadius[size];
+}
+
+/**
+ * Add opacity to a hex color
+ * @param hexColor - Hex color string (e.g., '#22c55e')
+ * @param opacity - Opacity value between 0 and 1 (e.g., 0.125 for 12.5%)
+ * @returns RGBA color string
+ */
+export function addOpacityToHex(hexColor: string, opacity: number): string {
+  // Remove # if present
+  const hex = hexColor.replace('#', '');
+  
+  // Parse RGB values
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+  
+  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
 }
 
 /**
