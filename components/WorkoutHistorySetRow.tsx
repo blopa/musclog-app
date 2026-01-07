@@ -38,7 +38,7 @@ export function SetRow({ set }: SetRowProps) {
               : theme.colors.background.overlay,
           }}>
           <Text
-            className="text-[10px] font-bold"
+            className="text-xs font-bold"
             style={{
               color: isCurrent ? theme.colors.text.black : theme.colors.text.secondary,
             }}>
@@ -50,7 +50,7 @@ export function SetRow({ set }: SetRowProps) {
       {/* Weight */}
       <View className="flex-1 items-center">
         <Text
-          className="text-sm font-bold tabular-nums"
+          className="text-base font-bold tabular-nums"
           style={{
             color: isCurrent ? theme.colors.text.primary : theme.colors.text.secondary,
           }}>
@@ -61,7 +61,7 @@ export function SetRow({ set }: SetRowProps) {
       {/* Reps */}
       <View className="flex-1 items-center">
         <Text
-          className="text-sm font-bold tabular-nums"
+          className="text-base font-bold tabular-nums"
           style={{
             color: isCurrent ? theme.colors.text.primary : theme.colors.text.secondary,
           }}>
@@ -72,7 +72,7 @@ export function SetRow({ set }: SetRowProps) {
       {/* Partials */}
       <View className="flex-1 items-center">
         <Text
-          className="text-xs tabular-nums"
+          className="text-sm tabular-nums"
           style={{
             color: set.partials > 0 ? theme.colors.accent.primary : theme.colors.text.tertiary,
             fontWeight: set.partials > 0 ? 'bold' : 'normal',

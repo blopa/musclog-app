@@ -83,7 +83,7 @@ export function WorkoutHistoryModal({
             <ArrowLeft size={theme.iconSize.md} color={theme.colors.text.primary} />
           </Pressable>
           <View className="flex-1">
-            <Text className="text-lg font-bold tracking-tight text-text-primary">
+            <Text className="text-xl font-bold tracking-tight text-text-primary">
               {t('workoutHistory.title')}
             </Text>
           </View>
@@ -100,19 +100,19 @@ export function WorkoutHistoryModal({
               <View className="flex-row items-center justify-between">
                 <View className="flex-1">
                   <Text
-                    className="mb-0.5 block text-xs font-bold uppercase tracking-wider"
+                    className="mb-0.5 block text-sm font-bold uppercase tracking-wider"
                     style={{ color: theme.colors.accent.primary }}>
                     {t('workoutHistory.workoutInProgress')}
                   </Text>
-                  <Text className="text-2xl font-bold leading-tight text-text-primary">
+                  <Text className="text-3xl font-bold leading-tight text-text-primary">
                     {workoutName}
                   </Text>
                 </View>
                 <View className="items-end">
-                  <Text className="font-mono text-2xl font-bold tabular-nums tracking-tight text-text-primary">
+                  <Text className="font-mono text-3xl font-bold tabular-nums tracking-tight text-text-primary">
                     {duration}
                   </Text>
-                  <Text className="text-xs font-medium text-text-secondary">
+                  <Text className="text-sm font-medium text-text-secondary">
                     {t('workoutHistory.duration')}
                   </Text>
                 </View>
@@ -123,9 +123,9 @@ export function WorkoutHistoryModal({
                 <View
                   className="flex-row items-center gap-1.5 rounded-lg px-3 py-1.5"
                   style={{ backgroundColor: `${theme.colors.status.info}33` }}>
-                  <Weight size={16} color={theme.colors.status.info} />
+                  <Weight size={18} color={theme.colors.status.info} />
                   <Text
-                    className="text-xs font-semibold"
+                    className="text-sm font-semibold"
                     style={{ color: theme.colors.status.info }}>
                     {totalVolume.toLocaleString()}kg {t('workoutHistory.volume')}
                   </Text>
@@ -133,8 +133,8 @@ export function WorkoutHistoryModal({
                 <View
                   className="flex-row items-center gap-1.5 rounded-lg px-3 py-1.5"
                   style={{ backgroundColor: `${theme.colors.background.white}0D` }}>
-                  <Dumbbell size={16} color={theme.colors.text.secondary} />
-                  <Text className="text-xs font-semibold text-text-secondary">
+                  <Dumbbell size={18} color={theme.colors.text.secondary} />
+                  <Text className="text-sm font-semibold text-text-secondary">
                     {totalSets} {t('workoutHistory.setsDone')}
                   </Text>
                 </View>

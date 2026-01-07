@@ -52,13 +52,13 @@ export function ExerciseItem({ exercise, isLast }: ExerciseItemProps) {
         {/* Exercise Info */}
         <View className="flex-1">
           <View className="mb-1 flex-row items-center gap-2">
-            <Text className="text-xs font-bold uppercase text-text-secondary">{exercise.time}</Text>
+            <Text className="text-sm font-bold uppercase text-text-secondary">{exercise.time}</Text>
             <View className="h-1 w-1 rounded-full bg-gray-300" />
-            <Text className="text-xs font-medium text-text-secondary">
+            <Text className="text-sm font-medium text-text-secondary">
               {t('workoutHistory.exercise', { number: exercise.exerciseNumber })}
             </Text>
           </View>
-          <Text className="text-base font-bold text-text-primary">{exercise.name}</Text>
+          <Text className="text-lg font-bold text-text-primary">{exercise.name}</Text>
         </View>
 
         {/* Exercise Image */}
@@ -85,23 +85,23 @@ export function ExerciseItem({ exercise, isLast }: ExerciseItemProps) {
               backgroundColor: `${theme.colors.background.white}08`,
             }}>
             <View className="w-8 items-center py-2">
-              <Text className="text-xs font-semibold uppercase tracking-wider text-text-secondary">
+              <Text className="text-sm font-semibold uppercase tracking-wider text-text-secondary">
                 #
               </Text>
             </View>
             <View className="flex-1 items-center py-2">
-              <Text className="text-xs font-semibold uppercase tracking-wider text-text-secondary">
+              <Text className="text-sm font-semibold uppercase tracking-wider text-text-secondary">
                 {t('workoutSession.kg')}
               </Text>
             </View>
             <View className="flex-1 items-center py-2">
-              <Text className="text-xs font-semibold uppercase tracking-wider text-text-secondary">
+              <Text className="text-sm font-semibold uppercase tracking-wider text-text-secondary">
                 {t('workoutSession.reps')}
               </Text>
             </View>
             <View className="flex-1 items-center py-2">
               <Text
-                className="text-xs font-semibold uppercase tracking-wider"
+                className="text-sm font-semibold uppercase tracking-wider"
                 style={{ color: theme.colors.accent.primary }}>
                 {t('workoutSession.partials')}
               </Text>
@@ -141,7 +141,7 @@ export function ExerciseItem({ exercise, isLast }: ExerciseItemProps) {
                       />
                     </View>
                     <Text
-                      className="text-[10px]"
+                      className="text-xs"
                       style={{
                         color: isCurrent ? theme.colors.accent.primary : theme.colors.text.tertiary,
                         fontWeight: isCurrent ? 'bold' : 'normal',
