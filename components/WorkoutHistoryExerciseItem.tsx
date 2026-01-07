@@ -53,7 +53,10 @@ export function ExerciseItem({ exercise, isLast }: ExerciseItemProps) {
         <View className="flex-1">
           <View className="mb-1 flex-row items-center gap-2">
             <Text className="text-sm font-bold uppercase text-text-secondary">{exercise.time}</Text>
-            <View className="h-1 w-1 rounded-full bg-gray-300" />
+            <View
+              className="h-1 w-1 rounded-full"
+              style={{ backgroundColor: theme.colors.text.gray300 }}
+            />
             <Text className="text-sm font-medium text-text-secondary">
               {t('workoutHistory.exercise', { number: exercise.exerciseNumber })}
             </Text>

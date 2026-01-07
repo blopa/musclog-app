@@ -9,7 +9,8 @@ type CreateTemplateCardProps = {
 export function CreateTemplateCard({ onPress }: CreateTemplateCardProps) {
   return (
     <Pressable
-      className="mt-6 items-center justify-center gap-4 rounded-3xl border-2 border-dashed border-gray-600/40 p-8"
+      className="mt-6 items-center justify-center gap-4 rounded-3xl border-2 border-dashed p-8"
+      style={{ borderColor: theme.colors.border.gray600 }}
       onPress={onPress}>
       <View
         className="h-12 w-12 items-center justify-center rounded-full"

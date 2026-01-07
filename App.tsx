@@ -104,7 +104,7 @@ export default function App() {
                 style={{ color: theme.colors.text.secondary }}>
                 {t('home.greeting.goodEvening')}
               </Text>
-              <Text className="text-xl font-bold text-white">{user.name}</Text>
+              <Text className="text-xl font-bold text-text-primary">{user.name}</Text>
             </View>
           </View>
           <Pressable className="relative rounded-full bg-bg-overlay p-3">
@@ -134,7 +134,7 @@ export default function App() {
         {/* Recent Workouts */}
         <View className="mx-6 mb-8">
           <View className="mb-4 flex-row items-center justify-between">
-            <Text className="text-2xl font-bold text-white">
+            <Text className="text-2xl font-bold text-text-primary">
               {t('home.sections.recentWorkouts')}
             </Text>
             <Pressable>
@@ -160,7 +160,7 @@ export default function App() {
 
         {/* Recent Foods */}
         <View className="mx-6 mb-8">
-          <Text className="mb-4 text-2xl font-bold text-white">
+          <Text className="mb-4 text-2xl font-bold text-text-primary">
             {t('home.sections.recentFoods')}
           </Text>
 
@@ -174,7 +174,7 @@ export default function App() {
                     <View className="flex-row items-center gap-3">
                       <Text className="text-4xl">{food.emoji}</Text>
                       <View>
-                        <Text className="text-lg font-bold text-white">{food.name}</Text>
+                        <Text className="text-lg font-bold text-text-primary">{food.name}</Text>
                         <View className="mt-2 flex-row gap-2">
                           <View className="rounded-full bg-bg-secondary px-2.5 py-1">
                             <Text
@@ -200,7 +200,7 @@ export default function App() {
                         </View>
                       </View>
                     </View>
-                    <Text className="text-lg font-bold text-white">
+                    <Text className="text-lg font-bold text-text-primary">
                       {food.calories} {t('common.kcal')}
                     </Text>
                   </View>

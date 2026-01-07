@@ -23,7 +23,9 @@ export function FeaturedWorkoutCard({
   onMore,
 }: FeaturedWorkoutCardProps) {
   return (
-    <View className="rounded-3xl border-2 border-blue-500/40 bg-bg-overlay p-5">
+    <View
+      className="rounded-3xl border-2 bg-bg-overlay p-5"
+      style={{ borderColor: theme.colors.border.blue }}>
       <View className="mb-4 flex-row items-start justify-between">
         <View className="flex-1">
           <View className="mb-3 inline-flex flex-row items-center gap-1.5 self-start rounded-full bg-accent-primary/20 px-3 py-1">

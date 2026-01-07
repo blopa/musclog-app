@@ -72,6 +72,9 @@ export const theme = {
       dark: '#1a2f2a', // Dark border
       accent: '#2a4d3f', // Accent border
       dashed: '#374151', // Dashed border (gray-700)
+      emerald: 'rgba(6, 78, 59, 0.3)', // emerald-900/30
+      blue: 'rgba(59, 130, 246, 0.4)', // blue-500/40
+      gray600: 'rgba(75, 85, 99, 0.4)', // gray-600/40
     },
 
     // Status colors
@@ -110,6 +113,7 @@ export const theme = {
       white30: 'rgba(255, 255, 255, 0.3)', // White with 30% opacity
       white20: 'rgba(255, 255, 255, 0.2)', // White with 20% opacity
       black60Opacity: 'rgba(0, 0, 0, 0.6)', // Black with 60% opacity (for gradients)
+      backdrop: 'rgba(10, 31, 26, 0.8)', // Background primary with 80% opacity (for modals)
     },
 
     // Gradient colors

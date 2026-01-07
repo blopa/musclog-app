@@ -57,9 +57,8 @@ export function ConfirmationModal({
     }
   };
 
-  // Calculate backdrop color from theme background.primary with 80% opacity
-  // Convert hex to rgba: #0a1f1a = rgb(10, 31, 26)
-  const backdropColor = 'rgba(10, 31, 26, 0.8)';
+  // Use backdrop overlay color from theme
+  const backdropColor = theme.colors.overlay.backdrop;
 
   return (
     <Modal
@@ -135,7 +134,7 @@ export function ConfirmationModal({
                 }}
                 onPress={handleConfirm}>
                 <Text
-                  className="text-center text-white"
+                  className="text-center text-text-primary"
                   style={{
                     fontSize: theme.typography.fontSize.sm,
                     fontWeight: theme.typography.fontWeight.bold,

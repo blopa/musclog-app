@@ -13,7 +13,8 @@ export function AICameraButton({ onPress }: AICameraButtonProps) {
 
   return (
     <Pressable
-      className="relative flex-1 rounded-2xl border border-emerald-900/30 py-4"
+      className="relative flex-1 rounded-2xl border py-4"
+      style={{ borderColor: theme.colors.border.emerald }}
       onPress={onPress}>
       <LinearGradient
         colors={theme.colors.gradients.button}

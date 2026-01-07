@@ -37,7 +37,7 @@ export default function SnackbarTestScreen() {
             className="absolute left-0 -ml-2 rounded-full p-2 active:bg-white/5">
             <ChevronLeft size={24} color={theme.colors.text.primary} />
           </Pressable>
-          <Text className="text-xl font-bold text-white">Snackbar Examples</Text>
+          <Text className="text-xl font-bold text-text-primary">Snackbar Examples</Text>
         </View>
       </View>
 
@@ -46,7 +46,7 @@ export default function SnackbarTestScreen() {
         <View className="space-y-8 px-4 py-8">
           {/* Feedback States Section */}
           <View className="gap-6">
-            <Text className="text-4xl font-bold text-white">Feedback States</Text>
+            <Text className="text-4xl font-bold text-text-primary">Feedback States</Text>
 
             <Text
               className="text-lg leading-relaxed"
@@ -71,7 +71,7 @@ export default function SnackbarTestScreen() {
                   }}>
                   <CheckCircle size={24} color={theme.colors.status.success} />
                 </View>
-                <Text className="flex-1 text-left text-xl font-semibold text-white">
+                <Text className="flex-1 text-left text-xl font-semibold text-text-primary">
                   Simulate Successful Save
                 </Text>
                 <ChevronLeft
@@ -95,7 +95,7 @@ export default function SnackbarTestScreen() {
                   }}>
                   <AlertTriangle size={24} color={theme.colors.status.error} />
                 </View>
-                <Text className="flex-1 text-left text-xl font-semibold text-white">
+                <Text className="flex-1 text-left text-xl font-semibold text-text-primary">
                   Simulate Sync Error
                 </Text>
                 <ChevronLeft

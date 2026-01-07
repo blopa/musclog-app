@@ -71,7 +71,7 @@ function RatingSlider({ label, value, onChange, leftLabel, rightLabel }: RatingS
               backgroundColor: theme.colors.background.white,
               borderColor: theme.colors.accent.primary,
               borderWidth: 2,
-              shadowColor: '#000',
+              shadowColor: theme.shadows.md.shadowColor,
               shadowOffset: { width: 0, height: 2 },
               shadowOpacity: 0.4,
               shadowRadius: 6,
