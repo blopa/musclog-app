@@ -1,4 +1,5 @@
 import { Text, Pressable, ViewStyle } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { LucideIcon } from 'lucide-react-native';
 import { theme } from '../theme';
 
@@ -24,6 +25,7 @@ const sizeConfig = {
     fontWeight: theme.typography.fontWeight.bold,
     iconSize: theme.iconSize.sm,
     gap: theme.spacing.gap.sm,
+    shadow: theme.shadows.md,
   },
   md: {
     paddingVertical: theme.spacing.padding.lg,
@@ -32,6 +34,7 @@ const sizeConfig = {
     fontWeight: theme.typography.fontWeight.bold,
     iconSize: theme.iconSize.md,
     gap: theme.spacing.gap.md,
+    shadow: theme.shadows.accentGlow,
   },
   lg: {
     paddingVertical: theme.spacing.padding.xl,
@@ -40,6 +43,7 @@ const sizeConfig = {
     fontWeight: theme.typography.fontWeight.bold,
     iconSize: theme.iconSize.lg,
     gap: theme.spacing.gap.md,
+    shadow: theme.shadows.accentGlowLarge,
   },
 };
 
@@ -63,22 +67,38 @@ export function ConfirmationButton({
 
   return (
     <Pressable
-      className={`flex-row items-center justify-center gap-3 bg-accent-primary ${widthClass}`}
-      style={{
-        paddingVertical: config.paddingVertical,
-        borderRadius: config.borderRadius,
-        ...style,
-      }}
+      className={`${widthClass} active:scale-[0.98] active:opacity-90`}
+      style={[
+        {
+          borderRadius: config.borderRadius,
+          ...config.shadow,
+        },
+        style,
+      ]}
       onPress={onPress}>
-      {Icon && <Icon size={config.iconSize} color={theme.colors.text.black} />}
-      <Text
-        className="uppercase tracking-wide text-text-black"
+      <LinearGradient
+        colors={theme.colors.gradients.accent}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
         style={{
-          fontSize: config.fontSize,
-          fontWeight: config.fontWeight,
+          borderRadius: config.borderRadius,
+          paddingVertical: config.paddingVertical,
+          paddingHorizontal: theme.spacing.padding.base,
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}>
-        {label}
-      </Text>
+        {Icon && <Icon size={config.iconSize} color={theme.colors.text.black} />}
+        <Text
+          className="uppercase tracking-wide text-text-black"
+          style={{
+            fontSize: config.fontSize,
+            fontWeight: config.fontWeight,
+            marginLeft: Icon ? theme.spacing.gap.md : 0,
+          }}>
+          {label}
+        </Text>
+      </LinearGradient>
     </Pressable>
   );
 }
