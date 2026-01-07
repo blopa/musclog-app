@@ -107,10 +107,13 @@ export function WorkoutOptionsModal({
         <View className="flex-1 justify-end">
           {/* Modal Content */}
           <Animated.View
-            className="rounded-t-3xl border-t border-border-dark"
+            className="border-t border-border-dark"
             style={{
               transform: [{ translateY: slideAnim }],
               backgroundColor: theme.colors.background.cardElevated,
+              overflow: 'hidden',
+              borderTopLeftRadius: theme.borderRadius['3xl'],
+              borderTopRightRadius: theme.borderRadius['3xl'],
             }}>
             {/* Header */}
             <View className="flex-row items-center justify-between border-b border-border-dark p-6">
@@ -161,13 +164,6 @@ export function WorkoutOptionsModal({
                   onClose();
                 }}
               />
-            </View>
-
-            {/* Footer */}
-            <View className="items-center pb-8">
-              <Text className="text-sm font-medium" style={{ color: theme.colors.status.info }}>
-                MUSCLOG
-              </Text>
             </View>
           </Animated.View>
         </View>
