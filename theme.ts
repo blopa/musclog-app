@@ -40,6 +40,7 @@ export const theme = {
       // White background with opacity
       white3: 'rgba(255, 255, 255, 0.03)', // White with ~3% opacity
       white5: 'rgba(255, 255, 255, 0.05)', // White with 5% opacity
+      white10: 'rgba(255, 255, 255, 0.1)', // White with 10% opacity
       white12: 'rgba(255, 255, 255, 0.125)', // White with ~12.5% opacity
     },
 
@@ -59,6 +60,7 @@ export const theme = {
       // Text colors with opacity
       primary12: 'rgba(255, 255, 255, 0.125)', // Primary with 12.5% opacity
       primary20: 'rgba(255, 255, 255, 0.2)', // Primary with 20% opacity
+      primary30: 'rgba(255, 255, 255, 0.3)', // Primary with 30% opacity
     },
 
     // Accent colors
@@ -343,7 +345,7 @@ export const theme = {
       elevation: 5,
     },
     roseGlow: {
-      shadowColor: '#be123c', // Using theme.colors.rose.brand value
+      shadowColor: '#da2552', // Using theme.colors.rose.brand value
       shadowOffset: { width: 0, height: 4 },
       shadowOpacity: 0.2,
       shadowRadius: 8,

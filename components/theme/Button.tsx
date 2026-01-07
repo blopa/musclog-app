@@ -16,6 +16,7 @@ type ThemeButtonProps = {
   size?: ThemeButtonSize;
   width?: ThemeButtonWidth;
   variant?: ThemeButtonVariant;
+  disabled?: boolean;
   className?: string;
   style?: ViewStyle;
 };
@@ -64,31 +65,49 @@ export function Button({
   size = 'md',
   width = 'auto',
   variant = 'accent',
+  disabled = false,
   style,
 }: ThemeButtonProps) {
   const config = sizeConfig[size];
   const widthClass = widthClasses[width];
 
-  // Determine colors and styles based on variant
+  // Determine colors and styles based on variant and disabled state
   const isRedVariant = variant === 'discard';
-  const gradientColors: readonly [string, string, ...string[]] = isRedVariant
+  const isDisabled = disabled;
+  
+  const gradientColors: readonly [string, string, ...string[]] = isDisabled
+    ? ([theme.colors.background.white10, theme.colors.background.white10] as const)
+    : isRedVariant
     ? ([theme.colors.rose.brand, theme.colors.rose.brand] as const)
     : theme.colors.gradients.accent;
-  const textColor = isRedVariant ? theme.colors.text.white : theme.colors.text.black;
-  const iconColor = isRedVariant ? theme.colors.text.white : theme.colors.text.black;
-  const shadow = isRedVariant ? theme.shadows.roseGlow : config.shadow;
+  
+  const textColor = isDisabled
+    ? theme.colors.text.primary30
+    : isRedVariant
+    ? theme.colors.text.white
+    : theme.colors.text.black;
+  
+  const iconColor = isDisabled
+    ? theme.colors.text.primary30
+    : isRedVariant
+    ? theme.colors.text.white
+    : theme.colors.text.black;
+  
+  const shadow = isDisabled ? theme.shadows.none : isRedVariant ? theme.shadows.roseGlow : config.shadow;
 
   return (
     <Pressable
-      className={`${widthClass} active:scale-[0.98] active:opacity-90`}
+      className={`${widthClass} ${isDisabled ? '' : 'active:scale-[0.98] active:opacity-90'}`}
       style={[
         {
           borderRadius: config.borderRadius,
           ...shadow,
+          opacity: isDisabled ? 1 : undefined,
         },
         style,
       ]}
-      onPress={onPress}>
+      onPress={isDisabled ? undefined : onPress}
+      disabled={isDisabled}>
       <LinearGradient
         colors={gradientColors}
         start={{ x: 0, y: 0 }}
@@ -103,7 +122,7 @@ export function Button({
         }}>
         {Icon && <Icon size={config.iconSize} color={iconColor} />}
         <Text
-          className={`uppercase tracking-wide ${isRedVariant ? 'text-white' : 'text-text-black'}`}
+          className={`uppercase tracking-wide ${isDisabled ? 'text-white/30' : isRedVariant ? 'text-white' : 'text-text-black'}`}
           style={{
             fontSize: config.fontSize,
             fontWeight: config.fontWeight,
