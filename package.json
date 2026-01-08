@@ -31,7 +31,7 @@
     "@expo/vector-icons": "^15.0.3",
     "@react-native-masked-view/masked-view": "^0.3.2",
     "date-fns": "^4.1.0",
-    "expo": "^54.0.30",
+    "expo": "^54.0.31",
     "expo-blur": "~15.0.8",
     "expo-camera": "~17.0.10",
     "expo-health-connect": "^0.1.1",
