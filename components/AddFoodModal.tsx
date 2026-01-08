@@ -28,7 +28,6 @@ type AddFoodModalProps = {
   onTrackCustomMealPress?: () => void;
 };
 
-
 export function AddFoodModal({
   visible,
   onClose,

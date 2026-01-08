@@ -148,7 +148,7 @@ export const theme = {
       black60Opacity: 'rgba(0, 0, 0, 0.6)', // Black with 60% opacity (for gradients)
       backdrop: 'rgba(10, 31, 26, 0.8)', // Background primary with 80% opacity (for modals)
     },
-    
+
     // Opacity values (for use in style objects)
     opacity: {
       light: 0.4,
@@ -264,7 +264,7 @@ export const theme = {
     // Additional border widths
     accent: 5, // For accent borders like snackbar
   },
-  
+
   // Stroke widths (for icons and SVG)
   strokeWidth: {
     thin: 1,
@@ -506,12 +506,12 @@ export function getBorderRadius(size: keyof typeof theme.borderRadius): number {
 export function addOpacityToHex(hexColor: string, opacity: number): string {
   // Remove # if present
   const hex = hexColor.replace('#', '');
-  
+
   // Parse RGB values
   const r = parseInt(hex.substring(0, 2), 16);
   const g = parseInt(hex.substring(2, 4), 16);
   const b = parseInt(hex.substring(4, 6), 16);
-  
+
   return `rgba(${r}, ${g}, ${b}, ${opacity})`;
 }
 

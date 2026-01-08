@@ -41,9 +41,7 @@ export function RecentWorkoutsCard({
         <View className="flex-row items-center gap-2">
           <View className="flex-row items-center gap-1 rounded-full bg-bg-secondary px-2.5 py-1">
             <Flame size={theme.iconSize.xs} color={theme.colors.status.warning} />
-            <Text
-              className="text-xs font-medium"
-              style={{ color: theme.colors.status.warning }}>
+            <Text className="text-xs font-medium" style={{ color: theme.colors.status.warning }}>
               {calories}
             </Text>
           </View>

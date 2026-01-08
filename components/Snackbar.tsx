@@ -102,9 +102,7 @@ export function Snackbar({ snackbar, onDismiss }: SnackbarProps) {
             {snackbar.message}
           </Text>
           {snackbar.subtitle && (
-            <Text
-              className="mt-0.5 text-sm"
-              style={{ color: theme.colors.text.secondary }}>
+            <Text className="mt-0.5 text-sm" style={{ color: theme.colors.text.secondary }}>
               {snackbar.subtitle}
             </Text>
           )}

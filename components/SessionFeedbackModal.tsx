@@ -112,7 +112,7 @@ export function SessionFeedbackModal({ visible, onClose, onSubmit }: SessionFeed
         style={theme.shadows.accentGlow}
         onPress={handleSubmit}>
         <View className="flex-row items-center justify-center gap-2">
-          <Text className="text-text-black text-base font-bold uppercase tracking-tight">
+          <Text className="text-base font-bold uppercase tracking-tight text-text-black">
             {t('sessionFeedback.submit')}
           </Text>
           <ArrowRight size={theme.iconSize.sm} color={theme.colors.text.black} />

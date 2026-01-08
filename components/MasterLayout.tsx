@@ -58,7 +58,9 @@ export function MasterLayout({ children }: MasterLayoutProps) {
                   color={
                     isActive('/workouts') ? theme.colors.accent.primary : theme.colors.text.tertiary
                   }
-                  strokeWidth={isActive('/workouts') ? theme.strokeWidth.normal : theme.borderWidth.medium}
+                  strokeWidth={
+                    isActive('/workouts') ? theme.strokeWidth.normal : theme.borderWidth.medium
+                  }
                 />
               </View>
               <Text
@@ -80,14 +82,18 @@ export function MasterLayout({ children }: MasterLayoutProps) {
                 left: '50%',
                 transform: [{ translateX: -theme.components.navBar.cameraButtonSize / 2 }],
               }}
-              hitSlop={{ 
-                top: theme.spacing.padding.md, 
-                bottom: theme.spacing.padding.md, 
-                left: theme.spacing.padding.md, 
-                right: theme.spacing.padding.md 
+              hitSlop={{
+                top: theme.spacing.padding.md,
+                bottom: theme.spacing.padding.md,
+                left: theme.spacing.padding.md,
+                right: theme.spacing.padding.md,
               }}>
               <View className="h-20 w-20 items-center justify-center rounded-full bg-accent-primary shadow-lg shadow-accent-primary/50">
-                <Camera size={theme.iconSize.lg} color={theme.colors.text.black} strokeWidth={theme.strokeWidth.normal} />
+                <Camera
+                  size={theme.iconSize.lg}
+                  color={theme.colors.text.black}
+                  strokeWidth={theme.strokeWidth.normal}
+                />
               </View>
             </Pressable>
 
@@ -102,7 +108,9 @@ export function MasterLayout({ children }: MasterLayoutProps) {
                   color={
                     isActive('/food') ? theme.colors.accent.primary : theme.colors.text.tertiary
                   }
-                  strokeWidth={isActive('/food') ? theme.strokeWidth.normal : theme.borderWidth.medium}
+                  strokeWidth={
+                    isActive('/food') ? theme.strokeWidth.normal : theme.borderWidth.medium
+                  }
                 />
               </View>
               <Text
@@ -122,7 +130,9 @@ export function MasterLayout({ children }: MasterLayoutProps) {
                   color={
                     isActive('/coach') ? theme.colors.accent.primary : theme.colors.text.tertiary
                   }
-                  strokeWidth={isActive('/coach') ? theme.strokeWidth.normal : theme.borderWidth.medium}
+                  strokeWidth={
+                    isActive('/coach') ? theme.strokeWidth.normal : theme.borderWidth.medium
+                  }
                 />
               </View>
               <Text

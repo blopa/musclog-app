@@ -4,7 +4,14 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowRight, CheckCircle, X } from 'lucide-react-native';
 import { Button } from '../../components/theme/Button';
 
-type ButtonVariant = 'accent' | 'discard' | 'outline' | 'secondary' | 'secondaryGradient' | 'dashed' | 'gradientCta';
+type ButtonVariant =
+  | 'accent'
+  | 'discard'
+  | 'outline'
+  | 'secondary'
+  | 'secondaryGradient'
+  | 'dashed'
+  | 'gradientCta';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
 const VARIANTS: ButtonVariant[] = [
@@ -27,7 +34,13 @@ type ButtonExampleProps = {
   disabled?: boolean;
 };
 
-function ButtonExample({ variant, size = 'md', label, icon, disabled = false }: ButtonExampleProps) {
+function ButtonExample({
+  variant,
+  size = 'md',
+  label,
+  icon,
+  disabled = false,
+}: ButtonExampleProps) {
   const defaultLabel = label || variant.charAt(0).toUpperCase() + variant.slice(1);
   return (
     <View className="mb-4">
@@ -101,7 +114,12 @@ export default function ButtonTestScreen() {
           {/* All Variants with Icons */}
           <Section title="All Variants with Icons">
             {VARIANTS.map((variant) => (
-              <ButtonExample key={`${variant}-icon`} variant={variant} size="md" icon={ArrowRight} />
+              <ButtonExample
+                key={`${variant}-icon`}
+                variant={variant}
+                size="md"
+                icon={ArrowRight}
+              />
             ))}
           </Section>
 
@@ -152,11 +170,15 @@ export default function ButtonTestScreen() {
               <Button label="Save Changes" variant="accent" icon={CheckCircle} width="full" />
             </View>
             <View className="mb-4">
-              <Text className="mb-2 text-xs font-semibold text-text-secondary">Destructive Action</Text>
+              <Text className="mb-2 text-xs font-semibold text-text-secondary">
+                Destructive Action
+              </Text>
               <Button label="Delete Item" variant="discard" icon={X} width="full" />
             </View>
             <View className="mb-4">
-              <Text className="mb-2 text-xs font-semibold text-text-secondary">Secondary Action</Text>
+              <Text className="mb-2 text-xs font-semibold text-text-secondary">
+                Secondary Action
+              </Text>
               <Button label="Cancel" variant="outline" width="full" />
             </View>
             <View className="mb-4">
@@ -168,7 +190,9 @@ export default function ButtonTestScreen() {
           {/* Button Groups */}
           <Section title="Button Groups">
             <View className="mb-4">
-              <Text className="mb-2 text-xs font-semibold text-text-secondary">Modal Footer Style</Text>
+              <Text className="mb-2 text-xs font-semibold text-text-secondary">
+                Modal Footer Style
+              </Text>
               <View className="flex-row gap-3">
                 <Button label="Cancel" variant="outline" width="flex-1" size="sm" />
                 <Button label="Confirm" variant="accent" width="flex-2" size="sm" />
@@ -190,4 +214,3 @@ export default function ButtonTestScreen() {
     </SafeAreaView>
   );
 }
-

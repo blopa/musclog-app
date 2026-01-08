@@ -32,7 +32,9 @@ export function DailySummaryCard({ calories, activity, gradientColors }: DailySu
         end={{ x: 1, y: 0 }}
         style={{ borderRadius: theme.borderRadius['2xl'], padding: theme.spacing.padding.xl }}>
         <View className="mb-6 flex-row items-start justify-between">
-          <Text className="text-sm font-semibold tracking-wide" style={{ color: theme.colors.overlay.white80 }}>
+          <Text
+            className="text-sm font-semibold tracking-wide"
+            style={{ color: theme.colors.overlay.white80 }}>
             {t('home.dailySummary.title')}
           </Text>
           <View

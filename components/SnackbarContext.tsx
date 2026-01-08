@@ -58,22 +58,23 @@ export function SnackbarProvider({ children }: { children: ReactNode }) {
   }, []);
 
   // Web-specific styles for proper viewport positioning
-  const webContainerStyle = Platform.OS === 'web' 
-    ? ({
-        position: 'fixed' as const,
-        bottom: 0,
-        left: 0,
-        right: 0,
-        width: '100vw',
-      } as any)
-    : {};
+  const webContainerStyle =
+    Platform.OS === 'web'
+      ? ({
+          position: 'fixed' as const,
+          bottom: 0,
+          left: 0,
+          right: 0,
+          width: '100vw',
+        } as any)
+      : {};
 
   return (
     <SnackbarContext.Provider value={{ showSnackbar, dismissSnackbar }}>
       {children}
       {/* Snackbar Container - renders at the bottom of the screen */}
-      <View 
-        className="absolute bottom-0 left-0 right-0 pb-8" 
+      <View
+        className="absolute bottom-0 left-0 right-0 pb-8"
         pointerEvents="box-none"
         style={webContainerStyle}>
         {snackbars.map((snackbar) => (

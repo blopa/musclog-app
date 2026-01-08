@@ -75,7 +75,10 @@ export function SetRow({ set }: SetRowProps) {
           className="text-sm tabular-nums"
           style={{
             color: set.partials > 0 ? theme.colors.accent.primary : theme.colors.text.tertiary,
-            fontWeight: set.partials > 0 ? theme.typography.fontWeight.bold : theme.typography.fontWeight.normal,
+            fontWeight:
+              set.partials > 0
+                ? theme.typography.fontWeight.bold
+                : theme.typography.fontWeight.normal,
           }}>
           {set.partials > 0 ? `+${set.partials}` : '-'}
         </Text>

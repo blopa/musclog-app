@@ -48,7 +48,9 @@ export function CaloriesRemainingCard({ calories, macros }: CaloriesRemainingCar
             {calories.remaining.toLocaleString()}
           </Text>
           <Text className="text-2xl text-text-secondary">/ {calories.total.toLocaleString()}</Text>
-          <Text className="ml-auto text-3xl font-semibold" style={{ color: theme.colors.accent.secondary }}>
+          <Text
+            className="ml-auto text-3xl font-semibold"
+            style={{ color: theme.colors.accent.secondary }}>
             {calories.percentage}%
           </Text>
         </View>

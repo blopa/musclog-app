@@ -68,7 +68,10 @@ export default function WorkoutsScreen() {
             <View className="flex-row items-center justify-between">
               <GradientText
                 colors={theme.colors.gradients.workoutsTitle}
-                style={{ fontSize: theme.typography.fontSize['4xl'], fontWeight: theme.typography.fontWeight.bold }}>
+                style={{
+                  fontSize: theme.typography.fontSize['4xl'],
+                  fontWeight: theme.typography.fontWeight.bold,
+                }}>
                 My Workouts
               </GradientText>
               <View className="ml-4 flex-row gap-4">

@@ -49,11 +49,11 @@
       "carbs": "Carbs",
       "fat": "Fat"
     },
-        "actions": {
-          "scanBarcode": "Scan Barcode",
-          "aiCamera": "AI Camera",
-          "moreFoodOptions": "More Food Options"
-        },
+    "actions": {
+      "scanBarcode": "Scan Barcode",
+      "aiCamera": "AI Camera",
+      "moreFoodOptions": "More Food Options"
+    },
     "meals": {
       "breakfast": "Breakfast",
       "lunch": "Lunch",

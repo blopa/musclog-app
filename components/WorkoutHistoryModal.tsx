@@ -110,9 +110,7 @@ export function WorkoutHistoryModal({
               className="flex-row items-center gap-1.5 rounded-lg px-3 py-1.5"
               style={{ backgroundColor: theme.colors.status.info20 }}>
               <Weight size={theme.iconSize.md} color={theme.colors.status.info} />
-              <Text
-                className="text-sm font-semibold"
-                style={{ color: theme.colors.status.info }}>
+              <Text className="text-sm font-semibold" style={{ color: theme.colors.status.info }}>
                 {totalVolume.toLocaleString()}kg {t('workoutHistory.volume')}
               </Text>
             </View>

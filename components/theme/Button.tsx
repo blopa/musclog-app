@@ -151,8 +151,8 @@ export function Button({
 
   const buttonContent = (
     <>
-      {Icon && (
-        iconBgColor ? (
+      {Icon &&
+        (iconBgColor ? (
           <View
             className="h-8 w-8 items-center justify-center rounded-full"
             style={{ backgroundColor: iconBgColor }}>
@@ -160,8 +160,7 @@ export function Button({
           </View>
         ) : (
           <Icon size={config.iconSize} color={iconColor} />
-        )
-      )}
+        ))}
       <Text
         className={`tracking-wide ${
           isDisabled

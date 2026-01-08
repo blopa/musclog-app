@@ -44,20 +44,21 @@ export function ConfirmationModal({
   const backdropColor = theme.colors.overlay.backdrop;
 
   // Web-specific styles for proper viewport positioning
-  const webBackdropStyle = Platform.OS === 'web' 
-    ? ({
-        position: 'fixed' as const,
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        width: '100vw',
-        height: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      } as any)
-    : {};
+  const webBackdropStyle =
+    Platform.OS === 'web'
+      ? ({
+          position: 'fixed' as const,
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          width: '100vw',
+          height: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        } as any)
+      : {};
 
   return (
     <Modal
@@ -65,15 +66,11 @@ export function ConfirmationModal({
       transparent
       animationType="fade"
       onRequestClose={onClose}
-      statusBarTranslucent={Platform.OS !== 'web'}
-    >
+      statusBarTranslucent={Platform.OS !== 'web'}>
       {/* Backdrop */}
       <Pressable
         className="flex-1 items-center justify-center p-4"
-        style={[
-          { backgroundColor: backdropColor },
-          webBackdropStyle,
-        ]}
+        style={[{ backgroundColor: backdropColor }, webBackdropStyle]}
         onPress={onClose}>
         {/* Modal */}
         <Pressable

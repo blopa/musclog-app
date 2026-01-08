@@ -32,7 +32,11 @@ export function FloatingActionButton({
           alignItems: 'center',
           justifyContent: 'center',
         }}>
-        <Plus size={theme.iconSize['2xl']} color={theme.colors.text.black} strokeWidth={theme.strokeWidth.thick} />
+        <Plus
+          size={theme.iconSize['2xl']}
+          color={theme.colors.text.black}
+          strokeWidth={theme.strokeWidth.thick}
+        />
       </LinearGradient>
     </Pressable>
   );

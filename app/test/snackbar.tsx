@@ -126,9 +126,7 @@ export default function SnackbarTestScreen() {
               />
             </View>
 
-            <Text
-              className="text-center"
-              style={{ color: theme.colors.text.secondary }}>
+            <Text className="text-center" style={{ color: theme.colors.text.secondary }}>
               Active snackbars are displayed below.{'\n'}Swipe to dismiss.
             </Text>
           </View>

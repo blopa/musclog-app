@@ -91,8 +91,20 @@ export function ReplaceExerciseModal({
       maxHeight="85%"
       footer={
         <View className="flex-row gap-3">
-          <Button label={t('replaceExercise.cancel')} variant="outline" size="sm" width="flex-1" onPress={onClose} />
-          <Button label={t('replaceExercise.replace')} icon={Repeat} size="sm" width="flex-2" onPress={handleReplace} />
+          <Button
+            label={t('replaceExercise.cancel')}
+            variant="outline"
+            size="sm"
+            width="flex-1"
+            onPress={onClose}
+          />
+          <Button
+            label={t('replaceExercise.replace')}
+            icon={Repeat}
+            size="sm"
+            width="flex-2"
+            onPress={handleReplace}
+          />
         </View>
       }>
       <View className="flex-1">
