@@ -163,7 +163,7 @@ export function Button({
         )
       )}
       <Text
-        className={`uppercase tracking-wide ${
+        className={`tracking-wide ${
           isDisabled
             ? 'text-white/30'
             : isOutlineVariant
