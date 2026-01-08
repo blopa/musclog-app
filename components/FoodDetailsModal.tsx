@@ -103,11 +103,21 @@ export function FoodDetailsModal({
   // Calculate dash array for circular chart
   const radius = 15.915;
   const circumference = 2 * Math.PI * radius;
-  const proteinDashArray = `${(proteinPercent / 100) * circumference} ${circumference}`;
-  const fatDashArray = `${(fatPercent / 100) * circumference} ${circumference}`;
-  const fatDashOffset = -((proteinPercent / 100) * circumference);
-  const carbsDashArray = `${(carbsPercent / 100) * circumference} ${circumference}`;
-  const carbsDashOffset = -(((proteinPercent + fatPercent) / 100) * circumference);
+  
+  // Calculate dash arrays - each segment should be a portion of the circumference
+  const proteinLength = (proteinPercent / 100) * circumference;
+  const fatLength = (fatPercent / 100) * circumference;
+  const carbsLength = (carbsPercent / 100) * circumference;
+  
+  // Dash arrays: [visible length, gap length]
+  const proteinDashArray = `${proteinLength} ${circumference}`;
+  const fatDashArray = `${fatLength} ${circumference}`;
+  const carbsDashArray = `${carbsLength} ${circumference}`;
+  
+  // Dash offsets: where each segment starts (negative to move clockwise from top)
+  const proteinDashOffset = 0;
+  const fatDashOffset = -proteinLength;
+  const carbsDashOffset = -(proteinLength + fatLength);
 
   const screenWidth = Dimensions.get('window').width;
   const cardWidth = screenWidth - theme.spacing.padding.xl * 2 - theme.spacing.padding.md * 2;
@@ -198,7 +208,7 @@ export function FoodDetailsModal({
                 <View className="flex-row items-center gap-4 rounded-xl border border-white/5 bg-white/5 p-3">
                   <View className="h-24 w-24 flex-none">
                     {/* Circular Chart - Using SVG */}
-                    <Svg width={96} height={96} viewBox="0 0 36 36" style={{ transform: [{ rotate: '-90deg' }] }}>
+                    <Svg width={96} height={96} viewBox="0 0 36 36">
                       {/* Background circle */}
                       <Circle
                         cx="18"
@@ -207,8 +217,9 @@ export function FoodDetailsModal({
                         fill="none"
                         stroke={theme.colors.text.primary20}
                         strokeWidth="6"
+                        transform="rotate(-90 18 18)"
                       />
-                      {/* Protein circle */}
+                      {/* Protein circle - starts at top */}
                       {proteinPercent > 0 && (
                         <Circle
                           cx="18"
@@ -218,11 +229,12 @@ export function FoodDetailsModal({
                           stroke="#6366f1"
                           strokeWidth="6"
                           strokeDasharray={proteinDashArray}
-                          strokeDashoffset="0"
+                          strokeDashoffset={proteinDashOffset}
                           strokeLinecap="round"
+                          transform="rotate(-90 18 18)"
                         />
                       )}
-                      {/* Fat circle */}
+                      {/* Fat circle - continues after protein */}
                       {fatPercent > 0 && (
                         <Circle
                           cx="18"
@@ -234,9 +246,10 @@ export function FoodDetailsModal({
                           strokeDasharray={fatDashArray}
                           strokeDashoffset={fatDashOffset}
                           strokeLinecap="round"
+                          transform="rotate(-90 18 18)"
                         />
                       )}
-                      {/* Carbs circle */}
+                      {/* Carbs circle - continues after fat */}
                       {carbsPercent > 0 && (
                         <Circle
                           cx="18"
@@ -248,10 +261,11 @@ export function FoodDetailsModal({
                           strokeDasharray={carbsDashArray}
                           strokeDashoffset={carbsDashOffset}
                           strokeLinecap="round"
+                          transform="rotate(-90 18 18)"
                         />
                       )}
                     </Svg>
-                    <View className="absolute inset-0 items-center justify-center">
+                    <View className="absolute inset-0 items-center justify-center pointer-events-none">
                       <Text className="text-[10px] font-bold text-white/50">{t('foodDetails.macro')}</Text>
                     </View>
                   </View>
