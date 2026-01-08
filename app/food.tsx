@@ -16,7 +16,6 @@ import { MasterLayout } from '../components/MasterLayout';
 import { CaloriesRemainingCard } from '../components/CaloriesRemainingCard';
 import { FoodItemCard } from '../components/FoodItemCard';
 import { MealSection } from '../components/MealSection';
-import { FloatingActionButton } from '../components/FloatingActionButton';
 import { Button } from '../components/theme/Button';
 import { AddFoodModal } from '../components/AddFoodModal';
 
@@ -185,9 +184,6 @@ export default function FoodScreen() {
             <View className="h-32" />
           </View>
         </ScrollView>
-
-        {/* Floating Action Button */}
-        <FloatingActionButton position="right" bottom={120} />
       </View>
 
       {/* Add Food Modal */}
