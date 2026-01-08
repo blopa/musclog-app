@@ -100,6 +100,9 @@
     },
     "datePicker": {
       "selectDate": "Datum Selecteren",
+      "selectMonthYear": "Maand en Jaar Selecteren",
+      "month": "Maand",
+      "year": "Jaar",
       "today": "Vandaag",
       "tomorrow": "Morgen",
       "nextMonday": "Volgende Maandag",

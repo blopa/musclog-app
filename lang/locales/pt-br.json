@@ -100,6 +100,9 @@
     },
     "datePicker": {
       "selectDate": "Selecionar Data",
+      "selectMonthYear": "Selecionar Mês e Ano",
+      "month": "Mês",
+      "year": "Ano",
       "today": "Hoje",
       "tomorrow": "Amanhã",
       "nextMonday": "Próxima Segunda",

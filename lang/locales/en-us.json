@@ -100,6 +100,9 @@
     },
     "datePicker": {
       "selectDate": "Select Date",
+      "selectMonthYear": "Select Month & Year",
+      "month": "Month",
+      "year": "Year",
       "today": "Today",
       "tomorrow": "Tomorrow",
       "nextMonday": "Next Monday",

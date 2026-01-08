@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable, ScrollView } from 'react-native';
+import { View, Text, Pressable, ScrollView, Modal } from 'react-native';
 import { ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
@@ -15,8 +15,13 @@ import {
   startOfWeek,
   endOfWeek,
   nextMonday,
+  setMonth,
+  setYear,
+  getYear,
+  getMonth,
 } from 'date-fns';
 import { useTranslation } from 'react-i18next';
+import i18n, { LOCALE_MAP, LanguageKeys } from '../lang/lang';
 import { theme } from '../theme';
 import { FullScreenModal } from './FullScreenModal';
 import { Button } from './theme/Button';
@@ -37,6 +42,9 @@ export function DatePickerModal({
   const { t } = useTranslation();
   const [currentMonth, setCurrentMonth] = useState(selectedDate);
   const [tempSelectedDate, setTempSelectedDate] = useState(selectedDate);
+  const [isMonthYearPickerVisible, setIsMonthYearPickerVisible] = useState(false);
+  const [selectedYear, setSelectedYear] = useState(getYear(currentMonth));
+  const [selectedMonthIndex, setSelectedMonthIndex] = useState(getMonth(currentMonth));
 
   const today = new Date();
   const monthStart = startOfMonth(currentMonth);
@@ -87,6 +95,30 @@ export function DatePickerModal({
     return `${dayName},\n${monthDay}`;
   };
 
+  const handleMonthYearSelect = () => {
+    const newDate = setYear(setMonth(new Date(), selectedMonthIndex), selectedYear);
+    setCurrentMonth(startOfMonth(newDate));
+    setIsMonthYearPickerVisible(false);
+  };
+
+  const handleMonthYearPickerOpen = () => {
+    setSelectedYear(getYear(currentMonth));
+    setSelectedMonthIndex(getMonth(currentMonth));
+    setIsMonthYearPickerVisible(true);
+  };
+
+  // Generate years (current year ± 10 years)
+  const currentYear = getYear(new Date());
+  const years = Array.from({ length: 21 }, (_, i) => currentYear - 10 + i);
+
+  // Generate month names using date-fns format with locale support
+  const currentLanguage = (i18n.language || 'en-US') as LanguageKeys;
+  const locale = LOCALE_MAP[currentLanguage] || LOCALE_MAP['en-US'];
+  const monthNames = Array.from({ length: 12 }, (_, i) => {
+    const monthDate = setMonth(new Date(2024, 0, 1), i);
+    return format(monthDate, 'MMMM', { locale });
+  });
+
   return (
     <FullScreenModal visible={visible} onClose={onClose} title="" scrollable={false}>
       <View className="flex-1">
@@ -105,7 +137,9 @@ export function DatePickerModal({
           <View className="rounded-2xl border border-white/5 bg-bg-cardDark p-5">
             {/* Month Navigation */}
             <View className="mb-6 flex-row items-center justify-between px-1">
-              <Pressable className="flex-row items-center gap-1 rounded-lg px-2 py-1">
+              <Pressable
+                className="flex-row items-center gap-1 rounded-lg px-2 py-1"
+                onPress={handleMonthYearPickerOpen}>
                 <Text className="text-base font-semibold text-text-primary">
                   {format(currentMonth, 'MMMM yyyy')}
                 </Text>
@@ -251,6 +285,114 @@ export function DatePickerModal({
           </View>
         </View>
       </View>
+
+      {/* Month/Year Picker Modal */}
+      <Modal
+        visible={isMonthYearPickerVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setIsMonthYearPickerVisible(false)}>
+        <Pressable
+          className="flex-1 items-center justify-center bg-black/60 p-4"
+          onPress={() => setIsMonthYearPickerVisible(false)}>
+          <Pressable
+            className="w-full max-w-sm rounded-2xl border border-white/10 bg-bg-cardDark p-6"
+            onPress={(e) => e.stopPropagation()}>
+            <Text className="mb-4 text-lg font-bold text-text-primary">
+              {t('datePicker.selectMonthYear')}
+            </Text>
+
+            {/* Month Grid */}
+            <View className="mb-6">
+              <Text className="mb-3 text-sm font-semibold uppercase tracking-wider text-text-secondary">
+                {t('datePicker.month')}
+              </Text>
+              <View className="flex-row flex-wrap" style={{ gap: 8 }}>
+                {monthNames.map((month, index) => (
+                  <Pressable
+                    key={index}
+                    className={`flex-1 rounded-lg border px-3 py-2 ${
+                      selectedMonthIndex === index
+                        ? 'border-accent-primary bg-accent-primary/10'
+                        : 'border-white/10 bg-white/5'
+                    }`}
+                    style={{ minWidth: '30%', maxWidth: '30%' }}
+                    onPress={() => setSelectedMonthIndex(index)}>
+                    <Text
+                      className={`text-center text-sm font-medium ${
+                        selectedMonthIndex === index
+                          ? 'text-accent-primary'
+                          : 'text-text-primary'
+                      }`}>
+                      {month.substring(0, 3)}
+                    </Text>
+                  </Pressable>
+                ))}
+              </View>
+            </View>
+
+            {/* Year List */}
+            <View>
+              <Text className="mb-3 text-sm font-semibold uppercase tracking-wider text-text-secondary">
+                {t('datePicker.year')}
+              </Text>
+              <ScrollView
+                className="max-h-48 rounded-lg border border-white/10 bg-white/5"
+                showsVerticalScrollIndicator={false}>
+                {years.map((year) => (
+                  <Pressable
+                    key={year}
+                    className={`border-b border-white/5 px-4 py-3 ${
+                      selectedYear === year ? 'bg-accent-primary/10' : ''
+                    }`}
+                    onPress={() => setSelectedYear(year)}>
+                    <Text
+                      className={`text-base font-medium ${
+                        selectedYear === year ? 'text-accent-primary' : 'text-text-primary'
+                      }`}>
+                      {year}
+                    </Text>
+                  </Pressable>
+                ))}
+              </ScrollView>
+            </View>
+
+            {/* Footer Buttons */}
+            <View className="mt-6 flex-row gap-3">
+              <Button
+                label={t('datePicker.cancel')}
+                variant="outline"
+                size="sm"
+                width="flex-1"
+                onPress={() => setIsMonthYearPickerVisible(false)}
+              />
+              <Pressable
+                className="relative flex-1 overflow-hidden rounded-xl"
+                onPress={handleMonthYearSelect}
+                style={{
+                  height: 40,
+                  shadowColor: '#6366f1',
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.2,
+                  shadowRadius: 4,
+                  elevation: 4,
+                }}>
+                <LinearGradient
+                  colors={['#6366f1', '#29e08e']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  className="absolute inset-0"
+                />
+                <View className="flex h-full items-center justify-center">
+                  <Text className="text-sm font-bold tracking-wide text-text-primary">
+                    {t('datePicker.confirm')}
+                  </Text>
+                </View>
+              </Pressable>
+            </View>
+          </Pressable>
+        </Pressable>
+      </Modal>
     </FullScreenModal>
   );
 }
