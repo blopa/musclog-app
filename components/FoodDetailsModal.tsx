@@ -23,6 +23,7 @@ import Svg, { Circle } from 'react-native-svg';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { FullScreenModal } from './FullScreenModal';
+import { FilterTabs } from './FilterTabs';
 
 type FoodDetailsModalProps = {
   visible: boolean;
@@ -61,7 +62,7 @@ export function FoodDetailsModal({
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [macroViewIndex, setMacroViewIndex] = useState(0);
 
-  const meals = [
+  const mealTabs = [
     { id: 'breakfast', label: t('food.meals.breakfast') },
     { id: 'lunch', label: t('food.meals.lunch') },
     { id: 'dinner', label: t('food.meals.dinner') },
@@ -384,29 +385,13 @@ export function FoodDetailsModal({
             <Text className="mb-3 text-xs font-bold uppercase tracking-wider text-text-secondary">
               {t('foodDetails.meal')}
             </Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} className="pb-2">
-              <View className="flex-row gap-2">
-                {meals.map((meal) => (
-                  <Pressable
-                    key={meal.id}
-                    className={`rounded-xl border px-5 py-3 ${
-                      selectedMeal === meal.id
-                        ? 'border-accent-primary bg-accent-primary'
-                        : 'border-white/10 bg-bg-cardDark'
-                    }`}
-                    onPress={() => setSelectedMeal(meal.id)}>
-                    <Text
-                      className={`text-sm font-medium ${
-                        selectedMeal === meal.id
-                          ? 'font-bold text-text-black'
-                          : 'text-text-secondary'
-                      }`}>
-                      {meal.label}
-                    </Text>
-                  </Pressable>
-                ))}
-              </View>
-            </ScrollView>
+            <FilterTabs
+              tabs={mealTabs}
+              activeTab={selectedMeal}
+              onTabChange={setSelectedMeal}
+              showContainer={false}
+              scrollViewContentContainerStyle={{ paddingHorizontal: 0 }}
+            />
           </View>
 
           {/* Date Selection */}
