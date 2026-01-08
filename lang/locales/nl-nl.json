@@ -60,7 +60,29 @@
       "dinner": "Diner",
       "snacks": "Tussendoortjes",
       "addFood": "Voedsel Toevoegen",
-      "addFoodTo": "Voedsel toevoegen aan {{meal}}"
+      "addFoodTo": "Voedsel toevoegen aan {{meal}}",
+      "trackOther": "Anders Bijhouden"
+    },
+    "addFoodModal": {
+      "title": "Voedsel Toevoegen",
+      "subtitle": "Kies een methode om je maaltijd bij te houden",
+      "trackByMealType": "Bijhouden op Maaltijdtype",
+      "trackingMethod": "Bijhoudmethode",
+      "aiCamera": {
+        "title": "AI Camera",
+        "description": "Directe herkenning en macro schatting",
+        "badge": "NIEUW"
+      },
+      "scanBarcode": {
+        "title": "Barcode Scannen",
+        "description": "Snel verpakte voedingsmiddelen toevoegen"
+      },
+      "searchFood": {
+        "title": "Zoek Voedsel",
+        "description": "Zoek in onze database van meer dan 2M+ items"
+      },
+      "createCustomFood": "Aangepast Voedsel Maken",
+      "trackCustomMeal": "Aangepaste Maaltijd Bijhouden"
     },
     "common": {
       "kcal": "kcal"
@@ -168,6 +190,27 @@
     "confirmation": "Weet je zeker dat je de huidige trainingssessie wilt beëindigen?",
     "finishAndSave": "Afronden en Opslaan",
     "finishAndDiscard": "Afronden en Verwijderen"
+  },
+  "replaceExercise": {
+    "title": "Oefening Vervangen",
+    "cancel": "Annuleren",
+    "replace": "Vervangen"
+  },
+  "startWorkout": {
+    "label": "Training Starten",
+    "start": "Starten"
+  },
+  "notifications": {
+    "header": {
+      "title": "Meldingen",
+      "clearAll": "ALLES WISSEN"
+    },
+    "sections": {
+      "today": " VANDAAG",
+      "yesterday": "GISTEREN",
+      "earlier": "EERDER"
+    },
+    "startNow": "Nu Starten"
   },
   "profile": {
     "header": {

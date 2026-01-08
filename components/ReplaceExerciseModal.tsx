@@ -87,12 +87,12 @@ export function ReplaceExerciseModal({
     <BottomPopUpMenu
       visible={visible}
       onClose={onClose}
-      title="Replace Exercise"
+      title={t('replaceExercise.title')}
       maxHeight="85%"
       footer={
         <View className="flex-row gap-3">
-          <Button label="Cancel" variant="outline" size="sm" width="flex-1" onPress={onClose} />
-          <Button label="Replace" icon={Repeat} size="sm" width="flex-2" onPress={handleReplace} />
+          <Button label={t('replaceExercise.cancel')} variant="outline" size="sm" width="flex-1" onPress={onClose} />
+          <Button label={t('replaceExercise.replace')} icon={Repeat} size="sm" width="flex-2" onPress={handleReplace} />
         </View>
       }>
       <View className="flex-1">

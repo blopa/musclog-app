@@ -60,7 +60,29 @@
       "dinner": "Cena",
       "snacks": "Meriendas",
       "addFood": "Agregar Comida",
-      "addFoodTo": "Agregar comida a {{meal}}"
+      "addFoodTo": "Agregar comida a {{meal}}",
+      "trackOther": "Rastrear Otro"
+    },
+    "addFoodModal": {
+      "title": "Agregar Comida",
+      "subtitle": "Elige un método para rastrear tu comida",
+      "trackByMealType": "Rastrear por Tipo de Comida",
+      "trackingMethod": "Método de Rastreo",
+      "aiCamera": {
+        "title": "Cámara IA",
+        "description": "Reconocimiento instantáneo y estimación de macros",
+        "badge": "NUEVO"
+      },
+      "scanBarcode": {
+        "title": "Escanear Código",
+        "description": "Agregar rápidamente alimentos empaquetados"
+      },
+      "searchFood": {
+        "title": "Buscar Comida",
+        "description": "Busca en nuestra base de datos de más de 2M+ artículos"
+      },
+      "createCustomFood": "Crear Comida Personalizada",
+      "trackCustomMeal": "Rastrear Comida Personalizada"
     },
     "common": {
       "kcal": "kcal"
@@ -168,6 +190,27 @@
     "confirmation": "¿Estás seguro de que quieres finalizar la sesión de entrenamiento actual?",
     "finishAndSave": "Finalizar y Guardar",
     "finishAndDiscard": "Finalizar y Descartar"
+  },
+  "replaceExercise": {
+    "title": "Reemplazar Ejercicio",
+    "cancel": "Cancelar",
+    "replace": "Reemplazar"
+  },
+  "startWorkout": {
+    "label": "Iniciar Entrenamiento",
+    "start": "Iniciar"
+  },
+  "notifications": {
+    "header": {
+      "title": "Notificaciones",
+      "clearAll": "LIMPIAR TODO"
+    },
+    "sections": {
+      "today": "HOY",
+      "yesterday": "AYER",
+      "earlier": "ANTES"
+    },
+    "startNow": "Iniciar Ahora"
   },
   "profile": {
     "header": {

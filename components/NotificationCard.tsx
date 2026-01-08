@@ -1,6 +1,7 @@
 import { View, Text } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { Button } from './theme/Button';
 
@@ -27,6 +28,7 @@ export function NotificationCard({
   hasAction,
   onActionPress,
 }: NotificationCardProps) {
+  const { t } = useTranslation();
   const isAiInsight = type === 'ai-insight';
 
   const content = (
@@ -65,7 +67,7 @@ export function NotificationCard({
           {hasAction ? (
             <>
               <Button
-                label="Start Now"
+                label={t('notifications.startNow')}
                 size="sm"
                 width="auto"
                 onPress={onActionPress}

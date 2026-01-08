@@ -44,28 +44,28 @@ export function AddFoodModal({
   const mealTypes = [
     {
       icon: UtensilsCrossed,
-      label: 'Breakfast',
+      label: t('food.meals.breakfast'),
       iconBgColor: 'rgba(249, 115, 22, 0.1)',
       iconColor: '#f97316',
       mealType: 'breakfast',
     },
     {
       icon: UtensilsCrossed,
-      label: 'Lunch',
+      label: t('food.meals.lunch'),
       iconBgColor: 'rgba(16, 185, 129, 0.1)',
       iconColor: '#10b981',
       mealType: 'lunch',
     },
     {
       icon: UtensilsCrossed,
-      label: 'Dinner',
+      label: t('food.meals.dinner'),
       iconBgColor: 'rgba(99, 102, 241, 0.1)',
       iconColor: '#6366f1',
       mealType: 'dinner',
     },
     {
       icon: UtensilsCrossed,
-      label: 'Snack',
+      label: t('food.meals.snacks'),
       iconBgColor: 'rgba(234, 179, 8, 0.1)',
       iconColor: '#eab308',
       mealType: 'snack',
@@ -76,8 +76,8 @@ export function AddFoodModal({
     <BottomPopUpMenu
       visible={visible}
       onClose={onClose}
-      title="Add Food"
-      subtitle="Choose a method to track your meal"
+      title={t('food.addFoodModal.title')}
+      subtitle={t('food.addFoodModal.subtitle')}
       maxHeight="92%">
       <ScrollView
         className="flex-1"
@@ -89,7 +89,7 @@ export function AddFoodModal({
             <View className="mb-4 flex-row items-center gap-2">
               <Clock size={theme.iconSize.sm} color={theme.colors.accent.primary} />
               <Text className="text-xs font-bold uppercase tracking-wider text-text-secondary">
-                Track by Meal Type
+                {t('food.addFoodModal.trackByMealType')}
               </Text>
             </View>
             <View className="flex-row flex-wrap" style={{ gap: theme.spacing.gap.md }}>
@@ -110,7 +110,7 @@ export function AddFoodModal({
               <View style={{ flex: 2, minWidth: '60%', maxWidth: '66.666%', alignSelf: 'stretch' }}>
                 <MealTypeButton
                   icon={MoreHorizontal}
-                  label="Track Other"
+                  label={t('food.meals.trackOther')}
                   iconBgColor="rgba(107, 114, 128, 0.1)"
                   iconColor={theme.colors.text.secondary}
                   span={2}
@@ -128,16 +128,16 @@ export function AddFoodModal({
             <View className="mb-4 flex-row items-center gap-2">
               <QrCode size={theme.iconSize.sm} color={theme.colors.accent.primary} />
               <Text className="text-xs font-bold uppercase tracking-wider text-text-secondary">
-                Tracking Method
+                {t('food.addFoodModal.trackingMethod')}
               </Text>
             </View>
             <View className="gap-3">
               <TrackingMethodButton
                 icon={Sparkles}
-                title="AI Camera"
-                description="Instant recognition & macro estimation"
+                title={t('food.addFoodModal.aiCamera.title')}
+                description={t('food.addFoodModal.aiCamera.description')}
                 iconGradient={['#6366f1', '#29e08e'] as const}
-                badge="NEW"
+                badge={t('food.addFoodModal.aiCamera.badge')}
                 highlighted={true}
                 onPress={() => {
                   onAiCameraPress?.();
@@ -146,8 +146,8 @@ export function AddFoodModal({
               />
               <TrackingMethodButton
                 icon={ScanLine}
-                title="Scan Barcode"
-                description="Quickly add packaged foods"
+                title={t('food.addFoodModal.scanBarcode.title')}
+                description={t('food.addFoodModal.scanBarcode.description')}
                 iconBgColor={theme.colors.background.cardDark}
                 onPress={() => {
                   onScanBarcodePress?.();
@@ -156,8 +156,8 @@ export function AddFoodModal({
               />
               <TrackingMethodButton
                 icon={Search}
-                title="Search for Food"
-                description="Search our database of 2M+ items"
+                title={t('food.addFoodModal.searchFood.title')}
+                description={t('food.addFoodModal.searchFood.description')}
                 iconBgColor={theme.colors.background.cardDark}
                 onPress={() => {
                   onSearchFoodPress?.();
@@ -166,7 +166,7 @@ export function AddFoodModal({
               />
               <View className="flex-row gap-3 pt-1">
                 <Button
-                  label="Create Custom Food"
+                  label={t('food.addFoodModal.createCustomFood')}
                   icon={Edit}
                   iconBgColor="rgba(59, 130, 246, 0.1)"
                   iconColor="#3b82f6"
@@ -179,7 +179,7 @@ export function AddFoodModal({
                   }}
                 />
                 <Button
-                  label="Track Custom Meal"
+                  label={t('food.addFoodModal.trackCustomMeal')}
                   icon={UtensilsCrossed}
                   iconBgColor="rgba(168, 85, 247, 0.1)"
                   iconColor="#a855f7"

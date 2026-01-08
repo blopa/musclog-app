@@ -60,7 +60,29 @@
       "dinner": "Dinner",
       "snacks": "Snacks",
       "addFood": "Add Food",
-      "addFoodTo": "Add food to {{meal}}"
+      "addFoodTo": "Add food to {{meal}}",
+      "trackOther": "Track Other"
+    },
+    "addFoodModal": {
+      "title": "Add Food",
+      "subtitle": "Choose a method to track your meal",
+      "trackByMealType": "Track by Meal Type",
+      "trackingMethod": "Tracking Method",
+      "aiCamera": {
+        "title": "AI Camera",
+        "description": "Instant recognition & macro estimation",
+        "badge": "NEW"
+      },
+      "scanBarcode": {
+        "title": "Scan Barcode",
+        "description": "Quickly add packaged foods"
+      },
+      "searchFood": {
+        "title": "Search for Food",
+        "description": "Search our database of 2M+ items"
+      },
+      "createCustomFood": "Create Custom Food",
+      "trackCustomMeal": "Track Custom Meal"
     },
     "common": {
       "kcal": "kcal"
@@ -75,7 +97,8 @@
       "today": "TODAY",
       "yesterday": "YESTERDAY",
       "earlier": "EARLIER"
-    }
+    },
+    "startNow": "Start Now"
   },
   "userMenu": {
     "greeting": "Account",
