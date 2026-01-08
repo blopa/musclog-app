@@ -279,6 +279,8 @@ export function AddFoodModal({
                 <Button
                   label="Create Custom Food"
                   icon={Edit}
+                  iconBgColor="rgba(59, 130, 246, 0.1)"
+                  iconColor="#3b82f6"
                   variant="outline"
                   size="sm"
                   width="flex-1"
@@ -290,6 +292,8 @@ export function AddFoodModal({
                 <Button
                   label="Track Custom Meal"
                   icon={UtensilsCrossed}
+                  iconBgColor="rgba(168, 85, 247, 0.1)"
+                  iconColor="#a855f7"
                   variant="outline"
                   size="sm"
                   width="flex-1"

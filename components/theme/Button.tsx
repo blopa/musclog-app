@@ -21,6 +21,8 @@ type ThemeButtonProps = {
   label: string;
   onPress?: () => void;
   icon?: LucideIcon;
+  iconBgColor?: string;
+  iconColor?: string;
   size?: ThemeButtonSize;
   width?: ThemeButtonWidth;
   variant?: ThemeButtonVariant;
@@ -70,6 +72,8 @@ export function Button({
   label,
   onPress,
   icon: Icon,
+  iconBgColor,
+  iconColor: customIconColor,
   size = 'md',
   width = 'auto',
   variant = 'accent',
@@ -142,9 +146,22 @@ export function Button({
           ? theme.shadows.roseGlow
           : config.shadow;
 
+  const finalIconColor = customIconColor || iconColor;
+  const iconSize = iconBgColor ? theme.iconSize.sm : config.iconSize;
+
   const buttonContent = (
     <>
-      {Icon && <Icon size={config.iconSize} color={iconColor} />}
+      {Icon && (
+        iconBgColor ? (
+          <View
+            className="h-8 w-8 items-center justify-center rounded-full"
+            style={{ backgroundColor: iconBgColor }}>
+            <Icon size={iconSize} color={finalIconColor} />
+          </View>
+        ) : (
+          <Icon size={config.iconSize} color={iconColor} />
+        )
+      )}
       <Text
         className={`uppercase tracking-wide ${
           isDisabled
@@ -164,7 +181,7 @@ export function Button({
         style={{
           fontSize: config.fontSize,
           fontWeight: config.fontWeight,
-          marginLeft: Icon ? theme.spacing.gap.md : 0,
+          marginLeft: Icon ? (iconBgColor ? theme.spacing.gap.md : theme.spacing.gap.md) : 0,
           color: textColor,
         }}>
         {label}
