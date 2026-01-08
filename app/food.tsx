@@ -18,6 +18,7 @@ import { FoodItemCard } from '../components/FoodItemCard';
 import { MealSection } from '../components/MealSection';
 import { Button } from '../components/theme/Button';
 import { AddFoodModal } from '../components/AddFoodModal';
+import { FoodSearchModal } from '../components/FoodSearchModal';
 
 const FOOD_DATA = {
   date: 'Today, Oct 24',
@@ -84,6 +85,8 @@ const FOOD_DATA = {
 export default function FoodScreen() {
   const { t } = useTranslation();
   const [isAddFoodModalVisible, setIsAddFoodModalVisible] = useState(false);
+  const [isFoodSearchModalVisible, setIsFoodSearchModalVisible] = useState(false);
+  const [selectedMealType, setSelectedMealType] = useState('Breakfast');
   const currentLanguage = (i18n.language || 'en-US') as LanguageKeys;
   const locale = LOCALE_MAP[currentLanguage] || LOCALE_MAP['en-US'];
   const today = new Date();
@@ -191,7 +194,17 @@ export default function FoodScreen() {
         visible={isAddFoodModalVisible}
         onClose={() => setIsAddFoodModalVisible(false)}
         onMealTypeSelect={(mealType) => {
-          console.log('Selected meal type:', mealType);
+          // Map meal type to display name
+          const mealTypeMap: Record<string, string> = {
+            breakfast: 'Breakfast',
+            lunch: 'Lunch',
+            dinner: 'Dinner',
+            snack: 'Snacks',
+            other: 'Other',
+          };
+          setSelectedMealType(mealTypeMap[mealType] || 'Breakfast');
+          setIsAddFoodModalVisible(false);
+          setIsFoodSearchModalVisible(true);
         }}
         onAiCameraPress={() => {
           console.log('AI Camera pressed');
@@ -200,13 +213,32 @@ export default function FoodScreen() {
           console.log('Scan Barcode pressed');
         }}
         onSearchFoodPress={() => {
-          console.log('Search Food pressed');
+          setIsAddFoodModalVisible(false);
+          setIsFoodSearchModalVisible(true);
         }}
         onCreateCustomFoodPress={() => {
           console.log('Create Custom Food pressed');
         }}
         onTrackCustomMealPress={() => {
           console.log('Track Custom Meal pressed');
+        }}
+      />
+
+      {/* Food Search Modal */}
+      <FoodSearchModal
+        visible={isFoodSearchModalVisible}
+        onClose={() => setIsFoodSearchModalVisible(false)}
+        mealType={selectedMealType}
+        onCreatePress={() => {
+          console.log('Create food pressed');
+        }}
+        onBarcodeScanPress={() => {
+          console.log('Barcode scan pressed');
+        }}
+        onFoodSelect={(food) => {
+          console.log('Food selected:', food);
+          // Handle food selection (e.g., add to meal)
+          setIsFoodSearchModalVisible(false);
         }}
       />
     </MasterLayout>
