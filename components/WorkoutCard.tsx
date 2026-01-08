@@ -1,5 +1,6 @@
 import { View, Text, Image, Pressable, ImageSourcePropType } from 'react-native';
 import { Archive } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { StartWorkoutButton } from './StartWorkoutButton';
 
@@ -22,16 +23,18 @@ export function WorkoutCard({
   onStart,
   onArchive,
 }: WorkoutCardProps) {
+  const { t } = useTranslation();
+
   return (
     <View className="rounded-3xl border border-border-light bg-bg-overlay p-5">
       <View className="mb-4 flex-row items-start justify-between">
         <View className="flex-1">
           <Text className="mb-2 text-sm" style={{ color: theme.colors.text.gray500 }}>
-            Last: {lastCompleted}
+            {t('workouts.last')}: {lastCompleted}
           </Text>
           <Text className="mb-2 text-2xl font-bold text-text-primary">{name}</Text>
           <Text className="text-sm text-text-secondary">
-            {exerciseCount} Exercises • {duration}
+            {exerciseCount} {t('workouts.exercises')} • {duration}
           </Text>
         </View>
         <View
@@ -44,7 +47,7 @@ export function WorkoutCard({
       <View className="flex-row items-center justify-between">
         <Pressable className="flex-row items-center gap-2" onPress={onArchive}>
           <Archive size={theme.iconSize.sm} color={theme.colors.text.secondary} />
-          <Text className="text-sm text-text-secondary">Archive</Text>
+          <Text className="text-sm text-text-secondary">{t('workouts.archive')}</Text>
         </Pressable>
         <StartWorkoutButton variant="secondary" onPress={onStart} />
       </View>

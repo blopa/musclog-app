@@ -1,5 +1,6 @@
 import { View, Text, Image, Pressable, ImageSourcePropType } from 'react-native';
 import { MoreVertical, Clock } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { StartWorkoutButton } from './StartWorkoutButton';
 
@@ -22,6 +23,8 @@ export function FeaturedWorkoutCard({
   onStart,
   onMore,
 }: FeaturedWorkoutCardProps) {
+  const { t } = useTranslation();
+
   return (
     <View
       className="rounded-3xl border-2 bg-bg-overlay p-5"
@@ -34,7 +37,7 @@ export function FeaturedWorkoutCard({
           </View>
           <Text className="mb-2 text-2xl font-bold text-text-primary">{name}</Text>
           <Text className="text-sm text-text-secondary">
-            {exerciseCount} Exercises • {duration}
+            {exerciseCount} {t('workouts.exercises')} • {duration}
           </Text>
         </View>
         <View

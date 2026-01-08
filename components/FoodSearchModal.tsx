@@ -9,7 +9,7 @@ import {
   ImageSourcePropType,
 } from 'react-native';
 import { Search, QrCode, Plus, Sparkles } from 'lucide-react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { FullScreenModal } from './FullScreenModal';
 
@@ -33,13 +33,6 @@ type FoodSearchModalProps = {
   onBarcodeScanPress?: () => void;
   onFoodSelect?: (food: FoodItem) => void;
 };
-
-const FILTER_TABS = [
-  { id: 'all', label: 'All Results' },
-  { id: 'myFoods', label: 'My Foods' },
-  { id: 'meals', label: 'Meals' },
-  { id: 'recipes', label: 'Recipes' },
-];
 
 const RECENT_HISTORY: FoodItem[] = [
   {
@@ -241,12 +234,22 @@ export function FoodSearchModal({
   onBarcodeScanPress,
   onFoodSelect,
 }: FoodSearchModalProps) {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState('all');
 
+  const FILTER_TABS = [
+    { id: 'all', label: t('foodSearch.filters.allResults') },
+    { id: 'myFoods', label: t('foodSearch.filters.myFoods') },
+    { id: 'meals', label: t('foodSearch.filters.meals') },
+    { id: 'recipes', label: t('foodSearch.filters.recipes') },
+  ];
+
   const headerRight = (
     <Pressable onPress={onCreatePress}>
-      <Text className="text-sm font-semibold text-accent-secondary">+ Create Meal</Text>
+      <Text className="text-sm font-semibold text-accent-secondary">
+        {t('foodSearch.createMeal')}
+      </Text>
     </Pressable>
   );
 
@@ -254,7 +257,7 @@ export function FoodSearchModal({
     <FullScreenModal
       visible={visible}
       onClose={onClose}
-      title={`Add to ${mealType}`}
+      title={t('food.meals.addFoodTo', { meal: mealType })}
       headerRight={headerRight}
       scrollable={false}>
       <View className="flex-1 bg-bg-primary">
@@ -270,7 +273,7 @@ export function FoodSearchModal({
               />
             </View>
             <TextInput
-              placeholder={`Search for food (e.g. 'Oats')`}
+              placeholder={t('food.addFoodModal.searchFood.title')}
               placeholderTextColor={theme.colors.text.secondary}
               value={searchQuery}
               onChangeText={setSearchQuery}
@@ -311,9 +314,9 @@ export function FoodSearchModal({
             {/* Recent History Section */}
             <View>
               <SectionHeader
-                title="Recent History"
+                title={t('foodSearch.recentHistory')}
                 rightAction={{
-                  label: 'View All',
+                  label: t('foodSearch.viewAll'),
                   onPress: () => {
                     // Handle view all
                   },
@@ -328,7 +331,7 @@ export function FoodSearchModal({
 
             {/* Common Foods Section */}
             <View>
-              <SectionHeader title="Common Breakfast Foods" icon={Sparkles} />
+              <SectionHeader title={t('foodSearch.commonBreakfastFoods')} icon={Sparkles} />
               <View className="gap-1.5">
                 {COMMON_FOODS.map((food) => (
                   <FoodItemCard key={food.id} food={food} onAddPress={() => onFoodSelect?.(food)} />

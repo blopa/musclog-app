@@ -196,6 +196,24 @@
     "cancel": "Annuleren",
     "replace": "Vervangen"
   },
+  "workouts": {
+    "archive": "Archiveren",
+    "last": "Laatste",
+    "exercises": "Oefeningen",
+    "start": "Starten"
+  },
+  "foodSearch": {
+    "recentHistory": "Recente Geschiedenis",
+    "viewAll": "Alles Bekijken",
+    "commonBreakfastFoods": "Veelvoorkomende Ontbijtproducten",
+    "createMeal": "+ Maaltijd Maken",
+    "filters": {
+      "allResults": "Alle Resultaten",
+      "myFoods": "Mijn Voedsel",
+      "meals": "Maaltijden",
+      "recipes": "Recepten"
+    }
+  },
   "startWorkout": {
     "label": "Training Starten",
     "start": "Starten"

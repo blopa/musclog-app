@@ -196,6 +196,24 @@
     "cancel": "Cancelar",
     "replace": "Reemplazar"
   },
+  "workouts": {
+    "archive": "Archivar",
+    "last": "Último",
+    "exercises": "Ejercicios",
+    "start": "Iniciar"
+  },
+  "foodSearch": {
+    "recentHistory": "Historial Reciente",
+    "viewAll": "Ver Todo",
+    "commonBreakfastFoods": "Alimentos Comunes para el Desayuno",
+    "createMeal": "+ Crear Comida",
+    "filters": {
+      "allResults": "Todos los Resultados",
+      "myFoods": "Mis Alimentos",
+      "meals": "Comidas",
+      "recipes": "Recetas"
+    }
+  },
   "startWorkout": {
     "label": "Iniciar Entrenamiento",
     "start": "Iniciar"
