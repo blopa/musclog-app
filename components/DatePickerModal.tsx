@@ -88,11 +88,7 @@ export function DatePickerModal({
   };
 
   return (
-    <FullScreenModal
-      visible={visible}
-      onClose={onClose}
-      title=""
-      scrollable={false}>
+    <FullScreenModal visible={visible} onClose={onClose} title="" scrollable={false}>
       <View className="flex-1">
         {/* Title Section */}
         <View className="px-6 pb-6 pt-2">
@@ -192,17 +188,14 @@ export function DatePickerModal({
             horizontal
             showsHorizontalScrollIndicator={false}
             className="mt-6 pb-2"
-            contentContainerStyle={{ gap: 12 }}>
+            contentContainerStyle={{ gap: 12 }}
+          >
             <Button
               label={t('datePicker.today')}
               variant="secondary"
               size="sm"
               width="auto"
               onPress={() => handleQuickDate('today')}
-              contentStyle={{
-                paddingVertical: 8,
-                paddingHorizontal: 16,
-              }}
             />
             <Button
               label={t('datePicker.tomorrow')}
@@ -210,10 +203,6 @@ export function DatePickerModal({
               size="sm"
               width="auto"
               onPress={() => handleQuickDate('tomorrow')}
-              contentStyle={{
-                paddingVertical: 8,
-                paddingHorizontal: 16,
-              }}
             />
             <Button
               label={t('datePicker.nextMonday')}
@@ -221,10 +210,6 @@ export function DatePickerModal({
               size="sm"
               width="auto"
               onPress={() => handleQuickDate('nextMonday')}
-              contentStyle={{
-                paddingVertical: 8,
-                paddingHorizontal: 16,
-              }}
             />
           </ScrollView>
         </View>
