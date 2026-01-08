@@ -97,6 +97,14 @@
       "today": "Vandaag",
       "addFood": "Voedsel Toevoegen",
       "macro": "MACRO"
+    },
+    "datePicker": {
+      "selectDate": "Datum Selecteren",
+      "today": "Vandaag",
+      "tomorrow": "Morgen",
+      "nextMonday": "Volgende Maandag",
+      "cancel": "Annuleren",
+      "confirm": "Bevestigen"
     }
   },
   "notifications": {

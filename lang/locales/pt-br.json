@@ -97,6 +97,14 @@
       "today": "Hoje",
       "addFood": "Adicionar Alimento",
       "macro": "MACRO"
+    },
+    "datePicker": {
+      "selectDate": "Selecionar Data",
+      "today": "Hoje",
+      "tomorrow": "Amanhã",
+      "nextMonday": "Próxima Segunda",
+      "cancel": "Cancelar",
+      "confirm": "Confirmar"
     }
   },
   "notifications": {

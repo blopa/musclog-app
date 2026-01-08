@@ -1,7 +1,6 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, Pressable, ScrollView, TextInput, Platform, Dimensions } from 'react-native';
+import { View, Text, Pressable, ScrollView, TextInput } from 'react-native';
 import {
-  ArrowLeft,
   MoreVertical,
   BookmarkPlus,
   Minus,
@@ -12,10 +11,12 @@ import {
 } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { Circle } from 'react-native-svg';
+import { format, isSameDay } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { FullScreenModal } from './FullScreenModal';
 import { FilterTabs } from './FilterTabs';
+import { DatePickerModal } from './DatePickerModal';
 
 type FoodDetailsModalProps = {
   visible: boolean;
@@ -50,6 +51,7 @@ export function FoodDetailsModal({
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [macroViewIndex, setMacroViewIndex] = useState(0);
   const [scrollViewWidth, setScrollViewWidth] = useState(0);
+  const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
 
   const mealTabs = [
@@ -425,7 +427,9 @@ export function FoodDetailsModal({
             <Text className="mb-2 text-xs font-bold uppercase tracking-wider text-text-secondary">
               {t('foodDetails.date')}
             </Text>
-            <Pressable className="flex-row items-center justify-between rounded-lg border border-white/10 bg-bg-cardDark p-4">
+            <Pressable
+              className="flex-row items-center justify-between rounded-lg border border-white/10 bg-bg-cardDark p-4"
+              onPress={() => setIsDatePickerVisible(true)}>
               <View className="flex-row items-center gap-3">
                 <View
                   className="h-10 w-10 items-center justify-center rounded-full"
@@ -435,13 +439,13 @@ export function FoodDetailsModal({
                   <Calendar size={theme.iconSize.md} color={theme.colors.accent.primary} />
                 </View>
                 <View>
-                  <Text className="font-medium text-text-primary">{t('foodDetails.today')}</Text>
+                  <Text className="font-medium text-text-primary">
+                    {isSameDay(selectedDate, new Date())
+                      ? t('foodDetails.today')
+                      : format(selectedDate, 'EEEE')}
+                  </Text>
                   <Text className="text-xs text-text-secondary">
-                    {selectedDate.toLocaleDateString('en-US', {
-                      month: 'long',
-                      day: 'numeric',
-                      year: 'numeric',
-                    })}
+                    {format(selectedDate, 'MMMM d, yyyy')}
                   </Text>
                 </View>
               </View>
@@ -475,6 +479,17 @@ export function FoodDetailsModal({
           </View>
         </Pressable>
       </View>
+
+      {/* Date Picker Modal */}
+      <DatePickerModal
+        visible={isDatePickerVisible}
+        onClose={() => setIsDatePickerVisible(false)}
+        selectedDate={selectedDate}
+        onDateSelect={(date) => {
+          setSelectedDate(date);
+          setIsDatePickerVisible(false);
+        }}
+      />
     </FullScreenModal>
   );
 }
