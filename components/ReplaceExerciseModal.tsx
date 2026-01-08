@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { BottomPopUpMenu } from './BottomPopUpMenu';
 import { Button } from './theme/Button';
+import { FilterTabs } from './FilterTabs';
 
 export type Exercise = {
   id: string;
@@ -49,7 +50,12 @@ const DEFAULT_EXERCISES: Exercise[] = [
   },
 ];
 
-const MUSCLE_GROUPS = ['All', 'Chest', 'Shoulders', 'Triceps'];
+const MUSCLE_GROUP_TABS = [
+  { id: 'All', label: 'All' },
+  { id: 'Chest', label: 'Chest' },
+  { id: 'Shoulders', label: 'Shoulders' },
+  { id: 'Triceps', label: 'Triceps' },
+];
 
 export function ReplaceExerciseModal({
   visible,
@@ -85,20 +91,8 @@ export function ReplaceExerciseModal({
       maxHeight="85%"
       footer={
         <View className="flex-row gap-3">
-          <Button
-            label="Cancel"
-            variant="outline"
-            size="sm"
-            width="flex-1"
-            onPress={onClose}
-          />
-          <Button
-            label="Replace"
-            icon={Repeat}
-            size="sm"
-            width="flex-2"
-            onPress={handleReplace}
-          />
+          <Button label="Cancel" variant="outline" size="sm" width="flex-1" onPress={onClose} />
+          <Button label="Replace" icon={Repeat} size="sm" width="flex-2" onPress={handleReplace} />
         </View>
       }>
       <View className="flex-1">
@@ -140,41 +134,13 @@ export function ReplaceExerciseModal({
           </View>
 
           {/* Filter Tabs */}
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            className="flex-row"
-            contentContainerStyle={{ gap: theme.spacing.gap.sm }}>
-            {MUSCLE_GROUPS.map((group) => {
-              const isActive = selectedFilter === group;
-              return (
-                <Pressable
-                  key={group}
-                  onPress={() => setSelectedFilter(group)}
-                  className="rounded-lg border"
-                  style={{
-                    backgroundColor: isActive
-                      ? theme.colors.accent.primary20
-                      : theme.colors.background.cardDark,
-                    borderColor: isActive
-                      ? theme.colors.accent.primary40
-                      : 'transparent',
-                    borderRadius: theme.borderRadius.lg,
-                    paddingHorizontal: theme.spacing.padding.md,
-                    paddingVertical: theme.spacing.padding.sm,
-                  }}>
-                  <Text
-                    style={{
-                      fontSize: theme.typography.fontSize.sm,
-                      fontWeight: theme.typography.fontWeight.semibold,
-                      color: isActive ? theme.colors.accent.primary : theme.colors.text.secondary,
-                    }}>
-                    {group}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </ScrollView>
+          <FilterTabs
+            tabs={MUSCLE_GROUP_TABS}
+            activeTab={selectedFilter}
+            onTabChange={setSelectedFilter}
+            showContainer={false}
+            scrollViewContentContainerStyle={{ paddingHorizontal: 0 }}
+          />
         </View>
 
         {/* Exercise List Section */}
@@ -203,9 +169,7 @@ export function ReplaceExerciseModal({
                       ? theme.colors.accent.primary10
                       : theme.colors.background.cardDark,
                     borderWidth: theme.borderWidth.thin,
-                    borderColor: isSelected
-                      ? theme.colors.accent.primary40
-                      : 'transparent',
+                    borderColor: isSelected ? theme.colors.accent.primary40 : 'transparent',
                     borderRadius: theme.borderRadius.xl,
                     padding: theme.spacing.padding.base,
                     ...theme.shadows.sm,
@@ -260,7 +224,11 @@ export function ReplaceExerciseModal({
                         width: theme.iconSize.md,
                         height: theme.iconSize.md,
                       }}>
-                      <Check size={theme.iconSize.xs} color={theme.colors.text.black} strokeWidth={theme.strokeWidth.thick} />
+                      <Check
+                        size={theme.iconSize.xs}
+                        color={theme.colors.text.black}
+                        strokeWidth={theme.strokeWidth.thick}
+                      />
                     </View>
                   )}
                 </Pressable>
