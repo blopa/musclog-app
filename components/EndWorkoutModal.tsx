@@ -56,6 +56,22 @@ export function EndWorkoutModal({
     }
   }, [visible, scaleAnim, opacityAnim]);
 
+  // Web-specific styles for proper viewport positioning
+  const webBackdropStyle = Platform.OS === 'web' 
+    ? ({
+        position: 'fixed' as const,
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: '100vw',
+        height: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      } as any)
+    : {};
+
   return (
     <Modal
       visible={visible}
@@ -67,9 +83,14 @@ export function EndWorkoutModal({
       {/* Backdrop */}
       <Pressable
         className="flex-1"
-        style={{ backgroundColor: theme.colors.overlay.black60 }}
+        style={[
+          { backgroundColor: theme.colors.overlay.black60 },
+          webBackdropStyle,
+        ]}
         onPress={onClose}>
-        <View className="flex-1 items-center justify-center px-6">
+        <View 
+          className="flex-1 items-center justify-center px-6" 
+          style={Platform.OS === 'web' ? ({ display: 'flex', alignItems: 'center', justifyContent: 'center' } as any) : undefined}>
           {/* Modal Content */}
           <View>
             <Animated.View

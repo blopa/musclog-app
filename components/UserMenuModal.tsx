@@ -1,4 +1,4 @@
-import { View, Text, Pressable, Modal, Image, ImageSourcePropType, Platform } from 'react-native';
+import { View, Text, Pressable, Modal, Image, ImageSourcePropType, Platform, StyleSheet } from 'react-native';
 import { X, User, Settings, BarChart3 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
@@ -44,6 +44,19 @@ export function UserMenuModal({
 }: UserMenuModalProps) {
   const { t } = useTranslation();
 
+  // Web-specific styles for proper viewport positioning
+  const webBackdropStyle = Platform.OS === 'web' 
+    ? ({
+        position: 'fixed' as const,
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: '100vw',
+        height: '100vh',
+      } as any)
+    : {};
+
   return (
     <Modal
       visible={visible}
@@ -55,9 +68,14 @@ export function UserMenuModal({
       {/* Backdrop */}
       <Pressable
         className="flex-1"
-        style={{ backgroundColor: theme.colors.overlay.black60 }}
+        style={[
+          { backgroundColor: theme.colors.overlay.black60 },
+          webBackdropStyle,
+        ]}
         onPress={onClose}>
-        <View className="flex-1 justify-start">
+        <View 
+          className="flex-1 justify-start" 
+          style={Platform.OS === 'web' ? { display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' } : undefined}>
           {/* Modal Content */}
           <View className="rounded-b-3xl border-b border-border-dark bg-bg-card">
             {/* Header */}

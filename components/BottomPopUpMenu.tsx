@@ -80,7 +80,9 @@ export function BottomPopUpMenu({
   maxHeight,
   headerIcon,
 }: BottomPopUpMenuProps) {
-  const slideAnim = useRef(new Animated.Value(theme.components.modal.bottomSheetInitialOffset)).current; // Start off-screen
+  const slideAnim = useRef(
+    new Animated.Value(theme.components.modal.bottomSheetInitialOffset)
+  ).current; // Start off-screen
 
   useEffect(() => {
     if (visible) {
@@ -101,20 +103,39 @@ export function BottomPopUpMenu({
     }
   }, [visible, slideAnim]);
 
+  // Web-specific styles for proper viewport positioning
+  const webBackdropStyle =
+    Platform.OS === 'web'
+      ? ({
+          position: 'fixed' as const,
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          width: '100vw',
+          height: '100vh',
+        } as any)
+      : {};
+
   return (
     <Modal
       visible={visible}
       transparent
       animationType="fade"
       onRequestClose={onClose}
-      statusBarTranslucent={Platform.OS !== 'web'}
-    >
+      statusBarTranslucent={Platform.OS !== 'web'}>
       {/* Backdrop */}
       <Pressable
         className="flex-1"
-        style={{ backgroundColor: theme.colors.overlay.black60 }}
+        style={[{ backgroundColor: theme.colors.overlay.black60 }, webBackdropStyle]}
         onPress={onClose}>
-        <View className="flex-1 justify-end">
+        <View
+          className="flex-1 justify-end"
+          style={
+            Platform.OS === 'web'
+              ? { display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }
+              : undefined
+          }>
           {/* Modal Content */}
           <Animated.View
             className="border-t border-border-dark"
