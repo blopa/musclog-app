@@ -246,7 +246,7 @@ export function FoodSearchModal({
 
   const headerRight = (
     <Pressable onPress={onCreatePress}>
-      <Text className="text-sm font-semibold text-accent-secondary">Create</Text>
+      <Text className="text-sm font-semibold text-accent-secondary">+ Create Meal</Text>
     </Pressable>
   );
 
@@ -337,28 +337,6 @@ export function FoodSearchModal({
             </View>
           </View>
         </ScrollView>
-
-        {/* Floating Action Button */}
-        <Pressable
-          className="absolute bottom-6 right-6 z-30 h-14 w-14 items-center justify-center rounded-full shadow-xl"
-          onPress={onBarcodeScanPress}
-          style={{
-            ...theme.shadows.lg,
-          }}>
-          <LinearGradient
-            colors={[theme.colors.accent.secondary, theme.colors.accent.primary]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={{
-              borderRadius: theme.borderRadius.full,
-              width: 56,
-              height: 56,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-            <QrCode size={26} color={theme.colors.text.white} />
-          </LinearGradient>
-        </Pressable>
       </View>
     </FullScreenModal>
   );
