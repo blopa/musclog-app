@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable, ScrollView, Modal } from 'react-native';
 import { ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import {
   format,
   startOfMonth,
@@ -222,8 +221,7 @@ export function DatePickerModal({
             horizontal
             showsHorizontalScrollIndicator={false}
             className="mt-6 pb-2"
-            contentContainerStyle={{ gap: 12 }}
-          >
+            contentContainerStyle={{ gap: 12 }}>
             <Button
               label={t('datePicker.today')}
               variant="secondary"
@@ -259,29 +257,13 @@ export function DatePickerModal({
               width="flex-1"
               onPress={onClose}
             />
-            <Pressable
-              className="relative flex-1 overflow-hidden rounded-xl"
+            <Button
+              label={t('datePicker.confirm')}
+              variant="gradientCta"
+              size="lg"
+              width="flex-1"
               onPress={handleConfirm}
-              style={{
-                height: 56,
-                shadowColor: '#6366f1',
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.3,
-                shadowRadius: 8,
-                elevation: 8,
-              }}>
-              <LinearGradient
-                colors={['#6366f1', '#29e08e']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                className="absolute inset-0"
-              />
-              <View className="flex h-full items-center justify-center">
-                <Text className="text-base font-bold tracking-wide text-text-primary">
-                  {t('datePicker.confirm')}
-                </Text>
-              </View>
-            </Pressable>
+            />
           </View>
         </View>
       </View>
@@ -320,9 +302,7 @@ export function DatePickerModal({
                     onPress={() => setSelectedMonthIndex(index)}>
                     <Text
                       className={`text-center text-sm font-medium ${
-                        selectedMonthIndex === index
-                          ? 'text-accent-primary'
-                          : 'text-text-primary'
+                        selectedMonthIndex === index ? 'text-accent-primary' : 'text-text-primary'
                       }`}>
                       {month.substring(0, 3)}
                     </Text>
@@ -366,29 +346,13 @@ export function DatePickerModal({
                 width="flex-1"
                 onPress={() => setIsMonthYearPickerVisible(false)}
               />
-              <Pressable
-                className="relative flex-1 overflow-hidden rounded-xl"
+              <Button
+                label={t('datePicker.confirm')}
+                variant="gradientCta"
+                size="sm"
+                width="flex-1"
                 onPress={handleMonthYearSelect}
-                style={{
-                  height: 40,
-                  shadowColor: '#6366f1',
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.2,
-                  shadowRadius: 4,
-                  elevation: 4,
-                }}>
-                <LinearGradient
-                  colors={['#6366f1', '#29e08e']}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 0 }}
-                  className="absolute inset-0"
-                />
-                <View className="flex h-full items-center justify-center">
-                  <Text className="text-sm font-bold tracking-wide text-text-primary">
-                    {t('datePicker.confirm')}
-                  </Text>
-                </View>
-              </Pressable>
+              />
             </View>
           </Pressable>
         </Pressable>
