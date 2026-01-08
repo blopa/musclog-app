@@ -8,7 +8,14 @@ type ThemeButtonSize = 'sm' | 'md' | 'lg';
 
 type ThemeButtonWidth = 'full' | 'flex-1' | 'flex-2' | 'auto';
 
-type ThemeButtonVariant = 'accent' | 'discard' | 'outline' | 'secondary' | 'secondaryGradient' | 'dashed' | 'gradientCta';
+type ThemeButtonVariant =
+  | 'accent'
+  | 'discard'
+  | 'outline'
+  | 'secondary'
+  | 'secondaryGradient'
+  | 'dashed'
+  | 'gradientCta';
 
 type ThemeButtonProps = {
   label: string;
@@ -81,48 +88,59 @@ export function Button({
   const isDashedVariant = variant === 'dashed';
   const isGradientCtaVariant = variant === 'gradientCta';
   const isDisabled = disabled;
-  
+
   const gradientColors: readonly [string, string, ...string[]] = isDisabled
     ? ([theme.colors.background.white10, theme.colors.background.white10] as const)
     : isGradientCtaVariant
-    ? theme.colors.gradients.cta
-    : isRedVariant
-    ? ([theme.colors.rose.brand, theme.colors.rose.brand] as const)
-    : isSecondaryGradientVariant
-    ? theme.colors.gradients.button
-    : isSecondaryVariant
-    ? ([theme.colors.background.overlay, theme.colors.background.overlay] as const)
-    : theme.colors.gradients.accent;
-  
+      ? theme.colors.gradients.cta
+      : isRedVariant
+        ? ([theme.colors.rose.brand, theme.colors.rose.brand] as const)
+        : isSecondaryGradientVariant
+          ? theme.colors.gradients.button
+          : isSecondaryVariant
+            ? ([theme.colors.background.overlay, theme.colors.background.overlay] as const)
+            : theme.colors.gradients.accent;
+
   const textColor = isDisabled
     ? theme.colors.text.primary30
     : isOutlineVariant
-    ? theme.colors.text.gray300
-    : isDashedVariant
-    ? theme.colors.text.secondary
-    : isGradientCtaVariant
-    ? theme.colors.text.white
-    : isSecondaryVariant || isSecondaryGradientVariant
-    ? theme.colors.text.primary
-    : isRedVariant
-    ? theme.colors.text.white
-    : theme.colors.text.black;
-  
+      ? theme.colors.text.gray300
+      : isDashedVariant
+        ? theme.colors.text.secondary
+        : isGradientCtaVariant
+          ? theme.colors.text.white
+          : isSecondaryVariant || isSecondaryGradientVariant
+            ? theme.colors.text.primary
+            : isRedVariant
+              ? theme.colors.text.white
+              : theme.colors.text.black;
+
   const iconColor = isDisabled
     ? theme.colors.text.primary30
     : isOutlineVariant
-    ? theme.colors.text.gray300
-    : isDashedVariant
-    ? theme.colors.text.secondary
-    : isGradientCtaVariant
-    ? theme.colors.text.white
-    : isSecondaryVariant || isSecondaryGradientVariant
-    ? theme.colors.accent.secondary
-    : isRedVariant
-    ? theme.colors.text.white
-    : theme.colors.text.black;
-  
-  const shadow = isDisabled || isOutlineVariant || isSecondaryVariant || isSecondaryGradientVariant || isDashedVariant ? theme.shadows.none : isGradientCtaVariant ? theme.shadows.none : isRedVariant ? theme.shadows.roseGlow : config.shadow;
+      ? theme.colors.text.gray300
+      : isDashedVariant
+        ? theme.colors.text.secondary
+        : isGradientCtaVariant
+          ? theme.colors.text.white
+          : isSecondaryVariant || isSecondaryGradientVariant
+            ? theme.colors.accent.secondary
+            : isRedVariant
+              ? theme.colors.text.white
+              : theme.colors.text.black;
+
+  const shadow =
+    isDisabled ||
+    isOutlineVariant ||
+    isSecondaryVariant ||
+    isSecondaryGradientVariant ||
+    isDashedVariant
+      ? theme.shadows.none
+      : isGradientCtaVariant
+        ? theme.shadows.none
+        : isRedVariant
+          ? theme.shadows.roseGlow
+          : config.shadow;
 
   const buttonContent = (
     <>
@@ -132,16 +150,16 @@ export function Button({
           isDisabled
             ? 'text-white/30'
             : isOutlineVariant
-            ? 'text-gray-300'
-            : isDashedVariant
-            ? 'text-text-secondary'
-            : isGradientCtaVariant
-            ? 'text-white'
-            : isSecondaryVariant || isSecondaryGradientVariant
-            ? 'text-text-primary'
-            : isRedVariant
-            ? 'text-white'
-            : 'text-text-black'
+              ? 'text-gray-300'
+              : isDashedVariant
+                ? 'text-text-secondary'
+                : isGradientCtaVariant
+                  ? 'text-white'
+                  : isSecondaryVariant || isSecondaryGradientVariant
+                    ? 'text-text-primary'
+                    : isRedVariant
+                      ? 'text-white'
+                      : 'text-text-black'
         }`}
         style={{
           fontSize: config.fontSize,
@@ -154,11 +172,12 @@ export function Button({
     </>
   );
 
-  const outlineBackgroundColor = isOutlineVariant && !isDisabled && isPressed
-    ? theme.colors.background.white5
-    : isOutlineVariant && !isDisabled
-    ? 'transparent'
-    : undefined;
+  const outlineBackgroundColor =
+    isOutlineVariant && !isDisabled && isPressed
+      ? theme.colors.background.white5
+      : isOutlineVariant && !isDisabled
+        ? 'transparent'
+        : undefined;
 
   // Determine border style for dashed variant
   const borderStyle = isDashedVariant ? 'dashed' : 'solid';
@@ -172,19 +191,23 @@ export function Button({
           ...shadow,
           opacity: isDisabled ? 1 : undefined,
           backgroundColor: outlineBackgroundColor,
-          borderWidth: isOutlineVariant || isSecondaryVariant || isSecondaryGradientVariant || isDashedVariant 
-            ? (isOutlineVariant || isDashedVariant ? 2 : 1) 
-            : 0,
+          borderWidth:
+            isOutlineVariant || isSecondaryVariant || isSecondaryGradientVariant || isDashedVariant
+              ? isOutlineVariant || isDashedVariant
+                ? 2
+                : 1
+              : 0,
           borderStyle: borderStyle,
           borderColor: isOutlineVariant
             ? theme.colors.background.white10
             : isDashedVariant
-            ? theme.colors.border.dashed
-            : isSecondaryGradientVariant
-            ? theme.colors.border.emerald
-            : isSecondaryVariant
-            ? theme.colors.border.default
-            : 'transparent',
+              ? theme.colors.border.dashed
+              : isSecondaryGradientVariant
+                ? theme.colors.border.emerald
+                : isSecondaryVariant
+                  ? theme.colors.border.default
+                  : 'transparent',
+          overflow: 'hidden',
         },
         style,
       ]}
@@ -201,16 +224,30 @@ export function Button({
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundColor: isSecondaryVariant && !isDisabled ? theme.colors.background.overlay : undefined,
+            backgroundColor:
+              isSecondaryVariant && !isDisabled ? theme.colors.background.overlay : undefined,
           }}>
           {buttonContent}
         </View>
       ) : (
-        <View style={{ position: 'relative', borderRadius: config.borderRadius, overflow: 'hidden' }}>
+        <View
+          style={{
+            position: 'relative',
+            borderRadius: config.borderRadius,
+            overflow: 'hidden',
+            width: '100%',
+            height: '100%',
+          }}>
           <LinearGradient
             colors={gradientColors}
-            start={{ x: isSecondaryGradientVariant || isGradientCtaVariant ? 0 : 0, y: isSecondaryGradientVariant ? 0 : 0 }}
-            end={{ x: isSecondaryGradientVariant || isGradientCtaVariant ? 1 : 1, y: isSecondaryGradientVariant ? 1 : 0 }}
+            start={{
+              x: isSecondaryGradientVariant || isGradientCtaVariant ? 0 : 0,
+              y: isSecondaryGradientVariant ? 0 : 0,
+            }}
+            end={{
+              x: isSecondaryGradientVariant || isGradientCtaVariant ? 1 : 1,
+              y: isSecondaryGradientVariant ? 1 : 0,
+            }}
             style={{
               borderRadius: config.borderRadius,
               paddingVertical: config.paddingVertical,
@@ -218,6 +255,8 @@ export function Button({
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'center',
+              minHeight: '100%',
+              width: '100%',
             }}>
             {buttonContent}
           </LinearGradient>
