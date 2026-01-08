@@ -68,7 +68,7 @@ const COMMON_FOODS: FoodItem[] = [
     id: '3',
     name: 'Oatmeal & Berries',
     description: '1 bowl • 350 kcal',
-    image: require('../assets/icon.png'), // Replace with actual image
+    // No image - will show placeholder
   },
   {
     id: '4',
@@ -141,20 +141,25 @@ type FoodItemCardProps = {
 
 function FoodItemCard({ food, onAddPress }: FoodItemCardProps) {
   return (
-    <Pressable className="mb-2 flex-row items-center gap-3 rounded-2xl border border-border-light bg-bg-overlay p-3 active:scale-[0.98]">
+    <Pressable className="flex-row items-center gap-3 rounded-2xl border border-border-light bg-bg-overlay p-3 active:scale-[0.98]">
       {/* Icon/Image */}
       <View
-        className="h-12 w-12 shrink-0 items-center justify-center rounded-xl border"
+        className="h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border"
         style={{
           backgroundColor: food.iconBgColor || theme.colors.background.cardDark,
           borderColor: food.iconColor ? `${food.iconColor}20` : 'transparent',
         }}>
         {food.image ? (
-          <Image source={food.image} className="h-full w-full rounded-xl" resizeMode="cover" />
+          <Image 
+            source={food.image} 
+            className="h-full w-full" 
+            resizeMode="cover"
+            style={{ borderRadius: theme.borderRadius.xl }}
+          />
         ) : food.icon ? (
           <Text className="text-xl">{food.icon}</Text>
         ) : (
-          <View className="h-full w-full rounded-xl opacity-80" />
+          <View className="h-full w-full opacity-80" />
         )}
       </View>
 
@@ -248,7 +253,7 @@ export function FoodSearchModal({
       title={`Add to ${mealType}`}
       headerRight={headerRight}
       scrollable={false}>
-      <View className="flex-1">
+      <View className="flex-1 bg-bg-primary">
         {/* Search Bar */}
         <View className="border-b border-border-light bg-bg-primary px-4 pb-2">
           <View className="relative">
@@ -294,8 +299,11 @@ export function FoodSearchModal({
         </View>
 
         {/* Content */}
-        <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-          <View className="gap-6 p-4 pb-20">
+        <ScrollView 
+          className="flex-1 bg-bg-primary" 
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ backgroundColor: theme.colors.background.primary }}>
+          <View className="gap-4 p-4 pb-20">
             {/* Recent History Section */}
             <View>
               <SectionHeader
@@ -307,7 +315,7 @@ export function FoodSearchModal({
                   },
                 }}
               />
-              <View className="gap-2">
+              <View className="gap-1.5">
                 {RECENT_HISTORY.map((food) => (
                   <FoodItemCard key={food.id} food={food} onAddPress={() => onFoodSelect?.(food)} />
                 ))}
@@ -317,7 +325,7 @@ export function FoodSearchModal({
             {/* Common Foods Section */}
             <View>
               <SectionHeader title="Common Breakfast Foods" icon={Sparkles} />
-              <View className="gap-2">
+              <View className="gap-1.5">
                 {COMMON_FOODS.map((food) => (
                   <FoodItemCard key={food.id} food={food} onAddPress={() => onFoodSelect?.(food)} />
                 ))}
