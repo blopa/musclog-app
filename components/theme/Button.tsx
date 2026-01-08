@@ -225,6 +225,7 @@ export function Button({
                   ? theme.colors.border.default
                   : 'transparent',
           overflow: 'hidden',
+          alignSelf: width === 'auto' ? 'flex-start' : undefined,
         },
         style,
       ]}
