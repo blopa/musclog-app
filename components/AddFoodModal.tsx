@@ -8,15 +8,13 @@ import {
   Search,
   Edit,
   UtensilsCrossed,
-  ArrowRight,
-  ChevronRight,
   MoreHorizontal,
 } from 'lucide-react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { BottomPopUpMenu } from './BottomPopUpMenu';
 import { Button } from './theme/Button';
+import { TrackingMethodButton } from './TrackingMethodButton';
 
 type AddFoodModalProps = {
   visible: boolean;
@@ -50,7 +48,7 @@ function MealTypeButton({
     <Pressable
       className={`${
         span === 2 ? 'flex-row' : 'flex-col'
-      } active:scale-95 items-center justify-center gap-2 rounded-2xl border border-border-default bg-bg-overlay p-3 active:bg-bg-card-elevated`}
+      } active:bg-bg-card-elevated items-center justify-center gap-2 rounded-2xl border border-border-default bg-bg-overlay p-3 active:scale-95`}
       onPress={onPress}>
       <View
         className={`${span === 2 ? 'h-8 w-8' : 'h-10 w-10'} items-center justify-center rounded-full`}
@@ -58,84 +56,6 @@ function MealTypeButton({
         <Icon size={span === 2 ? theme.iconSize.sm : theme.iconSize.md} color={iconColor} />
       </View>
       <Text className="text-xs font-medium text-text-primary">{label}</Text>
-    </Pressable>
-  );
-}
-
-type TrackingMethodButtonProps = {
-  icon: React.ComponentType<{ size: number; color: string }>;
-  title: string;
-  description: string;
-  iconBgColor?: string;
-  iconGradient?: readonly [string, string, ...string[]];
-  badge?: string;
-  highlighted?: boolean;
-  onPress: () => void;
-};
-
-function TrackingMethodButton({
-  icon: Icon,
-  title,
-  description,
-  iconBgColor,
-  iconGradient,
-  badge,
-  highlighted = false,
-  onPress,
-}: TrackingMethodButtonProps) {
-  const IconContainer = iconGradient ? (
-    <LinearGradient
-      colors={iconGradient as readonly [string, string, ...string[]]}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      className="h-12 w-12 items-center justify-center rounded-xl"
-      style={{ ...theme.shadows.md }}>
-      <Icon size={theme.iconSize.lg} color={theme.colors.text.white} />
-    </LinearGradient>
-  ) : (
-    <View
-      className="h-10 w-10 items-center justify-center rounded-lg"
-      style={{ backgroundColor: iconBgColor || theme.colors.background.cardDark }}>
-      <Icon size={theme.iconSize.md} color={theme.colors.text.primary} />
-    </View>
-  );
-
-  return (
-    <Pressable
-      className={`active:scale-[0.98] flex-row items-center gap-4 rounded-2xl border p-4 ${
-        highlighted
-          ? 'bg-bg-overlay active:bg-bg-card-elevated'
-          : 'bg-bg-overlay border-border-default active:bg-bg-card-elevated'
-      }`}
-      style={{
-        borderColor: highlighted
-          ? theme.colors.accent.primary40
-          : theme.colors.border.default,
-      }}
-      onPress={onPress}>
-      {IconContainer}
-      <View className="flex-1">
-        <View className="flex-row items-center gap-2">
-          <Text className="text-lg font-bold text-text-primary">{title}</Text>
-          {badge && (
-            <View
-              className="rounded-full px-2 py-0.5"
-              style={{ backgroundColor: theme.colors.accent.primary }}>
-              <Text
-                className="text-[10px] font-extrabold uppercase text-text-black"
-                style={{ fontSize: 10 }}>
-                {badge}
-              </Text>
-            </View>
-          )}
-        </View>
-        <Text className="mt-0.5 text-xs text-text-secondary">{description}</Text>
-      </View>
-      {highlighted ? (
-        <ArrowRight size={theme.iconSize.md} color={theme.colors.accent.primary} />
-      ) : (
-        <ChevronRight size={theme.iconSize.md} color={theme.colors.text.secondary} />
-      )}
     </Pressable>
   );
 }
@@ -310,4 +230,3 @@ export function AddFoodModal({
     </BottomPopUpMenu>
   );
 }
-
