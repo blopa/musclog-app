@@ -3,6 +3,7 @@
     "name": "musclog",
     "slug": "musclog",
     "version": "1.0.0",
+    "userInterfaceStyle": "automatic",
     "web": {
       "favicon": "./assets/favicon.png"
     },
@@ -20,7 +21,8 @@
           "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
           "recordAudioAndroid": false
         }
-      ]
+      ],
+      "expo-font"
     ],
     "orientation": "portrait",
     "icon": "./assets/icon.png",
