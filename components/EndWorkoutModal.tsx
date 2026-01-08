@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, Pressable, Modal, Animated } from 'react-native';
+import { View, Text, Pressable, Modal, Animated, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { X, Flag, Save, Trash2 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
@@ -62,7 +62,8 @@ export function EndWorkoutModal({
       transparent
       animationType="fade"
       onRequestClose={onClose}
-      statusBarTranslucent>
+      statusBarTranslucent={Platform.OS !== 'web'}
+    >
       {/* Backdrop */}
       <Pressable
         className="flex-1"

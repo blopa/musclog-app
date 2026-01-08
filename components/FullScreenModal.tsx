@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import { View, Text, Pressable, Modal, ScrollView } from 'react-native';
+import { View, Text, Pressable, Modal, ScrollView, Platform } from 'react-native';
 import { ArrowLeft } from 'lucide-react-native';
 import { theme } from '../theme';
 
@@ -36,7 +36,8 @@ export function FullScreenModal({
       transparent={false}
       animationType="slide"
       onRequestClose={onClose}
-      statusBarTranslucent>
+      statusBarTranslucent={Platform.OS !== 'web'}
+    >
       <View className="flex-1 bg-bg-primary">
         {/* Header */}
         <View className="flex-row items-center gap-4 border-b border-border-light bg-bg-primary px-4 py-4">

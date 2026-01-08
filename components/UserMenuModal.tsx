@@ -1,4 +1,4 @@
-import { View, Text, Pressable, Modal, Image, ImageSourcePropType } from 'react-native';
+import { View, Text, Pressable, Modal, Image, ImageSourcePropType, Platform } from 'react-native';
 import { X, User, Settings, BarChart3 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
@@ -50,7 +50,8 @@ export function UserMenuModal({
       transparent
       animationType="fade"
       onRequestClose={onClose}
-      statusBarTranslucent>
+      statusBarTranslucent={Platform.OS !== 'web'}
+    >
       {/* Backdrop */}
       <Pressable
         className="flex-1"

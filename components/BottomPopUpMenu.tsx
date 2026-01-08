@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, ReactNode } from 'react';
-import { View, Text, Pressable, Modal, Animated } from 'react-native';
+import { View, Text, Pressable, Modal, Animated, Platform } from 'react-native';
 import { X } from 'lucide-react-native';
 import { theme } from '../theme';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -107,7 +107,8 @@ export function BottomPopUpMenu({
       transparent
       animationType="fade"
       onRequestClose={onClose}
-      statusBarTranslucent>
+      statusBarTranslucent={Platform.OS !== 'web'}
+    >
       {/* Backdrop */}
       <Pressable
         className="flex-1"

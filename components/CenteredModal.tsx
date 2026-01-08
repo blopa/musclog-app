@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import { View, Text, Pressable, Modal } from 'react-native';
+import { View, Text, Pressable, Modal, Platform } from 'react-native';
 import { X } from 'lucide-react-native';
 import { theme } from '../theme';
 
@@ -28,7 +28,8 @@ export function CenteredModal({
       transparent
       animationType="fade"
       onRequestClose={onClose}
-      statusBarTranslucent>
+      statusBarTranslucent={Platform.OS !== 'web'}
+    >
       {/* Backdrop */}
       <Pressable
         className="flex-1 items-center justify-center p-4"
