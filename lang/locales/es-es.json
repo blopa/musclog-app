@@ -86,6 +86,17 @@
     },
     "common": {
       "kcal": "kcal"
+    },
+    "foodDetails": {
+      "title": "Detalles del Alimento",
+      "servingSize": "Tamaño de Porción",
+      "addFavorite": "Agregar Favorito",
+      "grams": "Gramos",
+      "meal": "Comida",
+      "date": "Fecha",
+      "today": "Hoy",
+      "addFood": "Agregar Alimento",
+      "macro": "MACRO"
     }
   },
   "notifications": {

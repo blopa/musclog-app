@@ -12,6 +12,7 @@ import { Search, QrCode, Plus, Sparkles } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { FullScreenModal } from './FullScreenModal';
+import { FoodDetailsModal } from './FoodDetailsModal';
 
 type FoodItem = {
   id: string;
@@ -23,6 +24,11 @@ type FoodItem = {
   image?: ImageSourcePropType;
   grade?: string; // e.g., "A", "A+"
   gradeColor?: string;
+  // Nutritional data (optional)
+  calories?: number;
+  protein?: number;
+  carbs?: number;
+  fat?: number;
 };
 
 type FoodSearchModalProps = {
@@ -44,6 +50,10 @@ const RECENT_HISTORY: FoodItem[] = [
     iconBgColor: 'rgba(249, 115, 22, 0.1)', // warning20
     grade: 'A',
     gradeColor: theme.colors.accent.primary,
+    calories: 121,
+    protein: 1.5,
+    carbs: 31,
+    fat: 0.4,
   },
   {
     id: '2',
@@ -53,6 +63,10 @@ const RECENT_HISTORY: FoodItem[] = [
     iconBgColor: 'rgba(59, 130, 246, 0.1)', // info20
     grade: 'A+',
     gradeColor: theme.colors.status.success,
+    calories: 72,
+    protein: 6,
+    carbs: 0.4,
+    fat: 5,
   },
 ];
 
@@ -61,7 +75,10 @@ const COMMON_FOODS: FoodItem[] = [
     id: '3',
     name: 'Oatmeal & Berries',
     description: '1 bowl • 350 kcal',
-    // No image - will show placeholder
+    calories: 350,
+    protein: 12,
+    carbs: 55,
+    fat: 8,
   },
   {
     id: '4',
@@ -69,6 +86,10 @@ const COMMON_FOODS: FoodItem[] = [
     description: '1 cup (8oz) • 2 kcal',
     iconColor: theme.colors.status.warning,
     iconBgColor: 'rgba(249, 115, 22, 0.1)', // warning20
+    calories: 2,
+    protein: 0.3,
+    carbs: 0,
+    fat: 0,
   },
   {
     id: '5',
@@ -76,6 +97,10 @@ const COMMON_FOODS: FoodItem[] = [
     description: '2 slices • 180 kcal',
     iconColor: theme.colors.status.purple,
     iconBgColor: theme.colors.status.purple20,
+    calories: 180,
+    protein: 8,
+    carbs: 32,
+    fat: 3,
   },
   {
     id: '6',
@@ -83,6 +108,10 @@ const COMMON_FOODS: FoodItem[] = [
     description: '1 cup (170g) • 100 kcal • 18g Protein',
     iconColor: theme.colors.status.error,
     iconBgColor: theme.colors.status.error20,
+    calories: 100,
+    protein: 18,
+    carbs: 6,
+    fat: 0,
   },
 ];
 
@@ -237,6 +266,8 @@ export function FoodSearchModal({
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState('all');
+  const [selectedFood, setSelectedFood] = useState<FoodItem | null>(null);
+  const [isFoodDetailsVisible, setIsFoodDetailsVisible] = useState(false);
 
   const FILTER_TABS = [
     { id: 'all', label: t('foodSearch.filters.allResults') },
@@ -324,7 +355,14 @@ export function FoodSearchModal({
               />
               <View className="gap-1.5">
                 {RECENT_HISTORY.map((food) => (
-                  <FoodItemCard key={food.id} food={food} onAddPress={() => onFoodSelect?.(food)} />
+                  <FoodItemCard
+                    key={food.id}
+                    food={food}
+                    onAddPress={() => {
+                      setSelectedFood(food);
+                      setIsFoodDetailsVisible(true);
+                    }}
+                  />
                 ))}
               </View>
             </View>
@@ -334,13 +372,50 @@ export function FoodSearchModal({
               <SectionHeader title={t('foodSearch.commonBreakfastFoods')} icon={Sparkles} />
               <View className="gap-1.5">
                 {COMMON_FOODS.map((food) => (
-                  <FoodItemCard key={food.id} food={food} onAddPress={() => onFoodSelect?.(food)} />
+                  <FoodItemCard
+                    key={food.id}
+                    food={food}
+                    onAddPress={() => {
+                      setSelectedFood(food);
+                      setIsFoodDetailsVisible(true);
+                    }}
+                  />
                 ))}
               </View>
             </View>
           </View>
         </ScrollView>
       </View>
+
+      {/* Food Details Modal */}
+      {selectedFood && (
+        <FoodDetailsModal
+          visible={isFoodDetailsVisible}
+          onClose={() => {
+            setIsFoodDetailsVisible(false);
+            setSelectedFood(null);
+          }}
+          food={{
+            name: selectedFood.name,
+            category: selectedFood.description,
+            calories: selectedFood.calories || 0,
+            protein: selectedFood.protein || 0,
+            carbs: selectedFood.carbs || 0,
+            fat: selectedFood.fat || 0,
+          }}
+          onAddFood={(data) => {
+            // Call the original onFoodSelect with the food and additional data
+            onFoodSelect?.({
+              ...selectedFood,
+              servingSize: data.servingSize,
+              meal: data.meal,
+              date: data.date,
+            } as any);
+            setIsFoodDetailsVisible(false);
+            setSelectedFood(null);
+          }}
+        />
+      )}
     </FullScreenModal>
   );
 }

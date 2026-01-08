@@ -86,6 +86,17 @@
     },
     "common": {
       "kcal": "kcal"
+    },
+    "foodDetails": {
+      "title": "Food Details",
+      "servingSize": "Serving Size",
+      "addFavorite": "Add Favorite",
+      "grams": "Grams",
+      "meal": "Meal",
+      "date": "Date",
+      "today": "Today",
+      "addFood": "Add Food",
+      "macro": "MACRO"
     }
   },
   "notifications": {
