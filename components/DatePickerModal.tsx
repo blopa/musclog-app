@@ -193,21 +193,39 @@ export function DatePickerModal({
             showsHorizontalScrollIndicator={false}
             className="mt-6 pb-2"
             contentContainerStyle={{ gap: 12 }}>
-            <Pressable
-              className="shrink-0 rounded-lg border border-white/10 bg-white/5 px-4 py-2 active:scale-[0.98]"
-              onPress={() => handleQuickDate('today')}>
-              <Text className="text-sm font-medium text-text-primary">{t('datePicker.today')}</Text>
-            </Pressable>
-            <Pressable
-              className="shrink-0 rounded-lg border border-white/10 bg-white/5 px-4 py-2 active:scale-[0.98]"
-              onPress={() => handleQuickDate('tomorrow')}>
-              <Text className="text-sm font-medium text-text-primary">{t('datePicker.tomorrow')}</Text>
-            </Pressable>
-            <Pressable
-              className="shrink-0 rounded-lg border border-white/10 bg-white/5 px-4 py-2 active:scale-[0.98]"
-              onPress={() => handleQuickDate('nextMonday')}>
-              <Text className="text-sm font-medium text-text-primary">{t('datePicker.nextMonday')}</Text>
-            </Pressable>
+            <Button
+              label={t('datePicker.today')}
+              variant="secondary"
+              size="sm"
+              width="auto"
+              onPress={() => handleQuickDate('today')}
+              contentStyle={{
+                paddingVertical: 8,
+                paddingHorizontal: 16,
+              }}
+            />
+            <Button
+              label={t('datePicker.tomorrow')}
+              variant="secondary"
+              size="sm"
+              width="auto"
+              onPress={() => handleQuickDate('tomorrow')}
+              contentStyle={{
+                paddingVertical: 8,
+                paddingHorizontal: 16,
+              }}
+            />
+            <Button
+              label={t('datePicker.nextMonday')}
+              variant="secondary"
+              size="sm"
+              width="auto"
+              onPress={() => handleQuickDate('nextMonday')}
+              contentStyle={{
+                paddingVertical: 8,
+                paddingHorizontal: 16,
+              }}
+            />
           </ScrollView>
         </View>
 
