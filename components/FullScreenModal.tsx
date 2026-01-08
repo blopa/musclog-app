@@ -30,6 +30,19 @@ export function FullScreenModal({
     <View className="flex-1">{children}</View>
   );
 
+  // Web-specific styles for proper viewport positioning
+  const webModalStyle = Platform.OS === 'web' 
+    ? ({
+        position: 'fixed' as const,
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: '100vw',
+        height: '100vh',
+      } as any)
+    : {};
+
   return (
     <Modal
       visible={visible}
@@ -38,7 +51,7 @@ export function FullScreenModal({
       onRequestClose={onClose}
       statusBarTranslucent={Platform.OS !== 'web'}
     >
-      <View className="flex-1 bg-bg-primary">
+      <View className="flex-1 bg-bg-primary" style={webModalStyle}>
         {/* Header */}
         <View className="flex-row items-center gap-4 border-b border-border-light bg-bg-primary px-4 py-4">
           <Pressable className="-ml-2 rounded-full p-2" onPress={onClose}>

@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, ReactNode, useCallback } from 'react';
-import { View } from 'react-native';
+import { View, Platform } from 'react-native';
 import { Snackbar, type SnackbarType } from './Snackbar';
 
 type SnackbarContextType = {
@@ -57,11 +57,25 @@ export function SnackbarProvider({ children }: { children: ReactNode }) {
     setSnackbars((prev) => prev.filter((s) => s.id !== id));
   }, []);
 
+  // Web-specific styles for proper viewport positioning
+  const webContainerStyle = Platform.OS === 'web' 
+    ? ({
+        position: 'fixed' as const,
+        bottom: 0,
+        left: 0,
+        right: 0,
+        width: '100vw',
+      } as any)
+    : {};
+
   return (
     <SnackbarContext.Provider value={{ showSnackbar, dismissSnackbar }}>
       {children}
       {/* Snackbar Container - renders at the bottom of the screen */}
-      <View className="absolute bottom-0 left-0 right-0 pb-8" pointerEvents="box-none">
+      <View 
+        className="absolute bottom-0 left-0 right-0 pb-8" 
+        pointerEvents="box-none"
+        style={webContainerStyle}>
         {snackbars.map((snackbar) => (
           <Snackbar key={snackbar.id} snackbar={snackbar} onDismiss={dismissSnackbar} />
         ))}
