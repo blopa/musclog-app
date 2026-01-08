@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { View, Text, ScrollView, Pressable } from 'react-native';
 import {
   ChevronLeft,
@@ -17,6 +18,7 @@ import { FoodItemCard } from '../components/FoodItemCard';
 import { MealSection } from '../components/MealSection';
 import { FloatingActionButton } from '../components/FloatingActionButton';
 import { Button } from '../components/theme/Button';
+import { AddFoodModal } from '../components/AddFoodModal';
 
 const FOOD_DATA = {
   date: 'Today, Oct 24',
@@ -82,6 +84,7 @@ const FOOD_DATA = {
 
 export default function FoodScreen() {
   const { t } = useTranslation();
+  const [isAddFoodModalVisible, setIsAddFoodModalVisible] = useState(false);
   const currentLanguage = (i18n.language || 'en-US') as LanguageKeys;
   const locale = LOCALE_MAP[currentLanguage] || LOCALE_MAP['en-US'];
   const today = new Date();
@@ -144,9 +147,7 @@ export default function FoodScreen() {
                 variant="secondaryGradient"
                 size="md"
                 width="full"
-                onPress={() => {
-                  // Handle more food options action
-                }}
+                onPress={() => setIsAddFoodModalVisible(true)}
               />
             </View>
 
@@ -188,6 +189,30 @@ export default function FoodScreen() {
         {/* Floating Action Button */}
         <FloatingActionButton position="right" bottom={120} />
       </View>
+
+      {/* Add Food Modal */}
+      <AddFoodModal
+        visible={isAddFoodModalVisible}
+        onClose={() => setIsAddFoodModalVisible(false)}
+        onMealTypeSelect={(mealType) => {
+          console.log('Selected meal type:', mealType);
+        }}
+        onAiCameraPress={() => {
+          console.log('AI Camera pressed');
+        }}
+        onScanBarcodePress={() => {
+          console.log('Scan Barcode pressed');
+        }}
+        onSearchFoodPress={() => {
+          console.log('Search Food pressed');
+        }}
+        onCreateCustomFoodPress={() => {
+          console.log('Create Custom Food pressed');
+        }}
+        onTrackCustomMealPress={() => {
+          console.log('Track Custom Meal pressed');
+        }}
+      />
     </MasterLayout>
   );
 }
