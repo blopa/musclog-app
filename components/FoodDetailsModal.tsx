@@ -326,15 +326,19 @@ export function FoodDetailsModal({
             <View className="rounded-xl border border-white/10 bg-bg-cardDark p-2">
               <View className="mb-4 flex-row items-center gap-3">
                 <Pressable
-                  className="h-12 w-12 items-center justify-center rounded-lg border border-white/5 bg-bg-overlay"
+                  className="h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-white/5 bg-bg-overlay"
                   onPress={handleDecrease}>
                   <Minus size={theme.iconSize.md} color={theme.colors.text.secondary} />
                 </Pressable>
-                <View className="flex-1 items-center justify-center py-1">
-                  <View className="flex-row items-baseline gap-1">
+                <View className="flex-1 items-center justify-center py-1" style={{ minWidth: 0 }}>
+                  <View className="relative flex-row items-baseline justify-center">
                     <TextInput
-                      className="min-w-[80px] bg-transparent p-0 text-center text-4xl font-black text-text-primary"
-                      style={{ color: theme.colors.text.primary }}
+                      className="bg-transparent p-0 text-center text-4xl font-black text-text-primary"
+                      style={{
+                        color: theme.colors.text.primary,
+                        width: 120,
+                        maxWidth: '100%',
+                      }}
                       value={String(servingSize)}
                       onChangeText={(text) => {
                         const num = parseInt(text) || 0;
@@ -351,7 +355,7 @@ export function FoodDetailsModal({
                   <Text className="mt-1 text-xs text-text-secondary">{t('foodDetails.grams')}</Text>
                 </View>
                 <Pressable
-                  className="h-12 w-12 items-center justify-center rounded-lg border border-accent-primary/20 bg-accent-primary/10"
+                  className="h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-accent-primary/20 bg-accent-primary/10"
                   onPress={handleIncrease}>
                   <Plus size={theme.iconSize.md} color={theme.colors.accent.primary} />
                 </Pressable>
