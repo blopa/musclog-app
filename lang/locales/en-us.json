@@ -214,6 +214,17 @@
     "exercises": "Exercises",
     "start": "Start"
   },
+  "workoutDetails": {
+    "subtitle": "Manage this workout",
+    "edit": "Edit Workout",
+    "editDescription": "Modify exercises and sets",
+    "duplicate": "Duplicate",
+    "duplicateDescription": "Create a copy of this workout",
+    "share": "Share",
+    "shareDescription": "Share workout with others",
+    "delete": "Delete",
+    "deleteDescription": "Permanently remove this workout"
+  },
   "replaceExercise": {
     "title": "Replace Exercise",
     "cancel": "Cancel",

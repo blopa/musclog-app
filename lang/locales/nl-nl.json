@@ -224,6 +224,17 @@
     "exercises": "Oefeningen",
     "start": "Starten"
   },
+  "workoutDetails": {
+    "subtitle": "Beheer deze training",
+    "edit": "Training Bewerken",
+    "editDescription": "Oefeningen en sets aanpassen",
+    "duplicate": "Dupliceren",
+    "duplicateDescription": "Maak een kopie van deze training",
+    "share": "Delen",
+    "shareDescription": "Deel training met anderen",
+    "delete": "Verwijderen",
+    "deleteDescription": "Verwijder deze training permanent"
+  },
   "foodSearch": {
     "recentHistory": "Recente Geschiedenis",
     "viewAll": "Alles Bekijken",

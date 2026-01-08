@@ -9,6 +9,7 @@ import { FilterTabs } from '../components/FilterTabs';
 import { CreateTemplateCard } from '../components/CreateTemplateCard';
 import { GradientText } from '../components/GradientText';
 import { FloatingActionButton } from '../components/FloatingActionButton';
+import { WorkoutDetailsMenu } from '../components/WorkoutDetailsMenu';
 
 const WORKOUTS_DATA = {
   featured: {
@@ -55,6 +56,8 @@ const FILTER_TABS = [
 
 export default function WorkoutsScreen() {
   const [activeFilter, setActiveFilter] = useState('all');
+  const [isMenuVisible, setIsMenuVisible] = useState(false);
+  const [selectedWorkoutName, setSelectedWorkoutName] = useState<string>('');
 
   return (
     <MasterLayout>
@@ -92,6 +95,10 @@ export default function WorkoutsScreen() {
               exerciseCount={WORKOUTS_DATA.featured.exerciseCount}
               duration={WORKOUTS_DATA.featured.duration}
               image={WORKOUTS_DATA.featured.image}
+              onMore={() => {
+                setSelectedWorkoutName(WORKOUTS_DATA.featured.name);
+                setIsMenuVisible(true);
+              }}
             />
 
             {/* Regular Workouts */}
@@ -103,6 +110,10 @@ export default function WorkoutsScreen() {
                 exerciseCount={workout.exerciseCount}
                 duration={workout.duration}
                 image={workout.image}
+                onMore={() => {
+                  setSelectedWorkoutName(workout.name);
+                  setIsMenuVisible(true);
+                }}
               />
             ))}
 
@@ -117,6 +128,29 @@ export default function WorkoutsScreen() {
         {/* Floating Action Button */}
         <FloatingActionButton position="right" bottom={120} />
       </View>
+
+      {/* Workout Details Menu */}
+      <WorkoutDetailsMenu
+        visible={isMenuVisible}
+        onClose={() => setIsMenuVisible(false)}
+        workoutName={selectedWorkoutName}
+        onEdit={() => {
+          console.log('Edit workout:', selectedWorkoutName);
+          setIsMenuVisible(false);
+        }}
+        onDuplicate={() => {
+          console.log('Duplicate workout:', selectedWorkoutName);
+          setIsMenuVisible(false);
+        }}
+        onShare={() => {
+          console.log('Share workout:', selectedWorkoutName);
+          setIsMenuVisible(false);
+        }}
+        onDelete={() => {
+          console.log('Delete workout:', selectedWorkoutName);
+          setIsMenuVisible(false);
+        }}
+      />
     </MasterLayout>
   );
 }

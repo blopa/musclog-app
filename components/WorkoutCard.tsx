@@ -1,5 +1,5 @@
 import { View, Text, Image, Pressable, ImageSourcePropType } from 'react-native';
-import { Archive } from 'lucide-react-native';
+import { Archive, MoreVertical } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { StartWorkoutButton } from './StartWorkoutButton';
@@ -12,6 +12,7 @@ type WorkoutCardProps = {
   image: ImageSourcePropType;
   onStart?: () => void;
   onArchive?: () => void;
+  onMore?: () => void;
 };
 
 export function WorkoutCard({
@@ -22,6 +23,7 @@ export function WorkoutCard({
   image,
   onStart,
   onArchive,
+  onMore,
 }: WorkoutCardProps) {
   const { t } = useTranslation();
 
@@ -44,12 +46,20 @@ export function WorkoutCard({
         </View>
       </View>
 
-      <View className="flex-row items-center justify-between">
+      <View className="flex-row items-center gap-3">
         <Pressable className="flex-row items-center gap-2" onPress={onArchive}>
           <Archive size={theme.iconSize.sm} color={theme.colors.text.secondary} />
           <Text className="text-sm text-text-secondary">{t('workouts.archive')}</Text>
         </Pressable>
         <StartWorkoutButton variant="secondary" onPress={onStart} />
+        {onMore && (
+          <Pressable
+            className="w-14 items-center justify-center rounded-2xl"
+            style={{ backgroundColor: theme.colors.background.iconDark }}
+            onPress={onMore}>
+            <MoreVertical size={theme.iconSize.sm} color={theme.colors.text.secondary} />
+          </Pressable>
+        )}
       </View>
     </View>
   );

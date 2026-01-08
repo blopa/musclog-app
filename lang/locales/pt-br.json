@@ -224,6 +224,17 @@
     "exercises": "Exercícios",
     "start": "Iniciar"
   },
+  "workoutDetails": {
+    "subtitle": "Gerenciar este treino",
+    "edit": "Editar Treino",
+    "editDescription": "Modificar exercícios e séries",
+    "duplicate": "Duplicar",
+    "duplicateDescription": "Criar uma cópia deste treino",
+    "share": "Compartilhar",
+    "shareDescription": "Compartilhar treino com outros",
+    "delete": "Excluir",
+    "deleteDescription": "Excluir permanentemente este treino"
+  },
   "foodSearch": {
     "recentHistory": "Histórico Recente",
     "viewAll": "Ver Tudo",
