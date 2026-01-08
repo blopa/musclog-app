@@ -1,13 +1,5 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  Pressable,
-  ScrollView,
-  TextInput,
-  Platform,
-  Dimensions,
-} from 'react-native';
+import React, { useState, useRef } from 'react';
+import { View, Text, Pressable, ScrollView, TextInput, Platform, Dimensions } from 'react-native';
 import {
   ArrowLeft,
   MoreVertical,
@@ -36,11 +28,7 @@ type FoodDetailsModalProps = {
     carbs: number;
     fat: number;
   };
-  onAddFood?: (data: {
-    servingSize: number;
-    meal: string;
-    date: Date;
-  }) => void;
+  onAddFood?: (data: { servingSize: number; meal: string; date: Date }) => void;
 };
 
 export function FoodDetailsModal({
@@ -61,6 +49,8 @@ export function FoodDetailsModal({
   const [selectedMeal, setSelectedMeal] = useState('lunch');
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [macroViewIndex, setMacroViewIndex] = useState(0);
+  const [scrollViewWidth, setScrollViewWidth] = useState(0);
+  const scrollViewRef = useRef<ScrollView>(null);
 
   const mealTabs = [
     { id: 'breakfast', label: t('food.meals.breakfast') },
@@ -103,24 +93,21 @@ export function FoodDetailsModal({
   // Calculate dash array for circular chart
   const radius = 15.915;
   const circumference = 2 * Math.PI * radius;
-  
+
   // Calculate dash arrays - each segment should be a portion of the circumference
   const proteinLength = (proteinPercent / 100) * circumference;
   const fatLength = (fatPercent / 100) * circumference;
   const carbsLength = (carbsPercent / 100) * circumference;
-  
+
   // Dash arrays: [visible length, gap length]
   const proteinDashArray = `${proteinLength} ${circumference}`;
   const fatDashArray = `${fatLength} ${circumference}`;
   const carbsDashArray = `${carbsLength} ${circumference}`;
-  
+
   // Dash offsets: where each segment starts (negative to move clockwise from top)
   const proteinDashOffset = 0;
   const fatDashOffset = -proteinLength;
   const carbsDashOffset = -(proteinLength + fatLength);
-
-  const screenWidth = Dimensions.get('window').width;
-  const cardWidth = screenWidth - theme.spacing.padding.xl * 2 - theme.spacing.padding.md * 2;
 
   const headerRight = (
     <Pressable className="rounded-full p-2" onPress={() => {}}>
@@ -167,17 +154,34 @@ export function FoodDetailsModal({
 
             {/* Macro Views - Swipeable */}
             <ScrollView
+              ref={scrollViewRef}
               horizontal
               pagingEnabled
               showsHorizontalScrollIndicator={false}
+              onLayout={(e) => {
+                const width = e.nativeEvent.layout.width;
+                if (width > 0 && width !== scrollViewWidth) {
+                  setScrollViewWidth(width);
+                }
+              }}
               onMomentumScrollEnd={(e) => {
-                const index = Math.round(e.nativeEvent.contentOffset.x / e.nativeEvent.layoutMeasurement.width);
+                const pageWidth = e.nativeEvent.layoutMeasurement.width;
+                const offsetX = e.nativeEvent.contentOffset.x;
+                const index = Math.round(offsetX / pageWidth);
                 setMacroViewIndex(index);
               }}
-              className="mb-4"
-              style={{ width: cardWidth }}>
+              onScroll={(e) => {
+                const pageWidth = e.nativeEvent.layoutMeasurement.width;
+                const offsetX = e.nativeEvent.contentOffset.x;
+                const index = Math.round(offsetX / pageWidth);
+                if (index !== macroViewIndex && index >= 0 && index <= 1) {
+                  setMacroViewIndex(index);
+                }
+              }}
+              scrollEventThrottle={16}
+              className="mb-4">
               {/* Grid View */}
-              <View className="flex-none" style={{ width: cardWidth }}>
+              <View className="flex-none" style={{ width: scrollViewWidth || '100%' }}>
                 <View className="mb-2 flex-row gap-3">
                   <View className="flex-1 overflow-hidden rounded-xl border border-white/5 bg-white/5 p-3">
                     <View className="absolute bottom-0 left-0 h-1 w-full bg-indigo-500 opacity-50" />
@@ -204,7 +208,7 @@ export function FoodDetailsModal({
               </View>
 
               {/* Circular Chart View */}
-              <View className="flex-none" style={{ width: cardWidth }}>
+              <View className="flex-none" style={{ width: scrollViewWidth || '100%' }}>
                 <View className="flex-row items-center gap-4 rounded-xl border border-white/5 bg-white/5 p-3">
                   <View className="h-24 w-24 flex-none">
                     {/* Circular Chart - Using SVG */}
@@ -265,8 +269,10 @@ export function FoodDetailsModal({
                         />
                       )}
                     </Svg>
-                    <View className="absolute inset-0 items-center justify-center pointer-events-none">
-                      <Text className="text-[10px] font-bold text-white/50">{t('foodDetails.macro')}</Text>
+                    <View className="pointer-events-none absolute inset-0 items-center justify-center">
+                      <Text className="text-[10px] font-bold text-white/50">
+                        {t('foodDetails.macro')}
+                      </Text>
                     </View>
                   </View>
                   <View className="flex-1 gap-2">
@@ -308,14 +314,16 @@ export function FoodDetailsModal({
                 className="h-1.5 rounded-full"
                 style={{
                   width: macroViewIndex === 0 ? 6 : 6,
-                  backgroundColor: macroViewIndex === 0 ? theme.colors.text.primary : theme.colors.text.primary20,
+                  backgroundColor:
+                    macroViewIndex === 0 ? theme.colors.text.primary : theme.colors.text.primary20,
                 }}
               />
               <View
                 className="h-1.5 rounded-full"
                 style={{
                   width: macroViewIndex === 1 ? 6 : 6,
-                  backgroundColor: macroViewIndex === 1 ? theme.colors.text.primary : theme.colors.text.primary20,
+                  backgroundColor:
+                    macroViewIndex === 1 ? theme.colors.text.primary : theme.colors.text.primary20,
                 }}
               />
             </View>
@@ -470,4 +478,3 @@ export function FoodDetailsModal({
     </FullScreenModal>
   );
 }
-
