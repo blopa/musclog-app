@@ -105,7 +105,11 @@ function UnderlineTabs({ tabs, activeTab, onTabChange }: UnderlineTabsProps) {
       horizontal
       showsHorizontalScrollIndicator={false}
       className="flex-row"
-      contentContainerStyle={{ paddingHorizontal: theme.spacing.padding.base, gap: 24 }}>
+      contentContainerStyle={{
+        paddingHorizontal: theme.spacing.padding.base,
+        paddingTop: theme.spacing.padding.sm,
+        gap: 24,
+      }}>
       {tabs.map((tab) => {
         const isActive = activeTab === tab.id;
         return (
@@ -150,9 +154,9 @@ function FoodItemCard({ food, onAddPress }: FoodItemCardProps) {
           borderColor: food.iconColor ? `${food.iconColor}20` : 'transparent',
         }}>
         {food.image ? (
-          <Image 
-            source={food.image} 
-            className="h-full w-full" 
+          <Image
+            source={food.image}
+            className="h-full w-full"
             resizeMode="cover"
             style={{ borderRadius: theme.borderRadius.xl }}
           />
@@ -299,8 +303,8 @@ export function FoodSearchModal({
         </View>
 
         {/* Content */}
-        <ScrollView 
-          className="flex-1 bg-bg-primary" 
+        <ScrollView
+          className="flex-1 bg-bg-primary"
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ backgroundColor: theme.colors.background.primary }}>
           <View className="gap-4 p-4 pb-20">

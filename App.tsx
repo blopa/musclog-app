@@ -87,7 +87,8 @@ export default function App() {
             <View className="relative">
               <View
                 className="h-14 w-14 overflow-hidden rounded-full border-4 border-accent-primary"
-                style={{ backgroundColor: theme.colors.background.imageLight }}>
+                style={{ backgroundColor: theme.colors.background.imageLight }}
+              >
                 <Image source={user.avatar} className="h-full w-full" resizeMode="cover" />
               </View>
               <View
@@ -101,7 +102,8 @@ export default function App() {
             <View>
               <Text
                 className="text-sm"
-                style={{ color: theme.colors.text.secondary }}>
+                style={{ color: theme.colors.text.secondary }}
+              >
                 {t('home.greeting.goodEvening')}
               </Text>
               <Text className="text-xl font-bold text-text-primary">{user.name}</Text>
@@ -179,7 +181,8 @@ export default function App() {
                           <View className="rounded-full bg-bg-secondary px-2.5 py-1">
                             <Text
                               className="text-xs"
-                              style={{ color: theme.colors.text.secondary }}>
+                              style={{ color: theme.colors.text.secondary }}
+                            >
                               {t('home.macros.protein', { value: food.protein })}
                             </Text>
                           </View>
