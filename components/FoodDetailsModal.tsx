@@ -9,7 +9,6 @@ import {
   Edit,
   PlusCircle,
 } from 'lucide-react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { Circle } from 'react-native-svg';
 import { format, isSameDay } from 'date-fns';
 import { useTranslation } from 'react-i18next';
@@ -17,6 +16,7 @@ import { theme } from '../theme';
 import { FullScreenModal } from './FullScreenModal';
 import { FilterTabs } from './FilterTabs';
 import { DatePickerModal } from './DatePickerModal';
+import { Button } from './theme/Button';
 
 type FoodDetailsModalProps = {
   visible: boolean;
@@ -126,7 +126,7 @@ export function FoodDetailsModal({
       scrollable={true}>
       <View className="flex-1 px-4 pb-32">
         {/* Food Info Card */}
-        <View className="mb-6 overflow-hidden rounded-xl border border-white/5 bg-bg-cardDark p-5">
+        <View className="mb-6 mt-6 overflow-hidden rounded-xl border border-white/5 bg-bg-cardDark p-5">
           {/* Background Blobs */}
           <View
             className="absolute -right-10 -top-10 h-40 w-40 rounded-full blur-3xl"
@@ -457,27 +457,14 @@ export function FoodDetailsModal({
 
       {/* Bottom Floating Action Button */}
       <View className="absolute bottom-0 left-0 right-0 border-t border-white/5 bg-bg-primary/95 p-4 pb-8">
-        <Pressable
-          className="w-full items-center justify-center rounded-xl py-4 shadow-lg"
+        <Button
+          label={t('foodDetails.addFood')}
+          icon={PlusCircle}
+          variant="gradientCta"
+          size="lg"
+          width="full"
           onPress={handleAddFood}
-          style={{
-            shadowColor: '#6366f1',
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.3,
-            shadowRadius: 8,
-            elevation: 8,
-          }}>
-          <LinearGradient
-            colors={['#6366f1', '#29e08e']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            className="absolute inset-0 rounded-xl"
-          />
-          <View className="flex-row items-center gap-2">
-            <PlusCircle size={theme.iconSize.md} color={theme.colors.text.primary} />
-            <Text className="text-lg font-bold text-text-primary">{t('foodDetails.addFood')}</Text>
-          </View>
-        </Pressable>
+        />
       </View>
 
       {/* Date Picker Modal */}
