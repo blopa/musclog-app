@@ -148,7 +148,7 @@ export function EndWorkoutModal({
                   <Button
                     label={t('endWorkout.finishAndSave')}
                     icon={Save}
-                    size="md"
+                    size="sm"
                     width="full"
                     onPress={() => {
                       onFinishAndSave?.();
@@ -160,7 +160,7 @@ export function EndWorkoutModal({
                     label={t('endWorkout.finishAndDiscard')}
                     icon={Trash2}
                     variant="discard"
-                    size="md"
+                    size="sm"
                     width="full"
                     onPress={() => {
                       onFinishAndDiscard?.();

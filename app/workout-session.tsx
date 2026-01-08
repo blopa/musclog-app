@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { View, Text, Pressable, ScrollView, ImageBackground } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { SkipForward, Edit, Repeat } from 'lucide-react-native';
+import { SkipForward, Edit, Repeat, CheckCircle } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -12,13 +12,13 @@ import { EndWorkoutModal } from '../components/EndWorkoutModal';
 import { WorkoutTimeTracker } from '../components/WorkoutTimeTracker';
 import { WorkoutStatCard } from '../components/WorkoutStatCard';
 import { WorkoutActionButton } from '../components/WorkoutActionButton';
-import { CompleteSetButton } from '../components/CompleteSetButton';
 import { LogSetPerformanceModal } from '../components/LogSetPerformanceModal';
 import { EditSetDetailsModal } from '../components/EditSetDetailsModal';
 import { ConfirmationModal } from '../components/ConfirmationModal';
 import { ReplaceExerciseModal, Exercise } from '../components/ReplaceExerciseModal';
 import { WorkoutHistoryModal } from '../components/WorkoutHistoryModal';
 import { SessionFeedbackModal } from '../components/SessionFeedbackModal';
+import { Button } from '../components/theme/Button';
 
 export default function WorkoutSessionScreen() {
   const { t } = useTranslation();
@@ -81,7 +81,7 @@ export default function WorkoutSessionScreen() {
             <Text className="mb-3 text-5xl font-bold text-text-primary">{exerciseData.name}</Text>
             <View className="mb-2 flex-row items-center gap-3">
               <View className="rounded-full bg-accent-primary px-4 py-1.5">
-                <Text className="text-text-black text-sm font-bold">
+                <Text className="text-sm font-bold text-text-black">
                   {t('workoutSession.setOf', {
                     current: exerciseData.set,
                     total: exerciseData.totalSets,
@@ -162,7 +162,11 @@ export default function WorkoutSessionScreen() {
             </View>
 
             {/* Complete Button */}
-            <CompleteSetButton
+            <Button
+              label={t('workoutSession.completeSet')}
+              icon={CheckCircle}
+              size="md"
+              width="full"
               onPress={() => {
                 setIsLogSetModalVisible(true);
               }}

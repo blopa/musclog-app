@@ -88,14 +88,14 @@ export function ReplaceExerciseModal({
           <Button
             label="Cancel"
             variant="outline"
-            size="md"
+            size="sm"
             width="flex-1"
             onPress={onClose}
           />
           <Button
             label="Replace"
             icon={Repeat}
-            size="md"
+            size="sm"
             width="flex-2"
             onPress={handleReplace}
           />
