@@ -49,6 +49,7 @@ function MealTypeButton({
       className={`${
         span === 2 ? 'flex-row' : 'flex-col'
       } active:bg-bg-card-elevated items-center justify-center gap-2 rounded-2xl border border-border-default bg-bg-overlay p-3 active:scale-95`}
+      style={{ minHeight: 88 }}
       onPress={onPress}>
       <View
         className={`${span === 2 ? 'h-8 w-8' : 'h-10 w-10'} items-center justify-center rounded-full`}
@@ -138,7 +139,7 @@ export function AddFoodModal({
                   />
                 </View>
               ))}
-              <View style={{ flex: 2, minWidth: '60%', maxWidth: '66.666%' }}>
+              <View style={{ flex: 2, minWidth: '60%', maxWidth: '66.666%', alignSelf: 'stretch' }}>
                 <MealTypeButton
                   icon={MoreHorizontal}
                   label="Track Other"
