@@ -12,14 +12,75 @@ export function ProgressIndicator({
   size = 'large',
 }: ProgressIndicatorProps) {
   return (
-    <View className="w-full flex-col items-center gap-4 rounded-3xl border border-white/10 bg-transparent p-0" style={{ minHeight: 140, justifyContent: 'center' }}>
-      <View className="w-full flex-col items-center justify-center rounded-3xl border border-white/20 bg-surface-dark/60 p-10" style={{ minHeight: 140 }}>
-        <ActivityIndicator
-          size={size}
-          color={theme.colors.accent.primary}
-          style={{ transform: [{ scale: size === 'large' ? 1.5 : 1 }] }}
-        />
-        {message && <Text className="text-lg font-medium text-accent-primary mt-6">{message}</Text>}
+    <View
+      className="w-full px-6 py-6"
+      style={{
+        minHeight: 160,
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}>
+      <View
+        className="w-full rounded-3xl"
+        style={{
+          backgroundColor: theme.colors.background.cardElevated,
+          borderColor: theme.colors.border.default,
+          borderWidth: 1,
+          padding: 24,
+        }}>
+        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+          <View
+            style={{
+              width: 72,
+              height: 72,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+            {/* Outer ring */}
+            <View
+              style={{
+                position: 'absolute',
+                width: 72,
+                height: 72,
+                borderRadius: 36,
+                borderWidth: 6,
+                borderColor: 'rgba(0,0,0,0.15)',
+              }}
+            />
+            {/* Progress arc using smaller view with accent color on top */}
+            <View
+              style={{
+                position: 'absolute',
+                top: 6,
+                left: 6,
+                width: 60,
+                height: 60,
+                borderRadius: 30,
+                borderWidth: 6,
+                borderColor: theme.colors.accent.primary,
+                transform: [{ rotate: '45deg' }],
+                overflow: 'hidden',
+              }}
+            />
+            <ActivityIndicator
+              size={size}
+              color={theme.colors.accent.primary}
+              style={{ transform: [{ scale: size === 'large' ? 1.4 : 1 }] }}
+            />
+          </View>
+
+          {message && (
+            <Text
+              style={{
+                marginTop: 18,
+                textAlign: 'center',
+                color: theme.colors.accent.primary,
+                fontSize: 18,
+                fontWeight: '600',
+              }}>
+              {message}
+            </Text>
+          )}
+        </View>
       </View>
     </View>
   );
