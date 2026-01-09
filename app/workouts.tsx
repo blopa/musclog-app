@@ -6,7 +6,7 @@ import { MasterLayout } from '../components/MasterLayout';
 import { WorkoutCard } from '../components/WorkoutCard';
 import { FeaturedWorkoutCard } from '../components/FeaturedWorkoutCard';
 import { FilterTabs } from '../components/FilterTabs';
-import { CreateTemplateCard } from '../components/CreateTemplateCard';
+import { CreateTemplateButton } from '../components/CreateTemplateButton';
 import { GradientText } from '../components/GradientText';
 import { FloatingActionButton } from '../components/FloatingActionButton';
 import { WorkoutDetailsMenu } from '../components/WorkoutDetailsMenu';
@@ -121,7 +121,7 @@ export default function WorkoutsScreen() {
             ))}
 
             {/* Create Template Card */}
-            <CreateTemplateCard />
+            <CreateTemplateButton />
           </View>
 
           {/* Bottom spacing for navigation and FAB */}

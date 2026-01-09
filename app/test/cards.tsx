@@ -8,7 +8,7 @@ import { DailySummaryCard } from '../../components/DailySummaryCard';
 import { RecentWorkoutsCard } from '../../components/RecentWorkoutsCard';
 import { WorkoutStatCard } from '../../components/WorkoutStatCard';
 import { CaloriesRemainingCard } from '../../components/CaloriesRemainingCard';
-import { CreateTemplateCard } from '../../components/CreateTemplateCard';
+import { CreateTemplateButton } from '../../components/CreateTemplateButton';
 import { WorkoutCard } from '../../components/WorkoutCard';
 import { FoodInfoCard } from '../../components/FoodInfoCard';
 import { NotificationCard } from '../../components/NotificationCard';
@@ -104,7 +104,7 @@ export default function CardsTestScreen() {
         </TestSection>
 
         <TestSection title="Create Template" subtitle="Design your workout templates">
-          <CreateTemplateCard onPress={() => console.log('Template created')} />
+          <CreateTemplateButton onPress={() => console.log('Template created')} />
         </TestSection>
 
         <TestSection title="Workout Card" subtitle="Standard workout display">
