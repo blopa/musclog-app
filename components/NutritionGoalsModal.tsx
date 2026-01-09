@@ -15,7 +15,7 @@ import Svg, { Circle } from 'react-native-svg';
 import { theme } from '../theme';
 import { FullScreenModal } from './FullScreenModal';
 import { Button } from './theme/Button';
-import { Slider } from './Slider';
+import { Slider } from './theme/Slider';
 
 type NutritionGoalsModalProps = {
   visible: boolean;
