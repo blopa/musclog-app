@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable, Platform, ScrollView } from 'react-native';
+import { View, Text, Platform, ScrollView } from 'react-native';
 import { ThumbsUp, ArrowRight } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { BottomPopUpMenu } from './BottomPopUpMenu';
 import { Slider } from './theme/Slider';
+import { Button } from './theme/Button';
 
 type SessionFeedbackModalProps = {
   visible: boolean;
@@ -94,17 +95,15 @@ export function SessionFeedbackModal({ visible, onClose, onSubmit }: SessionFeed
 
   const footer = (
     <View className="gap-3">
-      <Pressable
-        className="relative w-full overflow-hidden rounded-xl bg-accent-primary px-6 py-4 active:scale-[0.98]"
-        style={theme.shadows.accentGlow}
-        onPress={handleSubmit}>
-        <View className="flex-row items-center justify-center gap-2">
-          <Text className="text-base font-bold uppercase tracking-tight text-text-black">
-            {t('sessionFeedback.submit')}
-          </Text>
-          <ArrowRight size={theme.iconSize.sm} color={theme.colors.text.black} />
-        </View>
-      </Pressable>
+      <Button
+        label={t('sessionFeedback.submit')}
+        icon={ArrowRight}
+        iconPosition="right"
+        variant="accent"
+        size="md"
+        width="full"
+        onPress={handleSubmit}
+      />
     </View>
   );
 
