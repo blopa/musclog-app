@@ -1,16 +1,29 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, Pressable, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ArrowLeft } from 'lucide-react-native';
+import { ArrowLeft, User, Search, Calendar, Clock } from 'lucide-react-native';
 import { theme } from '../../theme';
-import { StandardInputs } from './components/StandardInputs';
-import { NumericalSteppers } from './components/NumericalSteppers';
-import { SpecializedNumeric } from './components/SpecializedNumeric';
-import { SelectionControls } from './components/SelectionControls';
-import { InteractiveSliders } from './components/InteractiveSliders';
-import { IconsAndPickers } from './components/IconsAndPickers';
+import { TestSection } from './components/TestSection';
+import { TestInput } from './components/TestInput';
+import { TestStepper } from './components/TestStepper';
+import { TestNumericInput } from './components/TestNumericInput';
+import { TestSegmentedControl } from './components/TestSegmentedControl';
+import { TestToggle } from './components/TestToggle';
+import { TestPickerButton } from './components/TestPickerButton';
+import { Slider } from '../../components/theme/Slider';
 
 export default function InputsTestScreen() {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('alex@musclog.fit');
+  const [targetWeight, setTargetWeight] = useState(85.0);
+  const [weight, setWeight] = useState('72');
+  const [reps, setReps] = useState('12');
+  const [selectedUnit, setSelectedUnit] = useState('metric');
+  const [dailyReminder, setDailyReminder] = useState(true);
+  const [bulkingPhase, setBulkingPhase] = useState(true);
+  const [difficulty, setDifficulty] = useState(8);
+  const [fullName, setFullName] = useState('Alex Johnson');
+
   return (
     <SafeAreaView className="flex-1 bg-bg-primary" edges={['top']}>
       {/* Header */}
@@ -37,12 +50,105 @@ export default function InputsTestScreen() {
 
         <View className="h-8" />
 
-        <StandardInputs />
-        <NumericalSteppers />
-        <SpecializedNumeric />
-        <SelectionControls />
-        <InteractiveSliders />
-        <IconsAndPickers />
+        <TestSection title="Standard Inputs" subtitle="Text fields & States">
+          <TestInput
+            label="Name (Default)"
+            value={name}
+            onChangeText={setName}
+            placeholder="Enter your name"
+          />
+          <TestInput
+            label="Email (Focused)"
+            value={email}
+            onChangeText={setEmail}
+            focused={true}
+            keyboardType="email-address"
+          />
+        </TestSection>
+
+        <TestSection title="Numerical Steppers" subtitle="Weight & Reps Adjusters">
+          <TestStepper
+            label="Target Weight"
+            value={targetWeight}
+            onIncrement={() => setTargetWeight((v) => v + 0.5)}
+            onDecrement={() => setTargetWeight((v) => Math.max(0, v - 0.5))}
+            unit="kg"
+          />
+        </TestSection>
+
+        <TestSection title="Specialized Numeric" subtitle="Workout Tracker & Goals">
+          <View className="flex-row gap-4">
+            <TestNumericInput label="Weight" value={weight} onChangeText={setWeight} unit="LBS" />
+            <TestNumericInput
+              label="Reps"
+              value={reps}
+              onChangeText={setReps}
+              unit="REPS"
+              unitColor={theme.colors.status.purple}
+            />
+          </View>
+        </TestSection>
+
+        <TestSection title="Selection Controls" subtitle="Choices & Toggles">
+          <TestSegmentedControl
+            options={[
+              { label: 'Metric', value: 'metric' },
+              { label: 'Imperial', value: 'imperial' },
+            ]}
+            value={selectedUnit}
+            onValueChange={setSelectedUnit}
+          />
+          <View className="flex-col gap-4">
+            <TestToggle
+              label="Daily Reminder"
+              value={dailyReminder}
+              onValueChange={setDailyReminder}
+              type="checkbox"
+            />
+            <TestToggle
+              label="Bulking Phase"
+              value={bulkingPhase}
+              onValueChange={setBulkingPhase}
+              type="radio"
+            />
+          </View>
+        </TestSection>
+
+        <TestSection title="Interactive Sliders" subtitle="Difficulty & Goals">
+          <View className="rounded-lg border border-white/10 bg-bg-card p-6">
+            <View className="mb-6 flex-row items-center justify-between">
+              <Text className="text-sm font-medium text-text-secondary">Workout Difficulty</Text>
+              <Text className="text-xl font-bold text-accent-primary">{difficulty}/10</Text>
+            </View>
+            <Slider value={difficulty} min={1} max={10} onChange={setDifficulty} />
+          </View>
+        </TestSection>
+
+        <TestSection title="Icons & Pickers" subtitle="Leading, Trailing & Triggers">
+          <TestInput
+            label=""
+            value=""
+            onChangeText={() => {}}
+            placeholder="Search exercises..."
+            icon={<Search size={20} color={theme.colors.text.tertiary} />}
+          />
+          <TestInput
+            label="Full Name"
+            value={fullName}
+            onChangeText={setFullName}
+            icon={<User size={20} color={`${theme.colors.accent.primary}66`} />}
+          />
+          <TestPickerButton
+            label="Monday, Oct 24"
+            icon={<Calendar size={20} color={theme.colors.status.purple} />}
+            onPress={() => {}}
+          />
+          <TestPickerButton
+            label="08:30 AM"
+            icon={<Clock size={20} color={theme.colors.accent.primary} />}
+            onPress={() => {}}
+          />
+        </TestSection>
 
         <View className="h-8" />
       </ScrollView>
