@@ -295,7 +295,7 @@ export function WorkoutSummaryCelebration({
                 top: 0,
                 left: 0,
                 right: 0,
-                height: 1,
+                height: 6,
                 opacity: 0.5,
               }}
             />
