@@ -1,8 +1,11 @@
 import React from 'react';
 import { View, Text } from 'react-native';
-import Svg, { Circle } from 'react-native-svg';
+import { PolarChart, Pie } from 'victory-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
+
+type MacroColor = '#6366f1' | '#10b981' | '#f59e0b' | '#ec4899';
+type MacroDatum = { value: number; color: MacroColor };
 
 type MacrosPizzaChartProps = {
   protein: number;
@@ -21,88 +24,30 @@ export function MacrosPizzaChart({
 }: MacrosPizzaChartProps) {
   const { t } = useTranslation();
 
-  const total = protein + carbs + fats + fiber;
-  const proteinPercentage = total > 0 ? (protein / total) * 100 : 0;
-  const carbsPercentage = total > 0 ? (carbs / total) * 100 : 0;
-  const fatsPercentage = total > 0 ? (fats / total) * 100 : 0;
-  const fiberPercentage = total > 0 ? (fiber / total) * 100 : 0;
+  const data: MacroDatum[] = [
+    { value: protein, color: theme.colors.macros.protein.bg },
+    { value: carbs, color: theme.colors.macros.carbs.bg },
+    { value: fats, color: theme.colors.macros.fat.bg },
+    ...(fiber > 0 ? [{ value: fiber, color: theme.colors.macros.fiber.bg }] : []),
+  ].filter((d) => d.value > 0);
 
-  // Calculate stroke-dasharray for each segment
-  const circumference = 2 * Math.PI * 40; // radius is 40
-  const proteinDashArray = (proteinPercentage / 100) * circumference;
-  const carbsDashArray = (carbsPercentage / 100) * circumference;
-  const fatsDashArray = (fatsPercentage / 100) * circumference;
-  const fiberDashArray = (fiberPercentage / 100) * circumference;
-
-  // Calculate stroke-dashoffset for each segment
-  const proteinOffset = 0;
-  const carbsOffset = -proteinDashArray;
-  const fatsOffset = -(proteinDashArray + carbsDashArray);
-  const fiberOffset = -(proteinDashArray + carbsDashArray + fatsDashArray);
+  // If all values are 0, show a placeholder background circle with a valid macro color
+  if (data.length === 0) {
+    data.push({ value: 1, color: theme.colors.macros.protein.bg });
+  }
 
   return (
     <View className="relative items-center justify-center" style={{ width: size, height: size }}>
-      <Svg
-        width={size}
-        height={size}
-        viewBox="0 0 100 100"
-        style={{ transform: [{ rotate: '-90deg' }] }}>
-        {/* Background circle */}
-        <Circle
-          cx="50"
-          cy="50"
-          r="40"
-          fill="transparent"
-          stroke={theme.colors.background.cardDark}
-          strokeWidth="12"
-        />
-        {/* Protein (Indigo) */}
-        <Circle
-          cx="50"
-          cy="50"
-          r="40"
-          fill="transparent"
-          stroke={theme.colors.macros.protein.bg}
-          strokeWidth="12"
-          strokeDasharray={`${proteinDashArray} ${circumference}`}
-          strokeDashoffset={proteinOffset}
-        />
-        {/* Carbs (Emerald) */}
-        <Circle
-          cx="50"
-          cy="50"
-          r="40"
-          fill="transparent"
-          stroke={theme.colors.macros.carbs.bg}
-          strokeWidth="12"
-          strokeDasharray={`${carbsDashArray} ${circumference}`}
-          strokeDashoffset={carbsOffset}
-        />
-        {/* Fats (amber) */}
-        <Circle
-          cx="50"
-          cy="50"
-          r="40"
-          fill="transparent"
-          stroke={theme.colors.macros.fat.bg}
-          strokeWidth="12"
-          strokeDasharray={`${fatsDashArray} ${circumference}`}
-          strokeDashoffset={fatsOffset}
-        />
-        {/* Fiber (teal) */}
-        {fiber > 0 && (
-          <Circle
-            cx="50"
-            cy="50"
-            r="40"
-            fill="transparent"
-            stroke={theme.colors.macros.fiber.bg}
-            strokeWidth="12"
-            strokeDasharray={`${fiberDashArray} ${circumference}`}
-            strokeDashoffset={fiberOffset}
-          />
-        )}
-      </Svg>
+      <View style={{ width: size, height: size }}>
+        <PolarChart<MacroDatum, never, 'value', 'color'>
+          data={data}
+          colorKey="color"
+          valueKey="value"
+          labelKey={undefined as never}>
+          <Pie.Chart innerRadius={size * 0.38} />
+        </PolarChart>
+      </View>
+
       <View className="absolute items-center">
         <Text className="text-[10px] font-bold uppercase text-text-secondary">
           {t('nutritionGoals.balance')}
