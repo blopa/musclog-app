@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, Text, TextInput } from 'react-native';
-import { theme } from '../../../theme';
+import { View, Text, TextInput as RNTextInput } from 'react-native';
+import { theme } from '../../theme';
 
 type TestInputProps = {
   label: string;
@@ -12,7 +12,7 @@ type TestInputProps = {
   icon?: React.ReactNode;
 };
 
-export function TestInput({
+export function TextInput({
   label,
   value,
   onChangeText,
@@ -43,7 +43,7 @@ export function TestInput({
               }
             : {}
         }>
-        <TextInput
+        <RNTextInput
           className="flex-1 border-none bg-transparent p-0 text-text-primary"
           placeholder={placeholder}
           placeholderTextColor={theme.colors.text.tertiary}

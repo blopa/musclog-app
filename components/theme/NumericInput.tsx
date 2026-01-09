@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TextInput, Pressable } from 'react-native';
 import { ChevronUp, ChevronDown } from 'lucide-react-native';
-import { theme } from '../../../theme';
+import { theme } from '../../theme';
 
 type TestNumericInputProps = {
   label: string;
@@ -13,7 +13,7 @@ type TestNumericInputProps = {
   onDecrement?: () => void;
 };
 
-export function TestNumericInput({
+export function NumericInput({
   label,
   value,
   onChangeText,

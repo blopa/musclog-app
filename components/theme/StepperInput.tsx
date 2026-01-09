@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { View, Text, Pressable, TextInput } from 'react-native';
 import { Minus, Plus } from 'lucide-react-native';
-import { theme } from '../../../theme';
+import { theme } from '../../theme';
 
 type TestStepperProps = {
   label: string;
@@ -12,7 +12,7 @@ type TestStepperProps = {
   unit?: string;
 };
 
-export function TestStepper({
+export function StepperInput({
   label,
   value,
   onIncrement,

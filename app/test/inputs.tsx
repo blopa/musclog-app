@@ -4,12 +4,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeft, User, Search, Calendar, Clock } from 'lucide-react-native';
 import { theme } from '../../theme';
 import { TestSection } from './components/TestSection';
-import { TestInput } from './components/TestInput';
-import { TestStepper } from './components/TestStepper';
-import { TestNumericInput } from './components/TestNumericInput';
-import { TestSegmentedControl } from './components/TestSegmentedControl';
-import { TestToggle } from './components/TestToggle';
-import { TestPickerButton } from './components/TestPickerButton';
+import { TextInput } from '../../components/theme/TextInput';
+import { StepperInput } from '../../components/theme/StepperInput';
+import { NumericInput } from '../../components/theme/NumericInput';
+import { SegmentedControl } from '../../components/theme/SegmentedControl';
+import { Toggle } from '../../components/theme/Toggle';
+import { PickerButton } from '../../components/theme/PickerButton';
 import { Slider } from '../../components/theme/Slider';
 
 export default function InputsTestScreen() {
@@ -51,13 +51,13 @@ export default function InputsTestScreen() {
         <View className="h-8" />
 
         <TestSection title="Standard Inputs" subtitle="Text fields & States">
-          <TestInput
+          <TextInput
             label="Name (Default)"
             value={name}
             onChangeText={setName}
             placeholder="Enter your name"
           />
-          <TestInput
+          <TextInput
             label="Email (Focused)"
             value={email}
             onChangeText={setEmail}
@@ -67,7 +67,7 @@ export default function InputsTestScreen() {
         </TestSection>
 
         <TestSection title="Numerical Steppers" subtitle="Weight & Reps Adjusters">
-          <TestStepper
+          <StepperInput
             label="Target Weight"
             value={targetWeight}
             onIncrement={() => setTargetWeight((v) => v + 0.5)}
@@ -79,7 +79,7 @@ export default function InputsTestScreen() {
 
         <TestSection title="Specialized Numeric" subtitle="Workout Tracker & Goals">
           <View className="flex-row gap-4">
-            <TestNumericInput
+            <NumericInput
               label="Weight"
               value={weight}
               onChangeText={setWeight}
@@ -87,7 +87,7 @@ export default function InputsTestScreen() {
               onIncrement={() => setWeight(String((parseInt(weight) || 0) + 1))}
               onDecrement={() => setWeight(String(Math.max(0, (parseInt(weight) || 0) - 1)))}
             />
-            <TestNumericInput
+            <NumericInput
               label="Reps"
               value={reps}
               onChangeText={setReps}
@@ -100,7 +100,7 @@ export default function InputsTestScreen() {
         </TestSection>
 
         <TestSection title="Selection Controls" subtitle="Choices & Toggles">
-          <TestSegmentedControl
+          <SegmentedControl
             options={[
               { label: 'Metric', value: 'metric' },
               { label: 'Imperial', value: 'imperial' },
@@ -109,13 +109,13 @@ export default function InputsTestScreen() {
             onValueChange={setSelectedUnit}
           />
           <View className="flex-col gap-4">
-            <TestToggle
+            <Toggle
               label="Daily Reminder"
               value={dailyReminder}
               onValueChange={setDailyReminder}
               type="checkbox"
             />
-            <TestToggle
+            <Toggle
               label="Bulking Phase"
               value={bulkingPhase}
               onValueChange={setBulkingPhase}
@@ -135,25 +135,25 @@ export default function InputsTestScreen() {
         </TestSection>
 
         <TestSection title="Icons & Pickers" subtitle="Leading, Trailing & Triggers">
-          <TestInput
+          <TextInput
             label=""
             value=""
             onChangeText={() => {}}
             placeholder="Search exercises..."
             icon={<Search size={20} color={theme.colors.text.tertiary} />}
           />
-          <TestInput
+          <TextInput
             label="Full Name"
             value={fullName}
             onChangeText={setFullName}
             icon={<User size={20} color={`${theme.colors.accent.primary}66`} />}
           />
-          <TestPickerButton
+          <PickerButton
             label="Monday, Oct 24"
             icon={<Calendar size={20} color={theme.colors.status.purple} />}
             onPress={() => {}}
           />
-          <TestPickerButton
+          <PickerButton
             label="08:30 AM"
             icon={<Clock size={20} color={theme.colors.accent.primary} />}
             onPress={() => {}}

@@ -12,7 +12,7 @@ type TestSegmentedControlProps = {
   onValueChange: (value: string) => void;
 };
 
-export function TestSegmentedControl({ options, value, onValueChange }: TestSegmentedControlProps) {
+export function SegmentedControl({ options, value, onValueChange }: TestSegmentedControlProps) {
   return (
     <View className="flex-row rounded-lg bg-bg-card p-1">
       {options.map((option) => (

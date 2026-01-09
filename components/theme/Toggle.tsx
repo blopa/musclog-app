@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { Check } from 'lucide-react-native';
-import { theme } from '../../../theme';
+import { theme } from '../../theme';
 
 type TestToggleProps = {
   label: string;
@@ -10,7 +10,7 @@ type TestToggleProps = {
   type?: 'checkbox' | 'radio';
 };
 
-export function TestToggle({ label, value, onValueChange, type = 'checkbox' }: TestToggleProps) {
+export function Toggle({ label, value, onValueChange, type = 'checkbox' }: TestToggleProps) {
   return (
     <Pressable
       className="flex-row items-center gap-3 active:opacity-90"

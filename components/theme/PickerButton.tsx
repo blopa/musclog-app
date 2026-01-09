@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { ChevronDown } from 'lucide-react-native';
-import { theme } from '../../../theme';
+import { theme } from '../../theme';
 
 type TestPickerButtonProps = {
   label: string;
@@ -9,7 +9,7 @@ type TestPickerButtonProps = {
   onPress: () => void;
 };
 
-export function TestPickerButton({ label, icon, onPress }: TestPickerButtonProps) {
+export function PickerButton({ label, icon, onPress }: TestPickerButtonProps) {
   return (
     <Pressable
       className="h-14 w-full flex-row items-center justify-between rounded-lg border border-white/10 bg-bg-card px-4 active:bg-white/5"
