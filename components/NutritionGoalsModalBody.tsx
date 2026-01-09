@@ -10,6 +10,7 @@ import {
   Activity,
   ChevronRight,
 } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import Svg, { Circle } from 'react-native-svg';
 import { theme } from '../theme';
 import { Button } from './theme/Button';
@@ -192,6 +193,7 @@ function MacrosDistributionChart({
   carbs: number;
   fats: number;
 }) {
+  const { t } = useTranslation();
   const total = protein + carbs + fats;
   const proteinPercentage = (protein / total) * 100;
   const carbsPercentage = (carbs / total) * 100;
@@ -211,7 +213,7 @@ function MacrosDistributionChart({
   return (
     <View className="items-center py-10">
       <Text className="mb-6 text-sm font-semibold uppercase tracking-widest text-text-secondary opacity-60">
-        Macros Distribution
+        {t('nutritionGoals.macrosDistribution')}
       </Text>
       <View className="relative h-48 w-48 items-center justify-center">
         <Svg
@@ -263,8 +265,10 @@ function MacrosDistributionChart({
           />
         </Svg>
         <View className="absolute items-center">
-          <Text className="text-[10px] font-bold uppercase text-text-secondary">Balance</Text>
-          <Text className="text-lg font-bold text-text-primary">Optimal</Text>
+          <Text className="text-[10px] font-bold uppercase text-text-secondary">
+            {t('nutritionGoals.balance')}
+          </Text>
+          <Text className="text-lg font-bold text-text-primary">{t('nutritionGoals.optimal')}</Text>
         </View>
       </View>
       <View className="mt-8 flex-row gap-6">
@@ -273,21 +277,27 @@ function MacrosDistributionChart({
             className="h-2 w-2 rounded-full"
             style={{ backgroundColor: theme.colors.macros.carbs.bg }}
           />
-          <Text className="text-xs text-text-secondary">{Math.round(proteinPercentage)}% P</Text>
+          <Text className="text-xs text-text-secondary">
+            {Math.round(proteinPercentage)}% {t('food.macros.protein').charAt(0)}
+          </Text>
         </View>
         <View className="flex-row items-center gap-2">
           <View
             className="h-2 w-2 rounded-full"
             style={{ backgroundColor: theme.colors.macros.protein.bg }}
           />
-          <Text className="text-xs text-text-secondary">{Math.round(carbsPercentage)}% C</Text>
+          <Text className="text-xs text-text-secondary">
+            {Math.round(carbsPercentage)}% {t('food.macros.carbs').charAt(0)}
+          </Text>
         </View>
         <View className="flex-row items-center gap-2">
           <View
             className="h-2 w-2 rounded-full"
             style={{ backgroundColor: theme.colors.macros.fat.bg }}
           />
-          <Text className="text-xs text-text-secondary">{Math.round(fatsPercentage)}% F</Text>
+          <Text className="text-xs text-text-secondary">
+            {Math.round(fatsPercentage)}% {t('food.macros.fat').charAt(0)}
+          </Text>
         </View>
       </View>
     </View>
@@ -300,6 +310,7 @@ export function NutritionGoalsModalBody({
   showSaveButton = true,
   showSubtitle = true,
 }: NutritionGoalsModalBodyProps) {
+  const { t } = useTranslation();
   const [totalCalories, setTotalCalories] = useState(initialGoals?.totalCalories ?? 2450);
   const [protein, setProtein] = useState(initialGoals?.protein ?? 180);
   const [carbs, setCarbs] = useState(initialGoals?.carbs ?? 250);
@@ -343,9 +354,7 @@ export function NutritionGoalsModalBody({
       <View className="gap-4 px-6 pb-6 pt-2">
         {/* Subtitle */}
         {showSubtitle && (
-          <Text className="mb-2 text-sm text-text-secondary">
-            Define your targets for nutrition and body composition.
-          </Text>
+          <Text className="mb-2 text-sm text-text-secondary">{t('nutritionGoals.subtitle')}</Text>
         )}
 
         {/* Total Daily Calories Card */}
@@ -363,25 +372,27 @@ export function NutritionGoalsModalBody({
           />
           <View className="relative z-10 items-center">
             <Text className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">
-              Total Daily Calories
+              {t('nutritionGoals.totalDailyCalories')}
             </Text>
             <View className="flex-row items-baseline gap-2">
               <Text className="text-5xl font-extrabold tracking-tighter text-text-primary">
                 {totalCalories.toLocaleString()}
               </Text>
-              <Text className="text-lg font-semibold uppercase text-accent-primary">kcal</Text>
+              <Text className="text-lg font-semibold uppercase text-accent-primary">
+                {t('food.common.kcal')}
+              </Text>
             </View>
           </View>
         </View>
 
         {/* Daily Macro Targets */}
         <Text className="mb-2 mt-8 text-[10px] font-bold uppercase tracking-widest text-text-secondary">
-          Daily Macro Targets
+          {t('nutritionGoals.dailyMacroTargets')}
         </Text>
         <View className="gap-4">
           <MacroCard
-            label="Protein"
-            kcalPerGram="4 kcal/g"
+            label={t('nutritionGoals.protein')}
+            kcalPerGram={t('nutritionGoals.kcalPerGram.protein')}
             value={protein}
             min={0}
             max={300}
@@ -389,8 +400,8 @@ export function NutritionGoalsModalBody({
             onChange={setProtein}
           />
           <MacroCard
-            label="Carbohydrates"
-            kcalPerGram="4 kcal/g"
+            label={t('nutritionGoals.carbohydrates')}
+            kcalPerGram={t('nutritionGoals.kcalPerGram.carbs')}
             value={carbs}
             min={0}
             max={500}
@@ -398,8 +409,8 @@ export function NutritionGoalsModalBody({
             onChange={setCarbs}
           />
           <MacroCard
-            label="Fats"
-            kcalPerGram="9 kcal/g"
+            label={t('nutritionGoals.fats')}
+            kcalPerGram={t('nutritionGoals.kcalPerGram.fats')}
             value={fats}
             min={0}
             max={150}
@@ -413,13 +424,13 @@ export function NutritionGoalsModalBody({
 
         {/* Target Body Metrics */}
         <Text className="mb-2 mt-8 text-[10px] font-bold uppercase tracking-widest text-text-secondary">
-          Target Body Metrics
+          {t('nutritionGoals.targetBodyMetrics')}
         </Text>
         <View className="gap-4">
           <BodyMetricCard
             icon={Scale}
-            label="Target Weight"
-            sublabel="kg/lbs"
+            label={t('nutritionGoals.targetWeight')}
+            sublabel={t('nutritionGoals.sublabels.targetWeight')}
             value={targetWeight}
             unit="kg"
             unitLabel="kg"
@@ -430,8 +441,8 @@ export function NutritionGoalsModalBody({
           />
           <BodyMetricCard
             icon={Percent}
-            label="Target Body Fat"
-            sublabel="% percentage"
+            label={t('nutritionGoals.targetBodyFat')}
+            sublabel={t('nutritionGoals.sublabels.targetBodyFat')}
             value={targetBodyFat}
             unit="%"
             unitLabel="%"
@@ -442,8 +453,8 @@ export function NutritionGoalsModalBody({
           />
           <BodyMetricCard
             icon={TrendingUp}
-            label="Target BMI"
-            sublabel="Body Mass Index"
+            label={t('nutritionGoals.targetBMI')}
+            sublabel={t('nutritionGoals.sublabels.targetBMI')}
             value={targetBMI}
             unit="index"
             unitLabel="index"
@@ -454,8 +465,8 @@ export function NutritionGoalsModalBody({
           />
           <BodyMetricCard
             icon={Activity}
-            label="Target FFMI"
-            sublabel="Fat-Free Mass Index"
+            label={t('nutritionGoals.targetFFMI')}
+            sublabel={t('nutritionGoals.sublabels.targetFFMI')}
             value={targetFFMI}
             unit="index"
             unitLabel="index"
@@ -470,7 +481,7 @@ export function NutritionGoalsModalBody({
         {showSaveButton && (
           <View className="mt-8 border-t border-white/5 pt-6">
             <Button
-              label="Save Goals"
+              label={t('nutritionGoals.saveGoals')}
               icon={ChevronRight}
               iconPosition="right"
               variant="gradientCta"
@@ -479,7 +490,7 @@ export function NutritionGoalsModalBody({
               onPress={handleSave}
             />
             <Text className="mt-4 text-center text-[10px] text-text-secondary">
-              You can change these values anytime in Settings.
+              {t('nutritionGoals.settingsNote')}
             </Text>
           </View>
         )}

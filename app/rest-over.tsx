@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { View, Animated, Platform } from 'react-native';
 import { Play } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../theme';
 import { Button } from '../components/theme/Button';
@@ -13,6 +14,7 @@ import { RestOverTitle } from '../components/RestOverTitle';
 import { RestOverNextExercise } from '../components/RestOverNextExercise';
 
 export default function RestOverScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const pulseAnim = useRef(new Animated.Value(0.3)).current;
   const [isOptionsModalVisible, setIsOptionsModalVisible] = useState(false);
@@ -103,7 +105,7 @@ export default function RestOverScreen() {
       {/* Footer */}
       <View className="z-10 w-full px-6 pb-12">
         <Button
-          label="Start Next Set"
+          label={t('restOver.startNextSet')}
           icon={Play}
           variant="accent"
           size="lg"

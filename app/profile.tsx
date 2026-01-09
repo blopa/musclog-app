@@ -121,7 +121,7 @@ export default function ProfileScreen() {
         {/* Syncing Indicator */}
         {isSyncing && (
           <View className="px-6 pt-6">
-            <ProgressIndicator message="Syncing with HealthKit..." />
+            <ProgressIndicator message={t('profile.syncing.healthKit')} />
           </View>
         )}
         {/* Header */}

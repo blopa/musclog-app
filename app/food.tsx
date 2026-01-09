@@ -158,9 +158,9 @@ export default function FoodScreen() {
             {error && (
               <ErrorStateCard
                 icon={WifiOff}
-                title="Connection Timeout"
-                description="We couldn't reach the Musclog servers. Please check your internet connection."
-                buttonLabel="Try Again"
+                title={t('errors.connectionTimeout.title')}
+                description={t('errors.connectionTimeout.description')}
+                buttonLabel={t('errors.connectionTimeout.tryAgain')}
                 onButtonPress={loadFoodData}
               />
             )}
@@ -207,9 +207,9 @@ export default function FoodScreen() {
             {!isLoading && !error && hasNoFood && (
               <EmptyStateCard
                 icon={UtensilsCrossed}
-                title="No Food Logged"
-                description="Log your meals to stay on top of your nutrition goals. Your body will thank you."
-                buttonLabel="Log Your Meal"
+                title={t('emptyStates.food.title')}
+                description={t('emptyStates.food.description')}
+                buttonLabel={t('emptyStates.food.buttonLabel')}
                 buttonVariant="secondary"
                 onButtonPress={() => setIsAddFoodModalVisible(true)}
               />

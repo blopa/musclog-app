@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, Pressable, Modal, Platform, Animated } from 'react-native';
 import { Home } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { Button } from './theme/Button';
 import { WorkoutSummaryTrophy } from './WorkoutSummaryTrophy';
@@ -26,6 +27,7 @@ export function WorkoutSummaryCelebration({
   volume = '12,450 kg',
   personalRecords = 2,
 }: WorkoutSummaryCelebrationProps) {
+  const { t } = useTranslation();
   const glowAnim1 = useRef(new Animated.Value(0.6)).current;
   const glowAnim2 = useRef(new Animated.Value(0.6)).current;
 
@@ -109,7 +111,7 @@ export function WorkoutSummaryCelebration({
 
           {/* Go Home Button */}
           <Button
-            label="Go Home"
+            label={t('workoutSummary.goHome')}
             icon={Home}
             variant="accent"
             size="md"

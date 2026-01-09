@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { FullScreenModal } from './FullScreenModal';
 import { NutritionGoalsModalBody, NutritionGoals } from './NutritionGoalsModalBody';
 
@@ -18,6 +19,7 @@ export function NutritionGoalsModal({
   onSave,
   initialGoals,
 }: NutritionGoalsModalProps) {
+  const { t } = useTranslation();
   const handleSave = (goals: NutritionGoals) => {
     onSave?.(goals);
     onClose();
@@ -27,7 +29,7 @@ export function NutritionGoalsModal({
     <FullScreenModal
       visible={visible}
       onClose={onClose}
-      title="Set Nutrition & Body Goals"
+      title={t('nutritionGoals.title')}
       scrollable={false}>
       <NutritionGoalsModalBody onSave={handleSave} initialGoals={initialGoals} />
     </FullScreenModal>

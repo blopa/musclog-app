@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { View, ScrollView, Pressable } from 'react-native';
 import { Search, SlidersHorizontal, Dumbbell, WifiOff } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { MasterLayout } from '../components/MasterLayout';
 import { WorkoutCard } from '../components/WorkoutCard';
@@ -58,6 +59,7 @@ const FILTER_TABS = [
 ];
 
 export default function WorkoutsScreen() {
+  const { t } = useTranslation();
   const [activeFilter, setActiveFilter] = useState('all');
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [selectedWorkoutName, setSelectedWorkoutName] = useState<string>('');
@@ -133,9 +135,9 @@ export default function WorkoutsScreen() {
             {error && (
               <ErrorStateCard
                 icon={WifiOff}
-                title="Connection Timeout"
-                description="We couldn't reach the Musclog servers. Please check your internet connection."
-                buttonLabel="Try Again"
+                title={t('errors.connectionTimeout.title')}
+                description={t('errors.connectionTimeout.description')}
+                buttonLabel={t('errors.connectionTimeout.tryAgain')}
                 onButtonPress={loadWorkouts}
               />
             )}
@@ -182,9 +184,9 @@ export default function WorkoutsScreen() {
             {!isLoading && !error && filteredWorkouts.length === 0 && (
               <EmptyStateCard
                 icon={Dumbbell}
-                title="No Workouts Yet"
-                description="Your fitness journey starts with your first rep. Plan your routine and track your progress here."
-                buttonLabel="Create Your First Workout"
+                title={t('emptyStates.workouts.title')}
+                description={t('emptyStates.workouts.description')}
+                buttonLabel={t('emptyStates.workouts.buttonLabel')}
                 iconGradient={true}
                 buttonVariant="gradientCta"
                 onButtonPress={() => {

@@ -275,6 +275,67 @@
       "editFitnessDesc": "Goals, Experience Level",
       "appPreferences": "App Preferences",
       "appPreferencesDesc": "Units, Notifications, Privacy"
+    },
+    "syncing": {
+      "healthKit": "Syncing with HealthKit..."
+    }
+  },
+  "emptyStates": {
+    "workouts": {
+      "title": "No Workouts Yet",
+      "description": "Your fitness journey starts with your first rep. Plan your routine and track your progress here.",
+      "buttonLabel": "Create Your First Workout"
+    },
+    "food": {
+      "title": "No Food Logged",
+      "description": "Log your meals to stay on top of your nutrition goals. Your body will thank you.",
+      "buttonLabel": "Log Your Meal"
+    }
+  },
+  "errors": {
+    "connectionTimeout": {
+      "title": "Connection Timeout",
+      "description": "We couldn't reach the Musclog servers. Please check your internet connection.",
+      "tryAgain": "Try Again"
+    }
+  },
+  "restOver": {
+    "startNextSet": "Start Next Set"
+  },
+  "workoutSummary": {
+    "totalTime": "Total Time",
+    "volume": "Volume",
+    "personalRecords": "Personal Records",
+    "goHome": "Go Home"
+  },
+  "nutritionGoals": {
+    "title": "Set Nutrition & Body Goals",
+    "subtitle": "Define your targets for nutrition and body composition.",
+    "dailyMacroTargets": "Daily Macro Targets",
+    "totalDailyCalories": "Total Daily Calories",
+    "targetBodyMetrics": "Target Body Metrics",
+    "macrosDistribution": "Macros Distribution",
+    "balance": "Balance",
+    "optimal": "Optimal",
+    "protein": "Protein",
+    "carbohydrates": "Carbohydrates",
+    "fats": "Fats",
+    "targetWeight": "Target Weight",
+    "targetBodyFat": "Target Body Fat",
+    "targetBMI": "Target BMI",
+    "targetFFMI": "Target FFMI",
+    "saveGoals": "Save Goals",
+    "settingsNote": "You can change these values anytime in Settings.",
+    "kcalPerGram": {
+      "protein": "4 kcal/g",
+      "carbs": "4 kcal/g",
+      "fats": "9 kcal/g"
+    },
+    "sublabels": {
+      "targetWeight": "kg/lbs",
+      "targetBodyFat": "% percentage",
+      "targetBMI": "Body Mass Index",
+      "targetFFMI": "Fat-Free Mass Index"
     }
   }
 }

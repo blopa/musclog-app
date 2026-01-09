@@ -2,6 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Timer, Dumbbell, TrendingUp } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { WorkoutSummaryStatRow } from './WorkoutSummaryStatRow';
 
@@ -16,6 +17,7 @@ export function WorkoutSummaryStatsCard({
   volume,
   personalRecords,
 }: WorkoutSummaryStatsCardProps) {
+  const { t } = useTranslation();
   return (
     <View
       className="mb-8 w-full overflow-hidden rounded-[20px] border p-6"
@@ -47,15 +49,15 @@ export function WorkoutSummaryStatsCard({
       <View className="gap-6">
         <WorkoutSummaryStatRow
           icon={Timer}
-          label="Total Time"
+          label={t('workoutSummary.totalTime')}
           value={totalTime.replace(/\s*(m|min|minutes?)/i, '')}
-          valueSuffix={totalTime.match(/\s*(m|min|minutes?)/i)?.[1] || 'm'}
+          valueSuffix={totalTime.match(/\s*(m|min|minutes?)/i)?.[1] || t('common.min')}
           iconBgColor="rgba(59, 130, 246, 0.1)"
           iconColor="#3b82f6"
         />
         <WorkoutSummaryStatRow
           icon={Dumbbell}
-          label="Volume"
+          label={t('workoutSummary.volume')}
           value={volume.replace(/\s*(kg|g|lbs?)/i, '').trim()}
           valueSuffix={volume.match(/\s*(kg|g|lbs?)/i)?.[1] || 'kg'}
           iconBgColor="rgba(41, 224, 142, 0.1)"
@@ -63,7 +65,7 @@ export function WorkoutSummaryStatsCard({
         />
         <WorkoutSummaryStatRow
           icon={TrendingUp}
-          label="Personal Records"
+          label={t('workoutSummary.personalRecords')}
           value={personalRecords}
           iconBgColor="rgba(251, 191, 36, 0.1)"
           iconColor="#fbbf24"
