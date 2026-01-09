@@ -341,7 +341,8 @@ export function NutritionGoalsModal({ visible, onClose, onSave }: NutritionGoals
       visible={visible}
       onClose={onClose}
       title="Set Nutrition & Body Goals"
-      scrollable={true}>
+      scrollable={true}
+    >
       <ScrollView
         className="flex-1"
         showsVerticalScrollIndicator={false}
