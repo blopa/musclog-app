@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable, Platform } from 'react-native';
 import { ThumbsUp, ArrowRight } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { BottomPopUpMenu } from './BottomPopUpMenu';
+import { Slider } from './theme/Slider';
 
 type SessionFeedbackModalProps = {
   visible: boolean;
@@ -20,18 +21,14 @@ type RatingSliderProps = {
 };
 
 function RatingSlider({ label, value, onChange, leftLabel, rightLabel }: RatingSliderProps) {
-  const sliderWidthRef = React.useRef(0);
-
-  const handleSliderPress = (event: any) => {
-    const { locationX } = event.nativeEvent;
-    if (sliderWidthRef.current > 0) {
-      const percentage = Math.max(0, Math.min(100, (locationX / sliderWidthRef.current) * 100));
-      const newValue = Math.round(1 + (percentage / 100) * 9);
-      onChange(Math.max(1, Math.min(10, newValue)));
-    }
-  };
-
-  const percentage = ((value - 1) / 9) * 100;
+  // Web-specific styles to allow horizontal gestures on slider area
+  const webSliderContainerStyle =
+    Platform.OS === 'web'
+      ? ({
+          // Allow horizontal panning for slider, preventing browser swipe gesture
+          touchAction: 'pan-x pan-y',
+        } as any)
+      : {};
 
   return (
     <View className="gap-3">
@@ -46,35 +43,16 @@ function RatingSlider({ label, value, onChange, leftLabel, rightLabel }: RatingS
       </View>
 
       {/* Slider */}
-      <View className="relative h-6 flex-row items-center">
-        <Pressable
-          className="h-1 w-full rounded-full"
-          style={{ backgroundColor: theme.colors.overlay.white20 }}
-          onPress={handleSliderPress}
-          onLayout={(event) => {
-            sliderWidthRef.current = event.nativeEvent.layout.width;
-          }}>
-          {/* Filled portion */}
-          <View
-            className="absolute left-0 top-0 h-full rounded-full"
-            style={{
-              width: `${percentage}%`,
-              backgroundColor: theme.colors.accent.primary,
-            }}
-          />
-          {/* Thumb */}
-          <View
-            className="absolute top-1/2 h-6 w-6 -translate-y-3 rounded-full border-2"
-            style={{
-              left: `${percentage}%`,
-              marginLeft: -theme.size['3'],
-              backgroundColor: theme.colors.background.white,
-              borderColor: theme.colors.accent.primary,
-              borderWidth: theme.borderWidth.medium,
-              ...theme.shadows.slider,
-            }}
-          />
-        </Pressable>
+      <View className="mb-2" style={webSliderContainerStyle}>
+        <Slider
+          value={value}
+          min={1}
+          max={10}
+          onChange={onChange}
+          trackColor={theme.colors.overlay.white20}
+          filledTrackColor={theme.colors.accent.primary}
+          thumbColor={theme.colors.background.white}
+        />
       </View>
 
       {/* Labels */}
