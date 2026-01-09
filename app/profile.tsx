@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, ScrollView, Pressable, Image } from 'react-native';
 import { Settings, Edit, TrendingUp, CheckCircle, User, Dumbbell, List } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
@@ -7,6 +7,7 @@ import { theme } from '../theme';
 import { MasterLayout } from '../components/MasterLayout';
 import { StatCard } from '../components/StatCard';
 import { ManagementItem } from '../components/ManagementItem';
+import { ProgressIndicator } from '../components/theme/ProgressIndicator';
 
 const PROFILE_DATA = {
   user: {
@@ -98,10 +99,31 @@ export default function ProfileScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const { user, stats, management } = PROFILE_DATA;
+  const [isSyncing, setIsSyncing] = useState(false);
+
+  // Simulate syncing with HealthKit or external services
+  const syncData = async () => {
+    setIsSyncing(true);
+    try {
+      // Simulate sync operation
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // In real app: await syncWithHealthKit();
+    } catch (err) {
+      console.error('Sync failed:', err);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
   return (
     <MasterLayout>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+        {/* Syncing Indicator */}
+        {isSyncing && (
+          <View className="px-6 pt-6">
+            <ProgressIndicator message="Syncing with HealthKit..." />
+          </View>
+        )}
         {/* Header */}
         <View className="flex-row items-center justify-between px-6 py-6">
           <Text className="text-4xl font-bold text-text-primary">{t('profile.header.title')}</Text>

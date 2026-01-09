@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, Image, Pressable, ScrollView } from 'react-native';
 import { Bell } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +11,7 @@ import { DailySummaryCard } from '../components/DailySummaryCard';
 import { UserMenuModal } from '../components/UserMenuModal';
 import { NotificationsModal } from '../components/NotificationsModal';
 import { useRouter } from 'expo-router';
+import { SkeletonLoader } from '../components/theme/SkeletonLoader';
 
 const PAGE_DATA = {
   user: {
@@ -78,9 +79,34 @@ const PAGE_DATA = {
 export default function HomeScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { user, dailySummary, recentWorkouts, recentFoods } = PAGE_DATA;
+  const [user, setUser] = useState(PAGE_DATA.user);
+  const [dailySummary, setDailySummary] = useState(PAGE_DATA.dailySummary);
+  const [recentWorkouts, setRecentWorkouts] = useState(PAGE_DATA.recentWorkouts);
+  const [recentFoods, setRecentFoods] = useState(PAGE_DATA.recentFoods);
   const [isUserMenuVisible, setIsUserMenuVisible] = useState(false);
   const [isNotificationsVisible, setIsNotificationsVisible] = useState(false);
+  const [isLoadingRecent, setIsLoadingRecent] = useState(false);
+
+  // Simulate loading recent data - replace with actual API call
+  const loadRecentData = async () => {
+    setIsLoadingRecent(true);
+    try {
+      // Simulate API call delay
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // In real app, replace with: const data = await fetchRecentData();
+      setRecentWorkouts(PAGE_DATA.recentWorkouts);
+      setRecentFoods(PAGE_DATA.recentFoods);
+    } catch (err) {
+      console.error('Failed to load recent data:', err);
+    } finally {
+      setIsLoadingRecent(false);
+    }
+  };
+
+  useEffect(() => {
+    // Uncomment to simulate initial load
+    // loadRecentData();
+  }, []);
 
   return (
     <MasterLayout>
@@ -140,20 +166,36 @@ export default function HomeScreen() {
             </Pressable>
           </View>
 
-          <View className="gap-3">
-            {recentWorkouts.map((workout) => (
-              <RecentWorkoutsCard
-                key={workout.id}
-                name={workout.name}
-                date={workout.date}
-                duration={workout.duration}
-                calories={workout.calories}
-                prs={workout.prs}
-                image={workout.image}
-                imageBgColor={workout.imageBgColor}
-              />
-            ))}
-          </View>
+          {isLoadingRecent ? (
+            <View className="gap-3">
+              {[1, 2].map((i) => (
+                <View key={i} className="rounded-lg border border-white/5 bg-bg-card p-4">
+                  <View className="flex-row items-center gap-3">
+                    <SkeletonLoader width={48} height={48} borderRadius={12} />
+                    <View className="flex-1 gap-2">
+                      <SkeletonLoader width="70%" height={16} />
+                      <SkeletonLoader width="50%" height={12} />
+                    </View>
+                  </View>
+                </View>
+              ))}
+            </View>
+          ) : (
+            <View className="gap-3">
+              {recentWorkouts.map((workout) => (
+                <RecentWorkoutsCard
+                  key={workout.id}
+                  name={workout.name}
+                  date={workout.date}
+                  duration={workout.duration}
+                  calories={workout.calories}
+                  prs={workout.prs}
+                  image={workout.image}
+                  imageBgColor={workout.imageBgColor}
+                />
+              ))}
+            </View>
+          )}
         </View>
 
         {/* Recent Foods */}
@@ -162,45 +204,66 @@ export default function HomeScreen() {
             {t('home.sections.recentFoods')}
           </Text>
 
-          <View className="gap-3">
-            {recentFoods.map((food) => (
-              <Pressable
-                key={food.id}
-                className="flex-row items-center gap-4 rounded-2xl bg-bg-overlay p-5">
-                <View className="flex-1">
-                  <View className="mb-3 flex-row items-start justify-between">
-                    <View className="flex-row items-center gap-3">
-                      <Text className="text-4xl">{food.emoji}</Text>
-                      <View>
-                        <Text className="text-lg font-bold text-text-primary">{food.name}</Text>
-                        <View className="mt-2 flex-row gap-2">
-                          <View className="rounded-full bg-bg-secondary px-2.5 py-1">
-                            <Text className="text-xs text-text-secondary">
-                              {t('home.macros.protein', { value: food.protein })}
-                            </Text>
-                          </View>
-                          <View className="rounded-full bg-bg-secondary px-2.5 py-1">
-                            <Text className="text-xs text-text-secondary">
-                              {t('home.macros.carbs', { value: food.carbs })}
-                            </Text>
-                          </View>
-                          <View className="rounded-full bg-bg-secondary px-2.5 py-1">
-                            <Text className="text-xs text-text-secondary">
-                              {t('home.macros.fat', { value: food.fat })}
-                            </Text>
+          {isLoadingRecent ? (
+            <View className="gap-3">
+              {[1, 2].map((i) => (
+                <View key={i} className="flex-row items-center gap-4 rounded-2xl bg-bg-overlay p-5">
+                  <View className="flex-row items-center gap-3">
+                    <SkeletonLoader width={40} height={40} borderRadius={20} />
+                    <View className="flex-1 gap-2">
+                      <SkeletonLoader width="60%" height={16} />
+                      <View className="flex-row gap-2">
+                        <SkeletonLoader width={60} height={20} borderRadius={10} />
+                        <SkeletonLoader width={60} height={20} borderRadius={10} />
+                        <SkeletonLoader width={60} height={20} borderRadius={10} />
+                      </View>
+                    </View>
+                  </View>
+                  <SkeletonLoader width={48} height={16} />
+                </View>
+              ))}
+            </View>
+          ) : (
+            <View className="gap-3">
+              {recentFoods.map((food) => (
+                <Pressable
+                  key={food.id}
+                  className="flex-row items-center gap-4 rounded-2xl bg-bg-overlay p-5">
+                  <View className="flex-1">
+                    <View className="mb-3 flex-row items-start justify-between">
+                      <View className="flex-row items-center gap-3">
+                        <Text className="text-4xl">{food.emoji}</Text>
+                        <View>
+                          <Text className="text-lg font-bold text-text-primary">{food.name}</Text>
+                          <View className="mt-2 flex-row gap-2">
+                            <View className="rounded-full bg-bg-secondary px-2.5 py-1">
+                              <Text className="text-xs text-text-secondary">
+                                {t('home.macros.protein', { value: food.protein })}
+                              </Text>
+                            </View>
+                            <View className="rounded-full bg-bg-secondary px-2.5 py-1">
+                              <Text className="text-xs text-text-secondary">
+                                {t('home.macros.carbs', { value: food.carbs })}
+                              </Text>
+                            </View>
+                            <View className="rounded-full bg-bg-secondary px-2.5 py-1">
+                              <Text className="text-xs text-text-secondary">
+                                {t('home.macros.fat', { value: food.fat })}
+                              </Text>
+                            </View>
                           </View>
                         </View>
                       </View>
+                      <Text className="text-lg font-bold text-text-primary">
+                        {food.calories} {t('common.kcal')}
+                      </Text>
                     </View>
-                    <Text className="text-lg font-bold text-text-primary">
-                      {food.calories} {t('common.kcal')}
-                    </Text>
                   </View>
-                </View>
-                <CircularArrow />
-              </Pressable>
-            ))}
-          </View>
+                  <CircularArrow />
+                </Pressable>
+              ))}
+            </View>
+          )}
         </View>
 
         {/* Bottom spacing for navigation */}

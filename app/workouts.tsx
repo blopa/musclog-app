@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { View, ScrollView, Pressable } from 'react-native';
-import { Search, SlidersHorizontal } from 'lucide-react-native';
+import { Search, SlidersHorizontal, Dumbbell, WifiOff } from 'lucide-react-native';
 import { theme } from '../theme';
 import { MasterLayout } from '../components/MasterLayout';
 import { WorkoutCard } from '../components/WorkoutCard';
@@ -10,6 +10,9 @@ import { CreateTemplateButton } from '../components/CreateTemplateButton';
 import { GradientText } from '../components/GradientText';
 import { FloatingActionButton } from '../components/FloatingActionButton';
 import { WorkoutDetailsMenu } from '../components/WorkoutDetailsMenu';
+import { EmptyStateCard } from '../components/theme/EmptyStateCard';
+import { SkeletonLoader } from '../components/theme/SkeletonLoader';
+import { ErrorStateCard } from '../components/theme/ErrorStateCard';
 
 const WORKOUTS_DATA = {
   featured: {
@@ -59,6 +62,41 @@ export default function WorkoutsScreen() {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [selectedWorkoutName, setSelectedWorkoutName] = useState<string>('');
 
+  // State management for workouts data
+  const [workouts, setWorkouts] = useState(WORKOUTS_DATA.workouts);
+  const [featuredWorkout, setFeaturedWorkout] = useState(WORKOUTS_DATA.featured);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Simulate loading workouts - replace with actual API call
+  const loadWorkouts = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      // Simulate API call delay
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // In real app, replace with: const data = await fetchWorkouts();
+      setWorkouts(WORKOUTS_DATA.workouts);
+      setFeaturedWorkout(WORKOUTS_DATA.featured);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load workouts');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    // Uncomment to simulate initial load
+    // loadWorkouts();
+  }, []);
+
+  // Filter workouts based on active filter
+  const filteredWorkouts = workouts.filter((workout) => {
+    if (activeFilter === 'all') return true;
+    // Add filter logic based on workout type
+    return true;
+  });
+
   return (
     <MasterLayout>
       <View className="flex-1">
@@ -91,37 +129,108 @@ export default function WorkoutsScreen() {
 
           {/* Workouts List */}
           <View className="mx-6 mb-8 gap-4">
-            {/* Featured Workout */}
-            <FeaturedWorkoutCard
-              name={WORKOUTS_DATA.featured.name}
-              lastCompleted={WORKOUTS_DATA.featured.lastCompleted}
-              exerciseCount={WORKOUTS_DATA.featured.exerciseCount}
-              duration={WORKOUTS_DATA.featured.duration}
-              image={WORKOUTS_DATA.featured.image}
-              onMore={() => {
-                setSelectedWorkoutName(WORKOUTS_DATA.featured.name);
-                setIsMenuVisible(true);
-              }}
-            />
+            {/* Error State */}
+            {error && (
+              <ErrorStateCard
+                icon={WifiOff}
+                title="Connection Timeout"
+                description="We couldn't reach the Musclog servers. Please check your internet connection."
+                buttonLabel="Try Again"
+                onButtonPress={loadWorkouts}
+              />
+            )}
 
-            {/* Regular Workouts */}
-            {WORKOUTS_DATA.workouts.map((workout) => (
-              <WorkoutCard
-                key={workout.id}
-                name={workout.name}
-                lastCompleted={workout.lastCompleted}
-                exerciseCount={workout.exerciseCount}
-                duration={workout.duration}
-                image={workout.image}
+            {/* Loading State */}
+            {isLoading && !error && (
+              <>
+                {/* Featured Workout Skeleton */}
+                <View className="rounded-lg border border-white/5 bg-bg-card p-5">
+                  <View className="mb-4 flex-row items-start justify-between">
+                    <View className="flex-1 gap-2">
+                      <SkeletonLoader width="40%" height={20} />
+                      <SkeletonLoader width="60%" height={24} />
+                      <SkeletonLoader width="50%" height={16} />
+                    </View>
+                    <SkeletonLoader width={64} height={64} borderRadius={12} />
+                  </View>
+                  <View className="flex-row gap-3">
+                    <SkeletonLoader width={120} height={44} borderRadius={12} />
+                    <SkeletonLoader width={48} height={44} borderRadius={12} />
+                  </View>
+                </View>
+
+                {/* Workout Cards Skeletons */}
+                {[1, 2, 3].map((i) => (
+                  <View key={i} className="rounded-lg border border-white/5 bg-bg-card p-4">
+                    <View className="flex-row items-center gap-3">
+                      <SkeletonLoader width={48} height={48} borderRadius={12} />
+                      <View className="flex-1 gap-2">
+                        <SkeletonLoader width="75%" height={16} />
+                        <SkeletonLoader width="50%" height={12} />
+                      </View>
+                    </View>
+                    <View className="mt-4 flex-row gap-2">
+                      <SkeletonLoader width={80} height={32} borderRadius={16} />
+                      <SkeletonLoader width={80} height={32} borderRadius={16} />
+                    </View>
+                  </View>
+                ))}
+              </>
+            )}
+
+            {/* Empty State */}
+            {!isLoading && !error && filteredWorkouts.length === 0 && (
+              <EmptyStateCard
+                icon={Dumbbell}
+                title="No Workouts Yet"
+                description="Your fitness journey starts with your first rep. Plan your routine and track your progress here."
+                buttonLabel="Create Your First Workout"
+                iconGradient={true}
+                buttonVariant="gradientCta"
+                onButtonPress={() => {
+                  // Navigate to create workout or open create template
+                  console.log('Create workout pressed');
+                }}
+              />
+            )}
+
+            {/* Normal State - Featured Workout */}
+            {!isLoading && !error && featuredWorkout && filteredWorkouts.length > 0 && (
+              <FeaturedWorkoutCard
+                name={featuredWorkout.name}
+                lastCompleted={featuredWorkout.lastCompleted}
+                exerciseCount={featuredWorkout.exerciseCount}
+                duration={featuredWorkout.duration}
+                image={featuredWorkout.image}
                 onMore={() => {
-                  setSelectedWorkoutName(workout.name);
+                  setSelectedWorkoutName(featuredWorkout.name);
                   setIsMenuVisible(true);
                 }}
               />
-            ))}
+            )}
 
-            {/* Create Template Card */}
-            <CreateTemplateButton />
+            {/* Normal State - Regular Workouts */}
+            {!isLoading && !error && filteredWorkouts.length > 0 && (
+              <>
+                {filteredWorkouts.map((workout) => (
+                  <WorkoutCard
+                    key={workout.id}
+                    name={workout.name}
+                    lastCompleted={workout.lastCompleted}
+                    exerciseCount={workout.exerciseCount}
+                    duration={workout.duration}
+                    image={workout.image}
+                    onMore={() => {
+                      setSelectedWorkoutName(workout.name);
+                      setIsMenuVisible(true);
+                    }}
+                  />
+                ))}
+
+                {/* Create Template Button */}
+                <CreateTemplateButton />
+              </>
+            )}
           </View>
 
           {/* Bottom spacing for navigation and FAB */}

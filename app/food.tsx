@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Pressable } from 'react-native';
 import {
   ChevronLeft,
@@ -7,6 +7,8 @@ import {
   ScanLine,
   Sparkles,
   ListPlus,
+  UtensilsCrossed,
+  WifiOff,
 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
@@ -19,6 +21,9 @@ import { MealSection } from '../components/MealSection';
 import { Button } from '../components/theme/Button';
 import { AddFoodModal } from '../components/AddFoodModal';
 import { FoodSearchModal } from '../components/FoodSearchModal';
+import { EmptyStateCard } from '../components/theme/EmptyStateCard';
+import { SkeletonLoader } from '../components/theme/SkeletonLoader';
+import { ErrorStateCard } from '../components/theme/ErrorStateCard';
 
 const FOOD_DATA = {
   date: 'Today, Oct 24',
@@ -92,6 +97,39 @@ export default function FoodScreen() {
   const today = new Date();
   const formattedDate = format(today, 'MMM d', { locale });
 
+  // State management for food data
+  const [meals, setMeals] = useState(FOOD_DATA.meals);
+  const [calories, setCalories] = useState(FOOD_DATA.calories);
+  const [macros, setMacros] = useState(FOOD_DATA.macros);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Simulate loading food data - replace with actual API call
+  const loadFoodData = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      // Simulate API call delay
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // In real app, replace with: const data = await fetchFoodData();
+      setMeals(FOOD_DATA.meals);
+      setCalories(FOOD_DATA.calories);
+      setMacros(FOOD_DATA.macros);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load food data');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    // Uncomment to simulate initial load
+    // loadFoodData();
+  }, []);
+
+  // Check if all meals are empty
+  const hasNoFood = Object.values(meals).every((meal) => !meal.items || meal.items.length === 0);
+
   return (
     <MasterLayout>
       <View className="flex-1 bg-bg-primary">
@@ -116,72 +154,142 @@ export default function FoodScreen() {
         {/* Main Content */}
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
           <View className="gap-6 px-4 pt-6">
-            {/* Calories Remaining Card */}
-            <CaloriesRemainingCard calories={FOOD_DATA.calories} macros={FOOD_DATA.macros} />
-
-            {/* Scan Buttons */}
-            <View className="gap-4">
-              <View className="flex-row gap-4">
-                <Button
-                  label={t('food.actions.scanBarcode')}
-                  icon={ScanLine}
-                  variant="secondary"
-                  size="md"
-                  width="flex-1"
-                  onPress={() => {
-                    // Handle scan barcode action
-                  }}
-                />
-                <Button
-                  label={t('food.actions.aiCamera')}
-                  icon={Sparkles}
-                  variant="secondaryGradient"
-                  size="md"
-                  width="flex-1"
-                  onPress={() => {
-                    // Handle AI camera action
-                  }}
-                />
-              </View>
-              <Button
-                label={t('food.actions.moreFoodOptions')}
-                icon={ListPlus}
-                variant="secondaryGradient"
-                size="md"
-                width="full"
-                onPress={() => setIsAddFoodModalVisible(true)}
+            {/* Error State */}
+            {error && (
+              <ErrorStateCard
+                icon={WifiOff}
+                title="Connection Timeout"
+                description="We couldn't reach the Musclog servers. Please check your internet connection."
+                buttonLabel="Try Again"
+                onButtonPress={loadFoodData}
               />
-            </View>
+            )}
 
-            {/* Breakfast Section */}
-            <MealSection
-              title={t('food.meals.breakfast')}
-              totalCalories={FOOD_DATA.meals.breakfast.totalCalories}>
-              {FOOD_DATA.meals.breakfast.items.map((item) => (
-                <FoodItemCard
-                  key={item.id}
-                  name={item.name}
-                  description={item.description}
-                  calories={item.calories}
-                  image={item.image}
-                />
-              ))}
-            </MealSection>
+            {/* Loading State */}
+            {isLoading && !error && (
+              <>
+                {/* Calories Card Skeleton */}
+                <View className="rounded-lg border border-white/5 bg-bg-card p-5">
+                  <View className="mb-4 flex-row items-center justify-between">
+                    <View className="gap-2">
+                      <SkeletonLoader width={120} height={16} />
+                      <SkeletonLoader width={80} height={32} />
+                    </View>
+                    <SkeletonLoader width={60} height={24} />
+                  </View>
+                  <SkeletonLoader width="100%" height={8} borderRadius={4} />
+                  <View className="mt-4 flex-row gap-2">
+                    <SkeletonLoader width="33%" height={60} borderRadius={8} />
+                    <SkeletonLoader width="33%" height={60} borderRadius={8} />
+                    <SkeletonLoader width="33%" height={60} borderRadius={8} />
+                  </View>
+                </View>
 
-            {/* Lunch Section */}
-            <MealSection
-              title={t('food.meals.lunch')}
-              totalCalories={FOOD_DATA.meals.lunch.totalCalories}>
-              {FOOD_DATA.meals.lunch.items.map((item) => (
-                <FoodItemCard
-                  key={item.id}
-                  name={item.name}
-                  description={item.description}
-                  calories={item.calories}
-                  image={item.image}
-                />
-              ))}
-            </MealSection>
+                {/* Food Item Skeletons */}
+                {[1, 2, 3].map((i) => (
+                  <View
+                    key={i}
+                    className="flex-row items-center justify-between rounded-lg border border-white/5 bg-bg-card p-4">
+                    <View className="flex-row items-center gap-3">
+                      <SkeletonLoader width={40} height={40} borderRadius={20} />
+                      <View className="gap-1">
+                        <SkeletonLoader width={96} height={16} />
+                        <SkeletonLoader width={64} height={12} />
+                      </View>
+                    </View>
+                    <SkeletonLoader width={48} height={16} />
+                  </View>
+                ))}
+              </>
+            )}
+
+            {/* Empty State */}
+            {!isLoading && !error && hasNoFood && (
+              <EmptyStateCard
+                icon={UtensilsCrossed}
+                title="No Food Logged"
+                description="Log your meals to stay on top of your nutrition goals. Your body will thank you."
+                buttonLabel="Log Your Meal"
+                buttonVariant="secondary"
+                onButtonPress={() => setIsAddFoodModalVisible(true)}
+              />
+            )}
+
+            {/* Normal State */}
+            {!isLoading && !error && !hasNoFood && (
+              <>
+                {/* Calories Remaining Card */}
+                <CaloriesRemainingCard calories={calories} macros={macros} />
+
+                {/* Scan Buttons */}
+                <View className="gap-4">
+                  <View className="flex-row gap-4">
+                    <Button
+                      label={t('food.actions.scanBarcode')}
+                      icon={ScanLine}
+                      variant="secondary"
+                      size="md"
+                      width="flex-1"
+                      onPress={() => {
+                        // Handle scan barcode action
+                      }}
+                    />
+                    <Button
+                      label={t('food.actions.aiCamera')}
+                      icon={Sparkles}
+                      variant="secondaryGradient"
+                      size="md"
+                      width="flex-1"
+                      onPress={() => {
+                        // Handle AI camera action
+                      }}
+                    />
+                  </View>
+                  <Button
+                    label={t('food.actions.moreFoodOptions')}
+                    icon={ListPlus}
+                    variant="secondaryGradient"
+                    size="md"
+                    width="full"
+                    onPress={() => setIsAddFoodModalVisible(true)}
+                  />
+                </View>
+
+                {/* Breakfast Section */}
+                {meals.breakfast.items && meals.breakfast.items.length > 0 && (
+                  <MealSection
+                    title={t('food.meals.breakfast')}
+                    totalCalories={meals.breakfast.totalCalories}>
+                    {meals.breakfast.items.map((item) => (
+                      <FoodItemCard
+                        key={item.id}
+                        name={item.name}
+                        description={item.description}
+                        calories={item.calories}
+                        image={item.image}
+                      />
+                    ))}
+                  </MealSection>
+                )}
+
+                {/* Lunch Section */}
+                {meals.lunch.items && meals.lunch.items.length > 0 && (
+                  <MealSection
+                    title={t('food.meals.lunch')}
+                    totalCalories={meals.lunch.totalCalories}>
+                    {meals.lunch.items.map((item) => (
+                      <FoodItemCard
+                        key={item.id}
+                        name={item.name}
+                        description={item.description}
+                        calories={item.calories}
+                        image={item.image}
+                      />
+                    ))}
+                  </MealSection>
+                )}
+              </>
+            )}
 
             {/* Bottom spacing for navigation */}
             <View className="h-32" />
