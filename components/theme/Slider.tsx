@@ -43,27 +43,34 @@ export function Slider({
   };
 
   return (
-    <Pressable
-      className="relative w-full rounded-full"
-      style={{ backgroundColor: trackColor, height }}
-      onPress={handleSliderPress}
-      onLayout={(event) => {
-        sliderWidthRef.current = event.nativeEvent.layout.width;
-      }}>
-      {/* Filled portion */}
-      <View
-        className="absolute left-0 top-0 h-full rounded-full"
+    <View className="relative w-full" style={{ height: Math.max(height, thumbSize) }}>
+      <Pressable
+        className="absolute w-full rounded-full"
         style={{
-          width: `${percentage}%`,
-          backgroundColor: filledTrackColor,
+          backgroundColor: trackColor,
+          height,
+          top: (Math.max(height, thumbSize) - height) / 2,
         }}
-      />
+        onPress={handleSliderPress}
+        onLayout={(event) => {
+          sliderWidthRef.current = event.nativeEvent.layout.width;
+        }}>
+        {/* Filled portion */}
+        <View
+          className="absolute left-0 top-0 h-full rounded-full"
+          style={{
+            width: `${percentage}%`,
+            backgroundColor: filledTrackColor,
+          }}
+        />
+      </Pressable>
       {/* Thumb */}
       <View
-        className="absolute top-1/2 rounded-full border-2"
+        className="absolute rounded-full border-2"
         style={{
           left: `${percentage}%`,
           marginLeft: -thumbSize / 2,
+          top: (Math.max(height, thumbSize) - thumbSize) / 2,
           width: thumbSize,
           height: thumbSize,
           backgroundColor: thumbColor,
@@ -71,6 +78,6 @@ export function Slider({
           ...theme.shadows.accentGlow,
         }}
       />
-    </Pressable>
+    </View>
   );
 }
