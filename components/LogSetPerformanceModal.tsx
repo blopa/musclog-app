@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable, ScrollView } from 'react-native';
+import { View, Text, Pressable, ScrollView, Platform } from 'react-native';
 import { Edit, Save } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
@@ -82,6 +82,24 @@ export function LogSetPerformanceModal({
     onClose();
   };
 
+  // Web-specific ScrollView styles to prevent browser gestures
+  const webScrollViewStyle =
+    Platform.OS === 'web'
+      ? ({
+          // Allow vertical scrolling but prevent horizontal browser gestures
+          touchAction: 'pan-y',
+        } as any)
+      : {};
+
+  // Web-specific styles to allow horizontal gestures on slider area
+  const webSliderContainerStyle =
+    Platform.OS === 'web'
+      ? ({
+          // Allow horizontal panning for slider, preventing browser swipe gesture
+          touchAction: 'pan-x pan-y',
+        } as any)
+      : {};
+
   const footer = (
     <View className="flex-row gap-3">
       <Button
@@ -111,6 +129,7 @@ export function LogSetPerformanceModal({
       <ScrollView
         className="flex-1"
         showsVerticalScrollIndicator={false}
+        style={webScrollViewStyle}
         contentContainerStyle={{
           padding: theme.spacing.padding['2xl'],
         }}>
@@ -155,7 +174,7 @@ export function LogSetPerformanceModal({
             </View>
 
             {/* RPE Slider */}
-            <View className="mb-2">
+            <View className="mb-2" style={webSliderContainerStyle}>
               <Slider
                 value={rpe}
                 min={1}
