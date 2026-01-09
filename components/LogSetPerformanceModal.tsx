@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { View, Text, Pressable, ScrollView } from 'react-native';
 import { Edit, Save } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
@@ -6,6 +6,7 @@ import { theme } from '../theme';
 import { BottomPopUpMenu } from './BottomPopUpMenu';
 import { EditSetDetailsModal } from './EditSetDetailsModal';
 import { Button } from './theme/Button';
+import { Slider } from './theme/Slider';
 
 type LogSetPerformanceModalProps = {
   visible: boolean;
@@ -65,7 +66,6 @@ export function LogSetPerformanceModal({
     typeof initialPartials === 'number' ? initialPartials : 0
   );
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
-  const sliderWidthRef = useRef(0);
 
   // Update local state when props change
   React.useEffect(() => {
@@ -76,17 +76,6 @@ export function LogSetPerformanceModal({
       setRpe(initialRpe);
     }
   }, [visible, initialWeight, initialReps, initialPartials, initialRpe]);
-
-  const rpePercentage = ((rpe - 1) / 9) * 100;
-
-  const handleSliderPress = (event: any) => {
-    const { locationX } = event.nativeEvent;
-    if (sliderWidthRef.current > 0) {
-      const percentage = Math.max(0, Math.min(100, (locationX / sliderWidthRef.current) * 100));
-      const newRpe = Math.round(1 + (percentage / 100) * 9);
-      setRpe(Math.max(1, Math.min(10, newRpe)));
-    }
-  };
 
   const handleConfirm = () => {
     onConfirm?.({ rpe });
@@ -165,38 +154,17 @@ export function LogSetPerformanceModal({
               </Text>
             </View>
 
-            {/* Custom Slider */}
+            {/* RPE Slider */}
             <View className="mb-2">
-              <Pressable
-                className="relative h-1 w-full rounded-full"
-                style={{ backgroundColor: theme.colors.background.cardDark }}
-                onPress={handleSliderPress}
-                onLayout={(event) => {
-                  sliderWidthRef.current = event.nativeEvent.layout.width;
-                }}>
-                {/* Filled portion */}
-                <View
-                  className="absolute left-0 top-0 h-full rounded-full"
-                  style={{
-                    width: `${rpePercentage}%`,
-                    backgroundColor: theme.colors.accent.primary,
-                  }}
-                />
-                {/* Thumb */}
-                <View
-                  className="absolute top-1/2 -translate-y-[11px] rounded-full border-2"
-                  style={{
-                    left: `${rpePercentage}%`,
-                    marginLeft: -theme.size['2half'],
-                    width: theme.size['22'],
-                    height: theme.size['22'],
-                    backgroundColor: theme.colors.background.white,
-                    borderColor: theme.colors.accent.primary,
-                    borderWidth: theme.borderWidth.medium,
-                    ...theme.shadows.accentGlowLarge,
-                  }}
-                />
-              </Pressable>
+              <Slider
+                value={rpe}
+                min={1}
+                max={10}
+                onChange={setRpe}
+                trackColor={theme.colors.background.cardDark}
+                filledTrackColor={theme.colors.accent.primary}
+                thumbColor={theme.colors.background.white}
+              />
             </View>
 
             {/* RPE Labels */}
