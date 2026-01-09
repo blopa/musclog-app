@@ -78,7 +78,7 @@ export function TestStepper({
               keyboardType="numeric"
               className="p-0 text-lg font-bold text-text-primary"
               style={{
-                width: 60,
+                width: 200,
                 padding: 0,
                 margin: 0,
                 color: theme.colors.text.primary,
