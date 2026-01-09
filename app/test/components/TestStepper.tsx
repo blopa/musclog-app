@@ -86,9 +86,7 @@ export function TestStepper({
               returnKeyType="done"
               selectTextOnFocus
             />
-            {unit && (
-              <Text className="ml-1 text-lg font-normal text-text-tertiary">{unit}</Text>
-            )}
+            {unit && <Text className="ml-1 text-lg font-normal text-text-tertiary">{unit}</Text>}
           </View>
         ) : (
           <Pressable onPress={handleValuePress}>
