@@ -28,8 +28,7 @@ export function NutritionGoalsModal({
       visible={visible}
       onClose={onClose}
       title="Set Nutrition & Body Goals"
-      scrollable={false}
-    >
+      scrollable={false}>
       <NutritionGoalsModalBody onSave={handleSave} initialGoals={initialGoals} />
     </FullScreenModal>
   );
