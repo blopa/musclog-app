@@ -75,7 +75,7 @@ export function ConfirmationModal({
         onPress={onClose}>
         {/* Modal */}
         <Pressable
-          className="w-full border border-border-dark overflow-hidden"
+          className="w-full overflow-hidden border border-border-dark"
           style={{
             backgroundColor: theme.colors.background.cardDark,
             maxWidth: modalMaxWidth,
@@ -85,11 +85,7 @@ export function ConfirmationModal({
           onPress={(e) => e.stopPropagation()}>
           {/* Gradient Header */}
           <LinearGradient
-            colors={[
-              theme.colors.status.purple40,
-              theme.colors.accent.secondary10,
-              'transparent',
-            ]}
+            colors={[theme.colors.status.purple40, theme.colors.accent.secondary10, 'transparent']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             className="border-b border-border-dark">

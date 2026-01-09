@@ -6,8 +6,8 @@ import {
   Image,
   ImageSourcePropType,
   Platform,
-  StyleSheet,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { X, User, Settings, BarChart3 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
@@ -87,26 +87,36 @@ export function UserMenuModal({
               : undefined
           }>
           {/* Modal Content */}
-          <View className="rounded-b-3xl border-b border-border-dark bg-bg-card">
-            {/* Header */}
-            <View className="flex-row items-center justify-between border-b border-border-dark p-6">
-              <View className="flex-row items-center gap-4">
-                <View
-                  className="h-14 w-14 overflow-hidden rounded-full border-2 border-accent-primary"
-                  style={{ backgroundColor: theme.colors.background.imageLight }}>
-                  <Image source={user.avatar} className="h-full w-full" resizeMode="cover" />
+          <View className="overflow-hidden rounded-b-3xl border-b border-border-dark bg-bg-card">
+            {/* Gradient Header */}
+            <LinearGradient
+              colors={[
+                theme.colors.status.purple40,
+                theme.colors.accent.secondary10,
+                'transparent',
+              ]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              className="border-b border-border-dark">
+              <View className="flex-row items-center justify-between p-6">
+                <View className="flex-row items-center gap-4">
+                  <View
+                    className="h-14 w-14 overflow-hidden rounded-full border-2 border-accent-primary"
+                    style={{ backgroundColor: theme.colors.background.imageLight }}>
+                    <Image source={user.avatar} className="h-full w-full" resizeMode="cover" />
+                  </View>
+                  <View>
+                    <Text className="text-sm text-text-secondary">{t('userMenu.greeting')}</Text>
+                    <Text className="text-xl font-bold text-text-primary">{user.name}</Text>
+                  </View>
                 </View>
-                <View>
-                  <Text className="text-sm text-text-secondary">{t('userMenu.greeting')}</Text>
-                  <Text className="text-xl font-bold text-text-primary">{user.name}</Text>
-                </View>
+                <Pressable
+                  className="active:bg-bg-card-elevated h-10 w-10 items-center justify-center rounded-full bg-bg-overlay"
+                  onPress={onClose}>
+                  <X size={theme.iconSize.md} color={theme.colors.text.secondary} />
+                </Pressable>
               </View>
-              <Pressable
-                className="active:bg-bg-card-elevated h-10 w-10 items-center justify-center rounded-full bg-bg-overlay"
-                onPress={onClose}>
-                <X size={theme.iconSize.md} color={theme.colors.text.secondary} />
-              </Pressable>
-            </View>
+            </LinearGradient>
 
             {/* Menu Items */}
             <View className="gap-3 p-6">

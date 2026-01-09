@@ -62,11 +62,7 @@ export function CenteredModal({
           onPress={(e) => e.stopPropagation()}>
           {/* Gradient Header */}
           <LinearGradient
-            colors={[
-              theme.colors.status.purple40,
-              theme.colors.accent.secondary10,
-              'transparent',
-            ]}
+            colors={[theme.colors.status.purple40, theme.colors.accent.secondary10, 'transparent']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             className="border-b border-border-dark">

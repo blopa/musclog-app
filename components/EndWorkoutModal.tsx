@@ -116,26 +116,36 @@ export function EndWorkoutModal({
                   borderRadius: theme.borderRadius['3xl'],
                   minHeight: '100%',
                 }}>
-                {/* Header */}
-                <View className="flex-row items-center justify-between border-b border-border-dark p-6">
-                  <View className="flex-row items-center gap-3">
-                    <View className="h-12 w-12 items-center justify-center rounded-full bg-bg-overlay">
-                      <Flag
-                        size={theme.iconSize.sm}
-                        color={theme.colors.accent.secondary}
-                        fill={theme.colors.accent.secondary}
-                      />
+                {/* Gradient Header */}
+                <LinearGradient
+                  colors={[
+                    theme.colors.status.purple40,
+                    theme.colors.accent.secondary10,
+                    'transparent',
+                  ]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  className="border-b border-border-dark">
+                  <View className="flex-row items-center justify-between p-6">
+                    <View className="flex-row items-center gap-3">
+                      <View className="h-12 w-12 items-center justify-center rounded-full bg-bg-overlay">
+                        <Flag
+                          size={theme.iconSize.sm}
+                          color={theme.colors.accent.secondary}
+                          fill={theme.colors.accent.secondary}
+                        />
+                      </View>
+                      <Text className="text-2xl font-bold text-text-primary">
+                        {t('endWorkout.title')}
+                      </Text>
                     </View>
-                    <Text className="text-2xl font-bold text-text-primary">
-                      {t('endWorkout.title')}
-                    </Text>
+                    <Pressable
+                      className="active:bg-bg-card-elevated h-10 w-10 items-center justify-center rounded-full bg-bg-overlay"
+                      onPress={onClose}>
+                      <X size={theme.iconSize.md} color={theme.colors.text.secondary} />
+                    </Pressable>
                   </View>
-                  <Pressable
-                    className="active:bg-bg-card-elevated h-10 w-10 items-center justify-center rounded-full bg-bg-overlay"
-                    onPress={onClose}>
-                    <X size={theme.iconSize.md} color={theme.colors.text.secondary} />
-                  </Pressable>
-                </View>
+                </LinearGradient>
 
                 {/* Content */}
                 <View className="p-6">
