@@ -24,6 +24,7 @@ export function SpecializedNumeric() {
             value={weight.toString()}
             onChangeText={(text) => setWeight(parseInt(text) || 0)}
             keyboardType="numeric"
+            style={{ outline: 'none', borderWidth: 0 }}
           />
           <Text className="text-xs font-medium text-accent-primary">LBS</Text>
         </View>
@@ -36,6 +37,7 @@ export function SpecializedNumeric() {
             value={reps.toString()}
             onChangeText={(text) => setReps(parseInt(text) || 0)}
             keyboardType="numeric"
+            style={{ outline: 'none', borderWidth: 0 }}
           />
           <Text className="text-xs font-medium" style={{ color: theme.colors.status.purple }}>
             REPS

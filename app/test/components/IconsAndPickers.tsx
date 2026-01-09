@@ -21,6 +21,7 @@ export function IconsAndPickers() {
             className="flex-1 border-none bg-transparent p-0 text-text-primary placeholder:text-text-tertiary"
             placeholder="Search exercises..."
             placeholderTextColor={theme.colors.text.tertiary}
+            style={{ outline: 'none', borderWidth: 0 }}
           />
         </View>
         <View className="flex-col gap-2">
@@ -30,6 +31,7 @@ export function IconsAndPickers() {
               className="flex-1 border-none bg-transparent p-0 text-text-primary"
               value={fullName}
               onChangeText={setFullName}
+              style={{ outline: 'none', borderWidth: 0 }}
             />
             <User size={20} color={`${theme.colors.accent.primary}66`} />
           </View>
