@@ -13,7 +13,7 @@ type SliderProps = {
   filledTrackColor?: string;
   thumbColor?: string;
   useGradient?: boolean;
-  gradientColors?: readonly string[] | string[];
+  gradientColors?: readonly [string, string, ...string[]];
 };
 
 export function Slider({
@@ -38,7 +38,7 @@ export function Slider({
       {useGradient && (
         <View className="absolute left-0.5 right-0.5 h-1.5 overflow-hidden rounded-full">
           <LinearGradient
-            colors={gradientColors as string[]}
+            colors={gradientColors}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             className="absolute inset-0"
@@ -51,7 +51,6 @@ export function Slider({
           width: '100%',
           height: 40,
           zIndex: 1,
-          ...(Platform.OS === 'web' ? { outlineStyle: 'none' } : {}),
         }}
         value={value}
         minimumValue={min}
