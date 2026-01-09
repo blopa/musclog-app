@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, Pressable, Modal, Platform } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { theme } from '../theme';
 import { Button } from './theme/Button';
 
@@ -74,7 +75,7 @@ export function ConfirmationModal({
         onPress={onClose}>
         {/* Modal */}
         <Pressable
-          className="w-full border border-border-dark"
+          className="w-full border border-border-dark overflow-hidden"
           style={{
             backgroundColor: theme.colors.background.cardDark,
             maxWidth: modalMaxWidth,
@@ -82,28 +83,44 @@ export function ConfirmationModal({
             borderRadius: theme.borderRadius.xl,
           }}
           onPress={(e) => e.stopPropagation()}>
+          {/* Gradient Header */}
+          <LinearGradient
+            colors={[
+              theme.colors.status.purple40,
+              theme.colors.accent.secondary10,
+              'transparent',
+            ]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            className="border-b border-border-dark">
+            <View
+              style={{
+                padding: theme.spacing.padding['2xl'],
+                paddingBottom: theme.spacing.padding.lg,
+              }}>
+              <Text
+                className="font-bold tracking-tight text-text-primary"
+                style={{ fontSize: theme.typography.fontSize.lg }}>
+                {title}
+              </Text>
+            </View>
+          </LinearGradient>
+
           {/* Content */}
           <View
             className="gap-6"
             style={{
               padding: theme.spacing.padding['2xl'],
             }}>
-            {/* Title and Message */}
-            <View style={{ gap: theme.spacing.gap.md }}>
-              <Text
-                className="font-bold tracking-tight text-text-primary"
-                style={{ fontSize: theme.typography.fontSize.lg }}>
-                {title}
-              </Text>
-              <Text
-                className="leading-relaxed"
-                style={{
-                  fontSize: theme.typography.fontSize.sm,
-                  color: theme.colors.text.secondary,
-                }}>
-                {message}
-              </Text>
-            </View>
+            {/* Message */}
+            <Text
+              className="leading-relaxed"
+              style={{
+                fontSize: theme.typography.fontSize.sm,
+                color: theme.colors.text.secondary,
+              }}>
+              {message}
+            </Text>
 
             {/* Buttons */}
             <View className="flex-row" style={{ gap: theme.spacing.gap.md }}>

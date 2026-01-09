@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react';
 import { View, Text, Pressable, Modal, Platform } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { X } from 'lucide-react-native';
 import { theme } from '../theme';
 
@@ -59,18 +60,28 @@ export function CenteredModal({
             maxWidth,
           }}
           onPress={(e) => e.stopPropagation()}>
-          {/* Header */}
-          <View className="flex-row items-center justify-between border-b border-border-dark bg-bg-overlay/50 px-6 py-5">
-            <View className="flex-1">
-              <Text className="text-xl font-bold text-text-primary">{title}</Text>
-              {subtitle && (
-                <Text className="mt-1 text-xs font-medium text-text-secondary">{subtitle}</Text>
-              )}
+          {/* Gradient Header */}
+          <LinearGradient
+            colors={[
+              theme.colors.status.purple40,
+              theme.colors.accent.secondary10,
+              'transparent',
+            ]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            className="border-b border-border-dark">
+            <View className="flex-row items-center justify-between px-6 py-5">
+              <View className="flex-1">
+                <Text className="text-xl font-bold text-text-primary">{title}</Text>
+                {subtitle && (
+                  <Text className="mt-1 text-xs font-medium text-text-secondary">{subtitle}</Text>
+                )}
+              </View>
+              <Pressable className="h-10 w-10 items-center justify-center" onPress={onClose}>
+                <X size={theme.iconSize.sm} color={theme.colors.text.secondary} />
+              </Pressable>
             </View>
-            <Pressable className="h-10 w-10 items-center justify-center" onPress={onClose}>
-              <X size={theme.iconSize.sm} color={theme.colors.text.secondary} />
-            </Pressable>
-          </View>
+          </LinearGradient>
 
           {/* Content */}
           <View className="p-6">{children}</View>
