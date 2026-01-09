@@ -18,7 +18,7 @@ export function IconsAndPickers() {
         <View className="h-14 w-full flex-row items-center gap-3 rounded-lg border border-white/10 bg-bg-card px-4">
           <Search size={20} color={theme.colors.text.tertiary} />
           <TextInput
-            className="flex-1 border-none bg-transparent p-0 text-text-primary placeholder:text-text-tertiary"
+            className="flex-1 border-none bg-transparent p-0 text-text-primary"
             placeholder="Search exercises..."
             placeholderTextColor={theme.colors.text.tertiary}
             style={{ borderWidth: 0 }}
