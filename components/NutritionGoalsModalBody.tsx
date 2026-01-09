@@ -339,156 +339,151 @@ export function NutritionGoalsModalBody({
       : {};
 
   return (
-    <>
-      <ScrollView
-        className="flex-1"
-        showsVerticalScrollIndicator={false}
-        style={webScrollViewStyle}>
-        <View className={`gap-4 px-6 pt-2 ${showSaveButton ? 'pb-36' : 'pb-6'}`}>
-          {/* Subtitle */}
-          {showSubtitle && (
-            <Text className="mb-2 text-sm text-text-secondary">
-              Define your targets for nutrition and body composition.
-            </Text>
-          )}
+    <ScrollView className="flex-1" showsVerticalScrollIndicator={false} style={webScrollViewStyle}>
+      <View className="gap-4 px-6 pb-6 pt-2">
+        {/* Subtitle */}
+        {showSubtitle && (
+          <Text className="mb-2 text-sm text-text-secondary">
+            Define your targets for nutrition and body composition.
+          </Text>
+        )}
 
-          {/* Total Daily Calories Card */}
-          <View
-            className="relative mb-6 overflow-hidden rounded-2xl border p-6"
-            style={{
-              borderColor: theme.colors.border.emerald,
-              backgroundColor: theme.colors.background.cardElevated,
-            }}>
-            <LinearGradient
-              colors={['rgba(99, 102, 241, 0.05)', 'rgba(52, 211, 153, 0.05)']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={{ position: 'absolute', inset: 0 }}
-            />
-            <View className="relative z-10 items-center">
-              <Text className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">
-                Total Daily Calories
+        {/* Total Daily Calories Card */}
+        <View
+          className="relative mb-6 overflow-hidden rounded-2xl border p-6"
+          style={{
+            borderColor: theme.colors.border.emerald,
+            backgroundColor: theme.colors.background.cardElevated,
+          }}>
+          <LinearGradient
+            colors={['rgba(99, 102, 241, 0.05)', 'rgba(52, 211, 153, 0.05)']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={{ position: 'absolute', inset: 0 }}
+          />
+          <View className="relative z-10 items-center">
+            <Text className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">
+              Total Daily Calories
+            </Text>
+            <View className="flex-row items-baseline gap-2">
+              <Text className="text-5xl font-extrabold tracking-tighter text-text-primary">
+                {totalCalories.toLocaleString()}
               </Text>
-              <View className="flex-row items-baseline gap-2">
-                <Text className="text-5xl font-extrabold tracking-tighter text-text-primary">
-                  {totalCalories.toLocaleString()}
-                </Text>
-                <Text className="text-lg font-semibold uppercase text-accent-primary">kcal</Text>
-              </View>
+              <Text className="text-lg font-semibold uppercase text-accent-primary">kcal</Text>
             </View>
           </View>
-
-          {/* Daily Macro Targets */}
-          <Text className="mb-2 mt-8 text-[10px] font-bold uppercase tracking-widest text-text-secondary">
-            Daily Macro Targets
-          </Text>
-          <View className="gap-4">
-            <MacroCard
-              label="Protein"
-              kcalPerGram="4 kcal/g"
-              value={protein}
-              min={0}
-              max={300}
-              color={theme.colors.macros.carbs.bg}
-              onChange={setProtein}
-            />
-            <MacroCard
-              label="Carbohydrates"
-              kcalPerGram="4 kcal/g"
-              value={carbs}
-              min={0}
-              max={500}
-              color={theme.colors.macros.protein.bg}
-              onChange={setCarbs}
-            />
-            <MacroCard
-              label="Fats"
-              kcalPerGram="9 kcal/g"
-              value={fats}
-              min={0}
-              max={150}
-              color={theme.colors.macros.fat.bg}
-              onChange={setFats}
-            />
-          </View>
-
-          {/* Macros Distribution Chart */}
-          <MacrosDistributionChart protein={protein} carbs={carbs} fats={fats} />
-
-          {/* Target Body Metrics */}
-          <Text className="mb-2 mt-8 text-[10px] font-bold uppercase tracking-widest text-text-secondary">
-            Target Body Metrics
-          </Text>
-          <View className="gap-4">
-            <BodyMetricCard
-              icon={Scale}
-              label="Target Weight"
-              sublabel="kg/lbs"
-              value={targetWeight}
-              unit="kg"
-              unitLabel="kg"
-              min={30}
-              max={200}
-              step={1}
-              onChange={setTargetWeight}
-            />
-            <BodyMetricCard
-              icon={Percent}
-              label="Target Body Fat"
-              sublabel="% percentage"
-              value={targetBodyFat}
-              unit="%"
-              unitLabel="%"
-              min={5}
-              max={50}
-              step={1}
-              onChange={setTargetBodyFat}
-            />
-            <BodyMetricCard
-              icon={TrendingUp}
-              label="Target BMI"
-              sublabel="Body Mass Index"
-              value={targetBMI}
-              unit="index"
-              unitLabel="index"
-              min={15}
-              max={40}
-              step={0.1}
-              onChange={setTargetBMI}
-            />
-            <BodyMetricCard
-              icon={Activity}
-              label="Target FFMI"
-              sublabel="Fat-Free Mass Index"
-              value={targetFFMI}
-              unit="index"
-              unitLabel="index"
-              min={15}
-              max={30}
-              step={0.1}
-              onChange={setTargetFFMI}
-            />
-          </View>
         </View>
-      </ScrollView>
 
-      {/* Bottom Fixed Button */}
-      {showSaveButton && (
-        <View className="absolute bottom-0 left-0 right-0 border-t border-white/5 bg-bg-primary p-6 pt-12">
-          <Button
-            label="Save Goals"
-            icon={ChevronRight}
-            iconPosition="right"
-            variant="gradientCta"
-            size="md"
-            width="full"
-            onPress={handleSave}
+        {/* Daily Macro Targets */}
+        <Text className="mb-2 mt-8 text-[10px] font-bold uppercase tracking-widest text-text-secondary">
+          Daily Macro Targets
+        </Text>
+        <View className="gap-4">
+          <MacroCard
+            label="Protein"
+            kcalPerGram="4 kcal/g"
+            value={protein}
+            min={0}
+            max={300}
+            color={theme.colors.macros.carbs.bg}
+            onChange={setProtein}
           />
-          <Text className="mt-4 text-center text-[10px] text-text-secondary">
-            You can change these values anytime in Settings.
-          </Text>
+          <MacroCard
+            label="Carbohydrates"
+            kcalPerGram="4 kcal/g"
+            value={carbs}
+            min={0}
+            max={500}
+            color={theme.colors.macros.protein.bg}
+            onChange={setCarbs}
+          />
+          <MacroCard
+            label="Fats"
+            kcalPerGram="9 kcal/g"
+            value={fats}
+            min={0}
+            max={150}
+            color={theme.colors.macros.fat.bg}
+            onChange={setFats}
+          />
         </View>
-      )}
-    </>
+
+        {/* Macros Distribution Chart */}
+        <MacrosDistributionChart protein={protein} carbs={carbs} fats={fats} />
+
+        {/* Target Body Metrics */}
+        <Text className="mb-2 mt-8 text-[10px] font-bold uppercase tracking-widest text-text-secondary">
+          Target Body Metrics
+        </Text>
+        <View className="gap-4">
+          <BodyMetricCard
+            icon={Scale}
+            label="Target Weight"
+            sublabel="kg/lbs"
+            value={targetWeight}
+            unit="kg"
+            unitLabel="kg"
+            min={30}
+            max={200}
+            step={1}
+            onChange={setTargetWeight}
+          />
+          <BodyMetricCard
+            icon={Percent}
+            label="Target Body Fat"
+            sublabel="% percentage"
+            value={targetBodyFat}
+            unit="%"
+            unitLabel="%"
+            min={5}
+            max={50}
+            step={1}
+            onChange={setTargetBodyFat}
+          />
+          <BodyMetricCard
+            icon={TrendingUp}
+            label="Target BMI"
+            sublabel="Body Mass Index"
+            value={targetBMI}
+            unit="index"
+            unitLabel="index"
+            min={15}
+            max={40}
+            step={0.1}
+            onChange={setTargetBMI}
+          />
+          <BodyMetricCard
+            icon={Activity}
+            label="Target FFMI"
+            sublabel="Fat-Free Mass Index"
+            value={targetFFMI}
+            unit="index"
+            unitLabel="index"
+            min={15}
+            max={30}
+            step={0.1}
+            onChange={setTargetFFMI}
+          />
+        </View>
+
+        {/* Save Button */}
+        {showSaveButton && (
+          <View className="mt-8 border-t border-white/5 pt-6">
+            <Button
+              label="Save Goals"
+              icon={ChevronRight}
+              iconPosition="right"
+              variant="gradientCta"
+              size="md"
+              width="full"
+              onPress={handleSave}
+            />
+            <Text className="mt-4 text-center text-[10px] text-text-secondary">
+              You can change these values anytime in Settings.
+            </Text>
+          </View>
+        )}
+      </View>
+    </ScrollView>
   );
 }
