@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { View, Pressable } from 'react-native';
+import { View, Pressable, PanResponder } from 'react-native';
 import { theme } from '../../theme';
 
 type SliderProps = {
@@ -28,10 +28,12 @@ export function Slider({
   thumbSize = 20,
 }: SliderProps) {
   const sliderWidthRef = useRef(0);
+  const containerPageXRef = useRef(0);
+  const startXRef = useRef(0);
+  const startValueRef = useRef(value);
   const percentage = ((value - min) / (max - min)) * 100;
 
-  const handleSliderPress = (event: any) => {
-    const { locationX } = event.nativeEvent;
+  const updateValue = (locationX: number) => {
     if (sliderWidthRef.current > 0) {
       const sliderPercentage = Math.max(
         0,
@@ -42,8 +44,45 @@ export function Slider({
     }
   };
 
+  const handleSliderPress = (event: any) => {
+    const { locationX } = event.nativeEvent;
+    updateValue(locationX);
+  };
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderGrant: (event) => {
+        // Store the starting position and value when drag begins
+        const { pageX } = event.nativeEvent;
+        startXRef.current = pageX - containerPageXRef.current;
+        startValueRef.current = value;
+      },
+      onPanResponderMove: (event, gestureState) => {
+        const { pageX } = event.nativeEvent;
+        // Calculate the new position relative to the slider track
+        const currentX = pageX - containerPageXRef.current;
+        updateValue(currentX);
+      },
+      onPanResponderRelease: () => {
+        // Drag ended
+      },
+    })
+  ).current;
+
+  const containerRef = useRef<View>(null);
+
   return (
-    <View className="relative w-full" style={{ height: Math.max(height, thumbSize) }}>
+    <View
+      ref={containerRef}
+      className="relative w-full"
+      style={{ height: Math.max(height, thumbSize) }}
+      onLayout={() => {
+        containerRef.current?.measure((x, y, width, height, pageX, pageY) => {
+          containerPageXRef.current = pageX;
+        });
+      }}>
       <Pressable
         className="absolute w-full rounded-full"
         style={{
@@ -64,7 +103,7 @@ export function Slider({
           }}
         />
       </Pressable>
-      {/* Thumb */}
+      {/* Thumb - Draggable */}
       <View
         className="absolute rounded-full border-2"
         style={{
@@ -77,6 +116,7 @@ export function Slider({
           borderColor: filledTrackColor,
           ...theme.shadows.accentGlow,
         }}
+        {...panResponder.panHandlers}
       />
     </View>
   );
