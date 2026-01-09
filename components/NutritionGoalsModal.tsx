@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable, ScrollView } from 'react-native';
+import { View, Text, Pressable, ScrollView, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
   Minus,
@@ -53,6 +53,15 @@ function MacroCard({ label, kcalPerGram, value, min, max, color, onChange }: Mac
     onChange(Math.min(max, value + 5));
   };
 
+  // Web-specific styles to allow horizontal gestures on slider area
+  const webSliderContainerStyle =
+    Platform.OS === 'web'
+      ? ({
+          // Allow horizontal panning for slider, preventing browser swipe gesture
+          touchAction: 'pan-x pan-y',
+        } as any)
+      : {};
+
   return (
     <View
       className="rounded-xl border bg-bg-card p-5"
@@ -88,7 +97,9 @@ function MacroCard({ label, kcalPerGram, value, min, max, color, onChange }: Mac
         </View>
       </View>
       {/* Slider */}
-      <Slider value={value} min={min} max={max} onChange={onChange} />
+      <View style={webSliderContainerStyle}>
+        <Slider value={value} min={min} max={max} onChange={onChange} />
+      </View>
     </View>
   );
 }
@@ -316,13 +327,25 @@ export function NutritionGoalsModal({ visible, onClose, onSave }: NutritionGoals
     setTotalCalories(Math.round(calculatedCalories));
   }, [protein, carbs, fats]);
 
+  // Web-specific ScrollView styles to prevent browser gestures
+  const webScrollViewStyle =
+    Platform.OS === 'web'
+      ? ({
+          // Allow vertical scrolling but prevent horizontal browser gestures
+          touchAction: 'pan-y',
+        } as any)
+      : {};
+
   return (
     <FullScreenModal
       visible={visible}
       onClose={onClose}
       title="Set Nutrition & Body Goals"
       scrollable={true}>
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+      <ScrollView
+        className="flex-1"
+        showsVerticalScrollIndicator={false}
+        style={webScrollViewStyle}>
         <View className="gap-4 px-6 pb-36 pt-2">
           {/* Subtitle */}
           <Text className="mb-2 text-sm text-text-secondary">

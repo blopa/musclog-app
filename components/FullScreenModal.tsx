@@ -22,14 +22,6 @@ export function FullScreenModal({
   children,
   scrollable = true,
 }: FullScreenModalProps) {
-  const content = scrollable ? (
-    <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-      {children}
-    </ScrollView>
-  ) : (
-    <View className="flex-1">{children}</View>
-  );
-
   // Web-specific styles for proper viewport positioning
   const webModalStyle =
     Platform.OS === 'web'
@@ -41,6 +33,17 @@ export function FullScreenModal({
           bottom: 0,
           width: '100vw',
           height: '100vh',
+          // Prevent browser swipe-to-go-back gesture
+          touchAction: 'pan-y',
+        } as any)
+      : {};
+
+  // Web-specific ScrollView styles to prevent browser gestures
+  const webScrollViewStyle =
+    Platform.OS === 'web'
+      ? ({
+          // Allow vertical scrolling but prevent horizontal browser gestures
+          touchAction: 'pan-y',
         } as any)
       : {};
 
@@ -65,7 +68,16 @@ export function FullScreenModal({
         </View>
 
         {/* Content */}
-        {content}
+        {scrollable ? (
+          <ScrollView
+            className="flex-1"
+            showsVerticalScrollIndicator={false}
+            style={webScrollViewStyle}>
+            {children}
+          </ScrollView>
+        ) : (
+          <View className="flex-1">{children}</View>
+        )}
       </View>
     </Modal>
   );
