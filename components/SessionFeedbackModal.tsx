@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable, Platform } from 'react-native';
+import { View, Text, Pressable, Platform, ScrollView } from 'react-native';
 import { ThumbsUp, ArrowRight } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
@@ -83,6 +83,15 @@ export function SessionFeedbackModal({ visible, onClose, onSubmit }: SessionFeed
     onClose();
   };
 
+  // Web-specific ScrollView styles to prevent browser gestures
+  const webScrollViewStyle =
+    Platform.OS === 'web'
+      ? ({
+          // Allow vertical scrolling but prevent horizontal browser gestures
+          touchAction: 'pan-y',
+        } as any)
+      : {};
+
   const footer = (
     <View className="gap-3">
       <Pressable
@@ -115,32 +124,40 @@ export function SessionFeedbackModal({ visible, onClose, onSubmit }: SessionFeed
       subtitle={t('sessionFeedback.subtitle')}
       headerIcon={headerIcon}
       footer={footer}>
-      <View className="-mt-2 gap-8">
-        {/* Rating Sliders */}
-        <RatingSlider
-          label={t('sessionFeedback.difficulty')}
-          value={difficulty}
-          onChange={setDifficulty}
-          leftLabel={t('sessionFeedback.easy')}
-          rightLabel={t('sessionFeedback.extreme')}
-        />
+      <ScrollView
+        className="flex-1"
+        showsVerticalScrollIndicator={false}
+        style={webScrollViewStyle}
+        contentContainerStyle={{
+          padding: theme.spacing.padding['2xl'],
+        }}>
+        <View className="-mt-2 gap-8">
+          {/* Rating Sliders */}
+          <RatingSlider
+            label={t('sessionFeedback.difficulty')}
+            value={difficulty}
+            onChange={setDifficulty}
+            leftLabel={t('sessionFeedback.easy')}
+            rightLabel={t('sessionFeedback.extreme')}
+          />
 
-        <RatingSlider
-          label={t('sessionFeedback.exhaustion')}
-          value={exhaustion}
-          onChange={setExhaustion}
-          leftLabel={t('sessionFeedback.fresh')}
-          rightLabel={t('sessionFeedback.drained')}
-        />
+          <RatingSlider
+            label={t('sessionFeedback.exhaustion')}
+            value={exhaustion}
+            onChange={setExhaustion}
+            leftLabel={t('sessionFeedback.fresh')}
+            rightLabel={t('sessionFeedback.drained')}
+          />
 
-        <RatingSlider
-          label={t('sessionFeedback.enjoyment')}
-          value={enjoyment}
-          onChange={setEnjoyment}
-          leftLabel={t('sessionFeedback.disliked')}
-          rightLabel={t('sessionFeedback.loved')}
-        />
-      </View>
+          <RatingSlider
+            label={t('sessionFeedback.enjoyment')}
+            value={enjoyment}
+            onChange={setEnjoyment}
+            leftLabel={t('sessionFeedback.disliked')}
+            rightLabel={t('sessionFeedback.loved')}
+          />
+        </View>
+      </ScrollView>
     </BottomPopUpMenu>
   );
 }
