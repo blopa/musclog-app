@@ -183,30 +183,38 @@ export function Button({
       style={{
         fontSize: config.fontSize,
         fontWeight: config.fontWeight,
-        marginLeft:
-          Icon && iconPosition === 'left'
-            ? iconBgColor
-              ? theme.spacing.gap.md
-              : theme.spacing.gap.md
-            : 0,
-        marginRight:
-          Icon && iconPosition === 'right'
-            ? iconBgColor
-              ? theme.spacing.gap.md
-              : theme.spacing.gap.md
-            : 0,
         color: textColor,
-      }}>
+        textAlign: 'center',
+        flexShrink: 1,
+      }}
+      numberOfLines={2}
+      ellipsizeMode="tail">
       {label}
     </Text>
   );
 
   const buttonContent = (
-    <>
+    <View
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: Icon ? config.gap : 0,
+        width: '100%',
+      }}>
       {iconPosition === 'left' && iconElement}
-      {textElement}
+      <View
+        style={{
+          flexShrink: 1,
+          minWidth: 0,
+          maxWidth: '100%',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+        {textElement}
+      </View>
       {iconPosition === 'right' && iconElement}
-    </>
+    </View>
   );
 
   const outlineBackgroundColor =
@@ -264,6 +272,7 @@ export function Button({
             justifyContent: 'center',
             backgroundColor:
               isSecondaryVariant && !isDisabled ? theme.colors.background.overlay : undefined,
+            minHeight: '100%',
           }}>
           {buttonContent}
         </View>
@@ -274,7 +283,7 @@ export function Button({
             borderRadius: config.borderRadius,
             overflow: 'hidden',
             width: '100%',
-            height: '100%',
+            minHeight: '100%',
           }}>
           <LinearGradient
             colors={gradientColors}
