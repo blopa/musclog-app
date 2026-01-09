@@ -29,7 +29,7 @@ export function NumericalSteppers() {
                   if (!isNaN(val)) setTargetWeight(val);
                 }}
                 keyboardType="numeric"
-                style={{ outline: 'none', borderWidth: 0 }}
+                style={{ borderWidth: 0 }}
               />
               <Text className="font-normal text-text-tertiary"> kg</Text>
             </View>

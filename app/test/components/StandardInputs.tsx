@@ -19,12 +19,12 @@ export function StandardInputs() {
           <Text className="ml-1 text-sm font-medium text-text-secondary">Name (Default)</Text>
           <View className="h-14 w-full flex-row items-center rounded-lg border border-white/10 bg-bg-card px-4">
             <TextInput
-              className="flex-1 border-none bg-transparent p-0 text-text-primary placeholder:text-text-tertiary"
+              className="flex-1 border-none bg-transparent p-0 text-text-primary"
               placeholder="Enter your name"
               placeholderTextColor={theme.colors.text.tertiary}
               value={name}
               onChangeText={setName}
-              style={{ outline: 'none', borderWidth: 0 }}
+              style={{ borderWidth: 0 }}
             />
           </View>
         </View>
@@ -45,7 +45,7 @@ export function StandardInputs() {
               value={email}
               onChangeText={setEmail}
               keyboardType="email-address"
-              style={{ outline: 'none', borderWidth: 0 }}
+              style={{ borderWidth: 0 }}
             />
           </View>
         </View>
