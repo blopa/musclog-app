@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Platform } from 'react-native';
+import { View, Platform } from 'react-native';
 import SliderComponent from '@react-native-community/slider';
 import { LinearGradient } from 'expo-linear-gradient';
 import { theme } from '../../theme';
@@ -28,7 +28,7 @@ export function Slider({
   gradientColors = theme.colors.gradients.progress,
 }: SliderProps) {
   return (
-    <View style={styles.container}>
+    <View className="h-10 w-full justify-center">
       {/* 
         The gradient track is placed behind the native slider.
         We set the slider's minimumTrackTintColor to 'transparent' 
@@ -36,18 +36,23 @@ export function Slider({
         The maximumTrackTintColor will cover the gradient on the right side.
       */}
       {useGradient && (
-        <View style={styles.trackWrapper}>
+        <View className="absolute left-0.5 right-0.5 h-1.5 overflow-hidden rounded-full">
           <LinearGradient
             colors={gradientColors as string[]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
-            style={StyleSheet.absoluteFill}
+            className="absolute inset-0"
           />
         </View>
       )}
 
       <SliderComponent
-        style={styles.slider}
+        style={{
+          width: '100%',
+          height: 40,
+          zIndex: 1,
+          ...(Platform.OS === 'web' ? { outlineStyle: 'none' } : {}),
+        }}
         value={value}
         minimumValue={min}
         maximumValue={max}
@@ -60,29 +65,3 @@ export function Slider({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-    height: 40,
-    justifyContent: 'center',
-  },
-  trackWrapper: {
-    position: 'absolute',
-    left: 2, // Inset slightly to match native slider track positioning better
-    right: 2,
-    height: 6,
-    borderRadius: 3,
-    overflow: 'hidden',
-  },
-  slider: {
-    width: '100%',
-    height: 40,
-    zIndex: 1,
-    ...Platform.select({
-      web: {
-        outlineStyle: 'none',
-      } as any,
-    }),
-  },
-});
