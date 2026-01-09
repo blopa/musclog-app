@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { View, Text, Pressable, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
@@ -15,6 +15,7 @@ import Svg, { Circle } from 'react-native-svg';
 import { theme } from '../theme';
 import { FullScreenModal } from './FullScreenModal';
 import { Button } from './theme/Button';
+import { Slider } from './Slider';
 
 type NutritionGoalsModalProps = {
   visible: boolean;
@@ -44,21 +45,6 @@ type MacroCardProps = {
 };
 
 function MacroCard({ label, kcalPerGram, value, min, max, color, onChange }: MacroCardProps) {
-  const sliderWidthRef = useRef(0);
-  const percentage = ((value - min) / (max - min)) * 100;
-
-  const handleSliderPress = (event: any) => {
-    const { locationX } = event.nativeEvent;
-    if (sliderWidthRef.current > 0) {
-      const sliderPercentage = Math.max(
-        0,
-        Math.min(100, (locationX / sliderWidthRef.current) * 100)
-      );
-      const newValue = Math.round(min + (sliderPercentage / 100) * (max - min));
-      onChange(Math.max(min, Math.min(max, newValue)));
-    }
-  };
-
   const handleDecrement = () => {
     onChange(Math.max(min, value - 5));
   };
@@ -102,33 +88,7 @@ function MacroCard({ label, kcalPerGram, value, min, max, color, onChange }: Mac
         </View>
       </View>
       {/* Slider */}
-      <Pressable
-        className="relative h-1.5 w-full rounded-full"
-        style={{ backgroundColor: theme.colors.accent.primary10 }}
-        onPress={handleSliderPress}
-        onLayout={(event) => {
-          sliderWidthRef.current = event.nativeEvent.layout.width;
-        }}>
-        {/* Filled portion */}
-        <View
-          className="absolute left-0 top-0 h-full rounded-full"
-          style={{
-            width: `${percentage}%`,
-            backgroundColor: theme.colors.accent.primary,
-          }}
-        />
-        {/* Thumb */}
-        <View
-          className="absolute top-1/2 h-5 w-5 -translate-y-2.5 rounded-full border-2"
-          style={{
-            left: `${percentage}%`,
-            marginLeft: -10,
-            backgroundColor: theme.colors.background.white,
-            borderColor: theme.colors.accent.primary,
-            ...theme.shadows.accentGlow,
-          }}
-        />
-      </Pressable>
+      <Slider value={value} min={min} max={max} onChange={onChange} />
     </View>
   );
 }
@@ -496,7 +456,7 @@ export function NutritionGoalsModal({ visible, onClose, onSave }: NutritionGoals
           icon={ChevronRight}
           iconPosition="right"
           variant="gradientCta"
-          size="lg"
+          size="md"
           width="full"
           onPress={handleSave}
         />
