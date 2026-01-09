@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable, TextInput } from 'react-native';
 import { Minus, Plus } from 'lucide-react-native';
 import { theme } from '../../../theme';
 
@@ -20,10 +20,19 @@ export function NumericalSteppers() {
             <Text className="text-xs font-semibold uppercase tracking-tighter text-text-tertiary">
               Target Weight
             </Text>
-            <Text className="text-lg font-bold text-text-primary">
-              {targetWeight.toFixed(1)}{' '}
-              <Text className="font-normal text-text-tertiary">kg</Text>
-            </Text>
+            <View className="flex-row items-center">
+              <TextInput
+                className="w-16 border-none bg-transparent p-0 text-lg font-bold text-text-primary"
+                value={targetWeight.toFixed(1)}
+                onChangeText={(text) => {
+                  const val = parseFloat(text);
+                  if (!isNaN(val)) setTargetWeight(val);
+                }}
+                keyboardType="numeric"
+                style={{ outline: 'none', borderWidth: 0 }}
+              />
+              <Text className="font-normal text-text-tertiary"> kg</Text>
+            </View>
           </View>
           <View className="flex-row items-center gap-3">
             <Pressable

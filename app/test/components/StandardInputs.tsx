@@ -18,14 +18,14 @@ export function StandardInputs() {
         <View className="flex-col gap-2">
           <Text className="ml-1 text-sm font-medium text-text-secondary">Name (Default)</Text>
           <View className="h-14 w-full flex-row items-center rounded-lg border border-white/10 bg-bg-card px-4">
-              <TextInput
-                className="flex-1 border-none bg-transparent p-0 text-text-primary placeholder:text-text-tertiary"
-                placeholder="Enter your name"
-                placeholderTextColor={theme.colors.text.tertiary}
-                value={name}
-                onChangeText={setName}
-                style={{ outline: 'none', borderWidth: 0 }}
-              />
+            <TextInput
+              className="flex-1 border-none bg-transparent p-0 text-text-primary placeholder:text-text-tertiary"
+              placeholder="Enter your name"
+              placeholderTextColor={theme.colors.text.tertiary}
+              value={name}
+              onChangeText={setName}
+              style={{ outline: 'none', borderWidth: 0 }}
+            />
           </View>
         </View>
         <View className="flex-col gap-2">
