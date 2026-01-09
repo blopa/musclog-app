@@ -80,7 +80,7 @@ export default function InputsTestScreen() {
 
         <TestSection title="Numerical Steppers" subtitle="Weight & Reps Adjusters">
           <StepperInput
-            label="Target Weight"
+            label="Weight (KG)"
             value={targetWeight}
             onIncrement={() => setTargetWeight((v) => v + 0.5)}
             onDecrement={() => setTargetWeight((v) => Math.max(0, v - 0.5))}
