@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import { theme } from '../../theme';
 
 type SkeletonLoaderProps = {
-  width?: number | string;
+  width?: number | `${number}%`;
   height?: number;
   borderRadius?: number;
   className?: string;
