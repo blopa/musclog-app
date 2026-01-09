@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Pressable, TextInput } from 'react-native';
+import { View, Text, Pressable, TextInput, Platform } from 'react-native';
 import { Minus, Plus } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
@@ -66,17 +66,32 @@ function NumberInputField({
           <Minus size={24} color={theme.colors.accent.primary} />
         </Pressable>
         <View
-          className="flex-1 flex-row items-center rounded-lg border"
+          className="flex-1 overflow-hidden rounded-lg border"
           style={{
             backgroundColor: 'rgba(0, 0, 0, 0.2)',
             borderColor: theme.colors.background.white10,
+            borderWidth: 1,
           }}>
           <TextInput
             value={value.toString()}
             onChangeText={handleTextChange}
             keyboardType={allowDecimals ? 'decimal-pad' : 'number-pad'}
-            className="flex-1 bg-transparent py-3 text-center text-xl font-bold"
-            style={{ color: theme.colors.text.primary }}
+            className="w-full bg-transparent py-3 text-xl font-bold"
+            style={[
+              {
+                color: theme.colors.text.primary,
+                textAlign: 'center',
+                textAlignVertical: 'center',
+                borderWidth: 0,
+                paddingHorizontal: 0,
+                paddingVertical: 12,
+              },
+              Platform.OS === 'web' &&
+                ({
+                  outlineStyle: 'none',
+                  outlineWidth: 0,
+                } as any),
+            ]}
             placeholderTextColor={theme.colors.text.secondary}
             selectTextOnFocus
           />
