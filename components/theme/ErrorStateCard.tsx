@@ -1,0 +1,47 @@
+import React from 'react';
+import { View, Text, Pressable } from 'react-native';
+import { LucideIcon, RefreshCw } from 'lucide-react-native';
+import { theme } from '../../theme';
+
+type ErrorStateCardProps = {
+  icon: LucideIcon;
+  title: string;
+  description: string;
+  buttonLabel?: string;
+  onButtonPress?: () => void;
+};
+
+export function ErrorStateCard({
+  icon: Icon,
+  title,
+  description,
+  buttonLabel = 'Try Again',
+  onButtonPress,
+}: ErrorStateCardProps) {
+  return (
+    <View className="border-status-error/20 bg-status-error/5 flex-col items-center gap-4 rounded-lg border-2 border-dashed p-6">
+      {/* Icon */}
+      <View
+        className="h-12 w-12 items-center justify-center rounded-full"
+        style={{ backgroundColor: `${theme.colors.status.error}1A` }}>
+        <Icon size={24} color={theme.colors.status.error} />
+      </View>
+
+      {/* Content */}
+      <View className="items-center">
+        <Text className="mb-1 text-center font-bold text-text-primary">{title}</Text>
+        <Text className="text-center text-sm text-text-secondary">{description}</Text>
+      </View>
+
+      {/* Button */}
+      {onButtonPress && (
+        <Pressable
+          className="mt-2 flex-row items-center gap-2 rounded-lg border border-accent-primary px-6 py-2 active:scale-95"
+          onPress={onButtonPress}>
+          <RefreshCw size={16} color={theme.colors.accent.primary} />
+          <Text className="text-sm font-bold text-accent-primary">{buttonLabel}</Text>
+        </Pressable>
+      )}
+    </View>
+  );
+}
