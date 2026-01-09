@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import { Minus, Plus } from 'lucide-react-native';
+import { theme } from '../../theme';
 
 interface StepperInputProps {
   label: string;
@@ -21,41 +22,53 @@ export const StepperInput: React.FC<StepperInputProps> = ({
 }) => {
   const [internalValue, setInternalValue] = useState<number>(value);
 
+  React.useEffect(() => {
+    setInternalValue(value);
+  }, [value]);
+
   const handleChange = (newValue: number) => {
     setInternalValue(newValue);
     onChangeValue?.(newValue);
   };
 
   return (
-    <View className="flex flex-col gap-1">
-      <Text className="ml-1 text-xs font-bold uppercase tracking-widest text-emerald-500">
+    <View className="flex flex-col gap-2">
+      <Text
+        className="text-xs font-bold uppercase tracking-tighter"
+        style={{ color: theme.colors.accent.primary }}>
         {label}
       </Text>
       <View className="flex flex-row items-center gap-3">
-        <TouchableOpacity
-          className="bg-surface-dark-lighter flex h-14 w-14 items-center justify-center rounded-2xl border border-white/5 transition-transform active:scale-95"
+        <Pressable
+          className="h-14 w-14 items-center justify-center rounded-xl active:scale-95"
+          style={{ backgroundColor: theme.colors.background.card }}
           onPress={() => {
-            handleChange(internalValue - 1);
+            const newVal = internalValue - 1;
+            handleChange(newVal);
             onDecrement();
           }}
           accessibilityLabel="Decrease value">
-          <Minus size={20} color="white" />
-        </TouchableOpacity>
-        <View className="bg-surface-dark flex h-14 flex-1 items-center justify-center rounded-2xl border border-white/10">
-          <Text className="text-center text-2xl font-bold text-white">
+          <Minus size={20} color={theme.colors.accent.primary} />
+        </Pressable>
+        <View
+          className="h-14 flex-1 items-center justify-center rounded-xl"
+          style={{ backgroundColor: theme.colors.background.card }}>
+          <Text className="text-center text-2xl font-bold text-text-primary">
             {internalValue.toFixed(1)}{' '}
             {unit && <Text className="font-normal text-text-tertiary">{unit}</Text>}
           </Text>
         </View>
-        <TouchableOpacity
-          className="bg-surface-dark-lighter flex h-14 w-14 items-center justify-center rounded-2xl border border-white/5 transition-transform active:scale-95"
+        <Pressable
+          className="h-14 w-14 items-center justify-center rounded-xl active:scale-95"
+          style={{ backgroundColor: theme.colors.background.card }}
           onPress={() => {
-            handleChange(internalValue + 1);
+            const newVal = internalValue + 1;
+            handleChange(newVal);
             onIncrement();
           }}
           accessibilityLabel="Increase value">
-          <Plus size={20} color="white" />
-        </TouchableOpacity>
+          <Plus size={20} color={theme.colors.accent.primary} />
+        </Pressable>
       </View>
     </View>
   );
