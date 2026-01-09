@@ -79,13 +79,22 @@ export default function InputsTestScreen() {
 
         <TestSection title="Specialized Numeric" subtitle="Workout Tracker & Goals">
           <View className="flex-row gap-4">
-            <TestNumericInput label="Weight" value={weight} onChangeText={setWeight} unit="LBS" />
+            <TestNumericInput
+              label="Weight"
+              value={weight}
+              onChangeText={setWeight}
+              unit="LBS"
+              onIncrement={() => setWeight(String((parseInt(weight) || 0) + 1))}
+              onDecrement={() => setWeight(String(Math.max(0, (parseInt(weight) || 0) - 1)))}
+            />
             <TestNumericInput
               label="Reps"
               value={reps}
               onChangeText={setReps}
               unit="REPS"
               unitColor={theme.colors.status.purple}
+              onIncrement={() => setReps(String((parseInt(reps) || 0) + 1))}
+              onDecrement={() => setReps(String(Math.max(0, (parseInt(reps) || 0) - 1)))}
             />
           </View>
         </TestSection>
