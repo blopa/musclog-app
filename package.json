@@ -31,6 +31,7 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
+    "@react-native-community/slider": "5.0.1",
     "@react-native-masked-view/masked-view": "^0.3.2",
     "date-fns": "^4.1.0",
     "expo": "^54.0.31",
