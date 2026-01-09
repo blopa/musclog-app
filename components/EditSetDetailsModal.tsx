@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Pressable, TextInput } from 'react-native';
+import { Minus, Plus } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { CenteredModal } from './CenteredModal';
@@ -15,43 +16,78 @@ type EditSetDetailsModalProps = {
   initialPartials: number;
 };
 
-type FieldProps = {
+type NumberInputFieldProps = {
   label: string;
-  children: React.ReactNode;
+  value: number;
+  onChange: (value: number) => void;
+  min?: number;
+  max?: number;
+  step?: number;
+  allowDecimals?: boolean;
 };
 
-function Field({ label, children }: FieldProps) {
+function NumberInputField({
+  label,
+  value,
+  onChange,
+  min = 0,
+  max = 9999,
+  step = 1,
+  allowDecimals = false,
+}: NumberInputFieldProps) {
+  const handleDecrement = () => {
+    const newValue = Math.max(min, value - step);
+    onChange(allowDecimals ? newValue : Math.round(newValue));
+  };
+
+  const handleIncrement = () => {
+    const newValue = Math.min(max, value + step);
+    onChange(allowDecimals ? newValue : Math.round(newValue));
+  };
+
+  const handleTextChange = (text: string) => {
+    const num = allowDecimals ? parseFloat(text) || 0 : parseInt(text, 10) || 0;
+    const clampedValue = Math.max(min, Math.min(max, num));
+    onChange(allowDecimals ? clampedValue : Math.round(clampedValue));
+  };
+
   return (
-    <View className="gap-2">
+    <View className="gap-3">
       <Text
-        className="text-xs font-bold uppercase tracking-wider"
+        className="px-1 text-xs font-bold uppercase tracking-wider"
         style={{ color: theme.colors.accent.primary }}>
         {label}
       </Text>
-      {children}
-    </View>
-  );
-}
-
-type NumberBoxProps = {
-  value: number;
-  onChange: (value: number) => void;
-};
-
-function NumberBox({ value, onChange }: NumberBoxProps) {
-  return (
-    <View className="relative flex-row items-center rounded-lg border border-border-default bg-bg-overlay">
-      <TextInput
-        value={value.toString()}
-        onChangeText={(text) => {
-          const num = parseInt(text, 10) || 0;
-          onChange(num);
-        }}
-        keyboardType="numeric"
-        className="w-full bg-transparent px-4 py-3 text-center text-lg font-bold text-text-primary"
-        style={{ color: theme.colors.text.primary }}
-        placeholderTextColor={theme.colors.text.secondary}
-      />
+      <View className="flex-row items-center gap-2">
+        <Pressable
+          className="h-12 w-12 items-center justify-center rounded-lg"
+          style={{ backgroundColor: theme.colors.background.white5 }}
+          onPress={handleDecrement}>
+          <Minus size={24} color={theme.colors.accent.primary} />
+        </Pressable>
+        <View
+          className="flex-1 flex-row items-center rounded-lg border"
+          style={{
+            backgroundColor: 'rgba(0, 0, 0, 0.2)',
+            borderColor: theme.colors.background.white10,
+          }}>
+          <TextInput
+            value={value.toString()}
+            onChangeText={handleTextChange}
+            keyboardType={allowDecimals ? 'decimal-pad' : 'number-pad'}
+            className="flex-1 bg-transparent py-3 text-center text-xl font-bold"
+            style={{ color: theme.colors.text.primary }}
+            placeholderTextColor={theme.colors.text.secondary}
+            selectTextOnFocus
+          />
+        </View>
+        <Pressable
+          className="h-12 w-12 items-center justify-center rounded-lg"
+          style={{ backgroundColor: theme.colors.background.white5 }}
+          onPress={handleIncrement}>
+          <Plus size={24} color={theme.colors.accent.primary} />
+        </Pressable>
+      </View>
     </View>
   );
 }
@@ -101,48 +137,46 @@ export function EditSetDetailsModal({
           />
           <Button
             label={t('editSetDetails.saveChanges')}
+            variant="accent"
             size="sm"
             width="flex-1"
             onPress={handleSave}
           />
         </View>
       }>
-      <View className="gap-5">
+      <View className="gap-6">
         {/* Weight */}
-        <Field label={t('workoutSession.weight')}>
-          <View className="relative flex-row items-center rounded-lg border border-border-default bg-bg-overlay">
-            <TextInput
-              value={weight.toString()}
-              onChangeText={(text) => {
-                const num = parseFloat(text) || 0;
-                setWeight(num);
-              }}
-              keyboardType="decimal-pad"
-              className="flex-1 bg-transparent py-3 pl-4 pr-12 text-lg font-bold text-text-primary"
-              style={{ color: theme.colors.text.primary }}
-              placeholderTextColor={theme.colors.text.secondary}
-            />
-            <View className="absolute right-0 flex items-center pr-4" pointerEvents="none">
-              <Text className="text-sm font-semibold text-text-secondary">
-                {t('workoutSession.kg')}
-              </Text>
-            </View>
-          </View>
-        </Field>
+        <NumberInputField
+          label={`${t('workoutSession.weight')} (${t('workoutSession.kg')})`}
+          value={weight}
+          onChange={setWeight}
+          min={0}
+          max={1000}
+          step={0.5}
+          allowDecimals={true}
+        />
 
-        {/* Reps + Partials */}
-        <View className="flex-row gap-4">
-          <View className="flex-1">
-            <Field label={t('workoutSession.reps')}>
-              <NumberBox value={reps} onChange={setReps} />
-            </Field>
-          </View>
-          <View className="flex-1">
-            <Field label={t('editSetDetails.partialReps')}>
-              <NumberBox value={partials} onChange={setPartials} />
-            </Field>
-          </View>
-        </View>
+        {/* Reps */}
+        <NumberInputField
+          label={t('workoutSession.reps')}
+          value={reps}
+          onChange={setReps}
+          min={0}
+          max={999}
+          step={1}
+          allowDecimals={false}
+        />
+
+        {/* Partial Reps */}
+        <NumberInputField
+          label={t('editSetDetails.partialReps')}
+          value={partials}
+          onChange={setPartials}
+          min={0}
+          max={999}
+          step={1}
+          allowDecimals={false}
+        />
       </View>
     </CenteredModal>
   );
