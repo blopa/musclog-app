@@ -122,16 +122,20 @@ export const theme = {
     // Macro colors
     macros: {
       protein: {
-        text: '#818cf8', // Indigo-400
+        text: '#6366f1', // Indigo-500
         bg: '#6366f1', // Indigo-500
       },
       carbs: {
-        text: '#34d399', // Emerald-400
-        bg: '#34d399', // Emerald-400
+        text: '#10b981', // Emerald-500
+        bg: '#10b981', // Emerald-500
       },
       fat: {
-        text: '#fbbf24', // Amber-400
-        bg: '#fbbf24', // Amber-400
+        text: '#f59e0b', // Amber-500
+        bg: '#f59e0b', // Amber-500
+      },
+      fiber: {
+        text: '#ec4899', // Pink-500
+        bg: '#ec4899', // Pink-500
       },
     },
 

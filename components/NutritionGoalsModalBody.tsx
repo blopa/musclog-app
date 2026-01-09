@@ -11,16 +11,17 @@ import {
   ChevronRight,
 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import Svg, { Circle } from 'react-native-svg';
 import { theme } from '../theme';
 import { Button } from './theme/Button';
 import { Slider } from './theme/Slider';
+import { MacrosPizzaChart } from './theme/MacrosPizzaChart';
 
 export type NutritionGoals = {
   totalCalories: number;
   protein: number;
   carbs: number;
   fats: number;
+  fiber: number;
   targetWeight: number;
   targetBodyFat: number;
   targetBMI: number;
@@ -188,106 +189,45 @@ function MacrosDistributionChart({
   protein,
   carbs,
   fats,
+  fiber = 0,
 }: {
   protein: number;
   carbs: number;
   fats: number;
+  fiber?: number;
 }) {
   const { t } = useTranslation();
-  const total = protein + carbs + fats;
-  const proteinPercentage = (protein / total) * 100;
-  const carbsPercentage = (carbs / total) * 100;
-  const fatsPercentage = (fats / total) * 100;
-
-  // Calculate stroke-dasharray for each segment
-  const circumference = 2 * Math.PI * 40; // radius is 40
-  const proteinDashArray = (proteinPercentage / 100) * circumference;
-  const carbsDashArray = (carbsPercentage / 100) * circumference;
-  const fatsDashArray = (fatsPercentage / 100) * circumference;
-
-  // Calculate stroke-dashoffset for each segment
-  const proteinOffset = 0;
-  const carbsOffset = -proteinDashArray;
-  const fatsOffset = -(proteinDashArray + carbsDashArray);
+  const total = protein + carbs + fats + fiber;
+  const proteinPercentage = total > 0 ? (protein / total) * 100 : 0;
+  const carbsPercentage = total > 0 ? (carbs / total) * 100 : 0;
+  const fatsPercentage = total > 0 ? (fats / total) * 100 : 0;
+  const fiberPercentage = total > 0 ? (fiber / total) * 100 : 0;
 
   return (
     <View className="items-center py-10">
       <Text className="mb-6 text-sm font-semibold uppercase tracking-widest text-text-secondary opacity-60">
         {t('nutritionGoals.macrosDistribution')}
       </Text>
-      <View className="relative h-48 w-48 items-center justify-center">
-        <Svg
-          width={192}
-          height={192}
-          viewBox="0 0 100 100"
-          style={{ transform: [{ rotate: '-90deg' }] }}>
-          {/* Background circle */}
-          <Circle
-            cx="50"
-            cy="50"
-            r="40"
-            fill="transparent"
-            stroke={theme.colors.background.cardDark}
-            strokeWidth="12"
-          />
-          {/* Protein (green/emerald) */}
-          <Circle
-            cx="50"
-            cy="50"
-            r="40"
-            fill="transparent"
-            stroke={theme.colors.macros.carbs.bg}
-            strokeWidth="12"
-            strokeDasharray={`${proteinDashArray} ${circumference}`}
-            strokeDashoffset={proteinOffset}
-          />
-          {/* Carbs (purple/indigo) */}
-          <Circle
-            cx="50"
-            cy="50"
-            r="40"
-            fill="transparent"
-            stroke={theme.colors.macros.protein.bg}
-            strokeWidth="12"
-            strokeDasharray={`${carbsDashArray} ${circumference}`}
-            strokeDashoffset={carbsOffset}
-          />
-          {/* Fats (amber) */}
-          <Circle
-            cx="50"
-            cy="50"
-            r="40"
-            fill="transparent"
-            stroke={theme.colors.macros.fat.bg}
-            strokeWidth="12"
-            strokeDasharray={`${fatsDashArray} ${circumference}`}
-            strokeDashoffset={fatsOffset}
-          />
-        </Svg>
-        <View className="absolute items-center">
-          <Text className="text-[10px] font-bold uppercase text-text-secondary">
-            {t('nutritionGoals.balance')}
-          </Text>
-          <Text className="text-lg font-bold text-text-primary">{t('nutritionGoals.optimal')}</Text>
-        </View>
-      </View>
-      <View className="mt-8 flex-row gap-6">
-        <View className="flex-row items-center gap-2">
-          <View
-            className="h-2 w-2 rounded-full"
-            style={{ backgroundColor: theme.colors.macros.carbs.bg }}
-          />
-          <Text className="text-xs text-text-secondary">
-            {Math.round(proteinPercentage)}% {t('food.macros.protein').charAt(0)}
-          </Text>
-        </View>
+
+      <MacrosPizzaChart protein={protein} carbs={carbs} fats={fats} fiber={fiber} />
+
+      <View className="mt-8 flex-row flex-wrap justify-center gap-x-6 gap-y-3 px-4">
         <View className="flex-row items-center gap-2">
           <View
             className="h-2 w-2 rounded-full"
             style={{ backgroundColor: theme.colors.macros.protein.bg }}
           />
           <Text className="text-xs text-text-secondary">
-            {Math.round(carbsPercentage)}% {t('food.macros.carbs').charAt(0)}
+            {Math.round(proteinPercentage)}% {t('food.macros.proteinLegend')}
+          </Text>
+        </View>
+        <View className="flex-row items-center gap-2">
+          <View
+            className="h-2 w-2 rounded-full"
+            style={{ backgroundColor: theme.colors.macros.carbs.bg }}
+          />
+          <Text className="text-xs text-text-secondary">
+            {Math.round(carbsPercentage)}% {t('food.macros.carbsLegend')}
           </Text>
         </View>
         <View className="flex-row items-center gap-2">
@@ -296,9 +236,20 @@ function MacrosDistributionChart({
             style={{ backgroundColor: theme.colors.macros.fat.bg }}
           />
           <Text className="text-xs text-text-secondary">
-            {Math.round(fatsPercentage)}% {t('food.macros.fat').charAt(0)}
+            {Math.round(fatsPercentage)}% {t('food.macros.fatLegend')}
           </Text>
         </View>
+        {fiber > 0 && (
+          <View className="flex-row items-center gap-2">
+            <View
+              className="h-2 w-2 rounded-full"
+              style={{ backgroundColor: theme.colors.macros.fiber.bg }}
+            />
+            <Text className="text-xs text-text-secondary">
+              {Math.round(fiberPercentage)}% {t('food.macros.fiberLegend')}
+            </Text>
+          </View>
+        )}
       </View>
     </View>
   );
@@ -315,6 +266,7 @@ export function NutritionGoalsModalBody({
   const [protein, setProtein] = useState(initialGoals?.protein ?? 180);
   const [carbs, setCarbs] = useState(initialGoals?.carbs ?? 250);
   const [fats, setFats] = useState(initialGoals?.fats ?? 80);
+  const [fiber, setFiber] = useState(initialGoals?.fiber ?? 30);
   const [targetWeight, setTargetWeight] = useState(initialGoals?.targetWeight ?? 75);
   const [targetBodyFat, setTargetBodyFat] = useState(initialGoals?.targetBodyFat ?? 12);
   const [targetBMI, setTargetBMI] = useState(initialGoals?.targetBMI ?? 23.5);
@@ -326,6 +278,7 @@ export function NutritionGoalsModalBody({
       protein,
       carbs,
       fats,
+      fiber,
       targetWeight,
       targetBodyFat,
       targetBMI,
@@ -334,11 +287,13 @@ export function NutritionGoalsModalBody({
     onSave?.(goals);
   };
 
-  // Calculate total calories from macros (protein and carbs are 4 kcal/g, fats are 9 kcal/g)
+  // Calculate total calories from macros (protein and carbs are 4 kcal/g, fats are 9 kcal/g, fiber is typically ~2 kcal/g or ignored, but we'll include it for accuracy if needed)
   React.useEffect(() => {
-    const calculatedCalories = protein * 4 + carbs * 4 + fats * 9;
+    // Note: Fiber is often included in total carbs (4kcal/g) or sometimes calculated as 2kcal/g.
+    // Most food labels include fiber in the carb count.
+    const calculatedCalories = protein * 4 + carbs * 4 + fats * 9 + fiber * 2;
     setTotalCalories(Math.round(calculatedCalories));
-  }, [protein, carbs, fats]);
+  }, [protein, carbs, fats, fiber]);
 
   // Web-specific ScrollView styles to prevent browser gestures
   const webScrollViewStyle =
@@ -396,7 +351,7 @@ export function NutritionGoalsModalBody({
             value={protein}
             min={0}
             max={300}
-            color={theme.colors.macros.carbs.bg}
+            color={theme.colors.macros.protein.bg}
             onChange={setProtein}
           />
           <MacroCard
@@ -405,7 +360,7 @@ export function NutritionGoalsModalBody({
             value={carbs}
             min={0}
             max={500}
-            color={theme.colors.macros.protein.bg}
+            color={theme.colors.macros.carbs.bg}
             onChange={setCarbs}
           />
           <MacroCard
@@ -417,10 +372,19 @@ export function NutritionGoalsModalBody({
             color={theme.colors.macros.fat.bg}
             onChange={setFats}
           />
+          <MacroCard
+            label={t('food.macros.fiber') || 'Fiber'}
+            kcalPerGram="2 kcal/g"
+            value={fiber}
+            min={0}
+            max={100}
+            color={theme.colors.macros.fiber.bg}
+            onChange={setFiber}
+          />
         </View>
 
         {/* Macros Distribution Chart */}
-        <MacrosDistributionChart protein={protein} carbs={carbs} fats={fats} />
+        <MacrosDistributionChart protein={protein} carbs={carbs} fats={fats} fiber={fiber} />
 
         {/* Target Body Metrics */}
         <Text className="mb-2 mt-8 text-[10px] font-bold uppercase tracking-widest text-text-secondary">
