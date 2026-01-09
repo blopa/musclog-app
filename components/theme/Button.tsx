@@ -23,6 +23,7 @@ type ThemeButtonProps = {
   icon?: LucideIcon;
   iconBgColor?: string;
   iconColor?: string;
+  iconPosition?: 'left' | 'right';
   size?: ThemeButtonSize;
   width?: ThemeButtonWidth;
   variant?: ThemeButtonVariant;
@@ -74,6 +75,7 @@ export function Button({
   icon: Icon,
   iconBgColor,
   iconColor: customIconColor,
+  iconPosition = 'left',
   size = 'md',
   width = 'auto',
   variant = 'accent',
@@ -149,42 +151,61 @@ export function Button({
   const finalIconColor = customIconColor || iconColor;
   const iconSize = iconBgColor ? theme.iconSize.sm : config.iconSize;
 
+  const iconElement = Icon ? (
+    iconBgColor ? (
+      <View
+        className="h-8 w-8 items-center justify-center rounded-full"
+        style={{ backgroundColor: iconBgColor }}>
+        <Icon size={iconSize} color={finalIconColor} />
+      </View>
+    ) : (
+      <Icon size={config.iconSize} color={iconColor} />
+    )
+  ) : null;
+
+  const textElement = (
+    <Text
+      className={`tracking-wide ${
+        isDisabled
+          ? 'text-white/30'
+          : isOutlineVariant
+            ? 'text-gray-300'
+            : isDashedVariant
+              ? 'text-text-secondary'
+              : isGradientCtaVariant
+                ? 'text-white'
+                : isSecondaryVariant || isSecondaryGradientVariant
+                  ? 'text-text-primary'
+                  : isRedVariant
+                    ? 'text-white'
+                    : 'text-text-black'
+      }`}
+      style={{
+        fontSize: config.fontSize,
+        fontWeight: config.fontWeight,
+        marginLeft:
+          Icon && iconPosition === 'left'
+            ? iconBgColor
+              ? theme.spacing.gap.md
+              : theme.spacing.gap.md
+            : 0,
+        marginRight:
+          Icon && iconPosition === 'right'
+            ? iconBgColor
+              ? theme.spacing.gap.md
+              : theme.spacing.gap.md
+            : 0,
+        color: textColor,
+      }}>
+      {label}
+    </Text>
+  );
+
   const buttonContent = (
     <>
-      {Icon &&
-        (iconBgColor ? (
-          <View
-            className="h-8 w-8 items-center justify-center rounded-full"
-            style={{ backgroundColor: iconBgColor }}>
-            <Icon size={iconSize} color={finalIconColor} />
-          </View>
-        ) : (
-          <Icon size={config.iconSize} color={iconColor} />
-        ))}
-      <Text
-        className={`tracking-wide ${
-          isDisabled
-            ? 'text-white/30'
-            : isOutlineVariant
-              ? 'text-gray-300'
-              : isDashedVariant
-                ? 'text-text-secondary'
-                : isGradientCtaVariant
-                  ? 'text-white'
-                  : isSecondaryVariant || isSecondaryGradientVariant
-                    ? 'text-text-primary'
-                    : isRedVariant
-                      ? 'text-white'
-                      : 'text-text-black'
-        }`}
-        style={{
-          fontSize: config.fontSize,
-          fontWeight: config.fontWeight,
-          marginLeft: Icon ? (iconBgColor ? theme.spacing.gap.md : theme.spacing.gap.md) : 0,
-          color: textColor,
-        }}>
-        {label}
-      </Text>
+      {iconPosition === 'left' && iconElement}
+      {textElement}
+      {iconPosition === 'right' && iconElement}
     </>
   );
 

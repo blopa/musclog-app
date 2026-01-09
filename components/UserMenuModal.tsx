@@ -1,12 +1,4 @@
-import {
-  View,
-  Text,
-  Pressable,
-  Modal,
-  Image,
-  ImageSourcePropType,
-  Platform,
-} from 'react-native';
+import { View, Text, Pressable, Modal, Image, ImageSourcePropType, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { X, User, Settings, BarChart3 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
