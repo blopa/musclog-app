@@ -72,6 +72,7 @@ export default function InputsTestScreen() {
             value={targetWeight}
             onIncrement={() => setTargetWeight((v) => v + 0.5)}
             onDecrement={() => setTargetWeight((v) => Math.max(0, v - 0.5))}
+            onChangeValue={setTargetWeight}
             unit="kg"
           />
         </TestSection>
