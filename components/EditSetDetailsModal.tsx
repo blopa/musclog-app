@@ -142,7 +142,7 @@ export function EditSetDetailsModal({
       title={t('editSetDetails.title')}
       subtitle={t('editSetDetails.subtitle', { setLabel })}
       footer={
-        <View className="flex-row gap-3">
+        <View className="flex-row items-stretch gap-3">
           <Button
             label={t('editSetDetails.cancel')}
             variant="outline"

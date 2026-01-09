@@ -90,7 +90,7 @@ export function ReplaceExerciseModal({
       title={t('replaceExercise.title')}
       maxHeight="85%"
       footer={
-        <View className="flex-row gap-3">
+        <View className="flex-row items-stretch gap-3">
           <Button
             label={t('replaceExercise.cancel')}
             variant="outline"

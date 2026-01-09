@@ -227,6 +227,10 @@ export function Button({
   // Determine border style for dashed variant
   const borderStyle = isDashedVariant ? 'dashed' : 'solid';
 
+  // Calculate minimum height based on size and padding
+  // This ensures buttons of the same size have consistent heights
+  const minHeight = config.paddingVertical * 2 + config.fontSize * 1.5;
+
   return (
     <Pressable
       className={`${widthClass} ${isDisabled ? '' : 'active:scale-[0.98]'}`}
@@ -253,7 +257,8 @@ export function Button({
                   ? theme.colors.border.default
                   : 'transparent',
           overflow: 'hidden',
-          alignSelf: width === 'auto' ? 'flex-start' : undefined,
+          alignSelf: width === 'auto' ? 'flex-start' : 'stretch',
+          minHeight: minHeight,
         },
         style,
       ]}
@@ -272,7 +277,8 @@ export function Button({
             justifyContent: 'center',
             backgroundColor:
               isSecondaryVariant && !isDisabled ? theme.colors.background.overlay : undefined,
-            minHeight: '100%',
+            height: '100%',
+            minHeight: minHeight,
           }}>
           {buttonContent}
         </View>
@@ -283,7 +289,8 @@ export function Button({
             borderRadius: config.borderRadius,
             overflow: 'hidden',
             width: '100%',
-            minHeight: '100%',
+            height: '100%',
+            minHeight: minHeight,
           }}>
           <LinearGradient
             colors={gradientColors}
@@ -302,7 +309,7 @@ export function Button({
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'center',
-              minHeight: '100%',
+              height: '100%',
               width: '100%',
             }}>
             {buttonContent}

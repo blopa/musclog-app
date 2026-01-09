@@ -338,7 +338,7 @@ export function DatePickerModal({
             </View>
 
             {/* Footer Buttons */}
-            <View className="mt-6 flex-row gap-3">
+            <View className="mt-6 flex-row items-stretch gap-3">
               <Button
                 label={t('datePicker.cancel')}
                 variant="outline"

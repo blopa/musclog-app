@@ -101,7 +101,7 @@ export function LogSetPerformanceModal({
       : {};
 
   const footer = (
-    <View className="flex-row gap-3">
+    <View className="flex-row items-stretch gap-3">
       <Button
         label={t('logSetPerformance.cancel')}
         variant="outline"

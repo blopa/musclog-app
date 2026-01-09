@@ -163,7 +163,7 @@ export function AddFoodModal({
                   onClose();
                 }}
               />
-              <View className="flex-row gap-3 pt-1">
+              <View className="flex-row items-stretch gap-3 pt-1">
                 <Button
                   label={t('food.addFoodModal.createCustomFood')}
                   icon={Edit}
