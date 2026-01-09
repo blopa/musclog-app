@@ -51,7 +51,6 @@ function RatingSlider({ label, value, onChange, leftLabel, rightLabel }: RatingS
           max={10}
           onChange={onChange}
           trackColor={theme.colors.overlay.white20}
-          filledTrackColor={theme.colors.accent.primary}
           thumbColor={theme.colors.background.white}
         />
       </View>
