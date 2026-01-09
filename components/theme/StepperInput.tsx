@@ -1,114 +1,55 @@
-import React, { useState, useRef } from 'react';
-import { View, Text, Pressable, TextInput } from 'react-native';
-import { Minus, Plus } from 'lucide-react-native';
-import { theme } from '../../theme';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity } from 'react-native';
 
-type TestStepperProps = {
-  label: string;
-  value: number;
-  onIncrement: () => void;
-  onDecrement: () => void;
-  onChangeValue?: (newValue: number) => void;
-  unit?: string;
-};
+interface WeightStepperProps {
+  label?: string;
+  value?: number;
+  min?: number;
+  max?: number;
+  step?: number;
+  onChange?: (value: number) => void;
+}
 
-export function StepperInput({
+export const StepperInput: React.FC<WeightStepperProps> = ({
   label,
-  value,
-  onIncrement,
-  onDecrement,
-  onChangeValue,
-  unit,
-}: TestStepperProps) {
-  const [editing, setEditing] = useState(false);
-  const [inputValue, setInputValue] = useState(value.toFixed(1));
-  const inputRef = useRef<TextInput>(null);
+  value = 24,
+  min = 0,
+  max = 999,
+  step = 1,
+  onChange,
+}) => {
+  const [internalValue, setInternalValue] = useState<number>(value);
 
-  // Sync inputValue with value prop when not editing
-  React.useEffect(() => {
-    if (!editing) {
-      setInputValue(value.toFixed(1));
-    }
-  }, [value, editing]);
-
-  const handleValuePress = () => {
-    setEditing(true);
-    // Small delay to ensure state update before focusing
-    setTimeout(() => {
-      inputRef.current?.focus();
-    }, 100);
-  };
-
-  const handleInputChange = (text: string) => {
-    // Allow only numbers, decimal point, and optional minus sign
-    if (/^-?\d*\.?\d*$/.test(text)) {
-      setInputValue(text);
-    }
-  };
-
-  const handleInputBlur = () => {
-    setEditing(false);
-    const num = parseFloat(inputValue);
-    if (!isNaN(num) && onChangeValue) {
-      onChangeValue(num);
-    } else {
-      // Reset to current value if invalid
-      setInputValue(value.toFixed(1));
-    }
-  };
-
-  const handleInputSubmit = () => {
-    inputRef.current?.blur();
+  const handleChange = (newValue: number) => {
+    if (newValue < min || newValue > max) return;
+    setInternalValue(newValue);
+    onChange?.(newValue);
   };
 
   return (
-    <View className="flex-row items-center justify-between rounded-lg border border-white/10 bg-bg-card p-4">
-      <View className="flex-1 flex-col">
-        <Text className="text-xs font-semibold uppercase tracking-tighter text-text-tertiary">
-          {label}
-        </Text>
-        {editing ? (
-          <View className="mr-6 flex-row items-center">
-            <TextInput
-              ref={inputRef}
-              value={inputValue}
-              onChangeText={handleInputChange}
-              onBlur={handleInputBlur}
-              onSubmitEditing={handleInputSubmit}
-              keyboardType="numeric"
-              className="p-0 text-lg font-bold text-text-primary"
-              style={{
-                width: 200,
-                padding: 0,
-                margin: 0,
-                color: theme.colors.text.primary,
-              }}
-              returnKeyType="done"
-              selectTextOnFocus
-            />
-            {unit && <Text className="ml-1 text-lg font-normal text-text-tertiary">{unit}</Text>}
-          </View>
-        ) : (
-          <Pressable onPress={handleValuePress}>
-            <Text className="text-lg font-bold text-text-primary">
-              {value.toFixed(1)}{' '}
-              {unit && <Text className="font-normal text-text-tertiary">{unit}</Text>}
-            </Text>
-          </Pressable>
-        )}
-      </View>
-      <View className="flex-row items-center gap-3">
-        <Pressable
-          className="h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-bg-cardElevated active:scale-95"
-          onPress={onDecrement}>
-          <Minus size={20} color={theme.colors.text.primary} />
-        </Pressable>
-        <Pressable
-          className="h-10 w-10 items-center justify-center rounded-lg bg-accent-primary active:scale-95"
-          onPress={onIncrement}>
-          <Plus size={20} color={theme.colors.text.black} />
-        </Pressable>
+    <View className="flex flex-col gap-1">
+      <Text className="ml-1 text-xs font-bold uppercase tracking-widest text-emerald-500">
+        {label}
+      </Text>
+      <View className="flex flex-row items-center gap-3">
+        <TouchableOpacity
+          className="bg-surface-dark-lighter flex h-14 w-14 items-center justify-center rounded-2xl border border-white/5 transition-transform active:scale-95"
+          onPress={() => handleChange(internalValue - step)}
+          accessibilityLabel="Decrease weight">
+          <Text className="text-2xl font-bold text-emerald-500">-</Text>
+        </TouchableOpacity>
+        <View className="bg-surface-dark flex h-14 flex-1 items-center justify-center rounded-2xl border border-white/10">
+          <Text className="text-center text-2xl font-bold text-white">{internalValue}</Text>
+        </View>
+        <TouchableOpacity
+          className="bg-surface-dark-lighter flex h-14 w-14 items-center justify-center rounded-2xl border border-white/5 transition-transform active:scale-95"
+          onPress={() => handleChange(internalValue + step)}
+          accessibilityLabel="Increase weight">
+          <Text className="text-2xl font-bold text-emerald-500">+</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
-}
+};
+
+export default StepperInput;

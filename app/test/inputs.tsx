@@ -5,12 +5,13 @@ import { ArrowLeft, User, Search, Calendar, Clock } from 'lucide-react-native';
 import { theme } from '../../theme';
 import { TestSection } from './components/TestSection';
 import { TextInput } from '../../components/theme/TextInput';
-import { StepperInput } from '../../components/theme/StepperInput';
+import { StepperInlineInput } from '../../components/theme/StepperInlineInput';
 import { NumericInput } from '../../components/theme/NumericInput';
 import { SegmentedControl } from '../../components/theme/SegmentedControl';
 import { Toggle } from '../../components/theme/Toggle';
 import { PickerButton } from '../../components/theme/PickerButton';
 import { Slider } from '../../components/theme/Slider';
+import StepperInput from '../../components/theme/StepperInput';
 
 export default function InputsTestScreen() {
   const [name, setName] = useState('');
@@ -63,6 +64,17 @@ export default function InputsTestScreen() {
             onChangeText={setEmail}
             focused={true}
             keyboardType="email-address"
+          />
+        </TestSection>
+
+        <TestSection title="Numerical Steppers" subtitle="Weight & Reps Adjusters">
+          <StepperInlineInput
+            label="Target Weight"
+            value={targetWeight}
+            onIncrement={() => setTargetWeight((v) => v + 0.5)}
+            onDecrement={() => setTargetWeight((v) => Math.max(0, v - 0.5))}
+            onChangeValue={setTargetWeight}
+            unit="kg"
           />
         </TestSection>
 
