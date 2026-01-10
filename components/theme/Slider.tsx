@@ -13,6 +13,7 @@ type SliderProps = {
   thumbColor?: string;
   useGradient?: boolean;
   gradientColors?: readonly [string, string, ...string[]];
+  variant?: 'gradient' | 'solid';
 };
 
 export function Slider({
@@ -24,6 +25,8 @@ export function Slider({
   thumbColor = theme.colors.background.white,
   useGradient = true,
   gradientColors = theme.colors.gradients.progress,
+  // TODO: use it
+  variant = 'gradient',
 }: SliderProps) {
   const [containerWidth, setContainerWidth] = React.useState(0);
   const [displayValue, setDisplayValue] = React.useState(value);
@@ -38,8 +41,13 @@ export function Slider({
     onChange(val);
   };
 
+  // Account for thumb radius - the slider track doesn't span full width
+  const thumbRadius = 12;
   const progress = (displayValue - min) / (max - min);
-  const fillWidth = containerWidth * progress;
+  // Effective track width excludes thumb padding on both sides
+  const effectiveTrackWidth = Math.max(0, containerWidth - thumbRadius * 2);
+  // Fill starts at thumbRadius and extends based on progress
+  const fillWidth = thumbRadius + effectiveTrackWidth * progress;
 
   return (
     <View
