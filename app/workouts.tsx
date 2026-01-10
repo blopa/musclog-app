@@ -9,7 +9,6 @@ import { FeaturedWorkoutCard } from '../components/FeaturedWorkoutCard';
 import { FilterTabs } from '../components/FilterTabs';
 import { CreateTemplateButton } from '../components/CreateTemplateButton';
 import { GradientText } from '../components/GradientText';
-import { FloatingActionButton } from '../components/FloatingActionButton';
 import { WorkoutDetailsMenu } from '../components/WorkoutDetailsMenu';
 import { EmptyStateCard } from '../components/theme/EmptyStateCard';
 import { SkeletonLoader } from '../components/theme/SkeletonLoader';
@@ -238,9 +237,6 @@ export default function WorkoutsScreen() {
           {/* Bottom spacing for navigation and FAB */}
           <View className="h-32" />
         </ScrollView>
-
-        {/* Floating Action Button */}
-        <FloatingActionButton position="right" bottom={120} />
       </View>
 
       {/* Workout Details Menu */}

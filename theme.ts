@@ -434,9 +434,6 @@ export const theme = {
       padding: 16,
       borderRadius: 24,
     },
-    floatingActionButton: {
-      size: 64,
-    },
     exerciseImage: {
       size: 48,
     },
