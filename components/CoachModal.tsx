@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { View, Text, Image, Pressable, ScrollView, TextInput } from 'react-native';
 import { GiftedChat, IMessage, BubbleProps } from 'react-native-gifted-chat';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -145,7 +145,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
   }, [visible]);
 
   // Custom render for message bubbles
-  const renderBubble = (props: BubbleProps<ExtendedIMessage>) => {
+  const renderBubble = useCallback((props: BubbleProps<ExtendedIMessage>) => {
     const { currentMessage, user } = props;
     const isUser = user && currentMessage?.user._id === user._id;
 
@@ -159,7 +159,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
             marginLeft: 'auto',
             alignItems: 'flex-end',
           }}>
-          {currentMessage?.text && (
+          {!!currentMessage?.text && (
             <LinearGradient
               colors={[theme.colors.accent.primary, '#1aa869']}
               start={{ x: 0, y: 0 }}
@@ -173,8 +173,8 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
               {props.renderMessageText && props.renderMessageText(props as any)}
             </LinearGradient>
           )}
-          {currentMessage?.workout && props.renderCustomView && props.renderCustomView(props)}
-          {currentMessage?.createdAt && (
+          {!!currentMessage?.workout && props.renderCustomView && props.renderCustomView(props)}
+          {!!currentMessage?.createdAt && (
             <Text
               className="mr-1 mt-1 text-right text-xs"
               style={{ color: theme.colors.text.tertiary }}>
@@ -197,12 +197,12 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
             marginRight: 'auto',
             alignItems: 'flex-start',
           }}>
-          {currentMessage?.user.name && (
+          {!!currentMessage?.user.name && (
             <Text className="mb-1 ml-1 text-xs" style={{ color: theme.colors.text.secondary }}>
               {currentMessage.user.name}
             </Text>
           )}
-          {currentMessage?.text && (
+          {!!currentMessage?.text && (
             <View
               style={{
                 backgroundColor: theme.colors.background.cardElevated,
@@ -214,14 +214,14 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
               {props.renderMessageText && props.renderMessageText(props as any)}
             </View>
           )}
-          {currentMessage?.workout && props.renderCustomView && props.renderCustomView(props)}
+          {!!currentMessage?.workout && props.renderCustomView && props.renderCustomView(props)}
         </View>
       );
     }
-  };
+  }, []);
 
   // Custom render for message text
-  const renderMessageText = (props: any) => {
+  const renderMessageText = useCallback((props: any) => {
     return (
       <Text
         style={{
@@ -235,10 +235,10 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
         {props.currentMessage?.text}
       </Text>
     );
-  };
+  }, []);
 
   // Custom render for avatar
-  const renderAvatar = (props: any) => {
+  const renderAvatar = useCallback((props: any) => {
     if (props.currentMessage?.user._id === 1) {
       // Don't show avatar for user messages
       return null;
@@ -260,10 +260,10 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
         resizeMode="cover"
       />
     );
-  };
+  }, []);
 
   // Custom render for custom views (workout cards)
-  const renderCustomView = (props: BubbleProps<ExtendedIMessage>) => {
+  const renderCustomView = useCallback((props: BubbleProps<ExtendedIMessage>) => {
     const { currentMessage } = props;
     if (currentMessage?.workout) {
       return (
@@ -281,11 +281,11 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
       );
     }
     return null;
-  };
+  }, []);
 
   // Custom composer with local state
   const [composerText, setComposerText] = useState('');
-  const renderComposer = () => {
+  const renderComposer = useCallback(() => {
     return (
       <TextInput
         value={composerText}
@@ -303,10 +303,14 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
         multiline
       />
     );
-  };
+  }, [composerText]);
+
+  const onSend = useCallback((newMessages: ExtendedIMessage[] = []) => {
+    setMessages((previousMessages) => GiftedChat.append(previousMessages, newMessages));
+  }, []);
 
   // Custom input toolbar
-  const renderInputToolbar = () => {
+  const renderInputToolbar = useCallback(() => {
     return (
       <View
         className="border-t bg-bg-primary px-4 pb-4 pt-1"
@@ -331,7 +335,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
                     text: composerText.trim(),
                     user: { _id: 1 },
                     createdAt: new Date(),
-                  },
+                  } as any,
                 ]);
                 setComposerText('');
               }
@@ -341,10 +345,10 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
         </View>
       </View>
     );
-  };
+  }, [composerText, onSend, renderComposer]);
 
   // Custom accessory (quick actions)
-  const renderAccessory = () => {
+  const renderAccessory = useCallback(() => {
     return (
       <ScrollView
         horizontal
@@ -376,14 +380,10 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
         </Pressable>
       </ScrollView>
     );
-  };
-
-  const onSend = useCallback((newMessages: ExtendedIMessage[] = []) => {
-    setMessages((previousMessages) => GiftedChat.append(previousMessages, newMessages));
   }, []);
 
   // Custom render for day separators
-  const renderDay = (props: any) => {
+  const renderDay = useCallback((props: any) => {
     if (!props.currentMessage?.createdAt) return null;
     const date = new Date(props.currentMessage.createdAt);
     const now = new Date();
@@ -401,13 +401,16 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
       );
     }
     return null;
-  };
+  }, []);
 
   // Custom header right component
-  const headerRight = (
-    <Pressable className="h-10 w-10 items-center justify-center rounded-full active:bg-white/5">
-      <MoreVertical size={20} color={theme.colors.text.secondary} />
-    </Pressable>
+  const headerRight = useMemo(
+    () => (
+      <Pressable className="h-10 w-10 items-center justify-center rounded-full active:bg-white/5">
+        <MoreVertical size={20} color={theme.colors.text.secondary} />
+      </Pressable>
+    ),
+    []
   );
 
   return (
