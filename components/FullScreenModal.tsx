@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react';
 import { View, Text, Pressable, Modal, ScrollView, Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArrowLeft } from 'lucide-react-native';
 import { theme } from '../theme';
 
@@ -24,6 +25,7 @@ export function FullScreenModal({
   scrollable = true,
   footer,
 }: FullScreenModalProps) {
+  const insets = useSafeAreaInsets();
   // Web-specific styles for proper viewport positioning
   const webModalStyle =
     Platform.OS === 'web'
@@ -56,7 +58,15 @@ export function FullScreenModal({
       animationType="slide"
       onRequestClose={onClose}
       statusBarTranslucent={Platform.OS !== 'web'}>
-      <View className="flex-1 bg-bg-primary" style={webModalStyle}>
+      <View
+        className="flex-1 bg-bg-primary"
+        style={[
+          webModalStyle,
+          {
+            paddingTop: Platform.OS !== 'web' ? insets.top : 0,
+            paddingBottom: Platform.OS !== 'web' ? insets.bottom : 0,
+          },
+        ]}>
         {/* Header */}
         <View className="flex-row items-center gap-4 border-b border-border-light bg-bg-primary px-4 py-4">
           <Pressable className="-ml-2 rounded-full p-2" onPress={onClose}>
@@ -87,7 +97,7 @@ export function FullScreenModal({
             <View
               className="absolute bottom-0 left-0 right-0"
               style={{
-                paddingBottom: Platform.OS === 'ios' ? 24 : 12,
+                paddingBottom: Platform.OS === 'web' ? 20 : 0,
                 paddingHorizontal: 0,
                 backgroundColor: 'transparent',
               }}>
