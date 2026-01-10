@@ -1,16 +1,13 @@
 module.exports = function (api) {
   api.cache(true);
-  let plugins = [];
-
-  // WatermelonDB decorator support
-  plugins.push(['@babel/plugin-proposal-decorators', { legacy: true }]);
-  plugins.push(['@babel/plugin-proposal-class-properties', { loose: true }]);
-
-  plugins.push('react-native-reanimated/plugin');
-
   return {
     presets: [['babel-preset-expo', { jsxImportSource: 'nativewind' }], 'nativewind/babel'],
-
-    plugins,
+    plugins: [
+      ['@babel/plugin-proposal-decorators', { legacy: true }],
+      ['@babel/plugin-proposal-class-properties', { loose: true }],
+      // ONLY use the reanimated plugin.
+      // In the new versions, it automatically handles the worklets logic.
+      'react-native-reanimated/plugin',
+    ],
   };
 };

@@ -43,6 +43,7 @@ export function UserMenuModal({
   onProfilePress,
   onSettingsPress,
   onProgressPress,
+  onDatabaseTestPress,
 }: UserMenuModalProps) {
   const { t } = useTranslation();
 
