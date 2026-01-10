@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, ReactNode, useCallback } from 'react';
 import { View, Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Snackbar, type SnackbarType } from './Snackbar';
 
 type SnackbarContextType = {
@@ -19,6 +20,7 @@ const SnackbarContext = createContext<SnackbarContextType | undefined>(undefined
 
 export function SnackbarProvider({ children }: { children: ReactNode }) {
   const [snackbars, setSnackbars] = useState<SnackbarType[]>([]);
+  const insets = useSafeAreaInsets();
 
   const showSnackbar = useCallback(
     (
@@ -74,8 +76,12 @@ export function SnackbarProvider({ children }: { children: ReactNode }) {
       {children}
       {/* Snackbar Container - renders at the bottom of the screen */}
       <View
-        className="absolute bottom-0 left-0 right-0 pb-8"
-        style={{ pointerEvents: 'box-none', ...webContainerStyle }}>
+        className="absolute bottom-0 left-0 right-0"
+        style={{
+          pointerEvents: 'box-none',
+          paddingBottom: Math.max(insets.bottom, 16),
+          ...webContainerStyle,
+        }}>
         {snackbars.map((snackbar) => (
           <Snackbar key={snackbar.id} snackbar={snackbar} onDismiss={dismissSnackbar} />
         ))}
