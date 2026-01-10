@@ -200,7 +200,7 @@ export function Button({
         alignItems: 'center',
         justifyContent: 'center',
         gap: Icon ? config.gap : 0,
-        width: '100%',
+        ...(width === 'auto' ? {} : { width: '100%' }),
       }}>
       {iconPosition === 'left' && iconElement}
       <View
@@ -257,8 +257,11 @@ export function Button({
                   ? theme.colors.border.default
                   : 'transparent',
           overflow: 'hidden',
+          // Prevent stretching in flex containers
           alignSelf: 'flex-start',
           minHeight: minHeight,
+          // Prevent horizontal stretching when width is 'auto'
+          ...(width === 'auto' ? { flexShrink: 0 } : {}),
         },
         style,
       ]}
@@ -278,6 +281,7 @@ export function Button({
             backgroundColor:
               isSecondaryVariant && !isDisabled ? theme.colors.background.overlay : undefined,
             minHeight: minHeight,
+            ...(width === 'auto' ? {} : { width: '100%' }),
           }}>
           {buttonContent}
         </View>
@@ -287,8 +291,8 @@ export function Button({
             position: 'relative',
             borderRadius: config.borderRadius,
             overflow: 'hidden',
-            width: '100%',
             minHeight: minHeight,
+            ...(width === 'auto' ? {} : { width: '100%' }),
           }}>
           <LinearGradient
             colors={gradientColors}
@@ -307,8 +311,8 @@ export function Button({
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'center',
-              width: '100%',
               minHeight: minHeight,
+              ...(width === 'auto' ? {} : { width: '100%' }),
             }}>
             {buttonContent}
           </LinearGradient>
