@@ -4,8 +4,9 @@ import { StatusBar } from 'expo-status-bar';
 import { useRouter, usePathname } from 'expo-router';
 import { Home, Dumbbell, MessageSquare, Camera, UtensilsCrossed } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { ReactNode } from 'react';
+import React, { ReactNode, useState } from 'react';
 import { theme } from '../theme';
+import { CoachModal } from './CoachModal';
 
 type MasterLayoutProps = {
   children: ReactNode;
@@ -15,12 +16,14 @@ export function MasterLayout({ children }: MasterLayoutProps) {
   const { t } = useTranslation();
   const router = useRouter();
   const pathname = usePathname();
+  const [isCoachModalVisible, setIsCoachModalVisible] = useState(false);
 
   const isActive = (path: string) => pathname === path;
 
   return (
     <SafeAreaView className="flex-1 bg-bg-primary" edges={['top']}>
       <StatusBar style="light" />
+      <CoachModal visible={isCoachModalVisible} onClose={() => setIsCoachModalVisible(false)} />
       <View className="flex-1">{children}</View>
 
       {/* Bottom Navigation */}
@@ -120,19 +123,12 @@ export function MasterLayout({ children }: MasterLayoutProps) {
             </Pressable>
 
             {/* Coach */}
-            <Pressable className="items-center gap-1" onPress={() => router.push('/coach')}>
-              <View
-                className={`h-10 w-16 items-center justify-center rounded-lg ${
-                  isActive('/coach') ? 'bg-bg-navActive' : ''
-                }`}>
+            <Pressable className="items-center gap-1" onPress={() => setIsCoachModalVisible(true)}>
+              <View className={`h-10 w-16 items-center justify-center rounded-lg`}>
                 <MessageSquare
                   size={theme.iconSize.md}
-                  color={
-                    isActive('/coach') ? theme.colors.accent.primary : theme.colors.text.tertiary
-                  }
-                  strokeWidth={
-                    isActive('/coach') ? theme.strokeWidth.normal : theme.borderWidth.medium
-                  }
+                  color={theme.colors.text.tertiary}
+                  strokeWidth={theme.borderWidth.medium}
                 />
               </View>
               <Text
