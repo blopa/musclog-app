@@ -65,7 +65,10 @@ export function CenteredModal({
             colors={[theme.colors.status.purple40, theme.colors.accent.secondary10, 'transparent']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
-            className="border-b border-border-dark">
+            style={{
+              borderBottomWidth: 1,
+              borderBottomColor: theme.colors.border.dark,
+            }}>
             <View className="flex-row items-center justify-between px-6 py-5">
               <View className="flex-1">
                 <Text className="text-xl font-bold text-text-primary">{title}</Text>

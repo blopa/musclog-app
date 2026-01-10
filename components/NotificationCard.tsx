@@ -92,11 +92,21 @@ export function NotificationCard({
         colors={theme.colors.gradients.notification}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        className="rounded-3xl border-2 border-border-accent p-5">
+        style={{
+          borderRadius: theme.borderRadius['3xl'],
+          borderWidth: 2,
+          borderColor: theme.colors.border.accent,
+          padding: theme.spacing.padding.base,
+          overflow: 'hidden',
+        }}>
         {content}
       </LinearGradient>
     );
   }
 
-  return <View className="rounded-3xl bg-bg-cardDark p-5">{content}</View>;
+  return (
+    <View className="rounded-3xl bg-bg-cardDark p-5" style={{ overflow: 'hidden' }}>
+      {content}
+    </View>
+  );
 }
