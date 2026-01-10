@@ -60,27 +60,17 @@ export function Slider({
         style={{ backgroundColor: trackColor }}
       />
 
-      {/* Progress Fill */}
-      {containerWidth > 0 && (
+      {/* Progress Fill (Custom mask for gradient only) */}
+      {variant === 'gradient' && useGradient && containerWidth > 0 && (
         <View
           className="absolute left-0.5 h-1.5 overflow-hidden rounded-full"
           style={{ width: fillWidth }}>
-          {variant === 'gradient' && useGradient ? (
-            <LinearGradient
-              colors={gradientColors}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={{ width: containerWidth, height: '100%' }}
-            />
-          ) : (
-            <View
-              style={{
-                width: '100%',
-                height: '100%',
-                backgroundColor: solidColor,
-              }}
-            />
-          )}
+          <LinearGradient
+            colors={gradientColors}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={{ width: containerWidth, height: '100%' }}
+          />
         </View>
       )}
 
@@ -94,7 +84,7 @@ export function Slider({
         minimumValue={min}
         maximumValue={max}
         onValueChange={handleValueChange}
-        minimumTrackTintColor="transparent"
+        minimumTrackTintColor={variant === 'solid' ? solidColor : 'transparent'}
         maximumTrackTintColor="transparent"
         thumbTintColor={thumbColor}
         step={1}
