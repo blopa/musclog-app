@@ -51,6 +51,46 @@ const getInitialMessages = (): ExtendedIMessage[] => {
 
   return [
     {
+      _id: 8,
+      text: 'Got it. Here is a high-intensity leg workout based on your previous logs. Get ready to sweat! 🔥',
+      createdAt: today9_42.getTime(),
+      user: {
+        _id: 2,
+        name: 'Musclog Trainer',
+        avatar: AI_COACH_AVATAR,
+      },
+    },
+    {
+      _id: 7,
+      text: 'Got it. Here is a high-intensity leg workout based on your previous logs. Get ready to sweat! 🔥',
+      createdAt: today9_42.getTime(),
+      user: {
+        _id: 2,
+        name: 'Musclog Trainer',
+        avatar: AI_COACH_AVATAR,
+      },
+    },
+    {
+      _id: 6,
+      text: 'Got it. Here is a high-intensity leg workout based on your previous logs. Get ready to sweat! 🔥',
+      createdAt: today9_42.getTime(),
+      user: {
+        _id: 2,
+        name: 'Musclog Trainer',
+        avatar: AI_COACH_AVATAR,
+      },
+    },
+    {
+      _id: 5,
+      text: 'Got it. Here is a high-intensity leg workout based on your previous logs. Get ready to sweat! 🔥',
+      createdAt: today9_42.getTime(),
+      user: {
+        _id: 2,
+        name: 'Musclog Trainer',
+        avatar: AI_COACH_AVATAR,
+      },
+    },
+    {
       _id: 4,
       text: '',
       createdAt: today9_42.getTime(),
