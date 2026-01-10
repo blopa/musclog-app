@@ -88,7 +88,10 @@ export function ConfirmationModal({
             colors={[theme.colors.status.purple40, theme.colors.accent.secondary10, 'transparent']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
-            className="border-b border-border-dark">
+            style={{
+              borderBottomWidth: 1,
+              borderBottomColor: theme.colors.border.dark,
+            }}>
             <View
               style={{
                 padding: theme.spacing.padding['2xl'],

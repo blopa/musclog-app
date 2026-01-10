@@ -40,7 +40,13 @@ export function CaloriesRemainingCard({ calories, macros }: CaloriesRemainingCar
       colors={theme.colors.gradients.card}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
-      className="rounded-3xl border border-border-default p-6">
+      style={{
+        borderRadius: theme.borderRadius['3xl'],
+        borderWidth: 1,
+        borderColor: theme.colors.border.default,
+        padding: theme.spacing.padding.xl,
+        overflow: 'hidden',
+      }}>
       <View className="mb-6">
         <Text className="mb-2 text-sm text-text-secondary">{t('food.caloriesRemaining')}</Text>
         <View className="mb-1 flex-row items-baseline gap-2">
@@ -64,8 +70,11 @@ export function CaloriesRemainingCard({ calories, macros }: CaloriesRemainingCar
           colors={theme.colors.gradients.progress}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
-          className="h-full rounded-full"
-          style={{ width: `${calories.percentage}%` }}
+          style={{
+            height: '100%',
+            borderRadius: theme.borderRadius.full,
+            width: `${calories.percentage}%`,
+          }}
         />
       </View>
 

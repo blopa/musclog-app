@@ -30,8 +30,15 @@ export function TrackingMethodButton({
       colors={iconGradient as readonly [string, string, ...string[]]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
-      className="h-12 w-12 items-center justify-center rounded-xl"
-      style={{ ...theme.shadows.md }}>
+      style={{
+        height: 48,
+        width: 48,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: theme.borderRadius.xl,
+        overflow: 'hidden',
+        ...theme.shadows.md,
+      }}>
       <Icon size={theme.iconSize.lg} color={theme.colors.text.white} />
     </LinearGradient>
   ) : (

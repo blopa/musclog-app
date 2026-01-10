@@ -125,7 +125,10 @@ export function EndWorkoutModal({
                   ]}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 0 }}
-                  className="border-b border-border-dark">
+                  style={{
+                    borderBottomWidth: 1,
+                    borderBottomColor: theme.colors.border.dark,
+                  }}>
                   <View className="flex-row items-center justify-between p-6">
                     <View className="flex-row items-center gap-3">
                       <View className="h-12 w-12 items-center justify-center rounded-full bg-bg-overlay">

@@ -257,7 +257,7 @@ export function Button({
                   ? theme.colors.border.default
                   : 'transparent',
           overflow: 'hidden',
-          alignSelf: width === 'auto' ? 'flex-start' : 'stretch',
+          alignSelf: 'flex-start',
           minHeight: minHeight,
         },
         style,
@@ -278,7 +278,6 @@ export function Button({
             backgroundColor:
               isSecondaryVariant && !isDisabled ? theme.colors.background.overlay : undefined,
             minHeight: minHeight,
-            ...(width !== 'auto' ? { height: '100%' } : {}),
           }}>
           {buttonContent}
         </View>
@@ -290,7 +289,6 @@ export function Button({
             overflow: 'hidden',
             width: '100%',
             minHeight: minHeight,
-            ...(width !== 'auto' ? { height: '100%' } : {}),
           }}>
           <LinearGradient
             colors={gradientColors}
@@ -311,7 +309,6 @@ export function Button({
               justifyContent: 'center',
               width: '100%',
               minHeight: minHeight,
-              ...(width !== 'auto' ? { height: '100%' } : {}),
             }}>
             {buttonContent}
           </LinearGradient>
