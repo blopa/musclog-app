@@ -91,26 +91,13 @@ export function EditFitnessDetailsModal({
     },
   ];
 
-  const saveButton = (
-    <View className="px-4 pb-8 pt-4">
-      <Button
-        label="Save Changes"
-        icon={Save}
-        variant="accent"
-        size="lg"
-        width="full"
-        onPress={handleSave}
-      />
-    </View>
-  );
-
   return (
     <FullScreenModal
       visible={visible}
       onClose={onClose}
       title="Edit Fitness Details"
-      footer={saveButton}>
-      <View className="flex-1 gap-8 px-4 pb-10 pt-2">
+    >
+      <View className="flex-1 gap-8 px-4 pb-6 pt-2">
         {/* Units Section */}
         <View className="gap-2">
           <Text className="ml-1 text-sm font-semibold text-text-tertiary">Units</Text>
@@ -126,7 +113,9 @@ export function EditFitnessDetailsModal({
 
         {/* Body Stats Section */}
         <View className="gap-4">
-          <Text className="ml-1 text-xl font-bold tracking-tight text-text-primary">Body Stats</Text>
+          <Text className="ml-1 text-xl font-bold tracking-tight text-text-primary">
+            Body Stats
+          </Text>
           <View className="flex-row gap-4">
             <View className="flex-1">
               <TextInput
@@ -189,7 +178,9 @@ export function EditFitnessDetailsModal({
             <View className="mb-4 flex-row items-center justify-between">
               <Text className="text-sm font-medium text-text-secondary">Activity Level</Text>
               <View className="rounded-md bg-accent-primary/10 px-2 py-1">
-                <Text className="text-sm font-bold text-accent-primary">{currentActivityLabel}</Text>
+                <Text className="text-sm font-bold text-accent-primary">
+                  {currentActivityLabel}
+                </Text>
               </View>
             </View>
             <Slider value={activityLevel} min={1} max={5} onChange={setActivityLevel} />
@@ -236,8 +227,18 @@ export function EditFitnessDetailsModal({
             </View>
           </View>
         </View>
+
+        <View className="px-4 pb-8 pt-4">
+          <Button
+            label="Save Changes"
+            icon={Save}
+            variant="accent"
+            size="md"
+            width="full"
+            onPress={handleSave}
+          />
+        </View>
       </View>
     </FullScreenModal>
   );
 }
-
