@@ -5,9 +5,20 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
-    }
+    },
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   },
 
-  "include": ["app", "components", "lang", "scripts", "theme.ts", "App.tsx", "nativewind-env.d.ts"],
+  "include": [
+    "app",
+    "components",
+    "lang",
+    "scripts",
+    "theme.ts",
+    "App.tsx",
+    "nativewind-env.d.ts",
+    "database"
+  ],
   "exclude": ["node_modules", "babel.config.js", "metro.config.js", "tailwind.config.js"]
 }

@@ -3,6 +3,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { theme } from '../theme';
 import { SnackbarProvider } from '../components/SnackbarContext';
 
+import '../database';
 import '../lang/lang';
 import '../global.css';
 
