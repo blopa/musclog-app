@@ -15,6 +15,7 @@ import { theme } from '../theme';
 import { Button } from './theme/Button';
 import { Slider } from './theme/Slider';
 import { MacrosPizzaChart } from './theme/MacrosPizzaChart';
+import { BodyMetricsStepper } from './theme/BodyMetricsStepper';
 
 export type NutritionGoals = {
   totalCalories: number;
@@ -100,86 +101,6 @@ function MacroCard({ label, kcalPerGram, value, min, max, color, onChange }: Mac
       {/* Slider */}
       <View style={webSliderContainerStyle}>
         <Slider value={value} min={min} max={max} onChange={onChange} />
-      </View>
-    </View>
-  );
-}
-
-type BodyMetricCardProps = {
-  icon: React.ComponentType<{ size: number; color: string }>;
-  label: string;
-  sublabel: string;
-  value: number;
-  unit: string;
-  unitLabel: string;
-  min: number;
-  max: number;
-  step?: number;
-  onChange: (value: number) => void;
-};
-
-function BodyMetricCard({
-  icon: Icon,
-  label,
-  sublabel,
-  value,
-  unit,
-  unitLabel,
-  min,
-  max,
-  step = 1,
-  onChange,
-}: BodyMetricCardProps) {
-  const handleDecrement = () => {
-    onChange(Math.max(min, value - step));
-  };
-
-  const handleIncrement = () => {
-    onChange(Math.min(max, value + step));
-  };
-
-  return (
-    <View
-      className="rounded-xl border bg-bg-card p-5"
-      style={{ borderColor: theme.colors.border.emerald }}>
-      <View className="flex-row items-center justify-between">
-        <View className="flex-row items-center gap-3">
-          <View
-            className="h-10 w-10 items-center justify-center rounded-lg"
-            style={{ backgroundColor: theme.colors.accent.primary10 }}>
-            <Icon size={theme.iconSize.md} color={theme.colors.accent.primary} />
-          </View>
-          <View>
-            <Text className="font-semibold text-text-primary">{label}</Text>
-            <Text className="text-xs text-text-secondary">{sublabel}</Text>
-          </View>
-        </View>
-        <View className="flex-row items-center gap-3">
-          <Pressable
-            className="h-10 w-10 items-center justify-center rounded-full border"
-            style={{
-              backgroundColor: theme.colors.accent.primary10,
-              borderColor: `${theme.colors.accent.primary}33`,
-            }}
-            onPress={handleDecrement}>
-            <Minus size={theme.iconSize.md} color={theme.colors.accent.primary} />
-          </Pressable>
-          <View className="w-16 items-center">
-            <Text className="text-xl font-bold text-text-primary">
-              {unit === 'index' ? value.toFixed(1) : value}
-            </Text>
-            <Text className="text-xs text-text-secondary">{unitLabel}</Text>
-          </View>
-          <Pressable
-            className="h-10 w-10 items-center justify-center rounded-full border"
-            style={{
-              backgroundColor: theme.colors.accent.primary10,
-              borderColor: `${theme.colors.accent.primary}33`,
-            }}
-            onPress={handleIncrement}>
-            <Plus size={theme.iconSize.md} color={theme.colors.accent.primary} />
-          </Pressable>
-        </View>
       </View>
     </View>
   );
@@ -391,7 +312,7 @@ export function NutritionGoalsModalBody({
           {t('nutritionGoals.targetBodyMetrics')}
         </Text>
         <View className="gap-4">
-          <BodyMetricCard
+          <BodyMetricsStepper
             icon={Scale}
             label={t('nutritionGoals.targetWeight')}
             sublabel={t('nutritionGoals.sublabels.targetWeight')}
@@ -403,7 +324,7 @@ export function NutritionGoalsModalBody({
             step={1}
             onChange={setTargetWeight}
           />
-          <BodyMetricCard
+          <BodyMetricsStepper
             icon={Percent}
             label={t('nutritionGoals.targetBodyFat')}
             sublabel={t('nutritionGoals.sublabels.targetBodyFat')}
@@ -415,7 +336,7 @@ export function NutritionGoalsModalBody({
             step={1}
             onChange={setTargetBodyFat}
           />
-          <BodyMetricCard
+          <BodyMetricsStepper
             icon={TrendingUp}
             label={t('nutritionGoals.targetBMI')}
             sublabel={t('nutritionGoals.sublabels.targetBMI')}
@@ -427,7 +348,7 @@ export function NutritionGoalsModalBody({
             step={0.1}
             onChange={setTargetBMI}
           />
-          <BodyMetricCard
+          <BodyMetricsStepper
             icon={Activity}
             label={t('nutritionGoals.targetFFMI')}
             sublabel={t('nutritionGoals.sublabels.targetFFMI')}
