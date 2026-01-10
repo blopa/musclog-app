@@ -1,6 +1,6 @@
 import { View, Text, Pressable, Modal, Image, ImageSourcePropType, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { X, User, Settings, BarChart3, Database } from 'lucide-react-native';
+import { X, User, Settings, BarChart3 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 
@@ -14,7 +14,7 @@ type UserMenuModalProps = {
   onProfilePress?: () => void;
   onSettingsPress?: () => void;
   onProgressPress?: () => void;
-  onDatabaseTestPress?: () => void;
+  onDebugMenuPress?: () => void;
 };
 
 type MenuItemProps = {
@@ -43,7 +43,7 @@ export function UserMenuModal({
   onProfilePress,
   onSettingsPress,
   onProgressPress,
-  onDatabaseTestPress,
+  onDebugMenuPress,
 }: UserMenuModalProps) {
   const { t } = useTranslation();
 
@@ -138,15 +138,16 @@ export function UserMenuModal({
                   onClose();
                 }}
               />
-              <MenuItem
-                icon={<Database size={theme.iconSize.md} color={theme.colors.status.info} />}
-                label="Database Test"
+              <Pressable
+                className="active:bg-bg-card-elevated flex-row items-center gap-4 rounded-2xl bg-bg-overlay p-4"
                 onPress={() => {
-                  /* @ts-ignore For testing purposes */
-                  onDatabaseTestPress?.();
+                  onDebugMenuPress?.();
                   onClose();
-                }}
-              />
+                }}>
+                <Text className="flex-1 text-lg font-semibold text-text-primary">
+                  {'Debug Page'}
+                </Text>
+              </Pressable>
             </View>
 
             {/* Top safe area spacing */}
