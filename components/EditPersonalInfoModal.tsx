@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, Image, Pressable } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { User, Mail, Calendar, Camera, Check } from 'lucide-react-native';
 import { theme } from '../theme';
 import { FullScreenModal } from './FullScreenModal';
@@ -28,6 +29,7 @@ export function EditPersonalInfoModal({
   onSave,
   initialData,
 }: EditPersonalInfoModalProps) {
+  const { t } = useTranslation();
   const [fullName, setFullName] = useState(initialData?.fullName ?? 'Alex Johnson');
   const [email, setEmail] = useState(initialData?.email ?? 'alex.j@musclog.app');
   const [dob, setDob] = useState(initialData?.dob ?? '08/24/1995');
@@ -49,15 +51,15 @@ export function EditPersonalInfoModal({
   };
 
   const genderOptions = [
-    { label: 'Male', value: 'male' },
-    { label: 'Female', value: 'female' },
-    { label: 'Other', value: 'other' },
+    { label: t('editPersonalInfo.male'), value: 'male' },
+    { label: t('editPersonalInfo.female'), value: 'female' },
+    { label: t('editPersonalInfo.other'), value: 'other' },
   ];
 
   const saveButton = (
     <View className="bg-transparent px-4 pb-6 pt-3" style={{ backgroundColor: 'transparent' }}>
       <Button
-        label="Save Changes"
+        label={t('editPersonalInfo.saveChanges')}
         icon={Check}
         variant="accent"
         size="md"
@@ -71,7 +73,7 @@ export function EditPersonalInfoModal({
     <FullScreenModal
       visible={visible}
       onClose={onClose}
-      title="Edit Personal Info"
+      title={t('editPersonalInfo.title')}
       footer={saveButton}>
       <View className="flex-1 px-4 pt-2">
         {/* Avatar Section */}
@@ -88,7 +90,7 @@ export function EditPersonalInfoModal({
           </View>
           <Pressable className="mt-4" onPress={() => console.log('Change photo')}>
             <Text className="text-sm font-semibold uppercase tracking-wide text-accent-primary">
-              Change Photo
+              {t('editPersonalInfo.changePhoto')}
             </Text>
           </Pressable>
         </View>
@@ -96,32 +98,34 @@ export function EditPersonalInfoModal({
         {/* Form Fields */}
         <View className="mt-2 gap-6">
           <TextInput
-            label="Full Name"
+            label={t('editPersonalInfo.fullName')}
             value={fullName}
             onChangeText={setFullName}
-            placeholder="e.g. Alex Johnson"
+            placeholder={t('editPersonalInfo.fullNamePlaceholder')}
             icon={<User size={20} color={theme.colors.text.tertiary} />}
           />
 
           <TextInput
-            label="Email Address"
+            label={t('editPersonalInfo.emailAddress')}
             value={email}
             onChangeText={setEmail}
-            placeholder="e.g. alex@example.com"
+            placeholder={t('editPersonalInfo.emailPlaceholder')}
             keyboardType="email-address"
             icon={<Mail size={20} color={theme.colors.text.tertiary} />}
           />
 
           <TextInput
-            label="Date of Birth"
+            label={t('editPersonalInfo.dateOfBirth')}
             value={dob}
             onChangeText={setDob}
-            placeholder="MM/DD/YYYY"
+            placeholder={t('editPersonalInfo.dateOfBirthPlaceholder')}
             icon={<Calendar size={20} color={theme.colors.text.tertiary} />}
           />
 
           <View className="gap-2">
-            <Text className="ml-1 text-sm font-medium text-text-secondary">Gender</Text>
+            <Text className="ml-1 text-sm font-medium text-text-secondary">
+              {t('editPersonalInfo.gender')}
+            </Text>
             <SegmentedControl options={genderOptions} value={gender} onValueChange={setGender} />
           </View>
         </View>

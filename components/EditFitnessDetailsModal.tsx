@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import {
-  ChevronDown,
   Dumbbell,
   CheckCircle2,
   Save,
@@ -10,11 +10,11 @@ import {
   Activity,
   Zap,
   Timer,
-  Target,
   Heart,
   Coffee,
   Move,
   Flame,
+  Target,
 } from 'lucide-react-native';
 import { theme } from '../theme';
 import { FullScreenModal } from './FullScreenModal';
@@ -48,11 +48,12 @@ export function EditFitnessDetailsModal({
   onSave,
   initialData,
 }: EditFitnessDetailsModalProps) {
+  const { t } = useTranslation();
   const [units, setUnits] = useState<'imperial' | 'metric'>(initialData?.units ?? 'metric');
   const [weight, setWeight] = useState(initialData?.weight ?? '0.0');
   const [height, setHeight] = useState(initialData?.height ?? '0');
   const [fitnessGoal, setFitnessGoal] = useState(
-    initialData?.fitnessGoal ?? 'Hypertrophy (Build Muscle)'
+    initialData?.fitnessGoal ?? t('editFitnessDetails.fitnessGoalLabels.hypertrophy')
   );
   const [eatingPhase, setEatingPhase] = useState<'cut' | 'maintain' | 'bulk'>(
     initialData?.eatingPhase ?? 'maintain'
@@ -77,84 +78,84 @@ export function EditFitnessDetailsModal({
     onClose();
   };
 
-  const activityLevelLabels = ['Sedentary', 'Light', 'Moderate', 'Active', 'Super Active'];
-  const currentActivityLabel = activityLevelLabels[activityLevel - 1];
-
   const activityLevelOptions = [
     {
       level: 1,
-      title: 'Sedentary',
-      description: 'Little to no exercise, desk job',
+      title: t('editFitnessDetails.activityLevelLabels.sedentary'),
+      description: t('editFitnessDetails.activityLevelDescriptions.sedentary'),
       icon: Coffee,
       iconColor: theme.colors.text.tertiary,
       iconBgColor: theme.colors.background.white5,
     },
     {
       level: 2,
-      title: 'Light',
-      description: 'Light exercise 1-3 days/week',
+      title: t('editFitnessDetails.activityLevelLabels.light'),
+      description: t('editFitnessDetails.activityLevelDescriptions.light'),
       icon: Move,
       iconColor: theme.colors.status.info,
       iconBgColor: 'rgba(59, 130, 246, 0.1)',
     },
     {
       level: 3,
-      title: 'Moderate',
-      description: 'Moderate exercise 3-5 days/week',
+      title: t('editFitnessDetails.activityLevelLabels.moderate'),
+      description: t('editFitnessDetails.activityLevelDescriptions.moderate'),
       icon: Activity,
       iconColor: theme.colors.accent.primary,
       iconBgColor: theme.colors.accent.primary10,
     },
     {
       level: 4,
-      title: 'Active',
-      description: 'Hard exercise 6-7 days/week',
+      title: t('editFitnessDetails.activityLevelLabels.active'),
+      description: t('editFitnessDetails.activityLevelDescriptions.active'),
       icon: Zap,
       iconColor: theme.colors.status.warning,
       iconBgColor: 'rgba(249, 115, 22, 0.1)',
     },
     {
       level: 5,
-      title: 'Super Active',
-      description: 'Very hard exercise & physical job',
+      title: t('editFitnessDetails.activityLevelLabels.superActive'),
+      description: t('editFitnessDetails.activityLevelDescriptions.superActive'),
       icon: Flame,
       iconColor: theme.colors.rose.brand,
       iconBgColor: 'rgba(218, 37, 82, 0.1)',
     },
   ];
 
+  const currentActivityLabel =
+    activityLevelOptions.find((opt) => opt.level === activityLevel)?.title || '';
+
   const fitnessGoalOptions = [
     {
-      title: 'Hypertrophy (Build Muscle)',
-      description: 'Focus on muscle size and definition',
+      title: t('editFitnessDetails.fitnessGoalLabels.hypertrophy'),
+      description: t('editFitnessDetails.fitnessGoalDescriptions.hypertrophy'),
       icon: Activity,
       iconColor: theme.colors.accent.primary,
       iconBgColor: theme.colors.accent.primary10,
     },
     {
-      title: 'Strength (Lift Heavier)',
-      description: 'Focus on maximum strength and power',
+      title: t('editFitnessDetails.fitnessGoalLabels.strength'),
+      description: t('editFitnessDetails.fitnessGoalDescriptions.strength'),
       icon: Zap,
       iconColor: theme.colors.status.warning,
       iconBgColor: 'rgba(249, 115, 22, 0.1)',
     },
     {
-      title: 'Endurance (Stamina)',
-      description: 'Focus on cardiovascular fitness',
+      title: t('editFitnessDetails.fitnessGoalLabels.endurance'),
+      description: t('editFitnessDetails.fitnessGoalDescriptions.endurance'),
       icon: Timer,
       iconColor: theme.colors.status.info,
       iconBgColor: 'rgba(59, 130, 246, 0.1)',
     },
     {
-      title: 'Weight Loss (Burn Fat)',
-      description: 'Focus on fat loss and toning',
+      title: t('editFitnessDetails.fitnessGoalLabels.weightLoss'),
+      description: t('editFitnessDetails.fitnessGoalDescriptions.weightLoss'),
       icon: Target,
       iconColor: theme.colors.rose.brand,
       iconBgColor: 'rgba(218, 37, 82, 0.1)',
     },
     {
-      title: 'General Fitness',
-      description: 'Maintain overall health and wellness',
+      title: t('editFitnessDetails.fitnessGoalLabels.general'),
+      description: t('editFitnessDetails.fitnessGoalDescriptions.general'),
       icon: Heart,
       iconColor: theme.colors.status.purple,
       iconBgColor: theme.colors.status.purple20,
@@ -164,20 +165,20 @@ export function EditFitnessDetailsModal({
   const experienceOptions = [
     {
       id: 'beginner' as const,
-      title: 'Beginner',
-      description: '0-1 years of consistent training',
+      title: t('editFitnessDetails.experienceLabels.beginner'),
+      description: t('editFitnessDetails.experienceDescriptions.beginner'),
       icon: Dumbbell,
     },
     {
       id: 'intermediate' as const,
-      title: 'Intermediate',
-      description: '1-3 years of consistent training',
+      title: t('editFitnessDetails.experienceLabels.intermediate'),
+      description: t('editFitnessDetails.experienceDescriptions.intermediate'),
       icon: Trophy,
     },
     {
       id: 'advanced' as const,
-      title: 'Advanced',
-      description: '3+ years of consistent training',
+      title: t('editFitnessDetails.experienceLabels.advanced'),
+      description: t('editFitnessDetails.experienceDescriptions.advanced'),
       icon: Medal,
     },
   ];
@@ -192,15 +193,17 @@ export function EditFitnessDetailsModal({
 
   return (
     <>
-      <FullScreenModal visible={visible} onClose={onClose} title="Edit Fitness Details">
+      <FullScreenModal visible={visible} onClose={onClose} title={t('editFitnessDetails.title')}>
         <View className="flex-1 gap-8 px-4 pb-6 pt-2">
           {/* Units Section */}
           <View className="gap-2">
-            <Text className="ml-1 text-sm font-semibold text-text-tertiary">Units</Text>
+            <Text className="ml-1 text-sm font-semibold text-text-tertiary">
+              {t('editFitnessDetails.units')}
+            </Text>
             <SegmentedControl
               options={[
-                { label: 'Imperial', value: 'imperial' },
-                { label: 'Metric', value: 'metric' },
+                { label: t('editFitnessDetails.imperial'), value: 'imperial' },
+                { label: t('editFitnessDetails.metric'), value: 'metric' },
               ]}
               value={units}
               onValueChange={(val) => setUnits(val as 'imperial' | 'metric')}
@@ -210,12 +213,12 @@ export function EditFitnessDetailsModal({
           {/* Body Stats Section */}
           <View className="gap-4">
             <Text className="ml-1 text-xl font-bold tracking-tight text-text-primary">
-              Body Stats
+              {t('editFitnessDetails.bodyStats')}
             </Text>
             <View className="flex-row gap-4">
               <View className="flex-1">
                 <TextInput
-                  label="Current Weight"
+                  label={t('editFitnessDetails.currentWeight')}
                   value={weight}
                   onChangeText={setWeight}
                   placeholder="0.0"
@@ -225,7 +228,7 @@ export function EditFitnessDetailsModal({
               </View>
               <View className="flex-1">
                 <TextInput
-                  label="Height"
+                  label={t('editFitnessDetails.height')}
                   value={height}
                   onChangeText={setHeight}
                   placeholder="0"
@@ -239,10 +242,12 @@ export function EditFitnessDetailsModal({
           {/* Goals & Strategy Section */}
           <View className="gap-4">
             <Text className="ml-1 text-xl font-bold tracking-tight text-text-primary">
-              Goals & Strategy
+              {t('editFitnessDetails.goalsStrategy')}
             </Text>
             <View className="gap-2">
-              <Text className="ml-1 text-sm font-medium text-text-secondary">Fitness Goal</Text>
+              <Text className="ml-1 text-sm font-medium text-text-secondary">
+                {t('editFitnessDetails.fitnessGoal')}
+              </Text>
               <PickerButton
                 label={fitnessGoal}
                 icon={
@@ -255,12 +260,14 @@ export function EditFitnessDetailsModal({
               />
             </View>
             <View className="gap-2">
-              <Text className="ml-1 text-sm font-medium text-text-secondary">Eating Phase</Text>
+              <Text className="ml-1 text-sm font-medium text-text-secondary">
+                {t('editFitnessDetails.eatingPhase')}
+              </Text>
               <SegmentedControl
                 options={[
-                  { label: 'Cut', value: 'cut' },
-                  { label: 'Maintain', value: 'maintain' },
-                  { label: 'Bulk', value: 'bulk' },
+                  { label: t('editFitnessDetails.cut'), value: 'cut' },
+                  { label: t('editFitnessDetails.maintain'), value: 'maintain' },
+                  { label: t('editFitnessDetails.bulk'), value: 'bulk' },
                 ]}
                 value={eatingPhase}
                 onValueChange={(val) => setEatingPhase(val as 'cut' | 'maintain' | 'bulk')}
@@ -271,12 +278,14 @@ export function EditFitnessDetailsModal({
           {/* Lifestyle Context Section */}
           <View className="gap-6">
             <Text className="ml-1 text-xl font-bold tracking-tight text-text-primary">
-              Lifestyle Context
+              {t('editFitnessDetails.lifestyleContext')}
             </Text>
 
             {/* Activity Level */}
             <View className="gap-2">
-              <Text className="ml-1 text-sm font-medium text-text-secondary">Activity Level</Text>
+              <Text className="ml-1 text-sm font-medium text-text-secondary">
+                {t('editFitnessDetails.activityLevel')}
+              </Text>
               <PickerButton
                 label={currentActivityLabel}
                 icon={
@@ -292,7 +301,7 @@ export function EditFitnessDetailsModal({
             {/* Lifting Experience */}
             <View className="gap-2">
               <Text className="ml-1 text-sm font-medium text-text-secondary">
-                Lifting Experience
+                {t('editFitnessDetails.liftingExperience')}
               </Text>
               <View className="gap-2">
                 {experienceOptions.map((option) => {
@@ -327,7 +336,7 @@ export function EditFitnessDetailsModal({
 
           <View className="px-4 pb-8 pt-4">
             <Button
-              label="Save Changes"
+              label={t('editFitnessDetails.saveChanges')}
               icon={Save}
               variant="accent"
               size="md"
@@ -341,8 +350,8 @@ export function EditFitnessDetailsModal({
       <BottomPopUpMenu
         visible={isGoalPickerVisible}
         onClose={() => setIsGoalPickerVisible(false)}
-        title="Select Fitness Goal"
-        subtitle="Choose the goal that best fits your training"
+        title={t('editFitnessDetails.selectGoal')}
+        subtitle={t('editFitnessDetails.selectGoalSubtitle')}
         items={fitnessGoalOptions.map((option) => ({
           ...option,
           onPress: () => {
@@ -355,8 +364,8 @@ export function EditFitnessDetailsModal({
       <BottomPopUpMenu
         visible={isActivityPickerVisible}
         onClose={() => setIsActivityPickerVisible(false)}
-        title="Select Activity Level"
-        subtitle="Choose your daily activity level"
+        title={t('editFitnessDetails.selectActivity')}
+        subtitle={t('editFitnessDetails.selectActivitySubtitle')}
         items={activityLevelOptions.map((option) => ({
           ...option,
           onPress: () => {

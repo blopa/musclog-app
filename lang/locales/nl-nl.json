@@ -119,6 +119,111 @@
       "today": " VANDAAG",
       "yesterday": "GISTEREN",
       "earlier": "EERDER"
+    },
+    "startNow": "Nu Starten"
+  },
+  "coach": {
+    "title": "AI Coach",
+    "status": "Online",
+    "placeholder": "Typ een bericht...",
+    "todayAt": "Vandaag, {{time}}",
+    "actions": {
+      "createWorkout": "Workout maken",
+      "analyzeProgress": "Voortgang analyseren",
+      "nutritionCheck": "Voedingscheck"
+    },
+    "mock": {
+      "trainerGreeting": "Hallo! Ik ben klaar om te helpen. Zullen we je volgende sessie plannen of naar je statistieken kijken?",
+      "userLegsRequest": "Ik wil me vandaag op benen concentreren. Kun je het intens maken?",
+      "trainerResponse": "Begrepen. Hier is een intensieve beentraining gebaseerd op je eerdere logs. Maak je klaar om te zweten! 🔥"
+    }
+  },
+  "editFitnessDetails": {
+    "title": "Fitnessgegevens bewerken",
+    "units": "Eenheden",
+    "imperial": "Imperiaal",
+    "metric": "Metrisch",
+    "bodyStats": "Lichaamsstatistieken",
+    "currentWeight": "Huidig gewicht",
+    "height": "Lengte",
+    "goalsStrategy": "Doelen & Strategie",
+    "fitnessGoal": "Fitnessdoel",
+    "eatingPhase": "Eetfase",
+    "cut": "Cutten",
+    "maintain": "Onderhouden",
+    "bulk": "Bulken",
+    "lifestyleContext": "Levensstijl",
+    "activityLevel": "Activiteitsniveau",
+    "liftingExperience": "Trainingservaring",
+    "saveChanges": "Wijzigingen opslaan",
+    "selectGoal": "Selecteer fitnessdoel",
+    "selectGoalSubtitle": "Kies het doel dat het beste bij je training past",
+    "selectActivity": "Selecteer activiteitsniveau",
+    "selectActivitySubtitle": "Kies je dagelijkse activiteitsniveau",
+    "activityLevelLabels": {
+      "sedentary": "Sedentair",
+      "light": "Licht",
+      "moderate": "Gemiddeld",
+      "active": "Actief",
+      "superActive": "Super actief"
+    },
+    "activityLevelDescriptions": {
+      "sedentary": "Weinig tot geen beweging, kantoorbaan",
+      "light": "Lichte beweging 1-3 dagen/week",
+      "moderate": "Gemiddelde beweging 3-5 dagen/week",
+      "active": "Zware training 6-7 dagen/week",
+      "superActive": "Zeer zware training & fysiek werk"
+    },
+    "fitnessGoalLabels": {
+      "hypertrophy": "Hypertrofie (spieropbouw)",
+      "strength": "Kracht (zwaarder tillen)",
+      "endurance": "Uithoudingsvermogen",
+      "weightLoss": "Gewichtsverlies (vetverbranding)",
+      "general": "Algemene conditie"
+    },
+    "fitnessGoalDescriptions": {
+      "hypertrophy": "Focus op spieromvang en definitie",
+      "strength": "Focus op maximale kracht en vermogen",
+      "endurance": "Focus op cardiovasculaire conditie",
+      "weightLoss": "Focus op vetverlies en verstrakking",
+      "general": "Behoud algemene gezondheid en welzijn"
+    },
+    "experienceLabels": {
+      "beginner": "Beginner",
+      "intermediate": "Gemiddeld",
+      "advanced": "Gevorderd"
+    },
+    "experienceDescriptions": {
+      "beginner": "0-1 jaar consistente training",
+      "intermediate": "1-3 jaar consistente training",
+      "advanced": "3+ jaar consistente training"
+    }
+  },
+  "editPersonalInfo": {
+    "title": "Persoonlijke info bewerken",
+    "changePhoto": "Foto wijzigen",
+    "fullName": "Volledige naam",
+    "fullNamePlaceholder": "bijv. Alex Johnson",
+    "emailAddress": "E-mailadres",
+    "emailPlaceholder": "bijv. alex@example.com",
+    "dateOfBirth": "Geboortedatum",
+    "dateOfBirthPlaceholder": "DD-MM-YYYY",
+    "gender": "Geslacht",
+    "male": "Man",
+    "female": "Vrouw",
+    "other": "Anders",
+    "saveChanges": "Wijzigingen opslaan"
+  },
+  "replaceExercise": {
+    "title": "Oefening vervangen",
+    "cancel": "Annuleren",
+    "replace": "Vervangen",
+    "searchPlaceholder": "Oefeningen zoeken...",
+    "muscleGroups": {
+      "all": "Alle",
+      "chest": "Borst",
+      "shoulders": "Schouders",
+      "triceps": "Triceps"
     }
   },
   "userMenu": {
@@ -213,79 +318,17 @@
     "finishAndSave": "Afronden en Opslaan",
     "finishAndDiscard": "Afronden en Verwijderen"
   },
-  "replaceExercise": {
-    "title": "Oefening Vervangen",
-    "cancel": "Annuleren",
-    "replace": "Vervangen"
+  "restOver": {
+    "startNextSet": "Volgende set starten",
+    "upNext": "Volgende",
+    "weight": "Gewicht",
+    "reps": "Reps",
+    "set": "Set"
   },
-  "workouts": {
-    "archive": "Archiveren",
-    "last": "Laatste",
-    "exercises": "Oefeningen",
-    "start": "Starten"
-  },
-  "workoutDetails": {
-    "subtitle": "Beheer deze training",
-    "edit": "Training Bewerken",
-    "editDescription": "Oefeningen en sets aanpassen",
-    "duplicate": "Dupliceren",
-    "duplicateDescription": "Maak een kopie van deze training",
-    "share": "Delen",
-    "shareDescription": "Deel training met anderen",
-    "delete": "Verwijderen",
-    "deleteDescription": "Verwijder deze training permanent"
-  },
-  "foodSearch": {
-    "recentHistory": "Recente Geschiedenis",
-    "viewAll": "Alles Bekijken",
-    "commonBreakfastFoods": "Veelvoorkomende Ontbijtproducten",
-    "createMeal": "+ Maaltijd Maken",
-    "filters": {
-      "allResults": "Alle Resultaten",
-      "myFoods": "Mijn Voedsel",
-      "meals": "Maaltijden",
-      "recipes": "Recepten"
-    }
-  },
-  "startWorkout": {
-    "label": "Training Starten",
-    "start": "Starten"
-  },
-  "notifications": {
-    "header": {
-      "title": "Meldingen",
-      "clearAll": "ALLES WISSEN"
-    },
-    "sections": {
-      "today": " VANDAAG",
-      "yesterday": "GISTEREN",
-      "earlier": "EERDER"
-    },
-    "startNow": "Nu Starten"
-  },
-  "profile": {
-    "header": {
-      "title": "Profiel"
-    },
-    "goal": "Doel",
-    "currentStats": "Huidige Statistieken",
-    "history": "Geschiedenis",
-    "management": "Beheer",
-    "stats": {
-      "weight": "Gewicht",
-      "height": "Lengte",
-      "bodyFat": "Vetpercentage",
-      "bmi": "BMI",
-      "age": "Leeftijd",
-      "gender": "Geslacht"
-    },
-    "managementItems": {
-      "editPersonal": "Persoonlijke Informatie Bewerken",
-      "editPersonalDesc": "Naam, Email, Verjaardag",
-      "editFitness": "Fitness Details Bewerken",
-      "editFitnessDesc": "Doelen, Ervaring Niveau",
-      "appPreferences": "App Voorkeuren",
-      "appPreferencesDesc": "Eenheden, Meldingen, Privacy"
-    }
+  "workoutSummary": {
+    "totalTime": "Totale tijd",
+    "volume": "Volume",
+    "personalRecords": "Persoonlijke records",
+    "goHome": "Naar huis"
   }
 }

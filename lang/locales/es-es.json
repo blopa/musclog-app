@@ -263,6 +263,22 @@
     },
     "startNow": "Iniciar Ahora"
   },
+  "coach": {
+    "title": "Coach IA",
+    "status": "En línea",
+    "placeholder": "Escribe un mensaje...",
+    "todayAt": "Hoy, {{time}}",
+    "actions": {
+      "createWorkout": "Crear Entrenamiento",
+      "analyzeProgress": "Analizar Progreso",
+      "nutritionCheck": "Control Nutricional"
+    },
+    "mock": {
+      "trainerGreeting": "¡Hola! Estoy listo para ayudar. ¿Deberíamos planificar tu próxima sesión o mirar tus estadísticas?",
+      "userLegsRequest": "Quiero centrarme en las piernas hoy. ¿Puedes hacerlo intenso?",
+      "trainerResponse": "Entendido. Aquí tienes un entrenamiento de piernas de alta intensidad basado en tus registros anteriores. ¡Prepárate para sudar! 🔥"
+    }
+  },
   "profile": {
     "header": {
       "title": "Perfil"

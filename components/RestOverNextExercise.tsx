@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 
 type RestOverNextExerciseProps = {
@@ -13,6 +14,8 @@ type RestOverNextExerciseProps = {
 };
 
 export function RestOverNextExercise({ exercise }: RestOverNextExerciseProps) {
+  const { t } = useTranslation();
+
   return (
     <View
       className="mt-4 w-full max-w-sm rounded-xl border p-5"
@@ -32,22 +35,26 @@ export function RestOverNextExercise({ exercise }: RestOverNextExerciseProps) {
         />
         <View className="flex-1">
           <Text className="text-xs font-bold uppercase tracking-widest text-accent-primary opacity-80">
-            Up Next
+            {t('restOver.upNext')}
           </Text>
           <Text className="text-xl font-bold text-white">{exercise.name}</Text>
         </View>
       </View>
       <View className="flex-row items-center justify-between border-t border-white/10 pt-3">
         <View className="flex-col items-start">
-          <Text className="text-[10px] font-bold uppercase text-white/40">Weight</Text>
+          <Text className="text-[10px] font-bold uppercase text-white/40">
+            {t('restOver.weight')}
+          </Text>
           <Text className="text-base font-bold text-white">{exercise.weight}</Text>
         </View>
         <View className="flex-col items-start">
-          <Text className="text-[10px] font-bold uppercase text-white/40">Reps</Text>
+          <Text className="text-[10px] font-bold uppercase text-white/40">
+            {t('restOver.reps')}
+          </Text>
           <Text className="text-base font-bold text-white">{exercise.reps}</Text>
         </View>
         <View className="flex-col items-start">
-          <Text className="text-[10px] font-bold uppercase text-white/40">Set</Text>
+          <Text className="text-[10px] font-bold uppercase text-white/40">{t('restOver.set')}</Text>
           <Text className="text-base font-bold text-white">
             {exercise.set}
             <Text className="font-normal text-white/40">/{exercise.totalSets}</Text>

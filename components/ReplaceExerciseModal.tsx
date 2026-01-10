@@ -50,13 +50,6 @@ const DEFAULT_EXERCISES: Exercise[] = [
   },
 ];
 
-const MUSCLE_GROUP_TABS = [
-  { id: 'All', label: 'All' },
-  { id: 'Chest', label: 'Chest' },
-  { id: 'Shoulders', label: 'Shoulders' },
-  { id: 'Triceps', label: 'Triceps' },
-];
-
 export function ReplaceExerciseModal({
   visible,
   onClose,
@@ -68,6 +61,13 @@ export function ReplaceExerciseModal({
   const [selectedExercise, setSelectedExercise] = useState<string>(exercises[0]?.id || '');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('All');
+
+  const MUSCLE_GROUP_TABS = [
+    { id: 'All', label: t('replaceExercise.muscleGroups.all') },
+    { id: 'Chest', label: t('replaceExercise.muscleGroups.chest') },
+    { id: 'Shoulders', label: t('replaceExercise.muscleGroups.shoulders') },
+    { id: 'Triceps', label: t('replaceExercise.muscleGroups.triceps') },
+  ];
 
   const filteredExercises = exercises.filter((exercise) => {
     const matchesSearch = exercise.name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -128,7 +128,7 @@ export function ReplaceExerciseModal({
               />
             </View>
             <TextInput
-              placeholder="Search exercises..."
+              placeholder={t('replaceExercise.searchPlaceholder')}
               placeholderTextColor={theme.colors.text.secondary}
               value={searchQuery}
               onChangeText={setSearchQuery}

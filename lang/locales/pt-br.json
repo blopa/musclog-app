@@ -112,20 +112,125 @@
   },
   "notifications": {
     "header": {
-      "title": "Notificações",
-      "clearAll": "LIMPAR TUDO"
+      "title": "Notificaciones",
+      "clearAll": "LIMPIAR TODO"
     },
     "sections": {
       "today": "HOJE",
       "yesterday": "ONTEM",
       "earlier": "ANTES"
+    },
+    "startNow": "Iniciar Agora"
+  },
+  "coach": {
+    "title": "Treinador IA",
+    "status": "Online",
+    "placeholder": "Digite uma mensagem...",
+    "todayAt": "Hoje, {{time}}",
+    "actions": {
+      "createWorkout": "Criar Treino",
+      "analyzeProgress": "Analisar Progresso",
+      "nutritionCheck": "Verificação Nutricional"
+    },
+    "mock": {
+      "trainerGreeting": "Olá! Estou pronto para ajudar. Vamos planejar sua próxima sessão ou olhar suas estatísticas?",
+      "userLegsRequest": "Quero focar nas pernas hoje. Você pode tornar intenso?",
+      "trainerResponse": "Entendido. Aqui está um treino de pernas de alta intensidade baseado em seus logs anteriores. Prepare-se para suar! 🔥"
+    }
+  },
+  "editFitnessDetails": {
+    "title": "Editar Detalhes de Fitness",
+    "units": "Unidades",
+    "imperial": "Imperial",
+    "metric": "Métrico",
+    "bodyStats": "Estatísticas Corporais",
+    "currentWeight": "Peso Atual",
+    "height": "Altura",
+    "goalsStrategy": "Objetivos e Estratégia",
+    "fitnessGoal": "Objetivo de Fitness",
+    "eatingPhase": "Fase de Alimentação",
+    "cut": "Cutting",
+    "maintain": "Manutenção",
+    "bulk": "Bulking",
+    "lifestyleContext": "Contexto de Estilo de Vida",
+    "activityLevel": "Nível de Atividade",
+    "liftingExperience": "Experiência de Treino",
+    "saveChanges": "Salvar Alterações",
+    "selectGoal": "Selecionar Objetivo",
+    "selectGoalSubtitle": "Escolha o objetivo que melhor se adapta ao seu treino",
+    "selectActivity": "Selecionar Nível de Atividade",
+    "selectActivitySubtitle": "Escolha o seu nível de atividade diária",
+    "activityLevelLabels": {
+      "sedentary": "Sedentário",
+      "light": "Leve",
+      "moderate": "Moderado",
+      "active": "Ativo",
+      "superActive": "Super Ativo"
+    },
+    "activityLevelDescriptions": {
+      "sedentary": "Pouco ou nenhum exercício, trabalho de escritório",
+      "light": "Exercício leve 1-3 dias/semana",
+      "moderate": "Exercício moderado 3-5 dias/semana",
+      "active": "Exercício intenso 6-7 dias/semana",
+      "superActive": "Exercício muito intenso e trabalho físico"
+    },
+    "fitnessGoalLabels": {
+      "hypertrophy": "Hipertrofia (Ganho de Músculo)",
+      "strength": "Força (Levantar mais Peso)",
+      "endurance": "Resistência (Stamina)",
+      "weightLoss": "Perda de Peso (Queimar Gordura)",
+      "general": "Fitness Geral"
+    },
+    "fitnessGoalDescriptions": {
+      "hypertrophy": "Foco no tamanho e definição muscular",
+      "strength": "Foco na força máxima e potência",
+      "endurance": "Foco no condicionamento cardiovascular",
+      "weightLoss": "Foco na perda de gordura e tonificação",
+      "general": "Manter a saúde e bem-estar geral"
+    },
+    "experienceLabels": {
+      "beginner": "Iniciante",
+      "intermediate": "Intermediário",
+      "advanced": "Avançado"
+    },
+    "experienceDescriptions": {
+      "beginner": "0-1 anos de treino consistente",
+      "intermediate": "1-3 anos de treino consistente",
+      "advanced": "3+ anos de treino consistente"
+    }
+  },
+  "editPersonalInfo": {
+    "title": "Editar Informações Pessoais",
+    "changePhoto": "Alterar Foto",
+    "fullName": "Nome Completo",
+    "fullNamePlaceholder": "ex: Alex Johnson",
+    "emailAddress": "Endereço de E-mail",
+    "emailPlaceholder": "ex: alex@example.com",
+    "dateOfBirth": "Data de Nascimento",
+    "dateOfBirthPlaceholder": "DD/MM/AAAA",
+    "gender": "Gênero",
+    "male": "Masculino",
+    "female": "Feminino",
+    "other": "Outro",
+    "saveChanges": "Salvar Alterações"
+  },
+  "replaceExercise": {
+    "title": "Substituir Exercício",
+    "cancel": "Cancelar",
+    "replace": "Substituir",
+    "searchPlaceholder": "Buscar exercícios...",
+    "muscleGroups": {
+      "all": "Todos",
+      "chest": "Peito",
+      "shoulders": "Ombros",
+      "triceps": "Tríceps"
     }
   },
   "userMenu": {
     "greeting": "Conta",
     "profile": "Perfil",
     "settings": "Configurações",
-    "progress": "Progresso"
+    "progress": "Progreso"
   },
   "workoutSession": {
     "totalTime": "TEMPO TOTAL",
@@ -213,79 +318,17 @@
     "finishAndSave": "Finalizar e Salvar",
     "finishAndDiscard": "Finalizar e Descartar"
   },
-  "replaceExercise": {
-    "title": "Substituir Exercício",
-    "cancel": "Cancelar",
-    "replace": "Substituir"
+  "restOver": {
+    "startNextSet": "Iniciar Próxima Série",
+    "upNext": "Próximo",
+    "weight": "Peso",
+    "reps": "Repetições",
+    "set": "Série"
   },
-  "workouts": {
-    "archive": "Arquivar",
-    "last": "Último",
-    "exercises": "Exercícios",
-    "start": "Iniciar"
-  },
-  "workoutDetails": {
-    "subtitle": "Gerenciar este treino",
-    "edit": "Editar Treino",
-    "editDescription": "Modificar exercícios e séries",
-    "duplicate": "Duplicar",
-    "duplicateDescription": "Criar uma cópia deste treino",
-    "share": "Compartilhar",
-    "shareDescription": "Compartilhar treino com outros",
-    "delete": "Excluir",
-    "deleteDescription": "Excluir permanentemente este treino"
-  },
-  "foodSearch": {
-    "recentHistory": "Histórico Recente",
-    "viewAll": "Ver Tudo",
-    "commonBreakfastFoods": "Alimentos Comuns para o Café da Manhã",
-    "createMeal": "+ Criar Refeição",
-    "filters": {
-      "allResults": "Todos os Resultados",
-      "myFoods": "Meus Alimentos",
-      "meals": "Refeições",
-      "recipes": "Receitas"
-    }
-  },
-  "startWorkout": {
-    "label": "Iniciar Treino",
-    "start": "Iniciar"
-  },
-  "notifications": {
-    "header": {
-      "title": "Notificações",
-      "clearAll": "LIMPAR TUDO"
-    },
-    "sections": {
-      "today": "HOJE",
-      "yesterday": "ONTEM",
-      "earlier": "ANTES"
-    },
-    "startNow": "Iniciar Agora"
-  },
-  "profile": {
-    "header": {
-      "title": "Perfil"
-    },
-    "goal": "Objetivo",
-    "currentStats": "Estatísticas Atuais",
-    "history": "Histórico",
-    "management": "Gerenciamento",
-    "stats": {
-      "weight": "Peso",
-      "height": "Altura",
-      "bodyFat": "Gordura Corporal",
-      "bmi": "IMC",
-      "age": "Idade",
-      "gender": "Gênero"
-    },
-    "managementItems": {
-      "editPersonal": "Editar Informações Pessoais",
-      "editPersonalDesc": "Nome, Email, Aniversário",
-      "editFitness": "Editar Detalhes de Fitness",
-      "editFitnessDesc": "Objetivos, Nível de Experiência",
-      "appPreferences": "Preferências do App",
-      "appPreferencesDesc": "Unidades, Notificações, Privacidade"
-    }
+  "workoutSummary": {
+    "totalTime": "Tempo total",
+    "volume": "Volume",
+    "personalRecords": "Recordes pessoais",
+    "goHome": "Início"
   }
 }

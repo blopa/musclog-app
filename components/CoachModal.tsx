@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { View, Text, Image, Pressable, ScrollView, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import {
   GiftedChat,
   IMessage,
@@ -199,7 +200,6 @@ const renderBubble = (props: BubbleProps<ExtendedIMessage>) => {
           <Text
             className="mr-1 mt-1 text-right text-xs"
             style={{ color: theme.colors.text.tertiary }}>
-            Read{' '}
             {new Date(currentMessage.createdAt).toLocaleTimeString('en-US', {
               hour: 'numeric',
               minute: '2-digit',
@@ -233,7 +233,7 @@ const renderAvatar = (props: any) => {
   return <Image source={{ uri: AI_COACH_AVATAR }} style={styles.avatar} resizeMode="cover" />;
 };
 
-const renderDay = (props: any) => {
+const renderDay = (props: any, t: any) => {
   if (!props.currentMessage?.createdAt) return null;
   const date = new Date(props.currentMessage.createdAt);
   const now = new Date();
@@ -244,7 +244,9 @@ const renderDay = (props: any) => {
       <View className="my-6 items-center">
         <View className="rounded-full bg-bg-card px-3 py-1">
           <Text className="text-xs font-medium" style={{ color: theme.colors.text.tertiary }}>
-            Today, {date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
+            {t('coach.todayAt', {
+              time: date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
+            })}
           </Text>
         </View>
       </View>
@@ -265,7 +267,7 @@ const renderSend = (props: SendProps<ExtendedIMessage>) => {
   );
 };
 
-const renderComposer = (props: ComposerProps) => {
+const renderComposer = (props: ComposerProps, t: any) => {
   return (
     <View style={styles.composerWrapper}>
       <Composer
@@ -273,7 +275,7 @@ const renderComposer = (props: ComposerProps) => {
         textInputProps={{
           ...props.textInputProps,
           style: [styles.composerTextInput, props.textInputProps?.style],
-          placeholder: 'Type a message...',
+          placeholder: t('coach.placeholder'),
           placeholderTextColor: theme.colors.text.tertiary,
           multiline: true,
         }}
@@ -303,13 +305,14 @@ type CoachModalProps = {
 };
 
 export function CoachModal({ visible, onClose }: CoachModalProps) {
+  const { t } = useTranslation();
   const [messages, setMessages] = useState<ExtendedIMessage[]>([]);
 
   useEffect(() => {
     if (visible) {
       setMessages(getInitialMessages());
     }
-  }, [visible]);
+  }, [visible, t]);
 
   const onSend = useCallback((newMessages: ExtendedIMessage[] = []) => {
     setMessages((previousMessages) => GiftedChat.append(previousMessages, newMessages));
@@ -330,24 +333,28 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
           }}>
           <PlusCircle size={18} color={theme.colors.accent.primary} />
           <Text className="text-sm font-medium" style={{ color: theme.colors.accent.primary }}>
-            Create Workout
+            {t('coach.actions.createWorkout')}
           </Text>
         </Pressable>
         <Pressable
           className="flex-row items-center gap-2 whitespace-nowrap rounded-full border bg-bg-card px-4 py-2 active:scale-95"
           style={{ borderColor: theme.colors.border.light }}>
           <TrendingUp size={18} color={theme.colors.status.info} />
-          <Text className="text-sm font-medium text-text-primary">Analyze Progress</Text>
+          <Text className="text-sm font-medium text-text-primary">
+            {t('coach.actions.analyzeProgress')}
+          </Text>
         </Pressable>
         <Pressable
           className="flex-row items-center gap-2 whitespace-nowrap rounded-full border bg-bg-card px-4 py-2 active:scale-95"
           style={{ borderColor: theme.colors.border.light }}>
           <UtensilsCrossed size={18} color={theme.colors.status.warning} />
-          <Text className="text-sm font-medium text-text-primary">Nutrition Check</Text>
+          <Text className="text-sm font-medium text-text-primary">
+            {t('coach.actions.nutritionCheck')}
+          </Text>
         </Pressable>
       </ScrollView>
     );
-  }, []);
+  }, [t]);
 
   const headerRight = useMemo(
     () => (
@@ -362,7 +369,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     <FullScreenModal
       visible={visible}
       onClose={onClose}
-      title="AI Coach"
+      title={t('coach.title')}
       headerRight={headerRight}
       scrollable={false}>
       <View className="flex-1 bg-bg-primary">
@@ -385,14 +392,14 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
             />
           </View>
           <View>
-            <Text className="text-lg font-bold text-text-primary">AI Coach</Text>
+            <Text className="text-lg font-bold text-text-primary">{t('coach.title')}</Text>
             <View className="flex-row items-center gap-1">
               <View
                 className="h-1.5 w-1.5 rounded-full"
                 style={{ backgroundColor: theme.colors.accent.primary }}
               />
               <Text className="text-xs font-medium" style={{ color: theme.colors.accent.primary }}>
-                Online
+                {t('coach.status')}
               </Text>
             </View>
           </View>
@@ -407,10 +414,10 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
             renderAvatar={renderAvatar}
             renderCustomView={renderCustomView}
             renderInputToolbar={renderInputToolbar}
-            renderComposer={renderComposer}
+            renderComposer={(props) => renderComposer(props, t)}
             renderSend={renderSend}
             renderAccessory={renderAccessory}
-            renderDay={renderDay}
+            renderDay={(props) => renderDay(props, t)}
             scrollToBottomComponent={() => null}
             minInputToolbarHeight={0}
             listProps={{

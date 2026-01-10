@@ -305,7 +305,115 @@
     }
   },
   "restOver": {
-    "startNextSet": "Start Next Set"
+    "startNextSet": "Start Next Set",
+    "upNext": "Up Next",
+    "weight": "Weight",
+    "reps": "Reps",
+    "set": "Set"
+  },
+  "coach": {
+    "title": "AI Coach",
+    "status": "Online",
+    "placeholder": "Type a message...",
+    "todayAt": "Today, {{time}}",
+    "actions": {
+      "createWorkout": "Create Workout",
+      "analyzeProgress": "Analyze Progress",
+      "nutritionCheck": "Nutrition Check"
+    },
+    "mock": {
+      "trainerGreeting": "Hello! I'm ready to help. Should we plan your next session or look at your stats?",
+      "userLegsRequest": "I want to focus on legs today. Can you make it intense?",
+      "trainerResponse": "Got it. Here is a high-intensity leg workout based on your previous logs. Get ready to sweat! 🔥"
+    }
+  },
+  "editFitnessDetails": {
+    "title": "Edit Fitness Details",
+    "units": "Units",
+    "imperial": "Imperial",
+    "metric": "Metric",
+    "bodyStats": "Body Stats",
+    "currentWeight": "Current Weight",
+    "height": "Height",
+    "goalsStrategy": "Goals & Strategy",
+    "fitnessGoal": "Fitness Goal",
+    "eatingPhase": "Eating Phase",
+    "cut": "Cut",
+    "maintain": "Maintain",
+    "bulk": "Bulk",
+    "lifestyleContext": "Lifestyle Context",
+    "activityLevel": "Activity Level",
+    "liftingExperience": "Lifting Experience",
+    "saveChanges": "Save Changes",
+    "selectGoal": "Select Fitness Goal",
+    "selectGoalSubtitle": "Choose the goal that best fits your training",
+    "selectActivity": "Select Activity Level",
+    "selectActivitySubtitle": "Choose your daily activity level",
+    "activityLevelLabels": {
+      "sedentary": "Sedentary",
+      "light": "Light",
+      "moderate": "Moderate",
+      "active": "Active",
+      "superActive": "Super Active"
+    },
+    "activityLevelDescriptions": {
+      "sedentary": "Little to no exercise, desk job",
+      "light": "Light exercise 1-3 days/week",
+      "moderate": "Moderate exercise 3-5 days/week",
+      "active": "Hard exercise 6-7 days/week",
+      "superActive": "Very hard exercise & physical job"
+    },
+    "fitnessGoalLabels": {
+      "hypertrophy": "Hypertrophy (Build Muscle)",
+      "strength": "Strength (Lift Heavier)",
+      "endurance": "Endurance (Stamina)",
+      "weightLoss": "Weight Loss (Burn Fat)",
+      "general": "General Fitness"
+    },
+    "fitnessGoalDescriptions": {
+      "hypertrophy": "Focus on muscle size and definition",
+      "strength": "Focus on maximum strength and power",
+      "endurance": "Focus on cardiovascular fitness",
+      "weightLoss": "Focus on fat loss and toning",
+      "general": "Maintain overall health and wellness"
+    },
+    "experienceLabels": {
+      "beginner": "Beginner",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced"
+    },
+    "experienceDescriptions": {
+      "beginner": "0-1 years of consistent training",
+      "intermediate": "1-3 years of consistent training",
+      "advanced": "3+ years of consistent training"
+    }
+  },
+  "editPersonalInfo": {
+    "title": "Edit Personal Info",
+    "changePhoto": "Change Photo",
+    "fullName": "Full Name",
+    "fullNamePlaceholder": "e.g. Alex Johnson",
+    "emailAddress": "Email Address",
+    "emailPlaceholder": "e.g. alex@example.com",
+    "dateOfBirth": "Date of Birth",
+    "dateOfBirthPlaceholder": "MM/DD/YYYY",
+    "gender": "Gender",
+    "male": "Male",
+    "female": "Female",
+    "other": "Other",
+    "saveChanges": "Save Changes"
+  },
+  "replaceExercise": {
+    "title": "Replace Exercise",
+    "cancel": "Cancel",
+    "replace": "Replace",
+    "searchPlaceholder": "Search exercises...",
+    "muscleGroups": {
+      "all": "All",
+      "chest": "Chest",
+      "shoulders": "Shoulders",
+      "triceps": "Triceps"
+    }
   },
   "workoutSummary": {
     "totalTime": "Total Time",
