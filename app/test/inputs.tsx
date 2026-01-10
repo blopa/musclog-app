@@ -11,7 +11,8 @@ import { SegmentedControl } from '../../components/theme/SegmentedControl';
 import { Toggle } from '../../components/theme/Toggle';
 import { PickerButton } from '../../components/theme/PickerButton';
 import { Slider } from '../../components/theme/Slider';
-import StepperInput from '../../components/theme/StepperInput';
+import { StepperInput } from '../../components/theme/StepperInput';
+import { BodyMetricsStepper } from '../../components/theme/BodyMetricsStepper';
 
 export default function InputsTestScreen() {
   const [name, setName] = useState('');
@@ -24,6 +25,7 @@ export default function InputsTestScreen() {
   const [bulkingPhase, setBulkingPhase] = useState(true);
   const [difficulty, setDifficulty] = useState(8);
   const [fullName, setFullName] = useState('Alex Johnson');
+  const [bodyMetric, setBodyMetric] = useState(70);
 
   return (
     <SafeAreaView className="flex-1 bg-bg-primary" edges={['top']}>
@@ -75,6 +77,23 @@ export default function InputsTestScreen() {
             onDecrement={() => setTargetWeight((v) => Math.max(0, v - 0.5))}
             onChangeValue={setTargetWeight}
             unit="kg"
+          />
+        </TestSection>
+
+        <TestSection title="Body Metrics Stepper" subtitle="Demo for BodyMetricsStepper component">
+          <BodyMetricsStepper
+            icon={User}
+            label="Body Weight"
+            sublabel="Current body weight"
+            value={bodyMetric}
+            unit="kg"
+            unitLabel="kg"
+            min={30}
+            max={200}
+            step={0.5}
+            onIncrement={() => setBodyMetric((v) => Math.min(200, v + 0.5))}
+            onDecrement={() => setBodyMetric((v) => Math.max(30, v - 0.5))}
+            onChangeValue={setBodyMetric}
           />
         </TestSection>
 

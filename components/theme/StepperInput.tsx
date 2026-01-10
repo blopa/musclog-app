@@ -139,5 +139,3 @@ export const StepperInput: React.FC<StepperInputProps> = ({
     </View>
   );
 };
-
-export default StepperInput;
