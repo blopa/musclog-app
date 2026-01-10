@@ -8,6 +8,7 @@
     "lint:eslint-fix": "eslint . --fix",
     "bump": "ncu -u -t minor",
     "bump-any": "ncu -u",
+    "clear-cache": "rm -rf /tmp/metro-cache /tmp/haste-map-metro-* .expo .next web-build",
     "bump-app-version": "node scripts/bump.js",
     "start": "expo start",
     "start-clear": "expo start --clear",
