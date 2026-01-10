@@ -15,7 +15,7 @@ export function StartWorkoutButton({ variant = 'primary', onPress }: StartWorkou
       <Button
         label={t('startWorkout.label')}
         icon={Play}
-        size="md"
+        size="sm"
         width="flex-1"
         onPress={onPress}
       />

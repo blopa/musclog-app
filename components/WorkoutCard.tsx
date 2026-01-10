@@ -1,8 +1,9 @@
 import { View, Text, Image, Pressable, ImageSourcePropType } from 'react-native';
-import { MoreVertical, Clock } from 'lucide-react-native';
+import { MoreVertical, Clock, Archive } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { StartWorkoutButton } from './StartWorkoutButton';
+import { Button } from './theme/Button';
 
 type FeaturedWorkoutCardProps = {
   name: string;
@@ -24,7 +25,7 @@ export function WorkoutCard({
   image,
   onStart,
   onMore,
-  // TODO: implement standard variant
+  onArchive,
   variant = 'featured',
 }: FeaturedWorkoutCardProps) {
   const { t } = useTranslation();
@@ -51,15 +52,35 @@ export function WorkoutCard({
         </View>
       </View>
 
-      <View className="flex-row gap-3">
-        <StartWorkoutButton variant="primary" onPress={onStart} />
-        <Pressable
-          className="w-14 items-center justify-center rounded-2xl"
-          style={{ backgroundColor: theme.colors.background.iconDark }}
-          onPress={onMore}>
-          <MoreVertical size={theme.iconSize.sm} color={theme.colors.text.secondary} />
-        </Pressable>
-      </View>
+      {variant === 'featured' ? (
+        <View className="flex-row gap-3">
+          <StartWorkoutButton variant="primary" onPress={onStart} />
+          <Pressable
+            className="w-14 items-center justify-center rounded-2xl"
+            style={{ backgroundColor: theme.colors.background.iconDark }}
+            onPress={onMore}>
+            <MoreVertical size={theme.iconSize.sm} color={theme.colors.text.secondary} />
+          </Pressable>
+        </View>
+      ) : (
+        <View className="flex-row gap-3">
+          <Button
+            label={t('workouts.archive')}
+            icon={Archive}
+            variant="secondary"
+            size="sm"
+            width="auto"
+            onPress={onArchive}
+          />
+          <StartWorkoutButton variant="secondary" onPress={onStart} />
+          <Pressable
+            className="w-14 items-center justify-center rounded-2xl"
+            style={{ backgroundColor: theme.colors.background.iconDark }}
+            onPress={onMore}>
+            <MoreVertical size={theme.iconSize.sm} color={theme.colors.text.secondary} />
+          </Pressable>
+        </View>
+      )}
     </View>
   );
 }
