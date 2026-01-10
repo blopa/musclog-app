@@ -75,8 +75,7 @@ export function SnackbarProvider({ children }: { children: ReactNode }) {
       {/* Snackbar Container - renders at the bottom of the screen */}
       <View
         className="absolute bottom-0 left-0 right-0 pb-8"
-        pointerEvents="box-none"
-        style={webContainerStyle}>
+        style={{ pointerEvents: 'box-none', ...webContainerStyle }}>
         {snackbars.map((snackbar) => (
           <Snackbar key={snackbar.id} snackbar={snackbar} onDismiss={dismissSnackbar} />
         ))}

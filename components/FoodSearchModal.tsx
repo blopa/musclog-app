@@ -297,7 +297,7 @@ export function FoodSearchModal({
           <View className="relative">
             <View
               className="absolute inset-y-0 left-0 z-10 items-center justify-center pl-3.5"
-              pointerEvents="none">
+              style={{ pointerEvents: 'none' }}>
               <Search
                 size={theme.iconSize.md}
                 color={searchQuery ? theme.colors.accent.secondary : theme.colors.text.secondary}

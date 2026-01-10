@@ -121,7 +121,7 @@ export function ReplaceExerciseModal({
           <View className="relative">
             <View
               className="absolute inset-y-0 left-0 z-10 items-center justify-center pl-4"
-              pointerEvents="none">
+              style={{ pointerEvents: 'none' }}>
               <Search
                 size={theme.iconSize.lg}
                 color={searchQuery ? theme.colors.accent.primary : theme.colors.text.secondary}
