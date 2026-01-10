@@ -74,7 +74,7 @@ export function WorkoutCard({
           />
           <StartWorkoutButton variant="secondary" onPress={onStart} />
           <Pressable
-            className="w-14 items-center justify-center rounded-2xl"
+            className="ml-auto w-14 items-center justify-center rounded-2xl"
             style={{ backgroundColor: theme.colors.background.iconDark }}
             onPress={onMore}>
             <MoreVertical size={theme.iconSize.sm} color={theme.colors.text.secondary} />
