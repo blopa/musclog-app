@@ -19,6 +19,7 @@ import { WorkoutHistoryModal } from '../../components/WorkoutHistoryModal';
 import { DatePickerModal } from '../../components/DatePickerModal';
 import { WorkoutSummaryCelebration } from '../../components/WorkoutSummaryCelebration';
 import { EditPersonalInfoModal } from '../../components/EditPersonalInfoModal';
+import { EditFitnessDetailsModal } from '../../components/EditFitnessDetailsModal';
 
 export default function ModalsTestScreen() {
   // Nutrition Goals Modal
@@ -26,6 +27,9 @@ export default function ModalsTestScreen() {
 
   // Edit Personal Info Modal
   const [isEditPersonalInfoVisible, setIsEditPersonalInfoVisible] = useState(false);
+
+  // Edit Fitness Details Modal
+  const [isEditFitnessDetailsVisible, setIsEditFitnessDetailsVisible] = useState(false);
 
   // Confirmation Modal
   const [isConfirmationVisible, setIsConfirmationVisible] = useState(false);
@@ -120,6 +124,23 @@ export default function ModalsTestScreen() {
               variant="accent"
               width="full"
               onPress={() => setIsEditPersonalInfoVisible(true)}
+            />
+          </View>
+
+          {/* Edit Fitness Details Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">
+              Edit Fitness Details Modal
+            </Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              A modal for editing fitness-related details such as units, body stats, goals, and
+              lifting experience.
+            </Text>
+            <Button
+              label="Open Edit Fitness Details Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsEditFitnessDetailsVisible(true)}
             />
           </View>
 
@@ -379,6 +400,14 @@ export default function ModalsTestScreen() {
         onClose={() => setIsEditPersonalInfoVisible(false)}
         onSave={(data) => {
           console.log('Personal info saved:', data);
+        }}
+      />
+
+      <EditFitnessDetailsModal
+        visible={isEditFitnessDetailsVisible}
+        onClose={() => setIsEditFitnessDetailsVisible(false)}
+        onSave={(data) => {
+          console.log('Fitness details saved:', data);
         }}
       />
 
