@@ -18,10 +18,14 @@ import { ReplaceExerciseModal } from '../../components/ReplaceExerciseModal';
 import { WorkoutHistoryModal } from '../../components/WorkoutHistoryModal';
 import { DatePickerModal } from '../../components/DatePickerModal';
 import { WorkoutSummaryCelebration } from '../../components/WorkoutSummaryCelebration';
+import { EditPersonalInfoModal } from '../../components/EditPersonalInfoModal';
 
 export default function ModalsTestScreen() {
   // Nutrition Goals Modal
   const [isNutritionGoalsVisible, setIsNutritionGoalsVisible] = useState(false);
+
+  // Edit Personal Info Modal
+  const [isEditPersonalInfoVisible, setIsEditPersonalInfoVisible] = useState(false);
 
   // Confirmation Modal
   const [isConfirmationVisible, setIsConfirmationVisible] = useState(false);
@@ -99,6 +103,23 @@ export default function ModalsTestScreen() {
               variant="accent"
               width="full"
               onPress={() => setIsNutritionGoalsVisible(true)}
+            />
+          </View>
+
+          {/* Edit Personal Info Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">
+              Edit Personal Info Modal
+            </Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              A modal for editing user profile information including avatar, name, email, DOB, and
+              gender.
+            </Text>
+            <Button
+              label="Open Edit Personal Info Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsEditPersonalInfoVisible(true)}
             />
           </View>
 
@@ -351,6 +372,14 @@ export default function ModalsTestScreen() {
         visible={isNutritionGoalsVisible}
         onClose={() => setIsNutritionGoalsVisible(false)}
         onSave={handleSaveGoals}
+      />
+
+      <EditPersonalInfoModal
+        visible={isEditPersonalInfoVisible}
+        onClose={() => setIsEditPersonalInfoVisible(false)}
+        onSave={(data) => {
+          console.log('Personal info saved:', data);
+        }}
       />
 
       <ConfirmationModal
