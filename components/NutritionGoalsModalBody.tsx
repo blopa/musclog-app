@@ -322,7 +322,9 @@ export function NutritionGoalsModalBody({
             min={30}
             max={200}
             step={1}
-            onChange={setTargetWeight}
+            onIncrement={() => {}}
+            onDecrement={() => {}}
+            onChangeValue={setTargetWeight}
           />
           <BodyMetricsStepper
             icon={Percent}
@@ -334,7 +336,9 @@ export function NutritionGoalsModalBody({
             min={5}
             max={50}
             step={1}
-            onChange={setTargetBodyFat}
+            onIncrement={() => {}}
+            onDecrement={() => {}}
+            onChangeValue={setTargetBodyFat}
           />
           <BodyMetricsStepper
             icon={TrendingUp}
@@ -346,7 +350,9 @@ export function NutritionGoalsModalBody({
             min={15}
             max={40}
             step={0.1}
-            onChange={setTargetBMI}
+            onIncrement={() => {}}
+            onDecrement={() => {}}
+            onChangeValue={setTargetBMI}
           />
           <BodyMetricsStepper
             icon={Activity}
@@ -358,7 +364,9 @@ export function NutritionGoalsModalBody({
             min={15}
             max={30}
             step={0.1}
-            onChange={setTargetFFMI}
+            onIncrement={() => {}}
+            onDecrement={() => {}}
+            onChangeValue={setTargetFFMI}
           />
         </View>
 

@@ -13,7 +13,9 @@ type BodyMetricCardProps = {
   min: number;
   max: number;
   step?: number;
-  onChange: (value: number) => void;
+  onIncrement: () => void;
+  onDecrement: () => void;
+  onChangeValue: (value: number) => void;
 };
 
 export function BodyMetricsStepper({
@@ -26,7 +28,9 @@ export function BodyMetricsStepper({
   min,
   max,
   step = 1,
-  onChange,
+  onIncrement,
+  onDecrement,
+  onChangeValue,
 }: BodyMetricCardProps) {
   const [editing, setEditing] = useState(false);
   const [inputValue, setInputValue] = useState(
@@ -41,11 +45,15 @@ export function BodyMetricsStepper({
   }, [value, editing, unit]);
 
   const handleDecrement = () => {
-    onChange(Math.max(min, value - step));
+    const newVal = Math.max(min, value - step);
+    onChangeValue(newVal);
+    onDecrement();
   };
 
   const handleIncrement = () => {
-    onChange(Math.min(max, value + step));
+    const newVal = Math.min(max, value + step);
+    onChangeValue(newVal);
+    onIncrement();
   };
 
   const handleValuePress = () => {
@@ -68,7 +76,7 @@ export function BodyMetricsStepper({
     if (!isNaN(num)) {
       // Clamp between min and max
       const clamped = Math.min(max, Math.max(min, num));
-      onChange(clamped);
+      onChangeValue(clamped);
     } else {
       setInputValue(unit === 'index' ? value.toFixed(1) : value.toString());
     }
