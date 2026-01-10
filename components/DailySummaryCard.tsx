@@ -25,7 +25,7 @@ export function DailySummaryCard({ calories, activity, gradientColors }: DailySu
   const activityProgress = (activity.minutes / activity.goal) * 100;
 
   return (
-    <View className="mx-6 mb-6">
+    <View className="w-full mb-6">
       <LinearGradient
         colors={gradientColors}
         start={{ x: 0, y: 0 }}
