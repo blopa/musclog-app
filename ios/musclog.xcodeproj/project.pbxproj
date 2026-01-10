@@ -259,7 +259,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.werules.logger";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.pablopirata.musclog";
 				PRODUCT_NAME = "musclog";
 				SWIFT_OBJC_BRIDGING_HEADER = "musclog/musclog-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -288,7 +288,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.werules.logger";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.pablopirata.musclog";
 				PRODUCT_NAME = "musclog";
 				SWIFT_OBJC_BRIDGING_HEADER = "musclog/musclog-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;

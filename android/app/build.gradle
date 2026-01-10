@@ -87,9 +87,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.werules.logger'
+    namespace 'com.pablopirata.musclog'
     defaultConfig {
-        applicationId 'com.werules.logger'
+        applicationId 'com.pablopirata.musclog'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

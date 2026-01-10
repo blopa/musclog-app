@@ -1,4 +1,4 @@
-package com.werules.logger
+package com.pablopirata.musclog
 
 import android.os.Build
 import android.os.Bundle
