@@ -44,7 +44,7 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.pablopirata.musclog"
+      "bundleIdentifier": "com.werules.logger"
     },
     "android": {
       "adaptiveIcon": {
@@ -52,7 +52,8 @@
         "backgroundColor": "#0a1f1a"
       },
       "permissions": ["android.permission.CAMERA"],
-      "package": "com.pablopirata.musclog"
+      "package": "com.werules.logger",
+      "softwareKeyboardLayoutMode": "pan"
     }
   }
 }

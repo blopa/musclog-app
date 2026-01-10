@@ -181,9 +181,23 @@ export function BottomPopUpMenu({
 
             {/* Content */}
             {children ? (
-              <View className="p-6">{children}</View>
+              <View
+                className="p-6"
+                style={
+                  !footer
+                    ? { paddingBottom: Math.max(insets.bottom, theme.spacing.padding.xl) }
+                    : undefined
+                }>
+                {children}
+              </View>
             ) : items ? (
-              <View className="gap-3 p-6">
+              <View
+                className="gap-3 p-6"
+                style={
+                  !footer
+                    ? { paddingBottom: Math.max(insets.bottom, theme.spacing.padding.xl) }
+                    : undefined
+                }>
                 {items.map((item, index) => (
                   <OptionItem
                     key={index}
