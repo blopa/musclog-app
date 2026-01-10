@@ -1,6 +1,6 @@
 import { View, Text, Pressable, Modal, Image, ImageSourcePropType, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { X, User, Settings, BarChart3 } from 'lucide-react-native';
+import { X, User, Settings, BarChart3, Database } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 
@@ -14,6 +14,7 @@ type UserMenuModalProps = {
   onProfilePress?: () => void;
   onSettingsPress?: () => void;
   onProgressPress?: () => void;
+  onDatabaseTestPress?: () => void;
 };
 
 type MenuItemProps = {
@@ -133,6 +134,15 @@ export function UserMenuModal({
                 label={t('userMenu.settings')}
                 onPress={() => {
                   onSettingsPress?.();
+                  onClose();
+                }}
+              />
+              <MenuItem
+                icon={<Database size={theme.iconSize.md} color={theme.colors.status.info} />}
+                label="Database Test"
+                onPress={() => {
+                  /* @ts-ignore For testing purposes */
+                  onDatabaseTestPress?.();
                   onClose();
                 }}
               />
