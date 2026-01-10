@@ -109,7 +109,9 @@ export function DailySummaryCard({
                   {macro.label}
                   <Text className="ml-1 font-normal text-text-primary">{macro.percent}%</Text>
                 </Text>
-                <View className="h-2 w-full overflow-hidden rounded-full bg-bg-secondary">
+                <View
+                  className="h-2 w-full overflow-hidden rounded-full"
+                  style={{ backgroundColor: theme.colors.overlay.white30 }}>
                   <View
                     className="h-full rounded-full bg-text-primary"
                     style={{ width: `${macro.percent}%` }}
