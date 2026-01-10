@@ -143,11 +143,13 @@ export default function HomeScreen() {
         </View>
 
         {/* Daily Summary Card */}
-        <DailySummaryCard
-          calories={dailySummary.calories}
-          activity={dailySummary.activity}
-          gradientColors={dailySummary.gradientColors}
-        />
+        <View className="px-6 mb-6">
+          <DailySummaryCard
+            calories={dailySummary.calories}
+            activity={dailySummary.activity}
+            gradientColors={dailySummary.gradientColors}
+          />
+        </View>
 
         {/* Action Buttons */}
         <View className="mx-6 mb-8 flex-row gap-4">
