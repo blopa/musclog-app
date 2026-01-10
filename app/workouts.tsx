@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { MasterLayout } from '../components/MasterLayout';
 import { WorkoutCard } from '../components/WorkoutCard';
-import { FeaturedWorkoutCard } from '../components/FeaturedWorkoutCard';
 import { FilterTabs } from '../components/FilterTabs';
 import { CreateTemplateButton } from '../components/CreateTemplateButton';
 import { GradientText } from '../components/GradientText';
@@ -197,7 +196,7 @@ export default function WorkoutsScreen() {
 
             {/* Normal State - Featured Workout */}
             {!isLoading && !error && featuredWorkout && filteredWorkouts.length > 0 && (
-              <FeaturedWorkoutCard
+              <WorkoutCard
                 name={featuredWorkout.name}
                 lastCompleted={featuredWorkout.lastCompleted}
                 exerciseCount={featuredWorkout.exerciseCount}
@@ -220,7 +219,14 @@ export default function WorkoutsScreen() {
                     lastCompleted={workout.lastCompleted}
                     exerciseCount={workout.exerciseCount}
                     duration={workout.duration}
+                    variant="standard"
                     image={workout.image}
+                    onStart={() => {
+                      console.log('Start workout:', workout.name);
+                    }}
+                    onArchive={() => {
+                      console.log('Archive workout:', workout.name);
+                    }}
                     onMore={() => {
                       setSelectedWorkoutName(workout.name);
                       setIsMenuVisible(true);

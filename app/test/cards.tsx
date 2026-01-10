@@ -3,13 +3,12 @@ import { View, Text, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Sparkles, Bell, Trophy, Activity, Zap } from 'lucide-react-native';
 import { TestSection } from './components/TestSection';
-import { FeaturedWorkoutCard } from '../../components/FeaturedWorkoutCard';
+import { WorkoutCard } from '../../components/WorkoutCard';
 import { DailySummaryCard } from '../../components/DailySummaryCard';
 import { RecentWorkoutsCard } from '../../components/RecentWorkoutsCard';
 import { WorkoutStatCard } from '../../components/WorkoutStatCard';
 import { CaloriesRemainingCard } from '../../components/CaloriesRemainingCard';
 import { CreateTemplateButton } from '../../components/CreateTemplateButton';
-import { WorkoutCard } from '../../components/WorkoutCard';
 import { FoodInfoCard } from '../../components/FoodInfoCard';
 import { NotificationCard } from '../../components/NotificationCard';
 import { MacroCard } from '../../components/MacroCard';
@@ -44,12 +43,15 @@ export default function CardsTestScreen() {
         <View className="h-8" />
 
         <TestSection title="Featured Workout" subtitle="Highlight your workouts">
-          <FeaturedWorkoutCard
+          <WorkoutCard
             name="Push Day"
             lastCompleted="2026-01-08"
             exerciseCount={5}
             duration="45 mins"
+            variant="featured"
             image={{ uri: 'https://example.com/workout-image.jpg' }}
+            onStart={() => console.log('Start workout')}
+            onMore={() => console.log('More options')}
           />
         </TestSection>
 
@@ -113,6 +115,7 @@ export default function CardsTestScreen() {
             lastCompleted="2 days ago"
             exerciseCount={6}
             duration="50 mins"
+            variant="standard"
             image={require('../../assets/icon.png')}
             onStart={() => console.log('Start workout')}
             onArchive={() => console.log('Archive workout')}
