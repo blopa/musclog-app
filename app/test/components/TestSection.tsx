@@ -20,3 +20,5 @@ export function TestSection({ title, subtitle, children }: TestSectionProps) {
     </View>
   );
 }
+
+export default TestSection;
