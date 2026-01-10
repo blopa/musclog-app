@@ -66,8 +66,20 @@ export function FoodDetailsModal({
       visible={visible}
       onClose={onClose}
       title={t('foodDetails.title')}
-      scrollable={true}>
-      <View className="flex-1 px-4 pb-32">
+      scrollable={true}
+      footer={
+        <View className="bg-transparent px-4 pb-6 pt-3">
+          <Button
+            label={t('foodDetails.addFood')}
+            icon={PlusCircle}
+            variant="gradientCta"
+            size="lg"
+            width="full"
+            onPress={handleAddFood}
+          />
+        </View>
+      }>
+      <View className="flex-1 px-4 pb-6">
         {/* Food Info Card */}
         <View className="mt-6">
           <FoodInfoCard food={food} />
@@ -125,17 +137,7 @@ export function FoodDetailsModal({
         </View>
       </View>
 
-      {/* Bottom Floating Action Button */}
-      <View className="absolute bottom-0 left-0 right-0 border-t border-white/5 bg-bg-primary/95 p-4 pb-8">
-        <Button
-          label={t('foodDetails.addFood')}
-          icon={PlusCircle}
-          variant="gradientCta"
-          size="lg"
-          width="full"
-          onPress={handleAddFood}
-        />
-      </View>
+      {/* footer is handled by FullScreenModal */}
 
       {/* Date Picker Modal */}
       <DatePickerModal

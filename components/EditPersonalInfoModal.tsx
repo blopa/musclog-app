@@ -72,8 +72,7 @@ export function EditPersonalInfoModal({
       visible={visible}
       onClose={onClose}
       title="Edit Personal Info"
-      footer={saveButton}
-    >
+      footer={saveButton}>
       <View className="flex-1 px-4 pt-2">
         {/* Avatar Section */}
         <View className="items-center py-6">
