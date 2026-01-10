@@ -110,74 +110,74 @@ export function EndWorkoutModal({
               style={{
                 borderRadius: theme.borderRadius['3xl'],
               }}>
-                {/* Gradient Header */}
-                <LinearGradient
-                  colors={[
-                    theme.colors.status.purple40,
-                    theme.colors.accent.secondary10,
-                    'transparent',
-                  ]}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 0 }}
-                  style={{
-                    borderBottomWidth: 1,
-                    borderBottomColor: theme.colors.border.dark,
-                  }}>
-                  <View className="flex-row items-center justify-between p-6">
-                    <View className="flex-row items-center gap-3">
-                      <View className="h-12 w-12 items-center justify-center rounded-full bg-bg-overlay">
-                        <Flag
-                          size={theme.iconSize.sm}
-                          color={theme.colors.accent.secondary}
-                          fill={theme.colors.accent.secondary}
-                        />
-                      </View>
-                      <Text className="text-2xl font-bold text-text-primary">
-                        {t('endWorkout.title')}
-                      </Text>
+              {/* Gradient Header */}
+              <LinearGradient
+                colors={[
+                  theme.colors.status.purple40,
+                  theme.colors.accent.secondary10,
+                  'transparent',
+                ]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={{
+                  borderBottomWidth: 1,
+                  borderBottomColor: theme.colors.border.dark,
+                }}>
+                <View className="flex-row items-center justify-between p-6">
+                  <View className="flex-row items-center gap-3">
+                    <View className="h-12 w-12 items-center justify-center rounded-full bg-bg-overlay">
+                      <Flag
+                        size={theme.iconSize.sm}
+                        color={theme.colors.accent.secondary}
+                        fill={theme.colors.accent.secondary}
+                      />
                     </View>
-                    <Pressable
-                      className="active:bg-bg-card-elevated h-10 w-10 items-center justify-center rounded-full bg-bg-overlay"
-                      onPress={onClose}>
-                      <X size={theme.iconSize.md} color={theme.colors.text.secondary} />
-                    </Pressable>
+                    <Text className="text-2xl font-bold text-text-primary">
+                      {t('endWorkout.title')}
+                    </Text>
                   </View>
-                </LinearGradient>
-
-                {/* Content */}
-                <View className="p-6">
-                  <Text className="text-base leading-relaxed text-text-primary">
-                    {t('endWorkout.confirmation')}
-                  </Text>
-                </View>
-
-                {/* Action Buttons */}
-                <View className="gap-3 px-6 pb-6">
-                  <Button
-                    label={t('endWorkout.finishAndSave')}
-                    icon={Save}
-                    size="sm"
-                    width="full"
-                    onPress={() => {
-                      onFinishAndSave?.();
-                      onClose();
-                    }}
-                  />
-
-                  <Button
-                    label={t('endWorkout.finishAndDiscard')}
-                    icon={Trash2}
-                    variant="discard"
-                    size="sm"
-                    width="full"
-                    onPress={() => {
-                      onFinishAndDiscard?.();
-                      onClose();
-                    }}
-                  />
+                  <Pressable
+                    className="active:bg-bg-card-elevated h-10 w-10 items-center justify-center rounded-full bg-bg-overlay"
+                    onPress={onClose}>
+                    <X size={theme.iconSize.md} color={theme.colors.text.secondary} />
+                  </Pressable>
                 </View>
               </LinearGradient>
-            </Animated.View>
+
+              {/* Content */}
+              <View className="p-6">
+                <Text className="text-base leading-relaxed text-text-primary">
+                  {t('endWorkout.confirmation')}
+                </Text>
+              </View>
+
+              {/* Action Buttons */}
+              <View className="gap-3 px-6 pb-6">
+                <Button
+                  label={t('endWorkout.finishAndSave')}
+                  icon={Save}
+                  size="sm"
+                  width="full"
+                  onPress={() => {
+                    onFinishAndSave?.();
+                    onClose();
+                  }}
+                />
+
+                <Button
+                  label={t('endWorkout.finishAndDiscard')}
+                  icon={Trash2}
+                  variant="discard"
+                  size="sm"
+                  width="full"
+                  onPress={() => {
+                    onFinishAndDiscard?.();
+                    onClose();
+                  }}
+                />
+              </View>
+            </LinearGradient>
+          </Animated.View>
         </Pressable>
       </Pressable>
     </Modal>

@@ -123,13 +123,12 @@ export function SessionFeedbackModal({ visible, onClose, onSubmit }: SessionFeed
       headerIcon={headerIcon}
       footer={footer}>
       <ScrollView
-        className="flex-1"
         showsVerticalScrollIndicator={false}
         style={webScrollViewStyle}
         contentContainerStyle={{
-          padding: theme.spacing.padding['2xl'],
+          paddingBottom: theme.spacing.padding.xl,
         }}>
-        <View className="-mt-2 gap-8">
+        <View className="gap-8">
           {/* Rating Sliders */}
           <RatingSlider
             label={t('sessionFeedback.difficulty')}

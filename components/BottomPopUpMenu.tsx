@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, ReactNode } from 'react';
 import { View, Text, Pressable, Modal, Animated, Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { X } from 'lucide-react-native';
 import { theme } from '../theme';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -80,6 +81,7 @@ export function BottomPopUpMenu({
   maxHeight,
   headerIcon,
 }: BottomPopUpMenuProps) {
+  const insets = useSafeAreaInsets();
   const slideAnim = useRef(
     new Animated.Value(theme.components.modal.bottomSheetInitialOffset)
   ).current; // Start off-screen
@@ -139,6 +141,7 @@ export function BottomPopUpMenu({
           {/* Modal Content */}
           <Animated.View
             className="border-t border-border-dark"
+            onStartShouldSetResponder={() => true}
             style={{
               transform: [{ translateY: slideAnim }],
               backgroundColor: theme.colors.background.cardElevated,
@@ -146,6 +149,7 @@ export function BottomPopUpMenu({
               borderTopLeftRadius: theme.borderRadius['3xl'],
               borderTopRightRadius: theme.borderRadius['3xl'],
               maxHeight: maxHeight || '90%',
+              width: '100%',
             }}>
             {/* Header */}
             <LinearGradient
@@ -177,7 +181,7 @@ export function BottomPopUpMenu({
 
             {/* Content */}
             {children ? (
-              <View className="flex-1 p-6">{children}</View>
+              <View className="p-6">{children}</View>
             ) : items ? (
               <View className="gap-3 p-6">
                 {items.map((item, index) => (
@@ -200,7 +204,15 @@ export function BottomPopUpMenu({
             ) : null}
 
             {/* Footer */}
-            {footer && <View className="border-t border-border-dark px-6 pb-6 pt-2">{footer}</View>}
+            {footer && (
+              <View
+                className="border-t border-border-dark px-6 pt-2"
+                style={{
+                  paddingBottom: Math.max(insets.bottom, theme.spacing.padding.xl),
+                }}>
+                {footer}
+              </View>
+            )}
           </Animated.View>
         </View>
       </Pressable>
