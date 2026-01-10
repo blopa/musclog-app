@@ -1,13 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { View, Text, Image, Pressable, ScrollView, TextInput } from 'react-native';
-import {
-  GiftedChat,
-  IMessage,
-  BubbleProps,
-  InputToolbarProps,
-  RenderMessageTextProps,
-  ComposerProps,
-} from 'react-native-gifted-chat';
+import { GiftedChat, IMessage, BubbleProps } from 'react-native-gifted-chat';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
   MoreVertical,
@@ -17,7 +10,6 @@ import {
   TrendingUp,
   UtensilsCrossed,
 } from 'lucide-react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../theme';
 import { FullScreenModal } from './FullScreenModal';
 import { ChatWorkoutCard } from './ChatWorkoutCard';
@@ -155,7 +147,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
   // Custom render for message bubbles
   const renderBubble = (props: BubbleProps<ExtendedIMessage>) => {
     const { currentMessage, user } = props;
-    const isUser = currentMessage?.user._id === user._id;
+    const isUser = user && currentMessage?.user._id === user._id;
 
     if (isUser) {
       // User message - gradient green bubble
@@ -229,7 +221,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
   };
 
   // Custom render for message text
-  const renderMessageText = (props: RenderMessageTextProps<ExtendedIMessage>) => {
+  const renderMessageText = (props: any) => {
     return (
       <Text
         style={{
@@ -291,33 +283,30 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     return null;
   };
 
-  // Custom composer
-  const renderComposer = (props: ComposerProps) => {
+  // Custom composer with local state
+  const [composerText, setComposerText] = useState('');
+  const renderComposer = () => {
     return (
       <TextInput
-        {...props.textInputProps}
-        value={props.text}
-        onChangeText={props.onTextChanged}
-        placeholder={props.placeholder}
+        value={composerText}
+        onChangeText={setComposerText}
+        placeholder="Type a message..."
         placeholderTextColor={theme.colors.text.tertiary}
-        style={[
-          {
-            fontSize: 16,
-            color: theme.colors.text.primary,
-            paddingVertical: 0,
-            paddingHorizontal: 0,
-            margin: 0,
-            flex: 1,
-          },
-          props.textInputProps?.style,
-        ]}
+        style={{
+          fontSize: 16,
+          color: theme.colors.text.primary,
+          paddingVertical: 0,
+          paddingHorizontal: 0,
+          margin: 0,
+          flex: 1,
+        }}
         multiline
       />
     );
   };
 
   // Custom input toolbar
-  const renderInputToolbar = (props: InputToolbarProps<ExtendedIMessage>) => {
+  const renderInputToolbar = () => {
     return (
       <View
         className="border-t bg-bg-primary px-4 pb-4 pt-1"
@@ -326,7 +315,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
           <View
             className="flex-1 flex-row items-center rounded-2xl border bg-bg-card pl-4"
             style={{ borderColor: theme.colors.border.light }}>
-            <View className="flex-1 py-2.5">{renderComposer(props)}</View>
+            <View className="flex-1 py-2.5">{renderComposer()}</View>
             <Pressable className="p-2" onPress={() => console.log('Mic pressed')}>
               <Mic size={20} color={theme.colors.text.tertiary} />
             </Pressable>
@@ -335,8 +324,16 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
             className="h-12 w-12 items-center justify-center rounded-full active:scale-90"
             style={{ backgroundColor: theme.colors.accent.primary }}
             onPress={() => {
-              if (props.text && props.text.trim() && props.onSend) {
-                props.onSend([{ text: props.text.trim(), user: { _id: 1 } }], true);
+              if (composerText.trim()) {
+                onSend([
+                  {
+                    _id: Date.now(),
+                    text: composerText.trim(),
+                    user: { _id: 1 },
+                    createdAt: new Date(),
+                  },
+                ]);
+                setComposerText('');
               }
             }}>
             <Send size={20} color={theme.colors.text.black} />
@@ -469,13 +466,9 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
             renderInputToolbar={renderInputToolbar}
             renderAccessory={renderAccessory}
             renderDay={renderDay}
-            placeholder="Ask about exercises, nutrition..."
-            alwaysShowSend={false}
-            scrollToBottom
             scrollToBottomComponent={() => null}
-            infiniteScroll
             minInputToolbarHeight={0}
-            listViewProps={{
+            listProps={{
               contentContainerStyle: { paddingBottom: 16, paddingHorizontal: 16 },
             }}
           />
