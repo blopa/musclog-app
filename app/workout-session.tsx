@@ -48,7 +48,7 @@ export default function WorkoutSessionScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-bg-primary" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-bg-primary" edges={['top', 'bottom']}>
       <StatusBar style="light" />
       <View className="flex-1">
         {/* Hero Image Background */}

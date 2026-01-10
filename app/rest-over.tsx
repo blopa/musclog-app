@@ -70,7 +70,7 @@ export default function RestOverScreen() {
       : {};
 
   return (
-    <SafeAreaView className="flex-1 bg-bg-primary" edges={['top']} style={webScreenStyle}>
+    <SafeAreaView className="flex-1 bg-bg-primary" edges={['top', 'bottom']} style={webScreenStyle}>
       {/* Background Glow Effects */}
       <Animated.View
         className="absolute right-[-10%] top-[-20%] h-[50%] w-[80%] rounded-full blur-3xl"

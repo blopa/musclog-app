@@ -84,7 +84,7 @@ export default function RestTimerScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-bg-primary" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-bg-primary" edges={['top', 'bottom']}>
       <StatusBar style="light" />
 
       {/* Ambient Background Gradients */}

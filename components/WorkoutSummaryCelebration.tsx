@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, Pressable, Modal, Platform, Animated } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Home } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
@@ -28,6 +29,7 @@ export function WorkoutSummaryCelebration({
   personalRecords = 2,
 }: WorkoutSummaryCelebrationProps) {
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
   const glowAnim1 = useRef(new Animated.Value(0.6)).current;
   const glowAnim2 = useRef(new Animated.Value(0.6)).current;
 
@@ -78,7 +80,15 @@ export function WorkoutSummaryCelebration({
       animationType="fade"
       onRequestClose={onClose}
       statusBarTranslucent={Platform.OS !== 'web'}>
-      <View className="flex-1 bg-bg-primary" style={webModalStyle}>
+      <View
+        className="flex-1 bg-bg-primary"
+        style={[
+          webModalStyle,
+          {
+            paddingTop: Platform.OS !== 'web' ? insets.top : 0,
+            paddingBottom: Platform.OS !== 'web' ? Math.max(insets.bottom, 16) : 0,
+          },
+        ]}>
         <View className="flex-1 items-center justify-center px-6 py-8">
           {/* Background Glow Effects */}
           <Animated.View

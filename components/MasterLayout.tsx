@@ -31,7 +31,11 @@ export function MasterLayout({ children }: MasterLayoutProps) {
         <SafeAreaView edges={['bottom']}>
           <View className="relative flex-row items-center justify-around px-6 py-4">
             {/* Home */}
-            <Pressable className="items-center gap-1" onPress={() => router.push('/')}>
+            <Pressable
+              className="items-center gap-1"
+              onPress={() => {
+                if (!isActive('/')) router.push('/');
+              }}>
               <View
                 className={`h-10 w-16 items-center justify-center rounded-lg ${
                   isActive('/') ? 'bg-bg-navActive' : ''
@@ -51,7 +55,11 @@ export function MasterLayout({ children }: MasterLayoutProps) {
             </Pressable>
 
             {/* Workouts */}
-            <Pressable className="items-center gap-1" onPress={() => router.push('/workouts')}>
+            <Pressable
+              className="items-center gap-1"
+              onPress={() => {
+                if (!isActive('/workouts')) router.push('/workouts');
+              }}>
               <View
                 className={`h-10 w-16 items-center justify-center rounded-lg ${
                   isActive('/workouts') ? 'bg-bg-navActive' : ''
@@ -86,7 +94,11 @@ export function MasterLayout({ children }: MasterLayoutProps) {
             </Pressable>
 
             {/* Food */}
-            <Pressable className="items-center gap-1" onPress={() => router.push('/food')}>
+            <Pressable
+              className="items-center gap-1"
+              onPress={() => {
+                if (!isActive('/food')) router.push('/food');
+              }}>
               <View
                 className={`h-10 w-16 items-center justify-center rounded-lg ${
                   isActive('/food') ? 'bg-bg-navActive' : ''
