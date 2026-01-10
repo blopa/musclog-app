@@ -7,5 +7,7 @@
       "@/*": ["src/*"]
     }
   },
-  "exclude": ["node_modules"]
+
+  "include": ["app", "components", "lang", "scripts", "theme.ts", "App.tsx", "nativewind-env.d.ts"],
+  "exclude": ["node_modules", "babel.config.js", "metro.config.js", "tailwind.config.js"]
 }

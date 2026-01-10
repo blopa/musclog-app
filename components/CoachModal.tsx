@@ -1,11 +1,21 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
-import { View, Text, Image, Pressable, ScrollView, TextInput } from 'react-native';
-import { GiftedChat, IMessage, BubbleProps } from 'react-native-gifted-chat';
+import { View, Text, Image, Pressable, ScrollView, StyleSheet } from 'react-native';
+import {
+  GiftedChat,
+  IMessage,
+  BubbleProps,
+  Send,
+  Composer,
+  InputToolbar,
+  SendProps,
+  ComposerProps,
+  InputToolbarProps,
+} from 'react-native-gifted-chat';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
   MoreVertical,
   Mic,
-  Send,
+  Send as SendIcon,
   PlusCircle,
   TrendingUp,
   UtensilsCrossed,
@@ -14,11 +24,11 @@ import { theme } from '../theme';
 import { FullScreenModal } from './FullScreenModal';
 import { ChatWorkoutCard } from './ChatWorkoutCard';
 
-// AI Coach avatar URL from the HTML
+// AI Coach avatar URL
 const AI_COACH_AVATAR =
   'https://lh3.googleusercontent.com/aida-public/AB6AXuAXxrp6riIDnXZkR98-jJEX8IIqKuGBbD6Nlxrt4t8oifz8KgM3q3VjFPKYVzNwfFBEbdvjEkEU1a8oYivCY0oJHBD1HEi-Pjg0638r8tULKurmfvFPaF6OSNcWQvlzhK3coc8DccgtARUtSOOmqSOoHEQM8JQIOwBYvElVbb2XsURsvRMicbylHk1qeA98fvyZhS3mwy_S67AKXjSWGEGJ5IJBSZNpAQRfaMWXjKg6b5xV_xg0ScM8K_urNvzJV1Pa5ATJZO9yDjw7';
 
-// Workout image URL from the HTML
+// Workout image URL
 const WORKOUT_IMAGE_URL =
   'https://lh3.googleusercontent.com/aida-public/AB6AXuC8wdyvHF33Emd_otj2gCXb_-DtuZnk1Yynloi9mvz8s2ZtTJ1fFbg_J8B8x02R5Njk5nPX1SonjXw5sEU1gwylKXq3buzHpa2EoRQfBpA6BTNRGfSjYnqBMRSyDW7tl5DHtCWM5DOUd91Ka2gB8Y-rdvJB99_hQED2ZIqMdcWkgxVdv_pRnWFXwFirvEOSMuCveL2ZxoS3oQpkrQoYXVBSunvPf8QQ6xtQQw-v_r9wOPDB6W6pKw22mPLs0nsdG-MkvUJTj7VCxnSe';
 
@@ -130,6 +140,163 @@ const getInitialMessages = (): ExtendedIMessage[] => {
   ];
 };
 
+// --- Custom Render Functions (Defined Outside for Stability) ---
+
+const renderMessageText = (props: any) => {
+  return (
+    <Text
+      style={{
+        fontSize: 15,
+        lineHeight: 22,
+        color:
+          props.currentMessage?.user._id === 1
+            ? theme.colors.text.black
+            : theme.colors.text.primary,
+      }}>
+      {props.currentMessage?.text}
+    </Text>
+  );
+};
+
+const renderCustomView = (props: BubbleProps<ExtendedIMessage>) => {
+  const { currentMessage } = props;
+  if (currentMessage?.workout) {
+    return (
+      <View className="mt-2 w-full max-w-sm">
+        <ChatWorkoutCard
+          title={currentMessage.workout.title}
+          duration={currentMessage.workout.duration}
+          level={currentMessage.workout.level}
+          exerciseCount={currentMessage.workout.exerciseCount}
+          calories={currentMessage.workout.calories}
+          image={{ uri: WORKOUT_IMAGE_URL }}
+          onStartWorkout={() => console.log('Start workout')}
+        />
+      </View>
+    );
+  }
+  return null;
+};
+
+const renderBubble = (props: BubbleProps<ExtendedIMessage>) => {
+  const { currentMessage, user } = props;
+  const isUser = user && currentMessage?.user._id === user._id;
+
+  if (isUser) {
+    return (
+      <View style={styles.userBubbleContainer}>
+        {!!currentMessage?.text && (
+          <LinearGradient
+            colors={[theme.colors.accent.primary, '#1aa869']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.userBubbleGradient}>
+            {renderMessageText(props)}
+          </LinearGradient>
+        )}
+        {!!currentMessage?.workout && renderCustomView(props)}
+        {!!currentMessage?.createdAt && (
+          <Text
+            className="mr-1 mt-1 text-right text-xs"
+            style={{ color: theme.colors.text.tertiary }}>
+            Read{' '}
+            {new Date(currentMessage.createdAt).toLocaleTimeString('en-US', {
+              hour: 'numeric',
+              minute: '2-digit',
+            })}
+          </Text>
+        )}
+      </View>
+    );
+  } else {
+    return (
+      <View style={styles.aiBubbleContainer}>
+        {!!currentMessage?.user.name && (
+          <Text className="mb-1 ml-1 text-xs" style={{ color: theme.colors.text.secondary }}>
+            {currentMessage.user.name}
+          </Text>
+        )}
+        {!!currentMessage?.text && (
+          <View style={styles.aiBubbleContent}>{renderMessageText(props)}</View>
+        )}
+        {!!currentMessage?.workout && renderCustomView(props)}
+      </View>
+    );
+  }
+};
+
+const renderAvatar = (props: any) => {
+  if (props.currentMessage?.user._id === 1) return null;
+  if (!props.currentMessage?.text && props.currentMessage?.workout) {
+    return <View style={{ width: 32 }} />;
+  }
+  return <Image source={{ uri: AI_COACH_AVATAR }} style={styles.avatar} resizeMode="cover" />;
+};
+
+const renderDay = (props: any) => {
+  if (!props.currentMessage?.createdAt) return null;
+  const date = new Date(props.currentMessage.createdAt);
+  const now = new Date();
+  const isToday = date.toDateString() === now.toDateString();
+
+  if (isToday) {
+    return (
+      <View className="my-6 items-center">
+        <View className="rounded-full bg-bg-card px-3 py-1">
+          <Text className="text-xs font-medium" style={{ color: theme.colors.text.tertiary }}>
+            Today, {date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
+          </Text>
+        </View>
+      </View>
+    );
+  }
+  return null;
+};
+
+const renderSend = (props: SendProps<ExtendedIMessage>) => {
+  return (
+    <Send {...props} containerStyle={styles.sendContainer}>
+      <View
+        className="h-12 w-12 items-center justify-center rounded-full active:scale-90"
+        style={{ backgroundColor: theme.colors.accent.primary }}>
+        <SendIcon size={20} color={theme.colors.text.black} />
+      </View>
+    </Send>
+  );
+};
+
+const renderComposer = (props: ComposerProps) => {
+  return (
+    <View style={styles.composerWrapper}>
+      <Composer
+        {...props}
+        textInputProps={{
+          ...props.textInputProps,
+          style: [styles.composerTextInput, props.textInputProps?.style],
+          placeholder: 'Type a message...',
+          placeholderTextColor: theme.colors.text.tertiary,
+          multiline: true,
+        }}
+      />
+      <Pressable className="p-2" onPress={() => console.log('Mic pressed')}>
+        <Mic size={20} color={theme.colors.text.tertiary} />
+      </Pressable>
+    </View>
+  );
+};
+
+const renderInputToolbar = (props: InputToolbarProps<ExtendedIMessage>) => {
+  return (
+    <InputToolbar
+      {...props}
+      containerStyle={styles.inputToolbarContainer}
+      primaryStyle={styles.inputToolbarPrimary}
+    />
+  );
+};
+
+// --- Main Component ---
+
 type CoachModalProps = {
   visible: boolean;
   onClose: () => void;
@@ -144,210 +311,10 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     }
   }, [visible]);
 
-  // Custom render for message bubbles
-  const renderBubble = useCallback((props: BubbleProps<ExtendedIMessage>) => {
-    const { currentMessage, user } = props;
-    const isUser = user && currentMessage?.user._id === user._id;
-
-    if (isUser) {
-      // User message - gradient green bubble
-      return (
-        <View
-          style={{
-            maxWidth: '85%',
-            marginRight: 0,
-            marginLeft: 'auto',
-            alignItems: 'flex-end',
-          }}>
-          {!!currentMessage?.text && (
-            <LinearGradient
-              colors={[theme.colors.accent.primary, '#1aa869']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={{
-                paddingHorizontal: 16,
-                paddingVertical: 12,
-                borderRadius: 20,
-                borderBottomRightRadius: 4,
-              }}>
-              {props.renderMessageText && props.renderMessageText(props as any)}
-            </LinearGradient>
-          )}
-          {!!currentMessage?.workout && props.renderCustomView && props.renderCustomView(props)}
-          {!!currentMessage?.createdAt && (
-            <Text
-              className="mr-1 mt-1 text-right text-xs"
-              style={{ color: theme.colors.text.tertiary }}>
-              Read{' '}
-              {new Date(currentMessage.createdAt).toLocaleTimeString('en-US', {
-                hour: 'numeric',
-                minute: '2-digit',
-              })}
-            </Text>
-          )}
-        </View>
-      );
-    } else {
-      // AI message - dark card bubble
-      return (
-        <View
-          style={{
-            maxWidth: '85%',
-            marginLeft: 0,
-            marginRight: 'auto',
-            alignItems: 'flex-start',
-          }}>
-          {!!currentMessage?.user.name && (
-            <Text className="mb-1 ml-1 text-xs" style={{ color: theme.colors.text.secondary }}>
-              {currentMessage.user.name}
-            </Text>
-          )}
-          {!!currentMessage?.text && (
-            <View
-              style={{
-                backgroundColor: theme.colors.background.cardElevated,
-                paddingHorizontal: 16,
-                paddingVertical: 12,
-                borderRadius: 20,
-                borderBottomLeftRadius: 4,
-              }}>
-              {props.renderMessageText && props.renderMessageText(props as any)}
-            </View>
-          )}
-          {!!currentMessage?.workout && props.renderCustomView && props.renderCustomView(props)}
-        </View>
-      );
-    }
-  }, []);
-
-  // Custom render for message text
-  const renderMessageText = useCallback((props: any) => {
-    return (
-      <Text
-        style={{
-          fontSize: 15,
-          lineHeight: 22,
-          color:
-            props.currentMessage?.user._id === 1
-              ? theme.colors.text.black
-              : theme.colors.text.primary,
-        }}>
-        {props.currentMessage?.text}
-      </Text>
-    );
-  }, []);
-
-  // Custom render for avatar
-  const renderAvatar = useCallback((props: any) => {
-    if (props.currentMessage?.user._id === 1) {
-      // Don't show avatar for user messages
-      return null;
-    }
-    if (!props.currentMessage?.text && props.currentMessage?.workout) {
-      // Don't show avatar for workout cards (they're standalone)
-      return <View style={{ width: 32 }} />;
-    }
-    return (
-      <Image
-        source={{ uri: AI_COACH_AVATAR }}
-        style={{
-          width: 32,
-          height: 32,
-          borderRadius: 16,
-          marginRight: 8,
-          marginBottom: 4,
-        }}
-        resizeMode="cover"
-      />
-    );
-  }, []);
-
-  // Custom render for custom views (workout cards)
-  const renderCustomView = useCallback((props: BubbleProps<ExtendedIMessage>) => {
-    const { currentMessage } = props;
-    if (currentMessage?.workout) {
-      return (
-        <View className="mt-2 w-full max-w-sm">
-          <ChatWorkoutCard
-            title={currentMessage.workout.title}
-            duration={currentMessage.workout.duration}
-            level={currentMessage.workout.level}
-            exerciseCount={currentMessage.workout.exerciseCount}
-            calories={currentMessage.workout.calories}
-            image={{ uri: WORKOUT_IMAGE_URL }}
-            onStartWorkout={() => console.log('Start workout')}
-          />
-        </View>
-      );
-    }
-    return null;
-  }, []);
-
-  // Custom composer with local state
-  const [composerText, setComposerText] = useState('');
-  const renderComposer = useCallback(() => {
-    return (
-      <TextInput
-        value={composerText}
-        onChangeText={setComposerText}
-        placeholder="Type a message..."
-        placeholderTextColor={theme.colors.text.tertiary}
-        style={{
-          fontSize: 16,
-          color: theme.colors.text.primary,
-          paddingVertical: 0,
-          paddingHorizontal: 0,
-          margin: 0,
-          flex: 1,
-        }}
-        multiline
-      />
-    );
-  }, [composerText]);
-
   const onSend = useCallback((newMessages: ExtendedIMessage[] = []) => {
     setMessages((previousMessages) => GiftedChat.append(previousMessages, newMessages));
   }, []);
 
-  // Custom input toolbar
-  const renderInputToolbar = useCallback(() => {
-    return (
-      <View
-        className="border-t bg-bg-primary px-4 pb-4 pt-1"
-        style={{ borderColor: theme.colors.border.light }}>
-        <View className="mb-2 flex-row items-end gap-2">
-          <View
-            className="flex-1 flex-row items-center rounded-2xl border bg-bg-card pl-4"
-            style={{ borderColor: theme.colors.border.light }}>
-            <View className="flex-1 py-2.5">{renderComposer()}</View>
-            <Pressable className="p-2" onPress={() => console.log('Mic pressed')}>
-              <Mic size={20} color={theme.colors.text.tertiary} />
-            </Pressable>
-          </View>
-          <Pressable
-            className="h-12 w-12 items-center justify-center rounded-full active:scale-90"
-            style={{ backgroundColor: theme.colors.accent.primary }}
-            onPress={() => {
-              if (composerText.trim()) {
-                onSend([
-                  {
-                    _id: Date.now(),
-                    text: composerText.trim(),
-                    user: { _id: 1 },
-                    createdAt: new Date(),
-                  } as any,
-                ]);
-                setComposerText('');
-              }
-            }}>
-            <Send size={20} color={theme.colors.text.black} />
-          </Pressable>
-        </View>
-      </View>
-    );
-  }, [composerText, onSend, renderComposer]);
-
-  // Custom accessory (quick actions)
   const renderAccessory = useCallback(() => {
     return (
       <ScrollView
@@ -382,28 +349,6 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     );
   }, []);
 
-  // Custom render for day separators
-  const renderDay = useCallback((props: any) => {
-    if (!props.currentMessage?.createdAt) return null;
-    const date = new Date(props.currentMessage.createdAt);
-    const now = new Date();
-    const isToday = date.toDateString() === now.toDateString();
-
-    if (isToday) {
-      return (
-        <View className="my-6 items-center">
-          <View className="rounded-full bg-bg-card px-3 py-1">
-            <Text className="text-xs font-medium" style={{ color: theme.colors.text.tertiary }}>
-              Today, {date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
-            </Text>
-          </View>
-        </View>
-      );
-    }
-    return null;
-  }, []);
-
-  // Custom header right component
   const headerRight = useMemo(
     () => (
       <Pressable className="h-10 w-10 items-center justify-center rounded-full active:bg-white/5">
@@ -421,7 +366,6 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
       headerRight={headerRight}
       scrollable={false}>
       <View className="flex-1 bg-bg-primary">
-        {/* Custom Header with Avatar - positioned right after modal header */}
         <View
           className="flex-row items-center gap-3 border-b px-4 py-3"
           style={{ borderColor: theme.colors.border.light }}>
@@ -454,19 +398,17 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
           </View>
         </View>
 
-        {/* GiftedChat */}
         <View className="flex-1">
           <GiftedChat
             messages={messages}
             onSend={onSend}
-            user={{
-              _id: 1,
-            }}
+            user={{ _id: 1 }}
             renderBubble={renderBubble}
-            renderMessageText={renderMessageText}
             renderAvatar={renderAvatar}
             renderCustomView={renderCustomView}
             renderInputToolbar={renderInputToolbar}
+            renderComposer={renderComposer}
+            renderSend={renderSend}
             renderAccessory={renderAccessory}
             renderDay={renderDay}
             scrollToBottomComponent={() => null}
@@ -480,3 +422,69 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     </FullScreenModal>
   );
 }
+
+const styles = StyleSheet.create({
+  userBubbleContainer: {
+    maxWidth: '85%',
+    marginRight: 0,
+    marginLeft: 'auto',
+    alignItems: 'flex-end',
+  },
+  userBubbleGradient: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 20,
+    borderBottomRightRadius: 4,
+  },
+  aiBubbleContainer: {
+    maxWidth: '85%',
+    marginLeft: 0,
+    marginRight: 'auto',
+    alignItems: 'flex-start',
+  },
+  aiBubbleContent: {
+    backgroundColor: theme.colors.background.cardElevated,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 20,
+    borderBottomLeftRadius: 4,
+  },
+  avatar: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    marginRight: 8,
+    marginBottom: 4,
+  },
+  sendContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'flex-end',
+    marginLeft: 8,
+  },
+  composerWrapper: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: theme.colors.border.light,
+    backgroundColor: theme.colors.background.card,
+    paddingLeft: 4,
+  },
+  composerTextInput: {
+    fontSize: 16,
+    color: theme.colors.text.primary,
+    marginTop: 8,
+    marginBottom: 8,
+  },
+  inputToolbarContainer: {
+    backgroundColor: 'transparent',
+    borderTopWidth: 0,
+    paddingHorizontal: 16,
+    paddingBottom: 8,
+  },
+  inputToolbarPrimary: {
+    alignItems: 'flex-end',
+  },
+});
