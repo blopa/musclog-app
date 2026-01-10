@@ -1,4 +1,5 @@
-import { View, Text, Pressable } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { View, Text, Pressable, TextInput } from 'react-native';
 import { Minus, Plus } from 'lucide-react-native';
 import { theme } from '../../theme';
 
@@ -27,12 +28,54 @@ export function BodyMetricsStepper({
   step = 1,
   onChange,
 }: BodyMetricCardProps) {
+  const [editing, setEditing] = useState(false);
+  const [inputValue, setInputValue] = useState(
+    unit === 'index' ? value.toFixed(1) : value.toString()
+  );
+  const inputRef = useRef<TextInput>(null);
+
+  useEffect(() => {
+    if (!editing) {
+      setInputValue(unit === 'index' ? value.toFixed(1) : value.toString());
+    }
+  }, [value, editing, unit]);
+
   const handleDecrement = () => {
     onChange(Math.max(min, value - step));
   };
 
   const handleIncrement = () => {
     onChange(Math.min(max, value + step));
+  };
+
+  const handleValuePress = () => {
+    setEditing(true);
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 100);
+  };
+
+  const handleInputChange = (text: string) => {
+    // Allow numbers and decimal points
+    if (/^\d*\.?\d*$/.test(text)) {
+      setInputValue(text);
+    }
+  };
+
+  const handleInputBlur = () => {
+    setEditing(false);
+    const num = parseFloat(inputValue);
+    if (!isNaN(num)) {
+      // Clamp between min and max
+      const clamped = Math.min(max, Math.max(min, num));
+      onChange(clamped);
+    } else {
+      setInputValue(unit === 'index' ? value.toFixed(1) : value.toString());
+    }
+  };
+
+  const handleInputSubmit = () => {
+    inputRef.current?.blur();
   };
 
   return (
@@ -62,9 +105,30 @@ export function BodyMetricsStepper({
             <Minus size={theme.iconSize.md} color={theme.colors.accent.primary} />
           </Pressable>
           <View className="w-16 items-center">
-            <Text className="text-xl font-bold text-text-primary">
-              {unit === 'index' ? value.toFixed(1) : value}
-            </Text>
+            {editing ? (
+              <TextInput
+                ref={inputRef}
+                value={inputValue}
+                onChangeText={handleInputChange}
+                onBlur={handleInputBlur}
+                onSubmitEditing={handleInputSubmit}
+                keyboardType="numeric"
+                className="text-center text-xl font-bold text-text-primary"
+                style={{
+                  padding: 0,
+                  margin: 0,
+                  width: '100%',
+                }}
+                returnKeyType="done"
+                selectTextOnFocus
+              />
+            ) : (
+              <Pressable onPress={handleValuePress} className="w-full items-center">
+                <Text className="text-xl font-bold text-text-primary">
+                  {unit === 'index' ? value.toFixed(1) : value}
+                </Text>
+              </Pressable>
+            )}
             <Text className="text-xs text-text-secondary">{unitLabel}</Text>
           </View>
           <Pressable
