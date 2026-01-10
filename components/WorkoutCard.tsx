@@ -24,7 +24,8 @@ export function WorkoutCard({
   image,
   onStart,
   onMore,
-  variant = 'standard',
+  // TODO: implement standard variant
+  variant = 'featured',
 }: FeaturedWorkoutCardProps) {
   const { t } = useTranslation();
 
