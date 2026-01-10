@@ -74,28 +74,13 @@ export function MasterLayout({ children }: MasterLayoutProps) {
               </Text>
             </Pressable>
 
-            {/* Spacer for camera button */}
-            <View className="w-20" />
-
-            {/* Camera - Central Action Button */}
-            <Pressable
-              className="absolute items-center justify-center"
-              style={{
-                top: -theme.size.base * 2, // Position above nav bar
-                left: '50%',
-                transform: [{ translateX: -theme.components.navBar.cameraButtonSize / 2 }],
-              }}
-              hitSlop={{
-                top: theme.spacing.padding.md,
-                bottom: theme.spacing.padding.md,
-                left: theme.spacing.padding.md,
-                right: theme.spacing.padding.md,
-              }}>
+            {/* Camera */}
+            <Pressable className="items-center gap-1">
               <View className="h-20 w-20 items-center justify-center rounded-full bg-accent-primary shadow-lg shadow-accent-primary/50">
                 <Camera
-                  size={theme.iconSize.lg}
-                  color={theme.colors.text.black}
-                  strokeWidth={theme.strokeWidth.normal}
+                  size={theme.iconSize.md}
+                  color={theme.colors.text.tertiary}
+                  strokeWidth={theme.borderWidth.medium}
                 />
               </View>
             </Pressable>
