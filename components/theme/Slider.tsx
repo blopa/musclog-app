@@ -26,7 +26,7 @@ export function Slider({
   thumbColor = theme.colors.background.white,
   useGradient = true,
   gradientColors = theme.colors.gradients.progress,
-  variant = 'gradient',
+  variant = 'solid',
   solidColor = theme.colors.accent.primary,
 }: SliderProps) {
   const [containerWidth, setContainerWidth] = React.useState(0);
@@ -42,19 +42,16 @@ export function Slider({
     onChange(val);
   };
 
-  // Account for thumb radius - the slider track doesn't span full width
+  // TODO: this math is only necessary for the gradient variant
   const thumbRadius = 12;
   const progress = (displayValue - min) / (max - min);
-  // Effective track width excludes thumb padding on both sides
   const effectiveTrackWidth = Math.max(0, containerWidth - thumbRadius * 2);
-  // Fill starts at thumbRadius and extends based on progress
   const fillWidth = thumbRadius + effectiveTrackWidth * progress;
 
   return (
     <View
       className="h-10 w-full justify-center"
       onLayout={(e) => setContainerWidth(e.nativeEvent.layout.width)}>
-      {/* Background Track (Unfilled part - Gray) */}
       <View
         className="absolute left-0.5 right-0.5 h-1.5 rounded-full"
         style={{ backgroundColor: trackColor }}
@@ -74,11 +71,12 @@ export function Slider({
         </View>
       )}
 
+      {/*TODO: why does the solid variant doesn't fill the whole track?*/}
       <SliderComponent
         style={{
           width: '100%',
           height: 40,
-          zIndex: 1,
+          zIndex: variant === 'gradient' ? 1 : 0,
         }}
         value={value}
         minimumValue={min}
