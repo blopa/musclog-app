@@ -14,6 +14,7 @@ type SliderProps = {
   useGradient?: boolean;
   gradientColors?: readonly [string, string, ...string[]];
   variant?: 'gradient' | 'solid';
+  solidColor?: string;
 };
 
 export function Slider({
@@ -25,8 +26,8 @@ export function Slider({
   thumbColor = theme.colors.background.white,
   useGradient = true,
   gradientColors = theme.colors.gradients.progress,
-  // TODO: use it
   variant = 'gradient',
+  solidColor = theme.colors.accent.primary,
 }: SliderProps) {
   const [containerWidth, setContainerWidth] = React.useState(0);
   const [displayValue, setDisplayValue] = React.useState(value);
@@ -59,17 +60,27 @@ export function Slider({
         style={{ backgroundColor: trackColor }}
       />
 
-      {/* Gradient Fill (Left side only) */}
-      {useGradient && containerWidth > 0 && (
+      {/* Progress Fill */}
+      {containerWidth > 0 && (
         <View
           className="absolute left-0.5 h-1.5 overflow-hidden rounded-full"
           style={{ width: fillWidth }}>
-          <LinearGradient
-            colors={gradientColors}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            style={{ width: containerWidth, height: '100%' }}
-          />
+          {variant === 'gradient' && useGradient ? (
+            <LinearGradient
+              colors={gradientColors}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={{ width: containerWidth, height: '100%' }}
+            />
+          ) : (
+            <View
+              style={{
+                width: '100%',
+                height: '100%',
+                backgroundColor: solidColor,
+              }}
+            />
+          )}
         </View>
       )}
 
