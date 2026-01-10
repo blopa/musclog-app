@@ -127,11 +127,10 @@ export function LogSetPerformanceModal({
       subtitle={`${setLabel} • ${exerciseName}`}
       footer={footer}>
       <ScrollView
-        className="flex-1"
         showsVerticalScrollIndicator={false}
         style={webScrollViewStyle}
         contentContainerStyle={{
-          padding: theme.spacing.padding['2xl'],
+          paddingBottom: theme.spacing.padding.xl,
         }}>
         <View className="gap-6">
           {/* Stats Cards */}

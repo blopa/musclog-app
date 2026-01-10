@@ -79,7 +79,6 @@ export function AddFoodModal({
       subtitle={t('food.addFoodModal.subtitle')}
       maxHeight="92%">
       <ScrollView
-        className="flex-1"
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: theme.spacing.padding.xl }}>
         <View className="gap-8">

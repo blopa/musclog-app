@@ -107,7 +107,7 @@ export function ReplaceExerciseModal({
           />
         </View>
       }>
-      <View className="flex-1">
+      <View>
         {/* Search and Filters Section */}
         <View
           className="gap-3"
@@ -157,7 +157,6 @@ export function ReplaceExerciseModal({
 
         {/* Exercise List Section */}
         <ScrollView
-          className="flex-1"
           showsVerticalScrollIndicator={false}
           style={{
             backgroundColor: theme.colors.background.primary,
