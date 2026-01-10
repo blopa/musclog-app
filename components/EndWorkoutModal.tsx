@@ -82,40 +82,34 @@ export function EndWorkoutModal({
       statusBarTranslucent={Platform.OS !== 'web'}>
       {/* Backdrop */}
       <Pressable
-        className="flex-1"
+        className="flex-1 items-center justify-center p-4"
         style={[{ backgroundColor: theme.colors.overlay.black60 }, webBackdropStyle]}
         onPress={onClose}>
-        <View
-          className="flex-1 items-center justify-center px-6"
-          style={
-            Platform.OS === 'web'
-              ? ({ display: 'flex', alignItems: 'center', justifyContent: 'center' } as any)
-              : undefined
-          }>
-          {/* Modal Content */}
-          <View>
-            <Animated.View
+        {/* Modal Content */}
+        <Pressable
+          onPress={(e) => e.stopPropagation()}
+          style={{ width: '100%', maxWidth: theme.components.modal.defaultMaxWidth }}>
+          <Animated.View
+            style={{
+              transform: [{ scale: scaleAnim }],
+              opacity: opacityAnim,
+              borderRadius: theme.borderRadius['3xl'],
+              borderWidth: theme.borderWidth.thin,
+              borderColor: theme.colors.border.dark,
+              overflow: 'hidden',
+              width: '100%',
+            }}>
+            <LinearGradient
+              colors={[
+                theme.colors.background.cardElevated,
+                theme.colors.background.card,
+                theme.colors.background.cardDark,
+              ]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
               style={{
-                transform: [{ scale: scaleAnim }],
-                opacity: opacityAnim,
                 borderRadius: theme.borderRadius['3xl'],
-                borderWidth: theme.borderWidth.thin,
-                borderColor: theme.colors.border.dark,
-                overflow: 'hidden',
-                width: '100%',
               }}>
-              <LinearGradient
-                colors={[
-                  theme.colors.background.cardElevated,
-                  theme.colors.background.card,
-                  theme.colors.background.cardDark,
-                ]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={{
-                  borderRadius: theme.borderRadius['3xl'],
-                  minHeight: '100%',
-                }}>
                 {/* Gradient Header */}
                 <LinearGradient
                   colors={[
@@ -184,8 +178,7 @@ export function EndWorkoutModal({
                 </View>
               </LinearGradient>
             </Animated.View>
-          </View>
-        </View>
+        </Pressable>
       </Pressable>
     </Modal>
   );
