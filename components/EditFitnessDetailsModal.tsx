@@ -12,6 +12,9 @@ import {
   Timer,
   Target,
   Heart,
+  Coffee,
+  Move,
+  Flame,
 } from 'lucide-react-native';
 import { theme } from '../theme';
 import { FullScreenModal } from './FullScreenModal';
@@ -59,6 +62,7 @@ export function EditFitnessDetailsModal({
     initialData?.experience ?? 'intermediate'
   );
   const [isGoalPickerVisible, setIsGoalPickerVisible] = useState(false);
+  const [isActivityPickerVisible, setIsActivityPickerVisible] = useState(false);
 
   const handleSave = () => {
     onSave?.({
@@ -75,6 +79,49 @@ export function EditFitnessDetailsModal({
 
   const activityLevelLabels = ['Sedentary', 'Light', 'Moderate', 'Active', 'Super Active'];
   const currentActivityLabel = activityLevelLabels[activityLevel - 1];
+
+  const activityLevelOptions = [
+    {
+      level: 1,
+      title: 'Sedentary',
+      description: 'Little to no exercise, desk job',
+      icon: Coffee,
+      iconColor: theme.colors.text.tertiary,
+      iconBgColor: theme.colors.background.white5,
+    },
+    {
+      level: 2,
+      title: 'Light',
+      description: 'Light exercise 1-3 days/week',
+      icon: Move,
+      iconColor: theme.colors.status.info,
+      iconBgColor: 'rgba(59, 130, 246, 0.1)',
+    },
+    {
+      level: 3,
+      title: 'Moderate',
+      description: 'Moderate exercise 3-5 days/week',
+      icon: Activity,
+      iconColor: theme.colors.accent.primary,
+      iconBgColor: theme.colors.accent.primary10,
+    },
+    {
+      level: 4,
+      title: 'Active',
+      description: 'Hard exercise 6-7 days/week',
+      icon: Zap,
+      iconColor: theme.colors.status.warning,
+      iconBgColor: 'rgba(249, 115, 22, 0.1)',
+    },
+    {
+      level: 5,
+      title: 'Super Active',
+      description: 'Very hard exercise & physical job',
+      icon: Flame,
+      iconColor: theme.colors.rose.brand,
+      iconBgColor: 'rgba(218, 37, 82, 0.1)',
+    },
+  ];
 
   const fitnessGoalOptions = [
     {
@@ -134,6 +181,10 @@ export function EditFitnessDetailsModal({
       icon: Medal,
     },
   ];
+
+  const selectedActivityOption =
+    activityLevelOptions.find((opt) => opt.level === activityLevel) || activityLevelOptions[2];
+  const SelectedActivityIcon = selectedActivityOption.icon;
 
   const selectedGoalOption =
     fitnessGoalOptions.find((opt) => opt.title === fitnessGoal) || fitnessGoalOptions[0];
@@ -224,24 +275,18 @@ export function EditFitnessDetailsModal({
             </Text>
 
             {/* Activity Level */}
-            <View className="rounded-xl border border-white/5 bg-bg-card p-5">
-              <View className="mb-4 flex-row items-center justify-between">
-                <Text className="text-sm font-medium text-text-secondary">Activity Level</Text>
-                <View className="rounded-md bg-accent-primary/10 px-2 py-1">
-                  <Text className="text-sm font-bold text-accent-primary">
-                    {currentActivityLabel}
-                  </Text>
-                </View>
-              </View>
-              <Slider value={activityLevel} min={1} max={5} onChange={setActivityLevel} />
-              <View className="mt-2 flex-row justify-between">
-                <Text className="text-[10px] font-medium uppercase tracking-wide text-text-tertiary">
-                  Sedentary
-                </Text>
-                <Text className="text-[10px] font-medium uppercase tracking-wide text-text-tertiary">
-                  Super Active
-                </Text>
-              </View>
+            <View className="gap-2">
+              <Text className="ml-1 text-sm font-medium text-text-secondary">Activity Level</Text>
+              <PickerButton
+                label={currentActivityLabel}
+                icon={
+                  <SelectedActivityIcon
+                    size={20}
+                    color={selectedActivityOption.iconColor || theme.colors.accent.primary}
+                  />
+                }
+                onPress={() => setIsActivityPickerVisible(true)}
+              />
             </View>
 
             {/* Lifting Experience */}
@@ -303,6 +348,20 @@ export function EditFitnessDetailsModal({
           onPress: () => {
             setFitnessGoal(option.title);
             setIsGoalPickerVisible(false);
+          },
+        }))}
+      />
+
+      <BottomPopUpMenu
+        visible={isActivityPickerVisible}
+        onClose={() => setIsActivityPickerVisible(false)}
+        title="Select Activity Level"
+        subtitle="Choose your daily activity level"
+        items={activityLevelOptions.map((option) => ({
+          ...option,
+          onPress: () => {
+            setActivityLevel(option.level);
+            setIsActivityPickerVisible(false);
           },
         }))}
       />
