@@ -151,7 +151,7 @@ export default function HomeScreen() {
             macros={{
               protein: { value: 180, goal: 200 },
               carbs: { value: 250, goal: 300 },
-              fats: { value: 70, goal: 80 },
+              fats: { value: 70, goal: 200 },
             }}
           />
         </View>
