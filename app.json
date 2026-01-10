@@ -23,7 +23,8 @@
         }
       ],
       "expo-font",
-      "expo-sqlite"
+      "expo-sqlite",
+      "react-native-health-connect"
     ],
     "orientation": "portrait",
     "icon": "./assets/icon.png",
