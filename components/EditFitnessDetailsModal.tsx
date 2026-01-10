@@ -135,6 +135,10 @@ export function EditFitnessDetailsModal({
     },
   ];
 
+  const selectedGoalOption =
+    fitnessGoalOptions.find((opt) => opt.title === fitnessGoal) || fitnessGoalOptions[0];
+  const SelectedGoalIcon = selectedGoalOption.icon;
+
   return (
     <>
       <FullScreenModal visible={visible} onClose={onClose} title="Edit Fitness Details">
@@ -190,7 +194,12 @@ export function EditFitnessDetailsModal({
               <Text className="ml-1 text-sm font-medium text-text-secondary">Fitness Goal</Text>
               <PickerButton
                 label={fitnessGoal}
-                icon={<Activity size={20} color={theme.colors.accent.primary} />}
+                icon={
+                  <SelectedGoalIcon
+                    size={20}
+                    color={selectedGoalOption.iconColor || theme.colors.accent.primary}
+                  />
+                }
                 onPress={() => setIsGoalPickerVisible(true)}
               />
             </View>
