@@ -42,7 +42,7 @@ export function Slider({
     onChange(val);
   };
 
-  // TODO: this math is only necessary for the gradient variant
+  // Math for gradient variant only
   const thumbRadius = 12;
   const progress = (displayValue - min) / (max - min);
   const effectiveTrackWidth = Math.max(0, containerWidth - thumbRadius * 2);
@@ -52,10 +52,13 @@ export function Slider({
     <View
       className="h-10 w-full justify-center"
       onLayout={(e) => setContainerWidth(e.nativeEvent.layout.width)}>
-      <View
-        className="absolute left-0.5 right-0.5 h-1.5 rounded-full"
-        style={{ backgroundColor: trackColor }}
-      />
+      {/* Custom background track (only for gradient variant) */}
+      {variant === 'gradient' && (
+        <View
+          className="absolute left-0.5 right-0.5 h-1.5 rounded-full"
+          style={{ backgroundColor: trackColor }}
+        />
+      )}
 
       {/* Progress Fill (Custom mask for gradient only) */}
       {variant === 'gradient' && useGradient && containerWidth > 0 && (
@@ -71,7 +74,6 @@ export function Slider({
         </View>
       )}
 
-      {/*TODO: why does the solid variant doesn't fill the whole track?*/}
       <SliderComponent
         style={{
           width: '100%',
@@ -83,7 +85,7 @@ export function Slider({
         maximumValue={max}
         onValueChange={handleValueChange}
         minimumTrackTintColor={variant === 'solid' ? solidColor : 'transparent'}
-        maximumTrackTintColor="transparent"
+        maximumTrackTintColor={variant === 'solid' ? trackColor : 'transparent'}
         thumbTintColor={thumbColor}
         step={1}
       />
