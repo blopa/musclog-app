@@ -54,9 +54,27 @@ export function EditPersonalInfoModal({
     { label: 'Other', value: 'other' },
   ];
 
+  const saveButton = (
+    <View className="bg-transparent px-4 pb-6 pt-3" style={{ backgroundColor: 'transparent' }}>
+      <Button
+        label="Save Changes"
+        icon={Check}
+        variant="accent"
+        size="md"
+        width="full"
+        onPress={handleSave}
+      />
+    </View>
+  );
+
   return (
-    <FullScreenModal visible={visible} onClose={onClose} title="Edit Personal Info">
-      <View className="flex-1 px-4 pb-10 pt-2">
+    <FullScreenModal
+      visible={visible}
+      onClose={onClose}
+      title="Edit Personal Info"
+      footer={saveButton}
+    >
+      <View className="flex-1 px-4 pt-2">
         {/* Avatar Section */}
         <View className="items-center py-6">
           <View className="relative">
@@ -107,18 +125,6 @@ export function EditPersonalInfoModal({
             <Text className="ml-1 text-sm font-medium text-text-secondary">Gender</Text>
             <SegmentedControl options={genderOptions} value={gender} onValueChange={setGender} />
           </View>
-        </View>
-
-        {/* Save Button (In-flow) */}
-        <View className="mt-10">
-          <Button
-            label="Save Changes"
-            icon={Check}
-            variant="accent"
-            size="md"
-            width="full"
-            onPress={handleSave}
-          />
         </View>
       </View>
     </FullScreenModal>

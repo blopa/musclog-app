@@ -9,6 +9,7 @@ type FullScreenModalProps = {
   title: string;
   subtitle?: string;
   headerRight?: ReactNode;
+  footer?: ReactNode;
   children: ReactNode;
   scrollable?: boolean;
 };
@@ -21,6 +22,7 @@ export function FullScreenModal({
   headerRight,
   children,
   scrollable = true,
+  footer,
 }: FullScreenModalProps) {
   // Web-specific styles for proper viewport positioning
   const webModalStyle =
@@ -67,17 +69,32 @@ export function FullScreenModal({
           {headerRight && <View className="-mr-2">{headerRight}</View>}
         </View>
 
-        {/* Content */}
-        {scrollable ? (
-          <ScrollView
-            className="flex-1"
-            showsVerticalScrollIndicator={false}
-            style={webScrollViewStyle}>
-            {children}
-          </ScrollView>
-        ) : (
-          <View className="flex-1">{children}</View>
-        )}
+        {/* Content area + optional footer */}
+        <View className="flex-1">
+          {scrollable ? (
+            <ScrollView
+              className="flex-1"
+              showsVerticalScrollIndicator={false}
+              style={webScrollViewStyle}
+              contentContainerStyle={{ paddingBottom: footer ? 120 : 20 }}>
+              {children}
+            </ScrollView>
+          ) : (
+            <View className="flex-1">{children}</View>
+          )}
+
+          {footer && (
+            <View
+              className="absolute bottom-0 left-0 right-0"
+              style={{
+                paddingBottom: Platform.OS === 'ios' ? 24 : 12,
+                paddingHorizontal: 0,
+                backgroundColor: 'transparent',
+              }}>
+              {footer}
+            </View>
+          )}
+        </View>
       </View>
     </Modal>
   );
