@@ -60,20 +60,35 @@ export function OptionsMultiSelector<T extends string | number>({
           }}>
           {title}
         </Text>
-        {isEditable && selectionEnabled && (
-          <Pressable
-            onPress={() => setSelectionEnabled(false)}
-            style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}>
-            <Text
-              style={{
-                color: theme.colors.accent.primary,
-                fontWeight: theme.typography.fontWeight.bold,
-                fontSize: theme.typography.fontSize.xs,
-              }}>
-              Done
-            </Text>
-          </Pressable>
-        )}
+        {isEditable ? (
+          selectionEnabled ? (
+            <Pressable
+              onPress={() => setSelectionEnabled(false)}
+              style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}>
+              <Text
+                style={{
+                  color: theme.colors.accent.primary,
+                  fontWeight: theme.typography.fontWeight.bold,
+                  fontSize: theme.typography.fontSize.xs,
+                }}>
+                Done
+              </Text>
+            </Pressable>
+          ) : (
+            <Pressable
+              onPress={() => setSelectionEnabled(true)}
+              style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}>
+              <Text
+                style={{
+                  color: theme.colors.accent.primary,
+                  fontWeight: theme.typography.fontWeight.bold,
+                  fontSize: theme.typography.fontSize.xs,
+                }}>
+                Edit
+              </Text>
+            </Pressable>
+          )
+        ) : null}
       </View>
       <View style={{ gap: theme.spacing.gap.md }}>
         {options.map((option) => {
@@ -157,19 +172,6 @@ export function OptionsMultiSelector<T extends string | number>({
                     />
                   )}
                 </View>
-              ) : isEditable ? (
-                <Pressable
-                  onPress={() => setSelectionEnabled(true)}
-                  style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}>
-                  <Text
-                    style={{
-                      color: theme.colors.status.success,
-                      fontWeight: theme.typography.fontWeight.bold,
-                      fontSize: theme.typography.fontSize.xs,
-                    }}>
-                    Edit
-                  </Text>
-                </Pressable>
               ) : (
                 <View />
               )}
