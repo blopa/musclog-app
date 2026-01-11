@@ -280,7 +280,6 @@ export default function CreateWorkoutScreen() {
               options={volumeOptions}
               value={volumeCalc}
               onValueChange={setVolumeCalc}
-              variant="outline"
             />
 
             <Text
