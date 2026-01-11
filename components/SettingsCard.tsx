@@ -7,12 +7,16 @@ export function SettingsCard({
   subtitle,
   onPress,
   rightIcon,
+  titleColor,
+  iconContainerStyle,
 }: {
   icon: React.ReactNode;
   title: string;
   subtitle: string;
   onPress: () => void;
   rightIcon?: React.ReactNode;
+  titleColor?: string;
+  iconContainerStyle?: object;
 }) {
   return (
     <Pressable
@@ -36,18 +40,26 @@ export function SettingsCard({
       onPress={onPress}>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
         <View
-          style={{
-            width: 48,
-            height: 48,
-            borderRadius: 24,
-            backgroundColor: theme.colors.background.iconDark,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
+          style={[
+            {
+              width: 48,
+              height: 48,
+              borderRadius: 24,
+              backgroundColor: theme.colors.background.iconDark,
+              alignItems: 'center',
+              justifyContent: 'center',
+            },
+            iconContainerStyle,
+          ]}>
           {icon}
         </View>
         <View>
-          <Text style={{ fontSize: 16, fontWeight: 'bold', color: theme.colors.text.primary }}>
+          <Text
+            style={{
+              fontSize: 16,
+              fontWeight: 'bold',
+              color: titleColor || theme.colors.text.primary,
+            }}>
             {title}
           </Text>
           <Text style={{ fontSize: 13, color: theme.colors.text.secondary, marginTop: 2 }}>

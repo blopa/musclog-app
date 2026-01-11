@@ -5,6 +5,7 @@ import { theme } from '../theme';
 type ToggleItem = {
   key: string;
   label: string;
+  subtitle?: string;
   icon?: React.ReactNode;
   value: boolean;
   onValueChange: (v: boolean) => void;
@@ -49,11 +50,18 @@ export function TogglableSettings(props: TogglableSettingsProps) {
               },
             ]}
             onPress={() => it.onValueChange(!it.value)}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flex: 1 }}>
               {it.icon}
-              <Text style={{ fontSize: 15, color: theme.colors.text.primary, fontWeight: '500' }}>
-                {it.label}
-              </Text>
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontSize: 15, color: theme.colors.text.primary, fontWeight: '500' }}>
+                  {it.label}
+                </Text>
+                {it.subtitle && (
+                  <Text style={{ fontSize: 13, color: theme.colors.text.secondary, marginTop: 2 }}>
+                    {it.subtitle}
+                  </Text>
+                )}
+              </View>
             </View>
             <Switch
               value={it.value}
