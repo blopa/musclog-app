@@ -21,6 +21,7 @@ import { WorkoutSummaryCelebration } from '../../components/WorkoutSummaryCelebr
 import { EditPersonalInfoModal } from '../../components/EditPersonalInfoModal';
 import { EditFitnessDetailsModal } from '../../components/EditFitnessDetailsModal';
 import { MainSettingsModal } from '../../components/MainSettingsModal';
+import { BasicSettingsModal } from '../../components/BasicSettingsModal';
 
 export default function ModalsTestScreen() {
   // Nutrition Goals Modal
@@ -28,6 +29,7 @@ export default function ModalsTestScreen() {
 
   // Setting Modal
   const [isSettingsVisible, setIsSettingsVisible] = useState(false);
+  const [isBasicSettingsVisible, setIsBasicSettingsVisible] = useState(false);
 
   // Edit Personal Info Modal
   const [isEditPersonalInfoVisible, setIsEditPersonalInfoVisible] = useState(false);
@@ -99,7 +101,7 @@ export default function ModalsTestScreen() {
             </Text>
           </View>
 
-          {/* Settings Modal */}
+          {/* Nutrition Goals Modal */}
           <View className="mb-6">
             <Text className="mb-2 text-lg font-bold text-text-primary">Nutrition Goals Modal</Text>
             <Text className="mb-4 text-sm text-text-secondary">
@@ -114,7 +116,22 @@ export default function ModalsTestScreen() {
             />
           </View>
 
-          {/* Nutrition Goals Modal */}
+          {/* Basic Settings Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Basic Settings Modal</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              A comprehensive modal for setting nutrition and body composition goals with
+              interactive sliders.
+            </Text>
+            <Button
+              label="Open Basic Settings Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsBasicSettingsVisible(true)}
+            />
+          </View>
+
+          {/* Main Settings Modal */}
           <View className="mb-6">
             <Text className="mb-2 text-lg font-bold text-text-primary">Settings Modal</Text>
             <Text className="mb-4 text-sm text-text-secondary">
@@ -409,6 +426,11 @@ export default function ModalsTestScreen() {
 
       {/* Modals */}
       <MainSettingsModal visible={isSettingsVisible} onClose={() => setIsSettingsVisible(false)} />
+
+      <BasicSettingsModal
+        visible={isBasicSettingsVisible}
+        onClose={() => setIsBasicSettingsVisible(false)}
+      />
 
       <NutritionGoalsModal
         visible={isNutritionGoalsVisible}
