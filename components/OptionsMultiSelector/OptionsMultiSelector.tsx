@@ -68,6 +68,12 @@ export function OptionsMultiSelector<T extends string | number>({
     return selectedItems.every((item) => item.groupId === firstGroupId);
   }, [selectedItems]);
 
+  // Find the highest selected item index
+  const firstSelectedIndex = useMemo(() => {
+    if (selectedIds.length === 0) return -1;
+    return orderedOptions.findIndex((o) => selectedIds.includes(o.id));
+  }, [orderedOptions, selectedIds]);
+
   // Generate a unique groupId
   const generateGroupId = () => {
     return `group-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -207,6 +213,67 @@ export function OptionsMultiSelector<T extends string | number>({
     );
   };
 
+  const renderGroupActionPill = () => {
+    if (!canGroup) return null;
+
+    return (
+      <View
+        style={{
+          position: 'absolute',
+          top: -45, // Position above the item
+          right: 0,
+          zIndex: 2000,
+        }}>
+        <Pressable
+          onPress={handleGroupAction}
+          style={({ pressed }) => [
+            {
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: theme.spacing.gap.sm,
+              paddingHorizontal: theme.spacing.padding.base,
+              paddingVertical: theme.spacing.padding.xs,
+              borderRadius: theme.borderRadius.full,
+              backgroundColor: allSelectedInSameGroup
+                ? theme.colors.status.error
+                : theme.colors.accent.primary,
+              ...theme.shadows.accentGlow,
+              transform: [{ scale: pressed ? 0.95 : 1 }],
+              shadowColor: allSelectedInSameGroup
+                ? theme.colors.status.error
+                : theme.colors.accent.primary,
+            },
+          ]}>
+          {allSelectedInSameGroup ? (
+            <>
+              <Unlink size={14} color={theme.colors.text.white} />
+              <Text
+                style={{
+                  color: theme.colors.text.white,
+                  fontWeight: theme.typography.fontWeight.bold,
+                  fontSize: 11,
+                }}>
+                Ungroup
+              </Text>
+            </>
+          ) : (
+            <>
+              <Link2 size={14} color={theme.colors.text.white} />
+              <Text
+                style={{
+                  color: theme.colors.text.white,
+                  fontWeight: theme.typography.fontWeight.bold,
+                  fontSize: 11,
+                }}>
+                Group
+              </Text>
+            </>
+          )}
+        </Pressable>
+      </View>
+    );
+  };
+
   const renderDraggableItem = ({
     item,
     drag,
@@ -219,10 +286,11 @@ export function OptionsMultiSelector<T extends string | number>({
     const groupPosition = getGroupPosition(orderedOptions, index);
     const isFirstInGroup = groupPosition === 'first' || groupPosition === 'only';
     const groupColor = item.groupId ? getGroupColor(item.groupId) : undefined;
+    const isHighestSelected = index === firstSelectedIndex;
 
     return (
       <ScaleDecorator>
-        <View style={{ flexDirection: 'row', alignItems: 'stretch' }}>
+        <View style={{ flexDirection: 'row', alignItems: 'stretch', zIndex: isHighestSelected ? 2000 : 1 }}>
           {renderGroupIndicator(groupPosition, item.groupId, isFirstInGroup)}
           <Pressable
             onLongPress={drag}
@@ -252,6 +320,7 @@ export function OptionsMultiSelector<T extends string | number>({
                   ...(selected ? theme.shadows.accentGlow : {}),
                   opacity: isActive ? 0.9 : pressed ? 0.7 : 1,
                 }}>
+                {isHighestSelected && renderGroupActionPill()}
                 {/* Drag Handle */}
                 <View
                   style={{
@@ -348,10 +417,17 @@ export function OptionsMultiSelector<T extends string | number>({
     const isFirstInGroup = groupPosition === 'first' || groupPosition === 'only';
     const groupColor = option.groupId ? getGroupColor(option.groupId) : undefined;
 
+    const isHighestSelected = index === firstSelectedIndex;
+
     return (
-      <View key={String(option.id)} style={{ flexDirection: 'row', alignItems: 'stretch' }}>
+      <View
+        key={String(option.id)}
+        style={{ flexDirection: 'row', alignItems: 'stretch', zIndex: isHighestSelected ? 2000 : 1 }}>
         {renderGroupIndicator(groupPosition, option.groupId, isFirstInGroup)}
-        <Pressable onPress={() => showCheckboxes && toggle(option.id)} disabled={!showCheckboxes} style={{ flex: 1 }}>
+        <Pressable
+          onPress={() => showCheckboxes && toggle(option.id)}
+          disabled={!showCheckboxes}
+          style={{ flex: 1 }}>
           {({ pressed }) => (
             <View
               style={{
@@ -371,6 +447,7 @@ export function OptionsMultiSelector<T extends string | number>({
                 transform: [{ scale: pressed ? 0.98 : 1 }],
                 ...(selected ? theme.shadows.accentGlow : {}),
               }}>
+              {isHighestSelected && renderGroupActionPill()}
               <View
                 style={{
                   flexDirection: 'row',
@@ -441,7 +518,7 @@ export function OptionsMultiSelector<T extends string | number>({
   };
 
   return (
-    <View style={{ position: 'relative' }}>
+    <View>
       <View
         style={{
           flexDirection: 'row',
@@ -499,80 +576,19 @@ export function OptionsMultiSelector<T extends string | number>({
         ) : null}
       </View>
 
-      <View style={{ position: 'relative', paddingBottom: canGroup ? 60 : 0 }}>
-        {isDragMode ? (
-          <DraggableFlatList
-            data={orderedOptions}
-            onDragEnd={handleDragEnd}
-            keyExtractor={(item) => String(item.id)}
-            renderItem={renderDraggableItem}
-            ItemSeparatorComponent={() => <View style={{ height: theme.spacing.gap.md }} />}
-            scrollEnabled={false}
-            activationDistance={10}
-          />
-        ) : (
-          <View style={{ gap: theme.spacing.gap.md }}>
-            {orderedOptions.map((option, index) => renderRegularItem(option, index))}
-          </View>
-        )}
-      </View>
-
-      {/* Floating Group Action Button - Positioned absolutely to float above content */}
-      {canGroup && (
-        <View
-          style={{
-            position: 'absolute',
-            bottom: 0,
-            right: theme.spacing.padding.base,
-            zIndex: 1000,
-            elevation: 10, // Android shadow
-          }}>
-          <Pressable
-            onPress={handleGroupAction}
-            style={({ pressed }) => [
-              {
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: theme.spacing.gap.sm,
-                paddingHorizontal: theme.spacing.padding.base,
-                paddingVertical: theme.spacing.padding.sm,
-                borderRadius: theme.borderRadius.full,
-                backgroundColor: allSelectedInSameGroup
-                  ? theme.colors.status.error
-                  : theme.colors.accent.primary,
-                ...theme.shadows.accentGlow,
-                transform: [{ scale: pressed ? 0.95 : 1 }],
-                shadowColor: allSelectedInSameGroup
-                  ? theme.colors.status.error
-                  : theme.colors.accent.primary,
-              },
-            ]}>
-            {allSelectedInSameGroup ? (
-              <>
-                <Unlink size={theme.iconSize.sm} color={theme.colors.text.white} />
-                <Text
-                  style={{
-                    color: theme.colors.text.white,
-                    fontWeight: theme.typography.fontWeight.bold,
-                    fontSize: theme.typography.fontSize.sm,
-                  }}>
-                  Ungroup ({selectedCount})
-                </Text>
-              </>
-            ) : (
-              <>
-                <Link2 size={theme.iconSize.sm} color={theme.colors.text.white} />
-                <Text
-                  style={{
-                    color: theme.colors.text.white,
-                    fontWeight: theme.typography.fontWeight.bold,
-                    fontSize: theme.typography.fontSize.sm,
-                  }}>
-                  Group ({selectedCount})
-                </Text>
-              </>
-            )}
-          </Pressable>
+      {isDragMode ? (
+        <DraggableFlatList
+          data={orderedOptions}
+          onDragEnd={handleDragEnd}
+          keyExtractor={(item) => String(item.id)}
+          renderItem={renderDraggableItem}
+          ItemSeparatorComponent={() => <View style={{ height: theme.spacing.gap.md }} />}
+          scrollEnabled={false}
+          activationDistance={10}
+        />
+      ) : (
+        <View style={{ gap: theme.spacing.gap.md }}>
+          {orderedOptions.map((option, index) => renderRegularItem(option, index))}
         </View>
       )}
     </View>
