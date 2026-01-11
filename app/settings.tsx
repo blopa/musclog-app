@@ -186,6 +186,7 @@ export default function SettingsScreen() {
           }}
         />
 
+        {/* TODO: Move these into a separate component called "TogglableSettings" */}
         {/* Toggles Section */}
         <View
           style={{
