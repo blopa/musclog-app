@@ -13,6 +13,8 @@ import { PickerButton } from '../../components/theme/PickerButton';
 import { Slider } from '../../components/theme/Slider';
 import { StepperInput } from '../../components/theme/StepperInput';
 import { BodyMetricsStepper } from '../../components/theme/BodyMetricsStepper';
+import { OptionsSelector } from '../../components/OptionsSelector';
+import { OptionsMultiSelector } from '../../components/OptionsMultiSelector';
 
 export default function InputsTestScreen() {
   const [name, setName] = useState('');
@@ -26,6 +28,54 @@ export default function InputsTestScreen() {
   const [difficulty, setDifficulty] = useState(8);
   const [fullName, setFullName] = useState('Alex Johnson');
   const [bodyMetric, setBodyMetric] = useState(70);
+  const [singleSelection, setSingleSelection] = useState<string | number | undefined>('1');
+  const [multiSelection, setMultiSelection] = useState<Array<string | number>>(['a']);
+
+  const sampleOptions = [
+    {
+      id: '1',
+      label: 'Option One',
+      description: 'Single select first option',
+      icon: User,
+      iconBgColor: theme.colors.accent.primary10,
+      iconColor: theme.colors.accent.primary,
+    },
+    {
+      id: '2',
+      label: 'Option Two',
+      description: 'Single select second option',
+      icon: Search,
+      iconBgColor: theme.colors.status.purple + '22',
+      iconColor: theme.colors.status.purple,
+    },
+  ];
+
+  const sampleMultiOptions = [
+    {
+      id: 'a',
+      label: 'Apple',
+      description: 'Select apples',
+      icon: Search,
+      iconBgColor: theme.colors.status.purple + '22',
+      iconColor: theme.colors.status.purple,
+    },
+    {
+      id: 'b',
+      label: 'Banana',
+      description: 'Select bananas',
+      icon: User,
+      iconBgColor: theme.colors.accent.primary10,
+      iconColor: theme.colors.accent.primary,
+    },
+    {
+      id: 'c',
+      label: 'Cherry',
+      description: 'Select cherries',
+      icon: Calendar,
+      iconBgColor: theme.colors.status.purple + '22',
+      iconColor: theme.colors.status.purple,
+    },
+  ];
 
   return (
     <SafeAreaView className="flex-1 bg-bg-primary" edges={['top']}>
@@ -52,6 +102,24 @@ export default function InputsTestScreen() {
         </View>
 
         <View className="h-8" />
+
+        <TestSection title="Options Selectors" subtitle="Single and Multi select demos">
+          <OptionsSelector
+            title="Single Choice"
+            options={sampleOptions}
+            selectedId={singleSelection as any}
+            onSelect={(id) => setSingleSelection(id)}
+          />
+
+          <View style={{ height: 12 }} />
+
+          <OptionsMultiSelector
+            title="Multiple Choice"
+            options={sampleMultiOptions}
+            selectedIds={multiSelection as any}
+            onChange={(ids) => setMultiSelection(ids as any)}
+          />
+        </TestSection>
 
         <TestSection title="Standard Inputs" subtitle="Text fields & States">
           <TextInput

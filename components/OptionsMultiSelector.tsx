@@ -137,5 +137,3 @@ export function OptionsMultiSelector<T extends string | number>({
     </View>
   );
 }
-
-export default OptionsMultiSelector;
