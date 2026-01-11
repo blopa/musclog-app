@@ -22,7 +22,10 @@ type ThemeButtonProps = {
   onPress?: () => void;
   iconBgColor?: string;
   iconColor?: string;
-  icon?: LucideIcon | React.ReactNode | ((props: { size?: number; color?: string }) => React.ReactNode);
+  icon?:
+    | LucideIcon
+    | React.ReactNode
+    | ((props: { size?: number; color?: string }) => React.ReactNode);
   iconPosition?: 'left' | 'right';
   size?: ThemeButtonSize;
   width?: ThemeButtonWidth;
@@ -159,16 +162,14 @@ export function Button({
       // Try rendering as a component first
       const Comp = Icon as any;
       try {
-        const compEl = (
-          iconBgColor ? (
-            <View
-              className="h-8 w-8 items-center justify-center rounded-full"
-              style={{ backgroundColor: iconBgColor }}>
-              <Comp size={iconSize} color={finalIconColor} />
-            </View>
-          ) : (
-            <Comp size={config.iconSize} color={iconColor} />
-          )
+        const compEl = iconBgColor ? (
+          <View
+            className="h-8 w-8 items-center justify-center rounded-full"
+            style={{ backgroundColor: iconBgColor }}>
+            <Comp size={iconSize} color={finalIconColor} />
+          </View>
+        ) : (
+          <Comp size={config.iconSize} color={iconColor} />
         );
         iconElement = compEl;
       } catch (e) {
