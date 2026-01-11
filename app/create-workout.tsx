@@ -6,7 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../theme';
 import { Button } from '../components/theme/Button';
 import { SegmentedControl } from '../components/theme/SegmentedControl';
-import { OptionsMultiSelector } from '../components/OptionsMultiSelector';
+import { OptionsMultiSelector, SelectorOption } from '../components/OptionsMultiSelector';
 import { LinearGradient } from 'expo-linear-gradient';
 import { WeekdayPicker } from '../components/theme/WeekdayPicker';
 
@@ -22,7 +22,7 @@ export default function CreateWorkoutScreen() {
 
   const [selectedExercises, setSelectedExercises] = useState<string[]>([]);
 
-  const mockExercises = [
+  const [exercises, setExercises] = useState<SelectorOption<string>[]>([
     {
       id: 'squat',
       label: 'Barbell Back Squat',
@@ -47,7 +47,7 @@ export default function CreateWorkoutScreen() {
       iconBgColor: theme.colors.status.purple + '11',
       iconColor: theme.colors.status.purple,
     },
-  ];
+  ]);
 
   const toggleDay = (index: number) => {
     if (selectedDays.includes(index)) {
@@ -403,9 +403,10 @@ export default function CreateWorkoutScreen() {
             }}>
             <OptionsMultiSelector
               title="Exercises in the workout"
-              options={mockExercises}
+              options={exercises}
               selectedIds={selectedExercises}
               onChange={(ids) => setSelectedExercises(ids)}
+              onOrderChange={(reorderedExercises) => setExercises(reorderedExercises)}
               isEditable={true}
             />
           </View>
