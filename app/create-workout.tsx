@@ -9,6 +9,7 @@ import { SegmentedControl } from '../components/theme/SegmentedControl';
 import { OptionsMultiSelector } from '../components/OptionsMultiSelector/OptionsMultiSelector';
 import { WeekdayPicker } from '../components/theme/WeekdayPicker';
 import { SelectorOption } from '../components/OptionsMultiSelector/utils';
+import { AddExerciseModal } from '../components/AddExerciseModal';
 
 export default function CreateWorkoutScreen() {
   const router = useRouter();
@@ -23,6 +24,7 @@ export default function CreateWorkoutScreen() {
   const days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
   const [selectedExercises, setSelectedExercises] = useState<string[]>([]);
+  const [addExerciseVisible, setAddExerciseVisible] = useState(false);
 
   const [exercises, setExercises] = useState<SelectorOption<string>[]>([
     {
@@ -485,13 +487,16 @@ export default function CreateWorkoutScreen() {
               size="md"
               width="full"
               icon={PlusSquare}
-              onPress={() => {
-                /* Add exercise logic */
-              }}
+              onPress={() => setAddExerciseVisible(true)}
             />
           </View>
         </View>
       </ScrollView>
+      <AddExerciseModal
+        visible={addExerciseVisible}
+        onClose={() => setAddExerciseVisible(false)}
+        onAddExercise={() => console.log('Add exercise')}
+      />
     </SafeAreaView>
   );
 }
