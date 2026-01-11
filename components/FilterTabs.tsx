@@ -1,4 +1,5 @@
 import { View, Text, Pressable, ScrollView, ViewStyle } from 'react-native';
+import { Check } from 'lucide-react-native';
 import { theme } from '../theme';
 
 type FilterTab = {
@@ -13,6 +14,7 @@ type FilterTabsProps = {
   containerClassName?: string;
   scrollViewContentContainerStyle?: ViewStyle;
   showContainer?: boolean;
+  withCheckmark?: boolean;
 };
 
 export function FilterTabs({
@@ -22,6 +24,7 @@ export function FilterTabs({
   containerClassName,
   scrollViewContentContainerStyle,
   showContainer = true,
+  withCheckmark = false,
 }: FilterTabsProps) {
   const content = (
     <ScrollView
@@ -35,7 +38,7 @@ export function FilterTabs({
         return (
           <Pressable
             key={tab.id}
-            className={`rounded-full px-6 py-2.5 ${
+            className={`flex-row items-center rounded-full px-6 py-2.5 ${
               isActive ? 'bg-accent-primary' : 'border border-border-light bg-bg-filterTab'
             }`}
             style={{ marginRight: index < tabs.length - 1 ? 12 : 0 }}
@@ -47,6 +50,9 @@ export function FilterTabs({
               }}>
               {tab.label}
             </Text>
+            {isActive && withCheckmark && (
+              <Check size={14} color={theme.colors.text.black} style={{ marginLeft: 6 }} />
+            )}
           </Pressable>
         );
       })}
