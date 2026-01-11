@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { View, Text, Pressable } from 'react-native';
-import { Check, GripVertical } from 'lucide-react-native';
+import { Check, GripVertical, Link2, Unlink } from 'lucide-react-native';
 import DraggableFlatList, {
   RenderItemParams,
   ScaleDecorator,
@@ -51,6 +51,54 @@ export function OptionsMultiSelector<T extends string | number>({
 
   const showCheckboxes = !isEditable || selectionEnabled;
   const isDragMode = isEditable && selectionEnabled;
+
+  // Check if we can group/ungroup selected items
+  const selectedCount = selectedIds.length;
+  const canGroup = selectedCount >= 2 && isEditable && selectionEnabled;
+
+  // Check if all selected items are already in the same group
+  const selectedItems = useMemo(() => {
+    return orderedOptions.filter((o) => selectedIds.includes(o.id));
+  }, [orderedOptions, selectedIds]);
+
+  const allSelectedInSameGroup = useMemo(() => {
+    if (selectedItems.length < 2) return false;
+    const firstGroupId = selectedItems[0]?.groupId;
+    if (!firstGroupId) return false;
+    return selectedItems.every((item) => item.groupId === firstGroupId);
+  }, [selectedItems]);
+
+  // Generate a unique groupId
+  const generateGroupId = () => {
+    return `group-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  };
+
+  // Handle grouping/ungrouping
+  const handleGroupAction = () => {
+    if (!canGroup) return;
+
+    const updatedOptions = orderedOptions.map((option) => {
+      if (selectedIds.includes(option.id)) {
+        if (allSelectedInSameGroup) {
+          // Ungroup: set groupId to undefined
+          return { ...option, groupId: undefined };
+        } else {
+          // Group: assign new groupId
+          const newGroupId = generateGroupId();
+          return { ...option, groupId: newGroupId };
+        }
+      }
+      return option;
+    });
+
+    // Normalize groups to ensure they're contiguous
+    const normalized = normalizeGroups(updatedOptions);
+    setOrderedOptions(normalized);
+    onOrderChange?.(normalized);
+    
+    // Clear selection after grouping
+    onChange([]);
+  };
 
   const handleDragEnd = ({
     data,
@@ -464,6 +512,64 @@ export function OptionsMultiSelector<T extends string | number>({
       ) : (
         <View style={{ gap: theme.spacing.gap.md }}>
           {orderedOptions.map((option, index) => renderRegularItem(option, index))}
+        </View>
+      )}
+
+      {/* Floating Group Action Button */}
+      {canGroup && (
+        <View
+          style={{
+            position: 'absolute',
+            bottom: theme.spacing.padding.lg,
+            right: theme.spacing.padding.base,
+            zIndex: 1000,
+          }}>
+          <Pressable
+            onPress={handleGroupAction}
+            style={({ pressed }) => [
+              {
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: theme.spacing.gap.sm,
+                paddingHorizontal: theme.spacing.padding.base,
+                paddingVertical: theme.spacing.padding.sm,
+                borderRadius: theme.borderRadius.full,
+                backgroundColor: allSelectedInSameGroup
+                  ? theme.colors.status.error
+                  : theme.colors.accent.primary,
+                ...theme.shadows.accentGlow,
+                transform: [{ scale: pressed ? 0.95 : 1 }],
+                shadowColor: allSelectedInSameGroup
+                  ? theme.colors.status.error
+                  : theme.colors.accent.primary,
+              },
+            ]}>
+            {allSelectedInSameGroup ? (
+              <>
+                <Unlink size={theme.iconSize.sm} color={theme.colors.text.white} />
+                <Text
+                  style={{
+                    color: theme.colors.text.white,
+                    fontWeight: theme.typography.fontWeight.bold,
+                    fontSize: theme.typography.fontSize.sm,
+                  }}>
+                  Ungroup ({selectedCount})
+                </Text>
+              </>
+            ) : (
+              <>
+                <Link2 size={theme.iconSize.sm} color={theme.colors.text.white} />
+                <Text
+                  style={{
+                    color: theme.colors.text.white,
+                    fontWeight: theme.typography.fontWeight.bold,
+                    fontSize: theme.typography.fontSize.sm,
+                  }}>
+                  Group ({selectedCount})
+                </Text>
+              </>
+            )}
+          </Pressable>
         </View>
       )}
     </View>
