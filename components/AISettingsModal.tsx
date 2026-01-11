@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable, TextInput as RNTextInput } from 'react-native';
 import {
-  ToyBrickIcon,
+  Bot,
   Link,
   Key,
   ChevronDown,
@@ -81,7 +81,7 @@ export function AISettingsModal({
             alignItems: 'center',
             justifyContent: 'center',
           }}>
-          <ToyBrickIcon size={20} color="#3b82f6" />
+          <Bot size={20} color="#3b82f6" />
         </View>
       ),
     },
@@ -140,6 +140,11 @@ export function AISettingsModal({
             style={{ color: theme.colors.accent.primary }}>
             GOOGLE GEMINI INTEGRATION
           </Text>
+
+          {/* Toggle Block */}
+          <TogglableSettings items={geminiToggleItems} />
+
+          {/* Settings Block */}
           <View
             style={{
               backgroundColor: theme.colors.background.card,
@@ -149,11 +154,6 @@ export function AISettingsModal({
               borderColor: theme.colors.border.light,
               overflow: 'hidden',
             }}>
-            {/* Enable Toggle */}
-            <View style={{ borderBottomWidth: 1, borderBottomColor: theme.colors.border.light }}>
-              <TogglableSettings items={geminiToggleItems} />
-            </View>
-
             {/* Connect Button */}
             <View
               style={{
@@ -279,7 +279,7 @@ export function AISettingsModal({
 
             {/* Model Selector */}
             <Pressable
-              onPress={onGeminiModelPress}
+              onPress={onOpenAiModelPress}
               style={({ pressed }) => [
                 {
                   flexDirection: 'row',
