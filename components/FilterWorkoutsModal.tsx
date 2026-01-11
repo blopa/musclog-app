@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Button } from './theme/Button';
 import { Dumbbell, LucideFootprints, PersonStanding, Check } from 'lucide-react-native';
 import { theme } from '../theme';
 import { FullScreenModal } from './FullScreenModal';
@@ -177,61 +178,34 @@ export function FilterWorkoutsModal({
                 Clear Filters
               </Text>
             </Pressable>
-            <Pressable
+            <Button
+              label="Apply Filters"
+              variant="gradientCta"
+              width="flex-2"
               onPress={handleApply}
-              style={({ pressed }) => [
-                {
-                  flex: 2,
-                  height: theme.size['14'],
-                  borderRadius: theme.borderRadius.xl,
-                  overflow: 'hidden',
-                  transform: [{ scale: pressed ? 0.98 : 1 }],
-                  ...theme.shadows.accentGlow,
-                },
-              ]}>
-              <LinearGradient
-                colors={theme.colors.gradients.cta}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                style={{
-                  flex: 1,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: theme.spacing.gap.sm,
-                  paddingHorizontal: theme.spacing.padding.base,
-                }}>
-                <Text
+              icon={
+                <View
                   style={{
-                    fontSize: theme.typography.fontSize.lg,
-                    fontWeight: theme.typography.fontWeight.bold,
-                    color: theme.colors.text.white,
+                    backgroundColor: theme.colors.background.black20,
+                    borderRadius: theme.borderRadius.sm,
+                    paddingHorizontal: theme.spacing.padding.sm,
+                    paddingVertical: theme.spacing.padding.xs / 2,
+                    minWidth: theme.size['6'],
+                    alignItems: 'center',
+                    justifyContent: 'center',
                   }}>
-                  Apply Filters
-                </Text>
-                {activeFilterCount > 0 && (
-                  <View
+                  <Text
                     style={{
-                      backgroundColor: theme.colors.background.black20,
-                      borderRadius: theme.borderRadius.sm,
-                      paddingHorizontal: theme.spacing.padding.sm,
-                      paddingVertical: theme.spacing.padding.xs / 2,
-                      minWidth: theme.size['6'],
-                      alignItems: 'center',
-                      justifyContent: 'center',
+                      fontSize: theme.typography.fontSize.sm,
+                      fontWeight: theme.typography.fontWeight.extrabold,
+                      color: theme.colors.text.white,
                     }}>
-                    <Text
-                      style={{
-                        fontSize: theme.typography.fontSize.sm,
-                        fontWeight: theme.typography.fontWeight.extrabold,
-                        color: theme.colors.text.white,
-                      }}>
-                      {activeFilterCount}
-                    </Text>
-                  </View>
-                )}
-              </LinearGradient>
-            </Pressable>
+                    {activeFilterCount}
+                  </Text>
+                </View>
+              }
+              iconPosition="right"
+            />
           </View>
         </View>
       }>

@@ -1,7 +1,7 @@
 import { Text, Pressable, ViewStyle, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { LucideIcon } from 'lucide-react-native';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { theme } from '../../theme';
 
 type ThemeButtonSize = 'sm' | 'md' | 'lg';
@@ -20,9 +20,9 @@ type ThemeButtonVariant =
 type ThemeButtonProps = {
   label: string;
   onPress?: () => void;
-  icon?: LucideIcon;
   iconBgColor?: string;
   iconColor?: string;
+  icon?: LucideIcon | React.ReactNode | ((props: { size?: number; color?: string }) => React.ReactNode);
   iconPosition?: 'left' | 'right';
   size?: ThemeButtonSize;
   width?: ThemeButtonWidth;
@@ -151,17 +151,56 @@ export function Button({
   const finalIconColor = customIconColor || iconColor;
   const iconSize = iconBgColor ? theme.iconSize.sm : config.iconSize;
 
-  const iconElement = Icon ? (
-    iconBgColor ? (
-      <View
-        className="h-8 w-8 items-center justify-center rounded-full"
-        style={{ backgroundColor: iconBgColor }}>
-        <Icon size={iconSize} color={finalIconColor} />
-      </View>
-    ) : (
-      <Icon size={config.iconSize} color={iconColor} />
-    )
-  ) : null;
+  let iconElement: React.ReactNode = null;
+  if (Icon) {
+    if (React.isValidElement(Icon)) {
+      iconElement = Icon;
+    } else if (typeof Icon === 'function') {
+      // Try rendering as a component first
+      const Comp = Icon as any;
+      try {
+        const compEl = (
+          iconBgColor ? (
+            <View
+              className="h-8 w-8 items-center justify-center rounded-full"
+              style={{ backgroundColor: iconBgColor }}>
+              <Comp size={iconSize} color={finalIconColor} />
+            </View>
+          ) : (
+            <Comp size={config.iconSize} color={iconColor} />
+          )
+        );
+        iconElement = compEl;
+      } catch (e) {
+        // Fallback: treat as render prop
+        try {
+          const rendered = (Icon as any)({ size: iconSize, color: finalIconColor });
+          iconElement = rendered;
+        } catch (e2) {
+          iconElement = null;
+        }
+      }
+    } else if (typeof Icon === 'object' && (Icon as any).render) {
+      // Handle forwardRef exotic components (they are objects with a `render` property)
+      const Comp = Icon as any;
+      try {
+        iconElement = iconBgColor ? (
+          <View
+            className="h-8 w-8 items-center justify-center rounded-full"
+            style={{ backgroundColor: iconBgColor }}>
+            <Comp size={iconSize} color={finalIconColor} />
+          </View>
+        ) : (
+          <Comp size={config.iconSize} color={iconColor} />
+        );
+      } catch (e) {
+        iconElement = null;
+      }
+    } else {
+      // Unknown type, attempt to render directly
+      iconElement = Icon as React.ReactNode;
+    }
+  }
 
   const textElement = (
     <Text
