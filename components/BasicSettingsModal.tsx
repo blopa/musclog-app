@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { Settings, Sun, Moon, ChevronRight, Heart } from 'lucide-react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { FullScreenModal } from './FullScreenModal';
 import { SettingsCard } from './SettingsCard';
 import { SegmentedControl } from './theme/SegmentedControl';
@@ -153,11 +154,13 @@ export function BasicSettingsModal({
           <TogglableSettings
             items={healthSettingsItems}
             header={
-              <View
+              <LinearGradient
+                colors={[theme.colors.status.error12, 'transparent']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
                 className="border-b p-4"
                 style={{
                   borderBottomColor: theme.colors.border.light,
-                  backgroundColor: theme.colors.status.error8, // Red tint background
                 }}>
                 <View className="mb-2 flex-row items-center gap-3">
                   <View
@@ -176,7 +179,7 @@ export function BasicSettingsModal({
                     </Text>
                   </View>
                 </View>
-              </View>
+              </LinearGradient>
             }
           />
 
