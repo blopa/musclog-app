@@ -6,6 +6,157 @@ import { theme } from '../theme';
 import { FullScreenModal } from './FullScreenModal';
 import { GradientText } from './GradientText';
 
+type NewWorkoutCardProps = {
+  variant?: 'default' | 'popular';
+  icon: React.ReactNode;
+  title: string;
+  subtitle?: string;
+  onPress: () => void;
+};
+
+function NewWorkoutCard({ variant = 'default', icon, title, subtitle, onPress }: NewWorkoutCardProps) {
+  if (variant === 'popular') {
+    return (
+      <Pressable
+        onPress={onPress}
+        style={({ pressed }) => [
+          {
+            position: 'relative',
+            width: '100%',
+            borderRadius: theme.borderRadius.xl,
+            overflow: 'hidden',
+            transform: [{ scale: pressed ? 0.98 : 1 }],
+          },
+        ]}>
+        <LinearGradient
+          colors={theme.colors.gradients.cta}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={{ padding: 2 }}>
+          <View
+            style={{
+              backgroundColor: theme.colors.background.aiCardBackground,
+              borderRadius: theme.borderRadius.xl - 2,
+              padding: theme.spacing.padding.lg,
+            }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'flex-start',
+                marginBottom: theme.spacing.padding.sm,
+              }}>
+              <LinearGradient
+                colors={theme.colors.gradients.cta}
+                style={{
+                  width: theme.size['10'],
+                  height: theme.size['10'],
+                  borderRadius: theme.borderRadius.full,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  ...theme.shadows.accent,
+                }}>
+                {icon}
+              </LinearGradient>
+              <View
+                style={{
+                  backgroundColor: theme.colors.background.white10,
+                  paddingHorizontal: theme.spacing.padding.sm,
+                  paddingVertical: 2,
+                  borderRadius: theme.borderRadius.sm,
+                }}>
+                <Text
+                  style={{
+                    fontSize: theme.typography.fontSize['10'],
+                    fontWeight: theme.typography.fontWeight.bold,
+                    color: theme.colors.accent.secondary,
+                    textTransform: 'uppercase',
+                    letterSpacing: 1,
+                  }}>
+                  Popular
+                </Text>
+              </View>
+            </View>
+            <Text
+              style={{
+                fontSize: theme.typography.fontSize.lg,
+                fontWeight: theme.typography.fontWeight.bold,
+                color: theme.colors.text.white,
+              }}>
+              {title}
+            </Text>
+            {subtitle ? (
+              <Text
+                style={{
+                  fontSize: theme.typography.fontSize.xs,
+                  color: theme.colors.text.secondary,
+                  marginTop: 4,
+                  lineHeight: 16,
+                }}>
+                {subtitle}
+              </Text>
+            ) : null}
+          </View>
+        </LinearGradient>
+      </Pressable>
+    );
+  }
+
+  return (
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => [
+        {
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: theme.spacing.gap.base,
+          backgroundColor: pressed ? theme.colors.background.cardDark : theme.colors.background.cardElevated,
+          padding: theme.spacing.padding.lg,
+          borderRadius: theme.borderRadius.xl,
+          borderWidth: theme.borderWidth.thin,
+          borderColor: theme.colors.background.white5,
+          transform: [{ scale: pressed ? 0.98 : 1 }],
+          ...theme.shadows.md,
+        },
+      ]}>
+      <View
+        style={{
+          width: theme.size['12'],
+          height: theme.size['12'],
+          borderRadius: theme.borderRadius.full,
+          backgroundColor: theme.colors.background.white5,
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderWidth: theme.borderWidth.thin,
+          borderColor: theme.colors.background.white5,
+        }}>
+        {icon}
+      </View>
+      <View style={{ flex: 1 }}>
+        <Text
+          style={{
+            fontSize: theme.typography.fontSize.lg,
+            fontWeight: theme.typography.fontWeight.bold,
+            color: theme.colors.text.white,
+          }}>
+          {title}
+        </Text>
+        {subtitle ? (
+          <Text
+            style={{
+              fontSize: theme.typography.fontSize.xs,
+              color: theme.colors.text.secondary,
+              marginTop: 2,
+            }}>
+            {subtitle}
+          </Text>
+        ) : null}
+      </View>
+      <ChevronRight size={20} color={theme.colors.text.tertiary} />
+    </Pressable>
+  );
+}
+
 type CreateWorkoutOptionsModalProps = {
   visible: boolean;
   onClose: () => void;
@@ -151,198 +302,34 @@ export function CreateWorkoutOptionsModal({
         </Animated.View>
 
         <View style={{ gap: theme.spacing.gap.base }}>
-          {/* AI Card */}
           <Animated.View style={animatedStyle(100)}>
-            <Pressable
+            <NewWorkoutCard
+              variant="popular"
+              icon={<Sparkles size={22} color={theme.colors.text.white} />}
+              title="Generate with AI"
+              subtitle="Let Musclog build a personalized routine based on your goals and equipment."
               onPress={onGenerateWithAi}
-              style={({ pressed }) => [
-                {
-                  position: 'relative',
-                  width: '100%',
-                  borderRadius: theme.borderRadius.xl,
-                  overflow: 'hidden',
-                  transform: [{ scale: pressed ? 0.98 : 1 }],
-                },
-              ]}>
-              <LinearGradient
-                colors={theme.colors.gradients.cta}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={{ padding: 2 }}>
-                <View
-                  style={{
-                    backgroundColor: theme.colors.background.aiCardBackground,
-                    borderRadius: theme.borderRadius.xl - 2,
-                    padding: theme.spacing.padding.lg,
-                  }}>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      alignItems: 'flex-start',
-                      marginBottom: theme.spacing.padding.sm,
-                    }}>
-                    <LinearGradient
-                      colors={theme.colors.gradients.cta}
-                      style={{
-                        width: theme.size['10'],
-                        height: theme.size['10'],
-                        borderRadius: theme.borderRadius.full,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        ...theme.shadows.accent,
-                      }}>
-                      <Sparkles size={22} color={theme.colors.text.white} />
-                    </LinearGradient>
-                    <View
-                      style={{
-                        backgroundColor: theme.colors.background.white10,
-                        paddingHorizontal: theme.spacing.padding.sm,
-                        paddingVertical: 2,
-                        borderRadius: theme.borderRadius.sm,
-                      }}>
-                      <Text
-                        style={{
-                          fontSize: theme.typography.fontSize['10'],
-                          fontWeight: theme.typography.fontWeight.bold,
-                          color: theme.colors.accent.secondary,
-                          textTransform: 'uppercase',
-                          letterSpacing: 1,
-                        }}>
-                        Popular
-                      </Text>
-                    </View>
-                  </View>
-                  <Text
-                    style={{
-                      fontSize: theme.typography.fontSize.lg,
-                      fontWeight: theme.typography.fontWeight.bold,
-                      color: theme.colors.text.white,
-                    }}>
-                    Generate with AI
-                  </Text>
-                  <Text
-                    style={{
-                      fontSize: theme.typography.fontSize.xs,
-                      color: theme.colors.text.secondary,
-                      marginTop: 4,
-                      lineHeight: 16,
-                    }}>
-                    Let Musclog build a personalized routine based on your goals and equipment.
-                  </Text>
-                </View>
-              </LinearGradient>
-            </Pressable>
+            />
           </Animated.View>
 
-          {/* Create Empty Template Card */}
           <Animated.View style={animatedStyle(200)}>
-            <Pressable
+            <NewWorkoutCard
+              variant="default"
+              icon={<PlusCircle size={24} color={theme.colors.text.gray300} />}
+              title="Create from Empty Template"
+              subtitle="Design your own routine from scratch, exercise by exercise."
               onPress={onCreateEmptyTemplate}
-              style={({ pressed }) => [
-                {
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  gap: theme.spacing.gap.base,
-                  backgroundColor: pressed
-                    ? theme.colors.background.cardDark
-                    : theme.colors.background.cardElevated,
-                  padding: theme.spacing.padding.lg,
-                  borderRadius: theme.borderRadius.xl,
-                  borderWidth: theme.borderWidth.thin,
-                  borderColor: theme.colors.background.white5,
-                  transform: [{ scale: pressed ? 0.98 : 1 }],
-                  ...theme.shadows.md,
-                },
-              ]}>
-              <View
-                style={{
-                  width: theme.size['12'],
-                  height: theme.size['12'],
-                  borderRadius: theme.borderRadius.full,
-                  backgroundColor: theme.colors.background.white5,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderWidth: theme.borderWidth.thin,
-                  borderColor: theme.colors.background.white5,
-                }}>
-                <PlusCircle size={24} color={theme.colors.text.gray300} />
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text
-                  style={{
-                    fontSize: theme.typography.fontSize.lg,
-                    fontWeight: theme.typography.fontWeight.bold,
-                    color: theme.colors.text.white,
-                  }}>
-                  Create from Empty Template
-                </Text>
-                <Text
-                  style={{
-                    fontSize: theme.typography.fontSize.xs,
-                    color: theme.colors.text.secondary,
-                    marginTop: 2,
-                  }}>
-                  Design your own routine from scratch, exercise by exercise.
-                </Text>
-              </View>
-              <ChevronRight size={20} color={theme.colors.text.tertiary} />
-            </Pressable>
+            />
           </Animated.View>
 
-          {/* Browse Templates Card */}
           <Animated.View style={animatedStyle(300)}>
-            <Pressable
+            <NewWorkoutCard
+              variant="default"
+              icon={<Library size={24} color={theme.colors.text.gray300} />}
+              title="Browse Templates"
+              subtitle="Explore expert-created programs and community favorites."
               onPress={onBrowseTemplates}
-              style={({ pressed }) => [
-                {
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  gap: theme.spacing.gap.base,
-                  backgroundColor: pressed
-                    ? theme.colors.background.cardDark
-                    : theme.colors.background.cardElevated,
-                  padding: theme.spacing.padding.lg,
-                  borderRadius: theme.borderRadius.xl,
-                  borderWidth: theme.borderWidth.thin,
-                  borderColor: theme.colors.background.white5,
-                  transform: [{ scale: pressed ? 0.98 : 1 }],
-                  ...theme.shadows.md,
-                },
-              ]}>
-              <View
-                style={{
-                  width: theme.size['12'],
-                  height: theme.size['12'],
-                  borderRadius: theme.borderRadius.full,
-                  backgroundColor: theme.colors.background.white5,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderWidth: theme.borderWidth.thin,
-                  borderColor: theme.colors.background.white5,
-                }}>
-                <Library size={24} color={theme.colors.text.gray300} />
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text
-                  style={{
-                    fontSize: theme.typography.fontSize.lg,
-                    fontWeight: theme.typography.fontWeight.bold,
-                    color: theme.colors.text.white,
-                  }}>
-                  Browse Templates
-                </Text>
-                <Text
-                  style={{
-                    fontSize: theme.typography.fontSize.xs,
-                    color: theme.colors.text.secondary,
-                    marginTop: 2,
-                  }}>
-                  Explore expert-created programs and community favorites.
-                </Text>
-              </View>
-              <ChevronRight size={20} color={theme.colors.text.tertiary} />
-            </Pressable>
+            />
           </Animated.View>
         </View>
       </View>
