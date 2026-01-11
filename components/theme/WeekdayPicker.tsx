@@ -1,5 +1,5 @@
 import { View, Text, Pressable } from 'react-native';
-import { theme } from '../theme';
+import { theme } from '../../theme';
 
 type WeekdayPickerProps = {
   days: string[];

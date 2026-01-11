@@ -7,7 +7,7 @@ import { theme } from '../theme';
 import { Button } from '../components/theme/Button';
 import { SegmentedControl } from '../components/theme/SegmentedControl';
 import { LinearGradient } from 'expo-linear-gradient';
-import { WeekdayPicker } from './WeekdayPicker';
+import { WeekdayPicker } from '../components/theme/WeekdayPicker';
 
 export default function CreateWorkoutScreen() {
   const router = useRouter();
