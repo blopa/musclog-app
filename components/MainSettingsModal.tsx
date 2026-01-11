@@ -146,7 +146,7 @@ function TogglableSettings({
   );
 }
 
-export function SettingsModal({ visible, onClose }: { visible: boolean; onClose: () => void }) {
+export function MainSettingsModal({ visible, onClose }: { visible: boolean; onClose: () => void }) {
   const [darkMode, setDarkMode] = useState(true);
   const [notifications, setNotifications] = useState(true);
   const [search, setSearch] = useState('');

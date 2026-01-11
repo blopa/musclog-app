@@ -20,7 +20,7 @@ import { DatePickerModal } from '../../components/DatePickerModal';
 import { WorkoutSummaryCelebration } from '../../components/WorkoutSummaryCelebration';
 import { EditPersonalInfoModal } from '../../components/EditPersonalInfoModal';
 import { EditFitnessDetailsModal } from '../../components/EditFitnessDetailsModal';
-import { SettingsModal } from '../../components/SettingsModal';
+import { MainSettingsModal } from '../../components/MainSettingsModal';
 
 export default function ModalsTestScreen() {
   // Nutrition Goals Modal
@@ -408,7 +408,7 @@ export default function ModalsTestScreen() {
       </ScrollView>
 
       {/* Modals */}
-      <SettingsModal visible={isSettingsVisible} onClose={() => setIsSettingsVisible(false)} />
+      <MainSettingsModal visible={isSettingsVisible} onClose={() => setIsSettingsVisible(false)} />
 
       <NutritionGoalsModal
         visible={isNutritionGoalsVisible}
