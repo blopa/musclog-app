@@ -14,6 +14,7 @@ import { NotificationCard } from '../../components/NotificationCard';
 import { MacroCard } from '../../components/MacroCard';
 import { UpNextExerciseCard } from '../../components/UpNextExerciseCard';
 import { FoodItemCard } from '../../components/FoodItemCard';
+import { NewWorkoutCard } from '../../components/NewWorkoutCard';
 import { WorkoutSummaryStatsCard } from '../../components/WorkoutSummaryStatsCard';
 import { StatCard } from '../../components/StatCard';
 import { theme } from '../../theme';
@@ -204,6 +205,22 @@ export default function CardsTestScreen() {
               image: require('../../assets/icon.png'),
             }}
             onPress={() => console.log('Exercise pressed')}
+          />
+        </TestSection>
+
+        <TestSection title="New Workout Card" subtitle="Add new workout options">
+          <NewWorkoutCard
+            variant="popular"
+            icon={<Sparkles size={22} color={theme.colors.text.white} />}
+            title="Generate with AI"
+            subtitle="Let Musclog build a personalized routine based on your goals and equipment."
+            onPress={() => console.log('New workout pressed')}
+          />
+          <NewWorkoutCard
+            icon={<Sparkles size={20} color={theme.colors.text.white} />}
+            title="Create New Workout"
+            subtitle="Start from a template or build your own"
+            onPress={() => console.log('New workout pressed')}
           />
         </TestSection>
 
