@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { Check, LucideIcon } from 'lucide-react-native';
 import { theme } from '../theme';
@@ -25,8 +25,9 @@ export function OptionsMultiSelector<T extends string | number>({
   options,
   selectedIds = [],
   onChange,
-  isEditable = false, // TODO: implement this
+  isEditable = false,
 }: OptionsMultiSelectorProps<T>) {
+  const [selectionEnabled, setSelectionEnabled] = useState(false);
   const isSelected = (id: T) => selectedIds.includes(id);
 
   const toggle = (id: T) => {
@@ -37,20 +38,43 @@ export function OptionsMultiSelector<T extends string | number>({
     }
   };
 
+  const showCheckboxes = !isEditable || selectionEnabled;
+
   return (
     <View>
-      <Text
+      <View
         style={{
-          fontSize: theme.typography.fontSize.xs,
-          fontWeight: theme.typography.fontWeight.bold,
-          color: theme.colors.text.secondary,
-          textTransform: 'uppercase',
-          letterSpacing: 1.2,
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
           marginBottom: theme.spacing.padding.base,
           paddingHorizontal: theme.spacing.padding.xs,
         }}>
-        {title}
-      </Text>
+        <Text
+          style={{
+            fontSize: theme.typography.fontSize.xs,
+            fontWeight: theme.typography.fontWeight.bold,
+            color: theme.colors.text.secondary,
+            textTransform: 'uppercase',
+            letterSpacing: 1.2,
+          }}>
+          {title}
+        </Text>
+        {isEditable && selectionEnabled && (
+          <Pressable
+            onPress={() => setSelectionEnabled(false)}
+            style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}>
+            <Text
+              style={{
+                color: theme.colors.accent.primary,
+                fontWeight: theme.typography.fontWeight.bold,
+                fontSize: theme.typography.fontSize.xs,
+              }}>
+              Done
+            </Text>
+          </Pressable>
+        )}
+      </View>
       <View style={{ gap: theme.spacing.gap.md }}>
         {options.map((option) => {
           const Icon = option.icon as any;
@@ -111,27 +135,44 @@ export function OptionsMultiSelector<T extends string | number>({
                   </Text>
                 </View>
               </View>
-              <View
-                style={{
-                  width: theme.size['6'],
-                  height: theme.size['6'],
-                  borderRadius: theme.borderRadius.sm,
-                  borderWidth: theme.borderWidth.medium,
-                  borderColor: selected
-                    ? theme.colors.accent.primary
-                    : theme.colors.border.default,
-                  backgroundColor: selected ? theme.colors.accent.primary : 'transparent',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}>
-                {selected && (
-                  <Check
-                    size={theme.iconSize.xs}
-                    color={theme.colors.text.black}
-                    strokeWidth={theme.strokeWidth.thick}
-                  />
-                )}
-              </View>
+              {showCheckboxes ? (
+                <View
+                  style={{
+                    width: theme.size['6'],
+                    height: theme.size['6'],
+                    borderRadius: theme.borderRadius.sm,
+                    borderWidth: theme.borderWidth.medium,
+                    borderColor: selected
+                      ? theme.colors.accent.primary
+                      : theme.colors.border.default,
+                    backgroundColor: selected ? theme.colors.accent.primary : 'transparent',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                  {selected && (
+                    <Check
+                      size={theme.iconSize.xs}
+                      color={theme.colors.text.black}
+                      strokeWidth={theme.strokeWidth.thick}
+                    />
+                  )}
+                </View>
+              ) : isEditable ? (
+                <Pressable
+                  onPress={() => setSelectionEnabled(true)}
+                  style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}>
+                  <Text
+                    style={{
+                      color: theme.colors.status.success,
+                      fontWeight: theme.typography.fontWeight.bold,
+                      fontSize: theme.typography.fontSize.xs,
+                    }}>
+                    Edit
+                  </Text>
+                </Pressable>
+              ) : (
+                <View />
+              )}
             </Pressable>
           );
         })}

@@ -406,6 +406,7 @@ export default function CreateWorkoutScreen() {
               options={mockExercises}
               selectedIds={selectedExercises}
               onChange={(ids) => setSelectedExercises(ids)}
+              isEditable={true}
             />
           </View>
         </View>
