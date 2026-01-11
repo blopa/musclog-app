@@ -442,42 +442,28 @@ export default function CreateWorkoutScreen() {
             />
           </View>
         </View>
-      </ScrollView>
 
-      {/* Fixed Bottom Button */}
-      <View
-        style={{
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          padding: theme.spacing.padding.base,
-          paddingBottom: Math.max(insets.bottom, theme.spacing.padding.base),
-          backgroundColor: 'transparent',
-        }}>
-        <LinearGradient
-          colors={['transparent', theme.colors.background.primary]}
+        {/* Fixed Bottom Button */}
+        <View
           style={{
-            position: 'absolute',
-            top: -40,
-            left: 0,
-            right: 0,
-            height: 40,
-          }}
-        />
-        <View style={{ backgroundColor: theme.colors.background.primary }}>
-          <Button
-            label="Add Exercise"
-            variant="gradientCta"
-            size="md"
-            width="full"
-            icon={PlusSquare}
-            onPress={() => {
-              /* Add exercise logic */
-            }}
-          />
+            padding: theme.spacing.padding.base,
+            paddingBottom: Math.max(insets.bottom, theme.spacing.padding.base),
+            backgroundColor: 'transparent',
+          }}>
+          <View style={{ backgroundColor: theme.colors.background.primary }}>
+            <Button
+              label="Add Exercise"
+              variant="gradientCta"
+              size="md"
+              width="full"
+              icon={PlusSquare}
+              onPress={() => {
+                /* Add exercise logic */
+              }}
+            />
+          </View>
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
