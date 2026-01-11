@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable, ScrollView, Switch, TextInput } from 'react-native';
+import { View, Text, Pressable, ScrollView, Switch } from 'react-native';
+import { TextInput as ThemedTextInput } from '../components/theme/TextInput';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { theme } from '../theme';
@@ -19,7 +20,6 @@ export default function SettingsScreen() {
         style={{
           flexDirection: 'row',
           alignItems: 'center',
-          justifyContent: 'space-between',
           paddingHorizontal: 16,
           paddingTop: insets.top + 8,
           paddingBottom: 12,
@@ -28,29 +28,22 @@ export default function SettingsScreen() {
           borderBottomColor: theme.colors.border.dark,
         }}>
         <Pressable
-          style={({ pressed }) => [
-            {
-              width: 40,
-              height: 40,
-              borderRadius: 20,
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: pressed ? theme.colors.background.overlay : 'transparent',
-            },
-          ]}
+          style={({ pressed }) => [{
+            width: 40,
+            height: 40,
+            borderRadius: 20,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: pressed ? theme.colors.background.overlay : 'transparent',
+          }]}
           onPress={() => router.back()}>
           <MaterialIcons name="arrow-back" size={24} color={theme.colors.text.primary} />
         </Pressable>
-        <Text style={{
-          fontSize: 20,
-          fontWeight: 'bold',
-          color: theme.colors.text.primary,
-          // TODO: for some reason text is not centred
-          textAlign: 'center',
-        }}
-        >
-          Settings
-        </Text>
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, pointerEvents: 'none' }}>
+          <Text style={{ fontSize: 20, fontWeight: 'bold', color: theme.colors.text.primary, textAlign: 'center' }}>
+            Settings
+          </Text>
+        </View>
       </View>
 
       <ScrollView
@@ -59,26 +52,12 @@ export default function SettingsScreen() {
         showsVerticalScrollIndicator={false}>
         {/* Search Bar */}
         <View style={{ marginHorizontal: 16, marginTop: 16, marginBottom: 8 }}>
-          <View
-            style={{ position: 'absolute', left: 16, top: 0, bottom: 0, justifyContent: 'center' }}>
-            <MaterialIcons name="search" size={20} color={theme.colors.text.secondary} />
-          </View>
-          {/*TODO: use input from theme folder*/}
-          <TextInput
-            style={{
-              backgroundColor: theme.colors.background.card,
-              borderRadius: 12,
-              paddingLeft: 44,
-              paddingRight: 16,
-              height: 44,
-              color: theme.colors.text.primary,
-              fontWeight: '500',
-              fontSize: 15,
-            }}
-            placeholder="Search settings"
-            placeholderTextColor={theme.colors.text.secondary}
+          <ThemedTextInput
+            label=""
             value={search}
             onChangeText={setSearch}
+            placeholder="Search settings"
+            icon={<MaterialIcons name="search" size={20} color={theme.colors.text.secondary} />}
           />
         </View>
 
