@@ -22,6 +22,7 @@ import { EditPersonalInfoModal } from '../../components/EditPersonalInfoModal';
 import { EditFitnessDetailsModal } from '../../components/EditFitnessDetailsModal';
 import { MainSettingsModal } from '../../components/MainSettingsModal';
 import { BasicSettingsModal } from '../../components/BasicSettingsModal';
+import { AdvancedSettingsModal } from '../../components/AdvancedSettingsModal';
 
 export default function ModalsTestScreen() {
   // Nutrition Goals Modal
@@ -48,6 +49,8 @@ export default function ModalsTestScreen() {
 
   // User Menu Modal
   const [isUserMenuVisible, setIsUserMenuVisible] = useState(false);
+  // Advanced Settings Modal
+  const [isAdvancedSettingsVisible, setIsAdvancedSettingsVisible] = useState(false);
 
   // Session Feedback Modal
   const [isSessionFeedbackVisible, setIsSessionFeedbackVisible] = useState(false);
@@ -143,6 +146,22 @@ export default function ModalsTestScreen() {
               variant="accent"
               width="full"
               onPress={() => setIsSettingsVisible(true)}
+            />
+          </View>
+
+          {/* Advanced Settings Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">
+              Advanced Settings Modal
+            </Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Export, import, privacy, and danger zone.
+            </Text>
+            <Button
+              label="Open Advanced Settings Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsAdvancedSettingsVisible(true)}
             />
           </View>
 
@@ -430,6 +449,15 @@ export default function ModalsTestScreen() {
       <BasicSettingsModal
         visible={isBasicSettingsVisible}
         onClose={() => setIsBasicSettingsVisible(false)}
+      />
+
+      <AdvancedSettingsModal
+        visible={isAdvancedSettingsVisible}
+        onClose={() => setIsAdvancedSettingsVisible(false)}
+        onExportPress={() => console.log('Export pressed')}
+        onImportPress={() => console.log('Import pressed')}
+        onAnonymousBugReportChange={(v) => console.log('Anonymous bug report:', v)}
+        onAccountDeletionPress={() => console.log('Account deletion requested')}
       />
 
       <NutritionGoalsModal
