@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { theme } from '../theme';
 import { MaterialIcons } from '@expo/vector-icons';
+import { Button } from '../components/theme/Button';
 
 export default function SettingsScreen() {
   const insets = useSafeAreaInsets();
@@ -28,19 +29,38 @@ export default function SettingsScreen() {
           borderBottomColor: theme.colors.border.dark,
         }}>
         <Pressable
-          style={({ pressed }) => [{
-            width: 40,
-            height: 40,
-            borderRadius: 20,
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: pressed ? theme.colors.background.overlay : 'transparent',
-          }]}
+          style={({ pressed }) => [
+            {
+              width: 40,
+              height: 40,
+              borderRadius: 20,
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: pressed ? theme.colors.background.overlay : 'transparent',
+            },
+          ]}
           onPress={() => router.back()}>
           <MaterialIcons name="arrow-back" size={24} color={theme.colors.text.primary} />
         </Pressable>
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, pointerEvents: 'none' }}>
-          <Text style={{ fontSize: 20, fontWeight: 'bold', color: theme.colors.text.primary, textAlign: 'center' }}>
+        <View
+          style={{
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0,
+            pointerEvents: 'none',
+          }}>
+          <Text
+            style={{
+              fontSize: 20,
+              fontWeight: 'bold',
+              color: theme.colors.text.primary,
+              textAlign: 'center',
+            }}>
             Settings
           </Text>
         </View>
@@ -76,6 +96,7 @@ export default function SettingsScreen() {
           Configuration
         </Text>
 
+        {/* TODO: create a separate component for these cards, let's call it SettingsCard and change the background color to be like the one on RecentWorkoutsCard */}
         {/* Basic Settings Card */}
         <Pressable
           style={({ pressed }) => [
@@ -139,7 +160,8 @@ export default function SettingsScreen() {
               transform: [{ scale: pressed ? 0.99 : 1 }],
             },
           ]}
-          onPress={() => router.push('/settings/advanced')}>
+          onPress={() => router.push('/settings/advanced')}
+        >
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
             <View
               style={{
@@ -162,98 +184,6 @@ export default function SettingsScreen() {
             </View>
           </View>
           <MaterialIcons name="chevron-right" size={24} color={theme.colors.text.secondary} />
-        </Pressable>
-
-        {/* AI Coach Card (Gradient Border) */}
-        <Pressable
-          style={({ pressed }) => [
-            {
-              marginHorizontal: 16,
-              marginBottom: 8,
-              borderRadius: 16,
-              overflow: 'hidden',
-              shadowColor: '#000',
-              shadowOpacity: 0.06,
-              shadowRadius: 4,
-              shadowOffset: { width: 0, height: 2 },
-              transform: [{ scale: pressed ? 0.99 : 1 }],
-              borderWidth: 0,
-            },
-          ]}
-          onPress={() => router.push('/settings/ai-coach')}>
-          <View
-            style={{
-              position: 'absolute',
-              left: 0,
-              right: 0,
-              top: 0,
-              bottom: 0,
-              backgroundColor: 'transparent',
-              borderRadius: 16,
-              borderWidth: 0,
-              zIndex: 0,
-            }}>
-            {/* Simulate gradient border with overlay */}
-            <View
-              style={{
-                flex: 1,
-                borderRadius: 16,
-                borderWidth: 2,
-                borderColor: 'rgba(99,102,241,0.7)', // Indigo
-                borderStyle: 'solid',
-                opacity: 0.7,
-              }}
-            />
-          </View>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              backgroundColor: theme.colors.background.card,
-              borderRadius: 16,
-              padding: 16,
-              zIndex: 1,
-            }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
-              <View
-                style={{
-                  width: 48,
-                  height: 48,
-                  borderRadius: 24,
-                  backgroundColor: theme.colors.accent.primary,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}>
-                <MaterialIcons name="auto-awesome" size={28} color={'#fff'} />
-              </View>
-              <View>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                  <Text
-                    style={{ fontSize: 16, fontWeight: 'bold', color: theme.colors.text.primary }}>
-                    AI Coach
-                  </Text>
-                  <Text
-                    style={{
-                      fontSize: 10,
-                      fontWeight: 'bold',
-                      color: theme.colors.accent.primary,
-                      backgroundColor: theme.colors.accent.primary + '33',
-                      borderRadius: 8,
-                      paddingHorizontal: 6,
-                      paddingVertical: 2,
-                      marginLeft: 4,
-                    }}>
-                    PRO
-                  </Text>
-                </View>
-                <Text style={{ fontSize: 13, color: theme.colors.text.secondary, marginTop: 2 }}>
-                  Personalization & generation
-                </Text>
-              </View>
-            </View>
-            <MaterialIcons name="chevron-right" size={24} color={theme.colors.accent.primary} />
-          </View>
         </Pressable>
 
         {/* Divider */}
@@ -371,24 +301,15 @@ export default function SettingsScreen() {
           </Pressable>
         </View>
 
-        {/* Danger Zone */}
-        <Pressable
-          style={({ pressed }) => [
-            {
-              marginHorizontal: 16,
-              marginTop: 12,
-              borderRadius: 16,
-              borderWidth: 1,
-              borderColor: '#fca5a5',
-              backgroundColor: pressed ? '#f87171' : '#fef2f2',
-              padding: 16,
-              alignItems: 'center',
-              justifyContent: 'center',
-            },
-          ]}
-          onPress={() => {}}>
-          <Text style={{ color: '#dc2626', fontWeight: 'bold', fontSize: 15 }}>Sign Out</Text>
-        </Pressable>
+        <View style={{ marginHorizontal: 16, marginTop: 12 }}>
+          <Button
+            label="Sign Out"
+            variant="discard"
+            width="full"
+            size="sm"
+            onPress={() => {}}
+          />
+        </View>
 
         {/* Spacer for bottom nav */}
         <View style={{ height: 32 }} />
