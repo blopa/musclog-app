@@ -35,6 +35,7 @@ export const theme = {
       darkGreen50: 'rgba(25, 43, 35, 0.5)', // Dark green with 50% opacity
       darkGreen80: 'rgba(27, 50, 39, 0.8)', // Dark green with 80% opacity
       black15: 'rgba(0, 0, 0, 0.15)', // Black with 15% opacity
+      black20: 'rgba(0, 0, 0, 0.2)', // Black with 20% opacity
       black80: 'rgba(0, 0, 0, 0.8)', // Black with 80% opacity
       snackbarSuccess: '#0d3520', // Success snackbar background
       snackbarError: '#3d1515', // Error snackbar background
