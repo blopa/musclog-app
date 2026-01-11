@@ -103,9 +103,14 @@ function reorderWithGroups<T extends string | number>(
     insertIndex = nonGroupItems.findIndex((o) => o.id === targetItem.id);
     if (insertIndex === -1) {
       insertIndex = nonGroupItems.length;
+    } else {
+      // If dragging to the last position and target is not in group, insert after it
+      if (newIndex === options.length - 1) {
+        insertIndex = insertIndex + 1;
+      }
     }
   } else {
-    // Target is in the same group or doesn't exist, calculate based on newIndex
+    // Target is in the same group or doesn't exist (newIndex is beyond array length)
     // Count how many non-group items come before newIndex
     let count = 0;
     for (let i = 0; i < newIndex && i < options.length; i++) {
@@ -113,7 +118,12 @@ function reorderWithGroups<T extends string | number>(
         count++;
       }
     }
-    insertIndex = count;
+    // If newIndex is at or beyond the end, insert at the end of non-group items
+    if (newIndex >= options.length) {
+      insertIndex = nonGroupItems.length;
+    } else {
+      insertIndex = count;
+    }
   }
 
   // Insert group items at the calculated position
