@@ -18,7 +18,7 @@ export const schema = appSchema({
     tableSchema({
       name: 'workout_sessions',
       columns: [
-        { name: 'workout_id', type: 'string', isOptional: true },
+        { name: 'workout_id', type: 'string', isOptional: true, isIndexed: true },
         { name: 'name', type: 'string' },
         { name: 'started_at', type: 'number' },
         { name: 'completed_at', type: 'number', isOptional: true },

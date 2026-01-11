@@ -51,7 +51,7 @@ export default class WorkoutExercise extends Model {
       throw new Error('At least 2 exercises are required to create a superset');
     }
 
-    const supersetId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const supersetId = `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
 
     await database.write(async () => {
       const exercises = await database
