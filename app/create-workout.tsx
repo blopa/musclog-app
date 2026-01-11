@@ -32,7 +32,12 @@ export default function CreateWorkoutScreen() {
     {
       label: 'AI',
       value: 'ai',
-      icon: <Sparkles size={14} color={volumeCalc === 'ai' ? theme.colors.text.white : theme.colors.text.tertiary} />,
+      icon: (
+        <Sparkles
+          size={14}
+          color={volumeCalc === 'ai' ? theme.colors.text.white : theme.colors.text.tertiary}
+        />
+      ),
     },
   ];
 
@@ -275,6 +280,7 @@ export default function CreateWorkoutScreen() {
               options={volumeOptions}
               value={volumeCalc}
               onValueChange={setVolumeCalc}
+              variant="outline"
             />
 
             <Text
@@ -413,4 +419,3 @@ export default function CreateWorkoutScreen() {
     </SafeAreaView>
   );
 }
-

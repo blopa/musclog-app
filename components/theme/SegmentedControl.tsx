@@ -7,16 +7,32 @@ type Option = {
   icon?: React.ReactNode;
 };
 
+type SegmentedControlVariant = 'clean' | 'elevated' | 'outline';
+
 type TestSegmentedControlProps = {
   options: Option[];
   value: string;
   onValueChange: (value: string) => void;
-  // variant?: 'default' | 'gradient';
+  variant?: SegmentedControlVariant;
 };
 
-export function SegmentedControl({ options, value, onValueChange }: TestSegmentedControlProps) {
+export function SegmentedControl({
+  options,
+  value,
+  onValueChange,
+  variant = 'outline',
+}: TestSegmentedControlProps) {
+  const containerBase = 'flex-row rounded-lg p-1';
+
+  const containerClass =
+    variant === 'elevated'
+      ? `${containerBase} bg-bg-cardElevated shadow-md`
+      : variant === 'outline'
+        ? `${containerBase} bg-transparent border border-border-light`
+        : `${containerBase} bg-bg-card`;
+
   return (
-    <View className="flex-row rounded-lg bg-bg-card p-1">
+    <View className={containerClass}>
       {options.map((option) => (
         <Pressable
           key={option.value}
