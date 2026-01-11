@@ -76,7 +76,7 @@ export default function CreateWorkoutScreen() {
       iconBgColor: theme.colors.status.purple + '11',
       iconColor: theme.colors.status.purple,
       // No groupId - standalone exercise
-    }
+    },
   ]);
 
   const toggleDay = (index: number) => {
