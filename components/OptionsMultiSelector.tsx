@@ -57,6 +57,24 @@ function getGroupPosition<T extends string | number>(
   return 'middle';
 }
 
+// Helper to get a consistent color for each group
+function getGroupColor(groupId: string | undefined): string {
+  if (!groupId) return theme.colors.accent.primary;
+  
+  // Simple hash to consistently pick a color for a groupId
+  const colors = [
+    theme.colors.accent.primary,
+    theme.colors.status.purple,
+    theme.colors.status.indigo,
+    '#10B981', // emerald green
+    '#F59E0B', // amber
+    '#EF4444', // red
+  ];
+  
+  const hash = groupId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  return colors[hash % colors.length];
+}
+
 export type SelectorOption<T extends string | number> = {
   id: T;
   label: string;
@@ -157,12 +175,16 @@ export function OptionsMultiSelector<T extends string | number>({
     onOrderChange?.(result);
   };
 
-  const renderGroupIndicator = (groupPosition: GroupPosition) => {
+  const renderGroupIndicator = (
+    groupPosition: GroupPosition,
+    groupId?: string,
+    isFirstInGroup: boolean = false
+  ) => {
     if (groupPosition === 'none') return null;
 
-    const lineColor = theme.colors.accent.primary;
+    const lineColor = getGroupColor(groupId);
     const lineWidth = 3;
-    const indicatorWidth = 12;
+    const indicatorWidth = 16;
 
     return (
       <View
@@ -170,7 +192,9 @@ export function OptionsMultiSelector<T extends string | number>({
           width: indicatorWidth,
           alignItems: 'center',
           marginRight: theme.spacing.gap.sm,
+          position: 'relative',
         }}>
+        {/* Main vertical line */}
         <View
           style={{
             width: lineWidth,
@@ -186,6 +210,22 @@ export function OptionsMultiSelector<T extends string | number>({
               groupPosition === 'last' || groupPosition === 'only' ? lineWidth : 0,
           }}
         />
+        {/* Small circle indicator at the top of each group */}
+        {isFirstInGroup && (
+          <View
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: (indicatorWidth - 8) / 2,
+              width: 8,
+              height: 8,
+              borderRadius: 4,
+              backgroundColor: lineColor,
+              borderWidth: 2,
+              borderColor: theme.colors.background.primary,
+            }}
+          />
+        )}
       </View>
     );
   };
@@ -200,11 +240,13 @@ export function OptionsMultiSelector<T extends string | number>({
     const selected = isSelected(item.id);
     const index = getIndex() ?? 0;
     const groupPosition = getGroupPosition(orderedOptions, index);
+    const isFirstInGroup = groupPosition === 'first' || groupPosition === 'only';
+    const groupColor = item.groupId ? getGroupColor(item.groupId) : undefined;
 
     return (
       <ScaleDecorator>
         <View style={{ flexDirection: 'row', alignItems: 'stretch' }}>
-          {renderGroupIndicator(groupPosition)}
+          {renderGroupIndicator(groupPosition, item.groupId, isFirstInGroup)}
           <Pressable
             onLongPress={drag}
             delayLongPress={150}
@@ -220,10 +262,16 @@ export function OptionsMultiSelector<T extends string | number>({
                   padding: theme.spacing.padding.base,
                   borderRadius: theme.borderRadius.md,
                   borderWidth: theme.borderWidth.thin,
-                  borderColor: selected ? theme.colors.accent.primary : theme.colors.border.light,
+                  borderColor: selected
+                    ? theme.colors.accent.primary
+                    : groupColor
+                      ? groupColor + '40'
+                      : theme.colors.border.light,
                   backgroundColor: isActive
                     ? theme.colors.background.cardElevated
-                    : theme.colors.background.card,
+                    : groupColor
+                      ? groupColor + '08'
+                      : theme.colors.background.card,
                   ...(selected ? theme.shadows.accentGlow : {}),
                   opacity: isActive ? 0.9 : pressed ? 0.7 : 1,
                 }}>
@@ -320,10 +368,12 @@ export function OptionsMultiSelector<T extends string | number>({
     const Icon = option.icon as any;
     const selected = isSelected(option.id);
     const groupPosition = getGroupPosition(orderedOptions, index);
+    const isFirstInGroup = groupPosition === 'first' || groupPosition === 'only';
+    const groupColor = option.groupId ? getGroupColor(option.groupId) : undefined;
 
     return (
       <View key={String(option.id)} style={{ flexDirection: 'row', alignItems: 'stretch' }}>
-        {renderGroupIndicator(groupPosition)}
+        {renderGroupIndicator(groupPosition, option.groupId, isFirstInGroup)}
         <Pressable onPress={() => toggle(option.id)} style={{ flex: 1 }}>
           {({ pressed }) => (
             <View
@@ -335,8 +385,12 @@ export function OptionsMultiSelector<T extends string | number>({
                 padding: theme.spacing.padding.base,
                 borderRadius: theme.borderRadius.md,
                 borderWidth: theme.borderWidth.thin,
-                borderColor: selected ? theme.colors.accent.primary : theme.colors.border.light,
-                backgroundColor: theme.colors.background.card,
+                borderColor: selected
+                  ? theme.colors.accent.primary
+                  : groupColor
+                    ? groupColor + '40'
+                    : theme.colors.border.light,
+                backgroundColor: groupColor ? groupColor + '08' : theme.colors.background.card,
                 transform: [{ scale: pressed ? 0.98 : 1 }],
                 ...(selected ? theme.shadows.accentGlow : {}),
               }}>
