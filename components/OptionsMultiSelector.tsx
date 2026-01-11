@@ -128,17 +128,18 @@ export function OptionsMultiSelector<T extends string | number>({
       return;
     }
 
-    // Item has a group - we need to pull all group members to be adjacent
+    // Item has a group - we need to ensure all group members are contiguous
+    // and preserve the internal order from the drag result
     const groupId = movedItem.groupId;
 
-    // Find where the moved item ended up in the new data array
-    const movedItemNewIndex = data.findIndex((o) => o.id === movedItem.id);
+    // Get all group items in the order they appear in the NEW data array
+    const groupItems = data.filter((o) => o.groupId === groupId);
 
-    // Get all non-group items in their new order (from data)
+    // Get all non-group items in their new order
     const nonGroupItems = data.filter((o) => o.groupId !== groupId);
 
-    // Get all group items in their original relative order
-    const groupItems = orderedOptions.filter((o) => o.groupId === groupId);
+    // Find where the moved item ended up in the new data array to determine insertion point
+    const movedItemNewIndex = data.findIndex((o) => o.id === movedItem.id);
 
     // Count how many non-group items come BEFORE the moved item's new position in data
     let insertIndex = 0;
