@@ -347,8 +347,8 @@ export default function CreateWorkoutScreen() {
                     onPress={() => toggleDay(index)}
                     style={({ pressed }) => [
                       {
-                        width: theme.size['9'] || 36,
-                        height: theme.size['9'] || 36,
+                        width: theme.size['10'],
+                        height: theme.size['10'],
                         borderRadius: theme.borderRadius.full,
                         alignItems: 'center',
                         justifyContent: 'center',
