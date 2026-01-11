@@ -94,23 +94,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
   };
 
   return (
-    <FullScreenModal
-      visible={visible}
-      onClose={onClose}
-      title="Add Exercise"
-      scrollable={true}
-      footer={
-        <View className="px-4 pb-8 pt-2">
-          <Button
-            label="Add to Workout"
-            variant="gradientCta"
-            size="lg"
-            width="full"
-            icon={PlusCircle}
-            onPress={handleAdd}
-          />
-        </View>
-      }>
+    <FullScreenModal visible={visible} onClose={onClose} title="Add Exercise" scrollable={true}>
       <View className="flex-1 px-4 py-6">
         {/* Target Muscle Section */}
         <View className="mb-6">
@@ -193,7 +177,10 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
               <Switch
                 value={isBodyweight}
                 onValueChange={setIsBodyweight}
-                trackColor={{ false: theme.colors.background.overlay, true: theme.colors.accent.primary }}
+                trackColor={{
+                  false: theme.colors.background.overlay,
+                  true: theme.colors.accent.primary,
+                }}
                 thumbColor={theme.colors.text.white}
               />
             </View>
@@ -202,18 +189,8 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
           <View className="gap-6">
             {/* Sets & Reps */}
             <View className="flex-row gap-4">
-              <NumericInput
-                label="Sets"
-                value={sets}
-                onChangeText={setSets}
-                unit=""
-              />
-              <NumericInput
-                label="Reps"
-                value={reps}
-                onChangeText={setReps}
-                unit=""
-              />
+              <NumericInput label="Sets" value={sets} onChangeText={setSets} unit="" />
+              <NumericInput label="Reps" value={reps} onChangeText={setReps} unit="" />
             </View>
 
             {/* Weight */}
@@ -248,6 +225,15 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
             </View>
           </View>
         </View>
+
+        <Button
+          label="Add to Workout"
+          variant="gradientCta"
+          size="md"
+          width="full"
+          icon={PlusCircle}
+          onPress={handleAdd}
+        />
       </View>
     </FullScreenModal>
   );

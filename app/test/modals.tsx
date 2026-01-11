@@ -3,6 +3,7 @@ import { View, Text, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '../../components/theme/Button';
 import { NutritionGoalsModal, NutritionGoals } from '../../components/NutritionGoalsModal';
+import { AddExerciseModal } from '../../components/AddExerciseModal';
 import { ConfirmationModal } from '../../components/ConfirmationModal';
 import { EndWorkoutModal } from '../../components/EndWorkoutModal';
 import { UserMenuModal } from '../../components/UserMenuModal';
@@ -98,6 +99,9 @@ export default function ModalsTestScreen() {
   // Workout Summary Celebration
   const [isWorkoutSummaryVisible, setIsWorkoutSummaryVisible] = useState(false);
 
+  // Add Exercise Modal
+  const [isAddExerciseVisible, setIsAddExerciseVisible] = useState(false);
+
   const handleSaveGoals = (goals: NutritionGoals) => {
     console.log('Goals saved:', goals);
   };
@@ -112,6 +116,20 @@ export default function ModalsTestScreen() {
             <Text className="text-base text-text-secondary">
               Test various modal components in the app
             </Text>
+          </View>
+
+          {/* Add Exercise Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Add Exercise Modal</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Modal for adding an exercise to the current workout.
+            </Text>
+            <Button
+              label="Open Add Exercise Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsAddExerciseVisible(true)}
+            />
           </View>
 
           {/* Nutrition Goals Modal */}
@@ -736,6 +754,15 @@ export default function ModalsTestScreen() {
         totalTime="45m"
         volume="12,450 kg"
         personalRecords={2}
+      />
+
+      <AddExerciseModal
+        visible={isAddExerciseVisible}
+        onClose={() => setIsAddExerciseVisible(false)}
+        onAddExercise={(data) => {
+          console.log('Exercise added:', data);
+          setIsAddExerciseVisible(false);
+        }}
       />
 
       <AISettingsModal
