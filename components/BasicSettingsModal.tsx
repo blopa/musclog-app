@@ -1,7 +1,10 @@
 import React from 'react';
-import { View, Text, Pressable, Switch } from 'react-native';
+import { View, Text } from 'react-native';
 import { Settings, Sun, Moon, ChevronRight, Heart } from 'lucide-react-native';
 import { FullScreenModal } from './FullScreenModal';
+import { SettingsCard } from './SettingsCard';
+import { SegmentedControl } from './theme/SegmentedControl';
+import { TogglableSettings } from './TogglableSettings';
 import { theme } from '../theme';
 
 type ThemeOption = 'system' | 'light' | 'dark';
@@ -38,90 +41,97 @@ export function BasicSettingsModal({
   writeHealthData = false,
   onWriteHealthDataChange,
 }: BasicSettingsModalProps) {
-  const themeOptions: { value: ThemeOption; label: string; icon: typeof Settings }[] = [
-    { value: 'system', label: 'System', icon: Settings },
-    { value: 'light', label: 'Light', icon: Sun },
-    { value: 'dark', label: 'Dark', icon: Moon },
+  const themeOptions = [
+    {
+      value: 'system',
+      label: 'System',
+      icon: (
+        <Settings
+          size={18}
+          color={themeValue === 'system' ? theme.colors.accent.primary : theme.colors.text.tertiary}
+        />
+      ),
+    },
+    {
+      value: 'light',
+      label: 'Light',
+      icon: (
+        <Sun
+          size={18}
+          color={themeValue === 'light' ? theme.colors.accent.primary : theme.colors.text.tertiary}
+        />
+      ),
+    },
+    {
+      value: 'dark',
+      label: 'Dark',
+      icon: (
+        <Moon
+          size={18}
+          color={themeValue === 'dark' ? theme.colors.accent.primary : theme.colors.text.tertiary}
+        />
+      ),
+    },
+  ];
+
+  const healthSettingsItems = [
+    {
+      key: 'connect',
+      label: 'Connect Health Data',
+      value: connectHealthData,
+      onValueChange: onConnectHealthDataChange || (() => {}),
+    },
+    {
+      key: 'read',
+      label: 'Read Health Data',
+      value: readHealthData,
+      onValueChange: onReadHealthDataChange || (() => {}),
+    },
+    {
+      key: 'write',
+      label: 'Write Health Data',
+      value: writeHealthData,
+      onValueChange: onWriteHealthDataChange || (() => {}),
+    },
   ];
 
   return (
     <FullScreenModal visible={visible} onClose={onClose} title="Basic Settings">
-      <View className="gap-8 px-4 py-6">
+      <View className="gap-8 py-6">
         {/* Appearance Section */}
         <View>
-          <Text className="mb-3 px-1 text-lg font-bold tracking-tight text-text-primary">
+          <Text className="mb-3 px-5 text-lg font-bold tracking-tight text-text-primary">
             Appearance
           </Text>
           <View
-            className="rounded-xl p-4"
             style={{
               backgroundColor: theme.colors.background.card,
+              borderRadius: 16,
+              marginHorizontal: 16,
+              padding: 16,
               borderWidth: 1,
               borderColor: theme.colors.border.light,
             }}>
             <Text className="mb-3 text-sm font-medium text-text-secondary">App Theme</Text>
-            <View
-              className="flex-row rounded-xl p-1.5"
-              style={{ backgroundColor: theme.colors.background.cardElevated }}>
-              {themeOptions.map((option) => {
-                const Icon = option.icon;
-                const isSelected = themeValue === option.value;
-                return (
-                  <Pressable
-                    key={option.value}
-                    className="flex-1 rounded-lg py-2"
-                    style={{
-                      backgroundColor: isSelected ? theme.colors.background.card : 'transparent',
-                    }}
-                    onPress={() => onThemeChange?.(option.value)}>
-                    <View className="flex-row items-center justify-center gap-1.5">
-                      <Icon
-                        size={18}
-                        color={
-                          isSelected ? theme.colors.accent.primary : theme.colors.text.tertiary
-                        }
-                      />
-                      <Text
-                        className="text-sm font-medium"
-                        style={{
-                          color: isSelected
-                            ? theme.colors.accent.primary
-                            : theme.colors.text.tertiary,
-                        }}>
-                        {option.label}
-                      </Text>
-                    </View>
-                  </Pressable>
-                );
-              })}
-            </View>
+            <SegmentedControl
+              options={themeOptions}
+              value={themeValue}
+              onValueChange={(val) => onThemeChange?.(val as ThemeOption)}
+            />
           </View>
         </View>
 
         {/* Localization Section */}
         <View>
-          <Text className="mb-3 px-1 text-lg font-bold tracking-tight text-text-primary">
+          <Text className="mb-3 px-5 text-lg font-bold tracking-tight text-text-primary">
             Localization
           </Text>
-          <Pressable
-            onPress={onLanguagePress}
-            style={({ pressed }) => [
-              {
-                backgroundColor: theme.colors.background.card,
-                borderRadius: 16,
-                borderWidth: 1,
-                borderColor: theme.colors.border.light,
-                padding: 16,
-                transform: [{ scale: pressed ? 0.99 : 1 }],
-              },
-            ]}>
-            <View className="flex-row items-center justify-between">
-              <View className="flex-1">
-                <Text className="text-base font-medium text-text-primary">Language</Text>
-                <Text className="mt-0.5 text-xs text-text-secondary">
-                  Choose your preferred language
-                </Text>
-              </View>
+          <SettingsCard
+            title="Language"
+            subtitle="Choose your preferred language"
+            onPress={onLanguagePress || (() => {})}
+            icon={<Settings size={24} color={theme.colors.text.primary} />}
+            rightIcon={
               <View className="flex-row items-center gap-2">
                 <Text
                   className="text-sm font-medium"
@@ -130,111 +140,49 @@ export function BasicSettingsModal({
                 </Text>
                 <ChevronRight size={16} color={theme.colors.text.tertiary} />
               </View>
-            </View>
-          </Pressable>
+            }
+          />
         </View>
 
         {/* Integrations Section */}
         <View>
-          <Text className="mb-3 px-1 text-lg font-bold tracking-tight text-text-primary">
+          <Text className="mb-3 px-5 text-lg font-bold tracking-tight text-text-primary">
             Integrations
           </Text>
+
+          {/* Custom Header for Health Data because TogglableSettings is just the toggle list */}
           <View
-            className="overflow-hidden rounded-xl"
+            className="mx-4 rounded-t-2xl border-l border-r border-t p-4"
             style={{
-              backgroundColor: theme.colors.background.card,
-              borderWidth: 1,
+              backgroundColor: theme.colors.status.error8,
               borderColor: theme.colors.border.light,
             }}>
-            {/* Header Card */}
-            <View
-              className="border-b p-4"
-              style={{
-                borderBottomColor: theme.colors.border.light,
-                backgroundColor: theme.colors.status.error8, // Red tint background
-              }}>
-              <View className="mb-2 flex-row items-center gap-3">
-                <View
-                  className="h-10 w-10 items-center justify-center rounded-full"
-                  style={{ backgroundColor: theme.colors.background.white }}>
-                  <Heart
-                    size={24}
-                    color={theme.colors.status.error}
-                    fill={theme.colors.status.error}
-                  />
-                </View>
-                <View className="flex-1">
-                  <Text className="text-base font-semibold text-text-primary">Health Data</Text>
-                  <Text className="text-xs text-text-secondary">
-                    Sync your workouts and body metrics
-                  </Text>
-                </View>
-              </View>
-            </View>
-
-            {/* Master Toggle */}
-            <View
-              className="flex-row items-center justify-between border-b p-4"
-              style={{ borderBottomColor: theme.colors.border.light }}>
-              <Text className="text-sm font-medium text-text-primary">Connect Health Data</Text>
-              <Switch
-                value={connectHealthData}
-                onValueChange={onConnectHealthDataChange}
-                trackColor={{
-                  false: theme.colors.background.cardElevated,
-                  true: theme.colors.accent.primary,
-                }}
-                thumbColor={theme.colors.background.white}
-              />
-            </View>
-
-            {/* Sub Toggles */}
-            <View
-              className="gap-5 p-4"
-              style={{ backgroundColor: theme.colors.background.cardDark }}>
-              {/* Read Health Data */}
-              <View className="flex-row items-center justify-between">
-                <View className="flex-1 pr-4">
-                  <Text className="text-sm font-medium text-text-primary">Read Health Data</Text>
-                  <Text className="mt-0.5 text-xs text-text-secondary">
-                    Allows Musclog to import weight, steps, and heart rate.
-                  </Text>
-                </View>
-                <Switch
-                  value={readHealthData}
-                  onValueChange={onReadHealthDataChange}
-                  trackColor={{
-                    false: theme.colors.background.cardElevated,
-                    true: theme.colors.accent.primary,
-                  }}
-                  thumbColor={theme.colors.background.white}
+            <View className="flex-row items-center gap-3">
+              <View
+                className="h-10 w-10 items-center justify-center rounded-full"
+                style={{ backgroundColor: theme.colors.background.white }}>
+                <Heart
+                  size={24}
+                  color={theme.colors.status.error}
+                  fill={theme.colors.status.error}
                 />
               </View>
-
-              {/* Write Health Data */}
-              <View className="flex-row items-center justify-between">
-                <View className="flex-1 pr-4">
-                  <Text className="text-sm font-medium text-text-primary">Write Health Data</Text>
-                  <Text className="mt-0.5 text-xs text-text-secondary">
-                    Allows Musclog to save completed workouts to Health.
-                  </Text>
-                </View>
-                <Switch
-                  value={writeHealthData}
-                  onValueChange={onWriteHealthDataChange}
-                  trackColor={{
-                    false: theme.colors.background.cardElevated,
-                    true: theme.colors.accent.primary,
-                  }}
-                  thumbColor={theme.colors.background.white}
-                />
+              <View className="flex-1">
+                <Text className="text-base font-semibold text-text-primary">Health Data</Text>
+                <Text className="text-xs text-text-secondary">
+                  Sync your workouts and body metrics
+                </Text>
               </View>
             </View>
           </View>
 
-          {/* Privacy Statement */}
+          {/* Using TogglableSettings for the list of switches */}
+          <View style={{ marginTop: -1 }}>
+            <TogglableSettings items={healthSettingsItems} />
+          </View>
+
           <Text
-            className="mt-4 px-8 text-center text-xs"
+            className="mt-0 px-8 text-center text-xs"
             style={{ color: theme.colors.text.tertiary }}>
             Data privacy is important to us. Your health data is never shared with third parties
             without your consent.

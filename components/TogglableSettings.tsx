@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, Text, Switch, Pressable } from 'react-native';
 import { theme } from '../theme';
-import { MaterialIcons } from '@expo/vector-icons';
 
 type ToggleItem = {
   key: string;
@@ -12,9 +11,8 @@ type ToggleItem = {
 };
 
 type TogglableSettingsProps = {
-      // New API: provide an array of items
-      items: ToggleItem[];
-    };
+  items: ToggleItem[];
+};
 
 export function TogglableSettings(props: TogglableSettingsProps) {
   const items: ToggleItem[] = props.items;
