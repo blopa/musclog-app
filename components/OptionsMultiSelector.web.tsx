@@ -219,111 +219,114 @@ function SortableItem<T extends string | number>({
     <div ref={setNodeRef} style={style}>
       <View style={{ flexDirection: 'row', alignItems: 'stretch' }}>
         <GroupIndicator groupPosition={groupPosition} />
-        <Pressable
-          onPress={onToggle}
-          style={({ pressed }) => [
-            {
-              flex: 1,
-              flexDirection: 'row',
-              alignItems: 'center',
-              padding: theme.spacing.padding.base,
-              borderRadius: theme.borderRadius.md,
-              borderWidth: theme.borderWidth.thin,
-              borderColor: selected ? theme.colors.accent.primary : theme.colors.border.light,
-              backgroundColor: isDragging
-                ? theme.colors.background.cardElevated
-                : selected
-                  ? theme.colors.accent.primary10
-                  : theme.colors.background.card,
-              transform: [{ scale: pressed && !isDragging ? 0.98 : 1 }],
-              ...(selected ? theme.shadows.accentGlow : {}),
-            },
-          ]}>
-          {/* Drag Handle - Only show in drag mode */}
-          {isDragMode && (
-            <div
-              {...attributes}
-              {...listeners}
-              style={{
-                cursor: 'grab',
-                marginRight: theme.spacing.gap.sm,
-                opacity: 0.5,
-                touchAction: 'none',
-              }}>
-              <GripVertical
-                size={theme.iconSize.md}
-                color={theme.colors.text.secondary}
-                strokeWidth={theme.strokeWidth.normal}
-              />
-            </div>
-          )}
-
-          <View
-            style={{
-              flex: 1,
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}>
+        <Pressable onPress={onToggle} style={{ flex: 1 }}>
+          {({ pressed }) => (
             <View
               style={{
+                flex: 1,
                 flexDirection: 'row',
                 alignItems: 'center',
-                gap: theme.spacing.gap.base,
-                flex: 1,
+                padding: theme.spacing.padding.base,
+                borderRadius: theme.borderRadius.md,
+                borderWidth: theme.borderWidth.thin,
+                borderColor: selected ? theme.colors.accent.primary : theme.colors.border.light,
+                backgroundColor: isDragging
+                  ? theme.colors.background.cardElevated
+                  : selected
+                    ? theme.colors.accent.primary10
+                    : theme.colors.background.card,
+                transform: [{ scale: pressed && !isDragging ? 0.98 : 1 }],
+                ...(selected ? theme.shadows.accentGlow : {}),
               }}>
-              <View
-                style={{
-                  width: theme.size['10'],
-                  height: theme.size['10'],
-                  borderRadius: theme.borderRadius.full,
-                  backgroundColor: option.iconBgColor,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}>
-                <Icon size={theme.iconSize.lg} color={option.iconColor} />
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text
+              {/* Drag Handle - Only show in drag mode */}
+              {isDragMode && (
+                <div
+                  {...attributes}
+                  {...listeners}
                   style={{
-                    fontSize: theme.typography.fontSize.base,
-                    fontWeight: theme.typography.fontWeight.bold,
-                    color: theme.colors.text.primary,
+                    cursor: 'grab',
+                    marginRight: theme.spacing.gap.sm,
+                    opacity: 0.5,
+                    touchAction: 'none',
                   }}>
-                  {option.label}
-                </Text>
-                <Text
-                  style={{
-                    fontSize: theme.typography.fontSize.xs,
-                    color: theme.colors.text.secondary,
-                    marginTop: theme.spacing.padding.xs / 4,
-                  }}>
-                  {option.description}
-                </Text>
-              </View>
-            </View>
-            {showCheckboxes && (
-              <View
-                style={{
-                  width: theme.size['6'],
-                  height: theme.size['6'],
-                  borderRadius: theme.borderRadius.sm,
-                  borderWidth: theme.borderWidth.medium,
-                  borderColor: selected ? theme.colors.accent.primary : theme.colors.border.default,
-                  backgroundColor: selected ? theme.colors.accent.primary : 'transparent',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}>
-                {selected && (
-                  <Check
-                    size={theme.iconSize.xs}
-                    color={theme.colors.text.black}
-                    strokeWidth={theme.strokeWidth.thick}
+                  <GripVertical
+                    size={theme.iconSize.md}
+                    color={theme.colors.text.secondary}
+                    strokeWidth={theme.strokeWidth.normal}
                   />
+                </div>
+              )}
+
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: theme.spacing.gap.base,
+                    flex: 1,
+                  }}>
+                  <View
+                    style={{
+                      width: theme.size['10'],
+                      height: theme.size['10'],
+                      borderRadius: theme.borderRadius.full,
+                      backgroundColor: option.iconBgColor,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}>
+                    <Icon size={theme.iconSize.lg} color={option.iconColor} />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text
+                      style={{
+                        fontSize: theme.typography.fontSize.base,
+                        fontWeight: theme.typography.fontWeight.bold,
+                        color: theme.colors.text.primary,
+                      }}>
+                      {option.label}
+                    </Text>
+                    <Text
+                      style={{
+                        fontSize: theme.typography.fontSize.xs,
+                        color: theme.colors.text.secondary,
+                        marginTop: theme.spacing.padding.xs / 4,
+                      }}>
+                      {option.description}
+                    </Text>
+                  </View>
+                </View>
+                {showCheckboxes && (
+                  <View
+                    style={{
+                      width: theme.size['6'],
+                      height: theme.size['6'],
+                      borderRadius: theme.borderRadius.sm,
+                      borderWidth: theme.borderWidth.medium,
+                      borderColor: selected
+                        ? theme.colors.accent.primary
+                        : theme.colors.border.default,
+                      backgroundColor: selected ? theme.colors.accent.primary : 'transparent',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}>
+                    {selected && (
+                      <Check
+                        size={theme.iconSize.xs}
+                        color={theme.colors.text.black}
+                        strokeWidth={theme.strokeWidth.thick}
+                      />
+                    )}
+                  </View>
                 )}
               </View>
-            )}
-          </View>
+            </View>
+          )}
         </Pressable>
       </View>
     </div>
@@ -399,84 +402,87 @@ export function OptionsMultiSelector<T extends string | number>({
     return (
       <View key={String(option.id)} style={{ flexDirection: 'row', alignItems: 'stretch' }}>
         <GroupIndicator groupPosition={groupPosition} />
-        <Pressable
-          onPress={() => toggle(option.id)}
-          style={({ pressed }) => [
-            {
-              flex: 1,
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              padding: theme.spacing.padding.base,
-              borderRadius: theme.borderRadius.md,
-              borderWidth: theme.borderWidth.thin,
-              borderColor: selected ? theme.colors.accent.primary : theme.colors.border.light,
-              backgroundColor: selected
-                ? theme.colors.accent.primary10
-                : theme.colors.background.card,
-              transform: [{ scale: pressed ? 0.98 : 1 }],
-              ...(selected ? theme.shadows.accentGlow : {}),
-            },
-          ]}>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: theme.spacing.gap.base,
-              flex: 1,
-            }}>
+        <Pressable onPress={() => toggle(option.id)} style={{ flex: 1 }}>
+          {({ pressed }) => (
             <View
               style={{
-                width: theme.size['10'],
-                height: theme.size['10'],
-                borderRadius: theme.borderRadius.full,
-                backgroundColor: option.iconBgColor,
+                flex: 1,
+                flexDirection: 'row',
                 alignItems: 'center',
-                justifyContent: 'center',
+                justifyContent: 'space-between',
+                padding: theme.spacing.padding.base,
+                borderRadius: theme.borderRadius.md,
+                borderWidth: theme.borderWidth.thin,
+                borderColor: selected ? theme.colors.accent.primary : theme.colors.border.light,
+                backgroundColor: selected
+                  ? theme.colors.accent.primary10
+                  : theme.colors.background.card,
+                transform: [{ scale: pressed ? 0.98 : 1 }],
+                ...(selected ? theme.shadows.accentGlow : {}),
               }}>
-              <Icon size={theme.iconSize.lg} color={option.iconColor} />
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text
+              <View
                 style={{
-                  fontSize: theme.typography.fontSize.base,
-                  fontWeight: theme.typography.fontWeight.bold,
-                  color: theme.colors.text.primary,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: theme.spacing.gap.base,
+                  flex: 1,
                 }}>
-                {option.label}
-              </Text>
-              <Text
-                style={{
-                  fontSize: theme.typography.fontSize.xs,
-                  color: theme.colors.text.secondary,
-                  marginTop: theme.spacing.padding.xs / 4,
-                }}>
-                {option.description}
-              </Text>
-            </View>
-          </View>
-          {showCheckboxes ? (
-            <View
-              style={{
-                width: theme.size['6'],
-                height: theme.size['6'],
-                borderRadius: theme.borderRadius.sm,
-                borderWidth: theme.borderWidth.medium,
-                borderColor: selected ? theme.colors.accent.primary : theme.colors.border.default,
-                backgroundColor: selected ? theme.colors.accent.primary : 'transparent',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-              {selected && (
-                <Check
-                  size={theme.iconSize.xs}
-                  color={theme.colors.text.black}
-                  strokeWidth={theme.strokeWidth.thick}
-                />
+                <View
+                  style={{
+                    width: theme.size['10'],
+                    height: theme.size['10'],
+                    borderRadius: theme.borderRadius.full,
+                    backgroundColor: option.iconBgColor,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                  <Icon size={theme.iconSize.lg} color={option.iconColor} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text
+                    style={{
+                      fontSize: theme.typography.fontSize.base,
+                      fontWeight: theme.typography.fontWeight.bold,
+                      color: theme.colors.text.primary,
+                    }}>
+                    {option.label}
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: theme.typography.fontSize.xs,
+                      color: theme.colors.text.secondary,
+                      marginTop: theme.spacing.padding.xs / 4,
+                    }}>
+                    {option.description}
+                  </Text>
+                </View>
+              </View>
+              {showCheckboxes ? (
+                <View
+                  style={{
+                    width: theme.size['6'],
+                    height: theme.size['6'],
+                    borderRadius: theme.borderRadius.sm,
+                    borderWidth: theme.borderWidth.medium,
+                    borderColor: selected
+                      ? theme.colors.accent.primary
+                      : theme.colors.border.default,
+                    backgroundColor: selected ? theme.colors.accent.primary : 'transparent',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                  {selected && (
+                    <Check
+                      size={theme.iconSize.xs}
+                      color={theme.colors.text.black}
+                      strokeWidth={theme.strokeWidth.thick}
+                    />
+                  )}
+                </View>
+              ) : (
+                <View />
               )}
             </View>
-          ) : (
-            <View />
           )}
         </Pressable>
       </View>

@@ -44,82 +44,85 @@ export function OptionsSelector<T extends string | number>({
           const Icon = option.icon as any;
           const isSelected = selectedId === option.id;
           return (
-            <Pressable
-              key={option.id}
-              onPress={() => onSelect(option.id)}
-              style={({ pressed }) => [
-                {
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: theme.spacing.padding.base,
-                  borderRadius: theme.borderRadius.md,
-                  borderWidth: theme.borderWidth.thin,
-                  borderColor: isSelected ? theme.colors.accent.primary : theme.colors.border.light,
-                  backgroundColor: isSelected
-                    ? theme.colors.accent.primary10
-                    : theme.colors.background.card,
-                  transform: [{ scale: pressed ? 0.98 : 1 }],
-                  ...(isSelected ? theme.shadows.accentGlow : {}),
-                },
-              ]}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  gap: theme.spacing.gap.base,
-                }}>
+            <Pressable key={option.id} onPress={() => onSelect(option.id)}>
+              {({ pressed }) => (
                 <View
                   style={{
-                    width: theme.size['10'],
-                    height: theme.size['10'],
-                    borderRadius: theme.borderRadius.full,
-                    backgroundColor: option.iconBgColor,
+                    flexDirection: 'row',
                     alignItems: 'center',
-                    justifyContent: 'center',
+                    justifyContent: 'space-between',
+                    padding: theme.spacing.padding.base,
+                    borderRadius: theme.borderRadius.md,
+                    borderWidth: theme.borderWidth.thin,
+                    borderColor: isSelected
+                      ? theme.colors.accent.primary
+                      : theme.colors.border.light,
+                    backgroundColor: isSelected
+                      ? theme.colors.accent.primary10
+                      : theme.colors.background.card,
+                    transform: [{ scale: pressed ? 0.98 : 1 }],
+                    ...(isSelected ? theme.shadows.accentGlow : {}),
                   }}>
-                  <Icon size={theme.iconSize.lg} color={option.iconColor} />
-                </View>
-                <View>
-                  <Text
+                  <View
                     style={{
-                      fontSize: theme.typography.fontSize.base,
-                      fontWeight: theme.typography.fontWeight.bold,
-                      color: theme.colors.text.primary,
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: theme.spacing.gap.base,
+                      flex: 1,
                     }}>
-                    {option.label}
-                  </Text>
-                  <Text
+                    <View
+                      style={{
+                        width: theme.size['10'],
+                        height: theme.size['10'],
+                        borderRadius: theme.borderRadius.full,
+                        backgroundColor: option.iconBgColor,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}>
+                      <Icon size={theme.iconSize.lg} color={option.iconColor} />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text
+                        style={{
+                          fontSize: theme.typography.fontSize.base,
+                          fontWeight: theme.typography.fontWeight.bold,
+                          color: theme.colors.text.primary,
+                        }}>
+                        {option.label}
+                      </Text>
+                      <Text
+                        style={{
+                          fontSize: theme.typography.fontSize.xs,
+                          color: theme.colors.text.secondary,
+                          marginTop: theme.spacing.padding.xs / 4,
+                        }}>
+                        {option.description}
+                      </Text>
+                    </View>
+                  </View>
+                  <View
                     style={{
-                      fontSize: theme.typography.fontSize.xs,
-                      color: theme.colors.text.secondary,
-                      marginTop: theme.spacing.padding.xs / 4,
+                      width: theme.size['6'],
+                      height: theme.size['6'],
+                      borderRadius: theme.borderRadius.full,
+                      borderWidth: theme.borderWidth.medium,
+                      borderColor: isSelected
+                        ? theme.colors.accent.primary
+                        : theme.colors.border.default,
+                      backgroundColor: isSelected ? theme.colors.accent.primary : 'transparent',
+                      alignItems: 'center',
+                      justifyContent: 'center',
                     }}>
-                    {option.description}
-                  </Text>
+                    {isSelected && (
+                      <Check
+                        size={theme.iconSize.xs}
+                        color={theme.colors.text.black}
+                        strokeWidth={theme.strokeWidth.thick}
+                      />
+                    )}
+                  </View>
                 </View>
-              </View>
-              <View
-                style={{
-                  width: theme.size['6'],
-                  height: theme.size['6'],
-                  borderRadius: theme.borderRadius.full,
-                  borderWidth: theme.borderWidth.medium,
-                  borderColor: isSelected
-                    ? theme.colors.accent.primary
-                    : theme.colors.border.default,
-                  backgroundColor: isSelected ? theme.colors.accent.primary : 'transparent',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}>
-                {isSelected && (
-                  <Check
-                    size={theme.iconSize.xs}
-                    color={theme.colors.text.black}
-                    strokeWidth={theme.strokeWidth.thick}
-                  />
-                )}
-              </View>
+              )}
             </Pressable>
           );
         })}
