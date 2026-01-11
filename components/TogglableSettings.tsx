@@ -1,19 +1,24 @@
-import { View, Text, Switch } from 'react-native';
+import React from 'react';
+import { View, Text, Switch, Pressable } from 'react-native';
 import { theme } from '../theme';
 import { MaterialIcons } from '@expo/vector-icons';
 
-// TogglableSettings component
-export function TogglableSettings({
-  darkMode,
-  setDarkMode,
-  notifications,
-  setNotifications,
-}: {
-  darkMode: boolean;
-  setDarkMode: (v: boolean) => void;
-  notifications: boolean;
-  setNotifications: (v: boolean) => void;
-}) {
+type ToggleItem = {
+  key: string;
+  label: string;
+  icon?: React.ReactNode;
+  value: boolean;
+  onValueChange: (v: boolean) => void;
+};
+
+type TogglableSettingsProps = {
+      // New API: provide an array of items
+      items: ToggleItem[];
+    };
+
+export function TogglableSettings(props: TogglableSettingsProps) {
+  const items: ToggleItem[] = props.items;
+
   return (
     <View
       style={{
@@ -27,57 +32,42 @@ export function TogglableSettings({
         shadowRadius: 2,
         shadowOffset: { width: 0, height: 1 },
       }}>
-      {/* Dark Mode */}
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: 12,
-        }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-          <MaterialIcons name="dark-mode" size={22} color={theme.colors.text.secondary} />
-          <Text style={{ fontSize: 15, color: theme.colors.text.primary, fontWeight: '500' }}>
-            Dark Mode
-          </Text>
-        </View>
-        <Switch
-          value={darkMode}
-          onValueChange={setDarkMode}
-          trackColor={{
-            false: theme.colors.background.overlay,
-            true: theme.colors.accent.primary,
-          }}
-          thumbColor={theme.colors.background.white}
-        />
-      </View>
-      <View
-        style={{ height: 1, backgroundColor: theme.colors.border.light, marginHorizontal: 8 }}
-      />
-      {/* Notifications */}
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: 12,
-        }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-          <MaterialIcons name="notifications" size={22} color={theme.colors.text.secondary} />
-          <Text style={{ fontSize: 15, color: theme.colors.text.primary, fontWeight: '500' }}>
-            Notifications
-          </Text>
-        </View>
-        <Switch
-          value={notifications}
-          onValueChange={setNotifications}
-          trackColor={{
-            false: theme.colors.background.overlay,
-            true: theme.colors.accent.primary,
-          }}
-          thumbColor={theme.colors.background.white}
-        />
-      </View>
+      {items.map((it, idx) => (
+        <React.Fragment key={it.key}>
+          <Pressable
+            style={({ pressed }) => [
+              {
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: 12,
+                backgroundColor: pressed ? theme.colors.background.overlay : undefined,
+              },
+            ]}
+            onPress={() => it.onValueChange(!it.value)}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              {it.icon}
+              <Text style={{ fontSize: 15, color: theme.colors.text.primary, fontWeight: '500' }}>
+                {it.label}
+              </Text>
+            </View>
+            <Switch
+              value={it.value}
+              onValueChange={it.onValueChange}
+              trackColor={{
+                false: theme.colors.background.overlay,
+                true: theme.colors.accent.primary,
+              }}
+              thumbColor={theme.colors.background.white}
+            />
+          </Pressable>
+          {idx < items.length - 1 && (
+            <View
+              style={{ height: 1, backgroundColor: theme.colors.border.light, marginHorizontal: 8 }}
+            />
+          )}
+        </React.Fragment>
+      ))}
     </View>
   );
 }

@@ -72,10 +72,26 @@ export function MainSettingsModal({ visible, onClose }: { visible: boolean; onCl
         />
 
         <TogglableSettings
-          darkMode={darkMode}
-          setDarkMode={setDarkMode}
-          notifications={notifications}
-          setNotifications={setNotifications}
+          items={[
+            {
+              key: 'darkMode',
+              label: 'Dark Mode',
+              icon: (
+                <MaterialIcons name="dark-mode" size={22} color={theme.colors.text.secondary} />
+              ),
+              value: darkMode,
+              onValueChange: setDarkMode,
+            },
+            {
+              key: 'notifications',
+              label: 'Notifications',
+              icon: (
+                <MaterialIcons name="notifications" size={22} color={theme.colors.text.secondary} />
+              ),
+              value: notifications,
+              onValueChange: setNotifications,
+            },
+          ]}
         />
 
         {/* Info Links */}
