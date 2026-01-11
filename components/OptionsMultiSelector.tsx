@@ -63,7 +63,15 @@ export function OptionsMultiSelector<T extends string | number>({
         {isEditable ? (
           selectionEnabled ? (
             <Pressable
-              onPress={() => setSelectionEnabled(false)}
+              onPress={() => {
+                // clear selections and exit edit mode
+                try {
+                  onChange([] as any);
+                } catch (e) {
+                  // ignore
+                }
+                setSelectionEnabled(false);
+              }}
               style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}>
               <Text
                 style={{
