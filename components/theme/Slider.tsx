@@ -15,6 +15,7 @@ type SliderProps = {
   gradientColors?: readonly [string, string, ...string[]];
   variant?: 'gradient' | 'solid';
   solidColor?: string;
+  step?: number;
 };
 
 export function Slider({
@@ -28,6 +29,7 @@ export function Slider({
   gradientColors = theme.colors.gradients.progress,
   variant = 'solid',
   solidColor = theme.colors.accent.primary,
+  step = 1,
 }: SliderProps) {
   const [containerWidth, setContainerWidth] = React.useState(0);
   const [displayValue, setDisplayValue] = React.useState(value);
@@ -87,7 +89,7 @@ export function Slider({
         minimumTrackTintColor={variant === 'solid' ? solidColor : 'transparent'}
         maximumTrackTintColor={variant === 'solid' ? trackColor : 'transparent'}
         thumbTintColor={thumbColor}
-        step={1}
+        step={step}
       />
     </View>
   );

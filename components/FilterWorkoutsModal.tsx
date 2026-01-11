@@ -8,14 +8,7 @@ import { Slider } from './theme/Slider';
 
 type WorkoutType = 'strength' | 'cardio' | 'flexibility';
 
-type TargetMuscle =
-  | 'full-body'
-  | 'chest'
-  | 'back'
-  | 'legs'
-  | 'shoulders'
-  | 'arms'
-  | 'core';
+type TargetMuscle = 'full-body' | 'chest' | 'back' | 'legs' | 'shoulders' | 'arms' | 'core';
 
 type FilterWorkoutsModalProps = {
   visible: boolean;
@@ -80,7 +73,9 @@ export function FilterWorkoutsModal({
   onApplyFilters,
   onClearFilters,
 }: FilterWorkoutsModalProps) {
-  const [selectedWorkoutType, setSelectedWorkoutType] = useState<WorkoutType | undefined>('strength');
+  const [selectedWorkoutType, setSelectedWorkoutType] = useState<WorkoutType | undefined>(
+    'strength'
+  );
   const [selectedMuscles, setSelectedMuscles] = useState<TargetMuscle[]>(['full-body']);
   const [duration, setDuration] = useState(90);
 
@@ -118,9 +113,7 @@ export function FilterWorkoutsModal({
   };
 
   const activeFilterCount =
-    (selectedWorkoutType ? 1 : 0) +
-    selectedMuscles.length +
-    (duration !== 90 ? 1 : 0);
+    (selectedWorkoutType ? 1 : 0) + selectedMuscles.length + (duration !== 90 ? 1 : 0);
 
   const formatDuration = (minutes: number) => {
     if (minutes >= 60) {
@@ -334,9 +327,7 @@ export function FilterWorkoutsModal({
                       borderColor: isSelected
                         ? theme.colors.accent.primary
                         : theme.colors.border.default,
-                      backgroundColor: isSelected
-                        ? theme.colors.accent.primary
-                        : 'transparent',
+                      backgroundColor: isSelected ? theme.colors.accent.primary : 'transparent',
                       alignItems: 'center',
                       justifyContent: 'center',
                     }}>
@@ -405,9 +396,7 @@ export function FilterWorkoutsModal({
                       fontWeight: isSelected
                         ? theme.typography.fontWeight.bold
                         : theme.typography.fontWeight.semibold,
-                      color: isSelected
-                        ? theme.colors.text.black
-                        : theme.colors.text.secondary,
+                      color: isSelected ? theme.colors.text.black : theme.colors.text.secondary,
                     }}>
                     {muscle.label}
                   </Text>
@@ -498,4 +487,3 @@ export function FilterWorkoutsModal({
     </FullScreenModal>
   );
 }
-

@@ -24,6 +24,7 @@ import { MainSettingsModal } from '../../components/MainSettingsModal';
 import { BasicSettingsModal } from '../../components/BasicSettingsModal';
 import { AdvancedSettingsModal } from '../../components/AdvancedSettingsModal';
 import { AISettingsModal } from '../../components/AISettingsModal';
+import { FilterWorkoutsModal } from '../../components/FilterWorkoutsModal';
 
 export default function ModalsTestScreen() {
   // Nutrition Goals Modal
@@ -54,6 +55,8 @@ export default function ModalsTestScreen() {
   const [isAdvancedSettingsVisible, setIsAdvancedSettingsVisible] = useState(false);
   // AI Settings Modal
   const [isAiSettingsVisible, setIsAiSettingsVisible] = useState(false);
+  // Filter Workouts Modal
+  const [isFilterWorkoutsVisible, setIsFilterWorkoutsVisible] = useState(false);
 
   // Session Feedback Modal
   const [isSessionFeedbackVisible, setIsSessionFeedbackVisible] = useState(false);
@@ -426,6 +429,20 @@ export default function ModalsTestScreen() {
             />
           </View>
 
+          {/* Filter Workouts Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Filter Workouts Modal</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Filter workouts by type, target muscles, and duration.
+            </Text>
+            <Button
+              label="Open Filter Workouts Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsFilterWorkoutsVisible(true)}
+            />
+          </View>
+
           {/* Date Picker Modal */}
           <View className="mb-6">
             <Text className="mb-2 text-lg font-bold text-text-primary">Date Picker Modal</Text>
@@ -699,6 +716,13 @@ export default function ModalsTestScreen() {
         onConnectGoogleAccount={() => console.log('Connect Google pressed')}
         onGetOpenAiKeyPress={() => console.log('Get OpenAI Key pressed')}
         onOpenAiModelPress={() => console.log('OpenAI model pressed')}
+      />
+
+      <FilterWorkoutsModal
+        visible={isFilterWorkoutsVisible}
+        onClose={() => setIsFilterWorkoutsVisible(false)}
+        onApplyFilters={(filters) => console.log('Applied filters:', filters)}
+        onClearFilters={() => console.log('Cleared filters')}
       />
     </SafeAreaView>
   );
