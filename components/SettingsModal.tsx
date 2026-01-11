@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable, ScrollView, Switch } from 'react-native';
-import { TextInput as ThemedTextInput } from '../components/theme/TextInput';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import { View, Text, Switch, Pressable } from 'react-native';
+import { TextInput as ThemedTextInput } from './theme/TextInput';
 import { theme } from '../theme';
 import { MaterialIcons } from '@expo/vector-icons';
-import { Button } from '../components/theme/Button';
+import { Button } from './theme/Button';
+import { FullScreenModal } from './FullScreenModal';
 
 // Reusable card for settings
 function SettingsCard({
@@ -147,70 +146,14 @@ function TogglableSettings({
   );
 }
 
-export default function SettingsScreen() {
-  const insets = useSafeAreaInsets();
-  const router = useRouter();
+export function SettingsModal({ visible, onClose }: { visible: boolean; onClose: () => void }) {
   const [darkMode, setDarkMode] = useState(true);
   const [notifications, setNotifications] = useState(true);
   const [search, setSearch] = useState('');
 
   return (
-    <View style={{ flex: 1, backgroundColor: theme.colors.background.primary }}>
-      {/* Header */}
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          paddingHorizontal: 16,
-          paddingTop: insets.top + 8,
-          paddingBottom: 12,
-          backgroundColor: theme.colors.background.primary,
-          borderBottomWidth: 1,
-          borderBottomColor: theme.colors.border.dark,
-        }}>
-        <Pressable
-          style={({ pressed }) => [
-            {
-              width: 40,
-              height: 40,
-              borderRadius: 20,
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: pressed ? theme.colors.background.overlay : 'transparent',
-            },
-          ]}
-          onPress={() => router.back()}>
-          <MaterialIcons name="arrow-back" size={24} color={theme.colors.text.primary} />
-        </Pressable>
-        <View
-          style={{
-            flex: 1,
-            alignItems: 'center',
-            justifyContent: 'center',
-            position: 'absolute',
-            left: 0,
-            right: 0,
-            top: 0,
-            bottom: 0,
-            pointerEvents: 'none',
-          }}>
-          <Text
-            style={{
-              fontSize: 20,
-              fontWeight: 'bold',
-              color: theme.colors.text.primary,
-              textAlign: 'center',
-            }}>
-            Settings
-          </Text>
-        </View>
-      </View>
-
-      <ScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={{ paddingBottom: 32 }}
-        showsVerticalScrollIndicator={false}>
-        {/* Search Bar */}
+    <FullScreenModal visible={visible} onClose={onClose} title="Settings">
+      <View style={{ flex: 1 }}>
         <View style={{ marginHorizontal: 16, marginTop: 16, marginBottom: 8 }}>
           <ThemedTextInput
             label=""
@@ -240,7 +183,7 @@ export default function SettingsScreen() {
           icon={<MaterialIcons name="settings" size={28} color={theme.colors.accent.primary} />}
           title="Basic Settings"
           subtitle="Profile, units, and preferences"
-          onPress={() => router.push('/settings/basic')}
+          onPress={() => {}}
           rightIcon={
             <MaterialIcons name="chevron-right" size={24} color={theme.colors.text.secondary} />
           }
@@ -250,7 +193,7 @@ export default function SettingsScreen() {
           icon={<MaterialIcons name="tune" size={28} color={theme.colors.accent.primary} />}
           title="Advanced Settings"
           subtitle="Data export, integrations, cache"
-          onPress={() => router.push('/settings/advanced')}
+          onPress={() => {}}
           rightIcon={
             <MaterialIcons name="chevron-right" size={24} color={theme.colors.text.secondary} />
           }
@@ -318,7 +261,7 @@ export default function SettingsScreen() {
 
         {/* Spacer for bottom nav */}
         <View style={{ height: 32 }} />
-      </ScrollView>
-    </View>
+      </View>
+    </FullScreenModal>
   );
 }

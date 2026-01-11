@@ -20,10 +20,14 @@ import { DatePickerModal } from '../../components/DatePickerModal';
 import { WorkoutSummaryCelebration } from '../../components/WorkoutSummaryCelebration';
 import { EditPersonalInfoModal } from '../../components/EditPersonalInfoModal';
 import { EditFitnessDetailsModal } from '../../components/EditFitnessDetailsModal';
+import { SettingsModal } from '../../components/SettingsModal';
 
 export default function ModalsTestScreen() {
   // Nutrition Goals Modal
   const [isNutritionGoalsVisible, setIsNutritionGoalsVisible] = useState(false);
+
+  // Setting Modal
+  const [isSettingsVisible, setIsSettingsVisible] = useState(false);
 
   // Edit Personal Info Modal
   const [isEditPersonalInfoVisible, setIsEditPersonalInfoVisible] = useState(false);
@@ -95,7 +99,7 @@ export default function ModalsTestScreen() {
             </Text>
           </View>
 
-          {/* Nutrition Goals Modal */}
+          {/* Settings Modal */}
           <View className="mb-6">
             <Text className="mb-2 text-lg font-bold text-text-primary">Nutrition Goals Modal</Text>
             <Text className="mb-4 text-sm text-text-secondary">
@@ -107,6 +111,21 @@ export default function ModalsTestScreen() {
               variant="accent"
               width="full"
               onPress={() => setIsNutritionGoalsVisible(true)}
+            />
+          </View>
+
+          {/* Nutrition Goals Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Settings Modal</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              A modal for adjusting app settings including notifications, privacy, and account
+              preferences.
+            </Text>
+            <Button
+              label="Open Settings Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsSettingsVisible(true)}
             />
           </View>
 
@@ -389,6 +408,8 @@ export default function ModalsTestScreen() {
       </ScrollView>
 
       {/* Modals */}
+      <SettingsModal visible={isSettingsVisible} onClose={() => setIsSettingsVisible(false)} />
+
       <NutritionGoalsModal
         visible={isNutritionGoalsVisible}
         onClose={() => setIsNutritionGoalsVisible(false)}
