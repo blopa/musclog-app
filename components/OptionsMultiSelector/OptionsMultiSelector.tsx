@@ -166,7 +166,7 @@ export function OptionsMultiSelector<T extends string | number>({
     getIndex,
   }: RenderItemParams<SelectorOption<T>>) => {
     const Icon = item.icon as any;
-    const selected = isSelected(item.id);
+    const selected = showCheckboxes && isSelected(item.id);
     const index = getIndex() ?? 0;
     const groupPosition = getGroupPosition(orderedOptions, index);
     const isFirstInGroup = groupPosition === 'first' || groupPosition === 'only';
@@ -179,8 +179,8 @@ export function OptionsMultiSelector<T extends string | number>({
           <Pressable
             onLongPress={drag}
             delayLongPress={150}
-            onPress={() => !isActive && toggle(item.id)}
-            disabled={isActive}
+            onPress={() => !isActive && showCheckboxes && toggle(item.id)}
+            disabled={isActive || !showCheckboxes}
             style={{ flex: 1 }}>
             {({ pressed }) => (
               <View
@@ -295,7 +295,7 @@ export function OptionsMultiSelector<T extends string | number>({
 
   const renderRegularItem = (option: SelectorOption<T>, index: number) => {
     const Icon = option.icon as any;
-    const selected = isSelected(option.id);
+    const selected = showCheckboxes && isSelected(option.id);
     const groupPosition = getGroupPosition(orderedOptions, index);
     const isFirstInGroup = groupPosition === 'first' || groupPosition === 'only';
     const groupColor = option.groupId ? getGroupColor(option.groupId) : undefined;
@@ -303,7 +303,7 @@ export function OptionsMultiSelector<T extends string | number>({
     return (
       <View key={String(option.id)} style={{ flexDirection: 'row', alignItems: 'stretch' }}>
         {renderGroupIndicator(groupPosition, option.groupId, isFirstInGroup)}
-        <Pressable onPress={() => toggle(option.id)} style={{ flex: 1 }}>
+        <Pressable onPress={() => showCheckboxes && toggle(option.id)} disabled={!showCheckboxes} style={{ flex: 1 }}>
           {({ pressed }) => (
             <View
               style={{
