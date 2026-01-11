@@ -11,6 +11,7 @@ type TestSegmentedControlProps = {
   options: Option[];
   value: string;
   onValueChange: (value: string) => void;
+  // variant?: 'default' | 'gradient';
 };
 
 export function SegmentedControl({ options, value, onValueChange }: TestSegmentedControlProps) {
