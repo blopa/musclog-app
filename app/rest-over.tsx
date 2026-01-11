@@ -3,7 +3,7 @@ import { View, Animated, Platform } from 'react-native';
 import { Play } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '../theme';
 import { Button } from '../components/theme/Button';
 import { WorkoutTimeTracker } from '../components/WorkoutTimeTracker';
@@ -16,6 +16,7 @@ import { RestOverNextExercise } from '../components/RestOverNextExercise';
 export default function RestOverScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const pulseAnim = useRef(new Animated.Value(0.3)).current;
   const [isOptionsModalVisible, setIsOptionsModalVisible] = useState(false);
   const [isEndWorkoutModalVisible, setIsEndWorkoutModalVisible] = useState(false);

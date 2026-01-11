@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Pressable, ScrollView, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ArrowLeft, Sparkles, PlusSquare } from 'lucide-react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '../theme';
 import { Button } from '../components/theme/Button';
 import { SegmentedControl } from '../components/theme/SegmentedControl';
@@ -12,6 +12,7 @@ import { WeekdayPicker } from '../components/theme/WeekdayPicker';
 
 export default function CreateWorkoutScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [workoutTitle, setWorkoutTitle] = useState('');
   const [description, setDescription] = useState('');
   const [volumeCalc, setVolumeCalc] = useState('none');
@@ -451,7 +452,7 @@ export default function CreateWorkoutScreen() {
           left: 0,
           right: 0,
           padding: theme.spacing.padding.base,
-          paddingBottom: Platform.OS === 'ios' ? 40 : 20,
+          paddingBottom: Math.max(insets.bottom, theme.spacing.padding.base),
           backgroundColor: 'transparent',
         }}>
         <LinearGradient

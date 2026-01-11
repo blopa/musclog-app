@@ -171,13 +171,12 @@ export function OptionsMultiSelector<T extends string | number>({
   const handleDragEnd = ({
     data,
     from,
-    to,
   }: {
     data: SelectorOption<T>[];
     from: number;
     to: number;
   }) => {
-    // Get the moved item
+    // Get the moved item from original array
     const movedItem = orderedOptions[from];
     if (!movedItem) {
       setOrderedOptions(data);
@@ -185,15 +184,39 @@ export function OptionsMultiSelector<T extends string | number>({
       return;
     }
 
-    // If the item has a group, reorder with group support
-    if (movedItem.groupId) {
-      const reordered = reorderWithGroups(orderedOptions, movedItem.id, to);
-      setOrderedOptions(reordered);
-      onOrderChange?.(reordered);
-    } else {
+    // If no group, just use the drag result directly
+    if (!movedItem.groupId) {
       setOrderedOptions(data);
       onOrderChange?.(data);
+      return;
     }
+
+    // Item has a group - we need to pull all group members to be adjacent
+    const groupId = movedItem.groupId;
+
+    // Find where the moved item ended up in the new data array
+    const movedItemNewIndex = data.findIndex((o) => o.id === movedItem.id);
+
+    // Get all non-group items in their new order (from data)
+    const nonGroupItems = data.filter((o) => o.groupId !== groupId);
+
+    // Get all group items in their original relative order
+    const groupItems = orderedOptions.filter((o) => o.groupId === groupId);
+
+    // Count how many non-group items come BEFORE the moved item's new position in data
+    let insertIndex = 0;
+    for (let i = 0; i < movedItemNewIndex; i++) {
+      if (data[i].groupId !== groupId) {
+        insertIndex++;
+      }
+    }
+
+    // Build the result: non-group items with group inserted at correct position
+    const result = [...nonGroupItems];
+    result.splice(insertIndex, 0, ...groupItems);
+
+    setOrderedOptions(result);
+    onOrderChange?.(result);
   };
 
   const renderGroupIndicator = (groupPosition: GroupPosition) => {

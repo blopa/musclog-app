@@ -379,16 +379,43 @@ export function OptionsMultiSelector<T extends string | number>({
       const newIndex = orderedOptions.findIndex((item) => String(item.id) === over.id);
       const movedItem = orderedOptions[oldIndex];
 
-      // If the item has a group, reorder with group support
-      if (movedItem?.groupId) {
-        const reordered = reorderWithGroups(orderedOptions, movedItem.id, newIndex);
-        setOrderedOptions(reordered);
-        onOrderChange?.(reordered);
-      } else {
+      // If no group, just do a simple move
+      if (!movedItem?.groupId) {
         const newOptions = arrayMove(orderedOptions, oldIndex, newIndex);
         setOrderedOptions(newOptions);
         onOrderChange?.(newOptions);
+        return;
       }
+
+      // Item has a group - we need to pull all group members to be adjacent
+      const groupId = movedItem.groupId;
+
+      // Simulate what the array would look like after the single item move
+      const dataAfterMove = arrayMove(orderedOptions, oldIndex, newIndex);
+
+      // Find where the moved item ended up
+      const movedItemNewIndex = dataAfterMove.findIndex((o) => o.id === movedItem.id);
+
+      // Get all non-group items in their new order
+      const nonGroupItems = dataAfterMove.filter((o) => o.groupId !== groupId);
+
+      // Get all group items in their original relative order
+      const groupItems = orderedOptions.filter((o) => o.groupId === groupId);
+
+      // Count how many non-group items come BEFORE the moved item's new position
+      let insertIndex = 0;
+      for (let i = 0; i < movedItemNewIndex; i++) {
+        if (dataAfterMove[i].groupId !== groupId) {
+          insertIndex++;
+        }
+      }
+
+      // Build the result: non-group items with group inserted at correct position
+      const result = [...nonGroupItems];
+      result.splice(insertIndex, 0, ...groupItems);
+
+      setOrderedOptions(result);
+      onOrderChange?.(result);
     }
   };
 

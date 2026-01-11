@@ -110,7 +110,7 @@ export function FullScreenModal({
             <View
               className="absolute bottom-0 left-0 right-0"
               style={{
-                paddingBottom: Platform.OS === 'web' ? 20 : 0,
+                paddingBottom: Platform.OS === 'web' ? 20 : insets.bottom,
                 paddingHorizontal: 0,
                 backgroundColor: 'transparent',
               }}>
