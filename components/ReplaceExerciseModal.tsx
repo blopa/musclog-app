@@ -6,6 +6,7 @@ import { theme } from '../theme';
 import { BottomPopUpMenu } from './BottomPopUpMenu';
 import { Button } from './theme/Button';
 import { FilterTabs } from './FilterTabs';
+import { OptionsSelector, SelectorOption } from './OptionsSelector';
 
 export type Exercise = {
   id: string;
@@ -155,7 +156,7 @@ export function ReplaceExerciseModal({
           />
         </View>
 
-        {/* Exercise List Section */}
+        {/* Exercise List Section (uses OptionsSelector) */}
         <ScrollView
           showsVerticalScrollIndicator={false}
           style={{
@@ -166,85 +167,41 @@ export function ReplaceExerciseModal({
             paddingBottom: theme.spacing.padding.xl,
             paddingTop: theme.spacing.padding.sm,
           }}>
-          <View className="gap-2">
-            {filteredExercises.map((exercise) => {
-              const isSelected = selectedExercise === exercise.id;
+          <View>
+            <OptionsSelector
+              title={t('replaceExercise.selectExercise')}
+              options={filteredExercises.map((exercise) => {
+                const IconComponent = (props: { size: number; color: string }) => {
+                  const size = props.size;
+                  const sx = {
+                    width: size,
+                    height: size,
+                    borderRadius: theme.borderRadius.md,
+                    overflow: 'hidden' as const,
+                    backgroundColor: theme.colors.background.iconDark,
+                  };
 
-              return (
-                <Pressable
-                  key={exercise.id}
-                  onPress={() => setSelectedExercise(exercise.id)}
-                  className="w-full flex-row items-center justify-between"
-                  style={{
-                    backgroundColor: isSelected
-                      ? theme.colors.accent.primary10
-                      : theme.colors.background.cardDark,
-                    borderWidth: theme.borderWidth.thin,
-                    borderColor: isSelected ? theme.colors.accent.primary40 : 'transparent',
-                    borderRadius: theme.borderRadius.xl,
-                    padding: theme.spacing.padding.base,
-                    ...theme.shadows.sm,
-                  }}>
-                  <View className="flex-1 flex-row items-center gap-3">
-                    {/* Exercise Image/Icon */}
-                    <View
-                      className="items-center justify-center rounded-lg"
-                      style={{
-                        backgroundColor: theme.colors.background.iconDark,
-                        width: theme.iconSize['2xl'],
-                        height: theme.iconSize['2xl'],
-                      }}>
-                      {exercise.image ? (
-                        <Image
-                          source={exercise.image}
-                          className="h-full w-full rounded-lg"
-                          resizeMode="cover"
-                        />
-                      ) : (
-                        <View className="h-full w-full rounded-lg opacity-80" />
-                      )}
-                    </View>
+                  return exercise.image ? (
+                    <Image source={exercise.image} style={sx} resizeMode="cover" />
+                  ) : (
+                    <View style={sx} />
+                  );
+                };
 
-                    {/* Exercise Info */}
-                    <View className="flex-1">
-                      <Text
-                        style={{
-                          fontSize: theme.typography.fontSize.base,
-                          fontWeight: theme.typography.fontWeight.bold,
-                          color: isSelected ? theme.colors.text.primary : theme.colors.text.primary,
-                        }}>
-                        {exercise.name}
-                      </Text>
-                      <Text
-                        style={{
-                          fontSize: theme.typography.fontSize.sm,
-                          color: theme.colors.text.secondary,
-                          marginTop: theme.spacing.gap.xs / 2,
-                        }}>
-                        {exercise.muscleGroup} • {exercise.type}
-                      </Text>
-                    </View>
-                  </View>
+                const option: SelectorOption<string> = {
+                  id: exercise.id,
+                  label: exercise.name,
+                  description: `${exercise.muscleGroup} • ${exercise.type}`,
+                  icon: IconComponent,
+                  iconBgColor: theme.colors.background.iconDark,
+                  iconColor: theme.colors.text.primary,
+                };
 
-                  {/* Selection Indicator */}
-                  {isSelected && (
-                    <View
-                      className="items-center justify-center rounded-full"
-                      style={{
-                        backgroundColor: theme.colors.accent.primary,
-                        width: theme.iconSize.md,
-                        height: theme.iconSize.md,
-                      }}>
-                      <Check
-                        size={theme.iconSize.xs}
-                        color={theme.colors.text.black}
-                        strokeWidth={theme.strokeWidth.thick}
-                      />
-                    </View>
-                  )}
-                </Pressable>
-              );
-            })}
+                return option;
+              })}
+              selectedId={selectedExercise}
+              onSelect={(id) => setSelectedExercise(id)}
+            />
           </View>
         </ScrollView>
       </View>
