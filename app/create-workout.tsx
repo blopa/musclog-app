@@ -30,6 +30,7 @@ export default function CreateWorkoutScreen() {
       icon: PlusSquare,
       iconBgColor: theme.colors.accent.primary10,
       iconColor: theme.colors.accent.primary,
+      groupId: 'compound-lifts', // Grouped with bench press
     },
     {
       id: 'bench',
@@ -38,6 +39,7 @@ export default function CreateWorkoutScreen() {
       icon: PlusSquare,
       iconBgColor: theme.colors.status.indigo10,
       iconColor: theme.colors.status.indigo,
+      groupId: 'compound-lifts', // Grouped with squat
     },
     {
       id: 'deadlift',
@@ -46,7 +48,35 @@ export default function CreateWorkoutScreen() {
       icon: PlusSquare,
       iconBgColor: theme.colors.status.purple + '11',
       iconColor: theme.colors.status.purple,
+      // No groupId - standalone exercise
     },
+    {
+      id: 'leg-press',
+      label: 'Leg Press',
+      description: '3 sets × 10–12 reps',
+      icon: PlusSquare,
+      iconBgColor: theme.colors.accent.primary10,
+      iconColor: theme.colors.accent.primary,
+      // No groupId - standalone exercise
+    },
+    {
+      id: 'calf-raises',
+      label: 'Standing Calf Raises',
+      description: '4 sets × 12–15 reps',
+      icon: PlusSquare,
+      iconBgColor: theme.colors.status.indigo10,
+      iconColor: theme.colors.status.indigo,
+      // No groupId - standalone exercise
+    },
+    {
+      id: 'lunges',
+      label: 'Walking Lunges',
+      description: '3 sets × 20 steps',
+      icon: PlusSquare,
+      iconBgColor: theme.colors.status.purple + '11',
+      iconColor: theme.colors.status.purple,
+      // No groupId - standalone exercise
+    }
   ]);
 
   const toggleDay = (index: number) => {
