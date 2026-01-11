@@ -219,9 +219,9 @@ export function OptionsMultiSelector<T extends string | number>({
     return (
       <View
         style={{
-          position: 'absolute',
-          top: -45, // Position above the item
-          right: 0,
+          alignItems: 'center',
+          justifyContent: 'center',
+          paddingVertical: theme.spacing.padding.xs,
           zIndex: 2000,
         }}>
         <Pressable
@@ -292,119 +292,121 @@ export function OptionsMultiSelector<T extends string | number>({
       <ScaleDecorator>
         <View style={{ flexDirection: 'row', alignItems: 'stretch', zIndex: isHighestSelected ? 2000 : 1 }}>
           {renderGroupIndicator(groupPosition, item.groupId, isFirstInGroup)}
-          <Pressable
-            onLongPress={drag}
-            delayLongPress={150}
-            onPress={() => !isActive && showCheckboxes && toggle(item.id)}
-            disabled={isActive || !showCheckboxes}
-            style={{ flex: 1 }}>
-            {({ pressed }) => (
-              <View
-                style={{
-                  flex: 1,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  padding: theme.spacing.padding.base,
-                  borderRadius: theme.borderRadius.md,
-                  borderWidth: theme.borderWidth.thin,
-                  borderColor: selected
-                    ? theme.colors.accent.primary
-                    : groupColor
-                      ? groupColor + '40'
-                      : theme.colors.border.light,
-                  backgroundColor: isActive
-                    ? theme.colors.background.cardElevated
-                    : groupColor
-                      ? groupColor + '08'
-                      : theme.colors.background.card,
-                  ...(selected ? theme.shadows.accentGlow : {}),
-                  opacity: isActive ? 0.9 : pressed ? 0.7 : 1,
-                }}>
-                {isHighestSelected && renderGroupActionPill()}
-                {/* Drag Handle */}
-                <View
-                  style={{
-                    marginRight: theme.spacing.gap.sm,
-                    opacity: 0.5,
-                  }}>
-                  <GripVertical
-                    size={theme.iconSize.md}
-                    color={theme.colors.text.secondary}
-                    strokeWidth={theme.strokeWidth.normal}
-                  />
-                </View>
-
+          <View style={{ flex: 1 }}>
+            {isHighestSelected && renderGroupActionPill()}
+            <Pressable
+              onLongPress={drag}
+              delayLongPress={150}
+              onPress={() => !isActive && showCheckboxes && toggle(item.id)}
+              disabled={isActive || !showCheckboxes}
+              style={{ flex: 1 }}>
+              {({ pressed }) => (
                 <View
                   style={{
                     flex: 1,
                     flexDirection: 'row',
                     alignItems: 'center',
-                    justifyContent: 'space-between',
+                    padding: theme.spacing.padding.base,
+                    borderRadius: theme.borderRadius.md,
+                    borderWidth: theme.borderWidth.thin,
+                    borderColor: selected
+                      ? theme.colors.accent.primary
+                      : groupColor
+                        ? groupColor + '40'
+                        : theme.colors.border.light,
+                    backgroundColor: isActive
+                      ? theme.colors.background.cardElevated
+                      : groupColor
+                        ? groupColor + '08'
+                        : theme.colors.background.card,
+                    ...(selected ? theme.shadows.accentGlow : {}),
+                    opacity: isActive ? 0.9 : pressed ? 0.7 : 1,
                   }}>
+                  {/* Drag Handle */}
                   <View
                     style={{
+                      marginRight: theme.spacing.gap.sm,
+                      opacity: 0.5,
+                    }}>
+                    <GripVertical
+                      size={theme.iconSize.md}
+                      color={theme.colors.text.secondary}
+                      strokeWidth={theme.strokeWidth.normal}
+                    />
+                  </View>
+
+                  <View
+                    style={{
+                      flex: 1,
                       flexDirection: 'row',
                       alignItems: 'center',
-                      gap: theme.spacing.gap.base,
-                      flex: 1,
+                      justifyContent: 'space-between',
                     }}>
                     <View
                       style={{
-                        width: theme.size['10'],
-                        height: theme.size['10'],
-                        borderRadius: theme.borderRadius.full,
-                        backgroundColor: item.iconBgColor,
+                        flexDirection: 'row',
                         alignItems: 'center',
-                        justifyContent: 'center',
+                        gap: theme.spacing.gap.base,
+                        flex: 1,
                       }}>
-                      <Icon size={theme.iconSize.lg} color={item.iconColor} />
-                    </View>
-                    <View style={{ flex: 1 }}>
-                      <Text
+                      <View
                         style={{
-                          fontSize: theme.typography.fontSize.base,
-                          fontWeight: theme.typography.fontWeight.bold,
-                          color: theme.colors.text.primary,
+                          width: theme.size['10'],
+                          height: theme.size['10'],
+                          borderRadius: theme.borderRadius.full,
+                          backgroundColor: item.iconBgColor,
+                          alignItems: 'center',
+                          justifyContent: 'center',
                         }}>
-                        {item.label}
-                      </Text>
-                      <Text
-                        style={{
-                          fontSize: theme.typography.fontSize.xs,
-                          color: theme.colors.text.secondary,
-                          marginTop: theme.spacing.padding.xs / 4,
-                        }}>
-                        {item.description}
-                      </Text>
+                        <Icon size={theme.iconSize.lg} color={item.iconColor} />
+                      </View>
+                      <View style={{ flex: 1 }}>
+                        <Text
+                          style={{
+                            fontSize: theme.typography.fontSize.base,
+                            fontWeight: theme.typography.fontWeight.bold,
+                            color: theme.colors.text.primary,
+                          }}>
+                          {item.label}
+                        </Text>
+                        <Text
+                          style={{
+                            fontSize: theme.typography.fontSize.xs,
+                            color: theme.colors.text.secondary,
+                            marginTop: theme.spacing.padding.xs / 4,
+                          }}>
+                          {item.description}
+                        </Text>
+                      </View>
                     </View>
+                    {showCheckboxes && (
+                      <View
+                        style={{
+                          width: theme.size['6'],
+                          height: theme.size['6'],
+                          borderRadius: theme.borderRadius.sm,
+                          borderWidth: theme.borderWidth.medium,
+                          borderColor: selected
+                            ? theme.colors.accent.primary
+                            : theme.colors.border.default,
+                          backgroundColor: selected ? theme.colors.accent.primary : 'transparent',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}>
+                        {selected && (
+                          <Check
+                            size={theme.iconSize.xs}
+                            color={theme.colors.text.black}
+                            strokeWidth={theme.strokeWidth.thick}
+                          />
+                        )}
+                      </View>
+                    )}
                   </View>
-                  {showCheckboxes && (
-                    <View
-                      style={{
-                        width: theme.size['6'],
-                        height: theme.size['6'],
-                        borderRadius: theme.borderRadius.sm,
-                        borderWidth: theme.borderWidth.medium,
-                        borderColor: selected
-                          ? theme.colors.accent.primary
-                          : theme.colors.border.default,
-                        backgroundColor: selected ? theme.colors.accent.primary : 'transparent',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}>
-                      {selected && (
-                        <Check
-                          size={theme.iconSize.xs}
-                          color={theme.colors.text.black}
-                          strokeWidth={theme.strokeWidth.thick}
-                        />
-                      )}
-                    </View>
-                  )}
                 </View>
-              </View>
-            )}
-          </Pressable>
+              )}
+            </Pressable>
+          </View>
         </View>
       </ScaleDecorator>
     );
@@ -424,95 +426,97 @@ export function OptionsMultiSelector<T extends string | number>({
         key={String(option.id)}
         style={{ flexDirection: 'row', alignItems: 'stretch', zIndex: isHighestSelected ? 2000 : 1 }}>
         {renderGroupIndicator(groupPosition, option.groupId, isFirstInGroup)}
-        <Pressable
-          onPress={() => showCheckboxes && toggle(option.id)}
-          disabled={!showCheckboxes}
-          style={{ flex: 1 }}>
-          {({ pressed }) => (
-            <View
-              style={{
-                flex: 1,
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: theme.spacing.padding.base,
-                borderRadius: theme.borderRadius.md,
-                borderWidth: theme.borderWidth.thin,
-                borderColor: selected
-                  ? theme.colors.accent.primary
-                  : groupColor
-                    ? groupColor + '40'
-                    : theme.colors.border.light,
-                backgroundColor: groupColor ? groupColor + '08' : theme.colors.background.card,
-                transform: [{ scale: pressed ? 0.98 : 1 }],
-                ...(selected ? theme.shadows.accentGlow : {}),
-              }}>
-              {isHighestSelected && renderGroupActionPill()}
+        <View style={{ flex: 1 }}>
+          {isHighestSelected && renderGroupActionPill()}
+          <Pressable
+            onPress={() => showCheckboxes && toggle(option.id)}
+            disabled={!showCheckboxes}
+            style={{ flex: 1 }}>
+            {({ pressed }) => (
               <View
                 style={{
+                  flex: 1,
                   flexDirection: 'row',
                   alignItems: 'center',
-                  gap: theme.spacing.gap.base,
-                  flex: 1,
+                  justifyContent: 'space-between',
+                  padding: theme.spacing.padding.base,
+                  borderRadius: theme.borderRadius.md,
+                  borderWidth: theme.borderWidth.thin,
+                  borderColor: selected
+                    ? theme.colors.accent.primary
+                    : groupColor
+                      ? groupColor + '40'
+                      : theme.colors.border.light,
+                  backgroundColor: groupColor ? groupColor + '08' : theme.colors.background.card,
+                  transform: [{ scale: pressed ? 0.98 : 1 }],
+                  ...(selected ? theme.shadows.accentGlow : {}),
                 }}>
                 <View
                   style={{
-                    width: theme.size['10'],
-                    height: theme.size['10'],
-                    borderRadius: theme.borderRadius.full,
-                    backgroundColor: option.iconBgColor,
+                    flexDirection: 'row',
                     alignItems: 'center',
-                    justifyContent: 'center',
+                    gap: theme.spacing.gap.base,
+                    flex: 1,
                   }}>
-                  <Icon size={theme.iconSize.lg} color={option.iconColor} />
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Text
+                  <View
                     style={{
-                      fontSize: theme.typography.fontSize.base,
-                      fontWeight: theme.typography.fontWeight.bold,
-                      color: theme.colors.text.primary,
+                      width: theme.size['10'],
+                      height: theme.size['10'],
+                      borderRadius: theme.borderRadius.full,
+                      backgroundColor: option.iconBgColor,
+                      alignItems: 'center',
+                      justifyContent: 'center',
                     }}>
-                    {option.label}
-                  </Text>
-                  <Text
-                    style={{
-                      fontSize: theme.typography.fontSize.xs,
-                      color: theme.colors.text.secondary,
-                      marginTop: theme.spacing.padding.xs / 4,
-                    }}>
-                    {option.description}
-                  </Text>
+                    <Icon size={theme.iconSize.lg} color={option.iconColor} />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text
+                      style={{
+                        fontSize: theme.typography.fontSize.base,
+                        fontWeight: theme.typography.fontWeight.bold,
+                        color: theme.colors.text.primary,
+                      }}>
+                      {option.label}
+                    </Text>
+                    <Text
+                      style={{
+                        fontSize: theme.typography.fontSize.xs,
+                        color: theme.colors.text.secondary,
+                        marginTop: theme.spacing.padding.xs / 4,
+                      }}>
+                      {option.description}
+                    </Text>
+                  </View>
                 </View>
+                {showCheckboxes ? (
+                  <View
+                    style={{
+                      width: theme.size['6'],
+                      height: theme.size['6'],
+                      borderRadius: theme.borderRadius.sm,
+                      borderWidth: theme.borderWidth.medium,
+                      borderColor: selected
+                        ? theme.colors.accent.primary
+                        : theme.colors.border.default,
+                      backgroundColor: selected ? theme.colors.accent.primary : 'transparent',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}>
+                    {selected && (
+                      <Check
+                        size={theme.iconSize.xs}
+                        color={theme.colors.text.black}
+                        strokeWidth={theme.strokeWidth.thick}
+                      />
+                    )}
+                  </View>
+                ) : (
+                  <View />
+                )}
               </View>
-              {showCheckboxes ? (
-                <View
-                  style={{
-                    width: theme.size['6'],
-                    height: theme.size['6'],
-                    borderRadius: theme.borderRadius.sm,
-                    borderWidth: theme.borderWidth.medium,
-                    borderColor: selected
-                      ? theme.colors.accent.primary
-                      : theme.colors.border.default,
-                    backgroundColor: selected ? theme.colors.accent.primary : 'transparent',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}>
-                  {selected && (
-                    <Check
-                      size={theme.iconSize.xs}
-                      color={theme.colors.text.black}
-                      strokeWidth={theme.strokeWidth.thick}
-                    />
-                  )}
-                </View>
-              ) : (
-                <View />
-              )}
-            </View>
-          )}
-        </Pressable>
+            )}
+          </Pressable>
+        </View>
       </View>
     );
   };
