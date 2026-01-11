@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, Pressable, Animated, Platform } from 'react-native';
-import { X, Sparkles, PlusCircle, Library, ChevronRight } from 'lucide-react-native';
+import { Sparkles, PlusCircle, Library, ChevronRight } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { theme } from '../theme';
 import { FullScreenModal } from './FullScreenModal';
@@ -97,24 +97,6 @@ export function CreateWorkoutOptionsModal({
           paddingBottom: theme.spacing.padding.sm,
           zIndex: 50,
         }}>
-        <Pressable
-          onPress={onClose}
-          style={({ pressed }) => [
-            {
-              width: theme.size['10'],
-              height: theme.size['10'],
-              borderRadius: theme.borderRadius.full,
-              backgroundColor: theme.colors.background.cardElevated,
-              borderWidth: theme.borderWidth.thin,
-              borderColor: theme.colors.background.white5,
-              alignItems: 'center',
-              justifyContent: 'center',
-              opacity: pressed ? 0.7 : 1,
-              ...theme.shadows.lg,
-            },
-          ]}>
-          <X size={theme.iconSize.lg} color={theme.colors.text.primary} />
-        </Pressable>
         <Text
           style={{
             fontSize: theme.typography.fontSize.sm,
