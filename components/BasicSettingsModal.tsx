@@ -155,7 +155,11 @@ export function BasicSettingsModal({
             items={healthSettingsItems}
             header={
               <LinearGradient
-                colors={[theme.colors.status.error12, 'transparent']}
+                colors={[
+                  theme.colors.status.purple40,
+                  theme.colors.accent.secondary10,
+                  'transparent',
+                ]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
                 className="border-b p-4"
