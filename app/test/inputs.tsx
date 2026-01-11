@@ -14,7 +14,7 @@ import { Slider } from '../../components/theme/Slider';
 import { StepperInput } from '../../components/theme/StepperInput';
 import { BodyMetricsStepper } from '../../components/theme/BodyMetricsStepper';
 import { OptionsSelector } from '../../components/OptionsSelector';
-import { OptionsMultiSelector } from '../../components/OptionsMultiSelector';
+import { OptionsMultiSelector } from '../../components/OptionsMultiSelector/OptionsMultiSelector';
 
 export default function InputsTestScreen() {
   const [name, setName] = useState('');

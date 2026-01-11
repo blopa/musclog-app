@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable, ScrollView, Platform } from 'react-native';
+import { View, Text, TextInput, Pressable, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ArrowLeft, Sparkles, PlusSquare } from 'lucide-react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '../theme';
 import { Button } from '../components/theme/Button';
 import { SegmentedControl } from '../components/theme/SegmentedControl';
-import { OptionsMultiSelector, SelectorOption } from '../components/OptionsMultiSelector';
-import { LinearGradient } from 'expo-linear-gradient';
+import { OptionsMultiSelector } from '../components/OptionsMultiSelector/OptionsMultiSelector';
 import { WeekdayPicker } from '../components/theme/WeekdayPicker';
+import { SelectorOption } from '../components/OptionsMultiSelector/utils';
 
 export default function CreateWorkoutScreen() {
   const router = useRouter();
