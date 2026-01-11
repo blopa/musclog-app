@@ -10,6 +10,7 @@ type TestInputProps = {
   focused?: boolean;
   keyboardType?: 'default' | 'email-address' | 'numeric';
   icon?: React.ReactNode;
+  secureTextEntry?: boolean;
 };
 
 export function TextInput({
@@ -20,6 +21,7 @@ export function TextInput({
   focused,
   keyboardType = 'default',
   icon,
+  secureTextEntry,
 }: TestInputProps) {
   return (
     <View className="flex-col gap-2">
@@ -50,6 +52,7 @@ export function TextInput({
           value={value}
           onChangeText={onChangeText}
           keyboardType={keyboardType}
+          secureTextEntry={secureTextEntry}
           style={{ borderWidth: 0 }}
         />
         {icon && <View className="ml-2">{icon}</View>}
