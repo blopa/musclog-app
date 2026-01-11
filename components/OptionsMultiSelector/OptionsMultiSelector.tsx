@@ -441,7 +441,7 @@ export function OptionsMultiSelector<T extends string | number>({
   };
 
   return (
-    <View>
+    <View style={{ position: 'relative' }}>
       <View
         style={{
           flexDirection: 'row',
@@ -499,30 +499,33 @@ export function OptionsMultiSelector<T extends string | number>({
         ) : null}
       </View>
 
-      {isDragMode ? (
-        <DraggableFlatList
-          data={orderedOptions}
-          onDragEnd={handleDragEnd}
-          keyExtractor={(item) => String(item.id)}
-          renderItem={renderDraggableItem}
-          ItemSeparatorComponent={() => <View style={{ height: theme.spacing.gap.md }} />}
-          scrollEnabled={false}
-          activationDistance={10}
-        />
-      ) : (
-        <View style={{ gap: theme.spacing.gap.md }}>
-          {orderedOptions.map((option, index) => renderRegularItem(option, index))}
-        </View>
-      )}
+      <View style={{ position: 'relative', paddingBottom: canGroup ? 60 : 0 }}>
+        {isDragMode ? (
+          <DraggableFlatList
+            data={orderedOptions}
+            onDragEnd={handleDragEnd}
+            keyExtractor={(item) => String(item.id)}
+            renderItem={renderDraggableItem}
+            ItemSeparatorComponent={() => <View style={{ height: theme.spacing.gap.md }} />}
+            scrollEnabled={false}
+            activationDistance={10}
+          />
+        ) : (
+          <View style={{ gap: theme.spacing.gap.md }}>
+            {orderedOptions.map((option, index) => renderRegularItem(option, index))}
+          </View>
+        )}
+      </View>
 
-      {/* Floating Group Action Button */}
+      {/* Floating Group Action Button - Positioned absolutely to float above content */}
       {canGroup && (
         <View
           style={{
             position: 'absolute',
-            bottom: theme.spacing.padding.lg,
+            bottom: 0,
             right: theme.spacing.padding.base,
             zIndex: 1000,
+            elevation: 10, // Android shadow
           }}>
           <Pressable
             onPress={handleGroupAction}
