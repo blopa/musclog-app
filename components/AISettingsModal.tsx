@@ -268,8 +268,7 @@ export function AISettingsModal({
                   alignItems: 'center',
                   justifyContent: 'space-between',
                   marginBottom: 8,
-                }}>
-              </View>
+                }}></View>
               <SecretInput
                 label="OPENAI API KEY"
                 value={openAiApiKey}
@@ -280,7 +279,7 @@ export function AISettingsModal({
 
             {/* Model Selector */}
             <Pressable
-              onPress={onOpenAiModelPress}
+              onPress={onGeminiModelPress}
               style={({ pressed }) => [
                 {
                   flexDirection: 'row',
@@ -290,17 +289,15 @@ export function AISettingsModal({
                   backgroundColor: pressed ? theme.colors.background.overlay : undefined,
                 },
               ]}>
-              <View style={{ flex: 1 }}>
+              <View>
                 <Text style={{ fontSize: 14, fontWeight: '500', color: theme.colors.text.primary }}>
                   OpenAI Model
                 </Text>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 2 }}>
-                  <Text style={{ fontSize: 12, color: theme.colors.text.secondary }}>
-                    {openAiModel || 'Select a model'}
-                  </Text>
-                </View>
+                <Text style={{ fontSize: 12, color: theme.colors.accent.primary, marginTop: 2 }}>
+                  {openAiModel || 'Select a model'}
+                </Text>
               </View>
-              <ChevronRight size={20} color={theme.colors.text.tertiary} />
+              <ChevronDown size={20} color={theme.colors.text.tertiary} />
             </Pressable>
           </View>
         </View>
