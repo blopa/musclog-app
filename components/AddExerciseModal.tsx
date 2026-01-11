@@ -189,8 +189,22 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
           <View className="gap-6">
             {/* Sets & Reps */}
             <View className="flex-row gap-4">
-              <NumericInput label="Sets" value={sets} onChangeText={setSets} unit="" />
-              <NumericInput label="Reps" value={reps} onChangeText={setReps} unit="" />
+              <NumericInput
+                label="Sets"
+                value={sets}
+                onChangeText={setSets}
+                unit=""
+                onIncrement={() => setSets((prev) => (parseInt(prev) + 1).toString())}
+                onDecrement={() => setSets((prev) => Math.max(1, parseInt(prev) - 1).toString())}
+              />
+              <NumericInput
+                label="Reps"
+                value={reps}
+                onChangeText={setReps}
+                unit=""
+                onIncrement={() => setReps((prev) => (parseInt(prev) + 1).toString())}
+                onDecrement={() => setReps((prev) => Math.max(1, parseInt(prev) - 1).toString())}
+              />
             </View>
 
             {/* Weight */}
@@ -238,4 +252,3 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
     </FullScreenModal>
   );
 }
-

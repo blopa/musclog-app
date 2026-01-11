@@ -11,6 +11,7 @@ type TestNumericInputProps = {
   unitColor?: string;
   onIncrement?: () => void;
   onDecrement?: () => void;
+  variant?: 'vertical' | 'horizontal';
 };
 
 export function NumericInput({
@@ -21,6 +22,7 @@ export function NumericInput({
   unitColor = theme.colors.accent.primary,
   onIncrement,
   onDecrement,
+  variant = 'vertical',
 }: TestNumericInputProps) {
   const inputRef = useRef<RNTextInput | null>(null);
 
