@@ -1,13 +1,40 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable } from 'react-native';
+import { Check, Dumbbell, LucideFootprints, PersonStanding } from 'lucide-react-native';
 import { Button } from './theme/Button';
-import { Check } from 'lucide-react-native';
-import { WorkoutTypeSelector } from './WorkoutTypeSelector';
+import { OptionsSelector, SelectorOption } from './OptionsSelector';
 import { theme } from '../theme';
 import { FullScreenModal } from './FullScreenModal';
 import { Slider } from './theme/Slider';
 
 type WorkoutType = 'strength' | 'cardio' | 'flexibility';
+
+const workoutTypeOptions: SelectorOption<WorkoutType>[] = [
+  {
+    id: 'strength',
+    label: 'Strength',
+    description: 'Weights, Bodyweight',
+    icon: Dumbbell,
+    iconBgColor: theme.colors.status.indigo10,
+    iconColor: theme.colors.status.indigo,
+  },
+  {
+    id: 'cardio',
+    label: 'Cardio',
+    description: 'Running, Cycling, HIIT',
+    icon: LucideFootprints,
+    iconBgColor: theme.colors.status.emerald10,
+    iconColor: theme.colors.status.emerald,
+  },
+  {
+    id: 'flexibility',
+    label: 'Flexibility',
+    description: 'Yoga, Stretching',
+    icon: PersonStanding,
+    iconBgColor: theme.colors.status.purple10,
+    iconColor: theme.colors.status.purple,
+  },
+];
 
 type TargetMuscle = 'full-body' | 'chest' | 'back' | 'legs' | 'shoulders' | 'arms' | 'core';
 
@@ -157,8 +184,10 @@ export function FilterWorkoutsModal({
           gap: theme.spacing.gap['2xl'],
         }}>
         {/* Workout Type Section */}
-        <WorkoutTypeSelector
-          selected={selectedWorkoutType}
+        <OptionsSelector
+          title="Workout Type"
+          options={workoutTypeOptions}
+          selectedId={selectedWorkoutType}
           onSelect={(id) => setSelectedWorkoutType(id)}
         />
 

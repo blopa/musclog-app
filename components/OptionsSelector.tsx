@@ -1,52 +1,30 @@
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
-import { Check, Dumbbell, LucideFootprints, PersonStanding } from 'lucide-react-native';
+import { Check, LucideIcon } from 'lucide-react-native';
 import { theme } from '../theme';
 
-type WorkoutType = 'strength' | 'cardio' | 'flexibility';
-
-type WorkoutTypeOption = {
-  id: WorkoutType;
+export type SelectorOption<T extends string | number> = {
+  id: T;
   label: string;
   description: string;
-  icon: React.ComponentType<{ size: number; color: string }>;
+  icon: LucideIcon | React.ComponentType<{ size: number; color: string }>;
   iconBgColor: string;
   iconColor: string;
 };
 
-const workoutTypes: WorkoutTypeOption[] = [
-  {
-    id: 'strength',
-    label: 'Strength',
-    description: 'Weights, Bodyweight',
-    icon: Dumbbell,
-    iconBgColor: theme.colors.status.indigo10,
-    iconColor: theme.colors.status.indigo,
-  },
-  {
-    id: 'cardio',
-    label: 'Cardio',
-    description: 'Running, Cycling, HIIT',
-    icon: LucideFootprints,
-    iconBgColor: theme.colors.status.emerald10,
-    iconColor: theme.colors.status.emerald,
-  },
-  {
-    id: 'flexibility',
-    label: 'Flexibility',
-    description: 'Yoga, Stretching',
-    icon: PersonStanding,
-    iconBgColor: theme.colors.status.purple10,
-    iconColor: theme.colors.status.purple,
-  },
-];
-
-type Props = {
-  selected?: WorkoutType;
-  onSelect: (id: WorkoutType) => void;
+type OptionsSelectorProps<T extends string | number> = {
+  title: string;
+  options: SelectorOption<T>[];
+  selectedId?: T;
+  onSelect: (id: T) => void;
 };
 
-export function WorkoutTypeSelector({ selected, onSelect }: Props) {
+export function OptionsSelector<T extends string | number>({
+  title,
+  options,
+  selectedId,
+  onSelect,
+}: OptionsSelectorProps<T>) {
   return (
     <View>
       <Text
@@ -59,16 +37,16 @@ export function WorkoutTypeSelector({ selected, onSelect }: Props) {
           marginBottom: theme.spacing.padding.base,
           paddingHorizontal: theme.spacing.padding.xs,
         }}>
-        WORKOUT TYPE
+        {title}
       </Text>
       <View style={{ gap: theme.spacing.gap.md }}>
-        {workoutTypes.map((type) => {
-          const Icon = type.icon as any;
-          const isSelected = selected === type.id;
+        {options.map((option) => {
+          const Icon = option.icon as any;
+          const isSelected = selectedId === option.id;
           return (
             <Pressable
-              key={type.id}
-              onPress={() => onSelect(type.id)}
+              key={option.id}
+              onPress={() => onSelect(option.id)}
               style={({ pressed }) => [
                 {
                   flexDirection: 'row',
@@ -96,11 +74,11 @@ export function WorkoutTypeSelector({ selected, onSelect }: Props) {
                     width: theme.size['10'],
                     height: theme.size['10'],
                     borderRadius: theme.borderRadius.full,
-                    backgroundColor: type.iconBgColor,
+                    backgroundColor: option.iconBgColor,
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}>
-                  <Icon size={theme.iconSize.lg} color={type.iconColor} />
+                  <Icon size={theme.iconSize.lg} color={option.iconColor} />
                 </View>
                 <View>
                   <Text
@@ -109,7 +87,7 @@ export function WorkoutTypeSelector({ selected, onSelect }: Props) {
                       fontWeight: theme.typography.fontWeight.bold,
                       color: theme.colors.text.primary,
                     }}>
-                    {type.label}
+                    {option.label}
                   </Text>
                   <Text
                     style={{
@@ -117,7 +95,7 @@ export function WorkoutTypeSelector({ selected, onSelect }: Props) {
                       color: theme.colors.text.secondary,
                       marginTop: theme.spacing.padding.xs / 4,
                     }}>
-                    {type.description}
+                    {option.description}
                   </Text>
                 </View>
               </View>
@@ -149,3 +127,4 @@ export function WorkoutTypeSelector({ selected, onSelect }: Props) {
     </View>
   );
 }
+
