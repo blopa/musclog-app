@@ -12,10 +12,12 @@ type ToggleItem = {
 
 type TogglableSettingsProps = {
   items: ToggleItem[];
+  header?: React.ReactNode;
 };
 
 export function TogglableSettings(props: TogglableSettingsProps) {
   const items: ToggleItem[] = props.items;
+  const hasHeader = !!props.header;
 
   return (
     <View
@@ -24,12 +26,16 @@ export function TogglableSettings(props: TogglableSettingsProps) {
         borderRadius: 16,
         marginHorizontal: 16,
         marginBottom: 16,
-        padding: 4,
+        padding: hasHeader ? 0 : 4,
+        overflow: 'hidden',
+        borderWidth: 1,
+        borderColor: theme.colors.border.light,
         shadowColor: theme.colors.accent.primary,
         shadowOpacity: 0.03,
         shadowRadius: 2,
         shadowOffset: { width: 0, height: 1 },
       }}>
+      {props.header}
       {items.map((it, idx) => (
         <React.Fragment key={it.key}>
           <Pressable

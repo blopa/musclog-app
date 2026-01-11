@@ -150,36 +150,35 @@ export function BasicSettingsModal({
             Integrations
           </Text>
 
-          {/* Custom Header for Health Data because TogglableSettings is just the toggle list */}
-          <View
-            className="mx-4 rounded-t-2xl border-l border-r border-t p-4"
-            style={{
-              backgroundColor: theme.colors.status.error8,
-              borderColor: theme.colors.border.light,
-            }}>
-            <View className="flex-row items-center gap-3">
+          <TogglableSettings
+            items={healthSettingsItems}
+            header={
               <View
-                className="h-10 w-10 items-center justify-center rounded-full"
-                style={{ backgroundColor: theme.colors.background.white }}>
-                <Heart
-                  size={24}
-                  color={theme.colors.status.error}
-                  fill={theme.colors.status.error}
-                />
+                className="border-b p-4"
+                style={{
+                  borderBottomColor: theme.colors.border.light,
+                  backgroundColor: theme.colors.status.error8, // Red tint background
+                }}>
+                <View className="mb-2 flex-row items-center gap-3">
+                  <View
+                    className="h-10 w-10 items-center justify-center rounded-full"
+                    style={{ backgroundColor: theme.colors.background.white }}>
+                    <Heart
+                      size={24}
+                      color={theme.colors.status.error}
+                      fill={theme.colors.status.error}
+                    />
+                  </View>
+                  <View className="flex-1">
+                    <Text className="text-base font-semibold text-text-primary">Health Data</Text>
+                    <Text className="text-xs text-text-secondary">
+                      Sync your workouts and body metrics
+                    </Text>
+                  </View>
+                </View>
               </View>
-              <View className="flex-1">
-                <Text className="text-base font-semibold text-text-primary">Health Data</Text>
-                <Text className="text-xs text-text-secondary">
-                  Sync your workouts and body metrics
-                </Text>
-              </View>
-            </View>
-          </View>
-
-          {/* Using TogglableSettings for the list of switches */}
-          <View style={{ marginTop: -1 }}>
-            <TogglableSettings items={healthSettingsItems} />
-          </View>
+            }
+          />
 
           <Text
             className="mt-0 px-8 text-center text-xs"
