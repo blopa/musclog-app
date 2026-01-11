@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Switch } from 'react-native';
-import { Search, Dumbbell, User, PlusCircle, Lock } from 'lucide-react-native';
+import { Search, Dumbbell, User, PlusCircle } from 'lucide-react-native';
 import { theme } from '../theme';
 import { FullScreenModal } from './FullScreenModal';
 import { Button } from './theme/Button';
