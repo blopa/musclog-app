@@ -79,6 +79,24 @@ export default function CreateWorkoutScreen() {
       // No groupId - standalone exercise
     },
     {
+      id: 'hamstring-curls',
+      label: 'Hamstring Curls',
+      description: '3 sets × 12–15 reps',
+      icon: PlusSquare,
+      iconBgColor: theme.colors.status.purple + '11',
+      iconColor: theme.colors.status.purple,
+      groupId: 'hamstring-isolation', // Grouped with glute bridges
+    },
+    {
+      id: 'glute-bridges',
+      label: 'Glute Bridges',
+      description: '3 sets × 10–12 reps',
+      icon: PlusSquare,
+      iconBgColor: theme.colors.accent.primary10,
+      iconColor: theme.colors.accent.primary,
+      groupId: 'hamstring-isolation', // Grouped with hamstring curls
+    },
+    {
       id: 'lunges',
       label: 'Walking Lunges',
       description: '3 sets × 20 steps',
