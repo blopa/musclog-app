@@ -130,18 +130,7 @@ export function FilterWorkoutsModal({
       visible={visible}
       onClose={onClose}
       title="Filter Workouts"
-      headerRight={
-        <Pressable onPress={handleClear}>
-          <Text
-            style={{
-              fontSize: theme.typography.fontSize.sm,
-              fontWeight: theme.typography.fontWeight.bold,
-              color: theme.colors.accent.primary,
-            }}>
-            Clear
-          </Text>
-        </Pressable>
-      }
+      headerRight={<Button label="Clear" variant="outline" size="sm" onPress={handleClear} />}
       footer={
         <View
           style={{
@@ -157,32 +146,19 @@ export function FilterWorkoutsModal({
               flexDirection: 'row',
               gap: theme.spacing.gap.base,
             }}>
-            <Pressable
+            <Button
+              label="Clear Filters"
+              variant="outline"
+              width="flex-1"
               onPress={handleClear}
-              style={({ pressed }) => [
-                {
-                  flex: 1,
-                  height: theme.size['14'],
-                  borderRadius: theme.borderRadius.xl,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  transform: [{ scale: pressed ? 0.98 : 1 }],
-                },
-              ]}>
-              <Text
-                style={{
-                  fontSize: theme.typography.fontSize.base,
-                  fontWeight: theme.typography.fontWeight.bold,
-                  color: theme.colors.text.secondary,
-                }}>
-                Clear Filters
-              </Text>
-            </Pressable>
+              size="sm"
+            />
             <Button
               label="Apply Filters"
               variant="gradientCta"
               width="flex-2"
               onPress={handleApply}
+              size="sm"
               icon={
                 <View
                   style={{
