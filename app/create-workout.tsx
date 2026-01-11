@@ -19,6 +19,7 @@ export default function CreateWorkoutScreen() {
   const [selectedDays, setSelectedDays] = useState<number[]>([4]); // Friday selected by default in mockup
   const [focusedField, setFocusedField] = useState<string | null>(null);
 
+  // TODO: unhardcode the translations for days
   const days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
   const [selectedExercises, setSelectedExercises] = useState<string[]>([]);
