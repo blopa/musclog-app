@@ -33,6 +33,8 @@ type AISettingsModalProps = {
   onGetOpenAiKeyPress?: () => void;
   openAiModel?: string;
   onOpenAiModelPress?: () => void;
+  enableOpenAi?: boolean;
+  onEnableOpenAiChange?: (value: boolean) => void;
   // Insights & Alerts
   dailyNutritionInsights?: boolean;
   onDailyNutritionInsightsChange?: (value: boolean) => void;
@@ -57,6 +59,8 @@ export function AISettingsModal({
   onGetOpenAiKeyPress,
   openAiModel = 'GPT-4o',
   onOpenAiModelPress,
+  enableOpenAi = true,
+  onEnableOpenAiChange,
   dailyNutritionInsights = true,
   onDailyNutritionInsightsChange,
   workoutInsights = false,
@@ -125,6 +129,28 @@ export function AISettingsModal({
             justifyContent: 'center',
           }}>
           <Dumbbell size={theme.iconSize.md} color={theme.colors.status.warning} />
+        </View>
+      ),
+    },
+  ];
+
+  const openAiToggleItems = [
+    {
+      key: 'enable-openai',
+      label: 'Enable OpenAI',
+      value: enableOpenAi,
+      onValueChange: onEnableOpenAiChange || (() => {}),
+      icon: (
+        <View
+          style={{
+            width: theme.size['8'],
+            height: theme.size['8'],
+            borderRadius: theme.borderRadius.full / 2,
+            backgroundColor: theme.colors.status.indigo10,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+          <Bot size={theme.iconSize.md} color={theme.colors.status.indigo} />
         </View>
       ),
     },
@@ -256,6 +282,8 @@ export function AISettingsModal({
             style={{ color: theme.colors.status.indigoLight }}>
             OPENAI INTEGRATION
           </Text>
+          {/* OpenAI Enable Toggle */}
+          <TogglableSettings items={openAiToggleItems} />
           <View
             style={{
               backgroundColor: theme.colors.background.card,
