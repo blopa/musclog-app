@@ -16,24 +16,35 @@ export function MainSettingsModal({ visible, onClose }: { visible: boolean; onCl
   return (
     <FullScreenModal visible={visible} onClose={onClose} title="Settings">
       <View style={{ flex: 1 }}>
-        <View style={{ marginHorizontal: 16, marginTop: 16, marginBottom: 8 }}>
+        <View
+          style={{
+            marginHorizontal: theme.spacing.padding.base,
+            marginTop: theme.spacing.padding.base,
+            marginBottom: theme.spacing.padding.sm,
+          }}>
           <ThemedTextInput
             label=""
             value={search}
             onChangeText={setSearch}
             placeholder="Search settings"
-            icon={<MaterialIcons name="search" size={20} color={theme.colors.text.secondary} />}
+            icon={
+              <MaterialIcons
+                name="search"
+                size={theme.iconSize.lg}
+                color={theme.colors.text.secondary}
+              />
+            }
           />
         </View>
 
         {/* Configuration Section */}
         <Text
           style={{
-            marginLeft: 20,
-            marginTop: 8,
-            marginBottom: 8,
-            fontSize: 13,
-            fontWeight: 'bold',
+            marginLeft: theme.spacing.padding['5'],
+            marginTop: theme.spacing.padding.sm,
+            marginBottom: theme.spacing.padding.sm,
+            fontSize: theme.typography.fontSize.sm,
+            fontWeight: theme.typography.fontWeight.bold,
             color: theme.colors.text.secondary,
             textTransform: 'uppercase',
             letterSpacing: 1.2,
@@ -42,7 +53,13 @@ export function MainSettingsModal({ visible, onClose }: { visible: boolean; onCl
         </Text>
 
         <SettingsCard
-          icon={<MaterialIcons name="settings" size={28} color={theme.colors.accent.primary} />}
+          icon={
+            <MaterialIcons
+              name="settings"
+              size={theme.iconSize['2xl']}
+              color={theme.colors.accent.primary}
+            />
+          }
           title="Basic Settings"
           subtitle="Profile, units, and preferences"
           onPress={() => {}}
@@ -52,7 +69,13 @@ export function MainSettingsModal({ visible, onClose }: { visible: boolean; onCl
         />
 
         <SettingsCard
-          icon={<MaterialIcons name="tune" size={28} color={theme.colors.accent.primary} />}
+          icon={
+            <MaterialIcons
+              name="tune"
+              size={theme.iconSize['2xl']}
+              color={theme.colors.accent.primary}
+            />
+          }
           title="Advanced Settings"
           subtitle="Data export, integrations, cache"
           onPress={() => {}}
@@ -64,10 +87,10 @@ export function MainSettingsModal({ visible, onClose }: { visible: boolean; onCl
         {/* Divider */}
         <View
           style={{
-            height: 1,
+            height: theme.borderWidth.thin,
             backgroundColor: theme.colors.border.light,
-            marginVertical: 12,
-            marginHorizontal: 16,
+            marginVertical: theme.spacing.padding.md,
+            marginHorizontal: theme.spacing.padding.base,
           }}
         />
 
@@ -77,7 +100,11 @@ export function MainSettingsModal({ visible, onClose }: { visible: boolean; onCl
               key: 'darkMode',
               label: 'Dark Mode',
               icon: (
-                <MaterialIcons name="dark-mode" size={22} color={theme.colors.text.secondary} />
+                <MaterialIcons
+                  name="dark-mode"
+                  size={theme.iconSize.xl}
+                  color={theme.colors.text.secondary}
+                />
               ),
               value: darkMode,
               onValueChange: setDarkMode,
@@ -86,7 +113,11 @@ export function MainSettingsModal({ visible, onClose }: { visible: boolean; onCl
               key: 'notifications',
               label: 'Notifications',
               icon: (
-                <MaterialIcons name="notifications" size={22} color={theme.colors.text.secondary} />
+                <MaterialIcons
+                  name="notifications"
+                  size={theme.iconSize.xl}
+                  color={theme.colors.text.secondary}
+                />
               ),
               value: notifications,
               onValueChange: setNotifications,
@@ -95,24 +126,39 @@ export function MainSettingsModal({ visible, onClose }: { visible: boolean; onCl
         />
 
         {/* Info Links */}
-        <View style={{ marginHorizontal: 16, marginBottom: 8 }}>
+        <View
+          style={{
+            marginHorizontal: theme.spacing.padding.base,
+            marginBottom: theme.spacing.padding.sm,
+          }}>
           <Pressable
             style={({ pressed }) => [
               {
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                borderRadius: 12,
-                paddingVertical: 12,
-                paddingHorizontal: 16,
+                borderRadius: theme.borderRadius.md,
+                paddingVertical: theme.spacing.padding.md,
+                paddingHorizontal: theme.spacing.padding.base,
                 backgroundColor: pressed ? theme.colors.background.overlay : 'transparent',
               },
             ]}
             onPress={() => {}}>
-            <Text style={{ fontSize: 15, color: theme.colors.text.primary, fontWeight: '500' }}>
+            <Text
+              style={{
+                fontSize: theme.typography.fontSize['15'],
+                color: theme.colors.text.primary,
+                fontWeight: theme.typography.fontWeight.medium,
+              }}>
               About Musclog
             </Text>
-            <Text style={{ fontSize: 12, color: theme.colors.text.secondary }}>v1.0.4</Text>
+            <Text
+              style={{
+                fontSize: theme.typography.fontSize.xs,
+                color: theme.colors.text.secondary,
+              }}>
+              v1.0.4
+            </Text>
           </Pressable>
           <Pressable
             style={({ pressed }) => [
@@ -120,25 +166,34 @@ export function MainSettingsModal({ visible, onClose }: { visible: boolean; onCl
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                borderRadius: 12,
-                paddingVertical: 12,
-                paddingHorizontal: 16,
+                borderRadius: theme.borderRadius.md,
+                paddingVertical: theme.spacing.padding.md,
+                paddingHorizontal: theme.spacing.padding.base,
                 backgroundColor: pressed ? theme.colors.background.overlay : 'transparent',
               },
             ]}
             onPress={() => {}}>
-            <Text style={{ fontSize: 15, color: theme.colors.text.primary, fontWeight: '500' }}>
+            <Text
+              style={{
+                fontSize: theme.typography.fontSize['15'],
+                color: theme.colors.text.primary,
+                fontWeight: theme.typography.fontWeight.medium,
+              }}>
               Privacy Policy
             </Text>
           </Pressable>
         </View>
 
-        <View style={{ marginHorizontal: 16, marginTop: 12 }}>
+        <View
+          style={{
+            marginHorizontal: theme.spacing.padding.base,
+            marginTop: theme.spacing.padding.md,
+          }}>
           <Button label="Sign Out" variant="discard" width="full" size="sm" onPress={() => {}} />
         </View>
 
         {/* Spacer for bottom nav */}
-        <View style={{ height: 32 }} />
+        <View style={{ height: theme.size['8'] }} />
       </View>
     </FullScreenModal>
   );

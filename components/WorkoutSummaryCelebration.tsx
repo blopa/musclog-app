@@ -94,7 +94,7 @@ export function WorkoutSummaryCelebration({
           <Animated.View
             className="absolute left-1/2 top-1/4 h-64 w-64 rounded-full blur-3xl"
             style={{
-              backgroundColor: 'rgba(99, 102, 241, 0.2)',
+              backgroundColor: theme.colors.status.indigo10,
               transform: [{ translateX: -128 }, { translateY: -128 }],
               opacity: glowAnim1,
             }}
@@ -102,7 +102,7 @@ export function WorkoutSummaryCelebration({
           <Animated.View
             className="absolute left-1/2 top-1/3 h-48 w-48 rounded-full blur-3xl"
             style={{
-              backgroundColor: 'rgba(41, 224, 142, 0.2)',
+              backgroundColor: theme.colors.status.emerald20,
               transform: [{ translateX: -96 }, { translateY: -96 }],
               opacity: glowAnim2,
             }}
@@ -127,7 +127,7 @@ export function WorkoutSummaryCelebration({
             size="md"
             width="full"
             onPress={onGoHome}
-            style={{ marginBottom: 16 }}
+            style={{ marginBottom: theme.spacing.padding.base }}
           />
 
           {/* Share Summary Link */}

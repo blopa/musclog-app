@@ -31,8 +31,8 @@ export function TrackingMethodButton({
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       style={{
-        height: 48,
-        width: 48,
+        height: theme.size['12'],
+        width: theme.size['12'],
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: theme.borderRadius.xl,
@@ -70,7 +70,7 @@ export function TrackingMethodButton({
               style={{ backgroundColor: theme.colors.accent.primary }}>
               <Text
                 className="text-[10px] font-extrabold uppercase text-text-black"
-                style={{ fontSize: 10 }}>
+                style={{ fontSize: theme.typography.fontSize['10'] }}>
                 {badge}
               </Text>
             </View>

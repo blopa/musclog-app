@@ -20,13 +20,9 @@ export function RestOverNextExercise({ exercise }: RestOverNextExerciseProps) {
     <View
       className="mt-4 w-full max-w-sm rounded-xl border p-5"
       style={{
-        backgroundColor: 'rgba(25, 43, 35, 0.5)',
+        backgroundColor: theme.colors.background.darkGreen50,
         borderColor: theme.colors.background.white5,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 12,
-        elevation: 8,
+        ...theme.shadows.lg,
       }}>
       <View className="mb-3 flex-row items-center gap-3">
         <View

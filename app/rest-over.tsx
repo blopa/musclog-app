@@ -75,14 +75,14 @@ export default function RestOverScreen() {
       <Animated.View
         className="absolute right-[-10%] top-[-20%] h-[50%] w-[80%] rounded-full blur-3xl"
         style={{
-          backgroundColor: 'rgba(79, 70, 229, 0.3)',
+          backgroundColor: theme.colors.accent.primary40,
           opacity: pulseAnim,
         }}
       />
       <Animated.View
         className="absolute bottom-[-10%] left-[-20%] h-[50%] w-[90%] rounded-full blur-3xl"
         style={{
-          backgroundColor: 'rgba(41, 224, 142, 0.2)',
+          backgroundColor: theme.colors.status.emerald20,
         }}
       />
 

@@ -59,7 +59,7 @@ export default function CardsTestScreen() {
           <DailySummaryCard
             calories={{ consumed: 1800, remaining: 400, goal: 2200 }}
             activity={{ minutes: 45, goal: 60 }}
-            gradientColors={['#4f46e5', '#29e08e']}
+            gradientColors={[theme.colors.status.indigo, theme.colors.status.emeraldLight]}
           />
         </TestSection>
 
@@ -71,7 +71,7 @@ export default function CardsTestScreen() {
             calories={500}
             prs={3}
             image={{ uri: 'https://example.com/leg-day.jpg' }}
-            imageBgColor="#11211a"
+            imageBgColor={theme.colors.background.cardDark}
           />
         </TestSection>
 
@@ -86,20 +86,20 @@ export default function CardsTestScreen() {
               protein: {
                 percentage: 40,
                 amount: '120g',
-                color: '#29e08e',
-                progressColor: '#4f46e5',
+                color: theme.colors.status.emeraldLight,
+                progressColor: theme.colors.status.indigo,
               },
               carbs: {
                 percentage: 50,
                 amount: '200g',
-                color: '#4f46e5',
-                progressColor: '#29e08e',
+                color: theme.colors.status.indigo,
+                progressColor: theme.colors.status.emeraldLight,
               },
               fat: {
                 percentage: 10,
                 amount: '50g',
-                color: '#e53e3e',
-                progressColor: '#e53e3e',
+                color: theme.colors.status.error,
+                progressColor: theme.colors.status.error,
               },
             }}
           />
@@ -150,7 +150,7 @@ export default function CardsTestScreen() {
             <NotificationCard
               type="workout-reminder"
               icon={<Bell size={24} color={theme.colors.status.info} />}
-              iconBg="rgba(59, 130, 246, 0.1)"
+              iconBg={theme.colors.status.info10}
               title="Workout Reminder"
               description="Don't forget your Push Day workout scheduled for today at 6:00 PM"
               time="5 hours ago"
@@ -160,7 +160,7 @@ export default function CardsTestScreen() {
             <NotificationCard
               type="workout-completed"
               icon={<Trophy size={24} color={theme.colors.status.warning} />}
-              iconBg="rgba(249, 115, 22, 0.1)"
+              iconBg={theme.colors.status.warning10}
               title="Workout Completed!"
               description="Great job completing your Leg Day workout. You hit 3 personal records!"
               time="Yesterday"

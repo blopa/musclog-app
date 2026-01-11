@@ -24,12 +24,12 @@ export function TogglableSettings(props: TogglableSettingsProps) {
     <View
       style={{
         backgroundColor: theme.colors.background.card,
-        borderRadius: 16,
-        marginHorizontal: 16,
-        marginBottom: 16,
-        padding: hasHeader ? 0 : 4,
+        borderRadius: theme.borderRadius.lg,
+        marginHorizontal: theme.spacing.padding.base,
+        marginBottom: theme.spacing.padding.base,
+        padding: hasHeader ? 0 : theme.spacing.padding.xs,
         overflow: 'hidden',
-        borderWidth: 1,
+        borderWidth: theme.borderWidth.thin,
         borderColor: theme.colors.border.light,
         shadowColor: theme.colors.accent.primary,
         shadowOpacity: 0.03,
@@ -45,7 +45,7 @@ export function TogglableSettings(props: TogglableSettingsProps) {
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                padding: 12,
+                padding: theme.spacing.padding.md,
                 backgroundColor: pressed ? theme.colors.background.overlay : undefined,
               },
             ]}
@@ -53,11 +53,21 @@ export function TogglableSettings(props: TogglableSettingsProps) {
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flex: 1 }}>
               {it.icon}
               <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 15, color: theme.colors.text.primary, fontWeight: '500' }}>
+                <Text
+                  style={{
+                    fontSize: theme.typography.fontSize['15'],
+                    color: theme.colors.text.primary,
+                    fontWeight: theme.typography.fontWeight.medium,
+                  }}>
                   {it.label}
                 </Text>
                 {it.subtitle && (
-                  <Text style={{ fontSize: 13, color: theme.colors.text.secondary, marginTop: 2 }}>
+                  <Text
+                    style={{
+                      fontSize: theme.typography.fontSize.sm,
+                      color: theme.colors.text.secondary,
+                      marginTop: theme.spacing.padding.xs / 2,
+                    }}>
                     {it.subtitle}
                   </Text>
                 )}
@@ -75,7 +85,11 @@ export function TogglableSettings(props: TogglableSettingsProps) {
           </Pressable>
           {idx < items.length - 1 && (
             <View
-              style={{ height: 1, backgroundColor: theme.colors.border.light, marginHorizontal: 8 }}
+              style={{
+                height: theme.borderWidth.thin,
+                backgroundColor: theme.colors.border.light,
+                marginHorizontal: theme.spacing.padding.sm,
+              }}
             />
           )}
         </React.Fragment>

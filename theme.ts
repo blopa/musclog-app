@@ -32,6 +32,10 @@ export const theme = {
       overlayDark: 'rgba(0, 0, 0, 0.6)', // Black overlay with 60% opacity
       purpleBlob: '#3d3162', // Purple blob background
       greenBlob: '#125630', // Green blob background
+      darkGreen50: 'rgba(25, 43, 35, 0.5)', // Dark green with 50% opacity
+      darkGreen80: 'rgba(27, 50, 39, 0.8)', // Dark green with 80% opacity
+      black15: 'rgba(0, 0, 0, 0.15)', // Black with 15% opacity
+      black80: 'rgba(0, 0, 0, 0.8)', // Black with 80% opacity
       snackbarSuccess: '#0d3520', // Success snackbar background
       snackbarError: '#3d1515', // Error snackbar background
       buttonCard: '#1a3530', // Button/card background
@@ -101,14 +105,32 @@ export const theme = {
       info: '#3b82f6', // Blue
       purple: '#a855f7', // Purple
       notificationBadge: '#ef4444', // Red notification badge (same as error)
+      amber: '#fbbf24', // Amber-400
+      yellow: '#eab308', // Yellow-500
+      indigo: '#6366f1', // Indigo-500
+      indigoLight: '#818cf8', // Indigo-400
+      emerald: '#10b981', // Emerald-500
+      emeraldLight: '#29e08e', // Emerald-400
+      greenDark: '#1aa869', // Green-600
+      indigoVeryLight: '#c7d2fe', // Indigo-100
+      emeraldVeryLight: '#a7f3d0', // Emerald-200
       // Status colors with opacity
       success20: 'rgba(34, 197, 94, 0.2)', // Success with 20% opacity
       error8: 'rgba(239, 68, 68, 0.08)', // Error with 8% opacity
       error20: 'rgba(239, 68, 68, 0.2)', // Error with 20% opacity
       error12: 'rgba(239, 68, 68, 0.125)', // Error with 12.5% opacity
       info20: 'rgba(59, 130, 246, 0.2)', // Info with 20% opacity
+      info10: 'rgba(59, 130, 246, 0.1)', // Info with 10% opacity
       purple40: 'rgba(168, 85, 247, 0.4)', // Purple with 40% opacity
       purple20: 'rgba(168, 85, 247, 0.2)', // Purple with 20% opacity
+      purple10: 'rgba(168, 85, 247, 0.1)', // Purple with 10% opacity
+      amber10: 'rgba(251, 191, 36, 0.1)', // Amber with 10% opacity
+      warning10: 'rgba(249, 115, 22, 0.1)', // Warning with 10% opacity
+      emerald10: 'rgba(16, 185, 129, 0.1)', // Emerald with 10% opacity
+      emerald20: 'rgba(41, 224, 142, 0.2)', // Emerald-400 with 20% opacity
+      yellow10: 'rgba(234, 179, 8, 0.1)', // Yellow with 10% opacity
+      indigo10: 'rgba(99, 102, 241, 0.1)', // Indigo with 10% opacity
+      gray10: 'rgba(107, 114, 128, 0.1)', // Gray with 10% opacity
     },
 
     // Rose colors (for red button variant)
@@ -175,6 +197,10 @@ export const theme = {
       notification: ['#1a3d2f', '#0f2419'] as const,
       upNextCard: ['#1a2f2a', '#141a17', '#1a2520'] as const,
       cta: ['#4f46e5', '#29e08e'] as const, // Indigo to primary green gradient
+      userBubble: ['#22c55e', '#1aa869'] as const, // User message bubble gradient
+      celebrationGlow: ['#c7d2fe', '#ffffff', '#a7f3d0'] as const, // Celebration header gradient
+      restOverTitle: ['#22c55e', '#818cf8'] as const, // Rest over title gradient
+      workoutStats: ['#818cf8', '#22c55e', '#34d399'] as const, // Workout stats gradient
       workoutSessionOverlay: [
         'rgba(10, 31, 26, 0.95)',
         'rgba(10, 31, 26, 0.85)',
@@ -197,6 +223,9 @@ export const theme = {
       '5xl': 48,
       '6xl': 60,
       '7xl': 80,
+      // Additional font sizes
+      '10': 10,
+      '15': 15,
     },
 
     // Font weights
@@ -205,6 +234,8 @@ export const theme = {
       medium: '500',
       semibold: '600',
       bold: '700',
+      extrabold: '800',
+      black: '900',
     },
 
     // Line heights
@@ -231,6 +262,9 @@ export const theme = {
       '2half': 10, // 2.5 * 4 = 10px
       '3half': 14, // 3.5 * 4 = 14px
       '4half': 18, // 4.5 * 4 = 18px
+      // Specific padding values found in codebase
+      '5': 20,
+      '6': 24,
     },
 
     // Margin/Gap
@@ -247,6 +281,8 @@ export const theme = {
       '2half': 10, // 2.5 * 4 = 10px
       '3half': 14, // 3.5 * 4 = 14px
       '4half': 18, // 4.5 * 4 = 18px
+      // Specific gap values found in codebase
+      '8': 8,
     },
   },
 
@@ -257,6 +293,7 @@ export const theme = {
     xl: 20,
     '2xl': 24,
     '3xl': 30,
+    '4xl': 36,
     full: 9999,
   },
 
@@ -267,6 +304,7 @@ export const theme = {
     thick: 3,
     // Additional border widths
     accent: 5, // For accent borders like snackbar
+    thick6: 6, // 6px border width
   },
 
   // Stroke widths (for icons and SVG)
@@ -397,10 +435,14 @@ export const theme = {
     '12': 48,
     '14': 56,
     '16': 64,
+    '18': 72,
     '20': 80,
     '22': 88,
     '24': 96,
+    '30': 120,
     '32': 128,
+    '40': 160,
+    '48': 192,
     // Fractional sizes (using valid keys)
     half: 2, // 0.5 * 4 = 2px
     '1half': 6, // 1.5 * 4 = 6px

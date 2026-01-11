@@ -15,7 +15,7 @@ export function ProgressIndicator({
     <View
       className="w-full py-6"
       style={{
-        minHeight: 160,
+        minHeight: theme.size['40'],
         alignItems: 'center',
         justifyContent: 'center',
         alignSelf: 'stretch',
@@ -25,15 +25,15 @@ export function ProgressIndicator({
         style={{
           backgroundColor: theme.colors.background.cardElevated,
           borderColor: theme.colors.border.default,
-          borderWidth: 1,
-          padding: 24,
+          borderWidth: theme.borderWidth.thin,
+          padding: theme.spacing.padding['6'],
           width: '100%',
         }}>
         <View style={{ alignItems: 'center', justifyContent: 'center' }}>
           <View
             style={{
-              width: 72,
-              height: 72,
+              width: theme.size['18'],
+              height: theme.size['18'],
               alignItems: 'center',
               justifyContent: 'center',
             }}>
@@ -41,23 +41,23 @@ export function ProgressIndicator({
             <View
               style={{
                 position: 'absolute',
-                width: 72,
-                height: 72,
-                borderRadius: 36,
-                borderWidth: 6,
-                borderColor: 'rgba(0,0,0,0.15)',
+                width: theme.size['18'],
+                height: theme.size['18'],
+                borderRadius: theme.size['18'] / 2,
+                borderWidth: theme.borderWidth.thick6,
+                borderColor: theme.colors.background.black15,
               }}
             />
             {/* Progress arc using smaller view with accent color on top */}
             <View
               style={{
                 position: 'absolute',
-                top: 6,
-                left: 6,
-                width: 60,
-                height: 60,
-                borderRadius: 30,
-                borderWidth: 6,
+                top: theme.borderWidth.thick6,
+                left: theme.borderWidth.thick6,
+                width: theme.size['15'],
+                height: theme.size['15'],
+                borderRadius: theme.size['15'] / 2,
+                borderWidth: theme.borderWidth.thick6,
                 borderColor: theme.colors.accent.primary,
                 transform: [{ rotate: '45deg' }],
                 overflow: 'hidden',
@@ -73,11 +73,11 @@ export function ProgressIndicator({
           {message && (
             <Text
               style={{
-                marginTop: 18,
+                marginTop: theme.spacing.padding.lg,
                 textAlign: 'center',
                 color: theme.colors.accent.primary,
-                fontSize: 18,
-                fontWeight: '600',
+                fontSize: theme.typography.fontSize.lg,
+                fontWeight: theme.typography.fontWeight.semibold,
               }}>
               {message}
             </Text>

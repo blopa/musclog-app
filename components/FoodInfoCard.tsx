@@ -135,7 +135,7 @@ export function FoodInfoCard({ food }: FoodInfoCardProps) {
             <View className="flex-row items-center gap-4 rounded-xl border border-white/5 bg-white/5 p-3">
               <View className="h-24 w-24 flex-none">
                 {/* Circular Chart - Using SVG */}
-                <Svg width={96} height={96} viewBox="0 0 36 36">
+                <Svg width={theme.size['24']} height={theme.size['24']} viewBox="0 0 36 36">
                   {/* Background circle */}
                   <Circle
                     cx="18"
@@ -153,7 +153,7 @@ export function FoodInfoCard({ food }: FoodInfoCardProps) {
                       cy="18"
                       r={radius}
                       fill="none"
-                      stroke="#6366f1"
+                      stroke={theme.colors.macros.protein.bg}
                       strokeWidth="6"
                       strokeDasharray={proteinDashArray}
                       strokeDashoffset={proteinDashOffset}
@@ -168,7 +168,7 @@ export function FoodInfoCard({ food }: FoodInfoCardProps) {
                       cy="18"
                       r={radius}
                       fill="none"
-                      stroke="#eab308"
+                      stroke={theme.colors.macros.fat.bg}
                       strokeWidth="6"
                       strokeDasharray={fatDashArray}
                       strokeDashoffset={fatDashOffset}
@@ -183,7 +183,7 @@ export function FoodInfoCard({ food }: FoodInfoCardProps) {
                       cy="18"
                       r={radius}
                       fill="none"
-                      stroke="#22c55e"
+                      stroke={theme.colors.macros.carbs.bg}
                       strokeWidth="6"
                       strokeDasharray={carbsDashArray}
                       strokeDashoffset={carbsDashOffset}

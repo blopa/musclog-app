@@ -44,29 +44,29 @@ export function AddFoodModal({
     {
       icon: UtensilsCrossed,
       label: t('food.meals.breakfast'),
-      iconBgColor: 'rgba(249, 115, 22, 0.1)',
-      iconColor: '#f97316',
+      iconBgColor: theme.colors.status.warning10,
+      iconColor: theme.colors.status.warning,
       mealType: 'breakfast',
     },
     {
       icon: UtensilsCrossed,
       label: t('food.meals.lunch'),
-      iconBgColor: 'rgba(16, 185, 129, 0.1)',
-      iconColor: '#10b981',
+      iconBgColor: theme.colors.status.emerald10,
+      iconColor: theme.colors.status.emerald,
       mealType: 'lunch',
     },
     {
       icon: UtensilsCrossed,
       label: t('food.meals.dinner'),
-      iconBgColor: 'rgba(99, 102, 241, 0.1)',
-      iconColor: '#6366f1',
+      iconBgColor: theme.colors.status.indigo10,
+      iconColor: theme.colors.status.indigo,
       mealType: 'dinner',
     },
     {
       icon: UtensilsCrossed,
       label: t('food.meals.snacks'),
-      iconBgColor: 'rgba(234, 179, 8, 0.1)',
-      iconColor: '#eab308',
+      iconBgColor: theme.colors.status.yellow10,
+      iconColor: theme.colors.status.yellow,
       mealType: 'snack',
     },
   ];
@@ -109,7 +109,7 @@ export function AddFoodModal({
                 <MealTypeButton
                   icon={MoreHorizontal}
                   label={t('food.meals.trackOther')}
-                  iconBgColor="rgba(107, 114, 128, 0.1)"
+                  iconBgColor={theme.colors.status.gray10}
                   iconColor={theme.colors.text.secondary}
                   span={2}
                   onPress={() => {
@@ -134,7 +134,9 @@ export function AddFoodModal({
                 icon={Sparkles}
                 title={t('food.addFoodModal.aiCamera.title')}
                 description={t('food.addFoodModal.aiCamera.description')}
-                iconGradient={['#6366f1', '#29e08e'] as const}
+                iconGradient={
+                  [theme.colors.status.indigo, theme.colors.status.emeraldLight] as const
+                }
                 badge={t('food.addFoodModal.aiCamera.badge')}
                 highlighted={true}
                 onPress={() => {
@@ -166,8 +168,8 @@ export function AddFoodModal({
                 <Button
                   label={t('food.addFoodModal.createCustomFood')}
                   icon={Edit}
-                  iconBgColor="rgba(59, 130, 246, 0.1)"
-                  iconColor="#3b82f6"
+                  iconBgColor={theme.colors.status.info10}
+                  iconColor={theme.colors.status.info}
                   variant="outline"
                   size="sm"
                   width="flex-1"
@@ -179,8 +181,8 @@ export function AddFoodModal({
                 <Button
                   label={t('food.addFoodModal.trackCustomMeal')}
                   icon={UtensilsCrossed}
-                  iconBgColor="rgba(168, 85, 247, 0.1)"
-                  iconColor="#a855f7"
+                  iconBgColor={theme.colors.status.purple10}
+                  iconColor={theme.colors.status.purple}
                   variant="outline"
                   size="sm"
                   width="flex-1"

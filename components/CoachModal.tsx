@@ -147,8 +147,8 @@ const renderMessageText = (props: any) => {
   return (
     <Text
       style={{
-        fontSize: 15,
-        lineHeight: 22,
+        fontSize: theme.typography.fontSize['15'],
+        lineHeight: theme.typography.lineHeight.normal * theme.typography.fontSize['15'],
         color:
           props.currentMessage?.user._id === 1
             ? theme.colors.text.black
@@ -188,7 +188,7 @@ const renderBubble = (props: BubbleProps<ExtendedIMessage>) => {
       <View style={styles.userBubbleContainer}>
         {!!currentMessage?.text && (
           <LinearGradient
-            colors={[theme.colors.accent.primary, '#1aa869']}
+            colors={theme.colors.gradients.userBubble}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.userBubbleGradient}>
@@ -328,8 +328,8 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
         <Pressable
           className="flex-row items-center gap-2 whitespace-nowrap rounded-full border px-4 py-2 active:scale-95"
           style={{
-            backgroundColor: 'rgba(99, 102, 241, 0.2)',
-            borderColor: 'rgba(34, 197, 94, 0.3)',
+            backgroundColor: theme.colors.status.indigo10,
+            borderColor: theme.colors.accent.primary30,
           }}>
           <PlusCircle size={18} color={theme.colors.accent.primary} />
           <Text className="text-sm font-medium" style={{ color: theme.colors.accent.primary }}>
@@ -380,7 +380,10 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
             <Image
               source={{ uri: AI_COACH_AVATAR }}
               className="h-10 w-10 rounded-full"
-              style={{ borderWidth: 2, borderColor: `${theme.colors.accent.primary}33` }}
+              style={{
+                borderWidth: theme.borderWidth.medium,
+                borderColor: theme.colors.accent.primary40,
+              }}
               resizeMode="cover"
             />
             <View
@@ -388,6 +391,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
               style={{
                 backgroundColor: theme.colors.accent.primary,
                 borderColor: theme.colors.background.primary,
+                borderWidth: theme.borderWidth.medium,
               }}
             />
           </View>
@@ -421,7 +425,10 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
             scrollToBottomComponent={() => null}
             minInputToolbarHeight={0}
             listProps={{
-              contentContainerStyle: { paddingBottom: 16, paddingHorizontal: 16 },
+              contentContainerStyle: {
+                paddingBottom: theme.spacing.padding.base,
+                paddingHorizontal: theme.spacing.padding.base,
+              },
             }}
           />
         </View>
@@ -438,10 +445,10 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   userBubbleGradient: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 20,
-    borderBottomRightRadius: 4,
+    paddingHorizontal: theme.spacing.padding.base,
+    paddingVertical: theme.spacing.padding.md,
+    borderRadius: theme.borderRadius.xl,
+    borderBottomRightRadius: theme.spacing.padding.xs,
   },
   aiBubbleContainer: {
     maxWidth: '85%',
@@ -451,45 +458,45 @@ const styles = StyleSheet.create({
   },
   aiBubbleContent: {
     backgroundColor: theme.colors.background.cardElevated,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 20,
-    borderBottomLeftRadius: 4,
+    paddingHorizontal: theme.spacing.padding.base,
+    paddingVertical: theme.spacing.padding.md,
+    borderRadius: theme.borderRadius.xl,
+    borderBottomLeftRadius: theme.spacing.padding.xs,
   },
   avatar: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    marginRight: 8,
-    marginBottom: 4,
+    width: theme.size['8'],
+    height: theme.size['8'],
+    borderRadius: theme.borderRadius.full / 2,
+    marginRight: theme.spacing.padding.sm,
+    marginBottom: theme.spacing.padding.xs,
   },
   sendContainer: {
     justifyContent: 'center',
     alignItems: 'center',
     alignSelf: 'flex-end',
-    marginLeft: 8,
+    marginLeft: theme.spacing.padding.sm,
   },
   composerWrapper: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 20,
-    borderWidth: 1,
+    borderRadius: theme.borderRadius.xl,
+    borderWidth: theme.borderWidth.thin,
     borderColor: theme.colors.border.light,
     backgroundColor: theme.colors.background.card,
-    paddingLeft: 4,
+    paddingLeft: theme.spacing.padding.xs,
   },
   composerTextInput: {
-    fontSize: 16,
+    fontSize: theme.typography.fontSize.base,
     color: theme.colors.text.primary,
-    marginTop: 8,
-    marginBottom: 8,
+    marginTop: theme.spacing.padding.sm,
+    marginBottom: theme.spacing.padding.sm,
   },
   inputToolbarContainer: {
     backgroundColor: 'transparent',
     borderTopWidth: 0,
-    paddingHorizontal: 16,
-    paddingBottom: 8,
+    paddingHorizontal: theme.spacing.padding.base,
+    paddingBottom: theme.spacing.padding.sm,
   },
   inputToolbarPrimary: {
     alignItems: 'flex-end',

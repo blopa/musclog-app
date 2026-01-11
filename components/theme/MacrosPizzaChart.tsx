@@ -20,7 +20,7 @@ export function MacrosPizzaChart({
   carbs,
   fats,
   fiber = 0,
-  size = 192,
+  size = theme.size['48'],
 }: MacrosPizzaChartProps) {
   const { t } = useTranslation();
 

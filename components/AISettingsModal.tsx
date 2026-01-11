@@ -74,14 +74,14 @@ export function AISettingsModal({
       icon: (
         <View
           style={{
-            width: 32,
-            height: 32,
-            borderRadius: 16,
-            backgroundColor: 'rgba(59, 130, 246, 0.2)',
+            width: theme.size['8'],
+            height: theme.size['8'],
+            borderRadius: theme.borderRadius.full / 2,
+            backgroundColor: theme.colors.status.info10,
             alignItems: 'center',
             justifyContent: 'center',
           }}>
-          <Bot size={20} color="#3b82f6" />
+          <Bot size={theme.iconSize.lg} color={theme.colors.status.info} />
         </View>
       ),
     },
@@ -97,14 +97,14 @@ export function AISettingsModal({
       icon: (
         <View
           style={{
-            width: 32,
-            height: 32,
-            borderRadius: 16,
-            backgroundColor: 'rgba(34, 197, 94, 0.2)',
+            width: theme.size['8'],
+            height: theme.size['8'],
+            borderRadius: theme.borderRadius.full / 2,
+            backgroundColor: theme.colors.accent.primary20,
             alignItems: 'center',
             justifyContent: 'center',
           }}>
-          <Apple size={18} color={theme.colors.accent.primary} />
+          <Apple size={theme.iconSize.md} color={theme.colors.accent.primary} />
         </View>
       ),
     },
@@ -117,14 +117,14 @@ export function AISettingsModal({
       icon: (
         <View
           style={{
-            width: 32,
-            height: 32,
-            borderRadius: 16,
-            backgroundColor: 'rgba(249, 115, 22, 0.2)',
+            width: theme.size['8'],
+            height: theme.size['8'],
+            borderRadius: theme.borderRadius.full / 2,
+            backgroundColor: theme.colors.status.warning10,
             alignItems: 'center',
             justifyContent: 'center',
           }}>
-          <Dumbbell size={18} color="#f97316" />
+          <Dumbbell size={theme.iconSize.md} color={theme.colors.status.warning} />
         </View>
       ),
     },
@@ -148,17 +148,17 @@ export function AISettingsModal({
           <View
             style={{
               backgroundColor: theme.colors.background.card,
-              borderRadius: 16,
-              marginHorizontal: 16,
-              borderWidth: 1,
+              borderRadius: theme.borderRadius.lg,
+              marginHorizontal: theme.spacing.padding.base,
+              borderWidth: theme.borderWidth.thin,
               borderColor: theme.colors.border.light,
               overflow: 'hidden',
             }}>
             {/* Connect Button */}
             <View
               style={{
-                padding: 16,
-                borderBottomWidth: 1,
+                padding: theme.spacing.padding.base,
+                borderBottomWidth: theme.borderWidth.thin,
                 borderBottomColor: theme.colors.border.light,
               }}>
               <Pressable
@@ -168,20 +168,20 @@ export function AISettingsModal({
                     flexDirection: 'row',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    gap: 8,
-                    height: 48,
-                    borderRadius: 12,
+                    gap: theme.spacing.gap.sm,
+                    height: theme.size['12'],
+                    borderRadius: theme.borderRadius.md,
                     backgroundColor: theme.colors.background.cardElevated,
-                    borderWidth: 1,
+                    borderWidth: theme.borderWidth.thin,
                     borderColor: theme.colors.border.light,
                     transform: [{ scale: pressed ? 0.98 : 1 }],
                   },
                 ]}>
-                <Link size={20} color={theme.colors.text.primary} />
+                <Link size={theme.iconSize.lg} color={theme.colors.text.primary} />
                 <Text
                   style={{
-                    fontSize: 14,
-                    fontWeight: '700',
+                    fontSize: theme.typography.fontSize.sm,
+                    fontWeight: theme.typography.fontWeight.bold,
                     letterSpacing: 0.5,
                     color: theme.colors.text.primary,
                   }}>
@@ -205,10 +205,10 @@ export function AISettingsModal({
               />
               <Text
                 style={{
-                  fontSize: 10,
+                  fontSize: theme.typography.fontSize['10'],
                   color: theme.colors.text.tertiary,
-                  marginTop: 8,
-                  marginLeft: 4,
+                  marginTop: theme.spacing.padding.sm,
+                  marginLeft: theme.spacing.padding.xs,
                 }}>
                 Leaving this blank will use the connected account quota.
               </Text>
@@ -227,10 +227,20 @@ export function AISettingsModal({
                 },
               ]}>
               <View>
-                <Text style={{ fontSize: 14, fontWeight: '500', color: theme.colors.text.primary }}>
+                <Text
+                  style={{
+                    fontSize: theme.typography.fontSize.sm,
+                    fontWeight: theme.typography.fontWeight.medium,
+                    color: theme.colors.text.primary,
+                  }}>
                   Gemini Model
                 </Text>
-                <Text style={{ fontSize: 12, color: theme.colors.accent.primary, marginTop: 2 }}>
+                <Text
+                  style={{
+                    fontSize: theme.typography.fontSize.xs,
+                    color: theme.colors.accent.primary,
+                    marginTop: theme.spacing.padding.xs / 2,
+                  }}>
                   {geminiModel}
                 </Text>
               </View>
@@ -243,23 +253,23 @@ export function AISettingsModal({
         <View>
           <Text
             className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
-            style={{ color: '#818cf8' }}>
+            style={{ color: theme.colors.status.indigoLight }}>
             OPENAI INTEGRATION
           </Text>
           <View
             style={{
               backgroundColor: theme.colors.background.card,
-              borderRadius: 16,
-              marginHorizontal: 16,
-              borderWidth: 1,
+              borderRadius: theme.borderRadius.lg,
+              marginHorizontal: theme.spacing.padding.base,
+              borderWidth: theme.borderWidth.thin,
               borderColor: theme.colors.border.light,
               overflow: 'hidden',
             }}>
             {/* API Key Input */}
             <View
               style={{
-                padding: 16,
-                borderBottomWidth: 1,
+                padding: theme.spacing.padding.base,
+                borderBottomWidth: theme.borderWidth.thin,
                 borderBottomColor: theme.colors.border.light,
               }}>
               <View
@@ -267,7 +277,7 @@ export function AISettingsModal({
                   flexDirection: 'row',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  marginBottom: 8,
+                  marginBottom: theme.spacing.padding.sm,
                 }}></View>
               <SecretInput
                 label="OPENAI API KEY"
@@ -290,14 +300,24 @@ export function AISettingsModal({
                 },
               ]}>
               <View>
-                <Text style={{ fontSize: 14, fontWeight: '500', color: theme.colors.text.primary }}>
+                <Text
+                  style={{
+                    fontSize: theme.typography.fontSize.sm,
+                    fontWeight: theme.typography.fontWeight.medium,
+                    color: theme.colors.text.primary,
+                  }}>
                   OpenAI Model
                 </Text>
-                <Text style={{ fontSize: 12, color: theme.colors.accent.primary, marginTop: 2 }}>
+                <Text
+                  style={{
+                    fontSize: theme.typography.fontSize.xs,
+                    color: theme.colors.accent.primary,
+                    marginTop: theme.spacing.padding.xs / 2,
+                  }}>
                   {openAiModel || 'Select a model'}
                 </Text>
               </View>
-              <ChevronDown size={20} color={theme.colors.text.tertiary} />
+              <ChevronDown size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
             </Pressable>
           </View>
         </View>
@@ -313,13 +333,17 @@ export function AISettingsModal({
         </View>
 
         {/* Footer Help */}
-        <View style={{ marginTop: 16, paddingHorizontal: 16 }}>
+        <View
+          style={{
+            marginTop: theme.spacing.padding.base,
+            paddingHorizontal: theme.spacing.padding.base,
+          }}>
           <Text
             style={{
-              fontSize: 12,
+              fontSize: theme.typography.fontSize.xs,
               color: theme.colors.text.tertiary,
               textAlign: 'center',
-              lineHeight: 18,
+              lineHeight: theme.typography.lineHeight.relaxed * theme.typography.fontSize.xs,
             }}>
             Need help finding your API keys?{' '}
             <Text
@@ -337,10 +361,10 @@ export function AISettingsModal({
           </Text>
           <Text
             style={{
-              fontSize: 10,
+              fontSize: theme.typography.fontSize['10'],
               color: theme.colors.text.tertiary,
               textAlign: 'center',
-              marginTop: 24,
+              marginTop: theme.spacing.padding['6'],
             }}>
             Musclog AI v{version}
           </Text>

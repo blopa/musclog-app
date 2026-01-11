@@ -65,7 +65,7 @@ export function WorkoutSummaryTrophy() {
       <View
         className="relative z-10 h-32 w-32 items-center justify-center rounded-full border"
         style={{
-          backgroundColor: 'rgba(99, 102, 241, 0.1)',
+          backgroundColor: theme.colors.status.indigo10,
           borderColor: theme.colors.background.white5,
           shadowColor: theme.colors.accent.primary,
           shadowOffset: { width: 0, height: 0 },
@@ -74,16 +74,20 @@ export function WorkoutSummaryTrophy() {
           elevation: 20,
         }}>
         <LinearGradient
-          colors={['rgba(99, 102, 241, 0.1)', 'rgba(41, 224, 142, 0.1)']}
+          colors={[theme.colors.status.indigo10, theme.colors.status.emerald10]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={{
             position: 'absolute',
             inset: 0,
-            borderRadius: 64,
+            borderRadius: theme.size['16'],
           }}
         />
-        <Trophy size={64} color={theme.colors.accent.primary} strokeWidth={1.5} />
+        <Trophy
+          size={theme.size['16']}
+          color={theme.colors.accent.primary}
+          strokeWidth={theme.strokeWidth.normal}
+        />
       </View>
 
       {/* Stars */}
@@ -92,21 +96,33 @@ export function WorkoutSummaryTrophy() {
         style={{
           transform: [{ scale: star1Anim }, { rotate: '12deg' }],
         }}>
-        <Star size={20} color="#fbbf24" fill="#fbbf24" />
+        <Star
+          size={theme.iconSize.lg}
+          color={theme.colors.status.amber}
+          fill={theme.colors.status.amber}
+        />
       </Animated.View>
       <Animated.View
         className="absolute -bottom-1 -left-4"
         style={{
           transform: [{ scale: star2Anim }, { rotate: '-12deg' }],
         }}>
-        <Star size={18} color={theme.colors.accent.primary} fill={theme.colors.accent.primary} />
+        <Star
+          size={theme.iconSize.md}
+          color={theme.colors.accent.primary}
+          fill={theme.colors.accent.primary}
+        />
       </Animated.View>
       <Animated.View
         className="absolute -left-2 top-0"
         style={{
           transform: [{ scale: star3Anim }, { rotate: '-45deg' }],
         }}>
-        <Star size={14} color="#818cf8" fill="#818cf8" />
+        <Star
+          size={theme.iconSize.sm}
+          color={theme.colors.status.indigoLight}
+          fill={theme.colors.status.indigoLight}
+        />
       </Animated.View>
     </Animated.View>
   );

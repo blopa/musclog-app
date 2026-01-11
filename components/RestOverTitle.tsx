@@ -11,12 +11,10 @@ export function RestOverTitle() {
           Rest time is{' '}
         </Text>
         <GradientText
-          colors={
-            [theme.colors.accent.primary, '#818cf8'] as readonly [string, string, ...string[]]
-          }
+          colors={theme.colors.gradients.restOverTitle}
           style={{
-            fontSize: 36,
-            fontWeight: '800',
+            fontSize: theme.typography.fontSize['4xl'],
+            fontWeight: theme.typography.fontWeight.extrabold,
             letterSpacing: -0.5,
           }}>
           over!

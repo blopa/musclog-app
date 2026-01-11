@@ -22,7 +22,7 @@ export function Slider({
   min,
   max,
   onChange,
-  trackColor = 'rgba(255, 255, 255, 0.1)',
+  trackColor = theme.colors.background.white10,
   thumbColor = theme.colors.background.white,
   useGradient = true,
   gradientColors = theme.colors.gradients.progress,
@@ -43,7 +43,7 @@ export function Slider({
   };
 
   // Math for gradient variant only
-  const thumbRadius = 12;
+  const thumbRadius = theme.spacing.padding.md;
   const progress = (displayValue - min) / (max - min);
   const effectiveTrackWidth = Math.max(0, containerWidth - thumbRadius * 2);
   const fillWidth = thumbRadius + effectiveTrackWidth * progress;
@@ -77,7 +77,7 @@ export function Slider({
       <SliderComponent
         style={{
           width: '100%',
-          height: 40,
+          height: theme.size['10'],
           zIndex: variant === 'gradient' ? 1 : 0,
         }}
         value={value}

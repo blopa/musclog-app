@@ -55,7 +55,7 @@ export function ServingSizeSelector({
                 className="bg-transparent p-0 text-center text-4xl font-black text-text-primary"
                 style={{
                   color: theme.colors.text.primary,
-                  width: 120,
+                  width: theme.size['30'],
                   maxWidth: '100%',
                 }}
                 value={String(value)}

@@ -1,18 +1,19 @@
 import React from 'react';
 import { Text } from 'react-native';
 import { GradientText } from './GradientText';
+import { theme } from '../theme';
 
 export function WorkoutSummaryHeader() {
   return (
     <>
       <GradientText
-        colors={['#c7d2fe', '#ffffff', '#a7f3d0']}
+        colors={theme.colors.gradients.celebrationGlow}
         style={{
-          fontSize: 36,
-          fontWeight: '800',
+          fontSize: theme.typography.fontSize['4xl'],
+          fontWeight: theme.typography.fontWeight.extrabold,
           textAlign: 'center',
           letterSpacing: -0.5,
-          marginBottom: 8,
+          marginBottom: theme.spacing.padding.sm,
         }}>
         You Crushed It!
       </GradientText>

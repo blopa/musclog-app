@@ -34,7 +34,7 @@ export function ChatWorkoutCard({
       <View className="relative h-32">
         <Image source={image} className="h-full w-full" resizeMode="cover" />
         <LinearGradient
-          colors={['transparent', 'rgba(0, 0, 0, 0.8)']}
+          colors={['transparent', theme.colors.background.black80]}
           style={{
             position: 'absolute',
             top: 0,

@@ -26,10 +26,10 @@ export function SettingsCard({
           alignItems: 'center',
           justifyContent: 'space-between',
           backgroundColor: theme.colors.background.overlay,
-          borderRadius: 16,
-          marginHorizontal: 16,
-          marginBottom: 8,
-          padding: 16,
+          borderRadius: theme.borderRadius.lg,
+          marginHorizontal: theme.spacing.padding.base,
+          marginBottom: theme.spacing.padding.sm,
+          padding: theme.spacing.padding.base,
           shadowColor: theme.colors.accent.primary,
           shadowOpacity: 0.03,
           shadowRadius: 2,
@@ -42,9 +42,9 @@ export function SettingsCard({
         <View
           style={[
             {
-              width: 48,
-              height: 48,
-              borderRadius: 24,
+              width: theme.size['12'],
+              height: theme.size['12'],
+              borderRadius: theme.borderRadius['2xl'],
               backgroundColor: theme.colors.background.iconDark,
               alignItems: 'center',
               justifyContent: 'center',
@@ -56,13 +56,18 @@ export function SettingsCard({
         <View>
           <Text
             style={{
-              fontSize: 16,
-              fontWeight: 'bold',
+              fontSize: theme.typography.fontSize.base,
+              fontWeight: theme.typography.fontWeight.bold,
               color: titleColor || theme.colors.text.primary,
             }}>
             {title}
           </Text>
-          <Text style={{ fontSize: 13, color: theme.colors.text.secondary, marginTop: 2 }}>
+          <Text
+            style={{
+              fontSize: theme.typography.fontSize.sm,
+              color: theme.colors.text.secondary,
+              marginTop: theme.spacing.padding.xs / 2,
+            }}>
             {subtitle}
           </Text>
         </View>

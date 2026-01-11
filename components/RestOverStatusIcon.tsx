@@ -29,7 +29,7 @@ export function RestOverStatusIcon() {
       <Animated.View
         className="absolute inset-0 rounded-full"
         style={{
-          backgroundColor: 'rgba(41, 224, 142, 0.2)',
+          backgroundColor: theme.colors.status.emerald20,
           transform: [{ scale: glowAnim }],
         }}
       />
@@ -37,14 +37,18 @@ export function RestOverStatusIcon() {
         className="relative z-10 h-24 w-24 items-center justify-center rounded-full border"
         style={{
           backgroundColor: theme.colors.background.cardDark,
-          borderColor: 'rgba(41, 224, 142, 0.2)',
+          borderColor: theme.colors.status.emerald20,
           shadowColor: theme.colors.accent.primary,
           shadowOffset: { width: 0, height: 0 },
           shadowOpacity: 0.3,
           shadowRadius: 20,
           elevation: 10,
         }}>
-        <Dumbbell size={48} color={theme.colors.accent.primary} strokeWidth={1.5} />
+        <Dumbbell
+          size={theme.iconSize['5xl']}
+          color={theme.colors.accent.primary}
+          strokeWidth={theme.strokeWidth.normal}
+        />
       </View>
       {/* Red Alert Badge */}
       <View
@@ -53,7 +57,11 @@ export function RestOverStatusIcon() {
           backgroundColor: theme.colors.status.error,
           borderColor: theme.colors.background.primary,
         }}>
-        <AlertCircle size={16} color={theme.colors.text.white} strokeWidth={3} />
+        <AlertCircle
+          size={theme.iconSize.sm}
+          color={theme.colors.text.white}
+          strokeWidth={theme.borderWidth.thick}
+        />
       </View>
     </View>
   );
