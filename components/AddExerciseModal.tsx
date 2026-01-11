@@ -218,27 +218,9 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
                 onDecrement={() => setWeight((prev) => (parseFloat(prev) - 2.5).toString())}
               />
             </View>
-
-            {/* Extra Weight */}
-            <View className="gap-2">
-              <View className="flex-row items-center gap-1.5">
-                <Text
-                  style={{
-                    fontSize: theme.typography.fontSize.xs,
-                    fontWeight: theme.typography.fontWeight.bold,
-                    color: theme.colors.text.tertiary,
-                    textTransform: 'uppercase',
-                  }}>
-                  Extra Weight
-                </Text>
-                <Lock size={12} color={theme.colors.text.tertiary} />
-              </View>
-              <View className="h-14 items-center justify-center rounded-xl bg-bg-cardDark opacity-50">
-                <Text className="text-xl font-black text-text-tertiary">{extraWeight}</Text>
-              </View>
-            </View>
           </View>
         </View>
+        <View style={{ height: 24 }} />
 
         <Button
           label="Add to Workout"
