@@ -232,9 +232,7 @@ function SortableItem<T extends string | number>({
                 borderColor: selected ? theme.colors.accent.primary : theme.colors.border.light,
                 backgroundColor: isDragging
                   ? theme.colors.background.cardElevated
-                  : selected
-                    ? theme.colors.accent.primary10
-                    : theme.colors.background.card,
+                  : theme.colors.background.card,
                 transform: [{ scale: pressed && !isDragging ? 0.98 : 1 }],
                 ...(selected ? theme.shadows.accentGlow : {}),
               }}>
@@ -414,9 +412,7 @@ export function OptionsMultiSelector<T extends string | number>({
                 borderRadius: theme.borderRadius.md,
                 borderWidth: theme.borderWidth.thin,
                 borderColor: selected ? theme.colors.accent.primary : theme.colors.border.light,
-                backgroundColor: selected
-                  ? theme.colors.accent.primary10
-                  : theme.colors.background.card,
+                backgroundColor: theme.colors.background.card,
                 transform: [{ scale: pressed ? 0.98 : 1 }],
                 ...(selected ? theme.shadows.accentGlow : {}),
               }}>

@@ -57,9 +57,7 @@ export function OptionsSelector<T extends string | number>({
                     borderColor: isSelected
                       ? theme.colors.accent.primary
                       : theme.colors.border.light,
-                    backgroundColor: isSelected
-                      ? theme.colors.accent.primary10
-                      : theme.colors.background.card,
+                    backgroundColor: theme.colors.background.card,
                     transform: [{ scale: pressed ? 0.98 : 1 }],
                     ...(isSelected ? theme.shadows.accentGlow : {}),
                   }}>
