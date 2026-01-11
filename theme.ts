@@ -37,6 +37,7 @@ export const theme = {
       black15: 'rgba(0, 0, 0, 0.15)', // Black with 15% opacity
       black20: 'rgba(0, 0, 0, 0.2)', // Black with 20% opacity
       black80: 'rgba(0, 0, 0, 0.8)', // Black with 80% opacity
+      aiCardBackground: '#15261f', // Dark green for AI card background
       snackbarSuccess: '#0d3520', // Success snackbar background
       snackbarError: '#3d1515', // Error snackbar background
       buttonCard: '#1a3530', // Button/card background
