@@ -7,6 +7,66 @@ import { theme } from '../theme';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Button } from '../components/theme/Button';
 
+// Reusable card for settings
+function SettingsCard({
+  icon,
+  title,
+  subtitle,
+  onPress,
+  rightIcon,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  subtitle: string;
+  onPress: () => void;
+  rightIcon?: React.ReactNode;
+}) {
+  return (
+    <Pressable
+      style={({ pressed }) => [
+        {
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          backgroundColor: theme.colors.background.overlay,
+          borderRadius: 16,
+          marginHorizontal: 16,
+          marginBottom: 8,
+          padding: 16,
+          shadowColor: '#000',
+          shadowOpacity: 0.03,
+          shadowRadius: 2,
+          shadowOffset: { width: 0, height: 1 },
+          transform: [{ scale: pressed ? 0.99 : 1 }],
+        },
+      ]}
+      onPress={onPress}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
+        <View
+          style={{
+            width: 48,
+            height: 48,
+            borderRadius: 24,
+            backgroundColor: theme.colors.background.iconDark,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+          {icon}
+        </View>
+        <View>
+          <Text style={{ fontSize: 16, fontWeight: 'bold', color: theme.colors.text.primary }}>
+            {title}
+          </Text>
+          <Text style={{ fontSize: 13, color: theme.colors.text.secondary, marginTop: 2 }}>
+            {subtitle}
+          </Text>
+        </View>
+      </View>
+      {rightIcon}
+    </Pressable>
+  );
+}
+
 export default function SettingsScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
@@ -96,95 +156,25 @@ export default function SettingsScreen() {
           Configuration
         </Text>
 
-        {/* TODO: create a separate component for these cards, let's call it SettingsCard and change the background color to be like the one on RecentWorkoutsCard */}
-        {/* Basic Settings Card */}
-        <Pressable
-          style={({ pressed }) => [
-            {
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              backgroundColor: theme.colors.background.card,
-              borderRadius: 16,
-              marginHorizontal: 16,
-              marginBottom: 8,
-              padding: 16,
-              shadowColor: '#000',
-              shadowOpacity: 0.03,
-              shadowRadius: 2,
-              shadowOffset: { width: 0, height: 1 },
-              transform: [{ scale: pressed ? 0.99 : 1 }],
-            },
-          ]}
-          onPress={() => router.push('/settings/basic')}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
-            <View
-              style={{
-                width: 48,
-                height: 48,
-                borderRadius: 24,
-                backgroundColor: theme.colors.background.imageLight,
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-              <MaterialIcons name="settings" size={28} color={theme.colors.accent.primary} />
-            </View>
-            <View>
-              <Text style={{ fontSize: 16, fontWeight: 'bold', color: theme.colors.text.primary }}>
-                Basic Settings
-              </Text>
-              <Text style={{ fontSize: 13, color: theme.colors.text.secondary, marginTop: 2 }}>
-                Profile, units, and preferences
-              </Text>
-            </View>
-          </View>
-          <MaterialIcons name="chevron-right" size={24} color={theme.colors.text.secondary} />
-        </Pressable>
+        <SettingsCard
+          icon={<MaterialIcons name="settings" size={28} color={theme.colors.accent.primary} />}
+          title="Basic Settings"
+          subtitle="Profile, units, and preferences"
+          onPress={() => router.push('/settings/basic')}
+          rightIcon={
+            <MaterialIcons name="chevron-right" size={24} color={theme.colors.text.secondary} />
+          }
+        />
 
-        {/* Advanced Settings Card */}
-        <Pressable
-          style={({ pressed }) => [
-            {
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              backgroundColor: theme.colors.background.card,
-              borderRadius: 16,
-              marginHorizontal: 16,
-              marginBottom: 8,
-              padding: 16,
-              shadowColor: '#000',
-              shadowOpacity: 0.03,
-              shadowRadius: 2,
-              shadowOffset: { width: 0, height: 1 },
-              transform: [{ scale: pressed ? 0.99 : 1 }],
-            },
-          ]}
+        <SettingsCard
+          icon={<MaterialIcons name="tune" size={28} color={theme.colors.accent.primary} />}
+          title="Advanced Settings"
+          subtitle="Data export, integrations, cache"
           onPress={() => router.push('/settings/advanced')}
-        >
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
-            <View
-              style={{
-                width: 48,
-                height: 48,
-                borderRadius: 24,
-                backgroundColor: theme.colors.background.imageLight,
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-              <MaterialIcons name="tune" size={28} color={theme.colors.accent.primary} />
-            </View>
-            <View>
-              <Text style={{ fontSize: 16, fontWeight: 'bold', color: theme.colors.text.primary }}>
-                Advanced Settings
-              </Text>
-              <Text style={{ fontSize: 13, color: theme.colors.text.secondary, marginTop: 2 }}>
-                Data export, integrations, cache
-              </Text>
-            </View>
-          </View>
-          <MaterialIcons name="chevron-right" size={24} color={theme.colors.text.secondary} />
-        </Pressable>
+          rightIcon={
+            <MaterialIcons name="chevron-right" size={24} color={theme.colors.text.secondary} />
+          }
+        />
 
         {/* Divider */}
         <View
@@ -302,13 +292,7 @@ export default function SettingsScreen() {
         </View>
 
         <View style={{ marginHorizontal: 16, marginTop: 12 }}>
-          <Button
-            label="Sign Out"
-            variant="discard"
-            width="full"
-            size="sm"
-            onPress={() => {}}
-          />
+          <Button label="Sign Out" variant="discard" width="full" size="sm" onPress={() => {}} />
         </View>
 
         {/* Spacer for bottom nav */}
