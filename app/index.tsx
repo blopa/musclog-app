@@ -285,8 +285,9 @@ export default function HomeScreen() {
         onProfilePress={() => router.push('/profile')}
         onSettingsPress={() => router.push('/settings')}
         onProgressPress={() => router.push('/progress')}
-        // TODO: only show in dev mode
-        onDebugMenuPress={() => router.push('/test/database')}
+        {...(__DEV__ && {
+          onDebugMenuPress: () => router.push('/test/database'),
+        })}
       />
 
       {/* Notifications Modal */}
