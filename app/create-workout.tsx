@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../theme';
 import { Button } from '../components/theme/Button';
 import { SegmentedControl } from '../components/theme/SegmentedControl';
+import { OptionsMultiSelector } from '../components/OptionsMultiSelector';
 import { LinearGradient } from 'expo-linear-gradient';
 import { WeekdayPicker } from '../components/theme/WeekdayPicker';
 
@@ -18,6 +19,35 @@ export default function CreateWorkoutScreen() {
   const [focusedField, setFocusedField] = useState<string | null>(null);
 
   const days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+
+  const [selectedExercises, setSelectedExercises] = useState<string[]>(['squat']);
+
+  const mockExercises = [
+    {
+      id: 'squat',
+      label: 'Barbell Back Squat',
+      description: '4 sets × 6–8 reps',
+      icon: PlusSquare,
+      iconBgColor: theme.colors.accent.primary10,
+      iconColor: theme.colors.accent.primary,
+    },
+    {
+      id: 'bench',
+      label: 'Barbell Bench Press',
+      description: '4 sets × 6–8 reps',
+      icon: PlusSquare,
+      iconBgColor: theme.colors.status.indigo10,
+      iconColor: theme.colors.status.indigo,
+    },
+    {
+      id: 'deadlift',
+      label: 'Romanian Deadlift',
+      description: '3 sets × 8–10 reps',
+      icon: PlusSquare,
+      iconBgColor: theme.colors.status.purple + '11',
+      iconColor: theme.colors.status.purple,
+    },
+  ];
 
   const toggleDay = (index: number) => {
     if (selectedDays.includes(index)) {
@@ -345,6 +375,38 @@ export default function CreateWorkoutScreen() {
             </View>
 
             <WeekdayPicker days={days} selectedDays={selectedDays} onToggleDay={toggleDay} />
+          </View>
+        </View>
+
+        {/* Exercises Section */}
+        <View style={{ marginBottom: theme.spacing.gap.xl }}>
+          <Text
+            style={{
+              fontSize: theme.typography.fontSize.sm,
+              fontWeight: theme.typography.fontWeight.bold,
+              color: theme.colors.text.secondary,
+              textTransform: 'uppercase',
+              letterSpacing: 1.2,
+              marginBottom: theme.spacing.padding.md,
+              marginLeft: 4,
+            }}>
+            Exercises
+          </Text>
+
+          <View
+            style={{
+              backgroundColor: theme.colors.background.card,
+              borderRadius: theme.borderRadius.lg,
+              padding: theme.spacing.padding.base,
+              borderWidth: theme.borderWidth.thin,
+              borderColor: theme.colors.border.light,
+            }}>
+            <OptionsMultiSelector
+              title="Exercises in the workout"
+              options={mockExercises}
+              selectedIds={selectedExercises}
+              onChange={(ids) => setSelectedExercises(ids)}
+            />
           </View>
         </View>
       </ScrollView>
