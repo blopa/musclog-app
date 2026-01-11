@@ -57,69 +57,6 @@ function getGroupPosition<T extends string | number>(
   return 'middle';
 }
 
-// Helper to reorder with group support - when one item moves, pull its group members along
-function reorderWithGroups<T extends string | number>(
-  options: SelectorOption<T>[],
-  movedItemId: T,
-  newIndex: number
-): SelectorOption<T>[] {
-  const movedItem = options.find((o) => o.id === movedItemId);
-  if (!movedItem) return options;
-
-  // If the moved item has no group, just do a simple move
-  if (!movedItem.groupId) {
-    const oldIndex = options.findIndex((o) => o.id === movedItemId);
-    const result = [...options];
-    const [removed] = result.splice(oldIndex, 1);
-    result.splice(newIndex > oldIndex ? newIndex : newIndex, 0, removed);
-    return result;
-  }
-
-  // Get all items in the same group
-  const groupId = movedItem.groupId;
-  const groupItems = options.filter((o) => o.groupId === groupId);
-  const nonGroupItems = options.filter((o) => o.groupId !== groupId);
-
-  // Find where to insert the group
-  // We need to find the correct position in the non-group items array
-  const targetItem = options[newIndex];
-  let insertIndex: number;
-
-  if (targetItem && targetItem.groupId !== groupId) {
-    // Find position of target in non-group items
-    insertIndex = nonGroupItems.findIndex((o) => o.id === targetItem.id);
-    if (insertIndex === -1) {
-      insertIndex = nonGroupItems.length;
-    } else {
-      // If dragging to the last position and target is not in group, insert after it
-      if (newIndex === options.length - 1) {
-        insertIndex = insertIndex + 1;
-      }
-    }
-  } else {
-    // Target is in the same group or doesn't exist (newIndex is beyond array length)
-    // Count how many non-group items come before newIndex
-    let count = 0;
-    for (let i = 0; i < newIndex && i < options.length; i++) {
-      if (options[i].groupId !== groupId) {
-        count++;
-      }
-    }
-    // If newIndex is at or beyond the end, insert at the end of non-group items
-    if (newIndex >= options.length) {
-      insertIndex = nonGroupItems.length;
-    } else {
-      insertIndex = count;
-    }
-  }
-
-  // Insert group items at the calculated position
-  const result = [...nonGroupItems];
-  result.splice(insertIndex, 0, ...groupItems);
-
-  return result;
-}
-
 export type SelectorOption<T extends string | number> = {
   id: T;
   label: string;
