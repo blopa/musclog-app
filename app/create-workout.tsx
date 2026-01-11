@@ -43,6 +43,15 @@ export default function CreateWorkoutScreen() {
       groupId: 'compound-lifts', // Grouped with squat
     },
     {
+      id: 'leg-extension',
+      label: 'Leg Extension',
+      description: '3 sets × 12–15 reps',
+      icon: PlusSquare,
+      iconBgColor: theme.colors.status.indigo10,
+      iconColor: theme.colors.status.indigo,
+      groupId: 'compound-lifts', // Grouped with squat
+    },
+    {
       id: 'deadlift',
       label: 'Romanian Deadlift',
       description: '3 sets × 8–10 reps',
