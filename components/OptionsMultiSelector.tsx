@@ -17,6 +17,7 @@ type OptionsMultiSelectorProps<T extends string | number> = {
   options: SelectorOption<T>[];
   selectedIds?: T[];
   onChange: (ids: T[]) => void;
+  isEditable?: boolean;
 };
 
 export function OptionsMultiSelector<T extends string | number>({
@@ -24,6 +25,7 @@ export function OptionsMultiSelector<T extends string | number>({
   options,
   selectedIds = [],
   onChange,
+  isEditable = false, // TODO: implement this
 }: OptionsMultiSelectorProps<T>) {
   const isSelected = (id: T) => selectedIds.includes(id);
 
