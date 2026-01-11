@@ -15,6 +15,7 @@ const APP_SCREENS = [
   { name: 'Profile', route: '/profile', category: 'Main' },
   { name: 'Workout Session', route: '/workout-session', category: 'Workout' },
   { name: 'Workout Summary', route: '/workout-summary', category: 'Workout' },
+  { name: 'Create Workout', route: '/create-workout', category: 'Workout' },
   { name: 'Rest Timer', route: '/rest-timer', category: 'Workout' },
   { name: 'Rest Over', route: '/rest-over', category: 'Workout' },
   { name: 'Test: Buttons', route: '/test/buttons', category: 'Test' },
