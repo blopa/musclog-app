@@ -20,7 +20,7 @@ export default function CreateWorkoutScreen() {
 
   const days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
-  const [selectedExercises, setSelectedExercises] = useState<string[]>(['squat']);
+  const [selectedExercises, setSelectedExercises] = useState<string[]>([]);
 
   const mockExercises = [
     {
