@@ -127,4 +127,3 @@ export function OptionsSelector<T extends string | number>({
     </View>
   );
 }
-

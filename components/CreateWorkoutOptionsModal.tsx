@@ -145,7 +145,7 @@ export function CreateWorkoutOptionsModal({
               color: theme.colors.text.white,
               lineHeight: 36,
             }}>
-            Let's crush a
+            {"Let's crush a"}
           </Text>
           <GradientText
             colors={theme.colors.gradients.cta}
@@ -367,4 +367,3 @@ export function CreateWorkoutOptionsModal({
     </FullScreenModal>
   );
 }
-

@@ -17,6 +17,7 @@ import { WorkoutOptionsModal } from '../../components/WorkoutOptionsModal';
 import { ReplaceExerciseModal } from '../../components/ReplaceExerciseModal';
 import { WorkoutHistoryModal } from '../../components/WorkoutHistoryModal';
 import { DatePickerModal } from '../../components/DatePickerModal';
+import { CreateWorkoutOptionsModal } from '../../components/CreateWorkoutOptionsModal';
 import { WorkoutSummaryCelebration } from '../../components/WorkoutSummaryCelebration';
 import { EditPersonalInfoModal } from '../../components/EditPersonalInfoModal';
 import { EditFitnessDetailsModal } from '../../components/EditFitnessDetailsModal';
@@ -81,6 +82,9 @@ export default function ModalsTestScreen() {
 
   // Workout Options Modal
   const [isWorkoutOptionsVisible, setIsWorkoutOptionsVisible] = useState(false);
+
+  // Create Workout Options Modal
+  const [isCreateWorkoutOptionsVisible, setIsCreateWorkoutOptionsVisible] = useState(false);
 
   // Replace Exercise Modal
   const [isReplaceExerciseVisible, setIsReplaceExerciseVisible] = useState(false);
@@ -399,6 +403,13 @@ export default function ModalsTestScreen() {
               width="full"
               onPress={() => setIsWorkoutOptionsVisible(true)}
             />
+            <View className="h-3" />
+            <Button
+              label="Open Create Workout Options"
+              variant="outline"
+              width="full"
+              onPress={() => setIsCreateWorkoutOptionsVisible(true)}
+            />
           </View>
 
           {/* Replace Exercise Modal */}
@@ -665,6 +676,23 @@ export default function ModalsTestScreen() {
         }}
         onEndWorkout={() => {
           console.log('End workout');
+        }}
+      />
+
+      <CreateWorkoutOptionsModal
+        visible={isCreateWorkoutOptionsVisible}
+        onClose={() => setIsCreateWorkoutOptionsVisible(false)}
+        onGenerateWithAi={() => {
+          console.log('Generate with AI pressed');
+          setIsCreateWorkoutOptionsVisible(false);
+        }}
+        onCreateEmptyTemplate={() => {
+          console.log('Create empty template pressed');
+          setIsCreateWorkoutOptionsVisible(false);
+        }}
+        onBrowseTemplates={() => {
+          console.log('Browse templates pressed');
+          setIsCreateWorkoutOptionsVisible(false);
         }}
       />
 
