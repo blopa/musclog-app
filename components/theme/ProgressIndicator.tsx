@@ -54,9 +54,9 @@ export function ProgressIndicator({
                 position: 'absolute',
                 top: theme.borderWidth.thick6,
                 left: theme.borderWidth.thick6,
-                width: theme.size['15'],
-                height: theme.size['15'],
-                borderRadius: theme.size['15'] / 2,
+                width: theme.size['14'],
+                height: theme.size['14'],
+                borderRadius: theme.size['14'] / 2,
                 borderWidth: theme.borderWidth.thick6,
                 borderColor: theme.colors.accent.primary,
                 transform: [{ rotate: '45deg' }],
@@ -64,7 +64,8 @@ export function ProgressIndicator({
               }}
             />
             <ActivityIndicator
-              size={size}
+              // ActivityIndicator accepts 'small' | 'large' | number
+              size={size === 'large' ? 'large' : 'small'}
               color={theme.colors.accent.primary}
               style={{ transform: [{ scale: size === 'large' ? 1.4 : 1 }] }}
             />

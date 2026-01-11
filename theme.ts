@@ -78,6 +78,7 @@ export const theme = {
       },
       // Accent colors with opacity
       primary10: 'rgba(34, 197, 94, 0.1)', // Primary with 10% opacity
+      primary30: 'rgba(34, 197, 94, 0.3)', // Primary with 30% opacity
       primary20: 'rgba(34, 197, 94, 0.2)', // Primary with 20% opacity
       primary40: 'rgba(34, 197, 94, 0.4)', // Primary with 40% opacity
       primary5: 'rgba(34, 197, 94, 0.05)', // Primary with 5% opacity
