@@ -23,6 +23,7 @@ import { EditFitnessDetailsModal } from '../../components/EditFitnessDetailsModa
 import { MainSettingsModal } from '../../components/MainSettingsModal';
 import { BasicSettingsModal } from '../../components/BasicSettingsModal';
 import { AdvancedSettingsModal } from '../../components/AdvancedSettingsModal';
+import { AISettingsModal } from '../../components/AISettingsModal';
 
 export default function ModalsTestScreen() {
   // Nutrition Goals Modal
@@ -51,6 +52,8 @@ export default function ModalsTestScreen() {
   const [isUserMenuVisible, setIsUserMenuVisible] = useState(false);
   // Advanced Settings Modal
   const [isAdvancedSettingsVisible, setIsAdvancedSettingsVisible] = useState(false);
+  // AI Settings Modal
+  const [isAiSettingsVisible, setIsAiSettingsVisible] = useState(false);
 
   // Session Feedback Modal
   const [isSessionFeedbackVisible, setIsSessionFeedbackVisible] = useState(false);
@@ -162,6 +165,20 @@ export default function ModalsTestScreen() {
               variant="accent"
               width="full"
               onPress={() => setIsAdvancedSettingsVisible(true)}
+            />
+          </View>
+
+          {/* AI Settings Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">AI Settings Modal</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Configure AI integrations like Google Gemini and OpenAI.
+            </Text>
+            <Button
+              label="Open AI Settings Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsAiSettingsVisible(true)}
             />
           </View>
 
@@ -674,6 +691,14 @@ export default function ModalsTestScreen() {
         totalTime="45m"
         volume="12,450 kg"
         personalRecords={2}
+      />
+
+      <AISettingsModal
+        visible={isAiSettingsVisible}
+        onClose={() => setIsAiSettingsVisible(false)}
+        onConnectGoogleAccount={() => console.log('Connect Google pressed')}
+        onGetOpenAiKeyPress={() => console.log('Get OpenAI Key pressed')}
+        onOpenAiModelPress={() => console.log('OpenAI model pressed')}
       />
     </SafeAreaView>
   );

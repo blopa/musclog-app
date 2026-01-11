@@ -269,60 +269,13 @@ export function AISettingsModal({
                   justifyContent: 'space-between',
                   marginBottom: 8,
                 }}>
-                <Text
-                  style={{
-                    fontSize: 12,
-                    fontWeight: '500',
-                    textTransform: 'uppercase',
-                    letterSpacing: 0.5,
-                    color: theme.colors.text.secondary,
-                  }}>
-                  OPENAI API KEY
-                </Text>
-                <Pressable onPress={onGetOpenAiKeyPress}>
-                  <Text
-                    style={{
-                      fontSize: 10,
-                      color: theme.colors.accent.primary,
-                      textDecorationLine: 'underline',
-                    }}>
-                    Get Key
-                  </Text>
-                </Pressable>
               </View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  backgroundColor: theme.colors.background.cardDark,
-                  borderRadius: 12,
-                  borderWidth: 1,
-                  borderColor: theme.colors.border.light,
-                  paddingLeft: 12,
-                  paddingRight: 12,
-                  height: 56,
-                }}>
-                <Key size={18} color={theme.colors.text.tertiary} style={{ marginRight: 12 }} />
-                <RNTextInput
-                  style={{
-                    flex: 1,
-                    color: theme.colors.text.primary,
-                    fontSize: 14,
-                  }}
-                  value={openAiApiKey}
-                  onChangeText={onOpenAiApiKeyChange || (() => {})}
-                  placeholder="sk-..."
-                  placeholderTextColor={theme.colors.text.tertiary}
-                  secureTextEntry={!openAiKeyVisible}
-                />
-                <Pressable onPress={() => setOpenAiKeyVisible(!openAiKeyVisible)}>
-                  {openAiKeyVisible ? (
-                    <Eye size={18} color={theme.colors.text.secondary} />
-                  ) : (
-                    <EyeOff size={18} color={theme.colors.text.secondary} />
-                  )}
-                </Pressable>
-              </View>
+              <SecretInput
+                label="OPENAI API KEY"
+                value={openAiApiKey}
+                onChangeText={onOpenAiApiKeyChange || (() => {})}
+                placeholder="Paste your API key here"
+              />
             </View>
 
             {/* Model Selector */}
