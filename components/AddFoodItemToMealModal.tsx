@@ -71,7 +71,13 @@ type FoodResultCardProps = {
   onAmountChange: (value: string) => void;
 };
 
-function FoodResultCard({ food, isSelected, amount, onToggle, onAmountChange }: FoodResultCardProps) {
+function FoodResultCard({
+  food,
+  isSelected,
+  amount,
+  onToggle,
+  onAmountChange,
+}: FoodResultCardProps) {
   const calories = Math.round((food.caloriesPer100g * (parseInt(amount) || 0)) / 100);
 
   return (
@@ -80,16 +86,16 @@ function FoodResultCard({ food, isSelected, amount, onToggle, onAmountChange }: 
         backgroundColor: theme.colors.background.card,
         borderRadius: theme.borderRadius.md,
         padding: 12,
-        borderWidth: theme.borderWidth.thin,
+        borderWidth: isSelected ? 1 : theme.borderWidth.thin,
         borderColor: isSelected ? theme.colors.accent.primary : theme.colors.border.light,
         shadowColor: isSelected ? theme.colors.accent.primary : 'transparent',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: isSelected ? 0.4 : 0,
+        shadowRadius: isSelected ? 8 : 0,
         elevation: isSelected ? 3 : 0,
       }}>
       <Pressable onPress={onToggle} style={{ flexDirection: 'row', gap: 12 }}>
-        <View style={{ paddingTop: 2 }}>
+        <View style={{ paddingTop: 4 }}>
           <View
             style={{
               width: 24,
@@ -97,47 +103,87 @@ function FoodResultCard({ food, isSelected, amount, onToggle, onAmountChange }: 
               borderRadius: 12,
               backgroundColor: isSelected ? theme.colors.accent.primary : 'transparent',
               borderWidth: isSelected ? 0 : 2,
-              borderColor: theme.colors.border.light,
+              borderColor: theme.colors.text.tertiary,
               alignItems: 'center',
               justifyContent: 'center',
+              shadowColor: isSelected ? theme.colors.accent.primary : 'transparent',
+              shadowOffset: { width: 0, height: 0 },
+              shadowOpacity: 0.3,
+              shadowRadius: 4,
             }}>
             {isSelected && <Check size={16} color={theme.colors.text.black} strokeWidth={3} />}
           </View>
         </View>
 
-        <View style={{ flex: 1 }}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <View style={{ flex: 1, minWidth: 0 }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'flex-start',
+              gap: 8,
+            }}>
             <Text
               style={{
                 fontSize: theme.typography.fontSize.base,
-                fontWeight: isSelected ? '700' : '500',
+                fontWeight: isSelected
+                  ? theme.typography.fontWeight.bold
+                  : theme.typography.fontWeight.medium,
                 color: theme.colors.text.primary,
                 flex: 1,
               }}>
               {food.name}
             </Text>
-            <Text
+            <View
               style={{
-                fontSize: 12,
-                fontWeight: '700',
-                color: isSelected ? theme.colors.accent.primary : theme.colors.text.secondary,
-                backgroundColor: isSelected ? theme.colors.accent.primary10 : theme.colors.background.white5,
+                backgroundColor: isSelected
+                  ? theme.colors.accent.primary10
+                  : theme.colors.background.white5,
                 paddingHorizontal: 8,
-                paddingVertical: 2,
-                borderRadius: 10,
+                paddingVertical: 4,
+                borderRadius: 12,
               }}>
-              {isSelected ? `${calories} kcal` : `${food.caloriesPer100g} kcal`}
-            </Text>
+              <Text
+                style={{
+                  fontSize: 12,
+                  fontWeight: theme.typography.fontWeight.bold,
+                  color: isSelected ? theme.colors.accent.primary : theme.colors.text.secondary,
+                }}>
+                {isSelected ? `${calories} kcal` : `${food.caloriesPer100g} kcal`}
+              </Text>
+            </View>
           </View>
 
-          <Text style={{ fontSize: 12, color: theme.colors.text.tertiary, marginTop: 2 }}>
+          <Text style={{ fontSize: 12, color: theme.colors.text.tertiary, marginTop: 4 }}>
             {food.description}
           </Text>
 
-          <View style={{ flexDirection: 'row', gap: 8, marginTop: 8 }}>
-            <MacroBadge label="P" value={`${food.protein}g`} />
-            <MacroBadge label="C" value={`${food.carbs}g`} />
-            <MacroBadge label="F" value={`${food.fat}g`} />
+          <View
+            style={{ flexDirection: 'row', gap: 8, marginTop: 8, opacity: isSelected ? 1 : 0.7 }}>
+            <Text
+              style={{
+                fontSize: 10,
+                color: theme.colors.text.tertiary,
+                fontWeight: theme.typography.fontWeight.medium,
+              }}>
+              P: {food.protein}g
+            </Text>
+            <Text
+              style={{
+                fontSize: 10,
+                color: theme.colors.text.tertiary,
+                fontWeight: theme.typography.fontWeight.medium,
+              }}>
+              C: {food.carbs}g
+            </Text>
+            <Text
+              style={{
+                fontSize: 10,
+                color: theme.colors.text.tertiary,
+                fontWeight: theme.typography.fontWeight.medium,
+              }}>
+              F: {food.fat}g
+            </Text>
           </View>
         </View>
       </Pressable>
@@ -154,52 +200,49 @@ function FoodResultCard({ food, isSelected, amount, onToggle, onAmountChange }: 
             alignItems: 'center',
             justifyContent: 'space-between',
           }}>
-          <Text style={{ fontSize: 12, fontWeight: '500', color: theme.colors.text.secondary }}>
+          <Text
+            style={{
+              fontSize: 12,
+              fontWeight: theme.typography.fontWeight.medium,
+              color: theme.colors.text.secondary,
+            }}>
             Amount
           </Text>
           <View
             style={{
               flexDirection: 'row',
               alignItems: 'center',
-              backgroundColor: 'rgba(0,0,0,0.2)',
+              backgroundColor: theme.colors.background.cardDark,
               borderRadius: 8,
               paddingHorizontal: 8,
               height: 36,
               borderWidth: 1,
-              borderColor: theme.colors.border.light,
+              borderColor: 'transparent',
             }}>
             <TextInput
               value={amount}
               onChangeText={onAmountChange}
               keyboardType="numeric"
               style={{
-                width: 40,
+                width: 48,
                 textAlign: 'center',
                 color: theme.colors.text.primary,
-                fontWeight: '700',
+                fontWeight: theme.typography.fontWeight.bold,
                 fontSize: 14,
               }}
             />
-            <Text style={{ fontSize: 12, color: theme.colors.text.tertiary, marginLeft: 2 }}>g</Text>
+            <Text
+              style={{
+                fontSize: 12,
+                color: theme.colors.text.tertiary,
+                paddingRight: 4,
+                fontWeight: theme.typography.fontWeight.medium,
+              }}>
+              g
+            </Text>
           </View>
         </View>
       )}
-    </View>
-  );
-}
-
-function MacroBadge({ label, value }: { label: string; value: string }) {
-  return (
-    <View
-      style={{
-        backgroundColor: theme.colors.background.white5,
-        paddingHorizontal: 6,
-        paddingVertical: 2,
-        borderRadius: 4,
-      }}>
-      <Text style={{ fontSize: 10, color: theme.colors.text.tertiary, fontWeight: '500' }}>
-        {label}: {value}
-      </Text>
     </View>
   );
 }
@@ -210,9 +253,15 @@ type AddFoodItemToMealModalProps = {
   onAddFoods?: (foods: { food: FoodResult; amount: number }[]) => void;
 };
 
-export function AddFoodItemToMealModal({ visible, onClose, onAddFoods }: AddFoodItemToMealModalProps) {
+export function AddFoodItemToMealModal({
+  visible,
+  onClose,
+  onAddFoods,
+}: AddFoodItemToMealModalProps) {
   const [searchQuery, setSearchQuery] = useState('Chicken');
-  const [selectedItems, setSelectedItems] = useState<Record<string, { selected: boolean; amount: string }>>({
+  const [selectedItems, setSelectedItems] = useState<
+    Record<string, { selected: boolean; amount: string }>
+  >({
     '1': { selected: true, amount: '200' },
     '3': { selected: true, amount: '150' },
   });
@@ -348,4 +397,3 @@ export function AddFoodItemToMealModal({ visible, onClose, onAddFoods }: AddFood
     </FullScreenModal>
   );
 }
-
