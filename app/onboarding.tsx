@@ -1,8 +1,9 @@
-import { View, Text, Pressable, ImageBackground, Dimensions } from 'react-native';
+import { View, Text, Pressable, ImageBackground, Dimensions, Animated } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Check, ArrowLeft, ArrowRight, LucideIcon } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
+import { useState, useRef, useEffect } from 'react';
 import { theme } from '../theme';
 import { GradientText } from '../components/GradientText';
 import { PageIndicators } from '../components/theme/PageIndicators';
@@ -23,7 +24,106 @@ type OnboardingBodyProps = {
 };
 
 function OnboardingStepTwo({ imageUrl, title, description, badge }: OnboardingBodyProps) {
-  return null;
+  return (
+    <View className="relative w-full max-w-md flex-1 flex-col items-center justify-center self-center px-6 pb-10">
+      {/* Illustration Section */}
+      <View
+        className="relative mb-6 flex w-full items-center justify-center"
+        style={{
+          aspectRatio: 4 / 5,
+          maxHeight: Dimensions.get('window').height * 0.45,
+        }}>
+        {/* Ambient Background Glow */}
+        <View className="absolute inset-0 rounded-full opacity-60">
+          <LinearGradient
+            colors={[
+              'rgba(99, 102, 241, 0.2)', // indigo-600/20
+              'rgba(41, 224, 142, 0.2)', // primary/20
+              'rgba(16, 185, 129, 0.2)', // emerald-400/20
+            ]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={{
+              flex: 1,
+              borderRadius: 9999,
+            }}
+          />
+        </View>
+
+        {/* Main Image Card */}
+        <View
+          className="relative z-10 h-full w-full overflow-hidden rounded-3xl border border-white/10"
+          style={theme.shadows.lg}>
+          <ImageBackground source={{ uri: imageUrl }} className="h-full w-full" resizeMode="cover">
+            {/* Gradient Overlay */}
+            <LinearGradient
+              colors={[
+                'rgba(10, 31, 26, 0.9)', // background-dark/90
+                'transparent',
+                'transparent',
+              ]}
+              start={{ x: 0, y: 1 }}
+              end={{ x: 0, y: 0 }}
+              style={{ flex: 1 }}
+            />
+
+            {/* Floating Badge Overlay */}
+            {badge && (
+              <View className="absolute bottom-6 left-6 right-6 flex-row items-center gap-4 rounded-xl border border-white/10 p-4">
+                <LinearGradient
+                  colors={['rgba(255, 255, 255, 0.1)', 'rgba(255, 255, 255, 0.05)']}
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    borderRadius: theme.borderRadius.xl,
+                  }}
+                />
+                <View className="relative z-10 h-10 w-10 items-center justify-center rounded-full">
+                  <View
+                    className="absolute inset-0 rounded-full"
+                    style={{ backgroundColor: theme.colors.status.emeraldLight }}
+                  />
+                  <badge.icon size={24} color={theme.colors.text.black} strokeWidth={3} />
+                </View>
+                <View className="relative z-10 flex-1 flex-col">
+                  <Text className="text-sm font-bold text-white">{badge.title}</Text>
+                  <Text className="text-xs" style={{ color: theme.colors.overlay.white70 }}>
+                    {badge.subtitle}
+                  </Text>
+                </View>
+              </View>
+            )}
+          </ImageBackground>
+        </View>
+      </View>
+
+      {/* Typography Block */}
+      <View className="z-20 w-full gap-4 text-center">
+        <GradientText
+          colors={[
+            theme.colors.text.white,
+            theme.colors.status.emeraldLight,
+            theme.colors.status.indigoLight,
+          ]}
+          style={{
+            fontSize: theme.typography.fontSize['3xl'],
+            fontWeight: theme.typography.fontWeight.extrabold,
+            lineHeight: theme.typography.fontSize['3xl'] * 1.25,
+            letterSpacing: -0.5,
+          }}>
+          {title}
+        </GradientText>
+        <Text
+          className="px-2 text-base font-normal leading-relaxed"
+          style={{ color: theme.colors.text.gray400 }}>
+          {description}
+        </Text>
+      </View>
+    </View>
+  );
 }
 
 function OnboardingStepOne({ imageUrl, title, description, badge }: OnboardingBodyProps) {
@@ -131,6 +231,34 @@ function OnboardingStepOne({ imageUrl, title, description, badge }: OnboardingBo
 
 export default function OnboardingScreen() {
   const router = useRouter();
+  const [currentStep, setCurrentStep] = useState(0);
+  const slideAnim = useRef(new Animated.Value(0)).current;
+  const screenWidth = Dimensions.get('window').width;
+
+  useEffect(() => {
+    Animated.timing(slideAnim, {
+      toValue: -currentStep * screenWidth,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  }, [currentStep, slideAnim, screenWidth]);
+
+  const handleNext = () => {
+    if (currentStep < 1) {
+      setCurrentStep(currentStep + 1);
+    } else {
+      // Navigate to home when on last step
+      router.push('/');
+    }
+  };
+
+  const handleBack = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    } else {
+      router.back();
+    }
+  };
 
   return (
     <View className="flex-1 bg-bg-primary">
@@ -153,52 +281,72 @@ export default function OnboardingScreen() {
         </View>
       </SafeAreaView>
 
-      {/* Main Content Area */}
-      <OnboardingStepOne
-        imageUrl={PHONE_MOCKUP_IMAGE_URL}
-        title="Effortless Tracking"
-        description="Ditch the notebook. Log your sets, reps, and weights in seconds and visualize your strength gains over time."
-        badge={{
-          icon: Check,
-          title: 'Workout Complete',
-          subtitle: '3 Personal Records set!',
-        }}
-      />
+      {/* Main Content Area - Sliding Container */}
+      <View className="flex-1" style={{ overflow: 'hidden' }}>
+        <Animated.View
+          style={{
+            flexDirection: 'row',
+            transform: [{ translateX: slideAnim }],
+            width: screenWidth * 2,
+            height: '100%',
+          }}>
+          {/* Step 1 */}
+          <View style={{ width: screenWidth }}>
+            <OnboardingStepOne
+              imageUrl={PHONE_MOCKUP_IMAGE_URL}
+              title="Effortless Tracking"
+              description="Ditch the notebook. Log your sets, reps, and weights in seconds and visualize your strength gains over time."
+              badge={{
+                icon: Check,
+                title: 'Workout Complete',
+                subtitle: '3 Personal Records set!',
+              }}
+            />
+          </View>
+
+          {/* Step 2 */}
+          <View style={{ width: screenWidth }}>
+            <OnboardingStepTwo
+              imageUrl={PHONE_MOCKUP_IMAGE_URL}
+              title="Smart Nutrition"
+              description="Log meals in seconds with AI scanning or our massive database. Understanding your fuel is the key to peak performance."
+            />
+          </View>
+        </Animated.View>
+      </View>
 
       {/* Footer / Navigation */}
       <View className="z-20 w-full max-w-md self-center">
         <SafeAreaView edges={['bottom']}>
           <View className="flex-col items-center gap-8 px-6 pb-8 pt-4">
             {/* Page Indicators */}
-            <PageIndicators totalPages={3} currentPage={0} />
+            <PageIndicators totalPages={2} currentPage={currentStep} />
 
             {/* Navigation Buttons */}
             <View className="w-full flex-row items-center justify-between">
-              <Button
-                label="Back"
-                variant="outline"
-                size="sm"
-                icon={ArrowLeft}
-                iconPosition="left"
-                onPress={() => {
-                  // Navigate back
-                  router.back();
-                }}
-                style={{
-                  borderColor: theme.colors.background.white10,
-                }}
-              />
+              {currentStep > 0 ? (
+                <Button
+                  label="Back"
+                  variant="outline"
+                  size="sm"
+                  icon={ArrowLeft}
+                  iconPosition="left"
+                  onPress={handleBack}
+                  style={{
+                    borderColor: theme.colors.background.white10,
+                  }}
+                />
+              ) : (
+                <View style={{ width: theme.size['14'] }} />
+              )}
 
               <Button
-                label="Next"
+                label={currentStep === 1 ? 'Get Started' : 'Next'}
                 variant="gradientCta"
                 size="sm"
                 icon={ArrowRight}
                 iconPosition="right"
-                onPress={() => {
-                  // Navigate to next onboarding screen or home
-                  router.push('/');
-                }}
+                onPress={handleNext}
                 style={{
                   backgroundColor: theme.colors.status.emeraldLight,
                   ...theme.shadows.lg,
