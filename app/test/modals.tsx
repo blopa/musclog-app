@@ -29,6 +29,7 @@ import { BasicSettingsModal } from '../../components/BasicSettingsModal';
 import { AdvancedSettingsModal } from '../../components/AdvancedSettingsModal';
 import { AISettingsModal } from '../../components/AISettingsModal';
 import { FilterWorkoutsModal } from '../../components/FilterWorkoutsModal';
+import { ConnectGoogleAccountModal } from '../../components/ConnectGoogleAccountModal';
 
 export default function ModalsTestScreen() {
   // Nutrition Goals Modal
@@ -108,6 +109,9 @@ export default function ModalsTestScreen() {
 
   // Add Exercise Modal
   const [isAddExerciseVisible, setIsAddExerciseVisible] = useState(false);
+
+  // Connect Google Account Modal
+  const [isConnectGoogleAccountVisible, setIsConnectGoogleAccountVisible] = useState(false);
 
   const handleSaveGoals = (goals: NutritionGoals) => {
     console.log('Goals saved:', goals);
@@ -427,6 +431,19 @@ export default function ModalsTestScreen() {
               width="full"
               onPress={() => setIsFoodSearchVisible(true)}
             />
+          </View>
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Food Search Modal</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Modal for connecting Google account for AI features.
+            </Text>
+              {/* Connect Google Account Modal Button */}
+              <Button
+                label="Open Connect Google Account Modal"
+                variant="accent"
+                width="full"
+                onPress={() => setIsConnectGoogleAccountVisible(true)}
+              />
           </View>
 
           {/* Notifications Modal */}
@@ -827,6 +844,13 @@ export default function ModalsTestScreen() {
         onClose={() => setIsFilterWorkoutsVisible(false)}
         onApplyFilters={(filters) => console.log('Applied filters:', filters)}
         onClearFilters={() => console.log('Cleared filters')}
+      />
+
+      <ConnectGoogleAccountModal
+        visible={isConnectGoogleAccountVisible}
+        onClose={() => setIsConnectGoogleAccountVisible(false)}
+        onConnect={() => console.log('Google Account Connected')}
+        onMaybeLater={() => console.log('Maybe Later pressed')}
       />
     </SafeAreaView>
   );
