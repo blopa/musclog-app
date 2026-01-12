@@ -42,27 +42,7 @@ export function ConnectGoogleAccountModal({
       visible={visible}
       onClose={onClose}
       title="Connect Google Account"
-      scrollable={true}
-      footer={
-        <View className="bg-transparent px-5 pb-2 pt-4">
-          <Pressable
-            onPress={handleConnect}
-            className="w-full flex-row items-center justify-center gap-3 rounded-full bg-white px-6 py-4 active:scale-[0.98]"
-            style={theme.shadows.lg}>
-            <Image source={{ uri: googleLogoUrl }} className="h-6 w-6" resizeMode="contain" />
-            <Text className="text-lg font-semibold" style={{ color: theme.colors.text.black }}>
-              Connect with Google
-            </Text>
-          </Pressable>
-          <Pressable
-            onPress={handleMaybeLater}
-            className="mt-4 w-full items-center justify-center rounded-lg px-4 py-2">
-            <Text className="text-sm font-medium" style={{ color: theme.colors.text.secondary }}>
-              Maybe later
-            </Text>
-          </Pressable>
-        </View>
-      }>
+      scrollable={true}>
       <View className="flex-1 px-5 pb-6">
         {/* Main Visual Card */}
         <GoogleGeminiIllustration
@@ -186,6 +166,24 @@ export function ConnectGoogleAccountModal({
             </View>
           </View>
         </View>
+      </View>
+      <View className="bg-transparent px-5 pb-2 pt-4">
+        <Pressable
+          onPress={handleConnect}
+          className="w-full flex-row items-center justify-center gap-3 rounded-full bg-white px-6 py-4 active:scale-[0.98]"
+          style={theme.shadows.lg}>
+          <Image source={{ uri: googleLogoUrl }} className="h-6 w-6" resizeMode="contain" />
+          <Text className="text-lg font-semibold" style={{ color: theme.colors.text.black }}>
+            Connect with Google
+          </Text>
+        </Pressable>
+        <Pressable
+          onPress={handleMaybeLater}
+          className="mt-4 w-full items-center justify-center rounded-lg px-4 py-2">
+          <Text className="text-sm font-medium" style={{ color: theme.colors.text.secondary }}>
+            Maybe later
+          </Text>
+        </Pressable>
       </View>
     </FullScreenModal>
   );

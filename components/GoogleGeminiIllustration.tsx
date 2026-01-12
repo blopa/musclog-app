@@ -74,7 +74,7 @@ export const GoogleGeminiIllustration = ({
               }}>
               {/* Google logo button - white circle */}
               <View
-                className="rounded-full bg-white items-center justify-center"
+                className="items-center justify-center rounded-full bg-white"
                 style={{
                   padding: 6,
                   minWidth: 28,
