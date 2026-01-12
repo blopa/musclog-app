@@ -5,7 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { FullScreenModal } from './FullScreenModal';
 import { SettingsCard } from './SettingsCard';
 import { SegmentedControl } from './theme/SegmentedControl';
-import { TogglableSettings } from './TogglableSettings';
+import { ToggleInput } from './theme/ToggleInput';
 import { theme } from '../theme';
 
 type ThemeOption = 'system' | 'light' | 'dark';
@@ -151,7 +151,7 @@ export function BasicSettingsModal({
             Integrations
           </Text>
 
-          <TogglableSettings
+          <ToggleInput
             items={healthSettingsItems}
             header={
               <LinearGradient

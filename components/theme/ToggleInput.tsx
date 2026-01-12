@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Switch, Pressable } from 'react-native';
-import { theme } from '../theme';
+import { theme } from '../../theme';
 
 type ToggleItem = {
   key: string;
@@ -16,7 +16,7 @@ type TogglableSettingsProps = {
   header?: React.ReactNode;
 };
 
-export function TogglableSettings(props: TogglableSettingsProps) {
+export function ToggleInput(props: TogglableSettingsProps) {
   const items: ToggleItem[] = props.items;
   const hasHeader = !!props.header;
 

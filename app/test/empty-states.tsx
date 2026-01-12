@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, ScrollView, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ArrowLeft, Settings , Dumbbell, UtensilsCrossed, WifiOff } from 'lucide-react-native';
+import { ArrowLeft, Settings, Dumbbell, UtensilsCrossed, WifiOff } from 'lucide-react-native';
 import { TestSection } from './components/TestSection';
 import { EmptyStateCard } from '../../components/theme/EmptyStateCard';
 import { SkeletonLoader } from '../../components/theme/SkeletonLoader';

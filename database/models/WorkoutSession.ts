@@ -1,4 +1,4 @@
-import { Model , Q } from '@nozbe/watermelondb';
+import { Model, Q } from '@nozbe/watermelondb';
 import { field, children, relation } from '@nozbe/watermelondb/decorators';
 import type { Associations } from '@nozbe/watermelondb/Model';
 import WorkoutExercise from './WorkoutExercise';

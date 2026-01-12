@@ -6,7 +6,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { Button } from './theme/Button';
 import { FullScreenModal } from './FullScreenModal';
 import { SettingsCard } from './SettingsCard';
-import { TogglableSettings } from './TogglableSettings';
+import { ToggleInput } from './theme/ToggleInput';
 
 export function MainSettingsModal({ visible, onClose }: { visible: boolean; onClose: () => void }) {
   const [darkMode, setDarkMode] = useState(true);
@@ -94,7 +94,7 @@ export function MainSettingsModal({ visible, onClose }: { visible: boolean; onCl
           }}
         />
 
-        <TogglableSettings
+        <ToggleInput
           items={[
             {
               key: 'darkMode',

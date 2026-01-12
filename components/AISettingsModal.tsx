@@ -13,7 +13,7 @@ import {
 } from 'lucide-react-native';
 import { FullScreenModal } from './FullScreenModal';
 import { SecretInput } from './theme/SecretInput';
-import { TogglableSettings } from './TogglableSettings';
+import { ToggleInput } from './theme/ToggleInput';
 import { theme } from '../theme';
 
 type AISettingsModalProps = {
@@ -168,7 +168,7 @@ export function AISettingsModal({
           </Text>
 
           {/* Toggle Block */}
-          <TogglableSettings items={geminiToggleItems} />
+          <ToggleInput items={geminiToggleItems} />
 
           {/* Settings Block */}
           <View
@@ -283,7 +283,7 @@ export function AISettingsModal({
             OPENAI INTEGRATION
           </Text>
           {/* OpenAI Enable Toggle */}
-          <TogglableSettings items={openAiToggleItems} />
+          <ToggleInput items={openAiToggleItems} />
           <View
             style={{
               backgroundColor: theme.colors.background.card,
@@ -357,7 +357,7 @@ export function AISettingsModal({
             style={{ color: theme.colors.text.secondary }}>
             INSIGHTS & ALERTS
           </Text>
-          <TogglableSettings items={insightsItems} />
+          <ToggleInput items={insightsItems} />
         </View>
 
         {/* Footer Help */}

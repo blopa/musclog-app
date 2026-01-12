@@ -437,13 +437,13 @@ export default function ModalsTestScreen() {
             <Text className="mb-4 text-sm text-text-secondary">
               Modal for connecting Google account for AI features.
             </Text>
-              {/* Connect Google Account Modal Button */}
-              <Button
-                label="Open Connect Google Account Modal"
-                variant="accent"
-                width="full"
-                onPress={() => setIsConnectGoogleAccountVisible(true)}
-              />
+            {/* Connect Google Account Modal Button */}
+            <Button
+              label="Open Connect Google Account Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsConnectGoogleAccountVisible(true)}
+            />
           </View>
 
           {/* Notifications Modal */}

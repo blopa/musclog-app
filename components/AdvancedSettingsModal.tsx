@@ -3,7 +3,7 @@ import { View, Text } from 'react-native';
 import { Download, Upload, Bug, Trash2, ChevronRight } from 'lucide-react-native';
 import { FullScreenModal } from './FullScreenModal';
 import { SettingsCard } from './SettingsCard';
-import { TogglableSettings } from './TogglableSettings';
+import { ToggleInput } from './theme/ToggleInput';
 import { theme } from '../theme';
 
 type AdvancedSettingsModalProps = {
@@ -101,7 +101,7 @@ export function AdvancedSettingsModal({
             style={{ color: theme.colors.text.secondary }}>
             PRIVACY & DIAGNOSTICS
           </Text>
-          <TogglableSettings items={bugReportItems} />
+          <ToggleInput items={bugReportItems} />
         </View>
 
         {/* Danger Zone Section */}
