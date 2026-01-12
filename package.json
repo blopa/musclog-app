@@ -116,5 +116,15 @@
     "typescript": "~5.9.3"
   },
   "main": "expo-router/entry",
-  "private": true
+  "private": false,
+  "expo": {
+    "doctor": {
+      "reactNativeDirectoryCheck": {
+        "exclude": [
+          "@nozbe/watermelondb",
+          "@nozbe/simdjson"
+        ]
+      }
+    }
+  }
 }
