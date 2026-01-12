@@ -25,7 +25,6 @@ export function ToggleInput(props: TogglableSettingsProps) {
       style={{
         backgroundColor: theme.colors.background.card,
         borderRadius: theme.borderRadius.lg,
-        marginHorizontal: theme.spacing.padding.base,
         marginBottom: theme.spacing.padding.base,
         padding: hasHeader ? 0 : theme.spacing.padding.xs,
         overflow: 'hidden',
