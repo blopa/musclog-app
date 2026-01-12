@@ -15,10 +15,14 @@ export function MainSettingsModal({ visible, onClose }: { visible: boolean; onCl
 
   return (
     <FullScreenModal visible={visible} onClose={onClose} title="Settings">
-      <View style={{ flex: 1 }}>
+      <View
+        style={{
+          flex: 1,
+          marginHorizontal: theme.spacing.padding.base,
+        }}
+      >
         <View
           style={{
-            marginHorizontal: theme.spacing.padding.base,
             marginTop: theme.spacing.padding.base,
             marginBottom: theme.spacing.padding.sm,
           }}>
@@ -90,7 +94,6 @@ export function MainSettingsModal({ visible, onClose }: { visible: boolean; onCl
             height: theme.borderWidth.thin,
             backgroundColor: theme.colors.border.light,
             marginVertical: theme.spacing.padding.md,
-            marginHorizontal: theme.spacing.padding.base,
           }}
         />
 
@@ -128,7 +131,6 @@ export function MainSettingsModal({ visible, onClose }: { visible: boolean; onCl
         {/* Info Links */}
         <View
           style={{
-            marginHorizontal: theme.spacing.padding.base,
             marginBottom: theme.spacing.padding.sm,
           }}>
           <Pressable
@@ -186,7 +188,6 @@ export function MainSettingsModal({ visible, onClose }: { visible: boolean; onCl
 
         <View
           style={{
-            marginHorizontal: theme.spacing.padding.base,
             marginTop: theme.spacing.padding.md,
           }}>
           <Button label="Sign Out" variant="discard" width="full" size="sm" onPress={() => {}} />

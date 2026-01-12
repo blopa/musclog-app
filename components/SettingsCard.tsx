@@ -27,7 +27,6 @@ export function SettingsCard({
           justifyContent: 'space-between',
           backgroundColor: theme.colors.background.overlay,
           borderRadius: theme.borderRadius.lg,
-          marginHorizontal: theme.spacing.padding.base,
           marginBottom: theme.spacing.padding.sm,
           padding: theme.spacing.padding.base,
           shadowColor: theme.colors.accent.primary,
