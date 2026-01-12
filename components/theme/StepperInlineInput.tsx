@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { View, Text, Pressable, TextInput } from 'react-native';
-import { Minus, Plus } from 'lucide-react-native';
+import { Minus, Plus, LucideIcon } from 'lucide-react-native';
 import { theme } from '../../theme';
 
 type TestStepperProps = {
@@ -10,6 +10,8 @@ type TestStepperProps = {
   onDecrement: () => void;
   onChangeValue?: (newValue: number) => void;
   unit?: string;
+  icon?: LucideIcon;
+  subtitle?: string;
 };
 
 export function StepperInlineInput({
@@ -19,6 +21,8 @@ export function StepperInlineInput({
   onDecrement,
   onChangeValue,
   unit,
+  icon: Icon,
+  subtitle,
 }: TestStepperProps) {
   const [editing, setEditing] = useState(false);
   const [inputValue, setInputValue] = useState(value.toFixed(1));
@@ -62,13 +66,29 @@ export function StepperInlineInput({
   };
 
   return (
-    <View className="flex-row items-center justify-between rounded-lg border border-white/10 bg-bg-card p-4">
-      <View className="flex-1 flex-col">
-        <Text className="text-xs font-semibold uppercase tracking-tighter text-text-tertiary">
-          {label}
-        </Text>
+    <View className="flex-row items-center justify-between rounded-xl border border-emerald-900/20 bg-bg-card p-5">
+      <View className="flex-row items-center gap-3">
+        {Icon && (
+          <View
+            className="h-10 w-10 items-center justify-center rounded-lg"
+            style={{ backgroundColor: 'rgba(16, 185, 129, 0.2)' }}>
+            <Icon size={20} color={theme.colors.status.emeraldLight} />
+          </View>
+        )}
+        <View>
+          <Text className="font-semibold text-white">{label}</Text>
+          {subtitle && <Text className="text-xs text-gray-500">{subtitle}</Text>}
+        </View>
+      </View>
+      <View className="flex-row items-center gap-3">
+        <Pressable
+          className="border-primary/20 h-10 w-10 items-center justify-center rounded-full border active:opacity-70"
+          style={{ backgroundColor: 'rgba(16, 185, 129, 0.3)' }}
+          onPress={onDecrement}>
+          <Minus size={20} color={theme.colors.status.emeraldLight} />
+        </Pressable>
         {editing ? (
-          <View className="mr-6 flex-row items-center">
+          <View className="w-16 items-center">
             <TextInput
               ref={inputRef}
               value={inputValue}
@@ -76,37 +96,39 @@ export function StepperInlineInput({
               onBlur={handleInputBlur}
               onSubmitEditing={handleInputSubmit}
               keyboardType="numeric"
-              className="p-0 text-lg font-bold text-text-primary"
+              className="p-0 text-center text-xl font-bold text-white"
               style={{
-                width: 200,
+                width: 64,
                 padding: 0,
                 margin: 0,
-                color: theme.colors.text.primary,
+                color: theme.colors.text.white,
               }}
               returnKeyType="done"
               selectTextOnFocus
             />
-            {unit && <Text className="ml-1 text-lg font-normal text-text-tertiary">{unit}</Text>}
+            {unit && (
+              <Text className="text-xs text-gray-500" style={{ fontSize: 10 }}>
+                {unit}
+              </Text>
+            )}
           </View>
         ) : (
-          <Pressable onPress={handleValuePress}>
-            <Text className="text-lg font-bold text-text-primary">
-              {value.toFixed(1)}{' '}
-              {unit && <Text className="font-normal text-text-tertiary">{unit}</Text>}
+          <Pressable onPress={handleValuePress} className="w-16 items-center">
+            <Text className="text-xl font-bold text-white">
+              {value % 1 === 0 ? value : value.toFixed(1)}
             </Text>
+            {unit && (
+              <Text className="text-xs text-gray-500" style={{ fontSize: 10 }}>
+                {unit}
+              </Text>
+            )}
           </Pressable>
         )}
-      </View>
-      <View className="flex-row items-center gap-3">
         <Pressable
-          className="h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-bg-cardElevated active:scale-95"
-          onPress={onDecrement}>
-          <Minus size={20} color={theme.colors.text.primary} />
-        </Pressable>
-        <Pressable
-          className="h-10 w-10 items-center justify-center rounded-lg bg-accent-primary active:scale-95"
+          className="border-primary/20 h-10 w-10 items-center justify-center rounded-full border active:opacity-70"
+          style={{ backgroundColor: 'rgba(16, 185, 129, 0.3)' }}
           onPress={onIncrement}>
-          <Plus size={20} color={theme.colors.text.black} />
+          <Plus size={20} color={theme.colors.status.emeraldLight} />
         </Pressable>
       </View>
     </View>

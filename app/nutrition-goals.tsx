@@ -7,6 +7,7 @@ import { useState, useMemo, useCallback, memo } from 'react';
 import { theme } from '../theme';
 import { Slider } from '../components/theme/Slider';
 import { Button } from '../components/theme/Button';
+import { StepperInlineInput } from '../components/theme/StepperInlineInput';
 import Svg, { Circle } from 'react-native-svg';
 
 type MacroCardProps = {
@@ -78,80 +79,6 @@ const MacroCard = memo(
 );
 
 MacroCard.displayName = 'MacroCard';
-
-type BodyMetricCardProps = {
-  icon: any;
-  label: string;
-  value: number;
-  setValue: (value: number) => void;
-  unit: string;
-  subtitle: string;
-  min?: number;
-  max?: number;
-  step?: number;
-};
-
-const BodyMetricCard = memo(
-  ({
-    icon: Icon,
-    label,
-    value,
-    setValue,
-    unit,
-    subtitle,
-    min = 0,
-    max = 200,
-    step = 1,
-  }: BodyMetricCardProps) => {
-    const handleDecrement = useCallback(() => {
-      setValue(Math.max(min, value - step));
-    }, [value, min, step, setValue]);
-
-    const handleIncrement = useCallback(() => {
-      setValue(Math.min(max, value + step));
-    }, [value, max, step, setValue]);
-
-    return (
-      <View className="rounded-xl border border-emerald-900/20 bg-bg-card p-5">
-        <View className="flex-row items-center justify-between">
-          <View className="flex-row items-center gap-3">
-            <View
-              className="h-10 w-10 items-center justify-center rounded-lg"
-              style={{ backgroundColor: 'rgba(16, 185, 129, 0.2)' }}>
-              <Icon size={20} color={theme.colors.status.emeraldLight} />
-            </View>
-            <View>
-              <Text className="font-semibold text-white">{label}</Text>
-              <Text className="text-xs text-gray-500">{subtitle}</Text>
-            </View>
-          </View>
-          <View className="flex-row items-center gap-3">
-            <Pressable
-              className="border-primary/20 h-10 w-10 items-center justify-center rounded-full border active:opacity-70"
-              style={{ backgroundColor: 'rgba(16, 185, 129, 0.3)' }}
-              onPress={handleDecrement}>
-              <Minus size={20} color={theme.colors.status.emeraldLight} />
-            </Pressable>
-            <View className="w-16 items-center">
-              <Text className="text-xl font-bold text-white">
-                {step === 0.1 ? value.toFixed(1) : value}
-              </Text>
-              <Text className="text-xs text-gray-500">{unit}</Text>
-            </View>
-            <Pressable
-              className="border-primary/20 h-10 w-10 items-center justify-center rounded-full border active:opacity-70"
-              style={{ backgroundColor: 'rgba(16, 185, 129, 0.3)' }}
-              onPress={handleIncrement}>
-              <Plus size={20} color={theme.colors.status.emeraldLight} />
-            </Pressable>
-          </View>
-        </View>
-      </View>
-    );
-  }
-);
-
-BodyMetricCard.displayName = 'BodyMetricCard';
 
 export default function NutritionGoalsScreen() {
   const router = useRouter();
@@ -365,47 +292,45 @@ export default function NutritionGoalsScreen() {
             Target Body Metrics
           </Text>
           <View style={{ gap: theme.spacing.gap.base }}>
-            <BodyMetricCard
-              icon={Scale}
+            <StepperInlineInput
               label="Target Weight"
               value={targetWeight}
-              setValue={handleSetTargetWeight}
+              onIncrement={() => handleSetTargetWeight(Math.min(200, targetWeight + 1))}
+              onDecrement={() => handleSetTargetWeight(Math.max(30, targetWeight - 1))}
+              onChangeValue={handleSetTargetWeight}
               unit="kg"
+              icon={Scale}
               subtitle="kg/lbs"
-              min={30}
-              max={200}
             />
-            <BodyMetricCard
-              icon={Percent}
+            <StepperInlineInput
               label="Target Body Fat"
               value={targetBodyFat}
-              setValue={handleSetTargetBodyFat}
+              onIncrement={() => handleSetTargetBodyFat(Math.min(50, targetBodyFat + 1))}
+              onDecrement={() => handleSetTargetBodyFat(Math.max(0, targetBodyFat - 1))}
+              onChangeValue={handleSetTargetBodyFat}
               unit="%"
+              icon={Percent}
               subtitle="% percentage"
-              min={0}
-              max={50}
             />
-            <BodyMetricCard
-              icon={Activity}
+            <StepperInlineInput
               label="Target BMI"
               value={targetBMI}
-              setValue={handleSetTargetBMI}
+              onIncrement={() => handleSetTargetBMI(Math.min(50, targetBMI + 0.1))}
+              onDecrement={() => handleSetTargetBMI(Math.max(10, targetBMI - 0.1))}
+              onChangeValue={handleSetTargetBMI}
               unit="index"
+              icon={Activity}
               subtitle="Body Mass Index"
-              min={10}
-              max={50}
-              step={0.1}
             />
-            <BodyMetricCard
-              icon={Dumbbell}
+            <StepperInlineInput
               label="Target FFMI"
               value={targetFFMI}
-              setValue={handleSetTargetFFMI}
+              onIncrement={() => handleSetTargetFFMI(Math.min(30, targetFFMI + 0.1))}
+              onDecrement={() => handleSetTargetFFMI(Math.max(10, targetFFMI - 0.1))}
+              onChangeValue={handleSetTargetFFMI}
               unit="index"
+              icon={Dumbbell}
               subtitle="Fat-Free Mass Index"
-              min={10}
-              max={30}
-              step={0.1}
             />
           </View>
         </View>
