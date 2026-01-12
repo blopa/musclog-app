@@ -4,6 +4,7 @@ import { MoreVertical, Trash2, Plus, CheckCircle2, Egg, Info, Apple } from 'luci
 import { theme } from '../theme';
 import { FullScreenModal } from './FullScreenModal';
 import { Button } from './theme/Button';
+import { AddFoodItemToMealModal } from './AddFoodItemToMealModal';
 
 type Ingredient = {
   id: string;
@@ -208,6 +209,7 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
   const [mealName, setMealName] = useState('');
   const [isFocused, setIsFocused] = useState(false);
   const [ingredients, setIngredients] = useState<Ingredient[]>(INITIAL_INGREDIENTS);
+  const [isAddFoodVisible, setIsAddFoodVisible] = useState(false);
 
   const handleSave = () => {
     onSave?.({
@@ -384,6 +386,7 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
             })}
 
             <Pressable
+              onPress={() => setIsAddFoodVisible(true)}
               style={({ pressed }) => ({
                 flexDirection: 'row',
                 alignItems: 'center',
@@ -420,6 +423,17 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
           </View>
         </View>
       </View>
+
+      <AddFoodItemToMealModal
+        visible={isAddFoodVisible}
+        onClose={() => setIsAddFoodVisible(false)}
+        onAddFoods={(foods) => {
+          console.log('Foods added to meal:', foods);
+          // Here you would typically add these to the ingredients state
+          // but for now we just close the modal as per the prompt
+          setIsAddFoodVisible(false);
+        }}
+      />
     </FullScreenModal>
   );
 }
