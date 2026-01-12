@@ -1,9 +1,17 @@
 import React, { useState, useMemo, useRef } from 'react';
-import { View, Text, Pressable, TextInput as RNTextInput, ScrollView, Platform } from 'react-native';
+import {
+  View,
+  Text,
+  Pressable,
+  TextInput as RNTextInput,
+  ScrollView,
+  Platform,
+} from 'react-native';
 import { Search, X, Check, PlusCircle } from 'lucide-react-native';
 import { theme } from '../theme';
 import { FullScreenModal } from './FullScreenModal';
 import { Button } from './theme/Button';
+import { TextInput } from './theme/TextInput';
 
 type FoodResult = {
   id: string;
@@ -87,7 +95,7 @@ function FoodResultCard({
     if (amountInputRef.current && amount) {
       const length = amount.length;
       setSelection({ start: 0, end: length });
-      
+
       // For iOS, use selectTextOnFocus prop, but we'll handle it with selection
       // For Android, we need to use setNativeProps
       if (Platform.OS === 'android') {
@@ -361,37 +369,13 @@ export function AddFoodItemToMealModal({
       <View className="flex-1 px-4 py-2">
         {/* Search Bar */}
         <View className="mb-6">
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              backgroundColor: theme.colors.background.card,
-              borderRadius: 14,
-              paddingHorizontal: 12,
-              height: 48,
-              borderWidth: 1,
-              borderColor: theme.colors.border.light,
-            }}>
-            <Search size={20} color={theme.colors.text.tertiary} />
-            {/*TODO: use TextInput from theme*/}
-            <RNTextInput
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-              placeholder="Search food (e.g. Chicken)..."
-              placeholderTextColor={theme.colors.text.tertiary}
-              style={{
-                flex: 1,
-                marginLeft: 10,
-                color: theme.colors.text.primary,
-                fontSize: 14,
-              }}
-            />
-            {searchQuery.length > 0 && (
-              <Pressable onPress={() => setSearchQuery('')}>
-                <X size={18} color={theme.colors.text.tertiary} />
-              </Pressable>
-            )}
-          </View>
+          <TextInput
+            label="Search Food"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            placeholder="Search food (e.g. Chicken)..."
+            icon={<Search size={20} color={theme.colors.text.tertiary} />}
+          />
         </View>
 
         {/* Search Results Header */}
