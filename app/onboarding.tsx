@@ -22,6 +22,10 @@ type OnboardingBodyProps = {
   };
 };
 
+function OnboardingStepTwo({ imageUrl, title, description, badge }: OnboardingBodyProps) {
+  return null;
+}
+
 function OnboardingStepOne({ imageUrl, title, description, badge }: OnboardingBodyProps) {
   return (
     <View className="relative w-full max-w-md flex-1 flex-col items-center justify-center self-center px-6 pb-10">
