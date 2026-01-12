@@ -13,6 +13,7 @@ import { LogSetPerformanceModal } from '../../components/LogSetPerformanceModal'
 import { FoodDetailsModal } from '../../components/FoodDetailsModal';
 import { AddFoodModal } from '../../components/AddFoodModal';
 import { AddMealModal } from '../../components/AddMealModal';
+import { CreateMealModal } from '../../components/CreateMealModal';
 import { FoodSearchModal } from '../../components/FoodSearchModal';
 import { NotificationsModal } from '../../components/NotificationsModal';
 import { WorkoutOptionsModal } from '../../components/WorkoutOptionsModal';
@@ -78,6 +79,8 @@ export default function ModalsTestScreen() {
 
   // Add Meal Modal
   const [isAddMealVisible, setIsAddMealVisible] = useState(false);
+  // Create Meal Modal
+  const [isCreateMealVisible, setIsCreateMealVisible] = useState(false);
 
   // Food Search Modal
   const [isFoodSearchVisible, setIsFoodSearchVisible] = useState(false);
@@ -398,6 +401,19 @@ export default function ModalsTestScreen() {
               onPress={() => setIsAddMealVisible(true)}
             />
           </View>
+          {/* Create Meal Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Create Meal Modal</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Modal for creating a new meal with custom ingredients and macros.
+            </Text>
+            <Button
+              label="Open Create Meal Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsCreateMealVisible(true)}
+            />
+          </View>
 
           {/* Food Search Modal */}
           <View className="mb-6">
@@ -681,9 +697,16 @@ export default function ModalsTestScreen() {
       <AddMealModal
         visible={isAddMealVisible}
         onClose={() => setIsAddMealVisible(false)}
-        onCreateMeal={() => console.log('Create meal pressed')}
+        onCreateMeal={() => {
+          setIsAddMealVisible(false);
+          setTimeout(() => setIsCreateMealVisible(true), 300);
+        }}
         onGenerateMealAI={() => console.log('Generate meal with AI pressed')}
         onManageCategories={() => console.log('Manage categories pressed')}
+      />
+      <CreateMealModal
+        visible={isCreateMealVisible}
+        onClose={() => setIsCreateMealVisible(false)}
       />
 
       <FoodSearchModal

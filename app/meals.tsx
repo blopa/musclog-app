@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, Pressable } from 'react-native';
 import { Search, MoreVertical } from 'lucide-react-native';
 import { AddMealModal } from '../components/AddMealModal';
+import { CreateMealModal } from '../components/CreateMealModal';
 import { theme } from '../theme';
 import { MasterLayout } from '../components/MasterLayout';
 import { FilterTabs } from '../components/FilterTabs';
@@ -69,12 +70,12 @@ export default function MyMealsScreen() {
   const [activeFilter, setActiveFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [addMealModalVisible, setAddMealModalVisible] = useState(false);
+  const [createMealModalVisible, setCreateMealModalVisible] = useState(false);
 
   // Handlers for AddMealModal options
   const handleCreateMeal = () => {
     setAddMealModalVisible(false);
-    // TODO: Implement create meal logic
-    console.log('Create Meal pressed');
+    setTimeout(() => setCreateMealModalVisible(true), 300); // Wait for modal close animation
   };
 
   const handleGenerateMealAI = () => {
@@ -151,6 +152,11 @@ export default function MyMealsScreen() {
           onCreateMeal={handleCreateMeal}
           onGenerateMealAI={handleGenerateMealAI}
           onManageCategories={handleManageCategories}
+        />
+        {/* CreateMealModal */}
+        <CreateMealModal
+          visible={createMealModalVisible}
+          onClose={() => setCreateMealModalVisible(false)}
         />
       </View>
     </MasterLayout>

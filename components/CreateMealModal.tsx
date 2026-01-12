@@ -146,7 +146,7 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
           <Button
             label="Save Meal"
             variant="gradientCta"
-            size="lg"
+            size="md"
             width="full"
             icon={CheckCircle2}
             onPress={handleSave}
