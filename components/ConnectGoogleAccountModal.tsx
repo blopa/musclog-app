@@ -105,42 +105,36 @@ export function ConnectGoogleAccountModal({
                 className="absolute inset-0"
               />
               {/* Bottom buttons overlay */}
-              <View className="absolute bottom-4 left-0 right-0 flex-row items-center justify-center">
+              <View className="absolute bottom-4 left-0 right-0 flex-row items-center justify-center gap-2">
+                {/* Google logo button - white background */}
+                <View className="h-9 w-9 items-center justify-center rounded-lg bg-white">
+                  <Image
+                    source={{
+                      uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBEDjeI4ad2IaWbBhnLQwpPkGJHZTJI_AZ1dIssXH__JLkQoYD_Qm_649_s2NsALfqefCg8-FNDsip3kbi3ZsYEqkdMXwpZEmfUOsmkxzCOTW2CdWBOOCnqgZ_Bgrq-S9vigmQajIBEFLcWErkfxsQCsPyfFy1ynq4Iz7Zb5gK74Ymge1VRW0z0aGL9BZjeAWO6sQepsDa91JCegUclE123Tm5VN1Oi94_nDfjS1TRvsc5nyQLQmD3pXLQDuSb6wQLcPYWv4tphDZ_z',
+                    }}
+                    className="h-5 w-5"
+                    resizeMode="contain"
+                  />
+                </View>
+                {/* Sparkles button - dark background with light green icons */}
                 <View
-                  className="flex-row items-center gap-3 rounded-full border border-white/20 px-4 py-2.5"
-                  style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>
-                  {/* Google logo button */}
-                  <View className="rounded-full bg-white p-1.5">
-                    <Image
-                      source={{
-                        uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBEDjeI4ad2IaWbBhnLQwpPkGJHZTJI_AZ1dIssXH__JLkQoYD_Qm_649_s2NsALfqefCg8-FNDsip3kbi3ZsYEqkdMXwpZEmfUOsmkxzCOTW2CdWBOOCnqgZ_Bgrq-S9vigmQajIBEFLcWErkfxsQCsPyfFy1ynq4Iz7Zb5gK74Ymge1VRW0z0aGL9BZjeAWO6sQepsDa91JCegUclE123Tm5VN1Oi94_nDfjS1TRvsc5nyQLQmD3pXLQDuSb6wQLcPYWv4tphDZ_z',
-                      }}
-                      className="h-4 w-4"
-                      resizeMode="contain"
-                    />
-                  </View>
-                  {/* Sparkles icon */}
+                  className="h-9 w-9 items-center justify-center rounded-lg"
+                  style={{ backgroundColor: 'rgba(0, 0, 0, 0.4)' }}>
                   <Sparkles
-                    size={20}
+                    size={18}
+                    color={theme.colors.status.emeraldLight}
+                    fill={theme.colors.status.emeraldLight}
+                  />
+                </View>
+                {/* Zap button - dark background with bright green icon */}
+                <View
+                  className="h-9 w-9 items-center justify-center rounded-lg"
+                  style={{ backgroundColor: 'rgba(0, 0, 0, 0.4)' }}>
+                  <Zap
+                    size={18}
                     color={theme.colors.accent.primary}
                     fill={theme.colors.accent.primary}
                   />
-                  {/* Zap icon */}
-                  <View
-                    className="rounded-full p-1.5"
-                    style={{
-                      backgroundColor: theme.colors.accent.primary,
-                      shadowColor: theme.colors.accent.primary,
-                      shadowOffset: { width: 0, height: 0 },
-                      shadowOpacity: 0.3,
-                      shadowRadius: 8,
-                    }}>
-                    <Zap
-                      size={18}
-                      color={theme.colors.background.primary}
-                      fill={theme.colors.background.primary}
-                    />
-                  </View>
                 </View>
               </View>
             </View>
@@ -161,45 +155,106 @@ export function ConnectGoogleAccountModal({
         {/* Feature Cards */}
         <View className="mb-8 gap-3">
           {/* Deep Analysis */}
-          <View className="flex-row items-center gap-4 rounded-xl border border-white/5 bg-bg-cardDark p-4">
+          <View className="relative">
+            {/* Glow effect */}
             <View
-              className="h-10 w-10 shrink-0 items-center justify-center rounded-full"
-              style={{ backgroundColor: theme.colors.accent.primary10 }}>
-              <LucideChartSpline size={theme.iconSize.md} color={theme.colors.accent.primary} />
+              className="absolute"
+              style={{
+                top: -1,
+                left: -1,
+                right: -1,
+                bottom: -1,
+                borderRadius: theme.borderRadius.xl,
+                backgroundColor: theme.colors.accent.primary,
+                opacity: 0.2,
+                shadowColor: theme.colors.accent.primary,
+                shadowOffset: { width: 0, height: 0 },
+                shadowOpacity: 0.2,
+                shadowRadius: 8,
+              }}
+            />
+            <View className="relative flex-row items-center gap-4 rounded-xl border border-white/5 bg-bg-cardDark p-4">
+              <View
+                className="h-10 w-10 shrink-0 items-center justify-center rounded-full"
+                style={{ backgroundColor: theme.colors.accent.primary10 }}>
+                <LucideChartSpline size={theme.iconSize.md} color={theme.colors.accent.primary} />
+              </View>
+              <View className="flex-1">
+                <Text className="text-sm font-bold text-text-primary">Deep Analysis</Text>
+                <Text className="text-xs text-text-secondary">Personalized workout breakdown</Text>
+              </View>
+              <CheckCircle2 size={20} color={theme.colors.accent.primary} />
             </View>
-            <View className="flex-1">
-              <Text className="text-sm font-bold text-text-primary">Deep Analysis</Text>
-              <Text className="text-xs text-text-secondary">Personalized workout breakdown</Text>
-            </View>
-            <CheckCircle2 size={20} color={theme.colors.accent.primary} />
           </View>
 
           {/* Gemini Powered */}
-          <View className="flex-row items-center gap-4 rounded-xl border border-white/5 bg-bg-cardDark p-4">
+          <View className="relative">
+            {/* Glow effect */}
             <View
-              className="h-10 w-10 shrink-0 items-center justify-center rounded-full"
-              style={{ backgroundColor: theme.colors.accent.primary10 }}>
-              <Sparkles size={theme.iconSize.md} color={theme.colors.accent.primary} />
+              className="absolute"
+              style={{
+                top: -1,
+                left: -1,
+                right: -1,
+                bottom: -1,
+                borderRadius: theme.borderRadius.xl,
+                backgroundColor: theme.colors.accent.primary,
+                opacity: 0.2,
+                shadowColor: theme.colors.accent.primary,
+                shadowOffset: { width: 0, height: 0 },
+                shadowOpacity: 0.2,
+                shadowRadius: 8,
+              }}
+            />
+            <View className="relative flex-row items-center gap-4 rounded-xl border border-white/5 bg-bg-cardDark p-4">
+              <View
+                className="h-10 w-10 shrink-0 items-center justify-center rounded-full"
+                style={{ backgroundColor: theme.colors.accent.primary10 }}>
+                <Sparkles size={theme.iconSize.md} color={theme.colors.accent.primary} />
+              </View>
+              <View className="flex-1">
+                <Text className="text-sm font-bold text-text-primary">Gemini Powered</Text>
+                <Text className="text-xs text-text-secondary">
+                  Advanced LLM fitness intelligence
+                </Text>
+              </View>
+              <CheckCircle2 size={20} color={theme.colors.accent.primary} />
             </View>
-            <View className="flex-1">
-              <Text className="text-sm font-bold text-text-primary">Gemini Powered</Text>
-              <Text className="text-xs text-text-secondary">Advanced LLM fitness intelligence</Text>
-            </View>
-            <CheckCircle2 size={20} color={theme.colors.accent.primary} />
           </View>
 
           {/* Secure Token */}
-          <View className="flex-row items-center gap-4 rounded-xl border border-white/5 bg-bg-cardDark p-4">
+          <View className="relative">
+            {/* Glow effect */}
             <View
-              className="h-10 w-10 shrink-0 items-center justify-center rounded-full"
-              style={{ backgroundColor: theme.colors.accent.primary10 }}>
-              <Key size={theme.iconSize.md} color={theme.colors.accent.primary} />
+              className="absolute"
+              style={{
+                top: -1,
+                left: -1,
+                right: -1,
+                bottom: -1,
+                borderRadius: theme.borderRadius.xl,
+                backgroundColor: theme.colors.accent.primary,
+                opacity: 0.2,
+                shadowColor: theme.colors.accent.primary,
+                shadowOffset: { width: 0, height: 0 },
+                shadowOpacity: 0.2,
+                shadowRadius: 8,
+              }}
+            />
+            <View className="relative flex-row items-center gap-4 rounded-xl border border-white/5 bg-bg-cardDark p-4">
+              <View
+                className="h-10 w-10 shrink-0 items-center justify-center rounded-full"
+                style={{ backgroundColor: theme.colors.accent.primary10 }}>
+                <Key size={theme.iconSize.md} color={theme.colors.accent.primary} />
+              </View>
+              <View className="flex-1">
+                <Text className="text-sm font-bold text-text-primary">Secure Token</Text>
+                <Text className="text-xs text-text-secondary">
+                  Direct integration with your key
+                </Text>
+              </View>
+              <CheckCircle2 size={20} color={theme.colors.accent.primary} />
             </View>
-            <View className="flex-1">
-              <Text className="text-sm font-bold text-text-primary">Secure Token</Text>
-              <Text className="text-xs text-text-secondary">Direct integration with your key</Text>
-            </View>
-            <CheckCircle2 size={20} color={theme.colors.accent.primary} />
           </View>
         </View>
       </View>

@@ -433,7 +433,9 @@ export default function ModalsTestScreen() {
             />
           </View>
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Food Search Modal</Text>
+            <Text className="mb-2 text-lg font-bold text-text-primary">
+              Connect Google Account Modal
+            </Text>
             <Text className="mb-4 text-sm text-text-secondary">
               Modal for connecting Google account for AI features.
             </Text>
