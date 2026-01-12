@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { View, Text, Pressable, TextInput, ScrollView, Animated } from 'react-native';
+import { View, Text, Pressable, TextInput, ScrollView } from 'react-native';
 import { Search, X, Check, PlusCircle } from 'lucide-react-native';
 import { theme } from '../theme';
 import { FullScreenModal } from './FullScreenModal';
@@ -270,29 +270,12 @@ export function AddFoodItemToMealModal({ visible, onClose, onAddFoods }: AddFood
           <Button
             label={`Add ${selectedCount} Selected Foods`}
             variant="gradientCta"
-            size="lg"
+            size="md"
             width="full"
             icon={PlusCircle}
             onPress={handleAdd}
             style={{ position: 'relative' }}
           />
-          <View
-            style={{
-              position: 'absolute',
-              right: 28,
-              top: '50%',
-              marginTop: -28, // Offset because of footer padding and button centering
-              backgroundColor: 'rgba(0,0,0,0.1)',
-              paddingHorizontal: 8,
-              paddingVertical: 2,
-              borderRadius: 4,
-              pointerEvents: 'none',
-              zIndex: 10,
-            }}>
-            <Text style={{ fontSize: 12, fontWeight: '700', color: theme.colors.text.white }}>
-              {totalCalories} kcal
-            </Text>
-          </View>
         </View>
       }>
       <View className="flex-1 px-4 py-2">
