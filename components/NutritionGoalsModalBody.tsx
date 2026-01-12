@@ -15,7 +15,7 @@ import { theme } from '../theme';
 import { Button } from './theme/Button';
 import { Slider } from './theme/Slider';
 import { MacrosPizzaChart } from './theme/MacrosPizzaChart';
-import { BodyMetricsStepper } from './theme/BodyMetricsStepper';
+import { StepperInlineInput } from './theme/StepperInlineInput';
 
 export type NutritionGoals = {
   totalCalories: number;
@@ -312,60 +312,44 @@ export function NutritionGoalsModalBody({
           {t('nutritionGoals.targetBodyMetrics')}
         </Text>
         <View className="gap-4">
-          <BodyMetricsStepper
-            icon={Scale}
+          <StepperInlineInput
             label={t('nutritionGoals.targetWeight')}
-            sublabel={t('nutritionGoals.sublabels.targetWeight')}
+            subtitle={t('nutritionGoals.sublabels.targetWeight')}
             value={targetWeight}
             unit="kg"
-            unitLabel="kg"
-            min={30}
-            max={200}
-            step={1}
-            onIncrement={() => {}}
-            onDecrement={() => {}}
+            icon={Scale}
+            onIncrement={() => setTargetWeight(Math.min(200, targetWeight + 1))}
+            onDecrement={() => setTargetWeight(Math.max(30, targetWeight - 1))}
             onChangeValue={setTargetWeight}
           />
-          <BodyMetricsStepper
-            icon={Percent}
+          <StepperInlineInput
             label={t('nutritionGoals.targetBodyFat')}
-            sublabel={t('nutritionGoals.sublabels.targetBodyFat')}
+            subtitle={t('nutritionGoals.sublabels.targetBodyFat')}
             value={targetBodyFat}
             unit="%"
-            unitLabel="%"
-            min={5}
-            max={50}
-            step={1}
-            onIncrement={() => {}}
-            onDecrement={() => {}}
+            icon={Percent}
+            onIncrement={() => setTargetBodyFat(Math.min(50, targetBodyFat + 1))}
+            onDecrement={() => setTargetBodyFat(Math.max(5, targetBodyFat - 1))}
             onChangeValue={setTargetBodyFat}
           />
-          <BodyMetricsStepper
-            icon={TrendingUp}
+          <StepperInlineInput
             label={t('nutritionGoals.targetBMI')}
-            sublabel={t('nutritionGoals.sublabels.targetBMI')}
+            subtitle={t('nutritionGoals.sublabels.targetBMI')}
             value={targetBMI}
             unit="index"
-            unitLabel="index"
-            min={15}
-            max={40}
-            step={0.1}
-            onIncrement={() => {}}
-            onDecrement={() => {}}
+            icon={TrendingUp}
+            onIncrement={() => setTargetBMI(Math.min(40, targetBMI + 0.1))}
+            onDecrement={() => setTargetBMI(Math.max(15, targetBMI - 0.1))}
             onChangeValue={setTargetBMI}
           />
-          <BodyMetricsStepper
-            icon={Activity}
+          <StepperInlineInput
             label={t('nutritionGoals.targetFFMI')}
-            sublabel={t('nutritionGoals.sublabels.targetFFMI')}
+            subtitle={t('nutritionGoals.sublabels.targetFFMI')}
             value={targetFFMI}
             unit="index"
-            unitLabel="index"
-            min={15}
-            max={30}
-            step={0.1}
-            onIncrement={() => {}}
-            onDecrement={() => {}}
+            icon={Activity}
+            onIncrement={() => setTargetFFMI(Math.min(30, targetFFMI + 0.1))}
+            onDecrement={() => setTargetFFMI(Math.max(15, targetFFMI - 0.1))}
             onChangeValue={setTargetFFMI}
           />
         </View>
