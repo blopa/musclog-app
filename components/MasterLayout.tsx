@@ -6,7 +6,7 @@ import { Home, Dumbbell, MessageSquare, Camera, UtensilsCrossed } from 'lucide-r
 import { useTranslation } from 'react-i18next';
 import React, { ReactNode, useState } from 'react';
 import { theme } from '../theme';
-import { CoachModal } from './CoachModal';
+import { CoachModal } from './modals/CoachModal';
 
 type MasterLayoutProps = {
   children: ReactNode;

@@ -4,12 +4,12 @@ import { Bell } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { MasterLayout } from '../components/MasterLayout';
-import { RecentWorkoutsCard } from '../components/RecentWorkoutsCard';
+import { RecentWorkoutsCard } from '../components/cards/RecentWorkoutsCard';
 import { CircularArrow } from '../components/CircularArrow';
 import { ActionButton } from '../components/ActionButton';
-import { DailySummaryCard } from '../components/DailySummaryCard';
-import { UserMenuModal } from '../components/UserMenuModal';
-import { NotificationsModal } from '../components/NotificationsModal';
+import { DailySummaryCard } from '../components/cards/DailySummaryCard';
+import { UserMenuModal } from '../components/modals/UserMenuModal';
+import { NotificationsModal } from '../components/modals/NotificationsModal';
 import { useRouter } from 'expo-router';
 import { SkeletonLoader } from '../components/theme/SkeletonLoader';
 

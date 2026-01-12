@@ -14,7 +14,7 @@ import { Slider } from '../../components/theme/Slider';
 import { StepperInput } from '../../components/theme/StepperInput';
 import { BodyMetricsStepper } from '../../components/theme/BodyMetricsStepper';
 import { OptionsSelector } from '../../components/OptionsSelector';
-import { OptionsMultiSelector } from '../../components/OptionsMultiSelector/OptionsMultiSelector';
+import { OptionsMultiSelector } from '../../components/theme/OptionsMultiSelector/OptionsMultiSelector';
 import { ToggleInput } from '../../components/theme/ToggleInput';
 
 export default function InputsTestScreen() {

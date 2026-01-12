@@ -5,7 +5,7 @@ import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { MasterLayout } from '../components/MasterLayout';
-import { StatCard } from '../components/StatCard';
+import { StatCard } from '../components/cards/StatCard';
 import { ManagementItem } from '../components/ManagementItem';
 import { ProgressIndicator } from '../components/theme/ProgressIndicator';
 
