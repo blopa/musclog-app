@@ -24,7 +24,7 @@ type OnboardingBodyProps = {
   };
 };
 
-function OnboardingStepFour({ title, description, badge }: OnboardingBodyProps) {
+function OnboardingStepFour({ title, description }: OnboardingBodyProps) {
   return (
     <View className="relative w-full max-w-md flex-1 flex-col items-center justify-center self-center px-6 pb-10">
       {/* Illustration Section */}
