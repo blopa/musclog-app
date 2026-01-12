@@ -12,6 +12,7 @@ import { EditSetDetailsModal } from '../../components/EditSetDetailsModal';
 import { LogSetPerformanceModal } from '../../components/LogSetPerformanceModal';
 import { FoodDetailsModal } from '../../components/FoodDetailsModal';
 import { AddFoodModal } from '../../components/AddFoodModal';
+import { AddMealModal } from '../../components/AddMealModal';
 import { FoodSearchModal } from '../../components/FoodSearchModal';
 import { NotificationsModal } from '../../components/NotificationsModal';
 import { WorkoutOptionsModal } from '../../components/WorkoutOptionsModal';
@@ -74,6 +75,9 @@ export default function ModalsTestScreen() {
 
   // Add Food Modal
   const [isAddFoodVisible, setIsAddFoodVisible] = useState(false);
+
+  // Add Meal Modal
+  const [isAddMealVisible, setIsAddMealVisible] = useState(false);
 
   // Food Search Modal
   const [isFoodSearchVisible, setIsFoodSearchVisible] = useState(false);
@@ -381,6 +385,20 @@ export default function ModalsTestScreen() {
             />
           </View>
 
+          {/* Add Meal Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Add Meal Modal</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Modal for creating or generating meals and managing categories.
+            </Text>
+            <Button
+              label="Open Add Meal Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsAddMealVisible(true)}
+            />
+          </View>
+
           {/* Food Search Modal */}
           <View className="mb-6">
             <Text className="mb-2 text-lg font-bold text-text-primary">Food Search Modal</Text>
@@ -658,6 +676,14 @@ export default function ModalsTestScreen() {
         onCreateCustomFoodPress={() => {
           console.log('Create custom food pressed');
         }}
+      />
+
+      <AddMealModal
+        visible={isAddMealVisible}
+        onClose={() => setIsAddMealVisible(false)}
+        onCreateMealPress={() => console.log('Create meal pressed')}
+        onGenerateAiMealPress={() => console.log('Generate meal with AI pressed')}
+        onManageCategoriesPress={() => console.log('Manage categories pressed')}
       />
 
       <FoodSearchModal
