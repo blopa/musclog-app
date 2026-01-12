@@ -29,7 +29,7 @@ export default function InputsTestScreen() {
   const [fullName, setFullName] = useState('Alex Johnson');
   const [bodyMetric, setBodyMetric] = useState(70);
   const [singleSelection, setSingleSelection] = useState<string | number | undefined>('1');
-  const [multiSelection, setMultiSelection] = useState<Array<string | number>>(['a']);
+  const [multiSelection, setMultiSelection] = useState<(string | number)[]>(['a']);
 
   const sampleOptions = [
     {

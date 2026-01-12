@@ -1,11 +1,9 @@
-import { Model, Database } from '@nozbe/watermelondb';
+import { Model, Database , Q } from '@nozbe/watermelondb';
 import { field, relation, children } from '@nozbe/watermelondb/decorators';
-import { Q } from '@nozbe/watermelondb';
 import type { Associations } from '@nozbe/watermelondb/Model';
 import Workout from './Workout';
 import WorkoutSession from './WorkoutSession';
 import Exercise from './Exercise';
-import Set from './Set';
 
 export default class WorkoutExercise extends Model {
   static table = 'workout_exercises';
