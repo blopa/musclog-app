@@ -6,6 +6,7 @@ import { useRouter } from 'expo-router';
 import { theme } from '../theme';
 import { GradientText } from '../components/GradientText';
 import { PageIndicators } from '../components/theme/PageIndicators';
+import { Button } from '../components/theme/Button';
 
 const PHONE_MOCKUP_IMAGE_URL =
   'https://lh3.googleusercontent.com/aida-public/AB6AXuCvPgrOeONs-O17Ju_HUwmNT_-Sv1SdtaoahIETdH1VPVF1sOdhGUVQPfGCSQc40hRRzo9Pk8XBan5A2gVZ7YsZusBCI8VD_Aw0SdNRgiwKnFsCdF55c3RaEo-hfwVzYVvQAcOFGNF_8EImiOV6GZmWmjqekRUfuW_a5LbmALIn-K55kdyBu4zo7vTYlHSHWQg4CElJfLX2KtzBWBN-Pqi_XccbCd6syoCCx_4xrZegtQNP1Re7Vt15261Ddj7edCPGTd3GNZO7MmHY';
@@ -169,49 +170,38 @@ export default function OnboardingScreen() {
 
             {/* Navigation Buttons */}
             <View className="w-full flex-row items-center justify-between">
-              {/* Back Button */}
-              <Pressable
-                className="h-14 w-14 items-center justify-center rounded-full border active:opacity-70"
-                style={{
-                  borderColor: theme.colors.background.white10,
-                }}
+              <Button
+                label="Back"
+                variant="outline"
+                size="sm"
+                icon={ArrowLeft}
+                iconPosition="left"
                 onPress={() => {
                   // Navigate back
                   router.back();
-                }}>
-                <ArrowLeft
-                  size={theme.iconSize.lg}
-                  color={theme.colors.text.gray500}
-                  strokeWidth={theme.strokeWidth.normal}
-                />
-              </Pressable>
+                }}
+                style={{
+                  borderColor: theme.colors.background.white10,
+                }}
+              />
 
-              {/* Next Button */}
-              <Pressable
-                className="h-14 flex-row items-center gap-2 rounded-full px-8 active:scale-95"
+              <Button
+                label="Next"
+                variant="gradientCta"
+                size="sm"
+                icon={ArrowRight}
+                iconPosition="right"
+                onPress={() => {
+                  // Navigate to next onboarding screen or home
+                  router.push('/');
+                }}
                 style={{
                   backgroundColor: theme.colors.status.emeraldLight,
                   ...theme.shadows.lg,
                   shadowColor: theme.colors.status.emeraldLight,
                   shadowOpacity: 0.2,
                 }}
-                onPress={() => {
-                  // Navigate to next onboarding screen or home
-                  router.push('/');
-                }}>
-                <Text
-                  className="text-lg font-bold"
-                  style={{
-                    color: '#11211a', // background-dark from HTML
-                  }}>
-                  Next
-                </Text>
-                <ArrowRight
-                  size={theme.iconSize.lg}
-                  color="#11211a"
-                  strokeWidth={theme.strokeWidth.normal}
-                />
-              </Pressable>
+              />
             </View>
           </View>
         </SafeAreaView>
