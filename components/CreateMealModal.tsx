@@ -1,14 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Pressable } from 'react-native';
-import {
-  MoreVertical,
-  Trash2,
-  Plus,
-  CheckCircle2,
-  Egg,
-  Info,
-  Apple,
-} from 'lucide-react-native';
+import { MoreVertical, Trash2, Plus, CheckCircle2, Egg, Info, Apple } from 'lucide-react-native';
 import { theme } from '../theme';
 import { FullScreenModal } from './FullScreenModal';
 import { Button } from './theme/Button';
@@ -51,6 +43,67 @@ type CreateMealModalProps = {
   onSave?: (mealData: any) => void;
 };
 
+const MacroCard = ({
+  label,
+  value,
+  progress,
+  color,
+}: {
+  label: string;
+  value: string;
+  progress: number;
+  color: string;
+}) => (
+  <View
+    style={{
+      flex: 1,
+      backgroundColor: 'rgba(10, 31, 26, 0.6)',
+      borderRadius: theme.borderRadius.md,
+      padding: 10,
+      borderWidth: theme.borderWidth.thin,
+      borderColor: theme.colors.border.light,
+      alignItems: 'center',
+    }}>
+    <Text
+      style={{
+        fontSize: 10,
+        fontWeight: theme.typography.fontWeight.bold,
+        color: theme.colors.text.secondary,
+        textTransform: 'uppercase',
+        letterSpacing: 1,
+        marginBottom: 2,
+      }}>
+      {label}
+    </Text>
+    <Text
+      style={{
+        fontSize: theme.typography.fontSize.sm,
+        fontWeight: theme.typography.fontWeight.bold,
+        color: theme.colors.text.primary,
+      }}>
+      {value}
+    </Text>
+    <View
+      style={{
+        width: '100%',
+        height: 4,
+        backgroundColor: theme.colors.background.white10,
+        borderRadius: 2,
+        marginTop: 8,
+        overflow: 'hidden',
+      }}>
+      <View
+        style={{
+          height: '100%',
+          width: `${progress}%`,
+          backgroundColor: color,
+          borderRadius: 2,
+        }}
+      />
+    </View>
+  </View>
+);
+
 export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalProps) {
   const [mealName, setMealName] = useState('');
   const [isFocused, setIsFocused] = useState(false);
@@ -67,69 +120,8 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
   };
 
   const removeIngredient = (id: string) => {
-    setIngredients(prev => prev.filter(item => item.id !== id));
+    setIngredients((prev) => prev.filter((item) => item.id !== id));
   };
-
-  const MacroCard = ({
-    label,
-    value,
-    progress,
-    color,
-  }: {
-    label: string;
-    value: string;
-    progress: number;
-    color: string;
-  }) => (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: 'rgba(10, 31, 26, 0.6)',
-        borderRadius: theme.borderRadius.md,
-        padding: 10,
-        borderWidth: theme.borderWidth.thin,
-        borderColor: theme.colors.border.light,
-        alignItems: 'center',
-      }}>
-      <Text
-        style={{
-          fontSize: 10,
-          fontWeight: theme.typography.fontWeight.bold,
-          color: theme.colors.text.secondary,
-          textTransform: 'uppercase',
-          letterSpacing: 1,
-          marginBottom: 2,
-        }}>
-        {label}
-      </Text>
-      <Text
-        style={{
-          fontSize: theme.typography.fontSize.sm,
-          fontWeight: theme.typography.fontWeight.bold,
-          color: theme.colors.text.primary,
-        }}>
-        {value}
-      </Text>
-      <View
-        style={{
-          width: '100%',
-          height: 4,
-          backgroundColor: theme.colors.background.white10,
-          borderRadius: 2,
-          marginTop: 8,
-          overflow: 'hidden',
-        }}>
-        <View
-          style={{
-            height: '100%',
-            width: `${progress}%`,
-            backgroundColor: color,
-            borderRadius: 2,
-          }}
-        />
-      </View>
-    </View>
-  );
 
   return (
     <FullScreenModal
@@ -237,7 +229,13 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
           />
 
           <View style={{ position: 'relative', zIndex: 10 }}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'flex-start',
+                marginBottom: 20,
+              }}>
               <View>
                 <Text
                   style={{
@@ -251,10 +249,20 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
                   Total Nutrition
                 </Text>
                 <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 4 }}>
-                  <Text style={{ fontSize: 36, fontWeight: theme.typography.fontWeight.bold, color: theme.colors.text.primary }}>
+                  <Text
+                    style={{
+                      fontSize: 36,
+                      fontWeight: theme.typography.fontWeight.bold,
+                      color: theme.colors.text.primary,
+                    }}>
                     854
                   </Text>
-                  <Text style={{ fontSize: 14, fontWeight: theme.typography.fontWeight.medium, color: theme.colors.text.tertiary }}>
+                  <Text
+                    style={{
+                      fontSize: 14,
+                      fontWeight: theme.typography.fontWeight.medium,
+                      color: theme.colors.text.tertiary,
+                    }}>
                     kcal
                   </Text>
                 </View>
@@ -268,15 +276,30 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
                   borderWidth: 1,
                   borderColor: theme.colors.border.light,
                 }}>
-                <Text style={{ fontSize: 10, fontWeight: theme.typography.fontWeight.bold, color: theme.colors.text.secondary }}>
+                <Text
+                  style={{
+                    fontSize: 10,
+                    fontWeight: theme.typography.fontWeight.bold,
+                    color: theme.colors.text.secondary,
+                  }}>
                   ESTIMATED
                 </Text>
               </View>
             </View>
 
             <View style={{ flexDirection: 'row', gap: 12 }}>
-              <MacroCard label="Protein" value="62g" progress={70} color={theme.colors.accent.primary} />
-              <MacroCard label="Carbs" value="95g" progress={45} color={theme.colors.status.indigo} />
+              <MacroCard
+                label="Protein"
+                value="62g"
+                progress={70}
+                color={theme.colors.accent.primary}
+              />
+              <MacroCard
+                label="Carbs"
+                value="95g"
+                progress={45}
+                color={theme.colors.status.indigo}
+              />
               <MacroCard label="Fat" value="24g" progress={30} color="#fbbf24" />
             </View>
           </View>
@@ -284,7 +307,7 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
 
         {/* Ingredients Section */}
         <View className="mb-6">
-          <View className="flex-row justify-between items-end mb-3 px-1">
+          <View className="mb-3 flex-row items-end justify-between px-1">
             <Text
               style={{
                 fontSize: theme.typography.fontSize.xs,
@@ -347,10 +370,22 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
                       }}>
                       {item.name}
                     </Text>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 2 }}>
-                      <Text style={{ fontSize: 12, color: theme.colors.text.secondary }}>{item.amount}</Text>
-                      <View style={{ width: 2, height: 2, borderRadius: 1, backgroundColor: theme.colors.text.tertiary }} />
-                      <Text style={{ fontSize: 12, color: theme.colors.text.secondary }}>{item.calories} kcal</Text>
+                    <View
+                      style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 2 }}>
+                      <Text style={{ fontSize: 12, color: theme.colors.text.secondary }}>
+                        {item.amount}
+                      </Text>
+                      <View
+                        style={{
+                          width: 2,
+                          height: 2,
+                          borderRadius: 1,
+                          backgroundColor: theme.colors.text.tertiary,
+                        }}
+                      />
+                      <Text style={{ fontSize: 12, color: theme.colors.text.secondary }}>
+                        {item.calories} kcal
+                      </Text>
                     </View>
                   </View>
                   <Pressable onPress={() => removeIngredient(item.id)} className="p-2">
@@ -385,7 +420,12 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
                 }}>
                 <Plus size={16} color={theme.colors.text.secondary} strokeWidth={3} />
               </View>
-              <Text style={{ fontSize: 14, fontWeight: theme.typography.fontWeight.bold, color: theme.colors.text.secondary }}>
+              <Text
+                style={{
+                  fontSize: 14,
+                  fontWeight: theme.typography.fontWeight.bold,
+                  color: theme.colors.text.secondary,
+                }}>
                 Add Food Item
               </Text>
             </Pressable>
@@ -395,4 +435,3 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
     </FullScreenModal>
   );
 }
-
