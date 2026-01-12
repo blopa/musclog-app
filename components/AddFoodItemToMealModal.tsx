@@ -83,7 +83,7 @@ function FoodResultCard({
   return (
     <View
       style={{
-        backgroundColor: theme.colors.background.card,
+        backgroundColor: theme.colors.background.cardElevated,
         borderRadius: theme.borderRadius.md,
         padding: 12,
         borderWidth: isSelected ? 1 : theme.borderWidth.thin,
@@ -154,7 +154,7 @@ function FoodResultCard({
             </View>
           </View>
 
-          <Text style={{ fontSize: 12, color: theme.colors.text.tertiary, marginTop: 4 }}>
+          <Text style={{ fontSize: 12, color: theme.colors.text.primary, marginTop: 4 }}>
             {food.description}
           </Text>
 
@@ -163,7 +163,7 @@ function FoodResultCard({
             <Text
               style={{
                 fontSize: 10,
-                color: theme.colors.text.tertiary,
+                color: theme.colors.text.primary,
                 fontWeight: theme.typography.fontWeight.medium,
               }}>
               P: {food.protein}g
@@ -171,7 +171,7 @@ function FoodResultCard({
             <Text
               style={{
                 fontSize: 10,
-                color: theme.colors.text.tertiary,
+                color: theme.colors.text.primary,
                 fontWeight: theme.typography.fontWeight.medium,
               }}>
               C: {food.carbs}g
@@ -179,7 +179,7 @@ function FoodResultCard({
             <Text
               style={{
                 fontSize: 10,
-                color: theme.colors.text.tertiary,
+                color: theme.colors.text.primary,
                 fontWeight: theme.typography.fontWeight.medium,
               }}>
               F: {food.fat}g
@@ -234,7 +234,7 @@ function FoodResultCard({
             <Text
               style={{
                 fontSize: 12,
-                color: theme.colors.text.tertiary,
+                color: theme.colors.text.primary,
                 paddingRight: 4,
                 fontWeight: theme.typography.fontWeight.medium,
               }}>
