@@ -3,11 +3,155 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Minus, Plus, Scale, Percent, Activity, Dumbbell, ChevronRight } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useState, useMemo, useCallback, memo } from 'react';
 import { theme } from '../theme';
 import { Slider } from '../components/theme/Slider';
 import { Button } from '../components/theme/Button';
 import Svg, { Circle } from 'react-native-svg';
+
+type MacroCardProps = {
+  label: string;
+  value: number;
+  setValue: (value: number) => void;
+  kcalPerGram: number;
+  color: string;
+  max: number;
+  min?: number;
+};
+
+const MacroCard = memo(
+  ({ label, value, setValue, kcalPerGram, color, max, min = 0 }: MacroCardProps) => {
+    const handleDecrement = useCallback(() => {
+      setValue(Math.max(min, value - 1));
+    }, [value, min, setValue]);
+
+    const handleIncrement = useCallback(() => {
+      setValue(Math.min(max, value + 1));
+    }, [value, max, setValue]);
+
+    const handleSliderChange = useCallback(
+      (newValue: number) => {
+        setValue(newValue);
+      },
+      [setValue]
+    );
+
+    return (
+      <View className="rounded-xl border border-emerald-900/20 bg-bg-card p-5">
+        <View className="mb-4 flex-row items-center justify-between">
+          <View className="flex-row items-center gap-3">
+            <View className="h-8 w-2 rounded-full" style={{ backgroundColor: color }} />
+            <View>
+              <Text className="font-semibold text-white">{label}</Text>
+              <Text className="text-xs text-gray-500">{kcalPerGram} kcal/g</Text>
+            </View>
+          </View>
+          <View className="flex-row items-center gap-3">
+            <Pressable
+              className="border-primary/20 h-10 w-10 items-center justify-center rounded-full border active:opacity-70"
+              style={{ backgroundColor: 'rgba(16, 185, 129, 0.3)' }}
+              onPress={handleDecrement}>
+              <Minus size={20} color={theme.colors.status.emeraldLight} />
+            </Pressable>
+            <Text className="w-12 text-center text-xl font-bold text-white">{value}g</Text>
+            <Pressable
+              className="border-primary/20 h-10 w-10 items-center justify-center rounded-full border active:opacity-70"
+              style={{ backgroundColor: 'rgba(16, 185, 129, 0.3)' }}
+              onPress={handleIncrement}>
+              <Plus size={20} color={theme.colors.status.emeraldLight} />
+            </Pressable>
+          </View>
+        </View>
+        <Slider
+          value={value}
+          min={min}
+          max={max}
+          onChange={handleSliderChange}
+          trackColor="rgba(16, 185, 129, 0.3)"
+          thumbColor={theme.colors.status.emeraldLight}
+          variant="solid"
+          solidColor={theme.colors.status.emeraldLight}
+        />
+      </View>
+    );
+  }
+);
+
+MacroCard.displayName = 'MacroCard';
+
+type BodyMetricCardProps = {
+  icon: any;
+  label: string;
+  value: number;
+  setValue: (value: number) => void;
+  unit: string;
+  subtitle: string;
+  min?: number;
+  max?: number;
+  step?: number;
+};
+
+const BodyMetricCard = memo(
+  ({
+    icon: Icon,
+    label,
+    value,
+    setValue,
+    unit,
+    subtitle,
+    min = 0,
+    max = 200,
+    step = 1,
+  }: BodyMetricCardProps) => {
+    const handleDecrement = useCallback(() => {
+      setValue(Math.max(min, value - step));
+    }, [value, min, step, setValue]);
+
+    const handleIncrement = useCallback(() => {
+      setValue(Math.min(max, value + step));
+    }, [value, max, step, setValue]);
+
+    return (
+      <View className="rounded-xl border border-emerald-900/20 bg-bg-card p-5">
+        <View className="flex-row items-center justify-between">
+          <View className="flex-row items-center gap-3">
+            <View
+              className="h-10 w-10 items-center justify-center rounded-lg"
+              style={{ backgroundColor: 'rgba(16, 185, 129, 0.2)' }}>
+              <Icon size={20} color={theme.colors.status.emeraldLight} />
+            </View>
+            <View>
+              <Text className="font-semibold text-white">{label}</Text>
+              <Text className="text-xs text-gray-500">{subtitle}</Text>
+            </View>
+          </View>
+          <View className="flex-row items-center gap-3">
+            <Pressable
+              className="border-primary/20 h-10 w-10 items-center justify-center rounded-full border active:opacity-70"
+              style={{ backgroundColor: 'rgba(16, 185, 129, 0.3)' }}
+              onPress={handleDecrement}>
+              <Minus size={20} color={theme.colors.status.emeraldLight} />
+            </Pressable>
+            <View className="w-16 items-center">
+              <Text className="text-xl font-bold text-white">
+                {step === 0.1 ? value.toFixed(1) : value}
+              </Text>
+              <Text className="text-xs text-gray-500">{unit}</Text>
+            </View>
+            <Pressable
+              className="border-primary/20 h-10 w-10 items-center justify-center rounded-full border active:opacity-70"
+              style={{ backgroundColor: 'rgba(16, 185, 129, 0.3)' }}
+              onPress={handleIncrement}>
+              <Plus size={20} color={theme.colors.status.emeraldLight} />
+            </Pressable>
+          </View>
+        </View>
+      </View>
+    );
+  }
+);
+
+BodyMetricCard.displayName = 'BodyMetricCard';
 
 export default function NutritionGoalsScreen() {
   const router = useRouter();
@@ -23,138 +167,48 @@ export default function NutritionGoalsScreen() {
   const [targetBMI, setTargetBMI] = useState(23.5);
   const [targetFFMI, setTargetFFMI] = useState(21.0);
 
-  // Calculate total calories
-  const totalCalories = protein * 4 + carbs * 4 + fats * 9;
+  // Memoize calculations
+  const { totalCalories, proteinPercent, carbsPercent, fatsPercent, chartData } = useMemo(() => {
+    const total = protein * 4 + carbs * 4 + fats * 9;
+    const proteinCal = protein * 4;
+    const carbsCal = carbs * 4;
+    const fatsCal = fats * 9;
+    const pPercent = total > 0 ? (proteinCal / total) * 100 : 0;
+    const cPercent = total > 0 ? (carbsCal / total) * 100 : 0;
+    const fPercent = total > 0 ? (fatsCal / total) * 100 : 0;
 
-  // Calculate percentages for chart
-  const proteinCalories = protein * 4;
-  const carbsCalories = carbs * 4;
-  const fatsCalories = fats * 9;
-  const proteinPercent = (proteinCalories / totalCalories) * 100;
-  const carbsPercent = (carbsCalories / totalCalories) * 100;
-  const fatsPercent = (fatsCalories / totalCalories) * 100;
+    // SVG circle calculations
+    const radius = 40;
+    const circumference = 2 * Math.PI * radius;
+    const proteinDash = (circumference * pPercent) / 100;
+    const carbsDash = (circumference * cPercent) / 100;
+    const fatsDash = (circumference * fPercent) / 100;
 
-  // SVG circle calculations
-  const radius = 40;
-  const circumference = 2 * Math.PI * radius;
-  const proteinDash = (circumference * proteinPercent) / 100;
-  const carbsDash = (circumference * carbsPercent) / 100;
-  const fatsDash = (circumference * fatsPercent) / 100;
-  const carbsOffset = -proteinDash;
-  const fatsOffset = -(proteinDash + carbsDash);
+    return {
+      totalCalories: total,
+      proteinPercent: pPercent,
+      carbsPercent: cPercent,
+      fatsPercent: fPercent,
+      chartData: {
+        radius,
+        circumference,
+        proteinDash,
+        carbsDash,
+        fatsDash,
+        carbsOffset: -proteinDash,
+        fatsOffset: -(proteinDash + carbsDash),
+      },
+    };
+  }, [protein, carbs, fats]);
 
-  const MacroCard = ({
-    label,
-    value,
-    setValue,
-    kcalPerGram,
-    color,
-    max,
-    min = 0,
-  }: {
-    label: string;
-    value: number;
-    setValue: (value: number) => void;
-    kcalPerGram: number;
-    color: string;
-    max: number;
-    min?: number;
-  }) => (
-    <View className="rounded-xl border border-emerald-900/20 bg-bg-card p-5">
-      <View className="mb-4 flex-row items-center justify-between">
-        <View className="flex-row items-center gap-3">
-          <View className="h-8 w-2 rounded-full" style={{ backgroundColor: color }} />
-          <View>
-            <Text className="font-semibold text-white">{label}</Text>
-            <Text className="text-xs text-gray-500">{kcalPerGram} kcal/g</Text>
-          </View>
-        </View>
-        <View className="flex-row items-center gap-3">
-          <Pressable
-            className="border-primary/20 h-10 w-10 items-center justify-center rounded-full border active:opacity-70"
-            style={{ backgroundColor: 'rgba(16, 185, 129, 0.3)' }}
-            onPress={() => setValue(Math.max(min, value - 1))}>
-            <Minus size={20} color={theme.colors.status.emeraldLight} />
-          </Pressable>
-          <Text className="w-12 text-center text-xl font-bold text-white">{value}g</Text>
-          <Pressable
-            className="border-primary/20 h-10 w-10 items-center justify-center rounded-full border active:opacity-70"
-            style={{ backgroundColor: 'rgba(16, 185, 129, 0.3)' }}
-            onPress={() => setValue(Math.min(max, value + 1))}>
-            <Plus size={20} color={theme.colors.status.emeraldLight} />
-          </Pressable>
-        </View>
-      </View>
-      <Slider
-        value={value}
-        min={min}
-        max={max}
-        onChange={setValue}
-        trackColor="rgba(16, 185, 129, 0.3)"
-        thumbColor={theme.colors.status.emeraldLight}
-        variant="solid"
-        solidColor={theme.colors.status.emeraldLight}
-      />
-    </View>
-  );
-
-  const BodyMetricCard = ({
-    icon: Icon,
-    label,
-    value,
-    setValue,
-    unit,
-    subtitle,
-    min = 0,
-    max = 200,
-    step = 1,
-  }: {
-    icon: any;
-    label: string;
-    value: number;
-    setValue: (value: number) => void;
-    unit: string;
-    subtitle: string;
-    min?: number;
-    max?: number;
-    step?: number;
-  }) => (
-    <View className="rounded-xl border border-emerald-900/20 bg-bg-card p-5">
-      <View className="flex-row items-center justify-between">
-        <View className="flex-row items-center gap-3">
-          <View
-            className="h-10 w-10 items-center justify-center rounded-lg"
-            style={{ backgroundColor: 'rgba(16, 185, 129, 0.2)' }}>
-            <Icon size={20} color={theme.colors.status.emeraldLight} />
-          </View>
-          <View>
-            <Text className="font-semibold text-white">{label}</Text>
-            <Text className="text-xs text-gray-500">{subtitle}</Text>
-          </View>
-        </View>
-        <View className="flex-row items-center gap-3">
-          <Pressable
-            className="border-primary/20 h-10 w-10 items-center justify-center rounded-full border active:opacity-70"
-            style={{ backgroundColor: 'rgba(16, 185, 129, 0.3)' }}
-            onPress={() => setValue(Math.max(min, value - step))}>
-            <Minus size={20} color={theme.colors.status.emeraldLight} />
-          </Pressable>
-          <View className="w-16 items-center">
-            <Text className="text-xl font-bold text-white">
-              {step === 0.1 ? value.toFixed(1) : value}
-            </Text>
-            <Text className="text-xs text-gray-500">{unit}</Text>
-          </View>
-          <Pressable
-            className="border-primary/20 h-10 w-10 items-center justify-center rounded-full border active:opacity-70"
-            style={{ backgroundColor: 'rgba(16, 185, 129, 0.3)' }}
-            onPress={() => setValue(Math.min(max, value + step))}>
-            <Plus size={20} color={theme.colors.status.emeraldLight} />
-          </Pressable>
-        </View>
-      </View>
-    </View>
-  );
+  // Use useCallback for setters to prevent unnecessary re-renders
+  const handleSetProtein = useCallback((value: number) => setProtein(value), []);
+  const handleSetCarbs = useCallback((value: number) => setCarbs(value), []);
+  const handleSetFats = useCallback((value: number) => setFats(value), []);
+  const handleSetTargetWeight = useCallback((value: number) => setTargetWeight(value), []);
+  const handleSetTargetBodyFat = useCallback((value: number) => setTargetBodyFat(value), []);
+  const handleSetTargetBMI = useCallback((value: number) => setTargetBMI(value), []);
+  const handleSetTargetFFMI = useCallback((value: number) => setTargetFFMI(value), []);
 
   return (
     <View className="flex-1 bg-bg-primary">
@@ -210,7 +264,7 @@ export default function NutritionGoalsScreen() {
             <MacroCard
               label="Protein"
               value={protein}
-              setValue={setProtein}
+              setValue={handleSetProtein}
               kcalPerGram={4}
               color={theme.colors.status.emerald}
               max={300}
@@ -218,7 +272,7 @@ export default function NutritionGoalsScreen() {
             <MacroCard
               label="Carbohydrates"
               value={carbs}
-              setValue={setCarbs}
+              setValue={handleSetCarbs}
               kcalPerGram={4}
               color={theme.colors.status.indigo}
               max={500}
@@ -226,7 +280,7 @@ export default function NutritionGoalsScreen() {
             <MacroCard
               label="Fats"
               value={fats}
-              setValue={setFats}
+              setValue={handleSetFats}
               kcalPerGram={9}
               color={theme.colors.status.amber}
               max={150}
@@ -245,7 +299,7 @@ export default function NutritionGoalsScreen() {
                   <Circle
                     cx="50"
                     cy="50"
-                    r={radius}
+                    r={chartData.radius}
                     fill="transparent"
                     stroke={theme.colors.background.card}
                     strokeWidth="12"
@@ -254,10 +308,10 @@ export default function NutritionGoalsScreen() {
                   <Circle
                     cx="50"
                     cy="50"
-                    r={radius}
+                    r={chartData.radius}
                     fill="transparent"
                     stroke={theme.colors.status.emerald}
-                    strokeDasharray={`${proteinDash} ${circumference}`}
+                    strokeDasharray={`${chartData.proteinDash} ${chartData.circumference}`}
                     strokeDashoffset="0"
                     strokeWidth="12"
                   />
@@ -265,22 +319,22 @@ export default function NutritionGoalsScreen() {
                   <Circle
                     cx="50"
                     cy="50"
-                    r={radius}
+                    r={chartData.radius}
                     fill="transparent"
                     stroke={theme.colors.status.indigo}
-                    strokeDasharray={`${carbsDash} ${circumference}`}
-                    strokeDashoffset={carbsOffset}
+                    strokeDasharray={`${chartData.carbsDash} ${chartData.circumference}`}
+                    strokeDashoffset={chartData.carbsOffset}
                     strokeWidth="12"
                   />
                   {/* Fats */}
                   <Circle
                     cx="50"
                     cy="50"
-                    r={radius}
+                    r={chartData.radius}
                     fill="transparent"
                     stroke={theme.colors.status.amber}
-                    strokeDasharray={`${fatsDash} ${circumference}`}
-                    strokeDashoffset={fatsOffset}
+                    strokeDasharray={`${chartData.fatsDash} ${chartData.circumference}`}
+                    strokeDashoffset={chartData.fatsOffset}
                     strokeWidth="12"
                   />
                 </Svg>
@@ -315,7 +369,7 @@ export default function NutritionGoalsScreen() {
               icon={Scale}
               label="Target Weight"
               value={targetWeight}
-              setValue={setTargetWeight}
+              setValue={handleSetTargetWeight}
               unit="kg"
               subtitle="kg/lbs"
               min={30}
@@ -325,7 +379,7 @@ export default function NutritionGoalsScreen() {
               icon={Percent}
               label="Target Body Fat"
               value={targetBodyFat}
-              setValue={setTargetBodyFat}
+              setValue={handleSetTargetBodyFat}
               unit="%"
               subtitle="% percentage"
               min={0}
@@ -335,7 +389,7 @@ export default function NutritionGoalsScreen() {
               icon={Activity}
               label="Target BMI"
               value={targetBMI}
-              setValue={setTargetBMI}
+              setValue={handleSetTargetBMI}
               unit="index"
               subtitle="Body Mass Index"
               min={10}
@@ -346,7 +400,7 @@ export default function NutritionGoalsScreen() {
               icon={Dumbbell}
               label="Target FFMI"
               value={targetFFMI}
-              setValue={setTargetFFMI}
+              setValue={handleSetTargetFFMI}
               unit="index"
               subtitle="Fat-Free Mass Index"
               min={10}
@@ -376,7 +430,7 @@ export default function NutritionGoalsScreen() {
                 icon={ChevronRight}
                 iconPosition="right"
                 variant="gradientCta"
-                size="lg"
+                size="md"
                 width="full"
                 style={{
                   ...theme.shadows.lg,
