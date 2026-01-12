@@ -146,10 +146,6 @@ export default function OnboardingScreen() {
             {/* Page Indicators */}
             <View className="flex-row items-center justify-center gap-2">
               <View
-                className="h-2 w-2 rounded-full"
-                style={{ backgroundColor: theme.colors.background.white10 }}
-              />
-              <View
                 className="h-2 rounded-full"
                 style={{
                   width: theme.size['8'],
@@ -160,6 +156,10 @@ export default function OnboardingScreen() {
                   shadowRadius: 10,
                   elevation: 5,
                 }}
+              />
+              <View
+                className="h-2 w-2 rounded-full"
+                style={{ backgroundColor: theme.colors.background.white10 }}
               />
               <View
                 className="h-2 w-2 rounded-full"
