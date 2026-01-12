@@ -1,7 +1,7 @@
 import { View, Text, ScrollView } from 'react-native';
 import { EditPersonalInfoBody } from '../components/EditPersonalInfoBody';
 
-export default function NutritionGoalsScreen() {
+export default function PersonalInfo() {
   return (
     <ScrollView>
       <View className="px-6 pb-2 pt-4">
