@@ -62,7 +62,9 @@ export const GoogleGeminiIllustration = ({
             className="absolute inset-0"
           />
           {/* Bottom buttons overlay */}
-          <View className="absolute bottom-4 left-0 right-0 flex-row items-center justify-center">
+          <View
+            className="absolute left-0 right-0 flex-row items-center justify-center"
+            style={{ bottom: 16 }}>
             {/* Single pill container */}
             <View
               className="flex-row items-center gap-3 rounded-full border border-white/20 px-4 py-2.5"
@@ -83,23 +85,24 @@ export const GoogleGeminiIllustration = ({
               {/* Sparkles icon - directly in pill, no background */}
               <Sparkles
                 size={20}
-                color={theme.colors.accent.primary}
-                fill={theme.colors.accent.primary}
+                color={theme.colors.status.emeraldLight} // #29e08e - primary from HTML
+                fill={theme.colors.status.emeraldLight}
               />
-              {/* Zap icon - green circle */}
+              {/* Zap icon - green circle with glow shadow */}
               <View
                 className="rounded-full p-1.5"
                 style={{
-                  backgroundColor: theme.colors.accent.primary,
-                  shadowColor: theme.colors.accent.primary,
+                  backgroundColor: theme.colors.status.emeraldLight, // #29e08e - primary from HTML
+                  shadowColor: theme.colors.status.emeraldLight,
                   shadowOffset: { width: 0, height: 0 },
                   shadowOpacity: 0.3,
-                  shadowRadius: 8,
+                  shadowRadius: 15, // Approximating the glow effect (0 0 20px -5px)
+                  elevation: 5,
                 }}>
                 <Zap
                   size={18}
-                  color={theme.colors.background.primary}
-                  fill={theme.colors.background.primary}
+                  color="#11211a" // background-dark color from HTML
+                  fill="#11211a"
                 />
               </View>
             </View>
