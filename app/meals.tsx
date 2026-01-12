@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, Pressable } from 'react-native';
 import { Search, MoreVertical } from 'lucide-react-native';
+import { AddMealModal } from '../components/AddMealModal';
 import { theme } from '../theme';
 import { MasterLayout } from '../components/MasterLayout';
 import { FilterTabs } from '../components/FilterTabs';
@@ -67,6 +68,26 @@ const FILTER_TABS = [
 export default function MyMealsScreen() {
   const [activeFilter, setActiveFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [addMealModalVisible, setAddMealModalVisible] = useState(false);
+
+  // Handlers for AddMealModal options
+  const handleCreateMeal = () => {
+    setAddMealModalVisible(false);
+    // TODO: Implement create meal logic
+    console.log('Create Meal pressed');
+  };
+
+  const handleGenerateMealAI = () => {
+    setAddMealModalVisible(false);
+    // TODO: Implement generate meal with AI logic
+    console.log('Generate Meal with AI pressed');
+  };
+
+  const handleManageCategories = () => {
+    setAddMealModalVisible(false);
+    // TODO: Implement manage categories logic
+    console.log('Manage Categories pressed');
+  };
 
   return (
     <MasterLayout>
@@ -89,7 +110,8 @@ export default function MyMealsScreen() {
             </Pressable>
             <Pressable
               className="h-10 w-10 items-center justify-center rounded-full"
-              style={{ backgroundColor: theme.colors.background.white5 }}>
+              style={{ backgroundColor: theme.colors.background.white5 }}
+              onPress={() => setAddMealModalVisible(true)}>
               <MoreVertical size={theme.iconSize.md} color={theme.colors.text.primary} />
             </Pressable>
           </View>
@@ -121,6 +143,15 @@ export default function MyMealsScreen() {
           {/* Bottom spacing for FAB and TabBar */}
           <View style={{ height: 120 }} />
         </ScrollView>
+
+        {/* AddMealModal */}
+        <AddMealModal
+          visible={addMealModalVisible}
+          onClose={() => setAddMealModalVisible(false)}
+          onCreateMeal={handleCreateMeal}
+          onGenerateMealAI={handleGenerateMealAI}
+          onManageCategories={handleManageCategories}
+        />
       </View>
     </MasterLayout>
   );

@@ -49,11 +49,6 @@ export function AddMealModal({
   ];
 
   return (
-    <BottomPopUpMenu
-      visible={visible}
-      onClose={onClose}
-      title={t('addMeal.title')}
-      items={items}
-    />
+    <BottomPopUpMenu visible={visible} onClose={onClose} title={t('addMeal.title')} items={items} />
   );
 }
