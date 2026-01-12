@@ -50,14 +50,7 @@ function OnboardingStepFour({ title, description }: OnboardingBodyProps) {
             }}
           />
         </View>
-
-        {/* Main Image Card */}
-        <View
-          className="relative z-10 h-full w-full overflow-hidden rounded-3xl border border-white/10"
-          style={theme.shadows.lg}
-        >
-          <PreRegistrationIntro />
-        </View>
+        <PreRegistrationIntro />
       </View>
 
       {/* Typography Block */}
