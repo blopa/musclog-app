@@ -140,62 +140,82 @@ export default function OnboardingScreen() {
       </View>
 
       {/* Footer / Navigation */}
-      <SafeAreaView edges={['bottom']} className="w-full max-w-md self-center px-6 pb-8 pt-4 z-20">
-        <View className="flex-col items-center gap-8">
-          {/* Page Indicators */}
-          <View className="flex-row items-center justify-center gap-2">
-            <View
-              className="h-2 w-2 rounded-full"
-              style={{ backgroundColor: theme.colors.background.white10 }}
-            />
-            <View
-              className="h-2 rounded-full"
-              style={{
-                width: theme.size['8'],
-                backgroundColor: theme.colors.status.emeraldLight,
-                ...theme.shadows.accentGlow,
-              }}
-            />
-            <View
-              className="h-2 w-2 rounded-full"
-              style={{ backgroundColor: theme.colors.background.white10 }}
-            />
-          </View>
-
-          {/* Navigation Buttons */}
-          <View className="w-full flex-row justify-between items-center">
-            {/* Back Button */}
-            <Pressable
-              className="h-14 w-14 items-center justify-center rounded-full border active:opacity-70"
-              style={{
-                borderColor: theme.colors.border.default,
-              }}
-              onPress={() => {
-                // Navigate back
-                router.back();
-              }}>
-              <ArrowLeft
-                size={theme.iconSize.lg}
-                color={theme.colors.text.gray500}
-                strokeWidth={theme.strokeWidth.normal}
+      <View className="w-full max-w-md self-center z-20">
+        <SafeAreaView edges={['bottom']}>
+          <View className="px-6 pb-8 pt-4 flex-col items-center gap-8">
+            {/* Page Indicators */}
+            <View className="flex-row items-center justify-center gap-2">
+              <View
+                className="h-2 w-2 rounded-full"
+                style={{ backgroundColor: theme.colors.background.white10 }}
               />
-            </Pressable>
+              <View
+                className="h-2 rounded-full"
+                style={{
+                  width: theme.size['8'],
+                  backgroundColor: theme.colors.status.emeraldLight,
+                  shadowColor: theme.colors.status.emeraldLight,
+                  shadowOffset: { width: 0, height: 0 },
+                  shadowOpacity: 0.5,
+                  shadowRadius: 10,
+                  elevation: 5,
+                }}
+              />
+              <View
+                className="h-2 w-2 rounded-full"
+                style={{ backgroundColor: theme.colors.background.white10 }}
+              />
+            </View>
 
-            {/* Next Button */}
-            <Button
-              label="Next"
-              onPress={() => {
-                // Navigate to next onboarding screen or home
-                router.push('/');
-              }}
-              icon={ArrowRight}
-              iconPosition="right"
-              variant="gradientCta"
-              size="lg"
-            />
+            {/* Navigation Buttons */}
+            <View className="w-full flex-row justify-between items-center">
+              {/* Back Button */}
+              <Pressable
+                className="h-14 w-14 items-center justify-center rounded-full border active:opacity-70"
+                style={{
+                  borderColor: theme.colors.background.white10,
+                }}
+                onPress={() => {
+                  // Navigate back
+                  router.back();
+                }}>
+                <ArrowLeft
+                  size={theme.iconSize.lg}
+                  color={theme.colors.text.gray500}
+                  strokeWidth={theme.strokeWidth.normal}
+                />
+              </Pressable>
+
+              {/* Next Button */}
+              <Pressable
+                className="h-14 px-8 rounded-full flex-row items-center gap-2 active:scale-95"
+                style={{
+                  backgroundColor: theme.colors.status.emeraldLight,
+                  ...theme.shadows.lg,
+                  shadowColor: theme.colors.status.emeraldLight,
+                  shadowOpacity: 0.2,
+                }}
+                onPress={() => {
+                  // Navigate to next onboarding screen or home
+                  router.push('/');
+                }}>
+                <Text
+                  className="font-bold text-lg"
+                  style={{
+                    color: '#11211a', // background-dark from HTML
+                  }}>
+                  Next
+                </Text>
+                <ArrowRight
+                  size={theme.iconSize.lg}
+                  color="#11211a"
+                  strokeWidth={theme.strokeWidth.normal}
+                />
+              </Pressable>
+            </View>
           </View>
-        </View>
-      </SafeAreaView>
+        </SafeAreaView>
+      </View>
     </View>
   );
 }
