@@ -174,7 +174,7 @@ export default function NutritionGoalsScreen() {
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="px-6 py-2 pb-36" style={{ gap: theme.spacing.gap.base }}>
           {/* Total Daily Calories Card */}
-          <View className="relative mb-6 overflow-hidden rounded-2xl border border-emerald-900/30 bg-bg-card/50 p-6">
+          <View className="relative mb-6 flex-col items-center justify-center overflow-hidden rounded-2xl border border-emerald-900/30 bg-bg-card/50 p-6">
             <LinearGradient
               colors={['rgba(99, 102, 241, 0.05)', 'rgba(41, 224, 142, 0.05)']}
               start={{ x: 0, y: 0 }}
@@ -194,7 +194,11 @@ export default function NutritionGoalsScreen() {
               <Text className="text-5xl font-extrabold tracking-tighter text-white">
                 {totalCalories.toLocaleString()}
               </Text>
-              <Text className="text-primary text-lg font-semibold uppercase">kcal</Text>
+              <Text
+                className="text-lg font-semibold uppercase"
+                style={{ color: theme.colors.status.emeraldLight }}>
+                KCAL
+              </Text>
             </View>
           </View>
 
