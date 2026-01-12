@@ -1,7 +1,13 @@
 import { View, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import MaskedView from '@react-native-masked-view/masked-view';
-import { CircleUserRound, TrendingUp, Dumbbell } from 'lucide-react-native';
+import Svg, {
+  Defs,
+  LinearGradient as SvgLinearGradient,
+  Stop,
+  Circle,
+  Path,
+} from 'react-native-svg';
+import { TrendingUp, Dumbbell } from 'lucide-react-native';
 import { theme } from '../theme';
 
 export default function PreRegistrationIntro() {
@@ -80,38 +86,39 @@ export default function PreRegistrationIntro() {
               alignItems: 'center',
               justifyContent: 'center',
             }}>
-            <MaskedView
-              style={{
-                width: innerCircleSize * 0.6,
-                height: innerCircleSize * 0.6,
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-              maskElement={
-                <View
-                  style={{
-                    width: innerCircleSize * 0.6,
-                    height: innerCircleSize * 0.6,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}>
-                  <CircleUserRound
-                    size={innerCircleSize * 0.8}
-                    color={theme.colors.text.white}
-                    strokeWidth={1}
-                  />
-                </View>
-              }>
-              <LinearGradient
-                colors={theme.colors.gradients.cta}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 0, y: 1 }}
-                style={{
-                  width: innerCircleSize * 0.6,
-                  height: innerCircleSize * 0.6,
-                }}
+            <Svg
+              width={innerCircleSize * 0.8}
+              height={innerCircleSize * 0.8}
+              viewBox="0 0 24 24"
+              fill="none">
+              <Defs>
+                <SvgLinearGradient id="userGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <Stop offset="0%" stopColor={theme.colors.text.white} />
+                  <Stop offset="50%" stopColor={theme.colors.status.emeraldLight} />
+                  <Stop offset="100%" stopColor={theme.colors.status.indigoLight} />
+                </SvgLinearGradient>
+              </Defs>
+              {/* CircleUserRound icon - circle for head */}
+              <Circle
+                cx="12"
+                cy="8"
+                r="5"
+                fill="none"
+                stroke="url(#userGradient)"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
-            </MaskedView>
+              {/* Shoulders/body path */}
+              <Path
+                d="M20 21a8 8 0 0 0-16 0"
+                fill="none"
+                stroke="url(#userGradient)"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </Svg>
           </View>
 
           {/* Top-Right Floating Icon - Insights */}
