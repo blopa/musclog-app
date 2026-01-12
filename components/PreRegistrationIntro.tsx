@@ -1,6 +1,7 @@
 import { View, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { User, TrendingUp, Dumbbell } from 'lucide-react-native';
+import MaskedView from '@react-native-masked-view/masked-view';
+import { UserRound, TrendingUp, Dumbbell } from 'lucide-react-native';
 import { theme } from '../theme';
 
 export default function PreRegistrationIntro() {
@@ -79,18 +80,39 @@ export default function PreRegistrationIntro() {
               alignItems: 'center',
               justifyContent: 'center',
             }}>
-            <LinearGradient
-              colors={theme.colors.gradients.cta}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 0, y: 1 }}
+            <MaskedView
               style={{
-                position: 'absolute',
-                width: '100%',
-                height: '100%',
-                borderRadius: innerCircleSize * 0.3,
+                width: innerCircleSize * 0.6,
+                height: innerCircleSize * 0.6,
+                alignItems: 'center',
+                justifyContent: 'center',
               }}
-            />
-            <User size={innerCircleSize * 0.4} color={theme.colors.text.white} strokeWidth={2.5} />
+              maskElement={
+                <View
+                  style={{
+                    width: innerCircleSize * 0.6,
+                    height: innerCircleSize * 0.6,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                  <UserRound
+                    size={innerCircleSize * 0.4}
+                    color={theme.colors.text.black}
+                    strokeWidth={2.5}
+                    fill={theme.colors.text.black}
+                  />
+                </View>
+              }>
+              <LinearGradient
+                colors={theme.colors.gradients.cta}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 0, y: 1 }}
+                style={{
+                  width: innerCircleSize * 0.6,
+                  height: innerCircleSize * 0.6,
+                }}
+              />
+            </MaskedView>
           </View>
 
           {/* Top-Right Floating Icon - Insights */}
