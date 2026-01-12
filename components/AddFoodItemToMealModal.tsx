@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { View, Text, Pressable, TextInput, ScrollView } from 'react-native';
+import { View, Text, Pressable, TextInput as RNTextInput, ScrollView } from 'react-native';
 import { Search, X, Check, PlusCircle } from 'lucide-react-native';
 import { theme } from '../theme';
 import { FullScreenModal } from './FullScreenModal';
@@ -219,7 +219,9 @@ function FoodResultCard({
               borderWidth: 1,
               borderColor: 'transparent',
             }}>
-            <TextInput
+            {/*OBS: this one can stay unthemed for now*/}
+            <RNTextInput
+              // TODO: make this input select all on focus
               value={amount}
               onChangeText={onAmountChange}
               keyboardType="numeric"
@@ -342,7 +344,8 @@ export function AddFoodItemToMealModal({
               borderColor: theme.colors.border.light,
             }}>
             <Search size={20} color={theme.colors.text.tertiary} />
-            <TextInput
+            {/*TODO: use TextInput from theme*/}
+            <RNTextInput
               value={searchQuery}
               onChangeText={setSearchQuery}
               placeholder="Search food (e.g. Chicken)..."
