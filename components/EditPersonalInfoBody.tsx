@@ -18,9 +18,7 @@ export type PersonalInfo = {
   photoUri?: string;
 };
 
-export function EditPersonalInfoBody({
-  initialData,
-}: EditPersonalInfoBodyProps) {
+export function EditPersonalInfoBody({ initialData }: EditPersonalInfoBodyProps) {
   const { t } = useTranslation();
   const [fullName, setFullName] = useState(initialData?.fullName ?? 'Alex Johnson');
   const [email, setEmail] = useState(initialData?.email ?? 'alex.j@musclog.app');
