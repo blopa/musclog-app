@@ -73,12 +73,19 @@ export const GoogleGeminiIllustration = ({
                 ...theme.shadows.lg,
               }}>
               {/* Google logo button - white circle */}
-              <View className="rounded-full bg-white p-1.5" style={theme.shadows.sm}>
+              <View
+                className="rounded-full bg-white items-center justify-center"
+                style={{
+                  padding: 6,
+                  minWidth: 28,
+                  minHeight: 28,
+                  ...theme.shadows.sm,
+                }}>
                 <Image
                   source={{
                     uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBEDjeI4ad2IaWbBhnLQwpPkGJHZTJI_AZ1dIssXH__JLkQoYD_Qm_649_s2NsALfqefCg8-FNDsip3kbi3ZsYEqkdMXwpZEmfUOsmkxzCOTW2CdWBOOCnqgZ_Bgrq-S9vigmQajIBEFLcWErkfxsQCsPyfFy1ynq4Iz7Zb5gK74Ymge1VRW0z0aGL9BZjeAWO6sQepsDa91JCegUclE123Tm5VN1Oi94_nDfjS1TRvsc5nyQLQmD3pXLQDuSb6wQLcPYWv4tphDZ_z',
                   }}
-                  className="h-4 w-4"
+                  style={{ width: 16, height: 16 }}
                   resizeMode="contain"
                 />
               </View>
