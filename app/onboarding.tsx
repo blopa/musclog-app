@@ -6,6 +6,7 @@ import { useRouter } from 'expo-router';
 import { theme } from '../theme';
 import { Button } from '../components/theme/Button';
 import { GradientText } from '../components/GradientText';
+import { PageIndicators } from '../components/theme/PageIndicators';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const PHONE_MOCKUP_IMAGE_URL =
@@ -36,10 +37,10 @@ export default function OnboardingScreen() {
       </SafeAreaView>
 
       {/* Main Content Area */}
-      <View className="flex-1 flex-col items-center justify-center relative w-full max-w-md self-center px-6 pb-10">
+      <View className="relative w-full max-w-md flex-1 flex-col items-center justify-center self-center px-6 pb-10">
         {/* Illustration Section */}
         <View
-          className="relative w-full mb-6 flex items-center justify-center"
+          className="relative mb-6 flex w-full items-center justify-center"
           style={{
             aspectRatio: 4 / 5,
             maxHeight: Dimensions.get('window').height * 0.45,
@@ -63,11 +64,11 @@ export default function OnboardingScreen() {
 
           {/* Main Image Card */}
           <View
-            className="relative z-10 w-full h-full rounded-3xl overflow-hidden border border-white/10"
+            className="relative z-10 h-full w-full overflow-hidden rounded-3xl border border-white/10"
             style={theme.shadows.lg}>
             <ImageBackground
               source={{ uri: PHONE_MOCKUP_IMAGE_URL }}
-              className="w-full h-full"
+              className="h-full w-full"
               resizeMode="cover">
               {/* Gradient Overlay */}
               <LinearGradient
@@ -82,7 +83,7 @@ export default function OnboardingScreen() {
               />
 
               {/* Floating Badge Overlay */}
-              <View className="absolute bottom-6 left-6 right-6 p-4 rounded-xl flex-row items-center gap-4 border border-white/10">
+              <View className="absolute bottom-6 left-6 right-6 flex-row items-center gap-4 rounded-xl border border-white/10 p-4">
                 <LinearGradient
                   colors={['rgba(255, 255, 255, 0.1)', 'rgba(255, 255, 255, 0.05)']}
                   style={{
@@ -102,10 +103,8 @@ export default function OnboardingScreen() {
                   <Check size={24} color={theme.colors.text.black} strokeWidth={3} />
                 </View>
                 <View className="relative z-10 flex-1 flex-col">
-                  <Text className="text-white text-sm font-bold">Workout Complete</Text>
-                  <Text
-                    className="text-xs"
-                    style={{ color: theme.colors.overlay.white70 }}>
+                  <Text className="text-sm font-bold text-white">Workout Complete</Text>
+                  <Text className="text-xs" style={{ color: theme.colors.overlay.white70 }}>
                     3 Personal Records set!
                   </Text>
                 </View>
@@ -115,7 +114,7 @@ export default function OnboardingScreen() {
         </View>
 
         {/* Typography Block */}
-        <View className="w-full text-center gap-4 z-20">
+        <View className="z-20 w-full gap-4 text-center">
           <GradientText
             colors={[
               theme.colors.text.white,
@@ -131,7 +130,7 @@ export default function OnboardingScreen() {
             Effortless Tracking
           </GradientText>
           <Text
-            className="text-base font-normal leading-relaxed px-2"
+            className="px-2 text-base font-normal leading-relaxed"
             style={{ color: theme.colors.text.gray400 }}>
             Ditch the notebook. Log your sets, reps, and weights in seconds and visualize your
             strength gains over time.
@@ -140,35 +139,14 @@ export default function OnboardingScreen() {
       </View>
 
       {/* Footer / Navigation */}
-      <View className="w-full max-w-md self-center z-20">
+      <View className="z-20 w-full max-w-md self-center">
         <SafeAreaView edges={['bottom']}>
-          <View className="px-6 pb-8 pt-4 flex-col items-center gap-8">
+          <View className="flex-col items-center gap-8 px-6 pb-8 pt-4">
             {/* Page Indicators */}
-            <View className="flex-row items-center justify-center gap-2">
-              <View
-                className="h-2 rounded-full"
-                style={{
-                  width: theme.size['8'],
-                  backgroundColor: theme.colors.status.emeraldLight,
-                  shadowColor: theme.colors.status.emeraldLight,
-                  shadowOffset: { width: 0, height: 0 },
-                  shadowOpacity: 0.5,
-                  shadowRadius: 10,
-                  elevation: 5,
-                }}
-              />
-              <View
-                className="h-2 w-2 rounded-full"
-                style={{ backgroundColor: theme.colors.background.white10 }}
-              />
-              <View
-                className="h-2 w-2 rounded-full"
-                style={{ backgroundColor: theme.colors.background.white10 }}
-              />
-            </View>
+            <PageIndicators totalPages={3} currentPage={0} />
 
             {/* Navigation Buttons */}
-            <View className="w-full flex-row justify-between items-center">
+            <View className="w-full flex-row items-center justify-between">
               {/* Back Button */}
               <Pressable
                 className="h-14 w-14 items-center justify-center rounded-full border active:opacity-70"
@@ -188,7 +166,7 @@ export default function OnboardingScreen() {
 
               {/* Next Button */}
               <Pressable
-                className="h-14 px-8 rounded-full flex-row items-center gap-2 active:scale-95"
+                className="h-14 flex-row items-center gap-2 rounded-full px-8 active:scale-95"
                 style={{
                   backgroundColor: theme.colors.status.emeraldLight,
                   ...theme.shadows.lg,
@@ -200,7 +178,7 @@ export default function OnboardingScreen() {
                   router.push('/');
                 }}>
                 <Text
-                  className="font-bold text-lg"
+                  className="text-lg font-bold"
                   style={{
                     color: '#11211a', // background-dark from HTML
                   }}>
@@ -219,4 +197,3 @@ export default function OnboardingScreen() {
     </View>
   );
 }
-

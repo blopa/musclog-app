@@ -49,12 +49,12 @@ export default function LandingScreen() {
 
       {/* Main Content */}
       <SafeAreaView className="flex-1" edges={['top', 'bottom']}>
-        <View className="flex-1 w-full max-w-md self-center px-6 justify-between">
+        <View className="w-full max-w-md flex-1 justify-between self-center px-6">
           {/* Top Spacer */}
           <View style={{ height: theme.size['12'] }} />
 
           {/* Hero Section */}
-          <View className="flex-1 justify-center items-center py-6 gap-8">
+          <View className="flex-1 items-center justify-center gap-8 py-6">
             {/* Logo Icon with Gradient Background */}
             <View className="mb-4">
               <LinearGradient
@@ -72,10 +72,10 @@ export default function LandingScreen() {
             </View>
 
             {/* Typography Section */}
-            <View className="items-center gap-2 mt-4">
+            <View className="mt-4 items-center gap-2">
               {/* App Name */}
               <Text
-                className="text-white font-black tracking-tight leading-none"
+                className="font-black leading-none tracking-tight text-white"
                 style={{
                   fontSize: theme.typography.fontSize['4xl'],
                   letterSpacing: -0.5,
@@ -86,7 +86,7 @@ export default function LandingScreen() {
 
               {/* Tagline */}
               <Text
-                className="text-gray-400 font-medium tracking-wide"
+                className="font-medium tracking-wide text-gray-400"
                 style={{
                   fontSize: theme.typography.fontSize.lg,
                   letterSpacing: 0.5,
@@ -96,7 +96,7 @@ export default function LandingScreen() {
 
               {/* Description */}
               <Text
-                className="text-gray-500 text-center mt-2"
+                className="mt-2 text-center text-gray-500"
                 style={{
                   fontSize: theme.typography.fontSize.sm,
                   maxWidth: 280,
@@ -108,7 +108,7 @@ export default function LandingScreen() {
           </View>
 
           {/* Action Section */}
-          <View className="pb-8 pt-4 gap-3">
+          <View className="gap-3 pb-8 pt-4">
             {/* Primary Button */}
             <Button
               label="Get Started"
@@ -137,9 +137,7 @@ export default function LandingScreen() {
             </Pressable>
 
             {/* Terms / Footer Text */}
-            <Text
-              className="text-center text-gray-500 mt-2"
-              style={{ fontSize: 10 }}>
+            <Text className="mt-2 text-center text-gray-500" style={{ fontSize: 10 }}>
               By continuing, you agree to our Terms & Privacy Policy.
             </Text>
           </View>
@@ -148,4 +146,3 @@ export default function LandingScreen() {
     </View>
   );
 }
-
