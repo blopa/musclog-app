@@ -681,9 +681,9 @@ export default function ModalsTestScreen() {
       <AddMealModal
         visible={isAddMealVisible}
         onClose={() => setIsAddMealVisible(false)}
-        onCreateMealPress={() => console.log('Create meal pressed')}
-        onGenerateAiMealPress={() => console.log('Generate meal with AI pressed')}
-        onManageCategoriesPress={() => console.log('Manage categories pressed')}
+        onCreateMeal={() => console.log('Create meal pressed')}
+        onGenerateMealAI={() => console.log('Generate meal with AI pressed')}
+        onManageCategories={() => console.log('Manage categories pressed')}
       />
 
       <FoodSearchModal
