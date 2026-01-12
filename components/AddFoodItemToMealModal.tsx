@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from 'react';
-import { View, Text, Pressable, TextInput as RNTextInput, ScrollView } from 'react-native';
+import React, { useState, useMemo, useRef } from 'react';
+import { View, Text, Pressable, TextInput as RNTextInput, ScrollView, Platform } from 'react-native';
 import { Search, X, Check, PlusCircle } from 'lucide-react-native';
 import { theme } from '../theme';
 import { FullScreenModal } from './FullScreenModal';
@@ -79,6 +79,31 @@ function FoodResultCard({
   onAmountChange,
 }: FoodResultCardProps) {
   const calories = Math.round((food.caloriesPer100g * (parseInt(amount) || 0)) / 100);
+  const amountInputRef = useRef<RNTextInput>(null);
+  const [selection, setSelection] = useState<{ start: number; end: number } | undefined>(undefined);
+
+  const handleAmountFocus = () => {
+    // Select all text on focus
+    if (amountInputRef.current && amount) {
+      const length = amount.length;
+      setSelection({ start: 0, end: length });
+      
+      // For iOS, use selectTextOnFocus prop, but we'll handle it with selection
+      // For Android, we need to use setNativeProps
+      if (Platform.OS === 'android') {
+        setTimeout(() => {
+          amountInputRef.current?.setNativeProps({
+            selection: { start: 0, end: length },
+          });
+        }, 0);
+      }
+    }
+  };
+
+  const handleAmountBlur = () => {
+    // Clear selection on blur
+    setSelection(undefined);
+  };
 
   return (
     <View
@@ -221,9 +246,13 @@ function FoodResultCard({
             }}>
             {/*OBS: this one can stay unthemed for now*/}
             <RNTextInput
-              // TODO: make this input select all on focus
+              ref={amountInputRef}
               value={amount}
               onChangeText={onAmountChange}
+              onFocus={handleAmountFocus}
+              onBlur={handleAmountBlur}
+              selection={selection}
+              selectTextOnFocus={Platform.OS === 'ios'}
               keyboardType="numeric"
               style={{
                 width: 48,
