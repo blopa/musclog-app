@@ -1,7 +1,7 @@
 import { View, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import MaskedView from '@react-native-masked-view/masked-view';
-import { UserRound, TrendingUp, Dumbbell } from 'lucide-react-native';
+import { CircleUserRound, TrendingUp, Dumbbell } from 'lucide-react-native';
 import { theme } from '../theme';
 
 export default function PreRegistrationIntro() {
@@ -95,11 +95,10 @@ export default function PreRegistrationIntro() {
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}>
-                  <UserRound
-                    size={innerCircleSize * 0.4}
-                    color={theme.colors.text.black}
-                    strokeWidth={2.5}
-                    fill={theme.colors.text.black}
+                  <CircleUserRound
+                    size={innerCircleSize * 0.8}
+                    color={theme.colors.text.white}
+                    strokeWidth={1}
                   />
                 </View>
               }>
