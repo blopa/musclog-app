@@ -8,12 +8,13 @@ import { theme } from '../theme';
 import { GradientText } from '../components/GradientText';
 import { PageIndicators } from '../components/theme/PageIndicators';
 import { Button } from '../components/theme/Button';
+import PreRegistrationIntro from '../components/PreRegistrationIntro';
 
 const PHONE_MOCKUP_IMAGE_URL =
   'https://lh3.googleusercontent.com/aida-public/AB6AXuCvPgrOeONs-O17Ju_HUwmNT_-Sv1SdtaoahIETdH1VPVF1sOdhGUVQPfGCSQc40hRRzo9Pk8XBan5A2gVZ7YsZusBCI8VD_Aw0SdNRgiwKnFsCdF55c3RaEo-hfwVzYVvQAcOFGNF_8EImiOV6GZmWmjqekRUfuW_a5LbmALIn-K55kdyBu4zo7vTYlHSHWQg4CElJfLX2KtzBWBN-Pqi_XccbCd6syoCCx_4xrZegtQNP1Re7Vt15261Ddj7edCPGTd3GNZO7MmHY';
 
 type OnboardingBodyProps = {
-  imageUrl: string;
+  imageUrl?: string;
   title: string;
   description: string;
   badge?: {
@@ -23,7 +24,7 @@ type OnboardingBodyProps = {
   };
 };
 
-function OnboardingStepFour({ imageUrl, title, description, badge }: OnboardingBodyProps) {
+function OnboardingStepFour({ title, description, badge }: OnboardingBodyProps) {
   return (
     <View className="relative w-full max-w-md flex-1 flex-col items-center justify-center self-center px-6 pb-10">
       {/* Illustration Section */}
@@ -53,50 +54,9 @@ function OnboardingStepFour({ imageUrl, title, description, badge }: OnboardingB
         {/* Main Image Card */}
         <View
           className="relative z-10 h-full w-full overflow-hidden rounded-3xl border border-white/10"
-          style={theme.shadows.lg}>
-          <ImageBackground source={{ uri: imageUrl }} className="h-full w-full" resizeMode="cover">
-            {/* Gradient Overlay */}
-            <LinearGradient
-              colors={[
-                'rgba(10, 31, 26, 0.9)', // background-dark/90
-                'transparent',
-                'transparent',
-              ]}
-              start={{ x: 0, y: 1 }}
-              end={{ x: 0, y: 0 }}
-              style={{ flex: 1 }}
-            />
-
-            {/* Floating Badge Overlay */}
-            {badge && (
-              <View className="absolute bottom-6 left-6 right-6 flex-row items-center gap-4 rounded-xl border border-white/10 p-4">
-                <LinearGradient
-                  colors={['rgba(255, 255, 255, 0.1)', 'rgba(255, 255, 255, 0.05)']}
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    borderRadius: theme.borderRadius.xl,
-                  }}
-                />
-                <View className="relative z-10 h-10 w-10 items-center justify-center rounded-full">
-                  <View
-                    className="absolute inset-0 rounded-full"
-                    style={{ backgroundColor: theme.colors.status.emeraldLight }}
-                  />
-                  <badge.icon size={24} color={theme.colors.text.black} strokeWidth={3} />
-                </View>
-                <View className="relative z-10 flex-1 flex-col">
-                  <Text className="text-sm font-bold text-white">{badge.title}</Text>
-                  <Text className="text-xs" style={{ color: theme.colors.overlay.white70 }}>
-                    {badge.subtitle}
-                  </Text>
-                </View>
-              </View>
-            )}
-          </ImageBackground>
+          style={theme.shadows.lg}
+        >
+          <PreRegistrationIntro />
         </View>
       </View>
 
@@ -531,7 +491,6 @@ export default function OnboardingScreen() {
           {/* Step 4 */}
           <View style={{ width: screenWidth }}>
             <OnboardingStepFour
-              imageUrl={PHONE_MOCKUP_IMAGE_URL}
               title="Let's Get Personal"
               description="To tailor your journey and track your gains with precision, we'd love to know a bit more about your fitness history."
             />
