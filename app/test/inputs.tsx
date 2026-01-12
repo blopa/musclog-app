@@ -15,6 +15,7 @@ import { StepperInput } from '../../components/theme/StepperInput';
 import { BodyMetricsStepper } from '../../components/theme/BodyMetricsStepper';
 import { OptionsSelector } from '../../components/OptionsSelector';
 import { OptionsMultiSelector } from '../../components/OptionsMultiSelector/OptionsMultiSelector';
+import { ToggleInput } from '../../components/theme/ToggleInput';
 
 export default function InputsTestScreen() {
   const [name, setName] = useState('');
@@ -256,6 +257,27 @@ export default function InputsTestScreen() {
             label="08:30 AM"
             icon={<Clock size={20} color={theme.colors.accent.primary} />}
             onPress={() => {}}
+          />
+        </TestSection>
+
+        <TestSection title="Toggle Input" subtitle="Demo for ToggleInput component">
+          <ToggleInput
+            items={[
+              {
+                key: '1',
+                label: 'Enable Notifications',
+                subtitle: 'Receive daily updates',
+                value: dailyReminder,
+                onValueChange: setDailyReminder,
+              },
+              {
+                key: '2',
+                label: 'Bulking Phase',
+                subtitle: 'Focus on muscle gain',
+                value: bulkingPhase,
+                onValueChange: setBulkingPhase,
+              },
+            ]}
           />
         </TestSection>
 
