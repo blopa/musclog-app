@@ -1,15 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable, TextInput as RNTextInput } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import {
   Bot,
   Link,
-  Key,
   ChevronDown,
-  ChevronRight,
   Apple,
   Dumbbell,
-  Eye,
-  EyeOff,
 } from 'lucide-react-native';
 import { FullScreenModal } from './FullScreenModal';
 import { SecretInput } from './theme/SecretInput';
@@ -158,7 +154,7 @@ export function AISettingsModal({
 
   return (
     <FullScreenModal visible={visible} onClose={onClose} title="AI Settings">
-      <View className="gap-6 px-4 py-6">
+      <View className="gap-6 px-4 py-6" style={{ minHeight: '100%' }}>
         {/* Google Gemini Integration Section */}
         <View>
           <Text
@@ -175,7 +171,6 @@ export function AISettingsModal({
             style={{
               backgroundColor: theme.colors.background.card,
               borderRadius: theme.borderRadius.lg,
-              marginHorizontal: theme.spacing.padding.base,
               borderWidth: theme.borderWidth.thin,
               borderColor: theme.colors.border.light,
               overflow: 'hidden',
@@ -288,7 +283,6 @@ export function AISettingsModal({
             style={{
               backgroundColor: theme.colors.background.card,
               borderRadius: theme.borderRadius.lg,
-              marginHorizontal: theme.spacing.padding.base,
               borderWidth: theme.borderWidth.thin,
               borderColor: theme.colors.border.light,
               overflow: 'hidden',
