@@ -5,9 +5,11 @@ import { User, Mail, Calendar, Camera, Check } from 'lucide-react-native';
 import { theme } from '../theme';
 import { TextInput } from './theme/TextInput';
 import { SegmentedControl } from './theme/SegmentedControl';
+import { Button } from './theme/Button';
 
 type EditPersonalInfoBodyProps = {
   initialData?: PersonalInfo;
+  onSave?: (data: PersonalInfo) => void;
 };
 
 export type PersonalInfo = {
@@ -18,7 +20,7 @@ export type PersonalInfo = {
   photoUri?: string;
 };
 
-export function EditPersonalInfoBody({ initialData }: EditPersonalInfoBodyProps) {
+export function EditPersonalInfoBody({ onSave, initialData }: EditPersonalInfoBodyProps) {
   const { t } = useTranslation();
   const [fullName, setFullName] = useState(initialData?.fullName ?? 'Alex Johnson');
   const [email, setEmail] = useState(initialData?.email ?? 'alex.j@musclog.app');
@@ -89,6 +91,25 @@ export function EditPersonalInfoBody({ initialData }: EditPersonalInfoBodyProps)
           </Text>
           <SegmentedControl options={genderOptions} value={gender} onValueChange={setGender} />
         </View>
+      </View>
+
+      <View className="bg-transparent px-4 pb-6 pt-3" style={{ backgroundColor: 'transparent' }}>
+        <Button
+          label={t('editPersonalInfo.saveChanges')}
+          icon={Check}
+          variant="accent"
+          size="md"
+          width="full"
+          onPress={() =>
+            onSave?.({
+              fullName,
+              email,
+              dob,
+              gender,
+              photoUri,
+            })
+          }
+        />
       </View>
     </View>
   );

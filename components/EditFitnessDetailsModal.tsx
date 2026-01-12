@@ -27,10 +27,31 @@ export function EditFitnessDetailsModal({
 }: EditFitnessDetailsModalProps) {
   const { t } = useTranslation();
 
+  const handleSave = ({
+    units,
+    weight,
+    height,
+    fitnessGoal,
+    eatingPhase,
+    activityLevel,
+    experience,
+  }: FitnessDetails) => {
+    onSave?.({
+      units,
+      weight,
+      height,
+      fitnessGoal,
+      eatingPhase,
+      activityLevel,
+      experience,
+    });
+    onClose();
+  };
+
   return (
     <>
       <FullScreenModal visible={visible} onClose={onClose} title={t('editFitnessDetails.title')}>
-        <EditFitnessDetailsBody onClose={onClose} onSave={onSave} initialData={initialData} />
+        <EditFitnessDetailsBody onClose={onClose} onSave={handleSave} initialData={initialData} />
       </FullScreenModal>
     </>
   );
