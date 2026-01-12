@@ -1,12 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable } from 'react-native';
-import {
-  Bot,
-  Link,
-  ChevronDown,
-  Apple,
-  Dumbbell,
-} from 'lucide-react-native';
+import { Bot, Link, ChevronDown, Apple, Dumbbell } from 'lucide-react-native';
 import { FullScreenModal } from './FullScreenModal';
 import { SecretInput } from './theme/SecretInput';
 import { ToggleInput } from './theme/ToggleInput';

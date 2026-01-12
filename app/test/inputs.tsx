@@ -8,7 +8,7 @@ import { TextInput } from '../../components/theme/TextInput';
 import { StepperInlineInput } from '../../components/theme/StepperInlineInput';
 import { NumericInput } from '../../components/theme/NumericInput';
 import { SegmentedControl } from '../../components/theme/SegmentedControl';
-import { Toggle } from '../../components/theme/Toggle';
+import { CheckRadioBox } from '../../components/theme/CheckRadioBox';
 import { PickerButton } from '../../components/theme/PickerButton';
 import { Slider } from '../../components/theme/Slider';
 import { StepperInput } from '../../components/theme/StepperInput';
@@ -209,13 +209,13 @@ export default function InputsTestScreen() {
             onValueChange={setSelectedUnit}
           />
           <View className="flex-col gap-4">
-            <Toggle
+            <CheckRadioBox
               label="Daily Reminder"
               value={dailyReminder}
               onValueChange={setDailyReminder}
               type="checkbox"
             />
-            <Toggle
+            <CheckRadioBox
               label="Bulking Phase"
               value={bulkingPhase}
               onValueChange={setBulkingPhase}

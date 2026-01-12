@@ -152,8 +152,7 @@ export function BasicSettingsModal({
         <View
           style={{
             marginHorizontal: theme.spacing.padding.base,
-          }}
-        >
+          }}>
           <Text className="mb-3 px-5 text-lg font-bold tracking-tight text-text-primary">
             Integrations
           </Text>

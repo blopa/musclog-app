@@ -19,8 +19,7 @@ export function MainSettingsModal({ visible, onClose }: { visible: boolean; onCl
         style={{
           flex: 1,
           marginHorizontal: theme.spacing.padding.base,
-        }}
-      >
+        }}>
         <View
           style={{
             marginTop: theme.spacing.padding.base,

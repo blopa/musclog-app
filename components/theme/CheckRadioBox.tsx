@@ -10,7 +10,7 @@ type TestToggleProps = {
   type?: 'checkbox' | 'radio';
 };
 
-export function Toggle({ label, value, onValueChange, type = 'checkbox' }: TestToggleProps) {
+export function CheckRadioBox({ label, value, onValueChange, type = 'checkbox' }: TestToggleProps) {
   return (
     <Pressable
       className="flex-row items-center gap-3 active:opacity-90"
