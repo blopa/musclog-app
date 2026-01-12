@@ -1,16 +1,128 @@
 import { View, Text, Pressable, ImageBackground, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Check, ArrowLeft, ArrowRight } from 'lucide-react-native';
+import { Check, ArrowLeft, ArrowRight, LucideIcon } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { theme } from '../theme';
-import { Button } from '../components/theme/Button';
 import { GradientText } from '../components/GradientText';
 import { PageIndicators } from '../components/theme/PageIndicators';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const PHONE_MOCKUP_IMAGE_URL =
   'https://lh3.googleusercontent.com/aida-public/AB6AXuCvPgrOeONs-O17Ju_HUwmNT_-Sv1SdtaoahIETdH1VPVF1sOdhGUVQPfGCSQc40hRRzo9Pk8XBan5A2gVZ7YsZusBCI8VD_Aw0SdNRgiwKnFsCdF55c3RaEo-hfwVzYVvQAcOFGNF_8EImiOV6GZmWmjqekRUfuW_a5LbmALIn-K55kdyBu4zo7vTYlHSHWQg4CElJfLX2KtzBWBN-Pqi_XccbCd6syoCCx_4xrZegtQNP1Re7Vt15261Ddj7edCPGTd3GNZO7MmHY';
+
+type OnboardingBodyProps = {
+  imageUrl: string;
+  title: string;
+  description: string;
+  badge?: {
+    icon: LucideIcon;
+    title: string;
+    subtitle: string;
+  };
+};
+
+function OnboardingStepOne({ imageUrl, title, description, badge }: OnboardingBodyProps) {
+  return (
+    <View className="relative w-full max-w-md flex-1 flex-col items-center justify-center self-center px-6 pb-10">
+      {/* Illustration Section */}
+      <View
+        className="relative mb-6 flex w-full items-center justify-center"
+        style={{
+          aspectRatio: 4 / 5,
+          maxHeight: Dimensions.get('window').height * 0.45,
+        }}>
+        {/* Ambient Background Glow */}
+        <View className="absolute inset-0 rounded-full opacity-60">
+          <LinearGradient
+            colors={[
+              'rgba(99, 102, 241, 0.2)', // indigo-600/20
+              'rgba(41, 224, 142, 0.2)', // primary/20
+              'rgba(16, 185, 129, 0.2)', // emerald-400/20
+            ]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={{
+              flex: 1,
+              borderRadius: 9999,
+            }}
+          />
+        </View>
+
+        {/* Main Image Card */}
+        <View
+          className="relative z-10 h-full w-full overflow-hidden rounded-3xl border border-white/10"
+          style={theme.shadows.lg}>
+          <ImageBackground source={{ uri: imageUrl }} className="h-full w-full" resizeMode="cover">
+            {/* Gradient Overlay */}
+            <LinearGradient
+              colors={[
+                'rgba(10, 31, 26, 0.9)', // background-dark/90
+                'transparent',
+                'transparent',
+              ]}
+              start={{ x: 0, y: 1 }}
+              end={{ x: 0, y: 0 }}
+              style={{ flex: 1 }}
+            />
+
+            {/* Floating Badge Overlay */}
+            {badge && (
+              <View className="absolute bottom-6 left-6 right-6 flex-row items-center gap-4 rounded-xl border border-white/10 p-4">
+                <LinearGradient
+                  colors={['rgba(255, 255, 255, 0.1)', 'rgba(255, 255, 255, 0.05)']}
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    borderRadius: theme.borderRadius.xl,
+                  }}
+                />
+                <View className="relative z-10 h-10 w-10 items-center justify-center rounded-full">
+                  <View
+                    className="absolute inset-0 rounded-full"
+                    style={{ backgroundColor: theme.colors.status.emeraldLight }}
+                  />
+                  <badge.icon size={24} color={theme.colors.text.black} strokeWidth={3} />
+                </View>
+                <View className="relative z-10 flex-1 flex-col">
+                  <Text className="text-sm font-bold text-white">{badge.title}</Text>
+                  <Text className="text-xs" style={{ color: theme.colors.overlay.white70 }}>
+                    {badge.subtitle}
+                  </Text>
+                </View>
+              </View>
+            )}
+          </ImageBackground>
+        </View>
+      </View>
+
+      {/* Typography Block */}
+      <View className="z-20 w-full gap-4 text-center">
+        <GradientText
+          colors={[
+            theme.colors.text.white,
+            theme.colors.status.emeraldLight,
+            theme.colors.status.indigoLight,
+          ]}
+          style={{
+            fontSize: theme.typography.fontSize['3xl'],
+            fontWeight: theme.typography.fontWeight.extrabold,
+            lineHeight: theme.typography.fontSize['3xl'] * 1.25,
+            letterSpacing: -0.5,
+          }}>
+          {title}
+        </GradientText>
+        <Text
+          className="px-2 text-base font-normal leading-relaxed"
+          style={{ color: theme.colors.text.gray400 }}>
+          {description}
+        </Text>
+      </View>
+    </View>
+  );
+}
 
 export default function OnboardingScreen() {
   const router = useRouter();
@@ -37,106 +149,16 @@ export default function OnboardingScreen() {
       </SafeAreaView>
 
       {/* Main Content Area */}
-      <View className="relative w-full max-w-md flex-1 flex-col items-center justify-center self-center px-6 pb-10">
-        {/* Illustration Section */}
-        <View
-          className="relative mb-6 flex w-full items-center justify-center"
-          style={{
-            aspectRatio: 4 / 5,
-            maxHeight: Dimensions.get('window').height * 0.45,
-          }}>
-          {/* Ambient Background Glow */}
-          <View className="absolute inset-0 rounded-full opacity-60">
-            <LinearGradient
-              colors={[
-                'rgba(99, 102, 241, 0.2)', // indigo-600/20
-                'rgba(41, 224, 142, 0.2)', // primary/20
-                'rgba(16, 185, 129, 0.2)', // emerald-400/20
-              ]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={{
-                flex: 1,
-                borderRadius: 9999,
-              }}
-            />
-          </View>
-
-          {/* Main Image Card */}
-          <View
-            className="relative z-10 h-full w-full overflow-hidden rounded-3xl border border-white/10"
-            style={theme.shadows.lg}>
-            <ImageBackground
-              source={{ uri: PHONE_MOCKUP_IMAGE_URL }}
-              className="h-full w-full"
-              resizeMode="cover">
-              {/* Gradient Overlay */}
-              <LinearGradient
-                colors={[
-                  'rgba(10, 31, 26, 0.9)', // background-dark/90
-                  'transparent',
-                  'transparent',
-                ]}
-                start={{ x: 0, y: 1 }}
-                end={{ x: 0, y: 0 }}
-                style={{ flex: 1 }}
-              />
-
-              {/* Floating Badge Overlay */}
-              <View className="absolute bottom-6 left-6 right-6 flex-row items-center gap-4 rounded-xl border border-white/10 p-4">
-                <LinearGradient
-                  colors={['rgba(255, 255, 255, 0.1)', 'rgba(255, 255, 255, 0.05)']}
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    borderRadius: theme.borderRadius.xl,
-                  }}
-                />
-                <View className="relative z-10 h-10 w-10 items-center justify-center rounded-full">
-                  <View
-                    className="absolute inset-0 rounded-full"
-                    style={{ backgroundColor: theme.colors.status.emeraldLight }}
-                  />
-                  <Check size={24} color={theme.colors.text.black} strokeWidth={3} />
-                </View>
-                <View className="relative z-10 flex-1 flex-col">
-                  <Text className="text-sm font-bold text-white">Workout Complete</Text>
-                  <Text className="text-xs" style={{ color: theme.colors.overlay.white70 }}>
-                    3 Personal Records set!
-                  </Text>
-                </View>
-              </View>
-            </ImageBackground>
-          </View>
-        </View>
-
-        {/* Typography Block */}
-        <View className="z-20 w-full gap-4 text-center">
-          <GradientText
-            colors={[
-              theme.colors.text.white,
-              theme.colors.status.emeraldLight,
-              theme.colors.status.indigoLight,
-            ]}
-            style={{
-              fontSize: theme.typography.fontSize['3xl'],
-              fontWeight: theme.typography.fontWeight.extrabold,
-              lineHeight: theme.typography.fontSize['3xl'] * 1.25,
-              letterSpacing: -0.5,
-            }}>
-            Effortless Tracking
-          </GradientText>
-          <Text
-            className="px-2 text-base font-normal leading-relaxed"
-            style={{ color: theme.colors.text.gray400 }}>
-            Ditch the notebook. Log your sets, reps, and weights in seconds and visualize your
-            strength gains over time.
-          </Text>
-        </View>
-      </View>
+      <OnboardingStepOne
+        imageUrl={PHONE_MOCKUP_IMAGE_URL}
+        title="Effortless Tracking"
+        description="Ditch the notebook. Log your sets, reps, and weights in seconds and visualize your strength gains over time."
+        badge={{
+          icon: Check,
+          title: 'Workout Complete',
+          subtitle: '3 Personal Records set!',
+        }}
+      />
 
       {/* Footer / Navigation */}
       <View className="z-20 w-full max-w-md self-center">
