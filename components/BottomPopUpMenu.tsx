@@ -1,5 +1,13 @@
 import React, { useEffect, useRef, ReactNode } from 'react';
-import { View, Text, Pressable, Modal, Animated, Platform } from 'react-native';
+import {
+  View,
+  Text,
+  Pressable,
+  Modal,
+  Animated,
+  Platform,
+  TouchableWithoutFeedback,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { X } from 'lucide-react-native';
 import { theme } from '../theme';
@@ -127,114 +135,114 @@ export function BottomPopUpMenu({
       onRequestClose={onClose}
       statusBarTranslucent={Platform.OS !== 'web'}>
       {/* Backdrop */}
-      <View
-        className="flex-1"
-        style={[{ backgroundColor: theme.colors.overlay.black60 }, webBackdropStyle]}>
-        <Pressable
-          className="absolute inset-0"
-          onPress={onClose}
-        />
+      <TouchableWithoutFeedback onPress={onClose}>
         <View
-          className="flex-1 justify-end"
-          style={
-            Platform.OS === 'web'
-              ? { display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }
-              : undefined
-          }>
-          {/* Modal Content */}
-          <Animated.View
-            className="border-t border-border-dark"
-            onStartShouldSetResponder={() => true}
-            onMoveShouldSetResponder={() => true}
-            onResponderTerminationRequest={() => false}
-            style={{
-              transform: [{ translateY: slideAnim }],
-              backgroundColor: theme.colors.background.cardElevated,
-              overflow: 'hidden',
-              borderTopLeftRadius: theme.borderRadius['3xl'],
-              borderTopRightRadius: theme.borderRadius['3xl'],
-              maxHeight: maxHeight || '90%',
-              width: '100%',
-            }}>
-            {/* Header */}
-            <LinearGradient
-              colors={[
-                theme.colors.status.purple40,
-                theme.colors.accent.secondary10,
-                'transparent',
-              ]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              className="border-b border-border-dark">
-              <View className="flex-row items-center justify-between p-6">
-                <View className="flex-1 flex-row items-center gap-3">
-                  {headerIcon && <View>{headerIcon}</View>}
-                  <View className="flex-1">
-                    <Text className="text-2xl font-bold text-text-primary">{title}</Text>
-                    {subtitle && (
-                      <Text className="mt-1 text-sm text-text-secondary">{subtitle}</Text>
-                    )}
-                  </View>
-                </View>
-                <Pressable
-                  className="active:bg-bg-card-elevated h-10 w-10 items-center justify-center rounded-full bg-bg-overlay"
-                  onPress={onClose}>
-                  <X size={theme.iconSize.md} color={theme.colors.text.secondary} />
-                </Pressable>
-              </View>
-            </LinearGradient>
-
-            {/* Content */}
-            {children ? (
-              <View
-                className="p-6"
-                style={
-                  !footer
-                    ? { paddingBottom: Math.max(insets.bottom, theme.spacing.padding.xl) }
-                    : undefined
-                }>
-                {children}
-              </View>
-            ) : items ? (
-              <View
-                className="gap-3 p-6"
-                style={
-                  !footer
-                    ? { paddingBottom: Math.max(insets.bottom, theme.spacing.padding.xl) }
-                    : undefined
-                }>
-                {items.map((item, index) => (
-                  <OptionItem
-                    key={index}
-                    icon={item.icon}
-                    iconColor={item.iconColor}
-                    iconBgColor={item.iconBgColor}
-                    title={item.title}
-                    description={item.description}
-                    titleColor={item.titleColor}
-                    descriptionColor={item.descriptionColor}
-                    onPress={() => {
-                      item.onPress();
-                      onClose();
-                    }}
-                  />
-                ))}
-              </View>
-            ) : null}
-
-            {/* Footer */}
-            {footer && (
-              <View
-                className="border-t border-border-dark px-6 pt-2"
+          className="flex-1"
+          style={[{ backgroundColor: theme.colors.overlay.black60 }, webBackdropStyle]}>
+          <View
+            className="flex-1 justify-end"
+            style={
+              Platform.OS === 'web'
+                ? { display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }
+                : undefined
+            }>
+            {/* Modal Content */}
+            <TouchableWithoutFeedback>
+              <Animated.View
+                className="border-t border-border-dark"
+                onStartShouldSetResponder={() => true}
+                onMoveShouldSetResponder={() => true}
+                onResponderTerminationRequest={() => false}
                 style={{
-                  paddingBottom: Math.max(insets.bottom, theme.spacing.padding.xl),
+                  transform: [{ translateY: slideAnim }],
+                  backgroundColor: theme.colors.background.cardElevated,
+                  overflow: 'hidden',
+                  borderTopLeftRadius: theme.borderRadius['3xl'],
+                  borderTopRightRadius: theme.borderRadius['3xl'],
+                  maxHeight: maxHeight || '90%',
+                  width: '100%',
                 }}>
-                {footer}
-              </View>
-            )}
-          </Animated.View>
+                {/* Header */}
+                <LinearGradient
+                  colors={[
+                    theme.colors.status.purple40,
+                    theme.colors.accent.secondary10,
+                    'transparent',
+                  ]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  className="border-b border-border-dark">
+                  <View className="flex-row items-center justify-between p-6">
+                    <View className="flex-1 flex-row items-center gap-3">
+                      {headerIcon && <View>{headerIcon}</View>}
+                      <View className="flex-1">
+                        <Text className="text-2xl font-bold text-text-primary">{title}</Text>
+                        {subtitle && (
+                          <Text className="mt-1 text-sm text-text-secondary">{subtitle}</Text>
+                        )}
+                      </View>
+                    </View>
+                    <Pressable
+                      className="active:bg-bg-card-elevated h-10 w-10 items-center justify-center rounded-full bg-bg-overlay"
+                      onPress={onClose}>
+                      <X size={theme.iconSize.md} color={theme.colors.text.secondary} />
+                    </Pressable>
+                  </View>
+                </LinearGradient>
+
+                {/* Content */}
+                {children ? (
+                  <View
+                    className="p-6"
+                    style={
+                      !footer
+                        ? { paddingBottom: Math.max(insets.bottom, theme.spacing.padding.xl) }
+                        : undefined
+                    }>
+                    {children}
+                  </View>
+                ) : items ? (
+                  <View
+                    className="gap-3 p-6"
+                    style={
+                      !footer
+                        ? { paddingBottom: Math.max(insets.bottom, theme.spacing.padding.xl) }
+                        : undefined
+                    }>
+                    {items.map((item, index) => (
+                      <OptionItem
+                        key={index}
+                        icon={item.icon}
+                        iconColor={item.iconColor}
+                        iconBgColor={item.iconBgColor}
+                        title={item.title}
+                        description={item.description}
+                        titleColor={item.titleColor}
+                        descriptionColor={item.descriptionColor}
+                        onPress={() => {
+                          item.onPress();
+                          onClose();
+                        }}
+                      />
+                    ))}
+                  </View>
+                ) : null}
+
+                {/* Footer */}
+                {footer && (
+                  <View
+                    className="border-t border-border-dark px-6 pt-2"
+                    style={{
+                      paddingBottom: Math.max(insets.bottom, theme.spacing.padding.xl),
+                    }}>
+                    {footer}
+                  </View>
+                )}
+              </Animated.View>
+            </TouchableWithoutFeedback>
+          </View>
         </View>
-      </View>
+      </TouchableWithoutFeedback>
     </Modal>
   );
 }
