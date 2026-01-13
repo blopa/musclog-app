@@ -6,7 +6,7 @@ type GenericCardProps = {
   children: React.ReactNode;
   isPopular?: boolean;
   onPress?: () => void;
-  variant?: 'default' | 'workout' | 'highlighted';
+  variant?: 'default' | 'workout' | 'highlighted' | 'card';
   backgroundVariant?: 'default' | 'dark-green';
   isPressable?: boolean;
   size?: 'sm' | 'default' | 'lg';
@@ -30,6 +30,7 @@ export function GenericCard({
   // ============================================================================
   const isWorkoutVariant = variant === 'workout';
   const isDefaultVariant = variant === 'default';
+  const isCardVariant = variant === 'card';
   const effectiveBackgroundVariant = backgroundVariant ?? variant;
   const isDarkGreenBackground = effectiveBackgroundVariant === 'dark-green';
   const shouldShowPopularGradient = isPopular && !isWorkoutVariant && !isDefaultVariant;
@@ -84,6 +85,15 @@ export function GenericCard({
       return {
         backgroundColor: theme.colors.background.overlay,
         borderColor: theme.colors.border.default,
+        borderWidth: theme.borderWidth.thin,
+      };
+    }
+
+    // Card variant: matches HealthCategoryCard styling (card background with white5 border)
+    if (isCardVariant) {
+      return {
+        backgroundColor: theme.colors.background.card,
+        borderColor: theme.colors.background.white5,
         borderWidth: theme.borderWidth.thin,
       };
     }
