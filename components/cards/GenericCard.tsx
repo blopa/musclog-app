@@ -23,13 +23,14 @@ export function GenericCard({
   variant = 'default',
   backgroundVariant,
 }: GenericCardProps) {
+  // Calculate derived values
   const isWorkoutVariant = variant === 'workout';
-
-  // Default backgroundVariant to match variant if not specified (backward compatibility)
   const effectiveBackgroundVariant = backgroundVariant ?? variant;
   const isDarkGreenBackground = effectiveBackgroundVariant === 'dark-green';
+  const shouldShowPopularGradient = isPopular && !isWorkoutVariant;
+  const shouldRenderAsPressable = isPressable && !isWorkoutVariant;
 
-  // Structural style helpers (controlled by variant)
+  // Style calculation functions
   const getStructuralStyle = (pressed: boolean = false): ViewStyle => {
     const baseStyle: ViewStyle = {
       width: '100%',
@@ -51,10 +52,9 @@ export function GenericCard({
     };
   };
 
-  // Background style helpers (controlled by backgroundVariant)
   const getBackgroundStyle = (pressed: boolean = false): ViewStyle => {
-    // Popular cards don't have background/border (they use gradient wrapper)
-    if (isPopular && !isWorkoutVariant) {
+    // Popular cards use gradient wrapper instead of background
+    if (shouldShowPopularGradient) {
       return {};
     }
 
@@ -67,7 +67,7 @@ export function GenericCard({
       };
     }
 
-    // Default background
+    // Default background with pressed state
     return {
       backgroundColor: pressed
         ? theme.colors.background.cardDark
@@ -85,7 +85,7 @@ export function GenericCard({
     };
   };
 
-  // Content rendering helpers
+  // Render functions
   const renderWorkoutGradientOverlay = () => (
     <LinearGradient
       colors={theme.colors.gradients.workoutStats}
@@ -113,8 +113,7 @@ export function GenericCard({
   );
 
   const renderCardContent = () => {
-    // Popular gradient wrapper only applies to default variant
-    if (isPopular && !isWorkoutVariant) {
+    if (shouldShowPopularGradient) {
       return renderPopularGradientWrapper();
     }
     return children;
@@ -122,14 +121,13 @@ export function GenericCard({
 
   const renderCardInnerContent = () => (
     <>
-      {/* Gradient overlay is controlled by variant, not backgroundVariant */}
       {isWorkoutVariant && renderWorkoutGradientOverlay()}
       {renderCardContent()}
     </>
   );
 
   // Render pressable card (only for default variant)
-  if (isPressable && !isWorkoutVariant) {
+  if (shouldRenderAsPressable) {
     return (
       <Pressable onPress={onPress} style={({ pressed }) => getCardStyle(pressed)}>
         {renderCardInnerContent()}
