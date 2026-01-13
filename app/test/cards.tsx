@@ -18,6 +18,9 @@ import { NewWorkoutCard } from '../../components/cards/NewWorkoutCard';
 import { WorkoutSummaryStatsCard } from '../../components/WorkoutSummaryStatsCard';
 import { StatCard } from '../../components/cards/StatCard';
 import { theme } from '../../theme';
+import { ChatWorkoutCard } from '../../components/cards/ChatWorkoutCard';
+import { MealItemCard } from '../../components/cards/MealItemCard';
+import { SettingsCard } from '../../components/cards/SettingsCard';
 
 export default function CardsTestScreen() {
   return (
@@ -258,6 +261,38 @@ export default function CardsTestScreen() {
               iconColor={theme.colors.status.warning}
             />
           </View>
+        </TestSection>
+
+        <TestSection title="Chat Workout" subtitle="Chat-based workout interactions">
+          <ChatWorkoutCard
+            title="Chat Workout"
+            duration="30 mins"
+            level="Intermediate"
+            exerciseCount={5}
+            calories={200}
+            image={{ uri: 'https://via.placeholder.com/150' }}
+            onStartWorkout={() => console.log('Start workout')}
+          />
+        </TestSection>
+
+        <TestSection title="Meal Item" subtitle="Display meal details">
+          <MealItemCard
+            title="Breakfast"
+            tags={["Healthy", "Quick"]}
+            calories={350}
+            macros={{ protein: "25g", carbs: "30g", fat: "10g" }}
+            image={{ uri: 'https://via.placeholder.com/150' }}
+            onTrackPress={() => console.log('Track meal')}
+          />
+        </TestSection>
+
+        <TestSection title="Settings" subtitle="App settings overview">
+          <SettingsCard
+            icon={<Sparkles size={24} color={theme.colors.accent.primary} />}
+            title="Settings"
+            subtitle="Manage your app settings."
+            onPress={() => console.log('Settings pressed')}
+          />
         </TestSection>
 
         <View className="h-8" />
