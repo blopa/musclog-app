@@ -8,12 +8,15 @@ import {
   X,
   LightbulbOff,
   Lightbulb,
-  Edit,
+  MessageSquareText,
   ScanBarcode,
   Sparkles,
   FileText,
+  CheckCircle,
 } from 'lucide-react-native';
 import { theme } from '../../theme';
+import { BottomPopUpMenu } from '../../components/BottomPopUpMenu';
+import { TextInput as RNTextInput } from 'react-native';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const CAMERA_ASPECT_RATIO = 4 / 5;
@@ -27,8 +30,19 @@ export default function AICameraScreen() {
   const [flashEnabled, setFlashEnabled] = useState(false);
   const [cameraMode, setCameraMode] = useState<CameraMode>('ai-meal-photo');
   const [isDetecting, setIsDetecting] = useState(true);
+  const [isContextModalVisible, setIsContextModalVisible] = useState(false);
+  const [mealDescription, setMealDescription] = useState('');
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const cameraRef = useRef<CameraView>(null);
   const pulseAnim = useRef(new Animated.Value(1)).current;
+
+  const quickTags = [
+    'High Protein',
+    'Low Carb',
+    'Large Serving',
+    'Eating Out',
+    'Vegan',
+  ];
 
   // Pulse animation for AI detecting indicator
   useEffect(() => {
@@ -82,6 +96,26 @@ export default function AICameraScreen() {
 
   const handleModeChange = (mode: CameraMode) => {
     setCameraMode(mode);
+  };
+
+  const handleToggleTag = (tag: string) => {
+    setSelectedTags((prev) =>
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+    );
+  };
+
+  const handleApplyContext = () => {
+    // TODO: Apply context to AI processing
+    console.log('Context applied:', { mealDescription, selectedTags });
+    setIsContextModalVisible(false);
+    setMealDescription('');
+    setSelectedTags([]);
+  };
+
+  const handleCancelContext = () => {
+    setIsContextModalVisible(false);
+    setMealDescription('');
+    setSelectedTags([]);
   };
 
   if (!permission) {
@@ -377,19 +411,127 @@ export default function AICameraScreen() {
               />
             </Pressable>
 
-            {/* Edit Button */}
+            {/* Context Button */}
             <Pressable
+              onPress={() => setIsContextModalVisible(true)}
               className="h-12 w-12 items-center justify-center rounded-full"
               style={{
                 backgroundColor: 'rgba(30, 35, 33, 0.5)',
                 borderWidth: 1,
                 borderColor: 'rgba(255, 255, 255, 0.1)',
               }}>
-              <Edit size={20} color={theme.colors.text.primary} />
+              <MessageSquareText size={20} color={theme.colors.text.primary} />
             </Pressable>
           </View>
         </View>
       </SafeAreaView>
+
+      {/* Context Modal */}
+      <BottomPopUpMenu
+        visible={isContextModalVisible}
+        onClose={handleCancelContext}
+        title="Add Context for AI"
+        maxHeight="85%"
+        headerIcon={
+          <View
+            className="h-10 w-10 items-center justify-center rounded-xl"
+            style={{
+              backgroundColor: 'transparent',
+            }}>
+            <LinearGradient
+              colors={['#6366f1', '#29e08e']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              className="absolute inset-0 rounded-xl"
+            />
+            <Sparkles size={24} color="#ffffff" />
+          </View>
+        }>
+        <View className="pt-2">
+          {/* Describe Your Meal Section */}
+          <View className="mb-6">
+            <Text className="mb-2 ml-1 text-xs font-bold uppercase tracking-widest text-text-secondary">
+              DESCRIBE YOUR MEAL
+            </Text>
+            <View
+              className="w-full rounded-lg border p-4"
+              style={{
+                backgroundColor: 'rgba(17, 20, 19, 0.5)',
+                borderColor: 'rgba(255, 255, 255, 0.1)',
+              }}>
+              <RNTextInput
+                className="min-h-[100px] w-full bg-transparent text-[15px] text-text-primary"
+                style={{
+                  color: theme.colors.text.primary,
+                  textAlignVertical: 'top',
+                }}
+                placeholder="e.g. This is a homemade dish with olive oil, about 2 cups of pasta..."
+                placeholderTextColor="rgba(255, 255, 255, 0.2)"
+                value={mealDescription}
+                onChangeText={setMealDescription}
+                multiline
+                numberOfLines={4}
+              />
+            </View>
+          </View>
+
+          {/* Quick Tags Section */}
+          <View className="mb-8">
+            <Text className="mb-3 ml-1 text-xs font-bold uppercase tracking-widest text-text-secondary">
+              QUICK TAGS
+            </Text>
+            <View className="flex-row flex-wrap gap-2">
+              {quickTags.map((tag) => {
+                const isSelected = selectedTags.includes(tag);
+                return (
+                  <Pressable
+                    key={tag}
+                    onPress={() => handleToggleTag(tag)}
+                    className="rounded-full border px-4 py-2"
+                    style={{
+                      backgroundColor: isSelected
+                        ? 'rgba(255, 255, 255, 0.1)'
+                        : 'rgba(42, 50, 46, 1)',
+                      borderColor: 'rgba(255, 255, 255, 0.05)',
+                    }}>
+                    <Text className="text-sm font-medium text-text-primary">{tag}</Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          </View>
+
+          {/* Action Buttons */}
+          <View className="flex-row gap-3">
+            <Pressable
+              onPress={handleCancelContext}
+              className="flex-1 rounded-xl border px-6 py-4"
+              style={{
+                backgroundColor: 'rgba(42, 50, 46, 1)',
+                borderColor: 'rgba(255, 255, 255, 0.05)',
+              }}>
+              <Text className="text-center text-sm font-bold text-text-primary">Cancel</Text>
+            </Pressable>
+            <Pressable
+              onPress={handleApplyContext}
+              className="flex-[2] rounded-xl px-6 py-4 active:scale-[0.98]"
+              style={{
+                overflow: 'hidden',
+              }}>
+              <LinearGradient
+                colors={['#6366f1', '#29e08e']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                className="absolute inset-0"
+              />
+              <View className="flex-row items-center justify-center gap-2">
+                <Text className="text-sm font-bold text-white">Apply Context</Text>
+                <CheckCircle size={18} color="#ffffff" />
+              </View>
+            </Pressable>
+          </View>
+        </View>
+      </BottomPopUpMenu>
     </View>
   );
 }
