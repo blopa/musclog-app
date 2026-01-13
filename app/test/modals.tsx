@@ -30,22 +30,10 @@ import { AdvancedSettingsModal } from '../../components/modals/AdvancedSettingsM
 import { AISettingsModal } from '../../components/modals/AISettingsModal';
 import { FilterWorkoutsModal } from '../../components/modals/FilterWorkoutsModal';
 import { ConnectGoogleAccountModal } from '../../components/modals/ConnectGoogleAccountModal';
-
-// TODO: add them to the test screen, by adding their own section similar to the other modals, with a button to open them etc
-import { CaloriesRemainingCard } from '../../components/cards/CaloriesRemainingCard';
-import { ChatWorkoutCard } from '../../components/cards/ChatWorkoutCard';
-import { DailySummaryCard } from '../../components/cards/DailySummaryCard';
-import { FoodInfoCard } from '../../components/cards/FoodInfoCard';
-import { FoodItemCard } from '../../components/cards/FoodItemCard';
-import { MealItemCard } from '../../components/cards/MealItemCard';
-import { NewWorkoutCard } from '../../components/cards/NewWorkoutCard';
-import { NotificationCard } from '../../components/cards/NotificationCard';
-import { RecentWorkoutsCard } from '../../components/cards/RecentWorkoutsCard';
-import { SettingsCard } from '../../components/cards/SettingsCard';
-import { StatCard } from '../../components/cards/StatCard';
-import { UpNextExerciseCard } from '../../components/cards/UpNextExerciseCard';
-import { WorkoutCard } from '../../components/cards/WorkoutCard';
-import { WorkoutStatCard } from '../../components/cards/WorkoutStatCard';
+import { AddFoodItemToMealModal } from '../../components/modals/AddFoodItemToMealModal';
+import { CenteredModal } from '../../components/modals/CenteredModal';
+import { CoachModal } from '../../components/modals/CoachModal';
+import { FullScreenModal } from '../../components/modals/FullScreenModal';
 
 export default function ModalsTestScreen() {
   // Nutrition Goals Modal
@@ -128,6 +116,18 @@ export default function ModalsTestScreen() {
 
   // Connect Google Account Modal
   const [isConnectGoogleAccountVisible, setIsConnectGoogleAccountVisible] = useState(false);
+
+  // Add Food Item to Meal Modal
+  const [isAddFoodItemToMealVisible, setIsAddFoodItemToMealVisible] = useState(false);
+
+  // Centered Modal
+  const [isCenteredModalVisible, setIsCenteredModalVisible] = useState(false);
+
+  // Coach Modal
+  const [isCoachModalVisible, setIsCoachModalVisible] = useState(false);
+
+  // Full Screen Modal
+  const [isFullScreenModalVisible, setIsFullScreenModalVisible] = useState(false);
 
   const handleSaveGoals = (goals: NutritionGoals) => {
     console.log('Goals saved:', goals);
@@ -570,6 +570,64 @@ export default function ModalsTestScreen() {
             />
           </View>
 
+          {/* Add Food Item to Meal Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">
+              Add Food Item to Meal Modal
+            </Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Modal for adding a specific food item to a meal.
+            </Text>
+            <Button
+              label="Open Add Food Item to Meal Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsAddFoodItemToMealVisible(true)}
+            />
+          </View>
+
+          {/* Centered Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Centered Modal</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              A simple centered modal for displaying information.
+            </Text>
+            <Button
+              label="Open Centered Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsCenteredModalVisible(true)}
+            />
+          </View>
+
+          {/* Coach Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Coach Modal</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Modal for displaying coaching tips and guidance.
+            </Text>
+            <Button
+              label="Open Coach Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsCoachModalVisible(true)}
+            />
+          </View>
+
+          {/* Full Screen Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Full Screen Modal</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              A modal that takes up the full screen for immersive content.
+            </Text>
+            <Button
+              label="Open Full Screen Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsFullScreenModalVisible(true)}
+            />
+          </View>
+
           {/* Bottom spacing */}
           <View className="h-8" />
         </View>
@@ -870,6 +928,37 @@ export default function ModalsTestScreen() {
         onConnect={() => console.log('Google Account Connected')}
         onMaybeLater={() => console.log('Maybe Later pressed')}
       />
+
+      <AddFoodItemToMealModal
+        visible={isAddFoodItemToMealVisible}
+        onClose={() => setIsAddFoodItemToMealVisible(false)}
+        onAddFoods={(foods) => console.log('Food items added to meal:', foods)}
+      />
+
+      <CenteredModal
+        visible={isCenteredModalVisible}
+        onClose={() => setIsCenteredModalVisible(false)}
+        title="Centered Modal"
+        subtitle="This is a centered modal."
+        footer={<Text>Footer content here</Text>}
+      >
+        <Text>Centered modal content goes here.</Text>
+      </CenteredModal>
+
+      <CoachModal
+        visible={isCoachModalVisible}
+        onClose={() => setIsCoachModalVisible(false)}
+      />
+
+      <FullScreenModal
+        visible={isFullScreenModalVisible}
+        onClose={() => setIsFullScreenModalVisible(false)}
+        title="Full Screen Modal"
+        subtitle="Subtitle for full screen modal"
+        footer={<Text>Footer content for full screen modal</Text>}
+      >
+        <Text>Full screen modal content goes here.</Text>
+      </FullScreenModal>
     </SafeAreaView>
   );
 }
