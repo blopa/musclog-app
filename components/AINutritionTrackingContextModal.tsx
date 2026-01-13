@@ -3,7 +3,7 @@ import { View, Text, Pressable, TextInput as RNTextInput } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Sparkles, CheckCircle } from 'lucide-react-native';
 import { theme } from '../theme';
-import { BottomPopUpMenu } from './BottomPopUpMenu';
+import { BottomPopUp } from './BottomPopUp';
 
 type AINutritionTrackingContextModalProps = {
   visible: boolean;
@@ -45,7 +45,7 @@ export function AINutritionTrackingContextModal({
   };
 
   return (
-    <BottomPopUpMenu
+    <BottomPopUp
       visible={visible}
       onClose={handleCancel}
       title="Add Context for AI"
@@ -154,6 +154,6 @@ export function AINutritionTrackingContextModal({
           </Pressable>
         </View>
       </View>
-    </BottomPopUpMenu>
+    </BottomPopUp>
   );
 }
