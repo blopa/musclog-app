@@ -120,7 +120,11 @@ export function MealItemCard({
           </View>
 
           <View
-            style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between' }}>
+            style={{
+              flexDirection: 'row',
+              alignItems: 'flex-end',
+              justifyContent: 'space-between',
+            }}>
             <View style={{ flexDirection: 'row', gap: theme.spacing.gap.md }}>
               <Macro label="PROT" value={macros.protein} color={theme.colors.macros.protein.text} />
               <View
