@@ -4,7 +4,7 @@ import { Timer, Dumbbell, TrendingUp } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { WorkoutSummaryStatRow } from './WorkoutSummaryStatRow';
-import { WorkoutGenericCard } from './WorkoutGenericCard';
+import { GenericCard } from './cards/GenericCard';
 
 type WorkoutSummaryStatsCardProps = {
   totalTime: string;
@@ -19,7 +19,7 @@ export function WorkoutSummaryStatsCard({
 }: WorkoutSummaryStatsCardProps) {
   const { t } = useTranslation();
   return (
-    <WorkoutGenericCard>
+    <GenericCard variant="workout">
       <View className="gap-6">
         <WorkoutSummaryStatRow
           icon={Timer}
@@ -47,6 +47,6 @@ export function WorkoutSummaryStatsCard({
           showStarIcon={true}
         />
       </View>
-    </WorkoutGenericCard>
+    </GenericCard>
   );
 }
