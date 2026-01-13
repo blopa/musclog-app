@@ -6,7 +6,7 @@ type GenericCardProps = {
   children: React.ReactNode;
   isPopular?: boolean;
   onPress?: () => void;
-  variant?: 'default' | 'workout';
+  variant?: 'default' | 'workout' | 'food';
   backgroundVariant?: 'default' | 'dark-green';
   isPressable?: boolean;
 };
@@ -27,9 +27,10 @@ export function GenericCard({
   // Computed Values
   // ============================================================================
   const isWorkoutVariant = variant === 'workout';
+  const isFoodVariant = variant === 'food';
   const effectiveBackgroundVariant = backgroundVariant ?? variant;
   const isDarkGreenBackground = effectiveBackgroundVariant === 'dark-green';
-  const shouldShowPopularGradient = isPopular && !isWorkoutVariant;
+  const shouldShowPopularGradient = isPopular && !isWorkoutVariant && !isFoodVariant;
   const shouldRenderAsPressable = isPressable && !isWorkoutVariant;
 
   // ============================================================================
@@ -60,6 +61,15 @@ export function GenericCard({
     // Popular cards use gradient wrapper instead of background style
     if (shouldShowPopularGradient) {
       return {};
+    }
+
+    // Food variant: matches FoodItemCard styling
+    if (isFoodVariant) {
+      return {
+        backgroundColor: theme.colors.background.overlay,
+        borderColor: theme.colors.border.default,
+        borderWidth: theme.borderWidth.thin,
+      };
     }
 
     if (isDarkGreenBackground) {
