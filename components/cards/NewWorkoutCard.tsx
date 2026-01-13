@@ -1,7 +1,8 @@
-import { View, Text, Pressable } from 'react-native';
+import { View, Text } from 'react-native';
 import { ChevronRight } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { theme } from '../../theme';
+import { GenericCard } from './GenericCard';
 
 type NewWorkoutCardProps = {
   variant?: 'default' | 'popular';
@@ -127,35 +128,8 @@ export function NewWorkoutCard({
   );
 
   return (
-    <Pressable
-      onPress={onPress}
-      style={({ pressed }) => [
-        {
-          width: '100%',
-          borderRadius: theme.borderRadius.xl,
-          overflow: 'hidden',
-          transform: [{ scale: pressed ? 0.98 : 1 }],
-        },
-        !isPopular && {
-          backgroundColor: pressed
-            ? theme.colors.background.cardDark
-            : theme.colors.background.cardElevated,
-          borderWidth: theme.borderWidth.thin,
-          borderColor: theme.colors.background.white5,
-          ...theme.shadows.md,
-        },
-      ]}>
-      {isPopular ? (
-        <LinearGradient
-          colors={theme.colors.gradients.cta}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={{ padding: 2 }}>
-          {content}
-        </LinearGradient>
-      ) : (
-        content
-      )}
-    </Pressable>
+    <GenericCard isPopular={isPopular} onPress={onPress}>
+      {content}
+    </GenericCard>
   );
 }
