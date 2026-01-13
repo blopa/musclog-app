@@ -22,6 +22,7 @@ import Svg, {
   LinearGradient as SvgLinearGradient,
   Stop,
 } from 'react-native-svg';
+import { HealthCategoryCard } from '../../components/HealthCategoryCard';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const ILLUSTRATION_SIZE = SCREEN_WIDTH * 0.4; // 40% of screen width
@@ -232,44 +233,36 @@ export default function HealthConnectScreen() {
         {/* Category Buttons Grid */}
         <View className="mb-8 w-full flex-row flex-wrap gap-3">
           {/* Nutrition */}
-          <View className="min-w-[45%] flex-1 flex-row items-center gap-3 rounded-2xl border border-white/5 bg-bg-card p-3">
-            <View
-              className="rounded-lg p-2"
-              style={{ backgroundColor: theme.colors.status.indigo10 }}>
-              <UtensilsCrossed size={20} color={theme.colors.status.indigoLight} strokeWidth={2} />
-            </View>
-            <Text className="text-sm font-medium text-white">Nutrition</Text>
-          </View>
+          <HealthCategoryCard
+            icon={UtensilsCrossed}
+            label="Nutrition"
+            backgroundColor={theme.colors.status.indigo10}
+            iconColor={theme.colors.status.indigoLight}
+          />
 
           {/* Weight */}
-          <View className="min-w-[45%] flex-1 flex-row items-center gap-3 rounded-2xl border border-white/5 bg-bg-card p-3">
-            <View
-              className="rounded-lg p-2"
-              style={{ backgroundColor: theme.colors.status.emerald20 }}>
-              <Scale size={20} color={theme.colors.status.emeraldLight} strokeWidth={2} />
-            </View>
-            <Text className="text-sm font-medium text-white">Weight</Text>
-          </View>
+          <HealthCategoryCard
+            icon={Scale}
+            label="Weight"
+            backgroundColor={theme.colors.status.emerald20}
+            iconColor={theme.colors.status.emeraldLight}
+          />
 
           {/* Sleep */}
-          <View className="min-w-[45%] flex-1 flex-row items-center gap-3 rounded-2xl border border-white/5 bg-bg-card p-3">
-            <View
-              className="rounded-lg p-2"
-              style={{ backgroundColor: theme.colors.status.emerald10 }}>
-              <Moon size={20} color={theme.colors.status.emerald} strokeWidth={2} />
-            </View>
-            <Text className="text-sm font-medium text-white">Sleep</Text>
-          </View>
+          <HealthCategoryCard
+            icon={Moon}
+            label="Sleep"
+            backgroundColor={theme.colors.status.emerald10}
+            iconColor={theme.colors.status.emerald}
+          />
 
           {/* Vitals */}
-          <View className="min-w-[45%] flex-1 flex-row items-center gap-3 rounded-2xl border border-white/5 bg-bg-card p-3">
-            <View
-              className="rounded-lg p-2"
-              style={{ backgroundColor: theme.colors.status.purple10 }}>
-              <Heart size={20} color={theme.colors.status.purple} strokeWidth={2} />
-            </View>
-            <Text className="text-sm font-medium text-white">Vitals</Text>
-          </View>
+          <HealthCategoryCard
+            icon={Heart}
+            label="Vitals"
+            backgroundColor={theme.colors.status.purple10}
+            iconColor={theme.colors.status.purple}
+          />
         </View>
       </View>
 

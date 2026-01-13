@@ -278,9 +278,9 @@ export default function CardsTestScreen() {
         <TestSection title="Meal Item" subtitle="Display meal details">
           <MealItemCard
             title="Breakfast"
-            tags={["Healthy", "Quick"]}
+            tags={['Healthy', 'Quick']}
             calories={350}
-            macros={{ protein: "25g", carbs: "30g", fat: "10g" }}
+            macros={{ protein: '25g', carbs: '30g', fat: '10g' }}
             image={{ uri: 'https://via.placeholder.com/150' }}
             onTrackPress={() => console.log('Track meal')}
           />
