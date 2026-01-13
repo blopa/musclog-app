@@ -22,7 +22,7 @@ export function NewWorkoutCard({
   const isPopular = variant === 'popular';
 
   return (
-    <GenericCard isPopular={isPopular} onPress={onPress} isPressable={true}>
+    <GenericCard isPopular={isPopular} onPress={onPress} isPressable={true} variant="highlighted">
       <View
         style={[
           { padding: theme.spacing.padding.lg },

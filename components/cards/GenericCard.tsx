@@ -6,7 +6,7 @@ type GenericCardProps = {
   children: React.ReactNode;
   isPopular?: boolean;
   onPress?: () => void;
-  variant?: 'default' | 'workout' | 'food';
+  variant?: 'default' | 'workout' | 'highlighted';
   backgroundVariant?: 'default' | 'dark-green';
   isPressable?: boolean;
 };
@@ -27,10 +27,10 @@ export function GenericCard({
   // Computed Values
   // ============================================================================
   const isWorkoutVariant = variant === 'workout';
-  const isFoodVariant = variant === 'food';
+  const isDefaultVariant = variant === 'default';
   const effectiveBackgroundVariant = backgroundVariant ?? variant;
   const isDarkGreenBackground = effectiveBackgroundVariant === 'dark-green';
-  const shouldShowPopularGradient = isPopular && !isWorkoutVariant && !isFoodVariant;
+  const shouldShowPopularGradient = isPopular && !isWorkoutVariant && !isDefaultVariant;
   const shouldRenderAsPressable = isPressable && !isWorkoutVariant;
 
   // ============================================================================
@@ -64,7 +64,7 @@ export function GenericCard({
     }
 
     // Food variant: matches FoodItemCard styling
-    if (isFoodVariant) {
+    if (isDefaultVariant) {
       return {
         backgroundColor: theme.colors.background.overlay,
         borderColor: theme.colors.border.default,
@@ -144,7 +144,7 @@ export function GenericCard({
     </>
   );
 
-  // Pressable card (only for default variant, not workout)
+  // Pressable card (only for highlighted variant, not workout)
   if (shouldRenderAsPressable) {
     return (
       <Pressable onPress={onPress} style={({ pressed }) => getCardStyle(pressed)}>

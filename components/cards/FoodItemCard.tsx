@@ -22,7 +22,7 @@ export function FoodItemCard({
   const { t } = useTranslation();
 
   return (
-    <GenericCard variant="food">
+    <GenericCard variant="default">
       <View className="flex-row items-center gap-4 p-4">
         <View
           className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl"
