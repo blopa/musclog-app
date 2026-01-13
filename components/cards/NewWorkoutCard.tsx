@@ -28,24 +28,24 @@ export function NewWorkoutCard({
           { padding: theme.spacing.padding.lg },
           isPopular
             ? {
-              backgroundColor: theme.colors.background.aiCardBackground,
-              borderRadius: theme.borderRadius.xl - 2,
-            }
+                backgroundColor: theme.colors.background.aiCardBackground,
+                borderRadius: theme.borderRadius.xl - 2,
+              }
             : {
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: theme.spacing.gap.base,
-            },
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: theme.spacing.gap.base,
+              },
         ]}>
         <View
           style={
             isPopular
               ? {
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'flex-start',
-                marginBottom: theme.spacing.padding.sm,
-              }
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'flex-start',
+                  marginBottom: theme.spacing.padding.sm,
+                }
               : null
           }>
           <View

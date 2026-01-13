@@ -7,6 +7,7 @@ type GenericCardProps = {
   isPopular?: boolean;
   onPress?: () => void;
   variant?: 'default' | 'workout';
+  backgroundVariant?: 'default' | 'dark-green';
   isPressable?: boolean;
 };
 
@@ -20,37 +21,54 @@ export function GenericCard({
   isPressable = false,
   onPress,
   variant = 'default',
+  backgroundVariant,
 }: GenericCardProps) {
   const isWorkoutVariant = variant === 'workout';
 
-  // Style helpers
-  const getWorkoutCardStyle = (): ViewStyle => ({
-    width: '100%',
-    overflow: 'hidden',
-    borderRadius: 20,
-    padding: 24,
-    backgroundColor: theme.colors.background.darkGreen80,
-    borderColor: theme.colors.background.white5,
-    borderWidth: theme.borderWidth.thin,
-    ...theme.shadows.lg,
-  });
+  // Default backgroundVariant to match variant if not specified (backward compatibility)
+  const effectiveBackgroundVariant = backgroundVariant ?? variant;
+  const isDarkGreenBackground = effectiveBackgroundVariant === 'dark-green';
 
-  const getDefaultCardStyle = (pressed: boolean = false): ViewStyle => {
+  // Structural style helpers (controlled by variant)
+  const getStructuralStyle = (pressed: boolean = false): ViewStyle => {
     const baseStyle: ViewStyle = {
       width: '100%',
       overflow: 'hidden',
-      borderRadius: theme.borderRadius.xl,
       transform: [{ scale: pressed ? 0.98 : 1 }],
     };
 
-    // Popular cards don't have background/border (they use gradient wrapper)
-    if (isPopular) {
-      return baseStyle;
+    if (isWorkoutVariant) {
+      return {
+        ...baseStyle,
+        borderRadius: 20,
+        padding: 24,
+      };
     }
 
-    // Regular cards have background, border, and shadow
     return {
       ...baseStyle,
+      borderRadius: theme.borderRadius.xl,
+    };
+  };
+
+  // Background style helpers (controlled by backgroundVariant)
+  const getBackgroundStyle = (pressed: boolean = false): ViewStyle => {
+    // Popular cards don't have background/border (they use gradient wrapper)
+    if (isPopular && !isWorkoutVariant) {
+      return {};
+    }
+
+    if (isDarkGreenBackground) {
+      return {
+        backgroundColor: theme.colors.background.darkGreen80,
+        borderColor: theme.colors.background.white5,
+        borderWidth: theme.borderWidth.thin,
+        ...theme.shadows.lg,
+      };
+    }
+
+    // Default background
+    return {
       backgroundColor: pressed
         ? theme.colors.background.cardDark
         : theme.colors.background.cardElevated,
@@ -61,7 +79,10 @@ export function GenericCard({
   };
 
   const getCardStyle = (pressed: boolean = false): ViewStyle => {
-    return isWorkoutVariant ? getWorkoutCardStyle() : getDefaultCardStyle(pressed);
+    return {
+      ...getStructuralStyle(pressed),
+      ...getBackgroundStyle(pressed),
+    };
   };
 
   // Content rendering helpers
@@ -92,6 +113,7 @@ export function GenericCard({
   );
 
   const renderCardContent = () => {
+    // Popular gradient wrapper only applies to default variant
     if (isPopular && !isWorkoutVariant) {
       return renderPopularGradientWrapper();
     }
@@ -100,6 +122,7 @@ export function GenericCard({
 
   const renderCardInnerContent = () => (
     <>
+      {/* Gradient overlay is controlled by variant, not backgroundVariant */}
       {isWorkoutVariant && renderWorkoutGradientOverlay()}
       {renderCardContent()}
     </>
