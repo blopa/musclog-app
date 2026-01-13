@@ -7,19 +7,22 @@ type GenericCardProps = {
   isPopular?: boolean;
   onPress?: () => void;
   variant?: 'default' | 'workout';
+  isPressable?: boolean;
 };
 
 export function GenericCard({
   children,
   isPopular = false,
+  isPressable = false,
   onPress,
   variant = 'default',
 }: GenericCardProps) {
   const isWorkoutVariant = variant === 'workout';
+  const CardWrapper = isPressable ? Pressable : View;
 
   if (isWorkoutVariant) {
     return (
-      <View
+      <CardWrapper
         className="mb-8 w-full overflow-hidden rounded-[20px] border p-6"
         style={{
           backgroundColor: theme.colors.background.darkGreen80,
@@ -43,12 +46,12 @@ export function GenericCard({
         />
 
         {children}
-      </View>
+      </CardWrapper>
     );
   }
 
   return (
-    <Pressable
+    <CardWrapper
       onPress={onPress}
       style={({ pressed }) => [
         {
@@ -77,6 +80,6 @@ export function GenericCard({
       ) : (
         children
       )}
-    </Pressable>
+    </CardWrapper>
   );
 }

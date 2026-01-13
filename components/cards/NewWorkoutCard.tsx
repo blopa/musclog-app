@@ -128,7 +128,7 @@ export function NewWorkoutCard({
   );
 
   return (
-    <GenericCard isPopular={isPopular} onPress={onPress}>
+    <GenericCard isPopular={isPopular} onPress={onPress} isPressable>
       {content}
     </GenericCard>
   );
