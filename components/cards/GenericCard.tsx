@@ -23,14 +23,18 @@ export function GenericCard({
   variant = 'default',
   backgroundVariant,
 }: GenericCardProps) {
-  // Calculate derived values
+  // ============================================================================
+  // Computed Values
+  // ============================================================================
   const isWorkoutVariant = variant === 'workout';
   const effectiveBackgroundVariant = backgroundVariant ?? variant;
   const isDarkGreenBackground = effectiveBackgroundVariant === 'dark-green';
   const shouldShowPopularGradient = isPopular && !isWorkoutVariant;
   const shouldRenderAsPressable = isPressable && !isWorkoutVariant;
 
-  // Style calculation functions
+  // ============================================================================
+  // Style Helpers
+  // ============================================================================
   const getStructuralStyle = (pressed: boolean = false): ViewStyle => {
     const baseStyle: ViewStyle = {
       width: '100%',
@@ -53,7 +57,7 @@ export function GenericCard({
   };
 
   const getBackgroundStyle = (pressed: boolean = false): ViewStyle => {
-    // Popular cards use gradient wrapper instead of background
+    // Popular cards use gradient wrapper instead of background style
     if (shouldShowPopularGradient) {
       return {};
     }
@@ -85,7 +89,9 @@ export function GenericCard({
     };
   };
 
-  // Render functions
+  // ============================================================================
+  // Render Helpers
+  // ============================================================================
   const renderWorkoutGradientOverlay = () => (
     <LinearGradient
       colors={theme.colors.gradients.workoutStats}
@@ -102,47 +108,49 @@ export function GenericCard({
     />
   );
 
-  const renderPopularGradientWrapper = () => (
-    <LinearGradient
-      colors={theme.colors.gradients.cta}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={{ padding: 2 }}>
-      {children}
-    </LinearGradient>
-  );
-
   const renderCardContent = () => {
+    // Popular cards get wrapped in a gradient border
     if (shouldShowPopularGradient) {
-      return renderPopularGradientWrapper();
+      return (
+        <LinearGradient
+          colors={theme.colors.gradients.cta}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={{ padding: 2 }}>
+          {children}
+        </LinearGradient>
+      );
     }
     return children;
   };
 
-  const renderCardInnerContent = () => (
+  // ============================================================================
+  // Main Render
+  // ============================================================================
+  const cardContent = (
     <>
       {isWorkoutVariant && renderWorkoutGradientOverlay()}
       {renderCardContent()}
     </>
   );
 
-  // Render pressable card (only for default variant)
+  // Pressable card (only for default variant, not workout)
   if (shouldRenderAsPressable) {
     return (
       <Pressable onPress={onPress} style={({ pressed }) => getCardStyle(pressed)}>
-        {renderCardInnerContent()}
+        {cardContent}
       </Pressable>
     );
   }
 
-  // Render static card
+  // Static card
   const workoutClassName = isWorkoutVariant
     ? 'mb-8 w-full overflow-hidden rounded-[20px] border p-6'
     : undefined;
 
   return (
     <View className={workoutClassName} style={getCardStyle()}>
-      {renderCardInnerContent()}
+      {cardContent}
     </View>
   );
 }
