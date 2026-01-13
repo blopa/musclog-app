@@ -1,10 +1,10 @@
 import React from 'react';
 import { View } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Timer, Dumbbell, TrendingUp } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { WorkoutSummaryStatRow } from './WorkoutSummaryStatRow';
+import { WorkoutGenericCard } from './WorkoutGenericCard';
 
 type WorkoutSummaryStatsCardProps = {
   totalTime: string;
@@ -19,29 +19,7 @@ export function WorkoutSummaryStatsCard({
 }: WorkoutSummaryStatsCardProps) {
   const { t } = useTranslation();
   return (
-    <View
-      className="mb-8 w-full overflow-hidden rounded-[20px] border p-6"
-      style={{
-        backgroundColor: theme.colors.background.darkGreen80,
-        borderColor: theme.colors.background.white5,
-        borderWidth: theme.borderWidth.thin,
-        ...theme.shadows.lg,
-      }}>
-      {/* Top gradient line */}
-      <LinearGradient
-        colors={theme.colors.gradients.workoutStats}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          height: theme.size['1half'],
-          opacity: 0.5,
-        }}
-      />
-
+    <WorkoutGenericCard>
       <View className="gap-6">
         <WorkoutSummaryStatRow
           icon={Timer}
@@ -69,6 +47,6 @@ export function WorkoutSummaryStatsCard({
           showStarIcon={true}
         />
       </View>
-    </View>
+    </WorkoutGenericCard>
   );
 }
