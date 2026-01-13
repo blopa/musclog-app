@@ -63,7 +63,7 @@ export function GenericCard({
       return {};
     }
 
-    // Food variant: matches FoodItemCard styling
+    // Default variant: matches FoodItemCard styling (overlay background with default border)
     if (isDefaultVariant) {
       return {
         backgroundColor: theme.colors.background.overlay,
@@ -81,7 +81,7 @@ export function GenericCard({
       };
     }
 
-    // Default background with pressed state
+    // Highlighted variant (or other variants): elevated card background with pressed state
     return {
       backgroundColor: pressed
         ? theme.colors.background.cardDark
@@ -144,7 +144,7 @@ export function GenericCard({
     </>
   );
 
-  // Pressable card (only for highlighted variant, not workout)
+  // Pressable card (works for any variant except workout)
   if (shouldRenderAsPressable) {
     return (
       <Pressable onPress={onPress} style={({ pressed }) => getCardStyle(pressed)}>
