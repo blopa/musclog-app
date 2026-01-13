@@ -31,6 +31,22 @@ import { AISettingsModal } from '../../components/modals/AISettingsModal';
 import { FilterWorkoutsModal } from '../../components/modals/FilterWorkoutsModal';
 import { ConnectGoogleAccountModal } from '../../components/modals/ConnectGoogleAccountModal';
 
+// TODO: add them to the test screen, by adding their own section similar to the other modals, with a button to open them etc
+import { CaloriesRemainingCard } from '../../components/cards/CaloriesRemainingCard';
+import { ChatWorkoutCard } from '../../components/cards/ChatWorkoutCard';
+import { DailySummaryCard } from '../../components/cards/DailySummaryCard';
+import { FoodInfoCard } from '../../components/cards/FoodInfoCard';
+import { FoodItemCard } from '../../components/cards/FoodItemCard';
+import { MealItemCard } from '../../components/cards/MealItemCard';
+import { NewWorkoutCard } from '../../components/cards/NewWorkoutCard';
+import { NotificationCard } from '../../components/cards/NotificationCard';
+import { RecentWorkoutsCard } from '../../components/cards/RecentWorkoutsCard';
+import { SettingsCard } from '../../components/cards/SettingsCard';
+import { StatCard } from '../../components/cards/StatCard';
+import { UpNextExerciseCard } from '../../components/cards/UpNextExerciseCard';
+import { WorkoutCard } from '../../components/cards/WorkoutCard';
+import { WorkoutStatCard } from '../../components/cards/WorkoutStatCard';
+
 export default function ModalsTestScreen() {
   // Nutrition Goals Modal
   const [isNutritionGoalsVisible, setIsNutritionGoalsVisible] = useState(false);
