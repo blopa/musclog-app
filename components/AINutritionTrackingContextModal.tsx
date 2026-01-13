@@ -69,8 +69,7 @@ export function AINutritionTrackingContextModal({
         className="pt-2"
         onStartShouldSetResponder={() => true}
         onMoveShouldSetResponder={() => true}
-        onResponderTerminationRequest={() => false}
-      >
+        onResponderTerminationRequest={() => false}>
         {/* Describe Your Meal Section */}
         <View className="mb-6">
           <Text className="mb-2 ml-1 text-xs font-bold uppercase tracking-widest text-text-secondary">
@@ -81,7 +80,8 @@ export function AINutritionTrackingContextModal({
             style={{
               backgroundColor: 'rgba(17, 20, 19, 0.5)',
               borderColor: 'rgba(255, 255, 255, 0.1)',
-            }}>
+            }}
+            collapsable={false}>
             <RNTextInput
               className="min-h-[100px] w-full bg-transparent text-[15px] text-text-primary"
               style={{
