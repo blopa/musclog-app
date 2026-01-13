@@ -3,6 +3,7 @@ import { View, Text, Image, Pressable, ImageSourcePropType } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient';
 import { Dumbbell, Flame, ArrowRight } from 'lucide-react-native';
 import { theme } from '../../theme';
+import { GenericCard } from './GenericCard';
 
 type ChatWorkoutCardProps = {
   title: string;
@@ -24,12 +25,7 @@ export function ChatWorkoutCard({
   onStartWorkout,
 }: ChatWorkoutCardProps) {
   return (
-    <View
-      className="overflow-hidden rounded-xl border bg-bg-card"
-      style={{
-        borderColor: theme.colors.background.white5,
-        ...theme.shadows.lg,
-      }}>
+    <GenericCard variant="card" size="sm">
       {/* Hero Image Section */}
       <View className="relative h-32">
         <Image source={image} className="h-full w-full" resizeMode="cover" />
@@ -80,6 +76,6 @@ export function ChatWorkoutCard({
           <ArrowRight size={18} color={theme.colors.text.black} />
         </Pressable>
       </View>
-    </View>
+    </GenericCard>
   );
 }
