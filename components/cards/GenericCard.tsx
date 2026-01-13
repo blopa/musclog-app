@@ -9,6 +9,7 @@ type GenericCardProps = {
   variant?: 'default' | 'workout' | 'highlighted';
   backgroundVariant?: 'default' | 'dark-green';
   isPressable?: boolean;
+  size?: 'sm' | 'default' | 'lg';
 };
 
 /**
@@ -22,6 +23,7 @@ export function GenericCard({
   onPress,
   variant = 'default',
   backgroundVariant,
+  size = 'default',
 }: GenericCardProps) {
   // ============================================================================
   // Computed Values
@@ -37,8 +39,14 @@ export function GenericCard({
   // Style Helpers
   // ============================================================================
   const getStructuralStyle = (pressed: boolean = false): ViewStyle => {
+    // Small cards should use flex-1 instead of full width for row layouts
+    const widthStyle: ViewStyle =
+      size === 'sm' && !isWorkoutVariant
+        ? { flex: 1 } // Allows cards to share space in a row
+        : { width: '100%' };
+
     const baseStyle: ViewStyle = {
-      width: '100%',
+      ...widthStyle,
       overflow: 'hidden',
       transform: [{ scale: pressed ? 0.98 : 1 }],
     };
@@ -51,9 +59,17 @@ export function GenericCard({
       };
     }
 
+    // Size-based border radius for non-workout variants
+    const borderRadius =
+      size === 'sm'
+        ? theme.borderRadius.lg // 16px, matching rounded-2xl
+        : size === 'lg'
+          ? theme.borderRadius['2xl'] // 24px
+          : theme.borderRadius.xl; // 20px, default
+
     return {
       ...baseStyle,
-      borderRadius: theme.borderRadius.xl,
+      borderRadius,
     };
   };
 
