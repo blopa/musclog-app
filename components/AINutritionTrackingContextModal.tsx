@@ -65,7 +65,12 @@ export function AINutritionTrackingContextModal({
           <Sparkles size={24} color="#ffffff" />
         </View>
       }>
-      <View className="pt-2">
+      <View
+        className="pt-2"
+        onStartShouldSetResponder={() => true}
+        onMoveShouldSetResponder={() => true}
+        onResponderTerminationRequest={() => false}
+      >
         {/* Describe Your Meal Section */}
         <View className="mb-6">
           <Text className="mb-2 ml-1 text-xs font-bold uppercase tracking-widest text-text-secondary">

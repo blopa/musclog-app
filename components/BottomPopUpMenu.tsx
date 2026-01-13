@@ -127,10 +127,13 @@ export function BottomPopUpMenu({
       onRequestClose={onClose}
       statusBarTranslucent={Platform.OS !== 'web'}>
       {/* Backdrop */}
-      <Pressable
+      <View
         className="flex-1"
-        style={[{ backgroundColor: theme.colors.overlay.black60 }, webBackdropStyle]}
-        onPress={onClose}>
+        style={[{ backgroundColor: theme.colors.overlay.black60 }, webBackdropStyle]}>
+        <Pressable
+          className="absolute inset-0"
+          onPress={onClose}
+        />
         <View
           className="flex-1 justify-end"
           style={
@@ -142,6 +145,8 @@ export function BottomPopUpMenu({
           <Animated.View
             className="border-t border-border-dark"
             onStartShouldSetResponder={() => true}
+            onMoveShouldSetResponder={() => true}
+            onResponderTerminationRequest={() => false}
             style={{
               transform: [{ translateY: slideAnim }],
               backgroundColor: theme.colors.background.cardElevated,
@@ -229,7 +234,7 @@ export function BottomPopUpMenu({
             )}
           </Animated.View>
         </View>
-      </Pressable>
+      </View>
     </Modal>
   );
 }
