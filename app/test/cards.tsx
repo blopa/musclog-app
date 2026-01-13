@@ -1,7 +1,17 @@
 import React from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Sparkles, Bell, Trophy, Activity, Zap } from 'lucide-react-native';
+import {
+  UtensilsCrossed,
+  Scale,
+  Moon,
+  Heart,
+  Sparkles,
+  Bell,
+  Trophy,
+  Activity,
+  Zap,
+} from 'lucide-react-native';
 import { TestSection } from './components/TestSection';
 import { WorkoutCard } from '../../components/cards/WorkoutCard';
 import { DailySummaryCard } from '../../components/cards/DailySummaryCard';
@@ -21,6 +31,7 @@ import { theme } from '../../theme';
 import { ChatWorkoutCard } from '../../components/cards/ChatWorkoutCard';
 import { MealItemCard } from '../../components/cards/MealItemCard';
 import { SettingsCard } from '../../components/cards/SettingsCard';
+import { HealthCategoryCard } from '../../components/HealthCategoryCard';
 
 export default function CardsTestScreen() {
   return (
@@ -293,6 +304,35 @@ export default function CardsTestScreen() {
             subtitle="Manage your app settings."
             onPress={() => console.log('Settings pressed')}
           />
+        </TestSection>
+
+        <TestSection title="Health Categories" subtitle="Test reusable health category cards">
+          <View className="flex-row flex-wrap gap-3">
+            <HealthCategoryCard
+              icon={UtensilsCrossed}
+              label="Nutrition"
+              backgroundColor={theme.colors.status.indigo10}
+              iconColor={theme.colors.status.indigoLight}
+            />
+            <HealthCategoryCard
+              icon={Scale}
+              label="Weight"
+              backgroundColor={theme.colors.status.emerald20}
+              iconColor={theme.colors.status.emeraldLight}
+            />
+            <HealthCategoryCard
+              icon={Moon}
+              label="Sleep"
+              backgroundColor={theme.colors.status.emerald10}
+              iconColor={theme.colors.status.emerald}
+            />
+            <HealthCategoryCard
+              icon={Heart}
+              label="Vitals"
+              backgroundColor={theme.colors.status.purple10}
+              iconColor={theme.colors.status.purple}
+            />
+          </View>
         </TestSection>
 
         <View className="h-8" />

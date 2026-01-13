@@ -106,7 +106,7 @@ function OnboardingStepThree({ imageUrl, title, description, badge }: Onboarding
           />
         </View>
 
-        {/* Main Image Card */}
+        {/* Main Image Card - TODO move to separate file maybe? */}
         <View
           className="relative z-10 h-full w-full overflow-hidden rounded-3xl border border-white/10"
           style={theme.shadows.lg}>
