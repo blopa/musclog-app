@@ -147,7 +147,6 @@ export default function HomeScreen() {
           <DailySummaryCard
             calories={dailySummary.calories}
             activity={dailySummary.activity}
-            gradientColors={dailySummary.gradientColors}
             macros={{
               protein: { value: 180, goal: 200 },
               carbs: { value: 250, goal: 300 },

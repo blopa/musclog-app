@@ -45,7 +45,9 @@ export function CaloriesRemainingCard({ calories, macros }: CaloriesRemainingCar
             <Text className="text-6xl font-bold text-text-primary">
               {calories.remaining.toLocaleString()}
             </Text>
-            <Text className="text-2xl text-text-secondary">/ {calories.total.toLocaleString()}</Text>
+            <Text className="text-2xl text-text-secondary">
+              / {calories.total.toLocaleString()}
+            </Text>
             <Text
               className="ml-auto text-3xl font-semibold"
               style={{ color: theme.colors.accent.secondary }}>

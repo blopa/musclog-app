@@ -74,7 +74,6 @@ export default function CardsTestScreen() {
           <DailySummaryCard
             calories={{ consumed: 1800, remaining: 400, goal: 2200 }}
             activity={{ minutes: 45, goal: 60 }}
-            gradientColors={[theme.colors.status.indigo, theme.colors.status.emeraldLight]}
           />
         </TestSection>
 

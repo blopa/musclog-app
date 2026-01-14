@@ -7,7 +7,7 @@ type GenericCardProps = {
   isPopular?: boolean;
   onPress?: () => void;
   variant?: 'default' | 'workout' | 'highlighted' | 'card';
-  backgroundVariant?: 'default' | 'dark-green' | 'gradient';
+  backgroundVariant?: 'default' | 'dark-green' | 'gradient' | 'colorful-gradient';
   isPressable?: boolean;
   size?: 'sm' | 'default' | 'lg';
 };
@@ -36,6 +36,7 @@ export function GenericCard({
   const shouldShowPopularGradient = isPopular && !isWorkoutVariant && !isDefaultVariant;
   const shouldRenderAsPressable = isPressable && !isWorkoutVariant;
   const hasGradientBackground = effectiveBackgroundVariant === 'gradient';
+  const hasColorfulGradientBackground = effectiveBackgroundVariant === 'colorful-gradient';
 
   // ============================================================================
   // Style Helpers
@@ -79,6 +80,14 @@ export function GenericCard({
     // Popular cards use gradient wrapper instead of background style
     if (shouldShowPopularGradient) {
       return {};
+    }
+
+    // Colorful gradient background uses LinearGradient, so no background style needed
+    if (hasColorfulGradientBackground) {
+      return {
+        borderColor: theme.colors.border.default,
+        borderWidth: theme.borderWidth.thin,
+      };
     }
 
     // Default variant: matches FoodItemCard styling (overlay background with default border)
@@ -158,6 +167,20 @@ export function GenericCard({
         </LinearGradient>
       );
     }
+
+    // Colorful gradient background wraps the content
+    if (hasColorfulGradientBackground) {
+      return (
+        <LinearGradient
+          colors={theme.colors.gradients.progress}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={{ flex: 1 }}>
+          {children}
+        </LinearGradient>
+      );
+    }
+
     return children;
   };
 
