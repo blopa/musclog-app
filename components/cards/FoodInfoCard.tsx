@@ -1,8 +1,8 @@
 import React, { useState, useRef } from 'react';
 import { View, Text, ScrollView } from 'react-native';
-import Svg, { Circle } from 'react-native-svg';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
+import { MacrosPizzaChart } from '../theme/MacrosPizzaChart';
 
 type FoodInfoCardProps = {
   food: {
@@ -21,30 +21,11 @@ export function FoodInfoCard({ food }: FoodInfoCardProps) {
   const [scrollViewWidth, setScrollViewWidth] = useState(0);
   const scrollViewRef = useRef<ScrollView>(null);
 
-  // Calculate macro percentages for circular chart
+  // Calculate macro percentages for legend
   const totalMacros = food.protein + food.carbs + food.fat;
   const proteinPercent = totalMacros > 0 ? (food.protein / totalMacros) * 100 : 0;
   const carbsPercent = totalMacros > 0 ? (food.carbs / totalMacros) * 100 : 0;
   const fatPercent = totalMacros > 0 ? (food.fat / totalMacros) * 100 : 0;
-
-  // Calculate dash array for circular chart
-  const radius = 15.915;
-  const circumference = 2 * Math.PI * radius;
-
-  // Calculate dash arrays - each segment should be a portion of the circumference
-  const proteinLength = (proteinPercent / 100) * circumference;
-  const fatLength = (fatPercent / 100) * circumference;
-  const carbsLength = (carbsPercent / 100) * circumference;
-
-  // Dash arrays: [visible length, gap length]
-  const proteinDashArray = `${proteinLength} ${circumference}`;
-  const fatDashArray = `${fatLength} ${circumference}`;
-  const carbsDashArray = `${carbsLength} ${circumference}`;
-
-  // Dash offsets: where each segment starts (negative to move clockwise from top)
-  const proteinDashOffset = 0;
-  const fatDashOffset = -proteinLength;
-  const carbsDashOffset = -(proteinLength + fatLength);
 
   return (
     <View className="mb-6 overflow-hidden rounded-xl border border-white/5 bg-bg-cardDark p-5">
@@ -134,69 +115,13 @@ export function FoodInfoCard({ food }: FoodInfoCardProps) {
           <View className="flex-none" style={{ width: scrollViewWidth || '100%' }}>
             <View className="flex-row items-center gap-4 rounded-xl border border-white/5 bg-white/5 p-3">
               <View className="h-24 w-24 flex-none">
-                {/* Circular Chart - Using SVG */}
-                <Svg width={theme.size['24']} height={theme.size['24']} viewBox="0 0 36 36">
-                  {/* Background circle */}
-                  <Circle
-                    cx="18"
-                    cy="18"
-                    r={radius}
-                    fill="none"
-                    stroke={theme.colors.text.primary20}
-                    strokeWidth="6"
-                    transform="rotate(-90 18 18)"
-                  />
-                  {/* Protein circle - starts at top */}
-                  {proteinPercent > 0 && (
-                    <Circle
-                      cx="18"
-                      cy="18"
-                      r={radius}
-                      fill="none"
-                      stroke={theme.colors.macros.protein.bg}
-                      strokeWidth="6"
-                      strokeDasharray={proteinDashArray}
-                      strokeDashoffset={proteinDashOffset}
-                      strokeLinecap="round"
-                      transform="rotate(-90 18 18)"
-                    />
-                  )}
-                  {/* Fat circle - continues after protein */}
-                  {fatPercent > 0 && (
-                    <Circle
-                      cx="18"
-                      cy="18"
-                      r={radius}
-                      fill="none"
-                      stroke={theme.colors.macros.fat.bg}
-                      strokeWidth="6"
-                      strokeDasharray={fatDashArray}
-                      strokeDashoffset={fatDashOffset}
-                      strokeLinecap="round"
-                      transform="rotate(-90 18 18)"
-                    />
-                  )}
-                  {/* Carbs circle - continues after fat */}
-                  {carbsPercent > 0 && (
-                    <Circle
-                      cx="18"
-                      cy="18"
-                      r={radius}
-                      fill="none"
-                      stroke={theme.colors.macros.carbs.bg}
-                      strokeWidth="6"
-                      strokeDasharray={carbsDashArray}
-                      strokeDashoffset={carbsDashOffset}
-                      strokeLinecap="round"
-                      transform="rotate(-90 18 18)"
-                    />
-                  )}
-                </Svg>
-                <View className="pointer-events-none absolute inset-0 items-center justify-center">
-                  <Text className="text-[10px] font-bold text-white/50">
-                    {t('foodDetails.macro')}
-                  </Text>
-                </View>
+                <MacrosPizzaChart
+                  protein={food.protein}
+                  carbs={food.carbs}
+                  fats={food.fat}
+                  size={96}
+                  showInsight={false}
+                />
               </View>
               <View className="flex-1 gap-2">
                 <View className="flex-row items-center justify-between">

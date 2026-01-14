@@ -13,6 +13,7 @@ type MacrosPizzaChartProps = {
   fats: number;
   fiber?: number;
   size?: number;
+  showInsight?: boolean;
 };
 
 export function MacrosPizzaChart({
@@ -21,6 +22,7 @@ export function MacrosPizzaChart({
   fats,
   fiber = 0,
   size = theme.size['48'],
+  showInsight = true,
 }: MacrosPizzaChartProps) {
   const { t } = useTranslation();
 
@@ -50,12 +52,14 @@ export function MacrosPizzaChart({
         </PolarChart>
       </View>
 
-      <View className="absolute items-center">
-        <Text className="text-[10px] font-bold uppercase text-text-secondary">
-          {t('nutritionGoals.balance')}
-        </Text>
-        <Text className="text-lg font-bold text-text-primary">{t('nutritionGoals.optimal')}</Text>
-      </View>
+      {showInsight ? (
+        <View className="absolute items-center">
+          <Text className="text-[10px] font-bold uppercase text-text-secondary">
+            {t('nutritionGoals.balance')}
+          </Text>
+          <Text className="text-lg font-bold text-text-primary">{t('nutritionGoals.optimal')}</Text>
+        </View>
+      ) : undefined}
     </View>
   );
 }
