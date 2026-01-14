@@ -166,7 +166,7 @@ const MealMacrosSummary = ({
                 fontWeight: theme.typography.fontWeight.bold,
                 color: theme.colors.text.primary,
               }}>
-              Total Nutrition
+              {t('food.createMeal.totalNutrition')}
             </Text>
             <Text
               style={{
@@ -194,7 +194,7 @@ const MealMacrosSummary = ({
                 textTransform: 'uppercase',
                 letterSpacing: 1,
               }}>
-              Estimated
+              {t('food.createMeal.estimated')}
             </Text>
           </View>
         </View>
@@ -220,6 +220,7 @@ const MealMacrosSummary = ({
 };
 
 export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalProps) {
+  const { t } = useTranslation();
   const [mealName, setMealName] = useState('');
   const [isFocused, setIsFocused] = useState(false);
   const [ingredients, setIngredients] = useState<Ingredient[]>(INITIAL_INGREDIENTS);
@@ -243,7 +244,7 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
     <FullScreenModal
       visible={visible}
       onClose={onClose}
-      title="Create New Meal"
+      title={t('food.createMeal.title')}
       headerRight={
         <Pressable className="p-2">
           <MoreVertical size={theme.iconSize.md} color={theme.colors.text.secondary} />
@@ -252,7 +253,7 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
       footer={
         <View className="px-4 pb-8 pt-2">
           <Button
-            label="Save Meal"
+            label={t('food.createMeal.saveMeal')}
             variant="gradientCta"
             size="md"
             width="full"
@@ -264,16 +265,16 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
       <View className="flex-1 px-4 py-6">
         {/* Meal Name Input Section */}
         <View className="mb-6 space-y-2">
-          <Text
-            style={{
-              fontSize: theme.typography.fontSize.xs,
-              fontWeight: theme.typography.fontWeight.bold,
-              color: theme.colors.text.secondary,
-              textTransform: 'uppercase',
-              letterSpacing: 1.2,
-              marginLeft: 4,
-            }}>
-            Meal Name
+            <Text
+              style={{
+                fontSize: theme.typography.fontSize.xs,
+                fontWeight: theme.typography.fontWeight.bold,
+                color: theme.colors.text.secondary,
+                textTransform: 'uppercase',
+                letterSpacing: 1.2,
+                marginLeft: 4,
+              }}>
+            {t('food.createMeal.mealName')}
           </Text>
           <View
             style={{
@@ -293,7 +294,7 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
             <TextInput
               value={mealName}
               onChangeText={setMealName}
-              placeholder="e.g. Post-Workout Smoothie"
+              placeholder={t('food.createMeal.mealNamePlaceholder')}
               placeholderTextColor={theme.colors.text.tertiary}
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
@@ -320,7 +321,7 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
                 textTransform: 'uppercase',
                 letterSpacing: 1.2,
               }}>
-              Ingredients ({ingredients.length})
+              {t('food.createMeal.ingredients', { count: ingredients.length })}
             </Text>
             <Pressable>
               <Text
@@ -331,7 +332,7 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
                   textTransform: 'uppercase',
                   letterSpacing: 1,
                 }}>
-                Edit List
+                {t('food.createMeal.editList')}
               </Text>
             </Pressable>
           </View>
@@ -431,7 +432,7 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
                   fontWeight: theme.typography.fontWeight.bold,
                   color: theme.colors.text.secondary,
                 }}>
-                Add Food Item
+                {t('food.createMeal.addFoodItem')}
               </Text>
             </Pressable>
           </View>

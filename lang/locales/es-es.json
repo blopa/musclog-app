@@ -108,6 +108,27 @@
       "nextMonday": "Próximo Lunes",
       "cancel": "Cancelar",
       "confirm": "Confirmar"
+    },
+    "addFoodItemToMeal": {
+      "title": "Añadir Comida",
+      "selectedCount": "{{count}} Seleccionado",
+      "addSelectedFoods": "Añadir {{count}} Comidas Seleccionadas",
+      "searchFood": "Buscar Comida",
+      "searchPlaceholder": "Buscar comida (ej. Pollo)...",
+      "searchResults": "Resultados de Búsqueda",
+      "foundItems": "Se encontraron {{count}} elementos",
+      "amount": "Cantidad"
+    },
+    "createMeal": {
+      "title": "Crear Nueva Comida",
+      "saveMeal": "Guardar Comida",
+      "totalNutrition": "Nutrición Total",
+      "estimated": "Estimado",
+      "mealName": "Nombre de la Comida",
+      "mealNamePlaceholder": "ej. Batido Post-Entrenamiento",
+      "ingredients": "Ingredientes ({{count}})",
+      "editList": "Editar Lista",
+      "addFoodItem": "Añadir Alimento"
     }
   },
   "notifications": {
@@ -222,7 +243,19 @@
     "archive": "Archivar",
     "last": "Último",
     "exercises": "Ejercicios",
-    "start": "Iniciar"
+    "start": "Iniciar",
+    "addExercise": {
+      "title": "Añadir Ejercicio",
+      "targetMuscle": "Músculo Objetivo",
+      "multiSelect": "MÚLTIPLE SELECCIÓN",
+      "searchPlaceholder": "Buscar ejercicios de {{muscle}}...",
+      "createSet": "Crear Serie",
+      "bodyweight": "Peso Corporal",
+      "sets": "Series",
+      "reps": "Repeticiones",
+      "weight": "Peso",
+      "addToWorkout": "Añadir al Entrenamiento"
+    }
   },
   "workoutDetails": {
     "subtitle": "Gestionar este entrenamiento",

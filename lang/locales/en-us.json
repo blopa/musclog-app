@@ -113,6 +113,27 @@
       "nextMonday": "Next Monday",
       "cancel": "Cancel",
       "confirm": "Confirm"
+    },
+    "addFoodItemToMeal": {
+      "title": "Add Food",
+      "selectedCount": "{{count}} Selected",
+      "addSelectedFoods": "Add {{count}} Selected Foods",
+      "searchFood": "Search Food",
+      "searchPlaceholder": "Search food (e.g. Chicken)...",
+      "searchResults": "Search Results",
+      "foundItems": "Found {{count}} items",
+      "amount": "Amount"
+    },
+    "createMeal": {
+      "title": "Create New Meal",
+      "saveMeal": "Save Meal",
+      "totalNutrition": "Total Nutrition",
+      "estimated": "Estimated",
+      "mealName": "Meal Name",
+      "mealNamePlaceholder": "e.g. Post-Workout Smoothie",
+      "ingredients": "Ingredients ({{count}})",
+      "editList": "Edit List",
+      "addFoodItem": "Add Food Item"
     }
   },
   "notifications": {
@@ -217,7 +238,19 @@
     "archive": "Archive",
     "last": "Last",
     "exercises": "Exercises",
-    "start": "Start"
+    "start": "Start",
+    "addExercise": {
+      "title": "Add Exercise",
+      "targetMuscle": "Target Muscle",
+      "multiSelect": "MULTI-SELECT",
+      "searchPlaceholder": "Search {{muscle}} exercises...",
+      "createSet": "Create Set",
+      "bodyweight": "Bodyweight",
+      "sets": "Sets",
+      "reps": "Reps",
+      "weight": "Weight",
+      "addToWorkout": "Add to Workout"
+    }
   },
   "workoutDetails": {
     "subtitle": "Manage this workout",

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Switch } from 'react-native';
 import { Search, Dumbbell, User, PlusCircle } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
 import { FullScreenModal } from './FullScreenModal';
 import { Button } from '../theme/Button';
@@ -62,6 +63,7 @@ type AddExerciseModalProps = {
 };
 
 export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExerciseModalProps) {
+  const { t } = useTranslation();
   const [activeMuscle, setActiveMuscle] = useState<MuscleGroup>('chest');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedExerciseId, setSelectedExerciseId] = useState<ExerciseId>('bench-press');
@@ -94,7 +96,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
   };
 
   return (
-    <FullScreenModal visible={visible} onClose={onClose} title="Add Exercise" scrollable={true}>
+    <FullScreenModal visible={visible} onClose={onClose} title={t('workouts.addExercise.title')} scrollable={true}>
       <View className="flex-1 px-4 py-6">
         {/* Target Muscle Section */}
         <View className="mb-6">
@@ -107,7 +109,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
                 textTransform: 'uppercase',
                 letterSpacing: 1.2,
               }}>
-              Target Muscle
+              {t('workouts.addExercise.targetMuscle')}
             </Text>
             <Text
               style={{
@@ -117,7 +119,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
                 textTransform: 'uppercase',
                 letterSpacing: 1,
               }}>
-              MULTI-SELECT
+              {t('workouts.addExercise.multiSelect')}
             </Text>
           </View>
           <FilterTabs
@@ -137,7 +139,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
           <Search size={20} color={theme.colors.text.tertiary} />
           <TextInput
             className="ml-3 flex-1 text-base text-text-primary"
-            placeholder={`Search ${activeMuscle} exercises...`}
+            placeholder={t('workouts.addExercise.searchPlaceholder', { muscle: activeMuscle })}
             placeholderTextColor={theme.colors.text.tertiary}
             value={searchQuery}
             onChangeText={setSearchQuery}
@@ -163,7 +165,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
                 fontWeight: theme.typography.fontWeight.bold,
                 color: theme.colors.text.primary,
               }}>
-              Create Set
+              {t('workouts.addExercise.createSet')}
             </Text>
             <View className="flex-row items-center gap-2">
               <Text
@@ -172,7 +174,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
                   fontWeight: theme.typography.fontWeight.medium,
                   color: theme.colors.text.secondary,
                 }}>
-                Bodyweight
+                {t('workouts.addExercise.bodyweight')}
               </Text>
               <Switch
                 value={isBodyweight}
@@ -190,7 +192,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
             {/* Sets & Reps */}
             <View className="flex-row gap-4">
               <NumericInput
-                label="Sets"
+                label={t('workouts.addExercise.sets')}
                 value={sets}
                 onChangeText={setSets}
                 unit=""
@@ -198,7 +200,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
                 onDecrement={() => setSets((prev) => Math.max(1, parseInt(prev) - 1).toString())}
               />
               <NumericInput
-                label="Reps"
+                label={t('workouts.addExercise.reps')}
                 value={reps}
                 onChangeText={setReps}
                 unit=""
@@ -210,7 +212,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
             {/* Weight */}
             <View className="flex-row">
               <NumericInput
-                label="Weight"
+                label={t('workouts.addExercise.weight')}
                 value={weight}
                 onChangeText={setWeight}
                 unit="KG"
@@ -223,7 +225,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
         <View style={{ height: 24 }} />
 
         <Button
-          label="Add to Workout"
+          label={t('workouts.addExercise.addToWorkout')}
           variant="gradientCta"
           size="md"
           width="full"

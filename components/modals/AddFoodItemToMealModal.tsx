@@ -8,6 +8,7 @@ import {
   Platform,
 } from 'react-native';
 import { Search, X, Check, PlusCircle } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
 import { FullScreenModal } from './FullScreenModal';
 import { Button } from '../theme/Button';
@@ -86,6 +87,7 @@ function FoodResultCard({
   onToggle,
   onAmountChange,
 }: FoodResultCardProps) {
+  const { t } = useTranslation();
   const calories = Math.round((food.caloriesPer100g * (parseInt(amount) || 0)) / 100);
   const amountInputRef = useRef<RNTextInput>(null);
   const [selection, setSelection] = useState<{ start: number; end: number } | undefined>(undefined);
@@ -239,7 +241,7 @@ function FoodResultCard({
               fontWeight: theme.typography.fontWeight.medium,
               color: theme.colors.text.secondary,
             }}>
-            Amount
+            {t('food.addFoodItemToMeal.amount')}
           </Text>
           <View
             style={{
@@ -297,6 +299,7 @@ export function AddFoodItemToMealModal({
   onClose,
   onAddFoods,
 }: AddFoodItemToMealModalProps) {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('Chicken');
   const [selectedItems, setSelectedItems] = useState<
     Record<string, { selected: boolean; amount: string }>
@@ -347,16 +350,16 @@ export function AddFoodItemToMealModal({
     <FullScreenModal
       visible={visible}
       onClose={onClose}
-      title="Add Food"
+      title={t('food.addFoodItemToMeal.title')}
       headerRight={
         <Text style={{ fontSize: 14, fontWeight: '600', color: theme.colors.accent.primary }}>
-          {selectedCount} Selected
+          {t('food.addFoodItemToMeal.selectedCount', { count: selectedCount })}
         </Text>
       }
       footer={
         <View className="px-4 pb-8 pt-2">
           <Button
-            label={`Add ${selectedCount} Selected Foods`}
+            label={t('food.addFoodItemToMeal.addSelectedFoods', { count: selectedCount })}
             variant="gradientCta"
             size="md"
             width="full"
@@ -370,10 +373,10 @@ export function AddFoodItemToMealModal({
         {/* Search Bar */}
         <View className="mb-6">
           <TextInput
-            label="Search Food"
+            label={t('food.addFoodItemToMeal.searchFood')}
             value={searchQuery}
             onChangeText={setSearchQuery}
-            placeholder="Search food (e.g. Chicken)..."
+            placeholder={t('food.addFoodItemToMeal.searchPlaceholder')}
             icon={<Search size={20} color={theme.colors.text.tertiary} />}
           />
         </View>
@@ -388,10 +391,10 @@ export function AddFoodItemToMealModal({
               textTransform: 'uppercase',
               letterSpacing: 1,
             }}>
-            Search Results
+            {t('food.addFoodItemToMeal.searchResults')}
           </Text>
           <Text style={{ fontSize: 12, color: theme.colors.text.tertiary }}>
-            Found {SEARCH_RESULTS.length} items
+            {t('food.addFoodItemToMeal.foundItems', { count: SEARCH_RESULTS.length })}
           </Text>
         </View>
 
