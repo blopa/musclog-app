@@ -391,5 +391,15 @@
       "breakfast": "Café da Manhã",
       "lunch": "Almoço"
     }
+  },
+  "snackbar": {
+    "view": "VER",
+    "retry": "TENTAR NOVAMENTE"
+  },
+  "optionsSelector": {
+    "link": "Vincular",
+    "unlink": "Desvincular",
+    "edit": "Editar",
+    "done": "Concluído"
   }
 }

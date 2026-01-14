@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { theme } from '../../../theme';
 
 type GroupActionButtonProps = {
@@ -11,6 +12,7 @@ export const GroupActionButton: React.FC<GroupActionButtonProps> = ({
   onPress,
   allSelectedInSameGroup,
 }) => {
+  const { t } = useTranslation();
   // Custom icon to match the image (4 dots with a horizontal line)
   const ActionIcon = ({ color }: { color: string }) => (
     <View
@@ -83,7 +85,7 @@ export const GroupActionButton: React.FC<GroupActionButtonProps> = ({
             textTransform: 'uppercase',
             letterSpacing: 1.5,
           }}>
-          {allSelectedInSameGroup ? 'Unlink' : 'Link'}
+          {allSelectedInSameGroup ? t('optionsSelector.unlink') : t('optionsSelector.link')}
         </Text>
       </Pressable>
     </View>

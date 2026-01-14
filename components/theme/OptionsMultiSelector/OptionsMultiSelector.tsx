@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { Check, GripVertical } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import DraggableFlatList, {
   RenderItemParams,
   ScaleDecorator,
@@ -32,6 +33,7 @@ export function OptionsMultiSelector<T extends string | number>({
   isEditable = false,
   onOrderChange,
 }: OptionsMultiSelectorProps<T>) {
+  const { t } = useTranslation();
   const [selectionEnabled, setSelectionEnabled] = useState(false);
   const [orderedOptions, setOrderedOptions] = useState<SelectorOption<T>[]>(options);
 
@@ -519,7 +521,7 @@ export function OptionsMultiSelector<T extends string | number>({
                   fontWeight: theme.typography.fontWeight.bold,
                   fontSize: theme.typography.fontSize.xs,
                 }}>
-                Done
+                {t('optionsSelector.done')}
               </Text>
             </Pressable>
           ) : (
@@ -532,7 +534,7 @@ export function OptionsMultiSelector<T extends string | number>({
                   fontWeight: theme.typography.fontWeight.bold,
                   fontSize: theme.typography.fontSize.xs,
                 }}>
-                Edit
+                {t('optionsSelector.edit')}
               </Text>
             </Pressable>
           )

@@ -381,5 +381,15 @@
       "breakfast": "Desayuno",
       "lunch": "Almuerzo"
     }
+  },
+  "snackbar": {
+    "view": "VER",
+    "retry": "REINTENTAR"
+  },
+  "optionsSelector": {
+    "link": "Vincular",
+    "unlink": "Desvincular",
+    "edit": "Editar",
+    "done": "Hecho"
   }
 }

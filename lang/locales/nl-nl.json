@@ -391,5 +391,15 @@
       "breakfast": "Ontbijt",
       "lunch": "Lunch"
     }
+  },
+  "snackbar": {
+    "view": "BEKIJKEN",
+    "retry": "OPNIEUW PROBEREN"
+  },
+  "optionsSelector": {
+    "link": "Koppelen",
+    "unlink": "Ontkoppelen",
+    "edit": "Bewerken",
+    "done": "Klaar"
   }
 }

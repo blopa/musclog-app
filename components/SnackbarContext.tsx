@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, ReactNode, useCallback } from 'react';
 import { View, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 import { Snackbar, type SnackbarType } from './Snackbar';
 
 type SnackbarContextType = {
@@ -21,6 +22,7 @@ const SnackbarContext = createContext<SnackbarContextType | undefined>(undefined
 export function SnackbarProvider({ children }: { children: ReactNode }) {
   const [snackbars, setSnackbars] = useState<SnackbarType[]>([]);
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
 
   const showSnackbar = useCallback(
     (
@@ -40,7 +42,7 @@ export function SnackbarProvider({ children }: { children: ReactNode }) {
         type,
         message,
         subtitle: options?.subtitle,
-        action: options?.action ?? (type === 'success' ? 'VIEW' : 'RETRY'),
+        action: options?.action ?? (type === 'success' ? t('snackbar.view') : t('snackbar.retry')),
       };
 
       setSnackbars((prev) => [...prev, newSnackbar]);
@@ -52,7 +54,7 @@ export function SnackbarProvider({ children }: { children: ReactNode }) {
         }, duration);
       }
     },
-    []
+    [t]
   );
 
   const dismissSnackbar = useCallback((id: number) => {
