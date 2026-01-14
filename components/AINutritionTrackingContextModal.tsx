@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { View, Text, Pressable, TextInput as RNTextInput } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Sparkles, CheckCircle } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { BottomPopUp } from './BottomPopUp';
 
@@ -18,6 +19,7 @@ export function AINutritionTrackingContextModal({
   onClose,
   onApply,
 }: AINutritionTrackingContextModalProps) {
+  const { t } = useTranslation();
   const [mealDescription, setMealDescription] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
@@ -48,7 +50,7 @@ export function AINutritionTrackingContextModal({
     <BottomPopUp
       visible={visible}
       onClose={handleCancel}
-      title="Add Context for AI"
+      title={t('food.aiNutritionContext.title')}
       maxHeight="85%"
       headerIcon={
         <View
@@ -73,7 +75,7 @@ export function AINutritionTrackingContextModal({
         {/* Describe Your Meal Section */}
         <View className="mb-6">
           <Text className="mb-2 ml-1 text-xs font-bold uppercase tracking-widest text-text-secondary">
-            DESCRIBE YOUR MEAL
+            {t('food.aiNutritionContext.describeYourMeal')}
           </Text>
           <View
             className="w-full rounded-lg border p-4"
@@ -88,7 +90,7 @@ export function AINutritionTrackingContextModal({
                 color: theme.colors.text.primary,
                 textAlignVertical: 'top',
               }}
-              placeholder="e.g. This is a homemade dish with olive oil, about 2 cups of pasta..."
+              placeholder={t('food.aiNutritionContext.placeholder')}
               placeholderTextColor="rgba(255, 255, 255, 0.2)"
               value={mealDescription}
               onChangeText={setMealDescription}
@@ -101,7 +103,7 @@ export function AINutritionTrackingContextModal({
         {/* Quick Tags Section */}
         <View className="mb-8">
           <Text className="mb-3 ml-1 text-xs font-bold uppercase tracking-widest text-text-secondary">
-            QUICK TAGS
+            {t('food.aiNutritionContext.quickTags')}
           </Text>
           <View className="flex-row flex-wrap gap-2">
             {quickTags.map((tag) => {
@@ -133,7 +135,7 @@ export function AINutritionTrackingContextModal({
               backgroundColor: 'rgba(42, 50, 46, 1)',
               borderColor: 'rgba(255, 255, 255, 0.05)',
             }}>
-            <Text className="text-center text-sm font-bold text-text-primary">Cancel</Text>
+            <Text className="text-center text-sm font-bold text-text-primary">{t('food.aiNutritionContext.cancel')}</Text>
           </Pressable>
           <Pressable
             onPress={handleApply}
@@ -148,7 +150,7 @@ export function AINutritionTrackingContextModal({
               className="absolute inset-0"
             />
             <View className="flex-row items-center justify-center gap-2">
-              <Text className="text-sm font-bold text-white">Apply Context</Text>
+              <Text className="text-sm font-bold text-white">{t('food.aiNutritionContext.applyContext')}</Text>
               <CheckCircle size={18} color="#ffffff" />
             </View>
           </Pressable>

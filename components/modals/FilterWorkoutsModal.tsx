@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { Check, Dumbbell, LucideFootprints, PersonStanding } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../theme/Button';
 import { OptionsSelector, SelectorOption } from '../OptionsSelector';
 import { theme } from '../../theme';
@@ -8,33 +9,6 @@ import { FullScreenModal } from './FullScreenModal';
 import { Slider } from '../theme/Slider';
 
 type WorkoutType = 'strength' | 'cardio' | 'flexibility';
-
-const workoutTypeOptions: SelectorOption<WorkoutType>[] = [
-  {
-    id: 'strength',
-    label: 'Strength',
-    description: 'Weights, Bodyweight',
-    icon: Dumbbell,
-    iconBgColor: theme.colors.status.indigo10,
-    iconColor: theme.colors.status.indigo,
-  },
-  {
-    id: 'cardio',
-    label: 'Cardio',
-    description: 'Running, Cycling, HIIT',
-    icon: LucideFootprints,
-    iconBgColor: theme.colors.status.emerald10,
-    iconColor: theme.colors.status.emerald,
-  },
-  {
-    id: 'flexibility',
-    label: 'Flexibility',
-    description: 'Yoga, Stretching',
-    icon: PersonStanding,
-    iconBgColor: theme.colors.status.purple10,
-    iconColor: theme.colors.status.purple,
-  },
-];
 
 type TargetMuscle = 'full-body' | 'chest' | 'back' | 'legs' | 'shoulders' | 'arms' | 'core';
 
@@ -49,27 +23,61 @@ type FilterWorkoutsModalProps = {
   onClearFilters?: () => void;
 };
 
-const targetMuscles: { id: TargetMuscle; label: string }[] = [
-  { id: 'full-body', label: 'Full Body' },
-  { id: 'chest', label: 'Chest' },
-  { id: 'back', label: 'Back' },
-  { id: 'legs', label: 'Legs' },
-  { id: 'shoulders', label: 'Shoulders' },
-  { id: 'arms', label: 'Arms' },
-  { id: 'core', label: 'Core' },
-];
-
 export function FilterWorkoutsModal({
   visible,
   onClose,
   onApplyFilters,
   onClearFilters,
 }: FilterWorkoutsModalProps) {
+  const { t } = useTranslation();
   const [selectedWorkoutType, setSelectedWorkoutType] = useState<WorkoutType | undefined>(
     'strength'
   );
   const [selectedMuscles, setSelectedMuscles] = useState<TargetMuscle[]>(['full-body']);
   const [duration, setDuration] = useState(90);
+
+  const workoutTypeOptions: SelectorOption<WorkoutType>[] = useMemo(
+    () => [
+      {
+        id: 'strength',
+        label: t('workouts.filterWorkouts.workoutTypes.strength'),
+        description: t('workouts.filterWorkouts.workoutTypes.strengthDescription'),
+        icon: Dumbbell,
+        iconBgColor: theme.colors.status.indigo10,
+        iconColor: theme.colors.status.indigo,
+      },
+      {
+        id: 'cardio',
+        label: t('workouts.filterWorkouts.workoutTypes.cardio'),
+        description: t('workouts.filterWorkouts.workoutTypes.cardioDescription'),
+        icon: LucideFootprints,
+        iconBgColor: theme.colors.status.emerald10,
+        iconColor: theme.colors.status.emerald,
+      },
+      {
+        id: 'flexibility',
+        label: t('workouts.filterWorkouts.workoutTypes.flexibility'),
+        description: t('workouts.filterWorkouts.workoutTypes.flexibilityDescription'),
+        icon: PersonStanding,
+        iconBgColor: theme.colors.status.purple10,
+        iconColor: theme.colors.status.purple,
+      },
+    ],
+    [t]
+  );
+
+  const targetMuscles: { id: TargetMuscle; label: string }[] = useMemo(
+    () => [
+      { id: 'full-body', label: t('workouts.filterWorkouts.muscleGroups.fullBody') },
+      { id: 'chest', label: t('workouts.filterWorkouts.muscleGroups.chest') },
+      { id: 'back', label: t('workouts.filterWorkouts.muscleGroups.back') },
+      { id: 'legs', label: t('workouts.filterWorkouts.muscleGroups.legs') },
+      { id: 'shoulders', label: t('workouts.filterWorkouts.muscleGroups.shoulders') },
+      { id: 'arms', label: t('workouts.filterWorkouts.muscleGroups.arms') },
+      { id: 'core', label: t('workouts.filterWorkouts.muscleGroups.core') },
+    ],
+    [t]
+  );
 
   const handleClear = () => {
     setSelectedWorkoutType(undefined);
@@ -120,8 +128,8 @@ export function FilterWorkoutsModal({
     <FullScreenModal
       visible={visible}
       onClose={onClose}
-      title="Filter Workouts"
-      headerRight={<Button label="Clear" variant="outline" size="sm" onPress={handleClear} />}
+      title={t('workouts.filterWorkouts.title')}
+      headerRight={<Button label={t('workouts.filterWorkouts.clear')} variant="outline" size="sm" onPress={handleClear} />}
       footer={
         <View
           style={{
@@ -138,14 +146,14 @@ export function FilterWorkoutsModal({
               gap: theme.spacing.gap.base,
             }}>
             <Button
-              label="Clear Filters"
+              label={t('workouts.filterWorkouts.clearFilters')}
               variant="outline"
               width="flex-1"
               onPress={handleClear}
               size="sm"
             />
             <Button
-              label="Apply Filters"
+              label={t('workouts.filterWorkouts.applyFilters')}
               variant="gradientCta"
               width="flex-2"
               onPress={handleApply}
@@ -185,7 +193,7 @@ export function FilterWorkoutsModal({
         }}>
         {/* Workout Type Section */}
         <OptionsSelector
-          title="Workout Type"
+          title={t('workouts.filterWorkouts.workoutType')}
           options={workoutTypeOptions}
           selectedId={selectedWorkoutType}
           onSelect={(id) => setSelectedWorkoutType(id)}
@@ -203,7 +211,7 @@ export function FilterWorkoutsModal({
               marginBottom: theme.spacing.padding.base,
               paddingHorizontal: theme.spacing.padding.xs,
             }}>
-            TARGET MUSCLES
+            {t('workouts.filterWorkouts.targetMuscles')}
           </Text>
           <View
             style={{
@@ -277,7 +285,7 @@ export function FilterWorkoutsModal({
                 textTransform: 'uppercase',
                 letterSpacing: 1.2,
               }}>
-              DURATION
+              {t('workouts.filterWorkouts.duration')}
             </Text>
             <Text
               style={{
@@ -286,7 +294,7 @@ export function FilterWorkoutsModal({
                 color: theme.colors.accent.primary,
                 fontFamily: 'monospace',
               }}>
-              Up to {formatDuration(duration)}
+              {t('workouts.filterWorkouts.upTo', { duration: formatDuration(duration) })}
             </Text>
           </View>
           <View

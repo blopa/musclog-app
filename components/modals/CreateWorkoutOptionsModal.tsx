@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, Animated, Platform } from 'react-native';
 import { Sparkles, PlusCircle, Library } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
 import { FullScreenModal } from './FullScreenModal';
 import { GradientText } from '../GradientText';
@@ -21,6 +22,7 @@ export function CreateWorkoutOptionsModal({
   onCreateEmptyTemplate,
   onBrowseTemplates,
 }: CreateWorkoutOptionsModalProps) {
+  const { t } = useTranslation();
   const slideAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -155,8 +157,8 @@ export function CreateWorkoutOptionsModal({
             <NewWorkoutCard
               variant="popular"
               icon={<Sparkles size={22} color={theme.colors.text.white} />}
-              title="Generate with AI"
-              subtitle="Let Musclog build a personalized routine based on your goals and equipment."
+              title={t('workouts.createWorkoutOptions.generateWithAi')}
+              subtitle={t('workouts.createWorkoutOptions.generateWithAiSubtitle')}
               onPress={onGenerateWithAi}
             />
           </Animated.View>
@@ -165,8 +167,8 @@ export function CreateWorkoutOptionsModal({
             <NewWorkoutCard
               variant="default"
               icon={<PlusCircle size={24} color={theme.colors.text.gray300} />}
-              title="Create from Empty Template"
-              subtitle="Design your own routine from scratch, exercise by exercise."
+              title={t('workouts.createWorkoutOptions.createFromEmptyTemplate')}
+              subtitle={t('workouts.createWorkoutOptions.createFromEmptyTemplateSubtitle')}
               onPress={onCreateEmptyTemplate}
             />
           </Animated.View>
@@ -175,8 +177,8 @@ export function CreateWorkoutOptionsModal({
             <NewWorkoutCard
               variant="default"
               icon={<Library size={24} color={theme.colors.text.gray300} />}
-              title="Browse Templates"
-              subtitle="Explore expert-created programs and community favorites."
+              title={t('workouts.createWorkoutOptions.browseTemplates')}
+              subtitle={t('workouts.createWorkoutOptions.browseTemplatesSubtitle')}
               onPress={onBrowseTemplates}
             />
           </Animated.View>

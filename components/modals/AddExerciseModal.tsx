@@ -74,10 +74,10 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
   const [extraWeight, setExtraWeight] = useState('0');
 
   const muscleTabs = [
-    { id: 'chest', label: 'Chest' },
-    { id: 'back', label: 'Back' },
-    { id: 'legs', label: 'Legs' },
-    { id: 'arms', label: 'Arms' },
+    { id: 'chest', label: t('workouts.addExercise.muscleGroups.chest') },
+    { id: 'back', label: t('workouts.addExercise.muscleGroups.back') },
+    { id: 'legs', label: t('workouts.addExercise.muscleGroups.legs') },
+    { id: 'arms', label: t('workouts.addExercise.muscleGroups.arms') },
   ];
 
   const filteredExercises = exercises[activeMuscle].filter((ex) =>

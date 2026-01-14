@@ -145,7 +145,7 @@ export function UserMenuModal({
                   onClose();
                 }}>
                 <Text className="flex-1 text-lg font-semibold text-text-primary">
-                  {'Debug Page'}
+                  {t('userMenu.debugPage')}
                 </Text>
               </Pressable>
             </View>

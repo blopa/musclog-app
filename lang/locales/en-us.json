@@ -146,6 +146,14 @@
         "labelScan": "AI Label Scan",
         "barcodeScan": "Barcode Scan"
       }
+    },
+    "aiNutritionContext": {
+      "title": "Add Context for AI",
+      "describeYourMeal": "DESCRIBE YOUR MEAL",
+      "placeholder": "e.g. This is a homemade dish with olive oil, about 2 cups of pasta...",
+      "quickTags": "QUICK TAGS",
+      "cancel": "Cancel",
+      "applyContext": "Apply Context"
     }
   },
   "notifications": {
@@ -164,7 +172,8 @@
     "greeting": "Account",
     "profile": "Profile",
     "settings": "Settings",
-    "progress": "Progress"
+    "progress": "Progress",
+    "debugPage": "Debug Page"
   },
   "workoutSession": {
     "totalTime": "TOTAL TIME",
@@ -268,7 +277,49 @@
       "sets": "Sets",
       "reps": "Reps",
       "weight": "Weight",
-      "addToWorkout": "Add to Workout"
+      "addToWorkout": "Add to Workout",
+      "muscleGroups": {
+        "chest": "Chest",
+        "back": "Back",
+        "legs": "Legs",
+        "arms": "Arms"
+      }
+    },
+    "filterWorkouts": {
+      "title": "Filter Workouts",
+      "clear": "Clear",
+      "clearFilters": "Clear Filters",
+      "applyFilters": "Apply Filters",
+      "workoutType": "Workout Type",
+      "targetMuscles": "TARGET MUSCLES",
+      "duration": "DURATION",
+      "upTo": "Up to {{duration}}",
+      "workoutTypes": {
+        "strength": "Strength",
+        "strengthDescription": "Weights, Bodyweight",
+        "cardio": "Cardio",
+        "cardioDescription": "Running, Cycling, HIIT",
+        "flexibility": "Flexibility",
+        "flexibilityDescription": "Yoga, Stretching"
+      },
+      "muscleGroups": {
+        "fullBody": "Full Body",
+        "chest": "Chest",
+        "back": "Back",
+        "legs": "Legs",
+        "shoulders": "Shoulders",
+        "arms": "Arms",
+        "core": "Core"
+      }
+    },
+    "createTemplate": "Create from Empty Template",
+    "createWorkoutOptions": {
+      "generateWithAi": "Generate with AI",
+      "generateWithAiSubtitle": "Let Musclog build a personalized routine based on your goals and equipment.",
+      "createFromEmptyTemplate": "Create from Empty Template",
+      "createFromEmptyTemplateSubtitle": "Design your own routine from scratch, exercise by exercise.",
+      "browseTemplates": "Browse Templates",
+      "browseTemplatesSubtitle": "Explore expert-created programs and community favorites."
     }
   },
   "createWorkout": {

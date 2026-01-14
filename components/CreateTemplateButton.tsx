@@ -1,5 +1,6 @@
 import { View, Text, Pressable } from 'react-native';
 import { Plus } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 
 type CreateTemplateCardProps = {
@@ -7,6 +8,8 @@ type CreateTemplateCardProps = {
 };
 
 export function CreateTemplateButton({ onPress }: CreateTemplateCardProps) {
+  const { t } = useTranslation();
+
   return (
     <Pressable
       className="w-full items-center justify-center gap-4 rounded-xl border-2 border-dashed p-8 active:opacity-80"
@@ -21,7 +24,7 @@ export function CreateTemplateButton({ onPress }: CreateTemplateCardProps) {
         <Plus size={theme.iconSize.lg} color={theme.colors.text.primary} />
       </View>
       <Text className="text-center text-base font-medium text-text-primary">
-        Create from Empty Template
+        {t('workouts.createTemplate')}
       </Text>
     </Pressable>
   );
