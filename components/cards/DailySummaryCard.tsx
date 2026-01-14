@@ -56,64 +56,62 @@ export function DailySummaryCard({ calories, activity, macros }: DailySummaryCar
     : [];
 
   return (
-    <View className="mb-6 w-full">
-      <GenericCard variant="default" size="lg" backgroundVariant="colorful-gradient">
-        <View className="p-6">
-          <View className="mb-6 flex-row items-start justify-between">
-            <Text
-              className="text-sm font-semibold tracking-wide"
-              style={{ color: theme.colors.overlay.white80 }}>
-              {t('home.dailySummary.title')}
-            </Text>
-            <View
-              className="rounded-full px-4 py-1.5"
-              style={{ backgroundColor: theme.colors.overlay.white30 }}>
-              <Text className="text-xs font-medium text-text-primary">{t('common.today')}</Text>
-            </View>
+    <GenericCard variant="default" size="lg" backgroundVariant="colorful-gradient">
+      <View className="p-6">
+        <View className="mb-6 flex-row items-start justify-between">
+          <Text
+            className="text-sm font-semibold tracking-wide"
+            style={{ color: theme.colors.overlay.white80 }}>
+            {t('home.dailySummary.title')}
+          </Text>
+          <View
+            className="rounded-full px-4 py-1.5"
+            style={{ backgroundColor: theme.colors.overlay.white30 }}>
+            <Text className="text-xs font-medium text-text-primary">{t('common.today')}</Text>
           </View>
-
-          <View className="flex-row gap-8">
-            <ProgressMetric
-              value={calories.consumed}
-              unit={t('common.kcal')}
-              progress={caloriesProgress}
-              bottomText={`${calories.remaining} ${t('common.remaining')}`}
-              formatValue={(v) => v.toLocaleString()}
-            />
-            <ProgressMetric
-              value={activity.minutes}
-              unit={t('common.min')}
-              progress={activityProgress}
-              bottomText={`${t('common.goal')}: ${activity.goal} ${t('common.min')}`}
-            />
-          </View>
-
-          {/* Macros Row */}
-          {macros && (
-            <View className="mt-6 flex-row gap-3">
-              {macroData.map((macro) => (
-                <View
-                  key={macro.key}
-                  className="flex-1 items-center rounded-2xl px-2.5 py-3"
-                  style={{ backgroundColor: theme.colors.background.white10 }}>
-                  <Text className="mb-1 text-xs font-bold uppercase text-text-primary">
-                    {macro.label}
-                    <Text className="ml-1 font-normal text-text-primary">{macro.percent}%</Text>
-                  </Text>
-                  <View
-                    className="h-2 w-full overflow-hidden rounded-full"
-                    style={{ backgroundColor: theme.colors.overlay.white30 }}>
-                    <View
-                      className="h-full rounded-full bg-text-primary"
-                      style={{ width: `${macro.percent}%` }}
-                    />
-                  </View>
-                </View>
-              ))}
-            </View>
-          )}
         </View>
-      </GenericCard>
-    </View>
+
+        <View className="flex-row gap-8">
+          <ProgressMetric
+            value={calories.consumed}
+            unit={t('common.kcal')}
+            progress={caloriesProgress}
+            bottomText={`${calories.remaining} ${t('common.remaining')}`}
+            formatValue={(v) => v.toLocaleString()}
+          />
+          <ProgressMetric
+            value={activity.minutes}
+            unit={t('common.min')}
+            progress={activityProgress}
+            bottomText={`${t('common.goal')}: ${activity.goal} ${t('common.min')}`}
+          />
+        </View>
+
+        {/* Macros Row */}
+        {macros && (
+          <View className="mt-6 flex-row gap-3">
+            {macroData.map((macro) => (
+              <View
+                key={macro.key}
+                className="flex-1 items-center rounded-2xl px-2.5 py-3"
+                style={{ backgroundColor: theme.colors.background.white10 }}>
+                <Text className="mb-1 text-xs font-bold uppercase text-text-primary">
+                  {macro.label}
+                  <Text className="ml-1 font-normal text-text-primary">{macro.percent}%</Text>
+                </Text>
+                <View
+                  className="h-2 w-full overflow-hidden rounded-full"
+                  style={{ backgroundColor: theme.colors.overlay.white30 }}>
+                  <View
+                    className="h-full rounded-full bg-text-primary"
+                    style={{ width: `${macro.percent}%` }}
+                  />
+                </View>
+              </View>
+            ))}
+          </View>
+        )}
+      </View>
+    </GenericCard>
   );
 }
