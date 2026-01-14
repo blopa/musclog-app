@@ -312,6 +312,42 @@
     "endWorkout": "Finalizar Treino",
     "endWorkoutDesc": "Terminar e salvar progresso"
   },
+  "workouts": {
+    "title": "Meus Treinos",
+    "filters": {
+      "all": "Todos",
+      "strength": "Força",
+      "cardio": "Cardio",
+      "flexibility": "Flexibilidade"
+    },
+    "archive": "Arquivar",
+    "last": "Último",
+    "exercises": "Exercícios",
+    "start": "Iniciar",
+    "addExercise": {
+      "title": "Adicionar Exercício",
+      "targetMuscle": "Músculo Alvo",
+      "multiSelect": "SELEÇÃO MÚLTIPLA",
+      "searchPlaceholder": "Buscar exercícios de {{muscle}}...",
+      "createSet": "Criar Série",
+      "bodyweight": "Peso Corporal",
+      "sets": "Séries",
+      "reps": "Repetições",
+      "weight": "Peso",
+      "addToWorkout": "Adicionar ao Treino"
+    }
+  },
+  "workoutDetails": {
+    "subtitle": "Gerenciar este treino",
+    "edit": "Editar Treino",
+    "editDescription": "Modificar exercícios e séries",
+    "duplicate": "Duplicar",
+    "duplicateDescription": "Criar uma cópia deste treino",
+    "share": "Compartilhar",
+    "shareDescription": "Compartilhar treino com outros",
+    "delete": "Excluir",
+    "deleteDescription": "Remover permanentemente este treino"
+  },
   "endWorkout": {
     "title": "Finalizar Treino",
     "confirmation": "Tem certeza de que deseja finalizar a sessão de treino atual?",
@@ -336,5 +372,14 @@
   },
   "mealItemCard": {
     "track": "Rastrear"
+  },
+  "meals": {
+    "title": "Minhas Refeições",
+    "filters": {
+      "all": "Todas",
+      "highProtein": "Alta Proteína",
+      "breakfast": "Café da Manhã",
+      "lunch": "Almoço"
+    }
   }
 }

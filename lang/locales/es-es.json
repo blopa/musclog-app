@@ -240,6 +240,13 @@
     "replace": "Reemplazar"
   },
   "workouts": {
+    "title": "Mis Entrenamientos",
+    "filters": {
+      "all": "Todos",
+      "strength": "Fuerza",
+      "cardio": "Cardio",
+      "flexibility": "Flexibilidad"
+    },
     "archive": "Archivar",
     "last": "Último",
     "exercises": "Ejercicios",
@@ -342,5 +349,14 @@
   },
   "mealItemCard": {
     "track": "Rastrear"
+  },
+  "meals": {
+    "title": "Mis Comidas",
+    "filters": {
+      "all": "Todas",
+      "highProtein": "Alta Proteína",
+      "breakfast": "Desayuno",
+      "lunch": "Almuerzo"
+    }
   }
 }

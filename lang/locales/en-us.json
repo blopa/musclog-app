@@ -235,6 +235,13 @@
     "endWorkoutDesc": "Finish and save progress"
   },
   "workouts": {
+    "title": "My Workouts",
+    "filters": {
+      "all": "All",
+      "strength": "Strength",
+      "cardio": "Cardio",
+      "flexibility": "Flexibility"
+    },
     "archive": "Archive",
     "last": "Last",
     "exercises": "Exercises",
@@ -489,5 +496,14 @@
   },
   "mealItemCard": {
     "track": "Track"
+  },
+  "meals": {
+    "title": "My Meals",
+    "filters": {
+      "all": "All",
+      "highProtein": "High Protein",
+      "breakfast": "Breakfast",
+      "lunch": "Lunch"
+    }
   }
 }

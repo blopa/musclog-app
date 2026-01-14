@@ -312,6 +312,42 @@
     "endWorkout": "Training Beëindigen",
     "endWorkoutDesc": "Afronden en voortgang opslaan"
   },
+  "workouts": {
+    "title": "Mijn Trainingen",
+    "filters": {
+      "all": "Alles",
+      "strength": "Kracht",
+      "cardio": "Cardio",
+      "flexibility": "Flexibiliteit"
+    },
+    "archive": "Archiveren",
+    "last": "Laatste",
+    "exercises": "Oefeningen",
+    "start": "Start",
+    "addExercise": {
+      "title": "Oefening Toevoegen",
+      "targetMuscle": "Doelspier",
+      "multiSelect": "MEERVOUDIGE SELECTIE",
+      "searchPlaceholder": "Zoek {{muscle}} oefeningen...",
+      "createSet": "Serie Maken",
+      "bodyweight": "Lichaamsgewicht",
+      "sets": "Series",
+      "reps": "Herhalingen",
+      "weight": "Gewicht",
+      "addToWorkout": "Toevoegen aan Training"
+    }
+  },
+  "workoutDetails": {
+    "subtitle": "Beheer deze training",
+    "edit": "Training Bewerken",
+    "editDescription": "Wijzig oefeningen en series",
+    "duplicate": "Dupliceren",
+    "duplicateDescription": "Maak een kopie van deze training",
+    "share": "Delen",
+    "shareDescription": "Deel training met anderen",
+    "delete": "Verwijderen",
+    "deleteDescription": "Verwijder deze training permanent"
+  },
   "endWorkout": {
     "title": "Training Beëindigen",
     "confirmation": "Weet je zeker dat je de huidige trainingssessie wilt beëindigen?",
@@ -336,5 +372,14 @@
   },
   "mealItemCard": {
     "track": "Volgen"
+  },
+  "meals": {
+    "title": "Mijn Maaltijden",
+    "filters": {
+      "all": "Alles",
+      "highProtein": "Hoog Eiwit",
+      "breakfast": "Ontbijt",
+      "lunch": "Lunch"
+    }
   }
 }

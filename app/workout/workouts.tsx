@@ -49,15 +49,15 @@ const WORKOUTS_DATA = {
   ],
 };
 
-const FILTER_TABS = [
-  { id: 'all', label: 'All' },
-  { id: 'strength', label: 'Strength' },
-  { id: 'cardio', label: 'Cardio' },
-  { id: 'flexibility', label: 'Flexibility' },
-];
-
 export default function WorkoutsScreen() {
   const { t } = useTranslation();
+
+  const FILTER_TABS = [
+    { id: 'all', label: t('workouts.filters.all') },
+    { id: 'strength', label: t('workouts.filters.strength') },
+    { id: 'cardio', label: t('workouts.filters.cardio') },
+    { id: 'flexibility', label: t('workouts.filters.flexibility') },
+  ];
   const [activeFilter, setActiveFilter] = useState('all');
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [selectedWorkoutName, setSelectedWorkoutName] = useState<string>('');
@@ -110,7 +110,7 @@ export default function WorkoutsScreen() {
                   fontSize: theme.typography.fontSize['4xl'],
                   fontWeight: theme.typography.fontWeight.bold,
                 }}>
-                My Workouts
+                {t('workouts.title')}
               </GradientText>
               <View className="ml-4 flex-row gap-4">
                 <Pressable className="rounded-lg p-2">

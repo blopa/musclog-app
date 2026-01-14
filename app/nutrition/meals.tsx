@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, Pressable } from 'react-native';
 import { Search, MoreVertical } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import { AddMealModal } from '../../components/modals/AddMealModal';
 import { CreateMealModal } from '../../components/modals/CreateMealModal';
 import { theme } from '../../theme';
@@ -59,15 +60,16 @@ const MEALS_DATA = [
   },
 ];
 
-const FILTER_TABS = [
-  { id: 'all', label: 'All' },
-  { id: 'high-protein', label: 'High Protein' },
-  { id: 'breakfast', label: 'Breakfast' },
-  { id: 'lunch', label: 'Lunch' },
-];
-
 export default function MyMealsScreen() {
+  const { t } = useTranslation();
   const [activeFilter, setActiveFilter] = useState('all');
+
+  const FILTER_TABS = [
+    { id: 'all', label: t('meals.filters.all') },
+    { id: 'high-protein', label: t('meals.filters.highProtein') },
+    { id: 'breakfast', label: t('meals.filters.breakfast') },
+    { id: 'lunch', label: t('meals.filters.lunch') },
+  ];
   const [searchQuery, setSearchQuery] = useState('');
   const [addMealModalVisible, setAddMealModalVisible] = useState(false);
   const [createMealModalVisible, setCreateMealModalVisible] = useState(false);
@@ -101,7 +103,7 @@ export default function MyMealsScreen() {
               fontWeight: theme.typography.fontWeight.bold,
               color: theme.colors.text.primary,
             }}>
-            My Meals
+            {t('meals.title')}
           </Text>
           <View className="flex-row gap-4">
             <Pressable
