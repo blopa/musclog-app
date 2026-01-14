@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, Image, Pressable, ImageSourcePropType } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Dumbbell, Flame, ArrowRight } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
 import { GenericCard } from './GenericCard';
 
@@ -24,6 +25,7 @@ export function ChatWorkoutCard({
   image,
   onStartWorkout,
 }: ChatWorkoutCardProps) {
+  const { t } = useTranslation();
   return (
     <GenericCard variant="card" size="sm">
       {/* Hero Image Section */}
@@ -54,7 +56,7 @@ export function ChatWorkoutCard({
           <View className="flex-row items-center gap-1">
             <Dumbbell size={16} color={theme.colors.text.secondary} />
             <Text className="text-sm" style={{ color: theme.colors.text.secondary }}>
-              {exerciseCount} Exercises
+              {exerciseCount} {t('workouts.exercises')}
             </Text>
           </View>
           <View className="flex-row items-center gap-1">
@@ -71,7 +73,7 @@ export function ChatWorkoutCard({
           style={{ backgroundColor: theme.colors.accent.primary }}
           onPress={onStartWorkout}>
           <Text className="font-bold" style={{ color: theme.colors.text.black }}>
-            Start Workout
+            {t('startWorkout.label')}
           </Text>
           <ArrowRight size={18} color={theme.colors.text.black} />
         </Pressable>

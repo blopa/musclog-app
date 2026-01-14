@@ -7,7 +7,8 @@
     "kcal": "kcal",
     "min": "min",
     "cancel": "Annuleren",
-    "tryAgain": "Opnieuw proberen"
+    "tryAgain": "Opnieuw proberen",
+    "popular": "Populair"
   },
   "home": {
     "greeting": {
@@ -362,13 +363,19 @@
     "upNext": "Volgende",
     "weight": "Gewicht",
     "reps": "Reps",
-    "set": "Set"
+    "set": "Set",
+    "restTimeIs": "Rusttijd is",
+    "over": "voorbij!",
+    "timeToGo": "Tijd om te gaan! De volgende set komt eraan."
   },
   "workoutSummary": {
     "totalTime": "Totale tijd",
     "volume": "Volume",
     "personalRecords": "Persoonlijke records",
-    "goHome": "Naar huis"
+    "goHome": "Naar huis",
+    "youCrushedIt": "Je hebt het gedaan!",
+    "feedbackSubmitted": "Trainingsfeedback succesvol verzonden.",
+    "shareSummary": "Samenvatting delen"
   },
   "recentWorkouts": {
     "prs": "PR"

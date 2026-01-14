@@ -1,6 +1,7 @@
 import { View, Text } from 'react-native';
 import { ChevronRight } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
 import { GenericCard } from './GenericCard';
 
@@ -19,6 +20,7 @@ export function NewWorkoutCard({
   subtitle,
   onPress,
 }: NewWorkoutCardProps) {
+  const { t } = useTranslation();
   const isPopular = variant === 'popular';
 
   return (
@@ -97,7 +99,7 @@ export function NewWorkoutCard({
                   textTransform: 'uppercase',
                   letterSpacing: 1,
                 }}>
-                Popular
+                {t('common.popular')}
               </Text>
             </View>
           )}

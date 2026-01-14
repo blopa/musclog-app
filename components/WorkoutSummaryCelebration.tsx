@@ -133,7 +133,7 @@ export function WorkoutSummaryCelebration({
           {/* Share Summary Link */}
           <Pressable onPress={onShareSummary}>
             <Text className="text-center text-xs font-medium uppercase tracking-wider text-text-tertiary">
-              Share Summary
+              {t('workoutSummary.shareSummary')}
             </Text>
           </Pressable>
         </View>

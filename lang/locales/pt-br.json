@@ -7,7 +7,8 @@
     "kcal": "kcal",
     "min": "min",
     "cancel": "Cancelar",
-    "tryAgain": "Tentar novamente"
+    "tryAgain": "Tentar novamente",
+    "popular": "Popular"
   },
   "home": {
     "greeting": {
@@ -362,13 +363,19 @@
     "upNext": "Próximo",
     "weight": "Peso",
     "reps": "Repetições",
-    "set": "Série"
+    "set": "Série",
+    "restTimeIs": "Tempo de descanso",
+    "over": "acabou!",
+    "timeToGo": "Hora de ir! A próxima série está chegando."
   },
   "workoutSummary": {
     "totalTime": "Tempo total",
     "volume": "Volume",
     "personalRecords": "Recordes pessoais",
-    "goHome": "Início"
+    "goHome": "Início",
+    "youCrushedIt": "Você arrasou!",
+    "feedbackSubmitted": "Feedback do treino enviado com sucesso.",
+    "shareSummary": "Compartilhar Resumo"
   },
   "recentWorkouts": {
     "prs": "PR"

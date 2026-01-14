@@ -7,7 +7,8 @@
     "kcal": "kcal",
     "min": "min",
     "cancel": "Cancel",
-    "tryAgain": "Try Again"
+    "tryAgain": "Try Again",
+    "popular": "Popular"
   },
   "home": {
     "greeting": {
@@ -442,7 +443,10 @@
     "upNext": "Up Next",
     "weight": "Weight",
     "reps": "Reps",
-    "set": "Set"
+    "set": "Set",
+    "restTimeIs": "Rest time is",
+    "over": "over!",
+    "timeToGo": "Time to go! Next set is up."
   },
   "coach": {
     "title": "AI Coach",
@@ -552,7 +556,10 @@
     "totalTime": "Total Time",
     "volume": "Volume",
     "personalRecords": "Personal Records",
-    "goHome": "Go Home"
+    "goHome": "Go Home",
+    "youCrushedIt": "You Crushed It!",
+    "feedbackSubmitted": "Workout feedback submitted successfully.",
+    "shareSummary": "Share Summary"
   },
   "nutritionGoals": {
     "title": "Set Nutrition & Body Goals",

@@ -1,14 +1,16 @@
 import React from 'react';
 import { View, Text } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { GradientText } from './GradientText';
 
 export function RestOverTitle() {
+  const { t } = useTranslation();
   return (
     <View className="mx-auto max-w-xs gap-3">
       <View className="flex-row flex-wrap items-center justify-center">
         <Text className="text-4xl font-extrabold leading-tight tracking-tight text-white">
-          Rest time is{' '}
+          {t('restOver.restTimeIs')}{' '}
         </Text>
         <GradientText
           colors={theme.colors.gradients.restOverTitle}
@@ -17,11 +19,11 @@ export function RestOverTitle() {
             fontWeight: theme.typography.fontWeight.extrabold,
             letterSpacing: -0.5,
           }}>
-          over!
+          {t('restOver.over')}
         </GradientText>
       </View>
       <Text className="text-center text-lg font-medium text-white/70">
-        Time to go! Next set is up.
+        {t('restOver.timeToGo')}
       </Text>
     </View>
   );

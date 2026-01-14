@@ -7,7 +7,8 @@
     "kcal": "kcal",
     "min": "min",
     "cancel": "Cancelar",
-    "tryAgain": "Intentar de nuevo"
+    "tryAgain": "Intentar de nuevo",
+    "popular": "Popular"
   },
   "home": {
     "greeting": {
@@ -236,6 +237,25 @@
     "confirmation": "¿Estás seguro de que quieres finalizar la sesión de entrenamiento actual?",
     "finishAndSave": "Finalizar y Guardar",
     "finishAndDiscard": "Finalizar y Descartar"
+  },
+  "restOver": {
+    "startNextSet": "Iniciar Siguiente Serie",
+    "upNext": "Siguiente",
+    "weight": "Peso",
+    "reps": "Repeticiones",
+    "set": "Serie",
+    "restTimeIs": "El tiempo de descanso",
+    "over": "terminó!",
+    "timeToGo": "¡Hora de ir! La siguiente serie está lista."
+  },
+  "workoutSummary": {
+    "totalTime": "Tiempo Total",
+    "volume": "Volumen",
+    "personalRecords": "Récords Personales",
+    "goHome": "Ir a Inicio",
+    "youCrushedIt": "¡Lo Lograste!",
+    "feedbackSubmitted": "Feedback del entrenamiento enviado exitosamente.",
+    "shareSummary": "Compartir Resumen"
   },
   "replaceExercise": {
     "title": "Reemplazar Ejercicio",
