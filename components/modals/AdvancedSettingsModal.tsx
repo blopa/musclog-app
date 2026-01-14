@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Download, Upload, Bug, Trash2, ChevronRight } from 'lucide-react-native';
 import { FullScreenModal } from './FullScreenModal';
 import { SettingsCard } from '../cards/SettingsCard';
@@ -33,11 +34,12 @@ export function AdvancedSettingsModal({
   version = '2.4.0',
   build = '1024',
 }: AdvancedSettingsModalProps) {
+  const { t } = useTranslation();
   const bugReportItems = [
     {
       key: 'bug-report',
-      label: 'Anonymous Bug Report',
-      subtitle: 'Help improve Musclog by sending crash logs',
+      label: t('settings.advancedSettings.anonymousBugReport'),
+      subtitle: t('settings.advancedSettings.anonymousBugReportSubtitle'),
       icon: (
         <View
           style={{
@@ -57,14 +59,14 @@ export function AdvancedSettingsModal({
   ];
 
   return (
-    <FullScreenModal visible={visible} onClose={onClose} title="Advanced Settings">
+    <FullScreenModal visible={visible} onClose={onClose} title={t('settings.advancedSettings.title')}>
       <View className="gap-6 px-4 py-6" style={{ minHeight: '100%' }}>
         {/* Data Portability Section */}
         <View>
           <Text
             className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
             style={{ color: theme.colors.text.secondary }}>
-            DATA PORTABILITY
+            {t('settings.advancedSettings.dataPortability')}
           </Text>
           <SettingsCard
             icon={<Download size={24} color={theme.colors.accent.primary} />}
@@ -74,8 +76,8 @@ export function AdvancedSettingsModal({
               borderRadius: 8,
               backgroundColor: theme.colors.accent.primary20,
             }}
-            title="Export Fitness Data"
-            subtitle="CSV/JSON format"
+            title={t('settings.advancedSettings.exportFitnessData')}
+            subtitle={t('settings.advancedSettings.exportFitnessDataSubtitle')}
             onPress={onExportPress || (() => {})}
             rightIcon={<ChevronRight size={20} color={theme.colors.text.tertiary} />}
           />
@@ -87,8 +89,8 @@ export function AdvancedSettingsModal({
               borderRadius: 8,
               backgroundColor: theme.colors.accent.primary20,
             }}
-            title="Import Fitness Data"
-            subtitle="Restore backup"
+            title={t('settings.advancedSettings.importFitnessData')}
+            subtitle={t('settings.advancedSettings.importFitnessDataSubtitle')}
             onPress={onImportPress || (() => {})}
             rightIcon={<ChevronRight size={20} color={theme.colors.text.tertiary} />}
           />
@@ -99,7 +101,7 @@ export function AdvancedSettingsModal({
           <Text
             className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
             style={{ color: theme.colors.text.secondary }}>
-            PRIVACY & DIAGNOSTICS
+            {t('settings.advancedSettings.privacyDiagnostics')}
           </Text>
           <ToggleInput items={bugReportItems} />
         </View>
@@ -130,7 +132,7 @@ export function AdvancedSettingsModal({
           <Text
             className="mt-3 px-4 text-center text-xs"
             style={{ color: theme.colors.text.tertiary }}>
-            Version {version} (Build {build})
+            {t('settings.advancedSettings.version', { version, build })}
           </Text>
         </View>
       </View>

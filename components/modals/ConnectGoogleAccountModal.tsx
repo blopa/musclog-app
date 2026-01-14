@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { FullScreenModal } from './FullScreenModal';
 import { ConnectGoogleAccountBody } from '../ConnectGoogleAccountBody';
 
@@ -15,6 +16,7 @@ export function ConnectGoogleAccountModal({
   onConnect,
   onMaybeLater,
 }: ConnectGoogleAccountModalProps) {
+  const { t } = useTranslation();
   // Google logo URL from the HTML
   const handleConnect = () => {
     onConnect?.();
@@ -30,7 +32,7 @@ export function ConnectGoogleAccountModal({
     <FullScreenModal
       visible={visible}
       onClose={onClose}
-      title="Connect Google Account"
+      title={t('connectGoogleAccount.title')}
       scrollable={true}>
       <ConnectGoogleAccountBody
         onClose={onClose}

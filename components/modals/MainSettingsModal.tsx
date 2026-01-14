@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { TextInput as ThemedTextInput } from '../theme/TextInput';
 import { theme } from '../../theme';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -9,12 +10,13 @@ import { SettingsCard } from '../cards/SettingsCard';
 import { ToggleInput } from '../theme/ToggleInput';
 
 export function MainSettingsModal({ visible, onClose }: { visible: boolean; onClose: () => void }) {
+  const { t } = useTranslation();
   const [darkMode, setDarkMode] = useState(true);
   const [notifications, setNotifications] = useState(true);
   const [search, setSearch] = useState('');
 
   return (
-    <FullScreenModal visible={visible} onClose={onClose} title="Settings">
+    <FullScreenModal visible={visible} onClose={onClose} title={t('settings.title')}>
       <View
         style={{
           flex: 1,
@@ -29,7 +31,7 @@ export function MainSettingsModal({ visible, onClose }: { visible: boolean; onCl
             label=""
             value={search}
             onChangeText={setSearch}
-            placeholder="Search settings"
+            placeholder={t('settings.searchPlaceholder')}
             icon={
               <MaterialIcons
                 name="search"
@@ -52,7 +54,7 @@ export function MainSettingsModal({ visible, onClose }: { visible: boolean; onCl
             textTransform: 'uppercase',
             letterSpacing: 1.2,
           }}>
-          Configuration
+          {t('settings.configuration')}
         </Text>
 
         <SettingsCard
@@ -63,8 +65,8 @@ export function MainSettingsModal({ visible, onClose }: { visible: boolean; onCl
               color={theme.colors.accent.primary}
             />
           }
-          title="Basic Settings"
-          subtitle="Profile, units, and preferences"
+          title={t('settings.basicSettings.title')}
+          subtitle={t('settings.basicSettings.subtitle')}
           onPress={() => {}}
           rightIcon={
             <MaterialIcons name="chevron-right" size={24} color={theme.colors.text.secondary} />
@@ -79,8 +81,8 @@ export function MainSettingsModal({ visible, onClose }: { visible: boolean; onCl
               color={theme.colors.accent.primary}
             />
           }
-          title="Advanced Settings"
-          subtitle="Data export, integrations, cache"
+          title={t('settings.advancedSettings.title')}
+          subtitle={t('settings.advancedSettings.subtitle')}
           onPress={() => {}}
           rightIcon={
             <MaterialIcons name="chevron-right" size={24} color={theme.colors.text.secondary} />
@@ -100,7 +102,7 @@ export function MainSettingsModal({ visible, onClose }: { visible: boolean; onCl
           items={[
             {
               key: 'darkMode',
-              label: 'Dark Mode',
+              label: t('settings.darkMode'),
               icon: (
                 <MaterialIcons
                   name="dark-mode"
@@ -113,7 +115,7 @@ export function MainSettingsModal({ visible, onClose }: { visible: boolean; onCl
             },
             {
               key: 'notifications',
-              label: 'Notifications',
+              label: t('settings.notifications'),
               icon: (
                 <MaterialIcons
                   name="notifications"
@@ -151,7 +153,7 @@ export function MainSettingsModal({ visible, onClose }: { visible: boolean; onCl
                 color: theme.colors.text.primary,
                 fontWeight: theme.typography.fontWeight.medium,
               }}>
-              About Musclog
+              {t('settings.aboutMusclog')}
             </Text>
             <Text
               style={{
@@ -180,7 +182,7 @@ export function MainSettingsModal({ visible, onClose }: { visible: boolean; onCl
                 color: theme.colors.text.primary,
                 fontWeight: theme.typography.fontWeight.medium,
               }}>
-              Privacy Policy
+              {t('settings.privacyPolicy')}
             </Text>
           </Pressable>
         </View>
@@ -189,7 +191,7 @@ export function MainSettingsModal({ visible, onClose }: { visible: boolean; onCl
           style={{
             marginTop: theme.spacing.padding.md,
           }}>
-          <Button label="Sign Out" variant="discard" width="full" size="sm" onPress={() => {}} />
+          <Button label={t('settings.signOut')} variant="discard" width="full" size="sm" onPress={() => {}} />
         </View>
 
         {/* Spacer for bottom nav */}

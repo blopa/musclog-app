@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Settings, Sun, Moon, ChevronRight, Heart } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { FullScreenModal } from './FullScreenModal';
@@ -42,10 +43,11 @@ export function BasicSettingsModal({
   writeHealthData = false,
   onWriteHealthDataChange,
 }: BasicSettingsModalProps) {
+  const { t } = useTranslation();
   const themeOptions = [
     {
       value: 'system',
-      label: 'System',
+      label: t('settings.basicSettings.themeSystem'),
       icon: (
         <Settings
           size={18}
@@ -55,7 +57,7 @@ export function BasicSettingsModal({
     },
     {
       value: 'light',
-      label: 'Light',
+      label: t('settings.basicSettings.themeLight'),
       icon: (
         <Sun
           size={18}
@@ -65,7 +67,7 @@ export function BasicSettingsModal({
     },
     {
       value: 'dark',
-      label: 'Dark',
+      label: t('settings.basicSettings.themeDark'),
       icon: (
         <Moon
           size={18}
@@ -78,31 +80,31 @@ export function BasicSettingsModal({
   const healthSettingsItems = [
     {
       key: 'connect',
-      label: 'Connect Health Data',
+      label: t('settings.basicSettings.connectHealthData'),
       value: connectHealthData,
       onValueChange: onConnectHealthDataChange || (() => {}),
     },
     {
       key: 'read',
-      label: 'Read Health Data',
+      label: t('settings.basicSettings.readHealthData'),
       value: readHealthData,
       onValueChange: onReadHealthDataChange || (() => {}),
     },
     {
       key: 'write',
-      label: 'Write Health Data',
+      label: t('settings.basicSettings.writeHealthData'),
       value: writeHealthData,
       onValueChange: onWriteHealthDataChange || (() => {}),
     },
   ];
 
   return (
-    <FullScreenModal visible={visible} onClose={onClose} title="Basic Settings">
+    <FullScreenModal visible={visible} onClose={onClose} title={t('settings.basicSettings.title')}>
       <View className="gap-8 py-6">
         {/* Appearance Section */}
         <View>
           <Text className="mb-3 px-5 text-lg font-bold tracking-tight text-text-primary">
-            Appearance
+            {t('settings.basicSettings.appearance')}
           </Text>
           <View
             style={{
@@ -113,7 +115,7 @@ export function BasicSettingsModal({
               borderWidth: 1,
               borderColor: theme.colors.border.light,
             }}>
-            <Text className="mb-3 text-sm font-medium text-text-secondary">App Theme</Text>
+            <Text className="mb-3 text-sm font-medium text-text-secondary">{t('settings.basicSettings.appTheme')}</Text>
             <SegmentedControl
               options={themeOptions}
               value={themeValue}
@@ -128,11 +130,11 @@ export function BasicSettingsModal({
             marginHorizontal: theme.spacing.padding.base,
           }}>
           <Text className="mb-3 px-5 text-lg font-bold tracking-tight text-text-primary">
-            Localization
+            {t('settings.basicSettings.localization')}
           </Text>
           <SettingsCard
-            title="Language"
-            subtitle="Choose your preferred language"
+            title={t('settings.basicSettings.language')}
+            subtitle={t('settings.basicSettings.languageSubtitle')}
             onPress={onLanguagePress || (() => {})}
             icon={<Settings size={24} color={theme.colors.text.primary} />}
             rightIcon={
@@ -183,9 +185,9 @@ export function BasicSettingsModal({
                     />
                   </View>
                   <View className="flex-1">
-                    <Text className="text-base font-semibold text-text-primary">Health Data</Text>
+                    <Text className="text-base font-semibold text-text-primary">{t('settings.basicSettings.healthData')}</Text>
                     <Text className="text-xs text-text-secondary">
-                      Sync your workouts and body metrics
+                      {t('settings.basicSettings.healthDataSubtitle')}
                     </Text>
                   </View>
                 </View>
@@ -196,8 +198,7 @@ export function BasicSettingsModal({
           <Text
             className="mt-0 px-8 text-center text-xs"
             style={{ color: theme.colors.text.tertiary }}>
-            Data privacy is important to us. Your health data is never shared with third parties
-            without your consent.
+            {t('settings.basicSettings.healthDataPrivacy')}
           </Text>
         </View>
       </View>

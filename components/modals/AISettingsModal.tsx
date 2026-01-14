@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Bot, Link, ChevronDown, Apple, Dumbbell } from 'lucide-react-native';
 import { FullScreenModal } from './FullScreenModal';
 import { SecretInput } from '../theme/SecretInput';
@@ -57,12 +58,13 @@ export function AISettingsModal({
   onWorkoutInsightsChange,
   version = '2.4.1',
 }: AISettingsModalProps) {
+  const { t } = useTranslation();
   const [openAiKeyVisible, setOpenAiKeyVisible] = useState(false);
 
   const geminiToggleItems = [
     {
       key: 'enable-gemini',
-      label: 'Enable Google Gemini',
+      label: t('settings.aiSettings.enableGoogleGemini'),
       value: enableGoogleGemini,
       onValueChange: onEnableGoogleGeminiChange || (() => {}),
       icon: (
@@ -84,8 +86,8 @@ export function AISettingsModal({
   const insightsItems = [
     {
       key: 'nutrition-insights',
-      label: 'Daily Nutrition Insights',
-      subtitle: 'Morning summary based on logs',
+      label: t('settings.aiSettings.dailyNutritionInsights'),
+      subtitle: t('settings.aiSettings.dailyNutritionInsightsSubtitle'),
       value: dailyNutritionInsights,
       onValueChange: onDailyNutritionInsightsChange || (() => {}),
       icon: (
@@ -104,8 +106,8 @@ export function AISettingsModal({
     },
     {
       key: 'workout-insights',
-      label: 'Workout Insights',
-      subtitle: 'Post-workout analysis',
+      label: t('settings.aiSettings.workoutInsights'),
+      subtitle: t('settings.aiSettings.workoutInsightsSubtitle'),
       value: workoutInsights,
       onValueChange: onWorkoutInsightsChange || (() => {}),
       icon: (
@@ -127,7 +129,7 @@ export function AISettingsModal({
   const openAiToggleItems = [
     {
       key: 'enable-openai',
-      label: 'Enable OpenAI',
+      label: t('settings.aiSettings.enableOpenAi'),
       value: enableOpenAi,
       onValueChange: onEnableOpenAiChange || (() => {}),
       icon: (
@@ -147,14 +149,14 @@ export function AISettingsModal({
   ];
 
   return (
-    <FullScreenModal visible={visible} onClose={onClose} title="AI Settings">
+    <FullScreenModal visible={visible} onClose={onClose} title={t('settings.aiSettings.title')}>
       <View className="gap-6 px-4 py-6" style={{ minHeight: '100%' }}>
         {/* Google Gemini Integration Section */}
         <View>
           <Text
             className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
             style={{ color: theme.colors.accent.primary }}>
-            GOOGLE GEMINI INTEGRATION
+            {t('settings.aiSettings.googleGeminiIntegration')}
           </Text>
 
           {/* Toggle Block */}
@@ -200,7 +202,7 @@ export function AISettingsModal({
                     letterSpacing: 0.5,
                     color: theme.colors.text.primary,
                   }}>
-                  Connect Google Account
+                  {t('settings.aiSettings.connectGoogleAccount')}
                 </Text>
               </Pressable>
             </View>
@@ -213,10 +215,10 @@ export function AISettingsModal({
                 borderBottomColor: theme.colors.border.light,
               }}>
               <SecretInput
-                label="GOOGLE GEMINI API KEY"
+                label={t('settings.aiSettings.googleGeminiApiKey')}
                 value={googleGeminiApiKey}
                 onChangeText={onGoogleGeminiApiKeyChange || (() => {})}
-                placeholder="Paste your API key here"
+                placeholder={t('settings.aiSettings.apiKeyPlaceholder')}
               />
               <Text
                 style={{
@@ -225,7 +227,7 @@ export function AISettingsModal({
                   marginTop: theme.spacing.padding.sm,
                   marginLeft: theme.spacing.padding.xs,
                 }}>
-                Leaving this blank will use the connected account quota.
+                {t('settings.aiSettings.apiKeyHelper')}
               </Text>
             </View>
 
@@ -248,7 +250,7 @@ export function AISettingsModal({
                     fontWeight: theme.typography.fontWeight.medium,
                     color: theme.colors.text.primary,
                   }}>
-                  Gemini Model
+                  {t('settings.aiSettings.geminiModel')}
                 </Text>
                 <Text
                   style={{
@@ -269,7 +271,7 @@ export function AISettingsModal({
           <Text
             className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
             style={{ color: theme.colors.status.indigoLight }}>
-            OPENAI INTEGRATION
+            {t('settings.aiSettings.openAiIntegration')}
           </Text>
           {/* OpenAI Enable Toggle */}
           <ToggleInput items={openAiToggleItems} />
@@ -296,10 +298,10 @@ export function AISettingsModal({
                   marginBottom: theme.spacing.padding.sm,
                 }}></View>
               <SecretInput
-                label="OPENAI API KEY"
+                label={t('settings.aiSettings.openAiApiKey')}
                 value={openAiApiKey}
                 onChangeText={onOpenAiApiKeyChange || (() => {})}
-                placeholder="Paste your API key here"
+                placeholder={t('settings.aiSettings.apiKeyPlaceholder')}
               />
             </View>
 
@@ -322,7 +324,7 @@ export function AISettingsModal({
                     fontWeight: theme.typography.fontWeight.medium,
                     color: theme.colors.text.primary,
                   }}>
-                  OpenAI Model
+                  {t('settings.aiSettings.openAiModel')}
                 </Text>
                 <Text
                   style={{
@@ -330,7 +332,7 @@ export function AISettingsModal({
                     color: theme.colors.accent.primary,
                     marginTop: theme.spacing.padding.xs / 2,
                   }}>
-                  {openAiModel || 'Select a model'}
+                  {openAiModel || t('settings.aiSettings.selectModel')}
                 </Text>
               </View>
               <ChevronDown size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
@@ -343,7 +345,7 @@ export function AISettingsModal({
           <Text
             className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
             style={{ color: theme.colors.text.secondary }}>
-            INSIGHTS & ALERTS
+            {t('settings.aiSettings.insightsAlerts')}
           </Text>
           <ToggleInput items={insightsItems} />
         </View>
@@ -361,7 +363,7 @@ export function AISettingsModal({
               textAlign: 'center',
               lineHeight: theme.typography.lineHeight.relaxed * theme.typography.fontSize.xs,
             }}>
-            Need help finding your API keys?{' '}
+            {t('settings.aiSettings.apiKeyHelp')}{' '}
             <Text
               style={{
                 color: theme.colors.accent.primary,
@@ -371,7 +373,7 @@ export function AISettingsModal({
               onPress={() => {
                 // Handle setup guide link
               }}>
-              Read the setup guide
+              {t('settings.aiSettings.setupGuide')}
             </Text>
             .
           </Text>
@@ -382,7 +384,7 @@ export function AISettingsModal({
               textAlign: 'center',
               marginTop: theme.spacing.padding['6'],
             }}>
-            Musclog AI v{version}
+            {t('settings.aiSettings.version', { version })}
           </Text>
         </View>
       </View>

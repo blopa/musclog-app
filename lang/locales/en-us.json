@@ -647,5 +647,76 @@
       "logIn": "Log In",
       "termsAndPrivacy": "By continuing, you agree to our Terms & Privacy Policy."
     }
+  },
+  "settings": {
+    "title": "Settings",
+    "searchPlaceholder": "Search settings",
+    "configuration": "Configuration",
+    "basicSettings": {
+      "title": "Basic Settings",
+      "subtitle": "Profile, units, and preferences",
+      "appearance": "Appearance",
+      "appTheme": "App Theme",
+      "themeSystem": "System",
+      "themeLight": "Light",
+      "themeDark": "Dark",
+      "localization": "Localization",
+      "language": "Language",
+      "languageSubtitle": "Choose your preferred language",
+      "integrations": "Integrations",
+      "connectHealthData": "Connect Health Data",
+      "readHealthData": "Read Health Data",
+      "writeHealthData": "Write Health Data",
+      "healthData": "Health Data",
+      "healthDataSubtitle": "Sync your workouts and body metrics",
+      "healthDataPrivacy": "Data privacy is important to us. Your health data is never shared with third parties without your consent."
+    },
+    "advancedSettings": {
+      "title": "Advanced Settings",
+      "subtitle": "Data export, integrations, cache",
+      "dataPortability": "DATA PORTABILITY",
+      "exportFitnessData": "Export Fitness Data",
+      "exportFitnessDataSubtitle": "CSV/JSON format",
+      "importFitnessData": "Import Fitness Data",
+      "importFitnessDataSubtitle": "Restore backup",
+      "privacyDiagnostics": "PRIVACY & DIAGNOSTICS",
+      "anonymousBugReport": "Anonymous Bug Report",
+      "anonymousBugReportSubtitle": "Help improve Musclog by sending crash logs",
+      "dangerZone": "DANGER ZONE",
+      "requestAccountDeletion": "Request Account Deletion",
+      "requestAccountDeletionSubtitle": "Permanently remove all data",
+      "version": "Version {{version}} (Build {{build}})"
+    },
+    "aiSettings": {
+      "title": "AI Settings",
+      "googleGeminiIntegration": "GOOGLE GEMINI INTEGRATION",
+      "connectGoogleAccount": "Connect Google Account",
+      "googleGeminiApiKey": "GOOGLE GEMINI API KEY",
+      "apiKeyPlaceholder": "Paste your API key here",
+      "apiKeyHelper": "Leaving this blank will use the connected account quota.",
+      "openAiIntegration": "OPENAI INTEGRATION",
+      "openAiApiKey": "OPENAI API KEY",
+      "insightsAlerts": "INSIGHTS & ALERTS",
+      "enableGoogleGemini": "Enable Google Gemini",
+      "dailyNutritionInsights": "Daily Nutrition Insights",
+      "dailyNutritionInsightsSubtitle": "Morning summary based on logs",
+      "workoutInsights": "Workout Insights",
+      "workoutInsightsSubtitle": "Post-workout analysis",
+      "enableOpenAi": "Enable OpenAI",
+      "geminiModel": "Gemini Model",
+      "openAiModel": "OpenAI Model",
+      "selectModel": "Select a model",
+      "apiKeyHelp": "Need help finding your API keys?",
+      "setupGuide": "Read the setup guide",
+      "version": "Musclog AI v{{version}}"
+    },
+    "darkMode": "Dark Mode",
+    "notifications": "Notifications",
+    "aboutMusclog": "About Musclog",
+    "privacyPolicy": "Privacy Policy",
+    "signOut": "Sign Out"
+  },
+  "connectGoogleAccount": {
+    "title": "Connect Google Account"
   }
 }
