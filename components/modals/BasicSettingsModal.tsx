@@ -115,7 +115,9 @@ export function BasicSettingsModal({
               borderWidth: 1,
               borderColor: theme.colors.border.light,
             }}>
-            <Text className="mb-3 text-sm font-medium text-text-secondary">{t('settings.basicSettings.appTheme')}</Text>
+            <Text className="mb-3 text-sm font-medium text-text-secondary">
+              {t('settings.basicSettings.appTheme')}
+            </Text>
             <SegmentedControl
               options={themeOptions}
               value={themeValue}
@@ -185,7 +187,9 @@ export function BasicSettingsModal({
                     />
                   </View>
                   <View className="flex-1">
-                    <Text className="text-base font-semibold text-text-primary">{t('settings.basicSettings.healthData')}</Text>
+                    <Text className="text-base font-semibold text-text-primary">
+                      {t('settings.basicSettings.healthData')}
+                    </Text>
                     <Text className="text-xs text-text-secondary">
                       {t('settings.basicSettings.healthDataSubtitle')}
                     </Text>

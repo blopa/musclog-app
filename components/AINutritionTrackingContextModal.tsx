@@ -141,7 +141,9 @@ export function AINutritionTrackingContextModal({
               backgroundColor: 'rgba(42, 50, 46, 1)',
               borderColor: 'rgba(255, 255, 255, 0.05)',
             }}>
-            <Text className="text-center text-sm font-bold text-text-primary">{t('food.aiNutritionContext.cancel')}</Text>
+            <Text className="text-center text-sm font-bold text-text-primary">
+              {t('food.aiNutritionContext.cancel')}
+            </Text>
           </Pressable>
           <Pressable
             onPress={handleApply}
@@ -156,7 +158,9 @@ export function AINutritionTrackingContextModal({
               className="absolute inset-0"
             />
             <View className="flex-row items-center justify-center gap-2">
-              <Text className="text-sm font-bold text-white">{t('food.aiNutritionContext.applyContext')}</Text>
+              <Text className="text-sm font-bold text-white">
+                {t('food.aiNutritionContext.applyContext')}
+              </Text>
               <CheckCircle size={18} color="#ffffff" />
             </View>
           </Pressable>

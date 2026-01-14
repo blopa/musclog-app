@@ -732,6 +732,25 @@
     "signOut": "Sign Out"
   },
   "connectGoogleAccount": {
-    "title": "Connect Google Account"
+    "title": "Connect Google Account",
+    "unlockTitle": "Unlock",
+    "aiInsights": "AI Insights",
+    "description": "Unlock personalized AI insights by connecting your Google account for seamless integration with your own Gemini key.",
+    "features": {
+      "deepAnalysis": {
+        "title": "Deep Analysis",
+        "description": "Personalized workout breakdown"
+      },
+      "geminiPowered": {
+        "title": "Gemini Powered",
+        "description": "Advanced LLM fitness intelligence"
+      },
+      "secureToken": {
+        "title": "Secure Token",
+        "description": "Direct integration with your key"
+      }
+    },
+    "connectWithGoogle": "Connect with Google",
+    "maybeLater": "Maybe later"
   }
 }

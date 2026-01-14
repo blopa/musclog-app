@@ -2,8 +2,10 @@ import { useRouter } from 'expo-router';
 import { useState, useMemo } from 'react';
 import { NutritionGoalsBody } from '../../components/NutritionGoalsBody';
 import { View, Text, ScrollView } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 export default function NutritionGoalsScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
 
   // Macro states
@@ -30,7 +32,7 @@ export default function NutritionGoalsScreen() {
     <ScrollView>
       <View className="px-6 pb-2 pt-4">
         <Text className="text-2xl font-bold tracking-tight text-white">
-          Set Nutrition & Body Goals
+          {t('nutritionGoals.title')}
         </Text>
       </View>
       <NutritionGoalsBody

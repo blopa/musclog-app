@@ -265,15 +265,15 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
       <View className="flex-1 px-4 py-6">
         {/* Meal Name Input Section */}
         <View className="mb-6 space-y-2">
-            <Text
-              style={{
-                fontSize: theme.typography.fontSize.xs,
-                fontWeight: theme.typography.fontWeight.bold,
-                color: theme.colors.text.secondary,
-                textTransform: 'uppercase',
-                letterSpacing: 1.2,
-                marginLeft: 4,
-              }}>
+          <Text
+            style={{
+              fontSize: theme.typography.fontSize.xs,
+              fontWeight: theme.typography.fontWeight.bold,
+              color: theme.colors.text.secondary,
+              textTransform: 'uppercase',
+              letterSpacing: 1.2,
+              marginLeft: 4,
+            }}>
             {t('food.createMeal.mealName')}
           </Text>
           <View

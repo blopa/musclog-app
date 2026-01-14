@@ -59,7 +59,10 @@ export function AdvancedSettingsModal({
   ];
 
   return (
-    <FullScreenModal visible={visible} onClose={onClose} title={t('settings.advancedSettings.title')}>
+    <FullScreenModal
+      visible={visible}
+      onClose={onClose}
+      title={t('settings.advancedSettings.title')}>
       <View className="gap-6 px-4 py-6" style={{ minHeight: '100%' }}>
         {/* Data Portability Section */}
         <View>

@@ -134,7 +134,9 @@ export default function LandingScreen() {
               }}>
               <Text className="text-sm font-medium text-gray-400">
                 {t('onboarding.landing.alreadyHaveAccount')}{' '}
-                <Text style={{ color: theme.colors.status.emeraldLight }}>{t('onboarding.landing.logIn')}</Text>
+                <Text style={{ color: theme.colors.status.emeraldLight }}>
+                  {t('onboarding.landing.logIn')}
+                </Text>
               </Text>
             </Pressable>
 

@@ -96,7 +96,11 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
   };
 
   return (
-    <FullScreenModal visible={visible} onClose={onClose} title={t('workouts.addExercise.title')} scrollable={true}>
+    <FullScreenModal
+      visible={visible}
+      onClose={onClose}
+      title={t('workouts.addExercise.title')}
+      scrollable={true}>
       <View className="flex-1 px-4 py-6">
         {/* Target Muscle Section */}
         <View className="mb-6">

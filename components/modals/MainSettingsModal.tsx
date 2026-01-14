@@ -191,7 +191,13 @@ export function MainSettingsModal({ visible, onClose }: { visible: boolean; onCl
           style={{
             marginTop: theme.spacing.padding.md,
           }}>
-          <Button label={t('settings.signOut')} variant="discard" width="full" size="sm" onPress={() => {}} />
+          <Button
+            label={t('settings.signOut')}
+            variant="discard"
+            width="full"
+            size="sm"
+            onPress={() => {}}
+          />
         </View>
 
         {/* Spacer for bottom nav */}

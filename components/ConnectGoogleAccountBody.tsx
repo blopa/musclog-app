@@ -1,5 +1,6 @@
 import { View, Text, Pressable, Image } from 'react-native';
 import { LucideChartSpline, Sparkles, Key, CheckCircle2 } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { GoogleGeminiIllustration } from './GoogleGeminiIllustration';
 
@@ -15,6 +16,7 @@ export function ConnectGoogleAccountBody({
   onConnect,
   onMaybeLater,
 }: ConnectGoogleAccountBodyProps) {
+  const { t } = useTranslation();
   // Google logo URL from the HTML
   const googleLogoUrl =
     'https://lh3.googleusercontent.com/aida-public/AB6AXuDD-q3Yh6AXDMBPsNrW8_Mtje_mP-T7JtL2ix7KBpT5JakMhY0GH9ZzVeFieftJtlvRrROPrN33q5WGo5cV_-PvS1s3jww8amWF0-_e3BB18Amq9No7czYlpbhTXQFTg_uB7w32EFnRneY58tBVGkSQhbzcEgTlIw5kyLmYeMA7dv2HjDQsmK8zswC2hZ-zjH9L9Gm27tWZzdxTNAqLHqrKEjUS12QIYBvVRvUFJGFbDRaXMCSeRipp9EwzLNFjBFjdTliadeykQ2CB';
@@ -45,11 +47,13 @@ export function ConnectGoogleAccountBody({
         {/* Title and Description */}
         <View className="mb-8 text-center">
           <Text className="mb-3 text-center text-3xl font-extrabold leading-tight tracking-tight text-text-primary">
-            Unlock <Text style={{ color: theme.colors.accent.primary }}>AI Insights</Text>
+            {t('connectGoogleAccount.unlockTitle')}{' '}
+            <Text style={{ color: theme.colors.accent.primary }}>
+              {t('connectGoogleAccount.aiInsights')}
+            </Text>
           </Text>
           <Text className="px-2 text-center text-base font-normal leading-relaxed text-text-secondary">
-            Unlock personalized AI insights by connecting your Google account for seamless
-            integration with your own Gemini key.
+            {t('connectGoogleAccount.description')}
           </Text>
         </View>
 
@@ -81,8 +85,12 @@ export function ConnectGoogleAccountBody({
                 <LucideChartSpline size={theme.iconSize.md} color={theme.colors.accent.primary} />
               </View>
               <View className="flex-1">
-                <Text className="text-sm font-bold text-text-primary">Deep Analysis</Text>
-                <Text className="text-xs text-text-secondary">Personalized workout breakdown</Text>
+                <Text className="text-sm font-bold text-text-primary">
+                  {t('connectGoogleAccount.features.deepAnalysis.title')}
+                </Text>
+                <Text className="text-xs text-text-secondary">
+                  {t('connectGoogleAccount.features.deepAnalysis.description')}
+                </Text>
               </View>
               <CheckCircle2 size={20} color={theme.colors.accent.primary} />
             </View>
@@ -114,9 +122,11 @@ export function ConnectGoogleAccountBody({
                 <Sparkles size={theme.iconSize.md} color={theme.colors.accent.primary} />
               </View>
               <View className="flex-1">
-                <Text className="text-sm font-bold text-text-primary">Gemini Powered</Text>
+                <Text className="text-sm font-bold text-text-primary">
+                  {t('connectGoogleAccount.features.geminiPowered.title')}
+                </Text>
                 <Text className="text-xs text-text-secondary">
-                  Advanced LLM fitness intelligence
+                  {t('connectGoogleAccount.features.geminiPowered.description')}
                 </Text>
               </View>
               <CheckCircle2 size={20} color={theme.colors.accent.primary} />
@@ -149,9 +159,11 @@ export function ConnectGoogleAccountBody({
                 <Key size={theme.iconSize.md} color={theme.colors.accent.primary} />
               </View>
               <View className="flex-1">
-                <Text className="text-sm font-bold text-text-primary">Secure Token</Text>
+                <Text className="text-sm font-bold text-text-primary">
+                  {t('connectGoogleAccount.features.secureToken.title')}
+                </Text>
                 <Text className="text-xs text-text-secondary">
-                  Direct integration with your key
+                  {t('connectGoogleAccount.features.secureToken.description')}
                 </Text>
               </View>
               <CheckCircle2 size={20} color={theme.colors.accent.primary} />
@@ -166,14 +178,14 @@ export function ConnectGoogleAccountBody({
           style={theme.shadows.lg}>
           <Image source={{ uri: googleLogoUrl }} className="h-6 w-6" resizeMode="contain" />
           <Text className="text-lg font-semibold" style={{ color: theme.colors.text.black }}>
-            Connect with Google
+            {t('connectGoogleAccount.connectWithGoogle')}
           </Text>
         </Pressable>
         <Pressable
           onPress={handleMaybeLater}
           className="mt-4 w-full items-center justify-center rounded-lg px-4 py-2">
           <Text className="text-sm font-medium" style={{ color: theme.colors.text.secondary }}>
-            Maybe later
+            {t('connectGoogleAccount.maybeLater')}
           </Text>
         </Pressable>
       </View>

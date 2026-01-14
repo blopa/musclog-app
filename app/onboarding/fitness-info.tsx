@@ -7,7 +7,9 @@ export default function FitnessInfo() {
   return (
     <ScrollView>
       <View className="px-6 pb-2 pt-4">
-        <Text className="text-2xl font-bold tracking-tight text-white">{t('onboarding.fitnessInfo.title')}</Text>
+        <Text className="text-2xl font-bold tracking-tight text-white">
+          {t('onboarding.fitnessInfo.title')}
+        </Text>
       </View>
       <EditFitnessDetailsBody onClose={() => {}} onSave={() => {}} />
     </ScrollView>

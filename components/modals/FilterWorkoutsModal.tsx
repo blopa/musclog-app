@@ -129,7 +129,14 @@ export function FilterWorkoutsModal({
       visible={visible}
       onClose={onClose}
       title={t('workouts.filterWorkouts.title')}
-      headerRight={<Button label={t('workouts.filterWorkouts.clear')} variant="outline" size="sm" onPress={handleClear} />}
+      headerRight={
+        <Button
+          label={t('workouts.filterWorkouts.clear')}
+          variant="outline"
+          size="sm"
+          onPress={handleClear}
+        />
+      }
       footer={
         <View
           style={{
