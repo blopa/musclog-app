@@ -209,7 +209,6 @@ export default function CardsTestScreen() {
           </View>
         </TestSection>
 
-        {/*TODO: NEEDS UPGRADE*/}
         <TestSection title="Up Next Exercise" subtitle="Next exercise preview">
           <UpNextExerciseCard
             exercise={{
