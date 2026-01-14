@@ -1,9 +1,9 @@
 import { View, Text } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
 import { Button } from '../theme/Button';
+import { GenericCard } from './GenericCard';
 
 type NotificationCardProps = {
   type: 'ai-insight' | 'workout-reminder' | 'workout-completed' | 'kudos' | 'weekly-report';
@@ -18,7 +18,7 @@ type NotificationCardProps = {
 };
 
 export function NotificationCard({
-  type,
+  type, // TODO: implement different styles based on type
   icon,
   iconBg,
   title,
@@ -29,8 +29,6 @@ export function NotificationCard({
   onActionPress,
 }: NotificationCardProps) {
   const { t } = useTranslation();
-  const isAiInsight = type === 'ai-insight';
-
   const content = (
     <View className="flex-row gap-4">
       {/* Icon */}
@@ -86,27 +84,9 @@ export function NotificationCard({
     </View>
   );
 
-  if (isAiInsight) {
-    return (
-      <LinearGradient
-        colors={theme.colors.gradients.notification}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={{
-          borderRadius: theme.borderRadius['3xl'],
-          borderWidth: 2,
-          borderColor: theme.colors.border.accent,
-          padding: theme.spacing.padding.base,
-          overflow: 'hidden',
-        }}>
-        {content}
-      </LinearGradient>
-    );
-  }
-
   return (
-    <View className="rounded-3xl bg-bg-cardDark p-5" style={{ overflow: 'hidden' }}>
-      {content}
-    </View>
+    <GenericCard variant="highlighted">
+      <View className="p-5">{content}</View>
+    </GenericCard>
   );
 }
