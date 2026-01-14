@@ -391,5 +391,9 @@
     "unlink": "Desvincular",
     "edit": "Editar",
     "done": "Hecho"
+  },
+  "editScreenInfo": {
+    "title": "Abre el código de esta pantalla:",
+    "description": "Cambia cualquier texto, guarda el archivo y tu aplicación se actualizará automáticamente."
   }
 }

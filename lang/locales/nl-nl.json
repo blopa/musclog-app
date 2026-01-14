@@ -401,5 +401,9 @@
     "unlink": "Ontkoppelen",
     "edit": "Bewerken",
     "done": "Klaar"
+  },
+  "editScreenInfo": {
+    "title": "Open de code voor dit scherm:",
+    "description": "Wijzig een tekst, sla het bestand op en je app wordt automatisch bijgewerkt."
   }
 }

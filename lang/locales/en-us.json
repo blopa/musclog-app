@@ -762,5 +762,9 @@
     },
     "connectWithGoogle": "Connect with Google",
     "maybeLater": "Maybe later"
+  },
+  "editScreenInfo": {
+    "title": "Open up the code for this screen:",
+    "description": "Change any of the text, save the file, and your app will automatically update."
   }
 }
