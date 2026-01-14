@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, Image, Pressable, ImageSourcePropType } from 'react-native';
 import { Plus } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
 import { GenericCard } from './GenericCard';
 
@@ -53,6 +54,7 @@ export function MealItemCard({
   image,
   onTrackPress,
 }: MealItemCardProps) {
+  const { t } = useTranslation();
   return (
     <GenericCard variant="highlighted">
       <View
@@ -92,7 +94,7 @@ export function MealItemCard({
                 fontWeight: theme.typography.fontWeight.bold,
                 color: theme.colors.text.black,
               }}>
-              {calories} kcal
+              {calories} {t('common.kcal')}
             </Text>
           </View>
         </View>
@@ -126,7 +128,11 @@ export function MealItemCard({
               justifyContent: 'space-between',
             }}>
             <View style={{ flexDirection: 'row', gap: theme.spacing.gap.md }}>
-              <Macro label="PROT" value={macros.protein} color={theme.colors.macros.protein.text} />
+              <Macro
+                label={t('food.macros.proteinLegend')}
+                value={macros.protein}
+                color={theme.colors.macros.protein.text}
+              />
               <View
                 style={{
                   width: 1,
@@ -135,7 +141,11 @@ export function MealItemCard({
                   alignSelf: 'center',
                 }}
               />
-              <Macro label="CARB" value={macros.carbs} color={theme.colors.macros.carbs.text} />
+              <Macro
+                label={t('food.macros.carbsLegend')}
+                value={macros.carbs}
+                color={theme.colors.macros.carbs.text}
+              />
               <View
                 style={{
                   width: 1,
@@ -144,7 +154,11 @@ export function MealItemCard({
                   alignSelf: 'center',
                 }}
               />
-              <Macro label="FAT" value={macros.fat} color={theme.colors.macros.fat.text} />
+              <Macro
+                label={t('food.macros.fatLegend')}
+                value={macros.fat}
+                color={theme.colors.macros.fat.text}
+              />
             </View>
 
             <Pressable
@@ -166,7 +180,7 @@ export function MealItemCard({
                   fontWeight: theme.typography.fontWeight.bold,
                   color: theme.colors.accent.primary,
                 }}>
-                Track
+                {t('mealItemCard.track')}
               </Text>
             </Pressable>
           </View>

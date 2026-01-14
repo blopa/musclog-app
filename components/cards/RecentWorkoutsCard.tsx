@@ -1,5 +1,6 @@
 import { View, Text, Image, ImageSourcePropType } from 'react-native';
 import { Flame } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
 import { CircularArrow } from '../CircularArrow';
 import { GenericCard } from './GenericCard';
@@ -25,6 +26,7 @@ export function RecentWorkoutsCard({
   imageBgColor,
   onPress,
 }: RecentWorkoutsCardProps) {
+  const { t } = useTranslation();
   return (
     <GenericCard variant="default" size="sm" isPressable={true} onPress={onPress}>
       <View className="flex-row items-center gap-4 p-4">
@@ -48,7 +50,9 @@ export function RecentWorkoutsCard({
             {prs !== null && (
               <View className="flex-row items-center gap-1 rounded-full bg-bg-secondary px-2.5 py-1">
                 <Text className="text-xs">💪</Text>
-                <Text className="text-xs font-medium text-text-accent">{prs} PRS</Text>
+                <Text className="text-xs font-medium text-text-accent">
+                  {prs} {t('recentWorkouts.prs')}
+                </Text>
               </View>
             )}
           </View>

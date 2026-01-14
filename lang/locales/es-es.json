@@ -303,5 +303,11 @@
       "appPreferences": "Preferencias de la App",
       "appPreferencesDesc": "Unidades, Notificaciones, Privacidad"
     }
+  },
+  "recentWorkouts": {
+    "prs": "PR"
+  },
+  "mealItemCard": {
+    "track": "Rastrear"
   }
 }

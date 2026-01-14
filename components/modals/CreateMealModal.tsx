@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Pressable } from 'react-native';
 import { MoreVertical, Trash2, Plus, CheckCircle2, Egg, Info, Apple } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
 import { FullScreenModal } from './FullScreenModal';
 import { Button } from '../theme/Button';
@@ -110,100 +111,113 @@ const MealMacrosSummary = ({
   macros,
 }: {
   macros: { protein: number; carbs: number; fat: number };
-}) => (
-  <View
-    style={{
-      backgroundColor: theme.colors.background.cardElevated,
-      borderRadius: theme.borderRadius.lg,
-      padding: 20,
-      marginBottom: 24,
-      borderWidth: theme.borderWidth.thin,
-      borderColor: theme.colors.border.light,
-      position: 'relative',
-      overflow: 'hidden',
-    }}>
-    {/* Background Glows */}
+}) => {
+  const { t } = useTranslation();
+  return (
     <View
       style={{
-        position: 'absolute',
-        top: -40,
-        right: -40,
-        width: 160,
-        height: 160,
-        backgroundColor: theme.colors.accent.primary20,
-        borderRadius: 80,
-        opacity: 0.5,
-      }}
-    />
-    <View
-      style={{
-        position: 'absolute',
-        bottom: -40,
-        left: -40,
-        width: 160,
-        height: 160,
-        backgroundColor: `${theme.colors.status.indigo}20`,
-        borderRadius: 80,
-        opacity: 0.5,
-      }}
-    />
-
-    <View style={{ position: 'relative', zIndex: 10 }}>
+        backgroundColor: theme.colors.background.cardElevated,
+        borderRadius: theme.borderRadius.lg,
+        padding: 20,
+        marginBottom: 24,
+        borderWidth: theme.borderWidth.thin,
+        borderColor: theme.colors.border.light,
+        position: 'relative',
+        overflow: 'hidden',
+      }}>
+      {/* Background Glows */}
       <View
         style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'flex-start',
-          marginBottom: 20,
-        }}>
-        <View>
-          <Text
-            style={{
-              fontSize: theme.typography.fontSize.base,
-              fontWeight: theme.typography.fontWeight.bold,
-              color: theme.colors.text.primary,
-            }}>
-            Total Nutrition
-          </Text>
-          <Text
-            style={{
-              fontSize: theme.typography.fontSize.sm,
-              fontWeight: theme.typography.fontWeight.medium,
-              color: theme.colors.text.secondary,
-            }}>
-            854 kcal
-          </Text>
-        </View>
+          position: 'absolute',
+          top: -40,
+          right: -40,
+          width: 160,
+          height: 160,
+          backgroundColor: theme.colors.accent.primary20,
+          borderRadius: 80,
+          opacity: 0.5,
+        }}
+      />
+      <View
+        style={{
+          position: 'absolute',
+          bottom: -40,
+          left: -40,
+          width: 160,
+          height: 160,
+          backgroundColor: `${theme.colors.status.indigo}20`,
+          borderRadius: 80,
+          opacity: 0.5,
+        }}
+      />
+
+      <View style={{ position: 'relative', zIndex: 10 }}>
         <View
           style={{
-            backgroundColor: theme.colors.background.cardDark,
-            paddingHorizontal: 10,
-            paddingVertical: 4,
-            borderRadius: theme.borderRadius.full,
-            borderWidth: 1,
-            borderColor: theme.colors.border.light,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'flex-start',
+            marginBottom: 20,
           }}>
-          <Text
+          <View>
+            <Text
+              style={{
+                fontSize: theme.typography.fontSize.base,
+                fontWeight: theme.typography.fontWeight.bold,
+                color: theme.colors.text.primary,
+              }}>
+              Total Nutrition
+            </Text>
+            <Text
+              style={{
+                fontSize: theme.typography.fontSize.sm,
+                fontWeight: theme.typography.fontWeight.medium,
+                color: theme.colors.text.secondary,
+              }}>
+              854 kcal
+            </Text>
+          </View>
+          <View
             style={{
-              fontSize: theme.typography.fontSize.xs,
-              fontWeight: theme.typography.fontWeight.bold,
-              color: theme.colors.text.secondary,
-              textTransform: 'uppercase',
-              letterSpacing: 1,
+              backgroundColor: theme.colors.background.cardDark,
+              paddingHorizontal: 10,
+              paddingVertical: 4,
+              borderRadius: theme.borderRadius.full,
+              borderWidth: 1,
+              borderColor: theme.colors.border.light,
             }}>
-            Estimated
-          </Text>
+            <Text
+              style={{
+                fontSize: theme.typography.fontSize.xs,
+                fontWeight: theme.typography.fontWeight.bold,
+                color: theme.colors.text.secondary,
+                textTransform: 'uppercase',
+                letterSpacing: 1,
+              }}>
+              Estimated
+            </Text>
+          </View>
+        </View>
+
+        <View style={{ flexDirection: 'row', gap: 12 }}>
+          <MacroCard
+            label={t('food.macros.protein')}
+            value="62g"
+            progress={70}
+            color={theme.colors.accent.primary}
+          />
+          <MacroCard
+            label={t('food.macros.carbs')}
+            value="95g"
+            progress={45}
+            color={theme.colors.status.indigo}
+          />
+          <MacroCard label={t('food.macros.fat')} value="24g" progress={30} color="#fbbf24" />
         </View>
       </View>
-
-      <View style={{ flexDirection: 'row', gap: 12 }}>
-        <MacroCard label="Protein" value="62g" progress={70} color={theme.colors.accent.primary} />
-        <MacroCard label="Carbs" value="95g" progress={45} color={theme.colors.status.indigo} />
-        <MacroCard label="Fat" value="24g" progress={30} color="#fbbf24" />
-      </View>
     </View>
-  </View>
-);
+  );
+};
 
 export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalProps) {
   const [mealName, setMealName] = useState('');

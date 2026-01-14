@@ -330,5 +330,11 @@
     "volume": "Volume",
     "personalRecords": "Persoonlijke records",
     "goHome": "Naar huis"
+  },
+  "recentWorkouts": {
+    "prs": "PR"
+  },
+  "mealItemCard": {
+    "track": "Volgen"
   }
 }
