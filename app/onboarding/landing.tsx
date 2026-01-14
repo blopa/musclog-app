@@ -3,12 +3,14 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Dumbbell, ArrowRight } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
 import { Button } from '../../components/theme/Button';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 export default function LandingScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
 
   return (
@@ -111,7 +113,7 @@ export default function LandingScreen() {
           <View className="gap-3 pb-8 pt-4">
             {/* Primary Button */}
             <Button
-              label="Get Started"
+              label={t('onboarding.landing.getStarted')}
               onPress={() => {
                 // Navigate to home or onboarding
                 router.push('/');
@@ -131,14 +133,14 @@ export default function LandingScreen() {
                 console.log('Navigate to login');
               }}>
               <Text className="text-sm font-medium text-gray-400">
-                Already have an account?{' '}
-                <Text style={{ color: theme.colors.status.emeraldLight }}>Log In</Text>
+                {t('onboarding.landing.alreadyHaveAccount')}{' '}
+                <Text style={{ color: theme.colors.status.emeraldLight }}>{t('onboarding.landing.logIn')}</Text>
               </Text>
             </Pressable>
 
             {/* Terms / Footer Text */}
             <Text className="mt-2 text-center text-gray-500" style={{ fontSize: 10 }}>
-              By continuing, you agree to our Terms & Privacy Policy.
+              {t('onboarding.landing.termsAndPrivacy')}
             </Text>
           </View>
         </View>

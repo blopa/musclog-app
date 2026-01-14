@@ -1,12 +1,14 @@
 import { View, Text, ScrollView } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { ConnectGoogleAccountBody } from '../../components/ConnectGoogleAccountBody';
 
 export default function ConnectWithGoogle() {
+  const { t } = useTranslation();
   return (
     <ScrollView>
       <View className="px-6 pb-2 pt-4">
         <Text className="text-2xl font-bold tracking-tight text-white">
-          Connect Your Google Account
+          {t('onboarding.connectGoogle.title')}
         </Text>
       </View>
       <ConnectGoogleAccountBody onMaybeLater={() => {}} onConnect={() => {}} onClose={() => {}} />

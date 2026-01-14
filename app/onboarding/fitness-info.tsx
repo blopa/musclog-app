@@ -1,11 +1,13 @@
 import { View, Text, ScrollView } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { EditFitnessDetailsBody } from '../../components/EditFitnessDetailsBody';
 
 export default function FitnessInfo() {
+  const { t } = useTranslation();
   return (
     <ScrollView>
       <View className="px-6 pb-2 pt-4">
-        <Text className="text-2xl font-bold tracking-tight text-white">Set Fitness Details</Text>
+        <Text className="text-2xl font-bold tracking-tight text-white">{t('onboarding.fitnessInfo.title')}</Text>
       </View>
       <EditFitnessDetailsBody onClose={() => {}} onSave={() => {}} />
     </ScrollView>

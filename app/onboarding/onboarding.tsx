@@ -3,6 +3,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Check, ArrowLeft, ArrowRight, LucideIcon } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { useState, useRef, useEffect } from 'react';
 import { theme } from '../../theme';
 import { GradientText } from '../../components/GradientText';
@@ -389,6 +390,7 @@ function OnboardingStepOne({ imageUrl, title, description, badge }: OnboardingBo
 }
 
 export default function OnboardingScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
   const slideAnim = useRef(new Animated.Value(0)).current;
@@ -434,7 +436,7 @@ export default function OnboardingScreen() {
             <Text
               className="text-sm font-bold leading-normal tracking-wide"
               style={{ color: theme.colors.text.gray500 }}>
-              Skip
+              {t('onboarding.skip')}
             </Text>
           </Pressable>
         </View>
@@ -453,12 +455,12 @@ export default function OnboardingScreen() {
           <View style={{ width: screenWidth }}>
             <OnboardingStepOne
               imageUrl={PHONE_MOCKUP_IMAGE_URL}
-              title="Effortless Tracking"
-              description="Ditch the notebook. Log your sets, reps, and weights in seconds and visualize your strength gains over time."
+              title={t('onboarding.steps.step1.title')}
+              description={t('onboarding.steps.step1.description')}
               badge={{
                 icon: Check,
-                title: 'Workout Complete',
-                subtitle: '3 Personal Records set!',
+                title: t('onboarding.steps.step1.badge.title'),
+                subtitle: t('onboarding.steps.step1.badge.subtitle'),
               }}
             />
           </View>
@@ -467,8 +469,8 @@ export default function OnboardingScreen() {
           <View style={{ width: screenWidth }}>
             <OnboardingStepTwo
               imageUrl={PHONE_MOCKUP_IMAGE_URL}
-              title="Smart Nutrition"
-              description="Log meals in seconds with AI scanning or our massive database. Understanding your fuel is the key to peak performance."
+              title={t('onboarding.steps.step2.title')}
+              description={t('onboarding.steps.step2.description')}
             />
           </View>
 
@@ -476,16 +478,16 @@ export default function OnboardingScreen() {
           <View style={{ width: screenWidth }}>
             <OnboardingStepThree
               imageUrl={PHONE_MOCKUP_IMAGE_URL}
-              title="One App, Total Control"
-              description="Connect the dots between your diet and your lifts. See exactly how your nutrition fuels your strength gains with unified progress charts."
+              title={t('onboarding.steps.step3.title')}
+              description={t('onboarding.steps.step3.description')}
             />
           </View>
 
           {/* Step 4 */}
           <View style={{ width: screenWidth }}>
             <OnboardingStepFour
-              title="Let's Get Personal"
-              description="To tailor your journey and track your gains with precision, we'd love to know a bit more about your fitness history."
+              title={t('onboarding.steps.step4.title')}
+              description={t('onboarding.steps.step4.description')}
             />
           </View>
         </Animated.View>
@@ -502,7 +504,7 @@ export default function OnboardingScreen() {
             <View className="w-full flex-row items-center justify-between">
               {currentStep > 0 ? (
                 <Button
-                  label="Back"
+                  label={t('onboarding.back')}
                   variant="outline"
                   size="sm"
                   icon={ArrowLeft}
@@ -517,7 +519,7 @@ export default function OnboardingScreen() {
               )}
 
               <Button
-                label={currentStep === 3 ? 'Get Started' : 'Next'}
+                label={currentStep === 3 ? t('onboarding.getStarted') : t('onboarding.next')}
                 variant="gradientCta"
                 size="sm"
                 icon={ArrowRight}

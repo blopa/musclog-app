@@ -12,6 +12,7 @@ import {
   RefreshCw,
 } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
 import { GradientText } from '../../components/GradientText';
 import { Button } from '../../components/theme/Button';
@@ -28,6 +29,7 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const ILLUSTRATION_SIZE = SCREEN_WIDTH * 0.4; // 40% of screen width
 
 export default function HealthConnectScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
 
   return (
@@ -205,7 +207,7 @@ export default function HealthConnectScreen() {
                 fontSize: theme.typography.fontSize['3xl'],
                 lineHeight: theme.typography.fontSize['3xl'] * 1.1,
               }}>
-              Connect Your{' '}
+              {t('onboarding.healthConnect.connectYour')}{' '}
             </Text>
             <GradientText
               colors={[theme.colors.status.indigoLight, theme.colors.status.emeraldLight]}
@@ -214,7 +216,7 @@ export default function HealthConnectScreen() {
                 fontWeight: theme.typography.fontWeight.bold,
                 lineHeight: theme.typography.fontSize['3xl'] * 1.1,
               }}>
-              Health
+              {t('onboarding.healthConnect.health')}
             </GradientText>
           </View>
           <Text
@@ -225,8 +227,7 @@ export default function HealthConnectScreen() {
               maxWidth: '85%',
               alignSelf: 'center',
             }}>
-            Sync your fitness data to Musclog for advanced progress tracking and personalized health
-            insights.
+            {t('onboarding.healthConnect.description')}
           </Text>
         </View>
 
@@ -235,7 +236,7 @@ export default function HealthConnectScreen() {
           {/* Nutrition */}
           <HealthCategoryCard
             icon={UtensilsCrossed}
-            label="Nutrition"
+            label={t('onboarding.healthConnect.categories.nutrition')}
             backgroundColor={theme.colors.status.indigo10}
             iconColor={theme.colors.status.indigoLight}
           />
@@ -243,7 +244,7 @@ export default function HealthConnectScreen() {
           {/* Weight */}
           <HealthCategoryCard
             icon={Scale}
-            label="Weight"
+            label={t('onboarding.healthConnect.categories.weight')}
             backgroundColor={theme.colors.status.emerald20}
             iconColor={theme.colors.status.emeraldLight}
           />
@@ -251,7 +252,7 @@ export default function HealthConnectScreen() {
           {/* Sleep */}
           <HealthCategoryCard
             icon={Moon}
-            label="Sleep"
+            label={t('onboarding.healthConnect.categories.sleep')}
             backgroundColor={theme.colors.status.emerald10}
             iconColor={theme.colors.status.emerald}
           />
@@ -259,7 +260,7 @@ export default function HealthConnectScreen() {
           {/* Vitals */}
           <HealthCategoryCard
             icon={Heart}
-            label="Vitals"
+            label={t('onboarding.healthConnect.categories.vitals')}
             backgroundColor={theme.colors.status.purple10}
             iconColor={theme.colors.status.purple}
           />
@@ -277,7 +278,7 @@ export default function HealthConnectScreen() {
             <View className="px-6 pb-6">
               {/* Primary Button */}
               <Button
-                label="Allow Health Access"
+                label={t('onboarding.healthConnect.allowHealthAccess')}
                 onPress={() => {
                   // Handle health access permission
                   console.log('Allow Health Access');
@@ -302,7 +303,7 @@ export default function HealthConnectScreen() {
                   router.push('/');
                 }}>
                 <Text className="text-sm font-medium" style={{ color: theme.colors.text.gray500 }}>
-                  Maybe later
+                  {t('onboarding.healthConnect.maybeLater')}
                 </Text>
               </Pressable>
 
@@ -313,8 +314,7 @@ export default function HealthConnectScreen() {
                   fontSize: 11,
                   color: theme.colors.text.gray500,
                 }}>
-                Musclog values your privacy. Your data is encrypted and used only for your personal
-                analytics.
+                {t('onboarding.healthConnect.privacyStatement')}
               </Text>
             </View>
           </SafeAreaView>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Pressable, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Sparkles, PlusSquare } from 'lucide-react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '../../theme';
@@ -12,6 +13,7 @@ import { SelectorOption } from '../../components/theme/OptionsMultiSelector/util
 import { AddExerciseModal } from '../../components/modals/AddExerciseModal';
 
 export default function CreateWorkoutScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const [workoutTitle, setWorkoutTitle] = useState('');
@@ -119,10 +121,10 @@ export default function CreateWorkoutScreen() {
   };
 
   const volumeOptions = [
-    { label: 'None', value: 'none' },
-    { label: 'Algorithm', value: 'algorithm' },
+    { label: t('createWorkout.volumeCalculation.none'), value: 'none' },
+    { label: t('createWorkout.volumeCalculation.algorithm'), value: 'algorithm' },
     {
-      label: 'AI',
+      label: t('createWorkout.volumeCalculation.ai'),
       value: 'ai',
       icon: (
         <Sparkles
@@ -193,7 +195,7 @@ export default function CreateWorkoutScreen() {
             fontWeight: theme.typography.fontWeight.bold,
             color: theme.colors.text.primary,
           }}>
-          Create New Workout
+          {t('createWorkout.title')}
         </Text>
         <Pressable
           onPress={() => {
@@ -212,7 +214,7 @@ export default function CreateWorkoutScreen() {
               fontWeight: theme.typography.fontWeight.bold,
               color: theme.colors.accent.primary,
             }}>
-            Save
+            {t('createWorkout.save')}
           </Text>
         </Pressable>
       </View>
@@ -236,7 +238,7 @@ export default function CreateWorkoutScreen() {
               marginBottom: theme.spacing.padding.md,
               marginLeft: 4,
             }}>
-            Essentials
+            {t('createWorkout.essentials')}
           </Text>
 
           <View style={{ gap: theme.spacing.gap.base }}>
@@ -266,14 +268,14 @@ export default function CreateWorkoutScreen() {
                     color: theme.colors.text.secondary,
                     marginBottom: 4,
                   }}>
-                  Workout Title
+                  {t('createWorkout.workoutTitle')}
                 </Text>
                 <TextInput
                   value={workoutTitle}
                   onChangeText={setWorkoutTitle}
                   onFocus={() => setFocusedField('title')}
                   onBlur={() => setFocusedField(null)}
-                  placeholder="e.g., Leg Day Destruction"
+                  placeholder={t('createWorkout.workoutTitlePlaceholder')}
                   placeholderTextColor={theme.colors.text.tertiary}
                   style={{
                     fontSize: theme.typography.fontSize.lg,
@@ -311,14 +313,14 @@ export default function CreateWorkoutScreen() {
                     color: theme.colors.text.secondary,
                     marginBottom: 4,
                   }}>
-                  Description
+                  {t('createWorkout.description')}
                 </Text>
                 <TextInput
                   value={description}
                   onChangeText={setDescription}
                   onFocus={() => setFocusedField('description')}
                   onBlur={() => setFocusedField(null)}
-                  placeholder="Focus on quads and calves..."
+                  placeholder={t('createWorkout.descriptionPlaceholder')}
                   placeholderTextColor={theme.colors.text.tertiary}
                   multiline
                   numberOfLines={3}
@@ -347,7 +349,7 @@ export default function CreateWorkoutScreen() {
               marginBottom: theme.spacing.padding.md,
               marginLeft: 4,
             }}>
-            Intelligence
+            {t('createWorkout.intelligence')}
           </Text>
 
           <View
@@ -365,7 +367,7 @@ export default function CreateWorkoutScreen() {
                 color: theme.colors.text.primary,
                 marginBottom: theme.spacing.padding.base,
               }}>
-              Volume Calculation
+              {t('createWorkout.volumeCalculation.title')}
             </Text>
 
             <SegmentedControl
@@ -381,8 +383,7 @@ export default function CreateWorkoutScreen() {
                 marginTop: theme.spacing.padding.md,
                 lineHeight: 18,
               }}>
-              Choose how Musclog calculates optimal volume for your next session. AI adapts based on
-              recovery data.
+              {t('createWorkout.volumeCalculation.description')}
             </Text>
           </View>
         </View>
@@ -399,7 +400,7 @@ export default function CreateWorkoutScreen() {
               marginBottom: theme.spacing.padding.md,
               marginLeft: 4,
             }}>
-            Routine
+            {t('createWorkout.routine')}
           </Text>
 
           <View
@@ -423,7 +424,7 @@ export default function CreateWorkoutScreen() {
                   fontWeight: theme.typography.fontWeight.medium,
                   color: theme.colors.text.primary,
                 }}>
-                Repeat on days
+                {t('createWorkout.repeatOnDays')}
               </Text>
               <Text
                 style={{
@@ -431,7 +432,7 @@ export default function CreateWorkoutScreen() {
                   fontWeight: theme.typography.fontWeight.medium,
                   color: theme.colors.accent.primary,
                 }}>
-                Weekly
+                {t('createWorkout.weekly')}
               </Text>
             </View>
 
@@ -451,7 +452,7 @@ export default function CreateWorkoutScreen() {
               marginBottom: theme.spacing.padding.md,
               marginLeft: 4,
             }}>
-            Exercises
+            {t('createWorkout.exercises')}
           </Text>
 
           <View
@@ -463,7 +464,7 @@ export default function CreateWorkoutScreen() {
               borderColor: theme.colors.border.light,
             }}>
             <OptionsMultiSelector
-              title="Exercises in the workout"
+              title={t('createWorkout.exercisesInWorkout')}
               options={exercises}
               selectedIds={selectedExercises}
               onChange={(ids) => setSelectedExercises(ids)}
@@ -482,7 +483,7 @@ export default function CreateWorkoutScreen() {
           }}>
           <View style={{ backgroundColor: theme.colors.background.primary }}>
             <Button
-              label="Add Exercise"
+              label={t('workouts.addExercise.title')}
               variant="gradientCta"
               size="md"
               width="full"

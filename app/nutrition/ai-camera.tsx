@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { View, Text, Pressable, StyleSheet, Dimensions, StatusBar, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
@@ -23,6 +24,7 @@ const CAMERA_MAX_HEIGHT = SCREEN_HEIGHT * 0.6;
 type CameraMode = 'ai-meal-photo' | 'ai-label-scan' | 'barcode-scan';
 
 export default function AICameraScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const [permission, requestPermission] = useCameraPermissions();
   const [flashEnabled, setFlashEnabled] = useState(false);
@@ -94,7 +96,7 @@ export default function AICameraScreen() {
   if (!permission) {
     return (
       <View className="flex-1 items-center justify-center bg-black">
-        <Text className="text-white">Requesting camera permission...</Text>
+        <Text className="text-white">{t('food.aiCamera.requestingPermission')}</Text>
       </View>
     );
   }
@@ -103,10 +105,10 @@ export default function AICameraScreen() {
     return (
       <View className="flex-1 items-center justify-center bg-black px-6">
         <Text className="mb-4 text-center text-lg text-white">
-          Camera permission is required to use this feature
+          {t('food.aiCamera.permissionRequired')}
         </Text>
         <Pressable onPress={requestPermission} className="rounded-xl bg-accent-primary px-6 py-3">
-          <Text className="font-semibold text-black">Grant Permission</Text>
+          <Text className="font-semibold text-black">{t('food.aiCamera.grantPermission')}</Text>
         </Pressable>
       </View>
     );
@@ -163,7 +165,7 @@ export default function AICameraScreen() {
               }}
             />
             <Text className="text-xs font-semibold uppercase tracking-wide text-white/90">
-              AI Detecting
+              {t('food.aiCamera.aiDetecting')}
             </Text>
           </View>
 
@@ -226,7 +228,7 @@ export default function AICameraScreen() {
 
           {/* Instruction Text */}
           <Text className="mt-6 text-center text-sm font-medium text-white/90 drop-shadow-md">
-            Point at your meal for instant estimation
+            {t('food.aiCamera.instruction')}
           </Text>
         </View>
 
@@ -271,7 +273,7 @@ export default function AICameraScreen() {
                       color:
                         cameraMode === 'ai-meal-photo' ? '#ffffff' : theme.colors.text.secondary,
                     }}>
-                    AI Meal Photo
+                    {t('food.aiCamera.modes.mealPhoto')}
                   </Text>
                 </View>
               </Pressable>
@@ -306,7 +308,7 @@ export default function AICameraScreen() {
                       color:
                         cameraMode === 'ai-label-scan' ? '#ffffff' : theme.colors.text.secondary,
                     }}>
-                    AI Label Scan
+                    {t('food.aiCamera.modes.labelScan')}
                   </Text>
                 </View>
               </Pressable>
@@ -341,7 +343,7 @@ export default function AICameraScreen() {
                       color:
                         cameraMode === 'barcode-scan' ? '#ffffff' : theme.colors.text.secondary,
                     }}>
-                    Barcode Scan
+                    {t('food.aiCamera.modes.barcodeScan')}
                   </Text>
                 </View>
               </Pressable>

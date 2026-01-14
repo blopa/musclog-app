@@ -134,6 +134,18 @@
       "ingredients": "Ingredients ({{count}})",
       "editList": "Edit List",
       "addFoodItem": "Add Food Item"
+    },
+    "aiCamera": {
+      "requestingPermission": "Requesting camera permission...",
+      "permissionRequired": "Camera permission is required to use this feature",
+      "grantPermission": "Grant Permission",
+      "aiDetecting": "AI Detecting",
+      "instruction": "Point at your meal for instant estimation",
+      "modes": {
+        "mealPhoto": "AI Meal Photo",
+        "labelScan": "AI Label Scan",
+        "barcodeScan": "Barcode Scan"
+      }
     }
   },
   "notifications": {
@@ -258,6 +270,28 @@
       "weight": "Weight",
       "addToWorkout": "Add to Workout"
     }
+  },
+  "createWorkout": {
+    "title": "Create New Workout",
+    "save": "Save",
+    "essentials": "Essentials",
+    "workoutTitle": "Workout Title",
+    "workoutTitlePlaceholder": "e.g., Leg Day Destruction",
+    "description": "Description",
+    "descriptionPlaceholder": "Focus on quads and calves...",
+    "intelligence": "Intelligence",
+    "volumeCalculation": {
+      "title": "Volume Calculation",
+      "description": "Choose how Musclog calculates optimal volume for your next session. AI adapts based on recovery data.",
+      "none": "None",
+      "algorithm": "Algorithm",
+      "ai": "AI"
+    },
+    "routine": "Routine",
+    "repeatOnDays": "Repeat on days",
+    "weekly": "Weekly",
+    "exercises": "Exercises",
+    "exercisesInWorkout": "Exercises in the workout"
   },
   "workoutDetails": {
     "subtitle": "Manage this workout",
@@ -504,6 +538,63 @@
       "highProtein": "High Protein",
       "breakfast": "Breakfast",
       "lunch": "Lunch"
+    }
+  },
+  "onboarding": {
+    "skip": "Skip",
+    "back": "Back",
+    "next": "Next",
+    "getStarted": "Get Started",
+    "steps": {
+      "step1": {
+        "title": "Effortless Tracking",
+        "description": "Ditch the notebook. Log your sets, reps, and weights in seconds and visualize your strength gains over time.",
+        "badge": {
+          "title": "Workout Complete",
+          "subtitle": "3 Personal Records set!"
+        }
+      },
+      "step2": {
+        "title": "Smart Nutrition",
+        "description": "Log meals in seconds with AI scanning or our massive database. Understanding your fuel is the key to peak performance."
+      },
+      "step3": {
+        "title": "One App, Total Control",
+        "description": "Connect the dots between your diet and your lifts. See exactly how your nutrition fuels your strength gains with unified progress charts."
+      },
+      "step4": {
+        "title": "Let's Get Personal",
+        "description": "To tailor your journey and track your gains with precision, we'd love to know a bit more about your fitness history."
+      }
+    },
+    "fitnessInfo": {
+      "title": "Set Fitness Details"
+    },
+    "personalInfo": {
+      "title": "Set Personal Information"
+    },
+    "connectGoogle": {
+      "title": "Connect Your Google Account"
+    },
+    "healthConnect": {
+      "connectYour": "Connect Your",
+      "health": "Health",
+      "description": "Sync your fitness data to Musclog for advanced progress tracking and personalized health insights.",
+      "categories": {
+        "nutrition": "Nutrition",
+        "weight": "Weight",
+        "sleep": "Sleep",
+        "vitals": "Vitals"
+      },
+      "allowHealthAccess": "Allow Health Access",
+      "maybeLater": "Maybe later",
+      "privacyStatement": "Musclog values your privacy. Your data is encrypted and used only for your personal analytics."
+    },
+    "landing": {
+      "getStarted": "Get Started",
+      "alreadyHaveAccount": "Already have an account?",
+      "logIn": "Log In",
+      "termsAndPrivacy": "By continuing, you agree to our Terms & Privacy Policy."
     }
   }
 }
