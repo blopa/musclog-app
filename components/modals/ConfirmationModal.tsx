@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, Pressable, Modal, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
 import { Button } from '../theme/Button';
 
@@ -25,10 +26,12 @@ export function ConfirmationModal({
   title,
   message,
   confirmLabel,
-  cancelLabel = 'Cancel',
+  cancelLabel,
   variant = 'default',
   maxWidth,
 }: ConfirmationModalProps) {
+  const { t } = useTranslation();
+  const defaultCancelLabel = cancelLabel || t('common.cancel');
   // Default maxWidth is 30% larger than 320px (416px)
   const modalMaxWidth = maxWidth || theme.components.modal.confirmationMaxWidth;
 
@@ -124,7 +127,7 @@ export function ConfirmationModal({
             {/* Buttons */}
             <View className="flex-row" style={{ gap: theme.spacing.gap.md }}>
               <Button
-                label={cancelLabel}
+                label={defaultCancelLabel}
                 variant="outline"
                 size="sm"
                 width="flex-1"

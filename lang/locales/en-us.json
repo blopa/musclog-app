@@ -5,7 +5,9 @@
     "remaining": "remaining",
     "goal": "Goal",
     "kcal": "kcal",
-    "min": "min"
+    "min": "min",
+    "cancel": "Cancel",
+    "tryAgain": "Try Again"
   },
   "home": {
     "greeting": {
@@ -153,6 +155,11 @@
       "describeYourMeal": "DESCRIBE YOUR MEAL",
       "placeholder": "e.g. This is a homemade dish with olive oil, about 2 cups of pasta...",
       "quickTags": "QUICK TAGS",
+      "quickTagHighProtein": "High Protein",
+      "quickTagLowCarb": "Low Carb",
+      "quickTagLargeServing": "Large Serving",
+      "quickTagEatingOut": "Eating Out",
+      "quickTagVegan": "Vegan",
       "cancel": "Cancel",
       "applyContext": "Apply Context"
     }

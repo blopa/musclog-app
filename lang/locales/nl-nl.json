@@ -5,7 +5,9 @@
     "remaining": "over",
     "goal": "Doel",
     "kcal": "kcal",
-    "min": "min"
+    "min": "min",
+    "cancel": "Annuleren",
+    "tryAgain": "Opnieuw proberen"
   },
   "home": {
     "greeting": {

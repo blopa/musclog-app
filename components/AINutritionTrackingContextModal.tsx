@@ -12,8 +12,6 @@ type AINutritionTrackingContextModalProps = {
   onApply?: (context: { description: string; tags: string[] }) => void;
 };
 
-const quickTags = ['High Protein', 'Low Carb', 'Large Serving', 'Eating Out', 'Vegan'];
-
 export function AINutritionTrackingContextModal({
   visible,
   onClose,
@@ -22,6 +20,14 @@ export function AINutritionTrackingContextModal({
   const { t } = useTranslation();
   const [mealDescription, setMealDescription] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+
+  const quickTags = [
+    t('food.aiNutritionContext.quickTagHighProtein'),
+    t('food.aiNutritionContext.quickTagLowCarb'),
+    t('food.aiNutritionContext.quickTagLargeServing'),
+    t('food.aiNutritionContext.quickTagEatingOut'),
+    t('food.aiNutritionContext.quickTagVegan'),
+  ];
 
   const handleToggleTag = (tag: string) => {
     setSelectedTags((prev) =>

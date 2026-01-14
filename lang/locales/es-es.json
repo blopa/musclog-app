@@ -5,7 +5,9 @@
     "remaining": "restantes",
     "goal": "Objetivo",
     "kcal": "kcal",
-    "min": "min"
+    "min": "min",
+    "cancel": "Cancelar",
+    "tryAgain": "Intentar de nuevo"
   },
   "home": {
     "greeting": {

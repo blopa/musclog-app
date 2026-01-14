@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { LucideIcon, RefreshCw } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
 
 type ErrorStateCardProps = {
@@ -15,9 +16,11 @@ export function ErrorStateCard({
   icon: Icon,
   title,
   description,
-  buttonLabel = 'Try Again',
+  buttonLabel,
   onButtonPress,
 }: ErrorStateCardProps) {
+  const { t } = useTranslation();
+  const defaultButtonLabel = buttonLabel || t('common.tryAgain');
   return (
     <View className="border-status-error/20 bg-status-error/5 flex-col items-center gap-4 rounded-lg border-2 border-dashed p-6">
       {/* Icon */}
@@ -39,7 +42,7 @@ export function ErrorStateCard({
           className="mt-2 flex-row items-center gap-2 rounded-lg border border-accent-primary px-6 py-2 active:scale-95"
           onPress={onButtonPress}>
           <RefreshCw size={16} color={theme.colors.accent.primary} />
-          <Text className="text-sm font-bold text-accent-primary">{buttonLabel}</Text>
+          <Text className="text-sm font-bold text-accent-primary">{defaultButtonLabel}</Text>
         </Pressable>
       )}
     </View>
