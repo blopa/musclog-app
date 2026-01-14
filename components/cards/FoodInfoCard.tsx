@@ -29,17 +29,7 @@ export function FoodInfoCard({ food }: FoodInfoCardProps) {
   const fatPercent = totalMacros > 0 ? (food.fat / totalMacros) * 100 : 0;
 
   return (
-    <GenericCard variant="highlighted">
-      {/* Background Blobs */}
-      <View
-        className="absolute -right-10 -top-10 h-40 w-40 rounded-full blur-3xl"
-        style={{ backgroundColor: theme.colors.accent.primary10 }}
-      />
-      <View
-        className="absolute -bottom-10 -left-10 h-40 w-40 rounded-full blur-3xl"
-        style={{ backgroundColor: theme.colors.accent.secondary10 }}
-      />
-
+    <GenericCard variant="highlighted" backgroundVariant="gradient">
       <View className="relative z-10 p-5">
         {/* Header */}
         <View className="mb-6 flex-row items-start justify-between">

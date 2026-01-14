@@ -38,7 +38,9 @@ export function WorkoutCard({
           <View className="flex-1">
             <View className="mb-3 inline-flex flex-row items-center gap-1.5 self-start rounded-full bg-accent-primary/20 px-3 py-1">
               <Clock size={theme.iconSize.xs} color={theme.colors.accent.primary} />
-              <Text className="text-xs font-bold uppercase text-accent-primary">{lastCompleted}</Text>
+              <Text className="text-xs font-bold uppercase text-accent-primary">
+                {lastCompleted}
+              </Text>
             </View>
             <Text className="mb-2 text-2xl font-bold text-text-primary">{name}</Text>
             <Text className="text-sm text-text-secondary">

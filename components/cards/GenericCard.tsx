@@ -7,7 +7,7 @@ type GenericCardProps = {
   isPopular?: boolean;
   onPress?: () => void;
   variant?: 'default' | 'workout' | 'highlighted' | 'card';
-  backgroundVariant?: 'default' | 'dark-green';
+  backgroundVariant?: 'default' | 'dark-green' | 'gradient';
   isPressable?: boolean;
   size?: 'sm' | 'default' | 'lg';
 };
@@ -35,6 +35,7 @@ export function GenericCard({
   const isDarkGreenBackground = effectiveBackgroundVariant === 'dark-green';
   const shouldShowPopularGradient = isPopular && !isWorkoutVariant && !isDefaultVariant;
   const shouldRenderAsPressable = isPressable && !isWorkoutVariant;
+  const hasGradientBackground = effectiveBackgroundVariant === 'gradient';
 
   // ============================================================================
   // Style Helpers
@@ -55,7 +56,7 @@ export function GenericCard({
     if (isWorkoutVariant) {
       return {
         ...baseStyle,
-        borderRadius: 20,
+        borderRadius: theme.borderRadius.xl,
         padding: 24,
       };
     }
@@ -63,10 +64,10 @@ export function GenericCard({
     // Size-based border radius for non-workout variants
     const borderRadius =
       size === 'sm'
-        ? theme.borderRadius.lg // 16px, matching rounded-2xl
+        ? theme.borderRadius.lg
         : size === 'lg'
-          ? theme.borderRadius['2xl'] // 24px
-          : theme.borderRadius.xl; // 20px, default
+          ? theme.borderRadius['2xl']
+          : theme.borderRadius.xl;
 
     return {
       ...baseStyle,
@@ -186,6 +187,18 @@ export function GenericCard({
 
   return (
     <View className={workoutClassName} style={getCardStyle()}>
+      {hasGradientBackground ? (
+        <>
+          <View
+            className="absolute -right-10 -top-10 h-40 w-40 rounded-full blur-3xl"
+            style={{ backgroundColor: theme.colors.accent.primary10 }}
+          />
+          <View
+            className="absolute -bottom-10 -left-10 h-40 w-40 rounded-full blur-3xl"
+            style={{ backgroundColor: theme.colors.accent.secondary10 }}
+          />
+        </>
+      ) : undefined}
       {cardContent}
     </View>
   );
