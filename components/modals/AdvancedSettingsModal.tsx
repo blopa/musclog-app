@@ -111,7 +111,7 @@ export function AdvancedSettingsModal({
           <Text
             className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
             style={{ color: theme.colors.status.error }}>
-            DANGER ZONE
+            {t('settings.advancedSettings.dangerZone')}
           </Text>
           <SettingsCard
             icon={<Trash2 size={24} color={theme.colors.status.error} />}
@@ -121,8 +121,8 @@ export function AdvancedSettingsModal({
               borderRadius: 8,
               backgroundColor: theme.colors.status.error20,
             }}
-            title="Request Account Deletion"
-            subtitle="Permanently remove all data"
+            title={t('settings.advancedSettings.requestAccountDeletion')}
+            subtitle={t('settings.advancedSettings.requestAccountDeletionSubtitle')}
             titleColor={theme.colors.status.error}
             onPress={onAccountDeletionPress || (() => {})}
             rightIcon={<ChevronRight size={20} color={theme.colors.status.error} />}

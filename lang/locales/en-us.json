@@ -64,6 +64,7 @@
       "lunch": "Lunch",
       "dinner": "Dinner",
       "snacks": "Snacks",
+      "other": "Other",
       "addFood": "Add Food",
       "addFoodTo": "Add food to {{meal}}",
       "trackOther": "Track Other"

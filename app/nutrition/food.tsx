@@ -91,7 +91,7 @@ export default function FoodScreen() {
   const { t } = useTranslation();
   const [isAddFoodModalVisible, setIsAddFoodModalVisible] = useState(false);
   const [isFoodSearchModalVisible, setIsFoodSearchModalVisible] = useState(false);
-  const [selectedMealType, setSelectedMealType] = useState('Breakfast');
+  const [selectedMealType, setSelectedMealType] = useState(t('food.meals.breakfast'));
   const currentLanguage = (i18n.language || 'en-US') as LanguageKeys;
   const locale = LOCALE_MAP[currentLanguage] || LOCALE_MAP['en-US'];
   const today = new Date();
@@ -304,13 +304,13 @@ export default function FoodScreen() {
         onMealTypeSelect={(mealType) => {
           // Map meal type to display name
           const mealTypeMap: Record<string, string> = {
-            breakfast: 'Breakfast',
-            lunch: 'Lunch',
-            dinner: 'Dinner',
-            snack: 'Snacks',
-            other: 'Other',
+            breakfast: t('food.meals.breakfast'),
+            lunch: t('food.meals.lunch'),
+            dinner: t('food.meals.dinner'),
+            snack: t('food.meals.snacks'),
+            other: t('food.meals.other'),
           };
-          setSelectedMealType(mealTypeMap[mealType] || 'Breakfast');
+          setSelectedMealType(mealTypeMap[mealType] || t('food.meals.breakfast'));
           setIsAddFoodModalVisible(false);
           setIsFoodSearchModalVisible(true);
         }}

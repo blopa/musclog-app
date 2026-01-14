@@ -59,6 +59,7 @@
       "lunch": "Lunch",
       "dinner": "Diner",
       "snacks": "Tussendoortjes",
+      "other": "Anders",
       "addFood": "Voedsel Toevoegen",
       "addFoodTo": "Voedsel toevoegen aan {{meal}}",
       "trackOther": "Anders Bijhouden"

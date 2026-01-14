@@ -59,6 +59,7 @@
       "lunch": "Almoço",
       "dinner": "Jantar",
       "snacks": "Lanches",
+      "other": "Outro",
       "addFood": "Adicionar Comida",
       "addFoodTo": "Adicionar comida a {{meal}}",
       "trackOther": "Rastrear Outro"
