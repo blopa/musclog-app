@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { View, Text, Pressable, TextInput } from 'react-native';
 import { Minus, Plus } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
 
 interface StepperInputProps {
@@ -20,6 +21,7 @@ export const StepperInput: React.FC<StepperInputProps> = ({
   onChangeValue,
   unit,
 }) => {
+  const { t } = useTranslation();
   const [internalValue, setInternalValue] = useState<number>(value);
   const [editing, setEditing] = useState(false);
   const [inputValue, setInputValue] = useState(value.toFixed(1));
@@ -88,7 +90,7 @@ export const StepperInput: React.FC<StepperInputProps> = ({
             handleChange(newVal);
             onDecrement();
           }}
-          accessibilityLabel="Decrease value">
+          accessibilityLabel={t('common.decreaseValue')}>
           <Minus size={20} color={theme.colors.accent.primary} />
         </Pressable>
         {editing ? (
@@ -132,7 +134,7 @@ export const StepperInput: React.FC<StepperInputProps> = ({
             handleChange(newVal);
             onIncrement();
           }}
-          accessibilityLabel="Increase value">
+          accessibilityLabel={t('common.increaseValue')}>
           <Plus size={20} color={theme.colors.accent.primary} />
         </Pressable>
       </View>
