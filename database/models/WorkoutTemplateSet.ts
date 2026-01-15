@@ -1,8 +1,15 @@
 import { Model } from '@nozbe/watermelondb';
-import { field } from '@nozbe/watermelondb/decorators';
+import { field, relation } from '@nozbe/watermelondb/decorators';
+import WorkoutTemplate from './WorkoutTemplate';
+import Exercise from './Exercise';
 
 export default class WorkoutTemplateSet extends Model {
   static table = 'workout_template_sets';
+
+  static associations = {
+    workout_templates: { type: 'belongs_to', key: 'template_id' },
+    exercises: { type: 'belongs_to', key: 'exercise_id' },
+  };
 
   @field('template_id') templateId!: string;
   @field('exercise_id') exerciseId!: string;
@@ -12,4 +19,7 @@ export default class WorkoutTemplateSet extends Model {
   @field('created_at') createdAt!: number;
   @field('updated_at') updatedAt!: number;
   @field('deleted_at') deletedAt?: number;
+
+  @relation('workout_templates', 'template_id') template!: WorkoutTemplate;
+  @relation('exercises', 'exercise_id') exercise!: Exercise;
 }
