@@ -2,6 +2,7 @@ import { Model, Q, Query } from '@nozbe/watermelondb';
 import { field, children, writer } from '@nozbe/watermelondb/decorators';
 import WorkoutTemplateSet from './WorkoutTemplateSet';
 import WorkoutLogSet from './WorkoutLogSet';
+import WorkoutLog from './WorkoutLog';
 
 export default class Exercise extends Model {
   static table = 'exercises';
@@ -34,13 +35,15 @@ export default class Exercise extends Model {
 
     if (activeLogSets.length > 0) {
       // Check if any of these sets belong to completed workouts (immutable historical data)
-      const workoutLogIds = [...new Set(activeLogSets.map((set: WorkoutLogSet) => set.workoutLogId))];
+      const workoutLogIds = [
+        ...new Set(activeLogSets.map((set: WorkoutLogSet) => set.workoutLogId)),
+      ];
       const workoutLogs = await this.collections
-        .get('workout_logs')
+        .get<WorkoutLog>('workout_logs')
         .query(Q.where('id', Q.oneOf(workoutLogIds as string[])))
         .fetch();
 
-      const hasCompletedWorkouts = workoutLogs.some((log) => (log).completedAt !== null);
+      const hasCompletedWorkouts = workoutLogs.some((log: WorkoutLog) => log.completedAt !== null);
 
       if (hasCompletedWorkouts) {
         throw new Error(
