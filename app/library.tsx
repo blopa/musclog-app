@@ -4,7 +4,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { useRouter } from 'expo-router';
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+  Layout,
+} from 'react-native-reanimated';
 import {
   Search,
   SlidersHorizontal,
@@ -69,13 +74,23 @@ function Accordion({
   children: React.ReactNode;
 }) {
   const rotation = useSharedValue(isOpen ? 180 : 0);
+  const opacity = useSharedValue(isOpen ? 1 : 0);
+  const maxHeight = useSharedValue(isOpen ? 2000 : 0); // Large enough max height
 
   useEffect(() => {
     rotation.value = withTiming(isOpen ? 180 : 0, { duration: 200 });
-  }, [isOpen, rotation]);
+    opacity.value = withTiming(isOpen ? 1 : 0, { duration: 250 });
+    maxHeight.value = withTiming(isOpen ? 2000 : 0, { duration: 300 });
+  }, [isOpen, rotation, opacity, maxHeight]);
 
-  const animatedStyle = useAnimatedStyle(() => ({
+  const animatedChevronStyle = useAnimatedStyle(() => ({
     transform: [{ rotate: `${rotation.value}deg` }],
+  }));
+
+  const animatedContentStyle = useAnimatedStyle(() => ({
+    maxHeight: maxHeight.value,
+    opacity: opacity.value,
+    overflow: 'hidden',
   }));
 
   const handlePress = () => {
@@ -94,11 +109,13 @@ function Accordion({
             </Text>
           </Text>
         </View>
-        <Animated.View style={animatedStyle}>
+        <Animated.View style={animatedChevronStyle}>
           <ChevronDown size={theme.iconSize.md} color={theme.colors.text.tertiary} />
         </Animated.View>
       </Pressable>
-      {isOpen && <View className="border-t border-border-dark">{children}</View>}
+      <Animated.View style={animatedContentStyle} pointerEvents={isOpen ? 'auto' : 'none'}>
+        <View className="border-t border-border-dark">{children}</View>
+      </Animated.View>
     </View>
   );
 }
