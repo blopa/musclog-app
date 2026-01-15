@@ -4,7 +4,7 @@ import {
   Text,
   ScrollView,
   Pressable,
-  ImageBackground,
+  Image,
   Modal,
   TouchableWithoutFeedback,
 } from 'react-native';
@@ -127,83 +127,93 @@ export default function ViewExerciseScreen() {
     <View className="flex-1" style={{ backgroundColor: '#1a2e2a' }}>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Hero Section with Background Image */}
-        <View className="relative" style={{ height: 384 }}>
-          <ImageBackground
+        <View style={{ height: 384, overflow: 'hidden', position: 'relative' }}>
+          {/* Background Image */}
+          <Image
             source={backgroundImage}
-            className="h-full w-full"
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              width: '100%',
+              height: '100%',
+              opacity: 0.6,
+            }}
             resizeMode="cover"
-            style={{ opacity: 0.6 }}>
-            {/* Top Navigation */}
-            <View
-              className="absolute top-0 left-0 right-0 flex-row items-center justify-between"
-              style={{ paddingTop: insets.top + 16, paddingHorizontal: 16 }}>
-              <Pressable
-                onPress={handleBack}
-                className="h-10 w-10 items-center justify-center rounded-full"
-                style={{ backgroundColor: 'rgba(0, 0, 0, 0.4)' }}>
-                <ChevronLeft size={24} color="white" />
-              </Pressable>
-              <Pressable
-                onPress={() => setIsMenuVisible(true)}
-                className="h-10 w-10 items-center justify-center rounded-full"
-                style={{ backgroundColor: 'rgba(0, 0, 0, 0.4)' }}>
-                <MoreVertical size={20} color="white" />
-              </Pressable>
-            </View>
+          />
+          
+          {/* Top Navigation */}
+          <View
+            className="absolute top-0 left-0 right-0 flex-row items-center justify-between"
+            style={{ paddingTop: insets.top + 16, paddingHorizontal: 16, zIndex: 10 }}>
+            <Pressable
+              onPress={handleBack}
+              className="h-10 w-10 items-center justify-center rounded-full"
+              style={{ backgroundColor: 'rgba(0, 0, 0, 0.4)' }}>
+              <ChevronLeft size={24} color="white" />
+            </Pressable>
+            <Pressable
+              onPress={() => setIsMenuVisible(true)}
+              className="h-10 w-10 items-center justify-center rounded-full"
+              style={{ backgroundColor: 'rgba(0, 0, 0, 0.4)' }}>
+              <MoreVertical size={20} color="white" />
+            </Pressable>
+          </View>
 
-            {/* Content Overlay */}
-            <LinearGradient
-              colors={['transparent', 'rgba(26, 46, 42, 0.9)', '#1a2e2a']}
-              locations={[0, 0.7, 1]}
-              className="absolute bottom-0 left-0 right-0"
-              style={{ padding: 24 }}>
-              <Pressable
-                onPress={handleWatchTechnique}
-                className="mb-4 flex-row items-center justify-center rounded-full px-4 py-3"
-                style={{ backgroundColor: '#1a3a2a' }}>
-                <Video size={16} color="#34d399" fill="#34d399" />
-                <Text className="ml-2 text-sm font-medium text-white">WATCH TECHNIQUE</Text>
-              </Pressable>
+          {/* Content Overlay */}
+          <LinearGradient
+            colors={['transparent', 'rgba(26, 46, 42, 0.9)', '#1a2e2a']}
+            locations={[0, 0.7, 1]}
+            className="absolute bottom-0 left-0 right-0"
+            style={{ padding: 24, zIndex: 5 }}>
+            <Pressable
+              onPress={handleWatchTechnique}
+              className="mb-4 flex-row items-center justify-center rounded-full px-4 py-3"
+              style={{ backgroundColor: '#1a3a2a' }}>
+              <Video size={16} color="#34d399" fill="#34d399" />
+              <Text className="ml-2 text-sm font-medium text-white">WATCH TECHNIQUE</Text>
+            </Pressable>
 
-              <Text className="mb-6 text-4xl font-bold text-white">{EXERCISE_DATA.name}</Text>
+            <Text className="mb-6 text-4xl font-bold text-white">{EXERCISE_DATA.name}</Text>
 
-              {/* Tags */}
-              <View className="mb-6 flex-row flex-wrap gap-3">
-                <LinearGradient
-                  colors={['#2563eb', '#10b981']}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 0 }}
-                  className="flex-row items-center gap-2 rounded-full px-4 py-2">
-                  <Text className="text-xs font-medium uppercase tracking-wide text-white opacity-80">
-                    Primary Muscle
-                  </Text>
-                  <Text className="font-bold text-white">{EXERCISE_DATA.primaryMuscle}</Text>
-                </LinearGradient>
-                <View
-                  className="flex-row items-center gap-2 rounded-full border px-4 py-2"
-                  style={{
-                    backgroundColor: '#1a3a2a',
-                    borderColor: '#374151',
-                  }}>
-                  <Text className="text-xs font-medium uppercase tracking-wide text-white opacity-80">
-                    Equipment
-                  </Text>
-                  <Text className="font-bold text-white">{EXERCISE_DATA.equipment}</Text>
-                </View>
-                <View
-                  className="flex-row items-center gap-2 rounded-full border px-4 py-2"
-                  style={{
-                    backgroundColor: '#1a3a2a',
-                    borderColor: '#374151',
-                  }}>
-                  <Text className="text-xs font-medium uppercase tracking-wide text-white opacity-80">
-                    Mechanic
-                  </Text>
-                  <Text className="font-bold text-white">{EXERCISE_DATA.mechanic}</Text>
-                </View>
+            {/* Tags */}
+            <View className="mb-6 flex-row flex-wrap gap-3">
+              <LinearGradient
+                colors={['#2563eb', '#10b981']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                className="flex-row items-center gap-2 rounded-full px-4 py-2">
+                <Text className="text-xs font-medium uppercase tracking-wide text-white opacity-80">
+                  Primary Muscle
+                </Text>
+                <Text className="font-bold text-white">{EXERCISE_DATA.primaryMuscle}</Text>
+              </LinearGradient>
+              <View
+                className="flex-row items-center gap-2 rounded-full border px-4 py-2"
+                style={{
+                  backgroundColor: '#1a3a2a',
+                  borderColor: '#374151',
+                }}>
+                <Text className="text-xs font-medium uppercase tracking-wide text-white opacity-80">
+                  Equipment
+                </Text>
+                <Text className="font-bold text-white">{EXERCISE_DATA.equipment}</Text>
               </View>
-            </LinearGradient>
-          </ImageBackground>
+              <View
+                className="flex-row items-center gap-2 rounded-full border px-4 py-2"
+                style={{
+                  backgroundColor: '#1a3a2a',
+                  borderColor: '#374151',
+                }}>
+                <Text className="text-xs font-medium uppercase tracking-wide text-white opacity-80">
+                  Mechanic
+                </Text>
+                <Text className="font-bold text-white">{EXERCISE_DATA.mechanic}</Text>
+              </View>
+            </View>
+          </LinearGradient>
         </View>
 
         {/* Stats Cards */}
