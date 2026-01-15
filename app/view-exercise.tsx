@@ -274,13 +274,8 @@ export default function ViewExerciseScreen() {
                 icon={
                   <LinearGradient
                     colors={workout.iconGradient}
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      borderRadius: theme.borderRadius['2xl'],
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}>
+                    className="h-full w-full items-center justify-center"
+                    style={{ borderRadius: theme.borderRadius['2xl'] }}>
                     <workout.icon
                       size={32}
                       color="white"
