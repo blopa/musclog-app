@@ -32,21 +32,21 @@ const EXERCISE_DATA = {
       id: '1',
       name: 'Push Day Hypertrophy',
       subtitle: 'Last performed 2 days ago',
-      iconGradient: ['#4f46e5', '#5b21b6'], // indigo gradient
+      iconGradient: ['#4f46e5', '#5b21b6'] as const, // indigo gradient
       icon: Zap,
     },
     {
       id: '2',
       name: 'Upper Body Blast',
       subtitle: 'Created on Oct 12, 2023',
-      iconGradient: ['#10b981', '#0d9488'], // emerald-teal gradient
+      iconGradient: ['#10b981', '#0d9488'] as const, // emerald-teal gradient
       icon: Zap,
     },
     {
       id: '3',
       name: 'Full Body Foundation',
       subtitle: 'Used in 12 sessions',
-      iconGradient: ['#ec4899', '#e11d48'], // pink-rose gradient
+      iconGradient: ['#ec4899', '#e11d48'] as const, // pink-rose gradient
       icon: Heart,
     },
   ],
