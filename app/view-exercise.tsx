@@ -20,6 +20,7 @@ import { theme } from '../theme';
 import { BottomPopUpMenu, BottomPopUpMenuItem } from '../components/BottomPopUpMenu';
 import { SettingsCard } from '../components/cards/SettingsCard';
 import { GenericCard } from '../components/cards/GenericCard';
+import { Button } from '../components/theme/Button';
 
 // Mock data - replace with actual data from props or route params
 const EXERCISE_DATA = {
@@ -171,13 +172,16 @@ export default function ViewExerciseScreen() {
             locations={[0, 0.7, 1]}
             className="absolute bottom-0 left-0 right-0"
             style={{ padding: 24, zIndex: 5 }}>
-            <Pressable
+            <Button
+              label="WATCH TECHNIQUE"
               onPress={handleWatchTechnique}
-              className="mb-4 flex-row items-center justify-center rounded-full px-4 py-3"
-              style={{ backgroundColor: '#1a3a2a' }}>
-              <Video size={16} color="#34d399" fill="#34d399" />
-              <Text className="ml-2 text-sm font-medium text-white">WATCH TECHNIQUE</Text>
-            </Pressable>
+              icon={Video}
+              iconColor="#34d399"
+              variant="secondary"
+              size="sm"
+              width="auto"
+              style={{ alignSelf: 'flex-start' }}
+            />
 
             <Text className="mb-6 text-4xl font-bold text-white">{EXERCISE_DATA.name}</Text>
 
@@ -297,27 +301,6 @@ export default function ViewExerciseScreen() {
         {/* Bottom spacing for button */}
         <View style={{ height: 100 }} />
       </ScrollView>
-
-      {/* Bottom Action Button */}
-      <View
-        className="px-6"
-        style={{
-          paddingBottom: Math.max(insets.bottom, 32),
-          paddingTop: 16,
-        }}>
-        <Pressable
-          onPress={handleLogExercise}
-          className="h-16 w-full flex-row items-center justify-center rounded-3xl">
-          <LinearGradient
-            colors={['#4f46e5', '#3b82f6', '#10b981']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            className="h-full w-full flex-row items-center justify-center rounded-3xl">
-            <Plus size={24} color="white" />
-            <Text className="ml-2 text-lg font-bold text-white">Log This Exercise</Text>
-          </LinearGradient>
-        </Pressable>
-      </View>
 
       {/* More Options Menu */}
       <BottomPopUpMenu
