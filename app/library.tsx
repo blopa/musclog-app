@@ -235,7 +235,7 @@ export default function LibraryScreen() {
     <MasterLayout>
       <SafeAreaView className="flex-1 bg-bg-primary" edges={['top']}>
         <ScrollView className="flex-1 px-4 pb-32" showsVerticalScrollIndicator={false}>
-          <View className="px-4 py-3">
+          <View className="py-3">
             <View className="flex-row items-stretch overflow-hidden rounded-lg bg-bg-card">
               <View className="items-center justify-center border-none bg-bg-card pl-4">
                 <Search size={theme.iconSize.md} color="#95c6b0" />
