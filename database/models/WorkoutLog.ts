@@ -1,4 +1,4 @@
-import { Model, Q } from '@nozbe/watermelondb';
+import { Model, Q, Query } from '@nozbe/watermelondb';
 import { field, children, relation, writer } from '@nozbe/watermelondb/decorators';
 import WorkoutLogSet from './WorkoutLogSet';
 import WorkoutTemplate from './WorkoutTemplate';
@@ -8,8 +8,8 @@ export default class WorkoutLog extends Model {
   static table = 'workout_logs';
 
   static associations = {
-    workout_log_sets: { type: 'has_many', foreignKey: 'workout_log_id' },
-    workout_templates: { type: 'belongs_to', key: 'template_id' },
+    workout_log_sets: { type: 'has_many' as const, foreignKey: 'workout_log_id' },
+    workout_templates: { type: 'belongs_to' as const, key: 'template_id' },
   };
 
   @field('template_id') templateId?: string;
@@ -21,10 +21,10 @@ export default class WorkoutLog extends Model {
   @field('updated_at') updatedAt!: number;
   @field('deleted_at') deletedAt?: number;
 
-  @children('workout_log_sets') logSets!: Q.Query<WorkoutLogSet>;
+  @children('workout_log_sets') logSets!: Query<WorkoutLogSet>;
   @relation('workout_templates', 'template_id') template?: WorkoutTemplate;
 
-  static getActive(): Q.Query<WorkoutLog> {
+  static getActive(): Query<WorkoutLog> {
     return database
       .get<WorkoutLog>('workout_logs')
       .query(
@@ -34,7 +34,7 @@ export default class WorkoutLog extends Model {
       );
   }
 
-  static getCompleted(timeframe?: { startDate: number; endDate: number }): Q.Query<WorkoutLog> {
+  static getCompleted(timeframe?: { startDate: number; endDate: number }): Query<WorkoutLog> {
     let query = database
       .get<WorkoutLog>('workout_logs')
       .query(
@@ -55,7 +55,7 @@ export default class WorkoutLog extends Model {
 
   async calculateVolume(): Promise<number> {
     const sets = await this.logSets.fetch();
-    return sets.reduce((total, set) => {
+    return sets.reduce((total: number, set: WorkoutLogSet) => {
       return total + set.reps * set.weight;
     }, 0);
   }
@@ -76,13 +76,13 @@ export default class WorkoutLog extends Model {
     }
 
     const sets = await this.logSets.fetch();
-    const set = sets.find((s) => s.id === setId);
+    const set = sets.find((s: WorkoutLogSet) => s.id === setId);
 
     if (!set) {
       throw new Error(`Set with id ${setId} not found`);
     }
 
-    await set.update((updatedSet) => {
+    await set.update((updatedSet: WorkoutLogSet) => {
       if (data.reps !== undefined) updatedSet.reps = data.reps;
       if (data.weight !== undefined) updatedSet.weight = data.weight;
       if (data.restTime !== undefined) updatedSet.restTime = data.restTime;
@@ -114,7 +114,7 @@ export default class WorkoutLog extends Model {
     }
 
     const sets = await this.logSets.fetch();
-    const maxOrder = sets.length > 0 ? Math.max(...sets.map((s) => s.setOrder)) : 0;
+    const maxOrder = sets.length > 0 ? Math.max(...sets.map((s: WorkoutLogSet) => s.setOrder)) : 0;
     const newOrder = setOrder ?? maxOrder + 1;
 
     const logSetsCollection = this.collections.get<WorkoutLogSet>('workout_log_sets');
@@ -147,7 +147,7 @@ export default class WorkoutLog extends Model {
     }
 
     const sets = await this.logSets.fetch();
-    const set = sets.find((s) => s.id === setId);
+    const set = sets.find((s: WorkoutLogSet) => s.id === setId);
 
     if (!set) {
       throw new Error(`Set with id ${setId} not found`);

@@ -59,7 +59,6 @@ export default function DatabaseTestScreen() {
         await database.get<Exercise>('exercises').create((exercise) => {
           exercise.name = name;
           exercise.muscleGroup = muscleGroup;
-          exercise.isCustom = true;
         });
       });
       setName('');

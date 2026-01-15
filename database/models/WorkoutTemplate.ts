@@ -1,4 +1,4 @@
-import { Model, Q } from '@nozbe/watermelondb';
+import { Model, Q, Query } from '@nozbe/watermelondb';
 import { field, children, relation, writer } from '@nozbe/watermelondb/decorators';
 import WorkoutTemplateSet from './WorkoutTemplateSet';
 import Schedule from './Schedule';
@@ -10,9 +10,9 @@ export default class WorkoutTemplate extends Model {
   static table = 'workout_templates';
 
   static associations = {
-    workout_template_sets: { type: 'has_many', foreignKey: 'template_id' },
-    schedules: { type: 'has_many', foreignKey: 'template_id' },
-    workout_logs: { type: 'has_many', foreignKey: 'template_id' },
+    workout_template_sets: { type: 'has_many' as const, foreignKey: 'template_id' },
+    schedules: { type: 'has_many' as const, foreignKey: 'template_id' },
+    workout_logs: { type: 'has_many' as const, foreignKey: 'template_id' },
   };
 
   @field('name') name!: string;
@@ -21,11 +21,11 @@ export default class WorkoutTemplate extends Model {
   @field('updated_at') updatedAt!: number;
   @field('deleted_at') deletedAt?: number;
 
-  @children('workout_template_sets') templateSets!: Q.Query<WorkoutTemplateSet>;
-  @children('schedules') schedules!: Q.Query<Schedule>;
-  @children('workout_logs') workoutLogs!: Q.Query<WorkoutLog>;
+  @children('workout_template_sets') templateSets!: Query<WorkoutTemplateSet>;
+  @children('schedules') schedules!: Query<Schedule>;
+  @children('workout_logs') workoutLogs!: Query<WorkoutLog>;
 
-  static getActive(): Q.Query<WorkoutTemplate> {
+  static getActive(): Query<WorkoutTemplate> {
     return database
       .get<WorkoutTemplate>('workout_templates')
       .query(Q.where('deleted_at', Q.eq(null)), Q.sortBy('created_at', Q.desc));
@@ -48,7 +48,7 @@ export default class WorkoutTemplate extends Model {
 
     // Prepare all log sets from template sets
     const logSetsCollection = this.collections.get<WorkoutLogSet>('workout_log_sets');
-    const preparedSets = templateSets.map((templateSet) =>
+    const preparedSets = templateSets.map((templateSet: WorkoutTemplateSet) =>
       logSetsCollection.prepareCreate((logSet) => {
         logSet.workoutLogId = workoutLog.id;
         logSet.exerciseId = templateSet.exerciseId;

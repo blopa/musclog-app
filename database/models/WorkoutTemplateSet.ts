@@ -7,8 +7,8 @@ export default class WorkoutTemplateSet extends Model {
   static table = 'workout_template_sets';
 
   static associations = {
-    workout_templates: { type: 'belongs_to', key: 'template_id' },
-    exercises: { type: 'belongs_to', key: 'exercise_id' },
+    workout_templates: { type: 'belongs_to' as const, key: 'template_id' },
+    exercises: { type: 'belongs_to' as const, key: 'exercise_id' },
   };
 
   @field('template_id') templateId!: string;

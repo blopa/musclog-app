@@ -7,8 +7,8 @@ export default class WorkoutLogSet extends Model {
   static table = 'workout_log_sets';
 
   static associations = {
-    workout_logs: { type: 'belongs_to', key: 'workout_log_id' },
-    exercises: { type: 'belongs_to', key: 'exercise_id' },
+    workout_logs: { type: 'belongs_to' as const, key: 'workout_log_id' },
+    exercises: { type: 'belongs_to' as const, key: 'exercise_id' },
   };
 
   @field('workout_log_id') workoutLogId!: string;

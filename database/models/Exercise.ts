@@ -1,4 +1,4 @@
-import { Model, Q } from '@nozbe/watermelondb';
+import { Model, Q, Query } from '@nozbe/watermelondb';
 import { field, children, writer } from '@nozbe/watermelondb/decorators';
 import WorkoutTemplateSet from './WorkoutTemplateSet';
 import WorkoutLogSet from './WorkoutLogSet';
@@ -7,8 +7,8 @@ export default class Exercise extends Model {
   static table = 'exercises';
 
   static associations = {
-    workout_template_sets: { type: 'has_many', foreignKey: 'exercise_id' },
-    workout_log_sets: { type: 'has_many', foreignKey: 'exercise_id' },
+    workout_template_sets: { type: 'has_many' as const, foreignKey: 'exercise_id' },
+    workout_log_sets: { type: 'has_many' as const, foreignKey: 'exercise_id' },
   };
 
   @field('name') name!: string;
@@ -21,8 +21,8 @@ export default class Exercise extends Model {
   @field('updated_at') updatedAt!: number;
   @field('deleted_at') deletedAt?: number;
 
-  @children('workout_template_sets') templateSets!: Q.Query<WorkoutTemplateSet>;
-  @children('workout_log_sets') logSets!: Q.Query<WorkoutLogSet>;
+  @children('workout_template_sets') templateSets!: Query<WorkoutTemplateSet>;
+  @children('workout_log_sets') logSets!: Query<WorkoutLogSet>;
 
   @writer
   async markAsDeleted(): Promise<void> {
@@ -30,17 +30,17 @@ export default class Exercise extends Model {
     const logSets = await this.logSets.fetch();
 
     // Filter out soft-deleted sets
-    const activeLogSets = logSets.filter((set) => !set.deletedAt);
+    const activeLogSets = logSets.filter((set: WorkoutLogSet) => !set.deletedAt);
 
     if (activeLogSets.length > 0) {
       // Check if any of these sets belong to completed workouts (immutable historical data)
-      const workoutLogIds = [...new Set(activeLogSets.map((set) => set.workoutLogId))];
+      const workoutLogIds = [...new Set(activeLogSets.map((set: WorkoutLogSet) => set.workoutLogId))];
       const workoutLogs = await this.collections
         .get('workout_logs')
-        .query(Q.where('id', Q.oneOf(workoutLogIds)))
+        .query(Q.where('id', Q.oneOf(workoutLogIds as string[])))
         .fetch();
 
-      const hasCompletedWorkouts = workoutLogs.some((log: any) => log.completedAt !== null);
+      const hasCompletedWorkouts = workoutLogs.some((log) => (log).completedAt !== null);
 
       if (hasCompletedWorkouts) {
         throw new Error(
