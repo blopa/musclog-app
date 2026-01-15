@@ -19,6 +19,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '../theme';
 import { BottomPopUpMenu, BottomPopUpMenuItem } from '../components/BottomPopUpMenu';
 import { SettingsCard } from '../components/cards/SettingsCard';
+import { GenericCard } from '../components/cards/GenericCard';
 
 // Mock data - replace with actual data from props or route params
 const EXERCISE_DATA = {
@@ -220,38 +221,32 @@ export default function ViewExerciseScreen() {
 
         {/* Stats Cards */}
         <View className="px-6 py-6" style={{ flexDirection: 'row', gap: 16 }}>
-          <View
-            className="flex-1 rounded-3xl border p-6"
-            style={{
-              backgroundColor: 'rgba(26, 58, 42, 0.5)',
-              borderColor: 'rgba(55, 65, 81, 0.5)',
-            }}>
-            <Text className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">
-              Personal Best
-            </Text>
-            <View className="flex-row items-baseline gap-2">
-              <Text className="text-5xl font-bold" style={{ color: '#34d399' }}>
-                {EXERCISE_DATA.personalBest.value}
+          <GenericCard variant="default" size="sm">
+            <View className="p-6">
+              <Text className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">
+                Personal Best
               </Text>
-              <Text className="text-xl text-gray-400">{EXERCISE_DATA.personalBest.unit}</Text>
+              <View className="flex-row items-baseline gap-2">
+                <Text className="text-5xl font-bold" style={{ color: '#34d399' }}>
+                  {EXERCISE_DATA.personalBest.value}
+                </Text>
+                <Text className="text-xl text-gray-400">{EXERCISE_DATA.personalBest.unit}</Text>
+              </View>
             </View>
-          </View>
-          <View
-            className="flex-1 rounded-3xl border p-6"
-            style={{
-              backgroundColor: 'rgba(26, 58, 42, 0.5)',
-              borderColor: 'rgba(55, 65, 81, 0.5)',
-            }}>
-            <Text className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">
-              Avg. Frequency
-            </Text>
-            <View className="flex-row items-baseline gap-2">
-              <Text className="text-5xl font-bold" style={{ color: '#818cf8' }}>
-                {EXERCISE_DATA.avgFrequency.value}
+          </GenericCard>
+          <GenericCard variant="default" size="sm">
+            <View className="p-6">
+              <Text className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">
+                Avg. Frequency
               </Text>
-              <Text className="text-xl text-gray-400">{EXERCISE_DATA.avgFrequency.unit}</Text>
+              <View className="flex-row items-baseline gap-2">
+                <Text className="text-5xl font-bold" style={{ color: '#818cf8' }}>
+                  {EXERCISE_DATA.avgFrequency.value}
+                </Text>
+                <Text className="text-xl text-gray-400">{EXERCISE_DATA.avgFrequency.unit}</Text>
+              </View>
             </View>
-          </View>
+          </GenericCard>
         </View>
 
         {/* Workouts Section */}
