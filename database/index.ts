@@ -25,6 +25,7 @@ export const database = new Database({
   ],
 });
 
+// TODO: move this somewhere else, like in the boot, right after the database is created.
 if (__DEV__) {
   (async () => await loadExercisesFromJson())();
 }
