@@ -3,9 +3,9 @@ import { View, Text, ScrollView, Pressable, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import {
   ChevronLeft,
+  ChevronRight,
   MoreVertical,
   Video,
-  ChevronRight,
   Plus,
   Pencil,
   Copy,
@@ -18,6 +18,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '../theme';
 import { BottomPopUpMenu, BottomPopUpMenuItem } from '../components/BottomPopUpMenu';
+import { SettingsCard } from '../components/cards/SettingsCard';
 
 // Mock data - replace with actual data from props or route params
 const EXERCISE_DATA = {
@@ -268,29 +269,37 @@ export default function ViewExerciseScreen() {
 
           <View style={{ gap: 12 }}>
             {EXERCISE_DATA.workouts.map((workout) => (
-              <Pressable
+              <SettingsCard
                 key={workout.id}
+                icon={
+                  <LinearGradient
+                    colors={workout.iconGradient}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      borderRadius: theme.borderRadius['2xl'],
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}>
+                    <workout.icon
+                      size={32}
+                      color="white"
+                      fill={workout.id === '2' ? 'white' : 'none'}
+                    />
+                  </LinearGradient>
+                }
+                title={workout.name}
+                subtitle={workout.subtitle}
                 onPress={() => handleWorkoutPress(workout.id)}
-                className="flex-row items-center gap-4 rounded-3xl border p-4"
-                style={{
-                  backgroundColor: 'rgba(26, 58, 42, 0.5)',
-                  borderColor: 'rgba(55, 65, 81, 0.5)',
-                }}>
-                <LinearGradient
-                  colors={workout.iconGradient}
-                  className="h-16 w-16 items-center justify-center rounded-2xl">
-                  <workout.icon
-                    size={32}
-                    color="white"
-                    fill={workout.id === '2' ? 'white' : 'none'}
-                  />
-                </LinearGradient>
-                <View className="flex-1">
-                  <Text className="mb-1 text-lg font-bold text-white">{workout.name}</Text>
-                  <Text className="text-sm text-gray-400">{workout.subtitle}</Text>
-                </View>
-                <ChevronRight size={20} color="#6b7280" />
-              </Pressable>
+                rightIcon={<ChevronRight size={20} color={theme.colors.text.secondary} />}
+                iconContainerStyle={{
+                  width: 64,
+                  height: 64,
+                  borderRadius: theme.borderRadius['2xl'],
+                  padding: 0,
+                  overflow: 'hidden',
+                }}
+              />
             ))}
           </View>
         </View>
