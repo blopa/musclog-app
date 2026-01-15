@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, ScrollView, Pressable, Animated } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, ScrollView, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ChevronLeft, Camera, Link, ChevronDown, Dumbbell } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -7,6 +7,7 @@ import { theme } from '../theme';
 import { TextInput } from '../components/theme/TextInput';
 import { Button } from '../components/theme/Button';
 import { GenericCard } from '../components/cards/GenericCard';
+import { ToggleInput } from '../components/theme/ToggleInput';
 import { BottomPopUpMenu } from '../components/BottomPopUpMenu';
 
 const PRIMARY_MUSCLES = [
@@ -35,15 +36,6 @@ export default function CreateExerciseScreen() {
   const [secondaryMuscles, setSecondaryMuscles] = useState<string[]>(['abs', 'traps']);
   const [isBodyweightOnly, setIsBodyweightOnly] = useState(false);
   const [isPickerVisible, setIsPickerVisible] = useState(false);
-  const toggleAnim = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    Animated.timing(toggleAnim, {
-      toValue: isBodyweightOnly ? 1 : 0,
-      duration: 200,
-      useNativeDriver: false,
-    }).start();
-  }, [isBodyweightOnly]);
 
   const handleBack = () => {
     router.back();
@@ -193,42 +185,17 @@ export default function CreateExerciseScreen() {
           </View>
 
           {/* Settings Section */}
-          <GenericCard variant="default">
-            <View className="flex-row items-center justify-between p-4">
-              <View className="flex-1">
-                <Text className="text-base font-bold text-text-primary">Bodyweight Only</Text>
-                <Text className="mt-0.5 text-xs text-text-secondary">
-                  {"This exercise doesn't require equipment"}
-                </Text>
-              </View>
-              <Pressable onPress={() => setIsBodyweightOnly(!isBodyweightOnly)}>
-                <Animated.View
-                  className="h-6 w-11 rounded-full"
-                  style={{
-                    backgroundColor: toggleAnim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [theme.colors.background.overlay, theme.colors.accent.primary],
-                    }),
-                    justifyContent: 'center',
-                    paddingHorizontal: 2,
-                  }}>
-                  <Animated.View
-                    className="h-5 w-5 rounded-full bg-white"
-                    style={{
-                      transform: [
-                        {
-                          translateX: toggleAnim.interpolate({
-                            inputRange: [0, 1],
-                            outputRange: [0, 20],
-                          }),
-                        },
-                      ],
-                    }}
-                  />
-                </Animated.View>
-              </Pressable>
-            </View>
-          </GenericCard>
+          <ToggleInput
+            items={[
+              {
+                key: 'bodyweight',
+                label: 'Bodyweight Only',
+                subtitle: "This exercise doesn't require equipment",
+                value: isBodyweightOnly,
+                onValueChange: setIsBodyweightOnly,
+              },
+            ]}
+          />
 
           {/* Add Visuals Section */}
           <View style={{ gap: 12 }}>
