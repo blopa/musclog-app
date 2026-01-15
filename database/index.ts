@@ -26,7 +26,7 @@ export const database = new Database({
 });
 
 if (__DEV__) {
-  loadExercisesFromJson();
+  (async () => await loadExercisesFromJson())();
 }
 
 // Export models for convenience

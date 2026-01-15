@@ -1,32 +1,33 @@
 import { useState, useMemo, useEffect } from 'react';
 import { View, Text, ScrollView, Pressable, TextInput, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { useRouter } from 'expo-router';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-  Layout,
-} from 'react-native-reanimated';
+import { Q } from '@nozbe/watermelondb';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import {
   Search,
   SlidersHorizontal,
   Dumbbell,
   ChevronRight,
   ChevronDown,
-  Plus,
-  Home,
-  History,
-  User,
-  PlusSquare,
   Activity,
   Footprints,
-  ClipboardList,
 } from 'lucide-react-native';
 import { theme } from '../theme';
-import exercisesData from '../data/exercisesEnUS.json'; // TODO: get from database instead
+import { database } from '../database';
+import Exercise from '../database/models/Exercise';
+import { SkeletonLoader } from '../components/theme/SkeletonLoader';
+import { MasterLayout } from '../components/MasterLayout';
+
+// Type for exercise data used in the component
+type ExerciseData = {
+  id: string;
+  name: string;
+  type: string;
+  muscleGroup: string;
+  imageUrl?: string;
+};
 
 // Map muscle groups to display names and icons
 const MUSCLE_GROUP_CONFIG: Record<
@@ -42,6 +43,18 @@ const MUSCLE_GROUP_CONFIG: Record<
   abdomen: { name: 'Abdomen', icon: Activity },
   glutes: { name: 'Glutes', icon: Footprints },
   full_body: { name: 'Full Body', icon: Activity },
+};
+
+// Map equipment type from database to display type
+const mapEquipmentTypeToType = (equipmentType: string): string => {
+  switch (equipmentType) {
+    case 'Bodyweight':
+      return 'bodyweight';
+    case 'Machine':
+      return 'machine';
+    default:
+      return 'equipment';
+  }
 };
 
 // Map exercise types to tag display
@@ -178,14 +191,45 @@ function ExerciseListItem({
 export default function LibraryScreen() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
+  const [exercises, setExercises] = useState<ExerciseData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [openAccordions, setOpenAccordions] = useState<Record<string, boolean>>({
     chest: true, // Chest starts open
   });
 
+  // Load exercises from database
+  useEffect(() => {
+    const loadExercises = async () => {
+      try {
+        setIsLoading(true);
+        const exercisesCollection = database.get<Exercise>('exercises');
+        const fetchedExercises = await exercisesCollection
+          .query(Q.where('deleted_at', Q.eq(null)), Q.sortBy('name', Q.asc))
+          .fetch();
+
+        const exercisesData: ExerciseData[] = fetchedExercises.map((exercise) => ({
+          id: exercise.id,
+          name: exercise.name,
+          type: mapEquipmentTypeToType(exercise.equipmentType),
+          muscleGroup: exercise.muscleGroup,
+          imageUrl: exercise.imageUrl || undefined,
+        }));
+
+        setExercises(exercisesData);
+      } catch (error) {
+        console.error('Error loading exercises:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadExercises();
+  }, []);
+
   // Group exercises by muscle group
   const exercisesByGroup = useMemo(() => {
-    const grouped: Record<string, typeof exercisesData> = {};
-    exercisesData.forEach((exercise) => {
+    const grouped: Record<string, ExerciseData[]> = {};
+    exercises.forEach((exercise) => {
       const group = exercise.muscleGroup;
       if (!grouped[group]) {
         grouped[group] = [];
@@ -193,7 +237,7 @@ export default function LibraryScreen() {
       grouped[group].push(exercise);
     });
     return grouped;
-  }, []);
+  }, [exercises]);
 
   // Filter exercises based on search
   const filteredExercisesByGroup = useMemo(() => {
@@ -201,7 +245,7 @@ export default function LibraryScreen() {
       return exercisesByGroup;
     }
 
-    const filtered: Record<string, typeof exercisesData> = {};
+    const filtered: Record<string, ExerciseData[]> = {};
     Object.keys(exercisesByGroup).forEach((group) => {
       const filteredInGroup = exercisesByGroup[group].filter((exercise) =>
         exercise.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -220,204 +264,126 @@ export default function LibraryScreen() {
     }));
   };
 
-  const handleExercisePress = (exercise: (typeof exercisesData)[0]) => {
+  const handleExercisePress = (exercise: ExerciseData) => {
     // Navigate to exercise details
     console.log('Exercise pressed:', exercise.name);
   };
 
-  // Default image URLs (using placeholder images from the HTML)
-  const getExerciseImageUrl = (exerciseName: string) => {
-    // You can implement a mapping here or use a service
-    // For now, returning placeholder URLs
-    if (exerciseName.toLowerCase().includes('bench press')) {
+  // Get image URL from exercise data or fallback to placeholder
+  const getExerciseImageUrl = (exercise: ExerciseData) => {
+    // Use imageUrl from database if available
+    if (exercise.imageUrl) {
+      return exercise.imageUrl;
+    }
+    // Fallback to placeholder URLs for specific exercises
+    const exerciseName = exercise.name.toLowerCase();
+    if (exerciseName.includes('bench press')) {
       return 'https://lh3.googleusercontent.com/aida-public/AB6AXuBXz6nQajFL_tgGhEPXNVZVozEK5Ya4QQjQF2hmg0PH89Caymd0AePmxB8mLOYSYA7aT8tpNZbG3RhTMAWgRkeiOGdUYTbNbpfyQ6W9Kn5OXb_3p9yk4E_WoPY0gqH_57q1Z3YTc2Y_c66b1NHz4V_nseICUczBPu4NcXLPtwGIIzBSCV33XGjJNjIGOFYwp_84pHRFttrWaCJHGSIgObG3BMIEnZuD90u-5tItaAJMbRbOmCS1FcQEDAMEytVYwcbgqcnBWXiavla3';
     }
-    if (exerciseName.toLowerCase().includes('push')) {
+    if (exerciseName.includes('push')) {
       return 'https://lh3.googleusercontent.com/aida-public/AB6AXuDqglhotlxCz_3guMeb-eE_A3oPVe5qXr479Ac_wnvSNKpPehqecvrGSqQFYsJVb8QmCB8kCjG0jHedr0J8ugplzlG3zSqSNTQoLA_7M30NHWjr2-hTWGGTtxrOy13SQ7MFY-X2A9EnIEYhKp-j77bL2UvjVuDHNLSucSz18V0GnX9UYQbRkQHRT6fwKWNGmrqKoMDlbWb5Gb1djQYoqCYZH0KXkOmp8VF8hl6doVx_uTgO9H3Ae5lE0QhD7O71M5tv8wgej1fMSz9f';
     }
     return undefined;
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-bg-primary" edges={['top']}>
-      <View className="flex-1">
-        {/* Top App Bar with blur effect */}
-        <View className="border-b border-border-dark">
-          <BlurView intensity={80} className="bg-bg-primary/80">
-            <View className="flex-row items-center justify-between px-4 pb-2 pt-4">
-              <View className="h-12 w-12 shrink-0 items-center justify-center">
-                <Dumbbell size={24} color={theme.colors.accent.primary} />
-              </View>
-              <Text className="flex-1 text-center text-xl font-bold tracking-tight text-text-primary">
-                Library
-              </Text>
-              <Pressable className="flex h-10 w-10 items-center justify-center rounded-full bg-bg-card">
-                <SlidersHorizontal size={theme.iconSize.md} color={theme.colors.text.primary} />
-              </Pressable>
-            </View>
-
-            {/* Search Bar */}
-            <View className="px-4 py-3">
-              <View className="flex-row items-stretch overflow-hidden rounded-lg bg-bg-card">
-                <View className="items-center justify-center border-none bg-bg-card pl-4">
-                  <Search size={theme.iconSize.md} color="#95c6b0" />
+    <MasterLayout>
+      <SafeAreaView className="flex-1 bg-bg-primary" edges={['top']}>
+        <View className="flex-1">
+          {/* Top App Bar with blur effect */}
+          <View className="border-b border-border-dark">
+            <BlurView intensity={80} className="bg-bg-primary/80">
+              <View className="flex-row items-center justify-between px-4 pb-2 pt-4">
+                <View className="h-12 w-12 shrink-0 items-center justify-center">
+                  <Dumbbell size={24} color={theme.colors.accent.primary} />
                 </View>
-                <TextInput
-                  className="flex-1 border-none bg-bg-card px-3 py-3 text-base font-normal text-text-primary"
-                  placeholder="Search exercises..."
-                  placeholderTextColor="#95c6b0"
-                  value={searchQuery}
-                  onChangeText={setSearchQuery}
-                />
-              </View>
-            </View>
-          </BlurView>
-        </View>
-
-        {/* Main Content */}
-        <ScrollView className="flex-1 px-4 pb-32" showsVerticalScrollIndicator={false}>
-          {Object.keys(filteredExercisesByGroup)
-            .sort()
-            .map((group) => {
-              const config = MUSCLE_GROUP_CONFIG[group] || {
-                name: group.charAt(0).toUpperCase() + group.slice(1),
-                icon: Dumbbell,
-              };
-              const exercises = filteredExercisesByGroup[group];
-
-              return (
-                <Accordion
-                  key={group}
-                  title={config.name}
-                  count={exercises.length}
-                  icon={config.icon}
-                  isOpen={openAccordions[group] || false}
-                  onToggle={() => toggleAccordion(group)}>
-                  {exercises.length === 0 ? (
-                    <View className="border-t border-border-dark px-4 py-2">
-                      <Text className="text-sm" style={{ color: '#95c6b0' }}>
-                        Tap to view {config.name.toLowerCase()} exercises.
-                      </Text>
-                    </View>
-                  ) : (
-                    exercises.map((exercise, index) => (
-                      <ExerciseListItem
-                        key={index}
-                        name={exercise.name}
-                        type={exercise.type}
-                        imageUrl={getExerciseImageUrl(exercise.name)}
-                        onPress={() => handleExercisePress(exercise)}
-                      />
-                    ))
-                  )}
-                </Accordion>
-              );
-            })}
-        </ScrollView>
-
-        {/* Floating Action Button */}
-        <Pressable
-          className="absolute bottom-24 right-6 z-30 h-14 w-14 items-center justify-center rounded-full active:scale-95"
-          onPress={() => {
-            // Handle FAB press - e.g., add new exercise
-            console.log('FAB pressed');
-          }}
-          style={[
-            theme.shadows.lg,
-            {
-              shadowColor: theme.colors.accent.primary,
-              shadowOpacity: 0.3,
-            },
-          ]}>
-          <LinearGradient
-            colors={theme.colors.gradients.cta}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              borderRadius: 9999,
-            }}
-          />
-          <Plus size={28} color={theme.colors.text.primary} />
-        </Pressable>
-
-        {/* Bottom Navigation Bar */}
-        <View className="absolute bottom-0 left-0 right-0 z-40 border-t border-white/10 pb-8 pt-3">
-          <BlurView intensity={80} className="bg-bg-primary/90">
-            <SafeAreaView edges={['bottom']}>
-              <View className="flex-row items-center justify-around px-6">
-                {/* Home */}
-                <Pressable className="items-center gap-1" onPress={() => router.push('/')}>
-                  <Home size={theme.iconSize.md} color={theme.colors.text.tertiary} />
-                  <Text className="text-[10px] font-medium text-text-tertiary">Home</Text>
-                </Pressable>
-
-                {/* Library */}
-                <Pressable className="items-center gap-1">
-                  <View className="h-10 w-16 items-center justify-center rounded-lg bg-bg-navActive">
-                    <ClipboardList
-                      size={theme.iconSize.md}
-                      color={theme.colors.accent.primary}
-                      strokeWidth={2.5}
-                    />
-                  </View>
-                  <Text
-                    className="text-[10px] font-medium"
-                    style={{ color: theme.colors.accent.primary }}>
-                    Library
-                  </Text>
-                </Pressable>
-
-                {/* Log */}
-                <Pressable className="items-center gap-1">
-                  <View className="-mt-8">
-                    <View
-                      className="rounded-full border-4"
-                      style={{
-                        borderColor: theme.colors.background.primary,
-                      }}>
-                      <LinearGradient
-                        colors={theme.colors.gradients.cta}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 1 }}
-                        style={{
-                          borderRadius: 9999,
-                          padding: 8,
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}>
-                        <PlusSquare size={20} color={theme.colors.text.primary} />
-                      </LinearGradient>
-                    </View>
-                  </View>
-                  <Text className="mt-[-4px] text-[10px] font-medium text-text-tertiary">Log</Text>
-                </Pressable>
-
-                {/* History */}
-                <Pressable
-                  className="items-center gap-1"
-                  onPress={() => {
-                    // Navigate to history screen when implemented
-                    console.log('Navigate to history');
-                  }}>
-                  <History size={theme.iconSize.md} color={theme.colors.text.tertiary} />
-                  <Text className="text-[10px] font-medium text-text-tertiary">History</Text>
-                </Pressable>
-
-                {/* Profile */}
-                <Pressable className="items-center gap-1" onPress={() => router.push('/profile')}>
-                  <User size={theme.iconSize.md} color={theme.colors.text.tertiary} />
-                  <Text className="text-[10px] font-medium text-text-tertiary">Profile</Text>
+                <Text className="flex-1 text-center text-xl font-bold tracking-tight text-text-primary">
+                  Library
+                </Text>
+                <Pressable className="flex h-10 w-10 items-center justify-center rounded-full bg-bg-card">
+                  <SlidersHorizontal size={theme.iconSize.md} color={theme.colors.text.primary} />
                 </Pressable>
               </View>
-            </SafeAreaView>
-          </BlurView>
+
+              {/* Search Bar */}
+              <View className="px-4 py-3">
+                <View className="flex-row items-stretch overflow-hidden rounded-lg bg-bg-card">
+                  <View className="items-center justify-center border-none bg-bg-card pl-4">
+                    <Search size={theme.iconSize.md} color="#95c6b0" />
+                  </View>
+                  <TextInput
+                    className="flex-1 border-none bg-bg-card px-3 py-3 text-base font-normal text-text-primary"
+                    placeholder="Search exercises..."
+                    placeholderTextColor="#95c6b0"
+                    value={searchQuery}
+                    onChangeText={setSearchQuery}
+                  />
+                </View>
+              </View>
+            </BlurView>
+          </View>
+
+          {/* Main Content */}
+          <ScrollView className="flex-1 px-4 pb-32" showsVerticalScrollIndicator={false}>
+            {isLoading ? (
+              // Loading skeleton
+              <>
+                {[1, 2, 3, 4].map((i) => (
+                  <View
+                    key={i}
+                    className="mb-4 overflow-hidden rounded-lg border border-border-dark bg-bg-card">
+                    <View className="flex-row items-center justify-between px-4 py-4">
+                      <View className="flex-row items-center gap-3">
+                        <SkeletonLoader width={18} height={18} borderRadius={999} />
+                        <SkeletonLoader width={120} height={20} />
+                      </View>
+                      <SkeletonLoader width={18} height={18} borderRadius={999} />
+                    </View>
+                  </View>
+                ))}
+              </>
+            ) : (
+              Object.keys(filteredExercisesByGroup)
+                .sort()
+                .map((group) => {
+                  const config = MUSCLE_GROUP_CONFIG[group] || {
+                    name: group.charAt(0).toUpperCase() + group.slice(1),
+                    icon: Dumbbell,
+                  };
+                  const groupExercises = filteredExercisesByGroup[group];
+
+                  return (
+                    <Accordion
+                      key={group}
+                      title={config.name}
+                      count={groupExercises.length}
+                      icon={config.icon}
+                      isOpen={openAccordions[group] || false}
+                      onToggle={() => toggleAccordion(group)}>
+                      {groupExercises.length === 0 ? (
+                        <View className="border-t border-border-dark px-4 py-2">
+                          <Text className="text-sm" style={{ color: '#95c6b0' }}>
+                            Tap to view {config.name.toLowerCase()} exercises.
+                          </Text>
+                        </View>
+                      ) : (
+                        groupExercises.map((exercise) => (
+                          <ExerciseListItem
+                            key={exercise.id}
+                            name={exercise.name}
+                            type={exercise.type}
+                            imageUrl={getExerciseImageUrl(exercise)}
+                            onPress={() => handleExercisePress(exercise)}
+                          />
+                        ))
+                      )}
+                    </Accordion>
+                  );
+                })
+            )}
+          </ScrollView>
         </View>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </MasterLayout>
   );
 }
