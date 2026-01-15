@@ -2,19 +2,35 @@ import { Database } from '@nozbe/watermelondb';
 import adapter from './adapter';
 
 // Import all models
-import Workout from './models/Workout';
-import WorkoutSession from './models/WorkoutSession';
 import Exercise from './models/Exercise';
-import WorkoutExercise from './models/WorkoutExercise';
-import Set from './models/Set';
-import FoodLog from './models/FoodLog';
 import UserMetric from './models/UserMetric';
+import WorkoutTemplate from './models/WorkoutTemplate';
+import Schedule from './models/Schedule';
+import WorkoutTemplateSet from './models/WorkoutTemplateSet';
+import WorkoutLog from './models/WorkoutLog';
+import WorkoutLogSet from './models/WorkoutLogSet';
 
 // Create database instance
 export const database = new Database({
   adapter,
-  modelClasses: [Workout, WorkoutSession, Exercise, WorkoutExercise, Set, FoodLog, UserMetric],
+  modelClasses: [
+    Exercise,
+    UserMetric,
+    WorkoutTemplate,
+    Schedule,
+    WorkoutTemplateSet,
+    WorkoutLog,
+    WorkoutLogSet,
+  ],
 });
 
 // Export models for convenience
-export { Workout, WorkoutSession, Exercise, WorkoutExercise, Set, FoodLog, UserMetric };
+export {
+  Exercise,
+  UserMetric,
+  WorkoutTemplate,
+  Schedule,
+  WorkoutTemplateSet,
+  WorkoutLog,
+  WorkoutLogSet,
+};
