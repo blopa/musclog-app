@@ -55,6 +55,7 @@ const EXERCISE_DATA = {
   ],
 };
 
+// TODO: change this to use FullScreenModal instead
 export default function ViewExerciseScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();

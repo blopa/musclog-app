@@ -6,7 +6,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '../theme';
 import { TextInput } from '../components/theme/TextInput';
 import { Button } from '../components/theme/Button';
-import { GenericCard } from '../components/cards/GenericCard';
 import { ToggleInput } from '../components/theme/ToggleInput';
 import { BottomPopUpMenu } from '../components/BottomPopUpMenu';
 
@@ -28,6 +27,7 @@ const SECONDARY_MUSCLES = [
   { value: 'glutes', label: 'Glutes' },
 ];
 
+// TODO: change this to use FullScreenModal instead
 export default function CreateExerciseScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
