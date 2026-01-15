@@ -636,7 +636,8 @@ export default function ModalsTestScreen() {
           <View className="mb-6">
             <Text className="mb-2 text-lg font-bold text-text-primary">Exercises Modal</Text>
             <Text className="mb-4 text-sm text-text-secondary">
-              A full-screen modal for browsing and selecting exercises from the exercise library with search and categorization.
+              A full-screen modal for browsing and selecting exercises from the exercise library
+              with search and categorization.
             </Text>
             <Button
               label="Open Exercises Modal"

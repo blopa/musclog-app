@@ -1,13 +1,5 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  Pressable,
-  Image,
-  Modal,
-  TouchableWithoutFeedback,
-} from 'react-native';
+import { View, Text, ScrollView, Pressable, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import {
   ChevronLeft,
@@ -25,6 +17,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '../theme';
+import { BottomPopUpMenu, BottomPopUpMenuItem } from '../components/BottomPopUpMenu';
 
 // Mock data - replace with actual data from props or route params
 const EXERCISE_DATA = {
@@ -86,42 +79,50 @@ export default function ViewExerciseScreen() {
     console.log('Navigate to workout:', workoutId);
   };
 
-  const menuItems = [
+  const menuItems: BottomPopUpMenuItem[] = [
     {
       icon: Pencil,
-      label: 'Edit Exercise',
+      iconColor: theme.colors.accent.secondary, // Vibrant emerald/teal green
+      iconBgColor: theme.colors.background.iconDarker, // Lighter shade of dark green
+      title: 'Edit Exercise',
+      description: 'Modify exercise details',
       onPress: () => {
         console.log('Edit exercise');
-        setIsMenuVisible(false);
       },
     },
     {
       icon: Share2,
-      label: 'Share',
+      iconColor: theme.colors.accent.secondary,
+      iconBgColor: theme.colors.background.iconDarker,
+      title: 'Share',
+      description: 'Share this exercise',
       onPress: () => {
         console.log('Share exercise');
-        setIsMenuVisible(false);
       },
     },
     {
       icon: Copy,
-      label: 'Duplicate',
+      iconColor: theme.colors.accent.secondary,
+      iconBgColor: theme.colors.background.iconDarker,
+      title: 'Duplicate',
+      description: 'Create a copy of this exercise',
       onPress: () => {
         console.log('Duplicate exercise');
-        setIsMenuVisible(false);
       },
     },
     {
       icon: Trash2,
-      label: 'Delete',
+      iconColor: theme.colors.status.error,
+      iconBgColor: theme.colors.status.error20,
+      title: 'Delete',
+      description: 'Remove this exercise permanently',
+      titleColor: theme.colors.status.error,
+      descriptionColor: theme.colors.status.error,
       onPress: () => {
         console.log('Delete exercise');
-        setIsMenuVisible(false);
       },
-      isDestructive: true,
     },
   ];
-
 
   return (
     <View className="flex-1" style={{ backgroundColor: '#1a2e2a' }}>
@@ -143,10 +144,10 @@ export default function ViewExerciseScreen() {
             }}
             resizeMode="cover"
           />
-          
+
           {/* Top Navigation */}
           <View
-            className="absolute top-0 left-0 right-0 flex-row items-center justify-between"
+            className="absolute left-0 right-0 top-0 flex-row items-center justify-between"
             style={{ paddingTop: insets.top + 16, paddingHorizontal: 16, zIndex: 10 }}>
             <Pressable
               onPress={handleBack}
@@ -278,7 +279,11 @@ export default function ViewExerciseScreen() {
                 <LinearGradient
                   colors={workout.iconGradient}
                   className="h-16 w-16 items-center justify-center rounded-2xl">
-                  <workout.icon size={32} color="white" fill={workout.id === '2' ? 'white' : 'none'} />
+                  <workout.icon
+                    size={32}
+                    color="white"
+                    fill={workout.id === '2' ? 'white' : 'none'}
+                  />
                 </LinearGradient>
                 <View className="flex-1">
                   <Text className="mb-1 text-lg font-bold text-white">{workout.name}</Text>
@@ -315,53 +320,14 @@ export default function ViewExerciseScreen() {
         </Pressable>
       </View>
 
-      {/* More Options Modal */}
-      <Modal
+      {/* More Options Menu */}
+      <BottomPopUpMenu
         visible={isMenuVisible}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setIsMenuVisible(false)}>
-        <TouchableWithoutFeedback onPress={() => setIsMenuVisible(false)}>
-          <View
-            className="flex-1 items-end justify-start"
-            style={{
-              backgroundColor: 'rgba(0, 0, 0, 0.5)',
-              paddingTop: insets.top + 60,
-              paddingRight: 16,
-            }}>
-            <TouchableWithoutFeedback>
-              <View
-                className="rounded-2xl border"
-                style={{
-                  backgroundColor: 'rgba(26, 58, 42, 0.95)',
-                  borderColor: '#374151',
-                  minWidth: 200,
-                  overflow: 'hidden',
-                }}>
-                {menuItems.map((item, index) => (
-                  <Pressable
-                    key={index}
-                    onPress={item.onPress}
-                    className="flex-row items-center gap-3 border-b px-4 py-3"
-                    style={{
-                      borderBottomColor: index < menuItems.length - 1 ? '#374151' : 'transparent',
-                    }}>
-                    <item.icon
-                      size={16}
-                      color={item.isDestructive ? '#ef4444' : 'white'}
-                    />
-                    <Text
-                      className="text-base"
-                      style={{ color: item.isDestructive ? '#ef4444' : 'white' }}>
-                      {item.label}
-                    </Text>
-                  </Pressable>
-                ))}
-              </View>
-            </TouchableWithoutFeedback>
-          </View>
-        </TouchableWithoutFeedback>
-      </Modal>
+        onClose={() => setIsMenuVisible(false)}
+        title={EXERCISE_DATA.name}
+        subtitle="Exercise Options"
+        items={menuItems}
+      />
     </View>
   );
 }

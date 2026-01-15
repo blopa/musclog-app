@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react';
 import { View, Text, Pressable } from 'react-native';
+import { ChevronRight } from 'lucide-react-native';
 import { BottomPopUp } from './BottomPopUp';
 import { theme } from '../theme';
 
@@ -24,6 +25,7 @@ type BottomPopUpMenuProps = {
   footer?: ReactNode;
   maxHeight?: number | 'auto' | `${number}%`;
   headerIcon?: ReactNode;
+  fullWidthItems?: boolean;
 };
 
 type OptionItemProps = BottomPopUpMenuItem;
@@ -39,17 +41,15 @@ function OptionItem({
   onPress,
 }: OptionItemProps) {
   return (
-    <Pressable
-      className="active:bg-bg-card-elevated flex-row items-center gap-4 rounded-2xl border border-border-default bg-bg-overlay p-4"
-      onPress={onPress}>
+    <Pressable className="flex-row items-center gap-4 py-3 active:opacity-70" onPress={onPress}>
       <View
-        className="h-12 w-12 items-center justify-center rounded-xl"
-        style={{ backgroundColor: iconBgColor }}>
-        <Icon size={theme.iconSize.md} color={iconColor} />
+        className="h-12 w-12 items-center justify-center rounded-full"
+        style={{ backgroundColor: iconBgColor || theme.colors.background.iconDarker }}>
+        <Icon size={theme.iconSize.md} color={iconColor || theme.colors.accent.secondary} />
       </View>
       <View className="flex-1">
         <Text
-          className="text-lg font-semibold"
+          className="text-lg font-bold"
           style={{ color: titleColor || theme.colors.text.primary }}>
           {title}
         </Text>
@@ -59,11 +59,7 @@ function OptionItem({
           {description}
         </Text>
       </View>
-      <View className="h-6 w-6 items-center justify-center">
-        <Text className="text-lg" style={{ color: theme.colors.text.secondary }}>
-          ›
-        </Text>
-      </View>
+      <ChevronRight size={theme.iconSize.md} color={theme.colors.text.secondary} />
     </Pressable>
   );
 }
