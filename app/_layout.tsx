@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { theme } from '../theme';
 import { SnackbarProvider } from '../components/SnackbarContext';
-import { loadExercisesFromJson } from '../database/dev';
+import { seedExercisesIfEmpty } from '../database/dev';
 
 import '../database';
 import '../lang/lang';
@@ -20,10 +20,10 @@ export default function RootLayout() {
       NavigationBar.setButtonStyleAsync('light');
     }
 
-    // Seed exercises database in development mode
+    // Seed exercises database in development mode if it's empty
     // This runs after the database is created and initialized
     if (__DEV__) {
-      loadExercisesFromJson().catch((error) => {
+      seedExercisesIfEmpty().catch((error) => {
         console.error('Error seeding exercises database:', error);
       });
     }

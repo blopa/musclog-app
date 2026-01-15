@@ -134,3 +134,28 @@ export async function loadExercisesFromJson(): Promise<{ created: number; skippe
 
   return { created, skipped };
 }
+
+/**
+ * Seeds the exercises database if it's empty
+ * Only runs if there are no exercises in the database
+ * Returns true if seeding was performed, false if database already had exercises
+ */
+export async function seedExercisesIfEmpty(): Promise<boolean> {
+  try {
+    // Check if there are any exercises in the database
+    const existingExercises = await database.get<Exercise>('exercises').query().fetch();
+
+    // If database already has exercises, skip seeding
+    if (existingExercises.length > 0) {
+      return false;
+    }
+
+    // Database is empty, seed it
+    const result = await loadExercisesFromJson();
+    console.log(`Seeded exercises database: ${result.created} created, ${result.skipped} skipped`);
+    return true;
+  } catch (error) {
+    console.error('Error seeding exercises database:', error);
+    throw error;
+  }
+}

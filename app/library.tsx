@@ -203,19 +203,19 @@ export default function LibraryScreen() {
       try {
         setIsLoading(true);
         const exercisesCollection = database.get<Exercise>('exercises');
-        
+
         // Try query with deleted_at filter first
         let fetchedExercises = await exercisesCollection
           .query(Q.where('deleted_at', Q.eq(null)), Q.sortBy('name', Q.asc))
           .fetch();
-        
+
         // Fallback: if filtered query returns 0, fetch all and filter manually
         // This handles cases where deletedAt might be undefined instead of null
         if (fetchedExercises.length === 0) {
           const allExercises = await exercisesCollection.query().fetch();
-          fetchedExercises = allExercises.filter(e => !e.deletedAt).sort((a, b) => 
-            a.name.localeCompare(b.name)
-          );
+          fetchedExercises = allExercises
+            .filter((e) => !e.deletedAt)
+            .sort((a, b) => a.name.localeCompare(b.name));
         }
 
         const exercisesData: ExerciseData[] = fetchedExercises.map((exercise) => ({
