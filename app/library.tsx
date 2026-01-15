@@ -234,101 +234,79 @@ export default function LibraryScreen() {
   return (
     <MasterLayout>
       <SafeAreaView className="flex-1 bg-bg-primary" edges={['top']}>
-        <View className="flex-1">
-          {/* Top App Bar with blur effect */}
-          <View className="border-b border-border-dark">
-            <BlurView intensity={80} className="bg-bg-primary/80">
-              <View className="flex-row items-center justify-between px-4 pb-2 pt-4">
-                <View className="h-12 w-12 shrink-0 items-center justify-center">
-                  <Dumbbell size={24} color={theme.colors.accent.primary} />
-                </View>
-                <Text className="flex-1 text-center text-xl font-bold tracking-tight text-text-primary">
-                  Library
-                </Text>
-                <Pressable className="flex h-10 w-10 items-center justify-center rounded-full bg-bg-card">
-                  <SlidersHorizontal size={theme.iconSize.md} color={theme.colors.text.primary} />
-                </Pressable>
+        <ScrollView className="flex-1 px-4 pb-32" showsVerticalScrollIndicator={false}>
+          <View className="px-4 py-3">
+            <View className="flex-row items-stretch overflow-hidden rounded-lg bg-bg-card">
+              <View className="items-center justify-center border-none bg-bg-card pl-4">
+                <Search size={theme.iconSize.md} color="#95c6b0" />
               </View>
-
-              {/* Search Bar */}
-              <View className="px-4 py-3">
-                <View className="flex-row items-stretch overflow-hidden rounded-lg bg-bg-card">
-                  <View className="items-center justify-center border-none bg-bg-card pl-4">
-                    <Search size={theme.iconSize.md} color="#95c6b0" />
-                  </View>
-                  <TextInput
-                    className="flex-1 border-none bg-bg-card px-3 py-3 text-base font-normal text-text-primary"
-                    placeholder="Search exercises..."
-                    placeholderTextColor="#95c6b0"
-                    value={searchQuery}
-                    onChangeText={setSearchQuery}
-                  />
-                </View>
-              </View>
-            </BlurView>
+              <TextInput
+                className="flex-1 border-none bg-bg-card px-3 py-3 text-base font-normal text-text-primary"
+                placeholder="Search exercises..."
+                placeholderTextColor="#95c6b0"
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+              />
+            </View>
           </View>
 
-          {/* Main Content */}
-          <ScrollView className="flex-1 px-4 pb-32" showsVerticalScrollIndicator={false}>
-            {isLoading ? (
-              // Loading skeleton
-              <>
-                {[1, 2, 3, 4].map((i) => (
-                  <View
-                    key={i}
-                    className="mb-4 overflow-hidden rounded-lg border border-border-dark bg-bg-card">
-                    <View className="flex-row items-center justify-between px-4 py-4">
-                      <View className="flex-row items-center gap-3">
-                        <SkeletonLoader width={18} height={18} borderRadius={999} />
-                        <SkeletonLoader width={120} height={20} />
-                      </View>
+          {isLoading ? (
+            // Loading skeleton
+            <>
+              {[1, 2, 3, 4].map((i) => (
+                <View
+                  key={i}
+                  className="mb-4 overflow-hidden rounded-lg border border-border-dark bg-bg-card">
+                  <View className="flex-row items-center justify-between px-4 py-4">
+                    <View className="flex-row items-center gap-3">
                       <SkeletonLoader width={18} height={18} borderRadius={999} />
+                      <SkeletonLoader width={120} height={20} />
                     </View>
+                    <SkeletonLoader width={18} height={18} borderRadius={999} />
                   </View>
-                ))}
-              </>
-            ) : (
-              Object.keys(filteredExercisesByGroup)
-                .sort()
-                .map((group) => {
-                  const config = MUSCLE_GROUP_CONFIG[group] || {
-                    name: group.charAt(0).toUpperCase() + group.slice(1),
-                    icon: Dumbbell,
-                  };
-                  const groupExercises = filteredExercisesByGroup[group];
+                </View>
+              ))}
+            </>
+          ) : (
+            Object.keys(filteredExercisesByGroup)
+              .sort()
+              .map((group) => {
+                const config = MUSCLE_GROUP_CONFIG[group] || {
+                  name: group.charAt(0).toUpperCase() + group.slice(1),
+                  icon: Dumbbell,
+                };
+                const groupExercises = filteredExercisesByGroup[group];
 
-                  return (
-                    <Accordion
-                      key={group}
-                      title={config.name}
-                      count={groupExercises.length}
-                      icon={config.icon}
-                      isOpen={openAccordions[group] || false}
-                      onToggle={() => toggleAccordion(group)}
-                    >
-                      {groupExercises.length === 0 ? (
-                        <View className="border-t border-border-dark px-4 py-2">
-                          <Text className="text-sm" style={{ color: '#95c6b0' }}>
-                            Tap to view {config.name.toLowerCase()} exercises.
-                          </Text>
-                        </View>
-                      ) : (
-                        groupExercises.map((exercise) => (
-                          <ExerciseListItem
-                            key={exercise.id}
-                            name={exercise.name}
-                            type={exercise.type}
-                            imageUrl={getExerciseImageUrl(exercise)}
-                            onPress={() => handleExercisePress(exercise)}
-                          />
-                        ))
-                      )}
-                    </Accordion>
-                  );
-                })
-            )}
-          </ScrollView>
-        </View>
+                return (
+                  <Accordion
+                    key={group}
+                    title={config.name}
+                    count={groupExercises.length}
+                    icon={config.icon}
+                    isOpen={openAccordions[group] || false}
+                    onToggle={() => toggleAccordion(group)}>
+                    {groupExercises.length === 0 ? (
+                      <View className="border-t border-border-dark px-4 py-2">
+                        <Text className="text-sm" style={{ color: '#95c6b0' }}>
+                          Tap to view {config.name.toLowerCase()} exercises.
+                        </Text>
+                      </View>
+                    ) : (
+                      groupExercises.map((exercise) => (
+                        <ExerciseListItem
+                          key={exercise.id}
+                          name={exercise.name}
+                          type={exercise.type}
+                          imageUrl={getExerciseImageUrl(exercise)}
+                          onPress={() => handleExercisePress(exercise)}
+                        />
+                      ))
+                    )}
+                  </Accordion>
+                );
+              })
+          )}
+        </ScrollView>
       </SafeAreaView>
     </MasterLayout>
   );
