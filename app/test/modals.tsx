@@ -34,6 +34,7 @@ import { AddFoodItemToMealModal } from '../../components/modals/AddFoodItemToMea
 import { CenteredModal } from '../../components/modals/CenteredModal';
 import { CoachModal } from '../../components/modals/CoachModal';
 import { FullScreenModal } from '../../components/modals/FullScreenModal';
+import ExercisesModal from '../../components/ExercisesModal';
 
 export default function ModalsTestScreen() {
   // Nutrition Goals Modal
@@ -128,6 +129,9 @@ export default function ModalsTestScreen() {
 
   // Full Screen Modal
   const [isFullScreenModalVisible, setIsFullScreenModalVisible] = useState(false);
+
+  // Exercises Modal
+  const [isExercisesModalVisible, setIsExercisesModalVisible] = useState(false);
 
   const handleSaveGoals = (goals: NutritionGoals) => {
     console.log('Goals saved:', goals);
@@ -628,6 +632,20 @@ export default function ModalsTestScreen() {
             />
           </View>
 
+          {/* Exercises Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Exercises Modal</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              A full-screen modal for browsing and selecting exercises from the exercise library with search and categorization.
+            </Text>
+            <Button
+              label="Open Exercises Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsExercisesModalVisible(true)}
+            />
+          </View>
+
           {/* Bottom spacing */}
           <View className="h-8" />
         </View>
@@ -954,6 +972,11 @@ export default function ModalsTestScreen() {
         footer={<Text>Footer content for full screen modal</Text>}>
         <Text>Full screen modal content goes here.</Text>
       </FullScreenModal>
+
+      <ExercisesModal
+        visible={isExercisesModalVisible}
+        onClose={() => setIsExercisesModalVisible(false)}
+      />
     </SafeAreaView>
   );
 }
