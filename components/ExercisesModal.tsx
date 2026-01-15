@@ -1,22 +1,15 @@
 import { useState, useMemo, useEffect } from 'react';
 import { View, Text, ScrollView, Pressable, TextInput, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { BlurView } from 'expo-blur';
 import { Q } from '@nozbe/watermelondb';
-import {
-  Search,
-  SlidersHorizontal,
-  Dumbbell,
-  ChevronRight,
-  Activity,
-  Footprints,
-} from 'lucide-react-native';
+import { Search, Dumbbell, ChevronRight, Activity, Footprints } from 'lucide-react-native';
 import { theme } from '../theme';
 import { database } from '../database';
 import Exercise from '../database/models/Exercise';
-import { SkeletonLoader } from '../components/theme/SkeletonLoader';
-import { Accordion } from '../components/theme/Accordion';
-import { MasterLayout } from '../components/MasterLayout';
+import { SkeletonLoader } from './theme/SkeletonLoader';
+import { Accordion } from './theme/Accordion';
+import { FullScreenModal } from './modals/FullScreenModal';
+import { useTranslation } from 'react-i18next';
 
 // Type for exercise data used in the component
 type ExerciseData = {
@@ -123,7 +116,14 @@ function ExerciseListItem({
   );
 }
 
-export default function LibraryScreen() {
+type ExercisesModalProps = {
+  visible: boolean;
+  onClose: () => void;
+};
+
+export default function ExercisesModal({ visible, onClose }: ExercisesModalProps) {
+  const { t } = useTranslation();
+
   const [searchQuery, setSearchQuery] = useState('');
   const [exercises, setExercises] = useState<ExerciseData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -232,7 +232,11 @@ export default function LibraryScreen() {
   };
 
   return (
-    <MasterLayout>
+    <FullScreenModal
+      visible={visible}
+      onClose={onClose}
+      title={t('exercises.title')}
+      scrollable={false}>
       <SafeAreaView className="flex-1 bg-bg-primary" edges={['top']}>
         <ScrollView className="flex-1 px-4 pb-32" showsVerticalScrollIndicator={false}>
           <View className="py-3">
@@ -308,6 +312,6 @@ export default function LibraryScreen() {
           )}
         </ScrollView>
       </SafeAreaView>
-    </MasterLayout>
+    </FullScreenModal>
   );
 }

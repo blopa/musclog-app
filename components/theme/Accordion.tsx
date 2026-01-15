@@ -1,11 +1,7 @@
 import React, { useEffect } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { ChevronDown } from 'lucide-react-native';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { theme } from '../../theme';
 
 type AccordionProps = {
@@ -59,16 +55,15 @@ export function Accordion({
   };
 
   return (
-    <View className={`mb-4 overflow-hidden rounded-lg border border-border-dark bg-bg-card ${className}`}>
+    <View
+      className={`mb-4 overflow-hidden rounded-lg border border-border-dark bg-bg-card ${className}`}>
       <Pressable onPress={handlePress} className="flex-row items-center justify-between px-4 py-4">
-        <View className="flex-row items-center gap-3 flex-1">
+        <View className="flex-1 flex-row items-center gap-3">
           {headerContent ? (
             headerContent
           ) : (
             <>
-              {Icon && (
-                <Icon size={theme.iconSize.md} color={theme.colors.accent.primary} />
-              )}
+              {Icon && <Icon size={theme.iconSize.md} color={theme.colors.accent.primary} />}
               <Text className="text-base font-semibold text-text-primary">
                 {title}
                 {count !== undefined && (
