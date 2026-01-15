@@ -9,6 +9,7 @@ import Schedule from './models/Schedule';
 import WorkoutTemplateSet from './models/WorkoutTemplateSet';
 import WorkoutLog from './models/WorkoutLog';
 import WorkoutLogSet from './models/WorkoutLogSet';
+import { loadExercisesFromJson } from './dev';
 
 // Create database instance
 export const database = new Database({
@@ -23,6 +24,10 @@ export const database = new Database({
     WorkoutLogSet,
   ],
 });
+
+if (__DEV__) {
+  loadExercisesFromJson();
+}
 
 // Export models for convenience
 export {
