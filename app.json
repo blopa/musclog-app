@@ -34,7 +34,8 @@
         }
       ],
       "expo-background-task",
-      "expo-web-browser"
+      "expo-web-browser",
+      "@sentry/react-native"
     ],
     "orientation": "portrait",
     "icon": "./assets/icon.png",
