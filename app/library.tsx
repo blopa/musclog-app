@@ -2,15 +2,12 @@ import { useState, useMemo, useEffect } from 'react';
 import { View, Text, ScrollView, Pressable, TextInput, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { BlurView } from 'expo-blur';
-import { useRouter } from 'expo-router';
 import { Q } from '@nozbe/watermelondb';
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import {
   Search,
   SlidersHorizontal,
   Dumbbell,
   ChevronRight,
-  ChevronDown,
   Activity,
   Footprints,
 } from 'lucide-react-native';
@@ -18,6 +15,7 @@ import { theme } from '../theme';
 import { database } from '../database';
 import Exercise from '../database/models/Exercise';
 import { SkeletonLoader } from '../components/theme/SkeletonLoader';
+import { Accordion } from '../components/theme/Accordion';
 import { MasterLayout } from '../components/MasterLayout';
 
 // Type for exercise data used in the component
@@ -69,69 +67,6 @@ const getExerciseTypeTag = (type: string) => {
       return { label: 'EQUIPMENT', variant: 'secondary' as const };
   }
 };
-
-// Accordion component
-function Accordion({
-  title,
-  count,
-  icon: Icon,
-  isOpen,
-  onToggle,
-  children,
-}: {
-  title: string;
-  count: number;
-  icon: React.ComponentType<{ size: number; color: string }>;
-  isOpen: boolean;
-  onToggle: () => void;
-  children: React.ReactNode;
-}) {
-  const rotation = useSharedValue(isOpen ? 180 : 0);
-  const opacity = useSharedValue(isOpen ? 1 : 0);
-  const maxHeight = useSharedValue(isOpen ? 2000 : 0); // Large enough max height
-
-  useEffect(() => {
-    rotation.value = withTiming(isOpen ? 180 : 0, { duration: 200 });
-    opacity.value = withTiming(isOpen ? 1 : 0, { duration: 250 });
-    maxHeight.value = withTiming(isOpen ? 2000 : 0, { duration: 300 });
-  }, [isOpen, rotation, opacity, maxHeight]);
-
-  const animatedChevronStyle = useAnimatedStyle(() => ({
-    transform: [{ rotate: `${rotation.value}deg` }],
-  }));
-
-  const animatedContentStyle = useAnimatedStyle(() => ({
-    maxHeight: maxHeight.value,
-    opacity: opacity.value,
-    overflow: 'hidden',
-  }));
-
-  const handlePress = () => {
-    onToggle();
-  };
-
-  return (
-    <View className="mb-4 overflow-hidden rounded-lg border border-border-dark bg-bg-card">
-      <Pressable onPress={handlePress} className="flex-row items-center justify-between px-4 py-4">
-        <View className="flex-row items-center gap-3">
-          <Icon size={theme.iconSize.md} color={theme.colors.accent.primary} />
-          <Text className="text-base font-semibold text-text-primary">
-            {title}{' '}
-            <Text className="text-sm font-normal" style={{ color: '#95c6b0' }}>
-              ({count})
-            </Text>
-          </Text>
-        </View>
-        <Animated.View style={animatedChevronStyle}>
-          <ChevronDown size={theme.iconSize.md} color={theme.colors.text.tertiary} />
-        </Animated.View>
-      </Pressable>
-      <Animated.View style={animatedContentStyle} pointerEvents={isOpen ? 'auto' : 'none'}>
-        <View className="border-t border-border-dark">{children}</View>
-      </Animated.View>
-    </View>
-  );
-}
 
 // Exercise list item component
 function ExerciseListItem({
@@ -189,7 +124,6 @@ function ExerciseListItem({
 }
 
 export default function LibraryScreen() {
-  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [exercises, setExercises] = useState<ExerciseData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -370,7 +304,8 @@ export default function LibraryScreen() {
                       count={groupExercises.length}
                       icon={config.icon}
                       isOpen={openAccordions[group] || false}
-                      onToggle={() => toggleAccordion(group)}>
+                      onToggle={() => toggleAccordion(group)}
+                    >
                       {groupExercises.length === 0 ? (
                         <View className="border-t border-border-dark px-4 py-2">
                           <Text className="text-sm" style={{ color: '#95c6b0' }}>
