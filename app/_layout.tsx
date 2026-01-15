@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { theme } from '../theme';
 import { SnackbarProvider } from '../components/SnackbarContext';
+import { loadExercisesFromJson } from '../database/dev';
 
 import '../database';
 import '../lang/lang';
@@ -17,6 +18,14 @@ export default function RootLayout() {
     if (Platform.OS === 'android') {
       NavigationBar.setBackgroundColorAsync(theme.colors.background.primary);
       NavigationBar.setButtonStyleAsync('light');
+    }
+
+    // Seed exercises database in development mode
+    // This runs after the database is created and initialized
+    if (__DEV__) {
+      loadExercisesFromJson().catch((error) => {
+        console.error('Error seeding exercises database:', error);
+      });
     }
   }, []);
 
