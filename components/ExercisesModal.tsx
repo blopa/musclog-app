@@ -294,7 +294,9 @@ export default function ExercisesModal({ visible, onClose }: ExercisesModalProps
                     {groupExercises.length === 0 ? (
                       <View className="border-t border-border-dark px-4 py-2">
                         <Text className="text-sm" style={{ color: '#95c6b0' }}>
-                          {t('exercises.emptyGroupMessage', { muscleGroup: config.name.toLowerCase() })}
+                          {t('exercises.emptyGroupMessage', {
+                            muscleGroup: config.name.toLowerCase(),
+                          })}
                         </Text>
                       </View>
                     ) : (

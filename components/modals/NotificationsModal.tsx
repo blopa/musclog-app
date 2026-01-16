@@ -23,9 +23,8 @@ export function NotificationsModal({ visible, onClose, onClearAll }: Notificatio
           type: 'ai-insight' as const,
           icon: <Sparkles size={theme.iconSize.md} color={theme.colors.text.primary} />,
           iconBg: theme.colors.status.info,
-          title: 'AI Insight',
-          description:
-            'Based on your recent lifts, try increasing your protein intake by 15g today for optimal recovery.',
+          title: t('notifications.types.aiInsight.title'),
+          description: t('notifications.types.aiInsight.description'),
           time: '2 hours ago',
           unread: true,
         },
@@ -34,7 +33,7 @@ export function NotificationsModal({ visible, onClose, onClearAll }: Notificatio
           type: 'workout-reminder' as const,
           icon: <Dumbbell size={theme.iconSize.md} color={theme.colors.status.warning} />,
           iconBg: theme.colors.background.iconDarkest,
-          title: 'Workout Reminder',
+          title: t('notifications.types.workoutReminder.title'),
           description: (
             <Text
               className="leading-relaxed"
@@ -42,8 +41,10 @@ export function NotificationsModal({ visible, onClose, onClearAll }: Notificatio
                 fontSize: theme.typography.fontSize.base,
                 color: theme.colors.text.gray300,
               }}>
-              Ready for <Text className="font-semibold">Upper Body Power</Text>?{'\n'}Scheduled for
-              6:00 PM today.
+              {t('notifications.types.workoutReminder.description', {
+                workoutName: 'Upper Body Power',
+                time: '6:00 PM',
+              })}
             </Text>
           ),
           time: '4 hours ago',
@@ -59,7 +60,7 @@ export function NotificationsModal({ visible, onClose, onClearAll }: Notificatio
           type: 'workout-completed' as const,
           icon: <CheckCircle2 size={theme.iconSize.md} color={theme.colors.accent.secondary} />,
           iconBg: theme.colors.background.iconDarkest,
-          title: 'Workout Completed!',
+          title: t('notifications.types.workoutCompleted.title'),
           description: (
             <Text
               className="leading-relaxed"
@@ -67,8 +68,10 @@ export function NotificationsModal({ visible, onClose, onClearAll }: Notificatio
                 fontSize: theme.typography.fontSize.base,
                 color: theme.colors.text.gray300,
               }}>
-              Great job crushing <Text className="font-semibold">Morning Run</Text>. You burned 310{' '}
-              {t('common.kcal')}.
+              {t('notifications.types.workoutCompleted.description', {
+                workoutName: 'Morning Run',
+                calories: 310,
+              })}
             </Text>
           ),
           time: 'Yesterday, 8:45 AM',
@@ -78,7 +81,7 @@ export function NotificationsModal({ visible, onClose, onClearAll }: Notificatio
           type: 'kudos' as const,
           icon: <ThumbsUp size={theme.iconSize.md} color={theme.colors.status.info} />,
           iconBg: theme.colors.background.iconDarkest,
-          title: 'Kudos Received',
+          title: t('notifications.types.kudosReceived.title'),
           description: (
             <Text
               className="leading-relaxed"
@@ -86,8 +89,11 @@ export function NotificationsModal({ visible, onClose, onClearAll }: Notificatio
                 fontSize: theme.typography.fontSize.base,
                 color: theme.colors.text.gray300,
               }}>
-              Sarah and 3 others liked your recent milestone:{' '}
-              <Text className="italic">{'"New Squat PR!"'}</Text>
+              {t('notifications.types.kudosReceived.description', {
+                name: 'Sarah',
+                count: 3,
+                milestone: 'New Squat PR!',
+              })}
             </Text>
           ),
           time: 'Yesterday, 2:15 PM',
@@ -102,8 +108,8 @@ export function NotificationsModal({ visible, onClose, onClearAll }: Notificatio
           type: 'weekly-report' as const,
           icon: <Clock size={theme.iconSize.md} color={theme.colors.status.purple} />,
           iconBg: theme.colors.background.iconDarkest,
-          title: 'Weekly Report Ready',
-          description: 'Your progress report for last week is available. Check your stats.',
+          title: t('notifications.types.weeklyReport.title'),
+          description: t('notifications.types.weeklyReport.description'),
           time: 'Mon, 9:00 AM',
         },
       ],

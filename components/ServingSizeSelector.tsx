@@ -9,20 +9,16 @@ type ServingSizeSelectorProps = {
   quickSizes?: { label: string; value: number }[];
 };
 
-export function ServingSizeSelector({
-  value,
-  onChange,
-  quickSizes,
-}: ServingSizeSelectorProps) {
+export function ServingSizeSelector({ value, onChange, quickSizes }: ServingSizeSelectorProps) {
   const { t } = useTranslation();
-  
+
   const defaultQuickSizes = [
     { label: `50${t('foodDetails.unitGrams')}`, value: 50 },
     { label: `100${t('foodDetails.unitGrams')}`, value: 100 },
     { label: `200${t('foodDetails.unitGrams')}`, value: 200 },
     { label: `1 ${t('foodDetails.unitCup')}`, value: 240 },
   ];
-  
+
   const effectiveQuickSizes = quickSizes || defaultQuickSizes;
 
   const handleDecrease = () => {

@@ -50,7 +50,12 @@
     "macros": {
       "protein": "Proteína",
       "carbs": "Carbohidratos",
-      "fat": "Grasa"
+      "fat": "Grasa",
+      "fiber": "Fibra",
+      "proteinLegend": "Prot",
+      "carbsLegend": "Carbs",
+      "fatLegend": "Grasas",
+      "fiberLegend": "Fibras"
     },
     "actions": {
       "scanBarcode": "Escanear Código",

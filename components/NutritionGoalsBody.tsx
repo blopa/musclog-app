@@ -294,7 +294,7 @@ export function NutritionGoalsBody({
             onChange={setFats}
           />
           <MacroCard
-            label={t('food.macros.fiber') || 'Fiber'}
+            label={t('food.macros.fiber')}
             kcalPerGram={t('nutritionGoals.kcalPerGram.fiber')}
             value={fiber}
             min={0}

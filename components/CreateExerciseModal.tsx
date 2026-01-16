@@ -76,7 +76,8 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
   };
 
   const primaryMuscleLabel = primaryMuscle
-    ? PRIMARY_MUSCLES.find((m) => m.value === primaryMuscle)?.label || t('exercises.createExercise.selectPrimaryMuscle')
+    ? PRIMARY_MUSCLES.find((m) => m.value === primaryMuscle)?.label ||
+      t('exercises.createExercise.selectPrimaryMuscle')
     : t('exercises.createExercise.selectPrimaryMuscle');
 
   const pickerMenuItems = PRIMARY_MUSCLES.map((muscle) => ({
@@ -89,7 +90,10 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
   }));
 
   return (
-    <FullScreenModal visible={visible} onClose={onClose} title={t('exercises.createExercise.title')}>
+    <FullScreenModal
+      visible={visible}
+      onClose={onClose}
+      title={t('exercises.createExercise.title')}>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="px-4 py-2" style={{ gap: 24 }}>
           {/* Exercise Name */}
@@ -184,19 +188,25 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
 
           {/* Add Visuals Section */}
           <View style={{ gap: 12 }}>
-            <Text className="text-lg font-bold tracking-tight text-text-primary">{t('exercises.createExercise.addVisuals')}</Text>
+            <Text className="text-lg font-bold tracking-tight text-text-primary">
+              {t('exercises.createExercise.addVisuals')}
+            </Text>
             <View className="flex-row gap-4">
               <Pressable
                 onPress={handleUploadImage}
                 className="flex-1 flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-white/10 bg-bg-card/30 p-4 active:border-accent-primary active:bg-accent-primary/5">
                 <Camera size={24} color={theme.colors.text.tertiary} />
-                <Text className="text-xs font-medium text-text-secondary">{t('exercises.createExercise.uploadImage')}</Text>
+                <Text className="text-xs font-medium text-text-secondary">
+                  {t('exercises.createExercise.uploadImage')}
+                </Text>
               </Pressable>
               <Pressable
                 onPress={handleVideoURL}
                 className="flex-1 flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-white/10 bg-bg-card/30 p-4 active:border-accent-primary active:bg-accent-primary/5">
                 <Link size={24} color={theme.colors.text.tertiary} />
-                <Text className="text-xs font-medium text-text-secondary">{t('exercises.createExercise.videoURL')}</Text>
+                <Text className="text-xs font-medium text-text-secondary">
+                  {t('exercises.createExercise.videoURL')}
+                </Text>
               </Pressable>
             </View>
           </View>

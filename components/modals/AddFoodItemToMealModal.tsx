@@ -184,7 +184,9 @@ function FoodResultCard({
                   fontWeight: theme.typography.fontWeight.bold,
                   color: isSelected ? theme.colors.accent.primary : theme.colors.text.secondary,
                 }}>
-                {isSelected ? `${calories} ${t('common.kcal')}` : `${food.caloriesPer100g} ${t('common.kcal')}`}
+                {isSelected
+                  ? `${calories} ${t('common.kcal')}`
+                  : `${food.caloriesPer100g} ${t('common.kcal')}`}
               </Text>
             </View>
           </View>

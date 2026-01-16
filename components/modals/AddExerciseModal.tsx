@@ -219,7 +219,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
                 label={t('workouts.addExercise.weight')}
                 value={weight}
                 onChangeText={setWeight}
-                unit="KG"
+                unit={t('workoutSession.kg')}
                 onIncrement={() => setWeight((prev) => (parseFloat(prev) + 2.5).toString())}
                 onDecrement={() => setWeight((prev) => (parseFloat(prev) - 2.5).toString())}
               />

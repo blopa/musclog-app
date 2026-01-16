@@ -50,7 +50,12 @@
     "macros": {
       "protein": "Eiwit",
       "carbs": "Koolhydraten",
-      "fat": "Vet"
+      "fat": "Vet",
+      "fiber": "Vezels",
+      "proteinLegend": "Prot",
+      "carbsLegend": "Carbs",
+      "fatLegend": "Vetten",
+      "fiberLegend": "Vezels"
     },
     "actions": {
       "scanBarcode": "Barcode Scannen",

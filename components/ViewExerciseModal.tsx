@@ -249,7 +249,9 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
         {/* Workouts Section */}
         <View className="px-6 py-4">
           <View className="mb-4 flex-row items-center justify-between">
-            <Text className="text-2xl font-bold text-white">{t('exercises.viewExercise.workoutsUsingThis')}</Text>
+            <Text className="text-2xl font-bold text-white">
+              {t('exercises.viewExercise.workoutsUsingThis')}
+            </Text>
             <View
               className="rounded-full px-3 py-1.5"
               style={{ backgroundColor: 'rgba(52, 211, 153, 0.2)' }}>

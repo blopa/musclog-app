@@ -177,7 +177,29 @@
       "yesterday": "YESTERDAY",
       "earlier": "EARLIER"
     },
-    "startNow": "Start Now"
+    "startNow": "Start Now",
+    "types": {
+      "aiInsight": {
+        "title": "AI Insight",
+        "description": "Based on your recent lifts, try increasing your protein intake by 15g today for optimal recovery."
+      },
+      "workoutReminder": {
+        "title": "Workout Reminder",
+        "description": "Ready for {{workoutName}}? Scheduled for {{time}} today."
+      },
+      "workoutCompleted": {
+        "title": "Workout Completed!",
+        "description": "Great job crushing {{workoutName}}. You burned {{calories}} kcal."
+      },
+      "kudosReceived": {
+        "title": "Kudos Received",
+        "description": "{{name}} and {{count}} others liked your recent milestone: \"{{milestone}}\""
+      },
+      "weeklyReport": {
+        "title": "Weekly Report Ready",
+        "description": "Your progress report for last week is available. Check your stats."
+      }
+    }
   },
   "userMenu": {
     "greeting": "Account",
