@@ -80,7 +80,7 @@ export function Slider({
         style={{
           width: '100%',
           height: theme.size['10'],
-          zIndex: variant === 'gradient' ? 1 : 0,
+          zIndex: variant === 'gradient' ? theme.zIndex.aboveBase : theme.zIndex.base,
         }}
         value={value}
         minimumValue={min}

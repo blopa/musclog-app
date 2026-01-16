@@ -363,6 +363,7 @@ export const theme = {
       // Specific padding values found in codebase
       '5': 20,
       '6': 24,
+      '4xl': 120, // Large padding for footer spacing
       // Fractional padding values
       xsQuarter: 1, // xs / 4 = 4 / 4 = 1px
       xsHalf: 2, // xs / 2 = 4 / 2 = 2px
@@ -403,6 +404,7 @@ export const theme = {
       xl: 24,
       '2xl': 32,
       '3xl': 48,
+      '4xl': 120, // Large margin for footer spacing
     },
   },
 
@@ -624,6 +626,7 @@ export const theme = {
   // Z-index values (for layering elements)
   zIndex: {
     base: 0, // Base layer
+    aboveBase: 1, // Just above base layer (for sliders, etc.)
     overlayLow: 5, // Low-level overlays (gradients, backgrounds)
     dropdown: 10, // Dropdown menus
     sticky: 20, // Sticky headers

@@ -152,7 +152,7 @@ export function FoodInfoCard({ food }: FoodInfoCardProps) {
           <View
             className="h-1.5 rounded-full"
             style={{
-              width: macroViewIndex === 0 ? 6 : 6,
+              width: theme.spacing.padding['1half'],
               backgroundColor:
                 macroViewIndex === 0 ? theme.colors.text.primary : theme.colors.text.primary20,
             }}
@@ -160,7 +160,7 @@ export function FoodInfoCard({ food }: FoodInfoCardProps) {
           <View
             className="h-1.5 rounded-full"
             style={{
-              width: macroViewIndex === 1 ? 6 : 6,
+              width: theme.spacing.padding['1half'],
               backgroundColor:
                 macroViewIndex === 1 ? theme.colors.text.primary : theme.colors.text.primary20,
             }}

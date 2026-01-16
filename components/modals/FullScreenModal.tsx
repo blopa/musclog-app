@@ -99,7 +99,9 @@ export function FullScreenModal({
               className="flex-1"
               showsVerticalScrollIndicator={false}
               style={webScrollViewStyle}
-              contentContainerStyle={{ paddingBottom: footer ? 120 : 20 }}>
+              contentContainerStyle={{
+                paddingBottom: footer ? theme.spacing.padding['4xl'] : theme.spacing.padding.lg,
+              }}>
               {children}
             </ScrollView>
           ) : (
@@ -110,7 +112,7 @@ export function FullScreenModal({
             <View
               className="absolute bottom-0 left-0 right-0"
               style={{
-                paddingBottom: Platform.OS === 'web' ? 20 : insets.bottom,
+                paddingBottom: Platform.OS === 'web' ? theme.spacing.padding.lg : insets.bottom,
                 paddingHorizontal: theme.spacing.padding.zero,
                 backgroundColor: 'transparent',
               }}>

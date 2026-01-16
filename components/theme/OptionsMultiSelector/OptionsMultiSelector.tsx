@@ -383,7 +383,7 @@ export function OptionsMultiSelector<T extends string | number>({
         style={{
           flexDirection: 'row',
           alignItems: 'stretch',
-          zIndex: isHighestSelected ? 2000 : 1,
+          zIndex: isHighestSelected ? theme.zIndex.dragItem : theme.zIndex.aboveBase,
         }}>
         {renderGroupIndicator(groupPosition, option.groupId, isFirstInGroup)}
         <View style={{ flex: 1 }}>
