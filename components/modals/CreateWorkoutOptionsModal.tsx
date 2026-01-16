@@ -95,7 +95,10 @@ export function CreateWorkoutOptionsModal({
           alignItems: 'center',
           justifyContent: 'space-between',
           paddingHorizontal: theme.spacing.padding.base,
-          paddingTop: Platform.OS === 'ios' ? 60 : 40,
+          paddingTop:
+            Platform.OS === 'ios'
+              ? theme.components.modal.headerPaddingTop.ios
+              : theme.components.modal.headerPaddingTop.android,
           paddingBottom: theme.spacing.padding.sm,
           zIndex: theme.zIndex.popover,
         }}>

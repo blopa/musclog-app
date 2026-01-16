@@ -320,7 +320,9 @@ export function FoodSearchModal({
               className="w-full rounded-2xl border border-border-light bg-bg-overlay py-3.5 pl-11 pr-10 text-base text-text-primary"
               style={{
                 backgroundColor: theme.colors.background.cardDark,
-                borderColor: searchQuery ? theme.colors.accent.secondary31 : theme.colors.border.light,
+                borderColor: searchQuery
+                  ? theme.colors.accent.secondary31
+                  : theme.colors.border.light,
               }}
               autoFocus
             />

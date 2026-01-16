@@ -204,9 +204,7 @@ export function GenericCard({
   }
 
   // Static card
-  const workoutClassName = isWorkoutVariant
-    ? 'mb-8 w-full overflow-hidden border p-6'
-    : undefined;
+  const workoutClassName = isWorkoutVariant ? 'mb-8 w-full overflow-hidden border p-6' : undefined;
 
   return (
     <View className={workoutClassName} style={getCardStyle()}>

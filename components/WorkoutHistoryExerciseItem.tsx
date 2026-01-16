@@ -32,7 +32,7 @@ export function ExerciseItem({ exercise, isLast }: ExerciseItemProps) {
           className="absolute top-12 w-0.5"
           style={{
             bottom: -theme.spacing.padding.xl,
-            left: 19, // Specific positioning for timeline alignment
+            left: theme.components.workoutHistory.timelineLeftOffset,
             backgroundColor: theme.colors.border.light,
           }}
         />

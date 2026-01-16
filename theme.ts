@@ -146,6 +146,7 @@ export const theme = {
       info10: 'rgba(59, 130, 246, 0.1)', // Info with 10% opacity
       purple40: 'rgba(168, 85, 247, 0.4)', // Purple with 40% opacity
       purple20: 'rgba(168, 85, 247, 0.2)', // Purple with 20% opacity
+      purple13: 'rgba(168, 85, 247, 0.13)', // Purple with 13% opacity (hex '22')
       purple10: 'rgba(168, 85, 247, 0.1)', // Purple with 10% opacity
       amber10: 'rgba(251, 191, 36, 0.1)', // Amber with 10% opacity
       warning10: 'rgba(249, 115, 22, 0.1)', // Warning with 10% opacity
@@ -212,6 +213,7 @@ export const theme = {
       white50: 'rgba(255, 255, 255, 0.5)', // White with 50% opacity
       white60: 'rgba(255, 255, 255, 0.6)', // White with 60% opacity
       white70: 'rgba(255, 255, 255, 0.7)', // White with 70% opacity
+      white90: 'rgba(255, 255, 255, 0.9)', // White with 90% opacity
       white80: 'rgba(255, 255, 255, 0.8)', // White with 80% opacity
       white30: 'rgba(255, 255, 255, 0.3)', // White with 30% opacity
       white20: 'rgba(255, 255, 255, 0.2)', // White with 20% opacity
@@ -748,6 +750,11 @@ export const theme = {
       defaultMaxWidth: 384,
       confirmationMaxWidth: 416,
       bottomSheetInitialOffset: 300, // Initial offset for bottom sheet animations
+      // Platform-specific padding for modal headers
+      headerPaddingTop: {
+        ios: 60, // iOS safe area top padding
+        android: 40, // Android top padding
+      },
     },
     workoutSession: {
       heroImageHeight: 520,
@@ -758,6 +765,10 @@ export const theme = {
     },
     stepperInput: {
       width: 64,
+    },
+    // Positioning values
+    workoutHistory: {
+      timelineLeftOffset: 19, // Timeline line left offset for alignment
     },
   },
 

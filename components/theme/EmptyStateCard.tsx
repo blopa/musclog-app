@@ -47,9 +47,7 @@ export function EmptyStateCard({
       )}
 
       {/* Content */}
-      <View
-        className="flex-col items-center gap-2"
-        style={{ maxWidth: theme.maxWidth['480'] }}>
+      <View className="flex-col items-center gap-2" style={{ maxWidth: theme.maxWidth['480'] }}>
         <Text className="text-center text-xl font-bold leading-tight tracking-tight text-text-primary">
           {title}
         </Text>

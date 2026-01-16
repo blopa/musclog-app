@@ -46,7 +46,7 @@ export default function InputsTestScreen() {
       label: 'Option Two',
       description: 'Single select second option',
       icon: Search,
-      iconBgColor: theme.colors.status.purple + '22',
+      iconBgColor: theme.colors.status.purple13,
       iconColor: theme.colors.status.purple,
     },
   ];
@@ -57,7 +57,7 @@ export default function InputsTestScreen() {
       label: 'Apple',
       description: 'Select apples',
       icon: Search,
-      iconBgColor: theme.colors.status.purple + '22',
+      iconBgColor: theme.colors.status.purple13,
       iconColor: theme.colors.status.purple,
     },
     {
@@ -73,7 +73,7 @@ export default function InputsTestScreen() {
       label: 'Cherry',
       description: 'Select cherries',
       icon: Calendar,
-      iconBgColor: theme.colors.status.purple + '22',
+      iconBgColor: theme.colors.status.purple13,
       iconColor: theme.colors.status.purple,
     },
   ];

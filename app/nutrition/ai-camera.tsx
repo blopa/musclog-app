@@ -95,27 +95,35 @@ export default function AICameraScreen() {
 
   if (!permission) {
     return (
-      <View className="flex-1 items-center justify-center bg-black">
-        <Text className="text-white">{t('food.aiCamera.requestingPermission')}</Text>
+      <View
+        className="flex-1 items-center justify-center"
+        style={{ backgroundColor: theme.colors.text.black }}>
+        <Text style={{ color: theme.colors.text.white }}>
+          {t('food.aiCamera.requestingPermission')}
+        </Text>
       </View>
     );
   }
 
   if (!permission.granted) {
     return (
-      <View className="flex-1 items-center justify-center bg-black px-6">
-        <Text className="mb-4 text-center text-lg text-white">
+      <View
+        className="flex-1 items-center justify-center px-6"
+        style={{ backgroundColor: theme.colors.text.black }}>
+        <Text className="mb-4 text-center text-lg" style={{ color: theme.colors.text.white }}>
           {t('food.aiCamera.permissionRequired')}
         </Text>
         <Pressable onPress={requestPermission} className="rounded-xl bg-accent-primary px-6 py-3">
-          <Text className="font-semibold text-black">{t('food.aiCamera.grantPermission')}</Text>
+          <Text className="font-semibold" style={{ color: theme.colors.text.black }}>
+            {t('food.aiCamera.grantPermission')}
+          </Text>
         </Pressable>
       </View>
     );
   }
 
   return (
-    <View className="flex-1 bg-black">
+    <View className="flex-1" style={{ backgroundColor: theme.colors.text.black }}>
       <StatusBar barStyle="light-content" />
       <SafeAreaView className="flex-1" edges={['top']}>
         {/* Camera Background */}
@@ -164,7 +172,9 @@ export default function AICameraScreen() {
                 transform: [{ scale: pulseAnim }],
               }}
             />
-            <Text className="text-xs font-semibold uppercase tracking-wide text-white/90">
+            <Text
+              className="text-xs font-semibold uppercase tracking-wide"
+              style={{ color: theme.colors.overlay.white90 }}>
               {t('food.aiCamera.aiDetecting')}
             </Text>
           </View>
@@ -227,7 +237,9 @@ export default function AICameraScreen() {
           </View>
 
           {/* Instruction Text */}
-          <Text className="mt-6 text-center text-sm font-medium text-white/90 drop-shadow-md">
+          <Text
+            className="mt-6 text-center text-sm font-medium drop-shadow-md"
+            style={{ color: theme.colors.overlay.white90 }}>
             {t('food.aiCamera.instruction')}
           </Text>
         </View>
