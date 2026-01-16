@@ -101,9 +101,11 @@ export const theme = {
       primary30: 'rgba(34, 197, 94, 0.3)', // Primary with 30% opacity
       primary20: 'rgba(34, 197, 94, 0.2)', // Primary with 20% opacity
       primary40: 'rgba(34, 197, 94, 0.4)', // Primary with 40% opacity
+      primary50: 'rgba(34, 197, 94, 0.5)', // Primary with 50% opacity
       primary5: 'rgba(34, 197, 94, 0.05)', // Primary with 5% opacity
       secondary10: 'rgba(52, 211, 153, 0.1)', // Secondary with 10% opacity
       secondary20: 'rgba(52, 211, 153, 0.2)', // Secondary with 20% opacity
+      secondary31: 'rgba(52, 211, 153, 0.31)', // Secondary with 31% opacity
     },
 
     // Border colors
@@ -239,6 +241,8 @@ export const theme = {
       lightDim: 0.1, // Light dim opacity
       veryLight: 0.05, // Very light opacity
       lightMedium: 0.08, // Light medium opacity
+      veryLight063: 0.063, // Very light opacity ~6.3%
+      medium31: 0.31, // Medium opacity ~31%
       // Additional opacity values found in codebase
       dim30: 0.3, // 30% opacity
       medium50: 0.5, // 50% opacity

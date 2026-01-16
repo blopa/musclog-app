@@ -173,7 +173,9 @@ function FoodItemCard({ food, onAddPress }: FoodItemCardProps) {
         className="h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border"
         style={{
           backgroundColor: food.iconBgColor || theme.colors.background.cardDark,
-          borderColor: food.iconColor ? addOpacityToHex(food.iconColor, 0.125) : 'transparent',
+          borderColor: food.iconColor
+            ? addOpacityToHex(food.iconColor, theme.colors.opacity.iconBackground)
+            : 'transparent',
         }}>
         {food.image ? (
           <Image
@@ -200,10 +202,10 @@ function FoodItemCard({ food, onAddPress }: FoodItemCardProps) {
               className="rounded border px-1.5 py-0.5"
               style={{
                 backgroundColor: food.gradeColor
-                  ? addOpacityToHex(food.gradeColor, 0.063)
+                  ? addOpacityToHex(food.gradeColor, theme.colors.opacity.veryLight063)
                   : theme.colors.accent.primary5,
                 borderColor: food.gradeColor
-                  ? addOpacityToHex(food.gradeColor, 0.125)
+                  ? addOpacityToHex(food.gradeColor, theme.colors.opacity.iconBackground)
                   : theme.colors.accent.primary20,
               }}>
               <Text
@@ -318,9 +320,7 @@ export function FoodSearchModal({
               className="w-full rounded-2xl border border-border-light bg-bg-overlay py-3.5 pl-11 pr-10 text-base text-text-primary"
               style={{
                 backgroundColor: theme.colors.background.cardDark,
-                borderColor: searchQuery
-                  ? addOpacityToHex(theme.colors.accent.secondary, 0.31)
-                  : theme.colors.border.light,
+                borderColor: searchQuery ? theme.colors.accent.secondary31 : theme.colors.border.light,
               }}
               autoFocus
             />

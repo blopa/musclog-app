@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TextInput as RNTextInput } from 'react-native';
-import { theme, addOpacityToHex } from '../../theme';
+import { theme } from '../../theme';
 
 type TestInputProps = {
   label: string;
@@ -36,7 +36,7 @@ export function TextInput({
         style={
           focused
             ? {
-                borderColor: addOpacityToHex(theme.colors.accent.primary, 0.5),
+                borderColor: theme.colors.accent.primary50,
                 shadowColor: theme.colors.accent.primary,
                 shadowOffset: theme.shadowOffset.zero,
                 shadowOpacity: theme.shadowOpacity.light,
