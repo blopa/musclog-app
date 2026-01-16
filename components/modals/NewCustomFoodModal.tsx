@@ -102,12 +102,13 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
                 placeholder="Scan or enter barcode"
               />
               <Pressable
-                className="absolute right-2"
+                className="absolute right-2 items-center justify-center"
                 style={{
-                  top: 34, // Label height (18px) + half of input height (28px)
+                  top: 36, // Label (~20px) + gap-2 (8px) + (input height 56px - button height 40px) / 2 = 28 + 8 = 36
+                  width: 40,
+                  height: 40,
                   backgroundColor: theme.colors.accent.primary10,
                   borderRadius: 8,
-                  padding: 8,
                 }}>
                 <ScanLine size={theme.iconSize.md} color={theme.colors.accent.primary} />
               </Pressable>
