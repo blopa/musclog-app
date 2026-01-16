@@ -103,7 +103,7 @@ export function EndWorkoutModal({
               colors={[
                 theme.colors.background.cardElevated,
                 theme.colors.background.card,
-                theme.colors.background.cardDark,
+                theme.colors.background.secondaryDark,
               ]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}

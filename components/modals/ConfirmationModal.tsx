@@ -80,7 +80,7 @@ export function ConfirmationModal({
         <Pressable
           className="w-full overflow-hidden border border-border-dark"
           style={{
-            backgroundColor: theme.colors.background.cardDark,
+            backgroundColor: theme.colors.background.secondaryDark,
             maxWidth: modalMaxWidth,
             borderColor: theme.colors.border.accent,
             borderRadius: theme.borderRadius.xl,

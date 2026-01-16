@@ -44,7 +44,7 @@ export function TrackingMethodButton({
   ) : (
     <View
       className="h-10 w-10 items-center justify-center rounded-lg"
-      style={{ backgroundColor: iconBgColor || theme.colors.background.cardDark }}>
+      style={{ backgroundColor: iconBgColor || theme.colors.background.secondaryDark }}>
       <Icon size={theme.iconSize.md} color={theme.colors.text.primary} />
     </View>
   );

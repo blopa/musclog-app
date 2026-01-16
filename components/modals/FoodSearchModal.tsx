@@ -172,7 +172,7 @@ function FoodItemCard({ food, onAddPress }: FoodItemCardProps) {
       <View
         className="h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border"
         style={{
-          backgroundColor: food.iconBgColor || theme.colors.background.cardDark,
+          backgroundColor: food.iconBgColor || theme.colors.background.secondaryDark,
           borderColor: food.iconColor
             ? addOpacityToHex(food.iconColor, theme.colors.opacity.subtle)
             : 'transparent',
@@ -229,7 +229,7 @@ function FoodItemCard({ food, onAddPress }: FoodItemCardProps) {
         className="h-8 w-8 items-center justify-center rounded-full bg-bg-overlay active:bg-accent-primary"
         onPress={onAddPress}
         style={{
-          backgroundColor: theme.colors.background.cardDark,
+          backgroundColor: theme.colors.background.secondaryDark,
         }}>
         <Plus size={theme.iconSize.lg} color={theme.colors.accent.primary} />
       </Pressable>
@@ -319,7 +319,7 @@ export function FoodSearchModal({
               onChangeText={setSearchQuery}
               className="w-full rounded-2xl border border-border-light bg-bg-overlay py-3.5 pl-11 pr-10 text-base text-text-primary"
               style={{
-                backgroundColor: theme.colors.background.cardDark,
+                backgroundColor: theme.colors.background.secondaryDark,
                 borderColor: searchQuery
                   ? theme.colors.accent.secondary31
                   : theme.colors.border.light,

@@ -120,7 +120,7 @@ export function GenericCard({
     // Highlighted variant (or other variants): elevated card background with pressed state
     return {
       backgroundColor: pressed
-        ? theme.colors.background.cardDark
+        ? theme.colors.background.secondaryDark
         : theme.colors.background.cardElevated,
       borderWidth: theme.borderWidth.thin,
       borderColor: theme.colors.background.white5,

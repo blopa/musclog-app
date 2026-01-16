@@ -265,7 +265,7 @@ function FoodResultCard({
             style={{
               flexDirection: 'row',
               alignItems: 'center',
-              backgroundColor: theme.colors.background.cardDark,
+              backgroundColor: theme.colors.background.secondaryDark,
               borderRadius: theme.borderRadius.sm,
               paddingHorizontal: theme.spacing.padding.sm,
               height: theme.components.button.height.sm,

@@ -148,7 +148,7 @@ export function AddFoodModal({
                 icon={ScanLine}
                 title={t('food.addFoodModal.scanBarcode.title')}
                 description={t('food.addFoodModal.scanBarcode.description')}
-                iconBgColor={theme.colors.background.cardDark}
+                iconBgColor={theme.colors.background.secondaryDark}
                 onPress={() => {
                   onScanBarcodePress?.();
                   onClose();
@@ -158,7 +158,7 @@ export function AddFoodModal({
                 icon={Search}
                 title={t('food.addFoodModal.searchFood.title')}
                 description={t('food.addFoodModal.searchFood.description')}
-                iconBgColor={theme.colors.background.cardDark}
+                iconBgColor={theme.colors.background.secondaryDark}
                 onPress={() => {
                   onSearchFoodPress?.();
                   onClose();

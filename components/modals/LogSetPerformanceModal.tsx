@@ -179,7 +179,7 @@ export function LogSetPerformanceModal({
                 min={1}
                 max={10}
                 onChange={setRpe}
-                trackColor={theme.colors.background.cardDark}
+                trackColor={theme.colors.background.secondaryDark}
                 thumbColor={theme.colors.background.white}
               />
             </View>

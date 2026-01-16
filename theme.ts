@@ -12,10 +12,7 @@ export const theme = {
       tertiary: '#0a0f0d', // Darker backgrounds (food page)
       card: '#141a17', // Card backgrounds
       cardElevated: '#1a2520', // Elevated card backgrounds
-      cardDark: '#0f2419', // Dark card backgrounds (active states)
-      navBar: '#0f251f', // Navigation bar background
-      navActive: '#0f2419', // Active navigation item background
-      screen: '#0a1f1a', // Screen backgrounds
+      secondaryDark: '#0f2419', // Dark card backgrounds (active states)
       overlay: '#1a2f2a', // Overlay backgrounds
       filterTab: '#0f2f27', // Filter tab background
       iconDark: '#1a3d35', // Dark icon backgrounds

@@ -71,7 +71,7 @@ export function MealItemCard({
               height: theme.size['100'],
               borderRadius: theme.borderRadius.lg,
               overflow: 'hidden',
-              backgroundColor: theme.colors.background.cardDark,
+              backgroundColor: theme.colors.background.secondaryDark,
             }}>
             <Image source={image} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
           </View>

@@ -87,7 +87,7 @@ export default function CardsTestScreen() {
             calories={500}
             prs={3}
             image={{ uri: 'https://example.com/leg-day.jpg' }}
-            imageBgColor={theme.colors.background.cardDark}
+            imageBgColor={theme.colors.background.secondaryDark}
           />
         </TestSection>
 

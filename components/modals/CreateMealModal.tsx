@@ -179,7 +179,7 @@ const MealMacrosSummary = ({
           </View>
           <View
             style={{
-              backgroundColor: theme.colors.background.cardDark,
+              backgroundColor: theme.colors.background.secondaryDark,
               paddingHorizontal: theme.spacing.padding['2half'],
               paddingVertical: theme.spacing.padding.xs,
               borderRadius: theme.borderRadius.full,
@@ -362,7 +362,7 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
                       width: theme.iconSize['5xl'],
                       height: theme.iconSize['5xl'],
                       borderRadius: theme.spacing.padding['2half'],
-                      backgroundColor: theme.colors.background.cardDark,
+                      backgroundColor: theme.colors.background.secondaryDark,
                       alignItems: 'center',
                       justifyContent: 'center',
                       borderWidth: theme.borderWidth.thin,
@@ -438,7 +438,7 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
                   width: theme.iconSize.xl,
                   height: theme.iconSize.xl,
                   borderRadius: theme.borderRadius.md,
-                  backgroundColor: theme.colors.background.cardDark,
+                  backgroundColor: theme.colors.background.secondaryDark,
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}>

@@ -36,7 +36,7 @@ export function RestOverStatusIcon() {
       <View
         className="relative z-10 h-24 w-24 items-center justify-center rounded-full border"
         style={{
-          backgroundColor: theme.colors.background.cardDark,
+          backgroundColor: theme.colors.background.secondaryDark,
           borderColor: theme.colors.status.emerald20,
           shadowColor: theme.colors.accent.primary,
           shadowOffset: theme.shadowOffset.zero,
