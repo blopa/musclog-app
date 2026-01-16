@@ -17,7 +17,7 @@ export default function LandingScreen() {
     <View className="flex-1">
       {/* Main Background Gradient */}
       <LinearGradient
-        colors={['#11211a', '#0a1f1a', '#0f251f']}
+        colors={theme.colors.gradients.landingBackground}
         start={{ x: 0, y: 0 }}
         end={{ x: 0, y: 1 }}
         className="absolute inset-0"

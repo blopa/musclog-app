@@ -36,8 +36,20 @@ export const theme = {
       darkGreen80: 'rgba(27, 50, 39, 0.8)', // Dark green with 80% opacity
       black15: 'rgba(0, 0, 0, 0.15)', // Black with 15% opacity
       black20: 'rgba(0, 0, 0, 0.2)', // Black with 20% opacity
+      black30: 'rgba(0, 0, 0, 0.3)', // Black with 30% opacity
+      black40: 'rgba(0, 0, 0, 0.4)', // Black with 40% opacity
       black80: 'rgba(0, 0, 0, 0.8)', // Black with 80% opacity
+      black90: 'rgba(0, 0, 0, 0.9)', // Black with 90% opacity
       aiCardBackground: '#15261f', // Dark green for AI card background
+      darkGreenVariant: '#1a3a2a', // Dark green variant for tags/badges
+      darkGreenOverlay: 'rgba(26, 46, 42, 0.9)', // Dark green overlay (rgba(26, 46, 42, 0.9))
+      darkGreenSolid: '#1a2e2a', // Dark green solid color
+      darkGray: 'rgba(30, 35, 33, 0.4)', // Dark gray background with opacity
+      darkGray50: 'rgba(30, 35, 33, 0.5)', // Dark gray with 50% opacity
+      darkGray90: 'rgba(30, 35, 33, 0.9)', // Dark gray with 90% opacity
+      darkGraySolid: 'rgba(17, 20, 19, 0.5)', // Dark gray solid with opacity
+      darkGreenSolidAlt: 'rgba(42, 50, 46, 1)', // Alternative dark green solid
+      exerciseCardBackground: '#254637', // Exercise card background
       snackbarSuccess: '#0d3520', // Success snackbar background
       snackbarError: '#3d1515', // Error snackbar background
       buttonCard: '#1a3530', // Button/card background
@@ -48,6 +60,8 @@ export const theme = {
       white5: 'rgba(255, 255, 255, 0.05)', // White with 5% opacity
       white10: 'rgba(255, 255, 255, 0.1)', // White with 10% opacity
       white12: 'rgba(255, 255, 255, 0.125)', // White with ~12.5% opacity
+      white20: 'rgba(255, 255, 255, 0.2)', // White with 20% opacity
+      white30: 'rgba(255, 255, 255, 0.3)', // White with 30% opacity
     },
 
     // Text colors
@@ -133,6 +147,14 @@ export const theme = {
       emerald20: 'rgba(41, 224, 142, 0.2)', // Emerald-400 with 20% opacity
       yellow10: 'rgba(234, 179, 8, 0.1)', // Yellow with 10% opacity
       indigo10: 'rgba(99, 102, 241, 0.1)', // Indigo with 10% opacity
+      indigo20: 'rgba(99, 102, 241, 0.2)', // Indigo with 20% opacity
+      indigo600: '#4f46e5', // Indigo-600
+      indigo600Purple: '#5b21b6', // Purple-700 (for indigo gradients)
+      blue600: '#2563eb', // Blue-600
+      pink500: '#ec4899', // Pink-500 (already in macros but adding for convenience)
+      rose600: '#e11d48', // Rose-600
+      customGreen: '#95c6b0', // Custom green used in components
+      emeraldTeal: '#0d9488', // Teal-600 (for emerald-teal gradient)
       gray10: 'rgba(107, 114, 128, 0.1)', // Gray with 10% opacity
     },
 
@@ -167,6 +189,7 @@ export const theme = {
     // Overlay and opacity colors
     overlay: {
       black60: 'rgba(0, 0, 0, 0.6)', // Black with 60% opacity
+      black90: 'rgba(0, 0, 0, 0.9)', // Black with 90% opacity
       white50: 'rgba(255, 255, 255, 0.5)', // White with 50% opacity
       white60: 'rgba(255, 255, 255, 0.6)', // White with 60% opacity
       white70: 'rgba(255, 255, 255, 0.7)', // White with 70% opacity
@@ -176,6 +199,7 @@ export const theme = {
       white5: 'rgba(255, 255, 255, 0.05)', // White with 5% opacity
       black60Opacity: 'rgba(0, 0, 0, 0.6)', // Black with 60% opacity (for gradients)
       backdrop: 'rgba(10, 31, 26, 0.8)', // Background primary with 80% opacity (for modals)
+      darkGreenOverlayGradient: 'rgba(26, 46, 42, 0.9)', // Dark green overlay gradient
     },
 
     // Opacity values (for use in style objects)
@@ -187,6 +211,15 @@ export const theme = {
       full: 1.0,
       // Specific opacity values
       iconBackground: 0.125, // 12.5% for icon backgrounds
+      image: 0.6, // Image opacity
+      subtle: 0.2, // Subtle opacity
+      overlay: 0.9, // Overlay opacity
+      strong: 0.7, // Strong opacity
+      dim: 0.3, // Dim opacity
+      dimmer: 0.2, // Dimmer opacity
+      lightDim: 0.1, // Light dim opacity
+      veryLight: 0.05, // Very light opacity
+      lightMedium: 0.08, // Light medium opacity
     },
 
     // Gradient colors
@@ -209,6 +242,20 @@ export const theme = {
         'rgba(10, 31, 26, 0.85)',
         'rgba(10, 31, 26, 0.7)',
       ] as const,
+      indigoPurple: ['#4f46e5', '#5b21b6'] as const, // Indigo to purple gradient
+      emeraldTeal: ['#10b981', '#0d9488'] as const, // Emerald to teal gradient
+      pinkRose: ['#ec4899', '#e11d48'] as const, // Pink to rose gradient
+      blueEmerald: ['#2563eb', '#10b981'] as const, // Blue to emerald gradient
+      overlayDark: ['transparent', 'rgba(26, 46, 42, 0.9)', '#1a2e2a'] as const, // Dark overlay gradient
+      cameraOverlay: ['rgba(0,0,0,0.6)', 'transparent', 'rgba(0,0,0,0.9)'] as const, // Camera overlay gradient
+      onboardingAmbient: [
+        'rgba(99, 102, 241, 0.2)', // indigo-600/20
+        'rgba(41, 224, 142, 0.2)', // primary/20
+        'rgba(16, 185, 129, 0.2)', // emerald-400/20
+      ] as const,
+      landingBackground: ['#11211a', '#0a1f1a', '#0f251f'] as const, // Landing page background gradient
+      whiteSubtle: ['rgba(255, 255, 255, 0.1)', 'rgba(255, 255, 255, 0.05)'] as const, // Subtle white gradient
+      backdrop90: ['rgba(10, 31, 26, 0.9)'] as const, // Background with 90% opacity (for gradients)
     },
   },
 
@@ -446,6 +493,14 @@ export const theme = {
     '32': 128,
     '40': 160,
     '48': 192,
+    '56': 224,
+    '64': 256,
+    '100': 100, // Common spacing/height value
+    '120': 120, // Common spacing/height value
+    '150': 150, // Common size value
+    '250': 250, // Common size value
+    '300': 300, // Common size value
+    '384': 384, // Common height value
     // Fractional sizes (using valid keys)
     half: 2, // 0.5 * 4 = 2px
     '1half': 6, // 1.5 * 4 = 6px

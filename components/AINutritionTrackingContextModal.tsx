@@ -65,12 +65,12 @@ export function AINutritionTrackingContextModal({
             backgroundColor: 'transparent',
           }}>
           <LinearGradient
-            colors={['#6366f1', '#29e08e']}
+            colors={theme.colors.gradients.cta}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             className="absolute inset-0 rounded-xl"
           />
-          <Sparkles size={24} color="#ffffff" />
+          <Sparkles size={24} color={theme.colors.text.white} />
         </View>
       }>
       <View
@@ -86,8 +86,8 @@ export function AINutritionTrackingContextModal({
           <View
             className="w-full rounded-lg border p-4"
             style={{
-              backgroundColor: 'rgba(17, 20, 19, 0.5)',
-              borderColor: 'rgba(255, 255, 255, 0.1)',
+              backgroundColor: theme.colors.background.darkGraySolid,
+              borderColor: theme.colors.background.white10,
             }}
             collapsable={false}>
             <RNTextInput
@@ -97,7 +97,7 @@ export function AINutritionTrackingContextModal({
                 textAlignVertical: 'top',
               }}
               placeholder={t('food.aiNutritionContext.placeholder')}
-              placeholderTextColor="rgba(255, 255, 255, 0.2)"
+              placeholderTextColor={theme.colors.background.white20}
               value={mealDescription}
               onChangeText={setMealDescription}
               multiline
@@ -121,9 +121,9 @@ export function AINutritionTrackingContextModal({
                   className="rounded-full border px-4 py-2"
                   style={{
                     backgroundColor: isSelected
-                      ? 'rgba(255, 255, 255, 0.1)'
-                      : 'rgba(42, 50, 46, 1)',
-                    borderColor: 'rgba(255, 255, 255, 0.05)',
+                      ? theme.colors.background.white10
+                      : theme.colors.background.darkGreenSolidAlt,
+                    borderColor: theme.colors.background.white5,
                   }}>
                   <Text className="text-sm font-medium text-text-primary">{tag}</Text>
                 </Pressable>
@@ -138,8 +138,8 @@ export function AINutritionTrackingContextModal({
             onPress={handleCancel}
             className="flex-1 rounded-xl border px-6 py-4"
             style={{
-              backgroundColor: 'rgba(42, 50, 46, 1)',
-              borderColor: 'rgba(255, 255, 255, 0.05)',
+              backgroundColor: theme.colors.background.darkGreenSolidAlt,
+              borderColor: theme.colors.background.white5,
             }}>
             <Text className="text-center text-sm font-bold text-text-primary">
               {t('food.aiNutritionContext.cancel')}
@@ -152,7 +152,7 @@ export function AINutritionTrackingContextModal({
               overflow: 'hidden',
             }}>
             <LinearGradient
-              colors={['#6366f1', '#29e08e']}
+              colors={theme.colors.gradients.cta}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               className="absolute inset-0"
@@ -161,7 +161,7 @@ export function AINutritionTrackingContextModal({
               <Text className="text-sm font-bold text-white">
                 {t('food.aiNutritionContext.applyContext')}
               </Text>
-              <CheckCircle size={18} color="#ffffff" />
+              <CheckCircle size={18} color={theme.colors.text.white} />
             </View>
           </Pressable>
         </View>

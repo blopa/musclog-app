@@ -59,16 +59,16 @@ const MacroCard = ({
   <View
     style={{
       flex: 1,
-      backgroundColor: 'rgba(10, 31, 26, 0.6)',
+      backgroundColor: theme.colors.overlay.backdrop,
       borderRadius: theme.borderRadius.md,
-      padding: 10,
+      padding: theme.spacing.padding['2half'],
       borderWidth: theme.borderWidth.thin,
       borderColor: theme.colors.border.light,
       alignItems: 'center',
     }}>
     <Text
       style={{
-        fontSize: 10,
+        fontSize: theme.typography.fontSize['10'],
         fontWeight: theme.typography.fontWeight.bold,
         color: theme.colors.text.secondary,
         textTransform: 'uppercase',
@@ -90,7 +90,7 @@ const MacroCard = ({
         width: '100%',
         height: 4,
         backgroundColor: theme.colors.background.white10,
-        borderRadius: 2,
+        borderRadius: theme.borderRadius.xs / 4,
         marginTop: 8,
         overflow: 'hidden',
       }}>
@@ -99,7 +99,7 @@ const MacroCard = ({
           height: '100%',
           width: `${progress}%`,
           backgroundColor: color,
-          borderRadius: 2,
+          borderRadius: theme.borderRadius.xs / 4,
         }}
       />
     </View>
@@ -118,7 +118,7 @@ const MealMacrosSummary = ({
       style={{
         backgroundColor: theme.colors.background.cardElevated,
         borderRadius: theme.borderRadius.lg,
-        padding: 20,
+        padding: theme.spacing.padding.lg,
         marginBottom: 24,
         borderWidth: theme.borderWidth.thin,
         borderColor: theme.colors.border.light,
@@ -134,7 +134,7 @@ const MealMacrosSummary = ({
           width: 160,
           height: 160,
           backgroundColor: theme.colors.accent.primary20,
-          borderRadius: 80,
+          borderRadius: theme.size['20'] * 4,
           opacity: 0.5,
         }}
       />
@@ -146,7 +146,7 @@ const MealMacrosSummary = ({
           width: 160,
           height: 160,
           backgroundColor: `${theme.colors.status.indigo}20`,
-          borderRadius: 80,
+          borderRadius: theme.size['20'] * 4,
           opacity: 0.5,
         }}
       />
@@ -199,7 +199,7 @@ const MealMacrosSummary = ({
           </View>
         </View>
 
-        <View style={{ flexDirection: 'row', gap: 12 }}>
+        <View style={{ flexDirection: 'row', gap: theme.spacing.gap.md }}>
           <MacroCard
             label={t('food.macros.protein')}
             value="62g"
@@ -212,7 +212,12 @@ const MealMacrosSummary = ({
             progress={45}
             color={theme.colors.status.indigo}
           />
-          <MacroCard label={t('food.macros.fat')} value="24g" progress={30} color="#fbbf24" />
+          <MacroCard
+            label={t('food.macros.fat')}
+            value="24g"
+            progress={30}
+            color={theme.colors.status.amber}
+          />
         </View>
       </View>
     </View>
@@ -337,7 +342,7 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
             </Pressable>
           </View>
 
-          <View style={{ gap: 12 }}>
+          <View style={{ gap: theme.spacing.gap.md }}>
             {ingredients.map((item) => {
               const Icon = item.icon;
               return (
@@ -347,7 +352,7 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
                     flexDirection: 'row',
                     alignItems: 'center',
                     backgroundColor: theme.colors.background.card,
-                    padding: 12,
+                    padding: theme.spacing.padding.md,
                     borderRadius: theme.borderRadius.md,
                     borderWidth: theme.borderWidth.thin,
                     borderColor: theme.colors.border.light,
@@ -356,7 +361,7 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
                     style={{
                       width: 48,
                       height: 48,
-                      borderRadius: 10,
+                      borderRadius: theme.spacing.padding['2half'],
                       backgroundColor: theme.colors.background.cardDark,
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -376,19 +381,32 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
                       {item.name}
                     </Text>
                     <View
-                      style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 2 }}>
-                      <Text style={{ fontSize: 12, color: theme.colors.text.secondary }}>
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        gap: theme.spacing.gap.sm,
+                        marginTop: theme.size.xs / 2,
+                      }}>
+                      <Text
+                        style={{
+                          fontSize: theme.typography.fontSize.xs,
+                          color: theme.colors.text.secondary,
+                        }}>
                         {item.amount}
                       </Text>
                       <View
                         style={{
                           width: 2,
                           height: 2,
-                          borderRadius: 1,
+                          borderRadius: theme.size.xs / 4,
                           backgroundColor: theme.colors.text.tertiary,
                         }}
                       />
-                      <Text style={{ fontSize: 12, color: theme.colors.text.secondary }}>
+                      <Text
+                        style={{
+                          fontSize: theme.typography.fontSize.xs,
+                          color: theme.colors.text.secondary,
+                        }}>
                         {item.calories} {t('common.kcal')}
                       </Text>
                     </View>
@@ -406,7 +424,7 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: 8,
+                gap: theme.spacing.gap.sm,
                 paddingVertical: 16,
                 marginTop: 8,
                 borderRadius: theme.borderRadius.md,
@@ -419,7 +437,7 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
                 style={{
                   width: 24,
                   height: 24,
-                  borderRadius: 12,
+                  borderRadius: theme.borderRadius.md,
                   backgroundColor: theme.colors.background.cardDark,
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -428,7 +446,7 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
               </View>
               <Text
                 style={{
-                  fontSize: 14,
+                  fontSize: theme.typography.fontSize.sm,
                   fontWeight: theme.typography.fontWeight.bold,
                   color: theme.colors.text.secondary,
                 }}>

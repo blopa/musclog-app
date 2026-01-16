@@ -34,21 +34,21 @@ const EXERCISE_DATA = {
       id: '1',
       name: 'Push Day Hypertrophy',
       subtitle: 'Last performed 2 days ago',
-      iconGradient: ['#4f46e5', '#5b21b6'] as const, // indigo gradient
+      iconGradient: theme.colors.gradients.indigoPurple,
       icon: Zap,
     },
     {
       id: '2',
       name: 'Upper Body Blast',
       subtitle: 'Created on Oct 12, 2023',
-      iconGradient: ['#10b981', '#0d9488'] as const, // emerald-teal gradient
+      iconGradient: theme.colors.gradients.emeraldTeal,
       icon: Zap,
     },
     {
       id: '3',
       name: 'Full Body Foundation',
       subtitle: 'Used in 12 sessions',
-      iconGradient: ['#ec4899', '#e11d48'] as const, // pink-rose gradient
+      iconGradient: theme.colors.gradients.pinkRose,
       icon: Heart,
     },
   ],
@@ -136,13 +136,13 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
         <Pressable
           onPress={() => setIsMenuVisible(true)}
           className="h-10 w-10 items-center justify-center rounded-full"
-          style={{ backgroundColor: 'rgba(0, 0, 0, 0.4)' }}>
+          style={{ backgroundColor: theme.colors.background.black40 }}>
           <MoreVertical size={20} color="white" />
         </Pressable>
       }>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Hero Section with Background Image */}
-        <View style={{ height: 384, overflow: 'hidden', position: 'relative' }}>
+        <View style={{ height: theme.size['384'], overflow: 'hidden', position: 'relative' }}>
           {/* Background Image */}
           <Image
             source={backgroundImage}
@@ -154,22 +154,22 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
               bottom: 0,
               width: '100%',
               height: '100%',
-              opacity: 0.6,
+              opacity: theme.colors.opacity.image,
             }}
             resizeMode="cover"
           />
 
           {/* Content Overlay */}
           <LinearGradient
-            colors={['transparent', 'rgba(26, 46, 42, 0.9)', '#1a2e2a']}
+            colors={theme.colors.gradients.overlayDark}
             locations={[0, 0.7, 1]}
             className="absolute bottom-0 left-0 right-0"
-            style={{ padding: 24, zIndex: 5 }}>
+            style={{ padding: theme.spacing.padding.xl, zIndex: 5 }}>
             <Button
               label={t('exercises.viewExercise.watchTechnique')}
               onPress={handleWatchTechnique}
               icon={Video}
-              iconColor="#34d399"
+              iconColor={theme.colors.accent.secondary}
               variant="secondary"
               size="sm"
               width="auto"
@@ -181,7 +181,7 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
             {/* Tags */}
             <View className="mb-6 flex-row flex-wrap gap-3">
               <LinearGradient
-                colors={['#2563eb', '#10b981']}
+                colors={theme.colors.gradients.blueEmerald}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
                 className="flex-row items-center gap-2 rounded-full px-4 py-2">
@@ -193,8 +193,8 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
               <View
                 className="flex-row items-center gap-2 rounded-full border px-4 py-2"
                 style={{
-                  backgroundColor: '#1a3a2a',
-                  borderColor: '#374151',
+                  backgroundColor: theme.colors.background.darkGreenVariant,
+                  borderColor: theme.colors.background.gray700,
                 }}>
                 <Text className="text-xs font-medium uppercase tracking-wide text-white opacity-80">
                   {t('exercises.viewExercise.equipment')}
@@ -204,8 +204,8 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
               <View
                 className="flex-row items-center gap-2 rounded-full border px-4 py-2"
                 style={{
-                  backgroundColor: '#1a3a2a',
-                  borderColor: '#374151',
+                  backgroundColor: theme.colors.background.darkGreenVariant,
+                  borderColor: theme.colors.background.gray700,
                 }}>
                 <Text className="text-xs font-medium uppercase tracking-wide text-white opacity-80">
                   {t('exercises.viewExercise.mechanic')}
@@ -217,14 +217,16 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
         </View>
 
         {/* Stats Cards */}
-        <View className="px-6 py-6" style={{ flexDirection: 'row', gap: 16 }}>
+        <View className="px-6 py-6" style={{ flexDirection: 'row', gap: theme.spacing.gap.base }}>
           <GenericCard variant="default" size="sm">
             <View className="p-6">
               <Text className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">
                 {t('exercises.viewExercise.personalBest')}
               </Text>
               <View className="flex-row items-baseline gap-2">
-                <Text className="text-5xl font-bold" style={{ color: '#34d399' }}>
+                <Text
+                  className="text-5xl font-bold"
+                  style={{ color: theme.colors.accent.secondary }}>
                   {EXERCISE_DATA.personalBest.value}
                 </Text>
                 <Text className="text-xl text-gray-400">{EXERCISE_DATA.personalBest.unit}</Text>
@@ -237,7 +239,9 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
                 {t('exercises.viewExercise.avgFrequency')}
               </Text>
               <View className="flex-row items-baseline gap-2">
-                <Text className="text-5xl font-bold" style={{ color: '#818cf8' }}>
+                <Text
+                  className="text-5xl font-bold"
+                  style={{ color: theme.colors.status.indigoLight }}>
                   {EXERCISE_DATA.avgFrequency.value}
                 </Text>
                 <Text className="text-xl text-gray-400">{EXERCISE_DATA.avgFrequency.unit}</Text>
@@ -254,14 +258,14 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
             </Text>
             <View
               className="rounded-full px-3 py-1.5"
-              style={{ backgroundColor: 'rgba(52, 211, 153, 0.2)' }}>
-              <Text className="text-xs font-bold" style={{ color: '#34d399' }}>
+              style={{ backgroundColor: theme.colors.accent.secondary20 }}>
+              <Text className="text-xs font-bold" style={{ color: theme.colors.accent.secondary }}>
                 {EXERCISE_DATA.workouts.length} {t('exercises.viewExercise.templates')}
               </Text>
             </View>
           </View>
 
-          <View style={{ gap: 12 }}>
+          <View style={{ gap: theme.spacing.gap.md }}>
             {EXERCISE_DATA.workouts.map((workout) => (
               <SettingsCard
                 key={workout.id}
@@ -282,8 +286,8 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
                 onPress={() => handleWorkoutPress(workout.id)}
                 rightIcon={<ChevronRight size={20} color={theme.colors.text.secondary} />}
                 iconContainerStyle={{
-                  width: 64,
-                  height: 64,
+                  width: theme.size['16'],
+                  height: theme.size['16'],
                   borderRadius: theme.borderRadius['2xl'],
                   padding: 0,
                   overflow: 'hidden',
@@ -294,7 +298,7 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
         </View>
 
         {/* Bottom spacing for button */}
-        <View style={{ height: 100 }} />
+        <View style={{ height: theme.size['100'] }} />
       </ScrollView>
 
       {/* More Options Menu */}

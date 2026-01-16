@@ -128,7 +128,7 @@ export default function AICameraScreen() {
           />
           {/* Gradient Overlay */}
           <LinearGradient
-            colors={['rgba(0,0,0,0.6)', 'transparent', 'rgba(0,0,0,0.9)']}
+            colors={theme.colors.gradients.cameraOverlay}
             locations={[0, 0.5, 1]}
             style={StyleSheet.absoluteFill}
           />
@@ -140,9 +140,9 @@ export default function AICameraScreen() {
             onPress={handleClose}
             className="h-10 w-10 items-center justify-center rounded-full"
             style={{
-              backgroundColor: 'rgba(30, 35, 33, 0.4)',
-              borderWidth: 1,
-              borderColor: 'rgba(255, 255, 255, 0.1)',
+              backgroundColor: theme.colors.background.darkGray,
+              borderWidth: theme.borderWidth.thin,
+              borderColor: theme.colors.background.white10,
             }}>
             <X size={20} color={theme.colors.text.primary} />
           </Pressable>
@@ -151,16 +151,16 @@ export default function AICameraScreen() {
           <View
             className="flex-row items-center gap-1 rounded-full px-3 py-1"
             style={{
-              backgroundColor: 'rgba(0, 0, 0, 0.3)',
-              borderWidth: 1,
-              borderColor: 'rgba(255, 255, 255, 0.05)',
+              backgroundColor: theme.colors.background.black30,
+              borderWidth: theme.borderWidth.thin,
+              borderColor: theme.colors.background.white5,
             }}>
             <Animated.View
               style={{
-                width: 8,
-                height: 8,
-                borderRadius: 4,
-                backgroundColor: '#ef4444',
+                width: theme.size.sm,
+                height: theme.size.sm,
+                borderRadius: theme.size.xs,
+                backgroundColor: theme.colors.status.error,
                 transform: [{ scale: pulseAnim }],
               }}
             />
@@ -173,9 +173,9 @@ export default function AICameraScreen() {
             onPress={handleFlashToggle}
             className="h-10 w-10 items-center justify-center rounded-full"
             style={{
-              backgroundColor: 'rgba(30, 35, 33, 0.4)',
-              borderWidth: 1,
-              borderColor: 'rgba(255, 255, 255, 0.1)',
+              backgroundColor: theme.colors.background.darkGray,
+              borderWidth: theme.borderWidth.thin,
+              borderColor: theme.colors.background.white10,
             }}>
             {flashEnabled ? (
               <Lightbulb size={20} color={theme.colors.text.primary} />
@@ -193,8 +193,8 @@ export default function AICameraScreen() {
             style={{
               aspectRatio: CAMERA_ASPECT_RATIO,
               maxHeight: CAMERA_MAX_HEIGHT,
-              borderWidth: 1,
-              borderColor: 'rgba(255, 255, 255, 0.2)',
+              borderWidth: theme.borderWidth.thin,
+              borderColor: theme.colors.background.white20,
               overflow: 'visible',
             }}>
             {/* Corner Markers */}
@@ -221,7 +221,7 @@ export default function AICameraScreen() {
               style={{
                 top: '50%',
                 height: 1,
-                backgroundColor: theme.colors.accent.primary + '80',
+                backgroundColor: theme.colors.accent.primary40,
               }}
             />
           </View>
@@ -239,9 +239,9 @@ export default function AICameraScreen() {
             <View
               className="w-full max-w-sm flex-row items-stretch justify-between rounded-2xl p-1.5"
               style={{
-                backgroundColor: 'rgba(30, 35, 33, 0.9)',
-                borderWidth: 1,
-                borderColor: 'rgba(255, 255, 255, 0.1)',
+                backgroundColor: theme.colors.background.darkGray90,
+                borderWidth: theme.borderWidth.thin,
+                borderColor: theme.colors.background.white10,
               }}>
               {/* AI Meal Photo */}
               <Pressable
@@ -256,7 +256,7 @@ export default function AICameraScreen() {
                 }>
                 {cameraMode === 'ai-meal-photo' ? (
                   <LinearGradient
-                    colors={['#6366f1', '#29e08e']}
+                    colors={theme.colors.gradients.cta}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
                     className="absolute inset-0 rounded-xl"
@@ -265,13 +265,19 @@ export default function AICameraScreen() {
                 <View className="flex-row items-center justify-center gap-1.5">
                   <Sparkles
                     size={18}
-                    color={cameraMode === 'ai-meal-photo' ? '#ffffff' : theme.colors.text.secondary}
+                    color={
+                      cameraMode === 'ai-meal-photo'
+                        ? theme.colors.text.white
+                        : theme.colors.text.secondary
+                    }
                   />
                   <Text
                     className="text-[10px] font-bold uppercase tracking-wide"
                     style={{
                       color:
-                        cameraMode === 'ai-meal-photo' ? '#ffffff' : theme.colors.text.secondary,
+                        cameraMode === 'ai-meal-photo'
+                          ? theme.colors.text.white
+                          : theme.colors.text.secondary,
                     }}>
                     {t('food.aiCamera.modes.mealPhoto')}
                   </Text>
@@ -291,7 +297,7 @@ export default function AICameraScreen() {
                 }>
                 {cameraMode === 'ai-label-scan' ? (
                   <LinearGradient
-                    colors={['#6366f1', '#29e08e']}
+                    colors={theme.colors.gradients.cta}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
                     className="absolute inset-0 rounded-xl"
@@ -306,7 +312,9 @@ export default function AICameraScreen() {
                     className="text-[10px] font-bold uppercase tracking-wide"
                     style={{
                       color:
-                        cameraMode === 'ai-label-scan' ? '#ffffff' : theme.colors.text.secondary,
+                        cameraMode === 'ai-label-scan'
+                          ? theme.colors.text.white
+                          : theme.colors.text.secondary,
                     }}>
                     {t('food.aiCamera.modes.labelScan')}
                   </Text>
@@ -326,7 +334,7 @@ export default function AICameraScreen() {
                 }>
                 {cameraMode === 'barcode-scan' ? (
                   <LinearGradient
-                    colors={['#6366f1', '#29e08e']}
+                    colors={theme.colors.gradients.cta}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
                     className="absolute inset-0 rounded-xl"
@@ -341,7 +349,9 @@ export default function AICameraScreen() {
                     className="text-[10px] font-bold uppercase tracking-wide"
                     style={{
                       color:
-                        cameraMode === 'barcode-scan' ? '#ffffff' : theme.colors.text.secondary,
+                        cameraMode === 'barcode-scan'
+                          ? theme.colors.text.white
+                          : theme.colors.text.secondary,
                     }}>
                     {t('food.aiCamera.modes.barcodeScan')}
                   </Text>
@@ -356,9 +366,9 @@ export default function AICameraScreen() {
             <Pressable
               className="h-12 w-12 items-center justify-center overflow-hidden rounded-lg"
               style={{
-                backgroundColor: 'rgba(30, 35, 33, 0.5)',
-                borderWidth: 1,
-                borderColor: 'rgba(255, 255, 255, 0.1)',
+                backgroundColor: theme.colors.background.darkGray50,
+                borderWidth: theme.borderWidth.thin,
+                borderColor: theme.colors.background.white10,
               }}>
               <View className="h-full w-full p-1">
                 <View className="h-full w-full rounded bg-white/10" style={{ opacity: 0.7 }} />
@@ -371,18 +381,18 @@ export default function AICameraScreen() {
               className="h-20 w-20 items-center justify-center rounded-full active:scale-95"
               style={{
                 borderWidth: 4,
-                borderColor: '#ffffff',
+                borderColor: theme.colors.text.white,
               }}>
               <View
                 className="absolute inset-0 rounded-full"
                 style={{
                   borderWidth: 1,
-                  borderColor: 'rgba(0, 0, 0, 0.2)',
+                  borderColor: theme.colors.background.black20,
                 }}
               />
               <View
                 className="h-16 w-16 rounded-full bg-white"
-                style={{ backgroundColor: '#ffffff' }}
+                style={{ backgroundColor: theme.colors.text.white }}
               />
             </Pressable>
 
@@ -391,9 +401,9 @@ export default function AICameraScreen() {
               onPress={() => setIsContextModalVisible(true)}
               className="h-12 w-12 items-center justify-center rounded-full"
               style={{
-                backgroundColor: 'rgba(30, 35, 33, 0.5)',
-                borderWidth: 1,
-                borderColor: 'rgba(255, 255, 255, 0.1)',
+                backgroundColor: theme.colors.background.darkGray50,
+                borderWidth: theme.borderWidth.thin,
+                borderColor: theme.colors.background.white10,
               }}>
               <MessageSquareText size={20} color={theme.colors.text.primary} />
             </Pressable>

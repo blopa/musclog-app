@@ -241,7 +241,7 @@ export function NutritionGoalsBody({
             backgroundColor: theme.colors.background.cardElevated,
           }}>
           <LinearGradient
-            colors={['rgba(99, 102, 241, 0.05)', 'rgba(52, 211, 153, 0.05)']}
+            colors={[theme.colors.status.indigo10, theme.colors.accent.secondary10]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={{ position: 'absolute', inset: 0 }}

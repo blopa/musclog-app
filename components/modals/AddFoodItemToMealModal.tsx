@@ -120,7 +120,7 @@ function FoodResultCard({
       style={{
         backgroundColor: theme.colors.background.cardElevated,
         borderRadius: theme.borderRadius.md,
-        padding: 12,
+        padding: theme.spacing.padding.md,
         borderWidth: isSelected ? 1 : theme.borderWidth.thin,
         borderColor: isSelected ? theme.colors.accent.primary : theme.colors.border.light,
         shadowColor: isSelected ? theme.colors.accent.primary : 'transparent',
@@ -129,13 +129,13 @@ function FoodResultCard({
         shadowRadius: isSelected ? 8 : 0,
         elevation: isSelected ? 3 : 0,
       }}>
-      <Pressable onPress={onToggle} style={{ flexDirection: 'row', gap: 12 }}>
+      <Pressable onPress={onToggle} style={{ flexDirection: 'row', gap: theme.spacing.gap.md }}>
         <View style={{ paddingTop: 4 }}>
           <View
             style={{
-              width: 24,
-              height: 24,
-              borderRadius: 12,
+              width: theme.size.xl,
+              height: theme.size.xl,
+              borderRadius: theme.borderRadius.md,
               backgroundColor: isSelected ? theme.colors.accent.primary : 'transparent',
               borderWidth: isSelected ? 0 : 2,
               borderColor: theme.colors.text.tertiary,
@@ -156,7 +156,7 @@ function FoodResultCard({
               flexDirection: 'row',
               justifyContent: 'space-between',
               alignItems: 'flex-start',
-              gap: 8,
+              gap: theme.spacing.gap.sm,
             }}>
             <Text
               style={{
@@ -176,11 +176,11 @@ function FoodResultCard({
                   : theme.colors.background.white5,
                 paddingHorizontal: 8,
                 paddingVertical: 4,
-                borderRadius: 12,
+                borderRadius: theme.borderRadius.md,
               }}>
               <Text
                 style={{
-                  fontSize: 12,
+                  fontSize: theme.typography.fontSize.xs,
                   fontWeight: theme.typography.fontWeight.bold,
                   color: isSelected ? theme.colors.accent.primary : theme.colors.text.secondary,
                 }}>
@@ -191,15 +191,25 @@ function FoodResultCard({
             </View>
           </View>
 
-          <Text style={{ fontSize: 12, color: theme.colors.text.primary, marginTop: 4 }}>
+          <Text
+            style={{
+              fontSize: theme.typography.fontSize.xs,
+              color: theme.colors.text.primary,
+              marginTop: theme.size.xs,
+            }}>
             {food.description}
           </Text>
 
           <View
-            style={{ flexDirection: 'row', gap: 8, marginTop: 8, opacity: isSelected ? 1 : 0.7 }}>
+            style={{
+              flexDirection: 'row',
+              gap: theme.spacing.gap.sm,
+              marginTop: theme.spacing.gap.sm,
+              opacity: isSelected ? 1 : theme.colors.opacity.strong,
+            }}>
             <Text
               style={{
-                fontSize: 10,
+                fontSize: theme.typography.fontSize['10'],
                 color: theme.colors.text.primary,
                 fontWeight: theme.typography.fontWeight.medium,
               }}>
@@ -228,8 +238,8 @@ function FoodResultCard({
       {isSelected && (
         <View
           style={{
-            marginTop: 12,
-            paddingTop: 12,
+            marginTop: theme.spacing.padding.md,
+            paddingTop: theme.spacing.padding.md,
             borderTopWidth: 1,
             borderStyle: 'dashed',
             borderColor: theme.colors.border.light,
@@ -250,7 +260,7 @@ function FoodResultCard({
               flexDirection: 'row',
               alignItems: 'center',
               backgroundColor: theme.colors.background.cardDark,
-              borderRadius: 8,
+              borderRadius: theme.borderRadius.sm,
               paddingHorizontal: 8,
               height: 36,
               borderWidth: 1,

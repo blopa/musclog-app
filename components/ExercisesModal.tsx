@@ -52,7 +52,9 @@ function ExerciseListItem({
     <Pressable
       onPress={onPress}
       className="flex-row items-center gap-4 px-4 py-3 active:bg-bg-overlay">
-      <View className="h-14 w-14 rounded-lg bg-bg-card" style={{ backgroundColor: '#254637' }}>
+      <View
+        className="h-14 w-14 rounded-lg bg-bg-card"
+        style={{ backgroundColor: theme.colors.background.exerciseCardBackground }}>
         {imageUrl ? (
           <Image
             source={{ uri: imageUrl }}
@@ -77,7 +79,10 @@ function ExerciseListItem({
             <Text
               className="text-[10px] font-bold uppercase tracking-wider"
               style={{
-                color: tag.variant === 'primary' ? theme.colors.accent.primary : '#95c6b0',
+                color:
+                  tag.variant === 'primary'
+                    ? theme.colors.accent.primary
+                    : theme.colors.status.customGreen,
               }}>
               {tag.label}
             </Text>
@@ -244,12 +249,12 @@ export default function ExercisesModal({ visible, onClose }: ExercisesModalProps
           <View className="py-3">
             <View className="flex-row items-stretch overflow-hidden rounded-lg bg-bg-card">
               <View className="items-center justify-center border-none bg-bg-card pl-4">
-                <Search size={theme.iconSize.md} color="#95c6b0" />
+                <Search size={theme.iconSize.md} color={theme.colors.status.customGreen} />
               </View>
               <TextInput
                 className="flex-1 border-none bg-bg-card px-3 py-3 text-base font-normal text-text-primary"
                 placeholder={t('exercises.searchPlaceholder')}
-                placeholderTextColor="#95c6b0"
+                placeholderTextColor={theme.colors.status.customGreen}
                 value={searchQuery}
                 onChangeText={setSearchQuery}
               />
@@ -293,7 +298,9 @@ export default function ExercisesModal({ visible, onClose }: ExercisesModalProps
                     onToggle={() => toggleAccordion(group)}>
                     {groupExercises.length === 0 ? (
                       <View className="border-t border-border-dark px-4 py-2">
-                        <Text className="text-sm" style={{ color: '#95c6b0' }}>
+                        <Text
+                          className="text-sm"
+                          style={{ color: theme.colors.status.customGreen }}>
                           {t('exercises.emptyGroupMessage', {
                             muscleGroup: config.name.toLowerCase(),
                           })}

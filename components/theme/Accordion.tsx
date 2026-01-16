@@ -69,7 +69,9 @@ export function Accordion({
                 {count !== undefined && (
                   <>
                     {' '}
-                    <Text className="text-sm font-normal" style={{ color: '#95c6b0' }}>
+                    <Text
+                      className="text-sm font-normal"
+                      style={{ color: theme.colors.status.customGreen }}>
                       ({count})
                     </Text>
                   </>

@@ -38,11 +38,7 @@ function OnboardingStepFour({ title, description }: OnboardingBodyProps) {
         {/* Ambient Background Glow */}
         <View className="absolute inset-0 rounded-full opacity-60">
           <LinearGradient
-            colors={[
-              'rgba(99, 102, 241, 0.2)', // indigo-600/20
-              'rgba(41, 224, 142, 0.2)', // primary/20
-              'rgba(16, 185, 129, 0.2)', // emerald-400/20
-            ]}
+            colors={theme.colors.gradients.onboardingAmbient}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={{
@@ -93,11 +89,7 @@ function OnboardingStepThree({ imageUrl, title, description, badge }: Onboarding
         {/* Ambient Background Glow */}
         <View className="absolute inset-0 rounded-full opacity-60">
           <LinearGradient
-            colors={[
-              'rgba(99, 102, 241, 0.2)', // indigo-600/20
-              'rgba(41, 224, 142, 0.2)', // primary/20
-              'rgba(16, 185, 129, 0.2)', // emerald-400/20
-            ]}
+            colors={theme.colors.gradients.onboardingAmbient}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={{
@@ -114,11 +106,7 @@ function OnboardingStepThree({ imageUrl, title, description, badge }: Onboarding
           <ImageBackground source={{ uri: imageUrl }} className="h-full w-full" resizeMode="cover">
             {/* Gradient Overlay */}
             <LinearGradient
-              colors={[
-                'rgba(10, 31, 26, 0.9)', // background-dark/90
-                'transparent',
-                'transparent',
-              ]}
+              colors={[theme.colors.gradients.backdrop90, 'transparent', 'transparent']}
               start={{ x: 0, y: 1 }}
               end={{ x: 0, y: 0 }}
               style={{ flex: 1 }}
@@ -128,7 +116,7 @@ function OnboardingStepThree({ imageUrl, title, description, badge }: Onboarding
             {badge && (
               <View className="absolute bottom-6 left-6 right-6 flex-row items-center gap-4 rounded-xl border border-white/10 p-4">
                 <LinearGradient
-                  colors={['rgba(255, 255, 255, 0.1)', 'rgba(255, 255, 255, 0.05)']}
+                  colors={theme.colors.gradients.whiteSubtle}
                   style={{
                     position: 'absolute',
                     top: 0,
@@ -196,11 +184,7 @@ function OnboardingStepTwo({ imageUrl, title, description, badge }: OnboardingBo
         {/* Ambient Background Glow */}
         <View className="absolute inset-0 rounded-full opacity-60">
           <LinearGradient
-            colors={[
-              'rgba(99, 102, 241, 0.2)', // indigo-600/20
-              'rgba(41, 224, 142, 0.2)', // primary/20
-              'rgba(16, 185, 129, 0.2)', // emerald-400/20
-            ]}
+            colors={theme.colors.gradients.onboardingAmbient}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={{
@@ -217,11 +201,7 @@ function OnboardingStepTwo({ imageUrl, title, description, badge }: OnboardingBo
           <ImageBackground source={{ uri: imageUrl }} className="h-full w-full" resizeMode="cover">
             {/* Gradient Overlay */}
             <LinearGradient
-              colors={[
-                'rgba(10, 31, 26, 0.9)', // background-dark/90
-                'transparent',
-                'transparent',
-              ]}
+              colors={[theme.colors.gradients.backdrop90, 'transparent', 'transparent']}
               start={{ x: 0, y: 1 }}
               end={{ x: 0, y: 0 }}
               style={{ flex: 1 }}
@@ -231,7 +211,7 @@ function OnboardingStepTwo({ imageUrl, title, description, badge }: OnboardingBo
             {badge && (
               <View className="absolute bottom-6 left-6 right-6 flex-row items-center gap-4 rounded-xl border border-white/10 p-4">
                 <LinearGradient
-                  colors={['rgba(255, 255, 255, 0.1)', 'rgba(255, 255, 255, 0.05)']}
+                  colors={theme.colors.gradients.whiteSubtle}
                   style={{
                     position: 'absolute',
                     top: 0,
@@ -299,11 +279,7 @@ function OnboardingStepOne({ imageUrl, title, description, badge }: OnboardingBo
         {/* Ambient Background Glow */}
         <View className="absolute inset-0 rounded-full opacity-60">
           <LinearGradient
-            colors={[
-              'rgba(99, 102, 241, 0.2)', // indigo-600/20
-              'rgba(41, 224, 142, 0.2)', // primary/20
-              'rgba(16, 185, 129, 0.2)', // emerald-400/20
-            ]}
+            colors={theme.colors.gradients.onboardingAmbient}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={{
@@ -320,11 +296,7 @@ function OnboardingStepOne({ imageUrl, title, description, badge }: OnboardingBo
           <ImageBackground source={{ uri: imageUrl }} className="h-full w-full" resizeMode="cover">
             {/* Gradient Overlay */}
             <LinearGradient
-              colors={[
-                'rgba(10, 31, 26, 0.9)', // background-dark/90
-                'transparent',
-                'transparent',
-              ]}
+              colors={[theme.colors.gradients.backdrop90, 'transparent', 'transparent']}
               start={{ x: 0, y: 1 }}
               end={{ x: 0, y: 0 }}
               style={{ flex: 1 }}
@@ -334,7 +306,7 @@ function OnboardingStepOne({ imageUrl, title, description, badge }: OnboardingBo
             {badge && (
               <View className="absolute bottom-6 left-6 right-6 flex-row items-center gap-4 rounded-xl border border-white/10 p-4">
                 <LinearGradient
-                  colors={['rgba(255, 255, 255, 0.1)', 'rgba(255, 255, 255, 0.05)']}
+                  colors={theme.colors.gradients.whiteSubtle}
                   style={{
                     position: 'absolute',
                     top: 0,

@@ -56,7 +56,7 @@ export default function HealthConnectScreen() {
               height: 256,
               left: -48,
               top: -32,
-              backgroundColor: 'rgba(99, 102, 241, 0.1)',
+              backgroundColor: theme.colors.status.indigo10,
               opacity: 0.6,
             }}
           />
@@ -67,7 +67,7 @@ export default function HealthConnectScreen() {
               height: 256,
               right: -48,
               bottom: -32,
-              backgroundColor: 'rgba(41, 224, 142, 0.1)',
+              backgroundColor: theme.colors.status.emerald20,
               opacity: 0.6,
             }}
           />
@@ -93,7 +93,7 @@ export default function HealthConnectScreen() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 borderWidth: 1,
-                borderColor: 'rgba(255, 255, 255, 0.2)',
+                borderColor: theme.colors.background.white20,
               }}>
               <Shield
                 size={ILLUSTRATION_SIZE * 0.5}
