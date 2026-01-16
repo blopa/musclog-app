@@ -33,7 +33,7 @@ export function OptionsSelector<T extends string | number>({
           fontWeight: theme.typography.fontWeight.bold,
           color: theme.colors.text.secondary,
           textTransform: 'uppercase',
-          letterSpacing: theme.typography.letterSpacing.widest,
+          letterSpacing: theme.typography.letterSpacing.extraWide,
           marginBottom: theme.spacing.padding.base,
           paddingHorizontal: theme.spacing.padding.xs,
         }}>
@@ -92,7 +92,7 @@ export function OptionsSelector<T extends string | number>({
                         style={{
                           fontSize: theme.typography.fontSize.xs,
                           color: theme.colors.text.secondary,
-                          marginTop: theme.spacing.padding.xsQuarter,
+                          marginTop: theme.spacing.padding.xsHalf,
                         }}>
                         {option.description}
                       </Text>

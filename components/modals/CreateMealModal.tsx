@@ -68,7 +68,7 @@ const MacroCard = ({
     }}>
     <Text
       style={{
-        fontSize: theme.typography.fontSize['10'],
+        fontSize: theme.typography.fontSize.xs,
         fontWeight: theme.typography.fontWeight.bold,
         color: theme.colors.text.secondary,
         textTransform: 'uppercase',
@@ -135,7 +135,7 @@ const MealMacrosSummary = ({
           height: theme.size['160'],
           backgroundColor: theme.colors.accent.primary20,
           borderRadius: theme.size['20'] * 4,
-          opacity: theme.colors.opacity.medium50,
+          opacity: theme.colors.opacity.medium,
         }}
       />
       <View
@@ -147,7 +147,7 @@ const MealMacrosSummary = ({
           height: theme.size['160'],
           backgroundColor: theme.colors.status.indigo20,
           borderRadius: theme.size['20'] * 4,
-          opacity: theme.colors.opacity.medium50,
+          opacity: theme.colors.opacity.medium,
         }}
       />
 
@@ -276,7 +276,7 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
               fontWeight: theme.typography.fontWeight.bold,
               color: theme.colors.text.secondary,
               textTransform: 'uppercase',
-              letterSpacing: theme.typography.letterSpacing.widest,
+              letterSpacing: theme.typography.letterSpacing.extraWide,
               marginLeft: theme.spacing.margin.xs,
             }}>
             {t('food.createMeal.mealName')}
@@ -292,7 +292,7 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
               justifyContent: 'center',
               shadowColor: isFocused ? theme.colors.accent.primary : 'transparent',
               shadowOffset: theme.shadowOffset.zero,
-              shadowOpacity: theme.colors.opacity.lightDim,
+              shadowOpacity: theme.colors.opacity.subtle,
               shadowRadius: theme.shadows.radius8.shadowRadius,
               elevation: isFocused ? theme.elevation.sm : theme.elevation.none,
             }}>
@@ -324,7 +324,7 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
                 fontWeight: theme.typography.fontWeight.bold,
                 color: theme.colors.text.secondary,
                 textTransform: 'uppercase',
-                letterSpacing: theme.typography.letterSpacing.widest,
+                letterSpacing: theme.typography.letterSpacing.extraWide,
               }}>
               {t('food.createMeal.ingredients', { count: ingredients.length })}
             </Text>

@@ -147,8 +147,8 @@ const renderMessageText = (props: any) => {
   return (
     <Text
       style={{
-        fontSize: theme.typography.fontSize['15'],
-        lineHeight: theme.typography.lineHeight.normal * theme.typography.fontSize['15'],
+        fontSize: theme.typography.fontSize.sm,
+        lineHeight: theme.typography.lineHeight.normal * theme.typography.fontSize.sm,
         color:
           props.currentMessage?.user._id === 1
             ? theme.colors.text.black

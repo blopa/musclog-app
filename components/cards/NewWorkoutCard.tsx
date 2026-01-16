@@ -88,12 +88,12 @@ export function NewWorkoutCard({
               style={{
                 backgroundColor: theme.colors.background.white10,
                 paddingHorizontal: theme.spacing.padding.sm,
-                paddingVertical: theme.spacing.padding['2'],
+                paddingVertical: theme.spacing.padding.xsHalf,
                 borderRadius: theme.borderRadius.sm,
               }}>
               <Text
                 style={{
-                  fontSize: theme.typography.fontSize['10'],
+                  fontSize: theme.typography.fontSize.xs,
                   fontWeight: theme.typography.fontWeight.bold,
                   color: theme.colors.accent.secondary,
                   textTransform: 'uppercase',

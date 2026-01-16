@@ -149,7 +149,7 @@ export function GenericCard({
         left: 0,
         right: 0,
         height: theme.size['1half'],
-        opacity: theme.colors.opacity.medium50,
+        opacity: theme.colors.opacity.medium,
       }}
     />
   );

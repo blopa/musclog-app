@@ -51,7 +51,7 @@ export default function PreRegistrationIntro() {
         <View
           className="absolute inset-0 rounded-full border"
           style={{
-            borderWidth: theme.borderWidth.thinHalf,
+            borderWidth: theme.borderWidth.medium,
             borderColor: theme.colors.background.white10,
             transform: [{ scale: 1.1 }],
           }}
@@ -59,7 +59,7 @@ export default function PreRegistrationIntro() {
         <View
           className="absolute inset-0 rounded-full border"
           style={{
-            borderWidth: theme.borderWidth.thinHalf,
+            borderWidth: theme.borderWidth.medium,
             borderColor: theme.colors.background.white5,
             transform: [{ scale: 1.25 }],
           }}
@@ -105,7 +105,7 @@ export default function PreRegistrationIntro() {
                 r="5"
                 fill="none"
                 stroke="url(#userGradient)"
-                strokeWidth={theme.strokeWidth.thinMedium}
+                strokeWidth={theme.strokeWidth.thin}
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
@@ -114,7 +114,7 @@ export default function PreRegistrationIntro() {
                 d="M20 21a8 8 0 0 0-16 0"
                 fill="none"
                 stroke="url(#userGradient)"
-                strokeWidth={theme.strokeWidth.thinMedium}
+                strokeWidth={theme.strokeWidth.thin}
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
@@ -147,7 +147,7 @@ export default function PreRegistrationIntro() {
               <TrendingUp
                 size={theme.iconSize['2xl']}
                 color={theme.colors.text.white}
-                strokeWidth={theme.strokeWidth.normal}
+                strokeWidth={theme.strokeWidth.medium}
               />
             </LinearGradient>
           </View>
@@ -166,7 +166,7 @@ export default function PreRegistrationIntro() {
             <Dumbbell
               size={theme.iconSize.xl}
               color={theme.colors.status.emeraldLight}
-              strokeWidth={theme.strokeWidth.normal}
+              strokeWidth={theme.strokeWidth.medium}
             />
           </View>
         </View>

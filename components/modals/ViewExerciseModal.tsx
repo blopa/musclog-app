@@ -154,7 +154,7 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
               bottom: 0,
               width: '100%',
               height: '100%',
-              opacity: theme.colors.opacity.image,
+              opacity: theme.colors.opacity.medium,
             }}
             resizeMode="cover"
           />

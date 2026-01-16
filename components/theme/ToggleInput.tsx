@@ -60,7 +60,7 @@ export function ToggleInput(props: TogglableSettingsProps) {
               <View style={{ flex: 1 }}>
                 <Text
                   style={{
-                    fontSize: theme.typography.fontSize['15'],
+                    fontSize: theme.typography.fontSize.sm,
                     color: theme.colors.text.primary,
                     fontWeight: theme.typography.fontWeight.medium,
                   }}>

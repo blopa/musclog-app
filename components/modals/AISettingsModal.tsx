@@ -222,7 +222,7 @@ export function AISettingsModal({
               />
               <Text
                 style={{
-                  fontSize: theme.typography.fontSize['10'],
+                  fontSize: theme.typography.fontSize.xs,
                   color: theme.colors.text.tertiary,
                   marginTop: theme.spacing.padding.sm,
                   marginLeft: theme.spacing.padding.xs,
@@ -379,7 +379,7 @@ export function AISettingsModal({
           </Text>
           <Text
             style={{
-              fontSize: theme.typography.fontSize['10'],
+              fontSize: theme.typography.fontSize.xs,
               color: theme.colors.text.tertiary,
               textAlign: 'center',
               marginTop: theme.spacing.padding['6'],

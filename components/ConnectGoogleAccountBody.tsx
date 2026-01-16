@@ -71,10 +71,10 @@ export function ConnectGoogleAccountBody({
                 bottom: theme.offset.glowSmall,
                 borderRadius: theme.borderRadius.xl,
                 backgroundColor: theme.colors.accent.primary,
-                opacity: theme.colors.opacity.dimmer,
+                opacity: theme.colors.opacity.subtle,
                 shadowColor: theme.colors.accent.primary,
                 shadowOffset: theme.shadowOffset.zero,
-                shadowOpacity: theme.colors.opacity.dimmer,
+                shadowOpacity: theme.colors.opacity.subtle,
                 shadowRadius: theme.shadows.radius8.shadowRadius,
               }}
             />
@@ -108,10 +108,10 @@ export function ConnectGoogleAccountBody({
                 bottom: theme.offset.glowSmall,
                 borderRadius: theme.borderRadius.xl,
                 backgroundColor: theme.colors.accent.primary,
-                opacity: theme.colors.opacity.dimmer,
+                opacity: theme.colors.opacity.subtle,
                 shadowColor: theme.colors.accent.primary,
                 shadowOffset: theme.shadowOffset.zero,
-                shadowOpacity: theme.colors.opacity.dimmer,
+                shadowOpacity: theme.colors.opacity.subtle,
                 shadowRadius: theme.shadows.radius8.shadowRadius,
               }}
             />
@@ -145,10 +145,10 @@ export function ConnectGoogleAccountBody({
                 bottom: theme.offset.glowSmall,
                 borderRadius: theme.borderRadius.xl,
                 backgroundColor: theme.colors.accent.primary,
-                opacity: theme.colors.opacity.dimmer,
+                opacity: theme.colors.opacity.subtle,
                 shadowColor: theme.colors.accent.primary,
                 shadowOffset: theme.shadowOffset.zero,
-                shadowOpacity: theme.colors.opacity.dimmer,
+                shadowOpacity: theme.colors.opacity.subtle,
                 shadowRadius: theme.shadows.radius8.shadowRadius,
               }}
             />

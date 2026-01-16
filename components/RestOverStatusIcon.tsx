@@ -47,7 +47,7 @@ export function RestOverStatusIcon() {
         <Dumbbell
           size={theme.iconSize['5xl']}
           color={theme.colors.accent.primary}
-          strokeWidth={theme.strokeWidth.normal}
+          strokeWidth={theme.strokeWidth.medium}
         />
       </View>
       {/* Red Alert Badge */}

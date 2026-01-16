@@ -28,7 +28,7 @@ export function Accordion({
   headerContent,
   className = '',
   animationDuration = 300,
-  maxHeight = theme.size.maxContentHeight,
+  maxHeight = theme.size['250'] * 10, // Default max height
 }: AccordionProps) {
   const rotation = useSharedValue(isOpen ? 180 : 0);
   const opacity = useSharedValue(isOpen ? 1 : 0);

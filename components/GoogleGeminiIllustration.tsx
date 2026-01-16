@@ -23,7 +23,7 @@ export const GoogleGeminiIllustration = ({
             right: -theme.spacing.margin['2'],
             bottom: -theme.spacing.margin['2'],
             borderRadius: theme.borderRadius['2xl'],
-            opacity: theme.colors.opacity.dim30,
+            opacity: theme.colors.opacity.subtle,
           }}>
           <LinearGradient
             colors={[
@@ -43,7 +43,7 @@ export const GoogleGeminiIllustration = ({
         {/* Main card */}
         <View className="relative flex-1 overflow-hidden rounded-2xl border border-white/5 bg-bg-cardDark">
           {/* Background image */}
-          <View className="absolute inset-0" style={{ opacity: theme.colors.opacity.medium80 }}>
+          <View className="absolute inset-0" style={{ opacity: theme.colors.opacity.strong }}>
             <Image
               source={{ uri: backgroundImageUrl }}
               className="h-full w-full"
@@ -102,7 +102,7 @@ export const GoogleGeminiIllustration = ({
                   backgroundColor: theme.colors.status.emeraldLight, // #29e08e - primary from HTML
                   shadowColor: theme.colors.status.emeraldLight,
                   shadowOffset: theme.shadowOffset.zero,
-                  shadowOpacity: theme.colors.opacity.dim30,
+                  shadowOpacity: theme.colors.opacity.subtle,
                   shadowRadius: theme.shadows.radius15.shadowRadius,
                   elevation: theme.elevation.lg,
                 }}>

@@ -111,7 +111,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
                 fontWeight: theme.typography.fontWeight.bold,
                 color: theme.colors.text.secondary,
                 textTransform: 'uppercase',
-                letterSpacing: theme.typography.letterSpacing.widest,
+                letterSpacing: theme.typography.letterSpacing.extraWide,
               }}>
               {t('workouts.addExercise.targetMuscle')}
             </Text>

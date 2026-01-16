@@ -534,7 +534,7 @@ export default function OnboardingScreen() {
                   backgroundColor: theme.colors.status.emeraldLight,
                   ...theme.shadows.lg,
                   shadowColor: theme.colors.status.emeraldLight,
-                  shadowOpacity: theme.colors.opacity.dimmer,
+                  shadowOpacity: theme.colors.opacity.subtle,
                 }}
               />
             </View>

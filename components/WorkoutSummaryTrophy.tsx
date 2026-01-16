@@ -86,7 +86,7 @@ export function WorkoutSummaryTrophy() {
         <Trophy
           size={theme.size['16']}
           color={theme.colors.accent.primary}
-          strokeWidth={theme.strokeWidth.normal}
+          strokeWidth={theme.strokeWidth.medium}
         />
       </View>
 

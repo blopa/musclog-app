@@ -174,7 +174,7 @@ function FoodItemCard({ food, onAddPress }: FoodItemCardProps) {
         style={{
           backgroundColor: food.iconBgColor || theme.colors.background.cardDark,
           borderColor: food.iconColor
-            ? addOpacityToHex(food.iconColor, theme.colors.opacity.iconBackground)
+            ? addOpacityToHex(food.iconColor, theme.colors.opacity.subtle)
             : 'transparent',
         }}>
         {food.image ? (
@@ -202,16 +202,16 @@ function FoodItemCard({ food, onAddPress }: FoodItemCardProps) {
               className="rounded border px-1.5 py-0.5"
               style={{
                 backgroundColor: food.gradeColor
-                  ? addOpacityToHex(food.gradeColor, theme.colors.opacity.veryLight063)
+                  ? addOpacityToHex(food.gradeColor, theme.colors.opacity.veryLight)
                   : theme.colors.accent.primary5,
                 borderColor: food.gradeColor
-                  ? addOpacityToHex(food.gradeColor, theme.colors.opacity.iconBackground)
+                  ? addOpacityToHex(food.gradeColor, theme.colors.opacity.subtle)
                   : theme.colors.accent.primary20,
               }}>
               <Text
                 className="font-bold"
                 style={{
-                  fontSize: theme.typography.fontSize['10'],
+                  fontSize: theme.typography.fontSize.xs,
                   color: food.gradeColor || theme.colors.accent.primary,
                 }}>
                 {food.grade}

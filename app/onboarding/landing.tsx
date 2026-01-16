@@ -148,7 +148,7 @@ export default function LandingScreen() {
               className="mt-2 text-center"
               style={{
                 color: theme.colors.text.gray500,
-                fontSize: theme.typography.fontSize['10'],
+                fontSize: theme.typography.fontSize.xs,
               }}>
               {t('onboarding.landing.termsAndPrivacy')}
             </Text>

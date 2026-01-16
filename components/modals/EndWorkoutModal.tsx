@@ -88,7 +88,7 @@ export function EndWorkoutModal({
         {/* Modal Content */}
         <Pressable
           onPress={(e) => e.stopPropagation()}
-          style={{ width: '100%', maxWidth: theme.components.modal.defaultMaxWidth }}>
+          style={{ width: '100%', maxWidth: theme.size['384'] }}>
           <Animated.View
             style={{
               transform: [{ scale: scaleAnim }],

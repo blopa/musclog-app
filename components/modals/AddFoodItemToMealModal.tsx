@@ -143,7 +143,7 @@ function FoodResultCard({
               justifyContent: 'center',
               shadowColor: isSelected ? theme.colors.accent.primary : 'transparent',
               shadowOffset: theme.shadowOffset.zero,
-              shadowOpacity: theme.colors.opacity.dim30,
+              shadowOpacity: theme.colors.opacity.subtle,
               shadowRadius: theme.shadows.radius4.shadowRadius,
             }}>
             {isSelected && (
@@ -215,7 +215,7 @@ function FoodResultCard({
             }}>
             <Text
               style={{
-                fontSize: theme.typography.fontSize['10'],
+                fontSize: theme.typography.fontSize.xs,
                 color: theme.colors.text.primary,
                 fontWeight: theme.typography.fontWeight.medium,
               }}>
@@ -223,7 +223,7 @@ function FoodResultCard({
             </Text>
             <Text
               style={{
-                fontSize: theme.typography.fontSize['10'],
+                fontSize: theme.typography.fontSize.xs,
                 color: theme.colors.text.primary,
                 fontWeight: theme.typography.fontWeight.medium,
               }}>
@@ -231,7 +231,7 @@ function FoodResultCard({
             </Text>
             <Text
               style={{
-                fontSize: theme.typography.fontSize['10'],
+                fontSize: theme.typography.fontSize.xs,
                 color: theme.colors.text.primary,
                 fontWeight: theme.typography.fontWeight.medium,
               }}>

@@ -286,7 +286,7 @@ export default function AICameraScreen() {
                   <Text
                     className="font-bold uppercase tracking-wide"
                     style={{
-                      fontSize: theme.typography.fontSize['10'],
+                      fontSize: theme.typography.fontSize.xs,
                       color:
                         cameraMode === 'ai-meal-photo'
                           ? theme.colors.text.white
@@ -328,7 +328,7 @@ export default function AICameraScreen() {
                   <Text
                     className="font-bold uppercase tracking-wide"
                     style={{
-                      fontSize: theme.typography.fontSize['10'],
+                      fontSize: theme.typography.fontSize.xs,
                       color:
                         cameraMode === 'ai-label-scan'
                           ? theme.colors.text.white
@@ -370,7 +370,7 @@ export default function AICameraScreen() {
                   <Text
                     className="font-bold uppercase tracking-wide"
                     style={{
-                      fontSize: theme.typography.fontSize['10'],
+                      fontSize: theme.typography.fontSize.xs,
                       color:
                         cameraMode === 'barcode-scan'
                           ? theme.colors.text.white
@@ -396,7 +396,7 @@ export default function AICameraScreen() {
               <View className="h-full w-full p-1">
                 <View
                   className="h-full w-full rounded bg-white/10"
-                  style={{ opacity: theme.colors.opacity.medium70 }}
+                  style={{ opacity: theme.colors.opacity.strong }}
                 />
               </View>
             </Pressable>
@@ -406,7 +406,7 @@ export default function AICameraScreen() {
               onPress={handleTakePicture}
               className="h-20 w-20 items-center justify-center rounded-full active:scale-95"
               style={{
-                borderWidth: theme.borderWidth.thick4,
+                borderWidth: theme.borderWidth.thick,
                 borderColor: theme.colors.text.white,
               }}>
               <View

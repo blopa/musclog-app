@@ -21,7 +21,7 @@ export function CenteredModal({
   subtitle,
   children,
   footer,
-  maxWidth = theme.components.modal.defaultMaxWidth, // max-w-sm equivalent
+  maxWidth = theme.size['384'], // max-w-sm equivalent
 }: CenteredModalProps) {
   // Web-specific styles for proper viewport positioning
   const webBackdropStyle =

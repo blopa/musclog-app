@@ -212,7 +212,7 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
           </View>
 
           {/* Bottom spacing for fixed button */}
-          <View style={{ height: theme.size.spacer100 }} />
+          <View style={{ height: theme.size['100'] }} />
         </View>
       </ScrollView>
 

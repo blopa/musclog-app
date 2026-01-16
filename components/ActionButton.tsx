@@ -44,13 +44,13 @@ export function ActionButton({ variant, label, onPress }: ActionButtonProps) {
         <Icon
           size={theme.iconSize.xl}
           color={config.iconColor}
-          strokeWidth={theme.strokeWidth.normal}
+          strokeWidth={theme.strokeWidth.medium}
         />
       </View>
       <Text className={`text-2xl font-bold leading-tight ${config.textColor}`}>{label}</Text>
       <View
         className="absolute -bottom-6 -right-6"
-        style={{ opacity: theme.colors.opacity.lightMedium }}>
+        style={{ opacity: theme.colors.opacity.veryLight }}>
         <Icon
           size={theme.iconSize.background}
           color={config.backgroundIconColor}

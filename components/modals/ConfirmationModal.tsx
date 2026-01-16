@@ -33,7 +33,7 @@ export function ConfirmationModal({
   const { t } = useTranslation();
   const defaultCancelLabel = cancelLabel || t('common.cancel');
   // Default maxWidth is 30% larger than 320px (416px)
-  const modalMaxWidth = maxWidth || theme.components.modal.confirmationMaxWidth;
+  const modalMaxWidth = maxWidth || theme.size['400'];
 
   const handleConfirm = () => {
     onConfirm();

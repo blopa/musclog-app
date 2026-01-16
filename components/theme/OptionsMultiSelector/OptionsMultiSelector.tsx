@@ -170,7 +170,7 @@ export function OptionsMultiSelector<T extends string | number>({
 
     const lineColor = getGroupColor(groupId);
     const lineWidth = theme.borderWidth.thick;
-    const indicatorWidth = theme.size.groupIndicatorWidth;
+    const indicatorWidth = theme.size['4'];
 
     return (
       <View
@@ -236,7 +236,7 @@ export function OptionsMultiSelector<T extends string | number>({
           style={{
             flexDirection: 'row',
             alignItems: 'stretch',
-            zIndex: isHighestSelected ? theme.zIndex.dragItem : theme.zIndex.base + 1,
+            zIndex: isHighestSelected ? theme.zIndex.max : theme.zIndex.base + 1,
           }}>
           {renderGroupIndicator(groupPosition, item.groupId, isFirstInGroup)}
           <View style={{ flex: 1 }}>
@@ -273,7 +273,7 @@ export function OptionsMultiSelector<T extends string | number>({
                         : theme.colors.background.card,
                     ...(selected ? theme.shadows.accentGlow : {}),
                     opacity: isActive
-                      ? theme.colors.opacity.overlay
+                      ? theme.colors.opacity.strong
                       : pressed
                         ? theme.colors.opacity.strong
                         : theme.colors.opacity.full,
@@ -282,12 +282,12 @@ export function OptionsMultiSelector<T extends string | number>({
                   <View
                     style={{
                       marginRight: theme.spacing.gap.sm,
-                      opacity: theme.colors.opacity.medium50,
+                      opacity: theme.colors.opacity.medium,
                     }}>
                     <GripVertical
                       size={theme.iconSize.md}
                       color={theme.colors.text.secondary}
-                      strokeWidth={theme.strokeWidth.normal}
+                      strokeWidth={theme.strokeWidth.medium}
                     />
                   </View>
 
@@ -329,7 +329,7 @@ export function OptionsMultiSelector<T extends string | number>({
                           style={{
                             fontSize: theme.typography.fontSize.xs,
                             color: theme.colors.text.secondary,
-                            marginTop: theme.spacing.padding.xsQuarter,
+                            marginTop: theme.spacing.padding.xsHalf,
                           }}>
                           {item.description}
                         </Text>
@@ -383,7 +383,7 @@ export function OptionsMultiSelector<T extends string | number>({
         style={{
           flexDirection: 'row',
           alignItems: 'stretch',
-          zIndex: isHighestSelected ? theme.zIndex.dragItem : theme.zIndex.aboveBase,
+          zIndex: isHighestSelected ? theme.zIndex.max : theme.zIndex.aboveBase,
         }}>
         {renderGroupIndicator(groupPosition, option.groupId, isFirstInGroup)}
         <View style={{ flex: 1 }}>
@@ -447,7 +447,7 @@ export function OptionsMultiSelector<T extends string | number>({
                       style={{
                         fontSize: theme.typography.fontSize.xs,
                         color: theme.colors.text.secondary,
-                        marginTop: theme.spacing.padding.xsQuarter,
+                        marginTop: theme.spacing.padding.xsHalf,
                       }}>
                       {option.description}
                     </Text>
@@ -502,7 +502,7 @@ export function OptionsMultiSelector<T extends string | number>({
             fontWeight: theme.typography.fontWeight.bold,
             color: theme.colors.text.secondary,
             textTransform: 'uppercase',
-            letterSpacing: theme.typography.letterSpacing.widest,
+            letterSpacing: theme.typography.letterSpacing.extraWide,
           }}>
           {title}
         </Text>

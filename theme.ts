@@ -228,31 +228,11 @@ export const theme = {
     // Opacity values (for use in style objects)
     opacity: {
       zero: 0, // 0% opacity (fully transparent)
-      light: 0.4,
-      medium: 0.5,
-      heavy: 0.6,
-      veryHeavy: 0.8,
-      full: 1.0,
-      // Specific opacity values
-      iconBackground: 0.125, // 12.5% for icon backgrounds
-      image: 0.6, // Image opacity
+      veryLight: 0.1, // Very light opacity
       subtle: 0.2, // Subtle opacity
-      overlay: 0.9, // Overlay opacity
+      medium: 0.5,
       strong: 0.7, // Strong opacity
-      dim: 0.3, // Dim opacity
-      dimmer: 0.2, // Dimmer opacity
-      lightDim: 0.1, // Light dim opacity
-      veryLight: 0.05, // Very light opacity
-      lightMedium: 0.08, // Light medium opacity
-      veryLight063: 0.063, // Very light opacity ~6.3%
-      medium31: 0.31, // Medium opacity ~31%
-      // Additional opacity values found in codebase
-      dim30: 0.3, // 30% opacity
-      medium50: 0.5, // 50% opacity
-      medium60: 0.6, // 60% opacity
-      medium70: 0.7, // 70% opacity
-      medium80: 0.8, // 80% opacity
-      heavy90: 0.9, // 90% opacity
+      full: 1.0,
     },
 
     // Gradient colors
@@ -306,12 +286,6 @@ export const theme = {
       '5xl': 48,
       '6xl': 60,
       '7xl': 80,
-      // Additional font sizes
-      '10': 10,
-      '11': 11,
-      '15': 15,
-      '32': 32, // 32px font size
-      '40': 40, // 40px font size
     },
 
     // Font weights
@@ -337,7 +311,6 @@ export const theme = {
       normal: 0,
       wide: 0.5,
       wider: 1,
-      widest: 1.2,
       extraWide: 1.5,
     },
   },
@@ -346,7 +319,6 @@ export const theme = {
     // Padding
     padding: {
       zero: 0, // Zero padding
-      '2': 2, // 2px padding
       xs: 4,
       sm: 8,
       md: 12,
@@ -365,7 +337,6 @@ export const theme = {
       '6': 24,
       '4xl': 120, // Large padding for footer spacing
       // Fractional padding values
-      xsQuarter: 1, // xs / 4 = 4 / 4 = 1px
       xsHalf: 2, // xs / 2 = 4 / 2 = 2px
     },
 
@@ -435,8 +406,6 @@ export const theme = {
     // Additional border widths
     accent: 5, // For accent borders like snackbar
     thick6: 6, // 6px border width
-    thinHalf: 1.5, // 1.5px border width
-    thick4: 4, // 4px border width
   },
 
   // Negative offsets (for decorative positioning, glows, badges, etc.)
@@ -452,11 +421,8 @@ export const theme = {
     none: 0, // No stroke
     extraThin: 0.5, // 0.5px stroke width
     thin: 1,
-    thinMedium: 1.5, // 1.5px stroke width
     medium: 2, // 2px stroke width
-    normal: 2.5,
     thick: 3,
-    thick4: 4, // 4px stroke width
   },
 
   shadows: {
@@ -635,7 +601,6 @@ export const theme = {
     popover: 50, // Popovers and tooltips
     tooltip: 100, // Tooltips
     max: 2000, // Maximum z-index (for critical overlays)
-    dragItem: 2000, // Z-index for draggable items when selected
   },
 
   // Icon sizes
@@ -689,7 +654,6 @@ export const theme = {
     '48': 192,
     '56': 224,
     '64': 256,
-    '18px': 18, // 18px size (for icons/small elements)
     '44': 44, // 44px size (for button heights)
     '60': 60, // 60px size (common width)
     '96': 96, // 96px size (for widths)
@@ -710,13 +674,6 @@ export const theme = {
     '1half': 6, // 1.5 * 4 = 6px
     '2half': 10, // 2.5 * 4 = 10px
     '3half': 14, // 3.5 * 4 = 14px
-    // Component-specific sizes
-    stepperInputWidth: 64, // Width for stepper input fields
-    spacer100: 100, // Common spacer height (100px)
-    groupIndicatorWidth: 16, // Width for group indicator lines (16px)
-    maxContentHeight: 2000, // Maximum height for accordion/content animations (2000px)
-    glowSizeLarge: 256, // Large glow effect size (h-64, w-64 = 256px)
-    glowSizeMedium: 192, // Medium glow effect size (h-48, w-48 = 192px)
   },
 
   // Max widths
@@ -730,52 +687,12 @@ export const theme = {
 
   // Component-specific sizes
   components: {
-    navBar: {
-      height: 80,
-      itemHeight: 40,
-      itemWidth: 64,
-      cameraButtonSize: 80,
-    },
     button: {
       height: {
         sm: 36,
         md: 44,
         lg: 52,
       },
-    },
-    card: {
-      padding: 16,
-      borderRadius: 24,
-    },
-    exerciseImage: {
-      size: 48,
-    },
-    progressBar: {
-      height: 48,
-    },
-    modal: {
-      defaultMaxWidth: 384,
-      confirmationMaxWidth: 416,
-      bottomSheetInitialOffset: 300, // Initial offset for bottom sheet animations
-      // Platform-specific padding for modal headers
-      headerPaddingTop: {
-        ios: 60, // iOS safe area top padding
-        android: 40, // Android top padding
-      },
-    },
-    workoutSession: {
-      heroImageHeight: 520,
-    },
-    skeleton: {
-      defaultHeight: 16,
-      defaultBorderRadius: 8,
-    },
-    stepperInput: {
-      width: 64,
-    },
-    // Positioning values
-    workoutHistory: {
-      timelineLeftOffset: 19, // Timeline line left offset for alignment
     },
   },
 

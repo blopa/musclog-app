@@ -95,26 +95,20 @@ export function WorkoutSummaryCelebration({
           <Animated.View
             className="absolute left-1/2 top-1/4 rounded-full blur-3xl"
             style={{
-              height: theme.size.glowSizeLarge,
-              width: theme.size.glowSizeLarge,
+              height: theme.size['256'],
+              width: theme.size['256'],
               backgroundColor: theme.colors.status.indigo10,
-              transform: [
-                { translateX: -theme.size.glowSizeLarge / 2 },
-                { translateY: -theme.size.glowSizeLarge / 2 },
-              ],
+              transform: [{ translateX: -theme.size['32'] }, { translateY: -theme.size['32'] }],
               opacity: glowAnim1,
             }}
           />
           <Animated.View
             className="absolute left-1/2 top-1/3 rounded-full blur-3xl"
             style={{
-              height: theme.size.glowSizeMedium,
-              width: theme.size.glowSizeMedium,
+              height: theme.size['48'],
+              width: theme.size['48'],
               backgroundColor: theme.colors.status.emerald20,
-              transform: [
-                { translateX: -theme.size.glowSizeMedium / 2 },
-                { translateY: -theme.size.glowSizeMedium / 2 },
-              ],
+              transform: [{ translateX: -theme.size['24'] }, { translateY: -theme.size['24'] }],
               opacity: glowAnim2,
             }}
           />

@@ -11,8 +11,8 @@ type SkeletonLoaderProps = {
 
 export function SkeletonLoader({
   width = '100%',
-  height = theme.components.skeleton.defaultHeight,
-  borderRadius = theme.components.skeleton.defaultBorderRadius,
+  height = theme.size.base,
+  borderRadius = theme.size.sm,
   className,
 }: SkeletonLoaderProps) {
   return (
@@ -23,7 +23,7 @@ export function SkeletonLoader({
         height,
         borderRadius,
         backgroundColor: theme.colors.background.cardElevated,
-        opacity: theme.colors.opacity.light,
+        opacity: theme.colors.opacity.medium,
       }}
     />
   );

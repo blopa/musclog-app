@@ -57,7 +57,7 @@ export default function HealthConnectScreen() {
               left: -theme.size['48'],
               top: -theme.size['32'],
               backgroundColor: theme.colors.status.indigo10,
-              opacity: theme.colors.opacity.medium60,
+              opacity: theme.colors.opacity.medium,
             }}
           />
           <View
@@ -68,7 +68,7 @@ export default function HealthConnectScreen() {
               right: -theme.size['48'],
               bottom: -theme.size['32'],
               backgroundColor: theme.colors.status.emerald20,
-              opacity: theme.colors.opacity.medium60,
+              opacity: theme.colors.opacity.medium,
             }}
           />
 
@@ -80,7 +80,7 @@ export default function HealthConnectScreen() {
               height: ILLUSTRATION_SIZE,
               ...theme.shadows.lg,
               shadowColor: theme.colors.status.indigo,
-              shadowOpacity: theme.colors.opacity.dim30,
+              shadowOpacity: theme.colors.opacity.subtle,
             }}>
             <LinearGradient
               colors={[theme.colors.status.indigo, theme.colors.status.emeraldLight]}
@@ -179,7 +179,7 @@ export default function HealthConnectScreen() {
           {/* Dashed Lines SVG */}
           <Svg
             className="absolute inset-0 h-full w-full"
-            style={{ opacity: theme.colors.opacity.dimmer }}
+            style={{ opacity: theme.colors.opacity.subtle }}
             viewBox="0 0 400 400"
             preserveAspectRatio="none">
             <Defs>
@@ -209,7 +209,7 @@ export default function HealthConnectScreen() {
               stroke="url(#lineGradient)"
               strokeWidth={theme.strokeWidth.extraThin}
               fill="none"
-              opacity={theme.colors.opacity.dim}
+              opacity={theme.colors.opacity.subtle}
             />
           </Svg>
         </View>
@@ -307,7 +307,7 @@ export default function HealthConnectScreen() {
                 style={{
                   ...theme.shadows.lg,
                   shadowColor: theme.colors.status.emeraldLight,
-                  shadowOpacity: theme.colors.opacity.dimmer,
+                  shadowOpacity: theme.colors.opacity.subtle,
                 }}
               />
 
@@ -327,7 +327,7 @@ export default function HealthConnectScreen() {
               <Text
                 className="mt-4 text-center leading-relaxed"
                 style={{
-                  fontSize: theme.typography.fontSize['11'],
+                  fontSize: theme.typography.fontSize.xs,
                   color: theme.colors.text.gray500,
                 }}>
                 {t('onboarding.healthConnect.privacyStatement')}

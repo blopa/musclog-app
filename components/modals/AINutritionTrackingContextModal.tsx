@@ -94,7 +94,7 @@ export function AINutritionTrackingContextModal({
               className="w-full bg-transparent text-text-primary"
               style={{
                 minHeight: theme.size['100'],
-                fontSize: theme.typography.fontSize['15'],
+                fontSize: theme.typography.fontSize.sm,
                 color: theme.colors.text.primary,
                 textAlignVertical: 'top',
               }}

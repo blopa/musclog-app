@@ -30,7 +30,7 @@ export default function EmptyStatesTestScreen() {
         <View className="px-6 pb-2 pt-6">
           <Text
             className="font-extrabold leading-tight tracking-tight text-text-primary"
-            style={{ fontSize: theme.typography.fontSize['32'] }}>
+            style={{ fontSize: theme.typography.fontSize['3xl'] }}>
             System States
           </Text>
           <Text className="pt-3 text-base font-normal leading-relaxed text-text-secondary">

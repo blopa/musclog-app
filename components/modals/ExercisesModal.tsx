@@ -79,7 +79,7 @@ function ExerciseListItem({
             <Text
               className="font-bold uppercase tracking-wider"
               style={{
-                fontSize: theme.typography.fontSize['10'],
+                fontSize: theme.typography.fontSize.xs,
                 color:
                   tag.variant === 'primary'
                     ? theme.colors.accent.primary
@@ -272,15 +272,15 @@ export default function ExercisesModal({ visible, onClose }: ExercisesModalProps
                   <View className="flex-row items-center justify-between px-4 py-4">
                     <View className="flex-row items-center gap-3">
                       <SkeletonLoader
-                        width={theme.size['18px']}
-                        height={theme.size['18px']}
+                        width={theme.size.lg}
+                        height={theme.size.lg}
                         borderRadius={theme.borderRadius.full}
                       />
                       <SkeletonLoader width={theme.size['120']} height={theme.size['5']} />
                     </View>
                     <SkeletonLoader
-                      width={theme.size['18px']}
-                      height={theme.size['18px']}
+                      width={theme.size.lg}
+                      height={theme.size.lg}
                       borderRadius={theme.borderRadius.full}
                     />
                   </View>

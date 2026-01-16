@@ -32,7 +32,7 @@ export function ExerciseItem({ exercise, isLast }: ExerciseItemProps) {
           className="absolute top-12 w-0.5"
           style={{
             bottom: -theme.spacing.padding.xl,
-            left: theme.components.workoutHistory.timelineLeftOffset,
+            left: theme.spacing.gap.lg,
             backgroundColor: theme.colors.border.light,
           }}
         />
@@ -128,7 +128,7 @@ export function ExerciseItem({ exercise, isLast }: ExerciseItemProps) {
               className="flex-row items-end gap-1 border-t px-4 pb-3 pt-1"
               style={{
                 borderTopColor: theme.colors.border.light,
-                height: theme.components.progressBar.height,
+                height: theme.size['12'],
               }}>
               {exercise.setProgress.map((progress, index) => {
                 const isCurrent = exercise.sets[index]?.isCurrent;

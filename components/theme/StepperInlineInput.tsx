@@ -98,7 +98,7 @@ export function StepperInlineInput({
               keyboardType="numeric"
               className="p-0 text-center text-xl font-bold text-white"
               style={{
-                width: theme.components.stepperInput.width,
+                width: theme.size['4xl'],
                 padding: theme.spacing.padding.zero,
                 margin: theme.spacing.margin.zero,
                 color: theme.colors.text.white,
@@ -109,7 +109,7 @@ export function StepperInlineInput({
             {unit && (
               <Text
                 className="text-xs text-gray-500"
-                style={{ fontSize: theme.typography.fontSize['10'] }}>
+                style={{ fontSize: theme.typography.fontSize.xs }}>
                 {unit}
               </Text>
             )}
@@ -122,7 +122,7 @@ export function StepperInlineInput({
             {unit && (
               <Text
                 className="text-xs text-gray-500"
-                style={{ fontSize: theme.typography.fontSize['10'] }}>
+                style={{ fontSize: theme.typography.fontSize.xs }}>
                 {unit}
               </Text>
             )}

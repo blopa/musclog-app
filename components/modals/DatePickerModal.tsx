@@ -128,7 +128,7 @@ export function DatePickerModal({
           </Text>
           <Text
             className="font-bold leading-tight tracking-tight text-text-primary"
-            style={{ fontSize: theme.typography.fontSize['40'] }}>
+            style={{ fontSize: theme.typography.fontSize['4xl'] }}>
             {formatSelectedDate(tempSelectedDate)}
           </Text>
         </View>

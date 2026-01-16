@@ -43,7 +43,7 @@ export function MasterLayout({ children }: MasterLayoutProps) {
                 <Home
                   size={theme.iconSize.md}
                   color={isActive('/') ? theme.colors.accent.primary : theme.colors.text.tertiary}
-                  strokeWidth={isActive('/') ? theme.strokeWidth.normal : theme.borderWidth.medium}
+                  strokeWidth={isActive('/') ? theme.strokeWidth.medium : theme.borderWidth.medium}
                 />
               </View>
               <Text
@@ -70,7 +70,7 @@ export function MasterLayout({ children }: MasterLayoutProps) {
                     isActive('/workouts') ? theme.colors.accent.primary : theme.colors.text.tertiary
                   }
                   strokeWidth={
-                    isActive('/workouts') ? theme.strokeWidth.normal : theme.borderWidth.medium
+                    isActive('/workouts') ? theme.strokeWidth.medium : theme.borderWidth.medium
                   }
                 />
               </View>
@@ -109,7 +109,7 @@ export function MasterLayout({ children }: MasterLayoutProps) {
                     isActive('/food') ? theme.colors.accent.primary : theme.colors.text.tertiary
                   }
                   strokeWidth={
-                    isActive('/food') ? theme.strokeWidth.normal : theme.borderWidth.medium
+                    isActive('/food') ? theme.strokeWidth.medium : theme.borderWidth.medium
                   }
                 />
               </View>

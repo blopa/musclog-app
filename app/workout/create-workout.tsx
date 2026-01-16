@@ -148,7 +148,7 @@ export default function CreateWorkoutScreen() {
             height: theme.size['300'],
             borderRadius: theme.borderRadius['150'],
             backgroundColor: theme.colors.accent.primary20,
-            opacity: theme.colors.opacity.lightDim,
+            opacity: theme.colors.opacity.subtle,
           }}
         />
         <View
@@ -160,7 +160,7 @@ export default function CreateWorkoutScreen() {
             height: theme.size['250'],
             borderRadius: theme.borderRadius['125'],
             backgroundColor: theme.colors.status.indigo10,
-            opacity: theme.colors.opacity.lightDim,
+            opacity: theme.colors.opacity.subtle,
           }}
         />
       </View>
@@ -234,7 +234,7 @@ export default function CreateWorkoutScreen() {
               fontWeight: theme.typography.fontWeight.bold,
               color: theme.colors.text.secondary,
               textTransform: 'uppercase',
-              letterSpacing: theme.typography.letterSpacing.widest,
+              letterSpacing: theme.typography.letterSpacing.extraWide,
               marginBottom: theme.spacing.padding.md,
               marginLeft: theme.spacing.margin.xs,
             }}>
@@ -345,7 +345,7 @@ export default function CreateWorkoutScreen() {
               fontWeight: theme.typography.fontWeight.bold,
               color: theme.colors.text.secondary,
               textTransform: 'uppercase',
-              letterSpacing: theme.typography.letterSpacing.widest,
+              letterSpacing: theme.typography.letterSpacing.extraWide,
               marginBottom: theme.spacing.padding.md,
               marginLeft: theme.spacing.margin.xs,
             }}>
@@ -396,7 +396,7 @@ export default function CreateWorkoutScreen() {
               fontWeight: theme.typography.fontWeight.bold,
               color: theme.colors.text.secondary,
               textTransform: 'uppercase',
-              letterSpacing: theme.typography.letterSpacing.widest,
+              letterSpacing: theme.typography.letterSpacing.extraWide,
               marginBottom: theme.spacing.padding.md,
               marginLeft: theme.spacing.margin.xs,
             }}>
@@ -448,7 +448,7 @@ export default function CreateWorkoutScreen() {
               fontWeight: theme.typography.fontWeight.bold,
               color: theme.colors.text.secondary,
               textTransform: 'uppercase',
-              letterSpacing: theme.typography.letterSpacing.widest,
+              letterSpacing: theme.typography.letterSpacing.extraWide,
               marginBottom: theme.spacing.padding.md,
               marginLeft: theme.spacing.margin.xs,
             }}>

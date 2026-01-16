@@ -30,7 +30,7 @@ export const GroupActionButton: React.FC<GroupActionButtonProps> = ({
             height: theme.size.xs,
             borderRadius: theme.borderRadius['2'],
             backgroundColor: color,
-            opacity: theme.colors.opacity.medium50,
+            opacity: theme.colors.opacity.medium,
           }}
         />
         <View
@@ -39,7 +39,7 @@ export const GroupActionButton: React.FC<GroupActionButtonProps> = ({
             height: theme.size.xs,
             borderRadius: theme.borderRadius['2'],
             backgroundColor: color,
-            opacity: theme.colors.opacity.medium50,
+            opacity: theme.colors.opacity.medium,
           }}
         />
       </View>
@@ -58,7 +58,7 @@ export const GroupActionButton: React.FC<GroupActionButtonProps> = ({
             height: theme.size.xs,
             borderRadius: theme.borderRadius['2'],
             backgroundColor: color,
-            opacity: theme.colors.opacity.medium50,
+            opacity: theme.colors.opacity.medium,
           }}
         />
         <View
@@ -67,7 +67,7 @@ export const GroupActionButton: React.FC<GroupActionButtonProps> = ({
             height: theme.size.xs,
             borderRadius: theme.borderRadius['2'],
             backgroundColor: color,
-            opacity: theme.colors.opacity.medium50,
+            opacity: theme.colors.opacity.medium,
           }}
         />
       </View>
@@ -94,7 +94,7 @@ export const GroupActionButton: React.FC<GroupActionButtonProps> = ({
             width: '100%',
             paddingVertical: theme.spacing.padding.sm,
             borderRadius: theme.borderRadius.xs,
-            borderWidth: theme.borderWidth.thinHalf,
+            borderWidth: theme.borderWidth.medium,
             borderColor: allSelectedInSameGroup
               ? theme.colors.status.redDark
               : theme.colors.status.emeraldDark,
@@ -104,7 +104,7 @@ export const GroupActionButton: React.FC<GroupActionButtonProps> = ({
             transform: [{ scale: pressed ? 0.98 : 1 }],
             shadowColor: theme.colors.text.black,
             shadowOffset: theme.shadowOffset.md,
-            shadowOpacity: theme.colors.opacity.dimmer,
+            shadowOpacity: theme.colors.opacity.subtle,
             shadowRadius: theme.shadows.radius3.shadowRadius,
             elevation: theme.elevation.md,
           },

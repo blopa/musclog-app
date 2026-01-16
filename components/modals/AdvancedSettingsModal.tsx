@@ -74,8 +74,8 @@ export function AdvancedSettingsModal({
           <SettingsCard
             icon={<Download size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
             iconContainerStyle={{
-              width: theme.size['40'],
-              height: theme.size['40'],
+              width: theme.size['16'],
+              height: theme.size['16'],
               borderRadius: theme.borderRadius.sm,
               backgroundColor: theme.colors.accent.primary20,
             }}
@@ -87,8 +87,8 @@ export function AdvancedSettingsModal({
           <SettingsCard
             icon={<Upload size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
             iconContainerStyle={{
-              width: theme.size['40'],
-              height: theme.size['40'],
+              width: theme.size['16'],
+              height: theme.size['16'],
               borderRadius: theme.borderRadius.sm,
               backgroundColor: theme.colors.accent.primary20,
             }}
@@ -119,8 +119,8 @@ export function AdvancedSettingsModal({
           <SettingsCard
             icon={<Trash2 size={theme.iconSize.xl} color={theme.colors.status.error} />}
             iconContainerStyle={{
-              width: theme.size['40'],
-              height: theme.size['40'],
+              width: theme.size['16'],
+              height: theme.size['16'],
               borderRadius: theme.borderRadius.sm,
               backgroundColor: theme.colors.status.error20,
             }}

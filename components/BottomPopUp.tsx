@@ -27,9 +27,7 @@ export function BottomPopUp({
   headerIcon,
 }: BottomPopUpProps) {
   const insets = useSafeAreaInsets();
-  const slideAnim = useRef(
-    new Animated.Value(theme.components.modal.bottomSheetInitialOffset)
-  ).current; // Start off-screen
+  const slideAnim = useRef(new Animated.Value(theme.size['300'])).current; // Start off-screen
 
   useEffect(() => {
     if (visible) {
@@ -43,7 +41,7 @@ export function BottomPopUp({
     } else {
       // Slide down when modal is hidden
       Animated.timing(slideAnim, {
-        toValue: theme.components.modal.bottomSheetInitialOffset,
+        toValue: theme.size['300'],
         duration: 250,
         useNativeDriver: true,
       }).start();

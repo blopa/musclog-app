@@ -70,7 +70,7 @@ export function TrackingMethodButton({
               style={{ backgroundColor: theme.colors.accent.primary }}>
               <Text
                 className="font-extrabold uppercase text-text-black"
-                style={{ fontSize: theme.typography.fontSize['10'] }}>
+                style={{ fontSize: theme.typography.fontSize.xs }}>
                 {badge}
               </Text>
             </View>

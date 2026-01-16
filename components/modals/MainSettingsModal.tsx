@@ -52,7 +52,7 @@ export function MainSettingsModal({ visible, onClose }: { visible: boolean; onCl
             fontWeight: theme.typography.fontWeight.bold,
             color: theme.colors.text.secondary,
             textTransform: 'uppercase',
-            letterSpacing: theme.typography.letterSpacing.widest,
+            letterSpacing: theme.typography.letterSpacing.extraWide,
           }}>
           {t('settings.configuration')}
         </Text>
@@ -157,7 +157,7 @@ export function MainSettingsModal({ visible, onClose }: { visible: boolean; onCl
             onPress={() => {}}>
             <Text
               style={{
-                fontSize: theme.typography.fontSize['15'],
+                fontSize: theme.typography.fontSize.sm,
                 color: theme.colors.text.primary,
                 fontWeight: theme.typography.fontWeight.medium,
               }}>
@@ -186,7 +186,7 @@ export function MainSettingsModal({ visible, onClose }: { visible: boolean; onCl
             onPress={() => {}}>
             <Text
               style={{
-                fontSize: theme.typography.fontSize['15'],
+                fontSize: theme.typography.fontSize.sm,
                 color: theme.colors.text.primary,
                 fontWeight: theme.typography.fontWeight.medium,
               }}>

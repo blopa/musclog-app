@@ -25,7 +25,7 @@ export function ManagementItem({
       <View
         className="h-12 w-12 items-center justify-center rounded-xl"
         style={{
-          backgroundColor: addOpacityToHex(iconColor, theme.colors.opacity.iconBackground),
+          backgroundColor: addOpacityToHex(iconColor, theme.colors.opacity.subtle),
         }}>
         <Icon size={theme.iconSize.md} color={iconColor} />
       </View>
