@@ -126,7 +126,19 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
   ];
 
   return (
-    <FullScreenModal visible={visible} onClose={onClose} title={'View exercise'}>
+    <FullScreenModal
+      visible={visible}
+      onClose={onClose}
+      title={EXERCISE_DATA.name}
+      headerRight={
+        <Pressable
+          onPress={() => setIsMenuVisible(true)}
+          className="h-10 w-10 items-center justify-center rounded-full"
+          style={{ backgroundColor: 'rgba(0, 0, 0, 0.4)' }}>
+          <MoreVertical size={20} color="white" />
+        </Pressable>
+      }
+    >
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Hero Section with Background Image */}
         <View style={{ height: 384, overflow: 'hidden', position: 'relative' }}>
@@ -145,19 +157,6 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
             }}
             resizeMode="cover"
           />
-
-          {/* Top Navigation */}
-          <View
-            className="absolute left-0 right-0 top-0 flex-row items-center justify-between"
-            style={{ paddingTop: insets.top + 16, paddingHorizontal: 16, zIndex: 10 }}
-          >
-            <Pressable
-              onPress={() => setIsMenuVisible(true)}
-              className="h-10 w-10 items-center justify-center rounded-full"
-              style={{ backgroundColor: 'rgba(0, 0, 0, 0.4)' }}>
-              <MoreVertical size={20} color="white" />
-            </Pressable>
-          </View>
 
           {/* Content Overlay */}
           <LinearGradient
