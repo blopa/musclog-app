@@ -21,6 +21,8 @@ import { theme } from '../../theme';
 import { FullScreenModal } from './FullScreenModal';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../theme/Button';
+import { TextInput } from '../theme/TextInput';
+import { SegmentedControl } from '../theme/SegmentedControl';
 
 type MeasurementUnit = '100g' | 'serving' | 'container';
 
@@ -83,52 +85,32 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
           <View className="gap-6 px-4 pb-40 pt-6">
             {/* Food Name */}
-            <View>
-              <Text className="mb-2 ml-1 text-sm font-medium text-text-secondary">Food Name</Text>
-              <View className="relative">
-                <RNTextInput
-                  value={foodName}
-                  onChangeText={setFoodName}
-                  placeholder="e.g., Homemade Chicken Salad"
-                  placeholderTextColor={theme.colors.text.tertiary + '80'}
-                  className="h-14 w-full rounded-xl border border-white/10 bg-bg-card px-4 pr-12 text-lg font-medium text-text-primary"
-                  style={{
-                    borderColor: theme.colors.background.white10,
-                  }}
-                />
-                <View
-                  className="absolute right-4"
-                  style={{
-                    top: '50%',
-                    transform: [{ translateY: -theme.iconSize.md / 2 }],
-                  }}>
-                  <Pencil size={theme.iconSize.md} color={theme.colors.text.tertiary} />
-                </View>
-              </View>
-            </View>
+            <TextInput
+              label="Food Name"
+              value={foodName}
+              onChangeText={setFoodName}
+              placeholder="e.g., Homemade Chicken Salad"
+              icon={<Pencil size={theme.iconSize.md} color={theme.colors.text.tertiary} />}
+            />
 
             {/* Barcode */}
-            <View>
-              <Text className="mb-2 ml-1 text-sm font-medium text-text-secondary">
-                Barcode (Optional)
-              </Text>
-              <View className="relative flex-row items-center">
-                <RNTextInput
-                  value={barcode}
-                  onChangeText={setBarcode}
-                  placeholder="Scan or enter barcode"
-                  placeholderTextColor={theme.colors.text.tertiary + '80'}
-                  className="h-14 flex-1 rounded-xl border border-white/10 bg-bg-card px-4 pr-14 text-lg font-medium text-text-primary"
-                  style={{
-                    borderColor: theme.colors.background.white10,
-                  }}
-                />
-                <Pressable
-                  className="absolute right-2 rounded-lg p-2"
-                  style={{ backgroundColor: theme.colors.accent.primary10 }}>
-                  <ScanLine size={theme.iconSize.md} color={theme.colors.accent.primary} />
-                </Pressable>
-              </View>
+            <View className="relative">
+              <TextInput
+                label="Barcode (Optional)"
+                value={barcode}
+                onChangeText={setBarcode}
+                placeholder="Scan or enter barcode"
+              />
+              <Pressable
+                className="absolute right-2"
+                style={{
+                  top: 34, // Label height (18px) + half of input height (28px)
+                  backgroundColor: theme.colors.accent.primary10,
+                  borderRadius: 8,
+                  padding: 8,
+                }}>
+                <ScanLine size={theme.iconSize.md} color={theme.colors.accent.primary} />
+              </Pressable>
             </View>
 
             {/* Measurement Unit */}
@@ -136,41 +118,12 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
               <Text className="mb-2 ml-1 text-sm font-medium text-text-secondary">
                 Measurement Unit
               </Text>
-              <View
-                className="h-12 rounded-xl bg-bg-card p-1"
-                style={{ backgroundColor: theme.colors.background.card }}>
-                <View className="h-full flex-row">
-                  {measurementOptions.map((option) => (
-                    <Pressable
-                      key={option.value}
-                      className={`h-full flex-1 items-center justify-center rounded-lg px-2 ${
-                        measurementUnit === option.value ? 'bg-bg-cardElevated' : ''
-                      }`}
-                      onPress={() => setMeasurementUnit(option.value as MeasurementUnit)}
-                      style={
-                        measurementUnit === option.value
-                          ? {
-                              backgroundColor: theme.colors.background.cardElevated,
-                              shadowColor: theme.colors.background.black10,
-                              shadowOffset: { width: 0, height: 1 },
-                              shadowOpacity: 1,
-                              shadowRadius: 2,
-                              elevation: 1,
-                            }
-                          : {}
-                      }>
-                      <Text
-                        className={`text-sm font-semibold ${
-                          measurementUnit === option.value
-                            ? 'text-text-primary'
-                            : 'text-text-tertiary'
-                        }`}>
-                        {option.label}
-                      </Text>
-                    </Pressable>
-                  ))}
-                </View>
-              </View>
+              <SegmentedControl
+                options={measurementOptions}
+                value={measurementUnit}
+                onValueChange={(value) => setMeasurementUnit(value as MeasurementUnit)}
+                variant="elevated"
+              />
             </View>
 
             {/* Macronutrients Header */}
