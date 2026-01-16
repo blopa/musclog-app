@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, Pressable, TextInput } from 'react-native';
 import { Minus, Plus } from 'lucide-react-native';
-import { theme, addOpacityToHex } from '../../theme';
+import { theme } from '../../theme';
 
 type BodyMetricCardProps = {
   icon: React.ComponentType<{ size: number; color: string }>;

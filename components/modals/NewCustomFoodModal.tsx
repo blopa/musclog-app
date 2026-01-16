@@ -72,6 +72,13 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
     router.back();
   };
 
+  // Filter to only allow numeric input
+  const handleNumericChange = (value: string, setter: (val: string) => void) => {
+    // Remove any non-numeric characters (allow digits only)
+    const numericValue = value.replace(/[^0-9]/g, '');
+    setter(numericValue);
+  };
+
   const measurementOptions = [
     { label: 'Per 100g', value: '100g' },
     { label: 'Per Serving', value: 'serving' },
@@ -156,10 +163,11 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
               </View>
               <RNTextInput
                 value={calories}
-                onChangeText={setCalories}
+                onChangeText={(value) => handleNumericChange(value, setCalories)}
                 placeholder="0"
                 placeholderTextColor={theme.colors.text.tertiary + '50'}
                 keyboardType="numeric"
+                selectTextOnFocus
                 className="w-full border-0 bg-transparent p-0 text-5xl font-bold text-text-primary"
                 style={{
                   fontSize: 48,
@@ -314,10 +322,15 @@ function MacroInput({
       <View className="flex-row items-baseline">
         <RNTextInput
           value={value}
-          onChangeText={onChange}
+          onChangeText={(text) => {
+            // Filter to only allow numeric input
+            const numericValue = text.replace(/[^0-9]/g, '');
+            onChange(numericValue);
+          }}
           placeholder="0"
           placeholderTextColor={theme.colors.text.tertiary + '50'}
           keyboardType="numeric"
+          selectTextOnFocus
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           className="flex-1 border-0 bg-transparent p-0 text-3xl font-bold text-text-primary"
