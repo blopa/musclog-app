@@ -2,7 +2,7 @@ import { View, Text } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
-import { MacroCard } from '../MacroCard';
+import { MacroCard } from './MacroCard';
 import { GenericCard } from './GenericCard';
 
 type CaloriesRemainingCardProps = {

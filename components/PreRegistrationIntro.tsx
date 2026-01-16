@@ -20,7 +20,7 @@ export default function PreRegistrationIntro() {
     <View
       className="relative w-full items-center justify-center"
       style={{
-        aspectRatio: 1,
+        aspectRatio: theme.aspectRatio.square,
         maxHeight: maxHeight,
       }}>
       {/* Ambient Background Glow */}

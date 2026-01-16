@@ -15,13 +15,13 @@ export default function EmptyStatesTestScreen() {
       {/* Header */}
       <View className="flex-row items-center justify-between bg-bg-primary/90 px-4 pb-2 pt-4">
         <Pressable className="h-10 w-10 shrink-0 items-center justify-center rounded-full active:bg-white/10">
-          <ArrowLeft size={24} color={theme.colors.text.primary} />
+          <ArrowLeft size={theme.iconSize.xl} color={theme.colors.text.primary} />
         </Pressable>
         <Text className="flex-1 text-center text-lg font-bold leading-tight tracking-tight text-text-primary">
           System Specs
         </Text>
         <Pressable className="h-10 w-10 items-center justify-center rounded-full active:bg-white/10">
-          <Settings size={20} color={theme.colors.accent.primary} />
+          <Settings size={theme.iconSize.lg} color={theme.colors.accent.primary} />
         </Pressable>
       </View>
 

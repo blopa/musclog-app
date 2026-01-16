@@ -207,8 +207,11 @@ function FoodItemCard({ food, onAddPress }: FoodItemCardProps) {
                   : theme.colors.accent.primary20,
               }}>
               <Text
-                className="text-[10px] font-bold"
-                style={{ color: food.gradeColor || theme.colors.accent.primary }}>
+                className="font-bold"
+                style={{
+                  fontSize: theme.typography.fontSize['10'],
+                  color: food.gradeColor || theme.colors.accent.primary,
+                }}>
                 {food.grade}
               </Text>
             </View>

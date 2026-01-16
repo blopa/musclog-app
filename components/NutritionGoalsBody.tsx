@@ -262,7 +262,9 @@ export function NutritionGoalsBody({
         </View>
 
         {/* Daily Macro Targets */}
-        <Text className="mb-2 mt-8 text-[10px] font-bold uppercase tracking-widest text-text-secondary">
+        <Text
+          className="mb-2 mt-8 font-bold uppercase tracking-widest text-text-secondary"
+          style={{ fontSize: theme.typography.fontSize['10'] }}>
           {t('nutritionGoals.dailyMacroTargets')}
         </Text>
         <View className="gap-4">
@@ -308,7 +310,9 @@ export function NutritionGoalsBody({
         <MacrosDistributionChart protein={protein} carbs={carbs} fats={fats} fiber={fiber} />
 
         {/* Target Body Metrics */}
-        <Text className="mb-2 mt-8 text-[10px] font-bold uppercase tracking-widest text-text-secondary">
+        <Text
+          className="mb-2 mt-8 font-bold uppercase tracking-widest text-text-secondary"
+          style={{ fontSize: theme.typography.fontSize['10'] }}>
           {t('nutritionGoals.targetBodyMetrics')}
         </Text>
         <View className="gap-4">
@@ -366,7 +370,9 @@ export function NutritionGoalsBody({
               width="full"
               onPress={handleSave}
             />
-            <Text className="mt-4 text-center text-[10px] text-text-secondary">
+            <Text
+              className="mt-4 text-center text-text-secondary"
+              style={{ fontSize: theme.typography.fontSize['10'] }}>
               {t('nutritionGoals.settingsNote')}
             </Text>
           </View>

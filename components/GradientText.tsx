@@ -53,7 +53,7 @@ export function GradientText({ colors, style, children }: GradientTextProps) {
         </Text>
       }>
       <LinearGradient colors={colors} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
-        <Text style={[style, { opacity: 0 }]}>{children}</Text>
+        <Text style={[style, { opacity: theme.colors.opacity.zero }]}>{children}</Text>
       </LinearGradient>
     </MaskedView>
   );

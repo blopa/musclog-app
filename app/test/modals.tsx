@@ -34,9 +34,9 @@ import { AddFoodItemToMealModal } from '../../components/modals/AddFoodItemToMea
 import { CenteredModal } from '../../components/modals/CenteredModal';
 import { CoachModal } from '../../components/modals/CoachModal';
 import { FullScreenModal } from '../../components/modals/FullScreenModal';
-import ExercisesModal from '../../components/ExercisesModal';
-import ViewExerciseModal from '../../components/ViewExerciseModal';
-import CreateExerciseModal from '../../components/CreateExerciseModal';
+import ExercisesModal from '../../components/modals/ExercisesModal';
+import ViewExerciseModal from '../../components/modals/ViewExerciseModal';
+import CreateExerciseModal from '../../components/modals/CreateExerciseModal';
 
 export default function ModalsTestScreen() {
   // Nutrition Goals Modal

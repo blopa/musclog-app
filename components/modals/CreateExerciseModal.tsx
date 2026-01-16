@@ -4,12 +4,12 @@ import { useRouter } from 'expo-router';
 import { ChevronLeft, Camera, Link, ChevronDown, Dumbbell } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
-import { theme } from '../theme';
-import { TextInput } from './theme/TextInput';
-import { Button } from './theme/Button';
-import { ToggleInput } from './theme/ToggleInput';
-import { BottomPopUpMenu } from './BottomPopUpMenu';
-import { FullScreenModal } from './modals/FullScreenModal';
+import { theme } from '../../theme';
+import { TextInput } from '../theme/TextInput';
+import { Button } from '../theme/Button';
+import { ToggleInput } from '../theme/ToggleInput';
+import { BottomPopUpMenu } from '../BottomPopUpMenu';
+import { FullScreenModal } from './FullScreenModal';
 
 // Muscle groups will be translated using useTranslation hook
 const PRIMARY_MUSCLES_KEYS = ['chest', 'shoulders', 'back', 'legs', 'arms', 'core'];

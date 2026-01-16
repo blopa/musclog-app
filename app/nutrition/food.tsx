@@ -183,9 +183,21 @@ export default function FoodScreen() {
                     borderRadius={theme.borderRadius.xs}
                   />
                   <View className="mt-4 flex-row gap-2">
-                    <SkeletonLoader width="33%" height={theme.size['60']} borderRadius={theme.borderRadius.sm} />
-                    <SkeletonLoader width="33%" height={theme.size['60']} borderRadius={theme.borderRadius.sm} />
-                    <SkeletonLoader width="33%" height={theme.size['60']} borderRadius={theme.borderRadius.sm} />
+                    <SkeletonLoader
+                      width="33%"
+                      height={theme.size['60']}
+                      borderRadius={theme.borderRadius.sm}
+                    />
+                    <SkeletonLoader
+                      width="33%"
+                      height={theme.size['60']}
+                      borderRadius={theme.borderRadius.sm}
+                    />
+                    <SkeletonLoader
+                      width="33%"
+                      height={theme.size['60']}
+                      borderRadius={theme.borderRadius.sm}
+                    />
                   </View>
                 </View>
 

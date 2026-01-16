@@ -15,10 +15,10 @@ import {
   FileText,
 } from 'lucide-react-native';
 import { theme } from '../../theme';
-import { AINutritionTrackingContextModal } from '../../components/AINutritionTrackingContextModal';
+import { AINutritionTrackingContextModal } from '../../components/modals/AINutritionTrackingContextModal';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
-const CAMERA_ASPECT_RATIO = 4 / 5;
+const CAMERA_ASPECT_RATIO = theme.aspectRatio.portrait;
 const CAMERA_MAX_HEIGHT = SCREEN_HEIGHT * 0.6;
 
 type CameraMode = 'ai-meal-photo' | 'ai-label-scan' | 'barcode-scan';
@@ -144,7 +144,7 @@ export default function AICameraScreen() {
               borderWidth: theme.borderWidth.thin,
               borderColor: theme.colors.background.white10,
             }}>
-            <X size={20} color={theme.colors.text.primary} />
+            <X size={theme.iconSize.lg} color={theme.colors.text.primary} />
           </Pressable>
 
           {/* AI Detecting Indicator */}
@@ -178,9 +178,9 @@ export default function AICameraScreen() {
               borderColor: theme.colors.background.white10,
             }}>
             {flashEnabled ? (
-              <Lightbulb size={20} color={theme.colors.text.primary} />
+              <Lightbulb size={theme.iconSize.lg} color={theme.colors.text.primary} />
             ) : (
-              <LightbulbOff size={20} color={theme.colors.text.primary} />
+              <LightbulbOff size={theme.iconSize.lg} color={theme.colors.text.primary} />
             )}
           </Pressable>
         </View>
@@ -264,7 +264,7 @@ export default function AICameraScreen() {
                 ) : null}
                 <View className="flex-row items-center justify-center gap-1.5">
                   <Sparkles
-                    size={18}
+                    size={theme.iconSize.md}
                     color={
                       cameraMode === 'ai-meal-photo'
                         ? theme.colors.text.white
@@ -272,8 +272,9 @@ export default function AICameraScreen() {
                     }
                   />
                   <Text
-                    className="text-[10px] font-bold uppercase tracking-wide"
+                    className="font-bold uppercase tracking-wide"
                     style={{
+                      fontSize: theme.typography.fontSize['10'],
                       color:
                         cameraMode === 'ai-meal-photo'
                           ? theme.colors.text.white
@@ -305,7 +306,7 @@ export default function AICameraScreen() {
                 ) : null}
                 <View className="flex-row items-center justify-center gap-1.5">
                   <FileText
-                    size={18}
+                    size={theme.iconSize.md}
                     color={
                       cameraMode === 'ai-label-scan'
                         ? theme.colors.text.white
@@ -313,8 +314,9 @@ export default function AICameraScreen() {
                     }
                   />
                   <Text
-                    className="text-[10px] font-bold uppercase tracking-wide"
+                    className="font-bold uppercase tracking-wide"
                     style={{
+                      fontSize: theme.typography.fontSize['10'],
                       color:
                         cameraMode === 'ai-label-scan'
                           ? theme.colors.text.white
@@ -346,7 +348,7 @@ export default function AICameraScreen() {
                 ) : null}
                 <View className="flex-row items-center justify-center gap-1.5">
                   <ScanBarcode
-                    size={18}
+                    size={theme.iconSize.md}
                     color={
                       cameraMode === 'barcode-scan'
                         ? theme.colors.text.white
@@ -354,8 +356,9 @@ export default function AICameraScreen() {
                     }
                   />
                   <Text
-                    className="text-[10px] font-bold uppercase tracking-wide"
+                    className="font-bold uppercase tracking-wide"
                     style={{
+                      fontSize: theme.typography.fontSize['10'],
                       color:
                         cameraMode === 'barcode-scan'
                           ? theme.colors.text.white
@@ -416,7 +419,7 @@ export default function AICameraScreen() {
                 borderWidth: theme.borderWidth.thin,
                 borderColor: theme.colors.background.white10,
               }}>
-              <MessageSquareText size={20} color={theme.colors.text.primary} />
+              <MessageSquareText size={theme.iconSize.lg} color={theme.colors.text.primary} />
             </Pressable>
           </View>
         </View>

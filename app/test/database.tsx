@@ -140,7 +140,7 @@ export default function DatabaseTestScreen() {
                       </Text>
                       <View className="flex-row items-center gap-2">
                         <Text className="text-xs text-text-tertiary">{screen.route}</Text>
-                        <ArrowRight size={16} color={theme.colors.text.tertiary} />
+                        <ArrowRight size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
                       </View>
                     </Pressable>
                   ))}
@@ -178,7 +178,7 @@ export default function DatabaseTestScreen() {
             <Pressable
               className="flex-row items-center justify-center gap-2 rounded-lg bg-accent-primary p-4"
               onPress={addExercise}>
-              <Plus size={20} color={theme.colors.text.black} />
+              <Plus size={theme.iconSize.lg} color={theme.colors.text.black} />
               <Text className="font-bold text-text-black">Add Exercise</Text>
             </Pressable>
           </View>
@@ -193,10 +193,10 @@ export default function DatabaseTestScreen() {
             </View>
             <View className="flex-row gap-2">
               <Pressable onPress={fetchExercises} className="p-2">
-                <RefreshCw size={20} color={theme.colors.text.secondary} />
+                <RefreshCw size={theme.iconSize.lg} color={theme.colors.text.secondary} />
               </Pressable>
               <Pressable onPress={clearAll} className="p-2">
-                <Trash2 size={20} color={theme.colors.status.error} />
+                <Trash2 size={theme.iconSize.lg} color={theme.colors.status.error} />
               </Pressable>
             </View>
           </View>
@@ -219,7 +219,7 @@ export default function DatabaseTestScreen() {
                     <Text className="text-sm text-text-secondary">{exercise.muscleGroup}</Text>
                   </View>
                   <Pressable onPress={() => deleteExercise(exercise)}>
-                    <Trash2 size={20} color={theme.colors.text.tertiary} />
+                    <Trash2 size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
                   </Pressable>
                 </View>
               ))

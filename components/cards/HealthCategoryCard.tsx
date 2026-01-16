@@ -1,7 +1,7 @@
 import { View, Text } from 'react-native';
 import { LucideIcon } from 'lucide-react-native';
-import { theme } from '../theme';
-import { GenericCard } from './cards/GenericCard';
+import { theme } from '../../theme';
+import { GenericCard } from './GenericCard';
 
 interface HealthCategoryCardProps {
   icon: LucideIcon;

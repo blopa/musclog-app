@@ -69,7 +69,7 @@ export function TrackingMethodButton({
               className="rounded-full px-2 py-0.5"
               style={{ backgroundColor: theme.colors.accent.primary }}>
               <Text
-                className="text-[10px] font-extrabold uppercase text-text-black"
+                className="font-extrabold uppercase text-text-black"
                 style={{ fontSize: theme.typography.fontSize['10'] }}>
                 {badge}
               </Text>

@@ -21,17 +21,17 @@ import { CaloriesRemainingCard } from '../../components/cards/CaloriesRemainingC
 import { CreateTemplateButton } from '../../components/CreateTemplateButton';
 import { FoodInfoCard } from '../../components/cards/FoodInfoCard';
 import { NotificationCard } from '../../components/cards/NotificationCard';
-import { MacroCard } from '../../components/MacroCard';
+import { MacroCard } from '../../components/cards/MacroCard';
 import { UpNextExerciseCard } from '../../components/cards/UpNextExerciseCard';
 import { FoodItemCard } from '../../components/cards/FoodItemCard';
 import { NewWorkoutCard } from '../../components/cards/NewWorkoutCard';
-import { WorkoutSummaryStatsCard } from '../../components/WorkoutSummaryStatsCard';
+import { WorkoutSummaryStatsCard } from '../../components/cards/WorkoutSummaryStatsCard';
 import { StatCard } from '../../components/cards/StatCard';
 import { theme } from '../../theme';
 import { ChatWorkoutCard } from '../../components/cards/ChatWorkoutCard';
 import { MealItemCard } from '../../components/cards/MealItemCard';
 import { SettingsCard } from '../../components/cards/SettingsCard';
-import { HealthCategoryCard } from '../../components/HealthCategoryCard';
+import { HealthCategoryCard } from '../../components/cards/HealthCategoryCard';
 
 export default function CardsTestScreen() {
   return (
@@ -154,7 +154,7 @@ export default function CardsTestScreen() {
           <View className="gap-4">
             <NotificationCard
               type="ai-insight"
-              icon={<Sparkles size={24} color={theme.colors.accent.primary} />}
+              icon={<Sparkles size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
               iconBg={theme.colors.accent.primary10}
               title="AI Workout Suggestion"
               description="Based on your progress, we recommend adding 2 more sets to your bench press."
@@ -163,7 +163,7 @@ export default function CardsTestScreen() {
             />
             <NotificationCard
               type="workout-reminder"
-              icon={<Bell size={24} color={theme.colors.status.info} />}
+              icon={<Bell size={theme.iconSize.xl} color={theme.colors.status.info} />}
               iconBg={theme.colors.status.info10}
               title="Workout Reminder"
               description="Don't forget your Push Day workout scheduled for today at 6:00 PM"
@@ -173,7 +173,7 @@ export default function CardsTestScreen() {
             />
             <NotificationCard
               type="workout-completed"
-              icon={<Trophy size={24} color={theme.colors.status.warning} />}
+              icon={<Trophy size={theme.iconSize.xl} color={theme.colors.status.warning} />}
               iconBg={theme.colors.status.warning10}
               title="Workout Completed!"
               description="Great job completing your Leg Day workout. You hit 3 personal records!"
@@ -230,7 +230,7 @@ export default function CardsTestScreen() {
             onPress={() => console.log('New workout pressed')}
           />
           <NewWorkoutCard
-            icon={<Sparkles size={20} color={theme.colors.text.white} />}
+            icon={<Sparkles size={theme.iconSize.lg} color={theme.colors.text.white} />}
             title="Create New Workout"
             subtitle="Start from a template or build your own"
             onPress={() => console.log('New workout pressed')}
@@ -298,7 +298,7 @@ export default function CardsTestScreen() {
 
         <TestSection title="Settings" subtitle="App settings overview">
           <SettingsCard
-            icon={<Sparkles size={24} color={theme.colors.accent.primary} />}
+            icon={<Sparkles size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
             title="Settings"
             subtitle="Manage your app settings."
             onPress={() => console.log('Settings pressed')}

@@ -38,19 +38,27 @@ export function RestOverNextExercise({ exercise }: RestOverNextExerciseProps) {
       </View>
       <View className="flex-row items-center justify-between border-t border-white/10 pt-3">
         <View className="flex-col items-start">
-          <Text className="text-[10px] font-bold uppercase text-white/40">
+          <Text
+            className="font-bold uppercase text-white/40"
+            style={{ fontSize: theme.typography.fontSize['10'] }}>
             {t('restOver.weight')}
           </Text>
           <Text className="text-base font-bold text-white">{exercise.weight}</Text>
         </View>
         <View className="flex-col items-start">
-          <Text className="text-[10px] font-bold uppercase text-white/40">
+          <Text
+            className="font-bold uppercase text-white/40"
+            style={{ fontSize: theme.typography.fontSize['10'] }}>
             {t('restOver.reps')}
           </Text>
           <Text className="text-base font-bold text-white">{exercise.reps}</Text>
         </View>
         <View className="flex-col items-start">
-          <Text className="text-[10px] font-bold uppercase text-white/40">{t('restOver.set')}</Text>
+          <Text
+            className="font-bold uppercase text-white/40"
+            style={{ fontSize: theme.typography.fontSize['10'] }}>
+            {t('restOver.set')}
+          </Text>
           <Text className="text-base font-bold text-white">
             {exercise.set}
             <Text className="font-normal text-white/40">/{exercise.totalSets}</Text>

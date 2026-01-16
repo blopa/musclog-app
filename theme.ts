@@ -222,6 +222,7 @@ export const theme = {
 
     // Opacity values (for use in style objects)
     opacity: {
+      zero: 0, // 0% opacity (fully transparent)
       light: 0.4,
       medium: 0.5,
       heavy: 0.6,
@@ -369,16 +370,16 @@ export const theme = {
       xl: 24,
       '2xl': 32,
       '3xl': 48,
-    // Additional gap values for fractional spacing
-    '2half': 10, // 2.5 * 4 = 10px
-    '3half': 14, // 3.5 * 4 = 14px
-    '4half': 18, // 4.5 * 4 = 18px
-    // Specific gap values found in codebase
-    '8': 8,
-    // Very small spacing values
-    '1': 1, // 1px gap (for dividers)
-    '2': 2, // 2px gap
-  },
+      // Additional gap values for fractional spacing
+      '2half': 10, // 2.5 * 4 = 10px
+      '3half': 14, // 3.5 * 4 = 14px
+      '4half': 18, // 4.5 * 4 = 18px
+      // Specific gap values found in codebase
+      '8': 8,
+      // Very small spacing values
+      '1': 1, // 1px gap (for dividers)
+      '2': 2, // 2px gap
+    },
 
     // Margin (same values as padding for consistency)
     margin: {
@@ -747,6 +748,13 @@ export const theme = {
     stepperInput: {
       width: 64,
     },
+  },
+
+  // Aspect ratios
+  aspectRatio: {
+    square: 1, // 1:1
+    portrait: 4 / 5, // 4:5 (portrait)
+    landscape: 4 / 3, // 4:3 (landscape)
   },
 } as const;
 

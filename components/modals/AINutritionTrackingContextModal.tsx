@@ -3,8 +3,8 @@ import { View, Text, Pressable, TextInput as RNTextInput } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Sparkles, CheckCircle } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { theme } from '../theme';
-import { BottomPopUp } from './BottomPopUp';
+import { theme } from '../../theme';
+import { BottomPopUp } from '../BottomPopUp';
 
 type AINutritionTrackingContextModalProps = {
   visible: boolean;
@@ -91,8 +91,9 @@ export function AINutritionTrackingContextModal({
             }}
             collapsable={false}>
             <RNTextInput
-              className="min-h-[100px] w-full bg-transparent text-[15px] text-text-primary"
+              className="min-h-[100px] w-full bg-transparent text-text-primary"
               style={{
+                fontSize: theme.typography.fontSize['15'],
                 color: theme.colors.text.primary,
                 textAlignVertical: 'top',
               }}

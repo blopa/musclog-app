@@ -32,7 +32,7 @@ function OnboardingStepFour({ title, description }: OnboardingBodyProps) {
       <View
         className="relative mb-6 flex w-full items-center justify-center"
         style={{
-          aspectRatio: 4 / 5,
+          aspectRatio: theme.aspectRatio.portrait,
           maxHeight: Dimensions.get('window').height * 0.45,
         }}>
         {/* Ambient Background Glow */}
@@ -83,7 +83,7 @@ function OnboardingStepThree({ imageUrl, title, description, badge }: Onboarding
       <View
         className="relative mb-6 flex w-full items-center justify-center"
         style={{
-          aspectRatio: 4 / 5,
+          aspectRatio: theme.aspectRatio.portrait,
           maxHeight: Dimensions.get('window').height * 0.45,
         }}>
         {/* Ambient Background Glow */}
@@ -182,7 +182,7 @@ function OnboardingStepTwo({ imageUrl, title, description, badge }: OnboardingBo
       <View
         className="relative mb-6 flex w-full items-center justify-center"
         style={{
-          aspectRatio: 4 / 5,
+          aspectRatio: theme.aspectRatio.portrait,
           maxHeight: Dimensions.get('window').height * 0.45,
         }}>
         {/* Ambient Background Glow */}
@@ -281,7 +281,7 @@ function OnboardingStepOne({ imageUrl, title, description, badge }: OnboardingBo
       <View
         className="relative mb-6 flex w-full items-center justify-center"
         style={{
-          aspectRatio: 4 / 5,
+          aspectRatio: theme.aspectRatio.portrait,
           maxHeight: Dimensions.get('window').height * 0.45,
         }}>
         {/* Ambient Background Glow */}

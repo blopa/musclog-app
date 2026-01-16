@@ -39,7 +39,9 @@ export function NumericInput({
 
   return (
     <View className="flex-1 flex-col items-center gap-1 rounded-lg border border-white/10 bg-bg-card p-4">
-      <Text className="text-[10px] font-bold uppercase tracking-widest text-text-tertiary">
+      <Text
+        className="font-bold uppercase tracking-widest text-text-tertiary"
+        style={{ fontSize: theme.typography.fontSize['10'] }}>
         {label}
       </Text>
       {onIncrement && (

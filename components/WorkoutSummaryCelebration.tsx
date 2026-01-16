@@ -7,7 +7,7 @@ import { theme } from '../theme';
 import { Button } from './theme/Button';
 import { WorkoutSummaryTrophy } from './WorkoutSummaryTrophy';
 import { WorkoutSummaryHeader } from './WorkoutSummaryHeader';
-import { WorkoutSummaryStatsCard } from './WorkoutSummaryStatsCard';
+import { WorkoutSummaryStatsCard } from './cards/WorkoutSummaryStatsCard';
 
 type WorkoutSummaryCelebrationProps = {
   visible: boolean;

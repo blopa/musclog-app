@@ -83,7 +83,7 @@ export default function InputsTestScreen() {
       {/* Header */}
       <View className="flex-row items-center justify-between bg-bg-primary/90 px-4 pb-2 pt-4">
         <Pressable className="h-12 w-12 shrink-0 items-center justify-center rounded-full active:bg-white/10">
-          <ArrowLeft size={24} color={theme.colors.text.primary} />
+          <ArrowLeft size={theme.iconSize.xl} color={theme.colors.text.primary} />
         </Pressable>
         <Text className="flex-1 pr-12 text-center text-lg font-bold leading-tight tracking-tight text-text-primary">
           Design System
@@ -240,22 +240,22 @@ export default function InputsTestScreen() {
             value=""
             onChangeText={() => {}}
             placeholder="Search exercises..."
-            icon={<Search size={20} color={theme.colors.text.tertiary} />}
+            icon={<Search size={theme.iconSize.lg} color={theme.colors.text.tertiary} />}
           />
           <TextInput
             label="Full Name"
             value={fullName}
             onChangeText={setFullName}
-            icon={<User size={20} color={theme.colors.accent.primary40} />}
+            icon={<User size={theme.iconSize.lg} color={theme.colors.accent.primary40} />}
           />
           <PickerButton
             label="Monday, Oct 24"
-            icon={<Calendar size={20} color={theme.colors.status.purple} />}
+            icon={<Calendar size={theme.iconSize.lg} color={theme.colors.status.purple} />}
             onPress={() => {}}
           />
           <PickerButton
             label="08:30 AM"
-            icon={<Clock size={20} color={theme.colors.accent.primary} />}
+            icon={<Clock size={theme.iconSize.lg} color={theme.colors.accent.primary} />}
             onPress={() => {}}
           />
         </TestSection>

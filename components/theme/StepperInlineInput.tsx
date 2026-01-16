@@ -72,7 +72,7 @@ export function StepperInlineInput({
           <View
             className="h-10 w-10 items-center justify-center rounded-lg"
             style={{ backgroundColor: theme.colors.status.emerald20 }}>
-            <Icon size={20} color={theme.colors.status.emeraldLight} />
+            <Icon size={theme.iconSize.lg} color={theme.colors.status.emeraldLight} />
           </View>
         )}
         <View>

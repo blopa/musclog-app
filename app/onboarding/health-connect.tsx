@@ -23,7 +23,7 @@ import Svg, {
   LinearGradient as SvgLinearGradient,
   Stop,
 } from 'react-native-svg';
-import { HealthCategoryCard } from '../../components/HealthCategoryCard';
+import { HealthCategoryCard } from '../../components/cards/HealthCategoryCard';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const ILLUSTRATION_SIZE = SCREEN_WIDTH * 0.4; // 40% of screen width
@@ -45,7 +45,7 @@ export default function HealthConnectScreen() {
         <View
           className="relative mb-8 mt-4 w-full items-center justify-center"
           style={{
-            aspectRatio: 1,
+            aspectRatio: theme.aspectRatio.square,
             minHeight: ILLUSTRATION_SIZE,
           }}>
           {/* Ambient Background Glows */}

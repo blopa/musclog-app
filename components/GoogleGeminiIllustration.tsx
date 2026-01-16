@@ -13,7 +13,7 @@ export const GoogleGeminiIllustration = ({
 }) => {
   return (
     <View className="mb-6 mt-2">
-      <View className="relative w-full" style={{ aspectRatio: 4 / 3 }}>
+      <View className="relative w-full" style={{ aspectRatio: theme.aspectRatio.landscape }}>
         {/* Glow effect wrapper - gradient blur */}
         <View
           className="absolute"

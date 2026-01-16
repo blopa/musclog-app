@@ -14,12 +14,12 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
-import { theme } from '../theme';
-import { BottomPopUpMenu, BottomPopUpMenuItem } from './BottomPopUpMenu';
-import { SettingsCard } from './cards/SettingsCard';
-import { GenericCard } from './cards/GenericCard';
-import { Button } from './theme/Button';
-import { FullScreenModal } from './modals/FullScreenModal';
+import { theme } from '../../theme';
+import { BottomPopUpMenu, BottomPopUpMenuItem } from '../BottomPopUpMenu';
+import { SettingsCard } from '../cards/SettingsCard';
+import { GenericCard } from '../cards/GenericCard';
+import { Button } from '../theme/Button';
+import { FullScreenModal } from './FullScreenModal';
 
 // Mock data - replace with actual data from props or route params
 const EXERCISE_DATA = {
@@ -65,7 +65,7 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
   const [isMenuVisible, setIsMenuVisible] = useState(false);
 
   // For now, using a placeholder image - replace with actual exercise image
-  const backgroundImage = require('../assets/icon.png');
+  const backgroundImage = require('../../assets/icon.png');
 
   const handleWatchTechnique = () => {
     // Navigate to technique video or open modal

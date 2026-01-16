@@ -3,12 +3,12 @@ import { View, Text, ScrollView, Pressable, TextInput, Image } from 'react-nativ
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Q } from '@nozbe/watermelondb';
 import { Search, Dumbbell, ChevronRight, Activity, Footprints } from 'lucide-react-native';
-import { theme } from '../theme';
-import { database } from '../database';
-import Exercise from '../database/models/Exercise';
-import { SkeletonLoader } from './theme/SkeletonLoader';
-import { Accordion } from './theme/Accordion';
-import { FullScreenModal } from './modals/FullScreenModal';
+import { theme } from '../../theme';
+import { database } from '../../database';
+import Exercise from '../../database/models/Exercise';
+import { SkeletonLoader } from '../theme/SkeletonLoader';
+import { Accordion } from '../theme/Accordion';
+import { FullScreenModal } from './FullScreenModal';
 import { useTranslation } from 'react-i18next';
 
 // Type for exercise data used in the component
@@ -77,8 +77,9 @@ function ExerciseListItem({
                 : 'border border-border-dark bg-bg-card'
             }`}>
             <Text
-              className="text-[10px] font-bold uppercase tracking-wider"
+              className="font-bold uppercase tracking-wider"
               style={{
+                fontSize: theme.typography.fontSize['10'],
                 color:
                   tag.variant === 'primary'
                     ? theme.colors.accent.primary
