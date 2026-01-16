@@ -96,6 +96,8 @@
       "servingSize": "Portiegrootte",
       "addFavorite": "Favoriet Toevoegen",
       "grams": "Gram",
+      "unitGrams": "g",
+      "unitCup": "kopje",
       "meal": "Maaltijd",
       "date": "Datum",
       "today": "Vandaag",

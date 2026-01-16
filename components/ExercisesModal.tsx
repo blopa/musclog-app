@@ -20,22 +20,6 @@ type ExerciseData = {
   imageUrl?: string;
 };
 
-// Map muscle groups to display names and icons
-const MUSCLE_GROUP_CONFIG: Record<
-  string,
-  { name: string; icon: React.ComponentType<{ size: number; color: string }> }
-> = {
-  chest: { name: 'Chest', icon: Activity },
-  back: { name: 'Back', icon: Dumbbell },
-  legs: { name: 'Legs', icon: Footprints },
-  shoulders: { name: 'Shoulders', icon: Activity },
-  arms: { name: 'Arms', icon: Dumbbell },
-  core: { name: 'Core', icon: Activity },
-  abdomen: { name: 'Abdomen', icon: Activity },
-  glutes: { name: 'Glutes', icon: Footprints },
-  full_body: { name: 'Full Body', icon: Activity },
-};
-
 // Map equipment type from database to display type
 const mapEquipmentTypeToType = (equipmentType: string): string => {
   switch (equipmentType) {
@@ -48,32 +32,21 @@ const mapEquipmentTypeToType = (equipmentType: string): string => {
   }
 };
 
-// Map exercise types to tag display
-const getExerciseTypeTag = (type: string) => {
-  switch (type) {
-    case 'bodyweight':
-      return { label: 'BODYWEIGHT', variant: 'primary' as const };
-    case 'machine':
-    case 'equipment':
-      return { label: 'EQUIPMENT', variant: 'secondary' as const };
-    default:
-      return { label: 'EQUIPMENT', variant: 'secondary' as const };
-  }
-};
-
 // Exercise list item component
 function ExerciseListItem({
   name,
   type,
   imageUrl,
   onPress,
+  getTypeTagLabel,
 }: {
   name: string;
   type: string;
   imageUrl?: string;
   onPress: () => void;
+  getTypeTagLabel: (type: string) => { label: string; variant: 'primary' | 'secondary' };
 }) {
-  const tag = getExerciseTypeTag(type);
+  const tag = getTypeTagLabel(type);
 
   return (
     <Pressable
@@ -130,6 +103,35 @@ export default function ExercisesModal({ visible, onClose }: ExercisesModalProps
   const [openAccordions, setOpenAccordions] = useState<Record<string, boolean>>({
     chest: true, // Chest starts open
   });
+
+  // Map muscle groups to display names and icons (using translations)
+  const MUSCLE_GROUP_CONFIG: Record<
+    string,
+    { name: string; icon: React.ComponentType<{ size: number; color: string }> }
+  > = {
+    chest: { name: t('exercises.muscleGroups.chest'), icon: Activity },
+    back: { name: t('exercises.muscleGroups.back'), icon: Dumbbell },
+    legs: { name: t('exercises.muscleGroups.legs'), icon: Footprints },
+    shoulders: { name: t('exercises.muscleGroups.shoulders'), icon: Activity },
+    arms: { name: t('exercises.muscleGroups.arms'), icon: Dumbbell },
+    core: { name: t('exercises.muscleGroups.core'), icon: Activity },
+    abdomen: { name: t('exercises.muscleGroups.abdomen'), icon: Activity },
+    glutes: { name: t('exercises.muscleGroups.glutes'), icon: Footprints },
+    full_body: { name: t('exercises.muscleGroups.fullBody'), icon: Activity },
+  };
+
+  // Map exercise types to tag display (using translations)
+  const getExerciseTypeTag = (type: string) => {
+    switch (type) {
+      case 'bodyweight':
+        return { label: t('exercises.typeTags.bodyweight'), variant: 'primary' as const };
+      case 'machine':
+      case 'equipment':
+        return { label: t('exercises.typeTags.equipment'), variant: 'secondary' as const };
+      default:
+        return { label: t('exercises.typeTags.equipment'), variant: 'secondary' as const };
+    }
+  };
 
   // Load exercises from database
   useEffect(() => {
@@ -292,7 +294,7 @@ export default function ExercisesModal({ visible, onClose }: ExercisesModalProps
                     {groupExercises.length === 0 ? (
                       <View className="border-t border-border-dark px-4 py-2">
                         <Text className="text-sm" style={{ color: '#95c6b0' }}>
-                          Tap to view {config.name.toLowerCase()} exercises.
+                          {t('exercises.emptyGroupMessage', { muscleGroup: config.name.toLowerCase() })}
                         </Text>
                       </View>
                     ) : (
@@ -303,6 +305,7 @@ export default function ExercisesModal({ visible, onClose }: ExercisesModalProps
                           type={exercise.type}
                           imageUrl={getExerciseImageUrl(exercise)}
                           onPress={() => handleExercisePress(exercise)}
+                          getTypeTagLabel={getExerciseTypeTag}
                         />
                       ))
                     )}

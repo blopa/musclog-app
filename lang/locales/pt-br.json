@@ -96,6 +96,8 @@
       "servingSize": "Tamanho da Porção",
       "addFavorite": "Adicionar Favorito",
       "grams": "Gramas",
+      "unitGrams": "g",
+      "unitCup": "xícara",
       "meal": "Refeição",
       "date": "Data",
       "today": "Hoje",

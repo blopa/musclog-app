@@ -101,6 +101,8 @@
       "servingSize": "Serving Size",
       "addFavorite": "Add Favorite",
       "grams": "Grams",
+      "unitGrams": "g",
+      "unitCup": "cup",
       "meal": "Meal",
       "date": "Date",
       "today": "Today",
@@ -770,6 +772,22 @@
   "exercises": {
     "title": "Exercises",
     "searchPlaceholder": "Search exercises...",
+    "muscleGroups": {
+      "chest": "Chest",
+      "back": "Back",
+      "legs": "Legs",
+      "shoulders": "Shoulders",
+      "arms": "Arms",
+      "core": "Core",
+      "abdomen": "Abdomen",
+      "glutes": "Glutes",
+      "fullBody": "Full Body"
+    },
+    "typeTags": {
+      "bodyweight": "BODYWEIGHT",
+      "equipment": "EQUIPMENT"
+    },
+    "emptyGroupMessage": "Tap to view {{muscleGroup}} exercises.",
     "createExercise": {
       "title": "Create exercise",
       "exerciseName": "Exercise Name",

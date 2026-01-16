@@ -12,14 +12,18 @@ type ServingSizeSelectorProps = {
 export function ServingSizeSelector({
   value,
   onChange,
-  quickSizes = [
-    { label: '50g', value: 50 },
-    { label: '100g', value: 100 },
-    { label: '200g', value: 200 },
-    { label: '1 cup', value: 240 },
-  ],
+  quickSizes,
 }: ServingSizeSelectorProps) {
   const { t } = useTranslation();
+  
+  const defaultQuickSizes = [
+    { label: `50${t('foodDetails.unitGrams')}`, value: 50 },
+    { label: `100${t('foodDetails.unitGrams')}`, value: 100 },
+    { label: `200${t('foodDetails.unitGrams')}`, value: 200 },
+    { label: `1 ${t('foodDetails.unitCup')}`, value: 240 },
+  ];
+  
+  const effectiveQuickSizes = quickSizes || defaultQuickSizes;
 
   const handleDecrease = () => {
     onChange(Math.max(0, value - 10));
@@ -68,7 +72,7 @@ export function ServingSizeSelector({
                 placeholderTextColor={theme.colors.text.primary20}
               />
               <Text className="absolute -right-6 bottom-1.5 text-lg font-bold text-text-secondary">
-                g
+                {t('foodDetails.unitGrams')}
               </Text>
             </View>
             <Text className="mt-1 text-xs text-text-secondary">{t('foodDetails.grams')}</Text>
@@ -80,7 +84,7 @@ export function ServingSizeSelector({
           </Pressable>
         </View>
         <View className="flex-row justify-center gap-2 pb-2">
-          {quickSizes.map((size) => (
+          {effectiveQuickSizes.map((size) => (
             <Pressable
               key={size.label}
               className={`rounded-full border px-4 py-1.5 ${

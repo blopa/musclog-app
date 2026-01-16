@@ -96,6 +96,8 @@
       "servingSize": "Tamaño de Porción",
       "addFavorite": "Agregar Favorito",
       "grams": "Gramos",
+      "unitGrams": "g",
+      "unitCup": "taza",
       "meal": "Comida",
       "date": "Fecha",
       "today": "Hoy",
