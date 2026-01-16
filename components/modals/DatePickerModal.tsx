@@ -126,7 +126,9 @@ export function DatePickerModal({
           <Text className="mb-1 text-sm font-semibold uppercase tracking-wider text-accent-primary">
             {t('datePicker.selectDate')}
           </Text>
-          <Text className="text-[40px] font-bold leading-tight tracking-tight text-text-primary">
+          <Text
+            className="font-bold leading-tight tracking-tight text-text-primary"
+            style={{ fontSize: theme.typography.fontSize['40'] }}>
             {formatSelectedDate(tempSelectedDate)}
           </Text>
         </View>

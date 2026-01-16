@@ -28,7 +28,9 @@ export default function EmptyStatesTestScreen() {
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Title Section */}
         <View className="px-6 pb-2 pt-6">
-          <Text className="text-[32px] font-extrabold leading-tight tracking-tight text-text-primary">
+          <Text
+            className="font-extrabold leading-tight tracking-tight text-text-primary"
+            style={{ fontSize: theme.typography.fontSize['32'] }}>
             System States
           </Text>
           <Text className="pt-3 text-base font-normal leading-relaxed text-text-secondary">

@@ -307,6 +307,8 @@ export const theme = {
       '10': 10,
       '11': 11,
       '15': 15,
+      '32': 32, // 32px font size
+      '40': 40, // 40px font size
     },
 
     // Font weights
@@ -414,6 +416,7 @@ export const theme = {
     // Additional border radius values
     '2': 2, // 2px border radius (for small dots)
     '10': 10, // 10px border radius
+    '20': 20, // 20px border radius
     '125': 125, // 125px for large circular backgrounds
     '150': 150, // 150px for large circular backgrounds
   },
@@ -684,6 +687,9 @@ export const theme = {
     '100': 100, // Common spacing/height value
     '120': 120, // Common spacing/height value
     '150': 150, // Common size value
+    '180': 180, // Common height value (for cards)
+    '400': 400, // Common max width value
+    '480': 480, // Common max width value
     '160': 160, // Common size value (for illustrations/glows)
     '250': 250, // Common size value (for background glows)
     '256': 256, // Common size value (for illustrations)
@@ -709,6 +715,8 @@ export const theme = {
     sm: 384,
     md: 416,
     lg: 520,
+    '400': 400, // 400px max width
+    '480': 480, // 480px max width
   },
 
   // Component-specific sizes

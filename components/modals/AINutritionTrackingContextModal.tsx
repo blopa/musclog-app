@@ -91,8 +91,9 @@ export function AINutritionTrackingContextModal({
             }}
             collapsable={false}>
             <RNTextInput
-              className="min-h-[100px] w-full bg-transparent text-text-primary"
+              className="w-full bg-transparent text-text-primary"
               style={{
+                minHeight: theme.size['100'],
                 fontSize: theme.typography.fontSize['15'],
                 color: theme.colors.text.primary,
                 textAlignVertical: 'top',

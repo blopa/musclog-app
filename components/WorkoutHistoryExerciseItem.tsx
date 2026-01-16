@@ -29,8 +29,12 @@ export function ExerciseItem({ exercise, isLast }: ExerciseItemProps) {
       {/* Timeline line */}
       {!isLast && (
         <View
-          className="absolute bottom-[-24px] left-[19px] top-12 w-0.5"
-          style={{ backgroundColor: theme.colors.border.light }}
+          className="absolute top-12 w-0.5"
+          style={{
+            bottom: -theme.spacing.padding.xl,
+            left: 19, // Specific positioning for timeline alignment
+            backgroundColor: theme.colors.border.light,
+          }}
         />
       )}
 

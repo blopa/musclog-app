@@ -15,7 +15,10 @@ export const ScreenContent = ({ title, path, children }: ScreenContentProps) => 
       <Text className={styles.title}>{title}</Text>
       <View
         className={styles.separator}
-        style={{ backgroundColor: theme.colors.background.separatorLight }}
+        style={{
+          height: theme.spacing.gap['1'],
+          backgroundColor: theme.colors.background.separatorLight,
+        }}
       />
       <EditScreenInfo path={path} />
       {children}
@@ -25,6 +28,6 @@ export const ScreenContent = ({ title, path, children }: ScreenContentProps) => 
 
 const styles = {
   container: `items-center flex-1 justify-center bg-bg-primary`,
-  separator: `h-[1px] my-7 w-4/5`,
+  separator: `my-7 w-4/5`,
   title: `text-xl font-bold`,
 };

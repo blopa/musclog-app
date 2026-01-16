@@ -32,7 +32,9 @@ export function RestTimer({ restTime, rotationAnim }: RestTimerProps) {
   });
 
   return (
-    <View className="relative aspect-square w-full max-w-[400px] items-center justify-center">
+    <View
+      className="relative aspect-square w-full items-center justify-center"
+      style={{ maxWidth: theme.maxWidth['400'] }}>
       {/* Background glow */}
       <View className="absolute inset-4 overflow-hidden rounded-full">
         <LinearGradient
