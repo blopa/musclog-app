@@ -13,10 +13,10 @@ export function ServingSizeSelector({ value, onChange, quickSizes }: ServingSize
   const { t } = useTranslation();
 
   const defaultQuickSizes = [
-    { label: `50${t('foodDetails.unitGrams')}`, value: 50 },
-    { label: `100${t('foodDetails.unitGrams')}`, value: 100 },
-    { label: `200${t('foodDetails.unitGrams')}`, value: 200 },
-    { label: `1 ${t('foodDetails.unitCup')}`, value: 240 },
+    { label: `50${t('food.foodDetails.unitGrams')}`, value: 50 },
+    { label: `100${t('food.foodDetails.unitGrams')}`, value: 100 },
+    { label: `200${t('food.foodDetails.unitGrams')}`, value: 200 },
+    { label: `1 ${t('food.foodDetails.unitCup')}`, value: 240 },
   ];
 
   const effectiveQuickSizes = quickSizes || defaultQuickSizes;
@@ -30,15 +30,15 @@ export function ServingSizeSelector({ value, onChange, quickSizes }: ServingSize
   };
 
   return (
-    <View>
+    <View className="w-full mt-6">
       <View className="mb-2 flex-row items-center justify-between">
         <Text className="text-xs font-bold uppercase tracking-wider text-text-secondary">
-          {t('foodDetails.servingSize')}
+          {t('food.foodDetails.servingSize')}
         </Text>
         <Pressable className="flex-row items-center gap-1">
           <BookmarkPlus size={theme.iconSize.sm} color={theme.colors.accent.primary} />
           <Text className="text-xs font-medium text-accent-primary">
-            {t('foodDetails.addFavorite')}
+            {t('food.foodDetails.addFavorite')}
           </Text>
         </Pressable>
       </View>
@@ -68,10 +68,10 @@ export function ServingSizeSelector({ value, onChange, quickSizes }: ServingSize
                 placeholderTextColor={theme.colors.text.primary20}
               />
               <Text className="absolute -right-6 bottom-1.5 text-lg font-bold text-text-secondary">
-                {t('foodDetails.unitGrams')}
+                {t('food.foodDetails.unitGrams')}
               </Text>
             </View>
-            <Text className="mt-1 text-xs text-text-secondary">{t('foodDetails.grams')}</Text>
+            <Text className="mt-1 text-xs text-text-secondary">{t('food.foodDetails.grams')}</Text>
           </View>
           <Pressable
             className="h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-accent-primary/20 bg-accent-primary/10"

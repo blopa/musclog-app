@@ -61,20 +61,19 @@ export function FoodDetailsModal({
     onClose();
   };
 
-  // TODO: ui is broken here
   return (
     <FullScreenModal
       visible={visible}
       onClose={onClose}
-      title={t('foodDetails.title')}
+      title={t('food.foodDetails.title')}
       scrollable={true}
       footer={
         <View className="bg-transparent px-4 pb-6 pt-3">
           <Button
-            label={t('foodDetails.addFood')}
+            label={t('food.foodDetails.addFood')}
             icon={PlusCircle}
             variant="gradientCta"
-            size="lg"
+            size="sm"
             width="full"
             onPress={handleAddFood}
           />
@@ -94,7 +93,7 @@ export function FoodDetailsModal({
           {/* Meal Selection */}
           <View>
             <Text className="mb-3 text-xs font-bold uppercase tracking-wider text-text-secondary">
-              {t('foodDetails.meal')}
+              {t('food.foodDetails.meal')}
             </Text>
             <FilterTabs
               tabs={mealTabs}
@@ -108,7 +107,7 @@ export function FoodDetailsModal({
           {/* Date Selection */}
           <View>
             <Text className="mb-2 text-xs font-bold uppercase tracking-wider text-text-secondary">
-              {t('foodDetails.date')}
+              {t('food.foodDetails.date')}
             </Text>
             <Pressable
               className="flex-row items-center justify-between rounded-lg border border-white/10 bg-bg-cardDark p-4"
@@ -124,7 +123,7 @@ export function FoodDetailsModal({
                 <View>
                   <Text className="font-medium text-text-primary">
                     {isSameDay(selectedDate, new Date())
-                      ? t('foodDetails.today')
+                      ? t('food.foodDetails.today')
                       : format(selectedDate, 'EEEE')}
                   </Text>
                   <Text className="text-xs text-text-secondary">
