@@ -137,8 +137,7 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
           style={{ backgroundColor: 'rgba(0, 0, 0, 0.4)' }}>
           <MoreVertical size={20} color="white" />
         </Pressable>
-      }
-    >
+      }>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Hero Section with Background Image */}
         <View style={{ height: 384, overflow: 'hidden', position: 'relative' }}>

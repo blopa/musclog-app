@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text, ScrollView, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '../../components/theme/Button';
 import { NutritionGoalsModal, NutritionGoals } from '../../components/modals/NutritionGoalsModal';
@@ -36,6 +36,7 @@ import { CoachModal } from '../../components/modals/CoachModal';
 import { FullScreenModal } from '../../components/modals/FullScreenModal';
 import ExercisesModal from '../../components/ExercisesModal';
 import ViewExerciseModal from '../../components/ViewExerciseModal';
+import CreateExerciseModal from '../../components/CreateExerciseModal';
 
 export default function ModalsTestScreen() {
   // Nutrition Goals Modal
@@ -136,6 +137,9 @@ export default function ModalsTestScreen() {
 
   // View Exercise Modal
   const [isViewExerciseVisible, setIsViewExerciseVisible] = useState(false);
+
+  // Create Exercise Modal
+  const [isCreateExerciseVisible, setIsCreateExerciseVisible] = useState(false);
 
   const handleSaveGoals = (goals: NutritionGoals) => {
     console.log('Goals saved:', goals);
@@ -661,6 +665,16 @@ export default function ModalsTestScreen() {
             />
           </View>
 
+          {/* Create Exercise Modal */}
+          <View className="mb-6">
+            <Button
+              label="Open Create Exercise Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsCreateExerciseVisible(true)}
+            />
+          </View>
+
           {/* Bottom spacing */}
           <View className="h-8" />
         </View>
@@ -996,6 +1010,11 @@ export default function ModalsTestScreen() {
       <ViewExerciseModal
         visible={isViewExerciseVisible}
         onClose={() => setIsViewExerciseVisible(false)}
+      />
+
+      <CreateExerciseModal
+        visible={isCreateExerciseVisible}
+        onClose={() => setIsCreateExerciseVisible(false)}
       />
     </SafeAreaView>
   );

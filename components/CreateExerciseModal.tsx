@@ -92,24 +92,6 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
 
   return (
     <FullScreenModal visible={visible} onClose={onClose} title={'Create exercise'}>
-      {/* Top Navigation */}
-      <View
-        className="flex-row items-center px-4"
-        style={{
-          paddingTop: insets.top,
-          paddingBottom: 16,
-          backgroundColor: theme.colors.background.primary,
-        }}>
-        <Pressable
-          onPress={handleBack}
-          className="h-10 w-10 items-center justify-center rounded-full active:bg-white/10">
-          <ChevronLeft size={24} color={theme.colors.text.primary} />
-        </Pressable>
-        <Text className="flex-1 pr-10 text-center text-lg font-bold text-text-primary">
-          Create Custom Exercise
-        </Text>
-      </View>
-
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="px-4 py-2" style={{ gap: 24 }}>
           {/* Exercise Name */}
