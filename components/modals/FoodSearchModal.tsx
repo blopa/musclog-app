@@ -321,7 +321,7 @@ export function FoodSearchModal({
               className="absolute inset-y-0 right-0 items-center justify-center pr-2"
               onPress={onBarcodeScanPress}>
               <View className="rounded-lg p-1.5">
-                <QrCode size={22} color={theme.colors.text.secondary} />
+                <QrCode size={theme.iconSize.lg} color={theme.colors.text.secondary} />
               </View>
             </Pressable>
           </View>

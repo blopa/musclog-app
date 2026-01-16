@@ -121,7 +121,7 @@ function FoodResultCard({
         backgroundColor: theme.colors.background.cardElevated,
         borderRadius: theme.borderRadius.md,
         padding: theme.spacing.padding.md,
-        borderWidth: isSelected ? 1 : theme.borderWidth.thin,
+        borderWidth: theme.borderWidth.thin,
         borderColor: isSelected ? theme.colors.accent.primary : theme.colors.border.light,
         shadowColor: isSelected ? theme.colors.accent.primary : 'transparent',
         shadowOffset: theme.shadowOffset.zero,
@@ -137,7 +137,7 @@ function FoodResultCard({
               height: theme.size.xl,
               borderRadius: theme.borderRadius.md,
               backgroundColor: isSelected ? theme.colors.accent.primary : 'transparent',
-              borderWidth: isSelected ? 0 : 2,
+              borderWidth: isSelected ? 0 : theme.borderWidth.medium,
               borderColor: theme.colors.text.tertiary,
               alignItems: 'center',
               justifyContent: 'center',
@@ -146,7 +146,7 @@ function FoodResultCard({
               shadowOpacity: theme.colors.opacity.dim30,
               shadowRadius: theme.shadows.radius4.shadowRadius,
             }}>
-            {isSelected && <Check size={16} color={theme.colors.text.black} strokeWidth={3} />}
+            {isSelected && <Check size={theme.iconSize.sm} color={theme.colors.text.black} strokeWidth={theme.strokeWidth.thick} />}
           </View>
         </View>
 
@@ -389,7 +389,7 @@ export function AddFoodItemToMealModal({
             value={searchQuery}
             onChangeText={setSearchQuery}
             placeholder={t('food.addFoodItemToMeal.searchPlaceholder')}
-            icon={<Search size={20} color={theme.colors.text.tertiary} />}
+            icon={<Search size={theme.iconSize.lg} color={theme.colors.text.tertiary} />}
           />
         </View>
 

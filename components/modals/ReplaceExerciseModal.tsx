@@ -136,7 +136,7 @@ export function ReplaceExerciseModal({
               className="w-full rounded-xl pl-12 pr-4"
               style={{
                 backgroundColor: theme.colors.background.cardDark,
-                borderWidth: searchQuery ? 2 : 0,
+                borderWidth: searchQuery ? theme.borderWidth.medium : 0,
                 borderColor: searchQuery ? theme.colors.accent.primary : 'transparent',
                 color: theme.colors.text.primary,
                 fontSize: theme.typography.fontSize.base,

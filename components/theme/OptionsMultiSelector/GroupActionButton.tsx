@@ -31,7 +31,7 @@ export const GroupActionButton: React.FC<GroupActionButtonProps> = ({
           style={{ width: theme.size.xs, height: theme.size.xs, borderRadius: theme.borderRadius['2'], backgroundColor: color, opacity: theme.colors.opacity.medium50 }}
         />
       </View>
-      <View style={{ width: theme.size.base, height: theme.size['2'] / 4, backgroundColor: color, borderRadius: theme.borderWidth.thin }} />
+      <View style={{ width: theme.size.base, height: theme.size['2'] / 4, backgroundColor: color, borderRadius: theme.borderRadius['2'] }} />
       <View style={{ flexDirection: 'row', gap: theme.size.xs }}>
         <View
           style={{ width: theme.size.xs, height: theme.size.xs, borderRadius: theme.borderRadius['2'], backgroundColor: color, opacity: theme.colors.opacity.medium50 }}
@@ -49,7 +49,7 @@ export const GroupActionButton: React.FC<GroupActionButtonProps> = ({
         alignItems: 'center',
         justifyContent: 'center',
         paddingVertical: theme.spacing.padding.md,
-        zIndex: 2000,
+        zIndex: theme.zIndex.max,
         width: '100%',
       }}>
       <Pressable

@@ -131,7 +131,7 @@ function OnboardingStepThree({ imageUrl, title, description, badge }: Onboarding
                     className="absolute inset-0 rounded-full"
                     style={{ backgroundColor: theme.colors.status.emeraldLight }}
                   />
-                  <badge.icon size={24} color={theme.colors.text.black} strokeWidth={3} />
+                  <badge.icon size={theme.iconSize.xl} color={theme.colors.text.black} strokeWidth={theme.strokeWidth.thick} />
                 </View>
                 <View className="relative z-10 flex-1 flex-col">
                   <Text className="text-sm font-bold text-white">{badge.title}</Text>
@@ -226,7 +226,7 @@ function OnboardingStepTwo({ imageUrl, title, description, badge }: OnboardingBo
                     className="absolute inset-0 rounded-full"
                     style={{ backgroundColor: theme.colors.status.emeraldLight }}
                   />
-                  <badge.icon size={24} color={theme.colors.text.black} strokeWidth={3} />
+                  <badge.icon size={theme.iconSize.xl} color={theme.colors.text.black} strokeWidth={theme.strokeWidth.thick} />
                 </View>
                 <View className="relative z-10 flex-1 flex-col">
                   <Text className="text-sm font-bold text-white">{badge.title}</Text>
@@ -321,7 +321,7 @@ function OnboardingStepOne({ imageUrl, title, description, badge }: OnboardingBo
                     className="absolute inset-0 rounded-full"
                     style={{ backgroundColor: theme.colors.status.emeraldLight }}
                   />
-                  <badge.icon size={24} color={theme.colors.text.black} strokeWidth={3} />
+                  <badge.icon size={theme.iconSize.xl} color={theme.colors.text.black} strokeWidth={theme.strokeWidth.thick} />
                 </View>
                 <View className="relative z-10 flex-1 flex-col">
                   <Text className="text-sm font-bold text-white">{badge.title}</Text>

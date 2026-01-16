@@ -224,7 +224,7 @@ export default function CardsTestScreen() {
         <TestSection title="New Workout Card" subtitle="Add new workout options">
           <NewWorkoutCard
             variant="popular"
-            icon={<Sparkles size={22} color={theme.colors.text.white} />}
+            icon={<Sparkles size={theme.iconSize.lg} color={theme.colors.text.white} />}
             title="Generate with AI"
             subtitle="Let Musclog build a personalized routine based on your goals and equipment."
             onPress={() => console.log('New workout pressed')}

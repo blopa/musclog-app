@@ -591,6 +591,19 @@ export const theme = {
     '3xl': 20, // 3x extra large elevation
   },
 
+  // Z-index values (for layering elements)
+  zIndex: {
+    base: 0, // Base layer
+    overlayLow: 5, // Low-level overlays (gradients, backgrounds)
+    dropdown: 10, // Dropdown menus
+    sticky: 20, // Sticky headers
+    overlay: 30, // Overlays
+    modal: 40, // Modals
+    popover: 50, // Popovers and tooltips
+    tooltip: 100, // Tooltips
+    max: 2000, // Maximum z-index (for critical overlays)
+  },
+
   // Icon sizes
   iconSize: {
     xs: 14,

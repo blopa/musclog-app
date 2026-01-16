@@ -128,7 +128,7 @@ export default function CreateWorkoutScreen() {
       value: 'ai',
       icon: (
         <Sparkles
-          size={14}
+          size={theme.iconSize.xs}
           color={volumeCalc === 'ai' ? theme.colors.text.white : theme.colors.text.tertiary}
         />
       ),
@@ -173,7 +173,7 @@ export default function CreateWorkoutScreen() {
           justifyContent: 'space-between',
           paddingHorizontal: theme.spacing.padding.base,
           paddingVertical: theme.spacing.padding.sm,
-          zIndex: 10,
+          zIndex: theme.zIndex.dropdown,
         }}>
         <Pressable
           onPress={() => router.back()}
@@ -187,7 +187,7 @@ export default function CreateWorkoutScreen() {
               opacity: pressed ? 0.7 : 1,
             },
           ]}>
-          <ArrowLeft size={24} color={theme.colors.text.secondary} />
+          <ArrowLeft size={theme.iconSize.xl} color={theme.colors.text.secondary} />
         </Pressable>
         <Text
           style={{

@@ -97,7 +97,7 @@ export function CreateWorkoutOptionsModal({
           paddingHorizontal: theme.spacing.padding.base,
           paddingTop: Platform.OS === 'ios' ? 60 : 40,
           paddingBottom: theme.spacing.padding.sm,
-          zIndex: 50,
+          zIndex: theme.zIndex.popover,
         }}>
         <Text
           style={{
@@ -156,7 +156,7 @@ export function CreateWorkoutOptionsModal({
           <Animated.View style={animatedStyle(100)}>
             <NewWorkoutCard
               variant="popular"
-              icon={<Sparkles size={22} color={theme.colors.text.white} />}
+              icon={<Sparkles size={theme.iconSize.lg} color={theme.colors.text.white} />}
               title={t('workouts.createWorkoutOptions.generateWithAi')}
               subtitle={t('workouts.createWorkoutOptions.generateWithAiSubtitle')}
               onPress={onGenerateWithAi}
@@ -166,7 +166,7 @@ export function CreateWorkoutOptionsModal({
           <Animated.View style={animatedStyle(200)}>
             <NewWorkoutCard
               variant="default"
-              icon={<PlusCircle size={24} color={theme.colors.text.gray300} />}
+              icon={<PlusCircle size={theme.iconSize.xl} color={theme.colors.text.gray300} />}
               title={t('workouts.createWorkoutOptions.createFromEmptyTemplate')}
               subtitle={t('workouts.createWorkoutOptions.createFromEmptyTemplateSubtitle')}
               onPress={onCreateEmptyTemplate}
@@ -176,7 +176,7 @@ export function CreateWorkoutOptionsModal({
           <Animated.View style={animatedStyle(300)}>
             <NewWorkoutCard
               variant="default"
-              icon={<Library size={24} color={theme.colors.text.gray300} />}
+              icon={<Library size={theme.iconSize.xl} color={theme.colors.text.gray300} />}
               title={t('workouts.createWorkoutOptions.browseTemplates')}
               subtitle={t('workouts.createWorkoutOptions.browseTemplatesSubtitle')}
               onPress={onBrowseTemplates}

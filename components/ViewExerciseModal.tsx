@@ -137,7 +137,7 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
           onPress={() => setIsMenuVisible(true)}
           className="h-10 w-10 items-center justify-center rounded-full"
           style={{ backgroundColor: theme.colors.background.black40 }}>
-          <MoreVertical size={20} color="white" />
+          <MoreVertical size={theme.iconSize.lg} color={theme.colors.text.white} />
         </Pressable>
       }>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
@@ -164,7 +164,7 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
             colors={theme.colors.gradients.overlayDark}
             locations={[0, 0.7, 1]}
             className="absolute bottom-0 left-0 right-0"
-            style={{ padding: theme.spacing.padding.xl, zIndex: 5 }}>
+            style={{ padding: theme.spacing.padding.xl, zIndex: theme.zIndex.overlayLow }}>
             <Button
               label={t('exercises.viewExercise.watchTechnique')}
               onPress={handleWatchTechnique}

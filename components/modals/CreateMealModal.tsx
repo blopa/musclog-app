@@ -151,7 +151,7 @@ const MealMacrosSummary = ({
         }}
       />
 
-      <View style={{ position: 'relative', zIndex: 10 }}>
+      <View style={{ position: 'relative', zIndex: theme.zIndex.dropdown }}>
         <View
           style={{
             flexDirection: 'row',
@@ -286,9 +286,9 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
               height: theme.components.button.height.md,
               backgroundColor: theme.colors.background.card,
               borderRadius: theme.borderRadius.md,
-              borderWidth: isFocused ? 2 : 1,
+              borderWidth: isFocused ? theme.borderWidth.medium : theme.borderWidth.thin,
               borderColor: isFocused ? theme.colors.accent.primary : theme.colors.border.light,
-              paddingHorizontal: 16,
+              paddingHorizontal: theme.spacing.padding.base,
               justifyContent: 'center',
               shadowColor: isFocused ? theme.colors.accent.primary : 'transparent',
               shadowOffset: theme.shadowOffset.zero,
@@ -369,7 +369,7 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
                       borderColor: theme.colors.border.light,
                       marginRight: theme.spacing.padding.md,
                     }}>
-                    <Icon size={20} color={theme.colors.text.secondary} />
+                    <Icon size={theme.iconSize.lg} color={theme.colors.text.secondary} />
                   </View>
                   <View style={{ flex: 1 }}>
                     <Text
@@ -412,7 +412,7 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
                     </View>
                   </View>
                   <Pressable onPress={() => removeIngredient(item.id)} className="p-2">
-                    <Trash2 size={20} color={theme.colors.text.tertiary} />
+                    <Trash2 size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
                   </Pressable>
                 </View>
               );
@@ -442,7 +442,7 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}>
-                <Plus size={16} color={theme.colors.text.secondary} strokeWidth={3} />
+                <Plus size={theme.iconSize.sm} color={theme.colors.text.secondary} strokeWidth={theme.strokeWidth.thick} />
               </View>
               <Text
                 style={{
