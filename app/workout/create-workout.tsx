@@ -142,8 +142,8 @@ export default function CreateWorkoutScreen() {
         <View
           style={{
             position: 'absolute',
-            top: -100,
-            right: -100,
+            top: -theme.size['100'],
+            right: -theme.size['100'],
             width: theme.size['300'],
             height: theme.size['300'],
             borderRadius: theme.borderRadius['150'],
@@ -154,8 +154,8 @@ export default function CreateWorkoutScreen() {
         <View
           style={{
             position: 'absolute',
-            bottom: -100,
-            left: -100,
+            bottom: -theme.size['100'],
+            left: -theme.size['100'],
             width: theme.size['250'],
             height: theme.size['250'],
             borderRadius: theme.borderRadius['125'],

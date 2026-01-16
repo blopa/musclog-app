@@ -256,7 +256,7 @@ export function AISettingsModal({
                   style={{
                     fontSize: theme.typography.fontSize.xs,
                     color: theme.colors.accent.primary,
-                    marginTop: theme.spacing.padding.xs / 2,
+                    marginTop: theme.spacing.padding.xsHalf,
                   }}>
                   {geminiModel}
                 </Text>
@@ -330,7 +330,7 @@ export function AISettingsModal({
                   style={{
                     fontSize: theme.typography.fontSize.xs,
                     color: theme.colors.accent.primary,
-                    marginTop: theme.spacing.padding.xs / 2,
+                    marginTop: theme.spacing.padding.xsHalf,
                   }}>
                   {openAiModel || t('settings.aiSettings.selectModel')}
                 </Text>

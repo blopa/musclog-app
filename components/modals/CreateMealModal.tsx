@@ -73,7 +73,7 @@ const MacroCard = ({
         color: theme.colors.text.secondary,
         textTransform: 'uppercase',
         letterSpacing: theme.typography.letterSpacing.wider,
-        marginBottom: theme.spacing.padding.xs / 2,
+        marginBottom: theme.spacing.padding.xsHalf,
       }}>
       {label}
     </Text>

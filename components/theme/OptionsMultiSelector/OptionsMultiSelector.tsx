@@ -169,8 +169,8 @@ export function OptionsMultiSelector<T extends string | number>({
     if (groupPosition === 'none') return null;
 
     const lineColor = getGroupColor(groupId);
-    const lineWidth = 3;
-    const indicatorWidth = 16;
+    const lineWidth = theme.borderWidth.thick;
+    const indicatorWidth = theme.size.groupIndicatorWidth;
 
     return (
       <View
@@ -236,7 +236,7 @@ export function OptionsMultiSelector<T extends string | number>({
           style={{
             flexDirection: 'row',
             alignItems: 'stretch',
-            zIndex: isHighestSelected ? 2000 : 1,
+            zIndex: isHighestSelected ? theme.zIndex.dragItem : theme.zIndex.base + 1,
           }}>
           {renderGroupIndicator(groupPosition, item.groupId, isFirstInGroup)}
           <View style={{ flex: 1 }}>
@@ -325,7 +325,7 @@ export function OptionsMultiSelector<T extends string | number>({
                           style={{
                             fontSize: theme.typography.fontSize.xs,
                             color: theme.colors.text.secondary,
-                            marginTop: theme.spacing.padding.xs / 4,
+                            marginTop: theme.spacing.padding.xsQuarter,
                           }}>
                           {item.description}
                         </Text>
@@ -443,7 +443,7 @@ export function OptionsMultiSelector<T extends string | number>({
                       style={{
                         fontSize: theme.typography.fontSize.xs,
                         color: theme.colors.text.secondary,
-                        marginTop: theme.spacing.padding.xs / 4,
+                        marginTop: theme.spacing.padding.xsQuarter,
                       }}>
                       {option.description}
                     </Text>

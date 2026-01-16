@@ -57,7 +57,7 @@ export function SettingsCard({
                 style={{
                   fontSize: theme.typography.fontSize.sm,
                   color: theme.colors.text.secondary,
-                  marginTop: theme.spacing.padding.xs / 2,
+                  marginTop: theme.spacing.padding.xsHalf,
                 }}>
                 {subtitle}
               </Text>

@@ -86,24 +86,35 @@ export function WorkoutSummaryCelebration({
           webModalStyle,
           {
             paddingTop: Platform.OS !== 'web' ? insets.top : 0,
-            paddingBottom: Platform.OS !== 'web' ? Math.max(insets.bottom, 16) : 0,
+            paddingBottom:
+              Platform.OS !== 'web' ? Math.max(insets.bottom, theme.spacing.padding.base) : 0,
           },
         ]}>
         <View className="flex-1 items-center justify-center px-6 py-8">
           {/* Background Glow Effects */}
           <Animated.View
-            className="absolute left-1/2 top-1/4 h-64 w-64 rounded-full blur-3xl"
+            className="absolute left-1/2 top-1/4 rounded-full blur-3xl"
             style={{
+              height: theme.size.glowSizeLarge,
+              width: theme.size.glowSizeLarge,
               backgroundColor: theme.colors.status.indigo10,
-              transform: [{ translateX: -128 }, { translateY: -128 }],
+              transform: [
+                { translateX: -theme.size.glowSizeLarge / 2 },
+                { translateY: -theme.size.glowSizeLarge / 2 },
+              ],
               opacity: glowAnim1,
             }}
           />
           <Animated.View
-            className="absolute left-1/2 top-1/3 h-48 w-48 rounded-full blur-3xl"
+            className="absolute left-1/2 top-1/3 rounded-full blur-3xl"
             style={{
+              height: theme.size.glowSizeMedium,
+              width: theme.size.glowSizeMedium,
               backgroundColor: theme.colors.status.emerald20,
-              transform: [{ translateX: -96 }, { translateY: -96 }],
+              transform: [
+                { translateX: -theme.size.glowSizeMedium / 2 },
+                { translateY: -theme.size.glowSizeMedium / 2 },
+              ],
               opacity: glowAnim2,
             }}
           />

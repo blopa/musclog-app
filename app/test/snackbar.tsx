@@ -133,7 +133,7 @@ export default function SnackbarTestScreen() {
         </View>
 
         {/* Bottom spacing for snackbars */}
-        <View className="h-64" />
+        <View style={{ height: theme.size['64'] }} />
       </ScrollView>
     </SafeAreaView>
   );

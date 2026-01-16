@@ -353,6 +353,9 @@ export const theme = {
       // Specific padding values found in codebase
       '5': 20,
       '6': 24,
+      // Fractional padding values
+      xsQuarter: 1, // xs / 4 = 4 / 4 = 1px
+      xsHalf: 2, // xs / 2 = 4 / 2 = 2px
     },
 
     // Margin/Gap
@@ -366,13 +369,16 @@ export const theme = {
       xl: 24,
       '2xl': 32,
       '3xl': 48,
-      // Additional gap values for fractional spacing
-      '2half': 10, // 2.5 * 4 = 10px
-      '3half': 14, // 3.5 * 4 = 14px
-      '4half': 18, // 4.5 * 4 = 18px
-      // Specific gap values found in codebase
-      '8': 8,
-    },
+    // Additional gap values for fractional spacing
+    '2half': 10, // 2.5 * 4 = 10px
+    '3half': 14, // 3.5 * 4 = 14px
+    '4half': 18, // 4.5 * 4 = 18px
+    // Specific gap values found in codebase
+    '8': 8,
+    // Very small spacing values
+    '1': 1, // 1px gap (for dividers)
+    '2': 2, // 2px gap
+  },
 
     // Margin (same values as padding for consistency)
     margin: {
@@ -411,7 +417,7 @@ export const theme = {
     none: 0, // No border
     thin: 1,
     medium: 2,
-    thick: 3,
+    thick: 3, // 3px border width (for group indicators)
     // Additional border widths
     accent: 5, // For accent borders like snackbar
     thick6: 6, // 6px border width
@@ -602,6 +608,7 @@ export const theme = {
     popover: 50, // Popovers and tooltips
     tooltip: 100, // Tooltips
     max: 2000, // Maximum z-index (for critical overlays)
+    dragItem: 2000, // Z-index for draggable items when selected
   },
 
   // Icon sizes
@@ -664,6 +671,8 @@ export const theme = {
     '280': 280, // Common max width value
     '300': 300, // Common size value (for background glows)
     '384': 384, // Common height value
+    '48': 48, // 48px size (for glow effects)
+    '64': 64, // 64px size (Tailwind h-64 equivalent)
     // Fractional sizes (using valid keys)
     half: 2, // 0.5 * 4 = 2px
     '1half': 6, // 1.5 * 4 = 6px
@@ -672,6 +681,10 @@ export const theme = {
     // Component-specific sizes
     stepperInputWidth: 64, // Width for stepper input fields
     spacer100: 100, // Common spacer height (100px)
+    groupIndicatorWidth: 16, // Width for group indicator lines (16px)
+    maxContentHeight: 2000, // Maximum height for accordion/content animations (2000px)
+    glowSizeLarge: 256, // Large glow effect size (h-64, w-64 = 256px)
+    glowSizeMedium: 192, // Medium glow effect size (h-48, w-48 = 192px)
   },
 
   // Max widths

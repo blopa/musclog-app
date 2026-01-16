@@ -171,7 +171,7 @@ export function FilterWorkoutsModal({
                     backgroundColor: theme.colors.background.black20,
                     borderRadius: theme.borderRadius.sm,
                     paddingHorizontal: theme.spacing.padding.sm,
-                    paddingVertical: theme.spacing.padding.xs / 2,
+                    paddingVertical: theme.spacing.padding.xsHalf,
                     minWidth: theme.size['6'],
                     alignItems: 'center',
                     justifyContent: 'center',

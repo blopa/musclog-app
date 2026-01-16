@@ -29,7 +29,13 @@ export function UpNextExerciseCard({ exercise, onPress }: UpNextExerciseCardProp
             colors={['transparent', theme.colors.overlay.black60]}
             start={{ x: 0, y: 0 }}
             end={{ x: 0, y: 1 }}
-            style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+            style={{
+              position: 'absolute',
+              top: theme.spacing.padding.zero,
+              left: theme.spacing.padding.zero,
+              right: theme.spacing.padding.zero,
+              bottom: theme.spacing.padding.zero,
+            }}
           />
         </View>
 

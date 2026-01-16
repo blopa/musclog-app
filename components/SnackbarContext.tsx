@@ -81,7 +81,7 @@ export function SnackbarProvider({ children }: { children: ReactNode }) {
         className="absolute bottom-0 left-0 right-0"
         style={{
           pointerEvents: 'box-none',
-          paddingBottom: Math.max(insets.bottom, 16),
+          paddingBottom: Math.max(insets.bottom, theme.spacing.padding.base),
           ...webContainerStyle,
         }}>
         {snackbars.map((snackbar) => (

@@ -18,10 +18,10 @@ export const GoogleGeminiIllustration = ({
         <View
           className="absolute"
           style={{
-            top: -2,
-            left: -2,
-            right: -2,
-            bottom: -2,
+            top: -theme.spacing.margin['2'],
+            left: -theme.spacing.margin['2'],
+            right: -theme.spacing.margin['2'],
+            bottom: -theme.spacing.margin['2'],
             borderRadius: theme.borderRadius['2xl'],
             opacity: theme.colors.opacity.dim30,
           }}>
