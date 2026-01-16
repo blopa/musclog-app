@@ -685,8 +685,6 @@ export const theme = {
     '280': 280, // Common max width value
     '300': 300, // Common size value (for background glows)
     '384': 384, // Common height value
-    '48': 48, // 48px size (for glow effects)
-    '64': 64, // 64px size (Tailwind h-64 equivalent)
     // Fractional sizes (using valid keys)
     half: 2, // 0.5 * 4 = 2px
     '1half': 6, // 1.5 * 4 = 6px

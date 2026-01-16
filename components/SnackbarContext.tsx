@@ -2,6 +2,7 @@ import { createContext, useContext, useState, ReactNode, useCallback } from 'rea
 import { View, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
+import { theme } from '../theme';
 import { Snackbar, type SnackbarType } from './Snackbar';
 
 type SnackbarContextType = {
