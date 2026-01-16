@@ -48,6 +48,7 @@ export function AddMealModal({
     },
   ];
 
+  // TODO: ui is broken here maybe
   return (
     <BottomPopUpMenu visible={visible} onClose={onClose} title={t('addMeal.title')} items={items} />
   );

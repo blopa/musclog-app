@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, Pressable, Modal, Platform, Animated } from 'react-native';
+import { View, Text, Pressable, Modal, Platform, Animated, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Home } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
@@ -10,8 +10,6 @@ import { WorkoutSummaryHeader } from './WorkoutSummaryHeader';
 import { WorkoutSummaryStatsCard } from './cards/WorkoutSummaryStatsCard';
 
 type WorkoutSummaryCelebrationProps = {
-  visible: boolean;
-  onClose: () => void;
   onGoHome: () => void;
   onShareSummary?: () => void;
   totalTime?: string; // e.g., "45m"
@@ -20,8 +18,6 @@ type WorkoutSummaryCelebrationProps = {
 };
 
 export function WorkoutSummaryCelebration({
-  visible,
-  onClose,
   onGoHome,
   onShareSummary,
   totalTime = '45m',
@@ -34,7 +30,6 @@ export function WorkoutSummaryCelebration({
   const glowAnim2 = useRef(new Animated.Value(0.6)).current;
 
   useEffect(() => {
-    if (visible) {
       // Glow pulse animations
       const createGlowPulse = (anim: Animated.Value, delay: number = 0) => {
         return Animated.loop(
@@ -56,8 +51,7 @@ export function WorkoutSummaryCelebration({
 
       createGlowPulse(glowAnim1).start();
       createGlowPulse(glowAnim2, 750).start();
-    }
-  }, [visible, glowAnim1, glowAnim2]);
+  }, [glowAnim1, glowAnim2]);
 
   // Web-specific styles for proper viewport positioning
   const webModalStyle =
@@ -74,12 +68,7 @@ export function WorkoutSummaryCelebration({
       : {};
 
   return (
-    <Modal
-      visible={visible}
-      transparent={false}
-      animationType="fade"
-      onRequestClose={onClose}
-      statusBarTranslucent={Platform.OS !== 'web'}>
+    <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
       <View
         className="flex-1 bg-bg-primary"
         style={[
@@ -143,6 +132,6 @@ export function WorkoutSummaryCelebration({
           </Pressable>
         </View>
       </View>
-    </Modal>
+    </ScrollView>
   );
 }

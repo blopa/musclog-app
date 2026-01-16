@@ -111,9 +111,6 @@ export default function ModalsTestScreen() {
   // Date Picker Modal
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
 
-  // Workout Summary Celebration
-  const [isWorkoutSummaryVisible, setIsWorkoutSummaryVisible] = useState(false);
-
   // Add Exercise Modal
   const [isAddExerciseVisible, setIsAddExerciseVisible] = useState(false);
 
@@ -565,23 +562,6 @@ export default function ModalsTestScreen() {
             />
           </View>
 
-          {/* Workout Summary Celebration */}
-          <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">
-              Workout Summary Celebration
-            </Text>
-            <Text className="mb-4 text-sm text-text-secondary">
-              Celebration screen shown after completing a workout with animated trophy, stats, and
-              actions.
-            </Text>
-            <Button
-              label="Open Workout Summary Celebration"
-              variant="accent"
-              width="full"
-              onPress={() => setIsWorkoutSummaryVisible(true)}
-            />
-          </View>
-
           {/* Add Food Item to Meal Modal */}
           <View className="mb-6">
             <Text className="mb-2 text-lg font-bold text-text-primary">
@@ -928,21 +908,6 @@ export default function ModalsTestScreen() {
           console.log('Date selected:', date);
         }}
         selectedDate={new Date()}
-      />
-
-      <WorkoutSummaryCelebration
-        visible={isWorkoutSummaryVisible}
-        onClose={() => setIsWorkoutSummaryVisible(false)}
-        onGoHome={() => {
-          console.log('Go Home pressed');
-          setIsWorkoutSummaryVisible(false);
-        }}
-        onShareSummary={() => {
-          console.log('Share Summary pressed');
-        }}
-        totalTime="45m"
-        volume="12,450 kg"
-        personalRecords={2}
       />
 
       <AddExerciseModal

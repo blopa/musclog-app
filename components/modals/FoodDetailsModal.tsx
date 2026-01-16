@@ -61,6 +61,7 @@ export function FoodDetailsModal({
     onClose();
   };
 
+  // TODO: ui is broken here
   return (
     <FullScreenModal
       visible={visible}

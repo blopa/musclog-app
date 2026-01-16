@@ -16,8 +16,6 @@ export default function WorkoutSummaryScreen() {
 
   return (
     <WorkoutSummaryCelebration
-      visible={true}
-      onClose={() => router.back()}
       onGoHome={handleGoHome}
       onShareSummary={handleShareSummary}
       totalTime="45m"
