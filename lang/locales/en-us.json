@@ -8,7 +8,8 @@
     "min": "min",
     "cancel": "Cancel",
     "tryAgain": "Try Again",
-    "popular": "Popular"
+    "popular": "Popular",
+    "loading": "Loading..."
   },
   "home": {
     "greeting": {

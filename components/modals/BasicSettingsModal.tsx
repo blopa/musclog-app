@@ -158,7 +158,7 @@ export function BasicSettingsModal({
             marginHorizontal: theme.spacing.padding.base,
           }}>
           <Text className="mb-3 px-5 text-lg font-bold tracking-tight text-text-primary">
-            Integrations
+            {t('settings.basicSettings.integrations')}
           </Text>
 
           <ToggleInput

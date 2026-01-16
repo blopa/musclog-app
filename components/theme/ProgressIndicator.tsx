@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
 
 type ProgressIndicatorProps = {
@@ -8,9 +9,11 @@ type ProgressIndicatorProps = {
 };
 
 export function ProgressIndicator({
-  message = 'Loading...',
+  message,
   size = 'large',
 }: ProgressIndicatorProps) {
+  const { t } = useTranslation();
+  const displayMessage = message || t('common.loading');
   return (
     <View
       className="w-full py-6"
@@ -71,7 +74,7 @@ export function ProgressIndicator({
             />
           </View>
 
-          {message && (
+          {displayMessage && (
             <Text
               style={{
                 marginTop: theme.spacing.padding.lg,
@@ -80,7 +83,7 @@ export function ProgressIndicator({
                 fontSize: theme.typography.fontSize.lg,
                 fontWeight: theme.typography.fontWeight.semibold,
               }}>
-              {message}
+              {displayMessage}
             </Text>
           )}
         </View>
