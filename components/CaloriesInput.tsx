@@ -25,10 +25,10 @@ export function CaloriesInput({
       style={{
         borderColor: isFocused ? theme.colors.accent.primary50 : theme.colors.background.white10,
         shadowColor: highlightColor,
-        shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0.1,
-        shadowRadius: 15,
-        elevation: 2,
+        shadowOffset: theme.shadowOffset.zero,
+        shadowOpacity: theme.shadowOpacity.veryLight,
+        shadowRadius: theme.shadows.radius8.shadowRadius,
+        elevation: theme.elevation.sm,
       }}>
       <View className="mb-1 flex-row items-start justify-between">
         <Text className="text-xs font-bold uppercase tracking-widest text-text-secondary">
@@ -40,15 +40,14 @@ export function CaloriesInput({
         value={value}
         onChangeText={onChange}
         placeholder="0"
-        placeholderTextColor={theme.colors.text.tertiary + '50'}
+        placeholderTextColor={theme.colors.text.primary12}
         keyboardType="numeric"
         selectTextOnFocus
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         className="w-full border-0 bg-transparent p-0 text-5xl font-bold text-text-primary"
         style={{
-          fontSize: 48,
-          lineHeight: 56,
+          fontSize: theme.typography.fontSize['5xl'],
         }}
       />
       {isFocused && (
