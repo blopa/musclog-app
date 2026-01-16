@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, ScrollView, Pressable } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '../../components/theme/Button';
 import { NutritionGoalsModal, NutritionGoals } from '../../components/modals/NutritionGoalsModal';
@@ -21,7 +21,6 @@ import { ReplaceExerciseModal } from '../../components/modals/ReplaceExerciseMod
 import { WorkoutHistoryModal } from '../../components/modals/WorkoutHistoryModal';
 import { DatePickerModal } from '../../components/modals/DatePickerModal';
 import { CreateWorkoutOptionsModal } from '../../components/modals/CreateWorkoutOptionsModal';
-import { WorkoutSummaryCelebration } from '../../components/WorkoutSummaryCelebration';
 import { EditPersonalInfoModal } from '../../components/modals/EditPersonalInfoModal';
 import { EditFitnessDetailsModal } from '../../components/modals/EditFitnessDetailsModal';
 import { MainSettingsModal } from '../../components/modals/MainSettingsModal';
