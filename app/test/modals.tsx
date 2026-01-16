@@ -36,6 +36,7 @@ import { FullScreenModal } from '../../components/modals/FullScreenModal';
 import ExercisesModal from '../../components/modals/ExercisesModal';
 import ViewExerciseModal from '../../components/modals/ViewExerciseModal';
 import CreateExerciseModal from '../../components/modals/CreateExerciseModal';
+import NewCustomFoodModal from '../../components/modals/NewCustomFoodModal';
 
 export default function ModalsTestScreen() {
   // Nutrition Goals Modal
@@ -136,6 +137,8 @@ export default function ModalsTestScreen() {
 
   // Create Exercise Modal
   const [isCreateExerciseVisible, setIsCreateExerciseVisible] = useState(false);
+  // New Custom Food Modal
+  const [isNewCustomFoodVisible, setIsNewCustomFoodVisible] = useState(false);
 
   const handleSaveGoals = (goals: NutritionGoals) => {
     console.log('Goals saved:', goals);
@@ -618,6 +621,18 @@ export default function ModalsTestScreen() {
               onPress={() => setIsFullScreenModalVisible(true)}
             />
           </View>
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">New Custom Food Modal</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Modal for creating a new custom food item with detailed nutritional information.
+            </Text>
+            <Button
+              label="Open New Custom Food Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsNewCustomFoodVisible(true)}
+            />
+          </View>
 
           {/* Exercises Modal */}
           <View className="mb-6">
@@ -979,6 +994,11 @@ export default function ModalsTestScreen() {
       <CreateExerciseModal
         visible={isCreateExerciseVisible}
         onClose={() => setIsCreateExerciseVisible(false)}
+      />
+      <NewCustomFoodModal
+        visible={isNewCustomFoodVisible}
+        onClose={() => setIsNewCustomFoodVisible(false)}
+        onSave={(data) => console.log('New custom food saved:', data)}
       />
     </SafeAreaView>
   );

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, ScrollView, Pressable, TextInput as RNTextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -16,11 +16,13 @@ import {
   Waves,
   Save,
   ChevronDown,
+  PlusCircle,
 } from 'lucide-react-native';
 import { theme } from '../../theme';
 import { LinearGradient } from 'expo-linear-gradient';
 import { FullScreenModal } from './FullScreenModal';
 import { useTranslation } from 'react-i18next';
+import { Button } from '../theme/Button';
 
 type MeasurementUnit = '100g' | 'serving' | 'container';
 
@@ -79,21 +81,6 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
   return (
     <FullScreenModal visible={visible} onClose={onClose} title={t('food.newCustomFood.title')}>
       <SafeAreaView className="flex-1 bg-bg-primary" edges={['top']}>
-        {/* Header */}
-        <View className="flex-row items-center justify-between border-b border-white/10 bg-bg-primary px-4 pb-2 pt-4">
-          <Pressable onPress={handleCancel} className="w-16 items-start justify-center">
-            <Text className="text-base font-medium text-text-secondary">Cancel</Text>
-          </Pressable>
-          <Text className="flex-1 text-center text-lg font-bold leading-tight tracking-tight text-text-primary">
-            New Custom Food
-          </Text>
-          <View className="w-16 items-end justify-center">
-            <Pressable onPress={handleSave}>
-              <Text className="text-base font-bold text-accent-primary">Save</Text>
-            </Pressable>
-          </View>
-        </View>
-
         {/* Main Content */}
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
           <View className="gap-6 px-4 pb-40 pt-6">
@@ -315,34 +302,17 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
               )}
             </View>
           </View>
+          <View className="gap-3 pb-8 pt-4">
+            <Button
+              label={t('common.save')}
+              variant="gradientCta"
+              size="md"
+              width="full"
+              icon={PlusCircle}
+              onPress={handleSave}
+            />
+          </View>
         </ScrollView>
-
-        {/* Fixed Bottom Button */}
-        <View
-          className="absolute bottom-0 left-0 right-0 border-t border-white/10 bg-bg-primary/80 px-4 pb-8 pt-4"
-          style={{
-            backgroundColor: theme.colors.background.primary + 'CC',
-          }}>
-          <Pressable
-            onPress={handleSave}
-            className="h-14 w-full items-center justify-center rounded-xl"
-            style={{
-              shadowColor: theme.colors.accent.primary,
-              shadowOffset: { width: 0, height: 0 },
-              shadowOpacity: 0.3,
-              shadowRadius: 20,
-              elevation: 8,
-            }}>
-            <LinearGradient
-              colors={['#6366f1', theme.colors.accent.primary]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              className="h-full w-full flex-row items-center justify-center gap-2 rounded-xl">
-              <Save size={theme.iconSize.lg} color={theme.colors.text.black} />
-              <Text className="text-lg font-bold text-black">Save Food</Text>
-            </LinearGradient>
-          </Pressable>
-        </View>
       </SafeAreaView>
     </FullScreenModal>
   );
