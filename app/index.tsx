@@ -308,7 +308,7 @@ export default function HomeScreen() {
         onSettingsPress={() => router.push('/settings')}
         onProgressPress={() => router.push('/progress')}
         {...(__DEV__ && {
-          onDebugMenuPress: () => router.push('/test/database'),
+          onDebugMenuPress: () => router.push('/test/debug'),
         })}
       />
 

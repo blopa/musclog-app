@@ -26,7 +26,7 @@ const APP_SCREENS = [
   { name: 'Test: Snackbar', route: '/test/snackbar', category: 'Test' },
 ];
 
-export default function DatabaseTestScreen() {
+export default function DebugTestScreen() {
   const router = useRouter();
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [name, setName] = useState('');
