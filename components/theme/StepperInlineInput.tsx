@@ -107,7 +107,9 @@ export function StepperInlineInput({
               selectTextOnFocus
             />
             {unit && (
-              <Text className="text-xs text-gray-500" style={{ fontSize: theme.typography.fontSize['10'] }}>
+              <Text
+                className="text-xs text-gray-500"
+                style={{ fontSize: theme.typography.fontSize['10'] }}>
                 {unit}
               </Text>
             )}
@@ -118,7 +120,9 @@ export function StepperInlineInput({
               {value % 1 === 0 ? value : value.toFixed(1)}
             </Text>
             {unit && (
-              <Text className="text-xs text-gray-500" style={{ fontSize: theme.typography.fontSize['10'] }}>
+              <Text
+                className="text-xs text-gray-500"
+                style={{ fontSize: theme.typography.fontSize['10'] }}>
                 {unit}
               </Text>
             )}

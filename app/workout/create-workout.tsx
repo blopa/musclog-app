@@ -378,11 +378,11 @@ export default function CreateWorkoutScreen() {
 
             <Text
               style={{
-                    fontSize: theme.typography.fontSize.xs,
-                    color: theme.colors.text.secondary,
-                    marginTop: theme.spacing.padding.md,
-                    lineHeight: theme.typography.fontSize.lg,
-                  }}>
+                fontSize: theme.typography.fontSize.xs,
+                color: theme.colors.text.secondary,
+                marginTop: theme.spacing.padding.md,
+                lineHeight: theme.typography.fontSize.lg,
+              }}>
               {t('createWorkout.volumeCalculation.description')}
             </Text>
           </View>

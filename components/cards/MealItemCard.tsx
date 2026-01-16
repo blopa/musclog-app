@@ -173,7 +173,11 @@ export function MealItemCard({
                 gap: theme.spacing.gap.xs,
                 opacity: pressed ? theme.colors.opacity.medium70 : theme.colors.opacity.full,
               })}>
-              <Plus size={theme.iconSize.xs} color={theme.colors.accent.primary} strokeWidth={theme.strokeWidth.thick} />
+              <Plus
+                size={theme.iconSize.xs}
+                color={theme.colors.accent.primary}
+                strokeWidth={theme.strokeWidth.thick}
+              />
               <Text
                 style={{
                   fontSize: theme.typography.fontSize.xs,

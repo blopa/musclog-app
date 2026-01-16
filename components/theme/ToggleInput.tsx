@@ -49,7 +49,13 @@ export function ToggleInput(props: TogglableSettingsProps) {
               },
             ]}
             onPress={() => it.onValueChange(!it.value)}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.gap.sm, flex: 1 }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: theme.spacing.gap.sm,
+                flex: 1,
+              }}>
               {it.icon}
               <View style={{ flex: 1 }}>
                 <Text

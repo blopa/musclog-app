@@ -284,7 +284,9 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
                 title={workout.name}
                 subtitle={workout.subtitle}
                 onPress={() => handleWorkoutPress(workout.id)}
-                rightIcon={<ChevronRight size={theme.iconSize.lg} color={theme.colors.text.secondary} />}
+                rightIcon={
+                  <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.secondary} />
+                }
                 iconContainerStyle={{
                   width: theme.size['16'],
                   height: theme.size['16'],

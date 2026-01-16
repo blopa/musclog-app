@@ -146,7 +146,13 @@ function FoodResultCard({
               shadowOpacity: theme.colors.opacity.dim30,
               shadowRadius: theme.shadows.radius4.shadowRadius,
             }}>
-            {isSelected && <Check size={theme.iconSize.sm} color={theme.colors.text.black} strokeWidth={theme.strokeWidth.thick} />}
+            {isSelected && (
+              <Check
+                size={theme.iconSize.sm}
+                color={theme.colors.text.black}
+                strokeWidth={theme.strokeWidth.thick}
+              />
+            )}
           </View>
         </View>
 
@@ -364,7 +370,12 @@ export function AddFoodItemToMealModal({
       onClose={onClose}
       title={t('food.addFoodItemToMeal.title')}
       headerRight={
-        <Text style={{ fontSize: theme.typography.fontSize.sm, fontWeight: theme.typography.fontWeight.semibold, color: theme.colors.accent.primary }}>
+        <Text
+          style={{
+            fontSize: theme.typography.fontSize.sm,
+            fontWeight: theme.typography.fontWeight.semibold,
+            color: theme.colors.accent.primary,
+          }}>
           {t('food.addFoodItemToMeal.selectedCount', { count: selectedCount })}
         </Text>
       }
@@ -405,13 +416,16 @@ export function AddFoodItemToMealModal({
             }}>
             {t('food.addFoodItemToMeal.searchResults')}
           </Text>
-          <Text style={{ fontSize: theme.typography.fontSize.xs, color: theme.colors.text.tertiary }}>
+          <Text
+            style={{ fontSize: theme.typography.fontSize.xs, color: theme.colors.text.tertiary }}>
             {t('food.addFoodItemToMeal.foundItems', { count: SEARCH_RESULTS.length })}
           </Text>
         </View>
 
         {/* Results List */}
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ gap: theme.spacing.gap.md }}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ gap: theme.spacing.gap.md }}>
           {SEARCH_RESULTS.map((food) => (
             <FoodResultCard
               key={food.id}

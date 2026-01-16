@@ -442,7 +442,11 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}>
-                <Plus size={theme.iconSize.sm} color={theme.colors.text.secondary} strokeWidth={theme.strokeWidth.thick} />
+                <Plus
+                  size={theme.iconSize.sm}
+                  color={theme.colors.text.secondary}
+                  strokeWidth={theme.strokeWidth.thick}
+                />
               </View>
               <Text
                 style={{

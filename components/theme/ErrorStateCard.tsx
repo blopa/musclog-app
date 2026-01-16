@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { LucideIcon, RefreshCw } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { theme } from '../../theme';
+import { theme, addOpacityToHex } from '../../theme';
 
 type ErrorStateCardProps = {
   icon: LucideIcon;
@@ -26,7 +26,7 @@ export function ErrorStateCard({
       {/* Icon */}
       <View
         className="h-12 w-12 items-center justify-center rounded-full"
-        style={{ backgroundColor: theme.colors.status.error10 }}>
+        style={{ backgroundColor: addOpacityToHex(theme.colors.status.error, 0.1) }}>
         <Icon size={theme.iconSize.xl} color={theme.colors.status.error} />
       </View>
 

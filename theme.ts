@@ -373,7 +373,7 @@ export const theme = {
       // Specific gap values found in codebase
       '8': 8,
     },
-    
+
     // Margin (same values as padding for consistency)
     margin: {
       zero: 0, // Zero margin

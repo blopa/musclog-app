@@ -25,19 +25,50 @@ export const GroupActionButton: React.FC<GroupActionButtonProps> = ({
       }}>
       <View style={{ flexDirection: 'row', gap: theme.size.xs }}>
         <View
-          style={{ width: theme.size.xs, height: theme.size.xs, borderRadius: theme.borderRadius['2'], backgroundColor: color, opacity: theme.colors.opacity.medium50 }}
+          style={{
+            width: theme.size.xs,
+            height: theme.size.xs,
+            borderRadius: theme.borderRadius['2'],
+            backgroundColor: color,
+            opacity: theme.colors.opacity.medium50,
+          }}
         />
         <View
-          style={{ width: theme.size.xs, height: theme.size.xs, borderRadius: theme.borderRadius['2'], backgroundColor: color, opacity: theme.colors.opacity.medium50 }}
+          style={{
+            width: theme.size.xs,
+            height: theme.size.xs,
+            borderRadius: theme.borderRadius['2'],
+            backgroundColor: color,
+            opacity: theme.colors.opacity.medium50,
+          }}
         />
       </View>
-      <View style={{ width: theme.size.base, height: theme.size['2'] / 4, backgroundColor: color, borderRadius: theme.borderRadius['2'] }} />
+      <View
+        style={{
+          width: theme.size.base,
+          height: theme.size['2'] / 4,
+          backgroundColor: color,
+          borderRadius: theme.borderRadius['2'],
+        }}
+      />
       <View style={{ flexDirection: 'row', gap: theme.size.xs }}>
         <View
-          style={{ width: theme.size.xs, height: theme.size.xs, borderRadius: theme.borderRadius['2'], backgroundColor: color, opacity: theme.colors.opacity.medium50 }}
+          style={{
+            width: theme.size.xs,
+            height: theme.size.xs,
+            borderRadius: theme.borderRadius['2'],
+            backgroundColor: color,
+            opacity: theme.colors.opacity.medium50,
+          }}
         />
         <View
-          style={{ width: theme.size.xs, height: theme.size.xs, borderRadius: theme.borderRadius['2'], backgroundColor: color, opacity: theme.colors.opacity.medium50 }}
+          style={{
+            width: theme.size.xs,
+            height: theme.size.xs,
+            borderRadius: theme.borderRadius['2'],
+            backgroundColor: color,
+            opacity: theme.colors.opacity.medium50,
+          }}
         />
       </View>
     </View>
@@ -64,7 +95,9 @@ export const GroupActionButton: React.FC<GroupActionButtonProps> = ({
             paddingVertical: theme.spacing.padding.sm,
             borderRadius: theme.borderRadius.xs,
             borderWidth: theme.borderWidth.thinHalf,
-            borderColor: allSelectedInSameGroup ? theme.colors.status.redDark : theme.colors.status.emeraldDark,
+            borderColor: allSelectedInSameGroup
+              ? theme.colors.status.redDark
+              : theme.colors.status.emeraldDark,
             backgroundColor: allSelectedInSameGroup
               ? theme.colors.status.errorSolid
               : theme.colors.status.emeraldSolid,

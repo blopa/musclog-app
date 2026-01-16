@@ -127,7 +127,7 @@ function UnderlineTabs({ tabs, activeTab, onTabChange }: UnderlineTabsProps) {
       horizontal
       showsHorizontalScrollIndicator={false}
       className="flex-row"
-        contentContainerStyle={{
+      contentContainerStyle={{
         paddingHorizontal: theme.spacing.padding.base,
         paddingTop: theme.spacing.padding.sm,
         gap: theme.spacing.gap.xl,

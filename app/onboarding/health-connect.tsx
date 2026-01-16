@@ -115,7 +115,11 @@ export default function HealthConnectScreen() {
               backgroundColor: theme.colors.background.card,
               ...theme.shadows.lg,
             }}>
-            <Dumbbell size={theme.iconSize.xl} color={theme.colors.status.indigoLight} strokeWidth={theme.borderWidth.medium} />
+            <Dumbbell
+              size={theme.iconSize.xl}
+              color={theme.colors.status.indigoLight}
+              strokeWidth={theme.borderWidth.medium}
+            />
           </View>
 
           {/* Top Right - Scale */}
@@ -129,7 +133,11 @@ export default function HealthConnectScreen() {
               backgroundColor: theme.colors.background.card,
               ...theme.shadows.lg,
             }}>
-            <Scale size={theme.iconSize.lg} color={theme.colors.status.emerald} strokeWidth={theme.borderWidth.medium} />
+            <Scale
+              size={theme.iconSize.lg}
+              color={theme.colors.status.emerald}
+              strokeWidth={theme.borderWidth.medium}
+            />
           </View>
 
           {/* Bottom Left - Apple/Nutrition */}
@@ -143,7 +151,11 @@ export default function HealthConnectScreen() {
               backgroundColor: theme.colors.background.card,
               ...theme.shadows.lg,
             }}>
-            <Apple size={theme.iconSize.lg} color={theme.colors.status.emeraldLight} strokeWidth={theme.borderWidth.medium} />
+            <Apple
+              size={theme.iconSize.lg}
+              color={theme.colors.status.emeraldLight}
+              strokeWidth={theme.borderWidth.medium}
+            />
           </View>
 
           {/* Bottom Right - Heart */}
@@ -157,7 +169,11 @@ export default function HealthConnectScreen() {
               backgroundColor: theme.colors.background.card,
               ...theme.shadows.lg,
             }}>
-            <Heart size={theme.iconSize['2xl']} color={theme.colors.status.purple} strokeWidth={theme.borderWidth.medium} />
+            <Heart
+              size={theme.iconSize['2xl']}
+              color={theme.colors.status.purple}
+              strokeWidth={theme.borderWidth.medium}
+            />
           </View>
 
           {/* Dashed Lines SVG */}

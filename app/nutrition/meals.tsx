@@ -131,7 +131,12 @@ export default function MyMealsScreen() {
         </View>
 
         {/* Meal List */}
-        <ScrollView className="flex-1" contentContainerStyle={{ paddingHorizontal: theme.spacing.padding.xl, gap: theme.spacing.gap.base }}>
+        <ScrollView
+          className="flex-1"
+          contentContainerStyle={{
+            paddingHorizontal: theme.spacing.padding.xl,
+            gap: theme.spacing.gap.base,
+          }}>
           {MEALS_DATA.map((meal) => (
             <MealItemCard
               key={meal.id}

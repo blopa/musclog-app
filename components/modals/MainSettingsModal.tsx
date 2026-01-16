@@ -69,7 +69,11 @@ export function MainSettingsModal({ visible, onClose }: { visible: boolean; onCl
           subtitle={t('settings.basicSettings.subtitle')}
           onPress={() => {}}
           rightIcon={
-            <MaterialIcons name="chevron-right" size={theme.iconSize.xl} color={theme.colors.text.secondary} />
+            <MaterialIcons
+              name="chevron-right"
+              size={theme.iconSize.xl}
+              color={theme.colors.text.secondary}
+            />
           }
         />
 
@@ -85,7 +89,11 @@ export function MainSettingsModal({ visible, onClose }: { visible: boolean; onCl
           subtitle={t('settings.advancedSettings.subtitle')}
           onPress={() => {}}
           rightIcon={
-            <MaterialIcons name="chevron-right" size={theme.iconSize.xl} color={theme.colors.text.secondary} />
+            <MaterialIcons
+              name="chevron-right"
+              size={theme.iconSize.xl}
+              color={theme.colors.text.secondary}
+            />
           }
         />
 
