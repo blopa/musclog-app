@@ -2,12 +2,32 @@ import React, { useState } from 'react';
 import { Text, TextInput as RNTextInput, View } from 'react-native';
 import { theme } from '../theme';
 
+type CaloriesInputVariant = 'default' | 'success' | 'warning' | 'error' | 'info' | 'accent';
+
 type CaloriesInputProps = {
   label: string;
   value: string;
   onChange: (value: string) => void;
   topRightElement: React.ReactNode;
-  highlightColor: string;
+  variant?: CaloriesInputVariant;
+};
+
+const variantColors: Record<CaloriesInputVariant, string> = {
+  default: theme.colors.accent.primary,
+  success: theme.colors.status.success,
+  warning: theme.colors.status.warning,
+  error: theme.colors.status.error,
+  info: theme.colors.status.info,
+  accent: theme.colors.accent.secondary,
+};
+
+const variantBorderColors: Record<CaloriesInputVariant, string> = {
+  default: theme.colors.accent.primary50,
+  success: theme.colors.accent.primary50,
+  warning: theme.colors.status.warning + 50,
+  error: theme.colors.status.error + 50,
+  info: theme.colors.status.info + 50,
+  accent: theme.colors.accent.secondary20,
 };
 
 export function CaloriesInput({
@@ -15,15 +35,18 @@ export function CaloriesInput({
   value,
   onChange,
   topRightElement,
-  highlightColor,
+  variant = 'default',
 }: CaloriesInputProps) {
   const [isFocused, setIsFocused] = useState(false);
+
+  const highlightColor = variantColors[variant];
+  const borderColor = variantBorderColors[variant];
 
   return (
     <View
       className="overflow-hidden rounded-xl border border-white/10 bg-bg-card p-5"
       style={{
-        borderColor: isFocused ? theme.colors.accent.primary50 : theme.colors.background.white10,
+        borderColor: isFocused ? borderColor : theme.colors.background.white10,
         shadowColor: highlightColor,
         shadowOffset: theme.shadowOffset.zero,
         shadowOpacity: theme.shadowOpacity.veryLight,

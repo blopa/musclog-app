@@ -153,7 +153,7 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
                   <Text className="text-xs font-medium text-accent-primary">kcal</Text>
                 </View>
               }
-              highlightColor={theme.colors.accent.primary}
+              variant="default"
             />
 
             {/* Macro Grid */}
