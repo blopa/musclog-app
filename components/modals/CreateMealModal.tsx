@@ -72,8 +72,8 @@ const MacroCard = ({
         fontWeight: theme.typography.fontWeight.bold,
         color: theme.colors.text.secondary,
         textTransform: 'uppercase',
-        letterSpacing: 1,
-        marginBottom: 2,
+        letterSpacing: theme.typography.letterSpacing.wider,
+        marginBottom: theme.spacing.padding.xs / 2,
       }}>
       {label}
     </Text>
@@ -192,7 +192,7 @@ const MealMacrosSummary = ({
                 fontWeight: theme.typography.fontWeight.bold,
                 color: theme.colors.text.secondary,
                 textTransform: 'uppercase',
-                letterSpacing: 1,
+                letterSpacing: theme.typography.letterSpacing.wider,
               }}>
               {t('food.createMeal.estimated')}
             </Text>
@@ -276,7 +276,7 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
               fontWeight: theme.typography.fontWeight.bold,
               color: theme.colors.text.secondary,
               textTransform: 'uppercase',
-              letterSpacing: 1.2,
+              letterSpacing: theme.typography.letterSpacing.widest,
               marginLeft: 4,
             }}>
             {t('food.createMeal.mealName')}
@@ -324,7 +324,7 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
                 fontWeight: theme.typography.fontWeight.bold,
                 color: theme.colors.text.secondary,
                 textTransform: 'uppercase',
-                letterSpacing: 1.2,
+                letterSpacing: theme.typography.letterSpacing.widest,
               }}>
               {t('food.createMeal.ingredients', { count: ingredients.length })}
             </Text>
@@ -335,7 +335,7 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
                   fontWeight: theme.typography.fontWeight.bold,
                   color: theme.colors.accent.primary,
                   textTransform: 'uppercase',
-                  letterSpacing: 1,
+                  letterSpacing: theme.typography.letterSpacing.wider,
                 }}>
                 {t('food.createMeal.editList')}
               </Text>
@@ -367,7 +367,7 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
                       justifyContent: 'center',
                       borderWidth: theme.borderWidth.thin,
                       borderColor: theme.colors.border.light,
-                      marginRight: 12,
+                      marginRight: theme.spacing.padding.md,
                     }}>
                     <Icon size={20} color={theme.colors.text.secondary} />
                   </View>

@@ -89,7 +89,7 @@ export function EditFitnessDetailsBody({
       description: t('editFitnessDetails.activityLevelDescriptions.light'),
       icon: Move,
       iconColor: theme.colors.status.info,
-      iconBgColor: 'rgba(59, 130, 246, 0.1)',
+      iconBgColor: theme.colors.status.info10,
     },
     {
       level: 3,
@@ -105,7 +105,7 @@ export function EditFitnessDetailsBody({
       description: t('editFitnessDetails.activityLevelDescriptions.active'),
       icon: Zap,
       iconColor: theme.colors.status.warning,
-      iconBgColor: 'rgba(249, 115, 22, 0.1)',
+      iconBgColor: theme.colors.status.warning10,
     },
     {
       level: 5,
@@ -113,7 +113,7 @@ export function EditFitnessDetailsBody({
       description: t('editFitnessDetails.activityLevelDescriptions.superActive'),
       icon: Flame,
       iconColor: theme.colors.rose.brand,
-      iconBgColor: 'rgba(218, 37, 82, 0.1)',
+      iconBgColor: theme.colors.rose.brand10,
     },
   ];
 
@@ -133,7 +133,7 @@ export function EditFitnessDetailsBody({
       description: t('editFitnessDetails.fitnessGoalDescriptions.strength'),
       icon: Zap,
       iconColor: theme.colors.status.warning,
-      iconBgColor: 'rgba(249, 115, 22, 0.1)',
+      iconBgColor: theme.colors.status.warning10,
     },
     {
       title: t('editFitnessDetails.fitnessGoalLabels.endurance'),
@@ -147,7 +147,7 @@ export function EditFitnessDetailsBody({
       description: t('editFitnessDetails.fitnessGoalDescriptions.weightLoss'),
       icon: Target,
       iconColor: theme.colors.rose.brand,
-      iconBgColor: 'rgba(218, 37, 82, 0.1)',
+      iconBgColor: theme.colors.rose.brand10,
     },
     {
       title: t('editFitnessDetails.fitnessGoalLabels.general'),

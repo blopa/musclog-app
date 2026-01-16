@@ -214,7 +214,7 @@ export function FilterWorkoutsModal({
               fontWeight: theme.typography.fontWeight.bold,
               color: theme.colors.text.secondary,
               textTransform: 'uppercase',
-              letterSpacing: 1.2,
+              letterSpacing: theme.typography.letterSpacing.widest,
               marginBottom: theme.spacing.padding.base,
               paddingHorizontal: theme.spacing.padding.xs,
             }}>
@@ -290,7 +290,7 @@ export function FilterWorkoutsModal({
                 fontWeight: theme.typography.fontWeight.bold,
                 color: theme.colors.text.secondary,
                 textTransform: 'uppercase',
-                letterSpacing: 1.2,
+                letterSpacing: theme.typography.letterSpacing.widest,
               }}>
               {t('workouts.filterWorkouts.duration')}
             </Text>

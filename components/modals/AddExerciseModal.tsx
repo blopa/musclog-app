@@ -111,7 +111,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
                 fontWeight: theme.typography.fontWeight.bold,
                 color: theme.colors.text.secondary,
                 textTransform: 'uppercase',
-                letterSpacing: 1.2,
+                letterSpacing: theme.typography.letterSpacing.widest,
               }}>
               {t('workouts.addExercise.targetMuscle')}
             </Text>
@@ -121,7 +121,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
                 fontWeight: theme.typography.fontWeight.bold,
                 color: theme.colors.accent.primary,
                 textTransform: 'uppercase',
-                letterSpacing: 1,
+                letterSpacing: theme.typography.letterSpacing.wider,
               }}>
               {t('workouts.addExercise.multiSelect')}
             </Text>

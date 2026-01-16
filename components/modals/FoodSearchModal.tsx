@@ -47,7 +47,7 @@ const RECENT_HISTORY: FoodItem[] = [
     description: '1 large (136g) • 121 kcal',
     icon: '🍌',
     iconColor: theme.colors.status.warning,
-    iconBgColor: 'rgba(249, 115, 22, 0.1)', // warning20
+    iconBgColor: theme.colors.status.warning10,
     grade: 'A',
     gradeColor: theme.colors.accent.primary,
     calories: 121,
@@ -60,7 +60,7 @@ const RECENT_HISTORY: FoodItem[] = [
     name: 'Large Egg',
     description: '1 large • 72 kcal • 6g Protein',
     iconColor: theme.colors.status.info,
-    iconBgColor: 'rgba(59, 130, 246, 0.1)', // info20
+    iconBgColor: theme.colors.status.info10,
     grade: 'A+',
     gradeColor: theme.colors.status.success,
     calories: 72,
@@ -85,7 +85,7 @@ const COMMON_FOODS: FoodItem[] = [
     name: 'Black Coffee',
     description: '1 cup (8oz) • 2 kcal',
     iconColor: theme.colors.status.warning,
-    iconBgColor: 'rgba(249, 115, 22, 0.1)', // warning20
+    iconBgColor: theme.colors.status.warning10,
     calories: 2,
     protein: 0.3,
     carbs: 0,
@@ -127,10 +127,10 @@ function UnderlineTabs({ tabs, activeTab, onTabChange }: UnderlineTabsProps) {
       horizontal
       showsHorizontalScrollIndicator={false}
       className="flex-row"
-      contentContainerStyle={{
+        contentContainerStyle={{
         paddingHorizontal: theme.spacing.padding.base,
         paddingTop: theme.spacing.padding.sm,
-        gap: 24,
+        gap: theme.spacing.gap.xl,
       }}>
       {tabs.map((tab) => {
         const isActive = activeTab === tab.id;

@@ -27,15 +27,15 @@ export default function PreRegistrationIntro() {
       <View className="absolute inset-0 rounded-full opacity-70">
         <LinearGradient
           colors={[
-            'rgba(79, 70, 229, 0.3)', // indigo-brand/30
-            'rgba(41, 224, 142, 0.1)', // primary/10
-            'rgba(16, 185, 129, 0.3)', // emerald-brand/30
+            theme.colors.status.indigo30,
+            theme.colors.status.emerald400_10,
+            theme.colors.status.emerald30,
           ]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={{
             flex: 1,
-            borderRadius: 9999,
+            borderRadius: theme.borderRadius.full,
           }}
         />
       </View>

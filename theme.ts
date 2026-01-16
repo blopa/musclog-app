@@ -34,6 +34,7 @@ export const theme = {
       greenBlob: '#125630', // Green blob background
       darkGreen50: 'rgba(25, 43, 35, 0.5)', // Dark green with 50% opacity
       darkGreen80: 'rgba(27, 50, 39, 0.8)', // Dark green with 80% opacity
+      black10: 'rgba(0, 0, 0, 0.1)', // Black with 10% opacity
       black15: 'rgba(0, 0, 0, 0.15)', // Black with 15% opacity
       black20: 'rgba(0, 0, 0, 0.2)', // Black with 20% opacity
       black30: 'rgba(0, 0, 0, 0.3)', // Black with 30% opacity
@@ -63,6 +64,8 @@ export const theme = {
       white12: 'rgba(255, 255, 255, 0.125)', // White with ~12.5% opacity
       white20: 'rgba(255, 255, 255, 0.2)', // White with 20% opacity
       white30: 'rgba(255, 255, 255, 0.3)', // White with 30% opacity
+      // Background primary with opacity
+      primary20: 'rgba(10, 31, 26, 0.2)', // Background primary with 20% opacity
     },
 
     // Text colors
@@ -145,10 +148,14 @@ export const theme = {
       amber10: 'rgba(251, 191, 36, 0.1)', // Amber with 10% opacity
       warning10: 'rgba(249, 115, 22, 0.1)', // Warning with 10% opacity
       emerald10: 'rgba(16, 185, 129, 0.1)', // Emerald with 10% opacity
-      emerald20: 'rgba(41, 224, 142, 0.2)', // Emerald-400 with 20% opacity
+      emerald20: 'rgba(16, 185, 129, 0.2)', // Emerald with 20% opacity
+      emerald30: 'rgba(16, 185, 129, 0.3)', // Emerald with 30% opacity
+      emerald400_10: 'rgba(41, 224, 142, 0.1)', // Emerald-400 with 10% opacity
+      emerald400_20: 'rgba(41, 224, 142, 0.2)', // Emerald-400 with 20% opacity
       yellow10: 'rgba(234, 179, 8, 0.1)', // Yellow with 10% opacity
       indigo10: 'rgba(99, 102, 241, 0.1)', // Indigo with 10% opacity
       indigo20: 'rgba(99, 102, 241, 0.2)', // Indigo with 20% opacity
+      indigo30: 'rgba(79, 70, 229, 0.3)', // Indigo-600 with 30% opacity
       indigo600: '#4f46e5', // Indigo-600
       // Red border colors for ungroup action
       redDark: '#7f1d1d', // Dark red border
@@ -172,6 +179,7 @@ export const theme = {
       brand: '#da2552', // Rose-700 (darker, less bright)
       dark: '#9f1239', // Rose-800 (darker variant)
       // Rose colors with opacity
+      brand10: 'rgba(218, 37, 82, 0.1)', // Rose-brand with 10% opacity
       brand20: 'rgba(190, 18, 60, 0.2)', // Rose-brand with 20% opacity
     },
 
@@ -312,6 +320,16 @@ export const theme = {
       normal: 1.5,
       relaxed: 1.75,
     },
+
+    // Letter spacing
+    letterSpacing: {
+      tight: -0.5,
+      normal: 0,
+      wide: 0.5,
+      wider: 1,
+      widest: 1.2,
+      extraWide: 1.5,
+    },
   },
 
   spacing: {
@@ -366,6 +384,8 @@ export const theme = {
     full: 9999,
     // Additional border radius values
     '2': 2, // 2px border radius (for small dots)
+    '125': 125, // 125px for large circular backgrounds
+    '150': 150, // 150px for large circular backgrounds
   },
 
   // Border widths
@@ -550,9 +570,9 @@ export const theme = {
     '100': 100, // Common spacing/height value
     '120': 120, // Common spacing/height value
     '150': 150, // Common size value
-    '250': 250, // Common size value
-    '300': 300, // Common size value
-    '384': 384, // Common height value
+      '250': 250, // Common size value (for background glows)
+      '300': 300, // Common size value (for background glows)
+      '384': 384, // Common height value
     // Fractional sizes (using valid keys)
     half: 2, // 0.5 * 4 = 2px
     '1half': 6, // 1.5 * 4 = 6px

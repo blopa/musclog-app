@@ -66,9 +66,9 @@ export function CreateWorkoutOptionsModal({
             position: 'absolute',
             top: -50,
             right: -50,
-            width: 300,
-            height: 300,
-            borderRadius: 150,
+            width: theme.size['300'],
+            height: theme.size['300'],
+            borderRadius: theme.borderRadius['150'],
             backgroundColor: theme.colors.accent.primary20,
             opacity: theme.colors.opacity.dimmer,
             // Blur is handled via opacity/size here since React Native blur is limited
@@ -79,9 +79,9 @@ export function CreateWorkoutOptionsModal({
             position: 'absolute',
             bottom: -50,
             left: -50,
-            width: 250,
-            height: 250,
-            borderRadius: 125,
+            width: theme.size['250'],
+            height: theme.size['250'],
+            borderRadius: theme.borderRadius['125'],
             backgroundColor: theme.colors.status.indigo10,
             opacity: theme.colors.opacity.lightDim,
           }}
@@ -105,7 +105,7 @@ export function CreateWorkoutOptionsModal({
             fontWeight: theme.typography.fontWeight.bold,
             color: theme.colors.text.secondary,
             textTransform: 'uppercase',
-            letterSpacing: 1.5,
+            letterSpacing: theme.typography.letterSpacing.extraWide,
             opacity: theme.colors.opacity.medium80,
           }}>
           New Session
@@ -118,7 +118,7 @@ export function CreateWorkoutOptionsModal({
           flex: 1,
           paddingHorizontal: theme.spacing.padding.xl,
           justifyContent: 'center',
-          paddingBottom: 80,
+          paddingBottom: theme.spacing.padding['3xl'],
         }}>
         {/* Title */}
         <Animated.View style={[animatedStyle(0), { marginBottom: theme.spacing.padding['2xl'] }]}>
@@ -127,7 +127,7 @@ export function CreateWorkoutOptionsModal({
               fontSize: theme.typography.fontSize['3xl'],
               fontWeight: theme.typography.fontWeight.extrabold,
               color: theme.colors.text.white,
-              lineHeight: 36,
+              lineHeight: theme.typography.fontSize['3xl'] * 1.2,
             }}>
             {"Let's crush a"}
           </Text>
@@ -136,7 +136,7 @@ export function CreateWorkoutOptionsModal({
             style={{
               fontSize: theme.typography.fontSize['3xl'],
               fontWeight: theme.typography.fontWeight.extrabold,
-              lineHeight: 36,
+              lineHeight: theme.typography.fontSize['3xl'] * 1.2,
               marginBottom: theme.spacing.padding.xs,
             }}>
             new workout.

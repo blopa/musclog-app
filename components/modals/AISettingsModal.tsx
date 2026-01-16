@@ -199,7 +199,7 @@ export function AISettingsModal({
                   style={{
                     fontSize: theme.typography.fontSize.sm,
                     fontWeight: theme.typography.fontWeight.bold,
-                    letterSpacing: 0.5,
+                    letterSpacing: theme.typography.letterSpacing.wide,
                     color: theme.colors.text.primary,
                   }}>
                   {t('settings.aiSettings.connectGoogleAccount')}

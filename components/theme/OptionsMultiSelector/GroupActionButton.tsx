@@ -83,7 +83,7 @@ export const GroupActionButton: React.FC<GroupActionButtonProps> = ({
             fontWeight: theme.typography.fontWeight.black,
             fontSize: theme.typography.fontSize.sm,
             textTransform: 'uppercase',
-            letterSpacing: 1.5,
+            letterSpacing: theme.typography.letterSpacing.extraWide,
           }}>
           {allSelectedInSameGroup ? t('optionsSelector.unlink') : t('optionsSelector.link')}
         </Text>

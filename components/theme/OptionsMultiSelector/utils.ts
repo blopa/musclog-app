@@ -70,9 +70,9 @@ export function getGroupColor(groupId: string | undefined): string {
     theme.colors.accent.primary,
     theme.colors.status.purple,
     theme.colors.status.indigo,
-    '#10B981', // emerald green
-    '#F59E0B', // amber
-    '#EF4444', // red
+    theme.colors.status.emerald, // emerald-500
+    theme.colors.status.amber, // amber-400
+    theme.colors.status.error, // red
   ];
 
   const hash = groupId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);

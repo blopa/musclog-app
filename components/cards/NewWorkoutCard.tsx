@@ -97,7 +97,7 @@ export function NewWorkoutCard({
                   fontWeight: theme.typography.fontWeight.bold,
                   color: theme.colors.accent.secondary,
                   textTransform: 'uppercase',
-                  letterSpacing: 1,
+                  letterSpacing: theme.typography.letterSpacing.wider,
                 }}>
                 {t('common.popular')}
               </Text>

@@ -71,7 +71,7 @@ export function StepperInlineInput({
         {Icon && (
           <View
             className="h-10 w-10 items-center justify-center rounded-lg"
-            style={{ backgroundColor: 'rgba(16, 185, 129, 0.2)' }}>
+            style={{ backgroundColor: theme.colors.status.emerald20 }}>
             <Icon size={20} color={theme.colors.status.emeraldLight} />
           </View>
         )}
@@ -83,7 +83,7 @@ export function StepperInlineInput({
       <View className="flex-row items-center gap-3">
         <Pressable
           className="border-primary/20 h-10 w-10 items-center justify-center rounded-full border active:opacity-70"
-          style={{ backgroundColor: 'rgba(16, 185, 129, 0.3)' }}
+          style={{ backgroundColor: theme.colors.status.emerald30 }}
           onPress={onDecrement}>
           <Minus size={20} color={theme.colors.status.emeraldLight} />
         </Pressable>
@@ -107,7 +107,7 @@ export function StepperInlineInput({
               selectTextOnFocus
             />
             {unit && (
-              <Text className="text-xs text-gray-500" style={{ fontSize: 10 }}>
+              <Text className="text-xs text-gray-500" style={{ fontSize: theme.typography.fontSize['10'] }}>
                 {unit}
               </Text>
             )}
@@ -118,7 +118,7 @@ export function StepperInlineInput({
               {value % 1 === 0 ? value : value.toFixed(1)}
             </Text>
             {unit && (
-              <Text className="text-xs text-gray-500" style={{ fontSize: 10 }}>
+              <Text className="text-xs text-gray-500" style={{ fontSize: theme.typography.fontSize['10'] }}>
                 {unit}
               </Text>
             )}
@@ -126,7 +126,7 @@ export function StepperInlineInput({
         )}
         <Pressable
           className="border-primary/20 h-10 w-10 items-center justify-center rounded-full border active:opacity-70"
-          style={{ backgroundColor: 'rgba(16, 185, 129, 0.3)' }}
+          style={{ backgroundColor: theme.colors.status.emerald30 }}
           onPress={onIncrement}>
           <Plus size={20} color={theme.colors.status.emeraldLight} />
         </Pressable>

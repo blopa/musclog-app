@@ -43,9 +43,9 @@ export function AdvancedSettingsModal({
       icon: (
         <View
           style={{
-            width: 40,
-            height: 40,
-            borderRadius: 8,
+            width: theme.size['10'],
+            height: theme.size['10'],
+            borderRadius: theme.borderRadius.sm,
             backgroundColor: theme.colors.status.purple20,
             alignItems: 'center',
             justifyContent: 'center',
@@ -110,7 +110,7 @@ export function AdvancedSettingsModal({
         </View>
 
         {/* Danger Zone Section */}
-        <View style={{ paddingTop: 32 }}>
+        <View style={{ paddingTop: theme.spacing.padding['2xl'] }}>
           <Text
             className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
             style={{ color: theme.colors.status.error }}>

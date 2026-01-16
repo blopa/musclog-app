@@ -52,7 +52,7 @@ export function MainSettingsModal({ visible, onClose }: { visible: boolean; onCl
             fontWeight: theme.typography.fontWeight.bold,
             color: theme.colors.text.secondary,
             textTransform: 'uppercase',
-            letterSpacing: 1.2,
+            letterSpacing: theme.typography.letterSpacing.widest,
           }}>
           {t('settings.configuration')}
         </Text>
