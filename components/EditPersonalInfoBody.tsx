@@ -93,7 +93,7 @@ export function EditPersonalInfoBody({ onSave, initialData }: EditPersonalInfoBo
         </View>
       </View>
 
-      <View className="bg-transparent px-4 pb-6 pt-3" style={{ backgroundColor: 'transparent' }}>
+      <View className="bg-transparent px-4 pb-6 pt-3">
         <Button
           label={t('editPersonalInfo.saveChanges')}
           icon={Check}
