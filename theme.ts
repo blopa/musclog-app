@@ -408,6 +408,7 @@ export const theme = {
     full: 9999,
     // Additional border radius values
     '2': 2, // 2px border radius (for small dots)
+    '10': 10, // 10px border radius
     '125': 125, // 125px for large circular backgrounds
     '150': 150, // 150px for large circular backgrounds
   },
@@ -662,6 +663,10 @@ export const theme = {
     '48': 192,
     '56': 224,
     '64': 256,
+    '18px': 18, // 18px size (for icons/small elements)
+    '44': 44, // 44px size (for button heights)
+    '60': 60, // 60px size (common width)
+    '96': 96, // 96px size (for widths)
     '100': 100, // Common spacing/height value
     '120': 120, // Common spacing/height value
     '150': 150, // Common size value

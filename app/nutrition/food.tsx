@@ -172,16 +172,20 @@ export default function FoodScreen() {
                 <View className="rounded-lg border border-white/5 bg-bg-card p-5">
                   <View className="mb-4 flex-row items-center justify-between">
                     <View className="gap-2">
-                      <SkeletonLoader width={120} height={16} />
-                      <SkeletonLoader width={80} height={32} />
+                      <SkeletonLoader width={theme.size['120']} height={theme.size['4']} />
+                      <SkeletonLoader width={theme.size['20']} height={theme.size['8']} />
                     </View>
-                    <SkeletonLoader width={60} height={24} />
+                    <SkeletonLoader width={theme.size['60']} height={theme.size['6']} />
                   </View>
-                  <SkeletonLoader width="100%" height={8} borderRadius={4} />
+                  <SkeletonLoader
+                    width="100%"
+                    height={theme.size['2']}
+                    borderRadius={theme.borderRadius.xs}
+                  />
                   <View className="mt-4 flex-row gap-2">
-                    <SkeletonLoader width="33%" height={60} borderRadius={8} />
-                    <SkeletonLoader width="33%" height={60} borderRadius={8} />
-                    <SkeletonLoader width="33%" height={60} borderRadius={8} />
+                    <SkeletonLoader width="33%" height={theme.size['60']} borderRadius={theme.borderRadius.sm} />
+                    <SkeletonLoader width="33%" height={theme.size['60']} borderRadius={theme.borderRadius.sm} />
+                    <SkeletonLoader width="33%" height={theme.size['60']} borderRadius={theme.borderRadius.sm} />
                   </View>
                 </View>
 
@@ -191,13 +195,17 @@ export default function FoodScreen() {
                     key={i}
                     className="flex-row items-center justify-between rounded-lg border border-white/5 bg-bg-card p-4">
                     <View className="flex-row items-center gap-3">
-                      <SkeletonLoader width={40} height={40} borderRadius={20} />
+                      <SkeletonLoader
+                        width={theme.size['10']}
+                        height={theme.size['10']}
+                        borderRadius={theme.borderRadius.xl}
+                      />
                       <View className="gap-1">
-                        <SkeletonLoader width={96} height={16} />
-                        <SkeletonLoader width={64} height={12} />
+                        <SkeletonLoader width={theme.size['96']} height={theme.size['4']} />
+                        <SkeletonLoader width={theme.size['16']} height={theme.size['3']} />
                       </View>
                     </View>
-                    <SkeletonLoader width={48} height={16} />
+                    <SkeletonLoader width={theme.size['12']} height={theme.size['4']} />
                   </View>
                 ))}
               </>

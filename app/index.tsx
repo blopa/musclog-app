@@ -177,10 +177,14 @@ export default function HomeScreen() {
               {[1, 2].map((i) => (
                 <View key={i} className="rounded-lg border border-white/5 bg-bg-card p-4">
                   <View className="flex-row items-center gap-3">
-                    <SkeletonLoader width={48} height={48} borderRadius={12} />
+                    <SkeletonLoader
+                      width={theme.size['12']}
+                      height={theme.size['12']}
+                      borderRadius={theme.borderRadius.md}
+                    />
                     <View className="flex-1 gap-2">
-                      <SkeletonLoader width="70%" height={16} />
-                      <SkeletonLoader width="50%" height={12} />
+                      <SkeletonLoader width="70%" height={theme.size['4']} />
+                      <SkeletonLoader width="50%" height={theme.size['3']} />
                     </View>
                   </View>
                 </View>
@@ -215,17 +219,33 @@ export default function HomeScreen() {
               {[1, 2].map((i) => (
                 <View key={i} className="flex-row items-center gap-4 rounded-2xl bg-bg-overlay p-5">
                   <View className="flex-row items-center gap-3">
-                    <SkeletonLoader width={40} height={40} borderRadius={20} />
+                    <SkeletonLoader
+                      width={theme.size['10']}
+                      height={theme.size['10']}
+                      borderRadius={theme.borderRadius.xl}
+                    />
                     <View className="flex-1 gap-2">
-                      <SkeletonLoader width="60%" height={16} />
+                      <SkeletonLoader width="60%" height={theme.size['4']} />
                       <View className="flex-row gap-2">
-                        <SkeletonLoader width={60} height={20} borderRadius={10} />
-                        <SkeletonLoader width={60} height={20} borderRadius={10} />
-                        <SkeletonLoader width={60} height={20} borderRadius={10} />
+                        <SkeletonLoader
+                          width={theme.size['60']}
+                          height={theme.size['5']}
+                          borderRadius={theme.borderRadius['10']}
+                        />
+                        <SkeletonLoader
+                          width={theme.size['60']}
+                          height={theme.size['5']}
+                          borderRadius={theme.borderRadius['10']}
+                        />
+                        <SkeletonLoader
+                          width={theme.size['60']}
+                          height={theme.size['5']}
+                          borderRadius={theme.borderRadius['10']}
+                        />
                       </View>
                     </View>
                   </View>
-                  <SkeletonLoader width={48} height={16} />
+                  <SkeletonLoader width={theme.size['12']} height={theme.size['4']} />
                 </View>
               ))}
             </View>

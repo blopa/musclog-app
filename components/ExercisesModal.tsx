@@ -270,10 +270,18 @@ export default function ExercisesModal({ visible, onClose }: ExercisesModalProps
                   className="mb-4 overflow-hidden rounded-lg border border-border-dark bg-bg-card">
                   <View className="flex-row items-center justify-between px-4 py-4">
                     <View className="flex-row items-center gap-3">
-                      <SkeletonLoader width={18} height={18} borderRadius={999} />
-                      <SkeletonLoader width={120} height={20} />
+                      <SkeletonLoader
+                        width={theme.size['18px']}
+                        height={theme.size['18px']}
+                        borderRadius={theme.borderRadius.full}
+                      />
+                      <SkeletonLoader width={theme.size['120']} height={theme.size['5']} />
                     </View>
-                    <SkeletonLoader width={18} height={18} borderRadius={999} />
+                    <SkeletonLoader
+                      width={theme.size['18px']}
+                      height={theme.size['18px']}
+                      borderRadius={theme.borderRadius.full}
+                    />
                   </View>
                 </View>
               ))}

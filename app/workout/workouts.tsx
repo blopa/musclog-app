@@ -147,15 +147,27 @@ export default function WorkoutsScreen() {
                 <View className="rounded-lg border border-white/5 bg-bg-card p-5">
                   <View className="mb-4 flex-row items-start justify-between">
                     <View className="flex-1 gap-2">
-                      <SkeletonLoader width="40%" height={20} />
-                      <SkeletonLoader width="60%" height={24} />
-                      <SkeletonLoader width="50%" height={16} />
+                      <SkeletonLoader width="40%" height={theme.size['5']} />
+                      <SkeletonLoader width="60%" height={theme.size['6']} />
+                      <SkeletonLoader width="50%" height={theme.size['4']} />
                     </View>
-                    <SkeletonLoader width={64} height={64} borderRadius={12} />
+                    <SkeletonLoader
+                      width={theme.size['16']}
+                      height={theme.size['16']}
+                      borderRadius={theme.borderRadius.md}
+                    />
                   </View>
                   <View className="flex-row gap-3">
-                    <SkeletonLoader width={120} height={44} borderRadius={12} />
-                    <SkeletonLoader width={48} height={44} borderRadius={12} />
+                    <SkeletonLoader
+                      width={theme.size['120']}
+                      height={theme.size['44']}
+                      borderRadius={theme.borderRadius.md}
+                    />
+                    <SkeletonLoader
+                      width={theme.size['12']}
+                      height={theme.size['44']}
+                      borderRadius={theme.borderRadius.md}
+                    />
                   </View>
                 </View>
 
@@ -163,15 +175,27 @@ export default function WorkoutsScreen() {
                 {[1, 2, 3].map((i) => (
                   <View key={i} className="rounded-lg border border-white/5 bg-bg-card p-4">
                     <View className="flex-row items-center gap-3">
-                      <SkeletonLoader width={48} height={48} borderRadius={12} />
+                      <SkeletonLoader
+                        width={theme.size['12']}
+                        height={theme.size['12']}
+                        borderRadius={theme.borderRadius.md}
+                      />
                       <View className="flex-1 gap-2">
-                        <SkeletonLoader width="75%" height={16} />
-                        <SkeletonLoader width="50%" height={12} />
+                        <SkeletonLoader width="75%" height={theme.size['4']} />
+                        <SkeletonLoader width="50%" height={theme.size['3']} />
                       </View>
                     </View>
                     <View className="mt-4 flex-row gap-2">
-                      <SkeletonLoader width={80} height={32} borderRadius={16} />
-                      <SkeletonLoader width={80} height={32} borderRadius={16} />
+                      <SkeletonLoader
+                        width={theme.size['20']}
+                        height={theme.size['8']}
+                        borderRadius={theme.borderRadius.lg}
+                      />
+                      <SkeletonLoader
+                        width={theme.size['20']}
+                        height={theme.size['8']}
+                        borderRadius={theme.borderRadius.lg}
+                      />
                     </View>
                   </View>
                 ))}
