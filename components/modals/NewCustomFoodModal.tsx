@@ -47,7 +47,6 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
   const [monoFat, setMonoFat] = useState('');
   const [polyFat, setPolyFat] = useState('');
   const [microOpen, setMicroOpen] = useState(false);
-  const [caloriesFocused, setCaloriesFocused] = useState(false);
   const { t } = useTranslation();
 
   const handleSave = () => {
@@ -142,50 +141,19 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
             </View>
 
             {/* Calories */}
-            <View
-              className="overflow-hidden rounded-xl border border-white/10 bg-bg-card p-5"
-              style={{
-                borderColor: caloriesFocused
-                  ? theme.colors.accent.primary50
-                  : theme.colors.background.white10,
-                shadowColor: caloriesFocused ? theme.colors.accent.primary : theme.colors.accent.primary,
-                shadowOffset: { width: 0, height: 0 },
-                shadowOpacity: 0.1,
-                shadowRadius: 15,
-                elevation: 2,
-              }}>
-              <View className="mb-1 flex-row items-start justify-between">
-                <Text className="text-xs font-bold uppercase tracking-widest text-text-secondary">
-                  Calories
-                </Text>
+            <CaloriesInput
+              label="Calories"
+              value={calories}
+              onChange={(value) => handleNumericChange(value, setCalories)}
+              topRightElement={
                 <View
                   className="rounded-full px-2 py-0.5"
                   style={{ backgroundColor: theme.colors.accent.primary10 }}>
                   <Text className="text-xs font-medium text-accent-primary">kcal</Text>
                 </View>
-              </View>
-              <RNTextInput
-                value={calories}
-                onChangeText={(value) => handleNumericChange(value, setCalories)}
-                placeholder="0"
-                placeholderTextColor={theme.colors.text.tertiary + '50'}
-                keyboardType="numeric"
-                selectTextOnFocus
-                onFocus={() => setCaloriesFocused(true)}
-                onBlur={() => setCaloriesFocused(false)}
-                className="w-full border-0 bg-transparent p-0 text-5xl font-bold text-text-primary"
-                style={{
-                  fontSize: 48,
-                  lineHeight: 56,
-                }}
-              />
-              {caloriesFocused && (
-                <View
-                  className="absolute bottom-0 left-0 right-0 h-1 rounded-b-xl"
-                  style={{ backgroundColor: theme.colors.accent.primary }}
-                />
-              )}
-            </View>
+              }
+              highlightColor={theme.colors.accent.primary}
+            />
 
             {/* Macro Grid */}
             <View className="flex-row flex-wrap gap-4">
@@ -286,6 +254,65 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
         </ScrollView>
       </SafeAreaView>
     </FullScreenModal>
+  );
+}
+
+type CaloriesInputProps = {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  topRightElement: React.ReactNode;
+  highlightColor: string;
+};
+
+function CaloriesInput({
+  label,
+  value,
+  onChange,
+  topRightElement,
+  highlightColor,
+}: CaloriesInputProps) {
+  const [isFocused, setIsFocused] = useState(false);
+
+  return (
+    <View
+      className="overflow-hidden rounded-xl border border-white/10 bg-bg-card p-5"
+      style={{
+        borderColor: isFocused ? theme.colors.accent.primary50 : theme.colors.background.white10,
+        shadowColor: highlightColor,
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.1,
+        shadowRadius: 15,
+        elevation: 2,
+      }}>
+      <View className="mb-1 flex-row items-start justify-between">
+        <Text className="text-xs font-bold uppercase tracking-widest text-text-secondary">
+          {label}
+        </Text>
+        {topRightElement}
+      </View>
+      <RNTextInput
+        value={value}
+        onChangeText={onChange}
+        placeholder="0"
+        placeholderTextColor={theme.colors.text.tertiary + '50'}
+        keyboardType="numeric"
+        selectTextOnFocus
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+        className="w-full border-0 bg-transparent p-0 text-5xl font-bold text-text-primary"
+        style={{
+          fontSize: 48,
+          lineHeight: 56,
+        }}
+      />
+      {isFocused && (
+        <View
+          className="absolute bottom-0 left-0 right-0 h-1 rounded-b-xl"
+          style={{ backgroundColor: highlightColor }}
+        />
+      )}
+    </View>
   );
 }
 
