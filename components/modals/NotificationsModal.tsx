@@ -67,8 +67,8 @@ export function NotificationsModal({ visible, onClose, onClearAll }: Notificatio
                 fontSize: theme.typography.fontSize.base,
                 color: theme.colors.text.gray300,
               }}>
-              Great job crushing <Text className="font-semibold">Morning Run</Text>. You burned 310
-              kcal.
+              Great job crushing <Text className="font-semibold">Morning Run</Text>. You burned 310{' '}
+              {t('common.kcal')}.
             </Text>
           ),
           time: 'Yesterday, 8:45 AM',

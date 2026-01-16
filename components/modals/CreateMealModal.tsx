@@ -174,7 +174,7 @@ const MealMacrosSummary = ({
                 fontWeight: theme.typography.fontWeight.medium,
                 color: theme.colors.text.secondary,
               }}>
-              854 kcal
+              854 {t('common.kcal')}
             </Text>
           </View>
           <View
@@ -389,7 +389,7 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
                         }}
                       />
                       <Text style={{ fontSize: 12, color: theme.colors.text.secondary }}>
-                        {item.calories} kcal
+                        {item.calories} {t('common.kcal')}
                       </Text>
                     </View>
                   </View>

@@ -62,7 +62,7 @@ export function ChatWorkoutCard({
           <View className="flex-row items-center gap-1">
             <Flame size={16} color={theme.colors.text.secondary} />
             <Text className="text-sm" style={{ color: theme.colors.text.secondary }}>
-              {calories} kcal
+              {calories} {t('common.kcal')}
             </Text>
           </View>
         </View>

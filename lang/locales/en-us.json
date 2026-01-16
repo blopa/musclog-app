@@ -594,7 +594,8 @@
     "kcalPerGram": {
       "protein": "4 kcal/g",
       "carbs": "4 kcal/g",
-      "fats": "9 kcal/g"
+      "fats": "9 kcal/g",
+      "fiber": "2 kcal/g"
     },
     "sublabels": {
       "targetWeight": "kg/lbs",

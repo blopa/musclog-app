@@ -295,7 +295,7 @@ export function NutritionGoalsBody({
           />
           <MacroCard
             label={t('food.macros.fiber') || 'Fiber'}
-            kcalPerGram="2 kcal/g"
+            kcalPerGram={t('nutritionGoals.kcalPerGram.fiber')}
             value={fiber}
             min={0}
             max={100}
