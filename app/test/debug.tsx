@@ -5,19 +5,27 @@ import { useRouter } from 'expo-router';
 import { theme } from '../../theme';
 import { MasterLayout } from '../../components/MasterLayout';
 import { database, Exercise } from '../../database';
-import { Q } from '@nozbe/watermelondb';
 
 // All app screens for navigation
 const APP_SCREENS = [
   { name: 'Home', route: '/', category: 'Main' },
-  { name: 'Food', route: '/food', category: 'Main' },
-  { name: 'Workouts', route: '/workouts', category: 'Main' },
   { name: 'Profile', route: '/profile', category: 'Main' },
-  { name: 'Workout Session', route: '/workout-session', category: 'Workout' },
-  { name: 'Workout Summary', route: '/workout-summary', category: 'Workout' },
-  { name: 'Create Workout', route: '/create-workout', category: 'Workout' },
-  { name: 'Rest Timer', route: '/rest-timer', category: 'Workout' },
-  { name: 'Rest Over', route: '/rest-over', category: 'Workout' },
+  { name: 'Food', route: '/nutrition/food', category: 'Nutrition' },
+  { name: 'Meals', route: '/nutrition/meals', category: 'Nutrition' },
+  { name: 'AI Camera', route: '/nutrition/ai-camera', category: 'Nutrition' },
+  { name: 'Workouts', route: '/workout/workouts', category: 'Workout' },
+  { name: 'Workout Session', route: '/workout/workout-session', category: 'Workout' },
+  { name: 'Workout Summary', route: '/workout/workout-summary', category: 'Workout' },
+  { name: 'Create Workout', route: '/workout/create-workout', category: 'Workout' },
+  { name: 'Rest Timer', route: '/workout/rest-timer', category: 'Workout' },
+  { name: 'Rest Over', route: '/workout/rest-over', category: 'Workout' },
+  { name: 'Landing', route: '/onboarding/landing', category: 'Onboarding' },
+  { name: 'Onboarding', route: '/onboarding/onboarding', category: 'Onboarding' },
+  { name: 'Personal Info', route: '/onboarding/personal-info', category: 'Onboarding' },
+  { name: 'Fitness Info', route: '/onboarding/fitness-info', category: 'Onboarding' },
+  { name: 'Nutrition Goals', route: '/onboarding/nutrition-goals', category: 'Onboarding' },
+  { name: 'Health Connect', route: '/onboarding/health-connect', category: 'Onboarding' },
+  { name: 'Connect with Google', route: '/onboarding/connect-with-google', category: 'Onboarding' },
   { name: 'Test: Buttons', route: '/test/buttons', category: 'Test' },
   { name: 'Test: Cards', route: '/test/cards', category: 'Test' },
   { name: 'Test: Empty States', route: '/test/empty-states', category: 'Test' },
