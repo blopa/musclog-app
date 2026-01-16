@@ -299,7 +299,7 @@ function MacroInput({
 
   return (
     <View
-      className="rounded-xl border bg-bg-card p-4"
+      className="overflow-hidden rounded-xl border bg-bg-card p-4"
       style={{
         width: '47%',
         borderColor: isFocused ? color : theme.colors.background.white10,
