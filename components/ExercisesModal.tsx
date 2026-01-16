@@ -246,7 +246,7 @@ export default function ExercisesModal({ visible, onClose }: ExercisesModalProps
               </View>
               <TextInput
                 className="flex-1 border-none bg-bg-card px-3 py-3 text-base font-normal text-text-primary"
-                placeholder="Search exercises..."
+                placeholder={t('exercises.searchPlaceholder')}
                 placeholderTextColor="#95c6b0"
                 value={searchQuery}
                 onChangeText={setSearchQuery}

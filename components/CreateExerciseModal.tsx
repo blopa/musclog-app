@@ -3,6 +3,7 @@ import { View, Text, ScrollView, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ChevronLeft, Camera, Link, ChevronDown, Dumbbell } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { TextInput } from './theme/TextInput';
 import { Button } from './theme/Button';
@@ -10,23 +11,9 @@ import { ToggleInput } from './theme/ToggleInput';
 import { BottomPopUpMenu } from './BottomPopUpMenu';
 import { FullScreenModal } from './modals/FullScreenModal';
 
-const PRIMARY_MUSCLES = [
-  { value: 'chest', label: 'Chest' },
-  { value: 'shoulders', label: 'Shoulders' },
-  { value: 'back', label: 'Back' },
-  { value: 'legs', label: 'Legs' },
-  { value: 'arms', label: 'Arms' },
-  { value: 'core', label: 'Core' },
-];
-
-const SECONDARY_MUSCLES = [
-  { value: 'triceps', label: 'Triceps' },
-  { value: 'biceps', label: 'Biceps' },
-  { value: 'abs', label: 'Abs' },
-  { value: 'forearms', label: 'Forearms' },
-  { value: 'traps', label: 'Traps' },
-  { value: 'glutes', label: 'Glutes' },
-];
+// Muscle groups will be translated using useTranslation hook
+const PRIMARY_MUSCLES_KEYS = ['chest', 'shoulders', 'back', 'legs', 'arms', 'core'];
+const SECONDARY_MUSCLES_KEYS = ['triceps', 'biceps', 'abs', 'forearms', 'traps', 'glutes'];
 
 type CreateExerciseModalProps = {
   visible: boolean;
@@ -34,6 +21,7 @@ type CreateExerciseModalProps = {
 };
 
 export default function CreateExerciseModal({ visible, onClose }: CreateExerciseModalProps) {
+  const { t } = useTranslation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const [exerciseName, setExerciseName] = useState('');
@@ -41,6 +29,16 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
   const [secondaryMuscles, setSecondaryMuscles] = useState<string[]>(['abs', 'traps']);
   const [isBodyweightOnly, setIsBodyweightOnly] = useState(false);
   const [isPickerVisible, setIsPickerVisible] = useState(false);
+
+  const PRIMARY_MUSCLES = PRIMARY_MUSCLES_KEYS.map((value) => ({
+    value,
+    label: t(`exercises.createExercise.muscleGroups.primary.${value}`),
+  }));
+
+  const SECONDARY_MUSCLES = SECONDARY_MUSCLES_KEYS.map((value) => ({
+    value,
+    label: t(`exercises.createExercise.muscleGroups.secondary.${value}`),
+  }));
 
   const handleBack = () => {
     router.back();
@@ -78,8 +76,8 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
   };
 
   const primaryMuscleLabel = primaryMuscle
-    ? PRIMARY_MUSCLES.find((m) => m.value === primaryMuscle)?.label || 'Select primary muscle'
-    : 'Select primary muscle';
+    ? PRIMARY_MUSCLES.find((m) => m.value === primaryMuscle)?.label || t('exercises.createExercise.selectPrimaryMuscle')
+    : t('exercises.createExercise.selectPrimaryMuscle');
 
   const pickerMenuItems = PRIMARY_MUSCLES.map((muscle) => ({
     icon: Dumbbell,
@@ -91,23 +89,23 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
   }));
 
   return (
-    <FullScreenModal visible={visible} onClose={onClose} title={'Create exercise'}>
+    <FullScreenModal visible={visible} onClose={onClose} title={t('exercises.createExercise.title')}>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="px-4 py-2" style={{ gap: 24 }}>
           {/* Exercise Name */}
           <View>
             <TextInput
-              label="Exercise Name"
+              label={t('exercises.createExercise.exerciseName')}
               value={exerciseName}
               onChangeText={setExerciseName}
-              placeholder="e.g. Incline Dumbbell Press"
+              placeholder={t('exercises.createExercise.exerciseNamePlaceholder')}
             />
           </View>
 
           {/* Muscle Target Section */}
           <View style={{ gap: 16 }}>
             <Text className="text-lg font-bold tracking-tight text-text-primary">
-              Muscle Target
+              {t('exercises.createExercise.muscleTarget')}
             </Text>
 
             {/* Primary Muscle Group */}
@@ -115,7 +113,7 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
               <Pressable onPress={() => setIsPickerVisible(true)}>
                 <View className="flex-col gap-2">
                   <Text className="ml-1 text-sm font-medium text-text-secondary">
-                    Primary Muscle Group
+                    {t('exercises.createExercise.primaryMuscleGroup')}
                   </Text>
                   <View className="h-14 w-full flex-row items-center justify-between rounded-lg border border-white/10 bg-bg-card px-4">
                     <Text
@@ -136,7 +134,7 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
             {/* Secondary Muscles */}
             <View style={{ gap: 8 }}>
               <Text className="ml-1 text-sm font-medium text-text-secondary">
-                Secondary Muscles
+                {t('exercises.createExercise.secondaryMuscles')}
               </Text>
               <View className="flex-row flex-wrap gap-2">
                 {SECONDARY_MUSCLES.map((muscle) => {
@@ -176,8 +174,8 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
             items={[
               {
                 key: 'bodyweight',
-                label: 'Bodyweight Only',
-                subtitle: "This exercise doesn't require equipment",
+                label: t('exercises.createExercise.bodyweightOnly'),
+                subtitle: t('exercises.createExercise.bodyweightOnlySubtitle'),
                 value: isBodyweightOnly,
                 onValueChange: setIsBodyweightOnly,
               },
@@ -186,19 +184,19 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
 
           {/* Add Visuals Section */}
           <View style={{ gap: 12 }}>
-            <Text className="text-lg font-bold tracking-tight text-text-primary">Add Visuals</Text>
+            <Text className="text-lg font-bold tracking-tight text-text-primary">{t('exercises.createExercise.addVisuals')}</Text>
             <View className="flex-row gap-4">
               <Pressable
                 onPress={handleUploadImage}
                 className="flex-1 flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-white/10 bg-bg-card/30 p-4 active:border-accent-primary active:bg-accent-primary/5">
                 <Camera size={24} color={theme.colors.text.tertiary} />
-                <Text className="text-xs font-medium text-text-secondary">Upload Image</Text>
+                <Text className="text-xs font-medium text-text-secondary">{t('exercises.createExercise.uploadImage')}</Text>
               </Pressable>
               <Pressable
                 onPress={handleVideoURL}
                 className="flex-1 flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-white/10 bg-bg-card/30 p-4 active:border-accent-primary active:bg-accent-primary/5">
                 <Link size={24} color={theme.colors.text.tertiary} />
-                <Text className="text-xs font-medium text-text-secondary">Video URL</Text>
+                <Text className="text-xs font-medium text-text-secondary">{t('exercises.createExercise.videoURL')}</Text>
               </Pressable>
             </View>
           </View>
@@ -217,7 +215,7 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
           backgroundColor: theme.colors.background.primary,
         }}>
         <Button
-          label="Create Exercise"
+          label={t('exercises.createExercise.createButton')}
           onPress={handleCreateExercise}
           variant="gradientCta"
           size="md"
@@ -229,7 +227,7 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
       <BottomPopUpMenu
         visible={isPickerVisible}
         onClose={() => setIsPickerVisible(false)}
-        title="Primary Muscle Group"
+        title={t('exercises.createExercise.primaryMuscleGroup')}
         items={pickerMenuItems}
       />
     </FullScreenModal>

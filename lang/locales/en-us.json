@@ -766,5 +766,61 @@
   "editScreenInfo": {
     "title": "Open up the code for this screen:",
     "description": "Change any of the text, save the file, and your app will automatically update."
+  },
+  "exercises": {
+    "title": "Exercises",
+    "searchPlaceholder": "Search exercises...",
+    "createExercise": {
+      "title": "Create exercise",
+      "exerciseName": "Exercise Name",
+      "exerciseNamePlaceholder": "e.g. Incline Dumbbell Press",
+      "muscleTarget": "Muscle Target",
+      "primaryMuscleGroup": "Primary Muscle Group",
+      "secondaryMuscles": "Secondary Muscles",
+      "selectPrimaryMuscle": "Select primary muscle",
+      "bodyweightOnly": "Bodyweight Only",
+      "bodyweightOnlySubtitle": "This exercise doesn't require equipment",
+      "addVisuals": "Add Visuals",
+      "uploadImage": "Upload Image",
+      "videoURL": "Video URL",
+      "createButton": "Create Exercise",
+      "muscleGroups": {
+        "primary": {
+          "chest": "Chest",
+          "shoulders": "Shoulders",
+          "back": "Back",
+          "legs": "Legs",
+          "arms": "Arms",
+          "core": "Core"
+        },
+        "secondary": {
+          "triceps": "Triceps",
+          "biceps": "Biceps",
+          "abs": "Abs",
+          "forearms": "Forearms",
+          "traps": "Traps",
+          "glutes": "Glutes"
+        }
+      }
+    },
+    "viewExercise": {
+      "watchTechnique": "WATCH TECHNIQUE",
+      "primaryMuscle": "Primary Muscle",
+      "equipment": "Equipment",
+      "mechanic": "Mechanic",
+      "personalBest": "Personal Best",
+      "avgFrequency": "Avg. Frequency",
+      "workoutsUsingThis": "Workouts Using This",
+      "templates": "TEMPLATES",
+      "exerciseOptions": "Exercise Options",
+      "editExercise": "Edit Exercise",
+      "editExerciseDescription": "Modify exercise details",
+      "share": "Share",
+      "shareDescription": "Share this exercise",
+      "duplicate": "Duplicate",
+      "duplicateDescription": "Create a copy of this exercise",
+      "delete": "Delete",
+      "deleteDescription": "Remove this exercise permanently"
+    }
   }
 }

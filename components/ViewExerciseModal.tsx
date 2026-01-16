@@ -13,6 +13,7 @@ import {
 } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { BottomPopUpMenu, BottomPopUpMenuItem } from './BottomPopUpMenu';
 import { SettingsCard } from './cards/SettingsCard';
@@ -59,6 +60,7 @@ type ViewExerciseModalProps = {
 };
 
 export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModalProps) {
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const [isMenuVisible, setIsMenuVisible] = useState(false);
 
@@ -85,8 +87,8 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
       icon: Pencil,
       iconColor: theme.colors.accent.secondary, // Vibrant emerald/teal green
       iconBgColor: theme.colors.background.iconDarker, // Lighter shade of dark green
-      title: 'Edit Exercise',
-      description: 'Modify exercise details',
+      title: t('exercises.viewExercise.editExercise'),
+      description: t('exercises.viewExercise.editExerciseDescription'),
       onPress: () => {
         console.log('Edit exercise');
       },
@@ -95,8 +97,8 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
       icon: Share2,
       iconColor: theme.colors.accent.secondary,
       iconBgColor: theme.colors.background.iconDarker,
-      title: 'Share',
-      description: 'Share this exercise',
+      title: t('exercises.viewExercise.share'),
+      description: t('exercises.viewExercise.shareDescription'),
       onPress: () => {
         console.log('Share exercise');
       },
@@ -105,8 +107,8 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
       icon: Copy,
       iconColor: theme.colors.accent.secondary,
       iconBgColor: theme.colors.background.iconDarker,
-      title: 'Duplicate',
-      description: 'Create a copy of this exercise',
+      title: t('exercises.viewExercise.duplicate'),
+      description: t('exercises.viewExercise.duplicateDescription'),
       onPress: () => {
         console.log('Duplicate exercise');
       },
@@ -115,8 +117,8 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
       icon: Trash2,
       iconColor: theme.colors.status.error,
       iconBgColor: theme.colors.status.error20,
-      title: 'Delete',
-      description: 'Remove this exercise permanently',
+      title: t('exercises.viewExercise.delete'),
+      description: t('exercises.viewExercise.deleteDescription'),
       titleColor: theme.colors.status.error,
       descriptionColor: theme.colors.status.error,
       onPress: () => {
@@ -164,7 +166,7 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
             className="absolute bottom-0 left-0 right-0"
             style={{ padding: 24, zIndex: 5 }}>
             <Button
-              label="WATCH TECHNIQUE"
+              label={t('exercises.viewExercise.watchTechnique')}
               onPress={handleWatchTechnique}
               icon={Video}
               iconColor="#34d399"
@@ -184,7 +186,7 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
                 end={{ x: 1, y: 0 }}
                 className="flex-row items-center gap-2 rounded-full px-4 py-2">
                 <Text className="text-xs font-medium uppercase tracking-wide text-white opacity-80">
-                  Primary Muscle
+                  {t('exercises.viewExercise.primaryMuscle')}
                 </Text>
                 <Text className="font-bold text-white">{EXERCISE_DATA.primaryMuscle}</Text>
               </LinearGradient>
@@ -195,7 +197,7 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
                   borderColor: '#374151',
                 }}>
                 <Text className="text-xs font-medium uppercase tracking-wide text-white opacity-80">
-                  Equipment
+                  {t('exercises.viewExercise.equipment')}
                 </Text>
                 <Text className="font-bold text-white">{EXERCISE_DATA.equipment}</Text>
               </View>
@@ -206,7 +208,7 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
                   borderColor: '#374151',
                 }}>
                 <Text className="text-xs font-medium uppercase tracking-wide text-white opacity-80">
-                  Mechanic
+                  {t('exercises.viewExercise.mechanic')}
                 </Text>
                 <Text className="font-bold text-white">{EXERCISE_DATA.mechanic}</Text>
               </View>
@@ -219,7 +221,7 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
           <GenericCard variant="default" size="sm">
             <View className="p-6">
               <Text className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">
-                Personal Best
+                {t('exercises.viewExercise.personalBest')}
               </Text>
               <View className="flex-row items-baseline gap-2">
                 <Text className="text-5xl font-bold" style={{ color: '#34d399' }}>
@@ -232,7 +234,7 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
           <GenericCard variant="default" size="sm">
             <View className="p-6">
               <Text className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">
-                Avg. Frequency
+                {t('exercises.viewExercise.avgFrequency')}
               </Text>
               <View className="flex-row items-baseline gap-2">
                 <Text className="text-5xl font-bold" style={{ color: '#818cf8' }}>
@@ -247,12 +249,12 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
         {/* Workouts Section */}
         <View className="px-6 py-4">
           <View className="mb-4 flex-row items-center justify-between">
-            <Text className="text-2xl font-bold text-white">Workouts Using This</Text>
+            <Text className="text-2xl font-bold text-white">{t('exercises.viewExercise.workoutsUsingThis')}</Text>
             <View
               className="rounded-full px-3 py-1.5"
               style={{ backgroundColor: 'rgba(52, 211, 153, 0.2)' }}>
               <Text className="text-xs font-bold" style={{ color: '#34d399' }}>
-                3 TEMPLATES
+                {EXERCISE_DATA.workouts.length} {t('exercises.viewExercise.templates')}
               </Text>
             </View>
           </View>
@@ -298,7 +300,7 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
         visible={isMenuVisible}
         onClose={() => setIsMenuVisible(false)}
         title={EXERCISE_DATA.name}
-        subtitle="Exercise Options"
+        subtitle={t('exercises.viewExercise.exerciseOptions')}
         items={menuItems}
       />
     </FullScreenModal>
