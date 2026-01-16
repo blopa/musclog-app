@@ -14,12 +14,10 @@ import {
   IceCream,
   Wine,
   Waves,
-  Save,
   ChevronDown,
   PlusCircle,
 } from 'lucide-react-native';
 import { theme } from '../../theme';
-import { LinearGradient } from 'expo-linear-gradient';
 import { FullScreenModal } from './FullScreenModal';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../theme/Button';
@@ -302,7 +300,7 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
               )}
             </View>
           </View>
-          <View className="gap-3 pb-8 pt-4">
+          <View className="gap-3 pb-8 pt-4 px-4">
             <Button
               label={t('common.save')}
               variant="gradientCta"
