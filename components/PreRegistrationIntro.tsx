@@ -105,7 +105,7 @@ export default function PreRegistrationIntro() {
                 r="5"
                 fill="none"
                 stroke="url(#userGradient)"
-                strokeWidth="1.5"
+                strokeWidth={theme.strokeWidth.thinMedium}
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
@@ -114,7 +114,7 @@ export default function PreRegistrationIntro() {
                 d="M20 21a8 8 0 0 0-16 0"
                 fill="none"
                 stroke="url(#userGradient)"
-                strokeWidth="1.5"
+                strokeWidth={theme.strokeWidth.thinMedium}
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />

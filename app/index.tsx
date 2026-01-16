@@ -175,7 +175,10 @@ export default function HomeScreen() {
           {isLoadingRecent ? (
             <View className="gap-3">
               {[1, 2].map((i) => (
-                <View key={i} className="rounded-lg border border-white/5 bg-bg-card p-4">
+                <View
+                  key={i}
+                  className="rounded-lg border bg-bg-card p-4"
+                  style={{ borderColor: theme.colors.background.white5 }}>
                   <View className="flex-row items-center gap-3">
                     <SkeletonLoader
                       width={theme.size['12']}

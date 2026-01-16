@@ -60,7 +60,7 @@ export function RestTimer({ restTime, rotationAnim }: RestTimerProps) {
             fill="none"
             stroke={theme.colors.border.accent}
             strokeOpacity={theme.colors.opacity.medium}
-            strokeWidth="4"
+            strokeWidth={theme.strokeWidth.thick4}
           />
           {/* Progress circle */}
           <Circle
@@ -69,7 +69,7 @@ export function RestTimer({ restTime, rotationAnim }: RestTimerProps) {
             r="46"
             fill="none"
             stroke={theme.colors.accent.secondary}
-            strokeWidth="4"
+            strokeWidth={theme.strokeWidth.thick4}
             strokeLinecap="round"
             strokeDasharray={circumference}
             strokeDashoffset={strokeDashoffset}

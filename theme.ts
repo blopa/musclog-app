@@ -447,10 +447,13 @@ export const theme = {
   // Stroke widths (for icons and SVG)
   strokeWidth: {
     none: 0, // No stroke
+    extraThin: 0.5, // 0.5px stroke width
     thin: 1,
+    thinMedium: 1.5, // 1.5px stroke width
     medium: 2, // 2px stroke width
     normal: 2.5,
     thick: 3,
+    thick4: 4, // 4px stroke width
   },
 
   shadows: {

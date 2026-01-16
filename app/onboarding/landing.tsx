@@ -77,8 +77,9 @@ export default function LandingScreen() {
             <View className="mt-4 items-center gap-2">
               {/* App Name */}
               <Text
-                className="font-black leading-none tracking-tight text-white"
+                className="font-black leading-none tracking-tight"
                 style={{
+                  color: theme.colors.text.white,
                   fontSize: theme.typography.fontSize['4xl'],
                   letterSpacing: theme.typography.letterSpacing.tight,
                   lineHeight: theme.typography.fontSize['4xl'] * 1.1,
@@ -88,8 +89,9 @@ export default function LandingScreen() {
 
               {/* Tagline */}
               <Text
-                className="font-medium tracking-wide text-gray-400"
+                className="font-medium tracking-wide"
                 style={{
+                  color: theme.colors.text.gray400,
                   fontSize: theme.typography.fontSize.lg,
                   letterSpacing: theme.typography.letterSpacing.wide,
                 }}>
@@ -98,8 +100,9 @@ export default function LandingScreen() {
 
               {/* Description */}
               <Text
-                className="mt-2 text-center text-gray-500"
+                className="mt-2 text-center"
                 style={{
+                  color: theme.colors.text.gray500,
                   fontSize: theme.typography.fontSize.sm,
                   maxWidth: theme.maxWidth.md,
                   lineHeight: theme.typography.fontSize.sm * 1.5,
@@ -132,7 +135,9 @@ export default function LandingScreen() {
                 // Navigate to login
                 console.log('Navigate to login');
               }}>
-              <Text className="text-sm font-medium text-gray-400">
+              <Text
+                className="text-sm font-medium"
+                style={{ color: theme.colors.text.gray400 }}>
                 {t('onboarding.landing.alreadyHaveAccount')}{' '}
                 <Text style={{ color: theme.colors.status.emeraldLight }}>
                   {t('onboarding.landing.logIn')}
@@ -142,8 +147,11 @@ export default function LandingScreen() {
 
             {/* Terms / Footer Text */}
             <Text
-              className="mt-2 text-center text-gray-500"
-              style={{ fontSize: theme.typography.fontSize['10'] }}>
+              className="mt-2 text-center"
+              style={{
+                color: theme.colors.text.gray500,
+                fontSize: theme.typography.fontSize['10'],
+              }}>
               {t('onboarding.landing.termsAndPrivacy')}
             </Text>
           </View>

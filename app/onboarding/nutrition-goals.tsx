@@ -3,6 +3,7 @@ import { useState, useMemo } from 'react';
 import { NutritionGoalsBody } from '../../components/NutritionGoalsBody';
 import { View, Text, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { theme } from '../../theme';
 
 export default function NutritionGoalsScreen() {
   const { t } = useTranslation();
@@ -31,7 +32,9 @@ export default function NutritionGoalsScreen() {
   return (
     <ScrollView>
       <View className="px-6 pb-2 pt-4">
-        <Text className="text-2xl font-bold tracking-tight text-white">
+        <Text
+          className="text-2xl font-bold tracking-tight"
+          style={{ color: theme.colors.text.white }}>
           {t('nutritionGoals.title')}
         </Text>
       </View>

@@ -207,7 +207,7 @@ export default function HealthConnectScreen() {
               cy="200"
               r="140"
               stroke="url(#lineGradient)"
-              strokeWidth="0.5"
+              strokeWidth={theme.strokeWidth.extraThin}
               fill="none"
               opacity="0.3"
             />

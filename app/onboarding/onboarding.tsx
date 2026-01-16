@@ -101,8 +101,11 @@ function OnboardingStepThree({ imageUrl, title, description, badge }: Onboarding
 
         {/* Main Image Card - TODO move to separate file maybe? */}
         <View
-          className="relative z-10 h-full w-full overflow-hidden rounded-3xl border border-white/10"
-          style={theme.shadows.lg}>
+          className="relative z-10 h-full w-full overflow-hidden rounded-3xl border"
+          style={{
+            ...theme.shadows.lg,
+            borderColor: theme.colors.background.white10,
+          }}>
           <ImageBackground source={{ uri: imageUrl }} className="h-full w-full" resizeMode="cover">
             {/* Gradient Overlay */}
             <LinearGradient
@@ -114,7 +117,9 @@ function OnboardingStepThree({ imageUrl, title, description, badge }: Onboarding
 
             {/* Floating Badge Overlay */}
             {badge && (
-              <View className="absolute bottom-6 left-6 right-6 flex-row items-center gap-4 rounded-xl border border-white/10 p-4">
+              <View
+                className="absolute bottom-6 left-6 right-6 flex-row items-center gap-4 rounded-xl border p-4"
+                style={{ borderColor: theme.colors.background.white10 }}>
                 <LinearGradient
                   colors={theme.colors.gradients.whiteSubtle}
                   style={{
@@ -138,7 +143,11 @@ function OnboardingStepThree({ imageUrl, title, description, badge }: Onboarding
                   />
                 </View>
                 <View className="relative z-10 flex-1 flex-col">
-                  <Text className="text-sm font-bold text-white">{badge.title}</Text>
+                  <Text
+                    className="text-sm font-bold"
+                    style={{ color: theme.colors.text.white }}>
+                    {badge.title}
+                  </Text>
                   <Text className="text-xs" style={{ color: theme.colors.overlay.white70 }}>
                     {badge.subtitle}
                   </Text>
@@ -200,8 +209,11 @@ function OnboardingStepTwo({ imageUrl, title, description, badge }: OnboardingBo
 
         {/* Main Image Card */}
         <View
-          className="relative z-10 h-full w-full overflow-hidden rounded-3xl border border-white/10"
-          style={theme.shadows.lg}>
+          className="relative z-10 h-full w-full overflow-hidden rounded-3xl border"
+          style={{
+            ...theme.shadows.lg,
+            borderColor: theme.colors.background.white10,
+          }}>
           <ImageBackground source={{ uri: imageUrl }} className="h-full w-full" resizeMode="cover">
             {/* Gradient Overlay */}
             <LinearGradient
@@ -213,7 +225,9 @@ function OnboardingStepTwo({ imageUrl, title, description, badge }: OnboardingBo
 
             {/* Floating Badge Overlay */}
             {badge && (
-              <View className="absolute bottom-6 left-6 right-6 flex-row items-center gap-4 rounded-xl border border-white/10 p-4">
+              <View
+                className="absolute bottom-6 left-6 right-6 flex-row items-center gap-4 rounded-xl border p-4"
+                style={{ borderColor: theme.colors.background.white10 }}>
                 <LinearGradient
                   colors={theme.colors.gradients.whiteSubtle}
                   style={{
@@ -237,7 +251,11 @@ function OnboardingStepTwo({ imageUrl, title, description, badge }: OnboardingBo
                   />
                 </View>
                 <View className="relative z-10 flex-1 flex-col">
-                  <Text className="text-sm font-bold text-white">{badge.title}</Text>
+                  <Text
+                    className="text-sm font-bold"
+                    style={{ color: theme.colors.text.white }}>
+                    {badge.title}
+                  </Text>
                   <Text className="text-xs" style={{ color: theme.colors.overlay.white70 }}>
                     {badge.subtitle}
                   </Text>
@@ -299,8 +317,11 @@ function OnboardingStepOne({ imageUrl, title, description, badge }: OnboardingBo
 
         {/* Main Image Card */}
         <View
-          className="relative z-10 h-full w-full overflow-hidden rounded-3xl border border-white/10"
-          style={theme.shadows.lg}>
+          className="relative z-10 h-full w-full overflow-hidden rounded-3xl border"
+          style={{
+            ...theme.shadows.lg,
+            borderColor: theme.colors.background.white10,
+          }}>
           <ImageBackground source={{ uri: imageUrl }} className="h-full w-full" resizeMode="cover">
             {/* Gradient Overlay */}
             <LinearGradient
@@ -312,7 +333,9 @@ function OnboardingStepOne({ imageUrl, title, description, badge }: OnboardingBo
 
             {/* Floating Badge Overlay */}
             {badge && (
-              <View className="absolute bottom-6 left-6 right-6 flex-row items-center gap-4 rounded-xl border border-white/10 p-4">
+              <View
+                className="absolute bottom-6 left-6 right-6 flex-row items-center gap-4 rounded-xl border p-4"
+                style={{ borderColor: theme.colors.background.white10 }}>
                 <LinearGradient
                   colors={theme.colors.gradients.whiteSubtle}
                   style={{
@@ -336,7 +359,11 @@ function OnboardingStepOne({ imageUrl, title, description, badge }: OnboardingBo
                   />
                 </View>
                 <View className="relative z-10 flex-1 flex-col">
-                  <Text className="text-sm font-bold text-white">{badge.title}</Text>
+                  <Text
+                    className="text-sm font-bold"
+                    style={{ color: theme.colors.text.white }}>
+                    {badge.title}
+                  </Text>
                   <Text className="text-xs" style={{ color: theme.colors.overlay.white70 }}>
                     {badge.subtitle}
                   </Text>
