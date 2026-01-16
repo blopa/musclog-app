@@ -1,9 +1,5 @@
-import React, { useState } from 'react';
-import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Check } from 'lucide-react-native';
 import { FullScreenModal } from './FullScreenModal';
-import { Button } from '../theme/Button';
 import { EditPersonalInfoBody } from '../EditPersonalInfoBody';
 
 type EditPersonalInfoModalProps = {

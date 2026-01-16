@@ -6,7 +6,6 @@ import {
   ChevronRight,
   MoreVertical,
   Video,
-  Plus,
   Pencil,
   Copy,
   Share2,
@@ -17,10 +16,12 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '../theme';
-import { BottomPopUpMenu, BottomPopUpMenuItem } from '../components/BottomPopUpMenu';
-import { SettingsCard } from '../components/cards/SettingsCard';
-import { GenericCard } from '../components/cards/GenericCard';
-import { Button } from '../components/theme/Button';
+import { BottomPopUpMenu, BottomPopUpMenuItem } from './BottomPopUpMenu';
+import { SettingsCard } from './cards/SettingsCard';
+import { GenericCard } from './cards/GenericCard';
+import { Button } from './theme/Button';
+import { FullScreenModal } from './modals/FullScreenModal';
+import { PersonalInfo } from './modals/EditPersonalInfoModal';
 
 // Mock data - replace with actual data from props or route params
 const EXERCISE_DATA = {
@@ -55,8 +56,12 @@ const EXERCISE_DATA = {
   ],
 };
 
-// TODO: change this to use FullScreenModal instead
-export default function ViewExerciseScreen() {
+type ViewExerciseModalProps = {
+  visible: boolean;
+  onClose: () => void;
+};
+
+export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModalProps) {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const [isMenuVisible, setIsMenuVisible] = useState(false);
@@ -129,7 +134,7 @@ export default function ViewExerciseScreen() {
   ];
 
   return (
-    <View className="flex-1" style={{ backgroundColor: '#1a2e2a' }}>
+    <FullScreenModal visible={visible} onClose={onClose} title={'View exercise'}>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Hero Section with Background Image */}
         <View style={{ height: 384, overflow: 'hidden', position: 'relative' }}>
@@ -311,6 +316,6 @@ export default function ViewExerciseScreen() {
         subtitle="Exercise Options"
         items={menuItems}
       />
-    </View>
+    </FullScreenModal>
   );
 }

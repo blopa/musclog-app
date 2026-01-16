@@ -4,10 +4,11 @@ import { useRouter } from 'expo-router';
 import { ChevronLeft, Camera, Link, ChevronDown, Dumbbell } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '../theme';
-import { TextInput } from '../components/theme/TextInput';
-import { Button } from '../components/theme/Button';
-import { ToggleInput } from '../components/theme/ToggleInput';
-import { BottomPopUpMenu } from '../components/BottomPopUpMenu';
+import { TextInput } from './theme/TextInput';
+import { Button } from './theme/Button';
+import { ToggleInput } from './theme/ToggleInput';
+import { BottomPopUpMenu } from './BottomPopUpMenu';
+import { FullScreenModal } from './modals/FullScreenModal';
 
 const PRIMARY_MUSCLES = [
   { value: 'chest', label: 'Chest' },
@@ -27,8 +28,12 @@ const SECONDARY_MUSCLES = [
   { value: 'glutes', label: 'Glutes' },
 ];
 
-// TODO: change this to use FullScreenModal instead
-export default function CreateExerciseScreen() {
+type CreateExerciseModalProps = {
+  visible: boolean;
+  onClose: () => void;
+};
+
+export default function CreateExerciseModal({ visible, onClose }: CreateExerciseModalProps) {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const [exerciseName, setExerciseName] = useState('');
@@ -86,7 +91,7 @@ export default function CreateExerciseScreen() {
   }));
 
   return (
-    <View className="flex-1" style={{ backgroundColor: theme.colors.background.primary }}>
+    <FullScreenModal visible={visible} onClose={onClose} title={'Create exercise'}>
       {/* Top Navigation */}
       <View
         className="flex-row items-center px-4"
@@ -245,6 +250,6 @@ export default function CreateExerciseScreen() {
         title="Primary Muscle Group"
         items={pickerMenuItems}
       />
-    </View>
+    </FullScreenModal>
   );
 }
