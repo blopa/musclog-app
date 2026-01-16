@@ -35,6 +35,7 @@ import { CenteredModal } from '../../components/modals/CenteredModal';
 import { CoachModal } from '../../components/modals/CoachModal';
 import { FullScreenModal } from '../../components/modals/FullScreenModal';
 import ExercisesModal from '../../components/ExercisesModal';
+import ViewExerciseModal from '../../components/ViewExerciseModal';
 
 export default function ModalsTestScreen() {
   // Nutrition Goals Modal
@@ -132,6 +133,9 @@ export default function ModalsTestScreen() {
 
   // Exercises Modal
   const [isExercisesModalVisible, setIsExercisesModalVisible] = useState(false);
+
+  // View Exercise Modal
+  const [isViewExerciseVisible, setIsViewExerciseVisible] = useState(false);
 
   const handleSaveGoals = (goals: NutritionGoals) => {
     console.log('Goals saved:', goals);
@@ -647,6 +651,16 @@ export default function ModalsTestScreen() {
             />
           </View>
 
+          {/* View Exercise Modal */}
+          <View className="mb-6">
+            <Button
+              label="Open View Exercise Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsViewExerciseVisible(true)}
+            />
+          </View>
+
           {/* Bottom spacing */}
           <View className="h-8" />
         </View>
@@ -977,6 +991,11 @@ export default function ModalsTestScreen() {
       <ExercisesModal
         visible={isExercisesModalVisible}
         onClose={() => setIsExercisesModalVisible(false)}
+      />
+
+      <ViewExerciseModal
+        visible={isViewExerciseVisible}
+        onClose={() => setIsViewExerciseVisible(false)}
       />
     </SafeAreaView>
   );

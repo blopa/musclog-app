@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, Pressable, Image } from 'react-native';
-import { useRouter } from 'expo-router';
 import {
-  ChevronLeft,
   ChevronRight,
   MoreVertical,
   Video,
@@ -21,7 +19,6 @@ import { SettingsCard } from './cards/SettingsCard';
 import { GenericCard } from './cards/GenericCard';
 import { Button } from './theme/Button';
 import { FullScreenModal } from './modals/FullScreenModal';
-import { PersonalInfo } from './modals/EditPersonalInfoModal';
 
 // Mock data - replace with actual data from props or route params
 const EXERCISE_DATA = {
@@ -62,16 +59,11 @@ type ViewExerciseModalProps = {
 };
 
 export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModalProps) {
-  const router = useRouter();
   const insets = useSafeAreaInsets();
   const [isMenuVisible, setIsMenuVisible] = useState(false);
 
   // For now, using a placeholder image - replace with actual exercise image
   const backgroundImage = require('../assets/icon.png');
-
-  const handleBack = () => {
-    router.back();
-  };
 
   const handleWatchTechnique = () => {
     // Navigate to technique video or open modal
@@ -157,13 +149,8 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
           {/* Top Navigation */}
           <View
             className="absolute left-0 right-0 top-0 flex-row items-center justify-between"
-            style={{ paddingTop: insets.top + 16, paddingHorizontal: 16, zIndex: 10 }}>
-            <Pressable
-              onPress={handleBack}
-              className="h-10 w-10 items-center justify-center rounded-full"
-              style={{ backgroundColor: 'rgba(0, 0, 0, 0.4)' }}>
-              <ChevronLeft size={24} color="white" />
-            </Pressable>
+            style={{ paddingTop: insets.top + 16, paddingHorizontal: 16, zIndex: 10 }}
+          >
             <Pressable
               onPress={() => setIsMenuVisible(true)}
               className="h-10 w-10 items-center justify-center rounded-full"
