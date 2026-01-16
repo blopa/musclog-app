@@ -317,7 +317,7 @@ export function EditFitnessDetailsBody({
                       }`}>
                       <Icon
                         size={theme.iconSize.lg}
-                        color={isSelected ? 'black' : theme.colors.text.tertiary}
+                        color={isSelected ? theme.colors.text.black : theme.colors.text.tertiary}
                       />
                     </View>
                     <View className="flex-1">

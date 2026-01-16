@@ -147,7 +147,7 @@ export default function PreRegistrationIntro() {
               <TrendingUp
                 size={theme.iconSize['2xl']}
                 color={theme.colors.text.white}
-                strokeWidth={2.5}
+                strokeWidth={theme.strokeWidth.normal}
               />
             </LinearGradient>
           </View>
@@ -166,7 +166,7 @@ export default function PreRegistrationIntro() {
             <Dumbbell
               size={theme.iconSize.xl}
               color={theme.colors.status.emeraldLight}
-              strokeWidth={2.5}
+              strokeWidth={theme.strokeWidth.normal}
             />
           </View>
         </View>

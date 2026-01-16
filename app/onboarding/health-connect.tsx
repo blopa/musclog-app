@@ -98,7 +98,7 @@ export default function HealthConnectScreen() {
               <Shield
                 size={ILLUSTRATION_SIZE * 0.5}
                 color={theme.colors.text.white}
-                strokeWidth={2}
+                strokeWidth={theme.strokeWidth.medium}
               />
             </LinearGradient>
           </View>
@@ -190,16 +190,16 @@ export default function HealthConnectScreen() {
             </Defs>
             <Path
               d="M120 100C160 80 240 80 280 120"
-              stroke="white"
+              stroke={theme.colors.text.white}
               strokeDasharray="4 4"
-              strokeWidth="1"
+              strokeWidth={theme.strokeWidth.thin}
               fill="none"
             />
             <Path
               d="M300 280C260 320 180 340 100 280"
-              stroke="white"
+              stroke={theme.colors.text.white}
               strokeDasharray="4 4"
-              strokeWidth="1"
+              strokeWidth={theme.strokeWidth.thin}
               fill="none"
             />
             <Circle

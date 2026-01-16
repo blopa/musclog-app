@@ -21,7 +21,7 @@ export function HealthCategoryCard({
       <GenericCard variant="card" size="sm">
         <View className="flex-row items-center gap-3 p-3">
           <View className="rounded-lg p-2" style={{ backgroundColor }}>
-            <Icon size={theme.iconSize.lg} color={iconColor} strokeWidth={2} />
+            <Icon size={theme.iconSize.lg} color={iconColor} strokeWidth={theme.strokeWidth.medium} />
           </View>
           <Text className="text-sm font-medium text-white">{label}</Text>
         </View>

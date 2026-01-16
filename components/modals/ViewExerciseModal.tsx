@@ -276,8 +276,8 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
                     style={{ borderRadius: theme.borderRadius['2xl'] }}>
                     <workout.icon
                       size={theme.iconSize['3xl']}
-                      color="white"
-                      fill={workout.id === '2' ? 'white' : 'none'}
+                      color={theme.colors.text.white}
+                      fill={workout.id === '2' ? theme.colors.text.white : 'none'}
                     />
                   </LinearGradient>
                 }

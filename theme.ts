@@ -439,6 +439,7 @@ export const theme = {
   strokeWidth: {
     none: 0, // No stroke
     thin: 1,
+    medium: 2, // 2px stroke width
     normal: 2.5,
     thick: 3,
   },

@@ -48,7 +48,7 @@ export function EditPersonalInfoBody({ onSave, initialData }: EditPersonalInfoBo
           <Pressable
             className="absolute bottom-0 right-0 h-10 w-10 items-center justify-center rounded-full border-4 border-bg-primary bg-accent-primary active:scale-110"
             onPress={() => console.log('Change photo')}>
-            <Camera size={theme.iconSize.lg} color="black" />
+            <Camera size={theme.iconSize.lg} color={theme.colors.text.black} />
           </Pressable>
         </View>
         <Pressable className="mt-4" onPress={() => console.log('Change photo')}>
