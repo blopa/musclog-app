@@ -140,7 +140,7 @@ export function EditFitnessDetailsBody({
       description: t('editFitnessDetails.fitnessGoalDescriptions.endurance'),
       icon: Timer,
       iconColor: theme.colors.status.info,
-      iconBgColor: 'rgba(59, 130, 246, 0.1)',
+      iconBgColor: theme.colors.status.info10,
     },
     {
       title: t('editFitnessDetails.fitnessGoalLabels.weightLoss'),

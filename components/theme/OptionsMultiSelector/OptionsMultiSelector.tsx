@@ -202,9 +202,9 @@ export function OptionsMultiSelector<T extends string | number>({
             style={{
               position: 'absolute',
               top: 0,
-              left: (indicatorWidth - 8) / 2,
-              width: 8,
-              height: 8,
+              left: (indicatorWidth - theme.size.sm) / 2,
+              width: theme.size.sm,
+              height: theme.size.sm,
               borderRadius: theme.borderRadius.xs,
               backgroundColor: lineColor,
               borderWidth: theme.borderWidth.medium,

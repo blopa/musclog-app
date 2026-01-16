@@ -21,7 +21,7 @@ export const GroupActionButton: React.FC<GroupActionButtonProps> = ({
         height: theme.iconSize.sm + 2,
         justifyContent: 'center',
         alignItems: 'center',
-        gap: 3,
+        gap: theme.spacing.gap.xs,
       }}>
       <View style={{ flexDirection: 'row', gap: theme.size.xs }}>
         <View

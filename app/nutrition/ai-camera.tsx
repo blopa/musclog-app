@@ -220,7 +220,7 @@ export default function AICameraScreen() {
               className="absolute left-0 right-0"
               style={{
                 top: '50%',
-                height: 1,
+                height: theme.borderWidth.thin,
                 backgroundColor: theme.colors.accent.primary40,
               }}
             />

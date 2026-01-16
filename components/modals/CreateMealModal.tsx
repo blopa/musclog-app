@@ -88,10 +88,10 @@ const MacroCard = ({
     <View
       style={{
         width: '100%',
-        height: 4,
+        height: theme.size.xs,
         backgroundColor: theme.colors.background.white10,
         borderRadius: theme.borderRadius.xs / 2,
-        marginTop: 8,
+        marginTop: theme.spacing.padding.sm,
         overflow: 'hidden',
       }}>
       <View
@@ -131,8 +131,8 @@ const MealMacrosSummary = ({
           position: 'absolute',
           top: -40,
           right: -40,
-          width: 160,
-          height: 160,
+          width: theme.size['160'],
+          height: theme.size['160'],
           backgroundColor: theme.colors.accent.primary20,
           borderRadius: theme.size['20'] * 4,
           opacity: theme.colors.opacity.medium50,
@@ -143,8 +143,8 @@ const MealMacrosSummary = ({
           position: 'absolute',
           bottom: -40,
           left: -40,
-          width: 160,
-          height: 160,
+          width: theme.size['160'],
+          height: theme.size['160'],
           backgroundColor: theme.colors.status.indigo20,
           borderRadius: theme.size['20'] * 4,
           opacity: theme.colors.opacity.medium50,
@@ -283,7 +283,7 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
           </Text>
           <View
             style={{
-              height: 56,
+              height: theme.components.button.height.md,
               backgroundColor: theme.colors.background.card,
               borderRadius: theme.borderRadius.md,
               borderWidth: isFocused ? 2 : 1,
@@ -396,8 +396,8 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
                       </Text>
                       <View
                         style={{
-                          width: 2,
-                          height: 2,
+                          width: theme.size.xs,
+                          height: theme.size.xs,
                           borderRadius: theme.size.xs / 4,
                           backgroundColor: theme.colors.text.tertiary,
                         }}
@@ -435,8 +435,8 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
               })}>
               <View
                 style={{
-                  width: 24,
-                  height: 24,
+                  width: theme.iconSize.xl,
+                  height: theme.iconSize.xl,
                   borderRadius: theme.borderRadius.md,
                   backgroundColor: theme.colors.background.cardDark,
                   alignItems: 'center',

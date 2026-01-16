@@ -101,7 +101,7 @@ export default function LandingScreen() {
                 className="mt-2 text-center text-gray-500"
                 style={{
                   fontSize: theme.typography.fontSize.sm,
-                  maxWidth: 280,
+                  maxWidth: theme.maxWidth.md,
                   lineHeight: theme.typography.fontSize.sm * 1.5,
                 }}>
                 Track your progress with data-driven insights and crush your fitness goals.

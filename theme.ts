@@ -570,9 +570,12 @@ export const theme = {
     '100': 100, // Common spacing/height value
     '120': 120, // Common spacing/height value
     '150': 150, // Common size value
-      '250': 250, // Common size value (for background glows)
-      '300': 300, // Common size value (for background glows)
-      '384': 384, // Common height value
+    '160': 160, // Common size value (for illustrations/glows)
+    '250': 250, // Common size value (for background glows)
+    '256': 256, // Common size value (for illustrations)
+    '280': 280, // Common max width value
+    '300': 300, // Common size value (for background glows)
+    '384': 384, // Common height value
     // Fractional sizes (using valid keys)
     half: 2, // 0.5 * 4 = 2px
     '1half': 6, // 1.5 * 4 = 6px

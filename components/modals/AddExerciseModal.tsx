@@ -139,7 +139,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
         {/* Search Bar */}
         <View
           className="mb-6 flex-row items-center rounded-xl border border-white/5 bg-bg-card px-4 py-3"
-          style={{ height: 56 }}>
+          style={{ height: theme.components.button.height.md }}>
           <Search size={20} color={theme.colors.text.tertiary} />
           <TextInput
             className="ml-3 flex-1 text-base text-text-primary"
@@ -226,7 +226,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
             </View>
           </View>
         </View>
-        <View style={{ height: 24 }} />
+        <View style={{ height: theme.spacing.padding.xl }} />
 
         <Button
           label={t('workouts.addExercise.addToWorkout')}

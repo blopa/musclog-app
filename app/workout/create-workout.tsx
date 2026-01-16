@@ -144,9 +144,9 @@ export default function CreateWorkoutScreen() {
             position: 'absolute',
             top: -100,
             right: -100,
-            width: 300,
-            height: 300,
-            borderRadius: 150,
+            width: theme.size['300'],
+            height: theme.size['300'],
+            borderRadius: theme.borderRadius['150'],
             backgroundColor: theme.colors.accent.primary20,
             opacity: theme.colors.opacity.lightDim,
           }}
@@ -156,9 +156,9 @@ export default function CreateWorkoutScreen() {
             position: 'absolute',
             bottom: -100,
             left: -100,
-            width: 250,
-            height: 250,
-            borderRadius: 125,
+            width: theme.size['250'],
+            height: theme.size['250'],
+            borderRadius: theme.borderRadius['125'],
             backgroundColor: theme.colors.status.indigo10,
             opacity: theme.colors.opacity.lightDim,
           }}
@@ -281,7 +281,7 @@ export default function CreateWorkoutScreen() {
                     fontSize: theme.typography.fontSize.lg,
                     fontWeight: theme.typography.fontWeight.medium,
                     color: theme.colors.text.primary,
-                    padding: 0,
+                    padding: theme.spacing.padding.xs,
                   }}
                 />
               </View>
@@ -311,7 +311,7 @@ export default function CreateWorkoutScreen() {
                     fontSize: theme.typography.fontSize.xs,
                     fontWeight: theme.typography.fontWeight.medium,
                     color: theme.colors.text.secondary,
-                    marginBottom: 4,
+                    marginBottom: theme.spacing.padding.xs,
                   }}>
                   {t('createWorkout.description')}
                 </Text>
@@ -327,8 +327,8 @@ export default function CreateWorkoutScreen() {
                   style={{
                     fontSize: theme.typography.fontSize.base,
                     color: theme.colors.text.primary,
-                    padding: 0,
-                    minHeight: 80,
+                    padding: theme.spacing.padding.xs,
+                    minHeight: theme.size['5xl'],
                     textAlignVertical: 'top',
                   }}
                 />
@@ -378,11 +378,11 @@ export default function CreateWorkoutScreen() {
 
             <Text
               style={{
-                fontSize: theme.typography.fontSize.xs,
-                color: theme.colors.text.secondary,
-                marginTop: theme.spacing.padding.md,
-                lineHeight: 18,
-              }}>
+                    fontSize: theme.typography.fontSize.xs,
+                    color: theme.colors.text.secondary,
+                    marginTop: theme.spacing.padding.md,
+                    lineHeight: theme.typography.fontSize.lg,
+                  }}>
               {t('createWorkout.volumeCalculation.description')}
             </Text>
           </View>

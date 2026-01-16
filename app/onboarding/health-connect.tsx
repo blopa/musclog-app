@@ -52,10 +52,10 @@ export default function HealthConnectScreen() {
           <View
             className="absolute rounded-full"
             style={{
-              width: 256,
-              height: 256,
-              left: -48,
-              top: -32,
+              width: theme.size['256'],
+              height: theme.size['256'],
+              left: -theme.size['48'],
+              top: -theme.size['32'],
               backgroundColor: theme.colors.status.indigo10,
               opacity: theme.colors.opacity.medium60,
             }}
@@ -63,10 +63,10 @@ export default function HealthConnectScreen() {
           <View
             className="absolute rounded-full"
             style={{
-              width: 256,
-              height: 256,
-              right: -48,
-              bottom: -32,
+              width: theme.size['256'],
+              height: theme.size['256'],
+              right: -theme.size['48'],
+              bottom: -theme.size['32'],
               backgroundColor: theme.colors.status.emerald20,
               opacity: theme.colors.opacity.medium60,
             }}
@@ -108,56 +108,56 @@ export default function HealthConnectScreen() {
           <View
             className="absolute items-center justify-center rounded-2xl border border-white/5"
             style={{
-              width: 56,
-              height: 56,
+              width: theme.size['56'],
+              height: theme.size['56'],
               top: '10%',
               left: '20%',
               backgroundColor: theme.colors.background.card,
               ...theme.shadows.lg,
             }}>
-            <Dumbbell size={24} color={theme.colors.status.indigoLight} strokeWidth={2} />
+            <Dumbbell size={theme.iconSize.xl} color={theme.colors.status.indigoLight} strokeWidth={theme.borderWidth.medium} />
           </View>
 
           {/* Top Right - Scale */}
           <View
             className="absolute items-center justify-center rounded-2xl border border-white/5"
             style={{
-              width: 48,
-              height: 48,
+              width: theme.size['48'],
+              height: theme.size['48'],
               top: '15%',
               right: '15%',
               backgroundColor: theme.colors.background.card,
               ...theme.shadows.lg,
             }}>
-            <Scale size={20} color={theme.colors.status.emerald} strokeWidth={2} />
+            <Scale size={theme.iconSize.lg} color={theme.colors.status.emerald} strokeWidth={theme.borderWidth.medium} />
           </View>
 
           {/* Bottom Left - Apple/Nutrition */}
           <View
             className="absolute items-center justify-center rounded-2xl border border-white/5"
             style={{
-              width: 48,
-              height: 48,
+              width: theme.size['48'],
+              height: theme.size['48'],
               bottom: '20%',
               left: '10%',
               backgroundColor: theme.colors.background.card,
               ...theme.shadows.lg,
             }}>
-            <Apple size={20} color={theme.colors.status.emeraldLight} strokeWidth={2} />
+            <Apple size={theme.iconSize.lg} color={theme.colors.status.emeraldLight} strokeWidth={theme.borderWidth.medium} />
           </View>
 
           {/* Bottom Right - Heart */}
           <View
             className="absolute items-center justify-center rounded-2xl border border-white/5"
             style={{
-              width: 64,
-              height: 64,
+              width: theme.size['64'],
+              height: theme.size['64'],
               bottom: '10%',
               right: '20%',
               backgroundColor: theme.colors.background.card,
               ...theme.shadows.lg,
             }}>
-            <Heart size={28} color={theme.colors.status.purple} strokeWidth={2} />
+            <Heart size={theme.iconSize['2xl']} color={theme.colors.status.purple} strokeWidth={theme.borderWidth.medium} />
           </View>
 
           {/* Dashed Lines SVG */}

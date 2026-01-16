@@ -112,7 +112,7 @@ export default function InputsTestScreen() {
             onSelect={(id) => setSingleSelection(id)}
           />
 
-          <View style={{ height: 12 }} />
+          <View style={{ height: theme.spacing.gap.md }} />
 
           <OptionsMultiSelector
             title="Multiple Choice"

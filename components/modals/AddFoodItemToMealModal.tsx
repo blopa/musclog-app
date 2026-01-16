@@ -240,7 +240,7 @@ function FoodResultCard({
           style={{
             marginTop: theme.spacing.padding.md,
             paddingTop: theme.spacing.padding.md,
-            borderTopWidth: 1,
+            borderTopWidth: theme.borderWidth.thin,
             borderStyle: 'dashed',
             borderColor: theme.colors.border.light,
             flexDirection: 'row',
@@ -261,8 +261,8 @@ function FoodResultCard({
               alignItems: 'center',
               backgroundColor: theme.colors.background.cardDark,
               borderRadius: theme.borderRadius.sm,
-              paddingHorizontal: 8,
-              height: 36,
+              paddingHorizontal: theme.spacing.padding.sm,
+              height: theme.components.button.height.sm,
               borderWidth: theme.borderWidth.thin,
               borderColor: 'transparent',
             }}>
@@ -277,7 +277,7 @@ function FoodResultCard({
               selectTextOnFocus={Platform.OS === 'ios'}
               keyboardType="numeric"
               style={{
-                width: 48,
+                width: theme.iconSize.xl,
                 textAlign: 'center',
                 color: theme.colors.text.primary,
                 fontWeight: theme.typography.fontWeight.bold,
@@ -411,7 +411,7 @@ export function AddFoodItemToMealModal({
         </View>
 
         {/* Results List */}
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ gap: 12 }}>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ gap: theme.spacing.gap.md }}>
           {SEARCH_RESULTS.map((food) => (
             <FoodResultCard
               key={food.id}
@@ -422,7 +422,7 @@ export function AddFoodItemToMealModal({
               onAmountChange={(val) => updateAmount(food.id, val)}
             />
           ))}
-          <View style={{ height: 100 }} />
+          <View style={{ height: theme.size['100'] }} />
         </ScrollView>
       </View>
     </FullScreenModal>

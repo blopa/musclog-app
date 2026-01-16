@@ -67,8 +67,8 @@ export function MealItemCard({
         <View style={{ position: 'relative' }}>
           <View
             style={{
-              width: 100,
-              height: 100,
+              width: theme.size['100'],
+              height: theme.size['100'],
               borderRadius: theme.borderRadius.lg,
               overflow: 'hidden',
               backgroundColor: theme.colors.background.cardDark,
@@ -83,7 +83,7 @@ export function MealItemCard({
               right: -8,
               backgroundColor: theme.colors.accent.primary,
               paddingHorizontal: theme.spacing.padding.sm,
-              paddingVertical: 2,
+              paddingVertical: theme.spacing.padding.xs,
               borderRadius: theme.borderRadius.full,
               borderWidth: theme.borderWidth.medium,
               borderColor: theme.colors.background.card,
@@ -107,7 +107,7 @@ export function MealItemCard({
                 fontSize: theme.typography.fontSize.base,
                 fontWeight: theme.typography.fontWeight.bold,
                 color: theme.colors.text.primary,
-                marginBottom: 2,
+                marginBottom: theme.spacing.padding.xs,
               }}>
               {title}
             </Text>
@@ -135,8 +135,8 @@ export function MealItemCard({
               />
               <View
                 style={{
-                  width: 1,
-                  height: 20,
+                  width: theme.borderWidth.thin,
+                  height: theme.size['20'],
                   backgroundColor: theme.colors.border.light,
                   alignSelf: 'center',
                 }}
@@ -148,8 +148,8 @@ export function MealItemCard({
               />
               <View
                 style={{
-                  width: 1,
-                  height: 20,
+                  width: theme.borderWidth.thin,
+                  height: theme.size['20'],
                   backgroundColor: theme.colors.border.light,
                   alignSelf: 'center',
                 }}
@@ -168,9 +168,9 @@ export function MealItemCard({
                 alignItems: 'center',
                 backgroundColor: theme.colors.accent.primary10,
                 paddingHorizontal: theme.spacing.padding.md,
-                paddingVertical: 6,
+                paddingVertical: theme.spacing.padding['1half'],
                 borderRadius: theme.borderRadius.full,
-                gap: 4,
+                gap: theme.spacing.gap.xs,
                 opacity: pressed ? 0.7 : 1,
               })}>
               <Plus size={14} color={theme.colors.accent.primary} strokeWidth={3} />

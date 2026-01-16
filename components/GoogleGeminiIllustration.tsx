@@ -85,7 +85,7 @@ export const GoogleGeminiIllustration = ({
                   source={{
                     uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBEDjeI4ad2IaWbBhnLQwpPkGJHZTJI_AZ1dIssXH__JLkQoYD_Qm_649_s2NsALfqefCg8-FNDsip3kbi3ZsYEqkdMXwpZEmfUOsmkxzCOTW2CdWBOOCnqgZ_Bgrq-S9vigmQajIBEFLcWErkfxsQCsPyfFy1ynq4Iz7Zb5gK74Ymge1VRW0z0aGL9BZjeAWO6sQepsDa91JCegUclE123Tm5VN1Oi94_nDfjS1TRvsc5nyQLQmD3pXLQDuSb6wQLcPYWv4tphDZ_z',
                   }}
-                  style={{ width: 16, height: 16 }}
+                  style={{ width: theme.iconSize.sm, height: theme.iconSize.sm }}
                   resizeMode="contain"
                 />
               </View>

@@ -74,9 +74,9 @@ export function AdvancedSettingsModal({
           <SettingsCard
             icon={<Download size={24} color={theme.colors.accent.primary} />}
             iconContainerStyle={{
-              width: 40,
-              height: 40,
-              borderRadius: 8,
+              width: theme.size['40'],
+              height: theme.size['40'],
+              borderRadius: theme.borderRadius.sm,
               backgroundColor: theme.colors.accent.primary20,
             }}
             title={t('settings.advancedSettings.exportFitnessData')}
@@ -87,9 +87,9 @@ export function AdvancedSettingsModal({
           <SettingsCard
             icon={<Upload size={24} color={theme.colors.accent.primary} />}
             iconContainerStyle={{
-              width: 40,
-              height: 40,
-              borderRadius: 8,
+              width: theme.size['40'],
+              height: theme.size['40'],
+              borderRadius: theme.borderRadius.sm,
               backgroundColor: theme.colors.accent.primary20,
             }}
             title={t('settings.advancedSettings.importFitnessData')}
@@ -119,9 +119,9 @@ export function AdvancedSettingsModal({
           <SettingsCard
             icon={<Trash2 size={24} color={theme.colors.status.error} />}
             iconContainerStyle={{
-              width: 40,
-              height: 40,
-              borderRadius: 8,
+              width: theme.size['40'],
+              height: theme.size['40'],
+              borderRadius: theme.borderRadius.sm,
               backgroundColor: theme.colors.status.error20,
             }}
             title={t('settings.advancedSettings.requestAccountDeletion')}

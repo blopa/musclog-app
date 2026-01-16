@@ -126,12 +126,12 @@ export default function MyMealsScreen() {
             tabs={FILTER_TABS}
             activeTab={activeFilter}
             onTabChange={setActiveFilter}
-            scrollViewContentContainerStyle={{ paddingHorizontal: 24 }}
+            scrollViewContentContainerStyle={{ paddingHorizontal: theme.spacing.padding.xl }}
           />
         </View>
 
         {/* Meal List */}
-        <ScrollView className="flex-1" contentContainerStyle={{ paddingHorizontal: 24, gap: 16 }}>
+        <ScrollView className="flex-1" contentContainerStyle={{ paddingHorizontal: theme.spacing.padding.xl, gap: theme.spacing.gap.base }}>
           {MEALS_DATA.map((meal) => (
             <MealItemCard
               key={meal.id}
@@ -144,7 +144,7 @@ export default function MyMealsScreen() {
             />
           ))}
           {/* Bottom spacing for FAB and TabBar */}
-          <View style={{ height: 120 }} />
+          <View style={{ height: theme.size['120'] }} />
         </ScrollView>
 
         {/* AddMealModal */}

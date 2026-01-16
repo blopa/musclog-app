@@ -162,7 +162,7 @@ export function GenericCard({
           colors={theme.colors.gradients.cta}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
-          style={{ padding: 2 }}>
+          style={{ padding: theme.spacing.padding.xs }}>
           {children}
         </LinearGradient>
       );
