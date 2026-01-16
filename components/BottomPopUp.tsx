@@ -1,5 +1,13 @@
 import React, { useEffect, useRef, ReactNode } from 'react';
-import { View, Text, Modal, Animated, Platform, TouchableWithoutFeedback } from 'react-native';
+import {
+  View,
+  Text,
+  Modal,
+  Animated,
+  Platform,
+  TouchableWithoutFeedback,
+  Pressable,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { X } from 'lucide-react-native';
 import { theme } from '../theme';
@@ -117,11 +125,11 @@ export function BottomPopUp({
                         )}
                       </View>
                     </View>
-                    <TouchableWithoutFeedback
+                    <Pressable
                       className="active:bg-bg-card-elevated h-10 w-10 items-center justify-center rounded-full bg-bg-overlay"
                       onPress={onClose}>
                       <X size={theme.iconSize.md} color={theme.colors.text.secondary} />
-                    </TouchableWithoutFeedback>
+                    </Pressable>
                   </View>
                 </LinearGradient>
 

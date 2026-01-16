@@ -17,6 +17,7 @@ type WorkoutSummaryCelebrationProps = {
   personalRecords?: number; // e.g., 2
 };
 
+// TODO: UI issue here
 export function WorkoutSummaryCelebration({
   onGoHome,
   onShareSummary,
@@ -30,27 +31,27 @@ export function WorkoutSummaryCelebration({
   const glowAnim2 = useRef(new Animated.Value(0.6)).current;
 
   useEffect(() => {
-      // Glow pulse animations
-      const createGlowPulse = (anim: Animated.Value, delay: number = 0) => {
-        return Animated.loop(
-          Animated.sequence([
-            Animated.delay(delay),
-            Animated.timing(anim, {
-              toValue: 0.8,
-              duration: 1500,
-              useNativeDriver: false,
-            }),
-            Animated.timing(anim, {
-              toValue: 0.6,
-              duration: 1500,
-              useNativeDriver: false,
-            }),
-          ])
-        );
-      };
+    // Glow pulse animations
+    const createGlowPulse = (anim: Animated.Value, delay: number = 0) => {
+      return Animated.loop(
+        Animated.sequence([
+          Animated.delay(delay),
+          Animated.timing(anim, {
+            toValue: 0.8,
+            duration: 1500,
+            useNativeDriver: false,
+          }),
+          Animated.timing(anim, {
+            toValue: 0.6,
+            duration: 1500,
+            useNativeDriver: false,
+          }),
+        ])
+      );
+    };
 
-      createGlowPulse(glowAnim1).start();
-      createGlowPulse(glowAnim2, 750).start();
+    createGlowPulse(glowAnim1).start();
+    createGlowPulse(glowAnim2, 750).start();
   }, [glowAnim1, glowAnim2]);
 
   // Web-specific styles for proper viewport positioning

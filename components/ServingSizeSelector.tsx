@@ -30,7 +30,7 @@ export function ServingSizeSelector({ value, onChange, quickSizes }: ServingSize
   };
 
   return (
-    <View className="w-full mt-6">
+    <View className="mt-6 w-full">
       <View className="mb-2 flex-row items-center justify-between">
         <Text className="text-xs font-bold uppercase tracking-wider text-text-secondary">
           {t('food.foodDetails.servingSize')}
