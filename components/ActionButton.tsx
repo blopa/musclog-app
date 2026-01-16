@@ -48,7 +48,9 @@ export function ActionButton({ variant, label, onPress }: ActionButtonProps) {
         />
       </View>
       <Text className={`text-2xl font-bold leading-tight ${config.textColor}`}>{label}</Text>
-      <View className="absolute -bottom-6 -right-6 opacity-[0.08]">
+      <View
+        className="absolute -bottom-6 -right-6"
+        style={{ opacity: theme.colors.opacity.lightMedium }}>
         <Icon
           size={theme.iconSize.background}
           color={config.backgroundIconColor}

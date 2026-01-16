@@ -184,7 +184,7 @@ export default function CreateWorkoutScreen() {
               borderRadius: theme.borderRadius.full,
               alignItems: 'center',
               justifyContent: 'center',
-              opacity: pressed ? 0.7 : 1,
+              opacity: pressed ? theme.colors.opacity.strong : theme.colors.opacity.full,
             },
           ]}>
           <ArrowLeft size={theme.iconSize.xl} color={theme.colors.text.secondary} />
@@ -205,7 +205,7 @@ export default function CreateWorkoutScreen() {
             {
               paddingHorizontal: theme.spacing.padding.sm,
               paddingVertical: theme.spacing.padding.xs,
-              opacity: pressed ? 0.7 : 1,
+              opacity: pressed ? theme.colors.opacity.strong : theme.colors.opacity.full,
             },
           ]}>
           <Text

@@ -272,7 +272,11 @@ export function OptionsMultiSelector<T extends string | number>({
                         ? groupColor + '08'
                         : theme.colors.background.card,
                     ...(selected ? theme.shadows.accentGlow : {}),
-                    opacity: isActive ? 0.9 : pressed ? 0.7 : 1,
+                    opacity: isActive
+                      ? theme.colors.opacity.overlay
+                      : pressed
+                        ? theme.colors.opacity.strong
+                        : theme.colors.opacity.full,
                   }}>
                   {/* Drag Handle */}
                   <View

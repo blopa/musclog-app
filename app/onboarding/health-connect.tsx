@@ -209,7 +209,7 @@ export default function HealthConnectScreen() {
               stroke="url(#lineGradient)"
               strokeWidth={theme.strokeWidth.extraThin}
               fill="none"
-              opacity="0.3"
+              opacity={theme.colors.opacity.dim}
             />
           </Svg>
         </View>

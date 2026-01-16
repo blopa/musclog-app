@@ -135,9 +135,7 @@ export default function LandingScreen() {
                 // Navigate to login
                 console.log('Navigate to login');
               }}>
-              <Text
-                className="text-sm font-medium"
-                style={{ color: theme.colors.text.gray400 }}>
+              <Text className="text-sm font-medium" style={{ color: theme.colors.text.gray400 }}>
                 {t('onboarding.landing.alreadyHaveAccount')}{' '}
                 <Text style={{ color: theme.colors.status.emeraldLight }}>
                   {t('onboarding.landing.logIn')}

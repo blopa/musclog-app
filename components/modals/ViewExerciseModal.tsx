@@ -176,9 +176,7 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
               style={{ alignSelf: 'flex-start' }}
             />
 
-            <Text
-              className="mb-6 text-4xl font-bold"
-              style={{ color: theme.colors.text.white }}>
+            <Text className="mb-6 text-4xl font-bold" style={{ color: theme.colors.text.white }}>
               {EXERCISE_DATA.name}
             </Text>
 
@@ -194,9 +192,7 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
                   style={{ color: theme.colors.overlay.white80 }}>
                   {t('exercises.viewExercise.primaryMuscle')}
                 </Text>
-                <Text
-                  className="font-bold"
-                  style={{ color: theme.colors.text.white }}>
+                <Text className="font-bold" style={{ color: theme.colors.text.white }}>
                   {EXERCISE_DATA.primaryMuscle}
                 </Text>
               </LinearGradient>
@@ -211,9 +207,7 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
                   style={{ color: theme.colors.overlay.white80 }}>
                   {t('exercises.viewExercise.equipment')}
                 </Text>
-                <Text
-                  className="font-bold"
-                  style={{ color: theme.colors.text.white }}>
+                <Text className="font-bold" style={{ color: theme.colors.text.white }}>
                   {EXERCISE_DATA.equipment}
                 </Text>
               </View>
@@ -228,9 +222,7 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
                   style={{ color: theme.colors.overlay.white80 }}>
                   {t('exercises.viewExercise.mechanic')}
                 </Text>
-                <Text
-                  className="font-bold"
-                  style={{ color: theme.colors.text.white }}>
+                <Text className="font-bold" style={{ color: theme.colors.text.white }}>
                   {EXERCISE_DATA.mechanic}
                 </Text>
               </View>
@@ -253,9 +245,7 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
                   style={{ color: theme.colors.accent.secondary }}>
                   {EXERCISE_DATA.personalBest.value}
                 </Text>
-                <Text
-                  className="text-xl"
-                  style={{ color: theme.colors.text.gray400 }}>
+                <Text className="text-xl" style={{ color: theme.colors.text.gray400 }}>
                   {EXERCISE_DATA.personalBest.unit}
                 </Text>
               </View>
@@ -274,9 +264,7 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
                   style={{ color: theme.colors.status.indigoLight }}>
                   {EXERCISE_DATA.avgFrequency.value}
                 </Text>
-                <Text
-                  className="text-xl"
-                  style={{ color: theme.colors.text.gray400 }}>
+                <Text className="text-xl" style={{ color: theme.colors.text.gray400 }}>
                   {EXERCISE_DATA.avgFrequency.unit}
                 </Text>
               </View>
@@ -287,9 +275,7 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
         {/* Workouts Section */}
         <View className="px-6 py-4">
           <View className="mb-4 flex-row items-center justify-between">
-            <Text
-              className="text-2xl font-bold"
-              style={{ color: theme.colors.text.white }}>
+            <Text className="text-2xl font-bold" style={{ color: theme.colors.text.white }}>
               {t('exercises.viewExercise.workoutsUsingThis')}
             </Text>
             <View

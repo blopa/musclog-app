@@ -143,9 +143,7 @@ function OnboardingStepThree({ imageUrl, title, description, badge }: Onboarding
                   />
                 </View>
                 <View className="relative z-10 flex-1 flex-col">
-                  <Text
-                    className="text-sm font-bold"
-                    style={{ color: theme.colors.text.white }}>
+                  <Text className="text-sm font-bold" style={{ color: theme.colors.text.white }}>
                     {badge.title}
                   </Text>
                   <Text className="text-xs" style={{ color: theme.colors.overlay.white70 }}>
@@ -251,9 +249,7 @@ function OnboardingStepTwo({ imageUrl, title, description, badge }: OnboardingBo
                   />
                 </View>
                 <View className="relative z-10 flex-1 flex-col">
-                  <Text
-                    className="text-sm font-bold"
-                    style={{ color: theme.colors.text.white }}>
+                  <Text className="text-sm font-bold" style={{ color: theme.colors.text.white }}>
                     {badge.title}
                   </Text>
                   <Text className="text-xs" style={{ color: theme.colors.overlay.white70 }}>
@@ -359,9 +355,7 @@ function OnboardingStepOne({ imageUrl, title, description, badge }: OnboardingBo
                   />
                 </View>
                 <View className="relative z-10 flex-1 flex-col">
-                  <Text
-                    className="text-sm font-bold"
-                    style={{ color: theme.colors.text.white }}>
+                  <Text className="text-sm font-bold" style={{ color: theme.colors.text.white }}>
                     {badge.title}
                   </Text>
                   <Text className="text-xs" style={{ color: theme.colors.overlay.white70 }}>
