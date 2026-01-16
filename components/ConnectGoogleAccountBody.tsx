@@ -65,10 +65,10 @@ export function ConnectGoogleAccountBody({
             <View
               className="absolute"
               style={{
-                top: -1,
-                left: -1,
-                right: -1,
-                bottom: -1,
+                top: theme.offset.glowSmall,
+                left: theme.offset.glowSmall,
+                right: theme.offset.glowSmall,
+                bottom: theme.offset.glowSmall,
                 borderRadius: theme.borderRadius.xl,
                 backgroundColor: theme.colors.accent.primary,
                 opacity: theme.colors.opacity.dimmer,
@@ -102,10 +102,10 @@ export function ConnectGoogleAccountBody({
             <View
               className="absolute"
               style={{
-                top: -1,
-                left: -1,
-                right: -1,
-                bottom: -1,
+                top: theme.offset.glowSmall,
+                left: theme.offset.glowSmall,
+                right: theme.offset.glowSmall,
+                bottom: theme.offset.glowSmall,
                 borderRadius: theme.borderRadius.xl,
                 backgroundColor: theme.colors.accent.primary,
                 opacity: theme.colors.opacity.dimmer,
@@ -139,10 +139,10 @@ export function ConnectGoogleAccountBody({
             <View
               className="absolute"
               style={{
-                top: -1,
-                left: -1,
-                right: -1,
-                bottom: -1,
+                top: theme.offset.glowSmall,
+                left: theme.offset.glowSmall,
+                right: theme.offset.glowSmall,
+                bottom: theme.offset.glowSmall,
                 borderRadius: theme.borderRadius.xl,
                 backgroundColor: theme.colors.accent.primary,
                 opacity: theme.colors.opacity.dimmer,

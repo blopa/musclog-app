@@ -62,7 +62,7 @@ function OnboardingStepFour({ title, description }: OnboardingBodyProps) {
             fontSize: theme.typography.fontSize['3xl'],
             fontWeight: theme.typography.fontWeight.extrabold,
             lineHeight: theme.typography.fontSize['3xl'] * 1.25,
-            letterSpacing: -0.5,
+            letterSpacing: theme.typography.letterSpacing.tight,
           }}>
           {title}
         </GradientText>
@@ -161,7 +161,7 @@ function OnboardingStepThree({ imageUrl, title, description, badge }: Onboarding
             fontSize: theme.typography.fontSize['3xl'],
             fontWeight: theme.typography.fontWeight.extrabold,
             lineHeight: theme.typography.fontSize['3xl'] * 1.25,
-            letterSpacing: -0.5,
+            letterSpacing: theme.typography.letterSpacing.tight,
           }}>
           {title}
         </GradientText>
@@ -260,7 +260,7 @@ function OnboardingStepTwo({ imageUrl, title, description, badge }: OnboardingBo
             fontSize: theme.typography.fontSize['3xl'],
             fontWeight: theme.typography.fontWeight.extrabold,
             lineHeight: theme.typography.fontSize['3xl'] * 1.25,
-            letterSpacing: -0.5,
+            letterSpacing: theme.typography.letterSpacing.tight,
           }}>
           {title}
         </GradientText>
@@ -359,7 +359,7 @@ function OnboardingStepOne({ imageUrl, title, description, badge }: OnboardingBo
             fontSize: theme.typography.fontSize['3xl'],
             fontWeight: theme.typography.fontWeight.extrabold,
             lineHeight: theme.typography.fontSize['3xl'] * 1.25,
-            letterSpacing: -0.5,
+            letterSpacing: theme.typography.letterSpacing.tight,
           }}>
           {title}
         </GradientText>

@@ -79,8 +79,8 @@ export function MealItemCard({
           <View
             style={{
               position: 'absolute',
-              bottom: -8,
-              right: -8,
+              bottom: theme.offset.badge,
+              right: theme.offset.badge,
               backgroundColor: theme.colors.accent.primary,
               paddingHorizontal: theme.spacing.padding.sm,
               paddingVertical: theme.spacing.padding.xs,

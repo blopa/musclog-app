@@ -80,7 +80,7 @@ export default function LandingScreen() {
                 className="font-black leading-none tracking-tight text-white"
                 style={{
                   fontSize: theme.typography.fontSize['4xl'],
-                  letterSpacing: -0.5,
+                  letterSpacing: theme.typography.letterSpacing.tight,
                   lineHeight: theme.typography.fontSize['4xl'] * 1.1,
                 }}>
                 Musclog
@@ -91,7 +91,7 @@ export default function LandingScreen() {
                 className="font-medium tracking-wide text-gray-400"
                 style={{
                   fontSize: theme.typography.fontSize.lg,
-                  letterSpacing: 0.5,
+                  letterSpacing: theme.typography.letterSpacing.wide,
                 }}>
                 Lift, Log, Repeat
               </Text>

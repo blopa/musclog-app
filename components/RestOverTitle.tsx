@@ -17,7 +17,7 @@ export function RestOverTitle() {
           style={{
             fontSize: theme.typography.fontSize['4xl'],
             fontWeight: theme.typography.fontWeight.extrabold,
-            letterSpacing: -0.5,
+            letterSpacing: theme.typography.letterSpacing.tight,
           }}>
           {t('restOver.over')}
         </GradientText>

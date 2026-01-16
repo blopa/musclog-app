@@ -64,8 +64,8 @@ export function CreateWorkoutOptionsModal({
         <View
           style={{
             position: 'absolute',
-            top: -50,
-            right: -50,
+            top: theme.offset.glowLarge,
+            right: theme.offset.glowLarge,
             width: theme.size['300'],
             height: theme.size['300'],
             borderRadius: theme.borderRadius['150'],
@@ -77,8 +77,8 @@ export function CreateWorkoutOptionsModal({
         <View
           style={{
             position: 'absolute',
-            bottom: -50,
-            left: -50,
+            bottom: theme.offset.glowLarge,
+            left: theme.offset.glowLarge,
             width: theme.size['250'],
             height: theme.size['250'],
             borderRadius: theme.borderRadius['125'],

@@ -14,7 +14,7 @@ export function WorkoutSummaryHeader() {
           fontSize: theme.typography.fontSize['4xl'],
           fontWeight: theme.typography.fontWeight.extrabold,
           textAlign: 'center',
-          letterSpacing: -0.5,
+          letterSpacing: theme.typography.letterSpacing.tight,
           marginBottom: theme.spacing.padding.sm,
         }}>
         {t('workoutSummary.youCrushedIt')}

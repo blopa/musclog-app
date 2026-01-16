@@ -129,8 +129,8 @@ const MealMacrosSummary = ({
       <View
         style={{
           position: 'absolute',
-          top: -40,
-          right: -40,
+          top: theme.offset.glowMedium,
+          right: theme.offset.glowMedium,
           width: theme.size['160'],
           height: theme.size['160'],
           backgroundColor: theme.colors.accent.primary20,
@@ -141,8 +141,8 @@ const MealMacrosSummary = ({
       <View
         style={{
           position: 'absolute',
-          bottom: -40,
-          left: -40,
+          bottom: theme.offset.glowMedium,
+          left: theme.offset.glowMedium,
           width: theme.size['160'],
           height: theme.size['160'],
           backgroundColor: theme.colors.status.indigo20,

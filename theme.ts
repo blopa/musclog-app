@@ -426,6 +426,14 @@ export const theme = {
     thick4: 4, // 4px border width
   },
 
+  // Negative offsets (for decorative positioning, glows, badges, etc.)
+  offset: {
+    glowSmall: -1, // Small offset for border glows
+    badge: -8, // Badge positioning offset
+    glowMedium: -40, // Medium offset for glow effects
+    glowLarge: -50, // Large offset for glow effects
+  },
+
   // Stroke widths (for icons and SVG)
   strokeWidth: {
     none: 0, // No stroke
