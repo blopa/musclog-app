@@ -47,6 +47,7 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
   const [monoFat, setMonoFat] = useState('');
   const [polyFat, setPolyFat] = useState('');
   const [microOpen, setMicroOpen] = useState(false);
+  const [caloriesFocused, setCaloriesFocused] = useState(false);
   const { t } = useTranslation();
 
   const handleSave = () => {
@@ -142,10 +143,12 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
 
             {/* Calories */}
             <View
-              className="rounded-xl border border-white/10 bg-bg-card p-5"
+              className="overflow-hidden rounded-xl border border-white/10 bg-bg-card p-5"
               style={{
-                borderColor: theme.colors.background.white10,
-                shadowColor: theme.colors.accent.primary,
+                borderColor: caloriesFocused
+                  ? theme.colors.accent.primary50
+                  : theme.colors.background.white10,
+                shadowColor: caloriesFocused ? theme.colors.accent.primary : theme.colors.accent.primary,
                 shadowOffset: { width: 0, height: 0 },
                 shadowOpacity: 0.1,
                 shadowRadius: 15,
@@ -168,12 +171,20 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
                 placeholderTextColor={theme.colors.text.tertiary + '50'}
                 keyboardType="numeric"
                 selectTextOnFocus
+                onFocus={() => setCaloriesFocused(true)}
+                onBlur={() => setCaloriesFocused(false)}
                 className="w-full border-0 bg-transparent p-0 text-5xl font-bold text-text-primary"
                 style={{
                   fontSize: 48,
                   lineHeight: 56,
                 }}
               />
+              {caloriesFocused && (
+                <View
+                  className="absolute bottom-0 left-0 right-0 h-1 rounded-b-xl"
+                  style={{ backgroundColor: theme.colors.accent.primary }}
+                />
+              )}
             </View>
 
             {/* Macro Grid */}
