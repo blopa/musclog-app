@@ -48,7 +48,7 @@ export function EditPersonalInfoBody({ onSave, initialData }: EditPersonalInfoBo
           <Pressable
             className="absolute bottom-0 right-0 h-10 w-10 items-center justify-center rounded-full border-4 border-bg-primary bg-accent-primary active:scale-110"
             onPress={() => console.log('Change photo')}>
-            <Camera size={20} color="black" />
+            <Camera size={theme.iconSize.lg} color="black" />
           </Pressable>
         </View>
         <Pressable className="mt-4" onPress={() => console.log('Change photo')}>
@@ -65,7 +65,7 @@ export function EditPersonalInfoBody({ onSave, initialData }: EditPersonalInfoBo
           value={fullName}
           onChangeText={setFullName}
           placeholder={t('editPersonalInfo.fullNamePlaceholder')}
-          icon={<User size={20} color={theme.colors.text.tertiary} />}
+          icon={<User size={theme.iconSize.lg} color={theme.colors.text.tertiary} />}
         />
 
         <TextInput
@@ -74,7 +74,7 @@ export function EditPersonalInfoBody({ onSave, initialData }: EditPersonalInfoBo
           onChangeText={setEmail}
           placeholder={t('editPersonalInfo.emailPlaceholder')}
           keyboardType="email-address"
-          icon={<Mail size={20} color={theme.colors.text.tertiary} />}
+          icon={<Mail size={theme.iconSize.lg} color={theme.colors.text.tertiary} />}
         />
 
         <TextInput
@@ -82,7 +82,7 @@ export function EditPersonalInfoBody({ onSave, initialData }: EditPersonalInfoBo
           value={dob}
           onChangeText={setDob}
           placeholder={t('editPersonalInfo.dateOfBirthPlaceholder')}
-          icon={<Calendar size={20} color={theme.colors.text.tertiary} />}
+          icon={<Calendar size={theme.iconSize.lg} color={theme.colors.text.tertiary} />}
         />
 
         <View className="gap-2">

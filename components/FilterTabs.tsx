@@ -41,7 +41,7 @@ export function FilterTabs({
             className={`flex-row items-center rounded-full px-6 py-2.5 ${
               isActive ? 'bg-accent-primary' : 'border border-border-light bg-bg-filterTab'
             }`}
-            style={{ marginRight: index < tabs.length - 1 ? 12 : 0 }}
+            style={{ marginRight: index < tabs.length - 1 ? theme.spacing.gap.md : 0 }}
             onPress={() => onTabChange(tab.id)}>
             <Text
               className={`text-sm font-medium ${isActive ? 'font-semibold' : ''}`}
@@ -51,7 +51,7 @@ export function FilterTabs({
               {tab.label}
             </Text>
             {isActive && withCheckmark && (
-              <Check size={14} color={theme.colors.text.black} style={{ marginLeft: theme.spacing.margin['1half'] }} />
+              <Check size={theme.iconSize.sm} color={theme.colors.text.black} style={{ marginLeft: theme.spacing.margin['1half'] }} />
             )}
           </Pressable>
         );

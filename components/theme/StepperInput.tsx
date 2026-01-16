@@ -91,7 +91,7 @@ export const StepperInput: React.FC<StepperInputProps> = ({
             onDecrement();
           }}
           accessibilityLabel={t('common.decreaseValue')}>
-          <Minus size={20} color={theme.colors.accent.primary} />
+          <Minus size={theme.iconSize.lg} color={theme.colors.accent.primary} />
         </Pressable>
         {editing ? (
           <View
@@ -135,7 +135,7 @@ export const StepperInput: React.FC<StepperInputProps> = ({
             onIncrement();
           }}
           accessibilityLabel={t('common.increaseValue')}>
-          <Plus size={20} color={theme.colors.accent.primary} />
+          <Plus size={theme.iconSize.lg} color={theme.colors.accent.primary} />
         </Pressable>
       </View>
     </View>

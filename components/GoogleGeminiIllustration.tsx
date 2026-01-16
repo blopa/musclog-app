@@ -91,7 +91,7 @@ export const GoogleGeminiIllustration = ({
               </View>
               {/* Sparkles icon - directly in pill, no background */}
               <Sparkles
-                size={20}
+                size={theme.iconSize.lg}
                 color={theme.colors.status.emeraldLight} // #29e08e - primary from HTML
                 fill={theme.colors.status.emeraldLight}
               />
@@ -107,7 +107,7 @@ export const GoogleGeminiIllustration = ({
                   elevation: theme.elevation.lg,
                 }}>
                 <Zap
-                  size={18}
+                  size={theme.iconSize.md}
                   color={theme.colors.background.darkBackground}
                   fill={theme.colors.background.darkBackground}
                 />

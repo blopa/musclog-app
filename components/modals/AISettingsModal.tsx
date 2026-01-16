@@ -261,7 +261,7 @@ export function AISettingsModal({
                   {geminiModel}
                 </Text>
               </View>
-              <ChevronDown size={20} color={theme.colors.text.tertiary} />
+              <ChevronDown size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
             </Pressable>
           </View>
         </View>

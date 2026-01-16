@@ -275,7 +275,7 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
                     className="h-full w-full items-center justify-center"
                     style={{ borderRadius: theme.borderRadius['2xl'] }}>
                     <workout.icon
-                      size={32}
+                      size={theme.iconSize['3xl']}
                       color="white"
                       fill={workout.id === '2' ? 'white' : 'none'}
                     />
@@ -284,7 +284,7 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
                 title={workout.name}
                 subtitle={workout.subtitle}
                 onPress={() => handleWorkoutPress(workout.id)}
-                rightIcon={<ChevronRight size={20} color={theme.colors.text.secondary} />}
+                rightIcon={<ChevronRight size={theme.iconSize.lg} color={theme.colors.text.secondary} />}
                 iconContainerStyle={{
                   width: theme.size['16'],
                   height: theme.size['16'],

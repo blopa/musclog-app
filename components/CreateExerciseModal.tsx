@@ -129,7 +129,7 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
                       }}>
                       {primaryMuscleLabel}
                     </Text>
-                    <ChevronDown size={20} color={theme.colors.text.tertiary} />
+                    <ChevronDown size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
                   </View>
                 </View>
               </Pressable>
@@ -195,7 +195,7 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
               <Pressable
                 onPress={handleUploadImage}
                 className="flex-1 flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-white/10 bg-bg-card/30 p-4 active:border-accent-primary active:bg-accent-primary/5">
-                <Camera size={24} color={theme.colors.text.tertiary} />
+                <Camera size={theme.iconSize.xl} color={theme.colors.text.tertiary} />
                 <Text className="text-xs font-medium text-text-secondary">
                   {t('exercises.createExercise.uploadImage')}
                 </Text>
@@ -203,7 +203,7 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
               <Pressable
                 onPress={handleVideoURL}
                 className="flex-1 flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-white/10 bg-bg-card/30 p-4 active:border-accent-primary active:bg-accent-primary/5">
-                <Link size={24} color={theme.colors.text.tertiary} />
+                <Link size={theme.iconSize.xl} color={theme.colors.text.tertiary} />
                 <Text className="text-xs font-medium text-text-secondary">
                   {t('exercises.createExercise.videoURL')}
                 </Text>

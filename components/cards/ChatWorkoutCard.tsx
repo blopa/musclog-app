@@ -54,13 +54,13 @@ export function ChatWorkoutCard({
         {/* Stats Row */}
         <View className="mb-3 flex-row items-center justify-between">
           <View className="flex-row items-center gap-1">
-            <Dumbbell size={16} color={theme.colors.text.secondary} />
+            <Dumbbell size={theme.iconSize.sm} color={theme.colors.text.secondary} />
             <Text className="text-sm" style={{ color: theme.colors.text.secondary }}>
               {exerciseCount} {t('workouts.exercises')}
             </Text>
           </View>
           <View className="flex-row items-center gap-1">
-            <Flame size={16} color={theme.colors.text.secondary} />
+            <Flame size={theme.iconSize.sm} color={theme.colors.text.secondary} />
             <Text className="text-sm" style={{ color: theme.colors.text.secondary }}>
               {calories} {t('common.kcal')}
             </Text>
@@ -75,7 +75,7 @@ export function ChatWorkoutCard({
           <Text className="font-bold" style={{ color: theme.colors.text.black }}>
             {t('startWorkout.label')}
           </Text>
-          <ArrowRight size={18} color={theme.colors.text.black} />
+          <ArrowRight size={theme.iconSize.md} color={theme.colors.text.black} />
         </Pressable>
       </View>
     </GenericCard>

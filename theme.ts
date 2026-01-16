@@ -615,6 +615,8 @@ export const theme = {
     '3xl': 32,
     '4xl': 40,
     '5xl': 48,
+    '6xl': 64,
+    '7xl': 96,
     // Large background icons
     background: 160,
   },

@@ -36,7 +36,7 @@ export function ServingSizeSelector({ value, onChange, quickSizes }: ServingSize
           {t('foodDetails.servingSize')}
         </Text>
         <Pressable className="flex-row items-center gap-1">
-          <BookmarkPlus size={16} color={theme.colors.accent.primary} />
+          <BookmarkPlus size={theme.iconSize.sm} color={theme.colors.accent.primary} />
           <Text className="text-xs font-medium text-accent-primary">
             {t('foodDetails.addFavorite')}
           </Text>

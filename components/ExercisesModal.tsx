@@ -63,7 +63,7 @@ function ExerciseListItem({
           />
         ) : (
           <View className="h-full w-full items-center justify-center">
-            <Dumbbell size={24} color={theme.colors.text.tertiary} />
+            <Dumbbell size={theme.iconSize.xl} color={theme.colors.text.tertiary} />
           </View>
         )}
       </View>

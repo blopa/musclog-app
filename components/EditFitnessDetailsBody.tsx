@@ -247,7 +247,7 @@ export function EditFitnessDetailsBody({
               label={fitnessGoal}
               icon={
                 <SelectedGoalIcon
-                  size={20}
+                  size={theme.iconSize.lg}
                   color={selectedGoalOption.iconColor || theme.colors.accent.primary}
                 />
               }
@@ -285,7 +285,7 @@ export function EditFitnessDetailsBody({
               label={currentActivityLabel}
               icon={
                 <SelectedActivityIcon
-                  size={20}
+                  size={theme.iconSize.lg}
                   color={selectedActivityOption.iconColor || theme.colors.accent.primary}
                 />
               }
@@ -315,13 +315,13 @@ export function EditFitnessDetailsBody({
                       className={`h-10 w-10 items-center justify-center rounded-full ${
                         isSelected ? 'bg-accent-primary' : 'bg-white/5'
                       }`}>
-                      <Icon size={20} color={isSelected ? 'black' : theme.colors.text.tertiary} />
+                      <Icon size={theme.iconSize.lg} color={isSelected ? 'black' : theme.colors.text.tertiary} />
                     </View>
                     <View className="flex-1">
                       <Text className="text-sm font-bold text-text-primary">{option.title}</Text>
                       <Text className="text-xs text-text-tertiary">{option.description}</Text>
                     </View>
-                    {isSelected && <CheckCircle2 size={20} color={theme.colors.accent.primary} />}
+                    {isSelected && <CheckCircle2 size={theme.iconSize.lg} color={theme.colors.accent.primary} />}
                   </Pressable>
                 );
               })}

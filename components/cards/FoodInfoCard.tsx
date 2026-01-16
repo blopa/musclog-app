@@ -110,7 +110,7 @@ export function FoodInfoCard({ food }: FoodInfoCardProps) {
                   protein={food.protein}
                   carbs={food.carbs}
                   fats={food.fat}
-                  size={96}
+                  size={theme.iconSize['7xl']}
                   showInsight={false}
                 />
               </View>

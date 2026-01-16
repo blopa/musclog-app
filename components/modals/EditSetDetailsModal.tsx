@@ -63,7 +63,7 @@ function NumberInputField({
           className="h-12 w-12 items-center justify-center rounded-lg"
           style={{ backgroundColor: theme.colors.background.white5 }}
           onPress={handleDecrement}>
-          <Minus size={24} color={theme.colors.accent.primary} />
+          <Minus size={theme.iconSize.xl} color={theme.colors.accent.primary} />
         </Pressable>
         <View
           className="flex-1 overflow-hidden rounded-lg border"
@@ -100,7 +100,7 @@ function NumberInputField({
           className="h-12 w-12 items-center justify-center rounded-lg"
           style={{ backgroundColor: theme.colors.background.white5 }}
           onPress={handleIncrement}>
-          <Plus size={24} color={theme.colors.accent.primary} />
+          <Plus size={theme.iconSize.xl} color={theme.colors.accent.primary} />
         </Pressable>
       </View>
     </View>

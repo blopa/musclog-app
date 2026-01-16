@@ -261,7 +261,7 @@ const renderSend = (props: SendProps<ExtendedIMessage>) => {
       <View
         className="h-12 w-12 items-center justify-center rounded-full active:scale-90"
         style={{ backgroundColor: theme.colors.accent.primary }}>
-        <SendIcon size={20} color={theme.colors.text.black} />
+        <SendIcon size={theme.iconSize.lg} color={theme.colors.text.black} />
       </View>
     </Send>
   );
@@ -281,7 +281,7 @@ const renderComposer = (props: ComposerProps, t: any) => {
         }}
       />
       <Pressable className="p-2" onPress={() => console.log('Mic pressed')}>
-        <Mic size={20} color={theme.colors.text.tertiary} />
+        <Mic size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
       </Pressable>
     </View>
   );
@@ -331,7 +331,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
             backgroundColor: theme.colors.status.indigo10,
             borderColor: theme.colors.accent.primary30,
           }}>
-          <PlusCircle size={18} color={theme.colors.accent.primary} />
+          <PlusCircle size={theme.iconSize.md} color={theme.colors.accent.primary} />
           <Text className="text-sm font-medium" style={{ color: theme.colors.accent.primary }}>
             {t('coach.actions.createWorkout')}
           </Text>
@@ -339,7 +339,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
         <Pressable
           className="flex-row items-center gap-2 whitespace-nowrap rounded-full border bg-bg-card px-4 py-2 active:scale-95"
           style={{ borderColor: theme.colors.border.light }}>
-          <TrendingUp size={18} color={theme.colors.status.info} />
+          <TrendingUp size={theme.iconSize.md} color={theme.colors.status.info} />
           <Text className="text-sm font-medium text-text-primary">
             {t('coach.actions.analyzeProgress')}
           </Text>
@@ -347,7 +347,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
         <Pressable
           className="flex-row items-center gap-2 whitespace-nowrap rounded-full border bg-bg-card px-4 py-2 active:scale-95"
           style={{ borderColor: theme.colors.border.light }}>
-          <UtensilsCrossed size={18} color={theme.colors.status.warning} />
+          <UtensilsCrossed size={theme.iconSize.md} color={theme.colors.status.warning} />
           <Text className="text-sm font-medium text-text-primary">
             {t('coach.actions.nutritionCheck')}
           </Text>
@@ -359,7 +359,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
   const headerRight = useMemo(
     () => (
       <Pressable className="h-10 w-10 items-center justify-center rounded-full active:bg-white/5">
-        <MoreVertical size={20} color={theme.colors.text.secondary} />
+        <MoreVertical size={theme.iconSize.lg} color={theme.colors.text.secondary} />
       </Pressable>
     ),
     []

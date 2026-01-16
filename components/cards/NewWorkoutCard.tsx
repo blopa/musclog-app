@@ -126,7 +126,7 @@ export function NewWorkoutCard({
           )}
         </View>
 
-        {!isPopular && <ChevronRight size={20} color={theme.colors.text.tertiary} />}
+        {!isPopular && <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />}
       </View>
     </GenericCard>
   );

@@ -92,7 +92,7 @@ export function ConnectGoogleAccountBody({
                   {t('connectGoogleAccount.features.deepAnalysis.description')}
                 </Text>
               </View>
-              <CheckCircle2 size={20} color={theme.colors.accent.primary} />
+              <CheckCircle2 size={theme.iconSize.lg} color={theme.colors.accent.primary} />
             </View>
           </View>
 
@@ -129,7 +129,7 @@ export function ConnectGoogleAccountBody({
                   {t('connectGoogleAccount.features.geminiPowered.description')}
                 </Text>
               </View>
-              <CheckCircle2 size={20} color={theme.colors.accent.primary} />
+              <CheckCircle2 size={theme.iconSize.lg} color={theme.colors.accent.primary} />
             </View>
           </View>
 
@@ -166,7 +166,7 @@ export function ConnectGoogleAccountBody({
                   {t('connectGoogleAccount.features.secureToken.description')}
                 </Text>
               </View>
-              <CheckCircle2 size={20} color={theme.colors.accent.primary} />
+              <CheckCircle2 size={theme.iconSize.lg} color={theme.colors.accent.primary} />
             </View>
           </View>
         </View>

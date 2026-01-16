@@ -70,7 +70,7 @@ export function AINutritionTrackingContextModal({
             end={{ x: 1, y: 1 }}
             className="absolute inset-0 rounded-xl"
           />
-          <Sparkles size={24} color={theme.colors.text.white} />
+          <Sparkles size={theme.iconSize.xl} color={theme.colors.text.white} />
         </View>
       }>
       <View
@@ -161,7 +161,7 @@ export function AINutritionTrackingContextModal({
               <Text className="text-sm font-bold text-white">
                 {t('food.aiNutritionContext.applyContext')}
               </Text>
-              <CheckCircle size={18} color={theme.colors.text.white} />
+              <CheckCircle size={theme.iconSize.md} color={theme.colors.text.white} />
             </View>
           </Pressable>
         </View>

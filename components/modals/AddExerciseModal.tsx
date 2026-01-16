@@ -140,7 +140,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
         <View
           className="mb-6 flex-row items-center rounded-xl border border-white/5 bg-bg-card px-4 py-3"
           style={{ height: theme.components.button.height.md }}>
-          <Search size={20} color={theme.colors.text.tertiary} />
+          <Search size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
           <TextInput
             className="ml-3 flex-1 text-base text-text-primary"
             placeholder={t('workouts.addExercise.searchPlaceholder', { muscle: activeMuscle })}

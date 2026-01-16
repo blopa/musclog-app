@@ -27,7 +27,7 @@ export function ErrorStateCard({
       <View
         className="h-12 w-12 items-center justify-center rounded-full"
         style={{ backgroundColor: `${theme.colors.status.error}1A` }}>
-        <Icon size={24} color={theme.colors.status.error} />
+        <Icon size={theme.iconSize.xl} color={theme.colors.status.error} />
       </View>
 
       {/* Content */}
@@ -41,7 +41,7 @@ export function ErrorStateCard({
         <Pressable
           className="mt-2 flex-row items-center gap-2 rounded-lg border border-accent-primary px-6 py-2 active:scale-95"
           onPress={onButtonPress}>
-          <RefreshCw size={16} color={theme.colors.accent.primary} />
+          <RefreshCw size={theme.iconSize.sm} color={theme.colors.accent.primary} />
           <Text className="text-sm font-bold text-accent-primary">{defaultButtonLabel}</Text>
         </Pressable>
       )}

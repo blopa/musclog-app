@@ -50,7 +50,7 @@ export function BasicSettingsModal({
       label: t('settings.basicSettings.themeSystem'),
       icon: (
         <Settings
-          size={18}
+          size={theme.iconSize.md}
           color={themeValue === 'system' ? theme.colors.accent.primary : theme.colors.text.tertiary}
         />
       ),
@@ -60,7 +60,7 @@ export function BasicSettingsModal({
       label: t('settings.basicSettings.themeLight'),
       icon: (
         <Sun
-          size={18}
+          size={theme.iconSize.md}
           color={themeValue === 'light' ? theme.colors.accent.primary : theme.colors.text.tertiary}
         />
       ),
@@ -70,7 +70,7 @@ export function BasicSettingsModal({
       label: t('settings.basicSettings.themeDark'),
       icon: (
         <Moon
-          size={18}
+          size={theme.iconSize.md}
           color={themeValue === 'dark' ? theme.colors.accent.primary : theme.colors.text.tertiary}
         />
       ),
@@ -138,7 +138,7 @@ export function BasicSettingsModal({
             title={t('settings.basicSettings.language')}
             subtitle={t('settings.basicSettings.languageSubtitle')}
             onPress={onLanguagePress || (() => {})}
-            icon={<Settings size={24} color={theme.colors.text.primary} />}
+            icon={<Settings size={theme.iconSize.xl} color={theme.colors.text.primary} />}
             rightIcon={
               <View className="flex-row items-center gap-2">
                 <Text
@@ -146,7 +146,7 @@ export function BasicSettingsModal({
                   style={{ color: theme.colors.accent.primary }}>
                   {language}
                 </Text>
-                <ChevronRight size={16} color={theme.colors.text.tertiary} />
+                <ChevronRight size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
               </View>
             }
           />
@@ -181,7 +181,7 @@ export function BasicSettingsModal({
                     className="h-10 w-10 items-center justify-center rounded-full"
                     style={{ backgroundColor: theme.colors.background.white }}>
                     <Heart
-                      size={24}
+                      size={theme.iconSize.xl}
                       color={theme.colors.status.error}
                       fill={theme.colors.status.error}
                     />

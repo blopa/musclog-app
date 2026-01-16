@@ -18,7 +18,7 @@ export function PickerButton({ label, icon, onPress }: TestPickerButtonProps) {
         {icon}
         <Text className="font-medium text-text-primary">{label}</Text>
       </View>
-      <ChevronDown size={20} color={theme.colors.text.tertiary} />
+      <ChevronDown size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
     </Pressable>
   );
 }

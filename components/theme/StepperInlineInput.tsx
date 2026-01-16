@@ -85,7 +85,7 @@ export function StepperInlineInput({
           className="border-primary/20 h-10 w-10 items-center justify-center rounded-full border active:opacity-70"
           style={{ backgroundColor: theme.colors.status.emerald30 }}
           onPress={onDecrement}>
-          <Minus size={20} color={theme.colors.status.emeraldLight} />
+          <Minus size={theme.iconSize.lg} color={theme.colors.status.emeraldLight} />
         </Pressable>
         {editing ? (
           <View className="w-16 items-center">
@@ -128,7 +128,7 @@ export function StepperInlineInput({
           className="border-primary/20 h-10 w-10 items-center justify-center rounded-full border active:opacity-70"
           style={{ backgroundColor: theme.colors.status.emerald30 }}
           onPress={onIncrement}>
-          <Plus size={20} color={theme.colors.status.emeraldLight} />
+          <Plus size={theme.iconSize.lg} color={theme.colors.status.emeraldLight} />
         </Pressable>
       </View>
     </View>

@@ -21,7 +21,7 @@ export function CheckRadioBox({ label, value, onValueChange, type = 'checkbox' }
         }`}>
         {value &&
           (type === 'checkbox' ? (
-            <Check size={16} color={theme.colors.accent.primary} />
+            <Check size={theme.iconSize.sm} color={theme.colors.accent.primary} />
           ) : (
             <View
               className="h-3 w-3 rounded-full"

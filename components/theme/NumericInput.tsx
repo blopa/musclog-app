@@ -46,7 +46,7 @@ export function NumericInput({
         <Pressable
           className="w-full items-center justify-center rounded-lg bg-accent-primary py-1.5 active:opacity-80"
           onPress={onIncrement}>
-          <ChevronUp size={16} color={theme.colors.text.black} />
+          <ChevronUp size={theme.iconSize.sm} color={theme.colors.text.black} />
         </Pressable>
       )}
       <TextInput
@@ -66,7 +66,7 @@ export function NumericInput({
         <Pressable
           className="w-full items-center justify-center rounded-lg bg-accent-primary py-1.5 active:opacity-80"
           onPress={onDecrement}>
-          <ChevronDown size={16} color={theme.colors.text.black} />
+          <ChevronDown size={theme.iconSize.sm} color={theme.colors.text.black} />
         </Pressable>
       )}
     </View>

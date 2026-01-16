@@ -50,7 +50,7 @@ export function AdvancedSettingsModal({
             alignItems: 'center',
             justifyContent: 'center',
           }}>
-          <Bug size={24} color={theme.colors.status.purple} />
+          <Bug size={theme.iconSize.xl} color={theme.colors.status.purple} />
         </View>
       ),
       value: anonymousBugReport,
@@ -72,7 +72,7 @@ export function AdvancedSettingsModal({
             {t('settings.advancedSettings.dataPortability')}
           </Text>
           <SettingsCard
-            icon={<Download size={24} color={theme.colors.accent.primary} />}
+            icon={<Download size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
             iconContainerStyle={{
               width: theme.size['40'],
               height: theme.size['40'],
@@ -82,10 +82,10 @@ export function AdvancedSettingsModal({
             title={t('settings.advancedSettings.exportFitnessData')}
             subtitle={t('settings.advancedSettings.exportFitnessDataSubtitle')}
             onPress={onExportPress || (() => {})}
-            rightIcon={<ChevronRight size={20} color={theme.colors.text.tertiary} />}
+            rightIcon={<ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />}
           />
           <SettingsCard
-            icon={<Upload size={24} color={theme.colors.accent.primary} />}
+            icon={<Upload size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
             iconContainerStyle={{
               width: theme.size['40'],
               height: theme.size['40'],
@@ -95,7 +95,7 @@ export function AdvancedSettingsModal({
             title={t('settings.advancedSettings.importFitnessData')}
             subtitle={t('settings.advancedSettings.importFitnessDataSubtitle')}
             onPress={onImportPress || (() => {})}
-            rightIcon={<ChevronRight size={20} color={theme.colors.text.tertiary} />}
+            rightIcon={<ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />}
           />
         </View>
 
@@ -117,7 +117,7 @@ export function AdvancedSettingsModal({
             {t('settings.advancedSettings.dangerZone')}
           </Text>
           <SettingsCard
-            icon={<Trash2 size={24} color={theme.colors.status.error} />}
+            icon={<Trash2 size={theme.iconSize.xl} color={theme.colors.status.error} />}
             iconContainerStyle={{
               width: theme.size['40'],
               height: theme.size['40'],
@@ -128,7 +128,7 @@ export function AdvancedSettingsModal({
             subtitle={t('settings.advancedSettings.requestAccountDeletionSubtitle')}
             titleColor={theme.colors.status.error}
             onPress={onAccountDeletionPress || (() => {})}
-            rightIcon={<ChevronRight size={20} color={theme.colors.status.error} />}
+            rightIcon={<ChevronRight size={theme.iconSize.lg} color={theme.colors.status.error} />}
           />
 
           {/* Version Info */}

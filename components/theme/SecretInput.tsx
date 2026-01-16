@@ -24,9 +24,9 @@ export function SecretInput({ label = '', value, onChangeText, placeholder }: Se
       icon={
         <Pressable onPress={() => setVisible((v) => !v)}>
           {visible ? (
-            <Eye size={18} color={theme.colors.text.secondary} />
+            <Eye size={theme.iconSize.md} color={theme.colors.text.secondary} />
           ) : (
-            <EyeOff size={18} color={theme.colors.text.secondary} />
+            <EyeOff size={theme.iconSize.md} color={theme.colors.text.secondary} />
           )}
         </Pressable>
       }

@@ -35,14 +35,14 @@ export function EmptyStateCard({
             end={{ x: 1, y: 0 }}
             className="h-40 w-40 items-center justify-center rounded-full"
             style={{ opacity: theme.colors.opacity.medium80 }}>
-            <Icon size={64} color={theme.colors.text.primary} />
+            <Icon size={theme.iconSize['6xl']} color={theme.colors.text.primary} />
           </LinearGradient>
         </View>
       ) : (
         <View
           className="h-40 w-40 items-center justify-center rounded-full"
           style={{ backgroundColor: theme.colors.accent.primary10 }}>
-          <Icon size={64} color={theme.colors.accent.primary} />
+          <Icon size={theme.iconSize['6xl']} color={theme.colors.accent.primary} />
         </View>
       )}
 
