@@ -8,10 +8,7 @@ type ProgressIndicatorProps = {
   size?: 'small' | 'large';
 };
 
-export function ProgressIndicator({
-  message,
-  size = 'large',
-}: ProgressIndicatorProps) {
+export function ProgressIndicator({ message, size = 'large' }: ProgressIndicatorProps) {
   const { t } = useTranslation();
   const displayMessage = message || t('common.loading');
   return (
