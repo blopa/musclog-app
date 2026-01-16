@@ -95,7 +95,7 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
       onClose={onClose}
       title={t('exercises.createExercise.title')}>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        <View className="px-4 py-2" style={{ gap: 24 }}>
+        <View className="px-4 py-2" style={{ gap: theme.spacing.gap.xl }}>
           {/* Exercise Name */}
           <View>
             <TextInput
@@ -107,7 +107,7 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
           </View>
 
           {/* Muscle Target Section */}
-          <View style={{ gap: 16 }}>
+          <View style={{ gap: theme.spacing.gap.base }}>
             <Text className="text-lg font-bold tracking-tight text-text-primary">
               {t('exercises.createExercise.muscleTarget')}
             </Text>
@@ -136,7 +136,7 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
             </View>
 
             {/* Secondary Muscles */}
-            <View style={{ gap: 8 }}>
+            <View style={{ gap: theme.spacing.gap.sm }}>
               <Text className="ml-1 text-sm font-medium text-text-secondary">
                 {t('exercises.createExercise.secondaryMuscles')}
               </Text>
@@ -187,7 +187,7 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
           />
 
           {/* Add Visuals Section */}
-          <View style={{ gap: 12 }}>
+          <View style={{ gap: theme.spacing.gap.md }}>
             <Text className="text-lg font-bold tracking-tight text-text-primary">
               {t('exercises.createExercise.addVisuals')}
             </Text>
@@ -212,7 +212,7 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
           </View>
 
           {/* Bottom spacing for fixed button */}
-          <View style={{ height: 100 }} />
+          <View style={{ height: theme.size.spacer100 }} />
         </View>
       </ScrollView>
 

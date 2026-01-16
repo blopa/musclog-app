@@ -278,7 +278,7 @@ export function OptionsMultiSelector<T extends string | number>({
                   <View
                     style={{
                       marginRight: theme.spacing.gap.sm,
-                      opacity: 0.5,
+                      opacity: theme.colors.opacity.medium50,
                     }}>
                     <GripVertical
                       size={theme.iconSize.md}

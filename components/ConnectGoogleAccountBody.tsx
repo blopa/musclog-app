@@ -73,7 +73,7 @@ export function ConnectGoogleAccountBody({
                 backgroundColor: theme.colors.accent.primary,
                 opacity: theme.colors.opacity.dimmer,
                 shadowColor: theme.colors.accent.primary,
-                shadowOffset: { width: 0, height: 0 },
+                shadowOffset: theme.shadowOffset.zero,
                 shadowOpacity: theme.colors.opacity.dimmer,
                 shadowRadius: theme.shadows.radius8.shadowRadius,
               }}
@@ -110,7 +110,7 @@ export function ConnectGoogleAccountBody({
                 backgroundColor: theme.colors.accent.primary,
                 opacity: theme.colors.opacity.dimmer,
                 shadowColor: theme.colors.accent.primary,
-                shadowOffset: { width: 0, height: 0 },
+                shadowOffset: theme.shadowOffset.zero,
                 shadowOpacity: theme.colors.opacity.dimmer,
                 shadowRadius: theme.shadows.radius8.shadowRadius,
               }}
@@ -147,7 +147,7 @@ export function ConnectGoogleAccountBody({
                 backgroundColor: theme.colors.accent.primary,
                 opacity: theme.colors.opacity.dimmer,
                 shadowColor: theme.colors.accent.primary,
-                shadowOffset: { width: 0, height: 0 },
+                shadowOffset: theme.shadowOffset.zero,
                 shadowOpacity: theme.colors.opacity.dimmer,
                 shadowRadius: theme.shadows.radius8.shadowRadius,
               }}

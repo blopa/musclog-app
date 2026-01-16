@@ -185,10 +185,10 @@ export function DatePickerModal({
                           style={{
                             backgroundColor: theme.colors.accent.primary,
                             shadowColor: theme.colors.accent.primary,
-                            shadowOffset: { width: 0, height: 4 },
-                            shadowOpacity: 0.3,
-                            shadowRadius: 8,
-                            elevation: 8,
+                            shadowOffset: theme.shadowOffset.lg,
+                            shadowOpacity: theme.shadowOpacity.medium,
+                            shadowRadius: theme.shadowRadius.md,
+                            elevation: theme.elevation.xl,
                           }}
                         />
                         <Text
@@ -221,7 +221,7 @@ export function DatePickerModal({
             horizontal
             showsHorizontalScrollIndicator={false}
             className="mt-6 pb-2"
-            contentContainerStyle={{ gap: 12 }}>
+            contentContainerStyle={{ gap: theme.spacing.gap.md }}>
             <Button
               label={t('datePicker.today')}
               variant="secondary"
@@ -289,7 +289,7 @@ export function DatePickerModal({
               <Text className="mb-3 text-sm font-semibold uppercase tracking-wider text-text-secondary">
                 {t('datePicker.month')}
               </Text>
-              <View className="flex-row flex-wrap" style={{ gap: 8 }}>
+              <View className="flex-row flex-wrap" style={{ gap: theme.spacing.gap.sm }}>
                 {monthNames.map((month, index) => (
                   <Pressable
                     key={index}

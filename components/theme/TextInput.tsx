@@ -38,10 +38,10 @@ export function TextInput({
             ? {
                 borderColor: `${theme.colors.accent.primary}80`,
                 shadowColor: theme.colors.accent.primary,
-                shadowOffset: { width: 0, height: 0 },
-                shadowOpacity: 0.1,
-                shadowRadius: 8,
-                elevation: 2,
+                shadowOffset: theme.shadowOffset.zero,
+                shadowOpacity: theme.shadowOpacity.light,
+                shadowRadius: theme.shadowRadius.md,
+                elevation: theme.elevation.sm,
               }
             : {}
         }>
@@ -53,7 +53,7 @@ export function TextInput({
           onChangeText={onChangeText}
           keyboardType={keyboardType}
           secureTextEntry={secureTextEntry}
-          style={{ borderWidth: 0 }}
+          style={{ borderWidth: theme.borderWidth.none }}
         />
         {icon && <View className="ml-2">{icon}</View>}
       </View>

@@ -31,9 +31,9 @@ export function ToggleInput(props: TogglableSettingsProps) {
         borderWidth: theme.borderWidth.thin,
         borderColor: theme.colors.border.light,
         shadowColor: theme.colors.accent.primary,
-        shadowOpacity: 0.03,
-        shadowRadius: 2,
-        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: theme.shadowOpacity.veryLight,
+        shadowRadius: theme.shadowRadius.sm,
+        shadowOffset: theme.shadowOffset.sm,
       }}>
       {props.header}
       {items.map((it, idx) => (
@@ -49,7 +49,7 @@ export function ToggleInput(props: TogglableSettingsProps) {
               },
             ]}
             onPress={() => it.onValueChange(!it.value)}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flex: 1 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.gap.sm, flex: 1 }}>
               {it.icon}
               <View style={{ flex: 1 }}>
                 <Text

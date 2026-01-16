@@ -70,10 +70,10 @@ export const GroupActionButton: React.FC<GroupActionButtonProps> = ({
               : theme.colors.status.emeraldSolid,
             transform: [{ scale: pressed ? 0.98 : 1 }],
             shadowColor: theme.colors.text.black,
-            shadowOffset: { width: 0, height: 2 },
+            shadowOffset: theme.shadowOffset.md,
             shadowOpacity: theme.colors.opacity.dimmer,
             shadowRadius: theme.shadows.radius3.shadowRadius,
-            elevation: 3,
+            elevation: theme.elevation.md,
           },
         ]}>
         <ActionIcon color={theme.colors.text.white} />

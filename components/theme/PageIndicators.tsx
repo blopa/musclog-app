@@ -21,10 +21,10 @@ export function PageIndicators({ totalPages, currentPage }: PageIndicatorsProps)
                     width: theme.size['8'],
                     backgroundColor: theme.colors.status.emeraldLight,
                     shadowColor: theme.colors.status.emeraldLight,
-                    shadowOffset: { width: 0, height: 0 },
-                    shadowOpacity: 0.5,
-                    shadowRadius: 10,
-                    elevation: 5,
+                    shadowOffset: theme.shadowOffset.zero,
+                    shadowOpacity: theme.shadowOpacity.medium50,
+                    shadowRadius: theme.shadowRadius.lg,
+                    elevation: theme.elevation.lg,
                   }
                 : {
                     backgroundColor: theme.colors.background.white10,

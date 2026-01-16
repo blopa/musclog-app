@@ -29,7 +29,7 @@ export function SettingsCard({
             justifyContent: 'space-between',
             padding: theme.spacing.padding.base,
           }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.gap.base }}>
             <View
               style={[
                 {

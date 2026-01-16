@@ -106,8 +106,8 @@ export const StepperInput: React.FC<StepperInputProps> = ({
               keyboardType="numeric"
               className="flex-1 p-0 text-center text-2xl font-bold text-text-primary"
               style={{
-                padding: 0,
-                margin: 0,
+                padding: theme.spacing.padding.zero,
+                margin: theme.spacing.margin.zero,
                 color: theme.colors.text.primary,
               }}
               returnKeyType="done"

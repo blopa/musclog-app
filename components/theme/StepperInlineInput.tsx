@@ -98,9 +98,9 @@ export function StepperInlineInput({
               keyboardType="numeric"
               className="p-0 text-center text-xl font-bold text-white"
               style={{
-                width: 64,
-                padding: 0,
-                margin: 0,
+                width: theme.components.stepperInput.width,
+                padding: theme.spacing.padding.zero,
+                margin: theme.spacing.margin.zero,
                 color: theme.colors.text.white,
               }}
               returnKeyType="done"

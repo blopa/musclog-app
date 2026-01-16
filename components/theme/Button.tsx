@@ -239,7 +239,7 @@ export function Button({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: Icon ? config.gap : 0,
+        gap: Icon ? config.gap : theme.spacing.gap.zero,
         ...(width === 'auto' ? {} : { width: '100%' }),
       }}>
       {iconPosition === 'left' && iconElement}

@@ -291,10 +291,10 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
               paddingHorizontal: 16,
               justifyContent: 'center',
               shadowColor: isFocused ? theme.colors.accent.primary : 'transparent',
-              shadowOffset: { width: 0, height: 0 },
+              shadowOffset: theme.shadowOffset.zero,
               shadowOpacity: theme.colors.opacity.lightDim,
               shadowRadius: theme.shadows.radius8.shadowRadius,
-              elevation: isFocused ? 2 : 0,
+              elevation: isFocused ? theme.elevation.sm : theme.elevation.none,
             }}>
             <TextInput
               value={mealName}
@@ -306,7 +306,7 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
               style={{
                 fontSize: theme.typography.fontSize.base,
                 color: theme.colors.text.primary,
-                borderWidth: 0,
+                borderWidth: theme.borderWidth.none,
               }}
             />
           </View>

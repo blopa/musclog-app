@@ -82,7 +82,7 @@ function NumberInputField({
                 color: theme.colors.text.primary,
                 textAlign: 'center',
                 textAlignVertical: 'center',
-                borderWidth: 0,
+                borderWidth: theme.borderWidth.none,
                 paddingHorizontal: 0,
                 paddingVertical: theme.spacing.padding.md,
               },

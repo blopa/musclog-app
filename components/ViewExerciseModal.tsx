@@ -289,7 +289,7 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
                   width: theme.size['16'],
                   height: theme.size['16'],
                   borderRadius: theme.borderRadius['2xl'],
-                  padding: 0,
+                  padding: theme.spacing.padding.zero,
                   overflow: 'hidden',
                 }}
               />

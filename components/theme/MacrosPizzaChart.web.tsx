@@ -56,7 +56,7 @@ export function MacrosPizzaChart({
         style={{
           data: {
             stroke: 'transparent',
-            strokeWidth: 0,
+            strokeWidth: theme.strokeWidth.none,
           },
         }}
       />

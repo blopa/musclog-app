@@ -228,7 +228,7 @@ const renderBubble = (props: BubbleProps<ExtendedIMessage>) => {
 const renderAvatar = (props: any) => {
   if (props.currentMessage?.user._id === 1) return null;
   if (!props.currentMessage?.text && props.currentMessage?.workout) {
-    return <View style={{ width: 32 }} />;
+    return <View style={{ width: theme.size['8'] }} />;
   }
   return <Image source={{ uri: AI_COACH_AVATAR }} style={styles.avatar} resizeMode="cover" />;
 };
@@ -324,7 +324,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
         horizontal
         showsHorizontalScrollIndicator={false}
         className="px-4 py-3"
-        contentContainerStyle={{ gap: 8 }}>
+        contentContainerStyle={{ gap: theme.spacing.gap.sm }}>
         <Pressable
           className="flex-row items-center gap-2 whitespace-nowrap rounded-full border px-4 py-2 active:scale-95"
           style={{
@@ -494,7 +494,7 @@ const styles = StyleSheet.create({
   },
   inputToolbarContainer: {
     backgroundColor: 'transparent',
-    borderTopWidth: 0,
+    borderTopWidth: theme.borderWidth.none,
     paddingHorizontal: theme.spacing.padding.base,
     paddingBottom: theme.spacing.padding.sm,
   },

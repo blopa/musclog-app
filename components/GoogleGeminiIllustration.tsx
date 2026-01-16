@@ -101,10 +101,10 @@ export const GoogleGeminiIllustration = ({
                 style={{
                   backgroundColor: theme.colors.status.emeraldLight, // #29e08e - primary from HTML
                   shadowColor: theme.colors.status.emeraldLight,
-                  shadowOffset: { width: 0, height: 0 },
+                  shadowOffset: theme.shadowOffset.zero,
                   shadowOpacity: theme.colors.opacity.dim30,
                   shadowRadius: theme.shadows.radius15.shadowRadius,
-                  elevation: 5,
+                  elevation: theme.elevation.lg,
                 }}>
                 <Zap
                   size={18}

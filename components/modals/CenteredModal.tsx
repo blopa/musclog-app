@@ -66,7 +66,7 @@ export function CenteredModal({
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             style={{
-              borderBottomWidth: 1,
+              borderBottomWidth: theme.borderWidth.thin,
               borderBottomColor: theme.colors.border.dark,
             }}>
             <View className="flex-row items-center justify-between px-6 py-5">

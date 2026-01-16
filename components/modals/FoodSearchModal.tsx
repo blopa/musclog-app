@@ -140,7 +140,7 @@ function UnderlineTabs({ tabs, activeTab, onTabChange }: UnderlineTabsProps) {
             onPress={() => onTabChange(tab.id)}
             className="pb-3"
             style={{
-              borderBottomWidth: 2,
+              borderBottomWidth: theme.borderWidth.medium,
               borderBottomColor: isActive ? theme.colors.accent.secondary : 'transparent',
             }}>
             <Text

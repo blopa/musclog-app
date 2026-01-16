@@ -335,6 +335,7 @@ export const theme = {
   spacing: {
     // Padding
     padding: {
+      zero: 0, // Zero padding
       xs: 4,
       sm: 8,
       md: 12,
@@ -355,6 +356,7 @@ export const theme = {
 
     // Margin/Gap
     gap: {
+      zero: 0, // Zero gap
       xs: 4,
       sm: 8,
       md: 12,
@@ -369,6 +371,19 @@ export const theme = {
       '4half': 18, // 4.5 * 4 = 18px
       // Specific gap values found in codebase
       '8': 8,
+    },
+    
+    // Margin (same values as padding for consistency)
+    margin: {
+      zero: 0, // Zero margin
+      xs: 4,
+      sm: 8,
+      md: 12,
+      base: 16,
+      lg: 20,
+      xl: 24,
+      '2xl': 32,
+      '3xl': 48,
     },
   },
 
@@ -390,6 +405,7 @@ export const theme = {
 
   // Border widths
   borderWidth: {
+    none: 0, // No border
     thin: 1,
     medium: 2,
     thick: 3,
@@ -402,6 +418,7 @@ export const theme = {
 
   // Stroke widths (for icons and SVG)
   strokeWidth: {
+    none: 0, // No stroke
     thin: 1,
     normal: 2.5,
     thick: 3,
@@ -518,6 +535,42 @@ export const theme = {
     },
   },
 
+  // Shadow offset values (for individual shadow properties)
+  shadowOffset: {
+    zero: { width: 0, height: 0 }, // No offset
+    sm: { width: 0, height: 1 }, // Small offset
+    md: { width: 0, height: 2 }, // Medium offset
+    lg: { width: 0, height: 4 }, // Large offset
+  },
+
+  // Shadow opacity values (for individual shadow properties)
+  shadowOpacity: {
+    veryLight: 0.03, // Very light shadow (3%)
+    light: 0.1, // Light shadow (10%)
+    medium: 0.3, // Medium shadow (30%)
+    mediumHeavy: 0.4, // Medium-heavy shadow (40%)
+    medium50: 0.5, // Medium shadow (50%)
+    heavy: 0.8, // Heavy shadow (80%)
+    full: 1.0, // Full opacity
+  },
+
+  // Shadow radius values (for individual shadow properties)
+  shadowRadius: {
+    sm: 2, // Small radius
+    md: 8, // Medium radius
+    lg: 10, // Large radius
+    xl: 20, // Extra large radius
+  },
+
+  // Elevation values (for Android shadow elevation)
+  elevation: {
+    none: 0, // No elevation
+    sm: 2, // Small elevation
+    md: 3, // Medium elevation
+    lg: 5, // Large elevation
+    xl: 8, // Extra large elevation
+  },
+
   // Icon sizes
   iconSize: {
     xs: 14,
@@ -581,6 +634,9 @@ export const theme = {
     '1half': 6, // 1.5 * 4 = 6px
     '2half': 10, // 2.5 * 4 = 10px
     '3half': 14, // 3.5 * 4 = 14px
+    // Component-specific sizes
+    stepperInputWidth: 64, // Width for stepper input fields
+    spacer100: 100, // Common spacer height (100px)
   },
 
   // Max widths
@@ -622,6 +678,13 @@ export const theme = {
     },
     workoutSession: {
       heroImageHeight: 520,
+    },
+    skeleton: {
+      defaultHeight: 16,
+      defaultBorderRadius: 8,
+    },
+    stepperInput: {
+      width: 64,
     },
   },
 } as const;

@@ -124,7 +124,7 @@ function FoodResultCard({
         borderWidth: isSelected ? 1 : theme.borderWidth.thin,
         borderColor: isSelected ? theme.colors.accent.primary : theme.colors.border.light,
         shadowColor: isSelected ? theme.colors.accent.primary : 'transparent',
-        shadowOffset: { width: 0, height: 0 },
+        shadowOffset: theme.shadowOffset.zero,
         shadowOpacity: isSelected ? 0.4 : 0,
         shadowRadius: isSelected ? 8 : 0,
         elevation: isSelected ? 3 : 0,
@@ -142,7 +142,7 @@ function FoodResultCard({
               alignItems: 'center',
               justifyContent: 'center',
               shadowColor: isSelected ? theme.colors.accent.primary : 'transparent',
-              shadowOffset: { width: 0, height: 0 },
+              shadowOffset: theme.shadowOffset.zero,
               shadowOpacity: theme.colors.opacity.dim30,
               shadowRadius: theme.shadows.radius4.shadowRadius,
             }}>

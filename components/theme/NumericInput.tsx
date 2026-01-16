@@ -57,7 +57,7 @@ export function NumericInput({
         onChangeText={onChangeText}
         keyboardType="numeric"
         onFocus={handleFocus}
-        style={{ borderWidth: 0 }}
+        style={{ borderWidth: theme.borderWidth.none }}
       />
       <Text className="text-xs font-medium" style={{ color: unitColor }}>
         {unit}

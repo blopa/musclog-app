@@ -75,8 +75,8 @@ export default function PreRegistrationIntro() {
             borderColor: theme.colors.background.white10,
             ...theme.shadows.lg,
             shadowColor: theme.colors.status.indigo,
-            shadowOpacity: 0.4,
-            shadowRadius: 20,
+            shadowOpacity: theme.shadowOpacity.mediumHeavy,
+            shadowRadius: theme.shadowRadius.xl,
           }}>
           {/* Person Icon with Gradient Effect */}
           <View
@@ -131,7 +131,7 @@ export default function PreRegistrationIntro() {
               height: theme.size['14'],
               ...theme.shadows.lg,
               shadowColor: theme.colors.status.emeraldLight,
-              shadowOpacity: 0.2,
+              shadowOpacity: theme.shadowOpacity.light,
             }}>
             <LinearGradient
               colors={theme.colors.gradients.cta}
