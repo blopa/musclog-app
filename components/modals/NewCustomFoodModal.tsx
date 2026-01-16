@@ -1,21 +1,21 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, Pressable, TextInput as RNTextInput } from 'react-native';
+import { Pressable, ScrollView, Text, TextInput as RNTextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import {
-  Pencil,
-  ScanLine,
   BarChart,
-  Dumbbell,
+  ChevronDown,
   Cookie,
   Droplet,
-  Leaf,
+  Dumbbell,
   FlaskConical,
   IceCream,
-  Wine,
-  Waves,
-  ChevronDown,
+  Leaf,
+  Pencil,
   PlusCircle,
+  ScanLine,
+  Waves,
+  Wine,
 } from 'lucide-react-native';
 import { theme } from '../../theme';
 import { FullScreenModal } from './FullScreenModal';
@@ -23,6 +23,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '../theme/Button';
 import { TextInput } from '../theme/TextInput';
 import { SegmentedControl } from '../theme/SegmentedControl';
+import { CaloriesInput } from '../CaloriesInput';
 
 type MeasurementUnit = '100g' | 'serving' | 'container';
 
@@ -241,7 +242,7 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
               )}
             </View>
           </View>
-          <View className="gap-3 pb-8 pt-4 px-4">
+          <View className="gap-3 px-4 pb-8 pt-4">
             <Button
               label={t('common.save')}
               variant="gradientCta"
@@ -254,65 +255,6 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
         </ScrollView>
       </SafeAreaView>
     </FullScreenModal>
-  );
-}
-
-type CaloriesInputProps = {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  topRightElement: React.ReactNode;
-  highlightColor: string;
-};
-
-function CaloriesInput({
-  label,
-  value,
-  onChange,
-  topRightElement,
-  highlightColor,
-}: CaloriesInputProps) {
-  const [isFocused, setIsFocused] = useState(false);
-
-  return (
-    <View
-      className="overflow-hidden rounded-xl border border-white/10 bg-bg-card p-5"
-      style={{
-        borderColor: isFocused ? theme.colors.accent.primary50 : theme.colors.background.white10,
-        shadowColor: highlightColor,
-        shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0.1,
-        shadowRadius: 15,
-        elevation: 2,
-      }}>
-      <View className="mb-1 flex-row items-start justify-between">
-        <Text className="text-xs font-bold uppercase tracking-widest text-text-secondary">
-          {label}
-        </Text>
-        {topRightElement}
-      </View>
-      <RNTextInput
-        value={value}
-        onChangeText={onChange}
-        placeholder="0"
-        placeholderTextColor={theme.colors.text.tertiary + '50'}
-        keyboardType="numeric"
-        selectTextOnFocus
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
-        className="w-full border-0 bg-transparent p-0 text-5xl font-bold text-text-primary"
-        style={{
-          fontSize: 48,
-          lineHeight: 56,
-        }}
-      />
-      {isFocused && (
-        <View
-          className="absolute bottom-0 left-0 right-0 h-1 rounded-b-xl"
-          style={{ backgroundColor: highlightColor }}
-        />
-      )}
-    </View>
   );
 }
 
