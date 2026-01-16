@@ -125,12 +125,12 @@ function FoodResultCard({
         borderColor: isSelected ? theme.colors.accent.primary : theme.colors.border.light,
         shadowColor: isSelected ? theme.colors.accent.primary : 'transparent',
         shadowOffset: theme.shadowOffset.zero,
-        shadowOpacity: isSelected ? 0.4 : 0,
-        shadowRadius: isSelected ? 8 : 0,
-        elevation: isSelected ? 3 : 0,
+        shadowOpacity: isSelected ? theme.shadowOpacity.mediumHeavy : 0,
+        shadowRadius: isSelected ? theme.shadowRadius.md : 0,
+        elevation: isSelected ? theme.elevation.md : 0,
       }}>
       <Pressable onPress={onToggle} style={{ flexDirection: 'row', gap: theme.spacing.gap.md }}>
-        <View style={{ paddingTop: 4 }}>
+        <View style={{ paddingTop: theme.spacing.padding.xs }}>
           <View
             style={{
               width: theme.size.xl,
@@ -174,8 +174,8 @@ function FoodResultCard({
                 backgroundColor: isSelected
                   ? theme.colors.accent.primary10
                   : theme.colors.background.white5,
-                paddingHorizontal: 8,
-                paddingVertical: 4,
+                paddingHorizontal: theme.spacing.padding.sm,
+                paddingVertical: theme.spacing.padding.xs,
                 borderRadius: theme.borderRadius.md,
               }}>
               <Text
@@ -288,7 +288,7 @@ function FoodResultCard({
               style={{
                 fontSize: theme.typography.fontSize.xs,
                 color: theme.colors.text.primary,
-                paddingRight: 4,
+                paddingRight: theme.spacing.padding.xs,
                 fontWeight: theme.typography.fontWeight.medium,
               }}>
               g

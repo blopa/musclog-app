@@ -83,7 +83,7 @@ function NumberInputField({
                 textAlign: 'center',
                 textAlignVertical: 'center',
                 borderWidth: theme.borderWidth.none,
-                paddingHorizontal: 0,
+                paddingHorizontal: theme.spacing.padding.zero,
                 paddingVertical: theme.spacing.padding.md,
               },
               Platform.OS === 'web' &&

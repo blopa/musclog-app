@@ -440,7 +440,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
 const styles = StyleSheet.create({
   userBubbleContainer: {
     maxWidth: '85%',
-    marginRight: 0,
+    marginRight: theme.spacing.margin.zero,
     marginLeft: 'auto',
     alignItems: 'flex-end',
   },
@@ -452,7 +452,7 @@ const styles = StyleSheet.create({
   },
   aiBubbleContainer: {
     maxWidth: '85%',
-    marginLeft: 0,
+    marginLeft: theme.spacing.margin.zero,
     marginRight: 'auto',
     alignItems: 'flex-start',
   },

@@ -30,7 +30,7 @@ export function FilterTabs({
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
-      contentContainerStyle={scrollViewContentContainerStyle || { paddingHorizontal: 24 }}
+      contentContainerStyle={scrollViewContentContainerStyle || { paddingHorizontal: theme.spacing.padding.xl }}
       className="flex-row">
       {tabs.map((tab, index) => {
         const isActive = activeTab === tab.id;
@@ -51,7 +51,7 @@ export function FilterTabs({
               {tab.label}
             </Text>
             {isActive && withCheckmark && (
-              <Check size={14} color={theme.colors.text.black} style={{ marginLeft: 6 }} />
+              <Check size={14} color={theme.colors.text.black} style={{ marginLeft: theme.spacing.margin['1half'] }} />
             )}
           </Pressable>
         );

@@ -68,10 +68,10 @@ export function WorkoutSummaryTrophy() {
           backgroundColor: theme.colors.status.indigo10,
           borderColor: theme.colors.background.white5,
           shadowColor: theme.colors.accent.primary,
-          shadowOffset: { width: 0, height: 0 },
-          shadowOpacity: 0.1,
-          shadowRadius: 40,
-          elevation: 20,
+          shadowOffset: theme.shadowOffset.zero,
+          shadowOpacity: theme.shadowOpacity.light,
+          shadowRadius: theme.shadowRadius['2xl'],
+          elevation: theme.elevation['3xl'],
         }}>
         <LinearGradient
           colors={[theme.colors.status.indigo10, theme.colors.status.emerald10]}

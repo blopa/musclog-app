@@ -220,8 +220,8 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
       <View
         className="px-4"
         style={{
-          paddingBottom: Math.max(insets.bottom, 16),
-          paddingTop: 16,
+          paddingBottom: Math.max(insets.bottom, theme.spacing.padding.base),
+          paddingTop: theme.spacing.padding.base,
           backgroundColor: theme.colors.background.primary,
         }}>
         <Button

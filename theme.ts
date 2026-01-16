@@ -336,6 +336,7 @@ export const theme = {
     // Padding
     padding: {
       zero: 0, // Zero padding
+      '2': 2, // 2px padding
       xs: 4,
       sm: 8,
       md: 12,
@@ -376,7 +377,9 @@ export const theme = {
     // Margin (same values as padding for consistency)
     margin: {
       zero: 0, // Zero margin
+      '2': 2, // 2px margin
       xs: 4,
+      '1half': 6, // 1.5 * 4 = 6px
       sm: 8,
       md: 12,
       base: 16,
@@ -490,6 +493,20 @@ export const theme = {
       shadowRadius: 15,
       elevation: 5,
     },
+    radius20: {
+      shadowColor: '#000000',
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0.3,
+      shadowRadius: 20,
+      elevation: 10,
+    },
+    radius40: {
+      shadowColor: '#000000',
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0.1,
+      shadowRadius: 40,
+      elevation: 20,
+    },
     // Custom shadow for sliders
     slider: {
       shadowColor: '#000000',
@@ -560,6 +577,7 @@ export const theme = {
     md: 8, // Medium radius
     lg: 10, // Large radius
     xl: 20, // Extra large radius
+    '2xl': 40, // 2x extra large radius
   },
 
   // Elevation values (for Android shadow elevation)
@@ -569,6 +587,8 @@ export const theme = {
     md: 3, // Medium elevation
     lg: 5, // Large elevation
     xl: 8, // Extra large elevation
+    '2xl': 10, // 2x extra large elevation
+    '3xl': 20, // 3x extra large elevation
   },
 
   // Icon sizes

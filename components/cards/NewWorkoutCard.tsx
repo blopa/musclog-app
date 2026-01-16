@@ -88,7 +88,7 @@ export function NewWorkoutCard({
               style={{
                 backgroundColor: theme.colors.background.white10,
                 paddingHorizontal: theme.spacing.padding.sm,
-                paddingVertical: 2,
+                paddingVertical: theme.spacing.padding['2'],
                 borderRadius: theme.borderRadius.sm,
               }}>
               <Text

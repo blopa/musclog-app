@@ -224,7 +224,7 @@ export default function CreateWorkoutScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           paddingHorizontal: theme.spacing.padding.base,
-          paddingBottom: 120,
+          paddingBottom: theme.size['120'],
         }}>
         {/* Essentials Section */}
         <View style={{ marginBottom: theme.spacing.gap.xl }}>
@@ -234,9 +234,9 @@ export default function CreateWorkoutScreen() {
               fontWeight: theme.typography.fontWeight.bold,
               color: theme.colors.text.secondary,
               textTransform: 'uppercase',
-              letterSpacing: 1.2,
+              letterSpacing: theme.typography.letterSpacing.widest,
               marginBottom: theme.spacing.padding.md,
-              marginLeft: 4,
+              marginLeft: theme.spacing.margin.xs,
             }}>
             {t('createWorkout.essentials')}
           </Text>
@@ -266,7 +266,7 @@ export default function CreateWorkoutScreen() {
                     fontSize: theme.typography.fontSize.xs,
                     fontWeight: theme.typography.fontWeight.medium,
                     color: theme.colors.text.secondary,
-                    marginBottom: 4,
+                    marginBottom: theme.spacing.margin.xs,
                   }}>
                   {t('createWorkout.workoutTitle')}
                 </Text>
@@ -345,9 +345,9 @@ export default function CreateWorkoutScreen() {
               fontWeight: theme.typography.fontWeight.bold,
               color: theme.colors.text.secondary,
               textTransform: 'uppercase',
-              letterSpacing: 1.2,
+              letterSpacing: theme.typography.letterSpacing.widest,
               marginBottom: theme.spacing.padding.md,
-              marginLeft: 4,
+              marginLeft: theme.spacing.margin.xs,
             }}>
             {t('createWorkout.intelligence')}
           </Text>
@@ -396,9 +396,9 @@ export default function CreateWorkoutScreen() {
               fontWeight: theme.typography.fontWeight.bold,
               color: theme.colors.text.secondary,
               textTransform: 'uppercase',
-              letterSpacing: 1.2,
+              letterSpacing: theme.typography.letterSpacing.widest,
               marginBottom: theme.spacing.padding.md,
-              marginLeft: 4,
+              marginLeft: theme.spacing.margin.xs,
             }}>
             {t('createWorkout.routine')}
           </Text>
@@ -448,9 +448,9 @@ export default function CreateWorkoutScreen() {
               fontWeight: theme.typography.fontWeight.bold,
               color: theme.colors.text.secondary,
               textTransform: 'uppercase',
-              letterSpacing: 1.2,
+              letterSpacing: theme.typography.letterSpacing.widest,
               marginBottom: theme.spacing.padding.md,
-              marginLeft: 4,
+              marginLeft: theme.spacing.margin.xs,
             }}>
             {t('createWorkout.exercises')}
           </Text>

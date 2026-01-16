@@ -39,10 +39,10 @@ export function RestOverStatusIcon() {
           backgroundColor: theme.colors.background.cardDark,
           borderColor: theme.colors.status.emerald20,
           shadowColor: theme.colors.accent.primary,
-          shadowOffset: { width: 0, height: 0 },
-          shadowOpacity: 0.3,
-          shadowRadius: 20,
-          elevation: 10,
+          shadowOffset: theme.shadowOffset.zero,
+          shadowOpacity: theme.shadowOpacity.medium,
+          shadowRadius: theme.shadowRadius.xl,
+          elevation: theme.elevation['2xl'],
         }}>
         <Dumbbell
           size={theme.iconSize['5xl']}

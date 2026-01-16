@@ -152,7 +152,7 @@ export function ReplaceExerciseModal({
             activeTab={selectedFilter}
             onTabChange={setSelectedFilter}
             showContainer={false}
-            scrollViewContentContainerStyle={{ paddingHorizontal: 0 }}
+            scrollViewContentContainerStyle={{ paddingHorizontal: theme.spacing.padding.zero }}
           />
         </View>
 

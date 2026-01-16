@@ -132,7 +132,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
             onTabChange={(id) => setActiveMuscle(id as MuscleGroup)}
             showContainer={false}
             withCheckmark={true}
-            scrollViewContentContainerStyle={{ paddingHorizontal: 0 }}
+            scrollViewContentContainerStyle={{ paddingHorizontal: theme.spacing.padding.zero }}
           />
         </View>
 

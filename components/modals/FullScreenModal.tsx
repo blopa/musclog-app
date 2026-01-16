@@ -111,7 +111,7 @@ export function FullScreenModal({
               className="absolute bottom-0 left-0 right-0"
               style={{
                 paddingBottom: Platform.OS === 'web' ? 20 : insets.bottom,
-                paddingHorizontal: 0,
+                paddingHorizontal: theme.spacing.padding.zero,
                 backgroundColor: 'transparent',
               }}>
               {footer}

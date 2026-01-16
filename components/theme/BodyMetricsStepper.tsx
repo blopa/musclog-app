@@ -123,8 +123,8 @@ export function BodyMetricsStepper({
                 keyboardType="numeric"
                 className="text-center text-xl font-bold text-text-primary"
                 style={{
-                  padding: 0,
-                  margin: 0,
+                  padding: theme.spacing.padding.zero,
+                  margin: theme.spacing.margin.zero,
                   width: '100%',
                 }}
                 returnKeyType="done"

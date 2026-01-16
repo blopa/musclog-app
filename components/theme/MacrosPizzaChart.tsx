@@ -4,7 +4,11 @@ import { PolarChart, Pie } from 'victory-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
 
-type MacroColor = '#6366f1' | '#10b981' | '#f59e0b' | '#ec4899';
+type MacroColor =
+  | typeof theme.colors.macros.protein.bg
+  | typeof theme.colors.macros.carbs.bg
+  | typeof theme.colors.macros.fat.bg
+  | typeof theme.colors.macros.fiber.bg;
 type MacroDatum = { value: number; color: MacroColor; label: string };
 
 type MacrosPizzaChartProps = {

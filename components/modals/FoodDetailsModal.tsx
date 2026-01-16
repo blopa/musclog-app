@@ -100,7 +100,7 @@ export function FoodDetailsModal({
               activeTab={selectedMeal}
               onTabChange={setSelectedMeal}
               showContainer={false}
-              scrollViewContentContainerStyle={{ paddingHorizontal: 0 }}
+              scrollViewContentContainerStyle={{ paddingHorizontal: theme.spacing.padding.zero }}
             />
           </View>
 

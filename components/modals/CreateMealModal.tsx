@@ -119,7 +119,7 @@ const MealMacrosSummary = ({
         backgroundColor: theme.colors.background.cardElevated,
         borderRadius: theme.borderRadius.lg,
         padding: theme.spacing.padding.lg,
-        marginBottom: 24,
+        marginBottom: theme.spacing.margin.xl,
         borderWidth: theme.borderWidth.thin,
         borderColor: theme.colors.border.light,
         position: 'relative',
@@ -157,7 +157,7 @@ const MealMacrosSummary = ({
             flexDirection: 'row',
             justifyContent: 'space-between',
             alignItems: 'flex-start',
-            marginBottom: 20,
+            marginBottom: theme.spacing.margin.lg,
           }}>
           <View>
             <Text
@@ -180,8 +180,8 @@ const MealMacrosSummary = ({
           <View
             style={{
               backgroundColor: theme.colors.background.cardDark,
-              paddingHorizontal: 10,
-              paddingVertical: 4,
+              paddingHorizontal: theme.spacing.padding['2half'],
+              paddingVertical: theme.spacing.padding.xs,
               borderRadius: theme.borderRadius.full,
               borderWidth: theme.borderWidth.thin,
               borderColor: theme.colors.border.light,
@@ -277,7 +277,7 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
               color: theme.colors.text.secondary,
               textTransform: 'uppercase',
               letterSpacing: theme.typography.letterSpacing.widest,
-              marginLeft: 4,
+              marginLeft: theme.spacing.margin.xs,
             }}>
             {t('food.createMeal.mealName')}
           </Text>

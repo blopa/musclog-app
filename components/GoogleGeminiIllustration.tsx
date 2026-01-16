@@ -64,7 +64,7 @@ export const GoogleGeminiIllustration = ({
           {/* Bottom buttons overlay */}
           <View
             className="absolute left-0 right-0 flex-row items-center justify-center"
-            style={{ bottom: 16 }}>
+            style={{ bottom: theme.spacing.padding.base }}>
             {/* Single pill container */}
             <View
               className="flex-row items-center gap-3 rounded-full border border-white/20 px-4 py-2.5"
