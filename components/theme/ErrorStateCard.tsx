@@ -26,7 +26,7 @@ export function ErrorStateCard({
       {/* Icon */}
       <View
         className="h-12 w-12 items-center justify-center rounded-full"
-        style={{ backgroundColor: `${theme.colors.status.error}1A` }}>
+        style={{ backgroundColor: theme.colors.status.error10 }}>
         <Icon size={theme.iconSize.xl} color={theme.colors.status.error} />
       </View>
 

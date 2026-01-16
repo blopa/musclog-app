@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, Pressable, TextInput } from 'react-native';
 import { Minus, Plus } from 'lucide-react-native';
-import { theme } from '../../theme';
+import { theme, addOpacityToHex } from '../../theme';
 
 type BodyMetricCardProps = {
   icon: React.ComponentType<{ size: number; color: string }>;
@@ -107,7 +107,7 @@ export function BodyMetricsStepper({
             className="h-10 w-10 items-center justify-center rounded-full border"
             style={{
               backgroundColor: theme.colors.accent.primary10,
-              borderColor: `${theme.colors.accent.primary}33`,
+              borderColor: theme.colors.accent.primary20,
             }}
             onPress={handleDecrement}>
             <Minus size={theme.iconSize.md} color={theme.colors.accent.primary} />
@@ -143,7 +143,7 @@ export function BodyMetricsStepper({
             className="h-10 w-10 items-center justify-center rounded-full border"
             style={{
               backgroundColor: theme.colors.accent.primary10,
-              borderColor: `${theme.colors.accent.primary}33`,
+              borderColor: theme.colors.accent.primary20,
             }}
             onPress={handleIncrement}>
             <Plus size={theme.iconSize.md} color={theme.colors.accent.primary} />

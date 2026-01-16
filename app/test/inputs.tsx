@@ -246,7 +246,7 @@ export default function InputsTestScreen() {
             label="Full Name"
             value={fullName}
             onChangeText={setFullName}
-            icon={<User size={20} color={`${theme.colors.accent.primary}66`} />}
+            icon={<User size={20} color={theme.colors.accent.primary40} />}
           />
           <PickerButton
             label="Monday, Oct 24"

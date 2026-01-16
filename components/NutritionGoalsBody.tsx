@@ -81,7 +81,7 @@ function MacroCard({ label, kcalPerGram, value, min, max, color, onChange }: Mac
             className="h-10 w-10 items-center justify-center rounded-full border"
             style={{
               backgroundColor: theme.colors.accent.primary10,
-              borderColor: `${theme.colors.accent.primary}33`,
+              borderColor: theme.colors.accent.primary20,
             }}
             onPress={handleDecrement}>
             <Minus size={theme.iconSize.md} color={theme.colors.accent.primary} />
@@ -91,7 +91,7 @@ function MacroCard({ label, kcalPerGram, value, min, max, color, onChange }: Mac
             className="h-10 w-10 items-center justify-center rounded-full border"
             style={{
               backgroundColor: theme.colors.accent.primary10,
-              borderColor: `${theme.colors.accent.primary}33`,
+              borderColor: theme.colors.accent.primary20,
             }}
             onPress={handleIncrement}>
             <Plus size={theme.iconSize.md} color={theme.colors.accent.primary} />

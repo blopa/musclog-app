@@ -171,7 +171,7 @@ export function MealItemCard({
                 paddingVertical: theme.spacing.padding['1half'],
                 borderRadius: theme.borderRadius.full,
                 gap: theme.spacing.gap.xs,
-                opacity: pressed ? 0.7 : 1,
+                opacity: pressed ? theme.colors.opacity.medium70 : theme.colors.opacity.full,
               })}>
               <Plus size={theme.iconSize.xs} color={theme.colors.accent.primary} strokeWidth={theme.strokeWidth.thick} />
               <Text

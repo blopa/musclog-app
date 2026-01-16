@@ -278,14 +278,14 @@ export function Button({
         {
           borderRadius: config.borderRadius,
           ...shadow,
-          opacity: isDisabled ? 1 : undefined,
+          opacity: isDisabled ? theme.colors.opacity.full : undefined,
           backgroundColor: outlineBackgroundColor,
           borderWidth:
             isOutlineVariant || isSecondaryVariant || isSecondaryGradientVariant || isDashedVariant
               ? isOutlineVariant || isDashedVariant
-                ? 2
-                : 1
-              : 0,
+                ? theme.borderWidth.medium
+                : theme.borderWidth.thin
+              : theme.borderWidth.none,
           borderStyle: borderStyle,
           borderColor: isOutlineVariant
             ? theme.colors.background.white10

@@ -31,7 +31,7 @@ export function NewWorkoutCard({
           isPopular
             ? {
                 backgroundColor: theme.colors.background.aiCardBackground,
-                borderRadius: theme.borderRadius.xl - 2,
+                borderRadius: theme.borderRadius.lg + theme.spacing.margin['2'],
               }
             : {
                 flexDirection: 'row',
@@ -118,8 +118,8 @@ export function NewWorkoutCard({
               style={{
                 fontSize: theme.typography.fontSize.xs,
                 color: theme.colors.text.secondary,
-                marginTop: isPopular ? 4 : 2,
-                lineHeight: isPopular ? 16 : undefined,
+                marginTop: isPopular ? theme.spacing.margin.xs : theme.spacing.margin['2'],
+                lineHeight: isPopular ? theme.typography.fontSize.base : undefined,
               }}>
               {subtitle}
             </Text>

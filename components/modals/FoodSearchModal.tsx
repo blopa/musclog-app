@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { Search, QrCode, Plus, Sparkles } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { theme } from '../../theme';
+import { theme, addOpacityToHex } from '../../theme';
 import { FullScreenModal } from './FullScreenModal';
 import { FoodDetailsModal } from './FoodDetailsModal';
 
@@ -173,7 +173,7 @@ function FoodItemCard({ food, onAddPress }: FoodItemCardProps) {
         className="h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border"
         style={{
           backgroundColor: food.iconBgColor || theme.colors.background.cardDark,
-          borderColor: food.iconColor ? `${food.iconColor}20` : 'transparent',
+          borderColor: food.iconColor ? addOpacityToHex(food.iconColor, 0.125) : 'transparent',
         }}>
         {food.image ? (
           <Image
@@ -199,8 +199,12 @@ function FoodItemCard({ food, onAddPress }: FoodItemCardProps) {
             <View
               className="rounded border px-1.5 py-0.5"
               style={{
-                backgroundColor: `${food.gradeColor || theme.colors.accent.primary}10`,
-                borderColor: `${food.gradeColor || theme.colors.accent.primary}20`,
+                backgroundColor: food.gradeColor
+                  ? addOpacityToHex(food.gradeColor, 0.063)
+                  : theme.colors.accent.primary5,
+                borderColor: food.gradeColor
+                  ? addOpacityToHex(food.gradeColor, 0.125)
+                  : theme.colors.accent.primary20,
               }}>
               <Text
                 className="text-[10px] font-bold"
@@ -312,7 +316,7 @@ export function FoodSearchModal({
               style={{
                 backgroundColor: theme.colors.background.cardDark,
                 borderColor: searchQuery
-                  ? `${theme.colors.accent.secondary}50`
+                  ? addOpacityToHex(theme.colors.accent.secondary, 0.31)
                   : theme.colors.border.light,
               }}
               autoFocus
