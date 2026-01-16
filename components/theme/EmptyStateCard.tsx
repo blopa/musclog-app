@@ -34,7 +34,7 @@ export function EmptyStateCard({
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             className="h-40 w-40 items-center justify-center rounded-full"
-            style={{ opacity: 0.9 }}>
+            style={{ opacity: theme.colors.opacity.medium80 }}>
             <Icon size={64} color={theme.colors.text.primary} />
           </LinearGradient>
         </View>

@@ -141,7 +141,7 @@ export default function LandingScreen() {
             </Pressable>
 
             {/* Terms / Footer Text */}
-            <Text className="mt-2 text-center text-gray-500" style={{ fontSize: 10 }}>
+            <Text className="mt-2 text-center text-gray-500" style={{ fontSize: theme.typography.fontSize['10'] }}>
               {t('onboarding.landing.termsAndPrivacy')}
             </Text>
           </View>

@@ -23,7 +23,7 @@ export const GoogleGeminiIllustration = ({
             right: -2,
             bottom: -2,
             borderRadius: theme.borderRadius['2xl'],
-            opacity: 0.3,
+            opacity: theme.colors.opacity.dim30,
           }}>
           <LinearGradient
             colors={[
@@ -43,7 +43,7 @@ export const GoogleGeminiIllustration = ({
         {/* Main card */}
         <View className="relative flex-1 overflow-hidden rounded-2xl border border-white/5 bg-bg-cardDark">
           {/* Background image */}
-          <View className="absolute inset-0" style={{ opacity: 0.8 }}>
+          <View className="absolute inset-0" style={{ opacity: theme.colors.opacity.medium80 }}>
             <Image
               source={{ uri: backgroundImageUrl }}
               className="h-full w-full"
@@ -53,8 +53,8 @@ export const GoogleGeminiIllustration = ({
           {/* Gradient overlay - from bottom to top */}
           <LinearGradient
             colors={[
-              theme.colors.background.primary + 'E6', // 90% opacity at bottom
-              theme.colors.background.primary + '33', // 20% opacity in middle
+              theme.colors.overlay.backdrop90, // 90% opacity at bottom
+              theme.colors.background.primary20, // 20% opacity in middle
               'transparent', // transparent at top
             ]}
             start={{ x: 0, y: 1 }}
@@ -69,16 +69,16 @@ export const GoogleGeminiIllustration = ({
             <View
               className="flex-row items-center gap-3 rounded-full border border-white/20 px-4 py-2.5"
               style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                backgroundColor: theme.colors.background.white10,
                 ...theme.shadows.lg,
               }}>
               {/* Google logo button - white circle */}
               <View
                 className="items-center justify-center rounded-full bg-white"
                 style={{
-                  padding: 6,
-                  minWidth: 28,
-                  minHeight: 28,
+                  padding: theme.spacing.padding['1half'],
+                  minWidth: theme.iconSize['2xl'],
+                  minHeight: theme.iconSize['2xl'],
                   ...theme.shadows.sm,
                 }}>
                 <Image
@@ -102,14 +102,14 @@ export const GoogleGeminiIllustration = ({
                   backgroundColor: theme.colors.status.emeraldLight, // #29e08e - primary from HTML
                   shadowColor: theme.colors.status.emeraldLight,
                   shadowOffset: { width: 0, height: 0 },
-                  shadowOpacity: 0.3,
-                  shadowRadius: 15, // Approximating the glow effect (0 0 20px -5px)
+                  shadowOpacity: theme.colors.opacity.dim30,
+                  shadowRadius: theme.shadows.radius15.shadowRadius,
                   elevation: 5,
                 }}>
                 <Zap
                   size={18}
-                  color="#11211a" // background-dark color from HTML
-                  fill="#11211a"
+                  color={theme.colors.background.darkBackground}
+                  fill={theme.colors.background.darkBackground}
                 />
               </View>
             </View>

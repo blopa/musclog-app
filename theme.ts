@@ -50,6 +50,7 @@ export const theme = {
       darkGraySolid: 'rgba(17, 20, 19, 0.5)', // Dark gray solid with opacity
       darkGreenSolidAlt: 'rgba(42, 50, 46, 1)', // Alternative dark green solid
       exerciseCardBackground: '#254637', // Exercise card background
+      darkBackground: '#11211a', // Dark background color (landing page, etc.)
       snackbarSuccess: '#0d3520', // Success snackbar background
       snackbarError: '#3d1515', // Error snackbar background
       buttonCard: '#1a3530', // Button/card background
@@ -149,6 +150,10 @@ export const theme = {
       indigo10: 'rgba(99, 102, 241, 0.1)', // Indigo with 10% opacity
       indigo20: 'rgba(99, 102, 241, 0.2)', // Indigo with 20% opacity
       indigo600: '#4f46e5', // Indigo-600
+      // Red border colors for ungroup action
+      redDark: '#7f1d1d', // Dark red border
+      // Emerald border colors for group action
+      emeraldDark: '#064e3b', // Dark emerald border
       indigo600Purple: '#5b21b6', // Purple-700 (for indigo gradients)
       blue600: '#2563eb', // Blue-600
       pink500: '#ec4899', // Pink-500 (already in macros but adding for convenience)
@@ -156,6 +161,10 @@ export const theme = {
       customGreen: '#95c6b0', // Custom green used in components
       emeraldTeal: '#0d9488', // Teal-600 (for emerald-teal gradient)
       gray10: 'rgba(107, 114, 128, 0.1)', // Gray with 10% opacity
+      // Error colors for ungroup action
+      errorSolid: '#ef4444', // Solid red for ungroup
+      // Success colors for group action
+      emeraldSolid: '#10b981', // Solid emerald for group
     },
 
     // Rose colors (for red button variant)
@@ -221,6 +230,13 @@ export const theme = {
       lightDim: 0.1, // Light dim opacity
       veryLight: 0.05, // Very light opacity
       lightMedium: 0.08, // Light medium opacity
+      // Additional opacity values found in codebase
+      dim30: 0.3, // 30% opacity
+      medium50: 0.5, // 50% opacity
+      medium60: 0.6, // 60% opacity
+      medium70: 0.7, // 70% opacity
+      medium80: 0.8, // 80% opacity
+      heavy90: 0.9, // 90% opacity
     },
 
     // Gradient colors
@@ -276,6 +292,7 @@ export const theme = {
       '7xl': 80,
       // Additional font sizes
       '10': 10,
+      '11': 11,
       '15': 15,
     },
 
@@ -347,6 +364,8 @@ export const theme = {
     '3xl': 30,
     '4xl': 36,
     full: 9999,
+    // Additional border radius values
+    '2': 2, // 2px border radius (for small dots)
   },
 
   // Border widths
@@ -357,6 +376,8 @@ export const theme = {
     // Additional border widths
     accent: 5, // For accent borders like snackbar
     thick6: 6, // 6px border width
+    thinHalf: 1.5, // 1.5px border width
+    thick4: 4, // 4px border width
   },
 
   // Stroke widths (for icons and SVG)
@@ -402,6 +423,35 @@ export const theme = {
       shadowOpacity: 0,
       shadowRadius: 0,
       elevation: 0,
+    },
+    // Specific shadow radius values
+    radius3: {
+      shadowColor: '#000000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 3,
+      elevation: 3,
+    },
+    radius4: {
+      shadowColor: '#000000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.3,
+      shadowRadius: 4,
+      elevation: 3,
+    },
+    radius8: {
+      shadowColor: '#000000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 8,
+      elevation: 3,
+    },
+    radius15: {
+      shadowColor: '#000000',
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0.3,
+      shadowRadius: 15,
+      elevation: 5,
     },
     // Custom shadow for sliders
     slider: {

@@ -70,7 +70,7 @@ export function CreateWorkoutOptionsModal({
             height: 300,
             borderRadius: 150,
             backgroundColor: theme.colors.accent.primary20,
-            opacity: 0.2,
+            opacity: theme.colors.opacity.dimmer,
             // Blur is handled via opacity/size here since React Native blur is limited
           }}
         />
@@ -83,7 +83,7 @@ export function CreateWorkoutOptionsModal({
             height: 250,
             borderRadius: 125,
             backgroundColor: theme.colors.status.indigo10,
-            opacity: 0.1,
+            opacity: theme.colors.opacity.lightDim,
           }}
         />
       </View>
@@ -106,7 +106,7 @@ export function CreateWorkoutOptionsModal({
             color: theme.colors.text.secondary,
             textTransform: 'uppercase',
             letterSpacing: 1.5,
-            opacity: 0.8,
+            opacity: theme.colors.opacity.medium80,
           }}>
           New Session
         </Text>

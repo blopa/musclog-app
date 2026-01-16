@@ -15,7 +15,7 @@ const Macro = ({ label, value, color }: MacroProps) => (
   <View className="gap-0.5">
     <Text
       style={{
-        fontSize: 10,
+        fontSize: theme.typography.fontSize['10'],
         fontWeight: theme.typography.fontWeight.bold,
         color,
         textTransform: 'uppercase',
@@ -85,12 +85,12 @@ export function MealItemCard({
               paddingHorizontal: theme.spacing.padding.sm,
               paddingVertical: 2,
               borderRadius: theme.borderRadius.full,
-              borderWidth: 2,
+              borderWidth: theme.borderWidth.medium,
               borderColor: theme.colors.background.card,
             }}>
             <Text
               style={{
-                fontSize: 10,
+                fontSize: theme.typography.fontSize['10'],
                 fontWeight: theme.typography.fontWeight.bold,
                 color: theme.colors.text.black,
               }}>

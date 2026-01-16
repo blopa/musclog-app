@@ -109,10 +109,10 @@ export function BasicSettingsModal({
           <View
             style={{
               backgroundColor: theme.colors.background.card,
-              borderRadius: 16,
-              marginHorizontal: 16,
-              padding: 16,
-              borderWidth: 1,
+              borderRadius: theme.borderRadius.lg,
+              marginHorizontal: theme.spacing.padding.base,
+              padding: theme.spacing.padding.base,
+              borderWidth: theme.borderWidth.thin,
               borderColor: theme.colors.border.light,
             }}>
             <Text className="mb-3 text-sm font-medium text-text-secondary">

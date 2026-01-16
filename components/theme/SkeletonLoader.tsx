@@ -23,7 +23,7 @@ export function SkeletonLoader({
         height,
         borderRadius,
         backgroundColor: theme.colors.background.cardElevated,
-        opacity: 0.4,
+        opacity: theme.colors.opacity.light,
       }}
     />
   );

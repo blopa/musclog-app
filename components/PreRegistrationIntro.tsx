@@ -51,7 +51,7 @@ export default function PreRegistrationIntro() {
         <View
           className="absolute inset-0 rounded-full border"
           style={{
-            borderWidth: 1.5,
+            borderWidth: theme.borderWidth.thinHalf,
             borderColor: theme.colors.background.white10,
             transform: [{ scale: 1.1 }],
           }}
@@ -59,7 +59,7 @@ export default function PreRegistrationIntro() {
         <View
           className="absolute inset-0 rounded-full border"
           style={{
-            borderWidth: 1.5,
+            borderWidth: theme.borderWidth.thinHalf,
             borderColor: theme.colors.background.white5,
             transform: [{ scale: 1.25 }],
           }}

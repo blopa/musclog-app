@@ -210,8 +210,8 @@ export function AISettingsModal({
             {/* API Key Input */}
             <View
               style={{
-                padding: 16,
-                borderBottomWidth: 1,
+                padding: theme.spacing.padding.base,
+                borderBottomWidth: theme.borderWidth.thin,
                 borderBottomColor: theme.colors.border.light,
               }}>
               <SecretInput
@@ -239,7 +239,7 @@ export function AISettingsModal({
                   flexDirection: 'row',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  padding: 16,
+                  padding: theme.spacing.padding.base,
                   backgroundColor: pressed ? theme.colors.background.overlay : undefined,
                 },
               ]}>
@@ -313,7 +313,7 @@ export function AISettingsModal({
                   flexDirection: 'row',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  padding: 16,
+                  padding: theme.spacing.padding.base,
                   backgroundColor: pressed ? theme.colors.background.overlay : undefined,
                 },
               ]}>

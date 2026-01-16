@@ -116,7 +116,7 @@ export function FoodDetailsModal({
                 <View
                   className="h-10 w-10 items-center justify-center rounded-full"
                   style={{
-                    backgroundColor: 'rgba(99, 102, 241, 0.2)',
+                    backgroundColor: theme.colors.status.indigo20,
                   }}>
                   <Calendar size={theme.iconSize.md} color={theme.colors.accent.primary} />
                 </View>

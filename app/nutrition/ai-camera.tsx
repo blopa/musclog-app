@@ -306,7 +306,7 @@ export default function AICameraScreen() {
                 <View className="flex-row items-center justify-center gap-1.5">
                   <FileText
                     size={18}
-                    color={cameraMode === 'ai-label-scan' ? '#ffffff' : theme.colors.text.secondary}
+                    color={cameraMode === 'ai-label-scan' ? theme.colors.text.white : theme.colors.text.secondary}
                   />
                   <Text
                     className="text-[10px] font-bold uppercase tracking-wide"
@@ -343,7 +343,7 @@ export default function AICameraScreen() {
                 <View className="flex-row items-center justify-center gap-1.5">
                   <ScanBarcode
                     size={18}
-                    color={cameraMode === 'barcode-scan' ? '#ffffff' : theme.colors.text.secondary}
+                    color={cameraMode === 'barcode-scan' ? theme.colors.text.white : theme.colors.text.secondary}
                   />
                   <Text
                     className="text-[10px] font-bold uppercase tracking-wide"
@@ -371,7 +371,7 @@ export default function AICameraScreen() {
                 borderColor: theme.colors.background.white10,
               }}>
               <View className="h-full w-full p-1">
-                <View className="h-full w-full rounded bg-white/10" style={{ opacity: 0.7 }} />
+                <View className="h-full w-full rounded bg-white/10" style={{ opacity: theme.colors.opacity.medium70 }} />
               </View>
             </Pressable>
 
@@ -380,13 +380,13 @@ export default function AICameraScreen() {
               onPress={handleTakePicture}
               className="h-20 w-20 items-center justify-center rounded-full active:scale-95"
               style={{
-                borderWidth: 4,
+                borderWidth: theme.borderWidth.thick4,
                 borderColor: theme.colors.text.white,
               }}>
               <View
                 className="absolute inset-0 rounded-full"
                 style={{
-                  borderWidth: 1,
+                  borderWidth: theme.borderWidth.thin,
                   borderColor: theme.colors.background.black20,
                 }}
               />

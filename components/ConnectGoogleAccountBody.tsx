@@ -71,11 +71,11 @@ export function ConnectGoogleAccountBody({
                 bottom: -1,
                 borderRadius: theme.borderRadius.xl,
                 backgroundColor: theme.colors.accent.primary,
-                opacity: 0.2,
+                opacity: theme.colors.opacity.dimmer,
                 shadowColor: theme.colors.accent.primary,
                 shadowOffset: { width: 0, height: 0 },
-                shadowOpacity: 0.2,
-                shadowRadius: 8,
+                shadowOpacity: theme.colors.opacity.dimmer,
+                shadowRadius: theme.shadows.radius8.shadowRadius,
               }}
             />
             <View className="relative flex-row items-center gap-4 rounded-xl border border-white/5 bg-bg-cardDark p-4">
@@ -108,11 +108,11 @@ export function ConnectGoogleAccountBody({
                 bottom: -1,
                 borderRadius: theme.borderRadius.xl,
                 backgroundColor: theme.colors.accent.primary,
-                opacity: 0.2,
+                opacity: theme.colors.opacity.dimmer,
                 shadowColor: theme.colors.accent.primary,
                 shadowOffset: { width: 0, height: 0 },
-                shadowOpacity: 0.2,
-                shadowRadius: 8,
+                shadowOpacity: theme.colors.opacity.dimmer,
+                shadowRadius: theme.shadows.radius8.shadowRadius,
               }}
             />
             <View className="relative flex-row items-center gap-4 rounded-xl border border-white/5 bg-bg-cardDark p-4">
@@ -145,11 +145,11 @@ export function ConnectGoogleAccountBody({
                 bottom: -1,
                 borderRadius: theme.borderRadius.xl,
                 backgroundColor: theme.colors.accent.primary,
-                opacity: 0.2,
+                opacity: theme.colors.opacity.dimmer,
                 shadowColor: theme.colors.accent.primary,
                 shadowOffset: { width: 0, height: 0 },
-                shadowOpacity: 0.2,
-                shadowRadius: 8,
+                shadowOpacity: theme.colors.opacity.dimmer,
+                shadowRadius: theme.shadows.radius8.shadowRadius,
               }}
             />
             <View className="relative flex-row items-center gap-4 rounded-xl border border-white/5 bg-bg-cardDark p-4">

@@ -68,9 +68,9 @@ function NumberInputField({
         <View
           className="flex-1 overflow-hidden rounded-lg border"
           style={{
-            backgroundColor: 'rgba(0, 0, 0, 0.2)',
+            backgroundColor: theme.colors.background.black20,
             borderColor: theme.colors.background.white10,
-            borderWidth: 1,
+            borderWidth: theme.borderWidth.thin,
           }}>
           <TextInput
             value={value.toString()}
@@ -84,7 +84,7 @@ function NumberInputField({
                 textAlignVertical: 'center',
                 borderWidth: 0,
                 paddingHorizontal: 0,
-                paddingVertical: 12,
+                paddingVertical: theme.spacing.padding.md,
               },
               Platform.OS === 'web' &&
                 ({

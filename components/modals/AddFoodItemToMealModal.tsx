@@ -143,8 +143,8 @@ function FoodResultCard({
               justifyContent: 'center',
               shadowColor: isSelected ? theme.colors.accent.primary : 'transparent',
               shadowOffset: { width: 0, height: 0 },
-              shadowOpacity: 0.3,
-              shadowRadius: 4,
+              shadowOpacity: theme.colors.opacity.dim30,
+              shadowRadius: theme.shadows.radius4.shadowRadius,
             }}>
             {isSelected && <Check size={16} color={theme.colors.text.black} strokeWidth={3} />}
           </View>
@@ -217,7 +217,7 @@ function FoodResultCard({
             </Text>
             <Text
               style={{
-                fontSize: 10,
+                fontSize: theme.typography.fontSize['10'],
                 color: theme.colors.text.primary,
                 fontWeight: theme.typography.fontWeight.medium,
               }}>
@@ -225,7 +225,7 @@ function FoodResultCard({
             </Text>
             <Text
               style={{
-                fontSize: 10,
+                fontSize: theme.typography.fontSize['10'],
                 color: theme.colors.text.primary,
                 fontWeight: theme.typography.fontWeight.medium,
               }}>
@@ -249,7 +249,7 @@ function FoodResultCard({
           }}>
           <Text
             style={{
-              fontSize: 12,
+              fontSize: theme.typography.fontSize.xs,
               fontWeight: theme.typography.fontWeight.medium,
               color: theme.colors.text.secondary,
             }}>
@@ -263,7 +263,7 @@ function FoodResultCard({
               borderRadius: theme.borderRadius.sm,
               paddingHorizontal: 8,
               height: 36,
-              borderWidth: 1,
+              borderWidth: theme.borderWidth.thin,
               borderColor: 'transparent',
             }}>
             {/*OBS: this one can stay unthemed for now*/}
@@ -281,12 +281,12 @@ function FoodResultCard({
                 textAlign: 'center',
                 color: theme.colors.text.primary,
                 fontWeight: theme.typography.fontWeight.bold,
-                fontSize: 14,
+                fontSize: theme.typography.fontSize.sm,
               }}
             />
             <Text
               style={{
-                fontSize: 12,
+                fontSize: theme.typography.fontSize.xs,
                 color: theme.colors.text.primary,
                 paddingRight: 4,
                 fontWeight: theme.typography.fontWeight.medium,
@@ -364,7 +364,7 @@ export function AddFoodItemToMealModal({
       onClose={onClose}
       title={t('food.addFoodItemToMeal.title')}
       headerRight={
-        <Text style={{ fontSize: 14, fontWeight: '600', color: theme.colors.accent.primary }}>
+        <Text style={{ fontSize: theme.typography.fontSize.sm, fontWeight: theme.typography.fontWeight.semibold, color: theme.colors.accent.primary }}>
           {t('food.addFoodItemToMeal.selectedCount', { count: selectedCount })}
         </Text>
       }
@@ -397,15 +397,15 @@ export function AddFoodItemToMealModal({
         <View className="mb-4 flex-row items-end justify-between px-1">
           <Text
             style={{
-              fontSize: 12,
-              fontWeight: '700',
+              fontSize: theme.typography.fontSize.xs,
+              fontWeight: theme.typography.fontWeight.bold,
               color: theme.colors.text.secondary,
               textTransform: 'uppercase',
               letterSpacing: 1,
             }}>
             {t('food.addFoodItemToMeal.searchResults')}
           </Text>
-          <Text style={{ fontSize: 12, color: theme.colors.text.tertiary }}>
+          <Text style={{ fontSize: theme.typography.fontSize.xs, color: theme.colors.text.tertiary }}>
             {t('food.addFoodItemToMeal.foundItems', { count: SEARCH_RESULTS.length })}
           </Text>
         </View>

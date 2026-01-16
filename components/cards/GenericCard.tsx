@@ -58,7 +58,7 @@ export function GenericCard({
       return {
         ...baseStyle,
         borderRadius: theme.borderRadius.xl,
-        padding: 24,
+        padding: theme.spacing.padding.xl,
       };
     }
 

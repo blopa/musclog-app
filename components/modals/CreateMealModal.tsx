@@ -135,7 +135,7 @@ const MealMacrosSummary = ({
           height: 160,
           backgroundColor: theme.colors.accent.primary20,
           borderRadius: theme.size['20'] * 4,
-          opacity: 0.5,
+          opacity: theme.colors.opacity.medium50,
         }}
       />
       <View
@@ -145,9 +145,9 @@ const MealMacrosSummary = ({
           left: -40,
           width: 160,
           height: 160,
-          backgroundColor: `${theme.colors.status.indigo}20`,
+          backgroundColor: theme.colors.status.indigo20,
           borderRadius: theme.size['20'] * 4,
-          opacity: 0.5,
+          opacity: theme.colors.opacity.medium50,
         }}
       />
 
@@ -183,7 +183,7 @@ const MealMacrosSummary = ({
               paddingHorizontal: 10,
               paddingVertical: 4,
               borderRadius: theme.borderRadius.full,
-              borderWidth: 1,
+              borderWidth: theme.borderWidth.thin,
               borderColor: theme.colors.border.light,
             }}>
             <Text
@@ -292,8 +292,8 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
               justifyContent: 'center',
               shadowColor: isFocused ? theme.colors.accent.primary : 'transparent',
               shadowOffset: { width: 0, height: 0 },
-              shadowOpacity: 0.1,
-              shadowRadius: 8,
+              shadowOpacity: theme.colors.opacity.lightDim,
+              shadowRadius: theme.shadows.radius8.shadowRadius,
               elevation: isFocused ? 2 : 0,
             }}>
             <TextInput
@@ -359,13 +359,13 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
                   }}>
                   <View
                     style={{
-                      width: 48,
-                      height: 48,
+                      width: theme.iconSize['5xl'],
+                      height: theme.iconSize['5xl'],
                       borderRadius: theme.spacing.padding['2half'],
                       backgroundColor: theme.colors.background.cardDark,
                       alignItems: 'center',
                       justifyContent: 'center',
-                      borderWidth: 1,
+                      borderWidth: theme.borderWidth.thin,
                       borderColor: theme.colors.border.light,
                       marginRight: 12,
                     }}>
@@ -425,10 +425,10 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: theme.spacing.gap.sm,
-                paddingVertical: 16,
-                marginTop: 8,
+                paddingVertical: theme.spacing.padding.base,
+                marginTop: theme.spacing.padding.sm,
                 borderRadius: theme.borderRadius.md,
-                borderWidth: 1,
+                borderWidth: theme.borderWidth.thin,
                 borderStyle: 'dashed',
                 borderColor: theme.colors.border.dashed,
                 backgroundColor: pressed ? theme.colors.accent.primary5 : 'transparent',

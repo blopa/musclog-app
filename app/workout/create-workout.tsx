@@ -148,7 +148,7 @@ export default function CreateWorkoutScreen() {
             height: 300,
             borderRadius: 150,
             backgroundColor: theme.colors.accent.primary20,
-            opacity: 0.15,
+            opacity: theme.colors.opacity.lightDim,
           }}
         />
         <View
@@ -160,7 +160,7 @@ export default function CreateWorkoutScreen() {
             height: 250,
             borderRadius: 125,
             backgroundColor: theme.colors.status.indigo10,
-            opacity: 0.1,
+            opacity: theme.colors.opacity.lightDim,
           }}
         />
       </View>

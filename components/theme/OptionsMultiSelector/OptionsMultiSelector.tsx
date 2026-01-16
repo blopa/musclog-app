@@ -205,9 +205,9 @@ export function OptionsMultiSelector<T extends string | number>({
               left: (indicatorWidth - 8) / 2,
               width: 8,
               height: 8,
-              borderRadius: 4,
+              borderRadius: theme.borderRadius.xs,
               backgroundColor: lineColor,
-              borderWidth: 2,
+              borderWidth: theme.borderWidth.medium,
               borderColor: theme.colors.background.primary,
             }}
           />
