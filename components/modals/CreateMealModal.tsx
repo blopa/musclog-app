@@ -90,7 +90,7 @@ const MacroCard = ({
         width: '100%',
         height: 4,
         backgroundColor: theme.colors.background.white10,
-        borderRadius: theme.borderRadius.xs / 4,
+        borderRadius: theme.borderRadius.xs / 2,
         marginTop: 8,
         overflow: 'hidden',
       }}>
@@ -99,7 +99,7 @@ const MacroCard = ({
           height: '100%',
           width: `${progress}%`,
           backgroundColor: color,
-          borderRadius: theme.borderRadius.xs / 4,
+          borderRadius: theme.borderRadius.xs / 2,
         }}
       />
     </View>

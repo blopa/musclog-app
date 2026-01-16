@@ -199,6 +199,7 @@ export const theme = {
       white5: 'rgba(255, 255, 255, 0.05)', // White with 5% opacity
       black60Opacity: 'rgba(0, 0, 0, 0.6)', // Black with 60% opacity (for gradients)
       backdrop: 'rgba(10, 31, 26, 0.8)', // Background primary with 80% opacity (for modals)
+      backdrop90: 'rgba(10, 31, 26, 0.9)', // Background primary with 90% opacity
       darkGreenOverlayGradient: 'rgba(26, 46, 42, 0.9)', // Dark green overlay gradient
     },
 
@@ -255,7 +256,7 @@ export const theme = {
       ] as const,
       landingBackground: ['#11211a', '#0a1f1a', '#0f251f'] as const, // Landing page background gradient
       whiteSubtle: ['rgba(255, 255, 255, 0.1)', 'rgba(255, 255, 255, 0.05)'] as const, // Subtle white gradient
-      backdrop90: ['rgba(10, 31, 26, 0.9)'] as const, // Background with 90% opacity (for gradients)
+      backdrop90: 'rgba(10, 31, 26, 0.9)', // Background with 90% opacity
     },
   },
 
@@ -337,6 +338,7 @@ export const theme = {
   },
 
   borderRadius: {
+    xs: 4,
     sm: 8,
     md: 12,
     lg: 16,

@@ -106,7 +106,7 @@ function OnboardingStepThree({ imageUrl, title, description, badge }: Onboarding
           <ImageBackground source={{ uri: imageUrl }} className="h-full w-full" resizeMode="cover">
             {/* Gradient Overlay */}
             <LinearGradient
-              colors={[theme.colors.gradients.backdrop90, 'transparent', 'transparent']}
+              colors={[theme.colors.overlay.backdrop90, 'transparent', 'transparent']}
               start={{ x: 0, y: 1 }}
               end={{ x: 0, y: 0 }}
               style={{ flex: 1 }}
@@ -201,7 +201,7 @@ function OnboardingStepTwo({ imageUrl, title, description, badge }: OnboardingBo
           <ImageBackground source={{ uri: imageUrl }} className="h-full w-full" resizeMode="cover">
             {/* Gradient Overlay */}
             <LinearGradient
-              colors={[theme.colors.gradients.backdrop90, 'transparent', 'transparent']}
+              colors={[theme.colors.overlay.backdrop90, 'transparent', 'transparent']}
               start={{ x: 0, y: 1 }}
               end={{ x: 0, y: 0 }}
               style={{ flex: 1 }}
@@ -296,7 +296,7 @@ function OnboardingStepOne({ imageUrl, title, description, badge }: OnboardingBo
           <ImageBackground source={{ uri: imageUrl }} className="h-full w-full" resizeMode="cover">
             {/* Gradient Overlay */}
             <LinearGradient
-              colors={[theme.colors.gradients.backdrop90, 'transparent', 'transparent']}
+              colors={[theme.colors.overlay.backdrop90, 'transparent', 'transparent']}
               start={{ x: 0, y: 1 }}
               end={{ x: 0, y: 0 }}
               style={{ flex: 1 }}
