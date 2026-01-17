@@ -28,8 +28,8 @@ export class UserService {
     await user.updateProfile(data);
 
     // Reload to get updated values
-    const updatedUser = await database.get<User>('users').find(user.id);
-    return updatedUser;
+
+    return await database.get<User>('users').find(user.id);
   }
 
   /**
@@ -57,7 +57,7 @@ export class UserService {
 
     const now = Date.now();
 
-    const user = await database.get<User>('users').create((u) => {
+    return await database.get<User>('users').create((u) => {
       u.fullName = initialData.fullName;
       u.email = initialData.email;
       u.dateOfBirth = initialData.dateOfBirth;
@@ -66,15 +66,10 @@ export class UserService {
       u.activityLevel = initialData.activityLevel;
       u.liftingExperience = initialData.liftingExperience;
       u.photoUri = initialData.photoUri;
-      u.units = initialData.units;
-      u.weight = initialData.weight;
-      u.height = initialData.height;
       u.eatingPhase = initialData.eatingPhase;
       u.createdAt = now;
       u.updatedAt = now;
     });
-
-    return user;
   }
 
   /**
