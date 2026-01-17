@@ -14,9 +14,10 @@ type DetailedItemCardProps = {
   };
   onPress?: () => void;
   ctaLabel?: React.ReactNode;
+  description?: string;
 };
 
-export function DetailedItemCard({ item, onPress, ctaLabel }: DetailedItemCardProps) {
+export function DetailedItemCard({ item, onPress, ctaLabel, description }: DetailedItemCardProps) {
   return (
     <GenericCard variant="highlighted" isPressable={true} onPress={onPress} size="sm">
       <View className="flex-row items-center gap-4 p-4">
@@ -51,6 +52,11 @@ export function DetailedItemCard({ item, onPress, ctaLabel }: DetailedItemCardPr
           <Text className="mt-1 truncate text-lg font-bold leading-tight text-text-primary">
             {item.name}
           </Text>
+          {description && (
+            <Text className="text-sm text-text-secondary">
+              {description}
+            </Text>
+          )}
 
           <View className="mt-1 flex-row items-center gap-3">
             <View className="flex-row items-center gap-1">
