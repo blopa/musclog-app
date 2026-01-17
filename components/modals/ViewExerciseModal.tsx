@@ -12,7 +12,6 @@ import {
   Heart,
 } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
 import { BottomPopUpMenu, BottomPopUpMenuItem } from '../BottomPopUpMenu';
@@ -61,7 +60,6 @@ type ViewExerciseModalProps = {
 
 export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModalProps) {
   const { t } = useTranslation();
-  const insets = useSafeAreaInsets();
   const [isMenuVisible, setIsMenuVisible] = useState(false);
 
   // For now, using a placeholder image - replace with actual exercise image
@@ -186,7 +184,10 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
                 colors={theme.colors.gradients.blueEmerald}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
-                className="flex-row items-center gap-2 rounded-full px-4 py-2">
+                className="flex-row items-center gap-2 rounded-full px-4 py-2"
+                style={{
+                  borderRadius: theme.borderRadius.full,
+                }}>
                 <Text
                   className="text-xs font-medium uppercase tracking-wide"
                   style={{ color: theme.colors.overlay.white80 }}>

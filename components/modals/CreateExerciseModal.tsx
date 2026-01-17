@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, Pressable } from 'react-native';
-import { useRouter } from 'expo-router';
-import { ChevronLeft, Camera, Link, ChevronDown, Dumbbell } from 'lucide-react-native';
+import { Camera, Link, ChevronDown, Dumbbell } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
@@ -22,7 +21,6 @@ type CreateExerciseModalProps = {
 
 export default function CreateExerciseModal({ visible, onClose }: CreateExerciseModalProps) {
   const { t } = useTranslation();
-  const router = useRouter();
   const insets = useSafeAreaInsets();
   const [exerciseName, setExerciseName] = useState('');
   const [primaryMuscle, setPrimaryMuscle] = useState<string | null>(null);
@@ -39,10 +37,6 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
     value,
     label: t(`exercises.createExercise.muscleGroups.secondary.${value}`),
   }));
-
-  const handleBack = () => {
-    router.back();
-  };
 
   const handleCreateExercise = () => {
     // TODO: Implement create exercise logic
