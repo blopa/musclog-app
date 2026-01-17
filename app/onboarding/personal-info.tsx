@@ -1,8 +1,8 @@
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { theme } from '../../theme';
 import {
   EditPersonalInfoBody,
@@ -10,10 +10,47 @@ import {
 } from '../../components/EditPersonalInfoBody';
 import { UserService } from '../../database/services/UserService';
 
+// Helper function to format date of birth timestamp to MM/DD/YYYY
+function formatDateOfBirth(timestamp: number): string {
+  const date = new Date(timestamp);
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const year = date.getFullYear();
+  return `${month}/${day}/${year}`;
+}
+
 export default function PersonalInfo() {
   const { t } = useTranslation();
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [initialData, setInitialData] = useState<PersonalInfoType | undefined>(undefined);
+
+  // Load user data on mount
+  useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        const user = await UserService.getCurrentUser();
+        if (user) {
+          // Convert user data to PersonalInfo format
+          setInitialData({
+            fullName: user.fullName || '',
+            email: user.email || '',
+            dob: formatDateOfBirth(user.dateOfBirth),
+            gender: user.gender,
+            photoUri: user.photoUri || undefined,
+          });
+        }
+      } catch (error) {
+        console.error('Error loading user data:', error);
+        // Continue with empty form if loading fails
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadUserData();
+  }, []);
 
   const handleSave = async (data: PersonalInfoType) => {
     setIsSaving(true);
@@ -66,6 +103,16 @@ export default function PersonalInfo() {
     }
   };
 
+  if (isLoading) {
+    return (
+      <SafeAreaView className="flex-1" edges={['top', 'bottom']}>
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator size="large" color={theme.colors.accent.primary} />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView className="flex-1" edges={['top', 'bottom']}>
       <ScrollView>
@@ -76,7 +123,7 @@ export default function PersonalInfo() {
             {t('onboarding.personalInfo.title')}
           </Text>
         </View>
-        <EditPersonalInfoBody onSave={handleSave} />
+        <EditPersonalInfoBody onSave={handleSave} initialData={initialData} isLoading={isSaving} />
       </ScrollView>
     </SafeAreaView>
   );

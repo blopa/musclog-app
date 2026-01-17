@@ -27,6 +27,7 @@ type EditFitnessDetailsBodyProps = {
   onClose: () => void;
   onSave?: (data: FitnessDetails) => void;
   initialData?: Partial<FitnessDetails>;
+  isLoading?: boolean;
 };
 
 export type FitnessDetails = {
@@ -43,14 +44,13 @@ export function EditFitnessDetailsBody({
   onClose,
   onSave,
   initialData,
+  isLoading,
 }: EditFitnessDetailsBodyProps) {
   const { t } = useTranslation();
   const [units, setUnits] = useState<'imperial' | 'metric'>(initialData?.units ?? 'metric');
   const [weight, setWeight] = useState(initialData?.weight ?? '0.0');
   const [height, setHeight] = useState(initialData?.height ?? '0');
-  const [fitnessGoal, setFitnessGoal] = useState(
-    initialData?.fitnessGoal ?? t('editFitnessDetails.fitnessGoalLabels.hypertrophy')
-  );
+  const [fitnessGoal, setFitnessGoal] = useState(initialData?.fitnessGoal ?? '');
   const [eatingPhase, setEatingPhase] = useState<'cut' | 'maintain' | 'bulk'>(
     initialData?.eatingPhase ?? 'maintain'
   );
@@ -341,6 +341,7 @@ export function EditFitnessDetailsBody({
             variant="accent"
             size="md"
             width="full"
+            loading={isLoading}
             onPress={handleSave}
           />
         </View>

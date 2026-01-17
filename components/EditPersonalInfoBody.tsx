@@ -10,6 +10,7 @@ import { Button } from './theme/Button';
 type EditPersonalInfoBodyProps = {
   initialData?: PersonalInfo;
   onSave?: (data: PersonalInfo) => void;
+  isLoading?: boolean;
 };
 
 export type PersonalInfo = {
@@ -20,16 +21,17 @@ export type PersonalInfo = {
   photoUri?: string;
 };
 
-export function EditPersonalInfoBody({ onSave, initialData }: EditPersonalInfoBodyProps) {
+export function EditPersonalInfoBody({
+  onSave,
+  initialData,
+  isLoading,
+}: EditPersonalInfoBodyProps) {
   const { t } = useTranslation();
-  const [fullName, setFullName] = useState(initialData?.fullName ?? 'Alex Johnson');
-  const [email, setEmail] = useState(initialData?.email ?? 'alex.j@musclog.app');
-  const [dob, setDob] = useState(initialData?.dob ?? '08/24/1995');
+  const [fullName, setFullName] = useState(initialData?.fullName ?? '');
+  const [email, setEmail] = useState(initialData?.email ?? '');
+  const [dob, setDob] = useState(initialData?.dob ?? '');
   const [gender, setGender] = useState(initialData?.gender ?? 'male');
-  const [photoUri, setPhotoUri] = useState(
-    initialData?.photoUri ??
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuDMP4pkOSdWU2aOZkJVlexx1zrOe_qXxzMDD_g37zaU_CNASasle4MyPoEtd3oumlhv0RmAoGBqCmAbBRqV7372rMK-BssHEbi84ux5w7_jlHs02lymnpnknm6WQ9gYzrC0pm3U2TSxZTbiEf9MWyU0HP0iny2O5S03XlV2idMW3mwHkvGMX2C6DbOSwAIEQ-2MY4vl_sX9YshkjRYWqjrqAIHe77wRtmg6oqZZffnzXyIRyvrQFfTNkpa57ArMP6PpAyOd7VO4R2kC'
-  );
+  const [photoUri, setPhotoUri] = useState(initialData?.photoUri ?? undefined);
 
   const genderOptions = [
     { label: t('editPersonalInfo.male'), value: 'male' },
@@ -100,6 +102,7 @@ export function EditPersonalInfoBody({ onSave, initialData }: EditPersonalInfoBo
           variant="accent"
           size="md"
           width="full"
+          loading={isLoading}
           onPress={() =>
             onSave?.({
               fullName,

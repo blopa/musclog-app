@@ -1,4 +1,4 @@
-import { Text, Pressable, ViewStyle, View } from 'react-native';
+import { Text, Pressable, ViewStyle, View, ActivityIndicator } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { LucideIcon } from 'lucide-react-native';
 import React, { useState } from 'react';
@@ -31,6 +31,7 @@ type ThemeButtonProps = {
   width?: ThemeButtonWidth;
   variant?: ThemeButtonVariant;
   disabled?: boolean;
+  loading?: boolean;
   className?: string;
   style?: ViewStyle;
 };
@@ -83,6 +84,7 @@ export function Button({
   width = 'auto',
   variant = 'accent',
   disabled = false,
+  loading = false,
   style,
 }: ThemeButtonProps) {
   const config = sizeConfig[size];
@@ -96,7 +98,7 @@ export function Button({
   const isSecondaryGradientVariant = variant === 'secondaryGradient';
   const isDashedVariant = variant === 'dashed';
   const isGradientCtaVariant = variant === 'gradientCta';
-  const isDisabled = disabled;
+  const isDisabled = disabled || loading;
 
   const gradientColors: readonly [string, string, ...string[]] = isDisabled
     ? ([theme.colors.background.white10, theme.colors.background.white10] as const)
@@ -155,7 +157,25 @@ export function Button({
   const iconSize = iconBgColor ? theme.iconSize.sm : config.iconSize;
 
   let iconElement: React.ReactNode = null;
-  if (Icon) {
+  if (loading) {
+    // Show ActivityIndicator when loading (replaces icon)
+    iconElement = (
+      <ActivityIndicator
+        size="small"
+        color={finalIconColor}
+        style={iconBgColor ? { width: iconSize, height: iconSize } : {}}
+      />
+    );
+    if (iconBgColor) {
+      iconElement = (
+        <View
+          className="h-8 w-8 items-center justify-center rounded-full"
+          style={{ backgroundColor: iconBgColor }}>
+          <ActivityIndicator size="small" color={finalIconColor} />
+        </View>
+      );
+    }
+  } else if (Icon) {
     if (React.isValidElement(Icon)) {
       iconElement = Icon;
     } else if (typeof Icon === 'function') {
@@ -305,7 +325,7 @@ export function Button({
         },
         style,
       ]}
-      onPress={isDisabled ? undefined : onPress}
+      onPress={isDisabled || loading ? undefined : onPress}
       onPressIn={() => !isDisabled && setIsPressed(true)}
       onPressOut={() => setIsPressed(false)}
       disabled={isDisabled}>
