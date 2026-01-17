@@ -180,28 +180,19 @@ export function AISettingsModal({
               }}>
               <Pressable
                 onPress={onConnectGoogleAccount}
+                className="flex-row items-center justify-center gap-2 rounded-lg border px-4 py-3 active:scale-[0.98]"
                 style={({ pressed }) => [
                   {
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: theme.spacing.gap.sm,
-                    paddingVertical: theme.spacing.padding.md,
-                    paddingHorizontal: theme.spacing.padding.base,
-                    borderRadius: theme.borderRadius.md,
                     backgroundColor: theme.colors.background.cardElevated,
                     borderWidth: theme.borderWidth.thin,
                     borderColor: theme.colors.border.light,
-                    transform: [{ scale: pressed ? 0.98 : 1 }],
                   },
                 ]}>
                 <Link size={theme.iconSize.lg} color={theme.colors.text.primary} />
                 <Text
+                  className="text-sm font-bold text-text-primary"
                   style={{
-                    fontSize: theme.typography.fontSize.sm,
-                    fontWeight: theme.typography.fontWeight.bold,
                     letterSpacing: theme.typography.letterSpacing.wide,
-                    color: theme.colors.text.primary,
                   }}>
                   {t('settings.aiSettings.connectGoogleAccount')}
                 </Text>
@@ -235,28 +226,15 @@ export function AISettingsModal({
             {/* Model Selector */}
             <Pressable
               onPress={onGeminiModelPress}
-              style={({ pressed }) => [
-                {
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: theme.spacing.padding.base,
-                  backgroundColor: pressed ? theme.colors.background.overlay : undefined,
-                },
-              ]}>
-              <View style={{ flex: 1 }}>
+              className="flex-row items-center justify-between p-4 active:bg-bg-overlay">
+              <View className="flex-1 min-w-0">
                 <Text
-                  style={{
-                    fontSize: theme.typography.fontSize.sm,
-                    fontWeight: theme.typography.fontWeight.medium,
-                    color: theme.colors.text.primary,
-                  }}>
+                  className="text-sm font-medium text-text-primary">
                   {t('settings.aiSettings.geminiModel')}
                 </Text>
                 <Text
+                  className="text-xs text-accent-primary"
                   style={{
-                    fontSize: theme.typography.fontSize.xs,
-                    color: theme.colors.accent.primary,
                     marginTop: theme.spacing.padding.xsHalf,
                   }}>
                   {geminiModel}
