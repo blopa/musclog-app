@@ -33,6 +33,8 @@
   "dependencies": {
     "@babel/plugin-proposal-decorators": "^7.28.6",
     "@babel/plugin-transform-class-properties": "^7.28.6",
+    "@babel/plugin-transform-private-methods": "^7.28.6",
+    "@babel/plugin-transform-private-property-in-object": "^7.28.6",
     "@ericblade/quagga2": "^1.12.1",
     "@expo/vector-icons": "^15.0.3",
     "@google/generative-ai": "^0.24.1",
