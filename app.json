@@ -2,7 +2,6 @@
   "expo": {
     "name": "musclog",
     "slug": "musclog",
-    "scheme": "musclog",
     "version": "1.0.0",
     "userInterfaceStyle": "automatic",
     "jsEngine": "hermes",

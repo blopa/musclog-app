@@ -31,7 +31,6 @@
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>musclog</string>
           <string>com.pablopirata.musclog</string>
         </array>
       </dict>

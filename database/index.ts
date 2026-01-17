@@ -1,3 +1,7 @@
+import { Database } from '@nozbe/watermelondb';
+import adapter from './adapter';
+
+// Import all models
 import Exercise from './models/Exercise';
 import UserMetric from './models/UserMetric';
 import User from './models/User';
@@ -8,7 +12,21 @@ import WorkoutTemplateSet from './models/WorkoutTemplateSet';
 import WorkoutLog from './models/WorkoutLog';
 import WorkoutLogSet from './models/WorkoutLogSet';
 
-export { database } from './instance';
+// Create database instance
+export const database = new Database({
+  adapter,
+  modelClasses: [
+    Exercise,
+    UserMetric,
+    User,
+    Setting,
+    WorkoutTemplate,
+    Schedule,
+    WorkoutTemplateSet,
+    WorkoutLog,
+    WorkoutLogSet,
+  ],
+});
 
 // Export models for convenience
 export {
