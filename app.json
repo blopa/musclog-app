@@ -4,6 +4,7 @@
     "slug": "musclog",
     "version": "1.0.0",
     "userInterfaceStyle": "automatic",
+    "jsEngine": "hermes",
     "web": {
       "favicon": "./assets/favicon.png"
     },
