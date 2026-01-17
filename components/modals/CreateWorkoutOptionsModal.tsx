@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import { View, Text, Animated, Platform } from 'react-native';
+import React from 'react';
+import { View, Text, Platform } from 'react-native';
 import { Sparkles, PlusCircle, Library } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
@@ -23,34 +23,6 @@ export function CreateWorkoutOptionsModal({
   onBrowseTemplates,
 }: CreateWorkoutOptionsModalProps) {
   const { t } = useTranslation();
-  const slideAnim = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    if (visible) {
-      Animated.timing(slideAnim, {
-        toValue: 1,
-        duration: 400,
-        useNativeDriver: true,
-      }).start();
-    } else {
-      slideAnim.setValue(0);
-    }
-  }, [visible, slideAnim]);
-
-  const animatedStyle = (delay: number) => ({
-    opacity: slideAnim.interpolate({
-      inputRange: [0, 1],
-      outputRange: [0, 1],
-    }),
-    transform: [
-      {
-        translateY: slideAnim.interpolate({
-          inputRange: [0, 1],
-          outputRange: [20, 0],
-        }),
-      },
-    ],
-  });
 
   return (
     <FullScreenModal
@@ -121,7 +93,7 @@ export function CreateWorkoutOptionsModal({
           paddingBottom: theme.spacing.padding['3xl'],
         }}>
         {/* Title */}
-        <Animated.View style={[animatedStyle(0), { marginBottom: theme.spacing.padding['2xl'] }]}>
+        <View style={{ marginBottom: theme.spacing.padding['2xl'] }}>
           <Text
             style={{
               fontSize: theme.typography.fontSize['3xl'],
@@ -150,10 +122,10 @@ export function CreateWorkoutOptionsModal({
             }}>
             Select how you want to build your routine today.
           </Text>
-        </Animated.View>
+        </View>
 
-        <View style={{ gap: theme.spacing.gap.base }}>
-          <Animated.View style={animatedStyle(100)}>
+        <View style={{ gap: theme.spacing.gap.base, width: '100%' }}>
+          <View style={{ width: '100%' }}>
             <NewWorkoutCard
               variant="popular"
               icon={<Sparkles size={theme.iconSize.lg} color={theme.colors.text.white} />}
@@ -161,9 +133,9 @@ export function CreateWorkoutOptionsModal({
               subtitle={t('workouts.createWorkoutOptions.generateWithAiSubtitle')}
               onPress={onGenerateWithAi}
             />
-          </Animated.View>
+          </View>
 
-          <Animated.View style={animatedStyle(200)}>
+          <View style={{ width: '100%' }}>
             <NewWorkoutCard
               variant="default"
               icon={<PlusCircle size={theme.iconSize.xl} color={theme.colors.text.gray300} />}
@@ -171,9 +143,9 @@ export function CreateWorkoutOptionsModal({
               subtitle={t('workouts.createWorkoutOptions.createFromEmptyTemplateSubtitle')}
               onPress={onCreateEmptyTemplate}
             />
-          </Animated.View>
+          </View>
 
-          <Animated.View style={animatedStyle(300)}>
+          <View style={{ width: '100%' }}>
             <NewWorkoutCard
               variant="default"
               icon={<Library size={theme.iconSize.xl} color={theme.colors.text.gray300} />}
@@ -181,7 +153,7 @@ export function CreateWorkoutOptionsModal({
               subtitle={t('workouts.createWorkoutOptions.browseTemplatesSubtitle')}
               onPress={onBrowseTemplates}
             />
-          </Animated.View>
+          </View>
         </View>
       </View>
     </FullScreenModal>
