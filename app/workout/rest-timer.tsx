@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
@@ -12,6 +12,7 @@ import { WorkoutTimeTracker } from '../../components/WorkoutTimeTracker';
 import { UpNextExerciseCard } from '../../components/cards/UpNextExerciseCard';
 import { RestTimerControls } from '../../components/RestTimerControls';
 import { RestTimer } from '../../components/RestTimer';
+import { UpNextLabel } from '../../components/cards/UpNextLabel';
 
 export default function RestTimerScreen() {
   const { t } = useTranslation();
@@ -153,6 +154,7 @@ export default function RestTimerScreen() {
           onPress={() => {
             // Handle navigation to exercise details or start exercise
           }}
+          ctaLabel={<UpNextLabel />}
         />
       </View>
 

@@ -1,7 +1,6 @@
 import { View, Text, Image, ImageSourcePropType } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ChevronRight, LucideIcon } from 'lucide-react-native';
-import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
 import { GenericCard } from './GenericCard';
 
@@ -14,11 +13,10 @@ type UpNextExerciseCardProps = {
     itemThree: { value: string | number; icon: LucideIcon };
   };
   onPress?: () => void;
+  ctaLabel?: React.ReactNode;
 };
 
-export function UpNextExerciseCard({ item, onPress }: UpNextExerciseCardProps) {
-  const { t } = useTranslation();
-
+export function UpNextExerciseCard({ item, onPress, ctaLabel }: UpNextExerciseCardProps) {
   return (
     <GenericCard variant="highlighted" isPressable={true} onPress={onPress} size="sm">
       <View className="flex-row items-center gap-4 p-4">
@@ -49,17 +47,7 @@ export function UpNextExerciseCard({ item, onPress }: UpNextExerciseCardProps) {
 
         {/* Info */}
         <View className="min-w-0 flex-1 gap-1">
-          <View className="flex-row items-start justify-between">
-            <View className="flex-1" />
-            <View className="rounded-full border border-accent-primary/20 bg-accent-primary/10 px-2 py-0.5">
-              <Text
-                className="font-bold uppercase tracking-widest text-accent-primary"
-                style={{ fontSize: theme.typography.fontSize.xs }}>
-                {t('restTimer.upNext')}
-              </Text>
-            </View>
-          </View>
-
+          {ctaLabel}
           <Text className="mt-1 truncate text-lg font-bold leading-tight text-text-primary">
             {item.name}
           </Text>

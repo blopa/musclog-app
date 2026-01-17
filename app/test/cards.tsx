@@ -35,6 +35,7 @@ import { ChatWorkoutCard } from '../../components/cards/ChatWorkoutCard';
 import { MealItemCard } from '../../components/cards/MealItemCard';
 import { SettingsCard } from '../../components/cards/SettingsCard';
 import { HealthCategoryCard } from '../../components/cards/HealthCategoryCard';
+import { UpNextLabel } from '../../components/cards/UpNextLabel';
 
 export default function CardsTestScreen() {
   return (
@@ -223,6 +224,7 @@ export default function CardsTestScreen() {
               media: require('../../assets/icon.png'),
             }}
             onPress={() => console.log('Exercise pressed')}
+            ctaLabel={<UpNextLabel />}
           />
         </TestSection>
 
