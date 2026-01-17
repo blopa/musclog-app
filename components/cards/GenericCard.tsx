@@ -135,6 +135,36 @@ export function GenericCard({
     };
   };
 
+  const getPressableStyle = (): ViewStyle => {
+    // For Pressable, we only need width and overflow, not borderRadius or background
+    const widthStyle: ViewStyle =
+      size === 'sm' && !isWorkoutVariant
+        ? { flex: 1 }
+        : { width: '100%' };
+
+    return {
+      ...widthStyle,
+      overflow: 'hidden',
+    };
+  };
+
+  const getInnerViewStyle = (pressed: boolean = false): ViewStyle => {
+    // Inner view gets the background, border, borderRadius, and transform
+    const borderRadius =
+      size === 'sm'
+        ? theme.borderRadius.lg
+        : size === 'lg'
+          ? theme.borderRadius['2xl']
+          : theme.borderRadius.xl;
+
+    return {
+      ...getBackgroundStyle(pressed),
+      borderRadius,
+      transform: [{ scale: pressed ? 0.98 : 1 }],
+      flex: 1,
+    };
+  };
+
   // ============================================================================
   // Render Helpers
   // ============================================================================
@@ -209,8 +239,12 @@ export function GenericCard({
   // Pressable card (works for any variant except workout)
   if (shouldRenderAsPressable) {
     return (
-      <Pressable onPress={onPress} style={({ pressed }) => getCardStyle(pressed)}>
-        {cardContent}
+      <Pressable onPress={onPress} style={getPressableStyle()}>
+        {({ pressed }) => (
+          <View style={getInnerViewStyle(pressed)}>
+            {cardContent}
+          </View>
+        )}
       </Pressable>
     );
   }
