@@ -118,6 +118,7 @@
   },
   "main": "expo-router/entry",
   "private": false,
+  "license": "CC-BY-NC-ND-4.0",
   "expo": {
     "doctor": {
       "reactNativeDirectoryCheck": {
