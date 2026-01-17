@@ -99,65 +99,50 @@ export default function HealthConnectScreen() {
                 iconColor={theme.colors.status.purple}
               />
             </View>
+          </View>
+          <View className="px-6 pb-6">
+            {/* Primary Button */}
+            <Button
+              label={t('onboarding.healthConnect.allowHealthAccess')}
+              onPress={() => {
+                // Handle health access permission
+                console.log('Allow Health Access');
+              }}
+              icon={RefreshCw}
+              iconPosition="left"
+              variant="gradientCta"
+              size="md"
+              width="full"
+              style={{
+                ...theme.shadows.lg,
+                shadowColor: theme.colors.status.emeraldLight,
+                shadowOpacity: theme.colors.opacity.subtle,
+              }}
+            />
 
-            {/* Footer Spacer */}
-            <View style={{ height: 180 }} />
+            {/* Maybe Later Button */}
+            <Pressable
+              className="w-full items-center py-2 active:opacity-70"
+              onPress={() => {
+                // Navigate away or skip
+                router.push('/onboarding/connect-with-google');
+              }}>
+              <Text className="text-sm font-medium" style={{ color: theme.colors.text.gray500 }}>
+                {t('onboarding.healthConnect.maybeLater')}
+              </Text>
+            </Pressable>
+
+            {/* Privacy Statement */}
+            <Text
+              className="mt-4 text-center leading-relaxed"
+              style={{
+                fontSize: theme.typography.fontSize.xs,
+                color: theme.colors.text.gray500,
+              }}>
+              {t('onboarding.healthConnect.privacyStatement')}
+            </Text>
           </View>
         </ScrollView>
-
-      {/* Footer - Fixed Bottom */}
-      <View className="absolute bottom-0 left-0 right-0">
-        <LinearGradient
-          colors={[theme.colors.background.primary, theme.colors.background.primary, 'transparent']}
-          start={{ x: 0, y: 1 }}
-          end={{ x: 0, y: 0 }}
-          style={{ paddingTop: theme.spacing.padding['3xl'] }}>
-          <SafeAreaView edges={['bottom']}>
-            <View className="px-6 pb-6">
-              {/* Primary Button */}
-              <Button
-                label={t('onboarding.healthConnect.allowHealthAccess')}
-                onPress={() => {
-                  // Handle health access permission
-                  console.log('Allow Health Access');
-                }}
-                icon={RefreshCw}
-                iconPosition="left"
-                variant="gradientCta"
-                size="md"
-                width="full"
-                style={{
-                  ...theme.shadows.lg,
-                  shadowColor: theme.colors.status.emeraldLight,
-                  shadowOpacity: theme.colors.opacity.subtle,
-                }}
-              />
-
-              {/* Maybe Later Button */}
-              <Pressable
-                className="w-full items-center py-2 active:opacity-70"
-                onPress={() => {
-                  // Navigate away or skip
-                  router.push('/onboarding/connect-with-google');
-                }}>
-                <Text className="text-sm font-medium" style={{ color: theme.colors.text.gray500 }}>
-                  {t('onboarding.healthConnect.maybeLater')}
-                </Text>
-              </Pressable>
-
-              {/* Privacy Statement */}
-              <Text
-                className="mt-4 text-center leading-relaxed"
-                style={{
-                  fontSize: theme.typography.fontSize.xs,
-                  color: theme.colors.text.gray500,
-                }}>
-                {t('onboarding.healthConnect.privacyStatement')}
-              </Text>
-            </View>
-          </SafeAreaView>
-        </LinearGradient>
-      </View>
       </SafeAreaView>
     </View>
   );
