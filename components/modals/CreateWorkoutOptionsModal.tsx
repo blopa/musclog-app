@@ -1,4 +1,3 @@
-import React from 'react';
 import { View, Text, Platform } from 'react-native';
 import { Sparkles, PlusCircle, Library } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
@@ -29,7 +28,7 @@ export function CreateWorkoutOptionsModal({
       visible={visible}
       onClose={onClose}
       title=""
-      scrollable={false}
+      scrollable={true}
       withGradient={false}>
       {/* Background Glows */}
       <View style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
@@ -89,7 +88,7 @@ export function CreateWorkoutOptionsModal({
         style={{
           flex: 1,
           paddingHorizontal: theme.spacing.padding.xl,
-          justifyContent: 'center',
+          paddingTop: theme.spacing.padding.xl,
           paddingBottom: theme.spacing.padding['3xl'],
         }}>
         {/* Title */}
@@ -124,36 +123,30 @@ export function CreateWorkoutOptionsModal({
           </Text>
         </View>
 
-        <View style={{ gap: theme.spacing.gap.base, width: '100%' }}>
-          <View style={{ width: '100%' }}>
-            <NewWorkoutCard
-              variant="popular"
-              icon={<Sparkles size={theme.iconSize.lg} color={theme.colors.text.white} />}
-              title={t('workouts.createWorkoutOptions.generateWithAi')}
-              subtitle={t('workouts.createWorkoutOptions.generateWithAiSubtitle')}
-              onPress={onGenerateWithAi}
-            />
-          </View>
+        <View style={{ gap: theme.spacing.gap.base }}>
+          <NewWorkoutCard
+            variant="popular"
+            icon={<Sparkles size={theme.iconSize.lg} color={theme.colors.text.white} />}
+            title={t('workouts.createWorkoutOptions.generateWithAi')}
+            subtitle={t('workouts.createWorkoutOptions.generateWithAiSubtitle')}
+            onPress={onGenerateWithAi}
+          />
 
-          <View style={{ width: '100%' }}>
-            <NewWorkoutCard
-              variant="default"
-              icon={<PlusCircle size={theme.iconSize.xl} color={theme.colors.text.gray300} />}
-              title={t('workouts.createWorkoutOptions.createFromEmptyTemplate')}
-              subtitle={t('workouts.createWorkoutOptions.createFromEmptyTemplateSubtitle')}
-              onPress={onCreateEmptyTemplate}
-            />
-          </View>
+          <NewWorkoutCard
+            variant="default"
+            icon={<PlusCircle size={theme.iconSize.xl} color={theme.colors.text.gray300} />}
+            title={t('workouts.createWorkoutOptions.createFromEmptyTemplate')}
+            subtitle={t('workouts.createWorkoutOptions.createFromEmptyTemplateSubtitle')}
+            onPress={onCreateEmptyTemplate}
+          />
 
-          <View style={{ width: '100%' }}>
-            <NewWorkoutCard
-              variant="default"
-              icon={<Library size={theme.iconSize.xl} color={theme.colors.text.gray300} />}
-              title={t('workouts.createWorkoutOptions.browseTemplates')}
-              subtitle={t('workouts.createWorkoutOptions.browseTemplatesSubtitle')}
-              onPress={onBrowseTemplates}
-            />
-          </View>
+          <NewWorkoutCard
+            variant="default"
+            icon={<Library size={theme.iconSize.xl} color={theme.colors.text.gray300} />}
+            title={t('workouts.createWorkoutOptions.browseTemplates')}
+            subtitle={t('workouts.createWorkoutOptions.browseTemplatesSubtitle')}
+            onPress={onBrowseTemplates}
+          />
         </View>
       </View>
     </FullScreenModal>
