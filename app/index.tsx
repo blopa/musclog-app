@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { View, Text, Image, Pressable, ScrollView } from 'react-native';
-import { Bell } from 'lucide-react-native';
+import { Bell, Zap, Wheat, Droplet, UtensilsCrossed } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { MasterLayout } from '../components/MasterLayout';
 import { RecentWorkoutsCard } from '../components/cards/RecentWorkoutsCard';
-import { CircularArrow } from '../components/CircularArrow';
+import { DetailedItemCard } from '../components/cards/DetailedItemCard';
 import { ActionButton } from '../components/ActionButton';
 import { DailySummaryCard } from '../components/cards/DailySummaryCard';
 import { UserMenuModal } from '../components/modals/UserMenuModal';
@@ -58,7 +58,6 @@ const PAGE_DATA = {
     {
       id: '1',
       name: 'Breakfast Burrito',
-      emoji: '🌯',
       protein: 24,
       carbs: 42,
       fat: 18,
@@ -67,7 +66,6 @@ const PAGE_DATA = {
     {
       id: '2',
       name: 'Chicken & Rice Bowl',
-      emoji: '🍔',
       protein: 45,
       carbs: 60,
       fat: 12,
@@ -255,41 +253,21 @@ export default function HomeScreen() {
           ) : (
             <View className="gap-3">
               {recentFoods.map((food) => (
-                <Pressable
+                <DetailedItemCard
                   key={food.id}
-                  className="flex-row items-center gap-4 rounded-2xl bg-bg-overlay p-5">
-                  <View className="flex-1">
-                    <View className="mb-3 flex-row items-start justify-between">
-                      <View className="flex-row items-center gap-3">
-                        <Text className="text-4xl">{food.emoji}</Text>
-                        <View>
-                          <Text className="text-lg font-bold text-text-primary">{food.name}</Text>
-                          <View className="mt-2 flex-row gap-2">
-                            <View className="rounded-full bg-bg-secondary px-2.5 py-1">
-                              <Text className="text-xs text-text-secondary">
-                                {t('home.macros.protein', { value: food.protein })}
-                              </Text>
-                            </View>
-                            <View className="rounded-full bg-bg-secondary px-2.5 py-1">
-                              <Text className="text-xs text-text-secondary">
-                                {t('home.macros.carbs', { value: food.carbs })}
-                              </Text>
-                            </View>
-                            <View className="rounded-full bg-bg-secondary px-2.5 py-1">
-                              <Text className="text-xs text-text-secondary">
-                                {t('home.macros.fat', { value: food.fat })}
-                              </Text>
-                            </View>
-                          </View>
-                        </View>
-                      </View>
-                      <Text className="text-lg font-bold text-text-primary">
-                        {food.calories} {t('common.kcal')}
-                      </Text>
-                    </View>
-                  </View>
-                  <CircularArrow />
-                </Pressable>
+                  item={{
+                    name: food.name,
+                    media: { icon: UtensilsCrossed, color: theme.colors.text.secondary },
+                    itemOne: { value: `${food.protein}G P`, icon: Zap },
+                    itemTwo: { value: `${food.carbs}G C`, icon: Wheat },
+                    itemThree: { value: `${food.fat}G F`, icon: Droplet },
+                  }}
+                  ctaLabel={
+                    <Text className="text-lg font-bold text-text-primary">
+                      {food.calories} {t('common.kcal')}
+                    </Text>
+                  }
+                />
               ))}
             </View>
           )}
