@@ -140,8 +140,11 @@ export const theme = {
       error10: 'rgba(239, 68, 68, 0.1)', // Error with 10% opacity
       error12: 'rgba(239, 68, 68, 0.125)', // Error with 12.5% opacity
       error20: 'rgba(239, 68, 68, 0.2)', // Error with 20% opacity
+      error50: 'rgba(239, 68, 68, 0.5)', // Error with 50% opacity
       info20: 'rgba(59, 130, 246, 0.2)', // Info with 20% opacity
       info10: 'rgba(59, 130, 246, 0.1)', // Info with 10% opacity
+      info50: 'rgba(59, 130, 246, 0.5)', // Info with 50% opacity
+      warning50: 'rgba(249, 115, 22, 0.5)', // Warning with 50% opacity
       purple40: 'rgba(168, 85, 247, 0.4)', // Purple with 40% opacity
       purple20: 'rgba(168, 85, 247, 0.2)', // Purple with 20% opacity
       purple13: 'rgba(168, 85, 247, 0.13)', // Purple with 13% opacity (hex '22')
@@ -173,6 +176,11 @@ export const theme = {
       errorSolid: '#ef4444', // Solid red for ungroup
       // Success colors for group action
       emeraldSolid: '#10b981', // Solid emerald for group
+      // Additional status colors
+      red400: '#f87171', // Red-400 (for fat icons, etc.)
+      teal400: '#2dd4bf', // Teal-400 (for monounsat fat, etc.)
+      purple400: '#a78bfa', // Purple-400 (for fiber icons, etc.)
+      violet500: '#8b5cf6', // Violet-500 (for polyunsat fat, etc.)
     },
 
     // Rose colors (for red button variant)

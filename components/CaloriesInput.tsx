@@ -16,11 +16,11 @@ type CaloriesInputProps = {
 
 const sizeConfig = {
   full: {
-    padding: 20, // p-5
+    padding: theme.spacing.padding['5'], // 20px
     fontSize: theme.typography.fontSize['5xl'], // 48px
   },
   half: {
-    padding: 16, // p-4
+    padding: theme.spacing.padding.base, // 16px
     fontSize: theme.typography.fontSize['4xl'], // 36px
   },
 };
@@ -37,9 +37,9 @@ const variantColors: Record<CaloriesInputVariant, string> = {
 const variantBorderColors: Record<CaloriesInputVariant, string> = {
   default: theme.colors.accent.primary50,
   success: theme.colors.accent.primary50,
-  warning: theme.colors.status.warning + 50,
-  error: theme.colors.status.error + 50,
-  info: theme.colors.status.info + 50,
+  warning: theme.colors.status.warning50,
+  error: theme.colors.status.error50,
+  info: theme.colors.status.info50,
   accent: theme.colors.accent.secondary20,
 };
 

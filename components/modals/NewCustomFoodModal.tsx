@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Pressable, ScrollView, Text, TextInput as RNTextInput, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import {
@@ -112,11 +112,11 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
               <Pressable
                 className="absolute right-2 items-center justify-center"
                 style={{
-                  top: 36, // Label (~20px) + gap-2 (8px) + (input height 56px - button height 40px) / 2 = 28 + 8 = 36
-                  width: 40,
-                  height: 40,
+                  top: theme.size['18'] / 2,
+                  width: theme.size['10'],
+                  height: theme.size['10'],
                   backgroundColor: theme.colors.accent.primary10,
-                  borderRadius: 8,
+                  borderRadius: theme.borderRadius.sm,
                 }}>
                 <ScanLine size={theme.iconSize.md} color={theme.colors.accent.primary} />
               </Pressable>
@@ -163,7 +163,9 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
                 label="Protein"
                 value={protein}
                 onChange={(value) => handleNumericChange(value, setProtein)}
-                topRightElement={<Dumbbell size={theme.iconSize.sm} color="#29e08e" />}
+                topRightElement={
+                  <Dumbbell size={theme.iconSize.sm} color={theme.colors.status.emeraldLight} />
+                }
                 variant="success"
                 size="half"
               />
@@ -171,7 +173,9 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
                 label="Carbs"
                 value={carbs}
                 onChange={(value) => handleNumericChange(value, setCarbs)}
-                topRightElement={<Cookie size={theme.iconSize.sm} color="#fbbf24" />}
+                topRightElement={
+                  <Cookie size={theme.iconSize.sm} color={theme.colors.status.amber} />
+                }
                 variant="warning"
                 size="half"
               />
@@ -179,7 +183,9 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
                 label="Fat"
                 value={fat}
                 onChange={(value) => handleNumericChange(value, setFat)}
-                topRightElement={<Droplet size={theme.iconSize.sm} color="#f87171" />}
+                topRightElement={
+                  <Droplet size={theme.iconSize.sm} color={theme.colors.status.red400} />
+                }
                 variant="error"
                 size="half"
               />
@@ -187,7 +193,9 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
                 label="Fiber"
                 value={fiber}
                 onChange={(value) => handleNumericChange(value, setFiber)}
-                topRightElement={<Leaf size={theme.iconSize.sm} color="#a78bfa" />}
+                topRightElement={
+                  <Leaf size={theme.iconSize.sm} color={theme.colors.status.purple400} />
+                }
                 variant="accent"
                 size="half"
               />
@@ -217,7 +225,9 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
                     label="Sugar"
                     value={sugar}
                     onChange={(value) => handleNumericChange(value, setSugar)}
-                    topRightElement={<IceCream size={theme.iconSize.sm} color="#ec4899" />}
+                    topRightElement={
+                      <IceCream size={theme.iconSize.sm} color={theme.colors.status.pink500} />
+                    }
                     variant="accent"
                     size="half"
                   />
@@ -225,7 +235,9 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
                     label="Alcohol"
                     value={alcohol}
                     onChange={(value) => handleNumericChange(value, setAlcohol)}
-                    topRightElement={<Wine size={theme.iconSize.sm} color="#6366f1" />}
+                    topRightElement={
+                      <Wine size={theme.iconSize.sm} color={theme.colors.status.indigo} />
+                    }
                     variant="info"
                     size="half"
                   />
@@ -233,7 +245,9 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
                     label="Monounsat. Fat"
                     value={monoFat}
                     onChange={(value) => handleNumericChange(value, setMonoFat)}
-                    topRightElement={<Droplet size={theme.iconSize.sm} color="#2dd4bf" />}
+                    topRightElement={
+                      <Droplet size={theme.iconSize.sm} color={theme.colors.status.teal400} />
+                    }
                     variant="accent"
                     size="half"
                   />
@@ -241,7 +255,9 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
                     label="Polyunsat. Fat"
                     value={polyFat}
                     onChange={(value) => handleNumericChange(value, setPolyFat)}
-                    topRightElement={<Waves size={theme.iconSize.sm} color="#8b5cf6" />}
+                    topRightElement={
+                      <Waves size={theme.iconSize.sm} color={theme.colors.status.violet500} />
+                    }
                     variant="accent"
                     size="half"
                   />
