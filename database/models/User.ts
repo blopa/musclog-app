@@ -3,7 +3,6 @@ import { field } from '@nozbe/watermelondb/decorators';
 
 export type Gender = 'male' | 'female' | 'other';
 export type LiftingExperience = 'beginner' | 'intermediate' | 'advanced';
-export type Units = 'imperial' | 'metric';
 export type EatingPhase = 'cut' | 'maintain' | 'bulk';
 
 export interface UserProfileUpdate {
@@ -15,9 +14,6 @@ export interface UserProfileUpdate {
   activityLevel?: number;
   liftingExperience?: LiftingExperience;
   photoUri?: string | null;
-  units?: Units;
-  weight?: number | null;
-  height?: number | null;
   eatingPhase?: EatingPhase;
 }
 

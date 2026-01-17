@@ -92,7 +92,7 @@ export const schema = appSchema({
       ],
     }),
 
-    // Your existing User Metrics
+    // User Metrics
     tableSchema({
       name: 'user_metrics',
       columns: [
@@ -100,6 +100,18 @@ export const schema = appSchema({
         { name: 'value', type: 'number' },
         { name: 'unit', type: 'string' },
         { name: 'date', type: 'number', isIndexed: true },
+        { name: 'created_at', type: 'number' },
+        { name: 'updated_at', type: 'number' },
+        { name: 'deleted_at', type: 'number', isOptional: true },
+      ],
+    }),
+
+    // Settings
+    tableSchema({
+      name: 'settings',
+      columns: [
+        { name: 'type', type: 'string', isIndexed: true },
+        { name: 'value', type: 'number' },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },

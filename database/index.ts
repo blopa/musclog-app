@@ -5,6 +5,7 @@ import adapter from './adapter';
 import Exercise from './models/Exercise';
 import UserMetric from './models/UserMetric';
 import User from './models/User';
+import Setting from './models/Setting';
 import WorkoutTemplate from './models/WorkoutTemplate';
 import Schedule from './models/Schedule';
 import WorkoutTemplateSet from './models/WorkoutTemplateSet';
@@ -18,6 +19,7 @@ export const database = new Database({
     Exercise,
     UserMetric,
     User,
+    Setting,
     WorkoutTemplate,
     Schedule,
     WorkoutTemplateSet,
@@ -31,6 +33,7 @@ export {
   Exercise,
   UserMetric,
   User,
+  Setting,
   WorkoutTemplate,
   Schedule,
   WorkoutTemplateSet,

@@ -42,12 +42,9 @@ export class UserService {
     fitnessGoal: string;
     activityLevel: number;
     liftingExperience: 'beginner' | 'intermediate' | 'advanced';
-    units: 'imperial' | 'metric';
     eatingPhase: 'cut' | 'maintain' | 'bulk';
     email?: string;
     photoUri?: string;
-    weight?: number;
-    height?: number;
   }): Promise<User> {
     const existingUser = await this.getCurrentUser();
 
