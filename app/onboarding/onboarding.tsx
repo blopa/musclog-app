@@ -436,7 +436,7 @@ export default function OnboardingScreen() {
             className="flex-row items-center justify-center rounded-full px-4 py-2 active:opacity-70"
             onPress={() => {
               // Navigate to home or skip onboarding
-              router.push('/');
+              router.push('/onboarding/health-connect');
             }}>
             <Text
               className="text-sm font-bold leading-normal tracking-wide"

@@ -694,8 +694,6 @@
     },
     "landing": {
       "getStarted": "Get Started",
-      "alreadyHaveAccount": "Already have an account?",
-      "logIn": "Log In",
       "termsAndPrivacy": "By continuing, you agree to our Terms & Privacy Policy."
     }
   },

@@ -14,8 +14,8 @@ export const schema = appSchema({
         { name: 'equipment_type', type: 'string', isIndexed: true }, // Dumbbell, Barbell, Bodyweight
         { name: 'mechanic_type', type: 'string' }, // 'compound' or 'isolation'
         { name: 'created_at', type: 'number' },
-        { name: 'updated_at', type: 'number' },
-        { name: 'deleted_at', type: 'number' },
+        { name: 'updated_at', type: 'number', isOptional: true },
+        { name: 'deleted_at', type: 'number', isOptional: true },
       ],
     }),
 
@@ -26,8 +26,8 @@ export const schema = appSchema({
         { name: 'name', type: 'string' },
         { name: 'description', type: 'string', isOptional: true },
         { name: 'created_at', type: 'number' },
-        { name: 'updated_at', type: 'number' },
-        { name: 'deleted_at', type: 'number' },
+        { name: 'updated_at', type: 'number', isOptional: true },
+        { name: 'deleted_at', type: 'number', isOptional: true },
       ],
     }),
 
@@ -39,8 +39,8 @@ export const schema = appSchema({
         { name: 'day_of_week', type: 'string' }, // e.g., 'Monday', 'Tuesday'
         { name: 'reminder_time', type: 'string', isOptional: true },
         { name: 'created_at', type: 'number' },
-        { name: 'updated_at', type: 'number' },
-        { name: 'deleted_at', type: 'number' },
+        { name: 'updated_at', type: 'number', isOptional: true },
+        { name: 'deleted_at', type: 'number', isOptional: true },
       ],
     }),
 
@@ -54,8 +54,8 @@ export const schema = appSchema({
         { name: 'target_weight', type: 'number' },
         { name: 'set_order', type: 'number' },
         { name: 'created_at', type: 'number' },
-        { name: 'updated_at', type: 'number' },
-        { name: 'deleted_at', type: 'number' },
+        { name: 'updated_at', type: 'number', isOptional: true },
+        { name: 'deleted_at', type: 'number', isOptional: true },
       ],
     }),
 
@@ -69,8 +69,8 @@ export const schema = appSchema({
         { name: 'completed_at', type: 'number', isOptional: true },
         { name: 'total_volume', type: 'number', isOptional: true },
         { name: 'created_at', type: 'number' },
-        { name: 'updated_at', type: 'number' },
-        { name: 'deleted_at', type: 'number' },
+        { name: 'updated_at', type: 'number', isOptional: true },
+        { name: 'deleted_at', type: 'number', isOptional: true },
       ],
     }),
 
@@ -87,8 +87,8 @@ export const schema = appSchema({
         { name: 'is_drop_set', type: 'boolean' },
         { name: 'set_order', type: 'number' },
         { name: 'created_at', type: 'number' },
-        { name: 'updated_at', type: 'number' },
-        { name: 'deleted_at', type: 'number' },
+        { name: 'updated_at', type: 'number', isOptional: true },
+        { name: 'deleted_at', type: 'number', isOptional: true },
       ],
     }),
 
@@ -101,8 +101,27 @@ export const schema = appSchema({
         { name: 'unit', type: 'string' },
         { name: 'date', type: 'number', isIndexed: true },
         { name: 'created_at', type: 'number' },
-        { name: 'updated_at', type: 'number' },
-        { name: 'deleted_at', type: 'number' },
+        { name: 'updated_at', type: 'number', isOptional: true },
+        { name: 'deleted_at', type: 'number', isOptional: true },
+      ],
+    }),
+
+    // User Profile
+    tableSchema({
+      name: 'users',
+      columns: [
+        { name: 'full_name', type: 'string' },
+        { name: 'email', type: 'string', isOptional: true },
+        { name: 'date_of_birth', type: 'number' },
+        { name: 'gender', type: 'string' }, // 'male', 'female', 'other'
+        { name: 'fitness_goal', type: 'string' },
+        { name: 'activity_level', type: 'number' },
+        { name: 'lifting_experience', type: 'string' }, // 'beginner', 'intermediate', 'advanced'
+        { name: 'photo_uri', type: 'string', isOptional: true },
+        { name: 'eating_phase', type: 'string' }, // 'cut', 'maintain', 'bulk'
+        { name: 'created_at', type: 'number' },
+        { name: 'updated_at', type: 'number', isOptional: true },
+        { name: 'deleted_at', type: 'number', isOptional: true },
       ],
     }),
   ],

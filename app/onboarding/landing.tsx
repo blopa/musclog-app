@@ -128,21 +128,6 @@ export default function LandingScreen() {
               width="full"
             />
 
-            {/* Secondary Action */}
-            <Pressable
-              className="h-10 items-center justify-center"
-              onPress={() => {
-                // Navigate to login
-                console.log('Navigate to login');
-              }}>
-              <Text className="text-sm font-medium" style={{ color: theme.colors.text.gray400 }}>
-                {t('onboarding.landing.alreadyHaveAccount')}{' '}
-                <Text style={{ color: theme.colors.status.emeraldLight }}>
-                  {t('onboarding.landing.logIn')}
-                </Text>
-              </Text>
-            </Pressable>
-
             {/* Terms / Footer Text */}
             <Text
               className="mt-2 text-center"
