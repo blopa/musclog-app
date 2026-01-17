@@ -7,7 +7,7 @@ import {
   ScrollView,
   Platform,
 } from 'react-native';
-import { Search, X, Check, PlusCircle } from 'lucide-react-native';
+import { Search, Check, PlusCircle } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
 import { FullScreenModal } from './FullScreenModal';
@@ -283,7 +283,7 @@ function FoodResultCard({
               selectTextOnFocus={Platform.OS === 'ios'}
               keyboardType="numeric"
               style={{
-                width: theme.iconSize.xl,
+                width: 80,
                 textAlign: 'center',
                 color: theme.colors.text.primary,
                 fontWeight: theme.typography.fontWeight.bold,
