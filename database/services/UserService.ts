@@ -54,18 +54,20 @@ export class UserService {
 
     const now = Date.now();
 
-    return await database.get<User>('users').create((u) => {
-      u.fullName = initialData.fullName;
-      u.email = initialData.email;
-      u.dateOfBirth = initialData.dateOfBirth;
-      u.gender = initialData.gender;
-      u.fitnessGoal = initialData.fitnessGoal;
-      u.activityLevel = initialData.activityLevel;
-      u.liftingExperience = initialData.liftingExperience;
-      u.photoUri = initialData.photoUri;
-      u.eatingPhase = initialData.eatingPhase;
-      u.createdAt = now;
-      u.updatedAt = now;
+    return await database.write(async () => {
+      return await database.get<User>('users').create((u) => {
+        u.fullName = initialData.fullName;
+        u.email = initialData.email;
+        u.dateOfBirth = initialData.dateOfBirth;
+        u.gender = initialData.gender;
+        u.fitnessGoal = initialData.fitnessGoal;
+        u.activityLevel = initialData.activityLevel;
+        u.liftingExperience = initialData.liftingExperience;
+        u.photoUri = initialData.photoUri;
+        u.eatingPhase = initialData.eatingPhase;
+        u.createdAt = now;
+        u.updatedAt = now;
+      });
     });
   }
 

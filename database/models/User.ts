@@ -1,5 +1,5 @@
 import { Model } from '@nozbe/watermelondb';
-import { field } from '@nozbe/watermelondb/decorators';
+import { field, writer } from '@nozbe/watermelondb/decorators';
 
 export type Gender = 'male' | 'female' | 'other';
 export type LiftingExperience = 'beginner' | 'intermediate' | 'advanced';
@@ -50,6 +50,7 @@ export default class User extends Model {
   /**
    * Update user profile with validation
    */
+  @writer
   async updateProfile(data: UserProfileUpdate): Promise<void> {
     await this.update((user) => {
       if (data.fullName !== undefined) user.fullName = data.fullName;
