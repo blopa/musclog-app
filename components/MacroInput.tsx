@@ -2,16 +2,16 @@ import React, { useState } from 'react';
 import { Text, TextInput as RNTextInput, View } from 'react-native';
 import { theme } from '../theme';
 
-type CaloriesInputVariant = 'default' | 'success' | 'warning' | 'error' | 'info' | 'accent';
-type CaloriesInputSize = 'full' | 'half';
+type MacroInputVariant = 'default' | 'success' | 'warning' | 'error' | 'info' | 'accent';
+type MacroInputSize = 'full' | 'half';
 
-type CaloriesInputProps = {
+type MacroInputProps = {
   label: string;
   value: string;
   onChange: (value: string) => void;
   topRightElement: React.ReactNode;
-  variant?: CaloriesInputVariant;
-  size?: CaloriesInputSize;
+  variant?: MacroInputVariant;
+  size?: MacroInputSize;
 };
 
 const sizeConfig = {
@@ -25,7 +25,7 @@ const sizeConfig = {
   },
 };
 
-const variantColors: Record<CaloriesInputVariant, string> = {
+const variantColors: Record<MacroInputVariant, string> = {
   default: theme.colors.accent.primary,
   success: theme.colors.status.success,
   warning: theme.colors.status.warning,
@@ -34,7 +34,7 @@ const variantColors: Record<CaloriesInputVariant, string> = {
   accent: theme.colors.accent.secondary,
 };
 
-const variantBorderColors: Record<CaloriesInputVariant, string> = {
+const variantBorderColors: Record<MacroInputVariant, string> = {
   default: theme.colors.accent.primary50,
   success: theme.colors.accent.primary50,
   warning: theme.colors.status.warning50,
@@ -43,14 +43,14 @@ const variantBorderColors: Record<CaloriesInputVariant, string> = {
   accent: theme.colors.accent.secondary20,
 };
 
-export function CaloriesInput({
+export function MacroInput({
   label,
   value,
   onChange,
   topRightElement,
   variant = 'default',
   size = 'full',
-}: CaloriesInputProps) {
+}: MacroInputProps) {
   const [isFocused, setIsFocused] = useState(false);
 
   const highlightColor = variantColors[variant];

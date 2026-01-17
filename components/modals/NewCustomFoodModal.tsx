@@ -23,7 +23,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '../theme/Button';
 import { TextInput } from '../theme/TextInput';
 import { SegmentedControl } from '../theme/SegmentedControl';
-import { CaloriesInput } from '../CaloriesInput';
+import { MacroInput } from '../MacroInput';
 
 type MeasurementUnit = '100g' | 'serving' | 'container';
 
@@ -142,7 +142,7 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
             </View>
 
             {/* Calories */}
-            <CaloriesInput
+            <MacroInput
               label="Calories"
               value={calories}
               onChange={(value) => handleNumericChange(value, setCalories)}
@@ -159,7 +159,7 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
 
             {/* Macro Grid */}
             <View className="flex-row flex-wrap gap-4">
-              <CaloriesInput
+              <MacroInput
                 label="Protein"
                 value={protein}
                 onChange={(value) => handleNumericChange(value, setProtein)}
@@ -169,7 +169,7 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
                 variant="success"
                 size="half"
               />
-              <CaloriesInput
+              <MacroInput
                 label="Carbs"
                 value={carbs}
                 onChange={(value) => handleNumericChange(value, setCarbs)}
@@ -179,7 +179,7 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
                 variant="warning"
                 size="half"
               />
-              <CaloriesInput
+              <MacroInput
                 label="Fat"
                 value={fat}
                 onChange={(value) => handleNumericChange(value, setFat)}
@@ -189,7 +189,7 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
                 variant="error"
                 size="half"
               />
-              <CaloriesInput
+              <MacroInput
                 label="Fiber"
                 value={fiber}
                 onChange={(value) => handleNumericChange(value, setFiber)}
@@ -221,7 +221,7 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
 
               {microOpen && (
                 <View className="flex-row flex-wrap gap-4">
-                  <CaloriesInput
+                  <MacroInput
                     label="Sugar"
                     value={sugar}
                     onChange={(value) => handleNumericChange(value, setSugar)}
@@ -231,7 +231,7 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
                     variant="accent"
                     size="half"
                   />
-                  <CaloriesInput
+                  <MacroInput
                     label="Alcohol"
                     value={alcohol}
                     onChange={(value) => handleNumericChange(value, setAlcohol)}
@@ -241,7 +241,7 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
                     variant="info"
                     size="half"
                   />
-                  <CaloriesInput
+                  <MacroInput
                     label="Monounsat. Fat"
                     value={monoFat}
                     onChange={(value) => handleNumericChange(value, setMonoFat)}
@@ -251,7 +251,7 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
                     variant="accent"
                     size="half"
                   />
-                  <CaloriesInput
+                  <MacroInput
                     label="Polyunsat. Fat"
                     value={polyFat}
                     onChange={(value) => handleNumericChange(value, setPolyFat)}
