@@ -7,6 +7,123 @@ import { SecretInput } from '../theme/SecretInput';
 import { ToggleInput } from '../theme/ToggleInput';
 import { theme } from '../../theme';
 
+type AIIntegrationCardProps = {
+  sectionTitle: string;
+  sectionTitleColor: string;
+  toggleItems: Array<{
+    key: string;
+    label: string;
+    value: boolean;
+    onValueChange: (value: boolean) => void;
+    icon?: React.ReactNode;
+    subtitle?: string;
+  }>;
+  headerContent?: React.ReactNode;
+  apiKeyLabel: string;
+  apiKeyValue: string;
+  onApiKeyChange: (value: string) => void;
+  apiKeyPlaceholder: string;
+  apiKeyHelper?: string;
+  modelLabel: string;
+  modelValue: string;
+  onModelPress?: () => void;
+  modelFallbackText?: string;
+};
+
+function AIIntegrationCard({
+  sectionTitle,
+  sectionTitleColor,
+  toggleItems,
+  headerContent,
+  apiKeyLabel,
+  apiKeyValue,
+  onApiKeyChange,
+  apiKeyPlaceholder,
+  apiKeyHelper,
+  modelLabel,
+  modelValue,
+  onModelPress,
+  modelFallbackText,
+}: AIIntegrationCardProps) {
+  return (
+    <View>
+      <Text
+        className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
+        style={{ color: sectionTitleColor }}>
+        {sectionTitle}
+      </Text>
+
+      {/* Toggle Block */}
+      <ToggleInput items={toggleItems} />
+
+      {/* Settings Block */}
+      <View
+        style={{
+          backgroundColor: theme.colors.background.card,
+          borderRadius: theme.borderRadius.lg,
+          borderWidth: theme.borderWidth.thin,
+          borderColor: theme.colors.border.light,
+          overflow: 'hidden',
+        }}>
+        {/* Optional Header Content (e.g., Connect Button) */}
+        {headerContent && (
+          <View
+            style={{
+              padding: theme.spacing.padding.base,
+              borderBottomWidth: theme.borderWidth.thin,
+              borderBottomColor: theme.colors.border.light,
+            }}>
+            {headerContent}
+          </View>
+        )}
+
+        {/* API Key Input */}
+        <View
+          style={{
+            padding: theme.spacing.padding.base,
+            borderBottomWidth: theme.borderWidth.thin,
+            borderBottomColor: theme.colors.border.light,
+          }}>
+          <SecretInput
+            label={apiKeyLabel}
+            value={apiKeyValue}
+            onChangeText={onApiKeyChange}
+            placeholder={apiKeyPlaceholder}
+          />
+          {apiKeyHelper && (
+            <Text
+              style={{
+                fontSize: theme.typography.fontSize.xs,
+                color: theme.colors.text.tertiary,
+                marginTop: theme.spacing.padding.sm,
+                marginLeft: theme.spacing.padding.xs,
+              }}>
+              {apiKeyHelper}
+            </Text>
+          )}
+        </View>
+
+        {/* Model Selector */}
+        <Pressable
+          onPress={onModelPress}
+          className="flex-row items-center justify-between p-4 active:bg-bg-overlay">
+          <View className="flex-1 min-w-0">
+            <Text className="text-sm font-medium text-text-primary">{modelLabel}</Text>
+            <Text
+              className="text-xs text-accent-primary"
+              style={{
+                marginTop: theme.spacing.padding.xsHalf,
+              }}>
+              {modelValue || modelFallbackText}
+            </Text>
+          </View>
+          <ChevronDown size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
+        </Pressable>
+      </View>
+    </View>
+  );
+}
+
 type AISettingsModalProps = {
   visible: boolean;
   onClose: () => void;
@@ -152,159 +269,53 @@ export function AISettingsModal({
     <FullScreenModal visible={visible} onClose={onClose} title={t('settings.aiSettings.title')}>
       <View className="gap-6 px-4 py-6" style={{ minHeight: '100%' }}>
         {/* Google Gemini Integration Section */}
-        <View>
-          <Text
-            className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
-            style={{ color: theme.colors.accent.primary }}>
-            {t('settings.aiSettings.googleGeminiIntegration')}
-          </Text>
-
-          {/* Toggle Block */}
-          <ToggleInput items={geminiToggleItems} />
-
-          {/* Settings Block */}
-          <View
-            style={{
-              backgroundColor: theme.colors.background.card,
-              borderRadius: theme.borderRadius.lg,
-              borderWidth: theme.borderWidth.thin,
-              borderColor: theme.colors.border.light,
-              overflow: 'hidden',
-            }}>
-            {/* Connect Button */}
-            <View
-              style={{
-                padding: theme.spacing.padding.base,
-                borderBottomWidth: theme.borderWidth.thin,
-                borderBottomColor: theme.colors.border.light,
-              }}>
-              <Pressable
-                onPress={onConnectGoogleAccount}
-                className="flex-row items-center justify-center gap-2 rounded-lg border px-4 py-3 active:scale-[0.98]"
-                style={({ pressed }) => [
-                  {
-                    backgroundColor: theme.colors.background.cardElevated,
-                    borderWidth: theme.borderWidth.thin,
-                    borderColor: theme.colors.border.light,
-                  },
-                ]}>
-                <Link size={theme.iconSize.lg} color={theme.colors.text.primary} />
-                <Text
-                  className="text-sm font-bold text-text-primary"
-                  style={{
-                    letterSpacing: theme.typography.letterSpacing.wide,
-                  }}>
-                  {t('settings.aiSettings.connectGoogleAccount')}
-                </Text>
-              </Pressable>
-            </View>
-
-            {/* API Key Input */}
-            <View
-              style={{
-                padding: theme.spacing.padding.base,
-                borderBottomWidth: theme.borderWidth.thin,
-                borderBottomColor: theme.colors.border.light,
-              }}>
-              <SecretInput
-                label={t('settings.aiSettings.googleGeminiApiKey')}
-                value={googleGeminiApiKey}
-                onChangeText={onGoogleGeminiApiKeyChange || (() => {})}
-                placeholder={t('settings.aiSettings.apiKeyPlaceholder')}
-              />
-              <Text
-                style={{
-                  fontSize: theme.typography.fontSize.xs,
-                  color: theme.colors.text.tertiary,
-                  marginTop: theme.spacing.padding.sm,
-                  marginLeft: theme.spacing.padding.xs,
-                }}>
-                {t('settings.aiSettings.apiKeyHelper')}
-              </Text>
-            </View>
-
-            {/* Model Selector */}
+        <AIIntegrationCard
+          sectionTitle={t('settings.aiSettings.googleGeminiIntegration')}
+          sectionTitleColor={theme.colors.accent.primary}
+          toggleItems={geminiToggleItems}
+          headerContent={
             <Pressable
-              onPress={onGeminiModelPress}
-              className="flex-row items-center justify-between p-4 active:bg-bg-overlay">
-              <View className="flex-1 min-w-0">
-                <Text
-                  className="text-sm font-medium text-text-primary">
-                  {t('settings.aiSettings.geminiModel')}
-                </Text>
-                <Text
-                  className="text-xs text-accent-primary"
-                  style={{
-                    marginTop: theme.spacing.padding.xsHalf,
-                  }}>
-                  {geminiModel}
-                </Text>
-              </View>
-              <ChevronDown size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
+              onPress={onConnectGoogleAccount}
+              className="flex-row items-center justify-center gap-2 rounded-lg border px-4 py-3 active:scale-[0.98]"
+              style={{
+                backgroundColor: theme.colors.background.cardElevated,
+                borderWidth: theme.borderWidth.thin,
+                borderColor: theme.colors.border.light,
+              }}>
+              <Link size={theme.iconSize.lg} color={theme.colors.text.primary} />
+              <Text
+                className="text-sm font-bold text-text-primary"
+                style={{
+                  letterSpacing: theme.typography.letterSpacing.wide,
+                }}>
+                {t('settings.aiSettings.connectGoogleAccount')}
+              </Text>
             </Pressable>
-          </View>
-        </View>
+          }
+          apiKeyLabel={t('settings.aiSettings.googleGeminiApiKey')}
+          apiKeyValue={googleGeminiApiKey}
+          onApiKeyChange={onGoogleGeminiApiKeyChange || (() => {})}
+          apiKeyPlaceholder={t('settings.aiSettings.apiKeyPlaceholder')}
+          apiKeyHelper={t('settings.aiSettings.apiKeyHelper')}
+          modelLabel={t('settings.aiSettings.geminiModel')}
+          modelValue={geminiModel}
+          onModelPress={onGeminiModelPress}
+        />
 
         {/* OpenAI Integration Section */}
-        <View>
-          <Text
-            className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
-            style={{ color: theme.colors.status.indigoLight }}>
-            {t('settings.aiSettings.openAiIntegration')}
-          </Text>
-          {/* OpenAI Enable Toggle */}
-          <ToggleInput items={openAiToggleItems} />
-          <View
-            style={{
-              backgroundColor: theme.colors.background.card,
-              borderRadius: theme.borderRadius.lg,
-              borderWidth: theme.borderWidth.thin,
-              borderColor: theme.colors.border.light,
-              overflow: 'hidden',
-            }}>
-            {/* API Key Input */}
-            <View
-              style={{
-                padding: theme.spacing.padding.base,
-                borderBottomWidth: theme.borderWidth.thin,
-                borderBottomColor: theme.colors.border.light,
-              }}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  marginBottom: theme.spacing.padding.sm,
-                }}></View>
-              <SecretInput
-                label={t('settings.aiSettings.openAiApiKey')}
-                value={openAiApiKey}
-                onChangeText={onOpenAiApiKeyChange || (() => {})}
-                placeholder={t('settings.aiSettings.apiKeyPlaceholder')}
-              />
-            </View>
-
-            {/* Model Selector */}
-            <Pressable
-              onPress={onOpenAiModelPress}
-              className="flex-row items-center justify-between p-4 active:bg-bg-overlay">
-              <View className="flex-1 min-w-0">
-                <Text
-                  className="text-sm font-medium text-text-primary">
-                  {t('settings.aiSettings.openAiModel')}
-                </Text>
-                <Text
-                  className="text-xs text-accent-primary"
-                  style={{
-                    marginTop: theme.spacing.padding.xsHalf,
-                  }}>
-                  {openAiModel || t('settings.aiSettings.selectModel')}
-                </Text>
-              </View>
-              <ChevronDown size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
-            </Pressable>
-          </View>
-        </View>
+        <AIIntegrationCard
+          sectionTitle={t('settings.aiSettings.openAiIntegration')}
+          sectionTitleColor={theme.colors.status.indigoLight}
+          toggleItems={openAiToggleItems}
+          apiKeyLabel={t('settings.aiSettings.openAiApiKey')}
+          apiKeyValue={openAiApiKey}
+          onApiKeyChange={onOpenAiApiKeyChange || (() => {})}
+          apiKeyPlaceholder={t('settings.aiSettings.apiKeyPlaceholder')}
+          modelLabel={t('settings.aiSettings.openAiModel')}
+          modelValue={openAiModel}
+          onModelPress={onOpenAiModelPress}
+          modelFallbackText={t('settings.aiSettings.selectModel')}
+        />
 
         {/* Insights & Alerts Section */}
         <View>
