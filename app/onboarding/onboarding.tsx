@@ -450,8 +450,7 @@ export default function OnboardingScreen() {
             setCurrentStep(newStep);
           }}
           scrollEnabled={true}
-          overdrag={false}
-        >
+          overdrag={false}>
           {/* Step 1 */}
           <View key="step1">
             <OnboardingStepOne

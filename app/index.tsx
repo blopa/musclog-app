@@ -1,6 +1,15 @@
 import { useState, useEffect } from 'react';
 import { View, Text, Image, Pressable, ScrollView } from 'react-native';
-import { Bell, Zap, Wheat, Droplet, UtensilsCrossed, Flame, Clock, Trophy } from 'lucide-react-native';
+import {
+  Bell,
+  Zap,
+  Wheat,
+  Droplet,
+  UtensilsCrossed,
+  Flame,
+  Clock,
+  Trophy,
+} from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { MasterLayout } from '../components/MasterLayout';
@@ -200,9 +209,9 @@ export default function HomeScreen() {
                     media: workout.image,
                     itemOne: { value: workout.calories, icon: Flame },
                     itemTwo: { value: workout.duration, icon: Clock },
-                    itemThree: { 
-                      value: workout.prs !== null ? workout.prs : '--', 
-                      icon: Trophy 
+                    itemThree: {
+                      value: workout.prs !== null ? workout.prs : '--',
+                      icon: Trophy,
                     },
                   }}
                   description={`${workout.date} • ${workout.duration}`}

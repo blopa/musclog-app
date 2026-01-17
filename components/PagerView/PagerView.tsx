@@ -2,13 +2,11 @@ import * as RNPagerView from 'react-native-pager-view';
 import { forwardRef } from 'react';
 import type { PagerViewRef } from './types';
 
-export type PagerViewProps = RNPagerView.PagerViewProps
+export type PagerViewProps = RNPagerView.PagerViewProps;
 
 export type { PagerViewRef };
 
-export const PagerView = forwardRef<PagerViewRef, PagerViewProps>(
-  (props, ref) => {
-    // Cast the native ref to our shared interface type
-    return <RNPagerView.default ref={ref as any} {...props} />;
-  }
-);
+export const PagerView = forwardRef<PagerViewRef, PagerViewProps>((props, ref) => {
+  // Cast the native ref to our shared interface type
+  return <RNPagerView.default ref={ref as any} {...props} />;
+});

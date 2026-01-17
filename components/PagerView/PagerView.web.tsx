@@ -39,10 +39,6 @@ export const PagerView = forwardRef<PagerViewRef, PagerViewProps>(
     const childrenArray = Array.isArray(children) ? children : [children];
     const currentChild = childrenArray[currentPage] || childrenArray[0];
 
-    return (
-      <View style={style}>
-        {currentChild}
-      </View>
-    );
+    return <View style={style}>{currentChild}</View>;
   }
 );

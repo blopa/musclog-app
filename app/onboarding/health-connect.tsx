@@ -1,12 +1,6 @@
 import { View, Text, Pressable, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import {
-  UtensilsCrossed,
-  Moon,
-  RefreshCw,
-  Scale,
-  Heart,
-} from 'lucide-react-native';
+import { UtensilsCrossed, Moon, RefreshCw, Scale, Heart } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';

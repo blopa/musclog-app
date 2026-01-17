@@ -1,12 +1,6 @@
 import { View, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import {
-  Shield,
-  Dumbbell,
-  Scale,
-  Apple,
-  Heart,
-} from 'lucide-react-native';
+import { Shield, Dumbbell, Scale, Apple, Heart } from 'lucide-react-native';
 import { theme } from '../theme';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
