@@ -8,13 +8,6 @@ import {
   Heart,
 } from 'lucide-react-native';
 import { theme } from '../theme';
-import Svg, {
-  Path,
-  Circle,
-  Defs,
-  LinearGradient as SvgLinearGradient,
-  Stop,
-} from 'react-native-svg';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const ILLUSTRATION_SIZE = SCREEN_WIDTH * 0.4; // 40% of screen width
@@ -82,115 +75,62 @@ export function HealthConnectIllustration() {
         </LinearGradient>
       </View>
 
-      {/* Floating Icons */}
+      {/* Floating Icons - Simplified without background cards */}
       {/* Top Left - Dumbbell */}
       <View
-        className="absolute items-center justify-center rounded-2xl border border-white/5"
+        className="absolute items-center justify-center"
         style={{
-          width: theme.size['56'],
-          height: theme.size['56'],
           top: '10%',
           left: '20%',
-          backgroundColor: theme.colors.background.card,
-          ...theme.shadows.lg,
         }}>
         <Dumbbell
           size={theme.iconSize.xl}
           color={theme.colors.status.indigoLight}
-          strokeWidth={theme.borderWidth.medium}
+          strokeWidth={theme.strokeWidth.medium}
         />
       </View>
 
       {/* Top Right - Scale */}
       <View
-        className="absolute items-center justify-center rounded-2xl border border-white/5"
+        className="absolute items-center justify-center"
         style={{
-          width: theme.size['48'],
-          height: theme.size['48'],
           top: '15%',
           right: '15%',
-          backgroundColor: theme.colors.background.card,
-          ...theme.shadows.lg,
         }}>
         <Scale
           size={theme.iconSize.lg}
           color={theme.colors.status.emerald}
-          strokeWidth={theme.borderWidth.medium}
+          strokeWidth={theme.strokeWidth.medium}
         />
       </View>
 
       {/* Bottom Left - Apple/Nutrition */}
       <View
-        className="absolute items-center justify-center rounded-2xl border border-white/5"
+        className="absolute items-center justify-center"
         style={{
-          width: theme.size['48'],
-          height: theme.size['48'],
           bottom: '20%',
           left: '10%',
-          backgroundColor: theme.colors.background.card,
-          ...theme.shadows.lg,
         }}>
         <Apple
           size={theme.iconSize.lg}
           color={theme.colors.status.emeraldLight}
-          strokeWidth={theme.borderWidth.medium}
+          strokeWidth={theme.strokeWidth.medium}
         />
       </View>
 
       {/* Bottom Right - Heart */}
       <View
-        className="absolute items-center justify-center rounded-2xl border border-white/5"
+        className="absolute items-center justify-center"
         style={{
-          width: theme.size['64'],
-          height: theme.size['64'],
           bottom: '10%',
           right: '20%',
-          backgroundColor: theme.colors.background.card,
-          ...theme.shadows.lg,
         }}>
         <Heart
           size={theme.iconSize['2xl']}
           color={theme.colors.status.purple}
-          strokeWidth={theme.borderWidth.medium}
+          strokeWidth={theme.strokeWidth.medium}
         />
       </View>
-
-      {/* Dashed Lines SVG */}
-      <Svg
-        className="absolute inset-0 h-full w-full"
-        style={{ opacity: theme.colors.opacity.subtle }}
-        viewBox="0 0 400 400"
-        preserveAspectRatio="none">
-        <Defs>
-          <SvgLinearGradient id="lineGradient" x1="60" y1="60" x2="340" y2="340">
-            <Stop offset="0" stopColor={theme.colors.status.indigo} />
-            <Stop offset="1" stopColor={theme.colors.status.emeraldLight} />
-          </SvgLinearGradient>
-        </Defs>
-        <Path
-          d="M120 100C160 80 240 80 280 120"
-          stroke={theme.colors.text.white}
-          strokeDasharray="4 4"
-          strokeWidth={theme.strokeWidth.thin}
-          fill="none"
-        />
-        <Path
-          d="M300 280C260 320 180 340 100 280"
-          stroke={theme.colors.text.white}
-          strokeDasharray="4 4"
-          strokeWidth={theme.strokeWidth.thin}
-          fill="none"
-        />
-        <Circle
-          cx="200"
-          cy="200"
-          r="140"
-          stroke="url(#lineGradient)"
-          strokeWidth={theme.strokeWidth.extraThin}
-          fill="none"
-          opacity={theme.colors.opacity.subtle}
-        />
-      </Svg>
     </View>
   );
 }
