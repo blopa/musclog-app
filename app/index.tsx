@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
 import { View, Text, Image, Pressable, ScrollView } from 'react-native';
-import { Bell, Zap, Wheat, Droplet, UtensilsCrossed } from 'lucide-react-native';
+import { Bell, Zap, Wheat, Droplet, UtensilsCrossed, Flame, Clock, Trophy } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { MasterLayout } from '../components/MasterLayout';
-import { RecentWorkoutsCard } from '../components/cards/RecentWorkoutsCard';
 import { DetailedItemCard } from '../components/cards/DetailedItemCard';
 import { ActionButton } from '../components/ActionButton';
 import { DailySummaryCard } from '../components/cards/DailySummaryCard';
@@ -194,15 +193,19 @@ export default function HomeScreen() {
           ) : (
             <View className="gap-3">
               {recentWorkouts.map((workout) => (
-                <RecentWorkoutsCard
+                <DetailedItemCard
                   key={workout.id}
-                  name={workout.name}
-                  date={workout.date}
-                  duration={workout.duration}
-                  calories={workout.calories}
-                  prs={workout.prs}
-                  image={workout.image}
-                  imageBgColor={workout.imageBgColor}
+                  item={{
+                    name: workout.name,
+                    media: workout.image,
+                    itemOne: { value: workout.calories, icon: Flame },
+                    itemTwo: { value: workout.duration, icon: Clock },
+                    itemThree: { 
+                      value: workout.prs !== null ? workout.prs : '--', 
+                      icon: Trophy 
+                    },
+                  }}
+                  description={`${workout.date} • ${workout.duration}`}
                 />
               ))}
             </View>

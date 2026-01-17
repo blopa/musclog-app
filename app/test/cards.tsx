@@ -18,7 +18,6 @@ import {
 import { TestSection } from './components/TestSection';
 import { WorkoutCard } from '../../components/cards/WorkoutCard';
 import { DailySummaryCard } from '../../components/cards/DailySummaryCard';
-import { RecentWorkoutsCard } from '../../components/cards/RecentWorkoutsCard';
 import { WorkoutStatCard } from '../../components/cards/WorkoutStatCard';
 import { CaloriesRemainingCard } from '../../components/cards/CaloriesRemainingCard';
 import { CreateTemplateButton } from '../../components/CreateTemplateButton';
@@ -80,18 +79,6 @@ export default function CardsTestScreen() {
           <DailySummaryCard
             calories={{ consumed: 1800, remaining: 400, goal: 2200 }}
             activity={{ minutes: 45, goal: 60 }}
-          />
-        </TestSection>
-
-        <TestSection title="Recent Workouts" subtitle="Overview of recent activities">
-          <RecentWorkoutsCard
-            name="Leg Day"
-            date="2026-01-07"
-            duration="60 mins"
-            calories={500}
-            prs={3}
-            image={{ uri: 'https://example.com/leg-day.jpg' }}
-            imageBgColor={theme.colors.background.secondaryDark}
           />
         </TestSection>
 
