@@ -157,12 +157,24 @@ export function GenericCard({
   const renderCardContent = () => {
     // Popular cards get wrapped in a gradient border
     if (shouldShowPopularGradient) {
+      // Calculate border radius to match the parent container
+      const borderRadius =
+        size === 'sm'
+          ? theme.borderRadius.lg
+          : size === 'lg'
+            ? theme.borderRadius['2xl']
+            : theme.borderRadius.xl;
+      
       return (
         <LinearGradient
           colors={theme.colors.gradients.cta}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
-          style={{ padding: theme.spacing.padding.xs }}>
+          style={{
+            padding: theme.spacing.padding.xs,
+            borderRadius: borderRadius,
+            flex: 1,
+          }}>
           {children}
         </LinearGradient>
       );

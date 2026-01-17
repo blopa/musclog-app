@@ -31,7 +31,7 @@ export function NewWorkoutCard({
           isPopular
             ? {
                 backgroundColor: theme.colors.background.aiCardBackground,
-                borderRadius: theme.borderRadius.lg + theme.spacing.margin['2'],
+                borderRadius: theme.borderRadius.xl - theme.spacing.padding.xs,
               }
             : {
                 flexDirection: 'row',
