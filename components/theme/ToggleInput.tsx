@@ -26,7 +26,7 @@ export function ToggleInput(props: TogglableSettingsProps) {
         backgroundColor: theme.colors.background.card,
         borderRadius: theme.borderRadius.lg,
         marginBottom: theme.spacing.padding.base,
-        padding: hasHeader ? 0 : theme.spacing.padding.xs,
+        padding: hasHeader ? 0 : theme.spacing.padding.sm,
         overflow: 'hidden',
         borderWidth: theme.borderWidth.thin,
         borderColor: theme.colors.border.light,
@@ -38,55 +38,57 @@ export function ToggleInput(props: TogglableSettingsProps) {
       {props.header}
       {items.map((it, idx) => (
         <React.Fragment key={it.key}>
-          <Pressable
-            style={({ pressed }) => [
-              {
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: theme.spacing.padding.md,
-                backgroundColor: pressed ? theme.colors.background.overlay : undefined,
-              },
-            ]}
-            onPress={() => it.onValueChange(!it.value)}>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: theme.spacing.gap.sm,
-                flex: 1,
-              }}>
-              {it.icon}
-              <View style={{ flex: 1 }}>
-                <Text
+          <Pressable onPress={() => it.onValueChange(!it.value)}>
+            {({ pressed }) => (
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: theme.spacing.padding.md,
+                  backgroundColor: pressed ? theme.colors.background.overlay : undefined,
+                }}
+              >
+                <View
                   style={{
-                    fontSize: theme.typography.fontSize.sm,
-                    color: theme.colors.text.primary,
-                    fontWeight: theme.typography.fontWeight.medium,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: theme.spacing.gap.sm,
+                    flex: 1,
                   }}>
-                  {it.label}
-                </Text>
-                {it.subtitle && (
-                  <Text
-                    style={{
-                      fontSize: theme.typography.fontSize.sm,
-                      color: theme.colors.text.secondary,
-                      marginTop: theme.spacing.padding.xsHalf,
-                    }}>
-                    {it.subtitle}
-                  </Text>
-                )}
+                  {it.icon}
+                  <View style={{ flex: 1 }}>
+                    <Text
+                      style={{
+                        fontSize: theme.typography.fontSize.sm,
+                        color: theme.colors.text.primary,
+                        fontWeight: theme.typography.fontWeight.medium,
+                      }}>
+                      {it.label}
+                    </Text>
+                    {it.subtitle && (
+                      <Text
+                        style={{
+                          fontSize: theme.typography.fontSize.sm,
+                          color: theme.colors.text.secondary,
+                          marginTop: theme.spacing.padding.xsHalf,
+                        }}>
+                        {it.subtitle}
+                      </Text>
+                    )}
+                  </View>
+                </View>
+                <Switch
+                  value={it.value}
+                  onValueChange={it.onValueChange}
+                  trackColor={{
+                    false: theme.colors.background.overlay,
+                    true: theme.colors.accent.primary,
+                  }}
+                  thumbColor={theme.colors.background.white}
+                />
               </View>
-            </View>
-            <Switch
-              value={it.value}
-              onValueChange={it.onValueChange}
-              trackColor={{
-                false: theme.colors.background.overlay,
-                true: theme.colors.accent.primary,
-              }}
-              thumbColor={theme.colors.background.white}
-            />
+            )}
           </Pressable>
           {idx < items.length - 1 && (
             <View

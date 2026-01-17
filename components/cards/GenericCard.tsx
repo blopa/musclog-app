@@ -138,9 +138,7 @@ export function GenericCard({
   const getPressableStyle = (): ViewStyle => {
     // For Pressable, we only need width and overflow, not borderRadius or background
     const widthStyle: ViewStyle =
-      size === 'sm' && !isWorkoutVariant
-        ? { flex: 1 }
-        : { width: '100%' };
+      size === 'sm' && !isWorkoutVariant ? { flex: 1 } : { width: '100%' };
 
     return {
       ...widthStyle,
@@ -194,7 +192,7 @@ export function GenericCard({
           : size === 'lg'
             ? theme.borderRadius['2xl']
             : theme.borderRadius.xl;
-      
+
       return (
         <LinearGradient
           colors={theme.colors.gradients.cta}
@@ -240,11 +238,7 @@ export function GenericCard({
   if (shouldRenderAsPressable) {
     return (
       <Pressable onPress={onPress} style={getPressableStyle()}>
-        {({ pressed }) => (
-          <View style={getInnerViewStyle(pressed)}>
-            {cardContent}
-          </View>
-        )}
+        {({ pressed }) => <View style={getInnerViewStyle(pressed)}>{cardContent}</View>}
       </Pressable>
     );
   }
