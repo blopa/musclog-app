@@ -69,10 +69,6 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
     router.back();
   };
 
-  const handleCancel = () => {
-    router.back();
-  };
-
   // Filter to only allow numeric input
   const handleNumericChange = (value: string, setter: (val: string) => void) => {
     // Remove any non-numeric characters (allow digits only)
@@ -81,9 +77,9 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
   };
 
   const measurementOptions = [
-    { label: 'Per 100g', value: '100g' },
-    { label: 'Per Serving', value: 'serving' },
-    { label: 'Container', value: 'container' },
+    { label: t('food.newCustomFood.measurementOptions.per100g'), value: '100g' },
+    { label: t('food.newCustomFood.measurementOptions.perServing'), value: 'serving' },
+    { label: t('food.newCustomFood.measurementOptions.container'), value: 'container' },
   ];
 
   return (
@@ -94,20 +90,20 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
           <View className="gap-6 px-4 pb-40 pt-6">
             {/* Food Name */}
             <TextInput
-              label="Food Name"
+              label={t('food.newCustomFood.foodName')}
               value={foodName}
               onChangeText={setFoodName}
-              placeholder="e.g., Homemade Chicken Salad"
+              placeholder={t('food.newCustomFood.foodNamePlaceholder')}
               icon={<Pencil size={theme.iconSize.md} color={theme.colors.text.tertiary} />}
             />
 
             {/* Barcode */}
             <View className="relative">
               <TextInput
-                label="Barcode (Optional)"
+                label={t('food.newCustomFood.barcode')}
                 value={barcode}
                 onChangeText={setBarcode}
-                placeholder="Scan or enter barcode"
+                placeholder={t('food.newCustomFood.barcodePlaceholder')}
               />
               <Pressable
                 className="absolute right-2 items-center justify-center"
@@ -125,7 +121,7 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
             {/* Measurement Unit */}
             <View>
               <Text className="mb-2 ml-1 text-sm font-medium text-text-secondary">
-                Measurement Unit
+                {t('food.newCustomFood.measurementUnit')}
               </Text>
               <SegmentedControl
                 options={measurementOptions}
@@ -138,12 +134,14 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
             {/* Macronutrients Header */}
             <View className="flex-row items-center gap-2">
               <BarChart size={theme.iconSize.lg} color={theme.colors.accent.primary} />
-              <Text className="text-xl font-bold text-text-primary">Macronutrients</Text>
+              <Text className="text-xl font-bold text-text-primary">
+                {t('food.newCustomFood.macronutrients')}
+              </Text>
             </View>
 
             {/* Calories */}
             <MacroInput
-              label="Calories"
+              label={t('food.newCustomFood.calories')}
               value={calories}
               onChange={(value) => handleNumericChange(value, setCalories)}
               topRightElement={
@@ -160,7 +158,7 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
             {/* Macro Grid */}
             <View className="flex-row flex-wrap gap-4">
               <MacroInput
-                label="Protein"
+                label={t('food.newCustomFood.protein')}
                 value={protein}
                 onChange={(value) => handleNumericChange(value, setProtein)}
                 topRightElement={
@@ -170,7 +168,7 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
                 size="half"
               />
               <MacroInput
-                label="Carbs"
+                label={t('food.newCustomFood.carbs')}
                 value={carbs}
                 onChange={(value) => handleNumericChange(value, setCarbs)}
                 topRightElement={
@@ -180,7 +178,7 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
                 size="half"
               />
               <MacroInput
-                label="Fat"
+                label={t('food.newCustomFood.fat')}
                 value={fat}
                 onChange={(value) => handleNumericChange(value, setFat)}
                 topRightElement={
@@ -190,7 +188,7 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
                 size="half"
               />
               <MacroInput
-                label="Fiber"
+                label={t('food.newCustomFood.fiber')}
                 value={fiber}
                 onChange={(value) => handleNumericChange(value, setFiber)}
                 topRightElement={
@@ -208,7 +206,9 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
                 onPress={() => setMicroOpen(!microOpen)}>
                 <View className="flex-row items-center gap-2">
                   <FlaskConical size={theme.iconSize.lg} color={theme.colors.accent.primary} />
-                  <Text className="text-xl font-bold text-text-primary">Micronutrients</Text>
+                  <Text className="text-xl font-bold text-text-primary">
+                    {t('food.newCustomFood.micronutrients')}
+                  </Text>
                 </View>
                 <ChevronDown
                   size={theme.iconSize.lg}
@@ -222,7 +222,7 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
               {microOpen && (
                 <View className="flex-row flex-wrap gap-4">
                   <MacroInput
-                    label="Sugar"
+                    label={t('food.newCustomFood.sugar')}
                     value={sugar}
                     onChange={(value) => handleNumericChange(value, setSugar)}
                     topRightElement={
@@ -232,7 +232,7 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
                     size="half"
                   />
                   <MacroInput
-                    label="Alcohol"
+                    label={t('food.newCustomFood.alcohol')}
                     value={alcohol}
                     onChange={(value) => handleNumericChange(value, setAlcohol)}
                     topRightElement={
@@ -242,7 +242,7 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
                     size="half"
                   />
                   <MacroInput
-                    label="Monounsat. Fat"
+                    label={t('food.newCustomFood.monounsatFat')}
                     value={monoFat}
                     onChange={(value) => handleNumericChange(value, setMonoFat)}
                     topRightElement={
@@ -252,7 +252,7 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
                     size="half"
                   />
                   <MacroInput
-                    label="Polyunsat. Fat"
+                    label={t('food.newCustomFood.polyunsatFat')}
                     value={polyFat}
                     onChange={(value) => handleNumericChange(value, setPolyFat)}
                     topRightElement={

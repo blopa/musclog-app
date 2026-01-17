@@ -9,7 +9,8 @@
     "cancel": "Cancel",
     "tryAgain": "Try Again",
     "popular": "Popular",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "save": "Save"
   },
   "home": {
     "greeting": {
@@ -166,6 +167,30 @@
       "quickTagVegan": "Vegan",
       "cancel": "Cancel",
       "applyContext": "Apply Context"
+    },
+    "newCustomFood": {
+      "title": "Create Custom Food",
+      "foodName": "Food Name",
+      "foodNamePlaceholder": "e.g., Homemade Chicken Salad",
+      "barcode": "Barcode (Optional)",
+      "barcodePlaceholder": "Scan or enter barcode",
+      "measurementUnit": "Measurement Unit",
+      "measurementOptions": {
+        "per100g": "Per 100g",
+        "perServing": "Per Serving",
+        "container": "Container"
+      },
+      "macronutrients": "Macronutrients",
+      "calories": "Calories",
+      "protein": "Protein",
+      "carbs": "Carbs",
+      "fat": "Fat",
+      "fiber": "Fiber",
+      "micronutrients": "Micronutrients",
+      "sugar": "Sugar",
+      "alcohol": "Alcohol",
+      "monounsatFat": "Monounsat. Fat",
+      "polyunsatFat": "Polyunsat. Fat"
     }
   },
   "notifications": {
