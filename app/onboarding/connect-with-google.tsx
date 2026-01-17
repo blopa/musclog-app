@@ -2,9 +2,12 @@ import { View, Text, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
 import { ConnectGoogleAccountBody } from '../../components/ConnectGoogleAccountBody';
+import { useRouter } from 'expo-router';
 
 export default function ConnectWithGoogle() {
   const { t } = useTranslation();
+  const router = useRouter();
+
   return (
     <ScrollView>
       <View className="px-6 pb-2 pt-4">
@@ -14,7 +17,9 @@ export default function ConnectWithGoogle() {
           {t('onboarding.connectGoogle.title')}
         </Text>
       </View>
-      <ConnectGoogleAccountBody onMaybeLater={() => {}} onConnect={() => {}} onClose={() => {}} />
+      <ConnectGoogleAccountBody onMaybeLater={() => {
+        router.push('/onboarding/fitness-info');
+      }} onConnect={() => {}} onClose={() => {}} />
     </ScrollView>
   );
 }

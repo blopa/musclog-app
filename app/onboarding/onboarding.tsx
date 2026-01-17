@@ -414,7 +414,7 @@ export default function OnboardingScreen() {
       setCurrentStep(currentStep + 1);
     } else {
       // Navigate to home when on last step
-      router.push('/');
+      router.push('/onboarding/health-connect');
     }
   };
 

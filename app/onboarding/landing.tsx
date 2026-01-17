@@ -119,7 +119,7 @@ export default function LandingScreen() {
               label={t('onboarding.landing.getStarted')}
               onPress={() => {
                 // Navigate to home or onboarding
-                router.push('/');
+                router.push('/onboarding/onboarding');
               }}
               icon={ArrowRight}
               iconPosition="right"

@@ -316,7 +316,7 @@ export default function HealthConnectScreen() {
                 className="w-full items-center py-2 active:opacity-70"
                 onPress={() => {
                   // Navigate away or skip
-                  router.push('/');
+                  router.push('/onboarding/connect-with-google');
                 }}>
                 <Text className="text-sm font-medium" style={{ color: theme.colors.text.gray500 }}>
                   {t('onboarding.healthConnect.maybeLater')}
