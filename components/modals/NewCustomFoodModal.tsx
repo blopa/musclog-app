@@ -159,33 +159,37 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
 
             {/* Macro Grid */}
             <View className="flex-row flex-wrap gap-4">
-              <MacroInput
+              <CaloriesInput
                 label="Protein"
-                icon={Dumbbell}
-                color="#29e08e"
                 value={protein}
-                onChange={setProtein}
+                onChange={(value) => handleNumericChange(value, setProtein)}
+                topRightElement={<Dumbbell size={theme.iconSize.sm} color="#29e08e" />}
+                variant="success"
+                size="half"
               />
-              <MacroInput
+              <CaloriesInput
                 label="Carbs"
-                icon={Cookie}
-                color="#fbbf24"
                 value={carbs}
-                onChange={setCarbs}
+                onChange={(value) => handleNumericChange(value, setCarbs)}
+                topRightElement={<Cookie size={theme.iconSize.sm} color="#fbbf24" />}
+                variant="warning"
+                size="half"
               />
-              <MacroInput
+              <CaloriesInput
                 label="Fat"
-                icon={Droplet}
-                color="#f87171"
                 value={fat}
-                onChange={setFat}
+                onChange={(value) => handleNumericChange(value, setFat)}
+                topRightElement={<Droplet size={theme.iconSize.sm} color="#f87171" />}
+                variant="error"
+                size="half"
               />
-              <MacroInput
+              <CaloriesInput
                 label="Fiber"
-                icon={Leaf}
-                color="#a78bfa"
                 value={fiber}
-                onChange={setFiber}
+                onChange={(value) => handleNumericChange(value, setFiber)}
+                topRightElement={<Leaf size={theme.iconSize.sm} color="#a78bfa" />}
+                variant="accent"
+                size="half"
               />
             </View>
 
@@ -209,35 +213,37 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
 
               {microOpen && (
                 <View className="flex-row flex-wrap gap-4">
-                  <MacroInput
+                  <CaloriesInput
                     label="Sugar"
-                    icon={IceCream}
-                    color="#ec4899"
                     value={sugar}
-                    onChange={setSugar}
+                    onChange={(value) => handleNumericChange(value, setSugar)}
+                    topRightElement={<IceCream size={theme.iconSize.sm} color="#ec4899" />}
+                    variant="accent"
+                    size="half"
                   />
-                  <MacroInput
+                  <CaloriesInput
                     label="Alcohol"
-                    icon={Wine}
-                    color="#6366f1"
                     value={alcohol}
-                    onChange={setAlcohol}
+                    onChange={(value) => handleNumericChange(value, setAlcohol)}
+                    topRightElement={<Wine size={theme.iconSize.sm} color="#6366f1" />}
+                    variant="info"
+                    size="half"
                   />
-                  <MacroInput
+                  <CaloriesInput
                     label="Monounsat. Fat"
-                    icon={Droplet}
-                    color="#2dd4bf"
                     value={monoFat}
-                    onChange={setMonoFat}
-                    smallLabel
+                    onChange={(value) => handleNumericChange(value, setMonoFat)}
+                    topRightElement={<Droplet size={theme.iconSize.sm} color="#2dd4bf" />}
+                    variant="accent"
+                    size="half"
                   />
-                  <MacroInput
+                  <CaloriesInput
                     label="Polyunsat. Fat"
-                    icon={Waves}
-                    color="#8b5cf6"
                     value={polyFat}
-                    onChange={setPolyFat}
-                    smallLabel
+                    onChange={(value) => handleNumericChange(value, setPolyFat)}
+                    topRightElement={<Waves size={theme.iconSize.sm} color="#8b5cf6" />}
+                    variant="accent"
+                    size="half"
                   />
                 </View>
               )}
@@ -256,78 +262,5 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
         </ScrollView>
       </SafeAreaView>
     </FullScreenModal>
-  );
-}
-
-type MacroInputProps = {
-  label: string;
-  icon: React.ComponentType<{ size?: number; color?: string }>;
-  color: string;
-  value: string;
-  onChange: (val: string) => void;
-  smallLabel?: boolean;
-};
-
-function MacroInput({
-  label,
-  icon: Icon,
-  color,
-  value,
-  onChange,
-  smallLabel = false,
-}: MacroInputProps) {
-  const [isFocused, setIsFocused] = useState(false);
-
-  return (
-    <View
-      className="overflow-hidden rounded-xl border bg-bg-card p-4"
-      style={{
-        width: '47%',
-        borderColor: isFocused ? color : theme.colors.background.white10,
-        backgroundColor: theme.colors.background.card,
-        shadowColor: isFocused ? color : 'transparent',
-        shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0.1,
-        shadowRadius: 15,
-        elevation: isFocused ? 2 : 0,
-      }}>
-      <View className="mb-2 flex-row items-center justify-between">
-        <Text
-          className={`font-bold uppercase tracking-wider text-text-secondary ${
-            smallLabel ? 'text-[10px] tracking-tight' : 'text-xs'
-          }`}>
-          {label}
-        </Text>
-        <Icon size={theme.iconSize.sm} color={color} />
-      </View>
-      <View className="flex-row items-baseline">
-        <RNTextInput
-          value={value}
-          onChangeText={(text) => {
-            // Filter to only allow numeric input
-            const numericValue = text.replace(/[^0-9]/g, '');
-            onChange(numericValue);
-          }}
-          placeholder="0"
-          placeholderTextColor={theme.colors.text.tertiary + '50'}
-          keyboardType="numeric"
-          selectTextOnFocus
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
-          className="flex-1 border-0 bg-transparent p-0 text-3xl font-bold text-text-primary"
-          style={{
-            fontSize: 30,
-            lineHeight: 36,
-          }}
-        />
-        <Text className="ml-1 text-sm font-medium text-text-secondary">g</Text>
-      </View>
-      {isFocused && (
-        <View
-          className="absolute bottom-0 left-0 right-0 h-1 rounded-b-xl"
-          style={{ backgroundColor: color }}
-        />
-      )}
-    </View>
   );
 }

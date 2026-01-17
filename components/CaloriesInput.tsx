@@ -16,12 +16,10 @@ type CaloriesInputProps = {
 
 const sizeConfig = {
   full: {
-    widthClass: 'w-full',
     padding: 20, // p-5
     fontSize: theme.typography.fontSize['5xl'], // 48px
   },
   half: {
-    widthClass: 'w-[48%]',
     padding: 16, // p-4
     fontSize: theme.typography.fontSize['4xl'], // 36px
   },
@@ -61,16 +59,19 @@ export function CaloriesInput({
 
   return (
     <View
-      className={`overflow-hidden rounded-xl border border-white/10 bg-bg-card ${config.widthClass}`}
-      style={{
-        padding: config.padding,
-        borderColor: isFocused ? borderColor : theme.colors.background.white10,
-        shadowColor: highlightColor,
-        shadowOffset: theme.shadowOffset.zero,
-        shadowOpacity: theme.shadowOpacity.veryLight,
-        shadowRadius: theme.shadows.radius8.shadowRadius,
-        elevation: theme.elevation.sm,
-      }}>
+      className="overflow-hidden rounded-xl border border-white/10 bg-bg-card"
+      style={
+        {
+          width: size === 'half' ? '47%' : '100%',
+          padding: config.padding,
+          borderColor: isFocused ? borderColor : theme.colors.background.white10,
+          shadowColor: highlightColor,
+          shadowOffset: theme.shadowOffset.zero,
+          shadowOpacity: theme.shadowOpacity.veryLight,
+          shadowRadius: theme.shadows.radius8.shadowRadius,
+          elevation: theme.elevation.sm,
+        } as any
+      }>
       <View className="mb-1 flex-row items-start justify-between">
         <Text className="text-xs font-bold uppercase tracking-widest text-text-secondary">
           {label}
