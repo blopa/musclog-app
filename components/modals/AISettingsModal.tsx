@@ -10,14 +10,14 @@ import { theme } from '../../theme';
 type AIIntegrationCardProps = {
   sectionTitle: string;
   sectionTitleColor: string;
-  toggleItems: Array<{
+  toggleItems: {
     key: string;
     label: string;
     value: boolean;
     onValueChange: (value: boolean) => void;
     icon?: React.ReactNode;
     subtitle?: string;
-  }>;
+  }[];
   headerContent?: React.ReactNode;
   apiKeyLabel: string;
   apiKeyValue: string;

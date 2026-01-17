@@ -15,8 +15,13 @@ import '../global.css';
 export default function RootLayout() {
   useEffect(() => {
     // Configure Android navigation bar to be transparent
+    // Note: setBackgroundColorAsync is not supported with edge-to-edge enabled,
+    // TODO: consider not using setBackgroundColorAsync and enable edge-to-edge
     if (Platform.OS === 'android') {
-      NavigationBar.setBackgroundColorAsync(theme.colors.background.primary);
+      NavigationBar.setBackgroundColorAsync(theme.colors.background.primary).catch(() => {
+        // Silently handle error when edge-to-edge is enabled
+        // The navigation bar will use the default edge-to-edge styling
+      });
       NavigationBar.setButtonStyleAsync('light');
     }
 

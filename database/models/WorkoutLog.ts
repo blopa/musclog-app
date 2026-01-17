@@ -2,7 +2,7 @@ import { Model, Q, Query } from '@nozbe/watermelondb';
 import { field, children, relation, writer } from '@nozbe/watermelondb/decorators';
 import WorkoutLogSet from './WorkoutLogSet';
 import WorkoutTemplate from './WorkoutTemplate';
-import { database } from '../index';
+import { database } from '../instance';
 
 export default class WorkoutLog extends Model {
   static table = 'workout_logs';
