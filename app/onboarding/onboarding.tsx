@@ -1,10 +1,11 @@
-import { View, Text, Pressable, ImageBackground, Dimensions, Animated } from 'react-native';
+import { View, Text, Pressable, ImageBackground, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Check, ArrowLeft, ArrowRight, LucideIcon } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
+import { PagerView, type PagerViewRef } from '../../components/PagerView/PagerView';
 import { theme } from '../../theme';
 import { GradientText } from '../../components/GradientText';
 import { PageIndicators } from '../../components/theme/PageIndicators';
@@ -398,20 +399,11 @@ export default function OnboardingScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
-  const slideAnim = useRef(new Animated.Value(0)).current;
-  const screenWidth = Dimensions.get('window').width;
-
-  useEffect(() => {
-    Animated.timing(slideAnim, {
-      toValue: -currentStep * screenWidth,
-      duration: 300,
-      useNativeDriver: true,
-    }).start();
-  }, [currentStep, slideAnim, screenWidth]);
+  const pagerRef = useRef<PagerViewRef>(null);
 
   const handleNext = () => {
     if (currentStep < 3) {
-      setCurrentStep(currentStep + 1);
+      pagerRef.current?.setPage(currentStep + 1);
     } else {
       // Navigate to home when on last step
       router.push('/onboarding/health-connect');
@@ -420,7 +412,7 @@ export default function OnboardingScreen() {
 
   const handleBack = () => {
     if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
+      pagerRef.current?.setPage(currentStep - 1);
     } else {
       router.back();
     }
@@ -447,17 +439,21 @@ export default function OnboardingScreen() {
         </View>
       </SafeAreaView>
 
-      {/* Main Content Area - Sliding Container */}
+      {/* Main Content Area - Swipeable Container */}
       <View className="flex-1" style={{ overflow: 'hidden' }}>
-        <Animated.View
-          style={{
-            flexDirection: 'row',
-            transform: [{ translateX: slideAnim }],
-            width: screenWidth * 4,
-            height: '100%',
-          }}>
+        <PagerView
+          ref={pagerRef}
+          style={{ flex: 1 }}
+          initialPage={0}
+          onPageSelected={(e) => {
+            const newStep = e.nativeEvent.position;
+            setCurrentStep(newStep);
+          }}
+          scrollEnabled={true}
+          overdrag={false}
+        >
           {/* Step 1 */}
-          <View style={{ width: screenWidth }}>
+          <View key="step1">
             <OnboardingStepOne
               imageUrl={PHONE_MOCKUP_IMAGE_URL}
               title={t('onboarding.steps.step1.title')}
@@ -471,7 +467,7 @@ export default function OnboardingScreen() {
           </View>
 
           {/* Step 2 */}
-          <View style={{ width: screenWidth }}>
+          <View key="step2">
             <OnboardingStepTwo
               imageUrl={PHONE_MOCKUP_IMAGE_URL}
               title={t('onboarding.steps.step2.title')}
@@ -480,7 +476,7 @@ export default function OnboardingScreen() {
           </View>
 
           {/* Step 3 */}
-          <View style={{ width: screenWidth }}>
+          <View key="step3">
             <OnboardingStepThree
               imageUrl={PHONE_MOCKUP_IMAGE_URL}
               title={t('onboarding.steps.step3.title')}
@@ -489,13 +485,13 @@ export default function OnboardingScreen() {
           </View>
 
           {/* Step 4 */}
-          <View style={{ width: screenWidth }}>
+          <View key="step4">
             <OnboardingStepFour
               title={t('onboarding.steps.step4.title')}
               description={t('onboarding.steps.step4.description')}
             />
           </View>
-        </Animated.View>
+        </PagerView>
       </View>
 
       {/* Footer / Navigation */}
