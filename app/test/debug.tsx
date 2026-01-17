@@ -7,6 +7,7 @@ import { MasterLayout } from '../../components/MasterLayout';
 import { database, Exercise, User, Setting, UserMetric } from '../../database';
 import { UserService } from '../../database/services/UserService';
 import { Q } from '@nozbe/watermelondb';
+import { Button } from '../../components/theme/Button';
 
 // All app screens for navigation
 const APP_SCREENS = [
@@ -134,6 +135,17 @@ export default function DebugTestScreen() {
     }
   };
 
+  const deleteDatabase = async () => {
+    try {
+      await database.write(async () => {
+        await database.unsafeResetDatabase();
+      });
+      console.log('Database has been deleted and will be recreated on next app load.');
+    } catch (error) {
+      console.error('Error deleting database:', error);
+    }
+  };
+
   // Group screens by category
   const screensByCategory = APP_SCREENS.reduce(
     (acc, screen) => {
@@ -185,6 +197,12 @@ export default function DebugTestScreen() {
                 </View>
               </View>
             ))}
+          </View>
+
+          {/* Danger Zone */}
+          <View className="gap-4 rounded-xl border border-border-accent bg-bg-overlay p-4">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Danger Zone</Text>
+            <Button onPress={deleteDatabase} label="Delete Database" size="sm" />
           </View>
 
           {/* Form */}

@@ -13,3 +13,8 @@ export { default as Schedule } from './models/Schedule';
 export { default as WorkoutTemplateSet } from './models/WorkoutTemplateSet';
 export { default as WorkoutLog } from './models/WorkoutLog';
 export { default as WorkoutLogSet } from './models/WorkoutLogSet';
+
+// Export repositories for query methods
+export { WorkoutTemplateRepository } from './repositories/WorkoutTemplateRepository';
+export { ScheduleRepository } from './repositories/ScheduleRepository';
+export { WorkoutLogRepository } from './repositories/WorkoutLogRepository';

@@ -1,7 +1,6 @@
-import { Model, Q, Query } from '@nozbe/watermelondb';
+import { Model } from '@nozbe/watermelondb';
 import { field, relation } from '@nozbe/watermelondb/decorators';
 import WorkoutTemplate from './WorkoutTemplate';
-import { database } from '../database-instance';
 
 export default class Schedule extends Model {
   static table = 'schedules';
@@ -18,10 +17,4 @@ export default class Schedule extends Model {
   @field('deleted_at') deletedAt?: number;
 
   @relation('workout_templates', 'template_id') template!: WorkoutTemplate;
-
-  static getForDay(dayOfWeek: string): Query<Schedule> {
-    return database
-      .get<Schedule>('schedules')
-      .query(Q.where('day_of_week', dayOfWeek), Q.where('deleted_at', Q.eq(null)));
-  }
 }

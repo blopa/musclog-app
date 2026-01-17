@@ -1,8 +1,7 @@
-import { Model, Q, Query } from '@nozbe/watermelondb';
+import { Model, Query } from '@nozbe/watermelondb';
 import { field, children, relation, writer } from '@nozbe/watermelondb/decorators';
 import WorkoutLogSet from './WorkoutLogSet';
 import WorkoutTemplate from './WorkoutTemplate';
-import { database } from '../database-instance';
 
 export default class WorkoutLog extends Model {
   static table = 'workout_logs';
@@ -23,35 +22,6 @@ export default class WorkoutLog extends Model {
 
   @children('workout_log_sets') logSets!: Query<WorkoutLogSet>;
   @relation('workout_templates', 'template_id') template?: WorkoutTemplate;
-
-  static getActive(): Query<WorkoutLog> {
-    return database
-      .get<WorkoutLog>('workout_logs')
-      .query(
-        Q.where('completed_at', Q.eq(null)),
-        Q.where('deleted_at', Q.eq(null)),
-        Q.sortBy('started_at', Q.desc)
-      );
-  }
-
-  static getCompleted(timeframe?: { startDate: number; endDate: number }): Query<WorkoutLog> {
-    let query = database
-      .get<WorkoutLog>('workout_logs')
-      .query(
-        Q.where('completed_at', Q.notEq(null)),
-        Q.where('deleted_at', Q.eq(null)),
-        Q.sortBy('started_at', Q.desc)
-      );
-
-    if (timeframe) {
-      query = query.extend(
-        Q.where('started_at', Q.gte(timeframe.startDate)),
-        Q.where('started_at', Q.lte(timeframe.endDate))
-      );
-    }
-
-    return query;
-  }
 
   async calculateVolume(): Promise<number> {
     const sets = await this.logSets.fetch();

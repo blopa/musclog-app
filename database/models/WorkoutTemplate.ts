@@ -1,10 +1,9 @@
-import { Model, Q, Query } from '@nozbe/watermelondb';
-import { field, children, relation, writer } from '@nozbe/watermelondb/decorators';
+import { Model, Query } from '@nozbe/watermelondb';
+import { field, children, writer } from '@nozbe/watermelondb/decorators';
 import WorkoutTemplateSet from './WorkoutTemplateSet';
 import Schedule from './Schedule';
 import WorkoutLog from './WorkoutLog';
 import WorkoutLogSet from './WorkoutLogSet';
-import { database } from '../database-instance';
 
 export default class WorkoutTemplate extends Model {
   static table = 'workout_templates';
@@ -24,12 +23,6 @@ export default class WorkoutTemplate extends Model {
   @children('workout_template_sets') templateSets!: Query<WorkoutTemplateSet>;
   @children('schedules') schedules!: Query<Schedule>;
   @children('workout_logs') workoutLogs!: Query<WorkoutLog>;
-
-  static getActive(): Query<WorkoutTemplate> {
-    return database
-      .get<WorkoutTemplate>('workout_templates')
-      .query(Q.where('deleted_at', Q.eq(null)), Q.sortBy('created_at', Q.desc));
-  }
 
   @writer
   async startWorkout(): Promise<WorkoutLog> {
