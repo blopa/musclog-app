@@ -16,6 +16,7 @@ import { BodyMetricsStepper } from '../../components/theme/BodyMetricsStepper';
 import { OptionsSelector } from '../../components/OptionsSelector';
 import { OptionsMultiSelector } from '../../components/theme/OptionsMultiSelector/OptionsMultiSelector';
 import { ToggleInput } from '../../components/theme/ToggleInput';
+import { MacroInput } from '../../components/MacroInput';
 
 export default function InputsTestScreen() {
   const [name, setName] = useState('');
@@ -280,6 +281,36 @@ export default function InputsTestScreen() {
                 onValueChange: setBulkingPhase,
               },
             ]}
+          />
+        </TestSection>
+
+        <TestSection title="Macro Inputs" subtitle="Testing MacroInput component">
+          <View className="flex-row gap-4">
+            <MacroInput
+              label="Protein"
+              value={weight}
+              onChange={setWeight}
+              topRightElement={<Text className="text-xs text-text-secondary">g</Text>}
+              variant="success"
+              size="half"
+            />
+            <MacroInput
+              label="Carbs"
+              value={reps}
+              onChange={setReps}
+              topRightElement={<Text className="text-xs text-text-secondary">g</Text>}
+              variant="warning"
+              size="half"
+            />
+          </View>
+          <View className="h-4" />
+          <MacroInput
+            label="Fats"
+            value={name}
+            onChange={setName}
+            topRightElement={<Text className="text-xs text-text-secondary">g</Text>}
+            variant="error"
+            size="full"
           />
         </TestSection>
 
