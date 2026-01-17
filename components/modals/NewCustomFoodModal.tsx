@@ -154,6 +154,7 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
                 </View>
               }
               variant="default"
+              size="full"
             />
 
             {/* Macro Grid */}
