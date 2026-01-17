@@ -86,12 +86,18 @@ export default function DebugTestScreen() {
   };
 
   useEffect(() => {
-    fetchExercises();
-    fetchUserData();
+    const fetchData = async () => {
+      await fetchExercises();
+      await fetchUserData();
+    };
+
+    fetchData();
   }, []);
 
   const addExercise = async () => {
-    if (!name || !muscleGroup) return;
+    if (!name || !muscleGroup) {
+      return;
+    }
 
     try {
       await database.write(async () => {
@@ -102,7 +108,7 @@ export default function DebugTestScreen() {
       });
       setName('');
       setMuscleGroup('');
-      fetchExercises();
+      await fetchExercises();
     } catch (error) {
       console.error('Error adding exercise:', error);
     }
@@ -110,11 +116,10 @@ export default function DebugTestScreen() {
 
   const deleteExercise = async (exercise: Exercise) => {
     try {
-      await database.write(async () => {
-        await exercise.markAsDeleted(); // WatermelonDB uses soft delete by default or sync-friendly delete
-        // For permanent delete without sync: await exercise.destroyPermanently()
-      });
-      fetchExercises();
+      // markAsDeleted is a @writer method, so it already manages its own write transaction
+      // Do NOT wrap it in database.write() - that creates nested writers and blocks the queue
+      await exercise.markAsDeleted();
+      await fetchExercises();
     } catch (error) {
       console.error('Error deleting exercise:', error);
     }
