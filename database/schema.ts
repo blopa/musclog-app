@@ -131,6 +131,9 @@ export const schema = appSchema({
         { name: 'activity_level', type: 'number' },
         { name: 'lifting_experience', type: 'string' }, // 'beginner', 'intermediate', 'advanced'
         { name: 'photo_uri', type: 'string', isOptional: true },
+        { name: 'sync_id', type: 'string', isIndexed: true }, // Primary sync identifier (UUID)
+        { name: 'external_account_id', type: 'string', isIndexed: true, isOptional: true }, // OAuth provider ID
+        { name: 'external_account_provider', type: 'string', isOptional: true }, // 'google', 'apple', etc.
         { name: 'eating_phase', type: 'string' }, // 'cut', 'maintain', 'bulk'
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },

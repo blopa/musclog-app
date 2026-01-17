@@ -1,6 +1,7 @@
 import { database } from '../index';
 import User, { UserProfileUpdate } from '../models/User';
 import { Q } from '@nozbe/watermelondb';
+import { generateUUID } from '../../utils/uuid';
 
 export class UserService {
   /**
@@ -53,6 +54,7 @@ export class UserService {
     }
 
     const now = Date.now();
+    const syncId = generateUUID(); // Generate UUID for cloud sync
 
     return await database.write(async () => {
       return await database.get<User>('users').create((u) => {
@@ -64,6 +66,7 @@ export class UserService {
         u.activityLevel = initialData.activityLevel;
         u.liftingExperience = initialData.liftingExperience;
         u.photoUri = initialData.photoUri;
+        u.syncId = syncId;
         u.eatingPhase = initialData.eatingPhase;
         u.createdAt = now;
         u.updatedAt = now;
@@ -77,5 +80,112 @@ export class UserService {
   static async hasUserProfile(): Promise<boolean> {
     const user = await this.getCurrentUser();
     return user !== null;
+  }
+
+  /**
+   * Ensure user has a sync_id (for backward compatibility)
+   * Generates sync_id if missing
+   */
+  static async ensureSyncId(): Promise<User> {
+    const user = await this.getCurrentUser();
+
+    if (!user) {
+      throw new Error('No user found. Please initialize user profile first.');
+    }
+
+    // If sync_id already exists, return user
+    if (user.syncId) {
+      return user;
+    }
+
+    // Generate and save sync_id
+    const syncId = generateUUID();
+
+    await database.write(async () => {
+      await user.update((u) => {
+        u.syncId = syncId;
+        u.updatedAt = Date.now();
+      });
+    });
+
+    // Reload to get updated values
+    return await database.get<User>('users').find(user.id);
+  }
+
+  /**
+   * Get user's sync_id for sync operations
+   */
+  static async getSyncId(): Promise<string | null> {
+    const user = await this.getCurrentUser();
+    if (!user) {
+      return null;
+    }
+
+    // Ensure sync_id exists (for backward compatibility)
+    if (!user.syncId) {
+      const updatedUser = await this.ensureSyncId();
+      return updatedUser.syncId;
+    }
+
+    return user.syncId;
+  }
+
+  /**
+   * Link OAuth account to existing user
+   */
+  static async linkOAuthAccount(
+    provider: 'google' | 'apple' | string,
+    accountId: string
+  ): Promise<User> {
+    const user = await this.getCurrentUser();
+
+    if (!user) {
+      throw new Error('No user found. Please initialize user profile first.');
+    }
+
+    await database.write(async () => {
+      await user.update((u) => {
+        u.externalAccountId = accountId;
+        u.externalAccountProvider = provider;
+        u.updatedAt = Date.now();
+      });
+    });
+
+    // Reload to get updated values
+    return await database.get<User>('users').find(user.id);
+  }
+
+  /**
+   * Unlink OAuth account from user
+   */
+  static async unlinkOAuthAccount(): Promise<User> {
+    const user = await this.getCurrentUser();
+
+    if (!user) {
+      throw new Error('No user found. Please initialize user profile first.');
+    }
+
+    if (!user.externalAccountId) {
+      return user; // Already unlinked
+    }
+
+    await database.write(async () => {
+      await user.update((u) => {
+        u.externalAccountId = undefined;
+        u.externalAccountProvider = undefined;
+        u.updatedAt = Date.now();
+      });
+    });
+
+    // Reload to get updated values
+    return await database.get<User>('users').find(user.id);
+  }
+
+  /**
+   * Check if user has OAuth account linked
+   */
+  static async hasLinkedAccount(): Promise<boolean> {
+    const user = await this.getCurrentUser();
+    return user !== null && user.externalAccountId !== undefined;
   }
 }
