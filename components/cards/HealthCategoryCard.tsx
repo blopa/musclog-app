@@ -17,7 +17,7 @@ export function HealthCategoryCard({
   iconColor,
 }: HealthCategoryCardProps) {
   return (
-    <View className="min-w-[45%]">
+    <View className="flex-1 basis-[48%]">
       <GenericCard variant="card" size="sm">
         <View className="flex-row items-center gap-3 p-3">
           <View className="rounded-lg p-2" style={{ backgroundColor }}>
