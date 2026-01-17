@@ -3,6 +3,7 @@
     "name": "musclog",
     "slug": "musclog",
     "version": "1.0.0",
+    "scheme": "musclog",
     "userInterfaceStyle": "automatic",
     "jsEngine": "hermes",
     "web": {

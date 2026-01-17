@@ -4,7 +4,7 @@ import WorkoutTemplateSet from './WorkoutTemplateSet';
 import Schedule from './Schedule';
 import WorkoutLog from './WorkoutLog';
 import WorkoutLogSet from './WorkoutLogSet';
-import { database } from '../index';
+import { database } from '../database-instance';
 
 export default class WorkoutTemplate extends Model {
   static table = 'workout_templates';
