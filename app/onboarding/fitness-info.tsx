@@ -44,8 +44,10 @@ export default function FitnessInfo() {
       }
 
       // Save weight and height to user_metrics (if provided)
+      // Use current date/time for the metric date
       const now = Date.now();
-      const todayTimestamp = new Date(new Date().setHours(0, 0, 0, 0)).getTime();
+      const currentDate = new Date().setHours(0, 0, 0, 0); // Set to midnight of today for date tracking
+      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone; // Get user's current timezone
 
       if (data.weight && parseFloat(data.weight) > 0) {
         const weightValue = parseFloat(data.weight);
@@ -55,25 +57,28 @@ export default function FitnessInfo() {
           .get<UserMetric>('user_metrics')
           .query(
             Q.where('type', 'weight'),
-            Q.where('date', todayTimestamp),
+            Q.where('date', currentDate),
             Q.where('deleted_at', Q.eq(null))
           )
           .fetch();
 
         await database.write(async () => {
           if (existingWeight.length > 0) {
-            // Update existing weight
+            // Update existing weight for today
             await existingWeight[0].update((metric) => {
               metric.value = weightValue;
+              metric.unit = data.units === 'imperial' ? 'lbs' : 'kg';
+              metric.timezone = timezone;
               metric.updatedAt = now;
             });
           } else {
-            // Create new weight metric
+            // Create new weight metric with current date
             await database.get<UserMetric>('user_metrics').create((metric) => {
               metric.type = 'weight';
               metric.value = weightValue;
               metric.unit = data.units === 'imperial' ? 'lbs' : 'kg';
-              metric.date = todayTimestamp;
+              metric.date = currentDate;
+              metric.timezone = timezone;
               metric.createdAt = now;
               metric.updatedAt = now;
             });
@@ -89,25 +94,28 @@ export default function FitnessInfo() {
           .get<UserMetric>('user_metrics')
           .query(
             Q.where('type', 'height'),
-            Q.where('date', todayTimestamp),
+            Q.where('date', currentDate),
             Q.where('deleted_at', Q.eq(null))
           )
           .fetch();
 
         await database.write(async () => {
           if (existingHeight.length > 0) {
-            // Update existing height
+            // Update existing height for today
             await existingHeight[0].update((metric) => {
               metric.value = heightValue;
+              metric.unit = data.units === 'imperial' ? 'in' : 'cm';
+              metric.timezone = timezone;
               metric.updatedAt = now;
             });
           } else {
-            // Create new height metric
+            // Create new height metric with current date
             await database.get<UserMetric>('user_metrics').create((metric) => {
               metric.type = 'height';
               metric.value = heightValue;
               metric.unit = data.units === 'imperial' ? 'in' : 'cm';
-              metric.date = todayTimestamp;
+              metric.date = currentDate;
+              metric.timezone = timezone;
               metric.createdAt = now;
               metric.updatedAt = now;
             });

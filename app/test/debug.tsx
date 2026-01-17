@@ -4,7 +4,9 @@ import { Plus, Trash2, RefreshCw, ArrowRight } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { theme } from '../../theme';
 import { MasterLayout } from '../../components/MasterLayout';
-import { database, Exercise } from '../../database';
+import { database, Exercise, User, Setting, UserMetric } from '../../database';
+import { UserService } from '../../database/services/UserService';
+import { Q } from '@nozbe/watermelondb';
 
 // All app screens for navigation
 const APP_SCREENS = [
@@ -40,6 +42,9 @@ export default function DebugTestScreen() {
   const [name, setName] = useState('');
   const [muscleGroup, setMuscleGroup] = useState('');
   const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [settings, setSettings] = useState<Setting[]>([]);
+  const [userMetrics, setUserMetrics] = useState<UserMetric[]>([]);
 
   // Fetch exercises manually
   const fetchExercises = async () => {
@@ -55,8 +60,33 @@ export default function DebugTestScreen() {
     }
   };
 
+  // Fetch user data
+  const fetchUserData = async () => {
+    try {
+      const currentUser = await UserService.getCurrentUser();
+      setUser(currentUser);
+
+      // Fetch settings
+      const allSettings = await database
+        .get<Setting>('settings')
+        .query(Q.where('deleted_at', Q.eq(null)))
+        .fetch();
+      setSettings(allSettings);
+
+      // Fetch user metrics
+      const allMetrics = await database
+        .get<UserMetric>('user_metrics')
+        .query(Q.where('deleted_at', Q.eq(null)), Q.sortBy('date', Q.desc))
+        .fetch();
+      setUserMetrics(allMetrics);
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  };
+
   useEffect(() => {
     fetchExercises();
+    fetchUserData();
   }, []);
 
   const addExercise = async () => {
@@ -189,6 +219,144 @@ export default function DebugTestScreen() {
               <Plus size={theme.iconSize.lg} color={theme.colors.text.black} />
               <Text className="font-bold text-text-black">Add Exercise</Text>
             </Pressable>
+          </View>
+
+          {/* User Data Section */}
+          <View className="gap-4 rounded-xl border border-border-accent bg-bg-overlay p-4">
+            <View className="flex-row items-center justify-between">
+              <Text className="text-lg font-bold text-text-primary">User Profile</Text>
+              <Pressable onPress={fetchUserData} className="p-2">
+                <RefreshCw size={theme.iconSize.lg} color={theme.colors.text.secondary} />
+              </Pressable>
+            </View>
+
+            {user ? (
+              <View className="gap-3">
+                <View className="rounded-lg border border-border-light bg-bg-primary p-3">
+                  <Text className="mb-2 text-xs font-bold uppercase text-text-tertiary">
+                    Personal Info
+                  </Text>
+                  <Text className="text-text-primary">
+                    <Text className="font-bold">Name:</Text> {user.fullName}
+                  </Text>
+                  {user.email && (
+                    <Text className="text-text-primary">
+                      <Text className="font-bold">Email:</Text> {user.email}
+                    </Text>
+                  )}
+                  <Text className="text-text-primary">
+                    <Text className="font-bold">DOB:</Text>{' '}
+                    {new Date(user.dateOfBirth).toLocaleDateString()}
+                  </Text>
+                  <Text className="text-text-primary">
+                    <Text className="font-bold">Age:</Text> {user.getAge()} years
+                  </Text>
+                  <Text className="text-text-primary">
+                    <Text className="font-bold">Gender:</Text> {user.gender}
+                  </Text>
+                  {user.photoUri && (
+                    <Text className="text-text-primary">
+                      <Text className="font-bold">Photo URI:</Text> {user.photoUri.substring(0, 50)}
+                      ...
+                    </Text>
+                  )}
+                </View>
+
+                <View className="rounded-lg border border-border-light bg-bg-primary p-3">
+                  <Text className="mb-2 text-xs font-bold uppercase text-text-tertiary">
+                    Fitness Info
+                  </Text>
+                  <Text className="text-text-primary">
+                    <Text className="font-bold">Goal:</Text> {user.fitnessGoal}
+                  </Text>
+                  <Text className="text-text-primary">
+                    <Text className="font-bold">Activity Level:</Text> {user.activityLevel}/5
+                  </Text>
+                  <Text className="text-text-primary">
+                    <Text className="font-bold">Experience:</Text> {user.liftingExperience}
+                  </Text>
+                  <Text className="text-text-primary">
+                    <Text className="font-bold">Eating Phase:</Text> {user.eatingPhase}
+                  </Text>
+                </View>
+
+                <View className="rounded-lg border border-border-light bg-bg-primary p-3">
+                  <Text className="mb-2 text-xs font-bold uppercase text-text-tertiary">
+                    Timestamps
+                  </Text>
+                  <Text className="text-xs text-text-secondary">
+                    Created: {new Date(user.createdAt).toLocaleString()}
+                  </Text>
+                  <Text className="text-xs text-text-secondary">
+                    Updated: {new Date(user.updatedAt).toLocaleString()}
+                  </Text>
+                </View>
+              </View>
+            ) : (
+              <Text className="py-4 text-center text-text-tertiary">No user profile found</Text>
+            )}
+
+            {/* Settings */}
+            <View className="mt-4">
+              <Text className="mb-2 text-xs font-bold uppercase text-text-tertiary">Settings</Text>
+              {settings.length > 0 ? (
+                <View className="gap-2">
+                  {settings.map((setting) => (
+                    <View
+                      key={setting.id}
+                      className="rounded-lg border border-border-light bg-bg-primary p-3">
+                      <Text className="text-text-primary">
+                        <Text className="font-bold">Type:</Text> {setting.type}
+                      </Text>
+                      <Text className="text-text-primary">
+                        <Text className="font-bold">Value:</Text>{' '}
+                        {setting.type === 'units'
+                          ? setting.value === 0
+                            ? 'metric'
+                            : 'imperial'
+                          : setting.value}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+              ) : (
+                <Text className="py-2 text-sm text-text-tertiary">No settings found</Text>
+              )}
+            </View>
+
+            {/* User Metrics */}
+            <View className="mt-4">
+              <Text className="mb-2 text-xs font-bold uppercase text-text-tertiary">
+                Recent Metrics ({userMetrics.length})
+              </Text>
+              {userMetrics.length > 0 ? (
+                <View className="gap-2">
+                  {userMetrics.slice(0, 10).map((metric) => (
+                    <View
+                      key={metric.id}
+                      className="rounded-lg border border-border-light bg-bg-primary p-3">
+                      <Text className="text-text-primary">
+                        <Text className="font-bold">{metric.type}:</Text> {metric.value}{' '}
+                        {metric.unit}
+                      </Text>
+                      <Text className="text-xs text-text-secondary">
+                        Date: {new Date(metric.date).toLocaleDateString()}
+                      </Text>
+                      <Text className="text-xs text-text-secondary">
+                        Timezone: {metric.timezone}
+                      </Text>
+                    </View>
+                  ))}
+                  {userMetrics.length > 10 && (
+                    <Text className="text-xs text-text-tertiary">
+                      ... and {userMetrics.length - 10} more
+                    </Text>
+                  )}
+                </View>
+              ) : (
+                <Text className="py-2 text-sm text-text-tertiary">No metrics found</Text>
+              )}
+            </View>
           </View>
 
           {/* List Header */}
