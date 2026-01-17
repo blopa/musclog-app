@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import {
@@ -108,7 +108,13 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
               <Pressable
                 className="absolute right-2 items-center justify-center"
                 style={{
-                  top: theme.size['18'] / 2,
+                  ...(Platform.OS !== 'web'
+                    ? {
+                        top: theme.size['14'] / 2,
+                      }
+                    : {
+                        top: theme.size['18'] / 2,
+                      }),
                   width: theme.size['10'],
                   height: theme.size['10'],
                   backgroundColor: theme.colors.accent.primary10,
