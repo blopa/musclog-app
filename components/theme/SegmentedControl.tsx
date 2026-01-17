@@ -36,7 +36,7 @@ export function SegmentedControl({
       {options.map((option) => (
         <Pressable
           key={option.value}
-          className={`flex-1 rounded-md py-2 ${value === option.value ? 'bg-bg-cardElevated' : ''}`}
+          className={`flex-1 rounded-md py-2 ${value === option.value ? 'bg-bg-card' : ''}`}
           onPress={() => onValueChange(option.value)}>
           <View className="flex-row items-center justify-center gap-1.5">
             {option.icon}
