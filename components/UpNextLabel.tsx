@@ -1,6 +1,6 @@
 import { View, Text } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { theme } from '../../theme';
+import { theme } from '../theme';
 
 export function UpNextLabel() {
   const { t } = useTranslation();

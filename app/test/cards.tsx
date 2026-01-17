@@ -25,7 +25,7 @@ import { CreateTemplateButton } from '../../components/CreateTemplateButton';
 import { FoodInfoCard } from '../../components/cards/FoodInfoCard';
 import { NotificationCard } from '../../components/cards/NotificationCard';
 import { MacroCard } from '../../components/cards/MacroCard';
-import { UpNextExerciseCard } from '../../components/cards/UpNextExerciseCard';
+import { DetailedItemCard } from '../../components/cards/DetailedItemCard';
 import { FoodItemCard } from '../../components/cards/FoodItemCard';
 import { NewWorkoutCard } from '../../components/cards/NewWorkoutCard';
 import { WorkoutSummaryStatsCard } from '../../components/cards/WorkoutSummaryStatsCard';
@@ -35,7 +35,7 @@ import { ChatWorkoutCard } from '../../components/cards/ChatWorkoutCard';
 import { MealItemCard } from '../../components/cards/MealItemCard';
 import { SettingsCard } from '../../components/cards/SettingsCard';
 import { HealthCategoryCard } from '../../components/cards/HealthCategoryCard';
-import { UpNextLabel } from '../../components/cards/UpNextLabel';
+import { UpNextLabel } from '../../components/UpNextLabel';
 
 export default function CardsTestScreen() {
   return (
@@ -215,7 +215,7 @@ export default function CardsTestScreen() {
         </TestSection>
 
         <TestSection title="Up Next Exercise" subtitle="Next exercise preview">
-          <UpNextExerciseCard
+          <DetailedItemCard
             item={{
               name: 'Barbell Bench Press',
               itemOne: { value: 80, icon: Dumbbell },

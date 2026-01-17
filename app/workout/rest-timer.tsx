@@ -9,10 +9,10 @@ import { theme } from '../../theme';
 import { WorkoutOptionsModal } from '../../components/modals/WorkoutOptionsModal';
 import { EndWorkoutModal } from '../../components/modals/EndWorkoutModal';
 import { WorkoutTimeTracker } from '../../components/WorkoutTimeTracker';
-import { UpNextExerciseCard } from '../../components/cards/UpNextExerciseCard';
+import { DetailedItemCard } from '../../components/cards/DetailedItemCard';
 import { RestTimerControls } from '../../components/RestTimerControls';
 import { RestTimer } from '../../components/RestTimer';
-import { UpNextLabel } from '../../components/cards/UpNextLabel';
+import { UpNextLabel } from '../../components/UpNextLabel';
 
 export default function RestTimerScreen() {
   const { t } = useTranslation();
@@ -143,7 +143,7 @@ export default function RestTimerScreen() {
         </View>
 
         {/* Next Exercise Card */}
-        <UpNextExerciseCard
+        <DetailedItemCard
           item={{
             name: exerciseData.next.name,
             media: exerciseData.next.image,

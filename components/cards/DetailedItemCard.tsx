@@ -4,7 +4,7 @@ import { ChevronRight, LucideIcon } from 'lucide-react-native';
 import { theme } from '../../theme';
 import { GenericCard } from './GenericCard';
 
-type UpNextExerciseCardProps = {
+type DetailedItemCardProps = {
   item: {
     name: string;
     media: ImageSourcePropType | { icon: LucideIcon; color: string };
@@ -16,7 +16,7 @@ type UpNextExerciseCardProps = {
   ctaLabel?: React.ReactNode;
 };
 
-export function UpNextExerciseCard({ item, onPress, ctaLabel }: UpNextExerciseCardProps) {
+export function DetailedItemCard({ item, onPress, ctaLabel }: DetailedItemCardProps) {
   return (
     <GenericCard variant="highlighted" isPressable={true} onPress={onPress} size="sm">
       <View className="flex-row items-center gap-4 p-4">
