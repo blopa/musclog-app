@@ -186,7 +186,8 @@ export function AISettingsModal({
                     alignItems: 'center',
                     justifyContent: 'center',
                     gap: theme.spacing.gap.sm,
-                    height: theme.size['12'],
+                    paddingVertical: theme.spacing.padding.md,
+                    paddingHorizontal: theme.spacing.padding.base,
                     borderRadius: theme.borderRadius.md,
                     backgroundColor: theme.colors.background.cardElevated,
                     borderWidth: theme.borderWidth.thin,
@@ -243,7 +244,7 @@ export function AISettingsModal({
                   backgroundColor: pressed ? theme.colors.background.overlay : undefined,
                 },
               ]}>
-              <View>
+              <View style={{ flex: 1 }}>
                 <Text
                   style={{
                     fontSize: theme.typography.fontSize.sm,
@@ -317,7 +318,7 @@ export function AISettingsModal({
                   backgroundColor: pressed ? theme.colors.background.overlay : undefined,
                 },
               ]}>
-              <View>
+              <View style={{ flex: 1 }}>
                 <Text
                   style={{
                     fontSize: theme.typography.fontSize.sm,
