@@ -232,33 +232,21 @@ export function FilterWorkoutsModal({
                 <Pressable
                   key={muscle.id}
                   onPress={() => toggleMuscle(muscle.id)}
-                  style={({ pressed }) => [
-                    {
-                      paddingHorizontal: theme.spacing.padding.base,
-                      paddingVertical: theme.spacing.padding.sm,
-                      borderRadius: theme.borderRadius.full,
-                      backgroundColor: isSelected
-                        ? theme.colors.accent.primary
-                        : theme.colors.background.card,
-                      borderWidth: theme.borderWidth.thin,
-                      borderColor: isSelected
-                        ? theme.colors.accent.primary
-                        : theme.colors.border.light,
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      gap: theme.spacing.gap.xs,
-                      transform: [{ scale: pressed ? 0.95 : 1 }],
-                      ...(isSelected ? theme.shadows.accentGlow : {}),
-                    },
-                  ]}>
+                  className="flex-row items-center gap-2 rounded-full border px-4 py-2 active:scale-95"
+                  style={{
+                    backgroundColor: isSelected
+                      ? theme.colors.accent.primary
+                      : theme.colors.background.card,
+                    borderWidth: theme.borderWidth.thin,
+                    borderColor: isSelected
+                      ? theme.colors.accent.primary
+                      : theme.colors.border.light,
+                    ...(isSelected ? theme.shadows.accentGlow : {}),
+                  }}>
                   <Text
-                    style={{
-                      fontSize: theme.typography.fontSize.sm,
-                      fontWeight: isSelected
-                        ? theme.typography.fontWeight.bold
-                        : theme.typography.fontWeight.semibold,
-                      color: isSelected ? theme.colors.text.black : theme.colors.text.secondary,
-                    }}>
+                    className={`text-sm ${
+                      isSelected ? 'font-bold text-black' : 'font-semibold text-text-secondary'
+                    }`}>
                     {muscle.label}
                   </Text>
                   {isSelected && (
