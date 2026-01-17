@@ -110,6 +110,12 @@ function FoodResultCard({
     }
   };
 
+  const handleAmountChange = (value: string) => {
+    // Clear selection when user starts typing so they can type normally
+    setSelection(undefined);
+    onAmountChange(value);
+  };
+
   const handleAmountBlur = () => {
     // Clear selection on blur
     setSelection(undefined);
@@ -276,11 +282,11 @@ function FoodResultCard({
             <RNTextInput
               ref={amountInputRef}
               value={amount}
-              onChangeText={onAmountChange}
+              onChangeText={handleAmountChange}
               onFocus={handleAmountFocus}
               onBlur={handleAmountBlur}
               selection={selection}
-              selectTextOnFocus={Platform.OS === 'ios'}
+              selectTextOnFocus={false}
               keyboardType="numeric"
               style={{
                 width: 80,

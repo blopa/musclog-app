@@ -107,7 +107,7 @@ function AIIntegrationCard({
         <Pressable
           onPress={onModelPress}
           className="flex-row items-center justify-between p-4 active:bg-bg-overlay">
-          <View className="flex-1 min-w-0">
+          <View className="min-w-0 flex-1">
             <Text className="text-sm font-medium text-text-primary">{modelLabel}</Text>
             <Text
               className="text-xs text-accent-primary"

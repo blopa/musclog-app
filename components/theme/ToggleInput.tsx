@@ -47,8 +47,7 @@ export function ToggleInput(props: TogglableSettingsProps) {
                   justifyContent: 'space-between',
                   padding: theme.spacing.padding.md,
                   backgroundColor: pressed ? theme.colors.background.overlay : undefined,
-                }}
-              >
+                }}>
                 <View
                   style={{
                     flexDirection: 'row',
