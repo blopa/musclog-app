@@ -287,28 +287,15 @@ export function AISettingsModal({
             {/* Model Selector */}
             <Pressable
               onPress={onOpenAiModelPress}
-              style={({ pressed }) => [
-                {
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: theme.spacing.padding.base,
-                  backgroundColor: pressed ? theme.colors.background.overlay : undefined,
-                },
-              ]}>
-              <View style={{ flex: 1 }}>
+              className="flex-row items-center justify-between p-4 active:bg-bg-overlay">
+              <View className="flex-1 min-w-0">
                 <Text
-                  style={{
-                    fontSize: theme.typography.fontSize.sm,
-                    fontWeight: theme.typography.fontWeight.medium,
-                    color: theme.colors.text.primary,
-                  }}>
+                  className="text-sm font-medium text-text-primary">
                   {t('settings.aiSettings.openAiModel')}
                 </Text>
                 <Text
+                  className="text-xs text-accent-primary"
                   style={{
-                    fontSize: theme.typography.fontSize.xs,
-                    color: theme.colors.accent.primary,
                     marginTop: theme.spacing.padding.xsHalf,
                   }}>
                   {openAiModel || t('settings.aiSettings.selectModel')}
