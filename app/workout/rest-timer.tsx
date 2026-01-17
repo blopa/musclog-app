@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { View, Text, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { CheckCircle } from 'lucide-react-native';
+import { CheckCircle, ChevronRight, Dumbbell, Repeat } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
@@ -143,7 +143,13 @@ export default function RestTimerScreen() {
 
         {/* Next Exercise Card */}
         <UpNextExerciseCard
-          exercise={exerciseData.next}
+          item={{
+            name: exerciseData.next.name,
+            media: exerciseData.next.image,
+            itemOne: { value: `${exerciseData.next.weight}kg`, icon: Dumbbell },
+            itemTwo: { value: `${exerciseData.next.reps} reps`, icon: Repeat },
+            itemThree: { value: `${exerciseData.next.sets} sets`, icon: ChevronRight },
+          }}
           onPress={() => {
             // Handle navigation to exercise details or start exercise
           }}

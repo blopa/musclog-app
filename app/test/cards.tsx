@@ -11,6 +11,9 @@ import {
   Trophy,
   Activity,
   Zap,
+  Dumbbell,
+  Repeat,
+  ChevronRight,
 } from 'lucide-react-native';
 import { TestSection } from './components/TestSection';
 import { WorkoutCard } from '../../components/cards/WorkoutCard';
@@ -212,12 +215,12 @@ export default function CardsTestScreen() {
 
         <TestSection title="Up Next Exercise" subtitle="Next exercise preview">
           <UpNextExerciseCard
-            exercise={{
+            item={{
               name: 'Barbell Bench Press',
-              weight: 80,
-              reps: 8,
-              sets: 4,
-              image: require('../../assets/icon.png'),
+              itemOne: { value: 80, icon: Dumbbell },
+              itemTwo: { value: 10, icon: Repeat },
+              itemThree: { value: '3x8', icon: ChevronRight },
+              media: require('../../assets/icon.png'),
             }}
             onPress={() => console.log('Exercise pressed')}
           />

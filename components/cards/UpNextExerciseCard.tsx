@@ -1,30 +1,38 @@
 import { View, Text, Image, ImageSourcePropType } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Dumbbell, Repeat, ChevronRight } from 'lucide-react-native';
+import { ChevronRight, LucideIcon } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
 import { GenericCard } from './GenericCard';
 
 type UpNextExerciseCardProps = {
-  exercise: {
+  item: {
     name: string;
-    weight: number;
-    reps: number;
-    sets: number;
-    image: ImageSourcePropType;
+    media: ImageSourcePropType | { icon: LucideIcon; color: string };
+    itemOne: { value: string | number; icon: LucideIcon };
+    itemTwo: { value: string | number; icon: LucideIcon };
+    itemThree: { value: string | number; icon: LucideIcon };
   };
   onPress?: () => void;
 };
 
-export function UpNextExerciseCard({ exercise, onPress }: UpNextExerciseCardProps) {
+export function UpNextExerciseCard({ item, onPress }: UpNextExerciseCardProps) {
   const { t } = useTranslation();
 
   return (
     <GenericCard variant="highlighted" isPressable={true} onPress={onPress} size="sm">
       <View className="flex-row items-center gap-4 p-4">
-        {/* Exercise Image */}
+        {/* Media */}
         <View className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-bg-overlay">
-          <Image source={exercise.image} className="h-full w-full" resizeMode="cover" />
+          {typeof item.media === 'object' && 'icon' in item.media ? (
+            <item.media.icon
+              size={theme.iconSize.xl}
+              color={item.media.color}
+              style={{ alignSelf: 'center', marginTop: 'auto', marginBottom: 'auto' }}
+            />
+          ) : (
+            <Image source={item.media} className="h-full w-full" resizeMode="cover" />
+          )}
           <LinearGradient
             colors={['transparent', theme.colors.overlay.black60]}
             start={{ x: 0, y: 0 }}
@@ -39,7 +47,7 @@ export function UpNextExerciseCard({ exercise, onPress }: UpNextExerciseCardProp
           />
         </View>
 
-        {/* Exercise Info */}
+        {/* Info */}
         <View className="min-w-0 flex-1 gap-1">
           <View className="flex-row items-start justify-between">
             <View className="flex-1" />
@@ -53,14 +61,14 @@ export function UpNextExerciseCard({ exercise, onPress }: UpNextExerciseCardProp
           </View>
 
           <Text className="mt-1 truncate text-lg font-bold leading-tight text-text-primary">
-            {exercise.name}
+            {item.name}
           </Text>
 
           <View className="mt-1 flex-row items-center gap-3">
             <View className="flex-row items-center gap-1">
-              <Dumbbell size={theme.iconSize.sm} color={theme.colors.text.secondary} />
+              <item.itemOne.icon size={theme.iconSize.sm} color={theme.colors.text.secondary} />
               <Text className="text-sm" style={{ color: theme.colors.overlay.white60 }}>
-                {exercise.weight}kg
+                {item.itemOne.value}
               </Text>
             </View>
             <View
@@ -68,18 +76,21 @@ export function UpNextExerciseCard({ exercise, onPress }: UpNextExerciseCardProp
               style={{ backgroundColor: theme.colors.overlay.white20 }}
             />
             <View className="flex-row items-center gap-1">
-              <Repeat size={theme.iconSize.sm} color={theme.colors.text.secondary} />
+              <item.itemTwo.icon size={theme.iconSize.sm} color={theme.colors.text.secondary} />
               <Text className="text-sm" style={{ color: theme.colors.overlay.white60 }}>
-                {exercise.reps} {t('restTimer.reps')}
+                {item.itemTwo.value}
               </Text>
             </View>
             <View
               className="h-1 w-1 rounded-full"
               style={{ backgroundColor: theme.colors.overlay.white20 }}
             />
-            <Text className="text-sm font-medium" style={{ color: theme.colors.overlay.white80 }}>
-              {exercise.sets} {t('restTimer.sets')}
-            </Text>
+            <View className="flex-row items-center gap-1">
+              <item.itemThree.icon size={theme.iconSize.sm} color={theme.colors.text.secondary} />
+              <Text className="text-sm font-medium" style={{ color: theme.colors.overlay.white80 }}>
+                {item.itemThree.value}
+              </Text>
+            </View>
           </View>
         </View>
 
