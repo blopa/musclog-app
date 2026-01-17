@@ -17,9 +17,13 @@ export default function ConnectWithGoogle() {
           {t('onboarding.connectGoogle.title')}
         </Text>
       </View>
-      <ConnectGoogleAccountBody onMaybeLater={() => {
-        router.push('/onboarding/fitness-info');
-      }} onConnect={() => {}} onClose={() => {}} />
+      <ConnectGoogleAccountBody
+        onMaybeLater={() => {
+          router.push('/onboarding/fitness-info');
+        }}
+        onConnect={() => {}}
+        onClose={() => {}}
+      />
     </ScrollView>
   );
 }
