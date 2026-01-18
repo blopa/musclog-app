@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { View, Text, Pressable, ScrollView } from 'react-native';
 import { Calendar } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
@@ -23,6 +23,12 @@ type PastWorkoutsHistoryFilterMenuProps = {
     minDuration: number;
   }) => void;
   onClearFilters?: () => void;
+  initialFilters?: {
+    workoutType?: WorkoutType;
+    dateRange?: DateRange;
+    muscleGroups?: MuscleGroup[];
+    minDuration?: number;
+  };
 };
 
 export function PastWorkoutsHistoryFilterMenu({
@@ -30,13 +36,30 @@ export function PastWorkoutsHistoryFilterMenu({
   onClose,
   onApplyFilters,
   onClearFilters,
+  initialFilters,
 }: PastWorkoutsHistoryFilterMenuProps) {
   const { t } = useTranslation();
 
-  const [selectedWorkoutType, setSelectedWorkoutType] = useState<WorkoutType>('all');
-  const [selectedDateRange, setSelectedDateRange] = useState<DateRange>('30');
-  const [selectedMuscleGroups, setSelectedMuscleGroups] = useState<MuscleGroup[]>(['back', 'legs']);
-  const [minDuration, setMinDuration] = useState(30);
+  const [selectedWorkoutType, setSelectedWorkoutType] = useState<WorkoutType>(
+    initialFilters?.workoutType || 'all'
+  );
+  const [selectedDateRange, setSelectedDateRange] = useState<DateRange>(
+    initialFilters?.dateRange || '30'
+  );
+  const [selectedMuscleGroups, setSelectedMuscleGroups] = useState<MuscleGroup[]>(
+    initialFilters?.muscleGroups || []
+  );
+  const [minDuration, setMinDuration] = useState(initialFilters?.minDuration || 0);
+
+  // Reset to initial filters when modal opens or initialFilters change
+  useEffect(() => {
+    if (visible && initialFilters) {
+      setSelectedWorkoutType(initialFilters.workoutType || 'all');
+      setSelectedDateRange(initialFilters.dateRange || '30');
+      setSelectedMuscleGroups(initialFilters.muscleGroups || []);
+      setMinDuration(initialFilters.minDuration || 0);
+    }
+  }, [visible, initialFilters]);
 
   const workoutTypes = useMemo(
     () => [

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, Pressable, TextInput, ActivityIndicator } from 'react-native';
-import { Search, SlidersHorizontal, Dumbbell, Trophy, Square, Activity } from 'lucide-react-native';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { Activity, Dumbbell, Search, SlidersHorizontal, Square, Trophy } from 'lucide-react-native';
 import { format } from 'date-fns';
 import { theme } from '../../theme';
 import { FullScreenModal } from './FullScreenModal';
@@ -9,6 +9,10 @@ import { GenericCard } from '../cards/GenericCard';
 import { PastWorkoutsHistoryFilterMenu } from './PastWorkoutsHistoryFilterMenu';
 import { WorkoutService } from '../../database/services/WorkoutService';
 import { WorkoutAnalytics } from '../../database/services/WorkoutAnalytics';
+import { database } from '../../database';
+import { Q } from '@nozbe/watermelondb';
+import Exercise from '../../database/models/Exercise';
+import WorkoutLogSet from '../../database/models/WorkoutLogSet';
 
 type WorkoutHistorySection = {
   month: string;
@@ -74,38 +78,145 @@ function getWorkoutIcon(workoutName: string) {
   };
 }
 
+type WorkoutFilters = {
+  workoutType?: 'all' | 'strength' | 'cardio' | 'hiit' | 'yoga';
+  dateRange?: '30' | '90' | 'custom';
+  muscleGroups: string[];
+  minDuration: number;
+};
+
 export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHistoryModalProps) {
   const { t } = useTranslation();
   const [isFilterMenuVisible, setIsFilterMenuVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [workoutHistoryData, setWorkoutHistoryData] = useState<WorkoutHistorySection[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [filters, setFilters] = useState<WorkoutFilters>({
+    workoutType: 'all',
+    dateRange: '30',
+    muscleGroups: [],
+    minDuration: 0,
+  });
 
-  // Load workout history when modal becomes visible
-  useEffect(() => {
-    if (visible) {
-      loadWorkoutHistory();
+  // Helper function to determine workout type from name
+  const getWorkoutTypeFromName = (name: string): 'strength' | 'cardio' | 'hiit' | 'yoga' | null => {
+    const nameLower = name.toLowerCase();
+    if (nameLower.includes('run') || nameLower.includes('cardio') || nameLower.includes('run')) {
+      return 'cardio';
     }
-  }, [visible]);
+    if (nameLower.includes('hiit') || nameLower.includes('interval')) {
+      return 'hiit';
+    }
+    if (nameLower.includes('yoga') || nameLower.includes('stretch')) {
+      return 'yoga';
+    }
+    // Default to strength for weightlifting workouts
+    return 'strength';
+  };
+
+  // Helper function to get muscle groups from a workout
+  const getMuscleGroupsFromWorkout = async (workoutId: string): Promise<string[]> => {
+    try {
+      // Get all sets for this workout
+      const sets = await database
+        .get<WorkoutLogSet>('workout_log_sets')
+        .query(Q.where('workout_log_id', workoutId), Q.where('deleted_at', Q.eq(null)))
+        .fetch();
+
+      // Get unique exercise IDs
+      const exerciseIds = [...new Set(sets.map((set) => set.exerciseId))];
+
+      if (exerciseIds.length === 0) {
+        return [];
+      }
+
+      // Get exercises and their muscle groups
+      const exercises = await database
+        .get<Exercise>('exercises')
+        .query(Q.where('id', Q.oneOf(exerciseIds)), Q.where('deleted_at', Q.eq(null)))
+        .fetch();
+
+      // Get unique muscle groups
+
+      return [...new Set(exercises.map((ex) => ex.muscleGroup.toLowerCase()))];
+    } catch (error) {
+      console.error('Error getting muscle groups from workout:', error);
+      return [];
+    }
+  };
+
+  // Helper function to normalize muscle group names (match filter menu IDs)
+  const normalizeMuscleGroup = (group: string): string => {
+    const normalized = group.toLowerCase().replace(/\s+/g, '-');
+    // Map common variations
+    if (normalized.includes('full') || normalized.includes('body')) {
+      return 'full-body';
+    }
+    return normalized;
+  };
 
   const loadWorkoutHistory = async () => {
     setIsLoading(true);
     try {
-      // Fetch completed workouts from database
-      const workouts = await WorkoutService.getWorkoutHistory();
+      // Calculate date range filter
+      let timeframe: { startDate: number; endDate: number } | undefined;
+      if (filters.dateRange === '30') {
+        const endDate = Date.now();
+        const startDate = endDate - 30 * 24 * 60 * 60 * 1000;
+        timeframe = { startDate, endDate };
+      } else if (filters.dateRange === '90') {
+        const endDate = Date.now();
+        const startDate = endDate - 90 * 24 * 60 * 60 * 1000;
+        timeframe = { startDate, endDate };
+      }
+      // 'custom' date range would need a date picker, skip for now
+
+      // Fetch completed workouts from database with date range filter
+      const workouts = await WorkoutService.getWorkoutHistory(timeframe);
 
       // Process each workout to get PR count and format data
-      const processedWorkouts: WorkoutHistoryItem[] = await Promise.all(
+      const processedWorkouts: (WorkoutHistoryItem | null)[] = await Promise.all(
         workouts.map(async (workout) => {
-          // Get PR count
-          const prs = await WorkoutAnalytics.detectPersonalRecords(workout);
-          const prCount = prs.length > 0 ? prs.length : null;
-
           // Calculate duration
           const durationMinutes =
             workout.completedAt && workout.startedAt
               ? Math.round((workout.completedAt - workout.startedAt) / 60000)
               : 0;
+
+          // Apply min duration filter
+          if (durationMinutes < filters.minDuration) {
+            return null;
+          }
+
+          // Get workout type and apply filter
+          if (filters.workoutType !== 'all') {
+            const workoutType = getWorkoutTypeFromName(workout.workoutName);
+            if (workoutType !== filters.workoutType) {
+              return null;
+            }
+          }
+
+          // Get muscle groups and apply filter
+          if (filters.muscleGroups.length > 0) {
+            const workoutMuscleGroups = await getMuscleGroupsFromWorkout(workout.id);
+            const normalizedWorkoutGroups = workoutMuscleGroups.map(normalizeMuscleGroup);
+            const normalizedFilterGroups = filters.muscleGroups.map((g) =>
+              g.toLowerCase().replace(/\s+/g, '-')
+            );
+
+            // Check if workout has any of the selected muscle groups
+            const hasMatchingMuscleGroup = normalizedWorkoutGroups.some((group) =>
+              normalizedFilterGroups.includes(group)
+            );
+
+            if (!hasMatchingMuscleGroup) {
+              return null;
+            }
+          }
+
+          // Get PR count
+          const prs = await WorkoutAnalytics.detectPersonalRecords(workout);
+          const prCount = prs.length > 0 ? prs.length : null;
 
           // Format date
           const dateTimestamp = workout.startedAt || workout.completedAt || Date.now();
@@ -139,10 +250,15 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
         })
       );
 
+      // Filter out null values (workouts that didn't match filters)
+      const validWorkouts = processedWorkouts.filter(
+        (workout): workout is WorkoutHistoryItem => workout !== null
+      );
+
       // Group workouts by month
       const groupedByMonth = new Map<string, WorkoutHistoryItem[]>();
 
-      processedWorkouts.forEach((workout) => {
+      validWorkouts.forEach((workout) => {
         // Extract month-year from workout date timestamp
         const date = new Date(workout.dateTimestamp);
         const monthKey = format(date, 'MMMM yyyy');
@@ -173,6 +289,13 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
       setIsLoading(false);
     }
   };
+
+  // Load workout history when modal becomes visible or filters change
+  useEffect(() => {
+    if (visible) {
+      loadWorkoutHistory();
+    }
+  }, [visible, filters, loadWorkoutHistory]);
 
   // Filter workouts based on search query
   const filteredWorkoutHistoryData = searchQuery
@@ -394,11 +517,35 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
       <PastWorkoutsHistoryFilterMenu
         visible={isFilterMenuVisible}
         onClose={() => setIsFilterMenuVisible(false)}
-        onApplyFilters={(filters) => {
-          console.log('Filters applied:', filters);
+        initialFilters={{
+          workoutType: filters.workoutType,
+          dateRange: filters.dateRange,
+          muscleGroups: filters.muscleGroups as (
+            | 'chest'
+            | 'back'
+            | 'legs'
+            | 'shoulders'
+            | 'arms'
+            | 'core'
+            | 'full-body'
+          )[],
+          minDuration: filters.minDuration,
+        }}
+        onApplyFilters={(newFilters) => {
+          setFilters({
+            workoutType: newFilters.workoutType || 'all',
+            dateRange: newFilters.dateRange || '30',
+            muscleGroups: newFilters.muscleGroups || [],
+            minDuration: newFilters.minDuration || 0,
+          });
         }}
         onClearFilters={() => {
-          console.log('Filters cleared');
+          setFilters({
+            workoutType: 'all',
+            dateRange: '30',
+            muscleGroups: [],
+            minDuration: 0,
+          });
         }}
       />
     </FullScreenModal>

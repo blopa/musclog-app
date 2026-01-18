@@ -208,7 +208,7 @@ export async function seedWorkoutHistory(): Promise<{ created: number }> {
         workoutName: string,
         startedAt: number,
         durationMinutes: number,
-        exerciseSets: Array<{ exercise: Exercise; sets: Array<{ weight: number; reps: number }> }>
+        exerciseSets: { exercise: Exercise; sets: { weight: number; reps: number }[] }[]
       ): Promise<WorkoutLog> => {
         const completedAt = startedAt + durationMinutes * 60000;
 
@@ -282,27 +282,59 @@ export async function seedWorkoutHistory(): Promise<{ created: number }> {
       };
 
       // Helper to create a date in a specific month
-      const dateInMonth = (year: number, month: number, day: number, hour: number = 18, minute: number = 30): number => {
+      const dateInMonth = (
+        year: number,
+        month: number,
+        day: number,
+        hour: number = 18,
+        minute: number = 30
+      ): number => {
         const date = new Date(year, month, day, hour, minute, 0, 0);
         return date.getTime();
       };
 
-      const workouts: Array<{
+      const workouts: {
         name: string;
         startedAt: number;
         durationMinutes: number;
-        exerciseSets: Array<{ exercise: Exercise; sets: Array<{ weight: number; reps: number }> }>;
-      }> = [
+        exerciseSets: { exercise: Exercise; sets: { weight: number; reps: number }[] }[];
+      }[] = [
         // Current month - recent workouts
         {
           name: 'Upper Body Power',
           startedAt: daysAgo(2),
           durationMinutes: 70,
           exerciseSets: [
-            { exercise: benchPress, sets: [{ weight: 80, reps: 8 }, { weight: 80, reps: 8 }, { weight: 85, reps: 6 }] },
-            { exercise: overheadPress, sets: [{ weight: 50, reps: 10 }, { weight: 52.5, reps: 8 }, { weight: 55, reps: 6 }] },
-            { exercise: latPulldown, sets: [{ weight: 70, reps: 10 }, { weight: 72.5, reps: 8 }] },
-            { exercise: bicepCurl, sets: [{ weight: 15, reps: 12 }, { weight: 17.5, reps: 10 }] },
+            {
+              exercise: benchPress,
+              sets: [
+                { weight: 80, reps: 8 },
+                { weight: 80, reps: 8 },
+                { weight: 85, reps: 6 },
+              ],
+            },
+            {
+              exercise: overheadPress,
+              sets: [
+                { weight: 50, reps: 10 },
+                { weight: 52.5, reps: 8 },
+                { weight: 55, reps: 6 },
+              ],
+            },
+            {
+              exercise: latPulldown,
+              sets: [
+                { weight: 70, reps: 10 },
+                { weight: 72.5, reps: 8 },
+              ],
+            },
+            {
+              exercise: bicepCurl,
+              sets: [
+                { weight: 15, reps: 12 },
+                { weight: 17.5, reps: 10 },
+              ],
+            },
           ],
         },
         {
@@ -310,9 +342,28 @@ export async function seedWorkoutHistory(): Promise<{ created: number }> {
           startedAt: daysAgo(4),
           durationMinutes: 55,
           exerciseSets: [
-            { exercise: squat, sets: [{ weight: 120, reps: 8 }, { weight: 125, reps: 6 }, { weight: 130, reps: 5 }] },
-            { exercise: legPress, sets: [{ weight: 180, reps: 12 }, { weight: 200, reps: 10 }] },
-            { exercise: deadlift, sets: [{ weight: 140, reps: 6 }, { weight: 150, reps: 5 }] },
+            {
+              exercise: squat,
+              sets: [
+                { weight: 120, reps: 8 },
+                { weight: 125, reps: 6 },
+                { weight: 130, reps: 5 },
+              ],
+            },
+            {
+              exercise: legPress,
+              sets: [
+                { weight: 180, reps: 12 },
+                { weight: 200, reps: 10 },
+              ],
+            },
+            {
+              exercise: deadlift,
+              sets: [
+                { weight: 140, reps: 6 },
+                { weight: 150, reps: 5 },
+              ],
+            },
           ],
         },
         {
@@ -320,9 +371,28 @@ export async function seedWorkoutHistory(): Promise<{ created: number }> {
           startedAt: daysAgo(7),
           durationMinutes: 60,
           exerciseSets: [
-            { exercise: benchPress, sets: [{ weight: 75, reps: 10 }, { weight: 80, reps: 8 }, { weight: 82.5, reps: 6 }] },
-            { exercise: overheadPress, sets: [{ weight: 48, reps: 10 }, { weight: 50, reps: 8 }] },
-            { exercise: tricepExtension, sets: [{ weight: 20, reps: 12 }, { weight: 22.5, reps: 10 }] },
+            {
+              exercise: benchPress,
+              sets: [
+                { weight: 75, reps: 10 },
+                { weight: 80, reps: 8 },
+                { weight: 82.5, reps: 6 },
+              ],
+            },
+            {
+              exercise: overheadPress,
+              sets: [
+                { weight: 48, reps: 10 },
+                { weight: 50, reps: 8 },
+              ],
+            },
+            {
+              exercise: tricepExtension,
+              sets: [
+                { weight: 20, reps: 12 },
+                { weight: 22.5, reps: 10 },
+              ],
+            },
           ],
         },
         // Previous month
@@ -331,10 +401,34 @@ export async function seedWorkoutHistory(): Promise<{ created: number }> {
           startedAt: dateInMonth(currentYear, currentMonth - 1, 28, 12, 0),
           durationMinutes: 75,
           exerciseSets: [
-            { exercise: deadlift, sets: [{ weight: 135, reps: 6 }, { weight: 145, reps: 5 }] },
-            { exercise: benchPress, sets: [{ weight: 77.5, reps: 8 }, { weight: 80, reps: 7 }] },
-            { exercise: squat, sets: [{ weight: 115, reps: 10 }, { weight: 120, reps: 8 }] },
-            { exercise: latPulldown, sets: [{ weight: 68, reps: 10 }, { weight: 70, reps: 9 }] },
+            {
+              exercise: deadlift,
+              sets: [
+                { weight: 135, reps: 6 },
+                { weight: 145, reps: 5 },
+              ],
+            },
+            {
+              exercise: benchPress,
+              sets: [
+                { weight: 77.5, reps: 8 },
+                { weight: 80, reps: 7 },
+              ],
+            },
+            {
+              exercise: squat,
+              sets: [
+                { weight: 115, reps: 10 },
+                { weight: 120, reps: 8 },
+              ],
+            },
+            {
+              exercise: latPulldown,
+              sets: [
+                { weight: 68, reps: 10 },
+                { weight: 70, reps: 9 },
+              ],
+            },
           ],
         },
         {
@@ -342,9 +436,28 @@ export async function seedWorkoutHistory(): Promise<{ created: number }> {
           startedAt: dateInMonth(currentYear, currentMonth - 1, 24, 18, 30),
           durationMinutes: 70,
           exerciseSets: [
-            { exercise: benchPress, sets: [{ weight: 78, reps: 8 }, { weight: 80, reps: 7 }, { weight: 82, reps: 6 }] },
-            { exercise: overheadPress, sets: [{ weight: 49, reps: 10 }, { weight: 51, reps: 8 }] },
-            { exercise: bicepCurl, sets: [{ weight: 14, reps: 12 }, { weight: 16, reps: 10 }] },
+            {
+              exercise: benchPress,
+              sets: [
+                { weight: 78, reps: 8 },
+                { weight: 80, reps: 7 },
+                { weight: 82, reps: 6 },
+              ],
+            },
+            {
+              exercise: overheadPress,
+              sets: [
+                { weight: 49, reps: 10 },
+                { weight: 51, reps: 8 },
+              ],
+            },
+            {
+              exercise: bicepCurl,
+              sets: [
+                { weight: 14, reps: 12 },
+                { weight: 16, reps: 10 },
+              ],
+            },
           ],
         },
         {
@@ -352,8 +465,21 @@ export async function seedWorkoutHistory(): Promise<{ created: number }> {
           startedAt: dateInMonth(currentYear, currentMonth - 1, 20, 17, 45),
           durationMinutes: 55,
           exerciseSets: [
-            { exercise: squat, sets: [{ weight: 118, reps: 8 }, { weight: 122, reps: 7 }, { weight: 125, reps: 6 }] },
-            { exercise: legPress, sets: [{ weight: 175, reps: 12 }, { weight: 190, reps: 10 }] },
+            {
+              exercise: squat,
+              sets: [
+                { weight: 118, reps: 8 },
+                { weight: 122, reps: 7 },
+                { weight: 125, reps: 6 },
+              ],
+            },
+            {
+              exercise: legPress,
+              sets: [
+                { weight: 175, reps: 12 },
+                { weight: 190, reps: 10 },
+              ],
+            },
           ],
         },
         // Two months ago
@@ -362,9 +488,27 @@ export async function seedWorkoutHistory(): Promise<{ created: number }> {
           startedAt: dateInMonth(currentYear, currentMonth - 2, 30, 10, 0),
           durationMinutes: 50,
           exerciseSets: [
-            { exercise: deadlift, sets: [{ weight: 130, reps: 6 }, { weight: 135, reps: 5 }] },
-            { exercise: latPulldown, sets: [{ weight: 65, reps: 12 }, { weight: 68, reps: 10 }] },
-            { exercise: bicepCurl, sets: [{ weight: 13, reps: 12 }, { weight: 15, reps: 10 }] },
+            {
+              exercise: deadlift,
+              sets: [
+                { weight: 130, reps: 6 },
+                { weight: 135, reps: 5 },
+              ],
+            },
+            {
+              exercise: latPulldown,
+              sets: [
+                { weight: 65, reps: 12 },
+                { weight: 68, reps: 10 },
+              ],
+            },
+            {
+              exercise: bicepCurl,
+              sets: [
+                { weight: 13, reps: 12 },
+                { weight: 15, reps: 10 },
+              ],
+            },
           ],
         },
         {
@@ -372,9 +516,27 @@ export async function seedWorkoutHistory(): Promise<{ created: number }> {
           startedAt: dateInMonth(currentYear, currentMonth - 2, 26, 18, 0),
           durationMinutes: 65,
           exerciseSets: [
-            { exercise: benchPress, sets: [{ weight: 75, reps: 10 }, { weight: 78, reps: 8 }] },
-            { exercise: overheadPress, sets: [{ weight: 47, reps: 10 }, { weight: 49, reps: 8 }] },
-            { exercise: tricepExtension, sets: [{ weight: 18, reps: 12 }, { weight: 20, reps: 10 }] },
+            {
+              exercise: benchPress,
+              sets: [
+                { weight: 75, reps: 10 },
+                { weight: 78, reps: 8 },
+              ],
+            },
+            {
+              exercise: overheadPress,
+              sets: [
+                { weight: 47, reps: 10 },
+                { weight: 49, reps: 8 },
+              ],
+            },
+            {
+              exercise: tricepExtension,
+              sets: [
+                { weight: 18, reps: 12 },
+                { weight: 20, reps: 10 },
+              ],
+            },
           ],
         },
       ];
