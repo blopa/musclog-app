@@ -3,23 +3,9 @@ import { View, Text } from 'react-native';
 import { Scale, Percent, Activity, Calculator, Calendar } from 'lucide-react-native';
 import { theme } from '../../theme';
 import { GenericCard } from './GenericCard';
+import { GoalTypeBadge } from '../GoalTypeBadge';
 
 type GoalType = 'cutting' | 'maintenance' | 'bulking' | 'lean-bulk';
-
-const goalTypeStyles: Record<GoalType, { label: string }> = {
-  cutting: {
-    label: 'CUTTING',
-  },
-  maintenance: {
-    label: 'MAINTENANCE',
-  },
-  bulking: {
-    label: 'BULKING',
-  },
-  'lean-bulk': {
-    label: 'LEAN BULK',
-  },
-};
 
 interface CurrentGoal {
   type: GoalType;
@@ -44,34 +30,8 @@ export function CurrentGoalsCard({ goal }: CurrentGoalsCardProps) {
       <View className="relative p-5">
         {/* Goal Type Badge */}
         <View className="absolute right-0 top-0 p-4">
-        <View
-          className="rounded px-2 py-1"
-          style={{
-            backgroundColor:
-              goal.type === 'cutting'
-                ? theme.colors.status.amber10
-                : goal.type === 'maintenance'
-                  ? theme.colors.status.indigo10
-                  : goal.type === 'bulking'
-                    ? theme.colors.status.indigo10
-                    : theme.colors.accent.primary10,
-          }}>
-          <Text
-            className="text-[10px] font-bold uppercase"
-            style={{
-              color:
-                goal.type === 'cutting'
-                  ? theme.colors.status.amber
-                  : goal.type === 'maintenance'
-                    ? theme.colors.status.indigoLight
-                    : goal.type === 'bulking'
-                      ? theme.colors.status.indigoLight
-                      : theme.colors.accent.primary,
-            }}>
-            {goalTypeStyles[goal.type].label}
-          </Text>
+          <GoalTypeBadge type={goal.type} variant="default" showBorder={false} />
         </View>
-      </View>
 
       {/* Daily Target */}
       <View className="mb-6">

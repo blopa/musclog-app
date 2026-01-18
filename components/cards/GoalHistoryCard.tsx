@@ -3,23 +3,9 @@ import { View, Text } from 'react-native';
 import { History } from 'lucide-react-native';
 import { theme } from '../../theme';
 import { GenericCard } from './GenericCard';
+import { GoalTypeBadge } from '../GoalTypeBadge';
 
 type GoalType = 'cutting' | 'maintenance' | 'bulking' | 'lean-bulk';
-
-const goalTypeStyles: Record<GoalType, { label: string }> = {
-  cutting: {
-    label: 'CUTTING',
-  },
-  maintenance: {
-    label: 'MAINTENANCE',
-  },
-  bulking: {
-    label: 'BULKING',
-  },
-  'lean-bulk': {
-    label: 'LEAN BULK',
-  },
-};
 
 interface GoalHistoryItem {
   id: number;
@@ -39,8 +25,6 @@ interface GoalHistoryCardProps {
 }
 
 export function GoalHistoryCard({ goal, isLast = false }: GoalHistoryCardProps) {
-  const styles = goalTypeStyles[goal.type];
-
   return (
     <View className="relative mb-6 flex-row gap-4">
       {/* Timeline line */}
@@ -66,41 +50,7 @@ export function GoalHistoryCard({ goal, isLast = false }: GoalHistoryCardProps) 
       <View className="flex-1 pb-2">
         <View className="mb-1 flex-row items-center justify-between">
           <Text className="text-xs font-semibold text-text-secondary">{goal.dateRange}</Text>
-          <View
-            className="rounded border px-2 py-0.5 uppercase"
-            style={{
-              backgroundColor:
-                goal.type === 'cutting'
-                  ? theme.colors.status.amber10
-                  : goal.type === 'maintenance'
-                    ? theme.colors.status.indigo10
-                    : goal.type === 'bulking'
-                      ? theme.colors.status.indigo10
-                      : theme.colors.accent.primary10,
-              borderColor:
-                goal.type === 'cutting'
-                  ? theme.colors.status.amber10
-                  : goal.type === 'maintenance'
-                    ? theme.colors.status.indigo20
-                    : goal.type === 'bulking'
-                      ? theme.colors.status.indigo20
-                      : theme.colors.accent.primary20,
-            }}>
-            <Text
-              className="text-[9px] font-bold"
-              style={{
-                color:
-                  goal.type === 'cutting'
-                    ? theme.colors.status.amber
-                    : goal.type === 'maintenance'
-                      ? theme.colors.status.indigoLight
-                      : goal.type === 'bulking'
-                        ? theme.colors.status.indigoLight
-                        : theme.colors.accent.primary,
-              }}>
-              {styles.label}
-            </Text>
-          </View>
+          <GoalTypeBadge type={goal.type} variant="compact" showBorder={true} />
         </View>
 
         <GenericCard variant="card">
