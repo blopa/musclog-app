@@ -236,6 +236,11 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
             stats.push({ label: 'Volume', value: formatVolume(workout.totalVolume) });
           }
 
+          // Add calories if available
+          if (workout.caloriesBurned && workout.caloriesBurned > 0) {
+            stats.push({ label: 'Calories', value: `${workout.caloriesBurned} kcal` });
+          }
+
           return {
             id: workout.id,
             name: workout.workoutName,
