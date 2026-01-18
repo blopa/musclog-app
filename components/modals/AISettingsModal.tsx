@@ -69,6 +69,7 @@ function AIIntegrationCard({
         {/* Optional Header Content (e.g., Connect Button) */}
         {headerContent && (
           <View
+            className="w-full items-center"
             style={{
               padding: theme.spacing.padding.base,
               borderBottomWidth: theme.borderWidth.thin,
@@ -275,12 +276,10 @@ export function AISettingsModal({
           sectionTitleColor={theme.colors.accent.primary}
           toggleItems={geminiToggleItems}
           headerContent={
-            <View className="w-full items-center">
-              <GoogleSignInButton
-                onPress={onConnectGoogleAccount}
-                variant="dark"
-              />
-            </View>
+            <GoogleSignInButton
+              onPress={onConnectGoogleAccount}
+              variant="dark"
+            />
           }
           apiKeyLabel={t('settings.aiSettings.googleGeminiApiKey')}
           apiKeyValue={googleGeminiApiKey}

@@ -214,16 +214,20 @@ export default function ButtonTestScreen() {
               <Text className="mb-2 text-xs font-semibold text-text-secondary">
                 Google Sign In (Enabled)
               </Text>
-              <GoogleSignInButton onPress={() => console.log('Google Sign In pressed')} />
+              <View className="w-full items-center">
+                <GoogleSignInButton onPress={() => console.log('Google Sign In pressed')} />
+              </View>
             </View>
             <View className="mb-4">
               <Text className="mb-2 text-xs font-semibold text-text-secondary">
                 Google Sign In (Disabled)
               </Text>
-              <GoogleSignInButton
-                disabled={true}
-                onPress={() => console.log('Disabled button pressed')}
-              />
+              <View className="w-full items-center">
+                <GoogleSignInButton
+                  disabled={true}
+                  onPress={() => console.log('Disabled button pressed')}
+                />
+              </View>
             </View>
           </Section>
 
