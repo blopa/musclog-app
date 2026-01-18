@@ -106,7 +106,7 @@
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */,
-				BA794D7663B3416A9D576D44 /* Upload Debug Symbols to Sentry */,
+				5BA0B1EFA5F749F3B892C4C6 /* Upload Debug Symbols to Sentry */,
 			);
 			buildRules = (
 			);
@@ -223,7 +223,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-musclog/Pods-musclog-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		BA794D7663B3416A9D576D44 /* Upload Debug Symbols to Sentry */ = {
+		5BA0B1EFA5F749F3B892C4C6 /* Upload Debug Symbols to Sentry */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
