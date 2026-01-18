@@ -1,10 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, ScrollView, Pressable, TextInput } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
 import {
-  ChevronLeft,
-  MoreVertical,
   Search,
   SlidersHorizontal,
   Dumbbell,
@@ -14,8 +10,9 @@ import {
 } from 'lucide-react-native';
 import { theme } from '../../theme';
 import { FullScreenModal } from './FullScreenModal';
-import { NutritionGoals } from '../NutritionGoalsBody';
 import { useTranslation } from 'react-i18next';
+import { GenericCard } from '../cards/GenericCard';
+import { PastWorkoutsHistoryFilterMenu } from './PastWorkoutsHistoryFilterMenu';
 
 // Mock data matching the HTML example
 const WORKOUT_HISTORY_DATA = [
@@ -94,6 +91,7 @@ type WorkoutHistoryModalProps = {
 
 export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHistoryModalProps) {
   const { t } = useTranslation();
+  const [isFilterMenuVisible, setIsFilterMenuVisible] = useState(false);
 
   return (
     <FullScreenModal
@@ -143,7 +141,8 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
                 backgroundColor: theme.colors.background.card,
                 borderColor: theme.colors.background.white5,
                 borderRadius: theme.borderRadius.md,
-              }}>
+              }}
+              onPress={() => setIsFilterMenuVisible(true)}>
               <SlidersHorizontal size={theme.iconSize.sm} color={theme.colors.text.primary} />
             </Pressable>
           </View>
@@ -176,96 +175,101 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
                     const opacity = isLastMonth ? 0.8 : 1;
 
                     return (
-                      <Pressable
+                      <View
                         key={workout.id}
-                        className="flex-col gap-4 border p-4"
                         style={{
-                          backgroundColor: theme.colors.background.card,
-                          borderColor: theme.colors.background.white5,
-                          borderRadius: theme.borderRadius.md,
                           opacity,
                         }}>
-                        {/* Card Header */}
-                        <View className="flex-row items-start justify-between">
-                          <View className="flex-row items-center gap-3">
-                            <View
-                              className="h-12 w-12 items-center justify-center rounded-lg"
-                              style={{
-                                backgroundColor: workout.iconBgOpacity,
-                              }}>
-                              <Icon size={theme.iconSize.xl} color={workout.iconBgColor} />
+                        <GenericCard
+                          variant="card"
+                          isPressable={true}
+                          onPress={() => {
+                            // Handle press if needed
+                          }}>
+                          <View className="flex-col gap-4 p-4">
+                            {/* Card Header */}
+                            <View className="flex-row items-start justify-between">
+                              <View className="flex-row items-center gap-3">
+                                <View
+                                  className="h-12 w-12 items-center justify-center rounded-lg"
+                                  style={{
+                                    backgroundColor: workout.iconBgOpacity,
+                                  }}>
+                                  <Icon size={theme.iconSize.xl} color={workout.iconBgColor} />
+                                </View>
+                                <View>
+                                  <Text
+                                    className="font-bold"
+                                    style={{
+                                      fontSize: theme.typography.fontSize.base,
+                                      color: theme.colors.text.primary,
+                                    }}>
+                                    {workout.name}
+                                  </Text>
+                                  <Text
+                                    className="text-xs"
+                                    style={{
+                                      color: theme.colors.text.gray400,
+                                    }}>
+                                    {workout.date}
+                                  </Text>
+                                </View>
+                              </View>
+                              {workout.prCount && (
+                                <View
+                                  className="flex-row items-center gap-1 rounded px-2 py-0.5"
+                                  style={{
+                                    backgroundColor: theme.colors.status.emerald400_10,
+                                  }}>
+                                  <Trophy
+                                    size={theme.iconSize.xs}
+                                    color={theme.colors.status.emeraldLight}
+                                  />
+                                  <Text
+                                    style={{
+                                      fontSize: 10,
+                                      fontWeight: theme.typography.fontWeight.bold,
+                                      color: theme.colors.status.emeraldLight,
+                                      textTransform: 'uppercase',
+                                      letterSpacing: theme.typography.letterSpacing.wider,
+                                    }}>
+                                    {workout.prCount} PR{workout.prCount > 1 ? 's' : ''}
+                                  </Text>
+                                </View>
+                              )}
                             </View>
-                            <View>
-                              <Text
-                                className="font-bold"
-                                style={{
-                                  fontSize: theme.typography.fontSize.base,
-                                  color: theme.colors.text.primary,
-                                }}>
-                                {workout.name}
-                              </Text>
-                              <Text
-                                className="text-xs"
-                                style={{
-                                  color: theme.colors.text.gray400,
-                                }}>
-                                {workout.date}
-                              </Text>
+
+                            {/* Stats Grid */}
+                            <View className="flex-row gap-2">
+                              {workout.stats.map((stat, statIndex) => (
+                                <View
+                                  key={statIndex}
+                                  className="flex-1 rounded-lg p-2"
+                                  style={{
+                                    backgroundColor: theme.colors.background.white5,
+                                  }}>
+                                  <Text
+                                    className="text-center"
+                                    style={{
+                                      fontSize: theme.typography.fontSize.xs,
+                                      color: theme.colors.text.gray400,
+                                    }}>
+                                    {stat.label}
+                                  </Text>
+                                  <Text
+                                    className="text-center font-bold"
+                                    style={{
+                                      fontSize: theme.typography.fontSize.sm,
+                                      color: theme.colors.text.primary,
+                                    }}>
+                                    {stat.value}
+                                  </Text>
+                                </View>
+                              ))}
                             </View>
                           </View>
-                          {workout.prCount && (
-                            <View
-                              className="flex-row items-center gap-1 rounded px-2 py-0.5"
-                              style={{
-                                backgroundColor: theme.colors.status.emerald400_10,
-                              }}>
-                              <Trophy
-                                size={theme.iconSize.xs}
-                                color={theme.colors.status.emeraldLight}
-                              />
-                              <Text
-                                style={{
-                                  fontSize: 10,
-                                  fontWeight: theme.typography.fontWeight.bold,
-                                  color: theme.colors.status.emeraldLight,
-                                  textTransform: 'uppercase',
-                                  letterSpacing: theme.typography.letterSpacing.wider,
-                                }}>
-                                {workout.prCount} PR{workout.prCount > 1 ? 's' : ''}
-                              </Text>
-                            </View>
-                          )}
-                        </View>
-
-                        {/* Stats Grid */}
-                        <View className="flex-row gap-2">
-                          {workout.stats.map((stat, statIndex) => (
-                            <View
-                              key={statIndex}
-                              className="flex-1 rounded-lg p-2"
-                              style={{
-                                backgroundColor: theme.colors.background.white5,
-                              }}>
-                              <Text
-                                className="text-center"
-                                style={{
-                                  fontSize: theme.typography.fontSize.xs,
-                                  color: theme.colors.text.gray400,
-                                }}>
-                                {stat.label}
-                              </Text>
-                              <Text
-                                className="text-center font-bold"
-                                style={{
-                                  fontSize: theme.typography.fontSize.sm,
-                                  color: theme.colors.text.primary,
-                                }}>
-                                {stat.value}
-                              </Text>
-                            </View>
-                          ))}
-                        </View>
-                      </Pressable>
+                        </GenericCard>
+                      </View>
                     );
                   })}
                 </View>
@@ -274,6 +278,32 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
           </View>
         </ScrollView>
       </View>
+
+      {/* Filter Menu */}
+      <PastWorkoutsHistoryFilterMenu
+        visible={isFilterMenuVisible}
+        onClose={() => setIsFilterMenuVisible(false)}
+        onDateRangeFilter={() => {
+          console.log('Date range filter pressed');
+          setIsFilterMenuVisible(false);
+        }}
+        onSortFilter={() => {
+          console.log('Sort filter pressed');
+          setIsFilterMenuVisible(false);
+        }}
+        onPRsOnlyFilter={() => {
+          console.log('PRs only filter pressed');
+          setIsFilterMenuVisible(false);
+        }}
+        onWorkoutTypeFilter={() => {
+          console.log('Workout type filter pressed');
+          setIsFilterMenuVisible(false);
+        }}
+        onClearFilters={() => {
+          console.log('Clear filters pressed');
+          setIsFilterMenuVisible(false);
+        }}
+      />
     </FullScreenModal>
   );
 }
