@@ -1,8 +1,9 @@
-import { View, Text, Pressable, Image } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import { LucideChartSpline, Sparkles, Key, CheckCircle2 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { GoogleGeminiIllustration } from './GoogleGeminiIllustration';
+import { GoogleSignInButton } from './GoogleSignInButton';
 
 // Illustration Component
 type ConnectGoogleAccountBodyProps = {
@@ -172,15 +173,11 @@ export function ConnectGoogleAccountBody({
         </View>
       </View>
       <View className="bg-transparent px-5 pb-2 pt-4">
-        <Pressable
+        <GoogleSignInButton
           onPress={handleConnect}
-          className="w-full flex-row items-center justify-center gap-3 rounded-full bg-white px-6 py-4 active:scale-[0.98]"
-          style={theme.shadows.lg}>
-          <Image source={{ uri: googleLogoUrl }} className="h-6 w-6" resizeMode="contain" />
-          <Text className="text-lg font-semibold" style={{ color: theme.colors.text.black }}>
-            {t('connectGoogleAccount.connectWithGoogle')}
-          </Text>
-        </Pressable>
+          variant="dark"
+          className="w-full"
+        />
         <Pressable
           onPress={handleMaybeLater}
           className="mt-4 w-full items-center justify-center rounded-lg px-4 py-2">

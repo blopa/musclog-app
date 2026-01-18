@@ -5,6 +5,7 @@ import { Bot, Link, ChevronDown, Apple, Dumbbell } from 'lucide-react-native';
 import { FullScreenModal } from './FullScreenModal';
 import { SecretInput } from '../theme/SecretInput';
 import { ToggleInput } from '../theme/ToggleInput';
+import { GoogleSignInButton } from '../GoogleSignInButton';
 import { theme } from '../../theme';
 
 type AIIntegrationCardProps = {
@@ -274,23 +275,11 @@ export function AISettingsModal({
           sectionTitleColor={theme.colors.accent.primary}
           toggleItems={geminiToggleItems}
           headerContent={
-            <Pressable
+            <GoogleSignInButton
               onPress={onConnectGoogleAccount}
-              className="flex-row items-center justify-center gap-2 rounded-lg border px-4 py-3 active:scale-[0.98]"
-              style={{
-                backgroundColor: theme.colors.background.cardElevated,
-                borderWidth: theme.borderWidth.thin,
-                borderColor: theme.colors.border.light,
-              }}>
-              <Link size={theme.iconSize.lg} color={theme.colors.text.primary} />
-              <Text
-                className="text-sm font-bold text-text-primary"
-                style={{
-                  letterSpacing: theme.typography.letterSpacing.wide,
-                }}>
-                {t('settings.aiSettings.connectGoogleAccount')}
-              </Text>
-            </Pressable>
+              variant="dark"
+              className="w-full"
+            />
           }
           apiKeyLabel={t('settings.aiSettings.googleGeminiApiKey')}
           apiKeyValue={googleGeminiApiKey}
