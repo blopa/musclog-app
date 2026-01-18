@@ -29,6 +29,9 @@ interface CurrentGoal {
   fat: number;
   targetWeight: number;
   bodyFat: number;
+  ffmi: number;
+  bmi: number;
+  goalDate: string;
 }
 
 interface CurrentGoalsCardProps {
