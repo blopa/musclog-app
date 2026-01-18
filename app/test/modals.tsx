@@ -37,6 +37,7 @@ import ExercisesModal from '../../components/modals/ExercisesModal';
 import ViewExerciseModal from '../../components/modals/ViewExerciseModal';
 import CreateExerciseModal from '../../components/modals/CreateExerciseModal';
 import NewCustomFoodModal from '../../components/modals/NewCustomFoodModal';
+import GoalsManagementModal from '../../components/GoalsManagementModal';
 
 export default function ModalsTestScreen() {
   // Nutrition Goals Modal
@@ -139,6 +140,8 @@ export default function ModalsTestScreen() {
   const [isCreateExerciseVisible, setIsCreateExerciseVisible] = useState(false);
   // New Custom Food Modal
   const [isNewCustomFoodVisible, setIsNewCustomFoodVisible] = useState(false);
+  // Goals Management Modal
+  const [isGoalsManagementVisible, setIsGoalsManagementVisible] = useState(false);
 
   const handleSaveGoals = (goals: NutritionGoals) => {
     console.log('Goals saved:', goals);
@@ -669,6 +672,20 @@ export default function ModalsTestScreen() {
             />
           </View>
 
+          {/* Goals Management Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Goals Management Modal</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              A full-screen modal for viewing and managing goals history and current goals.
+            </Text>
+            <Button
+              label="Open Goals Management Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsGoalsManagementVisible(true)}
+            />
+          </View>
+
           {/* Bottom spacing */}
           <View className="h-8" />
         </View>
@@ -999,6 +1016,11 @@ export default function ModalsTestScreen() {
         visible={isNewCustomFoodVisible}
         onClose={() => setIsNewCustomFoodVisible(false)}
         onSave={(data) => console.log('New custom food saved:', data)}
+      />
+
+      <GoalsManagementModal
+        visible={isGoalsManagementVisible}
+        onClose={() => setIsGoalsManagementVisible(false)}
       />
     </SafeAreaView>
   );

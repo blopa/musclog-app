@@ -94,17 +94,10 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
     <FullScreenModal
       visible={visible}
       onClose={onClose}
-      title={t('nutritionGoals.title')}
+      title={t('goalsManagement.title')}
       scrollable={false}>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        {/* Header */}
-        <View className="shrink-0 px-6 pb-6">
-          <Text className="text-2xl font-bold tracking-tight text-text-primary">
-            {t('goalsManagement.title')}
-          </Text>
-          <Text className="mt-1 text-sm text-text-secondary">{t('goalsManagement.subtitle')}</Text>
-        </View>
-
+        <View className="shrink-0 px-6 pb-6" />
         {/* Scrollable content */}
         <View className="flex-1 px-6 pb-32">
           {/* Current Goals Section */}
