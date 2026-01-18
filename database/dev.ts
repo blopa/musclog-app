@@ -159,3 +159,8 @@ export async function seedExercisesIfEmpty(): Promise<boolean> {
     throw error;
   }
 }
+
+// TODO: also seed workouts and workouts logs
+export async function seedDevData(): Promise<boolean> {
+  return seedExercisesIfEmpty();
+}
