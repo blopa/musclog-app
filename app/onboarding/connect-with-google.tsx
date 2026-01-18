@@ -1,13 +1,47 @@
 import { View, Text, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
+import React, { useState, useEffect } from 'react';
 import { theme } from '../../theme';
 import { ConnectGoogleAccountBody } from '../../components/ConnectGoogleAccountBody';
 import { useRouter } from 'expo-router';
+import { useGoogleAuth } from '../../hooks/useGoogleAuth';
+import { handleGoogleSignIn } from '../../utils/googleAuth';
 
 export default function ConnectWithGoogle() {
   const { t } = useTranslation();
   const router = useRouter();
+  const { authData, isSigningIn, promptAsync } = useGoogleAuth();
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const handleConnect = async () => {
+    try {
+      await promptAsync();
+    } catch (error) {
+      console.error('Error initiating Google sign-in:', error);
+    }
+  };
+
+  // Handle auth data when it becomes available
+  useEffect(() => {
+    if (authData && !isProcessing) {
+      const processAuth = async () => {
+        try {
+          setIsProcessing(true);
+          const isValid = await handleGoogleSignIn(authData);
+          if (isValid) {
+            router.push('/onboarding/fitness-info');
+          }
+        } catch (error) {
+          console.error('Error processing Google sign-in:', error);
+        } finally {
+          setIsProcessing(false);
+        }
+      };
+      processAuth();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authData, router]);
 
   return (
     <SafeAreaView className="flex-1" edges={['top', 'bottom']}>
@@ -23,8 +57,9 @@ export default function ConnectWithGoogle() {
           onMaybeLater={() => {
             router.push('/onboarding/fitness-info');
           }}
-          onConnect={() => {}}
+          onConnect={handleConnect}
           onClose={() => {}}
+          isSigningIn={isSigningIn || isProcessing}
         />
       </ScrollView>
     </SafeAreaView>

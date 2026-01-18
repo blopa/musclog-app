@@ -14,6 +14,7 @@ import {
 import { fetch } from 'expo/fetch';
 import { GEMINI_MODELS } from '../constants/ai';
 import { captureMessage } from './sentry';
+import { getAccessToken } from './googleAuth';
 
 const getModel = async () => {
   const defaultModel = GEMINI_MODELS.GEMINI_2_5_FLASH.model;
@@ -131,8 +132,7 @@ const rawFetchGeminiApi = async (model: string, accessToken: string, body: any) 
   if (result.status === 401) {
     try {
       console.warn('Access token is invalid. Attempting to refresh...');
-      // const newAccessToken = await refreshAccessToken();
-      const newAccessToken = ''; // Placeholder for refresh logic
+      const newAccessToken = await getAccessToken();
 
       if (newAccessToken) {
         // Retry with the new access token
@@ -184,3 +184,24 @@ const createConversationContent = (messages: ChatCompletionMessageParam[]): Cont
       parts: [{ text: msg.content } as Part],
       role: msg.role === 'assistant' ? 'model' : msg.role,
     }));
+
+/**
+ * Validate if an access token is valid by making a test API call
+ */
+export async function isValidAccessToken(accessToken: string): Promise<boolean> {
+  try {
+    const model = await configureBasicGenAI({ accessToken });
+
+    await model.generateContent({
+      contents: [{ parts: [{ text: 'hi' } as Part], role: 'user' }],
+      generationConfig: {
+        maxOutputTokens: 1,
+        temperature: 0.5,
+      },
+    } as GenerateContentRequest);
+
+    return true;
+  } catch (error) {
+    return false;
+  }
+}

@@ -31,7 +31,7 @@ export default function FitnessInfo() {
           .query(Q.where('type', 'units'), Q.where('deleted_at', Q.eq(null)))
           .fetch();
         const unitsSetting = settings.length > 0 ? settings[0] : null;
-        const units = unitsSetting?.value === 1 ? 'imperial' : 'metric';
+        const units = unitsSetting?.value === '1' ? 'imperial' : 'metric';
 
         // Fetch latest weight metric
         const weightMetrics = await database
@@ -213,14 +213,14 @@ export default function FitnessInfo() {
         if (existingUnitsSetting.length > 0) {
           // Update existing setting
           await existingUnitsSetting[0].update((setting) => {
-            setting.value = unitsValue;
+            setting.value = unitsValue.toString();
             setting.updatedAt = now;
           });
         } else {
           // Create new setting
           await database.get<Setting>('settings').create((setting) => {
             setting.type = 'units';
-            setting.value = unitsValue;
+            setting.value = unitsValue.toString();
             setting.createdAt = now;
             setting.updatedAt = now;
           });

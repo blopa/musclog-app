@@ -10,18 +10,21 @@ type ConnectGoogleAccountBodyProps = {
   onClose: () => void;
   onConnect?: () => void;
   onMaybeLater?: () => void;
+  isSigningIn?: boolean;
 };
 
 export function ConnectGoogleAccountBody({
   onClose,
   onConnect,
   onMaybeLater,
+  isSigningIn = false,
 }: ConnectGoogleAccountBodyProps) {
   const { t } = useTranslation();
 
   const handleConnect = () => {
-    onConnect?.();
-    onClose();
+    if (!isSigningIn) {
+      onConnect?.();
+    }
   };
 
   const handleMaybeLater = () => {
@@ -164,7 +167,7 @@ export function ConnectGoogleAccountBody({
       </View>
       <View className="bg-transparent px-5 pb-2 pt-4">
         <View className="w-full items-center">
-          <GoogleSignInButton onPress={handleConnect} variant="dark" />
+          <GoogleSignInButton onPress={handleConnect} variant="dark" disabled={isSigningIn} />
         </View>
         <Pressable
           onPress={handleMaybeLater}

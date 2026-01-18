@@ -36,15 +36,15 @@ export const GoogleGeminiIllustration = () => {
           />
         </View>
         {/* Main card */}
-        <View className="relative flex-1 rounded-2xl border border-white/5 bg-bg-cardDark" style={{ overflow: 'hidden' }}>
+        <View
+          className="relative flex-1 rounded-2xl border border-white/5 bg-bg-cardDark"
+          style={{ overflow: 'hidden' }}>
           {/* Background image */}
-          <View 
-            className="absolute inset-0" 
-            style={{ opacity: theme.colors.opacity.strong }}>
+          <View className="absolute inset-0" style={{ opacity: theme.colors.opacity.strong }}>
             <Image
               source={require('../assets/ai-background.png')}
-              style={{ 
-                width: '100%', 
+              style={{
+                width: '100%',
                 height: '100%',
               }}
               resizeMode="stretch"

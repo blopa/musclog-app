@@ -331,7 +331,7 @@ export default function DebugTestScreen() {
                       <Text className="text-text-primary">
                         <Text className="font-bold">Value:</Text>{' '}
                         {setting.type === 'units'
-                          ? setting.value === 0
+                          ? setting.value === '0'
                             ? 'metric'
                             : 'imperial'
                           : setting.value}

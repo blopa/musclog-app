@@ -112,7 +112,7 @@ export const schema = appSchema({
       name: 'settings',
       columns: [
         { name: 'type', type: 'string', isIndexed: true },
-        { name: 'value', type: 'number' },
+        { name: 'value', type: 'string' },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },
