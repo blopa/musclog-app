@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, Pressable } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, ScrollView, Pressable, ActivityIndicator } from 'react-native';
 import { SlidersHorizontal, Calendar, Clock, Plus } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
+import { format, isToday, isYesterday, isThisWeek } from 'date-fns';
 import { theme } from '../../theme';
 import { VictoryChart, VictoryArea, VictoryLine, VictoryScatter, VictoryAxis } from 'victory';
 import { SegmentedControl } from '../theme/SegmentedControl';
@@ -9,98 +10,61 @@ import { GenericCard } from '../cards/GenericCard';
 import { HistoryBodyMetricCard } from '../cards/HistoryBodyMetricCard';
 import { FullScreenModal } from './FullScreenModal';
 import { Button } from '../theme/Button';
+import { database } from '../../database';
+import { Q } from '@nozbe/watermelondb';
+import UserMetric from '../../database/models/UserMetric';
 
 type MetricType = 'weight' | 'bodyFat' | 'bmi' | 'ffmi';
 type TimePeriod = '30D' | '3M' | '1Y';
 
-const METRIC_DATA = {
-  weight: {
-    current: '78.5',
-    unit: 'kg',
-    label: 'Weight',
-  },
-  bodyFat: {
-    current: '15.0',
-    unit: '%',
-    label: 'Body Fat',
-  },
-  bmi: {
-    current: '24.2',
-    unit: '',
-    label: 'BMI',
-  },
-  ffmi: {
-    current: '20.5',
-    unit: '',
-    label: 'FFMI',
-  },
+type HistoryEntry = {
+  id: string;
+  date: string;
+  value: string;
+  change: string | null;
+  changeType: 'up' | 'down' | null;
+  note: string;
+  icon: typeof Calendar | typeof Clock;
+  iconColor: string;
+  iconBg: string;
+  opacity?: number;
 };
 
-const HISTORY_ENTRIES = [
-  {
-    id: '1',
-    date: 'Today, 08:30 AM',
-    value: '78.5 kg',
-    change: '-0.4 kg',
-    changeType: 'down' as const,
-    note: 'Target: 75.0 kg',
-    icon: Calendar,
-    iconColor: theme.colors.text.primary,
-    iconBg: theme.colors.status.indigo600,
-  },
-  {
-    id: '2',
-    date: 'Jun 08, 07:45 AM',
-    value: '78.9 kg',
-    change: '+0.2 kg',
-    changeType: 'up' as const,
-    note: 'Post-workout',
-    icon: Calendar,
-    iconColor: theme.colors.text.secondary,
-    iconBg: theme.colors.border.light,
-  },
-  {
-    id: '3',
-    date: 'Jun 05, 08:15 AM',
-    value: '78.7 kg',
-    change: '-0.8 kg',
-    changeType: 'down' as const,
-    note: 'Weekly low',
-    icon: Calendar,
-    iconColor: theme.colors.text.secondary,
-    iconBg: theme.colors.border.light,
-  },
-  {
-    id: '4',
-    date: 'May 31, 09:00 AM',
-    value: '79.5 kg',
-    change: null,
-    changeType: null,
-    note: 'Baseline',
-    icon: Clock,
-    iconColor: theme.colors.text.secondary,
-    iconBg: theme.colors.border.light,
-    opacity: 0.7,
-  },
-];
+type MetricData = {
+  current: string;
+  unit: string;
+  label: string;
+};
+
+// Helper function to format relative date
+function formatRelativeDate(timestamp: number, t: (key: string) => string): string {
+  const date = new Date(timestamp);
+  const timeStr = format(date, 'hh:mm a');
+
+  if (isToday(date)) {
+    return `Today, ${timeStr}`;
+  }
+  if (isYesterday(date)) {
+    return `Yesterday, ${timeStr}`;
+  }
+  if (isThisWeek(date)) {
+    return `${format(date, 'EEE')}, ${timeStr}`;
+  }
+  return format(date, 'MMM d, hh:mm a');
+}
 
 // Simple line chart component using Victory Native
-function LineChart() {
-  // Convert SVG Bezier path data points to chart data
-  // Based on: M0 120 C 50 110, 100 130, 150 90 C 200 50, 250 70, 300 40 C 350 10, 400 30, 400 30
-  const chartData = [
-    { x: 0, y: 120 },
-    { x: 50, y: 110 },
-    { x: 100, y: 130 },
-    { x: 150, y: 90 },
-    { x: 200, y: 50 },
-    { x: 250, y: 70 },
-    { x: 300, y: 40 },
-    { x: 400, y: 30 },
-  ];
+type LineChartProps = {
+  data: { x: number; y: number }[];
+};
+
+function LineChart({ data }: LineChartProps) {
+  if (data.length === 0) {
+    return null;
+  }
 
   // Last data point for the circle marker
-  const lastPoint = { x: 300, y: 40 };
+  const lastPoint = data[data.length - 1];
 
   return (
     <View className="relative mt-4 h-48 w-full">
@@ -131,7 +95,7 @@ function LineChart() {
         />
         {/* Area fill with gradient */}
         <VictoryArea
-          data={chartData}
+          data={data}
           interpolation="monotoneX"
           style={{
             data: {
@@ -141,7 +105,7 @@ function LineChart() {
         />
         {/* Line */}
         <VictoryLine
-          data={chartData}
+          data={data}
           interpolation="monotoneX"
           style={{
             data: {
@@ -188,10 +152,17 @@ type BodyMetricsHistoryModalProps = {
   onClose: () => void;
 };
 
-export default function BodyMetricsHistoryModal({ visible, onClose }: BodyMetricsHistoryModalProps) {
+export default function BodyMetricsHistoryModal({
+  visible,
+  onClose,
+}: BodyMetricsHistoryModalProps) {
   const { t } = useTranslation();
   const [selectedMetric, setSelectedMetric] = useState<MetricType>('weight');
   const [selectedPeriod, setSelectedPeriod] = useState<TimePeriod>('30D');
+  const [isLoading, setIsLoading] = useState(false);
+  const [currentMetric, setCurrentMetric] = useState<MetricData | null>(null);
+  const [historyEntries, setHistoryEntries] = useState<HistoryEntry[]>([]);
+  const [chartData, setChartData] = useState<{ x: number; y: number }[]>([]);
 
   const metricOptions = [
     { label: t('bodyMetrics.metrics.weight'), value: 'weight' },
@@ -200,7 +171,151 @@ export default function BodyMetricsHistoryModal({ visible, onClose }: BodyMetric
     { label: t('bodyMetrics.metrics.ffmi'), value: 'ffmi' },
   ];
 
-  const currentMetric = METRIC_DATA[selectedMetric];
+  // Helper to get unit for metric type
+  const getMetricUnit = (type: MetricType): string => {
+    switch (type) {
+      case 'weight':
+        return 'kg';
+      case 'bodyFat':
+        return '%';
+      case 'bmi':
+      case 'ffmi':
+        return '';
+      default:
+        return '';
+    }
+  };
+
+  // Helper to get label for metric type
+  const getMetricLabel = (type: MetricType): string => {
+    return t(`bodyMetrics.metrics.${type}`);
+  };
+
+  // Load metrics data
+  const loadMetricsData = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      // Calculate date range based on selected period
+      const now = Date.now();
+      let startDate = now;
+      if (selectedPeriod === '30D') {
+        startDate = now - 30 * 24 * 60 * 60 * 1000;
+      } else if (selectedPeriod === '3M') {
+        startDate = now - 90 * 24 * 60 * 60 * 1000;
+      } else if (selectedPeriod === '1Y') {
+        startDate = now - 365 * 24 * 60 * 60 * 1000;
+      }
+
+      // Fetch metrics for selected type within date range
+      const metrics = await database
+        .get<UserMetric>('user_metrics')
+        .query(
+          Q.where('type', selectedMetric),
+          Q.where('date', Q.gte(startDate)),
+          Q.where('deleted_at', Q.eq(null)),
+          Q.sortBy('date', Q.desc)
+        )
+        .fetch();
+
+      if (metrics.length === 0) {
+        setCurrentMetric(null);
+        setHistoryEntries([]);
+        setChartData([]);
+        return;
+      }
+
+      // Get current (latest) metric
+      const latest = metrics[0];
+      const unit = latest.unit || getMetricUnit(selectedMetric);
+      setCurrentMetric({
+        current: latest.value.toFixed(
+          selectedMetric === 'weight' || selectedMetric === 'bodyFat' ? 1 : 2
+        ),
+        unit,
+        label: getMetricLabel(selectedMetric),
+      });
+
+      // Create history entries with changes
+      const entries: HistoryEntry[] = metrics.map((metric, index) => {
+        const previous = index < metrics.length - 1 ? metrics[index + 1] : null;
+        let change: string | null = null;
+        let changeType: 'up' | 'down' | null = null;
+
+        if (previous) {
+          const diff = metric.value - previous.value;
+          const absDiff = Math.abs(diff);
+          if (absDiff > 0.01) {
+            changeType = diff > 0 ? 'up' : 'down';
+            const sign = diff > 0 ? '+' : '';
+            change = `${sign}${absDiff.toFixed(selectedMetric === 'weight' || selectedMetric === 'bodyFat' ? 1 : 2)} ${unit}`;
+          }
+        }
+
+        // Format value with unit
+        const valueStr = `${metric.value.toFixed(selectedMetric === 'weight' || selectedMetric === 'bodyFat' ? 1 : 2)}${unit ? ` ${unit}` : ''}`;
+
+        // Determine note based on context
+        let note = '';
+        if (index === metrics.length - 1) {
+          note = 'Baseline';
+        } else if (!change) {
+          note = 'No change';
+        } else {
+          note = changeType === 'down' ? 'Decreased' : 'Increased';
+        }
+
+        return {
+          id: metric.id,
+          date: formatRelativeDate(metric.date, t),
+          value: valueStr,
+          change,
+          changeType,
+          note,
+          icon: index === 0 ? Calendar : Calendar,
+          iconColor: index === 0 ? theme.colors.text.primary : theme.colors.text.secondary,
+          iconBg: index === 0 ? theme.colors.status.indigo600 : theme.colors.border.light,
+          opacity: index === metrics.length - 1 ? 0.7 : 1,
+        };
+      });
+
+      setHistoryEntries(entries);
+
+      // Generate chart data (reverse for chronological order, normalize for chart)
+      const sortedMetrics = [...metrics].reverse(); // Oldest to newest
+      if (sortedMetrics.length > 0) {
+        const minValue = Math.min(...sortedMetrics.map((m) => m.value));
+        const maxValue = Math.max(...sortedMetrics.map((m) => m.value));
+        const range = maxValue - minValue || 1; // Avoid division by zero
+        const padding = range * 0.1; // 10% padding
+
+        const normalizedData = sortedMetrics.map((metric, index) => {
+          // Normalize y to 0-150 range for chart (matching original design)
+          const normalizedY = ((metric.value - minValue + padding) / (range + padding * 2)) * 150;
+          // X-axis: distribute evenly across 400 width
+          const normalizedX = (index / (sortedMetrics.length - 1 || 1)) * 400;
+          return { x: normalizedX, y: Math.max(0, Math.min(150, 150 - normalizedY)) }; // Invert Y for chart
+        });
+
+        setChartData(normalizedData);
+      } else {
+        setChartData([]);
+      }
+    } catch (error) {
+      console.error('Error loading metrics data:', error);
+      setCurrentMetric(null);
+      setHistoryEntries([]);
+      setChartData([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [selectedMetric, selectedPeriod, t]);
+
+  // Load data when modal opens or metric/period changes
+  useEffect(() => {
+    if (visible) {
+      loadMetricsData();
+    }
+  }, [visible, selectedMetric, selectedPeriod, loadMetricsData]);
 
   const handleNewMetric = () => {
     // TODO: Open add new metric modal or form
@@ -222,8 +337,7 @@ export default function BodyMetricsHistoryModal({ visible, onClose }: BodyMetric
           onPress={handleNewMetric}
         />
       }
-      scrollable={false}
-    >
+      scrollable={false}>
       <ScrollView
         className="flex-1"
         showsVerticalScrollIndicator={false}
@@ -239,85 +353,101 @@ export default function BodyMetricsHistoryModal({ visible, onClose }: BodyMetric
           />
 
           {/* Current Metric Card */}
-          <GenericCard variant="card" size="default">
-            <View className="p-5">
-              <View className="mb-6 flex-row items-center justify-between">
-                <View>
-                  <Text className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">
-                    {`${t('bodyMetrics.current.label')} ${currentMetric.label}`}
-                  </Text>
-                  <View className="flex-row items-baseline gap-1">
-                    <Text className="text-3xl font-extrabold text-text-primary">
-                      {currentMetric.current}
-                    </Text>
-                    {currentMetric.unit && currentMetric.unit.length > 0 ? (
-                      <Text className="ml-1 text-lg font-medium text-text-tertiary">
-                        {currentMetric.unit}
-                      </Text>
-                    ) : null}
-                  </View>
-                </View>
-                <View
-                  className="flex-row rounded-lg p-1"
-                  style={{ backgroundColor: theme.colors.background.gray800Opacity50 }}>
-                  <Pressable
-                    onPress={() => setSelectedPeriod('30D')}
-                    className={`rounded-md px-3 py-1 ${selectedPeriod === '30D' ? '' : ''}`}
-                    style={
-                      selectedPeriod === '30D'
-                        ? {
-                            backgroundColor: theme.colors.accent.primary10,
-                          }
-                        : {}
-                    }>
-                    <Text
-                      className={`text-[10px] font-bold ${
-                        selectedPeriod === '30D' ? 'text-accent-primary' : 'text-text-tertiary'
-                      }`}>
-                      30D
-                    </Text>
-                  </Pressable>
-                  <Pressable
-                    onPress={() => setSelectedPeriod('3M')}
-                    className={`rounded-md px-3 py-1 ${selectedPeriod === '3M' ? '' : ''}`}
-                    style={
-                      selectedPeriod === '3M'
-                        ? {
-                            backgroundColor: theme.colors.accent.primary10,
-                          }
-                        : {}
-                    }>
-                    <Text
-                      className={`text-[10px] font-bold ${
-                        selectedPeriod === '3M' ? 'text-accent-primary' : 'text-text-tertiary'
-                      }`}>
-                      3M
-                    </Text>
-                  </Pressable>
-                  <Pressable
-                    onPress={() => setSelectedPeriod('1Y')}
-                    className={`rounded-md px-3 py-1 ${selectedPeriod === '1Y' ? '' : ''}`}
-                    style={
-                      selectedPeriod === '1Y'
-                        ? {
-                            backgroundColor: theme.colors.accent.primary10,
-                          }
-                        : {}
-                    }>
-                    <Text
-                      className={`text-[10px] font-bold ${
-                        selectedPeriod === '1Y' ? 'text-accent-primary' : 'text-text-tertiary'
-                      }`}>
-                      1Y
-                    </Text>
-                  </Pressable>
+          {isLoading ? (
+            <GenericCard variant="card" size="default">
+              <View className="p-5">
+                <View className="mb-6 flex-row items-center justify-center">
+                  <ActivityIndicator size="large" color={theme.colors.accent.primary} />
                 </View>
               </View>
+            </GenericCard>
+          ) : currentMetric ? (
+            <GenericCard variant="card" size="default">
+              <View className="p-5">
+                <View className="mb-6 flex-row items-center justify-between">
+                  <View>
+                    <Text className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">
+                      {`${t('bodyMetrics.current.label')} ${currentMetric.label}`}
+                    </Text>
+                    <View className="flex-row items-baseline gap-1">
+                      <Text className="text-3xl font-extrabold text-text-primary">
+                        {currentMetric.current}
+                      </Text>
+                      {currentMetric.unit && currentMetric.unit.length > 0 ? (
+                        <Text className="ml-1 text-lg font-medium text-text-tertiary">
+                          {currentMetric.unit}
+                        </Text>
+                      ) : null}
+                    </View>
+                  </View>
+                  <View
+                    className="flex-row rounded-lg p-1"
+                    style={{ backgroundColor: theme.colors.background.gray800Opacity50 }}>
+                    <Pressable
+                      onPress={() => setSelectedPeriod('30D')}
+                      className={`rounded-md px-3 py-1 ${selectedPeriod === '30D' ? '' : ''}`}
+                      style={
+                        selectedPeriod === '30D'
+                          ? {
+                              backgroundColor: theme.colors.accent.primary10,
+                            }
+                          : {}
+                      }>
+                      <Text
+                        className={`text-[10px] font-bold ${
+                          selectedPeriod === '30D' ? 'text-accent-primary' : 'text-text-tertiary'
+                        }`}>
+                        30D
+                      </Text>
+                    </Pressable>
+                    <Pressable
+                      onPress={() => setSelectedPeriod('3M')}
+                      className={`rounded-md px-3 py-1 ${selectedPeriod === '3M' ? '' : ''}`}
+                      style={
+                        selectedPeriod === '3M'
+                          ? {
+                              backgroundColor: theme.colors.accent.primary10,
+                            }
+                          : {}
+                      }>
+                      <Text
+                        className={`text-[10px] font-bold ${
+                          selectedPeriod === '3M' ? 'text-accent-primary' : 'text-text-tertiary'
+                        }`}>
+                        3M
+                      </Text>
+                    </Pressable>
+                    <Pressable
+                      onPress={() => setSelectedPeriod('1Y')}
+                      className={`rounded-md px-3 py-1 ${selectedPeriod === '1Y' ? '' : ''}`}
+                      style={
+                        selectedPeriod === '1Y'
+                          ? {
+                              backgroundColor: theme.colors.accent.primary10,
+                            }
+                          : {}
+                      }>
+                      <Text
+                        className={`text-[10px] font-bold ${
+                          selectedPeriod === '1Y' ? 'text-accent-primary' : 'text-text-tertiary'
+                        }`}>
+                        1Y
+                      </Text>
+                    </Pressable>
+                  </View>
+                </View>
 
-              {/* Chart */}
-              <LineChart />
-            </View>
-          </GenericCard>
+                {/* Chart */}
+                <LineChart data={chartData} />
+              </View>
+            </GenericCard>
+          ) : (
+            <GenericCard variant="card" size="default">
+              <View className="p-5">
+                <Text className="text-center text-text-secondary">No data available</Text>
+              </View>
+            </GenericCard>
+          )}
 
           {/* History Section */}
           <View className="space-y-4">
@@ -333,11 +463,21 @@ export default function BodyMetricsHistoryModal({ visible, onClose }: BodyMetric
               </Pressable>
             </View>
 
-            <View className="space-y-3">
-              {HISTORY_ENTRIES.map((entry) => (
-                <HistoryBodyMetricCard key={entry.id} entry={entry} />
-              ))}
-            </View>
+            {isLoading ? (
+              <View className="space-y-3">
+                <ActivityIndicator size="small" color={theme.colors.accent.primary} />
+              </View>
+            ) : historyEntries.length > 0 ? (
+              <View className="space-y-3">
+                {historyEntries.map((entry) => (
+                  <HistoryBodyMetricCard key={entry.id} entry={entry} />
+                ))}
+              </View>
+            ) : (
+              <Text className="py-4 text-center text-text-secondary">
+                No history data available
+              </Text>
+            )}
 
             <Pressable className="w-full py-4">
               <Text className="text-center text-sm font-bold text-text-tertiary">

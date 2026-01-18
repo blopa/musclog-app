@@ -2,6 +2,7 @@ import { database } from './index';
 import Exercise from './models/Exercise';
 import WorkoutLog from './models/WorkoutLog';
 import WorkoutLogSet from './models/WorkoutLogSet';
+import UserMetric from './models/UserMetric';
 import exercisesData from '../data/exercisesEnUS.json';
 
 interface ExerciseJsonData {
@@ -573,13 +574,140 @@ export async function seedWorkoutHistory(): Promise<{ created: number }> {
   }
 }
 
+export async function seedUserMetrics(): Promise<{ created: number }> {
+  const now = Date.now();
+  let created = 0;
+
+  try {
+    await database.write(async () => {
+      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+      // Helper to create a date N days ago
+      const daysAgo = (days: number): number => {
+        const date = new Date();
+        date.setDate(date.getDate() - days);
+        date.setHours(8, 30, 0, 0); // 8:30 AM for consistency
+        return new Date(date.setHours(0, 0, 0, 0)).getTime(); // Set to midnight for date tracking
+      };
+
+      // Helper to create a date in a specific month
+      const dateInMonth = (year: number, month: number, day: number): number => {
+        const date = new Date(year, month, day, 8, 30, 0, 0);
+        return new Date(date.setHours(0, 0, 0, 0)).getTime();
+      };
+
+      const today = new Date();
+      const currentYear = today.getFullYear();
+      const currentMonth = today.getMonth();
+
+      // Assume user height is 180cm (1.8m) for BMI/FFMI calculations
+      const heightM = 1.8;
+      const heightM2 = heightM * heightM;
+
+      // Weight progression: Start at 79.5kg, gradual decrease to 78.5kg over 3 months
+      const weightData: { date: number; weight: number; bodyFat: number }[] = [
+        // Current month
+        { date: daysAgo(0), weight: 78.5, bodyFat: 15.0 },
+        { date: daysAgo(3), weight: 78.7, bodyFat: 15.2 },
+        { date: daysAgo(7), weight: 78.9, bodyFat: 15.1 },
+        { date: daysAgo(10), weight: 79.1, bodyFat: 15.3 },
+        { date: daysAgo(14), weight: 79.0, bodyFat: 15.2 },
+        { date: daysAgo(18), weight: 79.2, bodyFat: 15.4 },
+        { date: daysAgo(21), weight: 79.3, bodyFat: 15.3 },
+
+        // Previous month
+        { date: dateInMonth(currentYear, currentMonth - 1, 28), weight: 79.2, bodyFat: 15.5 },
+        { date: dateInMonth(currentYear, currentMonth - 1, 24), weight: 79.4, bodyFat: 15.6 },
+        { date: dateInMonth(currentYear, currentMonth - 1, 20), weight: 79.3, bodyFat: 15.5 },
+        { date: dateInMonth(currentYear, currentMonth - 1, 15), weight: 79.5, bodyFat: 15.7 },
+        { date: dateInMonth(currentYear, currentMonth - 1, 10), weight: 79.4, bodyFat: 15.6 },
+        { date: dateInMonth(currentYear, currentMonth - 1, 5), weight: 79.6, bodyFat: 15.8 },
+        { date: dateInMonth(currentYear, currentMonth - 1, 1), weight: 79.5, bodyFat: 15.7 },
+
+        // Two months ago
+        { date: dateInMonth(currentYear, currentMonth - 2, 28), weight: 79.6, bodyFat: 15.9 },
+        { date: dateInMonth(currentYear, currentMonth - 2, 24), weight: 79.7, bodyFat: 16.0 },
+        { date: dateInMonth(currentYear, currentMonth - 2, 20), weight: 79.6, bodyFat: 15.9 },
+        { date: dateInMonth(currentYear, currentMonth - 2, 15), weight: 79.8, bodyFat: 16.1 },
+        { date: dateInMonth(currentYear, currentMonth - 2, 10), weight: 79.7, bodyFat: 16.0 },
+        { date: dateInMonth(currentYear, currentMonth - 2, 5), weight: 79.9, bodyFat: 16.2 },
+      ];
+
+      // Create metrics for each date
+      for (const data of weightData) {
+        // Calculate BMI: BMI = weight (kg) / height (m)^2
+        const bmi = data.weight / heightM2;
+
+        // Calculate FFMI: FFMI = (weight * (1 - bodyFat/100)) / height (m)^2
+        const fatFreeMass = data.weight * (1 - data.bodyFat / 100);
+        const ffmi = fatFreeMass / heightM2;
+
+        // Weight metric
+        await database.get<UserMetric>('user_metrics').create((metric) => {
+          metric.type = 'weight';
+          metric.value = data.weight;
+          metric.unit = 'kg';
+          metric.date = data.date;
+          metric.timezone = timezone;
+          metric.createdAt = now;
+          metric.updatedAt = now;
+        });
+        created++;
+
+        // Body Fat metric
+        await database.get<UserMetric>('user_metrics').create((metric) => {
+          metric.type = 'bodyFat';
+          metric.value = data.bodyFat;
+          metric.unit = '%';
+          metric.date = data.date;
+          metric.timezone = timezone;
+          metric.createdAt = now;
+          metric.updatedAt = now;
+        });
+        created++;
+
+        // BMI metric
+        await database.get<UserMetric>('user_metrics').create((metric) => {
+          metric.type = 'bmi';
+          metric.value = bmi;
+          metric.unit = '';
+          metric.date = data.date;
+          metric.timezone = timezone;
+          metric.createdAt = now;
+          metric.updatedAt = now;
+        });
+        created++;
+
+        // FFMI metric
+        await database.get<UserMetric>('user_metrics').create((metric) => {
+          metric.type = 'ffmi';
+          metric.value = ffmi;
+          metric.unit = '';
+          metric.date = data.date;
+          metric.timezone = timezone;
+          metric.createdAt = now;
+          metric.updatedAt = now;
+        });
+        created++;
+      }
+    });
+
+    console.log(`Seeded user metrics: ${created} metrics created`);
+    return { created };
+  } catch (error) {
+    console.error('Error seeding user metrics:', error);
+    throw error;
+  }
+}
+
 export async function seedDevData(): Promise<boolean> {
   const exercisesSeeded = await seedExercisesIfEmpty();
   const workoutHistorySeeded = await seedWorkoutHistory();
+  const userMetricsSeeded = await seedUserMetrics();
 
   console.log(
-    `Dev data seeding complete. Exercises: ${exercisesSeeded ? 'seeded' : 'skipped'}, Workout History: ${workoutHistorySeeded.created} workouts`
+    `Dev data seeding complete. Exercises: ${exercisesSeeded ? 'seeded' : 'skipped'}, Workout History: ${workoutHistorySeeded.created} workouts, User Metrics: ${userMetricsSeeded.created} metrics`
   );
 
-  return exercisesSeeded || workoutHistorySeeded.created > 0;
+  return exercisesSeeded || workoutHistorySeeded.created > 0 || userMetricsSeeded.created > 0;
 }
