@@ -298,9 +298,6 @@ export default function DebugTestScreen() {
                   <Text className="text-text-primary">
                     <Text className="font-bold">Experience:</Text> {user.liftingExperience}
                   </Text>
-                  <Text className="text-text-primary">
-                    <Text className="font-bold">Eating Phase:</Text> {user.eatingPhase}
-                  </Text>
                 </View>
 
                 <View className="rounded-lg border border-border-light bg-bg-primary p-3">

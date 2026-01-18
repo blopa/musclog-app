@@ -19,6 +19,7 @@ import { Button } from './theme/Button';
 import { Slider } from './theme/Slider';
 import { MacrosPizzaChart } from './theme/MacrosPizzaChart';
 import { StepperInlineInput } from './theme/StepperInlineInput';
+import { SegmentedControl } from './theme/SegmentedControl';
 
 export type NutritionGoals = {
   totalCalories: number;
@@ -26,6 +27,7 @@ export type NutritionGoals = {
   carbs: number;
   fats: number;
   fiber: number;
+  eatingPhase: 'cut' | 'maintain' | 'bulk';
   targetWeight: number;
   targetBodyFat: number;
   targetBMI: number;
@@ -194,6 +196,9 @@ export function NutritionGoalsBody({
   const [carbs, setCarbs] = useState(initialGoals?.carbs ?? 250);
   const [fats, setFats] = useState(initialGoals?.fats ?? 80);
   const [fiber, setFiber] = useState(initialGoals?.fiber ?? 30);
+  const [eatingPhase, setEatingPhase] = useState<'cut' | 'maintain' | 'bulk'>(
+    initialGoals?.eatingPhase ?? 'maintain'
+  );
   const [targetWeight, setTargetWeight] = useState(initialGoals?.targetWeight ?? 75);
   const [targetBodyFat, setTargetBodyFat] = useState(initialGoals?.targetBodyFat ?? 12);
   const [targetBMI, setTargetBMI] = useState(initialGoals?.targetBMI ?? 23.5);
@@ -208,6 +213,7 @@ export function NutritionGoalsBody({
       carbs,
       fats,
       fiber,
+      eatingPhase,
       targetWeight,
       targetBodyFat,
       targetBMI,
@@ -268,6 +274,22 @@ export function NutritionGoalsBody({
               </Text>
             </View>
           </View>
+        </View>
+
+        {/* Eating Phase */}
+        <View className="gap-2">
+          <Text className="ml-1 text-sm font-medium text-text-secondary">
+            {t('editFitnessDetails.eatingPhase')}
+          </Text>
+          <SegmentedControl
+            options={[
+              { label: t('editFitnessDetails.cut'), value: 'cut' },
+              { label: t('editFitnessDetails.maintain'), value: 'maintain' },
+              { label: t('editFitnessDetails.bulk'), value: 'bulk' },
+            ]}
+            value={eatingPhase}
+            onValueChange={(val) => setEatingPhase(val as 'cut' | 'maintain' | 'bulk')}
+          />
         </View>
 
         {/* Daily Macro Targets */}

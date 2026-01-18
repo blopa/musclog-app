@@ -3,7 +3,6 @@ import { field, writer } from '@nozbe/watermelondb/decorators';
 
 export type Gender = 'male' | 'female' | 'other';
 export type LiftingExperience = 'beginner' | 'intermediate' | 'advanced';
-export type EatingPhase = 'cut' | 'maintain' | 'bulk';
 
 export interface UserProfileUpdate {
   fullName?: string;
@@ -14,7 +13,6 @@ export interface UserProfileUpdate {
   activityLevel?: number;
   liftingExperience?: LiftingExperience;
   photoUri?: string | null;
-  eatingPhase?: EatingPhase;
   externalAccountId?: string | null;
   externalAccountProvider?: string | null;
 }
@@ -33,7 +31,6 @@ export default class User extends Model {
   @field('sync_id') syncId!: string;
   @field('external_account_id') externalAccountId?: string;
   @field('external_account_provider') externalAccountProvider?: string;
-  @field('eating_phase') eatingPhase!: EatingPhase;
   @field('created_at') createdAt!: number;
   @field('updated_at') updatedAt!: number;
   @field('deleted_at') deletedAt?: number;
@@ -71,7 +68,6 @@ export default class User extends Model {
       }
       if (data.liftingExperience !== undefined) user.liftingExperience = data.liftingExperience;
       if (data.photoUri !== undefined) user.photoUri = data.photoUri ?? undefined;
-      if (data.eatingPhase !== undefined) user.eatingPhase = data.eatingPhase;
       if (data.externalAccountId !== undefined)
         user.externalAccountId = data.externalAccountId ?? undefined;
       if (data.externalAccountProvider !== undefined)

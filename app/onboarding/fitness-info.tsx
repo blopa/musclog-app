@@ -62,7 +62,6 @@ export default function FitnessInfo() {
             weight: latestWeight ? String(latestWeight.value) : '0.0',
             height: latestHeight ? String(latestHeight.value) : '0',
             fitnessGoal: user.fitnessGoal || '',
-            eatingPhase: user.eatingPhase || 'maintain',
             activityLevel: user.activityLevel || 3,
             experience: user.liftingExperience || 'intermediate',
           });
@@ -73,7 +72,6 @@ export default function FitnessInfo() {
             weight: latestWeight ? String(latestWeight.value) : '0.0',
             height: latestHeight ? String(latestHeight.value) : '0',
             fitnessGoal: '',
-            eatingPhase: 'maintain',
             activityLevel: 3,
             experience: 'intermediate',
           });
@@ -86,7 +84,6 @@ export default function FitnessInfo() {
           weight: '0.0',
           height: '0',
           fitnessGoal: '',
-          eatingPhase: 'maintain',
           activityLevel: 3,
           experience: 'intermediate',
         });
@@ -113,7 +110,6 @@ export default function FitnessInfo() {
           fitnessGoal: data.fitnessGoal,
           activityLevel: data.activityLevel,
           liftingExperience: data.experience,
-          eatingPhase: data.eatingPhase,
         });
       } else {
         // Update user fitness info
@@ -121,7 +117,6 @@ export default function FitnessInfo() {
           fitnessGoal: data.fitnessGoal,
           activityLevel: data.activityLevel,
           liftingExperience: data.experience,
-          eatingPhase: data.eatingPhase,
         });
       }
 

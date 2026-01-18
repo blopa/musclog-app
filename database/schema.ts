@@ -134,7 +134,6 @@ export const schema = appSchema({
         { name: 'sync_id', type: 'string', isIndexed: true }, // Primary sync identifier (UUID)
         { name: 'external_account_id', type: 'string', isIndexed: true, isOptional: true }, // OAuth provider ID
         { name: 'external_account_provider', type: 'string', isOptional: true }, // 'google', 'apple', etc.
-        { name: 'eating_phase', type: 'string' }, // 'cut', 'maintain', 'bulk'
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },
@@ -150,6 +149,7 @@ export const schema = appSchema({
         { name: 'carbs', type: 'number' },
         { name: 'fats', type: 'number' },
         { name: 'fiber', type: 'number' },
+        { name: 'eating_phase', type: 'string' }, // 'cut', 'maintain', 'bulk'
         { name: 'target_weight', type: 'number' },
         { name: 'target_body_fat', type: 'number' },
         { name: 'target_bmi', type: 'number' },

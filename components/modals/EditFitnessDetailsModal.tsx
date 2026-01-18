@@ -14,7 +14,6 @@ export type FitnessDetails = {
   weight: string;
   height: string;
   fitnessGoal: string;
-  eatingPhase: 'cut' | 'maintain' | 'bulk';
   activityLevel: number;
   experience: 'beginner' | 'intermediate' | 'advanced';
 };
@@ -32,7 +31,6 @@ export function EditFitnessDetailsModal({
     weight,
     height,
     fitnessGoal,
-    eatingPhase,
     activityLevel,
     experience,
   }: FitnessDetails) => {
@@ -41,7 +39,6 @@ export function EditFitnessDetailsModal({
       weight,
       height,
       fitnessGoal,
-      eatingPhase,
       activityLevel,
       experience,
     });

@@ -35,7 +35,6 @@ export type FitnessDetails = {
   weight: string;
   height: string;
   fitnessGoal: string;
-  eatingPhase: 'cut' | 'maintain' | 'bulk';
   activityLevel: number;
   experience: 'beginner' | 'intermediate' | 'advanced';
 };
@@ -51,9 +50,6 @@ export function EditFitnessDetailsBody({
   const [weight, setWeight] = useState(initialData?.weight ?? '0.0');
   const [height, setHeight] = useState(initialData?.height ?? '0');
   const [fitnessGoal, setFitnessGoal] = useState(initialData?.fitnessGoal ?? '');
-  const [eatingPhase, setEatingPhase] = useState<'cut' | 'maintain' | 'bulk'>(
-    initialData?.eatingPhase ?? 'maintain'
-  );
   const [activityLevel, setActivityLevel] = useState(initialData?.activityLevel ?? 3);
   const [experience, setExperience] = useState<'beginner' | 'intermediate' | 'advanced'>(
     initialData?.experience ?? 'intermediate'
@@ -67,7 +63,6 @@ export function EditFitnessDetailsBody({
       weight,
       height,
       fitnessGoal,
-      eatingPhase,
       activityLevel,
       experience,
     });
@@ -252,20 +247,6 @@ export function EditFitnessDetailsBody({
                 />
               }
               onPress={() => setIsGoalPickerVisible(true)}
-            />
-          </View>
-          <View className="gap-2">
-            <Text className="ml-1 text-sm font-medium text-text-secondary">
-              {t('editFitnessDetails.eatingPhase')}
-            </Text>
-            <SegmentedControl
-              options={[
-                { label: t('editFitnessDetails.cut'), value: 'cut' },
-                { label: t('editFitnessDetails.maintain'), value: 'maintain' },
-                { label: t('editFitnessDetails.bulk'), value: 'bulk' },
-              ]}
-              value={eatingPhase}
-              onValueChange={(val) => setEatingPhase(val as 'cut' | 'maintain' | 'bulk')}
             />
           </View>
         </View>

@@ -43,7 +43,6 @@ export class UserService {
     fitnessGoal: string;
     activityLevel: number;
     liftingExperience: 'beginner' | 'intermediate' | 'advanced';
-    eatingPhase: 'cut' | 'maintain' | 'bulk';
     email?: string;
     photoUri?: string;
   }): Promise<User> {
@@ -67,7 +66,6 @@ export class UserService {
         u.liftingExperience = initialData.liftingExperience;
         u.photoUri = initialData.photoUri;
         u.syncId = syncId;
-        u.eatingPhase = initialData.eatingPhase;
         u.createdAt = now;
         u.updatedAt = now;
       });

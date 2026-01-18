@@ -8,6 +8,7 @@ export interface NutritionGoalInput {
   carbs: number;
   fats: number;
   fiber: number;
+  eatingPhase: 'cut' | 'maintain' | 'bulk';
   targetWeight: number;
   targetBodyFat: number;
   targetBMI: number;
@@ -51,6 +52,7 @@ export class NutritionGoalService {
         r.carbs = data.carbs;
         r.fats = data.fats;
         r.fiber = data.fiber;
+        r.eatingPhase = data.eatingPhase;
         r.targetWeight = data.targetWeight;
         r.targetBodyFat = data.targetBodyFat;
         r.targetBmi = data.targetBMI;
