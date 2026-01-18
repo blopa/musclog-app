@@ -13,7 +13,6 @@ const PROFILE_DATA = {
   user: {
     name: 'Alex Johnson',
     avatar: require('../assets/icon.png'),
-    membership: 'ELITE MEMBER',
     goal: 'Muscle Gain',
   },
   stats: [
@@ -149,14 +148,9 @@ export default function ProfileScreen() {
             </Pressable>
           </View>
           <Text className="mb-3 text-3xl font-bold text-text-primary">{user.name}</Text>
-          <View className="flex-row items-center gap-3">
-            <View className="bg-bg-card-elevated rounded-full px-4 py-1.5">
-              <Text className="text-xs font-bold text-accent-primary">{user.membership}</Text>
-            </View>
-            <Text className="text-base text-text-primary">
-              {t('profile.goal')}: {user.goal}
-            </Text>
-          </View>
+          <Text className="text-base text-text-primary">
+            {t('profile.goal')}: {user.goal}
+          </Text>
         </View>
 
         {/* Current Stats Section */}

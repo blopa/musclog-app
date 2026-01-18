@@ -979,5 +979,24 @@
     "g": "g",
     "kg": "kg",
     "bf": "BF"
+  },
+  "bodyMetrics": {
+    "header": {
+      "title": "Body Metrics"
+    },
+    "metrics": {
+      "weight": "Weight",
+      "bodyFat": "Body Fat",
+      "bmi": "BMI",
+      "ffmi": "FFMI"
+    },
+    "current": {
+      "label": "CURRENT"
+    },
+    "history": {
+      "title": "History",
+      "filter": "Filter",
+      "viewAll": "View All History"
+    }
   }
 }
