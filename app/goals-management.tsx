@@ -3,6 +3,7 @@ import { View, Text, ScrollView } from 'react-native';
 import { Scale, Percent, History } from 'lucide-react-native';
 import { MasterLayout } from '../components/MasterLayout';
 import { theme } from '../theme';
+import { CurrentGoalsCard } from '../components/cards/CurrentGoalsCard';
 
 type GoalType = 'cutting' | 'maintenance' | 'bulking' | 'lean-bulk';
 
@@ -32,6 +33,16 @@ const goalTypeStyles: Record<GoalType, { label: string }> = {
     label: 'LEAN BULK',
   },
 };
+
+interface CurrentGoal {
+  type: GoalType;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  targetWeight: number;
+  bodyFat: number;
+}
 
 const goalsHistory: GoalHistoryItem[] = [
   {
@@ -69,123 +80,53 @@ const goalsHistory: GoalHistoryItem[] = [
   },
 ];
 
+const currentGoal: CurrentGoal = {
+  type: 'bulking',
+  calories: 2850,
+  protein: 190,
+  carbs: 320,
+  fat: 85,
+  targetWeight: 82.0,
+  bodyFat: 14.0,
+};
+
 export default function GoalsManagementPage() {
   return (
     <MasterLayout>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Header */}
-        <View className="px-6 pb-6 shrink-0">
-          <Text className="text-text-primary text-2xl font-bold tracking-tight">
+        <View className="shrink-0 px-6 pb-6">
+          <Text className="text-2xl font-bold tracking-tight text-text-primary">
             Goals Management
           </Text>
-          <Text className="text-text-secondary text-sm mt-1">
-            Track your progress and history.
-          </Text>
+          <Text className="mt-1 text-sm text-text-secondary">Track your progress and history.</Text>
         </View>
 
         {/* Scrollable content */}
         <View className="flex-1 px-6 pb-32">
           {/* Current Goals Section */}
           <View className="mb-8">
-            <View className="flex-row items-center justify-between mb-3">
-              <Text className="text-text-secondary text-[10px] font-bold uppercase tracking-widest">
+            <View className="mb-3 flex-row items-center justify-between">
+              <Text className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">
                 CURRENT GOALS
               </Text>
               <View
-                className="px-2 py-0.5 rounded-full border"
+                className="rounded-full border px-2 py-0.5"
                 style={{
                   backgroundColor: theme.colors.accent.primary10,
                   borderColor: theme.colors.accent.primary20,
                 }}>
-                <Text className="text-accent-primary text-[10px] font-bold">Active</Text>
+                <Text className="text-[10px] font-bold text-accent-primary">Active</Text>
               </View>
             </View>
 
             {/* Current Goal Card */}
-            <View
-              className="bg-bg-card rounded-xl p-5 relative overflow-hidden border"
-              style={{ borderColor: theme.colors.border.emerald }}>
-              {/* Bulking Badge */}
-              <View className="absolute top-0 right-0 p-4">
-                <View
-                  className="bg-indigo-400/10 px-2 py-1 rounded"
-                  style={{ backgroundColor: theme.colors.status.indigo10 }}>
-                  <Text
-                    className="text-[10px] font-bold uppercase"
-                    style={{ color: theme.colors.status.indigoLight }}>
-                    Bulking
-                  </Text>
-                </View>
-              </View>
-
-              {/* Daily Target */}
-              <View className="mb-6">
-                <Text className="text-text-secondary text-[10px] font-medium uppercase tracking-wider mb-1">
-                  Daily Target
-                </Text>
-                <View className="flex-row items-baseline gap-1">
-                  <Text className="text-4xl font-extrabold tracking-tighter text-text-primary">
-                    2,850
-                  </Text>
-                  <Text className="text-accent-primary text-sm font-bold uppercase">kcal</Text>
-                </View>
-              </View>
-
-              {/* Macros Grid */}
-              <View className="flex-row gap-4 border-t border-border pt-4">
-                <View className="flex-1">
-                  <Text className="text-text-secondary text-[9px] font-bold uppercase">Protein</Text>
-                  <Text className="text-text-primary font-bold">
-                    190<Text className="text-[10px] ml-0.5 text-text-secondary">g</Text>
-                  </Text>
-                </View>
-                <View className="flex-1">
-                  <Text className="text-text-secondary text-[9px] font-bold uppercase">Carbs</Text>
-                  <Text className="text-text-primary font-bold">
-                    320<Text className="text-[10px] ml-0.5 text-text-secondary">g</Text>
-                  </Text>
-                </View>
-                <View className="flex-1">
-                  <Text className="text-text-secondary text-[9px] font-bold uppercase">Fats</Text>
-                  <Text className="text-text-primary font-bold">
-                    85<Text className="text-[10px] ml-0.5 text-text-secondary">g</Text>
-                  </Text>
-                </View>
-              </View>
-
-              {/* Target Weight & Body Fat */}
-              <View
-                className="flex-row gap-4 mt-4 p-3 rounded-lg"
-                style={{ backgroundColor: theme.colors.background.darkGreen50 }}>
-                <View className="flex-1 flex-row items-center gap-3">
-                  <Scale size={theme.iconSize.lg} color={theme.colors.accent.primary} />
-                  <View>
-                    <Text className="text-text-secondary text-[9px] font-bold uppercase">
-                      Target Weight
-                    </Text>
-                    <Text className="text-text-primary text-sm font-bold">
-                      82.0 <Text className="text-[10px] text-text-secondary">kg</Text>
-                    </Text>
-                  </View>
-                </View>
-                <View className="flex-1 flex-row items-center gap-3">
-                  <Percent size={theme.iconSize.lg} color={theme.colors.accent.primary} />
-                  <View>
-                    <Text className="text-text-secondary text-[9px] font-bold uppercase">
-                      Body Fat
-                    </Text>
-                    <Text className="text-text-primary text-sm font-bold">
-                      14.0 <Text className="text-[10px] text-text-secondary">%</Text>
-                    </Text>
-                  </View>
-                </View>
-              </View>
-            </View>
+            <CurrentGoalsCard goal={currentGoal} />
           </View>
 
           {/* Goals History Section */}
           <View className="mb-6">
-            <Text className="text-text-secondary text-[10px] font-bold uppercase tracking-widest mb-6">
+            <Text className="mb-6 text-[10px] font-bold uppercase tracking-widest text-text-secondary">
               GOALS HISTORY
             </Text>
 
@@ -195,7 +136,7 @@ export default function GoalsManagementPage() {
                 const isLast = index === goalsHistory.length - 1;
 
                 return (
-                  <View key={goal.id} className="relative flex-row gap-4 mb-6">
+                  <View key={goal.id} className="relative mb-6 flex-row gap-4">
                     {/* Timeline line */}
                     {!isLast && (
                       <View
@@ -210,19 +151,19 @@ export default function GoalsManagementPage() {
 
                     {/* Timeline dot */}
                     <View
-                      className="relative z-10 w-10 h-10 rounded-full bg-bg-card border flex items-center justify-center shrink-0"
+                      className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border bg-bg-card"
                       style={{ borderColor: theme.colors.border.emerald }}>
                       <History size={theme.iconSize.lg} color={theme.colors.text.secondary} />
                     </View>
 
                     {/* Content */}
                     <View className="flex-1 pb-2">
-                      <View className="flex-row items-center justify-between mb-1">
+                      <View className="mb-1 flex-row items-center justify-between">
                         <Text className="text-xs font-semibold text-text-secondary">
                           {goal.dateRange}
                         </Text>
                         <View
-                          className="px-2 py-0.5 rounded border uppercase"
+                          className="rounded border px-2 py-0.5 uppercase"
                           style={{
                             backgroundColor:
                               goal.type === 'cutting'
@@ -259,13 +200,13 @@ export default function GoalsManagementPage() {
                       </View>
 
                       <View
-                        className="border border-border rounded-xl p-3"
+                        className="border-border rounded-xl border p-3"
                         style={{ backgroundColor: theme.colors.background.card }}>
-                        <View className="flex-row justify-between items-center">
+                        <View className="flex-row items-center justify-between">
                           <View className="flex-col">
                             <Text className="text-lg font-bold text-text-primary">
                               {goal.calories.toLocaleString()}{' '}
-                              <Text className="text-[10px] text-text-secondary font-normal">
+                              <Text className="text-[10px] font-normal text-text-secondary">
                                 KCAL
                               </Text>
                             </Text>
