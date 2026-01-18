@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable, ScrollView, Platform } from 'react-native';
+import { View, Text, Pressable, ScrollView, Platform, useWindowDimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
   Minus,
@@ -187,6 +187,8 @@ export function NutritionGoalsBody({
   showSubtitle = true,
 }: NutritionGoalsModalBodyProps) {
   const { t } = useTranslation();
+  const { width: screenWidth } = useWindowDimensions();
+  const showIcons = screenWidth >= 415;
   const [totalCalories, setTotalCalories] = useState(initialGoals?.totalCalories ?? 2450);
   const [protein, setProtein] = useState(initialGoals?.protein ?? 180);
   const [carbs, setCarbs] = useState(initialGoals?.carbs ?? 250);
@@ -328,7 +330,7 @@ export function NutritionGoalsBody({
             subtitle={t('nutritionGoals.sublabels.targetWeight')}
             value={targetWeight}
             unit="kg"
-            icon={Scale}
+            icon={showIcons ? Scale : undefined}
             iconSize="sm"
             onIncrement={() => setTargetWeight(Math.min(200, targetWeight + 1))}
             onDecrement={() => setTargetWeight(Math.max(30, targetWeight - 1))}
@@ -339,7 +341,7 @@ export function NutritionGoalsBody({
             subtitle={t('nutritionGoals.sublabels.targetBodyFat')}
             value={targetBodyFat}
             unit="%"
-            icon={Percent}
+            icon={showIcons ? Percent : undefined}
             iconSize="sm"
             onIncrement={() => setTargetBodyFat(Math.min(50, targetBodyFat + 1))}
             onDecrement={() => setTargetBodyFat(Math.max(5, targetBodyFat - 1))}
@@ -350,7 +352,7 @@ export function NutritionGoalsBody({
             subtitle={t('nutritionGoals.sublabels.targetBMI')}
             value={targetBMI}
             unit="index"
-            icon={TrendingUp}
+            icon={showIcons ? TrendingUp : undefined}
             iconSize="sm"
             onIncrement={() => setTargetBMI(Math.min(40, targetBMI + 0.1))}
             onDecrement={() => setTargetBMI(Math.max(15, targetBMI - 0.1))}
@@ -361,7 +363,7 @@ export function NutritionGoalsBody({
             subtitle={t('nutritionGoals.sublabels.targetFFMI')}
             value={targetFFMI}
             unit="index"
-            icon={Activity}
+            icon={showIcons ? Activity : undefined}
             iconSize="sm"
             onIncrement={() => setTargetFFMI(Math.min(30, targetFFMI + 0.1))}
             onDecrement={() => setTargetFFMI(Math.max(15, targetFFMI - 0.1))}
@@ -372,11 +374,13 @@ export function NutritionGoalsBody({
             onPress={() => setIsTargetDatePickerVisible(true)}
             className="flex-row items-center justify-between rounded-xl border border-emerald-900/20 bg-bg-card p-5">
             <View className="flex-1 flex-row items-center gap-3 pr-3">
-              <View
-                className="h-8 w-8 items-center justify-center rounded-lg"
-                style={{ backgroundColor: theme.colors.status.emerald20 }}>
-                <Calendar size={theme.iconSize.sm} color={theme.colors.status.emeraldLight} />
-              </View>
+              {showIcons && (
+                <View
+                  className="h-8 w-8 items-center justify-center rounded-lg"
+                  style={{ backgroundColor: theme.colors.status.emerald20 }}>
+                  <Calendar size={theme.iconSize.sm} color={theme.colors.status.emeraldLight} />
+                </View>
+              )}
               <View className="flex-1">
                 <Text className="font-semibold text-white">{t('nutritionGoals.targetDate')}</Text>
                 <Text className="text-xs text-gray-500" numberOfLines={1}>
