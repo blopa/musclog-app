@@ -30,8 +30,7 @@ export function NutritionGoalsModal({
       visible={visible}
       onClose={onClose}
       title={t('nutritionGoals.title')}
-      scrollable={false}
-    >
+      scrollable={false}>
       <NutritionGoalsBody onSave={handleSave} initialGoals={initialGoals} />
     </FullScreenModal>
   );

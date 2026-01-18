@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { Plus } from 'lucide-react-native';
 import { theme } from '../theme';
 import { CurrentGoalsCard } from './cards/CurrentGoalsCard';
 import { GoalHistoryCard } from './cards/GoalHistoryCard';
 import { FullScreenModal } from './modals/FullScreenModal';
+import { NutritionGoalsModal } from './modals/NutritionGoalsModal';
+import { Button } from './theme/Button';
 
 type EatingPhase = 'cutting' | 'maintenance' | 'bulking' | 'lean-bulk';
 
@@ -89,57 +92,90 @@ type GoalsManagementModalProps = {
 
 export default function GoalsManagementModal({ visible, onClose }: GoalsManagementModalProps) {
   const { t } = useTranslation();
+  const [nutritionGoalsModalVisible, setNutritionGoalsModalVisible] = useState(false);
+
+  const handleNewGoal = () => {
+    setNutritionGoalsModalVisible(true);
+  };
+
+  const handleCloseNutritionGoalsModal = () => {
+    setNutritionGoalsModalVisible(false);
+  };
+
+  const handleSaveNutritionGoals = () => {
+    // TODO: Handle saving nutrition goals
+    // This could update the current goal or add to history
+    setNutritionGoalsModalVisible(false);
+  };
 
   return (
-    <FullScreenModal
-      visible={visible}
-      onClose={onClose}
-      title={t('goalsManagement.title')}
-      scrollable={false}>
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        <View className="shrink-0 px-6 pb-6" />
-        {/* Scrollable content */}
-        <View className="flex-1 px-6 pb-32">
-          {/* Current Goals Section */}
-          <View className="mb-8">
-            <View className="mb-3 flex-row items-center justify-between">
-              <Text className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">
-                {t('goalsManagement.currentGoals')}
-              </Text>
-              <View
-                className="rounded-full border px-2 py-0.5"
-                style={{
-                  backgroundColor: theme.colors.accent.primary10,
-                  borderColor: theme.colors.accent.primary20,
-                }}>
-                <Text className="text-[10px] font-bold text-accent-primary">
-                  {t('goalsManagement.active')}
+    <>
+      <FullScreenModal
+        visible={visible}
+        onClose={onClose}
+        title={t('goalsManagement.title')}
+        headerRight={
+          <Button
+            label={t('goalsManagement.newGoal')}
+            icon={Plus}
+            iconPosition="left"
+            variant="gradientCta"
+            size="sm"
+            onPress={handleNewGoal}
+          />
+        }
+        scrollable={false}>
+        <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+          <View className="shrink-0 px-6 pb-6" />
+          {/* Scrollable content */}
+          <View className="flex-1 px-6 pb-32">
+            {/* Current Goals Section */}
+            <View className="mb-8">
+              <View className="mb-3 flex-row items-center justify-between">
+                <Text className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">
+                  {t('goalsManagement.currentGoals')}
                 </Text>
+                <View
+                  className="rounded-full border px-2 py-0.5"
+                  style={{
+                    backgroundColor: theme.colors.accent.primary10,
+                    borderColor: theme.colors.accent.primary20,
+                  }}>
+                  <Text className="text-[10px] font-bold text-accent-primary">
+                    {t('goalsManagement.active')}
+                  </Text>
+                </View>
+              </View>
+
+              {/* Current Goal Card */}
+              <CurrentGoalsCard goal={currentGoal} />
+            </View>
+
+            {/* Goals History Section */}
+            <View className="mb-6">
+              <Text className="mb-6 text-[10px] font-bold uppercase tracking-widest text-text-secondary">
+                {t('goalsManagement.history')}
+              </Text>
+
+              <View>
+                {goalsHistory.map((goal, index) => {
+                  const isLast = index === goalsHistory.length - 1;
+                  return <GoalHistoryCard key={goal.id} goal={goal} isLast={isLast} />;
+                })}
               </View>
             </View>
-
-            {/* Current Goal Card */}
-            <CurrentGoalsCard goal={currentGoal} />
           </View>
 
-          {/* Goals History Section */}
-          <View className="mb-6">
-            <Text className="mb-6 text-[10px] font-bold uppercase tracking-widest text-text-secondary">
-              {t('goalsManagement.history')}
-            </Text>
+          {/* Bottom spacing for navigation */}
+          <View className="h-24" />
+        </ScrollView>
+      </FullScreenModal>
 
-            <View>
-              {goalsHistory.map((goal, index) => {
-                const isLast = index === goalsHistory.length - 1;
-                return <GoalHistoryCard key={goal.id} goal={goal} isLast={isLast} />;
-              })}
-            </View>
-          </View>
-        </View>
-
-        {/* Bottom spacing for navigation */}
-        <View className="h-24" />
-      </ScrollView>
-    </FullScreenModal>
+      <NutritionGoalsModal
+        visible={nutritionGoalsModalVisible}
+        onClose={handleCloseNutritionGoalsModal}
+        onSave={handleSaveNutritionGoals}
+      />
+    </>
   );
 }

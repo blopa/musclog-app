@@ -661,7 +661,8 @@
     "subtitle": "Track your progress and history.",
     "currentGoals": "CURRENT GOALS",
     "active": "Active",
-    "history": "GOALS HISTORY"
+    "history": "GOALS HISTORY",
+    "newGoal": "New Goal"
   },
   "recentWorkouts": {
     "prs": "PRS"
