@@ -44,8 +44,8 @@ const HISTORY_ENTRIES = [
     changeType: 'down' as const,
     note: 'Target: 75.0 kg',
     icon: Calendar,
-    iconColor: '#ffffff',
-    iconBg: '#4f46e5', // Indigo-600 for vibrant blue/indigo
+    iconColor: theme.colors.text.primary,
+    iconBg: theme.colors.status.indigo600,
   },
   {
     id: '2',
@@ -55,8 +55,8 @@ const HISTORY_ENTRIES = [
     changeType: 'up' as const,
     note: 'Post-workout',
     icon: Calendar,
-    iconColor: '#9ca3af', // Gray-400
-    iconBg: 'rgba(55, 65, 81, 0.3)', // Gray-700 with opacity
+    iconColor: theme.colors.text.secondary,
+    iconBg: theme.colors.border.light,
   },
   {
     id: '3',
@@ -66,8 +66,8 @@ const HISTORY_ENTRIES = [
     changeType: 'down' as const,
     note: 'Weekly low',
     icon: Calendar,
-    iconColor: '#9ca3af', // Gray-400
-    iconBg: 'rgba(55, 65, 81, 0.3)', // Gray-700 with opacity
+    iconColor: theme.colors.text.secondary,
+    iconBg: theme.colors.border.light,
   },
   {
     id: '4',
@@ -77,8 +77,8 @@ const HISTORY_ENTRIES = [
     changeType: null,
     note: 'Baseline',
     icon: Clock,
-    iconColor: '#9ca3af', // Gray-400
-    iconBg: 'rgba(55, 65, 81, 0.3)', // Gray-700 with opacity
+    iconColor: theme.colors.text.secondary,
+    iconBg: theme.colors.border.light,
     opacity: 0.7,
   },
 ];
@@ -134,8 +134,7 @@ function LineChart() {
           interpolation="monotoneX"
           style={{
             data: {
-              fill: theme.colors.accent.primary,
-              fillOpacity: 0.3,
+              fill: theme.colors.accent.primary30,
             },
           }}
         />
@@ -212,8 +211,8 @@ export default function BodyMetricsHistoryModal({ visible, onClose }: BodyMetric
       <ScrollView
         className="flex-1"
         showsVerticalScrollIndicator={false}
-        style={{ backgroundColor: '#0F0F0F' }}
-        contentContainerStyle={{ backgroundColor: '#0F0F0F' }}>
+        style={{ backgroundColor: theme.colors.background.primary }}
+        contentContainerStyle={{ backgroundColor: theme.colors.background.primary }}>
         <View className="mt-2 space-y-6 px-4">
           {/* Metric Selector */}
           <SegmentedControl
@@ -311,7 +310,7 @@ export default function BodyMetricsHistoryModal({ visible, onClose }: BodyMetric
                 {t('bodyMetrics.history.title')}
               </Text>
               <Pressable className="flex-row items-center gap-1">
-                <SlidersHorizontal size={theme.iconSize.sm} color="#6b7280" />
+                <SlidersHorizontal size={theme.iconSize.sm} color={theme.colors.text.muted} />
                 <Text className="text-xs font-semibold text-text-tertiary">
                   {t('bodyMetrics.history.filter')}
                 </Text>
