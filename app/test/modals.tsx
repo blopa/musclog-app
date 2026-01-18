@@ -38,6 +38,7 @@ import ViewExerciseModal from '../../components/modals/ViewExerciseModal';
 import CreateExerciseModal from '../../components/modals/CreateExerciseModal';
 import NewCustomFoodModal from '../../components/modals/NewCustomFoodModal';
 import GoalsManagementModal from '../../components/modals/GoalsManagementModal';
+import PastWorkoutsHistoryModal from '../../components/modals/PastWorkoutsHistoryModal';
 
 export default function ModalsTestScreen() {
   // Nutrition Goals Modal
@@ -142,6 +143,8 @@ export default function ModalsTestScreen() {
   const [isNewCustomFoodVisible, setIsNewCustomFoodVisible] = useState(false);
   // Goals Management Modal
   const [isGoalsManagementVisible, setIsGoalsManagementVisible] = useState(false);
+  // Past Workouts History Modal
+  const [isPastWorkoutsHistoryVisible, setIsPastWorkoutsHistoryVisible] = useState(false);
 
   const handleSaveGoals = (goals: NutritionGoals) => {
     console.log('Goals saved:', goals);
@@ -686,6 +689,20 @@ export default function ModalsTestScreen() {
             />
           </View>
 
+          {/* Past Workouts History Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Past Workouts History Modal</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              A full-screen modal displaying past workout history with search and filtering capabilities.
+            </Text>
+            <Button
+              label="Open Past Workouts History Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsPastWorkoutsHistoryVisible(true)}
+            />
+          </View>
+
           {/* Bottom spacing */}
           <View className="h-8" />
         </View>
@@ -1021,6 +1038,11 @@ export default function ModalsTestScreen() {
       <GoalsManagementModal
         visible={isGoalsManagementVisible}
         onClose={() => setIsGoalsManagementVisible(false)}
+      />
+
+      <PastWorkoutsHistoryModal
+        visible={isPastWorkoutsHistoryVisible}
+        onClose={() => setIsPastWorkoutsHistoryVisible(false)}
       />
     </SafeAreaView>
   );

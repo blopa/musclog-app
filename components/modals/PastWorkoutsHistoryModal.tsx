@@ -93,14 +93,13 @@ type WorkoutHistoryModalProps = {
 };
 
 export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHistoryModalProps) {
-  const router = useRouter();
   const { t } = useTranslation();
 
   return (
     <FullScreenModal
       visible={visible}
       onClose={onClose}
-      title={t('workoutHistory.title')}
+      title={t('pastWorkoutHistory.title')}
       scrollable={false}>
       <View className="flex-1">
         {/* Header */}
@@ -109,32 +108,6 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
           style={{
             backgroundColor: theme.colors.background.darkBackground,
           }}>
-          <View className="mb-4 flex-row items-center justify-between">
-            <View className="flex-row items-center gap-2">
-              <Pressable
-                className="h-10 w-10 items-center justify-center rounded-full"
-                onPress={() => router.back()}>
-                <ChevronLeft size={theme.iconSize.sm} color={theme.colors.text.primary} />
-              </Pressable>
-              <Text
-                className="font-bold tracking-tight"
-                style={{
-                  fontSize: theme.typography.fontSize.xl,
-                  color: theme.colors.text.primary,
-                }}>
-                Workout History
-              </Text>
-            </View>
-            <Pressable
-              className="h-10 w-10 items-center justify-center rounded-full border"
-              style={{
-                backgroundColor: theme.colors.background.card,
-                borderColor: theme.colors.background.white5,
-              }}>
-              <MoreVertical size={theme.iconSize.sm} color={theme.colors.text.primary} />
-            </Pressable>
-          </View>
-
           {/* Search and Filter */}
           <View className="flex-row items-center gap-2">
             <View className="relative flex-1">
