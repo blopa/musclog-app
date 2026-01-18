@@ -255,14 +255,14 @@ export function DatePickerModal({
             <Button
               label={t('datePicker.cancel')}
               variant="outline"
-              size="md"
+              size="sm"
               width="flex-1"
               onPress={onClose}
             />
             <Button
               label={t('datePicker.confirm')}
               variant="gradientCta"
-              size="md"
+              size="sm"
               width="flex-1"
               onPress={handleConfirm}
             />

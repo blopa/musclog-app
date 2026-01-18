@@ -1,34 +1,74 @@
 import { useRouter } from 'expo-router';
-import { useState, useMemo } from 'react';
-import { NutritionGoalsBody } from '../../components/NutritionGoalsBody';
-import { View, Text, ScrollView } from 'react-native';
+import { useState, useEffect } from 'react';
+import { NutritionGoalsBody, NutritionGoals } from '../../components/NutritionGoalsBody';
+import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
+import { NutritionGoalService } from '../../database/services/NutritionGoalService';
 
 export default function NutritionGoalsScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
+  const [initialGoals, setInitialGoals] = useState<Partial<NutritionGoals> | undefined>(undefined);
 
-  // Macro states
-  const [protein, setProtein] = useState(180);
-  const [carbs, setCarbs] = useState(250);
-  const [fats, setFats] = useState(80);
-
-  // Body metrics states
-  const [targetWeight, setTargetWeight] = useState(75);
-  const [targetBodyFat, setTargetBodyFat] = useState(12);
-  const [targetBMI, setTargetBMI] = useState(23.5);
-  const [targetFFMI, setTargetFFMI] = useState(21.0);
-
-  // Memoize calculations
-  const { totalCalories } = useMemo(() => {
-    const total = protein * 4 + carbs * 4 + fats * 9;
-
-    return {
-      totalCalories: total,
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const row = await NutritionGoalService.getCurrent();
+        if (row) {
+          setInitialGoals({
+            totalCalories: row.totalCalories,
+            protein: row.protein,
+            carbs: row.carbs,
+            fats: row.fats,
+            fiber: row.fiber,
+            targetWeight: row.targetWeight,
+            targetBodyFat: row.targetBodyFat,
+            targetBMI: row.targetBmi,
+            targetFFMI: row.targetFfmi,
+            targetDate: row.targetDate ?? null,
+          });
+        }
+      } catch (e) {
+        console.error('Error loading nutrition goals:', e);
+      } finally {
+        setIsLoading(false);
+      }
     };
-  }, [protein, carbs, fats]);
+    load();
+  }, []);
+
+  const handleSave = async (goals: NutritionGoals) => {
+    try {
+      await NutritionGoalService.saveGoals({
+        totalCalories: goals.totalCalories,
+        protein: goals.protein,
+        carbs: goals.carbs,
+        fats: goals.fats,
+        fiber: goals.fiber,
+        targetWeight: goals.targetWeight,
+        targetBodyFat: goals.targetBodyFat,
+        targetBMI: goals.targetBMI,
+        targetFFMI: goals.targetFFMI,
+        targetDate: goals.targetDate ?? null,
+      });
+      router.back();
+    } catch (e) {
+      console.error('Error saving nutrition goals:', e);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <SafeAreaView className="flex-1" edges={['top', 'bottom']}>
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator size="large" color={theme.colors.accent.primary} />
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView className="flex-1" edges={['top', 'bottom']}>
@@ -40,19 +80,7 @@ export default function NutritionGoalsScreen() {
             {t('nutritionGoals.title')}
           </Text>
         </View>
-        <NutritionGoalsBody
-          onSave={() => router.back()}
-          initialGoals={{
-            totalCalories,
-            protein,
-            carbs,
-            fats,
-            targetWeight,
-            targetBodyFat,
-            targetBMI,
-            targetFFMI,
-          }}
-        />
+        <NutritionGoalsBody onSave={handleSave} initialGoals={initialGoals} />
       </ScrollView>
     </SafeAreaView>
   );

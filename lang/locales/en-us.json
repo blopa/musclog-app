@@ -637,6 +637,10 @@
     "targetBodyFat": "Target Body Fat",
     "targetBMI": "Target BMI",
     "targetFFMI": "Target FFMI",
+    "targetDate": "Target date",
+    "targetDateNotSet": "Not set",
+    "targetDateSublabel": "When you want to reach your body targets",
+    "targetDateClear": "Clear",
     "saveGoals": "Save Goals",
     "settingsNote": "You can change these values anytime in Settings.",
     "kcalPerGram": {

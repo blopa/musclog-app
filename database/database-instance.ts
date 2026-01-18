@@ -11,6 +11,7 @@ import Schedule from './models/Schedule';
 import WorkoutTemplateSet from './models/WorkoutTemplateSet';
 import WorkoutLog from './models/WorkoutLog';
 import WorkoutLogSet from './models/WorkoutLogSet';
+import NutritionGoal from './models/NutritionGoal';
 
 // Create database instance
 // This file is separate from index.ts to avoid require cycles
@@ -27,5 +28,6 @@ export const database = new Database({
     WorkoutTemplateSet,
     WorkoutLog,
     WorkoutLogSet,
+    NutritionGoal,
   ],
 });

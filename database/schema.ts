@@ -140,5 +140,26 @@ export const schema = appSchema({
         { name: 'deleted_at', type: 'number', isOptional: true },
       ],
     }),
+
+    // Nutrition goals: snapshot per row; current = effective_until IS NULL
+    tableSchema({
+      name: 'nutrition_goals',
+      columns: [
+        { name: 'total_calories', type: 'number' },
+        { name: 'protein', type: 'number' },
+        { name: 'carbs', type: 'number' },
+        { name: 'fats', type: 'number' },
+        { name: 'fiber', type: 'number' },
+        { name: 'target_weight', type: 'number' },
+        { name: 'target_body_fat', type: 'number' },
+        { name: 'target_bmi', type: 'number' },
+        { name: 'target_ffmi', type: 'number' },
+        { name: 'target_date', type: 'number', isOptional: true },
+        { name: 'effective_until', type: 'number', isOptional: true },
+        { name: 'created_at', type: 'number' },
+        { name: 'updated_at', type: 'number' },
+        { name: 'deleted_at', type: 'number', isOptional: true },
+      ],
+    }),
   ],
 });

@@ -8,8 +8,11 @@ import {
   Percent,
   TrendingUp,
   Activity,
+  Calendar,
   ChevronRight,
 } from 'lucide-react-native';
+import { format } from 'date-fns';
+import { DatePickerModal } from './modals/DatePickerModal';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { Button } from './theme/Button';
@@ -27,6 +30,7 @@ export type NutritionGoals = {
   targetBodyFat: number;
   targetBMI: number;
   targetFFMI: number;
+  targetDate?: number | null;
 };
 
 type NutritionGoalsModalBodyProps = {
@@ -192,6 +196,8 @@ export function NutritionGoalsBody({
   const [targetBodyFat, setTargetBodyFat] = useState(initialGoals?.targetBodyFat ?? 12);
   const [targetBMI, setTargetBMI] = useState(initialGoals?.targetBMI ?? 23.5);
   const [targetFFMI, setTargetFFMI] = useState(initialGoals?.targetFFMI ?? 21.0);
+  const [targetDate, setTargetDate] = useState<number | null>(initialGoals?.targetDate ?? null);
+  const [isTargetDatePickerVisible, setIsTargetDatePickerVisible] = useState(false);
 
   const handleSave = () => {
     const goals: NutritionGoals = {
@@ -204,6 +210,7 @@ export function NutritionGoalsBody({
       targetBodyFat,
       targetBMI,
       targetFFMI,
+      targetDate,
     };
     onSave?.(goals);
   };
@@ -356,7 +363,54 @@ export function NutritionGoalsBody({
             onDecrement={() => setTargetFFMI(Math.max(15, targetFFMI - 0.1))}
             onChangeValue={setTargetFFMI}
           />
+          {/* Target date for body metrics */}
+          <Pressable
+            onPress={() => setIsTargetDatePickerVisible(true)}
+            className="flex-row items-center justify-between rounded-xl border border-emerald-900/20 bg-bg-card p-5">
+            <View className="flex-row items-center gap-3">
+              <View
+                className="h-10 w-10 items-center justify-center rounded-lg"
+                style={{ backgroundColor: theme.colors.status.emerald20 }}>
+                <Calendar size={theme.iconSize.lg} color={theme.colors.status.emeraldLight} />
+              </View>
+              <View>
+                <Text className="font-semibold text-white">{t('nutritionGoals.targetDate')}</Text>
+                <Text className="text-xs text-gray-500">
+                  {t('nutritionGoals.targetDateSublabel')}
+                </Text>
+              </View>
+            </View>
+            <View className="flex-row items-center gap-2">
+              <Text className="text-text-secondary">
+                {targetDate != null
+                  ? format(new Date(targetDate), 'MMM d, yyyy')
+                  : t('nutritionGoals.targetDateNotSet')}
+              </Text>
+              {targetDate != null && (
+                <Pressable
+                  hitSlop={8}
+                  onPress={(e) => {
+                    e.stopPropagation();
+                    setTargetDate(null);
+                  }}>
+                  <Text className="text-xs text-accent-primary">
+                    {t('nutritionGoals.targetDateClear')}
+                  </Text>
+                </Pressable>
+              )}
+            </View>
+          </Pressable>
         </View>
+
+        <DatePickerModal
+          visible={isTargetDatePickerVisible}
+          onClose={() => setIsTargetDatePickerVisible(false)}
+          selectedDate={targetDate != null ? new Date(targetDate) : new Date()}
+          onDateSelect={(date) => {
+            setTargetDate(date.getTime());
+            setIsTargetDatePickerVisible(false);
+          }}
+        />
 
         {/* Save Button */}
         {showSaveButton && (
