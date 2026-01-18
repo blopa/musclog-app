@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, Pressable } from 'react-native';
-import { SlidersHorizontal, Calendar, Clock } from 'lucide-react-native';
+import { SlidersHorizontal, Calendar, Clock, Plus } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
 import { VictoryChart, VictoryArea, VictoryLine, VictoryScatter, VictoryAxis } from 'victory';
@@ -8,6 +8,7 @@ import { SegmentedControl } from '../theme/SegmentedControl';
 import { GenericCard } from '../cards/GenericCard';
 import { HistoryBodyMetricCard } from '../cards/HistoryBodyMetricCard';
 import { FullScreenModal } from './FullScreenModal';
+import { Button } from '../theme/Button';
 
 type MetricType = 'weight' | 'bodyFat' | 'bmi' | 'ffmi';
 type TimePeriod = '30D' | '3M' | '1Y';
@@ -201,11 +202,26 @@ export default function BodyMetricsHistoryModal({ visible, onClose }: BodyMetric
 
   const currentMetric = METRIC_DATA[selectedMetric];
 
+  const handleNewMetric = () => {
+    // TODO: Open add new metric modal or form
+    console.log('New metric pressed');
+  };
+
   return (
     <FullScreenModal
       visible={visible}
       onClose={onClose}
       title={t('bodyMetrics.header.title')}
+      headerRight={
+        <Button
+          label={t('bodyMetrics.header.newMetric')}
+          icon={Plus}
+          iconPosition="left"
+          variant="gradientCta"
+          size="sm"
+          onPress={handleNewMetric}
+        />
+      }
       scrollable={false}
     >
       <ScrollView

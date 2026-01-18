@@ -982,7 +982,8 @@
   },
   "bodyMetrics": {
     "header": {
-      "title": "Body Metrics"
+      "title": "Body Metrics",
+      "newMetric": "New Metric"
     },
     "metrics": {
       "weight": "Weight",
