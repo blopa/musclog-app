@@ -1,7 +1,7 @@
 import { View, Text, Pressable, ImageBackground, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Check, ArrowLeft, ArrowRight, LucideIcon } from 'lucide-react-native';
+import { ArrowLeft, ArrowRight, LucideIcon } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useState, useRef } from 'react';
@@ -12,8 +12,8 @@ import { PageIndicators } from '../../components/theme/PageIndicators';
 import { Button } from '../../components/theme/Button';
 import PreRegistrationIntro from '../../components/PreRegistrationIntro';
 
-const PHONE_MOCKUP_IMAGE_URL =
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuCvPgrOeONs-O17Ju_HUwmNT_-Sv1SdtaoahIETdH1VPVF1sOdhGUVQPfGCSQc40hRRzo9Pk8XBan5A2gVZ7YsZusBCI8VD_Aw0SdNRgiwKnFsCdF55c3RaEo-hfwVzYVvQAcOFGNF_8EImiOV6GZmWmjqekRUfuW_a5LbmALIn-K55kdyBu4zo7vTYlHSHWQg4CElJfLX2KtzBWBN-Pqi_XccbCd6syoCCx_4xrZegtQNP1Re7Vt15261Ddj7edCPGTd3GNZO7MmHY';
+const PHONE_MOCKUP_IMAGE_URL_2 = 'https://lh3.googleusercontent.com/aida-public/AB6AXuCvPgrOeONs-O17Ju_HUwmNT_-Sv1SdtaoahIETdH1VPVF1sOdhGUVQPfGCSQc40hRRzo9Pk8XBan5A2gVZ7YsZusBCI8VD_Aw0SdNRgiwKnFsCdF55c3RaEo-hfwVzYVvQAcOFGNF_8EImiOV6GZmWmjqekRUfuW_a5LbmALIn-K55kdyBu4zo7vTYlHSHWQg4CElJfLX2KtzBWBN-Pqi_XccbCd6syoCCx_4xrZegtQNP1Re7Vt15261Ddj7edCPGTd3GNZO7MmHY';
+const PHONE_MOCKUP_IMAGE_URL_3 = 'https://lh3.googleusercontent.com/aida-public/AB6AXuCvPgrOeONs-O17Ju_HUwmNT_-Sv1SdtaoahIETdH1VPVF1sOdhGUVQPfGCSQc40hRRzo9Pk8XBan5A2gVZ7YsZusBCI8VD_Aw0SdNRgiwKnFsCdF55c3RaEo-hfwVzYVvQAcOFGNF_8EImiOV6GZmWmjqekRUfuW_a5LbmALIn-K55kdyBu4zo7vTYlHSHWQg4CElJfLX2KtzBWBN-Pqi_XccbCd6syoCCx_4xrZegtQNP1Re7Vt15261Ddj7edCPGTd3GNZO7MmHY';
 
 type OnboardingBodyProps = {
   imageUrl?: string;
@@ -296,8 +296,7 @@ function OnboardingStepOne({ imageUrl, title, description, badge }: OnboardingBo
       <View
         className="relative mb-6 flex w-full items-center justify-center"
         style={{
-          aspectRatio: theme.aspectRatio.portrait,
-          maxHeight: Dimensions.get('window').height * 0.45,
+          aspectRatio: 1,
         }}>
         {/* Ambient Background Glow */}
         <View className="absolute inset-0 rounded-full opacity-60">
@@ -314,18 +313,30 @@ function OnboardingStepOne({ imageUrl, title, description, badge }: OnboardingBo
 
         {/* Main Image Card */}
         <View
-          className="relative z-10 h-full w-full overflow-hidden rounded-3xl border"
+          className="relative z-10 h-full w-full rounded-3xl border"
           style={{
             ...theme.shadows.lg,
             borderColor: theme.colors.background.white10,
+            overflow: 'hidden',
           }}>
-          <ImageBackground source={{ uri: imageUrl }} className="h-full w-full" resizeMode="cover">
+          <ImageBackground 
+            source={require('../../assets/efordless-tracking.png')} 
+            style={{ 
+              width: '100%', 
+              height: '100%',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }} 
+            resizeMode="contain"
+            imageStyle={{
+              resizeMode: 'contain',
+            }}>
             {/* Gradient Overlay */}
             <LinearGradient
               colors={[theme.colors.overlay.backdrop90, 'transparent', 'transparent']}
               start={{ x: 0, y: 1 }}
               end={{ x: 0, y: 0 }}
-              style={{ flex: 1 }}
+              style={{ flex: 1, width: '100%' }}
             />
 
             {/* Floating Badge Overlay */}
@@ -454,21 +465,15 @@ export default function OnboardingScreen() {
           {/* Step 1 */}
           <View key="step1">
             <OnboardingStepOne
-              imageUrl={PHONE_MOCKUP_IMAGE_URL}
               title={t('onboarding.steps.step1.title')}
               description={t('onboarding.steps.step1.description')}
-              badge={{
-                icon: Check,
-                title: t('onboarding.steps.step1.badge.title'),
-                subtitle: t('onboarding.steps.step1.badge.subtitle'),
-              }}
             />
           </View>
 
           {/* Step 2 */}
           <View key="step2">
             <OnboardingStepTwo
-              imageUrl={PHONE_MOCKUP_IMAGE_URL}
+              imageUrl={PHONE_MOCKUP_IMAGE_URL_2}
               title={t('onboarding.steps.step2.title')}
               description={t('onboarding.steps.step2.description')}
             />
@@ -477,7 +482,7 @@ export default function OnboardingScreen() {
           {/* Step 3 */}
           <View key="step3">
             <OnboardingStepThree
-              imageUrl={PHONE_MOCKUP_IMAGE_URL}
+              imageUrl={PHONE_MOCKUP_IMAGE_URL_3}
               title={t('onboarding.steps.step3.title')}
               description={t('onboarding.steps.step3.description')}
             />
