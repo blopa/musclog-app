@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, Pressable } from 'react-native';
-import { ChevronLeft, Plus, SlidersHorizontal, Calendar, Clock } from 'lucide-react-native';
+import { SlidersHorizontal, Calendar, Clock } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { useRouter } from 'expo-router';
-import { theme } from '../theme';
+import { theme } from '../../theme';
 import { VictoryChart, VictoryArea, VictoryLine, VictoryScatter, VictoryAxis } from 'victory';
-import { MasterLayout } from '../components/MasterLayout';
-import { SegmentedControl } from '../components/theme/SegmentedControl';
-import { GenericCard } from '../components/cards/GenericCard';
-import { HistoryBodyMetricCard } from '../components/cards/HistoryBodyMetricCard';
+import { SegmentedControl } from '../theme/SegmentedControl';
+import { GenericCard } from '../cards/GenericCard';
+import { HistoryBodyMetricCard } from '../cards/HistoryBodyMetricCard';
+import { FullScreenModal } from './FullScreenModal';
 
 type MetricType = 'weight' | 'bodyFat' | 'bmi' | 'ffmi';
 type TimePeriod = '30D' | '3M' | '1Y';
@@ -184,9 +183,13 @@ function LineChart() {
   );
 }
 
-export default function BodyMetricsScreen() {
+type BodyMetricsHistoryModalProps = {
+  visible: boolean;
+  onClose: () => void;
+};
+
+export default function BodyMetricsHistoryModal({ visible, onClose }: BodyMetricsHistoryModalProps) {
   const { t } = useTranslation();
-  const router = useRouter();
   const [selectedMetric, setSelectedMetric] = useState<MetricType>('weight');
   const [selectedPeriod, setSelectedPeriod] = useState<TimePeriod>('30D');
 
@@ -200,35 +203,17 @@ export default function BodyMetricsScreen() {
   const currentMetric = METRIC_DATA[selectedMetric];
 
   return (
-    <MasterLayout>
+    <FullScreenModal
+      visible={visible}
+      onClose={onClose}
+      title={t('bodyMetrics.header.title')}
+      scrollable={false}
+    >
       <ScrollView
         className="flex-1"
         showsVerticalScrollIndicator={false}
         style={{ backgroundColor: '#0F0F0F' }}
         contentContainerStyle={{ backgroundColor: '#0F0F0F' }}>
-        {/* Header */}
-        <View className="flex-row items-center justify-between px-4 pb-2 pt-4">
-          <View className="flex-row items-center gap-3">
-            <Pressable
-              onPress={() => router.back()}
-              className="-ml-2 rounded-full p-2"
-              style={{ backgroundColor: theme.colors.overlay.white5 }}>
-              <ChevronLeft size={theme.iconSize.lg} color={theme.colors.text.primary} />
-            </Pressable>
-            <Text className="text-xl font-bold tracking-tight text-text-primary">
-              {t('bodyMetrics.header.title')}
-            </Text>
-          </View>
-          <Pressable
-            className="rounded-full p-2"
-            style={{ backgroundColor: theme.colors.overlay.white5 }}
-            onPress={() => {
-              // Handle add action
-            }}>
-            <Plus size={theme.iconSize.lg} color={theme.colors.accent.primary} />
-          </Pressable>
-        </View>
-
         <View className="mt-2 space-y-6 px-4">
           {/* Metric Selector */}
           <SegmentedControl
@@ -350,6 +335,6 @@ export default function BodyMetricsScreen() {
           <View className="h-24" />
         </View>
       </ScrollView>
-    </MasterLayout>
+    </FullScreenModal>
   );
 }
