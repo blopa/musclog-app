@@ -208,7 +208,8 @@ export async function seedWorkoutHistory(): Promise<{ created: number }> {
         workoutName: string,
         startedAt: number,
         durationMinutes: number,
-        exerciseSets: { exercise: Exercise; sets: { weight: number; reps: number }[] }[]
+        exerciseSets: { exercise: Exercise; sets: { weight: number; reps: number }[] }[],
+        caloriesBurned?: number
       ): Promise<WorkoutLog> => {
         const completedAt = startedAt + durationMinutes * 60000;
 
@@ -218,6 +219,7 @@ export async function seedWorkoutHistory(): Promise<{ created: number }> {
           log.startedAt = startedAt;
           log.completedAt = completedAt;
           log.totalVolume = 0; // Will be calculated
+          log.caloriesBurned = caloriesBurned;
           log.createdAt = now;
           log.updatedAt = now;
         });
@@ -298,12 +300,14 @@ export async function seedWorkoutHistory(): Promise<{ created: number }> {
         startedAt: number;
         durationMinutes: number;
         exerciseSets: { exercise: Exercise; sets: { weight: number; reps: number }[] }[];
+        caloriesBurned?: number;
       }[] = [
         // Current month - recent workouts
         {
           name: 'Upper Body Power',
           startedAt: daysAgo(2),
           durationMinutes: 70,
+          caloriesBurned: 520,
           exerciseSets: [
             {
               exercise: benchPress,
@@ -341,6 +345,7 @@ export async function seedWorkoutHistory(): Promise<{ created: number }> {
           name: 'Leg Day / Squats',
           startedAt: daysAgo(4),
           durationMinutes: 55,
+          caloriesBurned: 410,
           exerciseSets: [
             {
               exercise: squat,
@@ -370,6 +375,7 @@ export async function seedWorkoutHistory(): Promise<{ created: number }> {
           name: 'Push Day',
           startedAt: daysAgo(7),
           durationMinutes: 60,
+          caloriesBurned: 450,
           exerciseSets: [
             {
               exercise: benchPress,
@@ -400,6 +406,7 @@ export async function seedWorkoutHistory(): Promise<{ created: number }> {
           name: 'Full Body Blast',
           startedAt: dateInMonth(currentYear, currentMonth - 1, 28, 12, 0),
           durationMinutes: 75,
+          caloriesBurned: 550,
           exerciseSets: [
             {
               exercise: deadlift,
@@ -435,6 +442,7 @@ export async function seedWorkoutHistory(): Promise<{ created: number }> {
           name: 'Upper Body Power',
           startedAt: dateInMonth(currentYear, currentMonth - 1, 24, 18, 30),
           durationMinutes: 70,
+          caloriesBurned: 500,
           exerciseSets: [
             {
               exercise: benchPress,
@@ -464,6 +472,7 @@ export async function seedWorkoutHistory(): Promise<{ created: number }> {
           name: 'Leg Day / Squats',
           startedAt: dateInMonth(currentYear, currentMonth - 1, 20, 17, 45),
           durationMinutes: 55,
+          caloriesBurned: 420,
           exerciseSets: [
             {
               exercise: squat,
@@ -487,6 +496,7 @@ export async function seedWorkoutHistory(): Promise<{ created: number }> {
           name: 'Pull Day',
           startedAt: dateInMonth(currentYear, currentMonth - 2, 30, 10, 0),
           durationMinutes: 50,
+          caloriesBurned: 380,
           exerciseSets: [
             {
               exercise: deadlift,
@@ -515,6 +525,7 @@ export async function seedWorkoutHistory(): Promise<{ created: number }> {
           name: 'Upper Body Power',
           startedAt: dateInMonth(currentYear, currentMonth - 2, 26, 18, 0),
           durationMinutes: 65,
+          caloriesBurned: 480,
           exerciseSets: [
             {
               exercise: benchPress,
@@ -547,7 +558,8 @@ export async function seedWorkoutHistory(): Promise<{ created: number }> {
           workoutData.name,
           workoutData.startedAt,
           workoutData.durationMinutes,
-          workoutData.exerciseSets
+          workoutData.exerciseSets,
+          workoutData.caloriesBurned
         );
         created++;
       }
