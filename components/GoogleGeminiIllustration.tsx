@@ -3,7 +3,7 @@ import { View, Image } from 'react-native';
 import { Sparkles, Zap } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { theme } from '../theme';
-import { GoogleLogoSvg } from './GoogleLogoSvg';
+import { GoogleLogoSvg } from './icons/GoogleLogoSvg';
 
 export const GoogleGeminiIllustration = () => {
   return (
