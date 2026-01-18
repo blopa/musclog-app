@@ -45,6 +45,7 @@
     "@shopify/react-native-skia": "2.2.12",
     "@zxing/library": "^0.21.3",
     "buffer": "^6.0.3",
+    "classnames": "^2.5.1",
     "date-fns": "^4.1.0",
     "dotenv": "^17.2.3",
     "expo": "^54.0.31",

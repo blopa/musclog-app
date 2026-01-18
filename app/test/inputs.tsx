@@ -16,6 +16,7 @@ import { OptionsSelector } from '../../components/OptionsSelector';
 import { OptionsMultiSelector } from '../../components/theme/OptionsMultiSelector/OptionsMultiSelector';
 import { ToggleInput } from '../../components/theme/ToggleInput';
 import { MacroInput } from '../../components/MacroInput';
+import { GoogleSignInButton } from '../../components/GoogleSignInButton';
 
 export default function InputsTestScreen() {
   const [name, setName] = useState('');
@@ -295,6 +296,15 @@ export default function InputsTestScreen() {
             topRightElement={<Text className="text-xs text-text-secondary">g</Text>}
             variant="error"
             size="full"
+          />
+        </TestSection>
+
+        <TestSection title="Authentication Buttons" subtitle="Google Sign In Button">
+          <GoogleSignInButton onPress={() => console.log('Google Sign In pressed')} />
+          <View style={{ height: theme.spacing.gap.md }} />
+          <GoogleSignInButton
+            disabled={true}
+            onPress={() => console.log('Disabled button pressed')}
           />
         </TestSection>
 
