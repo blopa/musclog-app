@@ -1,86 +1,344 @@
-import React from 'react';
-import { Calendar, Clock, Trophy, ArrowUpDown, Filter } from 'lucide-react-native';
+import React, { useState, useMemo } from 'react';
+import { View, Text, Pressable, ScrollView } from 'react-native';
+import { Calendar } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
-import { BottomPopUpMenu, BottomPopUpMenuItem } from '../BottomPopUpMenu';
+import { BottomPopUp } from '../BottomPopUp';
+import { FilterTabs } from '../FilterTabs';
+import { SegmentedControl } from '../theme/SegmentedControl';
+import { Slider } from '../theme/Slider';
+import { Button } from '../theme/Button';
+
+type WorkoutType = 'all' | 'strength' | 'cardio' | 'hiit' | 'yoga';
+type DateRange = '30' | '90' | 'custom';
+type MuscleGroup = 'chest' | 'back' | 'legs' | 'shoulders' | 'arms' | 'core' | 'full-body';
 
 type PastWorkoutsHistoryFilterMenuProps = {
   visible: boolean;
   onClose: () => void;
-  onDateRangeFilter?: () => void;
-  onSortFilter?: () => void;
-  onPRsOnlyFilter?: () => void;
-  onWorkoutTypeFilter?: () => void;
+  onApplyFilters?: (filters: {
+    workoutType?: WorkoutType;
+    dateRange?: DateRange;
+    muscleGroups: MuscleGroup[];
+    minDuration: number;
+  }) => void;
   onClearFilters?: () => void;
 };
 
 export function PastWorkoutsHistoryFilterMenu({
   visible,
   onClose,
-  onDateRangeFilter,
-  onSortFilter,
-  onPRsOnlyFilter,
-  onWorkoutTypeFilter,
+  onApplyFilters,
   onClearFilters,
 }: PastWorkoutsHistoryFilterMenuProps) {
   const { t } = useTranslation();
 
-  const items: BottomPopUpMenuItem[] = [
-    {
-      icon: Calendar,
-      iconColor: theme.colors.text.primary,
-      iconBgColor: theme.colors.text.primary20,
-      title: t('pastWorkoutHistory.filters.dateRange') || 'Date Range',
-      description: t('pastWorkoutHistory.filters.dateRangeDescription') || 'Filter by time period',
-      onPress: () => onDateRangeFilter?.(),
-    },
-    {
-      icon: ArrowUpDown,
-      iconColor: theme.colors.text.primary,
-      iconBgColor: theme.colors.text.primary20,
-      title: t('pastWorkoutHistory.filters.sortBy') || 'Sort By',
-      description: t('pastWorkoutHistory.filters.sortByDescription') || 'Sort workouts by date, name, or duration',
-      onPress: () => onSortFilter?.(),
-    },
-    {
-      icon: Trophy,
-      iconColor: theme.colors.status.emeraldLight,
-      iconBgColor: theme.colors.status.emerald400_10,
-      title: t('pastWorkoutHistory.filters.prsOnly') || 'PRs Only',
-      description: t('pastWorkoutHistory.filters.prsOnlyDescription') || 'Show only workouts with personal records',
-      onPress: () => onPRsOnlyFilter?.(),
-    },
-    {
-      icon: Filter,
-      iconColor: theme.colors.text.primary,
-      iconBgColor: theme.colors.text.primary20,
-      title: t('pastWorkoutHistory.filters.workoutType') || 'Workout Type',
-      description: t('pastWorkoutHistory.filters.workoutTypeDescription') || 'Filter by exercise type',
-      onPress: () => onWorkoutTypeFilter?.(),
-    },
-  ];
+  const [selectedWorkoutType, setSelectedWorkoutType] = useState<WorkoutType>('all');
+  const [selectedDateRange, setSelectedDateRange] = useState<DateRange>('30');
+  const [selectedMuscleGroups, setSelectedMuscleGroups] = useState<MuscleGroup[]>(['back', 'legs']);
+  const [minDuration, setMinDuration] = useState(30);
 
-  // Add clear filters option if provided
-  if (onClearFilters) {
-    items.push({
-      icon: Filter,
-      iconColor: theme.colors.status.error,
-      iconBgColor: theme.colors.status.error20,
-      title: t('pastWorkoutHistory.filters.clearFilters') || 'Clear Filters',
-      description: t('pastWorkoutHistory.filters.clearFiltersDescription') || 'Reset all filters',
-      titleColor: theme.colors.status.error,
-      descriptionColor: theme.colors.status.error,
-      onPress: () => onClearFilters?.(),
+  const workoutTypes = useMemo(
+    () => [
+      { id: 'all', label: t('pastWorkoutHistory.filters.workoutTypes.all') || 'All Types' },
+      { id: 'strength', label: t('pastWorkoutHistory.filters.workoutTypes.strength') || 'Strength' },
+      { id: 'cardio', label: t('pastWorkoutHistory.filters.workoutTypes.cardio') || 'Cardio' },
+      { id: 'hiit', label: t('pastWorkoutHistory.filters.workoutTypes.hiit') || 'HIIT' },
+      { id: 'yoga', label: t('pastWorkoutHistory.filters.workoutTypes.yoga') || 'Yoga' },
+    ],
+    [t]
+  );
+
+  const dateRangeOptions = useMemo(
+    () => [
+      {
+        label: t('pastWorkoutHistory.filters.dateRange.30days') || 'Last 30 Days',
+        value: '30',
+      },
+      {
+        label: t('pastWorkoutHistory.filters.dateRange.90days') || 'Last 90 Days',
+        value: '90',
+      },
+      {
+        label: t('pastWorkoutHistory.filters.dateRange.custom') || 'Custom',
+        value: 'custom',
+        icon: <Calendar size={theme.iconSize.sm} color={theme.colors.text.secondary} />,
+      },
+    ],
+    [t]
+  );
+
+  const muscleGroups = useMemo(
+    () => [
+      { id: 'chest', label: t('pastWorkoutHistory.filters.muscleGroups.chest') || 'Chest' },
+      { id: 'back', label: t('pastWorkoutHistory.filters.muscleGroups.back') || 'Back' },
+      { id: 'legs', label: t('pastWorkoutHistory.filters.muscleGroups.legs') || 'Legs' },
+      {
+        id: 'shoulders',
+        label: t('pastWorkoutHistory.filters.muscleGroups.shoulders') || 'Shoulders',
+      },
+      { id: 'arms', label: t('pastWorkoutHistory.filters.muscleGroups.arms') || 'Arms' },
+      { id: 'core', label: t('pastWorkoutHistory.filters.muscleGroups.core') || 'Core' },
+      {
+        id: 'full-body',
+        label: t('pastWorkoutHistory.filters.muscleGroups.fullBody') || 'Full Body',
+      },
+    ],
+    [t]
+  );
+
+  const toggleMuscleGroup = (muscleGroup: MuscleGroup) => {
+    setSelectedMuscleGroups((prev) => {
+      if (prev.includes(muscleGroup)) {
+        return prev.filter((m) => m !== muscleGroup);
+      } else {
+        return [...prev, muscleGroup];
+      }
     });
-  }
+  };
+
+  const handleReset = () => {
+    setSelectedWorkoutType('all');
+    setSelectedDateRange('30');
+    setSelectedMuscleGroups([]);
+    setMinDuration(0);
+    onClearFilters?.();
+  };
+
+  const handleApply = () => {
+    onApplyFilters?.({
+      workoutType: selectedWorkoutType,
+      dateRange: selectedDateRange,
+      muscleGroups: selectedMuscleGroups,
+      minDuration,
+    });
+    onClose();
+  };
+
+  const formatDuration = (minutes: number) => {
+    if (minutes >= 120) {
+      return '120m+';
+    }
+    return `${minutes}m`;
+  };
+
+  const formatDurationDisplay = (minutes: number) => {
+    if (minutes === 0) {
+      return '0m';
+    }
+    if (minutes >= 120) {
+      return '120m+';
+    }
+    return `${minutes}+ mins`;
+  };
 
   return (
-    <BottomPopUpMenu
+    <BottomPopUp
       visible={visible}
       onClose={onClose}
       title={t('pastWorkoutHistory.filters.title') || 'Filter Workouts'}
-      subtitle={t('pastWorkoutHistory.filters.subtitle') || 'Customize your workout history view'}
-      items={items}
-    />
+      maxHeight="90%"
+      footer={
+        <View
+          style={{
+            flexDirection: 'row',
+            gap: theme.spacing.gap.base,
+            paddingTop: theme.spacing.padding.md,
+          }}>
+          <Button
+            label={t('pastWorkoutHistory.filters.reset') || 'Reset'}
+            variant="outline"
+            width="flex-1"
+            size="sm"
+            onPress={handleReset}
+          />
+          <Button
+            label={t('pastWorkoutHistory.filters.applyFilters') || 'Apply Filters'}
+            variant="gradientCta"
+            width="flex-2"
+            size="sm"
+            onPress={handleApply}
+          />
+        </View>
+      }>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        style={{ flex: 1 }}
+        contentContainerStyle={{
+          gap: theme.spacing.gap['2xl'],
+        }}>
+        {/* Drag Handle */}
+        <View
+          style={{
+            alignSelf: 'center',
+            width: theme.size['12'],
+            height: theme.spacing.padding['1half'],
+            backgroundColor: theme.colors.text.tertiary,
+            borderRadius: theme.borderRadius.full,
+            marginTop: theme.spacing.padding.sm,
+            marginBottom: -theme.spacing.gap.base,
+          }}
+        />
+
+        {/* Workout Type Section */}
+        <View>
+          <Text
+            style={{
+              fontSize: theme.typography.fontSize.xs,
+              fontWeight: theme.typography.fontWeight.bold,
+              color: theme.colors.text.secondary,
+              textTransform: 'uppercase',
+              letterSpacing: theme.typography.letterSpacing.extraWide,
+              marginBottom: theme.spacing.padding.base,
+            }}>
+            {t('pastWorkoutHistory.filters.workoutType') || 'WORKOUT TYPE'}
+          </Text>
+          <FilterTabs
+            tabs={workoutTypes}
+            activeTab={selectedWorkoutType}
+            onTabChange={(tabId) => setSelectedWorkoutType(tabId as WorkoutType)}
+            showContainer={false}
+            scrollViewContentContainerStyle={{ paddingHorizontal: 0 }}
+          />
+        </View>
+
+        {/* Date Range Section */}
+        <View>
+          <Text
+            style={{
+              fontSize: theme.typography.fontSize.xs,
+              fontWeight: theme.typography.fontWeight.bold,
+              color: theme.colors.text.secondary,
+              textTransform: 'uppercase',
+              letterSpacing: theme.typography.letterSpacing.extraWide,
+              marginBottom: theme.spacing.padding.base,
+            }}>
+            {t('pastWorkoutHistory.filters.dateRange.title') || 'DATE RANGE'}
+          </Text>
+          <SegmentedControl
+            options={dateRangeOptions}
+            value={selectedDateRange}
+            onValueChange={(value) => setSelectedDateRange(value as DateRange)}
+            variant="outline"
+          />
+        </View>
+
+        {/* Muscle Group Section */}
+        <View>
+          <Text
+            style={{
+              fontSize: theme.typography.fontSize.xs,
+              fontWeight: theme.typography.fontWeight.bold,
+              color: theme.colors.text.secondary,
+              textTransform: 'uppercase',
+              letterSpacing: theme.typography.letterSpacing.extraWide,
+              marginBottom: theme.spacing.padding.base,
+            }}>
+            {t('pastWorkoutHistory.filters.muscleGroups.title') ||
+              'MUSCLE GROUP (MULTI-SELECT)'}
+          </Text>
+          <View
+            style={{
+              flexDirection: 'row',
+              flexWrap: 'wrap',
+              gap: theme.spacing.gap.sm,
+            }}>
+            {muscleGroups.map((muscle) => {
+              const isSelected = selectedMuscleGroups.includes(muscle.id as MuscleGroup);
+              return (
+                <Pressable
+                  key={muscle.id}
+                  onPress={() => toggleMuscleGroup(muscle.id as MuscleGroup)}
+                  className="flex-row items-center gap-2 rounded-full border px-4 py-2 active:scale-95"
+                  style={{
+                    backgroundColor: isSelected
+                      ? theme.colors.accent.primary10
+                      : theme.colors.background.card,
+                    borderWidth: theme.borderWidth.thin,
+                    borderColor: isSelected
+                      ? theme.colors.accent.primary30
+                      : theme.colors.border.light,
+                  }}>
+                  <Text
+                    className={`text-sm font-medium ${
+                      isSelected ? 'font-semibold text-accent-primary' : 'text-text-secondary'
+                    }`}>
+                    {muscle.label}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        </View>
+
+        {/* Min. Duration Section */}
+        <View>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginBottom: theme.spacing.padding.base,
+            }}>
+            <Text
+              style={{
+                fontSize: theme.typography.fontSize.xs,
+                fontWeight: theme.typography.fontWeight.bold,
+                color: theme.colors.text.secondary,
+                textTransform: 'uppercase',
+                letterSpacing: theme.typography.letterSpacing.extraWide,
+              }}>
+              {t('pastWorkoutHistory.filters.minDuration') || 'MIN. DURATION'}
+            </Text>
+            <Text
+              style={{
+                fontSize: theme.typography.fontSize.sm,
+                fontWeight: theme.typography.fontWeight.bold,
+                color: theme.colors.accent.primary,
+              }}>
+              {formatDurationDisplay(minDuration)}
+            </Text>
+          </View>
+          <View
+            style={{
+              marginBottom: theme.spacing.padding.sm,
+            }}>
+            <Slider
+              value={minDuration}
+              min={0}
+              max={120}
+              step={5}
+              onChange={setMinDuration}
+              variant="solid"
+              solidColor={theme.colors.accent.primary}
+              trackColor={theme.colors.background.white10}
+              thumbColor={theme.colors.accent.primary}
+            />
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}>
+            <Text
+              style={{
+                fontSize: 10,
+                fontWeight: theme.typography.fontWeight.medium,
+                color: theme.colors.text.tertiary,
+              }}>
+              0m
+            </Text>
+            <Text
+              style={{
+                fontSize: 10,
+                fontWeight: theme.typography.fontWeight.medium,
+                color: theme.colors.text.tertiary,
+              }}>
+              120m+
+            </Text>
+          </View>
+        </View>
+      </ScrollView>
+    </BottomPopUp>
   );
 }
