@@ -1,6 +1,7 @@
 import { Pressable, View, Text, PressableProps } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import classNames from 'classnames';
+import { useTranslation } from 'react-i18next';
 
 interface GoogleSignInButtonProps extends PressableProps {
   children?: React.ReactNode;
@@ -14,15 +15,16 @@ export function GoogleSignInButton({
   className,
   ...props
 }: GoogleSignInButtonProps) {
+  const { t } = useTranslation();
   const isLight = variant === 'light';
 
   return (
     <Pressable
       disabled={disabled}
       accessibilityRole="button"
-      accessibilityLabel="Connect with Google"
+      accessibilityLabel={t('connectGoogleAccount.connectWithGoogle')}
       className={classNames(
-        'relative h-10 min-w-min max-w-[400px] flex-row items-center overflow-hidden rounded-[20px] border px-3',
+        'relative h-12 min-w-min max-w-[400px] flex-row items-center overflow-hidden rounded-[20px] border px-4',
         'transition-[background-color,border-color,box-shadow] duration-[218ms]',
         'hover:shadow-[0_1px_2px_0_rgba(60,64,67,0.30),0_1px_3px_1px_rgba(60,64,67,0.15)]',
 
@@ -54,7 +56,7 @@ export function GoogleSignInButton({
 
       <View className="w-full flex-row items-center">
         {/* Google icon */}
-        <View className={classNames('mr-2.5 h-5 w-5', disabled && 'opacity-[38%]')}>
+        <View className={classNames('mr-3 h-6 w-6', disabled && 'opacity-[38%]')}>
           <Svg viewBox="0 0 48 48" width="100%" height="100%">
             <Path
               fill="#EA4335"
@@ -79,11 +81,11 @@ export function GoogleSignInButton({
         <Text
           numberOfLines={1}
           className={classNames(
-            'flex-1 text-sm font-medium tracking-[0.25px]',
+            'flex-1 text-base font-medium tracking-[0.25px]',
             isLight ? 'text-[#1f1f1f]' : 'text-[#e3e3e3]',
             disabled && 'opacity-[38%]'
           )}>
-          {children || 'Connect with Google'}
+          {children || t('connectGoogleAccount.connectWithGoogle')}
         </Text>
       </View>
     </Pressable>

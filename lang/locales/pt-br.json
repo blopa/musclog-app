@@ -441,5 +441,27 @@
     "g": "g",
     "kg": "kg",
     "bf": "GC"
+  },
+  "connectGoogleAccount": {
+    "title": "Conectar conta do Google",
+    "unlockTitle": "Desbloquear",
+    "aiInsights": "Insights de IA",
+    "description": "Desbloqueie insights de IA personalizados conectando sua conta do Google para integração perfeita com sua própria chave Gemini.",
+    "features": {
+      "deepAnalysis": {
+        "title": "Análise profunda",
+        "description": "Análise de treino personalizada"
+      },
+      "geminiPowered": {
+        "title": "Alimentado por Gemini",
+        "description": "Inteligência de fitness LLM avançada"
+      },
+      "secureToken": {
+        "title": "Token seguro",
+        "description": "Integração direta com sua chave"
+      }
+    },
+    "connectWithGoogle": "Conectar com Google",
+    "maybeLater": "Talvez mais tarde"
   }
 }

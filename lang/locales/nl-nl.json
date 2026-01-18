@@ -441,5 +441,27 @@
     "g": "g",
     "kg": "kg",
     "bf": "LV"
+  },
+  "connectGoogleAccount": {
+    "title": "Google-account verbinden",
+    "unlockTitle": "Ontgrendelen",
+    "aiInsights": "AI-inzichten",
+    "description": "Ontgrendel gepersonaliseerde AI-inzichten door je Google-account te verbinden voor naadloze integratie met je eigen Gemini-sleutel.",
+    "features": {
+      "deepAnalysis": {
+        "title": "Diepgaande analyse",
+        "description": "Gepersonaliseerde trainingsoverzichten"
+      },
+      "geminiPowered": {
+        "title": "Gemini-aangedreven",
+        "description": "Geavanceerde LLM fitness-intelligentie"
+      },
+      "secureToken": {
+        "title": "Veilige token",
+        "description": "Directe integratie met je sleutel"
+      }
+    },
+    "connectWithGoogle": "Verbinden met Google",
+    "maybeLater": "Misschien later"
   }
 }

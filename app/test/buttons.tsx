@@ -202,8 +202,8 @@ export default function ButtonTestScreen() {
             <View className="mb-4">
               <Text className="mb-2 text-xs font-semibold text-text-secondary">Action Buttons</Text>
               <View className="flex-row gap-3">
-                <Button label="Skip" variant="outline" width="flex-1" />
-                <Button label="Save" variant="accent" width="flex-1" />
+                <Button label="Skip" variant="outline" width="flex-1" size="sm" />
+                <Button label="Save" variant="accent" width="flex-1" size="sm" />
               </View>
             </View>
           </Section>
