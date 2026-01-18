@@ -10,6 +10,7 @@ import { database } from '../../database';
 import { Q } from '@nozbe/watermelondb';
 import UserMetric from '../../database/models/UserMetric';
 import Setting from '../../database/models/Setting';
+import { setOnboardingCompleted } from '../../utils/onboardingService';
 
 export default function FitnessInfo() {
   const { t } = useTranslation();
@@ -226,6 +227,9 @@ export default function FitnessInfo() {
           });
         }
       });
+
+      // Mark onboarding as completed before navigating to home
+      await setOnboardingCompleted();
 
       // Navigate to next step or home
       router.push('/');

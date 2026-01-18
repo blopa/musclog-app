@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, Image, Pressable, ScrollView } from 'react-native';
+import { View, Text, Image, Pressable, ScrollView, ActivityIndicator } from 'react-native';
 import {
   Bell,
   Zap,
@@ -20,6 +20,7 @@ import { UserMenuModal } from '../components/modals/UserMenuModal';
 import { NotificationsModal } from '../components/modals/NotificationsModal';
 import { useRouter } from 'expo-router';
 import { SkeletonLoader } from '../components/theme/SkeletonLoader';
+import { isOnboardingCompleted } from '../utils/onboardingService';
 
 const PAGE_DATA = {
   user: {
@@ -92,6 +93,27 @@ export default function HomeScreen() {
   const [isUserMenuVisible, setIsUserMenuVisible] = useState(false);
   const [isNotificationsVisible, setIsNotificationsVisible] = useState(false);
   const [isLoadingRecent, setIsLoadingRecent] = useState(false);
+  const [isCheckingOnboarding, setIsCheckingOnboarding] = useState(true);
+
+  // Check onboarding status on mount
+  useEffect(() => {
+    const checkOnboarding = async () => {
+      try {
+        const completed = await isOnboardingCompleted();
+        if (!completed) {
+          // Redirect to onboarding if not completed
+          router.replace('/onboarding/landing');
+        }
+      } catch (error) {
+        console.error('Error checking onboarding status:', error);
+        // On error, allow access (don't block user)
+      } finally {
+        setIsCheckingOnboarding(false);
+      }
+    };
+
+    checkOnboarding();
+  }, [router]);
 
   // Simulate loading recent data - replace with actual API call
   const loadRecentData = async () => {
@@ -113,6 +135,17 @@ export default function HomeScreen() {
     // Uncomment to simulate initial load
     // loadRecentData();
   }, []);
+
+  // Show loading spinner while checking onboarding
+  if (isCheckingOnboarding) {
+    return (
+      <View
+        className="flex-1 items-center justify-center"
+        style={{ backgroundColor: theme.colors.background.primary }}>
+        <ActivityIndicator size="large" color={theme.colors.accent.primary} />
+      </View>
+    );
+  }
 
   return (
     <MasterLayout>

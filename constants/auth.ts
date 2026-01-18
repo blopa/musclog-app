@@ -23,3 +23,8 @@ export const GOOGLE_ACCESS_TOKEN = 'googleAccessToken';
 export const GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE = 'googleAccessTokenExpirationDate';
 export const LAST_TIME_GOOGLE_AUTH_ERROR_WAS_SHOWN = 'lastTimeGoogleAuthErrorWasShown';
 export const HAS_COMPLETED_ONBOARDING = 'hasCompletedOnboarding';
+
+// Onboarding Keys
+export const ONBOARDING_COMPLETED = 'onboardingCompleted';
+export const ONBOARDING_VERSION = 'onboardingVersion';
+export const CURRENT_ONBOARDING_VERSION = '1.0.0';

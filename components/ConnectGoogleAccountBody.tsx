@@ -126,43 +126,6 @@ export function ConnectGoogleAccountBody({
               <CheckCircle2 size={theme.iconSize.lg} color={theme.colors.accent.primary} />
             </View>
           </View>
-
-          {/* Secure Token */}
-          <View className="relative">
-            {/* Glow effect */}
-            <View
-              className="absolute"
-              style={{
-                top: theme.offset.glowSmall,
-                left: theme.offset.glowSmall,
-                right: theme.offset.glowSmall,
-                bottom: theme.offset.glowSmall,
-                borderRadius: theme.borderRadius.xl,
-                backgroundColor: theme.colors.accent.primary,
-                opacity: theme.colors.opacity.subtle,
-                shadowColor: theme.colors.accent.primary,
-                shadowOffset: theme.shadowOffset.zero,
-                shadowOpacity: theme.colors.opacity.subtle,
-                shadowRadius: theme.shadows.radius8.shadowRadius,
-              }}
-            />
-            <View className="relative flex-row items-center gap-4 rounded-xl border border-white/5 bg-bg-cardDark p-4">
-              <View
-                className="h-10 w-10 shrink-0 items-center justify-center rounded-full"
-                style={{ backgroundColor: theme.colors.accent.primary10 }}>
-                <Key size={theme.iconSize.md} color={theme.colors.accent.primary} />
-              </View>
-              <View className="flex-1">
-                <Text className="text-sm font-bold text-text-primary">
-                  {t('connectGoogleAccount.features.secureToken.title')}
-                </Text>
-                <Text className="text-xs text-text-secondary">
-                  {t('connectGoogleAccount.features.secureToken.description')}
-                </Text>
-              </View>
-              <CheckCircle2 size={theme.iconSize.lg} color={theme.colors.accent.primary} />
-            </View>
-          </View>
         </View>
       </View>
       <View className="bg-transparent px-5 pb-2 pt-4">
