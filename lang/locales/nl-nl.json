@@ -412,5 +412,34 @@
   "editScreenInfo": {
     "title": "Open de code voor dit scherm:",
     "description": "Wijzig een tekst, sla het bestand op en je app wordt automatisch bijgewerkt."
+  },
+  "eatingPhaseBadge": {
+    "cutting": "DEFINIËREN",
+    "maintenance": "BEHOUDEN",
+    "bulking": "VOLUME",
+    "lean-bulk": "SCHONE VOLUME"
+  },
+  "currentGoalsCard": {
+    "dailyTarget": "Dagelijks Doel",
+    "kcal": "kcal",
+    "protein": "Eiwit",
+    "carbs": "Koolhydraten",
+    "fats": "Vetten",
+    "targetWeight": "Doelgewicht",
+    "bodyFat": "Lichaamsvet",
+    "ffmi": "FFMI",
+    "bmi": "BMI",
+    "g": "g",
+    "kg": "kg",
+    "percent": "%"
+  },
+  "goalHistoryCard": {
+    "kcal": "KCAL",
+    "proteinPrefix": "P",
+    "carbsPrefix": "K",
+    "fatPrefix": "V",
+    "g": "g",
+    "kg": "kg",
+    "bf": "LV"
   }
 }

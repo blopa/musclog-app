@@ -899,5 +899,34 @@
       "delete": "Delete",
       "deleteDescription": "Remove this exercise permanently"
     }
+  },
+  "eatingPhaseBadge": {
+    "cutting": "CUTTING",
+    "maintenance": "MAINTENANCE",
+    "bulking": "BULKING",
+    "lean-bulk": "LEAN BULK"
+  },
+  "currentGoalsCard": {
+    "dailyTarget": "Daily Target",
+    "kcal": "kcal",
+    "protein": "Protein",
+    "carbs": "Carbs",
+    "fats": "Fats",
+    "targetWeight": "Target Weight",
+    "bodyFat": "Body Fat",
+    "ffmi": "FFMI",
+    "bmi": "BMI",
+    "g": "g",
+    "kg": "kg",
+    "percent": "%"
+  },
+  "goalHistoryCard": {
+    "kcal": "KCAL",
+    "proteinPrefix": "P",
+    "carbsPrefix": "C",
+    "fatPrefix": "F",
+    "g": "g",
+    "kg": "kg",
+    "bf": "BF"
   }
 }

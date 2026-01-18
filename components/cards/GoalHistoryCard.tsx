@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { History } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
 import { GenericCard } from './GenericCard';
 import { EatingPhaseBadge } from '../EatingPhaseBadge';
@@ -25,6 +26,8 @@ interface GoalHistoryCardProps {
 }
 
 export function GoalHistoryCard({ goal, isLast = false }: GoalHistoryCardProps) {
+  const { t } = useTranslation();
+  
   return (
     <View className="relative mb-6 flex-row gap-4">
       {/* Timeline line */}
@@ -59,15 +62,15 @@ export function GoalHistoryCard({ goal, isLast = false }: GoalHistoryCardProps) 
               <View className="flex-col">
                 <Text className="text-lg font-bold text-text-primary">
                   {goal.calories.toLocaleString()}{' '}
-                  <Text className="text-[10px] font-normal text-text-secondary">KCAL</Text>
+                  <Text className="text-[10px] font-normal text-text-secondary">{t('goalHistoryCard.kcal')}</Text>
                 </Text>
                 <Text className="text-[10px] text-text-secondary">
-                  P:{goal.protein}g • C:{goal.carbs}g • F:{goal.fat}g
+                  {t('goalHistoryCard.proteinPrefix')}:{goal.protein}{t('goalHistoryCard.g')} • {t('goalHistoryCard.carbsPrefix')}:{goal.carbs}{t('goalHistoryCard.g')} • {t('goalHistoryCard.fatPrefix')}:{goal.fat}{t('goalHistoryCard.g')}
                 </Text>
               </View>
               <View className="items-end">
-                <Text className="text-xs font-bold text-text-secondary">{goal.weight} kg</Text>
-                <Text className="text-[10px] text-text-secondary">{goal.bodyFat}% BF</Text>
+                <Text className="text-xs font-bold text-text-secondary">{goal.weight} {t('goalHistoryCard.kg')}</Text>
+                <Text className="text-[10px] text-text-secondary">{goal.bodyFat}% {t('goalHistoryCard.bf')}</Text>
               </View>
             </View>
           </View>

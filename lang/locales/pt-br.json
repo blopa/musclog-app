@@ -412,5 +412,34 @@
   "editScreenInfo": {
     "title": "Abra o código desta tela:",
     "description": "Altere qualquer texto, salve o arquivo e seu aplicativo será atualizado automaticamente."
+  },
+  "eatingPhaseBadge": {
+    "cutting": "DEFINIÇÃO",
+    "maintenance": "MANUTENÇÃO",
+    "bulking": "VOLUME",
+    "lean-bulk": "VOLUME LIMPO"
+  },
+  "currentGoalsCard": {
+    "dailyTarget": "Meta Diária",
+    "kcal": "kcal",
+    "protein": "Proteína",
+    "carbs": "Carboidratos",
+    "fats": "Gorduras",
+    "targetWeight": "Peso Alvo",
+    "bodyFat": "Gordura Corporal",
+    "ffmi": "FFMI",
+    "bmi": "IMC",
+    "g": "g",
+    "kg": "kg",
+    "percent": "%"
+  },
+  "goalHistoryCard": {
+    "kcal": "KCAL",
+    "proteinPrefix": "P",
+    "carbsPrefix": "C",
+    "fatPrefix": "G",
+    "g": "g",
+    "kg": "kg",
+    "bf": "GC"
   }
 }

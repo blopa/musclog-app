@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { Scale, Percent, Activity, Calculator, Calendar } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
 import { GenericCard } from './GenericCard';
 import { EatingPhaseBadge } from '../EatingPhaseBadge';
@@ -25,6 +26,8 @@ interface CurrentGoalsCardProps {
 }
 
 export function CurrentGoalsCard({ goal }: CurrentGoalsCardProps) {
+  const { t } = useTranslation();
+  
   return (
     <GenericCard variant="card">
       <View className="relative p-5">
@@ -36,37 +39,37 @@ export function CurrentGoalsCard({ goal }: CurrentGoalsCardProps) {
         {/* Daily Target */}
         <View className="mb-6">
           <Text className="mb-1 text-[10px] font-medium uppercase tracking-wider text-text-secondary">
-            Daily Target
+            {t('currentGoalsCard.dailyTarget')}
           </Text>
           <View className="flex-row items-baseline gap-1">
             <Text className="text-4xl font-extrabold tracking-tighter text-text-primary">
               {goal.calories.toLocaleString()}
             </Text>
-            <Text className="text-sm font-bold uppercase text-accent-primary">kcal</Text>
+            <Text className="text-sm font-bold uppercase text-accent-primary">{t('currentGoalsCard.kcal')}</Text>
           </View>
         </View>
 
         {/* Macros Grid */}
         <View className="border-border flex-row gap-4 border-t pt-4">
           <View className="flex-1">
-            <Text className="text-[9px] font-bold uppercase text-text-secondary">Protein</Text>
+            <Text className="text-[9px] font-bold uppercase text-text-secondary">{t('currentGoalsCard.protein')}</Text>
             <Text className="font-bold text-text-primary">
               {goal.protein}
-              <Text className="ml-0.5 text-[10px] text-text-secondary">g</Text>
+              <Text className="ml-0.5 text-[10px] text-text-secondary">{t('currentGoalsCard.g')}</Text>
             </Text>
           </View>
           <View className="flex-1">
-            <Text className="text-[9px] font-bold uppercase text-text-secondary">Carbs</Text>
+            <Text className="text-[9px] font-bold uppercase text-text-secondary">{t('currentGoalsCard.carbs')}</Text>
             <Text className="font-bold text-text-primary">
               {goal.carbs}
-              <Text className="ml-0.5 text-[10px] text-text-secondary">g</Text>
+              <Text className="ml-0.5 text-[10px] text-text-secondary">{t('currentGoalsCard.g')}</Text>
             </Text>
           </View>
           <View className="flex-1">
-            <Text className="text-[9px] font-bold uppercase text-text-secondary">Fats</Text>
+            <Text className="text-[9px] font-bold uppercase text-text-secondary">{t('currentGoalsCard.fats')}</Text>
             <Text className="font-bold text-text-primary">
               {goal.fat}
-              <Text className="ml-0.5 text-[10px] text-text-secondary">g</Text>
+              <Text className="ml-0.5 text-[10px] text-text-secondary">{t('currentGoalsCard.g')}</Text>
             </Text>
           </View>
         </View>
@@ -94,10 +97,10 @@ export function CurrentGoalsCard({ goal }: CurrentGoalsCardProps) {
                 <Scale size={theme.iconSize.lg} color={theme.colors.accent.primary} />
                 <View>
                   <Text className="text-[9px] font-bold uppercase text-text-secondary">
-                    Target Weight
+                    {t('currentGoalsCard.targetWeight')}
                   </Text>
                   <Text className="text-sm font-bold text-text-primary">
-                    {goal.targetWeight} <Text className="text-[10px] text-text-secondary">kg</Text>
+                    {goal.targetWeight} <Text className="text-[10px] text-text-secondary">{t('currentGoalsCard.kg')}</Text>
                   </Text>
                 </View>
               </View>
@@ -107,10 +110,10 @@ export function CurrentGoalsCard({ goal }: CurrentGoalsCardProps) {
                 <Percent size={theme.iconSize.lg} color={theme.colors.accent.primary} />
                 <View>
                   <Text className="text-[9px] font-bold uppercase text-text-secondary">
-                    Body Fat
+                    {t('currentGoalsCard.bodyFat')}
                   </Text>
                   <Text className="text-sm font-bold text-text-primary">
-                    {goal.bodyFat} <Text className="text-[10px] text-text-secondary">%</Text>
+                    {goal.bodyFat} <Text className="text-[10px] text-text-secondary">{t('currentGoalsCard.percent')}</Text>
                   </Text>
                 </View>
               </View>
@@ -119,7 +122,7 @@ export function CurrentGoalsCard({ goal }: CurrentGoalsCardProps) {
               <View className="min-w-[45%] flex-1 flex-row items-center gap-3">
                 <Activity size={theme.iconSize.lg} color={theme.colors.accent.primary} />
                 <View>
-                  <Text className="text-[9px] font-bold uppercase text-text-secondary">FFMI</Text>
+                  <Text className="text-[9px] font-bold uppercase text-text-secondary">{t('currentGoalsCard.ffmi')}</Text>
                   <Text className="text-sm font-bold text-text-primary">
                     {goal.ffmi.toFixed(1)}
                   </Text>
@@ -130,7 +133,7 @@ export function CurrentGoalsCard({ goal }: CurrentGoalsCardProps) {
               <View className="min-w-[45%] flex-1 flex-row items-center gap-3">
                 <Calculator size={theme.iconSize.lg} color={theme.colors.accent.primary} />
                 <View>
-                  <Text className="text-[9px] font-bold uppercase text-text-secondary">BMI</Text>
+                  <Text className="text-[9px] font-bold uppercase text-text-secondary">{t('currentGoalsCard.bmi')}</Text>
                   <Text className="text-sm font-bold text-text-primary">{goal.bmi.toFixed(1)}</Text>
                 </View>
               </View>

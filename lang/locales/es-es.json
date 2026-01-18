@@ -402,5 +402,34 @@
   "editScreenInfo": {
     "title": "Abre el código de esta pantalla:",
     "description": "Cambia cualquier texto, guarda el archivo y tu aplicación se actualizará automáticamente."
+  },
+  "eatingPhaseBadge": {
+    "cutting": "DEFINICIÓN",
+    "maintenance": "MANTENIMIENTO",
+    "bulking": "VOLUMEN",
+    "lean-bulk": "VOLUMEN LIMPIO"
+  },
+  "currentGoalsCard": {
+    "dailyTarget": "Objetivo Diario",
+    "kcal": "kcal",
+    "protein": "Proteína",
+    "carbs": "Carbohidratos",
+    "fats": "Grasas",
+    "targetWeight": "Peso Objetivo",
+    "bodyFat": "Grasa Corporal",
+    "ffmi": "FFMI",
+    "bmi": "IMC",
+    "g": "g",
+    "kg": "kg",
+    "percent": "%"
+  },
+  "goalHistoryCard": {
+    "kcal": "KCAL",
+    "proteinPrefix": "P",
+    "carbsPrefix": "C",
+    "fatPrefix": "G",
+    "g": "g",
+    "kg": "kg",
+    "bf": "GC"
   }
 }

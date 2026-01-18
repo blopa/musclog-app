@@ -1,23 +1,9 @@
 import React from 'react';
 import { View, Text } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 
 type EatingPhase = 'cutting' | 'maintenance' | 'bulking' | 'lean-bulk';
-
-const eatingPhaseStyles: Record<EatingPhase, { label: string }> = {
-  cutting: {
-    label: 'CUTTING',
-  },
-  maintenance: {
-    label: 'MAINTENANCE',
-  },
-  bulking: {
-    label: 'BULKING',
-  },
-  'lean-bulk': {
-    label: 'LEAN BULK',
-  },
-};
 
 interface EatingPhaseBadgeProps {
   phase: EatingPhase;
@@ -30,9 +16,11 @@ export function EatingPhaseBadge({
   variant = 'default',
   showBorder = true,
 }: EatingPhaseBadgeProps) {
-  const styles = eatingPhaseStyles[phase];
+  const { t } = useTranslation();
   const textSize = variant === 'compact' ? 'text-[9px]' : 'text-[10px]';
   const paddingY = variant === 'compact' ? 'py-0.5' : 'py-1';
+
+  const label = t(`eatingPhaseBadge.${phase}`);
 
   const backgroundColor =
     phase === 'cutting'
@@ -69,7 +57,7 @@ export function EatingPhaseBadge({
         ...(showBorder && { borderColor }),
       }}>
       <Text className={`${textSize} font-bold`} style={{ color: textColor }}>
-        {styles.label}
+        {label}
       </Text>
     </View>
   );
