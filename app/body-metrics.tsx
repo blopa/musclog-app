@@ -244,17 +244,17 @@ export default function BodyMetricsScreen() {
               <View className="mb-6 flex-row items-center justify-between">
                 <View>
                   <Text className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">
-                    {t('bodyMetrics.current.label')} {currentMetric.label}
+                    {`${t('bodyMetrics.current.label')} ${currentMetric.label}`}
                   </Text>
                   <View className="flex-row items-baseline gap-1">
                     <Text className="text-3xl font-extrabold text-text-primary">
                       {currentMetric.current}
                     </Text>
-                    {currentMetric.unit && (
+                    {currentMetric.unit && currentMetric.unit.length > 0 ? (
                       <Text className="ml-1 text-lg font-medium text-text-tertiary">
                         {currentMetric.unit}
                       </Text>
-                    )}
+                    ) : null}
                   </View>
                 </View>
                 <View
