@@ -81,9 +81,9 @@ export const StepperInput: React.FC<StepperInputProps> = ({
         style={{ color: theme.colors.accent.primary }}>
         {label}
       </Text>
-      <View className="flex flex-row items-center gap-3">
+      <View className="flex flex-row items-center gap-2 overflow-hidden">
         <Pressable
-          className="h-14 w-14 items-center justify-center rounded-xl active:scale-95"
+          className="h-14 min-w-[56px] flex-shrink-0 items-center justify-center rounded-xl active:scale-95"
           style={{ backgroundColor: theme.colors.background.card }}
           onPress={() => {
             const newVal = internalValue - 1;
@@ -95,7 +95,7 @@ export const StepperInput: React.FC<StepperInputProps> = ({
         </Pressable>
         {editing ? (
           <View
-            className="h-14 flex-1 flex-row items-center justify-center rounded-xl"
+            className="h-14 flex-1 flex-row items-center justify-center rounded-xl min-w-0"
             style={{ backgroundColor: theme.colors.background.card }}>
             <TextInput
               ref={inputRef}
@@ -104,7 +104,7 @@ export const StepperInput: React.FC<StepperInputProps> = ({
               onBlur={handleInputBlur}
               onSubmitEditing={handleInputSubmit}
               keyboardType="numeric"
-              className="flex-1 p-0 text-center text-2xl font-bold text-text-primary"
+              className="flex-1 p-0 text-center text-2xl font-bold text-text-primary min-w-0"
               style={{
                 padding: theme.spacing.padding.zero,
                 margin: theme.spacing.margin.zero,
@@ -113,21 +113,21 @@ export const StepperInput: React.FC<StepperInputProps> = ({
               returnKeyType="done"
               selectTextOnFocus
             />
-            {unit && <Text className="ml-1 text-2xl font-normal text-text-tertiary">{unit}</Text>}
+            {unit && <Text className="ml-1 text-2xl font-normal text-text-tertiary flex-shrink-0">{unit}</Text>}
           </View>
         ) : (
           <Pressable
-            className="h-14 flex-1 items-center justify-center rounded-xl"
+            className="h-14 flex-1 items-center justify-center rounded-xl min-w-0"
             style={{ backgroundColor: theme.colors.background.card }}
             onPress={handleValuePress}>
-            <Text className="text-center text-2xl font-bold text-text-primary">
+            <Text className="text-center text-2xl font-bold text-text-primary" numberOfLines={1} ellipsizeMode="tail">
               {internalValue.toFixed(1)}{' '}
               {unit && <Text className="font-normal text-text-tertiary">{unit}</Text>}
             </Text>
           </Pressable>
         )}
         <Pressable
-          className="h-14 w-14 items-center justify-center rounded-xl active:scale-95"
+          className="h-14 min-w-[56px] flex-shrink-0 items-center justify-center rounded-xl active:scale-95"
           style={{ backgroundColor: theme.colors.background.card }}
           onPress={() => {
             const newVal = internalValue + 1;

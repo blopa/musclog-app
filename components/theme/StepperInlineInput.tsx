@@ -66,23 +66,29 @@ export function StepperInlineInput({
   };
 
   return (
-    <View className="flex-row items-center justify-between rounded-xl border border-emerald-900/20 bg-bg-card p-5">
-      <View className="flex-row items-center gap-3">
+    <View className="flex-row items-center justify-between rounded-xl border border-emerald-900/20 bg-bg-card p-5 overflow-hidden">
+      <View className="flex-1 flex-row items-center gap-3 pr-3 min-w-0">
         {Icon && (
           <View
-            className="h-10 w-10 items-center justify-center rounded-lg"
+            className="h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg"
             style={{ backgroundColor: theme.colors.status.emerald20 }}>
             <Icon size={theme.iconSize.lg} color={theme.colors.status.emeraldLight} />
           </View>
         )}
-        <View>
-          <Text className="font-semibold text-white">{label}</Text>
-          {subtitle && <Text className="text-xs text-gray-500">{subtitle}</Text>}
+        <View className="flex-1 min-w-0">
+          <Text className="font-semibold text-white" numberOfLines={1} ellipsizeMode="tail">
+            {label}
+          </Text>
+          {subtitle && (
+            <Text className="text-xs text-gray-500" numberOfLines={1} ellipsizeMode="tail">
+              {subtitle}
+            </Text>
+          )}
         </View>
       </View>
-      <View className="flex-row items-center gap-3">
+      <View className="flex-row items-center gap-2 flex-shrink-0">
         <Pressable
-          className="h-10 w-10 items-center justify-center rounded-full border"
+          className="h-10 min-w-[40px] items-center justify-center rounded-full border"
           style={{
             backgroundColor: theme.colors.accent.primary10,
             borderColor: theme.colors.accent.primary20,
@@ -132,7 +138,7 @@ export function StepperInlineInput({
           </Pressable>
         )}
         <Pressable
-          className="h-10 w-10 items-center justify-center rounded-full border"
+          className="h-10 min-w-[40px] items-center justify-center rounded-full border"
           style={{
             backgroundColor: theme.colors.accent.primary10,
             borderColor: theme.colors.accent.primary20,
