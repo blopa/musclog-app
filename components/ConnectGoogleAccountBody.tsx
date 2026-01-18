@@ -18,10 +18,6 @@ export function ConnectGoogleAccountBody({
   onMaybeLater,
 }: ConnectGoogleAccountBodyProps) {
   const { t } = useTranslation();
-  // Google logo URL from the HTML
-  const googleLogoUrl =
-    'https://lh3.googleusercontent.com/aida-public/AB6AXuDD-q3Yh6AXDMBPsNrW8_Mtje_mP-T7JtL2ix7KBpT5JakMhY0GH9ZzVeFieftJtlvRrROPrN33q5WGo5cV_-PvS1s3jww8amWF0-_e3BB18Amq9No7czYlpbhTXQFTg_uB7w32EFnRneY58tBVGkSQhbzcEgTlIw5kyLmYeMA7dv2HjDQsmK8zswC2hZ-zjH9L9Gm27tWZzdxTNAqLHqrKEjUS12QIYBvVRvUFJGFbDRaXMCSeRipp9EwzLNFjBFjdTliadeykQ2CB';
-
   // Background image URL from the HTML
   const backgroundImageUrl =
     'https://lh3.googleusercontent.com/aida-public/AB6AXuBIUHHpLboa-7oRhIVkiQfJlErR0GL5ntRD8oyMWVpa6uB4tGMdsX6LIlnAAIdkFL4BKrPedtVAuVvXfJVSlwUJhiRZJicaFaSI2SVcksaQbJt8h-TZ-GTwmoxVs96uxnle3cZi0de4o3rX7zv9W9iqh7cFiLzT1F0Hj62866bpdABQPz4ujVrWRLTrbU4SHg2a1ZFVM79TkxqXTVsms0B29rdyIiGlDP73-Jb9YfS9_DTpueq2UvyVdxJLHz4nyJHdM_vZk7PAh7O7';
@@ -40,10 +36,7 @@ export function ConnectGoogleAccountBody({
     <>
       <View className="flex-1 px-5 pb-6">
         {/* Main Visual Card */}
-        <GoogleGeminiIllustration
-          googleLogoUrl={googleLogoUrl}
-          backgroundImageUrl={backgroundImageUrl}
-        />
+        <GoogleGeminiIllustration backgroundImageUrl={backgroundImageUrl} />
 
         {/* Title and Description */}
         <View className="mb-8 text-center">
@@ -174,10 +167,7 @@ export function ConnectGoogleAccountBody({
       </View>
       <View className="bg-transparent px-5 pb-2 pt-4">
         <View className="w-full items-center">
-          <GoogleSignInButton
-            onPress={handleConnect}
-            variant="dark"
-          />
+          <GoogleSignInButton onPress={handleConnect} variant="dark" />
         </View>
         <Pressable
           onPress={handleMaybeLater}

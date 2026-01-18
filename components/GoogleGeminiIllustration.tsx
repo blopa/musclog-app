@@ -3,12 +3,11 @@ import { View, Image } from 'react-native';
 import { Sparkles, Zap } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { theme } from '../theme';
+import { GoogleLogoSvg } from './GoogleLogoSvg';
 
 export const GoogleGeminiIllustration = ({
-  googleLogoUrl,
   backgroundImageUrl,
 }: {
-  googleLogoUrl: string;
   backgroundImageUrl: string;
 }) => {
   return (
@@ -81,13 +80,7 @@ export const GoogleGeminiIllustration = ({
                   minHeight: theme.iconSize['2xl'],
                   ...theme.shadows.sm,
                 }}>
-                <Image
-                  source={{
-                    uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBEDjeI4ad2IaWbBhnLQwpPkGJHZTJI_AZ1dIssXH__JLkQoYD_Qm_649_s2NsALfqefCg8-FNDsip3kbi3ZsYEqkdMXwpZEmfUOsmkxzCOTW2CdWBOOCnqgZ_Bgrq-S9vigmQajIBEFLcWErkfxsQCsPyfFy1ynq4Iz7Zb5gK74Ymge1VRW0z0aGL9BZjeAWO6sQepsDa91JCegUclE123Tm5VN1Oi94_nDfjS1TRvsc5nyQLQmD3pXLQDuSb6wQLcPYWv4tphDZ_z',
-                  }}
-                  style={{ width: theme.iconSize.sm, height: theme.iconSize.sm }}
-                  resizeMode="contain"
-                />
+                <GoogleLogoSvg size={theme.iconSize.sm} />
               </View>
               {/* Sparkles icon - directly in pill, no background */}
               <Sparkles
