@@ -58,7 +58,7 @@ const MOCK_EXERCISES: ExerciseData[] = [
   },
 ];
 
-export function WorkoutHistoryModal({
+export function WorkoutSessionHistoryModal({
   visible,
   onClose,
   exerciseName,

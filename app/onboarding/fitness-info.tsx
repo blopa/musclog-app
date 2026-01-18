@@ -241,6 +241,20 @@ export default function FitnessInfo() {
     }
   };
 
+  const handleSkip = async () => {
+    try {
+      // Mark onboarding as completed before navigating to home
+      await setOnboardingCompleted();
+
+      // Navigate to home
+      router.push('/');
+    } catch (error) {
+      console.error('Error skipping fitness info:', error);
+      // Still navigate to home even if marking complete fails
+      router.push('/');
+    }
+  };
+
   if (isLoading) {
     return (
       <SafeAreaView className="flex-1" edges={['top', 'bottom']}>
@@ -266,6 +280,7 @@ export default function FitnessInfo() {
           onSave={handleSave}
           initialData={initialData}
           isLoading={isSaving}
+          onMaybeLater={handleSkip}
         />
       </ScrollView>
     </SafeAreaView>

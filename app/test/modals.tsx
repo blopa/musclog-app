@@ -18,7 +18,7 @@ import { FoodSearchModal } from '../../components/modals/FoodSearchModal';
 import { NotificationsModal } from '../../components/modals/NotificationsModal';
 import { WorkoutOptionsModal } from '../../components/modals/WorkoutOptionsModal';
 import { ReplaceExerciseModal } from '../../components/modals/ReplaceExerciseModal';
-import { WorkoutHistoryModal } from '../../components/modals/WorkoutHistoryModal';
+import { WorkoutSessionHistoryModal } from '../../components/modals/WorkoutSessionHistoryModal';
 import { DatePickerModal } from '../../components/modals/DatePickerModal';
 import { CreateWorkoutOptionsModal } from '../../components/modals/CreateWorkoutOptionsModal';
 import { EditPersonalInfoModal } from '../../components/modals/EditPersonalInfoModal';
@@ -923,7 +923,7 @@ export default function ModalsTestScreen() {
         currentExercise="Bench Press"
       />
 
-      <WorkoutHistoryModal
+      <WorkoutSessionHistoryModal
         visible={isWorkoutHistoryVisible}
         onClose={() => setIsWorkoutHistoryVisible(false)}
         workoutName="Push Day"

@@ -16,7 +16,7 @@ import { LogSetPerformanceModal } from '../../components/modals/LogSetPerformanc
 import { EditSetDetailsModal } from '../../components/modals/EditSetDetailsModal';
 import { ConfirmationModal } from '../../components/modals/ConfirmationModal';
 import { ReplaceExerciseModal, Exercise } from '../../components/modals/ReplaceExerciseModal';
-import { WorkoutHistoryModal } from '../../components/modals/WorkoutHistoryModal';
+import { WorkoutSessionHistoryModal } from '../../components/modals/WorkoutSessionHistoryModal';
 import { SessionFeedbackModal } from '../../components/modals/SessionFeedbackModal';
 import { Button } from '../../components/theme/Button';
 
@@ -288,7 +288,7 @@ export default function WorkoutSessionScreen() {
       />
 
       {/* Workout History Modal */}
-      <WorkoutHistoryModal
+      <WorkoutSessionHistoryModal
         visible={isHistoryModalVisible}
         onClose={() => setIsHistoryModalVisible(false)}
         exerciseName={exerciseData.name}

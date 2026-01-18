@@ -28,6 +28,7 @@ type EditFitnessDetailsBodyProps = {
   onSave?: (data: FitnessDetails) => void;
   initialData?: Partial<FitnessDetails>;
   isLoading?: boolean;
+  onMaybeLater?: () => void;
 };
 
 export type FitnessDetails = {
@@ -44,6 +45,7 @@ export function EditFitnessDetailsBody({
   onSave,
   initialData,
   isLoading,
+  onMaybeLater,
 }: EditFitnessDetailsBodyProps) {
   const { t } = useTranslation();
   const [units, setUnits] = useState<'imperial' | 'metric'>(initialData?.units ?? 'metric');
@@ -335,6 +337,15 @@ export function EditFitnessDetailsBody({
             loading={isLoading}
             onPress={handleSave}
           />
+          {onMaybeLater && (
+            <Pressable
+              className="mt-3 w-full items-center py-2 active:opacity-70"
+              onPress={onMaybeLater}>
+              <Text className="text-sm font-medium" style={{ color: theme.colors.text.gray500 }}>
+                {t('onboarding.healthConnect.maybeLater')}
+              </Text>
+            </Pressable>
+          )}
         </View>
       </View>
       <BottomPopUpMenu
