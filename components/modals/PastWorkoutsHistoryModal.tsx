@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { Activity, Dumbbell, Search, SlidersHorizontal, Square, Trophy } from 'lucide-react-native';
 import { format } from 'date-fns';
@@ -155,7 +155,7 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
     return normalized;
   };
 
-  const loadWorkoutHistory = async () => {
+  const loadWorkoutHistory = useCallback(async () => {
     setIsLoading(true);
     try {
       // Calculate date range filter
@@ -288,7 +288,7 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [filters.dateRange, filters.minDuration, filters.muscleGroups, filters.workoutType]);
 
   // Load workout history when modal becomes visible or filters change
   useEffect(() => {
