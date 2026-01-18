@@ -12,9 +12,6 @@ import { PageIndicators } from '../../components/theme/PageIndicators';
 import { Button } from '../../components/theme/Button';
 import PreRegistrationIntro from '../../components/PreRegistrationIntro';
 
-const PHONE_MOCKUP_IMAGE_URL_2 = 'https://lh3.googleusercontent.com/aida-public/AB6AXuCvPgrOeONs-O17Ju_HUwmNT_-Sv1SdtaoahIETdH1VPVF1sOdhGUVQPfGCSQc40hRRzo9Pk8XBan5A2gVZ7YsZusBCI8VD_Aw0SdNRgiwKnFsCdF55c3RaEo-hfwVzYVvQAcOFGNF_8EImiOV6GZmWmjqekRUfuW_a5LbmALIn-K55kdyBu4zo7vTYlHSHWQg4CElJfLX2KtzBWBN-Pqi_XccbCd6syoCCx_4xrZegtQNP1Re7Vt15261Ddj7edCPGTd3GNZO7MmHY';
-const PHONE_MOCKUP_IMAGE_URL_3 = 'https://lh3.googleusercontent.com/aida-public/AB6AXuCvPgrOeONs-O17Ju_HUwmNT_-Sv1SdtaoahIETdH1VPVF1sOdhGUVQPfGCSQc40hRRzo9Pk8XBan5A2gVZ7YsZusBCI8VD_Aw0SdNRgiwKnFsCdF55c3RaEo-hfwVzYVvQAcOFGNF_8EImiOV6GZmWmjqekRUfuW_a5LbmALIn-K55kdyBu4zo7vTYlHSHWQg4CElJfLX2KtzBWBN-Pqi_XccbCd6syoCCx_4xrZegtQNP1Re7Vt15261Ddj7edCPGTd3GNZO7MmHY';
-
 type OnboardingBodyProps = {
   imageUrl?: string;
   title: string;
@@ -84,8 +81,7 @@ function OnboardingStepThree({ imageUrl, title, description, badge }: Onboarding
       <View
         className="relative mb-6 flex w-full items-center justify-center"
         style={{
-          aspectRatio: theme.aspectRatio.portrait,
-          maxHeight: Dimensions.get('window').height * 0.45,
+          aspectRatio: 1,
         }}>
         {/* Ambient Background Glow */}
         <View className="absolute inset-0 rounded-full opacity-60">
@@ -102,12 +98,24 @@ function OnboardingStepThree({ imageUrl, title, description, badge }: Onboarding
 
         {/* Main Image Card - TODO move to separate file maybe? */}
         <View
-          className="relative z-10 h-full w-full overflow-hidden rounded-3xl border"
+          className="relative z-10 h-full w-full rounded-3xl border"
           style={{
             ...theme.shadows.lg,
             borderColor: theme.colors.background.white10,
+            overflow: 'hidden',
           }}>
-          <ImageBackground source={{ uri: imageUrl }} className="h-full w-full" resizeMode="cover">
+          <ImageBackground
+            source={require('../../assets/app-insights.png')}
+            style={{
+              width: '100%',
+              height: '100%',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+            resizeMode="contain"
+            imageStyle={{
+              resizeMode: 'contain',
+            }}>
             {/* Gradient Overlay */}
             <LinearGradient
               colors={[theme.colors.overlay.backdrop90, 'transparent', 'transparent']}
@@ -190,8 +198,7 @@ function OnboardingStepTwo({ imageUrl, title, description, badge }: OnboardingBo
       <View
         className="relative mb-6 flex w-full items-center justify-center"
         style={{
-          aspectRatio: theme.aspectRatio.portrait,
-          maxHeight: Dimensions.get('window').height * 0.45,
+          aspectRatio: 1,
         }}>
         {/* Ambient Background Glow */}
         <View className="absolute inset-0 rounded-full opacity-60">
@@ -208,12 +215,24 @@ function OnboardingStepTwo({ imageUrl, title, description, badge }: OnboardingBo
 
         {/* Main Image Card */}
         <View
-          className="relative z-10 h-full w-full overflow-hidden rounded-3xl border"
+          className="relative z-10 h-full w-full rounded-3xl border"
           style={{
             ...theme.shadows.lg,
             borderColor: theme.colors.background.white10,
+            overflow: 'hidden',
           }}>
-          <ImageBackground source={{ uri: imageUrl }} className="h-full w-full" resizeMode="cover">
+          <ImageBackground
+            source={require('../../assets/nutrition-tracking.png')}
+            style={{
+              width: '100%',
+              height: '100%',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+            resizeMode="contain"
+            imageStyle={{
+              resizeMode: 'contain',
+            }}>
             {/* Gradient Overlay */}
             <LinearGradient
               colors={[theme.colors.overlay.backdrop90, 'transparent', 'transparent']}
@@ -319,14 +338,14 @@ function OnboardingStepOne({ imageUrl, title, description, badge }: OnboardingBo
             borderColor: theme.colors.background.white10,
             overflow: 'hidden',
           }}>
-          <ImageBackground 
-            source={require('../../assets/efordless-tracking.png')} 
-            style={{ 
-              width: '100%', 
+          <ImageBackground
+            source={require('../../assets/efordless-tracking.png')}
+            style={{
+              width: '100%',
               height: '100%',
               justifyContent: 'center',
               alignItems: 'center',
-            }} 
+            }}
             resizeMode="contain"
             imageStyle={{
               resizeMode: 'contain',
@@ -473,7 +492,6 @@ export default function OnboardingScreen() {
           {/* Step 2 */}
           <View key="step2">
             <OnboardingStepTwo
-              imageUrl={PHONE_MOCKUP_IMAGE_URL_2}
               title={t('onboarding.steps.step2.title')}
               description={t('onboarding.steps.step2.description')}
             />
@@ -482,7 +500,6 @@ export default function OnboardingScreen() {
           {/* Step 3 */}
           <View key="step3">
             <OnboardingStepThree
-              imageUrl={PHONE_MOCKUP_IMAGE_URL_3}
               title={t('onboarding.steps.step3.title')}
               description={t('onboarding.steps.step3.description')}
             />
