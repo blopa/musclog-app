@@ -280,6 +280,39 @@
     "exercise": "Exercise {{number}}",
     "set": "Set {{number}}"
   },
+  "pastWorkoutHistory": {
+    "title": "Workout History",
+    "filters": {
+      "title": "Filter Workouts",
+      "workoutType": "WORKOUT TYPE",
+      "minDuration": "MIN. DURATION",
+      "reset": "Reset",
+      "applyFilters": "Apply Filters",
+      "workoutTypes": {
+        "all": "All Types",
+        "strength": "Strength",
+        "cardio": "Cardio",
+        "hiit": "HIIT",
+        "yoga": "Yoga"
+      },
+      "dateRange": {
+        "title": "DATE RANGE",
+        "30days": "Last 30 Days",
+        "90days": "Last 90 Days",
+        "custom": "Custom"
+      },
+      "muscleGroups": {
+        "title": "MUSCLE GROUP (MULTI-SELECT)",
+        "chest": "Chest",
+        "back": "Back",
+        "legs": "Legs",
+        "shoulders": "Shoulders",
+        "arms": "Arms",
+        "core": "Core",
+        "fullBody": "Full Body"
+      }
+    }
+  },
   "sessionFeedback": {
     "title": "Session Feedback",
     "subtitle": "Rate your performance",

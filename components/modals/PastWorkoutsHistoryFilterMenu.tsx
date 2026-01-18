@@ -41,7 +41,10 @@ export function PastWorkoutsHistoryFilterMenu({
   const workoutTypes = useMemo(
     () => [
       { id: 'all', label: t('pastWorkoutHistory.filters.workoutTypes.all') || 'All Types' },
-      { id: 'strength', label: t('pastWorkoutHistory.filters.workoutTypes.strength') || 'Strength' },
+      {
+        id: 'strength',
+        label: t('pastWorkoutHistory.filters.workoutTypes.strength') || 'Strength',
+      },
       { id: 'cardio', label: t('pastWorkoutHistory.filters.workoutTypes.cardio') || 'Cardio' },
       { id: 'hiit', label: t('pastWorkoutHistory.filters.workoutTypes.hiit') || 'HIIT' },
       { id: 'yoga', label: t('pastWorkoutHistory.filters.workoutTypes.yoga') || 'Yoga' },
@@ -234,8 +237,7 @@ export function PastWorkoutsHistoryFilterMenu({
               letterSpacing: theme.typography.letterSpacing.extraWide,
               marginBottom: theme.spacing.padding.base,
             }}>
-            {t('pastWorkoutHistory.filters.muscleGroups.title') ||
-              'MUSCLE GROUP (MULTI-SELECT)'}
+            {t('pastWorkoutHistory.filters.muscleGroups.title') || 'MUSCLE GROUP (MULTI-SELECT)'}
           </Text>
           <View
             style={{

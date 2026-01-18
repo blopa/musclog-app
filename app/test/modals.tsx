@@ -691,9 +691,12 @@ export default function ModalsTestScreen() {
 
           {/* Past Workouts History Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Past Workouts History Modal</Text>
+            <Text className="mb-2 text-lg font-bold text-text-primary">
+              Past Workouts History Modal
+            </Text>
             <Text className="mb-4 text-sm text-text-secondary">
-              A full-screen modal displaying past workout history with search and filtering capabilities.
+              A full-screen modal displaying past workout history with search and filtering
+              capabilities.
             </Text>
             <Button
               label="Open Past Workouts History Modal"

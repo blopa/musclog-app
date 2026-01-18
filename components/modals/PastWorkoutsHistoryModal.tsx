@@ -1,13 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, Pressable, TextInput } from 'react-native';
-import {
-  Search,
-  SlidersHorizontal,
-  Dumbbell,
-  Trophy,
-  Square,
-  Activity,
-} from 'lucide-react-native';
+import { Search, SlidersHorizontal, Dumbbell, Trophy, Square, Activity } from 'lucide-react-native';
 import { theme } from '../../theme';
 import { FullScreenModal } from './FullScreenModal';
 import { useTranslation } from 'react-i18next';
@@ -283,25 +276,11 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
       <PastWorkoutsHistoryFilterMenu
         visible={isFilterMenuVisible}
         onClose={() => setIsFilterMenuVisible(false)}
-        onDateRangeFilter={() => {
-          console.log('Date range filter pressed');
-          setIsFilterMenuVisible(false);
-        }}
-        onSortFilter={() => {
-          console.log('Sort filter pressed');
-          setIsFilterMenuVisible(false);
-        }}
-        onPRsOnlyFilter={() => {
-          console.log('PRs only filter pressed');
-          setIsFilterMenuVisible(false);
-        }}
-        onWorkoutTypeFilter={() => {
-          console.log('Workout type filter pressed');
-          setIsFilterMenuVisible(false);
+        onApplyFilters={(filters) => {
+          console.log('Filters applied:', filters);
         }}
         onClearFilters={() => {
-          console.log('Clear filters pressed');
-          setIsFilterMenuVisible(false);
+          console.log('Filters cleared');
         }}
       />
     </FullScreenModal>
