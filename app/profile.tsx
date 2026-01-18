@@ -8,6 +8,7 @@ import { MasterLayout } from '../components/MasterLayout';
 import { StatCard } from '../components/cards/StatCard';
 import { ManagementItem } from '../components/ManagementItem';
 import { ProgressIndicator } from '../components/theme/ProgressIndicator';
+import BodyMetricsHistoryModal from '../components/modals/BodyMetricsHistoryModal';
 
 const PROFILE_DATA = {
   user: {
@@ -99,6 +100,7 @@ export default function ProfileScreen() {
   const router = useRouter();
   const { user, stats, management } = PROFILE_DATA;
   const [isSyncing, setIsSyncing] = useState(false);
+  const [isBodyMetricsHistoryVisible, setIsBodyMetricsHistoryVisible] = useState(false);
 
   // Simulate syncing with HealthKit or external services
   const syncData = async () => {
@@ -159,7 +161,7 @@ export default function ProfileScreen() {
             <Text className="text-2xl font-bold text-text-primary">
               {t('profile.currentStats')}
             </Text>
-            <Pressable onPress={() => router.push('/stats-history')}>
+            <Pressable onPress={() => setIsBodyMetricsHistoryVisible(true)}>
               <Text className="text-sm font-semibold text-accent-primary">
                 {t('profile.history')}
               </Text>
@@ -213,6 +215,11 @@ export default function ProfileScreen() {
         {/* Bottom spacing for navigation */}
         <View className="h-24" />
       </ScrollView>
+
+      <BodyMetricsHistoryModal
+        visible={isBodyMetricsHistoryVisible}
+        onClose={() => setIsBodyMetricsHistoryVisible(false)}
+      />
     </MasterLayout>
   );
 }
