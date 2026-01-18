@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Plus } from 'lucide-react-native';
-import { theme } from '../theme';
-import { CurrentGoalsCard } from './cards/CurrentGoalsCard';
-import { GoalHistoryCard } from './cards/GoalHistoryCard';
-import { FullScreenModal } from './modals/FullScreenModal';
-import { NutritionGoalsModal } from './modals/NutritionGoalsModal';
-import { Button } from './theme/Button';
+import { theme } from '../../theme';
+import { CurrentGoalsCard } from '../cards/CurrentGoalsCard';
+import { GoalHistoryCard } from '../cards/GoalHistoryCard';
+import { FullScreenModal } from './FullScreenModal';
+import { NutritionGoalsModal } from './NutritionGoalsModal';
+import { Button } from '../theme/Button';
 
 type EatingPhase = 'cutting' | 'maintenance' | 'bulking' | 'lean-bulk';
 

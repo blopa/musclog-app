@@ -37,7 +37,7 @@ import ExercisesModal from '../../components/modals/ExercisesModal';
 import ViewExerciseModal from '../../components/modals/ViewExerciseModal';
 import CreateExerciseModal from '../../components/modals/CreateExerciseModal';
 import NewCustomFoodModal from '../../components/modals/NewCustomFoodModal';
-import GoalsManagementModal from '../../components/GoalsManagementModal';
+import GoalsManagementModal from '../../components/modals/GoalsManagementModal';
 
 export default function ModalsTestScreen() {
   // Nutrition Goals Modal
