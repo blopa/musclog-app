@@ -367,21 +367,21 @@ export function NutritionGoalsBody({
           <Pressable
             onPress={() => setIsTargetDatePickerVisible(true)}
             className="flex-row items-center justify-between rounded-xl border border-emerald-900/20 bg-bg-card p-5">
-            <View className="flex-row items-center gap-3">
+            <View className="flex-1 flex-row items-center gap-3 pr-3">
               <View
                 className="h-10 w-10 items-center justify-center rounded-lg"
                 style={{ backgroundColor: theme.colors.status.emerald20 }}>
                 <Calendar size={theme.iconSize.lg} color={theme.colors.status.emeraldLight} />
               </View>
-              <View>
+              <View className="flex-1">
                 <Text className="font-semibold text-white">{t('nutritionGoals.targetDate')}</Text>
-                <Text className="text-xs text-gray-500">
+                <Text className="text-xs text-gray-500" numberOfLines={1}>
                   {t('nutritionGoals.targetDateSublabel')}
                 </Text>
               </View>
             </View>
-            <View className="flex-row items-center gap-2">
-              <Text className="text-text-secondary">
+            <View className="flex-shrink flex-row items-center gap-2">
+              <Text className="text-text-secondary" numberOfLines={1}>
                 {targetDate != null
                   ? format(new Date(targetDate), 'MMM d, yyyy')
                   : t('nutritionGoals.targetDateNotSet')}
