@@ -44,9 +44,6 @@ export function HealthConnectIllustration() {
         style={{
           width: ILLUSTRATION_SIZE,
           height: ILLUSTRATION_SIZE,
-          ...theme.shadows.lg,
-          shadowColor: theme.colors.status.indigo,
-          shadowOpacity: theme.colors.opacity.subtle,
         }}>
         <LinearGradient
           colors={[theme.colors.status.indigo, theme.colors.status.emeraldLight]}
