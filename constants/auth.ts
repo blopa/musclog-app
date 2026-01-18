@@ -5,7 +5,7 @@ export const GOOGLE_CLIENT_ID_WEB =
   '182653769964-19v2egl06jrj6650ci08bj97qeq5ilon.apps.googleusercontent.com';
 
 // Redirect URIs
-export const GOOGLE_REDIRECT_URI_MOBILE = 'musclog://';
+export const GOOGLE_REDIRECT_URI_MOBILE = 'com.werules.logger://';
 
 // OAuth Scopes
 export const GOOGLE_SCOPES = [
