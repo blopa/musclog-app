@@ -24,7 +24,7 @@ export function GoogleSignInButton({
       accessibilityRole="button"
       accessibilityLabel={t('connectGoogleAccount.connectWithGoogle')}
       className={classNames(
-        'relative h-12 min-w-min max-w-[400px] flex-row items-center overflow-hidden rounded-[20px] border px-4',
+        'relative h-12 min-w-[183px] flex-row items-center overflow-hidden rounded-[20px] border px-4',
         'transition-[background-color,border-color,box-shadow] duration-[218ms]',
         'hover:shadow-[0_1px_2px_0_rgba(60,64,67,0.30),0_1px_3px_1px_rgba(60,64,67,0.15)]',
 
@@ -54,9 +54,9 @@ export function GoogleSignInButton({
       {/* Disabled overlay (dark only) */}
       {!isLight && disabled && <View className="absolute inset-0 bg-[#e3e3e3] opacity-[12%]" />}
 
-      <View className="w-full flex-row items-center">
+      <View className="flex-row items-center">
         {/* Google icon */}
-        <View className={classNames('mr-3 h-6 w-6', disabled && 'opacity-[38%]')}>
+        <View className={classNames('mr-3 h-6 w-6 shrink-0', disabled && 'opacity-[38%]')}>
           <Svg viewBox="0 0 48 48" width="100%" height="100%">
             <Path
               fill="#EA4335"
@@ -81,7 +81,7 @@ export function GoogleSignInButton({
         <Text
           numberOfLines={1}
           className={classNames(
-            'flex-1 text-base font-medium tracking-[0.25px]',
+            'text-base font-medium tracking-[0.25px]',
             isLight ? 'text-[#1f1f1f]' : 'text-[#e3e3e3]',
             disabled && 'opacity-[38%]'
           )}>

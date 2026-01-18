@@ -173,11 +173,12 @@ export function ConnectGoogleAccountBody({
         </View>
       </View>
       <View className="bg-transparent px-5 pb-2 pt-4">
-        <GoogleSignInButton
-          onPress={handleConnect}
-          variant="dark"
-          className="w-full"
-        />
+        <View className="w-full items-center">
+          <GoogleSignInButton
+            onPress={handleConnect}
+            variant="dark"
+          />
+        </View>
         <Pressable
           onPress={handleMaybeLater}
           className="mt-4 w-full items-center justify-center rounded-lg px-4 py-2">

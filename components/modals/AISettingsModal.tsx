@@ -275,11 +275,12 @@ export function AISettingsModal({
           sectionTitleColor={theme.colors.accent.primary}
           toggleItems={geminiToggleItems}
           headerContent={
-            <GoogleSignInButton
-              onPress={onConnectGoogleAccount}
-              variant="dark"
-              className="w-full"
-            />
+            <View className="w-full items-center">
+              <GoogleSignInButton
+                onPress={onConnectGoogleAccount}
+                variant="dark"
+              />
+            </View>
           }
           apiKeyLabel={t('settings.aiSettings.googleGeminiApiKey')}
           apiKeyValue={googleGeminiApiKey}
