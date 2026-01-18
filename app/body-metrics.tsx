@@ -3,8 +3,8 @@ import { View, Text, ScrollView, Pressable } from 'react-native';
 import { ChevronLeft, Plus, SlidersHorizontal, Calendar, Clock } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
-import Svg, { Path, Circle, Defs, LinearGradient, Stop } from 'react-native-svg';
 import { theme } from '../theme';
+import { VictoryChart, VictoryArea, VictoryLine, VictoryScatter, VictoryAxis } from 'victory';
 import { MasterLayout } from '../components/MasterLayout';
 import { SegmentedControl } from '../components/theme/SegmentedControl';
 import { GenericCard } from '../components/cards/GenericCard';
@@ -84,56 +84,101 @@ const HISTORY_ENTRIES = [
   },
 ];
 
-// Simple line chart component
+// Simple line chart component using Victory Native
 function LineChart() {
+  // Convert SVG Bezier path data points to chart data
+  // Based on: M0 120 C 50 110, 100 130, 150 90 C 200 50, 250 70, 300 40 C 350 10, 400 30, 400 30
+  const chartData = [
+    { x: 0, y: 120 },
+    { x: 50, y: 110 },
+    { x: 100, y: 130 },
+    { x: 150, y: 90 },
+    { x: 200, y: 50 },
+    { x: 250, y: 70 },
+    { x: 300, y: 40 },
+    { x: 400, y: 30 },
+  ];
+
+  // Last data point for the circle marker
+  const lastPoint = { x: 300, y: 40 };
+
   return (
     <View className="relative mt-4 h-48 w-full">
-      <Svg width="100%" height="100%" viewBox="0 0 400 150" preserveAspectRatio="none">
-        <Defs>
-          <LinearGradient id="chartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-            <Stop offset="0%" stopColor={theme.colors.accent.primary} stopOpacity="0.3" />
-            <Stop offset="100%" stopColor={theme.colors.accent.primary} stopOpacity="0" />
-          </LinearGradient>
-        </Defs>
-        {/* Area fill */}
-        <Path
-          d="M0 120 C 50 110, 100 130, 150 90 C 200 50, 250 70, 300 40 C 350 10, 400 30, 400 30 L 400 150 L 0 150 Z"
-          fill="url(#chartGradient)"
+      <VictoryChart
+        height={192}
+        padding={{ left: 0, right: 0, top: 0, bottom: 0 }}
+        domain={{ x: [0, 400], y: [0, 150] }}
+        style={{
+          parent: {
+            height: 192,
+            width: '100%',
+          },
+        }}>
+        {/* Grid lines - horizontal dashed lines */}
+        <VictoryAxis
+          dependentAxis
+          style={{
+            axis: { stroke: 'transparent' },
+            grid: {
+              stroke: theme.colors.border.light,
+              strokeDasharray: '4,4',
+              strokeWidth: 1,
+            },
+            ticks: { stroke: 'transparent' },
+            tickLabels: { fill: 'transparent' },
+          }}
+          tickValues={[37.5, 75, 112.5]}
+        />
+        {/* Area fill with gradient */}
+        <VictoryArea
+          data={chartData}
+          interpolation="monotoneX"
+          style={{
+            data: {
+              fill: theme.colors.accent.primary,
+              fillOpacity: 0.3,
+            },
+          }}
         />
         {/* Line */}
-        <Path
-          d="M0 120 C 50 110, 100 130, 150 90 C 200 50, 250 70, 300 40 C 350 10, 400 30, 400 30"
-          fill="none"
-          stroke={theme.colors.accent.primary}
-          strokeWidth="3"
-          strokeLinecap="round"
+        <VictoryLine
+          data={chartData}
+          interpolation="monotoneX"
+          style={{
+            data: {
+              stroke: theme.colors.accent.primary,
+              strokeWidth: 3,
+              strokeLinecap: 'round',
+            },
+          }}
         />
-        {/* Data point circle */}
-        <Circle
-          cx="300"
-          cy="40"
-          r="5"
-          fill={theme.colors.accent.primary}
-          stroke={theme.colors.background.card}
-          strokeWidth="2"
+        {/* Data point circle at the end */}
+        <VictoryScatter
+          data={[lastPoint]}
+          size={10}
+          style={{
+            data: {
+              fill: theme.colors.accent.primary,
+              stroke: theme.colors.background.card,
+              strokeWidth: 2,
+            },
+          }}
         />
-      </Svg>
-      {/* Grid lines */}
-      <View
-        className="pointer-events-none absolute inset-0 flex-col justify-between"
-        style={{ paddingBottom: 8 }}>
-        <View
-          className="w-full border-t border-dashed"
-          style={{ borderColor: theme.colors.border.light }}
+        {/* Hidden independent axis (x-axis) */}
+        <VictoryAxis
+          style={{
+            axis: { stroke: 'transparent' },
+            grid: { stroke: 'transparent' },
+            ticks: { stroke: 'transparent' },
+            tickLabels: { fill: 'transparent' },
+          }}
         />
-        <View
-          className="w-full border-t border-dashed"
-          style={{ borderColor: theme.colors.border.light }}
-        />
-        <View
-          className="w-full border-t border-dashed"
-          style={{ borderColor: theme.colors.border.light }}
-        />
+      </VictoryChart>
+      {/* Custom X-axis labels */}
+      <View className="mt-4 flex-row justify-between px-1">
+        <Text className="text-[10px] font-medium text-text-tertiary">May 12</Text>
+        <Text className="text-[10px] font-medium text-text-tertiary">May 26</Text>
+        <Text className="text-[10px] font-medium text-text-tertiary">Jun 11</Text>
       </View>
     </View>
   );
@@ -271,13 +316,6 @@ export default function BodyMetricsScreen() {
 
               {/* Chart */}
               <LineChart />
-
-              {/* X-axis labels */}
-              <View className="mt-4 flex-row justify-between px-1">
-                <Text className="text-[10px] font-medium text-text-tertiary">May 12</Text>
-                <Text className="text-[10px] font-medium text-text-tertiary">May 26</Text>
-                <Text className="text-[10px] font-medium text-text-tertiary">Jun 11</Text>
-              </View>
             </View>
           </GenericCard>
 
