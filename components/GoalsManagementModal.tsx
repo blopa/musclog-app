@@ -1,10 +1,10 @@
 import React from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { MasterLayout } from '../components/MasterLayout';
 import { theme } from '../theme';
-import { CurrentGoalsCard } from '../components/cards/CurrentGoalsCard';
-import { GoalHistoryCard } from '../components/cards/GoalHistoryCard';
+import { CurrentGoalsCard } from './cards/CurrentGoalsCard';
+import { GoalHistoryCard } from './cards/GoalHistoryCard';
+import { FullScreenModal } from './modals/FullScreenModal';
 
 type EatingPhase = 'cutting' | 'maintenance' | 'bulking' | 'lean-bulk';
 
@@ -82,11 +82,20 @@ const currentGoal: CurrentGoal = {
   goalDate: 'Dec 31, 2024',
 };
 
-export default function GoalsManagementPage() {
+type GoalsManagementModalProps = {
+  visible: boolean;
+  onClose: () => void;
+};
+
+export default function GoalsManagementModal({ visible, onClose }: GoalsManagementModalProps) {
   const { t } = useTranslation();
 
   return (
-    <MasterLayout>
+    <FullScreenModal
+      visible={visible}
+      onClose={onClose}
+      title={t('nutritionGoals.title')}
+      scrollable={false}>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View className="shrink-0 px-6 pb-6">
@@ -138,6 +147,6 @@ export default function GoalsManagementPage() {
         {/* Bottom spacing for navigation */}
         <View className="h-24" />
       </ScrollView>
-    </MasterLayout>
+    </FullScreenModal>
   );
 }
