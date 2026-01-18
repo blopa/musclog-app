@@ -15,6 +15,7 @@ import Svg, { Path, Circle, Defs, LinearGradient, Stop } from 'react-native-svg'
 import { theme } from '../theme';
 import { MasterLayout } from '../components/MasterLayout';
 import { SegmentedControl } from '../components/theme/SegmentedControl';
+import { GenericCard } from '../components/cards/GenericCard';
 
 type MetricType = 'weight' | 'bodyFat' | 'bmi' | 'ffmi';
 type TimePeriod = '30D' | '3M' | '1Y';
@@ -200,19 +201,9 @@ export default function BodyMetricsScreen() {
           />
 
           {/* Current Metric Card */}
-          <View
-            className="relative overflow-hidden border p-5"
-            style={{
-              backgroundColor: '#1E2329', // Neutral grey card background
-              borderRadius: 16,
-              borderColor: theme.colors.background.white5,
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.3,
-              shadowRadius: 8,
-              elevation: 5,
-            }}>
-            <View className="mb-6 flex-row items-center justify-between">
+          <GenericCard variant="card" size="default">
+            <View className="p-5">
+              <View className="mb-6 flex-row items-center justify-between">
               <View>
                 <Text className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">
                   {t('bodyMetrics.current.label')} {currentMetric.label}
@@ -288,13 +279,14 @@ export default function BodyMetricsScreen() {
             {/* Chart */}
             <LineChart />
 
-            {/* X-axis labels */}
-            <View className="mt-4 flex-row justify-between px-1">
-              <Text className="text-[10px] font-medium text-text-tertiary">May 12</Text>
-              <Text className="text-[10px] font-medium text-text-tertiary">May 26</Text>
-              <Text className="text-[10px] font-medium text-text-tertiary">Jun 11</Text>
+              {/* X-axis labels */}
+              <View className="mt-4 flex-row justify-between px-1">
+                <Text className="text-[10px] font-medium text-text-tertiary">May 12</Text>
+                <Text className="text-[10px] font-medium text-text-tertiary">May 26</Text>
+                <Text className="text-[10px] font-medium text-text-tertiary">Jun 11</Text>
+              </View>
             </View>
-          </View>
+          </GenericCard>
 
           {/* History Section */}
           <View className="space-y-4">
@@ -314,15 +306,9 @@ export default function BodyMetricsScreen() {
               {HISTORY_ENTRIES.map((entry) => {
                 const IconComponent = entry.icon;
                 return (
-                  <View
-                    key={entry.id}
-                    className="flex-row items-center justify-between border p-5"
-                    style={{
-                      backgroundColor: '#1E2329', // Neutral grey card background
-                      borderRadius: 16,
-                      borderColor: theme.colors.background.white5,
-                      opacity: entry.opacity || 1,
-                    }}>
+                  <View key={entry.id} style={{ opacity: entry.opacity || 1 }}>
+                    <GenericCard variant="card" size="default">
+                      <View className="flex-row items-center justify-between p-5">
                     <View className="flex-1 flex-row items-center gap-4">
                       <View
                         className="h-10 w-10 items-center justify-center rounded-full"
@@ -369,10 +355,12 @@ export default function BodyMetricsScreen() {
                           <Text className="text-xs font-bold text-text-tertiary">{entry.note}</Text>
                         </View>
                       )}
-                      <Text className="text-[10px] font-medium text-text-tertiary">
-                        {entry.note}
-                      </Text>
-                    </View>
+                        <Text className="text-[10px] font-medium text-text-tertiary">
+                          {entry.note}
+                        </Text>
+                      </View>
+                      </View>
+                    </GenericCard>
                   </View>
                 );
               })}
