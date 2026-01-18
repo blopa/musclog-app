@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text } from 'react-native';
 import { Scale, Percent } from 'lucide-react-native';
 import { theme } from '../../theme';
+import { GenericCard } from './GenericCard';
 
 type GoalType = 'cutting' | 'maintenance' | 'bulking' | 'lean-bulk';
 
@@ -36,11 +37,10 @@ interface CurrentGoalsCardProps {
 
 export function CurrentGoalsCard({ goal }: CurrentGoalsCardProps) {
   return (
-    <View
-      className="relative overflow-hidden rounded-xl border bg-bg-card p-5"
-      style={{ borderColor: theme.colors.border.emerald }}>
-      {/* Goal Type Badge */}
-      <View className="absolute right-0 top-0 p-4">
+    <GenericCard variant="card">
+      <View className="relative p-5">
+        {/* Goal Type Badge */}
+        <View className="absolute right-0 top-0 p-4">
         <View
           className="rounded px-2 py-1"
           style={{
@@ -133,6 +133,7 @@ export function CurrentGoalsCard({ goal }: CurrentGoalsCardProps) {
           </View>
         </View>
       </View>
-    </View>
+      </View>
+    </GenericCard>
   );
 }
