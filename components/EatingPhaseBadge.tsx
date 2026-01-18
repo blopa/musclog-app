@@ -17,8 +17,9 @@ export function EatingPhaseBadge({
   showBorder = true,
 }: EatingPhaseBadgeProps) {
   const { t } = useTranslation();
-  const textSize = variant === 'compact' ? 'text-[9px]' : 'text-[10px]';
-  const paddingY = variant === 'compact' ? 'py-0.5' : 'py-1';
+  const fontSize =
+    variant === 'compact' ? theme.typography.fontSize.xxs : theme.typography.fontSize.xs;
+  const paddingY = variant === 'compact' ? theme.spacing.padding.xsHalf : theme.spacing.padding.xs;
 
   const label = t(`eatingPhaseBadge.${phase}`);
 
@@ -51,12 +52,13 @@ export function EatingPhaseBadge({
 
   return (
     <View
-      className={`rounded px-2 ${paddingY} ${showBorder ? 'border' : ''} uppercase`}
+      className={`rounded px-2 ${showBorder ? 'border' : ''} uppercase`}
       style={{
         backgroundColor,
+        paddingVertical: paddingY,
         ...(showBorder && { borderColor }),
       }}>
-      <Text className={`${textSize} font-bold`} style={{ color: textColor }}>
+      <Text className="font-bold" style={{ color: textColor, fontSize }}>
         {label}
       </Text>
     </View>

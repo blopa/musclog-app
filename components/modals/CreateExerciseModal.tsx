@@ -113,7 +113,9 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
                   <Text className="ml-1 text-sm font-medium text-text-secondary">
                     {t('exercises.createExercise.primaryMuscleGroup')}
                   </Text>
-                  <View className="h-14 w-full flex-row items-center justify-between rounded-lg border border-white/10 bg-bg-card px-4">
+                  <View
+                    className="h-14 w-full flex-row items-center justify-between rounded-lg border bg-bg-card px-4"
+                    style={{ borderColor: theme.colors.background.white10 }}>
                     <Text
                       className="font-medium"
                       style={{
@@ -188,7 +190,8 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
             <View className="flex-row gap-4">
               <Pressable
                 onPress={handleUploadImage}
-                className="flex-1 flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-white/10 bg-bg-card/30 p-4 active:border-accent-primary active:bg-accent-primary/5">
+                className="flex-1 flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed bg-bg-card/30 p-4 active:border-accent-primary active:bg-accent-primary/5"
+                style={{ borderColor: theme.colors.background.white10 }}>
                 <Camera size={theme.iconSize.xl} color={theme.colors.text.tertiary} />
                 <Text className="text-xs font-medium text-text-secondary">
                   {t('exercises.createExercise.uploadImage')}
@@ -196,7 +199,8 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
               </Pressable>
               <Pressable
                 onPress={handleVideoURL}
-                className="flex-1 flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-white/10 bg-bg-card/30 p-4 active:border-accent-primary active:bg-accent-primary/5">
+                className="flex-1 flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed bg-bg-card/30 p-4 active:border-accent-primary active:bg-accent-primary/5"
+                style={{ borderColor: theme.colors.background.white10 }}>
                 <Link size={theme.iconSize.xl} color={theme.colors.text.tertiary} />
                 <Text className="text-xs font-medium text-text-secondary">
                   {t('exercises.createExercise.videoURL')}

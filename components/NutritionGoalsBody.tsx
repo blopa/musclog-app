@@ -444,7 +444,9 @@ export function NutritionGoalsBody({
 
         {/* Save Button */}
         {showSaveButton && (
-          <View className="mt-8 border-t border-white/5 pt-6">
+          <View
+            className="mt-8 border-t pt-6"
+            style={{ borderTopColor: theme.colors.background.white5 }}>
             <Button
               label={t('nutritionGoals.saveGoals')}
               icon={ChevronRight}

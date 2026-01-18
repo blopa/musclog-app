@@ -138,8 +138,11 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
 
         {/* Search Bar */}
         <View
-          className="mb-6 flex-row items-center rounded-xl border border-white/5 bg-bg-card px-4 py-3"
-          style={{ height: theme.components.button.height.md }}>
+          className="mb-6 flex-row items-center rounded-xl border bg-bg-card px-4 py-3"
+          style={{
+            height: theme.components.button.height.md,
+            borderColor: theme.colors.background.white5,
+          }}>
           <Search size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
           <TextInput
             className="ml-3 flex-1 text-base text-text-primary"
@@ -161,7 +164,9 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
         </View>
 
         {/* Create Set Card */}
-        <View className="rounded-2xl border border-white/5 bg-bg-card p-5">
+        <View
+          className="rounded-2xl border bg-bg-card p-5"
+          style={{ borderColor: theme.colors.background.white5 }}>
           <View className="mb-6 flex-row items-center justify-between">
             <Text
               style={{

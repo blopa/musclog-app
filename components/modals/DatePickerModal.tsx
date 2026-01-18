@@ -135,7 +135,9 @@ export function DatePickerModal({
 
         {/* Calendar */}
         <View className="flex-1 px-4">
-          <View className="rounded-2xl border border-white/5 bg-bg-cardDark p-5">
+          <View
+            className="rounded-2xl border bg-bg-cardDark p-5"
+            style={{ borderColor: theme.colors.background.white5 }}>
             {/* Month Navigation */}
             <View className="mb-6 flex-row items-center justify-between px-1">
               <Pressable
@@ -178,7 +180,8 @@ export function DatePickerModal({
                 return (
                   <Pressable
                     key={index}
-                    className="h-10 w-[14.28%] items-center justify-center"
+                    className="h-10 items-center justify-center"
+                    style={{ width: '14.28%' }}
                     onPress={() => handleDateSelect(day)}>
                     {isSelected ? (
                       <View className="relative h-10 w-10 items-center justify-center">
@@ -250,7 +253,12 @@ export function DatePickerModal({
 
         {/* Footer */}
         <View className="p-6 pt-4">
-          <View className="mb-6 h-px bg-white/10" />
+          <View
+            className="mb-6 h-px"
+            style={{
+              backgroundColor: theme.colors.background.white10,
+            }}
+          />
           <View className="flex-row items-center gap-4">
             <Button
               label={t('datePicker.cancel')}
@@ -277,10 +285,12 @@ export function DatePickerModal({
         animationType="fade"
         onRequestClose={() => setIsMonthYearPickerVisible(false)}>
         <Pressable
-          className="flex-1 items-center justify-center bg-black/60 p-4"
+          className="flex-1 items-center justify-center p-4"
+          style={{ backgroundColor: theme.colors.overlay.black60 }}
           onPress={() => setIsMonthYearPickerVisible(false)}>
           <Pressable
-            className="w-full max-w-sm rounded-2xl border border-white/10 bg-bg-cardDark p-6"
+            className="w-full max-w-sm rounded-2xl border bg-bg-cardDark p-6"
+            style={{ borderColor: theme.colors.background.white10 }}
             onPress={(e) => e.stopPropagation()}>
             <Text className="mb-4 text-lg font-bold text-text-primary">
               {t('datePicker.selectMonthYear')}
@@ -298,9 +308,20 @@ export function DatePickerModal({
                     className={`flex-1 rounded-lg border px-3 py-2 ${
                       selectedMonthIndex === index
                         ? 'border-accent-primary bg-accent-primary/10'
-                        : 'border-white/10 bg-white/5'
+                        : ''
                     }`}
-                    style={{ minWidth: '30%', maxWidth: '30%' }}
+                    style={{
+                      borderColor:
+                        selectedMonthIndex === index
+                          ? theme.colors.accent.primary
+                          : theme.colors.background.white10,
+                      backgroundColor:
+                        selectedMonthIndex === index
+                          ? theme.colors.accent.primary10
+                          : theme.colors.background.white5,
+                      minWidth: '30%',
+                      maxWidth: '30%',
+                    }}
                     onPress={() => setSelectedMonthIndex(index)}>
                     <Text
                       className={`text-center text-sm font-medium ${
@@ -319,14 +340,21 @@ export function DatePickerModal({
                 {t('datePicker.year')}
               </Text>
               <ScrollView
-                className="max-h-48 rounded-lg border border-white/10 bg-white/5"
+                className="max-h-48 rounded-lg border"
+                style={{
+                  borderColor: theme.colors.background.white10,
+                  backgroundColor: theme.colors.background.white5,
+                }}
                 showsVerticalScrollIndicator={false}>
                 {years.map((year) => (
                   <Pressable
                     key={year}
-                    className={`border-b border-white/5 px-4 py-3 ${
+                    className={`border-b px-4 py-3 ${
                       selectedYear === year ? 'bg-accent-primary/10' : ''
                     }`}
+                    style={{
+                      borderBottomColor: theme.colors.background.white5,
+                    }}
                     onPress={() => setSelectedYear(year)}>
                     <Text
                       className={`text-base font-medium ${

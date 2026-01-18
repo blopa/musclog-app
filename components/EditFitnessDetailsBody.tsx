@@ -290,12 +290,22 @@ export function EditFitnessDetailsBody({
                     className={`flex-row items-center gap-3 rounded-xl border p-4 transition-all ${
                       isSelected
                         ? 'border-accent-primary bg-bg-card'
-                        : 'border-white/5 bg-bg-card active:bg-white/5'
-                    }`}>
+                        : 'bg-bg-card active:bg-white/5'
+                    }`}
+                    style={{
+                      borderColor: isSelected
+                        ? theme.colors.accent.primary
+                        : theme.colors.background.white5,
+                    }}>
                     <View
                       className={`h-10 w-10 items-center justify-center rounded-full ${
-                        isSelected ? 'bg-accent-primary' : 'bg-white/5'
-                      }`}>
+                        isSelected ? 'bg-accent-primary' : ''
+                      }`}
+                      style={{
+                        backgroundColor: isSelected
+                          ? theme.colors.accent.primary
+                          : theme.colors.background.white5,
+                      }}>
                       <Icon
                         size={theme.iconSize.lg}
                         color={isSelected ? theme.colors.text.black : theme.colors.text.tertiary}

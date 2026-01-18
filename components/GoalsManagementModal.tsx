@@ -132,16 +132,21 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
             {/* Current Goals Section */}
             <View className="mb-8">
               <View className="mb-3 flex-row items-center justify-between">
-                <Text className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">
+                <Text
+                  className="font-bold uppercase tracking-widest text-text-secondary"
+                  style={{ fontSize: theme.typography.fontSize.xs }}>
                   {t('goalsManagement.currentGoals')}
                 </Text>
                 <View
-                  className="rounded-full border px-2 py-0.5"
+                  className="rounded-full border px-2"
                   style={{
                     backgroundColor: theme.colors.accent.primary10,
                     borderColor: theme.colors.accent.primary20,
+                    paddingVertical: theme.spacing.padding.xsHalf,
                   }}>
-                  <Text className="text-[10px] font-bold text-accent-primary">
+                  <Text
+                    className="font-bold text-accent-primary"
+                    style={{ fontSize: theme.typography.fontSize.xs }}>
                     {t('goalsManagement.active')}
                   </Text>
                 </View>
@@ -153,7 +158,9 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
 
             {/* Goals History Section */}
             <View className="mb-6">
-              <Text className="mb-6 text-[10px] font-bold uppercase tracking-widest text-text-secondary">
+              <Text
+                className="mb-6 font-bold uppercase tracking-widest text-text-secondary"
+                style={{ fontSize: theme.typography.fontSize.xs }}>
                 {t('goalsManagement.history')}
               </Text>
 
@@ -167,7 +174,7 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
           </View>
 
           {/* Bottom spacing for navigation */}
-          <View className="h-24" />
+          <View style={{ height: theme.size['24'] }} />
         </ScrollView>
       </FullScreenModal>
 

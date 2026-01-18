@@ -152,8 +152,11 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
               onChange={(value) => handleNumericChange(value, setCalories)}
               topRightElement={
                 <View
-                  className="rounded-full px-2 py-0.5"
-                  style={{ backgroundColor: theme.colors.accent.primary10 }}>
+                  className="rounded-full px-2"
+                  style={{
+                    paddingVertical: theme.spacing.padding.xsHalf,
+                    backgroundColor: theme.colors.accent.primary10,
+                  }}>
                   <Text className="text-xs font-medium text-accent-primary">kcal</Text>
                 </View>
               }

@@ -169,7 +169,9 @@ export default function FoodScreen() {
             {isLoading && !error && (
               <>
                 {/* Calories Card Skeleton */}
-                <View className="rounded-lg border border-white/5 bg-bg-card p-5">
+                <View
+                  className="rounded-lg border bg-bg-card p-5"
+                  style={{ borderColor: theme.colors.background.white5 }}>
                   <View className="mb-4 flex-row items-center justify-between">
                     <View className="gap-2">
                       <SkeletonLoader width={theme.size['120']} height={theme.size['4']} />
@@ -205,7 +207,8 @@ export default function FoodScreen() {
                 {[1, 2, 3].map((i) => (
                   <View
                     key={i}
-                    className="flex-row items-center justify-between rounded-lg border border-white/5 bg-bg-card p-4">
+                    className="flex-row items-center justify-between rounded-lg border bg-bg-card p-4"
+                    style={{ borderColor: theme.colors.background.white5 }}>
                     <View className="flex-row items-center gap-3">
                       <SkeletonLoader
                         width={theme.size['10']}

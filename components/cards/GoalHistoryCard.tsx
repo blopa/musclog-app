@@ -27,7 +27,7 @@ interface GoalHistoryCardProps {
 
 export function GoalHistoryCard({ goal, isLast = false }: GoalHistoryCardProps) {
   const { t } = useTranslation();
-  
+
   return (
     <View className="relative mb-6 flex-row gap-4">
       {/* Timeline line */}
@@ -62,15 +62,30 @@ export function GoalHistoryCard({ goal, isLast = false }: GoalHistoryCardProps) 
               <View className="flex-col">
                 <Text className="text-lg font-bold text-text-primary">
                   {goal.calories.toLocaleString()}{' '}
-                  <Text className="text-[10px] font-normal text-text-secondary">{t('goalHistoryCard.kcal')}</Text>
+                  <Text
+                    className="font-normal text-text-secondary"
+                    style={{ fontSize: theme.typography.fontSize.xs }}>
+                    {t('goalHistoryCard.kcal')}
+                  </Text>
                 </Text>
-                <Text className="text-[10px] text-text-secondary">
-                  {t('goalHistoryCard.proteinPrefix')}:{goal.protein}{t('goalHistoryCard.g')} • {t('goalHistoryCard.carbsPrefix')}:{goal.carbs}{t('goalHistoryCard.g')} • {t('goalHistoryCard.fatPrefix')}:{goal.fat}{t('goalHistoryCard.g')}
+                <Text
+                  className="text-text-secondary"
+                  style={{ fontSize: theme.typography.fontSize.xs }}>
+                  {t('goalHistoryCard.proteinPrefix')}:{goal.protein}
+                  {t('goalHistoryCard.g')} • {t('goalHistoryCard.carbsPrefix')}:{goal.carbs}
+                  {t('goalHistoryCard.g')} • {t('goalHistoryCard.fatPrefix')}:{goal.fat}
+                  {t('goalHistoryCard.g')}
                 </Text>
               </View>
               <View className="items-end">
-                <Text className="text-xs font-bold text-text-secondary">{goal.weight} {t('goalHistoryCard.kg')}</Text>
-                <Text className="text-[10px] text-text-secondary">{goal.bodyFat}% {t('goalHistoryCard.bf')}</Text>
+                <Text className="text-xs font-bold text-text-secondary">
+                  {goal.weight} {t('goalHistoryCard.kg')}
+                </Text>
+                <Text
+                  className="text-text-secondary"
+                  style={{ fontSize: theme.typography.fontSize.xs }}>
+                  {goal.bodyFat}% {t('goalHistoryCard.bf')}
+                </Text>
               </View>
             </View>
           </View>

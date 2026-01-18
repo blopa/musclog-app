@@ -42,10 +42,13 @@ export function ServingSizeSelector({ value, onChange, quickSizes }: ServingSize
           </Text>
         </Pressable>
       </View>
-      <View className="rounded-xl border border-white/10 bg-bg-cardDark p-2">
+      <View
+        className="rounded-xl border bg-bg-cardDark p-2"
+        style={{ borderColor: theme.colors.background.white10 }}>
         <View className="mb-4 flex-row items-center gap-3">
           <Pressable
-            className="h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-white/5 bg-bg-overlay"
+            className="h-12 w-12 shrink-0 items-center justify-center rounded-lg border bg-bg-overlay"
+            style={{ borderColor: theme.colors.background.white5 }}
             onPress={handleDecrease}>
             <Minus size={theme.iconSize.md} color={theme.colors.text.secondary} />
           </Pressable>
@@ -83,11 +86,18 @@ export function ServingSizeSelector({ value, onChange, quickSizes }: ServingSize
           {effectiveQuickSizes.map((size) => (
             <Pressable
               key={size.label}
-              className={`rounded-full border px-4 py-1.5 ${
+              className={`rounded-full border px-4 ${
                 value === size.value
                   ? 'border-accent-primary/20 bg-accent-primary/10'
-                  : 'border-white/5 bg-bg-overlay/50'
+                  : 'bg-bg-overlay/50'
               }`}
+              style={{
+                paddingVertical: theme.spacing.padding['1half'],
+                borderColor:
+                  value === size.value
+                    ? theme.colors.accent.primary20
+                    : theme.colors.background.white5,
+              }}
               onPress={() => onChange(size.value)}>
               <Text
                 className={`text-xs font-medium ${

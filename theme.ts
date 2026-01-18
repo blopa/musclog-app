@@ -280,6 +280,7 @@ export const theme = {
   typography: {
     // Font sizes
     fontSize: {
+      xxs: 8,
       xs: 12,
       sm: 14,
       base: 16,

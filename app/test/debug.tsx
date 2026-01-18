@@ -383,7 +383,9 @@ export default function DebugTestScreen() {
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-center gap-2">
               <Text className="text-lg font-bold text-text-primary">Exercises</Text>
-              <Text className="rounded-full bg-bg-overlay px-2 py-0.5 text-xs text-text-secondary">
+              <Text
+                className="rounded-full bg-bg-overlay px-2 text-xs text-text-secondary"
+                style={{ paddingVertical: theme.spacing.padding.xsHalf }}>
                 {exercises.length}
               </Text>
             </View>

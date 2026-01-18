@@ -395,8 +395,11 @@ export default function AICameraScreen() {
               }}>
               <View className="h-full w-full p-1">
                 <View
-                  className="h-full w-full rounded bg-white/10"
-                  style={{ opacity: theme.colors.opacity.strong }}
+                  className="h-full w-full rounded"
+                  style={{
+                    backgroundColor: theme.colors.background.white10,
+                    opacity: theme.colors.opacity.strong,
+                  }}
                 />
               </View>
             </Pressable>

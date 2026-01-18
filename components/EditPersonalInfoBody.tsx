@@ -44,7 +44,9 @@ export function EditPersonalInfoBody({
       {/* Avatar Section */}
       <View className="items-center py-6">
         <View className="relative">
-          <View className="h-32 w-32 overflow-hidden rounded-full border-4 border-white/10 shadow-xl">
+          <View
+            className="h-32 w-32 overflow-hidden rounded-full border-4 shadow-xl"
+            style={{ borderColor: theme.colors.background.white10 }}>
             <Image source={{ uri: photoUri }} className="h-full w-full" resizeMode="cover" />
           </View>
           <Pressable

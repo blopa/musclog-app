@@ -144,7 +144,9 @@ export default function WorkoutsScreen() {
             {isLoading && !error && (
               <>
                 {/* Featured Workout Skeleton */}
-                <View className="rounded-lg border border-white/5 bg-bg-card p-5">
+                <View
+                  className="rounded-lg border bg-bg-card p-5"
+                  style={{ borderColor: theme.colors.background.white5 }}>
                   <View className="mb-4 flex-row items-start justify-between">
                     <View className="flex-1 gap-2">
                       <SkeletonLoader width="40%" height={theme.size['5']} />
@@ -173,7 +175,10 @@ export default function WorkoutsScreen() {
 
                 {/* Workout Cards Skeletons */}
                 {[1, 2, 3].map((i) => (
-                  <View key={i} className="rounded-lg border border-white/5 bg-bg-card p-4">
+                  <View
+                    key={i}
+                    className="rounded-lg border bg-bg-card p-4"
+                    style={{ borderColor: theme.colors.background.white5 }}>
                     <View className="flex-row items-center gap-3">
                       <SkeletonLoader
                         width={theme.size['12']}

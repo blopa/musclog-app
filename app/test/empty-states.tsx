@@ -14,7 +14,9 @@ export default function EmptyStatesTestScreen() {
     <SafeAreaView className="flex-1 bg-bg-primary" edges={['top']}>
       {/* Header */}
       <View className="flex-row items-center justify-between bg-bg-primary/90 px-4 pb-2 pt-4">
-        <Pressable className="h-10 w-10 shrink-0 items-center justify-center rounded-full active:bg-white/10">
+        <Pressable
+          className="h-10 w-10 shrink-0 items-center justify-center rounded-full"
+          style={{ backgroundColor: theme.colors.background.white10 }}>
           <ArrowLeft size={theme.iconSize.xl} color={theme.colors.text.primary} />
         </Pressable>
         <Text className="flex-1 text-center text-lg font-bold leading-tight tracking-tight text-text-primary">
@@ -67,7 +69,9 @@ export default function EmptyStatesTestScreen() {
         <TestSection title="Loading Indicators" subtitle="Skeleton Loaders">
           <View className="gap-4">
             {/* Workout Card Skeleton */}
-            <View className="flex-col gap-4 rounded-lg border border-white/5 bg-bg-card p-4">
+            <View
+              className="flex-col gap-4 rounded-lg border bg-bg-card p-4"
+              style={{ borderColor: theme.colors.background.white5 }}>
               <View className="flex-row items-center gap-3">
                 <SkeletonLoader
                   width={theme.size['12']}
@@ -94,7 +98,9 @@ export default function EmptyStatesTestScreen() {
             </View>
 
             {/* Food Item Skeleton */}
-            <View className="flex-row items-center justify-between rounded-lg border border-white/5 bg-bg-card p-4">
+            <View
+              className="flex-row items-center justify-between rounded-lg border bg-bg-card p-4"
+              style={{ borderColor: theme.colors.background.white5 }}>
               <View className="flex-row items-center gap-3">
                 <SkeletonLoader
                   width={theme.size['10']}
