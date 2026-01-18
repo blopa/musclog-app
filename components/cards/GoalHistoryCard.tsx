@@ -3,14 +3,14 @@ import { View, Text } from 'react-native';
 import { History } from 'lucide-react-native';
 import { theme } from '../../theme';
 import { GenericCard } from './GenericCard';
-import { GoalTypeBadge } from '../GoalTypeBadge';
+import { EatingPhaseBadge } from '../EatingPhaseBadge';
 
-type GoalType = 'cutting' | 'maintenance' | 'bulking' | 'lean-bulk';
+type EatingPhase = 'cutting' | 'maintenance' | 'bulking' | 'lean-bulk';
 
 interface GoalHistoryItem {
   id: number;
   dateRange: string;
-  type: GoalType;
+  phase: EatingPhase;
   calories: number;
   protein: number;
   carbs: number;
@@ -50,7 +50,7 @@ export function GoalHistoryCard({ goal, isLast = false }: GoalHistoryCardProps) 
       <View className="flex-1 pb-2">
         <View className="mb-1 flex-row items-center justify-between">
           <Text className="text-xs font-semibold text-text-secondary">{goal.dateRange}</Text>
-          <GoalTypeBadge type={goal.type} variant="compact" showBorder={true} />
+          <EatingPhaseBadge phase={goal.phase} variant="compact" showBorder={true} />
         </View>
 
         <GenericCard variant="card">

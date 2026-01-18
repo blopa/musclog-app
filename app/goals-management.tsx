@@ -5,12 +5,12 @@ import { theme } from '../theme';
 import { CurrentGoalsCard } from '../components/cards/CurrentGoalsCard';
 import { GoalHistoryCard } from '../components/cards/GoalHistoryCard';
 
-type GoalType = 'cutting' | 'maintenance' | 'bulking' | 'lean-bulk';
+type EatingPhase = 'cutting' | 'maintenance' | 'bulking' | 'lean-bulk';
 
 interface GoalHistoryItem {
   id: number;
   dateRange: string;
-  type: GoalType;
+  phase: EatingPhase;
   calories: number;
   protein: number;
   carbs: number;
@@ -19,9 +19,8 @@ interface GoalHistoryItem {
   bodyFat: number;
 }
 
-
 interface CurrentGoal {
-  type: GoalType;
+  phase: EatingPhase;
   calories: number;
   protein: number;
   carbs: number;
@@ -37,7 +36,7 @@ const goalsHistory: GoalHistoryItem[] = [
   {
     id: 1,
     dateRange: 'Mar 16 - May 22, 2023',
-    type: 'cutting',
+    phase: 'cutting',
     calories: 2100,
     protein: 180,
     carbs: 190,
@@ -48,7 +47,7 @@ const goalsHistory: GoalHistoryItem[] = [
   {
     id: 2,
     dateRange: 'Jan 01 - Mar 15, 2023',
-    type: 'maintenance',
+    phase: 'maintenance',
     calories: 2450,
     protein: 175,
     carbs: 280,
@@ -59,7 +58,7 @@ const goalsHistory: GoalHistoryItem[] = [
   {
     id: 3,
     dateRange: 'Oct 12 - Dec 31, 2022',
-    type: 'lean-bulk',
+    phase: 'lean-bulk',
     calories: 2700,
     protein: 170,
     carbs: 350,
@@ -70,7 +69,7 @@ const goalsHistory: GoalHistoryItem[] = [
 ];
 
 const currentGoal: CurrentGoal = {
-  type: 'bulking',
+  phase: 'bulking',
   calories: 2850,
   protein: 190,
   carbs: 320,

@@ -2,9 +2,9 @@ import React from 'react';
 import { View, Text } from 'react-native';
 import { theme } from '../theme';
 
-type GoalType = 'cutting' | 'maintenance' | 'bulking' | 'lean-bulk';
+type EatingPhase = 'cutting' | 'maintenance' | 'bulking' | 'lean-bulk';
 
-const goalTypeStyles: Record<GoalType, { label: string }> = {
+const eatingPhaseStyles: Record<EatingPhase, { label: string }> = {
   cutting: {
     label: 'CUTTING',
   },
@@ -19,45 +19,45 @@ const goalTypeStyles: Record<GoalType, { label: string }> = {
   },
 };
 
-interface GoalTypeBadgeProps {
-  type: GoalType;
+interface EatingPhaseBadgeProps {
+  phase: EatingPhase;
   variant?: 'default' | 'compact';
   showBorder?: boolean;
 }
 
-export function GoalTypeBadge({
-  type,
+export function EatingPhaseBadge({
+  phase,
   variant = 'default',
   showBorder = true,
-}: GoalTypeBadgeProps) {
-  const styles = goalTypeStyles[type];
+}: EatingPhaseBadgeProps) {
+  const styles = eatingPhaseStyles[phase];
   const textSize = variant === 'compact' ? 'text-[9px]' : 'text-[10px]';
   const paddingY = variant === 'compact' ? 'py-0.5' : 'py-1';
 
   const backgroundColor =
-    type === 'cutting'
+    phase === 'cutting'
       ? theme.colors.status.amber10
-      : type === 'maintenance'
+      : phase === 'maintenance'
         ? theme.colors.status.indigo10
-        : type === 'bulking'
+        : phase === 'bulking'
           ? theme.colors.status.indigo10
           : theme.colors.accent.primary10;
 
   const borderColor =
-    type === 'cutting'
+    phase === 'cutting'
       ? theme.colors.status.amber10
-      : type === 'maintenance'
+      : phase === 'maintenance'
         ? theme.colors.status.indigo20
-        : type === 'bulking'
+        : phase === 'bulking'
           ? theme.colors.status.indigo20
           : theme.colors.accent.primary20;
 
   const textColor =
-    type === 'cutting'
+    phase === 'cutting'
       ? theme.colors.status.amber
-      : type === 'maintenance'
+      : phase === 'maintenance'
         ? theme.colors.status.indigoLight
-        : type === 'bulking'
+        : phase === 'bulking'
           ? theme.colors.status.indigoLight
           : theme.colors.accent.primary;
 
