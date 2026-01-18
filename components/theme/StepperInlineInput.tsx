@@ -82,8 +82,11 @@ export function StepperInlineInput({
       </View>
       <View className="flex-row items-center gap-3">
         <Pressable
-          className="border-primary/20 h-10 w-10 items-center justify-center rounded-full border active:opacity-70"
-          style={{ backgroundColor: theme.colors.status.emerald30 }}
+          className="h-10 w-10 items-center justify-center rounded-full border"
+          style={{
+            backgroundColor: theme.colors.accent.primary10,
+            borderColor: theme.colors.accent.primary20,
+          }}
           onPress={onDecrement}>
           <Minus size={theme.iconSize.lg} color={theme.colors.status.emeraldLight} />
         </Pressable>
@@ -129,8 +132,11 @@ export function StepperInlineInput({
           </Pressable>
         )}
         <Pressable
-          className="border-primary/20 h-10 w-10 items-center justify-center rounded-full border active:opacity-70"
-          style={{ backgroundColor: theme.colors.status.emerald30 }}
+          className="h-10 w-10 items-center justify-center rounded-full border"
+          style={{
+            backgroundColor: theme.colors.accent.primary10,
+            borderColor: theme.colors.accent.primary20,
+          }}
           onPress={onIncrement}>
           <Plus size={theme.iconSize.lg} color={theme.colors.status.emeraldLight} />
         </Pressable>

@@ -12,7 +12,6 @@ import { CheckRadioBox } from '../../components/theme/CheckRadioBox';
 import { PickerButton } from '../../components/theme/PickerButton';
 import { Slider } from '../../components/theme/Slider';
 import { StepperInput } from '../../components/theme/StepperInput';
-import { BodyMetricsStepper } from '../../components/theme/BodyMetricsStepper';
 import { OptionsSelector } from '../../components/OptionsSelector';
 import { OptionsMultiSelector } from '../../components/theme/OptionsMultiSelector/OptionsMultiSelector';
 import { ToggleInput } from '../../components/theme/ToggleInput';
@@ -149,23 +148,6 @@ export default function InputsTestScreen() {
             onDecrement={() => setTargetWeight((v) => Math.max(0, v - 0.5))}
             onChangeValue={setTargetWeight}
             unit="kg"
-          />
-        </TestSection>
-
-        <TestSection title="Body Metrics Stepper" subtitle="Demo for BodyMetricsStepper component">
-          <BodyMetricsStepper
-            icon={User}
-            label="Body Weight"
-            sublabel="Current body weight"
-            value={bodyMetric}
-            unit="kg"
-            unitLabel="kg"
-            min={30}
-            max={200}
-            step={0.5}
-            onIncrement={() => setBodyMetric((v) => Math.min(200, v + 0.5))}
-            onDecrement={() => setBodyMetric((v) => Math.max(30, v - 0.5))}
-            onChangeValue={setBodyMetric}
           />
         </TestSection>
 
