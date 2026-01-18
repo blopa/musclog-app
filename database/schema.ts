@@ -68,6 +68,7 @@ export const schema = appSchema({
         { name: 'started_at', type: 'number', isIndexed: true },
         { name: 'completed_at', type: 'number', isOptional: true },
         { name: 'total_volume', type: 'number', isOptional: true },
+        { name: 'calories_burned', type: 'number', isOptional: true },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },

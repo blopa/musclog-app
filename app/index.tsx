@@ -186,7 +186,7 @@ export default function HomeScreen() {
             name: workout.workoutName,
             date: dateStr,
             duration: formatDuration(durationMinutes),
-            calories: 0, // Calories not stored in workout log yet
+            calories: workout.caloriesBurned || 0,
             prs: prCount,
             image: require('../assets/icon.png'), // Default image
             imageBgColor: theme.colors.background.imageLight,
