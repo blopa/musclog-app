@@ -95,7 +95,7 @@ export const StepperInput: React.FC<StepperInputProps> = ({
         </Pressable>
         {editing ? (
           <View
-            className="h-14 flex-1 flex-row items-center justify-center rounded-xl min-w-0"
+            className="h-14 min-w-0 flex-1 flex-row items-center justify-center rounded-xl"
             style={{ backgroundColor: theme.colors.background.card }}>
             <TextInput
               ref={inputRef}
@@ -104,7 +104,7 @@ export const StepperInput: React.FC<StepperInputProps> = ({
               onBlur={handleInputBlur}
               onSubmitEditing={handleInputSubmit}
               keyboardType="numeric"
-              className="flex-1 p-0 text-center text-2xl font-bold text-text-primary min-w-0"
+              className="min-w-0 flex-1 p-0 text-center text-2xl font-bold text-text-primary"
               style={{
                 padding: theme.spacing.padding.zero,
                 margin: theme.spacing.margin.zero,
@@ -113,14 +113,21 @@ export const StepperInput: React.FC<StepperInputProps> = ({
               returnKeyType="done"
               selectTextOnFocus
             />
-            {unit && <Text className="ml-1 text-2xl font-normal text-text-tertiary flex-shrink-0">{unit}</Text>}
+            {unit && (
+              <Text className="ml-1 flex-shrink-0 text-2xl font-normal text-text-tertiary">
+                {unit}
+              </Text>
+            )}
           </View>
         ) : (
           <Pressable
-            className="h-14 flex-1 items-center justify-center rounded-xl min-w-0"
+            className="h-14 min-w-0 flex-1 items-center justify-center rounded-xl"
             style={{ backgroundColor: theme.colors.background.card }}
             onPress={handleValuePress}>
-            <Text className="text-center text-2xl font-bold text-text-primary" numberOfLines={1} ellipsizeMode="tail">
+            <Text
+              className="text-center text-2xl font-bold text-text-primary"
+              numberOfLines={1}
+              ellipsizeMode="tail">
               {internalValue.toFixed(1)}{' '}
               {unit && <Text className="font-normal text-text-tertiary">{unit}</Text>}
             </Text>

@@ -329,6 +329,7 @@ export function NutritionGoalsBody({
             value={targetWeight}
             unit="kg"
             icon={Scale}
+            iconSize="sm"
             onIncrement={() => setTargetWeight(Math.min(200, targetWeight + 1))}
             onDecrement={() => setTargetWeight(Math.max(30, targetWeight - 1))}
             onChangeValue={setTargetWeight}
@@ -339,6 +340,7 @@ export function NutritionGoalsBody({
             value={targetBodyFat}
             unit="%"
             icon={Percent}
+            iconSize="sm"
             onIncrement={() => setTargetBodyFat(Math.min(50, targetBodyFat + 1))}
             onDecrement={() => setTargetBodyFat(Math.max(5, targetBodyFat - 1))}
             onChangeValue={setTargetBodyFat}
@@ -349,6 +351,7 @@ export function NutritionGoalsBody({
             value={targetBMI}
             unit="index"
             icon={TrendingUp}
+            iconSize="sm"
             onIncrement={() => setTargetBMI(Math.min(40, targetBMI + 0.1))}
             onDecrement={() => setTargetBMI(Math.max(15, targetBMI - 0.1))}
             onChangeValue={setTargetBMI}
@@ -359,6 +362,7 @@ export function NutritionGoalsBody({
             value={targetFFMI}
             unit="index"
             icon={Activity}
+            iconSize="sm"
             onIncrement={() => setTargetFFMI(Math.min(30, targetFFMI + 0.1))}
             onDecrement={() => setTargetFFMI(Math.max(15, targetFFMI - 0.1))}
             onChangeValue={setTargetFFMI}
@@ -369,9 +373,9 @@ export function NutritionGoalsBody({
             className="flex-row items-center justify-between rounded-xl border border-emerald-900/20 bg-bg-card p-5">
             <View className="flex-1 flex-row items-center gap-3 pr-3">
               <View
-                className="h-10 w-10 items-center justify-center rounded-lg"
+                className="h-8 w-8 items-center justify-center rounded-lg"
                 style={{ backgroundColor: theme.colors.status.emerald20 }}>
-                <Calendar size={theme.iconSize.lg} color={theme.colors.status.emeraldLight} />
+                <Calendar size={theme.iconSize.sm} color={theme.colors.status.emeraldLight} />
               </View>
               <View className="flex-1">
                 <Text className="font-semibold text-white">{t('nutritionGoals.targetDate')}</Text>

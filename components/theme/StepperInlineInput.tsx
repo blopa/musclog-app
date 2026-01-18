@@ -12,6 +12,7 @@ type TestStepperProps = {
   unit?: string;
   icon?: LucideIcon;
   subtitle?: string;
+  iconSize?: 'sm' | 'md';
 };
 
 export function StepperInlineInput({
@@ -23,6 +24,7 @@ export function StepperInlineInput({
   unit,
   icon: Icon,
   subtitle,
+  iconSize = 'md',
 }: TestStepperProps) {
   const [editing, setEditing] = useState(false);
   const [inputValue, setInputValue] = useState(value.toFixed(1));
@@ -66,16 +68,19 @@ export function StepperInlineInput({
   };
 
   return (
-    <View className="flex-row items-center justify-between rounded-xl border border-emerald-900/20 bg-bg-card p-5 overflow-hidden">
-      <View className="flex-1 flex-row items-center gap-3 pr-3 min-w-0">
+    <View className="flex-row items-center justify-between overflow-hidden rounded-xl border border-emerald-900/20 bg-bg-card p-5">
+      <View className="min-w-0 flex-1 flex-row items-center gap-3 pr-3">
         {Icon && (
           <View
-            className="h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg"
+            className={`${iconSize === 'sm' ? 'h-8 w-8' : 'h-10 w-10'} flex-shrink-0 items-center justify-center rounded-lg`}
             style={{ backgroundColor: theme.colors.status.emerald20 }}>
-            <Icon size={theme.iconSize.lg} color={theme.colors.status.emeraldLight} />
+            <Icon
+              size={iconSize === 'sm' ? theme.iconSize.sm : theme.iconSize.md}
+              color={theme.colors.status.emeraldLight}
+            />
           </View>
         )}
-        <View className="flex-1 min-w-0">
+        <View className="min-w-0 flex-1">
           <Text className="font-semibold text-white" numberOfLines={1} ellipsizeMode="tail">
             {label}
           </Text>
@@ -86,7 +91,7 @@ export function StepperInlineInput({
           )}
         </View>
       </View>
-      <View className="flex-row items-center gap-2 flex-shrink-0">
+      <View className="flex-shrink-0 flex-row items-center gap-2">
         <Pressable
           className="h-10 min-w-[40px] items-center justify-center rounded-full border"
           style={{
