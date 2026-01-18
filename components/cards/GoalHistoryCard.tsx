@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text } from 'react-native';
 import { History } from 'lucide-react-native';
 import { theme } from '../../theme';
+import { GenericCard } from './GenericCard';
 
 type GoalType = 'cutting' | 'maintenance' | 'bulking' | 'lean-bulk';
 
@@ -102,25 +103,25 @@ export function GoalHistoryCard({ goal, isLast = false }: GoalHistoryCardProps) 
           </View>
         </View>
 
-        <View
-          className="border-border rounded-xl border p-3"
-          style={{ backgroundColor: theme.colors.background.card }}>
-          <View className="flex-row items-center justify-between">
-            <View className="flex-col">
-              <Text className="text-lg font-bold text-text-primary">
-                {goal.calories.toLocaleString()}{' '}
-                <Text className="text-[10px] font-normal text-text-secondary">KCAL</Text>
-              </Text>
-              <Text className="text-[10px] text-text-secondary">
-                P:{goal.protein}g • C:{goal.carbs}g • F:{goal.fat}g
-              </Text>
-            </View>
-            <View className="items-end">
-              <Text className="text-xs font-bold text-text-secondary">{goal.weight} kg</Text>
-              <Text className="text-[10px] text-text-secondary">{goal.bodyFat}% BF</Text>
+        <GenericCard variant="card">
+          <View className="p-3">
+            <View className="flex-row items-center justify-between">
+              <View className="flex-col">
+                <Text className="text-lg font-bold text-text-primary">
+                  {goal.calories.toLocaleString()}{' '}
+                  <Text className="text-[10px] font-normal text-text-secondary">KCAL</Text>
+                </Text>
+                <Text className="text-[10px] text-text-secondary">
+                  P:{goal.protein}g • C:{goal.carbs}g • F:{goal.fat}g
+                </Text>
+              </View>
+              <View className="items-end">
+                <Text className="text-xs font-bold text-text-secondary">{goal.weight} kg</Text>
+                <Text className="text-[10px] text-text-secondary">{goal.bodyFat}% BF</Text>
+              </View>
             </View>
           </View>
-        </View>
+        </GenericCard>
       </View>
     </View>
   );
