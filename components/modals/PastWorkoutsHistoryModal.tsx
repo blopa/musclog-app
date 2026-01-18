@@ -37,21 +37,22 @@ type WorkoutHistoryModalProps = {
 };
 
 // Helper function to format duration in minutes to readable format
-function formatDuration(minutes: number): string {
+function formatDuration(minutes: number, t: (key: string) => string): string {
   if (minutes < 60) {
-    return `${minutes} min`;
+    return `${minutes} ${t('common.min')}`;
   }
   const hours = Math.floor(minutes / 60);
   const mins = minutes % 60;
-  return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
+  return mins > 0 ? `${hours}h ${mins}${t('common.min')}` : `${hours}h`;
 }
 
 // Helper function to format volume
-function formatVolume(volume: number): string {
+function formatVolume(volume: number, t: (key: string) => string): string {
+  const kg = t('workoutSession.kg');
   if (volume >= 1000) {
-    return `${(volume / 1000).toFixed(1)}k kg`;
+    return `${(volume / 1000).toFixed(1)}k ${kg}`;
   }
-  return `${Math.round(volume).toLocaleString()} kg`;
+  return `${Math.round(volume).toLocaleString()} ${kg}`;
 }
 
 // Helper function to get icon and colors based on workout type
@@ -228,17 +229,26 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
 
           // Format stats
           const stats: { label: string; value: string }[] = [
-            { label: 'Duration', value: formatDuration(durationMinutes) },
+            {
+              label: t('pastWorkoutHistory.stats.duration'),
+              value: formatDuration(durationMinutes, t),
+            },
           ];
 
           // Add volume if available
           if (workout.totalVolume && workout.totalVolume > 0) {
-            stats.push({ label: 'Volume', value: formatVolume(workout.totalVolume) });
+            stats.push({
+              label: t('pastWorkoutHistory.stats.volume'),
+              value: formatVolume(workout.totalVolume, t),
+            });
           }
 
           // Add calories if available
           if (workout.caloriesBurned && workout.caloriesBurned > 0) {
-            stats.push({ label: 'Calories', value: `${workout.caloriesBurned} kcal` });
+            stats.push({
+              label: t('pastWorkoutHistory.stats.calories'),
+              value: `${workout.caloriesBurned} ${t('common.kcal')}`,
+            });
           }
 
           return {
@@ -343,7 +353,7 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
               </View>
               <TextInput
                 className="h-11 w-full pl-10 pr-4"
-                placeholder="Search sessions..."
+                placeholder={t('pastWorkoutHistory.searchPlaceholder')}
                 placeholderTextColor={theme.colors.text.secondary}
                 value={searchQuery}
                 onChangeText={setSearchQuery}
@@ -386,8 +396,8 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
                   textAlign: 'center',
                 }}>
                 {searchQuery
-                  ? 'No workouts found matching your search.'
-                  : 'No workout history yet.'}
+                  ? t('pastWorkoutHistory.noWorkoutsFound')
+                  : t('pastWorkoutHistory.noWorkoutHistory')}
               </Text>
             </View>
           ) : (
@@ -471,7 +481,13 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
                                         textTransform: 'uppercase',
                                         letterSpacing: theme.typography.letterSpacing.wider,
                                       }}>
-                                      {workout.prCount} PR{workout.prCount > 1 ? 's' : ''}
+                                      {workout.prCount === 1
+                                        ? t('pastWorkoutHistory.prBadge.singular', {
+                                            count: workout.prCount,
+                                          })
+                                        : t('pastWorkoutHistory.prBadge.plural', {
+                                            count: workout.prCount,
+                                          })}
                                     </Text>
                                   </View>
                                 )}

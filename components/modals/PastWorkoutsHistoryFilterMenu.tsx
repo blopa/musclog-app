@@ -143,19 +143,19 @@ export function PastWorkoutsHistoryFilterMenu({
 
   const formatDuration = (minutes: number) => {
     if (minutes >= 120) {
-      return '120m+';
+      return t('pastWorkoutHistory.filters.durationFormats.max');
     }
-    return `${minutes}m`;
+    return t('pastWorkoutHistory.filters.durationFormats.minutes', { minutes });
   };
 
   const formatDurationDisplay = (minutes: number) => {
     if (minutes === 0) {
-      return '0m';
+      return t('pastWorkoutHistory.filters.durationFormats.zero');
     }
     if (minutes >= 120) {
-      return '120m+';
+      return t('pastWorkoutHistory.filters.durationFormats.max');
     }
-    return `${minutes}+ mins`;
+    return t('pastWorkoutHistory.filters.durationFormats.minutesPlus', { minutes });
   };
 
   return (
@@ -351,7 +351,7 @@ export function PastWorkoutsHistoryFilterMenu({
                 fontWeight: theme.typography.fontWeight.medium,
                 color: theme.colors.text.tertiary,
               }}>
-              0m
+              {t('pastWorkoutHistory.filters.durationFormats.zero')}
             </Text>
             <Text
               style={{
@@ -359,7 +359,7 @@ export function PastWorkoutsHistoryFilterMenu({
                 fontWeight: theme.typography.fontWeight.medium,
                 color: theme.colors.text.tertiary,
               }}>
-              120m+
+              {t('pastWorkoutHistory.filters.durationFormats.max')}
             </Text>
           </View>
         </View>

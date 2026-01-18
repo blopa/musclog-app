@@ -282,12 +282,30 @@
   },
   "pastWorkoutHistory": {
     "title": "Workout History",
+    "searchPlaceholder": "Search sessions...",
+    "noWorkoutsFound": "No workouts found matching your search.",
+    "noWorkoutHistory": "No workout history yet.",
+    "stats": {
+      "duration": "Duration",
+      "volume": "Volume",
+      "calories": "Calories"
+    },
+    "prBadge": {
+      "singular": "{{count}} PR",
+      "plural": "{{count}} PRs"
+    },
     "filters": {
       "title": "Filter Workouts",
       "workoutType": "WORKOUT TYPE",
       "minDuration": "MIN. DURATION",
       "reset": "Reset",
       "applyFilters": "Apply Filters",
+      "durationFormats": {
+        "zero": "0m",
+        "minutes": "{{minutes}}m",
+        "minutesPlus": "{{minutes}}+ mins",
+        "max": "120m+"
+      },
       "workoutTypes": {
         "all": "All Types",
         "strength": "Strength",
