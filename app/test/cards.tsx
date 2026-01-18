@@ -34,6 +34,8 @@ import { ChatWorkoutCard } from '../../components/cards/ChatWorkoutCard';
 import { MealItemCard } from '../../components/cards/MealItemCard';
 import { SettingsCard } from '../../components/cards/SettingsCard';
 import { HealthCategoryCard } from '../../components/cards/HealthCategoryCard';
+import { CurrentGoalsCard } from '../../components/cards/CurrentGoalsCard';
+import { GoalHistoryCard } from '../../components/cards/GoalHistoryCard';
 import { UpNextLabel } from '../../components/UpNextLabel';
 
 export default function CardsTestScreen() {
@@ -79,6 +81,54 @@ export default function CardsTestScreen() {
           <DailySummaryCard
             calories={{ consumed: 1800, remaining: 400, goal: 2200 }}
             activity={{ minutes: 45, goal: 60 }}
+          />
+        </TestSection>
+
+        <TestSection title="Current Goals" subtitle="Display your current nutrition goals">
+          <CurrentGoalsCard
+            goal={{
+              phase: 'cutting',
+              calories: 2200,
+              protein: 165,
+              carbs: 220,
+              fat: 73,
+              targetWeight: 75,
+              bodyFat: 15,
+              ffmi: 22.5,
+              bmi: 24.2,
+              goalDate: '2026-03-15',
+            }}
+          />
+        </TestSection>
+
+        <TestSection title="Goal History" subtitle="Timeline of past goals">
+          <GoalHistoryCard
+            goal={{
+              id: 1,
+              dateRange: 'Jan 2024 - Mar 2024',
+              phase: 'cutting',
+              calories: 2000,
+              protein: 150,
+              carbs: 200,
+              fat: 67,
+              weight: 78,
+              bodyFat: 18,
+            }}
+            isLast={false}
+          />
+          <GoalHistoryCard
+            goal={{
+              id: 2,
+              dateRange: 'Apr 2024 - Jun 2024',
+              phase: 'maintenance',
+              calories: 2300,
+              protein: 172,
+              carbs: 230,
+              fat: 77,
+              weight: 75,
+              bodyFat: 16,
+            }}
+            isLast={true}
           />
         </TestSection>
 
