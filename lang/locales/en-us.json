@@ -656,6 +656,13 @@
       "targetFFMI": "Fat-Free Mass Index"
     }
   },
+  "goalsManagement": {
+    "title": "Goals Management",
+    "subtitle": "Track your progress and history.",
+    "currentGoals": "CURRENT GOALS",
+    "active": "Active",
+    "history": "GOALS HISTORY"
+  },
   "recentWorkouts": {
     "prs": "PRS"
   },

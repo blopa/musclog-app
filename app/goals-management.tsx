@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, ScrollView } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { MasterLayout } from '../components/MasterLayout';
 import { theme } from '../theme';
 import { CurrentGoalsCard } from '../components/cards/CurrentGoalsCard';
@@ -82,15 +83,17 @@ const currentGoal: CurrentGoal = {
 };
 
 export default function GoalsManagementPage() {
+  const { t } = useTranslation();
+
   return (
     <MasterLayout>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View className="shrink-0 px-6 pb-6">
           <Text className="text-2xl font-bold tracking-tight text-text-primary">
-            Goals Management
+            {t('goalsManagement.title')}
           </Text>
-          <Text className="mt-1 text-sm text-text-secondary">Track your progress and history.</Text>
+          <Text className="mt-1 text-sm text-text-secondary">{t('goalsManagement.subtitle')}</Text>
         </View>
 
         {/* Scrollable content */}
@@ -99,7 +102,7 @@ export default function GoalsManagementPage() {
           <View className="mb-8">
             <View className="mb-3 flex-row items-center justify-between">
               <Text className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">
-                CURRENT GOALS
+                {t('goalsManagement.currentGoals')}
               </Text>
               <View
                 className="rounded-full border px-2 py-0.5"
@@ -107,7 +110,9 @@ export default function GoalsManagementPage() {
                   backgroundColor: theme.colors.accent.primary10,
                   borderColor: theme.colors.accent.primary20,
                 }}>
-                <Text className="text-[10px] font-bold text-accent-primary">Active</Text>
+                <Text className="text-[10px] font-bold text-accent-primary">
+                  {t('goalsManagement.active')}
+                </Text>
               </View>
             </View>
 
@@ -118,7 +123,7 @@ export default function GoalsManagementPage() {
           {/* Goals History Section */}
           <View className="mb-6">
             <Text className="mb-6 text-[10px] font-bold uppercase tracking-widest text-text-secondary">
-              GOALS HISTORY
+              {t('goalsManagement.history')}
             </Text>
 
             <View>
