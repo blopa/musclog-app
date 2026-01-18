@@ -1,5 +1,7 @@
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { theme } from '../../theme';
 
 type Option = {
   label: string;
@@ -7,7 +9,7 @@ type Option = {
   icon?: React.ReactNode;
 };
 
-type SegmentedControlVariant = 'clean' | 'elevated' | 'outline';
+type SegmentedControlVariant = 'clean' | 'elevated' | 'outline' | 'gradient';
 
 type TestSegmentedControlProps = {
   options: Option[];
@@ -27,28 +29,61 @@ export function SegmentedControl({
   const containerClass =
     variant === 'elevated'
       ? `${containerBase} bg-bg-cardElevated shadow-md`
-      : variant === 'outline'
-        ? `${containerBase} bg-transparent border border-border-light`
-        : `${containerBase} bg-bg-card`;
+      : variant === 'gradient'
+        ? `${containerBase} bg-bg-cardElevated`
+        : variant === 'outline'
+          ? `${containerBase} bg-transparent border border-border-light`
+          : `${containerBase} bg-bg-card`;
 
   return (
     <View className={containerClass}>
-      {options.map((option) => (
-        <Pressable
-          key={option.value}
-          className={`flex-1 rounded-md py-2 ${value === option.value ? 'bg-bg-card' : ''}`}
-          onPress={() => onValueChange(option.value)}>
-          <View className="flex-row items-center justify-center gap-1.5">
-            {option.icon}
-            <Text
-              className={`text-center text-sm font-bold ${
-                value === option.value ? 'text-text-primary' : 'text-text-tertiary'
-              }`}>
-              {option.label}
-            </Text>
-          </View>
-        </Pressable>
-      ))}
+      {options.map((option) => {
+        const isSelected = value === option.value;
+        return (
+          <Pressable
+            key={option.value}
+            className="flex-1"
+            onPress={() => onValueChange(option.value)}>
+            {variant === 'gradient' && isSelected ? (
+              <LinearGradient
+                colors={theme.colors.gradients.cta}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={{
+                  paddingVertical: 8,
+                  borderRadius: 8,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  shadowColor: theme.colors.accent.primary,
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 4,
+                  elevation: 3,
+                }}>
+                <View className="flex-row items-center justify-center gap-1.5">
+                  {option.icon}
+                  <Text className="text-center text-xs font-bold text-text-primary">
+                    {option.label}
+                  </Text>
+                </View>
+              </LinearGradient>
+            ) : (
+              <View
+                className={`flex-1 rounded-md py-2 ${variant !== 'gradient' && isSelected ? 'bg-bg-card' : ''}`}>
+                <View className="flex-row items-center justify-center gap-1.5">
+                  {option.icon}
+                  <Text
+                    className={`text-center ${variant === 'gradient' ? 'text-xs' : 'text-sm'} font-bold ${
+                      isSelected ? 'text-text-primary' : 'text-text-tertiary'
+                    }`}>
+                    {option.label}
+                  </Text>
+                </View>
+              </View>
+            )}
+          </Pressable>
+        );
+      })}
     </View>
   );
 }

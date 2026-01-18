@@ -12,9 +12,9 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
 import Svg, { Path, Circle, Defs, LinearGradient, Stop } from 'react-native-svg';
-import { LinearGradient as RNLinearGradient } from 'expo-linear-gradient';
 import { theme } from '../theme';
 import { MasterLayout } from '../components/MasterLayout';
+import { SegmentedControl } from '../components/theme/SegmentedControl';
 
 type MetricType = 'weight' | 'bodyFat' | 'bmi' | 'ffmi';
 type TimePeriod = '30D' | '3M' | '1Y';
@@ -192,45 +192,12 @@ export default function BodyMetricsScreen() {
 
         <View className="mt-2 space-y-6 px-4">
           {/* Metric Selector */}
-          <View
-            className="flex-row gap-1 rounded-xl p-1"
-            style={{ backgroundColor: theme.colors.background.cardElevated }}>
-            {metricOptions.map((option) => {
-              const isSelected = selectedMetric === option.value;
-              return (
-                <Pressable
-                  key={option.value}
-                  className="flex-1"
-                  onPress={() => setSelectedMetric(option.value as MetricType)}>
-                  {isSelected ? (
-                    <RNLinearGradient
-                      colors={theme.colors.gradients.cta}
-                      start={{ x: 0, y: 0 }}
-                      end={{ x: 1, y: 0 }}
-                      style={{
-                        paddingVertical: 8,
-                        borderRadius: 8,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        shadowColor: '#000',
-                        shadowOffset: { width: 0, height: 2 },
-                        shadowOpacity: 0.3,
-                        shadowRadius: 4,
-                        elevation: 3,
-                      }}>
-                      <Text className="text-xs font-bold text-text-primary">{option.label}</Text>
-                    </RNLinearGradient>
-                  ) : (
-                    <View className="flex-1 items-center justify-center rounded-lg py-2">
-                      <Text className="text-xs font-semibold text-text-tertiary">
-                        {option.label}
-                      </Text>
-                    </View>
-                  )}
-                </Pressable>
-              );
-            })}
-          </View>
+          <SegmentedControl
+            options={metricOptions}
+            value={selectedMetric}
+            onValueChange={(value) => setSelectedMetric(value as MetricType)}
+            variant="gradient"
+          />
 
           {/* Current Metric Card */}
           <View
