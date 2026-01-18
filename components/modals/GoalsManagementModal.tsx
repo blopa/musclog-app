@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Plus } from 'lucide-react-native';
+import { format } from 'date-fns';
 import { theme } from '../../theme';
 import { CurrentGoalsCard } from '../cards/CurrentGoalsCard';
 import { GoalHistoryCard } from '../cards/GoalHistoryCard';
 import { FullScreenModal } from './FullScreenModal';
-import { NutritionGoalsModal } from './NutritionGoalsModal';
+import { NutritionGoalsModal, NutritionGoals } from './NutritionGoalsModal';
 import { Button } from '../theme/Button';
+import { NutritionGoalService } from '../../database/services/NutritionGoalService';
 
 type EatingPhase = 'cutting' | 'maintenance' | 'bulking' | 'lean-bulk';
 
@@ -36,54 +38,19 @@ interface CurrentGoal {
   goalDate?: string;
 }
 
-const goalsHistory: GoalHistoryItem[] = [
-  {
-    id: 1,
-    dateRange: 'Mar 16 - May 22, 2023',
-    phase: 'cutting',
-    calories: 2100,
-    protein: 180,
-    carbs: 190,
-    fat: 65,
-    weight: 74.5,
-    bodyFat: 11,
-  },
-  {
-    id: 2,
-    dateRange: 'Jan 01 - Mar 15, 2023',
-    phase: 'maintenance',
-    calories: 2450,
-    protein: 175,
-    carbs: 280,
-    fat: 70,
-    weight: 78.0,
-    bodyFat: 13,
-  },
-  {
-    id: 3,
-    dateRange: 'Oct 12 - Dec 31, 2022',
-    phase: 'lean-bulk',
-    calories: 2700,
-    protein: 170,
-    carbs: 350,
-    fat: 75,
-    weight: 76.0,
-    bodyFat: 12.5,
-  },
-];
-
-const currentGoal: CurrentGoal = {
-  phase: 'bulking',
-  calories: 2850,
-  protein: 190,
-  carbs: 320,
-  fat: 85,
-  targetWeight: 82.0,
-  bodyFat: 14.0,
-  ffmi: 22.5,
-  bmi: 24.5,
-  goalDate: 'Dec 31, 2024',
-};
+// Helper to convert DB eating phase to UI format
+function convertEatingPhase(dbPhase: string): EatingPhase {
+  switch (dbPhase) {
+    case 'cut':
+      return 'cutting';
+    case 'maintain':
+      return 'maintenance';
+    case 'bulk':
+      return 'bulking';
+    default:
+      return 'maintenance';
+  }
+}
 
 type GoalsManagementModalProps = {
   visible: boolean;
@@ -93,6 +60,90 @@ type GoalsManagementModalProps = {
 export default function GoalsManagementModal({ visible, onClose }: GoalsManagementModalProps) {
   const { t } = useTranslation();
   const [nutritionGoalsModalVisible, setNutritionGoalsModalVisible] = useState(false);
+  const [currentGoal, setCurrentGoal] = useState<CurrentGoal | null>(null);
+  const [currentGoalsData, setCurrentGoalsData] = useState<Partial<NutritionGoals> | undefined>(
+    undefined
+  );
+  const [goalsHistory, setGoalsHistory] = useState<GoalHistoryItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Load goals data
+  useEffect(() => {
+    if (visible) {
+      loadGoalsData();
+    }
+  }, [visible]);
+
+  const loadGoalsData = async () => {
+    setIsLoading(true);
+    try {
+      // Load current goal
+      const current = await NutritionGoalService.getCurrent();
+      if (current) {
+        setCurrentGoal({
+          phase: convertEatingPhase(current.eatingPhase),
+          calories: current.totalCalories,
+          protein: current.protein,
+          carbs: current.carbs,
+          fat: current.fats,
+          targetWeight: current.targetWeight,
+          bodyFat: current.targetBodyFat,
+          bmi: current.targetBmi,
+          ffmi: current.targetFfmi,
+          goalDate: current.targetDate
+            ? format(new Date(current.targetDate), 'MMM d, yyyy')
+            : undefined,
+        });
+        // Store full data for passing to NutritionGoalsModal
+        setCurrentGoalsData({
+          totalCalories: current.totalCalories,
+          protein: current.protein,
+          carbs: current.carbs,
+          fats: current.fats,
+          fiber: current.fiber,
+          eatingPhase: current.eatingPhase as 'cut' | 'maintain' | 'bulk',
+          targetWeight: current.targetWeight,
+          targetBodyFat: current.targetBodyFat,
+          targetBMI: current.targetBmi,
+          targetFFMI: current.targetFfmi,
+          targetDate: current.targetDate ?? null,
+        });
+      } else {
+        setCurrentGoal(null);
+        setCurrentGoalsData(undefined);
+      }
+
+      // Load history (all goals except current)
+      const history = await NutritionGoalService.getHistory();
+      const historyItems: GoalHistoryItem[] = history
+        .filter((goal) => goal.effectiveUntil !== null) // Only past goals
+        .map((goal, index) => {
+          const startDate = new Date(goal.createdAt);
+          const endDate = goal.effectiveUntil ? new Date(goal.effectiveUntil) : new Date();
+          const dateRange =
+            format(startDate, 'MMM d') === format(endDate, 'MMM d')
+              ? format(startDate, 'MMM d, yyyy')
+              : `${format(startDate, 'MMM d')} - ${format(endDate, 'MMM d, yyyy')}`;
+
+          return {
+            id: parseInt(goal.id, 10) || index,
+            dateRange,
+            phase: convertEatingPhase(goal.eatingPhase),
+            calories: goal.totalCalories,
+            protein: goal.protein,
+            carbs: goal.carbs,
+            fat: goal.fats,
+            weight: goal.targetWeight,
+            bodyFat: goal.targetBodyFat,
+          };
+        });
+      setGoalsHistory(historyItems);
+    } catch (error) {
+      console.error('Error loading goals data:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleNewGoal = () => {
     setNutritionGoalsModalVisible(true);
@@ -102,10 +153,27 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
     setNutritionGoalsModalVisible(false);
   };
 
-  const handleSaveNutritionGoals = () => {
-    // TODO: Handle saving nutrition goals
-    // This could update the current goal or add to history
-    setNutritionGoalsModalVisible(false);
+  const handleSaveNutritionGoals = async (goals: NutritionGoals) => {
+    try {
+      await NutritionGoalService.saveGoals({
+        totalCalories: goals.totalCalories,
+        protein: goals.protein,
+        carbs: goals.carbs,
+        fats: goals.fats,
+        fiber: goals.fiber,
+        eatingPhase: goals.eatingPhase,
+        targetWeight: goals.targetWeight,
+        targetBodyFat: goals.targetBodyFat,
+        targetBMI: goals.targetBMI,
+        targetFFMI: goals.targetFFMI,
+        targetDate: goals.targetDate ?? null,
+      });
+      // Reload data after saving
+      await loadGoalsData();
+      setNutritionGoalsModalVisible(false);
+    } catch (error) {
+      console.error('Error saving nutrition goals:', error);
+    }
   };
 
   return (
@@ -125,63 +193,86 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
           />
         }
         scrollable={false}>
-        <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-          <View className="shrink-0 px-6 pb-6" />
-          {/* Scrollable content */}
-          <View className="flex-1 px-6 pb-32">
-            {/* Current Goals Section */}
-            <View className="mb-8">
-              <View className="mb-3 flex-row items-center justify-between">
-                <Text
-                  className="font-bold uppercase tracking-widest text-text-secondary"
-                  style={{ fontSize: theme.typography.fontSize.xs }}>
-                  {t('goalsManagement.currentGoals')}
-                </Text>
-                <View
-                  className="rounded-full border px-2"
-                  style={{
-                    backgroundColor: theme.colors.accent.primary10,
-                    borderColor: theme.colors.accent.primary20,
-                    paddingVertical: theme.spacing.padding.xsHalf,
-                  }}>
+        {isLoading ? (
+          <View className="flex-1 items-center justify-center">
+            <ActivityIndicator size="large" color={theme.colors.accent.primary} />
+          </View>
+        ) : (
+          <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+            <View className="shrink-0 px-6 pb-6" />
+            {/* Scrollable content */}
+            <View className="flex-1 px-6 pb-32">
+              {/* Current Goals Section */}
+              {currentGoal && (
+                <View className="mb-8">
+                  <View className="mb-3 flex-row items-center justify-between">
+                    <Text
+                      className="font-bold uppercase tracking-widest text-text-secondary"
+                      style={{ fontSize: theme.typography.fontSize.xs }}>
+                      {t('goalsManagement.currentGoals')}
+                    </Text>
+                    <View
+                      className="rounded-full border px-2"
+                      style={{
+                        backgroundColor: theme.colors.accent.primary10,
+                        borderColor: theme.colors.accent.primary20,
+                        paddingVertical: theme.spacing.padding.xsHalf,
+                      }}>
+                      <Text
+                        className="font-bold text-accent-primary"
+                        style={{ fontSize: theme.typography.fontSize.xs }}>
+                        {t('goalsManagement.active')}
+                      </Text>
+                    </View>
+                  </View>
+
+                  {/* Current Goal Card */}
+                  <CurrentGoalsCard goal={currentGoal} />
+                </View>
+              )}
+
+              {/* Goals History Section */}
+              {goalsHistory.length > 0 && (
+                <View className="mb-6">
                   <Text
-                    className="font-bold text-accent-primary"
+                    className="mb-6 font-bold uppercase tracking-widest text-text-secondary"
                     style={{ fontSize: theme.typography.fontSize.xs }}>
-                    {t('goalsManagement.active')}
+                    {t('goalsManagement.history')}
+                  </Text>
+
+                  <View>
+                    {goalsHistory.map((goal, index) => {
+                      const isLast = index === goalsHistory.length - 1;
+                      return <GoalHistoryCard key={goal.id} goal={goal} isLast={isLast} />;
+                    })}
+                  </View>
+                </View>
+              )}
+
+              {/* Empty state */}
+              {!currentGoal && goalsHistory.length === 0 && (
+                <View className="flex-1 items-center justify-center py-16">
+                  <Text className="text-center text-text-secondary">
+                    {t('goalsManagement.subtitle')}
+                  </Text>
+                  <Text className="mt-2 text-center text-xs text-text-tertiary">
+                    {t('goalsManagement.newGoal')} to get started
                   </Text>
                 </View>
-              </View>
-
-              {/* Current Goal Card */}
-              <CurrentGoalsCard goal={currentGoal} />
+              )}
             </View>
 
-            {/* Goals History Section */}
-            <View className="mb-6">
-              <Text
-                className="mb-6 font-bold uppercase tracking-widest text-text-secondary"
-                style={{ fontSize: theme.typography.fontSize.xs }}>
-                {t('goalsManagement.history')}
-              </Text>
-
-              <View>
-                {goalsHistory.map((goal, index) => {
-                  const isLast = index === goalsHistory.length - 1;
-                  return <GoalHistoryCard key={goal.id} goal={goal} isLast={isLast} />;
-                })}
-              </View>
-            </View>
-          </View>
-
-          {/* Bottom spacing for navigation */}
-          <View style={{ height: theme.size['24'] }} />
-        </ScrollView>
+            {/* Bottom spacing for navigation */}
+            <View style={{ height: theme.size['24'] }} />
+          </ScrollView>
+        )}
       </FullScreenModal>
 
       <NutritionGoalsModal
         visible={nutritionGoalsModalVisible}
         onClose={handleCloseNutritionGoalsModal}
         onSave={handleSaveNutritionGoals}
+        initialGoals={currentGoalsData}
       />
     </>
   );
