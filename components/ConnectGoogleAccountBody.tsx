@@ -18,9 +18,6 @@ export function ConnectGoogleAccountBody({
   onMaybeLater,
 }: ConnectGoogleAccountBodyProps) {
   const { t } = useTranslation();
-  // Background image URL from the HTML
-  const backgroundImageUrl =
-    'https://lh3.googleusercontent.com/aida-public/AB6AXuBIUHHpLboa-7oRhIVkiQfJlErR0GL5ntRD8oyMWVpa6uB4tGMdsX6LIlnAAIdkFL4BKrPedtVAuVvXfJVSlwUJhiRZJicaFaSI2SVcksaQbJt8h-TZ-GTwmoxVs96uxnle3cZi0de4o3rX7zv9W9iqh7cFiLzT1F0Hj62866bpdABQPz4ujVrWRLTrbU4SHg2a1ZFVM79TkxqXTVsms0B29rdyIiGlDP73-Jb9YfS9_DTpueq2UvyVdxJLHz4nyJHdM_vZk7PAh7O7';
 
   const handleConnect = () => {
     onConnect?.();
@@ -36,7 +33,7 @@ export function ConnectGoogleAccountBody({
     <>
       <View className="flex-1 px-5 pb-6">
         {/* Main Visual Card */}
-        <GoogleGeminiIllustration backgroundImageUrl={backgroundImageUrl} />
+        <GoogleGeminiIllustration />
 
         {/* Title and Description */}
         <View className="mb-8 text-center">

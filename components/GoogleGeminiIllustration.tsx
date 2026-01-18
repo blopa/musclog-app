@@ -5,11 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { theme } from '../theme';
 import { GoogleLogoSvg } from './GoogleLogoSvg';
 
-export const GoogleGeminiIllustration = ({
-  backgroundImageUrl,
-}: {
-  backgroundImageUrl: string;
-}) => {
+export const GoogleGeminiIllustration = () => {
   return (
     <View className="mb-6 mt-2">
       <View className="relative w-full" style={{ aspectRatio: theme.aspectRatio.landscape }}>
@@ -40,13 +36,18 @@ export const GoogleGeminiIllustration = ({
           />
         </View>
         {/* Main card */}
-        <View className="relative flex-1 overflow-hidden rounded-2xl border border-white/5 bg-bg-cardDark">
+        <View className="relative flex-1 rounded-2xl border border-white/5 bg-bg-cardDark" style={{ overflow: 'hidden' }}>
           {/* Background image */}
-          <View className="absolute inset-0" style={{ opacity: theme.colors.opacity.strong }}>
+          <View 
+            className="absolute inset-0" 
+            style={{ opacity: theme.colors.opacity.strong }}>
             <Image
-              source={{ uri: backgroundImageUrl }}
-              className="h-full w-full"
-              resizeMode="cover"
+              source={require('../assets/ai-background.png')}
+              style={{ 
+                width: '100%', 
+                height: '100%',
+              }}
+              resizeMode="stretch"
             />
           </View>
           {/* Gradient overlay - from bottom to top */}
