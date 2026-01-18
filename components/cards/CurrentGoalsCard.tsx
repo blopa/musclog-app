@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text } from 'react-native';
-import { Scale, Percent } from 'lucide-react-native';
+import { Scale, Percent, Activity, Calculator, Calendar } from 'lucide-react-native';
 import { theme } from '../../theme';
 import { GenericCard } from './GenericCard';
 
@@ -27,11 +27,11 @@ interface CurrentGoal {
   protein: number;
   carbs: number;
   fat: number;
-  targetWeight: number;
-  bodyFat: number;
-  ffmi: number;
-  bmi: number;
-  goalDate: string;
+  targetWeight?: number;
+  bodyFat?: number;
+  ffmi?: number;
+  bmi?: number;
+  goalDate?: string;
 }
 
 interface CurrentGoalsCardProps {
@@ -111,31 +111,74 @@ export function CurrentGoalsCard({ goal }: CurrentGoalsCardProps) {
         </View>
       </View>
 
-      {/* Target Weight & Body Fat */}
-      <View
-        className="mt-4 flex-row gap-4 rounded-lg p-3"
-        style={{ backgroundColor: theme.colors.background.darkGreen50 }}>
-        <View className="flex-1 flex-row items-center gap-3">
-          <Scale size={theme.iconSize.lg} color={theme.colors.accent.primary} />
-          <View>
-            <Text className="text-[9px] font-bold uppercase text-text-secondary">
-              Target Weight
-            </Text>
-            <Text className="text-sm font-bold text-text-primary">
-              {goal.targetWeight} <Text className="text-[10px] text-text-secondary">kg</Text>
-            </Text>
+      {/* Goal Date */}
+      {goal.goalDate && (
+        <View className="mt-4">
+          <View className="flex-row items-center gap-2">
+            <Calendar size={theme.iconSize.md} color={theme.colors.text.secondary} />
+            <Text className="text-xs font-semibold text-text-secondary">{goal.goalDate}</Text>
           </View>
         </View>
-        <View className="flex-1 flex-row items-center gap-3">
-          <Percent size={theme.iconSize.lg} color={theme.colors.accent.primary} />
-          <View>
-            <Text className="text-[9px] font-bold uppercase text-text-secondary">Body Fat</Text>
-            <Text className="text-sm font-bold text-text-primary">
-              {goal.bodyFat} <Text className="text-[10px] text-text-secondary">%</Text>
-            </Text>
-          </View>
+      )}
+
+      {/* Target Metrics */}
+      {(goal.targetWeight !== undefined ||
+        goal.bodyFat !== undefined ||
+        goal.ffmi !== undefined ||
+        goal.bmi !== undefined) && (
+        <View
+          className="mt-4 flex-row flex-wrap gap-4 rounded-lg p-3"
+          style={{ backgroundColor: theme.colors.background.darkGreen50 }}>
+          {goal.targetWeight !== undefined && (
+            <View className="flex-1 min-w-[45%] flex-row items-center gap-3">
+              <Scale size={theme.iconSize.lg} color={theme.colors.accent.primary} />
+              <View>
+                <Text className="text-[9px] font-bold uppercase text-text-secondary">
+                  Target Weight
+                </Text>
+                <Text className="text-sm font-bold text-text-primary">
+                  {goal.targetWeight}{' '}
+                  <Text className="text-[10px] text-text-secondary">kg</Text>
+                </Text>
+              </View>
+            </View>
+          )}
+          {goal.bodyFat !== undefined && (
+            <View className="flex-1 min-w-[45%] flex-row items-center gap-3">
+              <Percent size={theme.iconSize.lg} color={theme.colors.accent.primary} />
+              <View>
+                <Text className="text-[9px] font-bold uppercase text-text-secondary">Body Fat</Text>
+                <Text className="text-sm font-bold text-text-primary">
+                  {goal.bodyFat}{' '}
+                  <Text className="text-[10px] text-text-secondary">%</Text>
+                </Text>
+              </View>
+            </View>
+          )}
+          {goal.ffmi !== undefined && (
+            <View className="flex-1 min-w-[45%] flex-row items-center gap-3">
+              <Activity size={theme.iconSize.lg} color={theme.colors.accent.primary} />
+              <View>
+                <Text className="text-[9px] font-bold uppercase text-text-secondary">FFMI</Text>
+                <Text className="text-sm font-bold text-text-primary">
+                  {goal.ffmi.toFixed(1)}
+                </Text>
+              </View>
+            </View>
+          )}
+          {goal.bmi !== undefined && (
+            <View className="flex-1 min-w-[45%] flex-row items-center gap-3">
+              <Calculator size={theme.iconSize.lg} color={theme.colors.accent.primary} />
+              <View>
+                <Text className="text-[9px] font-bold uppercase text-text-secondary">BMI</Text>
+                <Text className="text-sm font-bold text-text-primary">
+                  {goal.bmi.toFixed(1)}
+                </Text>
+              </View>
+            </View>
+          )}
         </View>
-      </View>
+      )}
       </View>
     </GenericCard>
   );

@@ -40,8 +40,11 @@ interface CurrentGoal {
   protein: number;
   carbs: number;
   fat: number;
-  targetWeight: number;
-  bodyFat: number;
+  targetWeight?: number;
+  bodyFat?: number;
+  ffmi?: number;
+  bmi?: number;
+  goalDate?: string;
 }
 
 const goalsHistory: GoalHistoryItem[] = [
@@ -88,6 +91,9 @@ const currentGoal: CurrentGoal = {
   fat: 85,
   targetWeight: 82.0,
   bodyFat: 14.0,
+  ffmi: 22.5,
+  bmi: 24.5,
+  goalDate: 'Dec 31, 2024',
 };
 
 export default function GoalsManagementPage() {
