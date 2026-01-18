@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { View, Text, Image, Pressable, ScrollView, ActivityIndicator } from 'react-native';
 import {
   Bell,
@@ -18,9 +18,13 @@ import { ActionButton } from '../components/ActionButton';
 import { DailySummaryCard } from '../components/cards/DailySummaryCard';
 import { UserMenuModal } from '../components/modals/UserMenuModal';
 import { NotificationsModal } from '../components/modals/NotificationsModal';
+import PastWorkoutsHistoryModal from '../components/modals/PastWorkoutsHistoryModal';
 import { useRouter } from 'expo-router';
 import { SkeletonLoader } from '../components/theme/SkeletonLoader';
 import { isOnboardingCompleted } from '../utils/onboardingService';
+import { WorkoutService } from '../database/services/WorkoutService';
+import { WorkoutAnalytics } from '../database/services/WorkoutAnalytics';
+import { format, isToday, isYesterday, isThisWeek } from 'date-fns';
 
 const PAGE_DATA = {
   user: {
@@ -88,10 +92,22 @@ export default function HomeScreen() {
   const router = useRouter();
   const [user, setUser] = useState(PAGE_DATA.user);
   const [dailySummary, setDailySummary] = useState(PAGE_DATA.dailySummary);
-  const [recentWorkouts, setRecentWorkouts] = useState(PAGE_DATA.recentWorkouts);
+  const [recentWorkouts, setRecentWorkouts] = useState<
+    {
+      id: string;
+      name: string;
+      date: string;
+      duration: string;
+      calories: number;
+      prs: number | null;
+      image: any;
+      imageBgColor: string;
+    }[]
+  >(PAGE_DATA.recentWorkouts);
   const [recentFoods, setRecentFoods] = useState(PAGE_DATA.recentFoods);
   const [isUserMenuVisible, setIsUserMenuVisible] = useState(false);
   const [isNotificationsVisible, setIsNotificationsVisible] = useState(false);
+  const [isWorkoutHistoryVisible, setIsWorkoutHistoryVisible] = useState(false);
   const [isLoadingRecent, setIsLoadingRecent] = useState(false);
   const [isCheckingOnboarding, setIsCheckingOnboarding] = useState(true);
 
@@ -115,26 +131,85 @@ export default function HomeScreen() {
     checkOnboarding();
   }, [router]);
 
-  // Simulate loading recent data - replace with actual API call
-  const loadRecentData = async () => {
+  // Helper function to format relative date
+  const formatRelativeDate = (timestamp: number): string => {
+    const date = new Date(timestamp);
+    if (isToday(date)) {
+      return 'Today';
+    }
+    if (isYesterday(date)) {
+      return 'Yesterday';
+    }
+    if (isThisWeek(date)) {
+      return format(date, 'EEEE'); // Day name like "Monday"
+    }
+    // For older dates, show formatted date
+    return format(date, 'MMM d'); // "Jan 15"
+  };
+
+  // Helper function to format duration
+  const formatDuration = (minutes: number): string => {
+    if (minutes < 60) {
+      return `${minutes}m`;
+    }
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
+  };
+
+  // Load recent workouts from database
+  const loadRecentData = useCallback(async () => {
     setIsLoadingRecent(true);
     try {
-      // Simulate API call delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      // In real app, replace with: const data = await fetchRecentData();
-      setRecentWorkouts(PAGE_DATA.recentWorkouts);
+      // Fetch recent completed workouts (limit to 2 for homepage)
+      const workouts = await WorkoutService.getWorkoutHistory(undefined, 2);
+
+      // Process workouts for display
+      const processedWorkouts = await Promise.all(
+        workouts.map(async (workout) => {
+          // Calculate duration
+          const durationMinutes =
+            workout.completedAt && workout.startedAt
+              ? Math.round((workout.completedAt - workout.startedAt) / 60000)
+              : 0;
+
+          // Get PR count
+          const prs = await WorkoutAnalytics.detectPersonalRecords(workout);
+          const prCount = prs.length > 0 ? prs.length : null;
+
+          // Format date
+          const dateTimestamp = workout.startedAt || workout.completedAt || Date.now();
+          const dateStr = formatRelativeDate(dateTimestamp);
+
+          return {
+            id: workout.id,
+            name: workout.workoutName,
+            date: dateStr,
+            duration: formatDuration(durationMinutes),
+            calories: 0, // Calories not stored in workout log yet
+            prs: prCount,
+            image: require('../assets/icon.png'), // Default image
+            imageBgColor: theme.colors.background.imageLight,
+          };
+        })
+      );
+
+      setRecentWorkouts(processedWorkouts);
+      // Keep foods as is for now (will be replaced with real data later)
       setRecentFoods(PAGE_DATA.recentFoods);
     } catch (err) {
       console.error('Failed to load recent data:', err);
+      // Fallback to empty array on error
+      setRecentWorkouts([]);
     } finally {
       setIsLoadingRecent(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    // Uncomment to simulate initial load
-    // loadRecentData();
-  }, []);
+    // Load recent data when component mounts
+    loadRecentData();
+  }, [loadRecentData]);
 
   // Show loading spinner while checking onboarding
   if (isCheckingOnboarding) {
@@ -206,7 +281,7 @@ export default function HomeScreen() {
             <Text className="text-2xl font-bold text-text-primary">
               {t('home.sections.recentWorkouts')}
             </Text>
-            <Pressable>
+            <Pressable onPress={() => setIsWorkoutHistoryVisible(true)}>
               <Text className="text-sm font-medium text-text-accent">{t('common.seeAll')}</Text>
             </Pressable>
           </View>
@@ -343,6 +418,12 @@ export default function HomeScreen() {
           // Handle clear all notifications
           console.log('Clear all notifications');
         }}
+      />
+
+      {/* Workout History Modal */}
+      <PastWorkoutsHistoryModal
+        visible={isWorkoutHistoryVisible}
+        onClose={() => setIsWorkoutHistoryVisible(false)}
       />
     </MasterLayout>
   );
