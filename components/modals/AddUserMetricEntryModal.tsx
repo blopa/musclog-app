@@ -283,7 +283,7 @@ export default function AddUserMetricEntryModal({
       <View className="flex-1">
         {/* Content */}
         <ScrollView className="flex-1 px-4 pb-12" showsVerticalScrollIndicator={false}>
-          <View className="space-y-8">
+          <View style={{ gap: 32 }}>
             {/* Metric Selector */}
             <SegmentedControl
               options={metricOptions}
