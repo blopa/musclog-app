@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, ScrollView, Pressable } from 'react-native';
+import { View, Text, ScrollView, Pressable, ActivityIndicator } from 'react-native';
 import { CheckCircle, Minus, Plus } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
@@ -12,6 +12,8 @@ import { MoodSelectorCard } from '../cards/MoodSelectorCard';
 import { PagerView, type PagerViewRef } from '../PagerView/PagerView';
 import { format } from 'date-fns';
 import { FullScreenModal } from './FullScreenModal';
+import { database } from '../../database';
+import UserMetric from '../../database/models/UserMetric';
 
 type MetricType = 'weight' | 'bodyFat' | 'height';
 
@@ -50,6 +52,7 @@ export default function AddUserMetricEntryModal({
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedTime, setSelectedTime] = useState(new Date());
   const [pagerHeight, setPagerHeight] = useState<number | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   const pageIndexToMetric: MetricType[] = ['weight', 'bodyFat', 'height'];
 
@@ -142,9 +145,72 @@ export default function AddUserMetricEntryModal({
     }
   };
 
-  const handleSave = () => {
-    // TODO: Save entry logic
-    router.back();
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      const now = Date.now();
+      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+      // Combine date and time into a single timestamp
+      // Set the date to midnight for date tracking, but preserve the time component
+      const combinedDate = new Date(selectedDate);
+      combinedDate.setHours(selectedTime.getHours(), selectedTime.getMinutes(), 0, 0);
+      const dateTimestamp = new Date(combinedDate.setHours(0, 0, 0, 0)).getTime(); // Set to midnight for date tracking
+
+      await database.write(async () => {
+        // Save weight metric
+        await database.get<UserMetric>('user_metrics').create((metric) => {
+          metric.type = 'weight';
+          metric.value = weight;
+          metric.unit = 'kg';
+          metric.date = dateTimestamp;
+          metric.timezone = timezone;
+          metric.createdAt = now;
+          metric.updatedAt = now;
+        });
+
+        // Save body fat metric
+        await database.get<UserMetric>('user_metrics').create((metric) => {
+          metric.type = 'bodyFat';
+          metric.value = bodyFat;
+          metric.unit = '%';
+          metric.date = dateTimestamp;
+          metric.timezone = timezone;
+          metric.createdAt = now;
+          metric.updatedAt = now;
+        });
+
+        // Save height metric
+        await database.get<UserMetric>('user_metrics').create((metric) => {
+          metric.type = 'height';
+          metric.value = height;
+          metric.unit = 'cm';
+          metric.date = dateTimestamp;
+          metric.timezone = timezone;
+          metric.createdAt = now;
+          metric.updatedAt = now;
+        });
+
+        // Save mood metric
+        await database.get<UserMetric>('user_metrics').create((metric) => {
+          metric.type = 'mood';
+          metric.value = mood;
+          metric.unit = '';
+          metric.date = dateTimestamp;
+          metric.timezone = timezone;
+          metric.createdAt = now;
+          metric.updatedAt = now;
+        });
+      });
+
+      // Navigate back after successful save
+      router.back();
+    } catch (error) {
+      console.error('Error saving user metrics:', error);
+      // TODO: Show error message to user
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   // Render full metric entry card content for a specific metric type
@@ -348,6 +414,8 @@ export default function AddUserMetricEntryModal({
             variant="gradientCta"
             size="md"
             width="full"
+            loading={isSaving}
+            disabled={isSaving}
           />
         </View>
       </View>

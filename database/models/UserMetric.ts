@@ -6,7 +6,7 @@ export default class UserMetric extends Model {
 
   @field('type') type!: string;
   @field('value') value!: number;
-  @field('unit') unit!: string;
+  @field('unit') unit?: string;
   @field('date') date!: number;
   @field('timezone') timezone!: string;
   @field('created_at') createdAt!: number;

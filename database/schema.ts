@@ -99,7 +99,7 @@ export const schema = appSchema({
       columns: [
         { name: 'type', type: 'string', isIndexed: true },
         { name: 'value', type: 'number' },
-        { name: 'unit', type: 'string' },
+        { name: 'unit', type: 'string', isOptional: true },
         { name: 'date', type: 'number', isIndexed: true },
         { name: 'timezone', type: 'string' },
         { name: 'created_at', type: 'number' },

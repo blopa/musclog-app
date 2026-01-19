@@ -357,7 +357,7 @@ export default function DebugTestScreen() {
                       className="rounded-lg border border-border-light bg-bg-primary p-3">
                       <Text className="text-text-primary">
                         <Text className="font-bold">{metric.type}:</Text> {metric.value}{' '}
-                        {metric.unit}
+                        {metric.unit || 'N/A'}
                       </Text>
                       <Text className="text-xs text-text-secondary">
                         Date: {new Date(metric.date).toLocaleDateString()}
