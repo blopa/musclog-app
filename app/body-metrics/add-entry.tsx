@@ -1,9 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, ScrollView, Pressable } from 'react-native';
-import { X, CheckCircle, Minus, Plus } from 'lucide-react-native';
+import { CheckCircle, Minus, Plus } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { theme } from '../../theme';
 import { SegmentedControl } from '../../components/theme/SegmentedControl';
@@ -12,6 +11,7 @@ import { DateTimeSelectorCard } from '../../components/cards/DateTimeSelectorCar
 import { MoodSelectorCard } from '../../components/cards/MoodSelectorCard';
 import { PagerView, type PagerViewRef } from '../../components/PagerView/PagerView';
 import { format } from 'date-fns';
+import { FullScreenModal } from '../../components/modals/FullScreenModal';
 
 type MetricType = 'weight' | 'bodyFat' | 'height';
 
@@ -23,7 +23,22 @@ type MetricConfig = {
   step: number;
 };
 
-export default function AddEntryScreen() {
+type AddUserMetricEntryModalProps = {
+  visible: boolean;
+  onClose: () => void;
+};
+
+// Map metric types to page indices
+const metricToPageIndex: Record<MetricType, number> = {
+  weight: 0,
+  bodyFat: 1,
+  height: 2,
+};
+
+export default function AddUserMetricEntryModal({
+  visible,
+  onClose,
+}: AddUserMetricEntryModalProps) {
   const { t } = useTranslation();
   const router = useRouter();
   const pagerRef = useRef<PagerViewRef>(null);
@@ -34,13 +49,6 @@ export default function AddEntryScreen() {
   const [mood, setMood] = useState(3); // 0-4: Poor, Low, Okay, Good, Great
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedTime, setSelectedTime] = useState(new Date());
-
-  // Map metric types to page indices
-  const metricToPageIndex: Record<MetricType, number> = {
-    weight: 0,
-    bodyFat: 1,
-    height: 2,
-  };
 
   const pageIndexToMetric: MetricType[] = ['weight', 'bodyFat', 'height'];
 
@@ -266,22 +274,12 @@ export default function AddEntryScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-bg-primary" edges={['top']}>
+    <FullScreenModal
+      visible={visible}
+      onClose={onClose}
+      title={t('bodyMetrics.addEntry.title')}
+      scrollable={false}>
       <View className="flex-1">
-        {/* Header */}
-        <View className="flex-row items-center justify-between px-4 pb-4 pt-6">
-          <Pressable
-            onPress={() => router.back()}
-            className="-ml-2 rounded-full p-2"
-            style={{ backgroundColor: theme.colors.overlay.white5 }}>
-            <X size={theme.iconSize.lg} color={theme.colors.text.primary} />
-          </Pressable>
-          <Text className="text-lg font-bold text-text-primary">
-            {t('bodyMetrics.addEntry.title')}
-          </Text>
-          <View style={{ width: 40 }} />
-        </View>
-
         {/* Content */}
         <ScrollView className="flex-1 px-4 pb-12" showsVerticalScrollIndicator={false}>
           <View className="space-y-8">
@@ -350,6 +348,6 @@ export default function AddEntryScreen() {
           </Pressable>
         </View>
       </View>
-    </SafeAreaView>
+    </FullScreenModal>
   );
 }
