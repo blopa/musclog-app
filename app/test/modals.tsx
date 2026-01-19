@@ -734,7 +734,8 @@ export default function ModalsTestScreen() {
               Add User Metric Entry Modal
             </Text>
             <Text className="mb-4 text-sm text-text-secondary">
-              A full-screen modal for adding body metric entries (weight, body fat, height) with date, time, and mood selection.
+              A full-screen modal for adding body metric entries (weight, body fat, height) with
+              date, time, and mood selection.
             </Text>
             <Button
               label="Open Add User Metric Entry Modal"

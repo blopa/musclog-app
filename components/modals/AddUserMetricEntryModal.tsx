@@ -228,9 +228,7 @@ export default function AddUserMetricEntryModal({
           </View>
 
           {/* Quick Increment Buttons */}
-          <View
-            className="mb-6 flex-row justify-center"
-            style={{ gap: theme.spacing.gap['2'] }}>
+          <View className="mb-6 flex-row justify-center" style={{ gap: theme.spacing.gap['2'] }}>
             {config.quickIncrements.map((increment) => (
               <Pressable
                 key={increment}

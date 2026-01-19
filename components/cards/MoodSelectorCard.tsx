@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import { Smile } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
@@ -55,7 +55,10 @@ export function MoodSelectorCard({ value, onChange }: MoodSelectorCardProps) {
             {[0, 1, 2, 3, 4].map((moodValue) => {
               const isSelected = value === moodValue;
               return (
-                <View key={moodValue} className="flex-col items-center gap-1">
+                <Pressable
+                  key={moodValue}
+                  onPress={() => onChange(moodValue)}
+                  className="flex-col items-center gap-1">
                   <Text className="text-xl">{MOOD_EMOJIS[moodValue]}</Text>
                   <Text
                     className={`text-[10px] font-bold uppercase ${
@@ -64,7 +67,7 @@ export function MoodSelectorCard({ value, onChange }: MoodSelectorCardProps) {
                     style={{ opacity: isSelected ? 1 : 0.4 }}>
                     {t(`bodyMetrics.addEntry.moods.${moodValue}`)}
                   </Text>
-                </View>
+                </Pressable>
               );
             })}
           </View>
