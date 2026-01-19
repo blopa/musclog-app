@@ -289,6 +289,7 @@ export default function AddUserMetricEntryModal({
       <View className="flex-1">
         {/* Content */}
         <ScrollView className="flex-1 px-4 pb-12" showsVerticalScrollIndicator={false}>
+          <View className="h-4" />
           <View style={{ gap: theme.spacing.gap['2xl'] }}>
             {/* Metric Selector */}
             <SegmentedControl
@@ -320,7 +321,8 @@ export default function AddUserMetricEntryModal({
                     const pageIndex = e.nativeEvent.position;
                     handlePageChange(pageIndex);
                   }}
-                  scrollEnabled={false}>
+                  scrollEnabled={true}
+                  overdrag={false}>
                   {/* Weight Page */}
                   <View key="weight">{renderMetricEntry('weight')}</View>
                   {/* Body Fat Page */}
