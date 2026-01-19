@@ -30,12 +30,12 @@ const OptionItem = React.memo(
     onSelect: (id: T) => void;
   }) => {
     const Icon = option.icon as any;
-    const handlePress = useCallback(() => {
+    const handlePressIn = useCallback(() => {
       onSelect(option.id);
     }, [option.id, onSelect]);
 
     return (
-      <Pressable key={option.id} onPress={handlePress}>
+      <Pressable key={option.id} onPressIn={handlePressIn}>
         {({ pressed }) => (
           <View
             style={{

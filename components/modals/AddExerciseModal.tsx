@@ -175,15 +175,11 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
 
       setExercises(groupedExercises);
 
-      // Auto-select first exercise if available (only if nothing is selected or selection is invalid)
-      const currentGroupExercises = groupedExercises[activeMuscle];
-      if (currentGroupExercises.length > 0) {
-        // Check if current selection exists in the loaded exercises (use ref to avoid stale closure)
-        const allExerciseIds = new Set(groupedExercises.all.map((ex) => ex.id));
-        const currentSelection = selectedExerciseIdRef.current;
-        if (!currentSelection || !allExerciseIds.has(currentSelection)) {
-          setSelectedExerciseId(currentGroupExercises[0].id);
-        }
+      // Validate current selection - clear it if it no longer exists
+      const allExerciseIds = new Set(groupedExercises.all.map((ex) => ex.id));
+      const currentSelection = selectedExerciseIdRef.current;
+      if (currentSelection && !allExerciseIds.has(currentSelection)) {
+        setSelectedExerciseId(null);
       }
     } catch (error) {
       console.error('Error loading exercises:', error);
@@ -191,25 +187,28 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
     } finally {
       setIsLoading(false);
     }
-  }, [activeMuscle]);
+  }, []);
 
   // Load exercises when modal opens or active muscle changes
   useEffect(() => {
     if (visible) {
+      // Reset selection when modal opens
+      setSelectedExerciseId(null);
+      selectedExerciseIdRef.current = null;
       loadExercises();
     }
   }, [visible, loadExercises]);
 
-  // Update selected exercise when active muscle changes (only muscle group change, not selection)
+  // Update selected exercise when active muscle changes - clear selection if it doesn't exist in new group
   useEffect(() => {
     const currentGroupExercises = exercises[activeMuscle];
-    if (currentGroupExercises.length > 0) {
-      // Keep selection if it exists in the new group, otherwise select first
+    if (currentGroupExercises.length > 0 && selectedExerciseId) {
+      // Clear selection if it doesn't exist in the new group
       const exerciseExists = currentGroupExercises.some((ex) => ex.id === selectedExerciseId);
       if (!exerciseExists) {
-        setSelectedExerciseId(currentGroupExercises[0].id);
+        setSelectedExerciseId(null);
       }
-    } else {
+    } else if (currentGroupExercises.length === 0) {
       setSelectedExerciseId(null);
     }
     // Only run when activeMuscle or exercises change, not when selectedExerciseId changes
