@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Sparkles, PlusSquare, Dumbbell, User } from 'lucide-react-native';
+import { ArrowLeft, Sparkles, PlusSquare } from 'lucide-react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '../../theme';
 import { Button } from '../../components/theme/Button';
@@ -19,24 +19,20 @@ import { OptionsMultiSelector } from '../../components/theme/OptionsMultiSelecto
 import { WeekdayPicker } from '../../components/theme/WeekdayPicker';
 import { SelectorOption } from '../../components/theme/OptionsMultiSelector/utils';
 import { AddExerciseModal } from '../../components/modals/AddExerciseModal';
-import {
-  WorkoutTemplateService,
-  ExerciseInWorkout,
-} from '../../database/services/WorkoutTemplateService';
-import { database } from '../../database';
+import { WorkoutTemplateService } from '../../database/services/WorkoutTemplateService';
 import Exercise from '../../database/models/Exercise';
-
-// Day labels for WeekdayPicker (Monday through Sunday)
-const days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-
-// Day names mapping for database: WeekdayPicker index -> Day name
-// WeekdayPicker uses: 0 = Monday, 1 = Tuesday, ..., 6 = Sunday
-const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-
-// Convert day name from database to WeekdayPicker index
-const dayNameToIndex = (dayName: string): number => {
-  return dayNames.indexOf(dayName);
-};
+import { database } from '../../database';
+import {
+  WEEKDAY_LABELS,
+  transformExercisesToOptions,
+  transformScheduleDays,
+  createExerciseOption,
+  extractExerciseMetadata,
+  updateMetadataWithGroupIds,
+  exercisesToWorkoutFormat,
+  validateWorkoutTitle,
+  type ExerciseMetadata,
+} from '../../utils/workout';
 
 export default function CreateWorkoutScreen() {
   const { t } = useTranslation();
@@ -71,43 +67,20 @@ export default function CreateWorkoutScreen() {
       setDescription(template.description || '');
 
       // Convert schedule days to indices
-      const dayIndices = schedule
-        .map((s) => dayNameToIndex(s.dayOfWeek))
-        .filter((idx) => idx !== -1);
+      const dayIndices = transformScheduleDays(schedule);
       setSelectedDays(dayIndices);
 
       // Convert template sets to exercises
       const exercisesInWorkout = await WorkoutTemplateService.convertSetsToExercises(sets);
 
-      // Convert to SelectorOption format and populate metadata
-      const exerciseOptions: SelectorOption<string>[] = exercisesInWorkout.map((ex) => ({
-        id: ex.id,
-        label: ex.label,
-        description: ex.description,
-        icon: ex.icon,
-        iconBgColor: ex.iconBgColor,
-        iconColor: ex.iconColor,
-        groupId: ex.groupId,
-      }));
-
+      // Convert to SelectorOption format
+      const exerciseOptions = transformExercisesToOptions(exercisesInWorkout);
       setExercises(exerciseOptions);
 
       // Populate metadata map
-      const metadataMap = new Map<
-        string,
-        Omit<
-          ExerciseInWorkout,
-          'id' | 'label' | 'description' | 'icon' | 'iconBgColor' | 'iconColor'
-        >
-      >();
+      const metadataMap = new Map<string, ExerciseMetadata>();
       exercisesInWorkout.forEach((ex) => {
-        metadataMap.set(ex.id, {
-          sets: ex.sets,
-          reps: ex.reps,
-          weight: ex.weight,
-          isBodyweight: ex.isBodyweight,
-          groupId: ex.groupId,
-        });
+        metadataMap.set(ex.id, extractExerciseMetadata(ex));
       });
       setExerciseMetadata(metadataMap);
     } catch (error) {
@@ -119,7 +92,7 @@ export default function CreateWorkoutScreen() {
     } finally {
       setIsLoading(false);
     }
-  }, [dayNameToIndex, isEditMode, templateId, t]);
+  }, [isEditMode, templateId, t]);
 
   // Load template on mount if in edit mode
   useEffect(() => {
@@ -138,12 +111,9 @@ export default function CreateWorkoutScreen() {
 
   // Store exercise metadata (sets, reps, weight, isBodyweight) separately
   // This is needed because SelectorOption doesn't include these fields
-  const [exerciseMetadata, setExerciseMetadata] = useState<
-    Map<
-      string,
-      Omit<ExerciseInWorkout, 'id' | 'label' | 'description' | 'icon' | 'iconBgColor' | 'iconColor'>
-    >
-  >(new Map());
+  const [exerciseMetadata, setExerciseMetadata] = useState<Map<string, ExerciseMetadata>>(
+    new Map()
+  );
 
   // Handle adding exercise from AddExerciseModal
   const handleAddExerciseWithMetadata = useCallback(
@@ -158,31 +128,15 @@ export default function CreateWorkoutScreen() {
         // Fetch exercise details from database
         const exercise = await database.get<Exercise>('exercises').find(exerciseData.exerciseId);
 
-        // Determine icon and colors based on exercise type
-        const equipmentType = exercise.equipmentType?.toLowerCase() || '';
-        const isBodyweight =
-          equipmentType.includes('bodyweight') || equipmentType.includes('body weight');
-        const Icon = isBodyweight ? User : Dumbbell;
-
-        // Get colors based on exercise type
-        const iconBgColor = isBodyweight
-          ? theme.colors.background.white5
-          : theme.colors.accent.primary10;
-        const iconColor = isBodyweight ? theme.colors.text.secondary : theme.colors.accent.primary;
-
-        // Generate description
-        const description = `${exerciseData.sets} sets × ${exerciseData.reps} reps`;
-
-        // Create new exercise option
-        const newExercise: SelectorOption<string> = {
-          id: exerciseData.exerciseId,
-          label: exercise.name,
-          description,
-          icon: Icon,
-          iconBgColor,
-          iconColor,
+        // Create new exercise option using utility function
+        const newExercise = createExerciseOption({
+          exercise,
+          sets: exerciseData.sets,
+          reps: exerciseData.reps,
+          weight: exerciseData.weight,
+          isBodyweight: exerciseData.isBodyweight,
           groupId: undefined,
-        };
+        });
 
         // Store metadata
         setExerciseMetadata((prev) => {
@@ -213,7 +167,8 @@ export default function CreateWorkoutScreen() {
   // Handle saving workout template
   const handleSave = useCallback(async () => {
     // Validate
-    if (!workoutTitle.trim()) {
+    const titleValidation = validateWorkoutTitle(workoutTitle);
+    if (!titleValidation.valid) {
       Alert.alert(
         t('createWorkout.validation.titleRequired', 'Title Required'),
         t('createWorkout.validation.titleRequiredMessage', 'Please enter a workout title')
@@ -227,29 +182,7 @@ export default function CreateWorkoutScreen() {
     setIsSaving(true);
     try {
       // Convert exercises with metadata to ExerciseInWorkout format
-      const exercisesInWorkout: ExerciseInWorkout[] = exercises.map((ex) => {
-        const metadata = exerciseMetadata.get(ex.id) || {
-          sets: 3,
-          reps: 10,
-          weight: 0,
-          isBodyweight: false,
-          groupId: undefined,
-        };
-
-        return {
-          id: ex.id,
-          label: ex.label,
-          description: ex.description,
-          icon: ex.icon,
-          iconBgColor: ex.iconBgColor,
-          iconColor: ex.iconColor,
-          groupId: ex.groupId || metadata.groupId,
-          sets: metadata.sets,
-          reps: metadata.reps,
-          weight: metadata.weight,
-          isBodyweight: metadata.isBodyweight,
-        };
-      });
+      const exercisesInWorkout = exercisesToWorkoutFormat(exercises, exerciseMetadata);
 
       // Save template (update if editing, create if new)
       await WorkoutTemplateService.saveTemplate({
@@ -286,26 +219,8 @@ export default function CreateWorkoutScreen() {
   // Update metadata when exercises are reordered or grouped
   const handleExerciseOrderChange = useCallback((reorderedExercises: SelectorOption<string>[]) => {
     setExercises(reorderedExercises);
-    // Update groupId in metadata
-    setExerciseMetadata((prev) => {
-      const updated = new Map(prev);
-      reorderedExercises.forEach((ex) => {
-        const existing = updated.get(ex.id);
-        if (existing) {
-          updated.set(ex.id, { ...existing, groupId: ex.groupId });
-        } else {
-          // If metadata doesn't exist yet, create it with the groupId
-          updated.set(ex.id, {
-            sets: 3,
-            reps: 10,
-            weight: 0,
-            isBodyweight: false,
-            groupId: ex.groupId,
-          });
-        }
-      });
-      return updated;
-    });
+    // Update groupId in metadata using utility function
+    setExerciseMetadata((prev) => updateMetadataWithGroupIds(prev, reorderedExercises));
   }, []);
 
   const volumeOptions = [
@@ -650,7 +565,11 @@ export default function CreateWorkoutScreen() {
               </Text>
             </View>
 
-            <WeekdayPicker days={days} selectedDays={selectedDays} onToggleDay={toggleDay} />
+            <WeekdayPicker
+              days={WEEKDAY_LABELS}
+              selectedDays={selectedDays}
+              onToggleDay={toggleDay}
+            />
           </View>
         </View>
 

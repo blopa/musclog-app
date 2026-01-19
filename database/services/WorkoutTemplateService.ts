@@ -8,6 +8,7 @@ import { Q } from '@nozbe/watermelondb';
 import { Dumbbell, User } from 'lucide-react-native';
 import { theme } from '../../theme';
 import { WorkoutTemplateRepository } from '../repositories/WorkoutTemplateRepository';
+import { WEEKDAY_NAMES, indexToDayName } from '../../utils/workout';
 
 export type ExerciseInWorkout = {
   id: string; // exerciseId
@@ -286,24 +287,15 @@ export class WorkoutTemplateService {
 
       // Create schedule entries
       // WeekdayPicker indices: 0 = Monday, 1 = Tuesday, ..., 6 = Sunday
-      const dayNames = [
-        'Monday',
-        'Tuesday',
-        'Wednesday',
-        'Thursday',
-        'Friday',
-        'Saturday',
-        'Sunday',
-      ];
       const schedulesCollection = database.get<Schedule>('schedules');
       const preparedSchedules: Schedule[] = [];
 
       data.selectedDays.forEach((dayIndex) => {
-        if (dayIndex >= 0 && dayIndex < dayNames.length) {
+        if (dayIndex >= 0 && dayIndex < WEEKDAY_NAMES.length) {
           preparedSchedules.push(
             schedulesCollection.prepareCreate((s) => {
               s.templateId = template.id;
-              s.dayOfWeek = dayNames[dayIndex];
+              s.dayOfWeek = indexToDayName(dayIndex);
               s.createdAt = now;
               s.updatedAt = now;
             })
