@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, ScrollView, Pressable } from 'react-native';
 import { X, CheckCircle, Minus, Plus } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
@@ -10,6 +10,7 @@ import { SegmentedControl } from '../../components/theme/SegmentedControl';
 import { GenericCard } from '../../components/cards/GenericCard';
 import { DateTimeSelectorCard } from '../../components/cards/DateTimeSelectorCard';
 import { MoodSelectorCard } from '../../components/cards/MoodSelectorCard';
+import { PagerView, type PagerViewRef } from '../../components/PagerView/PagerView';
 import { format } from 'date-fns';
 
 type MetricType = 'weight' | 'bodyFat' | 'height';
@@ -25,6 +26,7 @@ type MetricConfig = {
 export default function AddEntryScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const pagerRef = useRef<PagerViewRef>(null);
   const [selectedMetric, setSelectedMetric] = useState<MetricType>('weight');
   const [weight, setWeight] = useState(78.5);
   const [bodyFat, setBodyFat] = useState(15.0);
@@ -32,6 +34,15 @@ export default function AddEntryScreen() {
   const [mood, setMood] = useState(3); // 0-4: Poor, Low, Okay, Good, Great
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedTime, setSelectedTime] = useState(new Date());
+
+  // Map metric types to page indices
+  const metricToPageIndex: Record<MetricType, number> = {
+    weight: 0,
+    bodyFat: 1,
+    height: 2,
+  };
+
+  const pageIndexToMetric: MetricType[] = ['weight', 'bodyFat', 'height'];
 
   const metricOptions = [
     { label: t('bodyMetrics.metrics.weight'), value: 'weight' },
@@ -65,11 +76,7 @@ export default function AddEntryScreen() {
 
   const currentConfig = metricConfigs[selectedMetric];
   const currentValue =
-    selectedMetric === 'weight'
-      ? weight
-      : selectedMetric === 'bodyFat'
-        ? bodyFat
-        : height;
+    selectedMetric === 'weight' ? weight : selectedMetric === 'bodyFat' ? bodyFat : height;
 
   const handleIncrement = (amount: number) => {
     if (selectedMetric === 'weight') {
@@ -109,9 +116,153 @@ export default function AddEntryScreen() {
     return format(date, 'hh:mm a');
   };
 
+  // Sync PagerView when selectedMetric changes
+  useEffect(() => {
+    const pageIndex = metricToPageIndex[selectedMetric];
+    pagerRef.current?.setPage(pageIndex);
+  }, [metricToPageIndex, selectedMetric]);
+
+  const handleMetricChange = (value: string) => {
+    setSelectedMetric(value as MetricType);
+  };
+
+  const handlePageChange = (pageIndex: number) => {
+    const newMetric = pageIndexToMetric[pageIndex];
+    if (newMetric !== selectedMetric) {
+      setSelectedMetric(newMetric);
+    }
+  };
+
   const handleSave = () => {
     // TODO: Save entry logic
     router.back();
+  };
+
+  // Render full metric entry card content for a specific metric type
+  const renderMetricEntry = (metric: MetricType) => {
+    const config = metricConfigs[metric];
+    const value = metric === 'weight' ? weight : metric === 'bodyFat' ? bodyFat : height;
+
+    const handleIncrement = (amount: number) => {
+      if (metric === 'weight') {
+        setWeight((prev) => Math.round((prev + amount) * 10) / 10);
+      } else if (metric === 'bodyFat') {
+        setBodyFat((prev) => Math.round((prev + amount) * 10) / 10);
+      } else {
+        setHeight((prev) => Math.round((prev + amount) * 10) / 10);
+      }
+    };
+
+    const handleDecrement = () => {
+      if (metric === 'weight') {
+        setWeight((prev) => Math.max(0, Math.round((prev - config.step) * 10) / 10));
+      } else if (metric === 'bodyFat') {
+        setBodyFat((prev) => Math.max(0, Math.round((prev - config.step) * 10) / 10));
+      } else {
+        setHeight((prev) => Math.max(0, Math.round((prev - config.step) * 10) / 10));
+      }
+    };
+
+    const handleIncrementAction = () => {
+      if (metric === 'weight') {
+        setWeight((prev) => Math.round((prev + config.step) * 10) / 10);
+      } else if (metric === 'bodyFat') {
+        setBodyFat((prev) => Math.round((prev + config.step) * 10) / 10);
+      } else {
+        setHeight((prev) => Math.round((prev + config.step) * 10) / 10);
+      }
+    };
+
+    return (
+      <View className="p-6">
+        {/* Metric Input Section */}
+        <View>
+          <Text className="mb-4 text-center text-xs font-bold uppercase tracking-wider text-text-secondary">
+            {config.label} ({config.unit})
+          </Text>
+
+          {/* Stepper Controls */}
+          <View
+            className="mb-6 flex-row items-center justify-between"
+            style={{ maxWidth: 280, width: '100%', alignSelf: 'center' }}>
+            <Pressable
+              onPress={handleDecrement}
+              className="h-14 w-14 items-center justify-center rounded-full"
+              style={{
+                backgroundColor: theme.colors.background.cardElevated,
+                borderColor: theme.colors.background.white10,
+                borderWidth: 1,
+              }}>
+              <Minus size={theme.iconSize.xl} color={theme.colors.text.primary} />
+            </Pressable>
+
+            <View className="flex-1 items-center">
+              <Text className="text-center text-6xl font-extrabold text-text-primary">
+                {config.step < 1 ? value.toFixed(1) : Math.round(value)}
+              </Text>
+            </View>
+
+            <Pressable
+              onPress={handleIncrementAction}
+              className="h-14 w-14 items-center justify-center rounded-full"
+              style={{
+                backgroundColor: theme.colors.background.cardElevated,
+                borderColor: theme.colors.background.white10,
+                borderWidth: 1,
+              }}>
+              <Plus size={theme.iconSize.xl} color={theme.colors.text.primary} />
+            </Pressable>
+          </View>
+
+          {/* Quick Increment Buttons */}
+          <View className="mb-6 flex-row justify-center gap-2">
+            {config.quickIncrements.map((increment) => (
+              <Pressable
+                key={increment}
+                onPress={() => handleIncrement(increment)}
+                className="rounded-full border px-3 py-1"
+                style={{
+                  backgroundColor: theme.colors.accent.primary10,
+                  borderColor: theme.colors.accent.primary20,
+                }}>
+                <Text className="text-[10px] font-bold text-accent-primary">
+                  +{increment % 1 === 0 ? increment : increment.toFixed(1)}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+        </View>
+
+        {/* Divider */}
+        <View
+          className="mb-6"
+          style={{
+            height: 1,
+            backgroundColor: theme.colors.background.white5,
+          }}
+        />
+
+        {/* Date and Time Sections */}
+        <View className="space-y-3">
+          <DateTimeSelectorCard
+            type="date"
+            value={selectedDate}
+            onEdit={() => {}}
+            label={t('bodyMetrics.addEntry.date')}
+            formattedValue={formatDate(selectedDate)}
+            noCard={true}
+          />
+          <DateTimeSelectorCard
+            type="time"
+            value={selectedTime}
+            onEdit={() => {}}
+            label={t('bodyMetrics.addEntry.time')}
+            formattedValue={formatTime(selectedTime)}
+            noCard={true}
+          />
+        </View>
+      </View>
+    );
   };
 
   return (
@@ -138,101 +289,29 @@ export default function AddEntryScreen() {
             <SegmentedControl
               options={metricOptions}
               value={selectedMetric}
-              onValueChange={(value) => setSelectedMetric(value as MetricType)}
+              onValueChange={handleMetricChange}
               variant="gradient"
             />
 
             {/* Metric Entry Group - Input, Date, and Time */}
             <GenericCard variant="card" size="default">
-              <View className="p-6">
-                {/* Metric Input Section */}
-                <View>
-                  <Text className="mb-4 text-center text-xs font-bold uppercase tracking-wider text-text-secondary">
-                    {currentConfig.label} ({currentConfig.unit})
-                  </Text>
-
-                  {/* Stepper Controls */}
-                  <View
-                    className="mb-6 flex-row items-center justify-between"
-                    style={{ maxWidth: 280, width: '100%', alignSelf: 'center' }}>
-                    <Pressable
-                      onPress={handleDecrement}
-                      className="h-14 w-14 items-center justify-center rounded-full"
-                      style={{
-                        backgroundColor: theme.colors.background.cardElevated,
-                        borderColor: theme.colors.background.white10,
-                        borderWidth: 1,
-                      }}>
-                      <Minus size={theme.iconSize.xl} color={theme.colors.text.primary} />
-                    </Pressable>
-
-                    <View className="flex-1 items-center">
-                      <Text className="text-center text-6xl font-extrabold text-text-primary">
-                        {currentConfig.step < 1
-                          ? currentValue.toFixed(1)
-                          : Math.round(currentValue)}
-                      </Text>
-                    </View>
-
-                    <Pressable
-                      onPress={handleIncrementAction}
-                      className="h-14 w-14 items-center justify-center rounded-full"
-                      style={{
-                        backgroundColor: theme.colors.background.cardElevated,
-                        borderColor: theme.colors.background.white10,
-                        borderWidth: 1,
-                      }}>
-                      <Plus size={theme.iconSize.xl} color={theme.colors.text.primary} />
-                    </Pressable>
-                  </View>
-
-                  {/* Quick Increment Buttons */}
-                  <View className="mb-6 flex-row justify-center gap-2">
-                    {currentConfig.quickIncrements.map((increment) => (
-                      <Pressable
-                        key={increment}
-                        onPress={() => handleIncrement(increment)}
-                        className="rounded-full border px-3 py-1"
-                        style={{
-                          backgroundColor: theme.colors.accent.primary10,
-                          borderColor: theme.colors.accent.primary20,
-                        }}>
-                        <Text className="text-[10px] font-bold text-accent-primary">
-                          +{increment % 1 === 0 ? increment : increment.toFixed(1)}
-                        </Text>
-                      </Pressable>
-                    ))}
-                  </View>
-                </View>
-
-                {/* Divider */}
-                <View
-                  className="mb-6"
-                  style={{
-                    height: 1,
-                    backgroundColor: theme.colors.background.white5,
+              <View style={{ overflow: 'hidden' }}>
+                <PagerView
+                  ref={pagerRef}
+                  style={{ flex: 1 }}
+                  initialPage={metricToPageIndex[selectedMetric]}
+                  onPageSelected={(e) => {
+                    const pageIndex = e.nativeEvent.position;
+                    handlePageChange(pageIndex);
                   }}
-                />
-
-                {/* Date and Time Sections */}
-                <View className="space-y-3">
-                  <DateTimeSelectorCard
-                    type="date"
-                    value={selectedDate}
-                    onEdit={() => {}}
-                    label={t('bodyMetrics.addEntry.date')}
-                    formattedValue={formatDate(selectedDate)}
-                    noCard={true}
-                  />
-                  <DateTimeSelectorCard
-                    type="time"
-                    value={selectedTime}
-                    onEdit={() => {}}
-                    label={t('bodyMetrics.addEntry.time')}
-                    formattedValue={formatTime(selectedTime)}
-                    noCard={true}
-                  />
-                </View>
+                  scrollEnabled={false}>
+                  {/* Weight Page */}
+                  <View key="weight">{renderMetricEntry('weight')}</View>
+                  {/* Body Fat Page */}
+                  <View key="bodyFat">{renderMetricEntry('bodyFat')}</View>
+                  {/* Height Page */}
+                  <View key="height">{renderMetricEntry('height')}</View>
+                </PagerView>
               </View>
             </GenericCard>
 
