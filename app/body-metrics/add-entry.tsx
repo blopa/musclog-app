@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, Pressable } from 'react-native';
-import { X, Smile, CheckCircle, Minus, Plus } from 'lucide-react-native';
+import { X, CheckCircle, Minus, Plus } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -8,8 +8,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { theme } from '../../theme';
 import { SegmentedControl } from '../../components/theme/SegmentedControl';
 import { GenericCard } from '../../components/cards/GenericCard';
-import { Slider } from '../../components/theme/Slider';
-import { DateTimeSelectorCard } from '../../components/DateTimeSelectorCard';
+import { DateTimeSelectorCard } from '../../components/cards/DateTimeSelectorCard';
+import { MoodSelectorCard } from '../../components/cards/MoodSelectorCard';
 import { format } from 'date-fns';
 
 type MetricType = 'weight' | 'bodyFat' | 'bmi' | 'ffmi';
@@ -164,61 +164,7 @@ export default function AddEntryScreen() {
             </View>
 
             {/* Mood Slider Section */}
-            <GenericCard variant="card" size="default">
-              <View className="p-4">
-                <View className="mb-6 flex-row items-center justify-between">
-                  <View className="flex-row items-center gap-3">
-                    <Smile size={theme.iconSize.xl} color={theme.colors.text.tertiary} />
-                    <Text className="text-xs font-bold uppercase tracking-wider text-text-secondary">
-                      {t('bodyMetrics.addEntry.moodQuestion')}
-                    </Text>
-                  </View>
-                  <View
-                    className="rounded px-2 py-0.5"
-                    style={{ backgroundColor: theme.colors.accent.primary10 }}>
-                    <Text className="text-xs font-bold text-accent-primary">
-                      {t(`bodyMetrics.addEntry.moods.${mood}`)}
-                    </Text>
-                  </View>
-                </View>
-
-                {/* Slider */}
-                <View className="relative px-2">
-                  <Slider
-                    value={mood}
-                    min={0}
-                    max={4}
-                    step={1}
-                    onChange={setMood}
-                    variant="solid"
-                    trackColor={theme.colors.background.cardElevated}
-                    solidColor={theme.colors.accent.primary}
-                    thumbColor={theme.colors.accent.primary}
-                    useGradient={false}
-                  />
-
-                  {/* Mood Labels */}
-                  <View className="mt-4 flex-row justify-between px-1">
-                    {[0, 1, 2, 3, 4].map((moodValue) => {
-                      const isSelected = mood === moodValue;
-                      const moodEmojis = ['😫', '😔', '😐', '😊', '🤩'];
-                      return (
-                        <View key={moodValue} className="flex-col items-center gap-1">
-                          <Text className="text-xl">{moodEmojis[moodValue]}</Text>
-                          <Text
-                            className={`text-[10px] font-bold uppercase ${
-                              isSelected ? 'text-accent-primary' : 'text-text-tertiary'
-                            }`}
-                            style={{ opacity: isSelected ? 1 : 0.4 }}>
-                            {t(`bodyMetrics.addEntry.moods.${moodValue}`)}
-                          </Text>
-                        </View>
-                      );
-                    })}
-                  </View>
-                </View>
-              </View>
-            </GenericCard>
+            <MoodSelectorCard value={mood} onChange={setMood} />
           </View>
         </ScrollView>
 
