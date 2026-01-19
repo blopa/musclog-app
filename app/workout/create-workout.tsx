@@ -63,9 +63,8 @@ export default function CreateWorkoutScreen() {
 
     setIsLoading(true);
     try {
-      const { template, sets, schedule } = await WorkoutTemplateService.getTemplateWithDetails(
-        templateId
-      );
+      const { template, sets, schedule } =
+        await WorkoutTemplateService.getTemplateWithDetails(templateId);
 
       // Set basic template info
       setWorkoutTitle(template.name);

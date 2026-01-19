@@ -170,7 +170,7 @@ export function OptionsMultiSelector<T extends string | number>({
   ) => {
     if (groupPosition === 'none') return null;
 
-    const lineColor = getGroupColor(groupId);
+    const lineColor = getGroupColor(groupId, orderedOptions);
     const lineWidth = theme.borderWidth.thick;
     const indicatorWidth = theme.size['4'];
 
@@ -230,7 +230,7 @@ export function OptionsMultiSelector<T extends string | number>({
     const index = getIndex() ?? 0;
     const groupPosition = getGroupPosition(orderedOptions, index);
     const isFirstInGroup = groupPosition === 'first' || groupPosition === 'only';
-    const groupColor = item.groupId ? getGroupColor(item.groupId) : undefined;
+    const groupColor = item.groupId ? getGroupColor(item.groupId, orderedOptions) : undefined;
     const isHighestSelected = index === firstSelectedIndex;
 
     return (
@@ -386,7 +386,7 @@ export function OptionsMultiSelector<T extends string | number>({
     const selected = showCheckboxes && isSelected(option.id);
     const groupPosition = getGroupPosition(orderedOptions, index);
     const isFirstInGroup = groupPosition === 'first' || groupPosition === 'only';
-    const groupColor = option.groupId ? getGroupColor(option.groupId) : undefined;
+    const groupColor = option.groupId ? getGroupColor(option.groupId, orderedOptions) : undefined;
 
     const isHighestSelected = index === firstSelectedIndex;
 
