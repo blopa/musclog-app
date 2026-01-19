@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, Pressable } from 'react-native';
-import { X, Calendar, Clock, Smile, CheckCircle, Minus, Plus } from 'lucide-react-native';
+import { X, Smile, CheckCircle, Minus, Plus } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -9,6 +9,7 @@ import { theme } from '../../theme';
 import { SegmentedControl } from '../../components/theme/SegmentedControl';
 import { GenericCard } from '../../components/cards/GenericCard';
 import { Slider } from '../../components/theme/Slider';
+import { DateTimeSelectorCard } from '../../components/DateTimeSelectorCard';
 import { format } from 'date-fns';
 
 type MetricType = 'weight' | 'bodyFat' | 'bmi' | 'ffmi';
@@ -146,57 +147,20 @@ export default function AddEntryScreen() {
 
             {/* Date and Time Sections */}
             <View className="space-y-3">
-              {/* Date Section */}
-              <GenericCard variant="card" size="default">
-                <View className="flex-row items-center justify-between p-4">
-                  <View className="flex-row items-center gap-3">
-                    <View
-                      className="h-10 w-10 items-center justify-center rounded-lg"
-                      style={{ backgroundColor: theme.colors.status.indigo10 }}>
-                      <Calendar size={theme.iconSize.xl} color={theme.colors.status.indigo} />
-                    </View>
-                    <View>
-                      <Text className="mb-1 text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
-                        {t('bodyMetrics.addEntry.date')}
-                      </Text>
-                      <Text className="text-sm font-semibold text-text-primary">
-                        {formatDate(selectedDate)}
-                      </Text>
-                    </View>
-                  </View>
-                  <Pressable onPress={() => {}}>
-                    <Text className="text-sm font-bold text-accent-primary">
-                      {t('common.edit')}
-                    </Text>
-                  </Pressable>
-                </View>
-              </GenericCard>
-
-              {/* Time Section */}
-              <GenericCard variant="card" size="default">
-                <View className="flex-row items-center justify-between p-4">
-                  <View className="flex-row items-center gap-3">
-                    <View
-                      className="h-10 w-10 items-center justify-center rounded-lg"
-                      style={{ backgroundColor: theme.colors.accent.primary10 }}>
-                      <Clock size={theme.iconSize.xl} color={theme.colors.accent.primary} />
-                    </View>
-                    <View>
-                      <Text className="mb-1 text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
-                        {t('bodyMetrics.addEntry.time')}
-                      </Text>
-                      <Text className="text-sm font-semibold text-text-primary">
-                        {formatTime(selectedTime)}
-                      </Text>
-                    </View>
-                  </View>
-                  <Pressable onPress={() => {}}>
-                    <Text className="text-sm font-bold text-accent-primary">
-                      {t('common.edit')}
-                    </Text>
-                  </Pressable>
-                </View>
-              </GenericCard>
+              <DateTimeSelectorCard
+                type="date"
+                value={selectedDate}
+                onEdit={() => {}}
+                label={t('bodyMetrics.addEntry.date')}
+                formattedValue={formatDate(selectedDate)}
+              />
+              <DateTimeSelectorCard
+                type="time"
+                value={selectedTime}
+                onEdit={() => {}}
+                label={t('bodyMetrics.addEntry.time')}
+                formattedValue={formatTime(selectedTime)}
+              />
             </View>
 
             {/* Mood Slider Section */}
