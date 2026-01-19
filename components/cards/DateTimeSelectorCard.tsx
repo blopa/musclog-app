@@ -11,6 +11,7 @@ type DateTimeSelectorCardProps = {
   onEdit: () => void;
   label: string;
   formattedValue: string;
+  noCard?: boolean; // When true, renders without GenericCard wrapper
 };
 
 export function DateTimeSelectorCard({
@@ -19,32 +20,41 @@ export function DateTimeSelectorCard({
   onEdit,
   label,
   formattedValue,
+  noCard = false,
 }: DateTimeSelectorCardProps) {
   const { t } = useTranslation();
   const Icon: LucideIcon = type === 'date' ? Calendar : Clock;
   const iconBg = type === 'date' ? theme.colors.status.indigo10 : theme.colors.accent.primary10;
   const iconColor = type === 'date' ? theme.colors.status.indigo : theme.colors.accent.primary;
 
+  const content = (
+    <View className="flex-row items-center justify-between p-4">
+      <View className="flex-row items-center gap-3">
+        <View
+          className="h-10 w-10 items-center justify-center rounded-lg"
+          style={{ backgroundColor: iconBg }}>
+          <Icon size={theme.iconSize.xl} color={iconColor} />
+        </View>
+        <View>
+          <Text className="mb-1 text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
+            {label}
+          </Text>
+          <Text className="text-sm font-semibold text-text-primary">{formattedValue}</Text>
+        </View>
+      </View>
+      <Pressable onPress={onEdit}>
+        <Text className="text-sm font-bold text-accent-primary">{t('common.edit')}</Text>
+      </Pressable>
+    </View>
+  );
+
+  if (noCard) {
+    return content;
+  }
+
   return (
     <GenericCard variant="card" size="default">
-      <View className="flex-row items-center justify-between p-4">
-        <View className="flex-row items-center gap-3">
-          <View
-            className="h-10 w-10 items-center justify-center rounded-lg"
-            style={{ backgroundColor: iconBg }}>
-            <Icon size={theme.iconSize.xl} color={iconColor} />
-          </View>
-          <View>
-            <Text className="mb-1 text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
-              {label}
-            </Text>
-            <Text className="text-sm font-semibold text-text-primary">{formattedValue}</Text>
-          </View>
-        </View>
-        <Pressable onPress={onEdit}>
-          <Text className="text-sm font-bold text-accent-primary">{t('common.edit')}</Text>
-        </Pressable>
-      </View>
+      {content}
     </GenericCard>
   );
 }

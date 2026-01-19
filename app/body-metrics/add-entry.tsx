@@ -142,85 +142,99 @@ export default function AddEntryScreen() {
               variant="gradient"
             />
 
-            {/* Metric Input Section */}
+            {/* Metric Entry Group - Input, Date, and Time */}
             <GenericCard variant="card" size="default">
               <View className="p-6">
-                <Text className="mb-4 text-center text-xs font-bold uppercase tracking-wider text-text-secondary">
-                  {currentConfig.label} ({currentConfig.unit})
-                </Text>
+                {/* Metric Input Section */}
+                <View>
+                  <Text className="mb-4 text-center text-xs font-bold uppercase tracking-wider text-text-secondary">
+                    {currentConfig.label} ({currentConfig.unit})
+                  </Text>
 
-                {/* Stepper Controls */}
-                <View
-                  className="mb-6 flex-row items-center justify-between"
-                  style={{ maxWidth: 280, width: '100%', alignSelf: 'center' }}>
-                  <Pressable
-                    onPress={handleDecrement}
-                    className="h-14 w-14 items-center justify-center rounded-full"
-                    style={{
-                      backgroundColor: theme.colors.background.cardElevated,
-                      borderColor: theme.colors.background.white10,
-                      borderWidth: 1,
-                    }}>
-                    <Minus size={theme.iconSize.xl} color={theme.colors.text.primary} />
-                  </Pressable>
+                  {/* Stepper Controls */}
+                  <View
+                    className="mb-6 flex-row items-center justify-between"
+                    style={{ maxWidth: 280, width: '100%', alignSelf: 'center' }}>
+                    <Pressable
+                      onPress={handleDecrement}
+                      className="h-14 w-14 items-center justify-center rounded-full"
+                      style={{
+                        backgroundColor: theme.colors.background.cardElevated,
+                        borderColor: theme.colors.background.white10,
+                        borderWidth: 1,
+                      }}>
+                      <Minus size={theme.iconSize.xl} color={theme.colors.text.primary} />
+                    </Pressable>
 
-                  <View className="flex-1 items-center">
-                    <Text className="text-center text-6xl font-extrabold text-text-primary">
-                      {currentConfig.step < 1
-                        ? currentValue.toFixed(1)
-                        : Math.round(currentValue)}
-                    </Text>
+                    <View className="flex-1 items-center">
+                      <Text className="text-center text-6xl font-extrabold text-text-primary">
+                        {currentConfig.step < 1
+                          ? currentValue.toFixed(1)
+                          : Math.round(currentValue)}
+                      </Text>
+                    </View>
+
+                    <Pressable
+                      onPress={handleIncrementAction}
+                      className="h-14 w-14 items-center justify-center rounded-full"
+                      style={{
+                        backgroundColor: theme.colors.background.cardElevated,
+                        borderColor: theme.colors.background.white10,
+                        borderWidth: 1,
+                      }}>
+                      <Plus size={theme.iconSize.xl} color={theme.colors.text.primary} />
+                    </Pressable>
                   </View>
 
-                  <Pressable
-                    onPress={handleIncrementAction}
-                    className="h-14 w-14 items-center justify-center rounded-full"
-                    style={{
-                      backgroundColor: theme.colors.background.cardElevated,
-                      borderColor: theme.colors.background.white10,
-                      borderWidth: 1,
-                    }}>
-                    <Plus size={theme.iconSize.xl} color={theme.colors.text.primary} />
-                  </Pressable>
+                  {/* Quick Increment Buttons */}
+                  <View className="mb-6 flex-row justify-center gap-2">
+                    {currentConfig.quickIncrements.map((increment) => (
+                      <Pressable
+                        key={increment}
+                        onPress={() => handleIncrement(increment)}
+                        className="rounded-full border px-3 py-1"
+                        style={{
+                          backgroundColor: theme.colors.accent.primary10,
+                          borderColor: theme.colors.accent.primary20,
+                        }}>
+                        <Text className="text-[10px] font-bold text-accent-primary">
+                          +{increment % 1 === 0 ? increment : increment.toFixed(1)}
+                        </Text>
+                      </Pressable>
+                    ))}
+                  </View>
                 </View>
 
-                {/* Quick Increment Buttons */}
-                <View className="flex-row justify-center gap-2">
-                  {currentConfig.quickIncrements.map((increment) => (
-                    <Pressable
-                      key={increment}
-                      onPress={() => handleIncrement(increment)}
-                      className="rounded-full border px-3 py-1"
-                      style={{
-                        backgroundColor: theme.colors.accent.primary10,
-                        borderColor: theme.colors.accent.primary20,
-                      }}>
-                      <Text className="text-[10px] font-bold text-accent-primary">
-                        +{increment % 1 === 0 ? increment : increment.toFixed(1)}
-                      </Text>
-                    </Pressable>
-                  ))}
+                {/* Divider */}
+                <View
+                  className="mb-6"
+                  style={{
+                    height: 1,
+                    backgroundColor: theme.colors.background.white5,
+                  }}
+                />
+
+                {/* Date and Time Sections */}
+                <View className="space-y-3">
+                  <DateTimeSelectorCard
+                    type="date"
+                    value={selectedDate}
+                    onEdit={() => {}}
+                    label={t('bodyMetrics.addEntry.date')}
+                    formattedValue={formatDate(selectedDate)}
+                    noCard={true}
+                  />
+                  <DateTimeSelectorCard
+                    type="time"
+                    value={selectedTime}
+                    onEdit={() => {}}
+                    label={t('bodyMetrics.addEntry.time')}
+                    formattedValue={formatTime(selectedTime)}
+                    noCard={true}
+                  />
                 </View>
               </View>
             </GenericCard>
-
-            {/* Date and Time Sections */}
-            <View className="space-y-3">
-              <DateTimeSelectorCard
-                type="date"
-                value={selectedDate}
-                onEdit={() => {}}
-                label={t('bodyMetrics.addEntry.date')}
-                formattedValue={formatDate(selectedDate)}
-              />
-              <DateTimeSelectorCard
-                type="time"
-                value={selectedTime}
-                onEdit={() => {}}
-                label={t('bodyMetrics.addEntry.time')}
-                formattedValue={formatTime(selectedTime)}
-              />
-            </View>
 
             {/* Mood Slider Section */}
             <MoodSelectorCard value={mood} onChange={setMood} />
