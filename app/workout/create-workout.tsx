@@ -42,9 +42,8 @@ export default function CreateWorkoutScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const params = useLocalSearchParams<{ templateId?: string; workoutId?: string }>();
-  // Support both templateId and workoutId (workoutId is an alias for clarity)
-  const templateId = params.templateId || params.workoutId;
+  const params = useLocalSearchParams<{ templateId?: string }>();
+  const templateId = params.templateId;
   const isEditMode = !!templateId;
 
   const [workoutTitle, setWorkoutTitle] = useState('');
