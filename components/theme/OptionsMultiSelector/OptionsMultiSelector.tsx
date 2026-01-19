@@ -86,22 +86,41 @@ export function OptionsMultiSelector<T extends string | number>({
   const handleGroupAction = () => {
     if (!canGroup) return;
 
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/b4248a4a-4b24-44a3-b918-17843b5d9fe0',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'OptionsMultiSelector.tsx:86',message:'handleGroupAction called',data:{selectedIds,allSelectedInSameGroup,selectedItemsGroupIds:orderedOptions.filter(o=>selectedIds.includes(o.id)).map(o=>({id:o.id,groupId:o.groupId}))},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+    // #endregion
+
+    // Generate groupId ONCE before mapping (not inside the map)
+    const newGroupId = allSelectedInSameGroup ? undefined : generateGroupId();
+
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/b4248a4a-4b24-44a3-b918-17843b5d9fe0',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'OptionsMultiSelector.tsx:91',message:'Generated groupId for linking',data:{newGroupId,allSelectedInSameGroup},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+    // #endregion
+
     const updatedOptions = orderedOptions.map((option) => {
       if (selectedIds.includes(option.id)) {
         if (allSelectedInSameGroup) {
           // Ungroup: set groupId to undefined
           return { ...option, groupId: undefined };
         } else {
-          // Group: assign new groupId
-          const newGroupId = generateGroupId();
+          // Group: assign the SAME groupId to all selected items
           return { ...option, groupId: newGroupId };
         }
       }
       return option;
     });
 
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/b4248a4a-4b24-44a3-b918-17843b5d9fe0',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'OptionsMultiSelector.tsx:104',message:'Updated options after grouping',data:{updatedGroupIds:updatedOptions.filter(o=>selectedIds.includes(o.id)).map(o=>({id:o.id,groupId:o.groupId}))},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+    // #endregion
+
     // Normalize groups to ensure they're contiguous
     const normalized = normalizeGroups(updatedOptions);
+
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/b4248a4a-4b24-44a3-b918-17843b5d9fe0',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'OptionsMultiSelector.tsx:109',message:'Normalized groups before onOrderChange',data:{normalizedGroupIds:normalized.filter(o=>selectedIds.includes(o.id)).map(o=>({id:o.id,groupId:o.groupId}))},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+    // #endregion
+
     setOrderedOptions(normalized);
     onOrderChange?.(normalized);
 
