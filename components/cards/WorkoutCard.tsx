@@ -8,9 +8,9 @@ import { GenericCard } from './GenericCard';
 
 type FeaturedWorkoutCardProps = {
   name: string;
-  lastCompleted: string;
+  lastCompleted?: string;
   exerciseCount: number;
-  duration: string;
+  duration?: string;
   image: ImageSourcePropType;
   onStart?: () => void;
   onMore?: () => void;
@@ -36,15 +36,18 @@ export function WorkoutCard({
       <View className="p-5">
         <View className="mb-4 flex-row items-start justify-between">
           <View className="flex-1">
-            <View className="mb-3 inline-flex flex-row items-center gap-1.5 self-start rounded-full bg-accent-primary/20 px-3 py-1">
-              <Clock size={theme.iconSize.xs} color={theme.colors.accent.primary} />
-              <Text className="text-xs font-bold uppercase text-accent-primary">
-                {lastCompleted}
-              </Text>
-            </View>
+            {lastCompleted && (
+              <View className="mb-3 inline-flex flex-row items-center gap-1.5 self-start rounded-full bg-accent-primary/20 px-3 py-1">
+                <Clock size={theme.iconSize.xs} color={theme.colors.accent.primary} />
+                <Text className="text-xs font-bold uppercase text-accent-primary">
+                  {lastCompleted}
+                </Text>
+              </View>
+            )}
             <Text className="mb-2 text-2xl font-bold text-text-primary">{name}</Text>
             <Text className="text-sm text-text-secondary">
-              {exerciseCount} {t('workouts.exercises')} • {duration}
+              {exerciseCount} {t('workouts.exercises')}
+              {duration && ` • ${duration}`}
             </Text>
           </View>
           <View

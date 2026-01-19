@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { View, ScrollView, Pressable } from 'react-native';
 import { Search, SlidersHorizontal, Dumbbell, WifiOff } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
+import { useRouter } from 'expo-router';
 import { theme } from '../../theme';
 import { MasterLayout } from '../../components/MasterLayout';
 import { WorkoutCard } from '../../components/cards/WorkoutCard';
@@ -12,45 +13,14 @@ import { WorkoutDetailsMenu } from '../../components/WorkoutDetailsMenu';
 import { EmptyStateCard } from '../../components/theme/EmptyStateCard';
 import { SkeletonLoader } from '../../components/theme/SkeletonLoader';
 import { ErrorStateCard } from '../../components/theme/ErrorStateCard';
-
-const WORKOUTS_DATA = {
-  featured: {
-    name: 'Push Day A',
-    lastCompleted: '2 Days Ago',
-    exerciseCount: 5,
-    duration: '45 mins',
-    image: require('../../assets/icon.png'),
-  },
-  workouts: [
-    {
-      id: '1',
-      name: 'Leg Hypertrophy',
-      lastCompleted: '5 days ago',
-      exerciseCount: 7,
-      duration: '60 mins',
-      image: require('../../assets/icon.png'),
-    },
-    {
-      id: '2',
-      name: 'Full Body Cardio',
-      lastCompleted: 'Yesterday',
-      exerciseCount: 3,
-      duration: '30 mins',
-      image: require('../../assets/icon.png'),
-    },
-    {
-      id: '3',
-      name: 'Pull Day B',
-      lastCompleted: '2 weeks ago',
-      exerciseCount: 6,
-      duration: '50 mins',
-      image: require('../../assets/icon.png'),
-    },
-  ],
-};
+import { WorkoutTemplateService } from '../../database/services/WorkoutTemplateService';
+import { WorkoutService } from '../../database/services/WorkoutService';
+import { database } from '../../database';
+import WorkoutTemplate from '../../database/models/WorkoutTemplate';
 
 export default function WorkoutsScreen() {
   const { t } = useTranslation();
+  const router = useRouter();
 
   const FILTER_TABS = [
     { id: 'all', label: t('workouts.filters.all') },
@@ -61,34 +31,77 @@ export default function WorkoutsScreen() {
   const [activeFilter, setActiveFilter] = useState('all');
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [selectedWorkoutName, setSelectedWorkoutName] = useState<string>('');
+  const [selectedWorkoutId, setSelectedWorkoutId] = useState<string>('');
 
   // State management for workouts data
-  const [workouts, setWorkouts] = useState(WORKOUTS_DATA.workouts);
-  const [featuredWorkout, setFeaturedWorkout] = useState(WORKOUTS_DATA.featured);
-  const [isLoading, setIsLoading] = useState(false);
+  const [workouts, setWorkouts] = useState<
+    {
+      id: string;
+      name: string;
+      lastCompleted?: string;
+      exerciseCount: number;
+      duration?: string;
+      image?: any;
+    }[]
+  >([]);
+  const [featuredWorkout, setFeaturedWorkout] = useState<{
+    id: string;
+    name: string;
+    lastCompleted?: string;
+    exerciseCount: number;
+    duration?: string;
+    image?: any;
+  } | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Simulate loading workouts - replace with actual API call
-  const loadWorkouts = async () => {
+  // Load workouts from database
+  const loadWorkouts = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
-      // Simulate API call delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      // In real app, replace with: const data = await fetchWorkouts();
-      setWorkouts(WORKOUTS_DATA.workouts);
-      setFeaturedWorkout(WORKOUTS_DATA.featured);
+      // Load all templates with metadata
+      const templatesWithMetadata = await WorkoutTemplateService.getAllTemplatesWithMetadata();
+
+      if (templatesWithMetadata.length === 0) {
+        setWorkouts([]);
+        setFeaturedWorkout(null);
+        return;
+      }
+
+      // First template is the featured workout (most recently completed, or most recently created)
+      const featured = templatesWithMetadata[0];
+      setFeaturedWorkout({
+        id: featured.id,
+        name: featured.name,
+        lastCompleted: featured.lastCompleted,
+        exerciseCount: featured.exerciseCount,
+        duration: featured.duration,
+        image: featured.image,
+      });
+
+      // Rest are regular workouts
+      const regularWorkouts = templatesWithMetadata.slice(1).map((template) => ({
+        id: template.id,
+        name: template.name,
+        lastCompleted: template.lastCompleted,
+        exerciseCount: template.exerciseCount,
+        duration: template.duration,
+        image: template.image,
+      }));
+
+      setWorkouts(regularWorkouts);
     } catch (err) {
+      console.error('Error loading workouts:', err);
       setError(err instanceof Error ? err.message : 'Failed to load workouts');
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    // Uncomment to simulate initial load
-    // loadWorkouts();
-  }, []);
+    loadWorkouts();
+  }, [loadWorkouts]);
 
   // Filter workouts based on active filter
   const filteredWorkouts = workouts.filter((workout) => {
@@ -211,7 +224,7 @@ export default function WorkoutsScreen() {
             )}
 
             {/* Empty State */}
-            {!isLoading && !error && filteredWorkouts.length === 0 && (
+            {!isLoading && !error && !featuredWorkout && filteredWorkouts.length === 0 && (
               <EmptyStateCard
                 icon={Dumbbell}
                 title={t('emptyStates.workouts.title')}
@@ -220,22 +233,32 @@ export default function WorkoutsScreen() {
                 iconGradient={true}
                 buttonVariant="gradientCta"
                 onButtonPress={() => {
-                  // Navigate to create workout or open create template
-                  console.log('Create workout pressed');
+                  router.push('/workout/create-workout');
                 }}
               />
             )}
 
             {/* Normal State - Featured Workout */}
-            {!isLoading && !error && featuredWorkout && filteredWorkouts.length > 0 && (
+            {!isLoading && !error && featuredWorkout && (
               <WorkoutCard
                 name={featuredWorkout.name}
                 lastCompleted={featuredWorkout.lastCompleted}
                 exerciseCount={featuredWorkout.exerciseCount}
                 duration={featuredWorkout.duration}
                 image={featuredWorkout.image}
+                onStart={async () => {
+                  try {
+                    if (featuredWorkout.id) {
+                      await WorkoutService.startWorkoutFromTemplate(featuredWorkout.id);
+                      router.push('/workout/workout-session');
+                    }
+                  } catch (err) {
+                    console.error('Error starting workout:', err);
+                  }
+                }}
                 onMore={() => {
                   setSelectedWorkoutName(featuredWorkout.name);
+                  setSelectedWorkoutId(featuredWorkout.id);
                   setIsMenuVisible(true);
                 }}
               />
@@ -253,14 +276,22 @@ export default function WorkoutsScreen() {
                     duration={workout.duration}
                     variant="standard"
                     image={workout.image}
-                    onStart={() => {
-                      console.log('Start workout:', workout.name);
+                    onStart={async () => {
+                      try {
+                        await WorkoutService.startWorkoutFromTemplate(workout.id);
+                        router.push('/workout/workout-session');
+                      } catch (err) {
+                        console.error('Error starting workout:', err);
+                        // Show error to user (you might want to add an alert here)
+                      }
                     }}
                     onArchive={() => {
+                      // TODO: Implement archive functionality
                       console.log('Archive workout:', workout.name);
                     }}
                     onMore={() => {
                       setSelectedWorkoutName(workout.name);
+                      setSelectedWorkoutId(workout.id);
                       setIsMenuVisible(true);
                     }}
                   />
@@ -283,19 +314,34 @@ export default function WorkoutsScreen() {
         onClose={() => setIsMenuVisible(false)}
         workoutName={selectedWorkoutName}
         onEdit={() => {
-          console.log('Edit workout:', selectedWorkoutName);
+          if (selectedWorkoutId) {
+            router.push(`/workout/create-workout?templateId=${selectedWorkoutId}`);
+          }
           setIsMenuVisible(false);
         }}
         onDuplicate={() => {
+          // TODO: Implement duplicate functionality
           console.log('Duplicate workout:', selectedWorkoutName);
           setIsMenuVisible(false);
         }}
         onShare={() => {
+          // TODO: Implement share functionality
           console.log('Share workout:', selectedWorkoutName);
           setIsMenuVisible(false);
         }}
-        onDelete={() => {
-          console.log('Delete workout:', selectedWorkoutName);
+        onDelete={async () => {
+          if (selectedWorkoutId) {
+            try {
+              const template = await database
+                .get<WorkoutTemplate>('workout_templates')
+                .find(selectedWorkoutId);
+              await template.markAsDeleted();
+              // Reload workouts after deletion
+              await loadWorkouts();
+            } catch (err) {
+              console.error('Error deleting workout:', err);
+            }
+          }
           setIsMenuVisible(false);
         }}
       />
