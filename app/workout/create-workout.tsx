@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable, ScrollView } from 'react-native';
+import { View, Text, TextInput, Pressable, ScrollView, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Sparkles, PlusSquare } from 'lucide-react-native';
@@ -21,6 +21,9 @@ export default function CreateWorkoutScreen() {
   const [volumeCalc, setVolumeCalc] = useState('none');
   const [selectedDays, setSelectedDays] = useState<number[]>([4]); // Friday selected by default in mockup
   const [focusedField, setFocusedField] = useState<string | null>(null);
+
+  // TODO: implement this
+  const isLoadingExercises = false;
 
   // TODO: unhardcode the translations for days
   const days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
@@ -463,14 +466,27 @@ export default function CreateWorkoutScreen() {
               borderWidth: theme.borderWidth.thin,
               borderColor: theme.colors.border.light,
             }}>
-            <OptionsMultiSelector
-              title={t('createWorkout.exercisesInWorkout')}
-              options={exercises}
-              selectedIds={selectedExercises}
-              onChange={(ids) => setSelectedExercises(ids)}
-              onOrderChange={(reorderedExercises) => setExercises(reorderedExercises)}
-              isEditable={true}
-            />
+            {isLoadingExercises ? (
+              <View className="py-8 items-center justify-center">
+                <ActivityIndicator size="large" color={theme.colors.accent.primary} />
+              </View>
+            ) : exercises.length > 0 ? (
+              <OptionsMultiSelector
+                title={t('createWorkout.exercisesInWorkout')}
+                options={exercises}
+                selectedIds={selectedExercises}
+                onChange={(ids) => setSelectedExercises(ids)}
+                onOrderChange={(reorderedExercises) => setExercises(reorderedExercises)}
+                isEditable={true}
+              />
+            ) : (
+              <View className="py-8 items-center justify-center">
+                <Text className="text-center text-text-secondary">
+                  {/* text: No exercises available. Add exercises to get started. */}
+                  {t('createWorkout.noExercisesPlaceholder')}
+                </Text>
+              </View>
+            )}
           </View>
         </View>
 
