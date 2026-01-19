@@ -22,7 +22,8 @@ export default function PreRegistrationIntro() {
       style={{
         aspectRatio: theme.aspectRatio.square,
         maxHeight: maxHeight,
-      }}>
+      }}
+    >
       {/* Ambient Background Glow */}
       <View className="absolute inset-0 rounded-full opacity-70">
         <LinearGradient
@@ -46,7 +47,8 @@ export default function PreRegistrationIntro() {
         style={{
           width: containerSize,
           height: containerSize,
-        }}>
+        }}
+      >
         {/* Outer Concentric Circles */}
         <View
           className="absolute inset-0 rounded-full border"
@@ -77,7 +79,8 @@ export default function PreRegistrationIntro() {
             shadowColor: theme.colors.status.indigo,
             shadowOpacity: theme.shadowOpacity.mediumHeavy,
             shadowRadius: theme.shadowRadius.xl,
-          }}>
+          }}
+        >
           {/* Person Icon with Gradient Effect */}
           <View
             style={{
@@ -85,12 +88,14 @@ export default function PreRegistrationIntro() {
               height: innerCircleSize * 0.6,
               alignItems: 'center',
               justifyContent: 'center',
-            }}>
+            }}
+          >
             <Svg
               width={innerCircleSize * 0.8}
               height={innerCircleSize * 0.8}
               viewBox="0 0 24 24"
-              fill="none">
+              fill="none"
+            >
               <Defs>
                 <SvgLinearGradient id="userGradient" x1="0%" y1="0%" x2="100%" y2="0%">
                   <Stop offset="0%" stopColor={theme.colors.text.white} />
@@ -132,7 +137,8 @@ export default function PreRegistrationIntro() {
               ...theme.shadows.lg,
               shadowColor: theme.colors.status.emeraldLight,
               shadowOpacity: theme.shadowOpacity.light,
-            }}>
+            }}
+          >
             <LinearGradient
               colors={theme.colors.gradients.cta}
               start={{ x: 0, y: 0 }}
@@ -143,7 +149,8 @@ export default function PreRegistrationIntro() {
                 borderRadius: theme.borderRadius['2xl'],
                 alignItems: 'center',
                 justifyContent: 'center',
-              }}>
+              }}
+            >
               <TrendingUp
                 size={theme.iconSize['2xl']}
                 color={theme.colors.text.white}
@@ -162,7 +169,8 @@ export default function PreRegistrationIntro() {
               height: theme.size['10'],
               backgroundColor: theme.colors.background.white10,
               borderColor: theme.colors.background.white10,
-            }}>
+            }}
+          >
             <Dumbbell
               size={theme.iconSize.xl}
               color={theme.colors.status.emeraldLight}

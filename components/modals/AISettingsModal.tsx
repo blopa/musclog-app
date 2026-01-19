@@ -50,7 +50,8 @@ function AIIntegrationCard({
     <View>
       <Text
         className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
-        style={{ color: sectionTitleColor }}>
+        style={{ color: sectionTitleColor }}
+      >
         {sectionTitle}
       </Text>
 
@@ -65,7 +66,8 @@ function AIIntegrationCard({
           borderWidth: theme.borderWidth.thin,
           borderColor: theme.colors.border.light,
           overflow: 'hidden',
-        }}>
+        }}
+      >
         {/* Optional Header Content (e.g., Connect Button) */}
         {headerContent && (
           <View
@@ -74,7 +76,8 @@ function AIIntegrationCard({
               padding: theme.spacing.padding.base,
               borderBottomWidth: theme.borderWidth.thin,
               borderBottomColor: theme.colors.border.light,
-            }}>
+            }}
+          >
             {headerContent}
           </View>
         )}
@@ -85,7 +88,8 @@ function AIIntegrationCard({
             padding: theme.spacing.padding.base,
             borderBottomWidth: theme.borderWidth.thin,
             borderBottomColor: theme.colors.border.light,
-          }}>
+          }}
+        >
           <SecretInput
             label={apiKeyLabel}
             value={apiKeyValue}
@@ -99,7 +103,8 @@ function AIIntegrationCard({
                 color: theme.colors.text.tertiary,
                 marginTop: theme.spacing.padding.sm,
                 marginLeft: theme.spacing.padding.xs,
-              }}>
+              }}
+            >
               {apiKeyHelper}
             </Text>
           )}
@@ -108,14 +113,16 @@ function AIIntegrationCard({
         {/* Model Selector */}
         <Pressable
           onPress={onModelPress}
-          className="flex-row items-center justify-between p-4 active:bg-bg-overlay">
+          className="flex-row items-center justify-between p-4 active:bg-bg-overlay"
+        >
           <View className="min-w-0 flex-1">
             <Text className="text-sm font-medium text-text-primary">{modelLabel}</Text>
             <Text
               className="text-xs text-accent-primary"
               style={{
                 marginTop: theme.spacing.padding.xsHalf,
-              }}>
+              }}
+            >
               {modelValue || modelFallbackText}
             </Text>
           </View>
@@ -195,7 +202,8 @@ export function AISettingsModal({
             backgroundColor: theme.colors.status.info10,
             alignItems: 'center',
             justifyContent: 'center',
-          }}>
+          }}
+        >
           <Bot size={theme.iconSize.lg} color={theme.colors.status.info} />
         </View>
       ),
@@ -218,7 +226,8 @@ export function AISettingsModal({
             backgroundColor: theme.colors.accent.primary20,
             alignItems: 'center',
             justifyContent: 'center',
-          }}>
+          }}
+        >
           <Apple size={theme.iconSize.md} color={theme.colors.accent.primary} />
         </View>
       ),
@@ -238,7 +247,8 @@ export function AISettingsModal({
             backgroundColor: theme.colors.status.warning10,
             alignItems: 'center',
             justifyContent: 'center',
-          }}>
+          }}
+        >
           <Dumbbell size={theme.iconSize.md} color={theme.colors.status.warning} />
         </View>
       ),
@@ -260,7 +270,8 @@ export function AISettingsModal({
             backgroundColor: theme.colors.status.indigo10,
             alignItems: 'center',
             justifyContent: 'center',
-          }}>
+          }}
+        >
           <Bot size={theme.iconSize.md} color={theme.colors.status.indigo} />
         </View>
       ),
@@ -305,7 +316,8 @@ export function AISettingsModal({
         <View>
           <Text
             className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
-            style={{ color: theme.colors.text.secondary }}>
+            style={{ color: theme.colors.text.secondary }}
+          >
             {t('settings.aiSettings.insightsAlerts')}
           </Text>
           <ToggleInput items={insightsItems} />
@@ -316,14 +328,16 @@ export function AISettingsModal({
           style={{
             marginTop: theme.spacing.padding.base,
             paddingHorizontal: theme.spacing.padding.base,
-          }}>
+          }}
+        >
           <Text
             style={{
               fontSize: theme.typography.fontSize.xs,
               color: theme.colors.text.tertiary,
               textAlign: 'center',
               lineHeight: theme.typography.lineHeight.relaxed * theme.typography.fontSize.xs,
-            }}>
+            }}
+          >
             {t('settings.aiSettings.apiKeyHelp')}{' '}
             <Text
               style={{
@@ -333,7 +347,8 @@ export function AISettingsModal({
               }}
               onPress={() => {
                 // Handle setup guide link
-              }}>
+              }}
+            >
               {t('settings.aiSettings.setupGuide')}
             </Text>
             .
@@ -344,7 +359,8 @@ export function AISettingsModal({
               color: theme.colors.text.tertiary,
               textAlign: 'center',
               marginTop: theme.spacing.padding['6'],
-            }}>
+            }}
+          >
             {t('settings.aiSettings.version', { version })}
           </Text>
         </View>

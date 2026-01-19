@@ -19,7 +19,8 @@ export function ProgressIndicator({ message, size = 'large' }: ProgressIndicator
         alignItems: 'center',
         justifyContent: 'center',
         alignSelf: 'stretch',
-      }}>
+      }}
+    >
       <View
         className="rounded-3xl"
         style={{
@@ -28,7 +29,8 @@ export function ProgressIndicator({ message, size = 'large' }: ProgressIndicator
           borderWidth: theme.borderWidth.thin,
           padding: theme.spacing.padding['6'],
           width: '100%',
-        }}>
+        }}
+      >
         <View style={{ alignItems: 'center', justifyContent: 'center' }}>
           <View
             style={{
@@ -36,7 +38,8 @@ export function ProgressIndicator({ message, size = 'large' }: ProgressIndicator
               height: theme.size['18'],
               alignItems: 'center',
               justifyContent: 'center',
-            }}>
+            }}
+          >
             {/* Outer ring */}
             <View
               style={{
@@ -79,7 +82,8 @@ export function ProgressIndicator({ message, size = 'large' }: ProgressIndicator
                 color: theme.colors.accent.primary,
                 fontSize: theme.typography.fontSize.lg,
                 fontWeight: theme.typography.fontWeight.semibold,
-              }}>
+              }}
+            >
               {displayMessage}
             </Text>
           )}

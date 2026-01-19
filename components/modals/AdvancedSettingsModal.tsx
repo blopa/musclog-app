@@ -49,7 +49,8 @@ export function AdvancedSettingsModal({
             backgroundColor: theme.colors.status.purple20,
             alignItems: 'center',
             justifyContent: 'center',
-          }}>
+          }}
+        >
           <Bug size={theme.iconSize.xl} color={theme.colors.status.purple} />
         </View>
       ),
@@ -62,13 +63,15 @@ export function AdvancedSettingsModal({
     <FullScreenModal
       visible={visible}
       onClose={onClose}
-      title={t('settings.advancedSettings.title')}>
+      title={t('settings.advancedSettings.title')}
+    >
       <View className="gap-6 px-4 py-6" style={{ minHeight: '100%' }}>
         {/* Data Portability Section */}
         <View>
           <Text
             className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
-            style={{ color: theme.colors.text.secondary }}>
+            style={{ color: theme.colors.text.secondary }}
+          >
             {t('settings.advancedSettings.dataPortability')}
           </Text>
           <SettingsCard
@@ -103,7 +106,8 @@ export function AdvancedSettingsModal({
         <View>
           <Text
             className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
-            style={{ color: theme.colors.text.secondary }}>
+            style={{ color: theme.colors.text.secondary }}
+          >
             {t('settings.advancedSettings.privacyDiagnostics')}
           </Text>
           <ToggleInput items={bugReportItems} />
@@ -113,7 +117,8 @@ export function AdvancedSettingsModal({
         <View style={{ paddingTop: theme.spacing.padding['2xl'] }}>
           <Text
             className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
-            style={{ color: theme.colors.status.error }}>
+            style={{ color: theme.colors.status.error }}
+          >
             {t('settings.advancedSettings.dangerZone')}
           </Text>
           <SettingsCard
@@ -134,7 +139,8 @@ export function AdvancedSettingsModal({
           {/* Version Info */}
           <Text
             className="mt-3 px-4 text-center text-xs"
-            style={{ color: theme.colors.text.tertiary }}>
+            style={{ color: theme.colors.text.tertiary }}
+          >
             {t('settings.advancedSettings.version', { version, build })}
           </Text>
         </View>

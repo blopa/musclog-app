@@ -102,19 +102,22 @@ export default function MyMealsScreen() {
               fontSize: theme.typography.fontSize['4xl'],
               fontWeight: theme.typography.fontWeight.bold,
               color: theme.colors.text.primary,
-            }}>
+            }}
+          >
             {t('meals.title')}
           </Text>
           <View className="flex-row gap-4">
             <Pressable
               className="h-10 w-10 items-center justify-center rounded-full"
-              style={{ backgroundColor: theme.colors.background.white5 }}>
+              style={{ backgroundColor: theme.colors.background.white5 }}
+            >
               <Search size={theme.iconSize.md} color={theme.colors.text.primary} />
             </Pressable>
             <Pressable
               className="h-10 w-10 items-center justify-center rounded-full"
               style={{ backgroundColor: theme.colors.background.white5 }}
-              onPress={() => setAddMealModalVisible(true)}>
+              onPress={() => setAddMealModalVisible(true)}
+            >
               <MoreVertical size={theme.iconSize.md} color={theme.colors.text.primary} />
             </Pressable>
           </View>
@@ -136,7 +139,8 @@ export default function MyMealsScreen() {
           contentContainerStyle={{
             paddingHorizontal: theme.spacing.padding.xl,
             gap: theme.spacing.gap.base,
-          }}>
+          }}
+        >
           {MEALS_DATA.map((meal) => (
             <MealItemCard
               key={meal.id}

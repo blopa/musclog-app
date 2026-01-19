@@ -30,7 +30,8 @@ export function GradientText({ colors, style, children }: GradientTextProps) {
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text',
           },
-        ]}>
+        ]}
+      >
         {children}
       </Text>
     );
@@ -48,10 +49,12 @@ export function GradientText({ colors, style, children }: GradientTextProps) {
               backgroundColor: 'transparent',
               color: theme.colors.text.black,
             },
-          ]}>
+          ]}
+        >
           {children}
         </Text>
-      }>
+      }
+    >
       <LinearGradient colors={colors} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
         <Text style={[style, { opacity: theme.colors.opacity.zero }]}>{children}</Text>
       </LinearGradient>

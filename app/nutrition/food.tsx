@@ -171,7 +171,8 @@ export default function FoodScreen() {
                 {/* Calories Card Skeleton */}
                 <View
                   className="rounded-lg border bg-bg-card p-5"
-                  style={{ borderColor: theme.colors.background.white5 }}>
+                  style={{ borderColor: theme.colors.background.white5 }}
+                >
                   <View className="mb-4 flex-row items-center justify-between">
                     <View className="gap-2">
                       <SkeletonLoader width={theme.size['120']} height={theme.size['4']} />
@@ -208,7 +209,8 @@ export default function FoodScreen() {
                   <View
                     key={i}
                     className="flex-row items-center justify-between rounded-lg border bg-bg-card p-4"
-                    style={{ borderColor: theme.colors.background.white5 }}>
+                    style={{ borderColor: theme.colors.background.white5 }}
+                  >
                     <View className="flex-row items-center gap-3">
                       <SkeletonLoader
                         width={theme.size['10']}
@@ -282,7 +284,8 @@ export default function FoodScreen() {
                 {meals.breakfast.items && meals.breakfast.items.length > 0 && (
                   <MealSection
                     title={t('food.meals.breakfast')}
-                    totalCalories={meals.breakfast.totalCalories}>
+                    totalCalories={meals.breakfast.totalCalories}
+                  >
                     {meals.breakfast.items.map((item) => (
                       <FoodItemCard
                         key={item.id}
@@ -299,7 +302,8 @@ export default function FoodScreen() {
                 {meals.lunch.items && meals.lunch.items.length > 0 && (
                   <MealSection
                     title={t('food.meals.lunch')}
-                    totalCalories={meals.lunch.totalCalories}>
+                    totalCalories={meals.lunch.totalCalories}
+                  >
                     {meals.lunch.items.map((item) => (
                       <FoodItemCard
                         key={item.id}

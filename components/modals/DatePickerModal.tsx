@@ -128,7 +128,8 @@ export function DatePickerModal({
           </Text>
           <Text
             className="font-bold leading-tight tracking-tight text-text-primary"
-            style={{ fontSize: theme.typography.fontSize['4xl'] }}>
+            style={{ fontSize: theme.typography.fontSize['4xl'] }}
+          >
             {formatSelectedDate(tempSelectedDate)}
           </Text>
         </View>
@@ -137,12 +138,14 @@ export function DatePickerModal({
         <View className="flex-1 px-4">
           <View
             className="rounded-2xl border bg-bg-cardDark p-5"
-            style={{ borderColor: theme.colors.background.white5 }}>
+            style={{ borderColor: theme.colors.background.white5 }}
+          >
             {/* Month Navigation */}
             <View className="mb-6 flex-row items-center justify-between px-1">
               <Pressable
                 className="flex-row items-center gap-1 rounded-lg px-2 py-1"
-                onPress={handleMonthYearPickerOpen}>
+                onPress={handleMonthYearPickerOpen}
+              >
                 <Text className="text-base font-semibold text-text-primary">
                   {format(currentMonth, 'MMMM yyyy')}
                 </Text>
@@ -182,7 +185,8 @@ export function DatePickerModal({
                     key={index}
                     className="h-10 items-center justify-center"
                     style={{ width: '14.28%' }}
-                    onPress={() => handleDateSelect(day)}>
+                    onPress={() => handleDateSelect(day)}
+                  >
                     {isSelected ? (
                       <View className="relative h-10 w-10 items-center justify-center">
                         <View
@@ -198,7 +202,8 @@ export function DatePickerModal({
                         />
                         <Text
                           className="relative z-10 text-sm font-bold"
-                          style={{ color: theme.colors.text.black }}>
+                          style={{ color: theme.colors.text.black }}
+                        >
                           {format(day, 'd')}
                         </Text>
                       </View>
@@ -206,11 +211,13 @@ export function DatePickerModal({
                       <View
                         className={`h-10 w-10 items-center justify-center rounded-full ${
                           isToday ? 'border border-accent-primary' : ''
-                        }`}>
+                        }`}
+                      >
                         <Text
                           className={`text-sm font-medium ${
                             isOtherMonth ? 'text-text-secondary' : 'text-text-primary'
-                          }`}>
+                          }`}
+                        >
                           {format(day, 'd')}
                         </Text>
                       </View>
@@ -226,7 +233,8 @@ export function DatePickerModal({
             horizontal
             showsHorizontalScrollIndicator={false}
             className="mt-6 pb-2"
-            contentContainerStyle={{ gap: theme.spacing.gap.md }}>
+            contentContainerStyle={{ gap: theme.spacing.gap.md }}
+          >
             <Button
               label={t('datePicker.today')}
               variant="secondary"
@@ -283,15 +291,18 @@ export function DatePickerModal({
         visible={isMonthYearPickerVisible}
         transparent
         animationType="fade"
-        onRequestClose={() => setIsMonthYearPickerVisible(false)}>
+        onRequestClose={() => setIsMonthYearPickerVisible(false)}
+      >
         <Pressable
           className="flex-1 items-center justify-center p-4"
           style={{ backgroundColor: theme.colors.overlay.black60 }}
-          onPress={() => setIsMonthYearPickerVisible(false)}>
+          onPress={() => setIsMonthYearPickerVisible(false)}
+        >
           <Pressable
             className="w-full max-w-sm rounded-2xl border bg-bg-cardDark p-6"
             style={{ borderColor: theme.colors.background.white10 }}
-            onPress={(e) => e.stopPropagation()}>
+            onPress={(e) => e.stopPropagation()}
+          >
             <Text className="mb-4 text-lg font-bold text-text-primary">
               {t('datePicker.selectMonthYear')}
             </Text>
@@ -322,11 +333,13 @@ export function DatePickerModal({
                       minWidth: '30%',
                       maxWidth: '30%',
                     }}
-                    onPress={() => setSelectedMonthIndex(index)}>
+                    onPress={() => setSelectedMonthIndex(index)}
+                  >
                     <Text
                       className={`text-center text-sm font-medium ${
                         selectedMonthIndex === index ? 'text-accent-primary' : 'text-text-primary'
-                      }`}>
+                      }`}
+                    >
                       {month.substring(0, 3)}
                     </Text>
                   </Pressable>
@@ -345,7 +358,8 @@ export function DatePickerModal({
                   borderColor: theme.colors.background.white10,
                   backgroundColor: theme.colors.background.white5,
                 }}
-                showsVerticalScrollIndicator={false}>
+                showsVerticalScrollIndicator={false}
+              >
                 {years.map((year) => (
                   <Pressable
                     key={year}
@@ -355,11 +369,13 @@ export function DatePickerModal({
                     style={{
                       borderBottomColor: theme.colors.background.white5,
                     }}
-                    onPress={() => setSelectedYear(year)}>
+                    onPress={() => setSelectedYear(year)}
+                  >
                     <Text
                       className={`text-base font-medium ${
                         selectedYear === year ? 'text-accent-primary' : 'text-text-primary'
-                      }`}>
+                      }`}
+                    >
                       {year}
                     </Text>
                   </Pressable>

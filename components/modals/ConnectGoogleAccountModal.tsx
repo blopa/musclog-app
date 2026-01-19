@@ -33,7 +33,8 @@ export function ConnectGoogleAccountModal({
       visible={visible}
       onClose={onClose}
       title={t('connectGoogleAccount.title')}
-      scrollable={true}>
+      scrollable={true}
+    >
       <ConnectGoogleAccountBody
         onClose={onClose}
         onConnect={handleConnect}

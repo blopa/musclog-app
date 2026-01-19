@@ -70,12 +70,14 @@ export function ConfirmationModal({
       transparent
       animationType="fade"
       onRequestClose={onClose}
-      statusBarTranslucent={Platform.OS !== 'web'}>
+      statusBarTranslucent={Platform.OS !== 'web'}
+    >
       {/* Backdrop */}
       <Pressable
         className="flex-1 items-center justify-center p-4"
         style={[{ backgroundColor: backdropColor }, webBackdropStyle]}
-        onPress={onClose}>
+        onPress={onClose}
+      >
         {/* Modal */}
         <Pressable
           className="w-full overflow-hidden border border-border-dark"
@@ -85,7 +87,8 @@ export function ConfirmationModal({
             borderColor: theme.colors.border.accent,
             borderRadius: theme.borderRadius.xl,
           }}
-          onPress={(e) => e.stopPropagation()}>
+          onPress={(e) => e.stopPropagation()}
+        >
           {/* Gradient Header */}
           <LinearGradient
             colors={[theme.colors.status.purple40, theme.colors.accent.secondary10, 'transparent']}
@@ -94,15 +97,18 @@ export function ConfirmationModal({
             style={{
               borderBottomWidth: theme.borderWidth.thin,
               borderBottomColor: theme.colors.border.dark,
-            }}>
+            }}
+          >
             <View
               style={{
                 padding: theme.spacing.padding['2xl'],
                 paddingBottom: theme.spacing.padding.lg,
-              }}>
+              }}
+            >
               <Text
                 className="font-bold tracking-tight text-text-primary"
-                style={{ fontSize: theme.typography.fontSize.lg }}>
+                style={{ fontSize: theme.typography.fontSize.lg }}
+              >
                 {title}
               </Text>
             </View>
@@ -113,14 +119,16 @@ export function ConfirmationModal({
             className="gap-6"
             style={{
               padding: theme.spacing.padding['2xl'],
-            }}>
+            }}
+          >
             {/* Message */}
             <Text
               className="leading-relaxed"
               style={{
                 fontSize: theme.typography.fontSize.sm,
                 color: theme.colors.text.secondary,
-              }}>
+              }}
+            >
               {message}
             </Text>
 

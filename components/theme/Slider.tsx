@@ -53,7 +53,8 @@ export function Slider({
   return (
     <View
       className="h-10 w-full justify-center"
-      onLayout={(e) => setContainerWidth(e.nativeEvent.layout.width)}>
+      onLayout={(e) => setContainerWidth(e.nativeEvent.layout.width)}
+    >
       {/* Custom background track (only for gradient variant) */}
       {variant === 'gradient' && (
         <View
@@ -66,7 +67,8 @@ export function Slider({
       {variant === 'gradient' && useGradient && containerWidth > 0 && (
         <View
           className="absolute left-0.5 h-1.5 overflow-hidden rounded-full"
-          style={{ width: fillWidth }}>
+          style={{ width: fillWidth }}
+        >
           <LinearGradient
             colors={gradientColors}
             start={{ x: 0, y: 0 }}

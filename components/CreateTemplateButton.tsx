@@ -17,10 +17,12 @@ export function CreateTemplateButton({ onPress }: CreateTemplateCardProps) {
         borderColor: theme.colors.border.gray600,
         backgroundColor: theme.colors.background.card,
       }}
-      onPress={onPress}>
+      onPress={onPress}
+    >
       <View
         className="h-14 w-14 items-center justify-center rounded-full"
-        style={{ backgroundColor: theme.colors.background.cardElevated }}>
+        style={{ backgroundColor: theme.colors.background.cardElevated }}
+      >
         <Plus size={theme.iconSize.lg} color={theme.colors.text.primary} />
       </View>
       <Text className="text-center text-base font-medium text-text-primary">

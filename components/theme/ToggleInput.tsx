@@ -34,7 +34,8 @@ export function ToggleInput(props: TogglableSettingsProps) {
         shadowOpacity: theme.shadowOpacity.veryLight,
         shadowRadius: theme.shadowRadius.sm,
         shadowOffset: theme.shadowOffset.sm,
-      }}>
+      }}
+    >
       {props.header}
       {items.map((it, idx) => (
         <React.Fragment key={it.key}>
@@ -47,14 +48,16 @@ export function ToggleInput(props: TogglableSettingsProps) {
                   justifyContent: 'space-between',
                   padding: theme.spacing.padding.md,
                   backgroundColor: pressed ? theme.colors.background.overlay : undefined,
-                }}>
+                }}
+              >
                 <View
                   style={{
                     flexDirection: 'row',
                     alignItems: 'center',
                     gap: theme.spacing.gap.sm,
                     flex: 1,
-                  }}>
+                  }}
+                >
                   {it.icon}
                   <View style={{ flex: 1 }}>
                     <Text
@@ -62,7 +65,8 @@ export function ToggleInput(props: TogglableSettingsProps) {
                         fontSize: theme.typography.fontSize.sm,
                         color: theme.colors.text.primary,
                         fontWeight: theme.typography.fontWeight.medium,
-                      }}>
+                      }}
+                    >
                       {it.label}
                     </Text>
                     {it.subtitle && (
@@ -71,7 +75,8 @@ export function ToggleInput(props: TogglableSettingsProps) {
                           fontSize: theme.typography.fontSize.sm,
                           color: theme.colors.text.secondary,
                           marginTop: theme.spacing.padding.xsHalf,
-                        }}>
+                        }}
+                      >
                         {it.subtitle}
                       </Text>
                     )}

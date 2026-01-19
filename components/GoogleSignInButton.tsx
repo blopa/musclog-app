@@ -40,7 +40,8 @@ export function GoogleSignInButton({
 
         className
       )}
-      {...props}>
+      {...props}
+    >
       {/* Interaction overlay */}
       <View
         pointerEvents="none"
@@ -65,7 +66,8 @@ export function GoogleSignInButton({
             'text-base font-medium tracking-[0.25px]',
             isLight ? 'text-[#1f1f1f]' : 'text-[#e3e3e3]',
             disabled && 'opacity-[38%]'
-          )}>
+          )}
+        >
           {children || t('connectGoogleAccount.connectWithGoogle')}
         </Text>
       </View>

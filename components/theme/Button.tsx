@@ -170,7 +170,8 @@ export function Button({
       iconElement = (
         <View
           className="h-8 w-8 items-center justify-center rounded-full"
-          style={{ backgroundColor: iconBgColor }}>
+          style={{ backgroundColor: iconBgColor }}
+        >
           <ActivityIndicator size="small" color={finalIconColor} />
         </View>
       );
@@ -185,7 +186,8 @@ export function Button({
         const compEl = iconBgColor ? (
           <View
             className="h-8 w-8 items-center justify-center rounded-full"
-            style={{ backgroundColor: iconBgColor }}>
+            style={{ backgroundColor: iconBgColor }}
+          >
             <Comp size={iconSize} color={finalIconColor} />
           </View>
         ) : (
@@ -208,7 +210,8 @@ export function Button({
         iconElement = iconBgColor ? (
           <View
             className="h-8 w-8 items-center justify-center rounded-full"
-            style={{ backgroundColor: iconBgColor }}>
+            style={{ backgroundColor: iconBgColor }}
+          >
             <Comp size={iconSize} color={finalIconColor} />
           </View>
         ) : (
@@ -248,7 +251,8 @@ export function Button({
         flexShrink: 1,
       }}
       numberOfLines={2}
-      ellipsizeMode="tail">
+      ellipsizeMode="tail"
+    >
       {label}
     </Text>
   );
@@ -261,7 +265,8 @@ export function Button({
         justifyContent: 'center',
         gap: Icon ? config.gap : theme.spacing.gap.zero,
         ...(width === 'auto' ? {} : { width: '100%' }),
-      }}>
+      }}
+    >
       {iconPosition === 'left' && iconElement}
       <View
         style={{
@@ -270,7 +275,8 @@ export function Button({
           maxWidth: '100%',
           alignItems: 'center',
           justifyContent: 'center',
-        }}>
+        }}
+      >
         {textElement}
       </View>
       {iconPosition === 'right' && iconElement}
@@ -328,7 +334,8 @@ export function Button({
       onPress={isDisabled || loading ? undefined : onPress}
       onPressIn={() => !isDisabled && setIsPressed(true)}
       onPressOut={() => setIsPressed(false)}
-      disabled={isDisabled}>
+      disabled={isDisabled}
+    >
       {isOutlineVariant || isSecondaryVariant || isDashedVariant ? (
         <View
           style={{
@@ -342,7 +349,8 @@ export function Button({
               isSecondaryVariant && !isDisabled ? theme.colors.background.overlay : undefined,
             minHeight: minHeight,
             ...(width === 'auto' ? {} : { width: '100%' }),
-          }}>
+          }}
+        >
           {buttonContent}
         </View>
       ) : (
@@ -353,7 +361,8 @@ export function Button({
             overflow: 'hidden',
             minHeight: minHeight,
             ...(width === 'auto' ? {} : { width: '100%' }),
-          }}>
+          }}
+        >
           <LinearGradient
             colors={gradientColors}
             start={{
@@ -373,7 +382,8 @@ export function Button({
               justifyContent: 'center',
               minHeight: minHeight,
               ...(width === 'auto' ? {} : { width: '100%' }),
-            }}>
+            }}
+          >
             {buttonContent}
           </LinearGradient>
           {isGradientCtaVariant && isPressed && !isDisabled && (

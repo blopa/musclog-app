@@ -61,12 +61,14 @@ export function DailySummaryCard({ calories, activity, macros }: DailySummaryCar
         <View className="mb-6 flex-row items-start justify-between">
           <Text
             className="text-sm font-semibold tracking-wide"
-            style={{ color: theme.colors.overlay.white80 }}>
+            style={{ color: theme.colors.overlay.white80 }}
+          >
             {t('home.dailySummary.title')}
           </Text>
           <View
             className="rounded-full px-4 py-1.5"
-            style={{ backgroundColor: theme.colors.overlay.white30 }}>
+            style={{ backgroundColor: theme.colors.overlay.white30 }}
+          >
             <Text className="text-xs font-medium text-text-primary">{t('common.today')}</Text>
           </View>
         </View>
@@ -94,14 +96,16 @@ export function DailySummaryCard({ calories, activity, macros }: DailySummaryCar
               <View
                 key={macro.key}
                 className="flex-1 items-center rounded-2xl px-2.5 py-3"
-                style={{ backgroundColor: theme.colors.background.white10 }}>
+                style={{ backgroundColor: theme.colors.background.white10 }}
+              >
                 <Text className="mb-1 text-xs font-bold uppercase text-text-primary">
                   {macro.label}
                   <Text className="ml-1 font-normal text-text-primary">{macro.percent}%</Text>
                 </Text>
                 <View
                   className="h-2 w-full overflow-hidden rounded-full"
-                  style={{ backgroundColor: theme.colors.overlay.white30 }}>
+                  style={{ backgroundColor: theme.colors.overlay.white30 }}
+                >
                   <View
                     className="h-full rounded-full bg-text-primary"
                     style={{ width: `${macro.percent}%` }}

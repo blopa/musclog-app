@@ -49,7 +49,8 @@ export default function ConnectWithGoogle() {
         <View className="px-6 pb-2 pt-4">
           <Text
             className="text-2xl font-bold tracking-tight"
-            style={{ color: theme.colors.text.white }}>
+            style={{ color: theme.colors.text.white }}
+          >
             {t('onboarding.connectGoogle.title')}
           </Text>
         </View>

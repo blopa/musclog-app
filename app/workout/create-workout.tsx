@@ -177,7 +177,8 @@ export default function CreateWorkoutScreen() {
           paddingHorizontal: theme.spacing.padding.base,
           paddingVertical: theme.spacing.padding.sm,
           zIndex: theme.zIndex.dropdown,
-        }}>
+        }}
+      >
         <Pressable
           onPress={() => router.back()}
           style={({ pressed }) => [
@@ -189,7 +190,8 @@ export default function CreateWorkoutScreen() {
               justifyContent: 'center',
               opacity: pressed ? theme.colors.opacity.strong : theme.colors.opacity.full,
             },
-          ]}>
+          ]}
+        >
           <ArrowLeft size={theme.iconSize.xl} color={theme.colors.text.secondary} />
         </Pressable>
         <Text
@@ -197,7 +199,8 @@ export default function CreateWorkoutScreen() {
             fontSize: theme.typography.fontSize.lg,
             fontWeight: theme.typography.fontWeight.bold,
             color: theme.colors.text.primary,
-          }}>
+          }}
+        >
           {t('createWorkout.title')}
         </Text>
         <Pressable
@@ -210,13 +213,15 @@ export default function CreateWorkoutScreen() {
               paddingVertical: theme.spacing.padding.xs,
               opacity: pressed ? theme.colors.opacity.strong : theme.colors.opacity.full,
             },
-          ]}>
+          ]}
+        >
           <Text
             style={{
               fontSize: theme.typography.fontSize.base,
               fontWeight: theme.typography.fontWeight.bold,
               color: theme.colors.accent.primary,
-            }}>
+            }}
+          >
             {t('createWorkout.save')}
           </Text>
         </Pressable>
@@ -228,7 +233,8 @@ export default function CreateWorkoutScreen() {
         contentContainerStyle={{
           paddingHorizontal: theme.spacing.padding.base,
           paddingBottom: theme.size['120'],
-        }}>
+        }}
+      >
         {/* Essentials Section */}
         <View style={{ marginBottom: theme.spacing.gap.xl }}>
           <Text
@@ -240,7 +246,8 @@ export default function CreateWorkoutScreen() {
               letterSpacing: theme.typography.letterSpacing.extraWide,
               marginBottom: theme.spacing.padding.md,
               marginLeft: theme.spacing.margin.xs,
-            }}>
+            }}
+          >
             {t('createWorkout.essentials')}
           </Text>
 
@@ -251,7 +258,8 @@ export default function CreateWorkoutScreen() {
                 position: 'relative',
                 borderRadius: theme.borderRadius.lg,
                 overflow: 'hidden',
-              }}>
+              }}
+            >
               <View
                 style={{
                   backgroundColor: theme.colors.background.card,
@@ -263,14 +271,16 @@ export default function CreateWorkoutScreen() {
                       ? theme.colors.accent.primary
                       : theme.colors.border.light,
                   ...(focusedField === 'title' ? theme.shadows.accentGlow : {}),
-                }}>
+                }}
+              >
                 <Text
                   style={{
                     fontSize: theme.typography.fontSize.xs,
                     fontWeight: theme.typography.fontWeight.medium,
                     color: theme.colors.text.secondary,
                     marginBottom: theme.spacing.margin.xs,
-                  }}>
+                  }}
+                >
                   {t('createWorkout.workoutTitle')}
                 </Text>
                 <TextInput
@@ -296,7 +306,8 @@ export default function CreateWorkoutScreen() {
                 position: 'relative',
                 borderRadius: theme.borderRadius.lg,
                 overflow: 'hidden',
-              }}>
+              }}
+            >
               <View
                 style={{
                   backgroundColor: theme.colors.background.card,
@@ -308,14 +319,16 @@ export default function CreateWorkoutScreen() {
                       ? theme.colors.accent.primary
                       : theme.colors.border.light,
                   ...(focusedField === 'description' ? theme.shadows.accentGlow : {}),
-                }}>
+                }}
+              >
                 <Text
                   style={{
                     fontSize: theme.typography.fontSize.xs,
                     fontWeight: theme.typography.fontWeight.medium,
                     color: theme.colors.text.secondary,
                     marginBottom: theme.spacing.padding.xs,
-                  }}>
+                  }}
+                >
                   {t('createWorkout.description')}
                 </Text>
                 <TextInput
@@ -351,7 +364,8 @@ export default function CreateWorkoutScreen() {
               letterSpacing: theme.typography.letterSpacing.extraWide,
               marginBottom: theme.spacing.padding.md,
               marginLeft: theme.spacing.margin.xs,
-            }}>
+            }}
+          >
             {t('createWorkout.intelligence')}
           </Text>
 
@@ -362,14 +376,16 @@ export default function CreateWorkoutScreen() {
               padding: theme.spacing.padding.base,
               borderWidth: theme.borderWidth.thin,
               borderColor: theme.colors.border.light,
-            }}>
+            }}
+          >
             <Text
               style={{
                 fontSize: theme.typography.fontSize.sm,
                 fontWeight: theme.typography.fontWeight.medium,
                 color: theme.colors.text.primary,
                 marginBottom: theme.spacing.padding.base,
-              }}>
+              }}
+            >
               {t('createWorkout.volumeCalculation.title')}
             </Text>
 
@@ -385,7 +401,8 @@ export default function CreateWorkoutScreen() {
                 color: theme.colors.text.secondary,
                 marginTop: theme.spacing.padding.md,
                 lineHeight: theme.typography.fontSize.lg,
-              }}>
+              }}
+            >
               {t('createWorkout.volumeCalculation.description')}
             </Text>
           </View>
@@ -402,7 +419,8 @@ export default function CreateWorkoutScreen() {
               letterSpacing: theme.typography.letterSpacing.extraWide,
               marginBottom: theme.spacing.padding.md,
               marginLeft: theme.spacing.margin.xs,
-            }}>
+            }}
+          >
             {t('createWorkout.routine')}
           </Text>
 
@@ -413,20 +431,23 @@ export default function CreateWorkoutScreen() {
               padding: theme.spacing.padding.base,
               borderWidth: theme.borderWidth.thin,
               borderColor: theme.colors.border.light,
-            }}>
+            }}
+          >
             <View
               style={{
                 flexDirection: 'row',
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 marginBottom: theme.spacing.padding.base,
-              }}>
+              }}
+            >
               <Text
                 style={{
                   fontSize: theme.typography.fontSize.sm,
                   fontWeight: theme.typography.fontWeight.medium,
                   color: theme.colors.text.primary,
-                }}>
+                }}
+              >
                 {t('createWorkout.repeatOnDays')}
               </Text>
               <Text
@@ -434,7 +455,8 @@ export default function CreateWorkoutScreen() {
                   fontSize: theme.typography.fontSize.xs,
                   fontWeight: theme.typography.fontWeight.medium,
                   color: theme.colors.accent.primary,
-                }}>
+                }}
+              >
                 {t('createWorkout.weekly')}
               </Text>
             </View>
@@ -454,7 +476,8 @@ export default function CreateWorkoutScreen() {
               letterSpacing: theme.typography.letterSpacing.extraWide,
               marginBottom: theme.spacing.padding.md,
               marginLeft: theme.spacing.margin.xs,
-            }}>
+            }}
+          >
             {t('createWorkout.exercises')}
           </Text>
 
@@ -465,7 +488,8 @@ export default function CreateWorkoutScreen() {
               padding: theme.spacing.padding.base,
               borderWidth: theme.borderWidth.thin,
               borderColor: theme.colors.border.light,
-            }}>
+            }}
+          >
             {isLoadingExercises ? (
               <View className="items-center justify-center py-8">
                 <ActivityIndicator size="large" color={theme.colors.accent.primary} />
@@ -496,7 +520,8 @@ export default function CreateWorkoutScreen() {
             padding: theme.spacing.padding.base,
             paddingBottom: Math.max(insets.bottom, theme.spacing.padding.base),
             backgroundColor: 'transparent',
-          }}>
+          }}
+        >
           <View style={{ backgroundColor: theme.colors.background.primary }}>
             <Button
               label={t('workouts.addExercise.title')}

@@ -19,7 +19,8 @@ export default function HealthConnectScreen() {
         <ScrollView
           className="flex-1"
           contentContainerStyle={{ flexGrow: 1 }}
-          showsVerticalScrollIndicator={false}>
+          showsVerticalScrollIndicator={false}
+        >
           {/* Main Content */}
           <View className="flex-col items-center px-6 pt-4">
             {/* Illustration Section */}
@@ -33,7 +34,8 @@ export default function HealthConnectScreen() {
                   style={{
                     fontSize: theme.typography.fontSize['3xl'],
                     lineHeight: theme.typography.fontSize['3xl'] * 1.1,
-                  }}>
+                  }}
+                >
                   {t('onboarding.healthConnect.connectYour')}{' '}
                 </Text>
                 <GradientText
@@ -42,7 +44,8 @@ export default function HealthConnectScreen() {
                     fontSize: theme.typography.fontSize['3xl'],
                     fontWeight: theme.typography.fontWeight.bold,
                     lineHeight: theme.typography.fontSize['3xl'] * 1.1,
-                  }}>
+                  }}
+                >
                   {t('onboarding.healthConnect.health')}
                 </GradientText>
               </View>
@@ -53,7 +56,8 @@ export default function HealthConnectScreen() {
                   color: theme.colors.text.gray400,
                   maxWidth: '85%',
                   alignSelf: 'center',
-                }}>
+                }}
+              >
                 {t('onboarding.healthConnect.description')}
               </Text>
             </View>
@@ -119,7 +123,8 @@ export default function HealthConnectScreen() {
               onPress={() => {
                 // Navigate away or skip
                 router.push('/onboarding/connect-with-google');
-              }}>
+              }}
+            >
               <Text className="text-sm font-medium" style={{ color: theme.colors.text.gray500 }}>
                 {t('onboarding.healthConnect.maybeLater')}
               </Text>
@@ -131,7 +136,8 @@ export default function HealthConnectScreen() {
               style={{
                 fontSize: theme.typography.fontSize.xs,
                 color: theme.colors.text.gray500,
-              }}>
+              }}
+            >
               {t('onboarding.healthConnect.privacyStatement')}
             </Text>
           </View>

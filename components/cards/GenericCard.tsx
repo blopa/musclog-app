@@ -202,7 +202,8 @@ export function GenericCard({
             padding: theme.spacing.padding.xs,
             borderRadius: borderRadius,
             flex: 1,
-          }}>
+          }}
+        >
           {children}
         </LinearGradient>
       );
@@ -215,7 +216,8 @@ export function GenericCard({
           colors={theme.colors.gradients.progress}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
-          style={{ flex: 1 }}>
+          style={{ flex: 1 }}
+        >
           {children}
         </LinearGradient>
       );

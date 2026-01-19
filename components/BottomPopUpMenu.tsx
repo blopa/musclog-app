@@ -44,18 +44,21 @@ function OptionItem({
     <Pressable className="flex-row items-center gap-4 py-3 active:opacity-70" onPress={onPress}>
       <View
         className="h-12 w-12 items-center justify-center rounded-full"
-        style={{ backgroundColor: iconBgColor || theme.colors.background.iconDarker }}>
+        style={{ backgroundColor: iconBgColor || theme.colors.background.iconDarker }}
+      >
         <Icon size={theme.iconSize.md} color={iconColor || theme.colors.accent.secondary} />
       </View>
       <View className="flex-1">
         <Text
           className="text-lg font-bold"
-          style={{ color: titleColor || theme.colors.text.primary }}>
+          style={{ color: titleColor || theme.colors.text.primary }}
+        >
           {title}
         </Text>
         <Text
           className="mt-0.5 text-sm"
-          style={{ color: descriptionColor || theme.colors.text.secondary }}>
+          style={{ color: descriptionColor || theme.colors.text.secondary }}
+        >
           {description}
         </Text>
       </View>
@@ -83,7 +86,8 @@ export function BottomPopUpMenu({
       subtitle={subtitle}
       maxHeight={maxHeight}
       headerIcon={headerIcon}
-      footer={footer}>
+      footer={footer}
+    >
       {children ||
         (items && (
           <View className="gap-3 p-6">

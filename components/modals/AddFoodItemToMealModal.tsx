@@ -134,7 +134,8 @@ function FoodResultCard({
         shadowOpacity: isSelected ? theme.shadowOpacity.mediumHeavy : 0,
         shadowRadius: isSelected ? theme.shadowRadius.md : 0,
         elevation: isSelected ? theme.elevation.md : 0,
-      }}>
+      }}
+    >
       <Pressable onPress={onToggle} style={{ flexDirection: 'row', gap: theme.spacing.gap.md }}>
         <View style={{ paddingTop: theme.spacing.padding.xs }}>
           <View
@@ -151,7 +152,8 @@ function FoodResultCard({
               shadowOffset: theme.shadowOffset.zero,
               shadowOpacity: theme.colors.opacity.subtle,
               shadowRadius: theme.shadows.radius4.shadowRadius,
-            }}>
+            }}
+          >
             {isSelected && (
               <Check
                 size={theme.iconSize.sm}
@@ -169,7 +171,8 @@ function FoodResultCard({
               justifyContent: 'space-between',
               alignItems: 'flex-start',
               gap: theme.spacing.gap.sm,
-            }}>
+            }}
+          >
             <Text
               style={{
                 fontSize: theme.typography.fontSize.base,
@@ -178,7 +181,8 @@ function FoodResultCard({
                   : theme.typography.fontWeight.medium,
                 color: theme.colors.text.primary,
                 flex: 1,
-              }}>
+              }}
+            >
               {food.name}
             </Text>
             <View
@@ -189,13 +193,15 @@ function FoodResultCard({
                 paddingHorizontal: theme.spacing.padding.sm,
                 paddingVertical: theme.spacing.padding.xs,
                 borderRadius: theme.borderRadius.md,
-              }}>
+              }}
+            >
               <Text
                 style={{
                   fontSize: theme.typography.fontSize.xs,
                   fontWeight: theme.typography.fontWeight.bold,
                   color: isSelected ? theme.colors.accent.primary : theme.colors.text.secondary,
-                }}>
+                }}
+              >
                 {isSelected
                   ? `${calories} ${t('common.kcal')}`
                   : `${food.caloriesPer100g} ${t('common.kcal')}`}
@@ -208,7 +214,8 @@ function FoodResultCard({
               fontSize: theme.typography.fontSize.xs,
               color: theme.colors.text.primary,
               marginTop: theme.size.xs,
-            }}>
+            }}
+          >
             {food.description}
           </Text>
 
@@ -218,13 +225,15 @@ function FoodResultCard({
               gap: theme.spacing.gap.sm,
               marginTop: theme.spacing.gap.sm,
               opacity: isSelected ? 1 : theme.colors.opacity.strong,
-            }}>
+            }}
+          >
             <Text
               style={{
                 fontSize: theme.typography.fontSize.xs,
                 color: theme.colors.text.primary,
                 fontWeight: theme.typography.fontWeight.medium,
-              }}>
+              }}
+            >
               P: {food.protein}g
             </Text>
             <Text
@@ -232,7 +241,8 @@ function FoodResultCard({
                 fontSize: theme.typography.fontSize.xs,
                 color: theme.colors.text.primary,
                 fontWeight: theme.typography.fontWeight.medium,
-              }}>
+              }}
+            >
               C: {food.carbs}g
             </Text>
             <Text
@@ -240,7 +250,8 @@ function FoodResultCard({
                 fontSize: theme.typography.fontSize.xs,
                 color: theme.colors.text.primary,
                 fontWeight: theme.typography.fontWeight.medium,
-              }}>
+              }}
+            >
               F: {food.fat}g
             </Text>
           </View>
@@ -258,13 +269,15 @@ function FoodResultCard({
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'space-between',
-          }}>
+          }}
+        >
           <Text
             style={{
               fontSize: theme.typography.fontSize.xs,
               fontWeight: theme.typography.fontWeight.medium,
               color: theme.colors.text.secondary,
-            }}>
+            }}
+          >
             {t('food.addFoodItemToMeal.amount')}
           </Text>
           <View
@@ -277,7 +290,8 @@ function FoodResultCard({
               height: theme.components.button.height.sm,
               borderWidth: theme.borderWidth.thin,
               borderColor: 'transparent',
-            }}>
+            }}
+          >
             {/*OBS: this one can stay unthemed for now*/}
             <RNTextInput
               ref={amountInputRef}
@@ -302,7 +316,8 @@ function FoodResultCard({
                 color: theme.colors.text.primary,
                 paddingRight: theme.spacing.padding.xs,
                 fontWeight: theme.typography.fontWeight.medium,
-              }}>
+              }}
+            >
               g
             </Text>
           </View>
@@ -381,10 +396,12 @@ export function AddFoodItemToMealModal({
             fontSize: theme.typography.fontSize.sm,
             fontWeight: theme.typography.fontWeight.semibold,
             color: theme.colors.accent.primary,
-          }}>
+          }}
+        >
           {t('food.addFoodItemToMeal.selectedCount', { count: selectedCount })}
         </Text>
-      }>
+      }
+    >
       <View className="flex-1 px-4 py-2">
         {/* Search Bar */}
         <View className="mb-6">
@@ -406,11 +423,13 @@ export function AddFoodItemToMealModal({
               color: theme.colors.text.secondary,
               textTransform: 'uppercase',
               letterSpacing: theme.typography.letterSpacing.wider,
-            }}>
+            }}
+          >
             {t('food.addFoodItemToMeal.searchResults')}
           </Text>
           <Text
-            style={{ fontSize: theme.typography.fontSize.xs, color: theme.colors.text.tertiary }}>
+            style={{ fontSize: theme.typography.fontSize.xs, color: theme.colors.text.tertiary }}
+          >
             {t('food.addFoodItemToMeal.foundItems', { count: SEARCH_RESULTS.length })}
           </Text>
         </View>
@@ -418,7 +437,8 @@ export function AddFoodItemToMealModal({
         {/* Results List */}
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ gap: theme.spacing.gap.md }}>
+          contentContainerStyle={{ gap: theme.spacing.gap.md }}
+        >
           {SEARCH_RESULTS.map((food) => (
             <FoodResultCard
               key={food.id}

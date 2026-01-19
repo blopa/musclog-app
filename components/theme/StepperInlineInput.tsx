@@ -73,7 +73,8 @@ export function StepperInlineInput({
         {Icon && (
           <View
             className={`${iconSize === 'sm' ? 'h-8 w-8' : 'h-10 w-10'} flex-shrink-0 items-center justify-center rounded-lg`}
-            style={{ backgroundColor: theme.colors.status.emerald20 }}>
+            style={{ backgroundColor: theme.colors.status.emerald20 }}
+          >
             <Icon
               size={iconSize === 'sm' ? theme.iconSize.sm : theme.iconSize.md}
               color={theme.colors.status.emeraldLight}
@@ -98,7 +99,8 @@ export function StepperInlineInput({
             backgroundColor: theme.colors.accent.primary10,
             borderColor: theme.colors.accent.primary20,
           }}
-          onPress={onDecrement}>
+          onPress={onDecrement}
+        >
           <Minus size={theme.iconSize.lg} color={theme.colors.status.emeraldLight} />
         </Pressable>
         {editing ? (
@@ -123,7 +125,8 @@ export function StepperInlineInput({
             {unit && (
               <Text
                 className="text-xs text-gray-500"
-                style={{ fontSize: theme.typography.fontSize.xs }}>
+                style={{ fontSize: theme.typography.fontSize.xs }}
+              >
                 {unit}
               </Text>
             )}
@@ -136,7 +139,8 @@ export function StepperInlineInput({
             {unit && (
               <Text
                 className="text-xs text-gray-500"
-                style={{ fontSize: theme.typography.fontSize.xs }}>
+                style={{ fontSize: theme.typography.fontSize.xs }}
+              >
                 {unit}
               </Text>
             )}
@@ -148,7 +152,8 @@ export function StepperInlineInput({
             backgroundColor: theme.colors.accent.primary10,
             borderColor: theme.colors.accent.primary20,
           }}
-          onPress={onIncrement}>
+          onPress={onIncrement}
+        >
           <Plus size={theme.iconSize.lg} color={theme.colors.status.emeraldLight} />
         </Pressable>
       </View>

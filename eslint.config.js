@@ -10,6 +10,7 @@ module.exports = defineConfig([
   {
     rules: {
       'react/display-name': 'off',
+      'react/jsx-closing-bracket-location': ['warn', 'line-aligned'],
     },
   },
 ]);

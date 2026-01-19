@@ -109,7 +109,8 @@ export default function WorkoutsScreen() {
                 style={{
                   fontSize: theme.typography.fontSize['4xl'],
                   fontWeight: theme.typography.fontWeight.bold,
-                }}>
+                }}
+              >
                 {t('workouts.title')}
               </GradientText>
               <View className="ml-4 flex-row gap-4">
@@ -146,7 +147,8 @@ export default function WorkoutsScreen() {
                 {/* Featured Workout Skeleton */}
                 <View
                   className="rounded-lg border bg-bg-card p-5"
-                  style={{ borderColor: theme.colors.background.white5 }}>
+                  style={{ borderColor: theme.colors.background.white5 }}
+                >
                   <View className="mb-4 flex-row items-start justify-between">
                     <View className="flex-1 gap-2">
                       <SkeletonLoader width="40%" height={theme.size['5']} />
@@ -178,7 +180,8 @@ export default function WorkoutsScreen() {
                   <View
                     key={i}
                     className="rounded-lg border bg-bg-card p-4"
-                    style={{ borderColor: theme.colors.background.white5 }}>
+                    style={{ borderColor: theme.colors.background.white5 }}
+                  >
                     <View className="flex-row items-center gap-3">
                       <SkeletonLoader
                         width={theme.size['12']}

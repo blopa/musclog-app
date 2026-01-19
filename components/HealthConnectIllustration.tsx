@@ -13,7 +13,8 @@ export function HealthConnectIllustration() {
       style={{
         aspectRatio: theme.aspectRatio.square,
         minHeight: ILLUSTRATION_SIZE,
-      }}>
+      }}
+    >
       {/* Ambient Background Glows */}
       <View
         className="absolute rounded-full"
@@ -44,7 +45,8 @@ export function HealthConnectIllustration() {
         style={{
           width: ILLUSTRATION_SIZE,
           height: ILLUSTRATION_SIZE,
-        }}>
+        }}
+      >
         <LinearGradient
           colors={[theme.colors.status.indigo, theme.colors.status.emeraldLight]}
           start={{ x: 0, y: 0 }}
@@ -57,7 +59,8 @@ export function HealthConnectIllustration() {
             justifyContent: 'center',
             borderWidth: theme.borderWidth.thin,
             borderColor: theme.colors.background.white20,
-          }}>
+          }}
+        >
           <Shield
             size={ILLUSTRATION_SIZE * 0.5}
             color={theme.colors.text.white}
@@ -73,7 +76,8 @@ export function HealthConnectIllustration() {
         style={{
           top: '10%',
           left: '20%',
-        }}>
+        }}
+      >
         <Dumbbell
           size={theme.iconSize.xl}
           color={theme.colors.status.indigoLight}
@@ -87,7 +91,8 @@ export function HealthConnectIllustration() {
         style={{
           top: '15%',
           right: '15%',
-        }}>
+        }}
+      >
         <Scale
           size={theme.iconSize.lg}
           color={theme.colors.status.emerald}
@@ -101,7 +106,8 @@ export function HealthConnectIllustration() {
         style={{
           bottom: '20%',
           left: '10%',
-        }}>
+        }}
+      >
         <Apple
           size={theme.iconSize.lg}
           color={theme.colors.status.emeraldLight}
@@ -115,7 +121,8 @@ export function HealthConnectIllustration() {
         style={{
           bottom: '10%',
           right: '20%',
-        }}>
+        }}
+      >
         <Heart
           size={theme.iconSize['2xl']}
           color={theme.colors.status.purple}

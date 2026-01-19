@@ -27,7 +27,8 @@ export function ProgressMetric({
       <View className="mb-2">
         <View
           className="h-2 overflow-hidden rounded-full"
-          style={{ backgroundColor: theme.colors.overlay.white30 }}>
+          style={{ backgroundColor: theme.colors.overlay.white30 }}
+        >
           <View className="h-full rounded-full bg-text-primary" style={{ width: `${progress}%` }} />
         </View>
       </View>

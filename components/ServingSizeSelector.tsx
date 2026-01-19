@@ -44,12 +44,14 @@ export function ServingSizeSelector({ value, onChange, quickSizes }: ServingSize
       </View>
       <View
         className="rounded-xl border bg-bg-cardDark p-2"
-        style={{ borderColor: theme.colors.background.white10 }}>
+        style={{ borderColor: theme.colors.background.white10 }}
+      >
         <View className="mb-4 flex-row items-center gap-3">
           <Pressable
             className="h-12 w-12 shrink-0 items-center justify-center rounded-lg border bg-bg-overlay"
             style={{ borderColor: theme.colors.background.white5 }}
-            onPress={handleDecrease}>
+            onPress={handleDecrease}
+          >
             <Minus size={theme.iconSize.md} color={theme.colors.text.secondary} />
           </Pressable>
           <View className="flex-1 items-center justify-center py-1" style={{ minWidth: 0 }}>
@@ -78,7 +80,8 @@ export function ServingSizeSelector({ value, onChange, quickSizes }: ServingSize
           </View>
           <Pressable
             className="h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-accent-primary/20 bg-accent-primary/10"
-            onPress={handleIncrease}>
+            onPress={handleIncrease}
+          >
             <Plus size={theme.iconSize.md} color={theme.colors.accent.primary} />
           </Pressable>
         </View>
@@ -98,11 +101,13 @@ export function ServingSizeSelector({ value, onChange, quickSizes }: ServingSize
                     ? theme.colors.accent.primary20
                     : theme.colors.background.white5,
               }}
-              onPress={() => onChange(size.value)}>
+              onPress={() => onChange(size.value)}
+            >
               <Text
                 className={`text-xs font-medium ${
                   value === size.value ? 'font-bold text-accent-primary' : 'text-text-secondary'
-                }`}>
+                }`}
+              >
                 {size.label}
               </Text>
             </Pressable>

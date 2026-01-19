@@ -130,7 +130,8 @@ export default function ProfileScreen() {
           <Text className="text-4xl font-bold text-text-primary">{t('profile.header.title')}</Text>
           <Pressable
             className="active:bg-bg-card-elevated h-12 w-12 items-center justify-center rounded-full bg-bg-overlay"
-            onPress={() => router.push('/settings')}>
+            onPress={() => router.push('/settings')}
+          >
             <Settings size={theme.iconSize.md} color={theme.colors.text.secondary} />
           </Pressable>
         </View>
@@ -140,12 +141,14 @@ export default function ProfileScreen() {
           <View className="relative mb-4">
             <View
               className="h-32 w-32 overflow-hidden rounded-full border-4"
-              style={{ borderColor: theme.colors.accent.primary }}>
+              style={{ borderColor: theme.colors.accent.primary }}
+            >
               <Image source={user.avatar} className="h-full w-full" resizeMode="cover" />
             </View>
             <Pressable
               className="absolute bottom-0 right-0 h-10 w-10 items-center justify-center rounded-full border-2 border-bg-primary"
-              style={{ backgroundColor: theme.colors.accent.primary }}>
+              style={{ backgroundColor: theme.colors.accent.primary }}
+            >
               <Edit size={theme.iconSize.sm} color={theme.colors.text.black} />
             </Pressable>
           </View>

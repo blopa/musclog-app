@@ -146,12 +146,14 @@ export function FilterWorkoutsModal({
             backgroundColor: theme.colors.background.primary,
             borderTopWidth: theme.borderWidth.thin,
             borderTopColor: theme.colors.border.light,
-          }}>
+          }}
+        >
           <View
             style={{
               flexDirection: 'row',
               gap: theme.spacing.gap.base,
-            }}>
+            }}
+          >
             <Button
               label={t('workouts.filterWorkouts.clearFilters')}
               variant="outline"
@@ -175,13 +177,15 @@ export function FilterWorkoutsModal({
                     minWidth: theme.size['6'],
                     alignItems: 'center',
                     justifyContent: 'center',
-                  }}>
+                  }}
+                >
                   <Text
                     style={{
                       fontSize: theme.typography.fontSize.sm,
                       fontWeight: theme.typography.fontWeight.extrabold,
                       color: theme.colors.text.white,
-                    }}>
+                    }}
+                  >
                     {activeFilterCount}
                   </Text>
                 </View>
@@ -190,14 +194,16 @@ export function FilterWorkoutsModal({
             />
           </View>
         </View>
-      }>
+      }
+    >
       <View
         style={{
           paddingHorizontal: theme.spacing.padding.base,
           paddingTop: theme.spacing.padding['6'],
           paddingBottom: theme.spacing.padding['3xl'],
           gap: theme.spacing.gap['2xl'],
-        }}>
+        }}
+      >
         {/* Workout Type Section */}
         <OptionsSelector
           title={t('workouts.filterWorkouts.workoutType')}
@@ -217,7 +223,8 @@ export function FilterWorkoutsModal({
               letterSpacing: theme.typography.letterSpacing.extraWide,
               marginBottom: theme.spacing.padding.base,
               paddingHorizontal: theme.spacing.padding.xs,
-            }}>
+            }}
+          >
             {t('workouts.filterWorkouts.targetMuscles')}
           </Text>
           <View
@@ -225,7 +232,8 @@ export function FilterWorkoutsModal({
               flexDirection: 'row',
               flexWrap: 'wrap',
               gap: theme.spacing.gap.sm,
-            }}>
+            }}
+          >
             {targetMuscles.map((muscle) => {
               const isSelected = selectedMuscles.includes(muscle.id);
               return (
@@ -242,11 +250,13 @@ export function FilterWorkoutsModal({
                       ? theme.colors.accent.primary
                       : theme.colors.border.light,
                     ...(isSelected ? theme.shadows.accentGlow : {}),
-                  }}>
+                  }}
+                >
                   <Text
                     className={`text-sm ${
                       isSelected ? 'font-bold text-black' : 'font-semibold text-text-secondary'
-                    }`}>
+                    }`}
+                  >
                     {muscle.label}
                   </Text>
                   {isSelected && (
@@ -271,7 +281,8 @@ export function FilterWorkoutsModal({
               justifyContent: 'space-between',
               marginBottom: theme.spacing.padding.base,
               paddingHorizontal: theme.spacing.padding.xs,
-            }}>
+            }}
+          >
             <Text
               style={{
                 fontSize: theme.typography.fontSize.xs,
@@ -279,7 +290,8 @@ export function FilterWorkoutsModal({
                 color: theme.colors.text.secondary,
                 textTransform: 'uppercase',
                 letterSpacing: theme.typography.letterSpacing.extraWide,
-              }}>
+              }}
+            >
               {t('workouts.filterWorkouts.duration')}
             </Text>
             <Text
@@ -288,7 +300,8 @@ export function FilterWorkoutsModal({
                 fontWeight: theme.typography.fontWeight.bold,
                 color: theme.colors.accent.primary,
                 fontFamily: 'monospace',
-              }}>
+              }}
+            >
               {t('workouts.filterWorkouts.upTo', { duration: formatDuration(duration) })}
             </Text>
           </View>
@@ -300,7 +313,8 @@ export function FilterWorkoutsModal({
               borderWidth: theme.borderWidth.thin,
               borderColor: theme.colors.border.light,
               ...theme.shadows.sm,
-            }}>
+            }}
+          >
             <Slider
               value={duration}
               min={10}
@@ -317,7 +331,8 @@ export function FilterWorkoutsModal({
                 flexDirection: 'row',
                 justifyContent: 'space-between',
                 marginTop: theme.spacing.padding.md,
-              }}>
+              }}
+            >
               {[10, 30, 60, 90, 120].map((value) => (
                 <Text
                   key={value}
@@ -325,7 +340,8 @@ export function FilterWorkoutsModal({
                     fontSize: theme.typography.fontSize.xs,
                     fontWeight: theme.typography.fontWeight.semibold,
                     color: theme.colors.text.tertiary,
-                  }}>
+                  }}
+                >
                   {formatDuration(value)}
                 </Text>
               ))}

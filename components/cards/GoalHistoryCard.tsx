@@ -45,7 +45,8 @@ export function GoalHistoryCard({ goal, isLast = false }: GoalHistoryCardProps) 
       {/* Timeline dot */}
       <View
         className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border bg-bg-card"
-        style={{ borderColor: theme.colors.border.emerald }}>
+        style={{ borderColor: theme.colors.border.emerald }}
+      >
         <History size={theme.iconSize.lg} color={theme.colors.text.secondary} />
       </View>
 
@@ -64,13 +65,15 @@ export function GoalHistoryCard({ goal, isLast = false }: GoalHistoryCardProps) 
                   {goal.calories.toLocaleString()}{' '}
                   <Text
                     className="font-normal text-text-secondary"
-                    style={{ fontSize: theme.typography.fontSize.xs }}>
+                    style={{ fontSize: theme.typography.fontSize.xs }}
+                  >
                     {t('goalHistoryCard.kcal')}
                   </Text>
                 </Text>
                 <Text
                   className="text-text-secondary"
-                  style={{ fontSize: theme.typography.fontSize.xs }}>
+                  style={{ fontSize: theme.typography.fontSize.xs }}
+                >
                   {t('goalHistoryCard.proteinPrefix')}:{goal.protein}
                   {t('goalHistoryCard.g')} • {t('goalHistoryCard.carbsPrefix')}:{goal.carbs}
                   {t('goalHistoryCard.g')} • {t('goalHistoryCard.fatPrefix')}:{goal.fat}
@@ -83,7 +86,8 @@ export function GoalHistoryCard({ goal, isLast = false }: GoalHistoryCardProps) 
                 </Text>
                 <Text
                   className="text-text-secondary"
-                  style={{ fontSize: theme.typography.fontSize.xs }}>
+                  style={{ fontSize: theme.typography.fontSize.xs }}
+                >
                   {goal.bodyFat}% {t('goalHistoryCard.bf')}
                 </Text>
               </View>

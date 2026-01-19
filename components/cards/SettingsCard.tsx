@@ -28,7 +28,8 @@ export function SettingsCard({
             alignItems: 'center',
             justifyContent: 'space-between',
             padding: theme.spacing.padding.base,
-          }}>
+          }}
+        >
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.gap.base }}>
             <View
               style={[
@@ -41,7 +42,8 @@ export function SettingsCard({
                   justifyContent: 'center',
                 },
                 iconContainerStyle,
-              ]}>
+              ]}
+            >
               {icon}
             </View>
             <View>
@@ -50,7 +52,8 @@ export function SettingsCard({
                   fontSize: theme.typography.fontSize.base,
                   fontWeight: theme.typography.fontWeight.bold,
                   color: titleColor || theme.colors.text.primary,
-                }}>
+                }}
+              >
                 {title}
               </Text>
               <Text
@@ -58,7 +61,8 @@ export function SettingsCard({
                   fontSize: theme.typography.fontSize.sm,
                   color: theme.colors.text.secondary,
                   marginTop: theme.spacing.padding.xsHalf,
-                }}>
+                }}
+              >
                 {subtitle}
               </Text>
             </View>

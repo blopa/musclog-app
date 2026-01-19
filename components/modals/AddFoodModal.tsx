@@ -77,10 +77,12 @@ export function AddFoodModal({
       onClose={onClose}
       title={t('food.addFoodModal.title')}
       subtitle={t('food.addFoodModal.subtitle')}
-      maxHeight="92%">
+      maxHeight="92%"
+    >
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: theme.spacing.padding.xl }}>
+        contentContainerStyle={{ paddingBottom: theme.spacing.padding.xl }}
+      >
         <View className="gap-8">
           {/* Track by Meal Type */}
           <View>

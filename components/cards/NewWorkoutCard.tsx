@@ -38,7 +38,8 @@ export function NewWorkoutCard({
                 alignItems: 'center',
                 gap: theme.spacing.gap.base,
               },
-        ]}>
+        ]}
+      >
         <View
           style={
             isPopular
@@ -49,7 +50,8 @@ export function NewWorkoutCard({
                   marginBottom: theme.spacing.padding.sm,
                 }
               : null
-          }>
+          }
+        >
           <View
             style={[
               {
@@ -64,7 +66,8 @@ export function NewWorkoutCard({
                 borderWidth: theme.borderWidth.thin,
                 borderColor: theme.colors.background.white5,
               },
-            ]}>
+            ]}
+          >
             {isPopular ? (
               <LinearGradient
                 colors={theme.colors.gradients.cta}
@@ -75,7 +78,8 @@ export function NewWorkoutCard({
                   alignItems: 'center',
                   justifyContent: 'center',
                   ...theme.shadows.accent,
-                }}>
+                }}
+              >
                 {icon}
               </LinearGradient>
             ) : (
@@ -90,7 +94,8 @@ export function NewWorkoutCard({
                 paddingHorizontal: theme.spacing.padding.sm,
                 paddingVertical: theme.spacing.padding.xsHalf,
                 borderRadius: theme.borderRadius.sm,
-              }}>
+              }}
+            >
               <Text
                 style={{
                   fontSize: theme.typography.fontSize.xs,
@@ -98,7 +103,8 @@ export function NewWorkoutCard({
                   color: theme.colors.accent.secondary,
                   textTransform: 'uppercase',
                   letterSpacing: theme.typography.letterSpacing.wider,
-                }}>
+                }}
+              >
                 {t('common.popular')}
               </Text>
             </View>
@@ -110,7 +116,8 @@ export function NewWorkoutCard({
               fontSize: theme.typography.fontSize.lg,
               fontWeight: theme.typography.fontWeight.bold,
               color: theme.colors.text.white,
-            }}>
+            }}
+          >
             {title}
           </Text>
           {subtitle && (
@@ -120,7 +127,8 @@ export function NewWorkoutCard({
                 color: theme.colors.text.secondary,
                 marginTop: isPopular ? theme.spacing.margin.xs : theme.spacing.margin['2'],
                 lineHeight: isPopular ? theme.typography.fontSize.base : undefined,
-              }}>
+              }}
+            >
               {subtitle}
             </Text>
           )}

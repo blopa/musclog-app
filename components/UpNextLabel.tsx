@@ -13,10 +13,12 @@ export function UpNextLabel() {
         style={{
           borderColor: theme.colors.accent.primary20,
           paddingVertical: theme.spacing.padding.xsHalf,
-        }}>
+        }}
+      >
         <Text
           className="font-bold uppercase tracking-widest text-accent-primary"
-          style={{ fontSize: theme.typography.fontSize.xs }}>
+          style={{ fontSize: theme.typography.fontSize.xs }}
+        >
           {t('restTimer.upNext')}
         </Text>
       </View>

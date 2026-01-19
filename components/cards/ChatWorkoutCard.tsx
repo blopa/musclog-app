@@ -71,7 +71,8 @@ export function ChatWorkoutCard({
         <Pressable
           className="w-full flex-row items-center justify-center gap-2 rounded-lg py-2.5 active:scale-95"
           style={{ backgroundColor: theme.colors.accent.primary }}
-          onPress={onStartWorkout}>
+          onPress={onStartWorkout}
+        >
           <Text className="font-bold" style={{ color: theme.colors.text.black }}>
             {t('startWorkout.label')}
           </Text>

@@ -30,12 +30,14 @@ export default function SnackbarTestScreen() {
       {/* Header */}
       <View
         className="border-b bg-bg-primary"
-        style={{ borderColor: theme.colors.background.buttonCard }}>
+        style={{ borderColor: theme.colors.background.buttonCard }}
+      >
         <View className="relative flex-row items-center justify-center px-4 py-4">
           <Pressable
             onPress={() => router.back()}
             className="absolute left-0 -ml-2 rounded-full p-2"
-            style={{ backgroundColor: theme.colors.overlay.white5 }}>
+            style={{ backgroundColor: theme.colors.overlay.white5 }}
+          >
             <ChevronLeft size={theme.iconSize.xl} color={theme.colors.text.primary} />
           </Pressable>
           <Text className="text-xl font-bold text-text-primary">Snackbar Examples</Text>
@@ -51,7 +53,8 @@ export default function SnackbarTestScreen() {
 
             <Text
               className="text-lg leading-relaxed"
-              style={{ color: theme.colors.text.secondary }}>
+              style={{ color: theme.colors.text.secondary }}
+            >
               Tap the buttons below to trigger the success and error feedback notifications. These
               non-intrusive messages appear at the bottom of the screen.
             </Text>
@@ -64,12 +67,14 @@ export default function SnackbarTestScreen() {
                 className="flex-row items-center gap-4 rounded-2xl p-6"
                 style={{
                   backgroundColor: theme.colors.background.buttonCard,
-                }}>
+                }}
+              >
                 <View
                   className="h-12 w-12 flex-shrink-0 items-center justify-center rounded-full"
                   style={{
                     backgroundColor: theme.colors.status.success20,
-                  }}>
+                  }}
+                >
                   <CheckCircle size={theme.iconSize.xl} color={theme.colors.status.success} />
                 </View>
                 <Text className="flex-1 text-left text-xl font-semibold text-text-primary">
@@ -88,12 +93,14 @@ export default function SnackbarTestScreen() {
                 className="flex-row items-center gap-4 rounded-2xl p-6"
                 style={{
                   backgroundColor: theme.colors.background.buttonCard,
-                }}>
+                }}
+              >
                 <View
                   className="h-12 w-12 flex-shrink-0 items-center justify-center rounded-full"
                   style={{
                     backgroundColor: theme.colors.status.error20,
-                  }}>
+                  }}
+                >
                   <AlertTriangle size={theme.iconSize.xl} color={theme.colors.status.error} />
                 </View>
                 <Text className="flex-1 text-left text-xl font-semibold text-text-primary">
@@ -117,7 +124,8 @@ export default function SnackbarTestScreen() {
               />
               <Text
                 className="text-sm font-semibold tracking-wider"
-                style={{ color: theme.colors.text.tertiary }}>
+                style={{ color: theme.colors.text.tertiary }}
+              >
                 LIVE PREVIEW
               </Text>
               <View

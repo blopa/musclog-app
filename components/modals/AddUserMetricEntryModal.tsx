@@ -263,7 +263,8 @@ export default function AddUserMetricEntryModal({
               maxWidth: theme.size['280'],
               width: '100%',
               alignSelf: 'center',
-            }}>
+            }}
+          >
             <Pressable
               onPress={handleDecrement}
               className="h-14 w-14 items-center justify-center rounded-full"
@@ -271,7 +272,8 @@ export default function AddUserMetricEntryModal({
                 backgroundColor: theme.colors.background.cardElevated,
                 borderColor: theme.colors.background.white10,
                 borderWidth: theme.borderWidth.thin,
-              }}>
+              }}
+            >
               <Minus size={theme.iconSize.xl} color={theme.colors.text.primary} />
             </Pressable>
 
@@ -288,7 +290,8 @@ export default function AddUserMetricEntryModal({
                 backgroundColor: theme.colors.background.cardElevated,
                 borderColor: theme.colors.background.white10,
                 borderWidth: theme.borderWidth.thin,
-              }}>
+              }}
+            >
               <Plus size={theme.iconSize.xl} color={theme.colors.text.primary} />
             </Pressable>
           </View>
@@ -303,7 +306,8 @@ export default function AddUserMetricEntryModal({
                 style={{
                   backgroundColor: theme.colors.accent.primary10,
                   borderColor: theme.colors.accent.primary20,
-                }}>
+                }}
+              >
                 <Text className="text-[10px] font-bold text-accent-primary">
                   +{increment % 1 === 0 ? increment : increment.toFixed(1)}
                 </Text>
@@ -349,7 +353,8 @@ export default function AddUserMetricEntryModal({
       visible={visible}
       onClose={onClose}
       title={t('bodyMetrics.addEntry.title')}
-      scrollable={false}>
+      scrollable={false}
+    >
       <View className="flex-1">
         {/* Content */}
         <ScrollView className="flex-1 px-4 pb-12" showsVerticalScrollIndicator={false}>
@@ -374,7 +379,8 @@ export default function AddUserMetricEntryModal({
                       const height = e.nativeEvent.layout.height;
                       setPagerHeight(height);
                     }
-                  }}>
+                  }}
+                >
                   {renderMetricEntry(selectedMetric)}
                 </View>
                 <PagerView
@@ -386,7 +392,8 @@ export default function AddUserMetricEntryModal({
                     handlePageChange(pageIndex);
                   }}
                   scrollEnabled={true}
-                  overdrag={false}>
+                  overdrag={false}
+                >
                   {/* Weight Page */}
                   <View key="weight">{renderMetricEntry('weight')}</View>
                   {/* Body Fat Page */}
@@ -405,7 +412,8 @@ export default function AddUserMetricEntryModal({
         {/* Save Button Footer */}
         <View
           className="border-t p-6 pb-10"
-          style={{ borderColor: theme.colors.background.white5 }}>
+          style={{ borderColor: theme.colors.background.white5 }}
+        >
           <Button
             label={t('bodyMetrics.addEntry.saveEntry')}
             onPress={handleSave}

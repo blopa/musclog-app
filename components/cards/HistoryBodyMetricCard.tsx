@@ -27,7 +27,8 @@ export function HistoryBodyMetricCard({ entry }: { entry: HistoryEntry }) {
           <View className="flex-1 flex-row items-center gap-4">
             <View
               className="h-10 w-10 items-center justify-center rounded-full"
-              style={{ backgroundColor: entry.iconBg }}>
+              style={{ backgroundColor: entry.iconBg }}
+            >
               <IconComponent size={theme.iconSize.xl} color={entry.iconColor} />
             </View>
             <View className="flex-1">
@@ -46,7 +47,8 @@ export function HistoryBodyMetricCard({ entry }: { entry: HistoryEntry }) {
                     entry.changeType === 'down'
                       ? 'rgba(34, 197, 94, 0.15)' // Green at 15% opacity
                       : 'rgba(249, 115, 22, 0.15)', // Orange at 15% opacity
-                }}>
+                }}
+              >
                 {entry.changeType === 'down' ? (
                   <TrendingDown size={14} color="#22c55e" />
                 ) : (
@@ -56,7 +58,8 @@ export function HistoryBodyMetricCard({ entry }: { entry: HistoryEntry }) {
                   className="ml-1 text-xs font-bold"
                   style={{
                     color: entry.changeType === 'down' ? '#22c55e' : '#f97316',
-                  }}>
+                  }}
+                >
                   {entry.change}
                 </Text>
               </View>
@@ -64,7 +67,8 @@ export function HistoryBodyMetricCard({ entry }: { entry: HistoryEntry }) {
             {!entry.change && (
               <View
                 className="flex-row items-center rounded-full px-2.5 py-1"
-                style={{ backgroundColor: 'rgba(107, 114, 128, 0.15)' }}>
+                style={{ backgroundColor: 'rgba(107, 114, 128, 0.15)' }}
+              >
                 <Text className="text-xs font-bold text-text-tertiary">{entry.note}</Text>
               </View>
             )}

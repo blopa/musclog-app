@@ -63,7 +63,8 @@ export function AINutritionTrackingContextModal({
           className="h-10 w-10 items-center justify-center rounded-xl"
           style={{
             backgroundColor: 'transparent',
-          }}>
+          }}
+        >
           <LinearGradient
             colors={theme.colors.gradients.cta}
             start={{ x: 0, y: 0 }}
@@ -72,12 +73,14 @@ export function AINutritionTrackingContextModal({
           />
           <Sparkles size={theme.iconSize.xl} color={theme.colors.text.white} />
         </View>
-      }>
+      }
+    >
       <View
         className="pt-2"
         onStartShouldSetResponder={() => true}
         onMoveShouldSetResponder={() => true}
-        onResponderTerminationRequest={() => false}>
+        onResponderTerminationRequest={() => false}
+      >
         {/* Describe Your Meal Section */}
         <View className="mb-6">
           <Text className="mb-2 ml-1 text-xs font-bold uppercase tracking-widest text-text-secondary">
@@ -89,7 +92,8 @@ export function AINutritionTrackingContextModal({
               backgroundColor: theme.colors.background.darkGraySolid,
               borderColor: theme.colors.background.white10,
             }}
-            collapsable={false}>
+            collapsable={false}
+          >
             <RNTextInput
               className="w-full bg-transparent text-text-primary"
               style={{
@@ -126,7 +130,8 @@ export function AINutritionTrackingContextModal({
                       ? theme.colors.background.white10
                       : theme.colors.background.darkGreenSolidAlt,
                     borderColor: theme.colors.background.white5,
-                  }}>
+                  }}
+                >
                   <Text className="text-sm font-medium text-text-primary">{tag}</Text>
                 </Pressable>
               );
@@ -142,7 +147,8 @@ export function AINutritionTrackingContextModal({
             style={{
               backgroundColor: theme.colors.background.darkGreenSolidAlt,
               borderColor: theme.colors.background.white5,
-            }}>
+            }}
+          >
             <Text className="text-center text-sm font-bold text-text-primary">
               {t('food.aiNutritionContext.cancel')}
             </Text>
@@ -152,7 +158,8 @@ export function AINutritionTrackingContextModal({
             className="flex-[2] rounded-xl px-6 py-4 active:scale-[0.98]"
             style={{
               overflow: 'hidden',
-            }}>
+            }}
+          >
             <LinearGradient
               colors={theme.colors.gradients.cta}
               start={{ x: 0, y: 0 }}

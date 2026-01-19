@@ -17,7 +17,8 @@ export function WorkoutStatCard({ title, value, unit, onPress }: WorkoutStatCard
       <View className="items-center p-6">
         <Text className="mb-2 text-sm font-medium text-text-secondary">{title}</Text>
         <Text
-          className={`text-5xl font-bold ${typeof value === 'string' && value === '-' ? 'text-text-tertiary' : 'text-text-primary'}`}>
+          className={`text-5xl font-bold ${typeof value === 'string' && value === '-' ? 'text-text-tertiary' : 'text-text-primary'}`}
+        >
           {value}
         </Text>
         {unit && <Text className="mt-1 text-lg text-text-secondary">{unit}</Text>}

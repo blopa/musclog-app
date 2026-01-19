@@ -153,7 +153,8 @@ const renderMessageText = (props: any) => {
           props.currentMessage?.user._id === 1
             ? theme.colors.text.black
             : theme.colors.text.primary,
-      }}>
+      }}
+    >
       {props.currentMessage?.text}
     </Text>
   );
@@ -191,7 +192,8 @@ const renderBubble = (props: BubbleProps<ExtendedIMessage>) => {
             colors={theme.colors.gradients.userBubble}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            style={styles.userBubbleGradient}>
+            style={styles.userBubbleGradient}
+          >
             {renderMessageText(props)}
           </LinearGradient>
         )}
@@ -199,7 +201,8 @@ const renderBubble = (props: BubbleProps<ExtendedIMessage>) => {
         {!!currentMessage?.createdAt && (
           <Text
             className="mr-1 mt-1 text-right text-xs"
-            style={{ color: theme.colors.text.tertiary }}>
+            style={{ color: theme.colors.text.tertiary }}
+          >
             {new Date(currentMessage.createdAt).toLocaleTimeString('en-US', {
               hour: 'numeric',
               minute: '2-digit',
@@ -260,7 +263,8 @@ const renderSend = (props: SendProps<ExtendedIMessage>) => {
     <Send {...props} containerStyle={styles.sendContainer}>
       <View
         className="h-12 w-12 items-center justify-center rounded-full active:scale-90"
-        style={{ backgroundColor: theme.colors.accent.primary }}>
+        style={{ backgroundColor: theme.colors.accent.primary }}
+      >
         <SendIcon size={theme.iconSize.lg} color={theme.colors.text.black} />
       </View>
     </Send>
@@ -324,13 +328,15 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
         horizontal
         showsHorizontalScrollIndicator={false}
         className="px-4 py-3"
-        contentContainerStyle={{ gap: theme.spacing.gap.sm }}>
+        contentContainerStyle={{ gap: theme.spacing.gap.sm }}
+      >
         <Pressable
           className="flex-row items-center gap-2 whitespace-nowrap rounded-full border px-4 py-2 active:scale-95"
           style={{
             backgroundColor: theme.colors.status.indigo10,
             borderColor: theme.colors.accent.primary30,
-          }}>
+          }}
+        >
           <PlusCircle size={theme.iconSize.md} color={theme.colors.accent.primary} />
           <Text className="text-sm font-medium" style={{ color: theme.colors.accent.primary }}>
             {t('coach.actions.createWorkout')}
@@ -338,7 +344,8 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
         </Pressable>
         <Pressable
           className="flex-row items-center gap-2 whitespace-nowrap rounded-full border bg-bg-card px-4 py-2 active:scale-95"
-          style={{ borderColor: theme.colors.border.light }}>
+          style={{ borderColor: theme.colors.border.light }}
+        >
           <TrendingUp size={theme.iconSize.md} color={theme.colors.status.info} />
           <Text className="text-sm font-medium text-text-primary">
             {t('coach.actions.analyzeProgress')}
@@ -346,7 +353,8 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
         </Pressable>
         <Pressable
           className="flex-row items-center gap-2 whitespace-nowrap rounded-full border bg-bg-card px-4 py-2 active:scale-95"
-          style={{ borderColor: theme.colors.border.light }}>
+          style={{ borderColor: theme.colors.border.light }}
+        >
           <UtensilsCrossed size={theme.iconSize.md} color={theme.colors.status.warning} />
           <Text className="text-sm font-medium text-text-primary">
             {t('coach.actions.nutritionCheck')}
@@ -371,11 +379,13 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
       onClose={onClose}
       title={t('coach.title')}
       headerRight={headerRight}
-      scrollable={false}>
+      scrollable={false}
+    >
       <View className="flex-1 bg-bg-primary">
         <View
           className="flex-row items-center gap-3 border-b px-4 py-3"
-          style={{ borderColor: theme.colors.border.light }}>
+          style={{ borderColor: theme.colors.border.light }}
+        >
           <View className="relative">
             <Image
               source={{ uri: AI_COACH_AVATAR }}

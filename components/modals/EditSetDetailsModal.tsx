@@ -55,14 +55,16 @@ function NumberInputField({
     <View className="gap-3">
       <Text
         className="px-1 text-xs font-bold uppercase tracking-wider"
-        style={{ color: theme.colors.accent.primary }}>
+        style={{ color: theme.colors.accent.primary }}
+      >
         {label}
       </Text>
       <View className="flex-row items-center gap-2">
         <Pressable
           className="h-12 w-12 items-center justify-center rounded-lg"
           style={{ backgroundColor: theme.colors.background.white5 }}
-          onPress={handleDecrement}>
+          onPress={handleDecrement}
+        >
           <Minus size={theme.iconSize.xl} color={theme.colors.accent.primary} />
         </Pressable>
         <View
@@ -71,7 +73,8 @@ function NumberInputField({
             backgroundColor: theme.colors.background.black20,
             borderColor: theme.colors.background.white10,
             borderWidth: theme.borderWidth.thin,
-          }}>
+          }}
+        >
           <TextInput
             value={value.toString()}
             onChangeText={handleTextChange}
@@ -99,7 +102,8 @@ function NumberInputField({
         <Pressable
           className="h-12 w-12 items-center justify-center rounded-lg"
           style={{ backgroundColor: theme.colors.background.white5 }}
-          onPress={handleIncrement}>
+          onPress={handleIncrement}
+        >
           <Plus size={theme.iconSize.xl} color={theme.colors.accent.primary} />
         </Pressable>
       </View>
@@ -158,7 +162,8 @@ export function EditSetDetailsModal({
             onPress={handleSave}
           />
         </View>
-      }>
+      }
+    >
       <View className="gap-6">
         {/* Weight */}
         <NumberInputField

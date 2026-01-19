@@ -119,7 +119,8 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
                   height: theme.size['10'],
                   backgroundColor: theme.colors.accent.primary10,
                   borderRadius: theme.borderRadius.sm,
-                }}>
+                }}
+              >
                 <ScanLine size={theme.iconSize.md} color={theme.colors.accent.primary} />
               </Pressable>
             </View>
@@ -156,7 +157,8 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
                   style={{
                     paddingVertical: theme.spacing.padding.xsHalf,
                     backgroundColor: theme.colors.accent.primary10,
-                  }}>
+                  }}
+                >
                   <Text className="text-xs font-medium text-accent-primary">kcal</Text>
                 </View>
               }
@@ -212,7 +214,8 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
             <View>
               <Pressable
                 className="flex-row items-center justify-between py-4"
-                onPress={() => setMicroOpen(!microOpen)}>
+                onPress={() => setMicroOpen(!microOpen)}
+              >
                 <View className="flex-row items-center gap-2">
                   <FlaskConical size={theme.iconSize.lg} color={theme.colors.accent.primary} />
                   <Text className="text-xl font-bold text-text-primary">

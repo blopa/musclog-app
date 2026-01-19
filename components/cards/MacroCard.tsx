@@ -23,7 +23,8 @@ export function MacroCard({ name, percentage, amount, color, progressColor }: Ma
         <Text className="mb-3 text-3xl font-bold text-text-primary">{amount}</Text>
         <View
           className="h-1.5 overflow-hidden rounded-full"
-          style={{ backgroundColor: theme.colors.background.gray800Opacity50 }}>
+          style={{ backgroundColor: theme.colors.background.gray800Opacity50 }}
+        >
           <View
             className="h-full rounded-full"
             style={{ width: `${percentage}%`, backgroundColor: progressColor }}

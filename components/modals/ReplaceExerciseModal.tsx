@@ -107,7 +107,8 @@ export function ReplaceExerciseModal({
             onPress={handleReplace}
           />
         </View>
-      }>
+      }
+    >
       <View>
         {/* Search and Filters Section */}
         <View
@@ -117,12 +118,14 @@ export function ReplaceExerciseModal({
             paddingHorizontal: theme.spacing.padding.xl,
             paddingTop: theme.spacing.padding.base,
             paddingBottom: theme.spacing.padding.sm,
-          }}>
+          }}
+        >
           {/* Search Input */}
           <View className="relative">
             <View
               className="absolute inset-y-0 left-0 z-10 items-center justify-center pl-4"
-              style={{ pointerEvents: 'none' }}>
+              style={{ pointerEvents: 'none' }}
+            >
               <Search
                 size={theme.iconSize.lg}
                 color={searchQuery ? theme.colors.accent.primary : theme.colors.text.secondary}
@@ -166,7 +169,8 @@ export function ReplaceExerciseModal({
           contentContainerStyle={{
             paddingBottom: theme.spacing.padding.xl,
             paddingTop: theme.spacing.padding.sm,
-          }}>
+          }}
+        >
           <View>
             <OptionsSelector
               title={t('replaceExercise.selectExercise')}

@@ -73,7 +73,8 @@ function MacroCard({ label, kcalPerGram, value, min, max, color, onChange }: Mac
   return (
     <View
       className="rounded-xl border bg-bg-card p-5"
-      style={{ borderColor: theme.colors.border.emerald }}>
+      style={{ borderColor: theme.colors.border.emerald }}
+    >
       <View className="mb-4 flex-row items-center justify-between">
         <View className="flex-row items-center gap-3">
           <View className="h-8 w-0.5 rounded-full" style={{ backgroundColor: color }} />
@@ -89,7 +90,8 @@ function MacroCard({ label, kcalPerGram, value, min, max, color, onChange }: Mac
               backgroundColor: theme.colors.accent.primary10,
               borderColor: theme.colors.accent.primary20,
             }}
-            onPress={handleDecrement}>
+            onPress={handleDecrement}
+          >
             <Minus size={theme.iconSize.md} color={theme.colors.accent.primary} />
           </Pressable>
           <Text className="w-12 text-center text-xl font-bold text-text-primary">{value}g</Text>
@@ -99,7 +101,8 @@ function MacroCard({ label, kcalPerGram, value, min, max, color, onChange }: Mac
               backgroundColor: theme.colors.accent.primary10,
               borderColor: theme.colors.accent.primary20,
             }}
-            onPress={handleIncrement}>
+            onPress={handleIncrement}
+          >
             <Plus size={theme.iconSize.md} color={theme.colors.accent.primary} />
           </Pressable>
         </View>
@@ -254,7 +257,8 @@ export function NutritionGoalsBody({
           style={{
             borderColor: theme.colors.border.emerald,
             backgroundColor: theme.colors.background.cardElevated,
-          }}>
+          }}
+        >
           <LinearGradient
             colors={[theme.colors.status.indigo10, theme.colors.accent.secondary10]}
             start={{ x: 0, y: 0 }}
@@ -295,7 +299,8 @@ export function NutritionGoalsBody({
         {/* Daily Macro Targets */}
         <Text
           className="mb-2 mt-8 font-bold uppercase tracking-widest text-text-secondary"
-          style={{ fontSize: theme.typography.fontSize.xs }}>
+          style={{ fontSize: theme.typography.fontSize.xs }}
+        >
           {t('nutritionGoals.dailyMacroTargets')}
         </Text>
         <View className="gap-4">
@@ -343,7 +348,8 @@ export function NutritionGoalsBody({
         {/* Target Body Metrics */}
         <Text
           className="mb-2 mt-8 font-bold uppercase tracking-widest text-text-secondary"
-          style={{ fontSize: theme.typography.fontSize.xs }}>
+          style={{ fontSize: theme.typography.fontSize.xs }}
+        >
           {t('nutritionGoals.targetBodyMetrics')}
         </Text>
         <View className="gap-4">
@@ -394,12 +400,14 @@ export function NutritionGoalsBody({
           {/* Target date for body metrics */}
           <Pressable
             onPress={() => setIsTargetDatePickerVisible(true)}
-            className="flex-row items-center justify-between rounded-xl border border-emerald-900/20 bg-bg-card p-5">
+            className="flex-row items-center justify-between rounded-xl border border-emerald-900/20 bg-bg-card p-5"
+          >
             <View className="flex-1 flex-row items-center gap-3 pr-3">
               {showIcons && (
                 <View
                   className="h-8 w-8 items-center justify-center rounded-lg"
-                  style={{ backgroundColor: theme.colors.status.emerald20 }}>
+                  style={{ backgroundColor: theme.colors.status.emerald20 }}
+                >
                   <Calendar size={theme.iconSize.sm} color={theme.colors.status.emeraldLight} />
                 </View>
               )}
@@ -422,7 +430,8 @@ export function NutritionGoalsBody({
                   onPress={(e) => {
                     e.stopPropagation();
                     setTargetDate(null);
-                  }}>
+                  }}
+                >
                   <Text className="text-xs text-accent-primary">
                     {t('nutritionGoals.targetDateClear')}
                   </Text>
@@ -446,7 +455,8 @@ export function NutritionGoalsBody({
         {showSaveButton && (
           <View
             className="mt-8 border-t pt-6"
-            style={{ borderTopColor: theme.colors.background.white5 }}>
+            style={{ borderTopColor: theme.colors.background.white5 }}
+          >
             <Button
               label={t('nutritionGoals.saveGoals')}
               icon={ChevronRight}
@@ -458,7 +468,8 @@ export function NutritionGoalsBody({
             />
             <Text
               className="mt-4 text-center text-text-secondary"
-              style={{ fontSize: theme.typography.fontSize.xs }}>
+              style={{ fontSize: theme.typography.fontSize.xs }}
+            >
               {t('nutritionGoals.settingsNote')}
             </Text>
           </View>

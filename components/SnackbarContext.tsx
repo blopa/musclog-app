@@ -84,7 +84,8 @@ export function SnackbarProvider({ children }: { children: ReactNode }) {
           pointerEvents: 'box-none',
           paddingBottom: Math.max(insets.bottom, theme.spacing.padding.base),
           ...webContainerStyle,
-        }}>
+        }}
+      >
         {snackbars.map((snackbar) => (
           <Snackbar key={snackbar.id} snackbar={snackbar} onDismiss={dismissSnackbar} />
         ))}

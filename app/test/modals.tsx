@@ -1042,7 +1042,8 @@ export default function ModalsTestScreen() {
         onClose={() => setIsCenteredModalVisible(false)}
         title="Centered Modal"
         subtitle="This is a centered modal."
-        footer={<Text>Footer content here</Text>}>
+        footer={<Text>Footer content here</Text>}
+      >
         <Text>Centered modal content goes here.</Text>
       </CenteredModal>
 
@@ -1053,7 +1054,8 @@ export default function ModalsTestScreen() {
         onClose={() => setIsFullScreenModalVisible(false)}
         title="Full Screen Modal"
         subtitle="Subtitle for full screen modal"
-        footer={<Text>Footer content for full screen modal</Text>}>
+        footer={<Text>Footer content for full screen modal</Text>}
+      >
         <Text>Full screen modal content goes here.</Text>
       </FullScreenModal>
 

@@ -77,7 +77,8 @@ function LineChart({ data }: LineChartProps) {
             height: 192,
             width: '100%',
           },
-        }}>
+        }}
+      >
         {/* Grid lines - horizontal dashed lines */}
         <VictoryAxis
           dependentAxis
@@ -337,12 +338,14 @@ export default function BodyMetricsHistoryModal({
           onPress={handleNewMetric}
         />
       }
-      scrollable={false}>
+      scrollable={false}
+    >
       <ScrollView
         className="flex-1"
         showsVerticalScrollIndicator={false}
         style={{ backgroundColor: theme.colors.background.primary }}
-        contentContainerStyle={{ backgroundColor: theme.colors.background.primary }}>
+        contentContainerStyle={{ backgroundColor: theme.colors.background.primary }}
+      >
         <View className="mt-2 space-y-6 px-4">
           {/* Metric Selector */}
           <SegmentedControl
@@ -382,7 +385,8 @@ export default function BodyMetricsHistoryModal({
                   </View>
                   <View
                     className="flex-row rounded-lg p-1"
-                    style={{ backgroundColor: theme.colors.background.gray800Opacity50 }}>
+                    style={{ backgroundColor: theme.colors.background.gray800Opacity50 }}
+                  >
                     <Pressable
                       onPress={() => setSelectedPeriod('30D')}
                       className={`rounded-md px-3 py-1 ${selectedPeriod === '30D' ? '' : ''}`}
@@ -392,11 +396,13 @@ export default function BodyMetricsHistoryModal({
                               backgroundColor: theme.colors.accent.primary10,
                             }
                           : {}
-                      }>
+                      }
+                    >
                       <Text
                         className={`text-[10px] font-bold ${
                           selectedPeriod === '30D' ? 'text-accent-primary' : 'text-text-tertiary'
-                        }`}>
+                        }`}
+                      >
                         30D
                       </Text>
                     </Pressable>
@@ -409,11 +415,13 @@ export default function BodyMetricsHistoryModal({
                               backgroundColor: theme.colors.accent.primary10,
                             }
                           : {}
-                      }>
+                      }
+                    >
                       <Text
                         className={`text-[10px] font-bold ${
                           selectedPeriod === '3M' ? 'text-accent-primary' : 'text-text-tertiary'
-                        }`}>
+                        }`}
+                      >
                         3M
                       </Text>
                     </Pressable>
@@ -426,11 +434,13 @@ export default function BodyMetricsHistoryModal({
                               backgroundColor: theme.colors.accent.primary10,
                             }
                           : {}
-                      }>
+                      }
+                    >
                       <Text
                         className={`text-[10px] font-bold ${
                           selectedPeriod === '1Y' ? 'text-accent-primary' : 'text-text-tertiary'
-                        }`}>
+                        }`}
+                      >
                         1Y
                       </Text>
                     </Pressable>

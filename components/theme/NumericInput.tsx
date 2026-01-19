@@ -41,13 +41,15 @@ export function NumericInput({
     <View className="flex-1 flex-col items-center gap-1 rounded-lg border border-white/10 bg-bg-card p-4">
       <Text
         className="font-bold uppercase tracking-widest text-text-tertiary"
-        style={{ fontSize: theme.typography.fontSize.xs }}>
+        style={{ fontSize: theme.typography.fontSize.xs }}
+      >
         {label}
       </Text>
       {onIncrement && (
         <Pressable
           className="w-full items-center justify-center rounded-lg bg-accent-primary py-1.5 active:opacity-80"
-          onPress={onIncrement}>
+          onPress={onIncrement}
+        >
           <ChevronUp size={theme.iconSize.sm} color={theme.colors.text.black} />
         </Pressable>
       )}
@@ -67,7 +69,8 @@ export function NumericInput({
       {onDecrement && (
         <Pressable
           className="w-full items-center justify-center rounded-lg bg-accent-primary py-1.5 active:opacity-80"
-          onPress={onDecrement}>
+          onPress={onDecrement}
+        >
           <ChevronDown size={theme.iconSize.sm} color={theme.colors.text.black} />
         </Pressable>
       )}

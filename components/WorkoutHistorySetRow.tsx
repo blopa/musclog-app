@@ -27,7 +27,8 @@ export function SetRow({ set }: SetRowProps) {
         backgroundColor: isCurrent ? theme.colors.accent.primary10 : 'transparent',
         borderWidth: isCurrent ? theme.borderWidth.thin : 0,
         borderColor: isCurrent ? theme.colors.accent.primary20 : 'transparent',
-      }}>
+      }}
+    >
       {/* Set Number */}
       <View className="w-8 items-center">
         <View
@@ -36,12 +37,14 @@ export function SetRow({ set }: SetRowProps) {
             backgroundColor: isCurrent
               ? theme.colors.accent.primary
               : theme.colors.background.overlay,
-          }}>
+          }}
+        >
           <Text
             className="text-xs font-bold"
             style={{
               color: isCurrent ? theme.colors.text.black : theme.colors.text.secondary,
-            }}>
+            }}
+          >
             {set.setNumber}
           </Text>
         </View>
@@ -53,7 +56,8 @@ export function SetRow({ set }: SetRowProps) {
           className="text-base font-bold tabular-nums"
           style={{
             color: isCurrent ? theme.colors.text.primary : theme.colors.text.secondary,
-          }}>
+          }}
+        >
           {set.weight}
         </Text>
       </View>
@@ -64,7 +68,8 @@ export function SetRow({ set }: SetRowProps) {
           className="text-base font-bold tabular-nums"
           style={{
             color: isCurrent ? theme.colors.text.primary : theme.colors.text.secondary,
-          }}>
+          }}
+        >
           {set.reps}
         </Text>
       </View>
@@ -79,7 +84,8 @@ export function SetRow({ set }: SetRowProps) {
               set.partials > 0
                 ? theme.typography.fontWeight.bold
                 : theme.typography.fontWeight.normal,
-          }}>
+          }}
+        >
           {set.partials > 0 ? `+${set.partials}` : '-'}
         </Text>
       </View>

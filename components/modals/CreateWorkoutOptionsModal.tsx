@@ -29,7 +29,8 @@ export function CreateWorkoutOptionsModal({
       onClose={onClose}
       title=""
       scrollable={true}
-      withGradient={false}>
+      withGradient={false}
+    >
       {/* Background Glows */}
       <View style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
         <View
@@ -69,7 +70,8 @@ export function CreateWorkoutOptionsModal({
           paddingTop: Platform.OS === 'ios' ? theme.size['16'] : theme.size['10'],
           paddingBottom: theme.spacing.padding.sm,
           zIndex: theme.zIndex.popover,
-        }}>
+        }}
+      >
         <Text
           style={{
             fontSize: theme.typography.fontSize.sm,
@@ -78,7 +80,8 @@ export function CreateWorkoutOptionsModal({
             textTransform: 'uppercase',
             letterSpacing: theme.typography.letterSpacing.extraWide,
             opacity: theme.colors.opacity.strong,
-          }}>
+          }}
+        >
           New Session
         </Text>
         <View style={{ width: theme.size['10'] }} />
@@ -90,7 +93,8 @@ export function CreateWorkoutOptionsModal({
           paddingHorizontal: theme.spacing.padding.xl,
           paddingTop: theme.spacing.padding.xl,
           paddingBottom: theme.spacing.padding['3xl'],
-        }}>
+        }}
+      >
         {/* Title */}
         <View style={{ marginBottom: theme.spacing.padding['2xl'] }}>
           <Text
@@ -99,7 +103,8 @@ export function CreateWorkoutOptionsModal({
               fontWeight: theme.typography.fontWeight.extrabold,
               color: theme.colors.text.white,
               lineHeight: theme.typography.fontSize['3xl'] * 1.2,
-            }}>
+            }}
+          >
             {"Let's crush a"}
           </Text>
           <GradientText
@@ -109,7 +114,8 @@ export function CreateWorkoutOptionsModal({
               fontWeight: theme.typography.fontWeight.extrabold,
               lineHeight: theme.typography.fontSize['3xl'] * 1.2,
               marginBottom: theme.spacing.padding.xs,
-            }}>
+            }}
+          >
             new workout.
           </GradientText>
           <Text
@@ -118,7 +124,8 @@ export function CreateWorkoutOptionsModal({
               fontWeight: theme.typography.fontWeight.medium,
               color: theme.colors.text.secondary,
               marginTop: theme.spacing.padding.xs,
-            }}>
+            }}
+          >
             Select how you want to build your routine today.
           </Text>
         </View>

@@ -114,7 +114,8 @@ export function BasicSettingsModal({
               padding: theme.spacing.padding.base,
               borderWidth: theme.borderWidth.thin,
               borderColor: theme.colors.border.light,
-            }}>
+            }}
+          >
             <Text className="mb-3 text-sm font-medium text-text-secondary">
               {t('settings.basicSettings.appTheme')}
             </Text>
@@ -130,7 +131,8 @@ export function BasicSettingsModal({
         <View
           style={{
             marginHorizontal: theme.spacing.padding.base,
-          }}>
+          }}
+        >
           <Text className="mb-3 px-5 text-lg font-bold tracking-tight text-text-primary">
             {t('settings.basicSettings.localization')}
           </Text>
@@ -143,7 +145,8 @@ export function BasicSettingsModal({
               <View className="flex-row items-center gap-2">
                 <Text
                   className="text-sm font-medium"
-                  style={{ color: theme.colors.accent.primary }}>
+                  style={{ color: theme.colors.accent.primary }}
+                >
                   {language}
                 </Text>
                 <ChevronRight size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
@@ -156,7 +159,8 @@ export function BasicSettingsModal({
         <View
           style={{
             marginHorizontal: theme.spacing.padding.base,
-          }}>
+          }}
+        >
           <Text className="mb-3 px-5 text-lg font-bold tracking-tight text-text-primary">
             {t('settings.basicSettings.integrations')}
           </Text>
@@ -175,11 +179,13 @@ export function BasicSettingsModal({
                 className="border-b p-4"
                 style={{
                   borderBottomColor: theme.colors.border.light,
-                }}>
+                }}
+              >
                 <View className="mb-2 flex-row items-center gap-3">
                   <View
                     className="h-10 w-10 items-center justify-center rounded-full"
-                    style={{ backgroundColor: theme.colors.background.white }}>
+                    style={{ backgroundColor: theme.colors.background.white }}
+                  >
                     <Heart
                       size={theme.iconSize.xl}
                       color={theme.colors.status.error}
@@ -201,7 +207,8 @@ export function BasicSettingsModal({
 
           <Text
             className="mt-0 px-8 text-center text-xs"
-            style={{ color: theme.colors.text.tertiary }}>
+            style={{ color: theme.colors.text.tertiary }}
+          >
             {t('settings.basicSettings.healthDataPrivacy')}
           </Text>
         </View>

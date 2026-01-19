@@ -31,7 +31,8 @@ export function SelectedExerciseCard({
         {/* Icon Container */}
         <View
           className="h-12 w-12 shrink-0 items-center justify-center rounded-lg"
-          style={{ backgroundColor: theme.colors.accent.primary20 }}>
+          style={{ backgroundColor: theme.colors.accent.primary20 }}
+        >
           <MaterialIcons
             name="fitness-center"
             size={theme.iconSize['2xl']}
@@ -46,7 +47,8 @@ export function SelectedExerciseCard({
             style={{
               fontSize: theme.typography.fontSize.xxs + 2, // 10px
               color: theme.colors.accent.primary,
-            }}>
+            }}
+          >
             Selected Exercise
           </Text>
           <Text
@@ -55,7 +57,8 @@ export function SelectedExerciseCard({
             style={{
               fontSize: theme.typography.fontSize.lg,
               color: theme.colors.text.primary,
-            }}>
+            }}
+          >
             {exerciseName}
           </Text>
           {detailsText && (
@@ -65,7 +68,8 @@ export function SelectedExerciseCard({
               style={{
                 fontSize: theme.typography.fontSize.xs,
                 color: theme.colors.text.secondary,
-              }}>
+              }}
+            >
               {detailsText}
             </Text>
           )}
@@ -84,7 +88,8 @@ export function SelectedExerciseCard({
               style={{
                 fontSize: theme.typography.fontSize.xxs + 1, // 9px
                 color: theme.colors.accent.primary,
-              }}>
+              }}
+            >
               {t('common.change')}
             </Text>
           </Pressable>

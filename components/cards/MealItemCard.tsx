@@ -19,7 +19,8 @@ const Macro = ({ label, value, color }: MacroProps) => (
         fontWeight: theme.typography.fontWeight.bold,
         color,
         textTransform: 'uppercase',
-      }}>
+      }}
+    >
       {label}
     </Text>
     <Text
@@ -27,7 +28,8 @@ const Macro = ({ label, value, color }: MacroProps) => (
         fontSize: theme.typography.fontSize.sm,
         fontWeight: theme.typography.fontWeight.bold,
         color: theme.colors.text.primary,
-      }}>
+      }}
+    >
       {value}
     </Text>
   </View>
@@ -62,7 +64,8 @@ export function MealItemCard({
           flexDirection: 'row',
           padding: theme.spacing.padding.md,
           gap: theme.spacing.gap.base,
-        }}>
+        }}
+      >
         {/* Image Container */}
         <View style={{ position: 'relative' }}>
           <View
@@ -72,7 +75,8 @@ export function MealItemCard({
               borderRadius: theme.borderRadius.lg,
               overflow: 'hidden',
               backgroundColor: theme.colors.background.secondaryDark,
-            }}>
+            }}
+          >
             <Image source={image} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
           </View>
           {/* Calories Badge */}
@@ -87,13 +91,15 @@ export function MealItemCard({
               borderRadius: theme.borderRadius.full,
               borderWidth: theme.borderWidth.medium,
               borderColor: theme.colors.background.card,
-            }}>
+            }}
+          >
             <Text
               style={{
                 fontSize: theme.typography.fontSize.xs,
                 fontWeight: theme.typography.fontWeight.bold,
                 color: theme.colors.text.black,
-              }}>
+              }}
+            >
               {calories} {t('common.kcal')}
             </Text>
           </View>
@@ -108,7 +114,8 @@ export function MealItemCard({
                 fontWeight: theme.typography.fontWeight.bold,
                 color: theme.colors.text.primary,
                 marginBottom: theme.spacing.padding.xs,
-              }}>
+              }}
+            >
               {title}
             </Text>
             <Text
@@ -116,7 +123,8 @@ export function MealItemCard({
                 fontSize: theme.typography.fontSize.xs,
                 color: theme.colors.text.accent,
                 fontWeight: theme.typography.fontWeight.medium,
-              }}>
+              }}
+            >
               {tags.join(' • ')}
             </Text>
           </View>
@@ -126,7 +134,8 @@ export function MealItemCard({
               flexDirection: 'row',
               alignItems: 'flex-end',
               justifyContent: 'space-between',
-            }}>
+            }}
+          >
             <View style={{ flexDirection: 'row', gap: theme.spacing.gap.md }}>
               <Macro
                 label={t('food.macros.proteinLegend')}
@@ -172,7 +181,8 @@ export function MealItemCard({
                 borderRadius: theme.borderRadius.full,
                 gap: theme.spacing.gap.xs,
                 opacity: pressed ? theme.colors.opacity.strong : theme.colors.opacity.full,
-              })}>
+              })}
+            >
               <Plus
                 size={theme.iconSize.xs}
                 color={theme.colors.accent.primary}
@@ -183,7 +193,8 @@ export function MealItemCard({
                   fontSize: theme.typography.fontSize.xs,
                   fontWeight: theme.typography.fontWeight.bold,
                   color: theme.colors.accent.primary,
-                }}>
+                }}
+              >
                 {t('mealItemCard.track')}
               </Text>
             </Pressable>

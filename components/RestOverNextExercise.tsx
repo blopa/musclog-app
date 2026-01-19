@@ -23,7 +23,8 @@ export function RestOverNextExercise({ exercise }: RestOverNextExerciseProps) {
         backgroundColor: theme.colors.background.darkGreen50,
         borderColor: theme.colors.background.white5,
         ...theme.shadows.lg,
-      }}>
+      }}
+    >
       <View className="mb-3 flex-row items-center gap-3">
         <View
           className="h-10 w-1 rounded-full"
@@ -40,7 +41,8 @@ export function RestOverNextExercise({ exercise }: RestOverNextExerciseProps) {
         <View className="flex-col items-start">
           <Text
             className="font-bold uppercase text-white/40"
-            style={{ fontSize: theme.typography.fontSize.xs }}>
+            style={{ fontSize: theme.typography.fontSize.xs }}
+          >
             {t('restOver.weight')}
           </Text>
           <Text className="text-base font-bold text-white">{exercise.weight}</Text>
@@ -48,7 +50,8 @@ export function RestOverNextExercise({ exercise }: RestOverNextExerciseProps) {
         <View className="flex-col items-start">
           <Text
             className="font-bold uppercase text-white/40"
-            style={{ fontSize: theme.typography.fontSize.xs }}>
+            style={{ fontSize: theme.typography.fontSize.xs }}
+          >
             {t('restOver.reps')}
           </Text>
           <Text className="text-base font-bold text-white">{exercise.reps}</Text>
@@ -56,7 +59,8 @@ export function RestOverNextExercise({ exercise }: RestOverNextExerciseProps) {
         <View className="flex-col items-start">
           <Text
             className="font-bold uppercase text-white/40"
-            style={{ fontSize: theme.typography.fontSize.xs }}>
+            style={{ fontSize: theme.typography.fontSize.xs }}
+          >
             {t('restOver.set')}
           </Text>
           <Text className="text-base font-bold text-white">

@@ -65,7 +65,8 @@ const MacroCard = ({
       borderWidth: theme.borderWidth.thin,
       borderColor: theme.colors.border.light,
       alignItems: 'center',
-    }}>
+    }}
+  >
     <Text
       style={{
         fontSize: theme.typography.fontSize.xs,
@@ -74,7 +75,8 @@ const MacroCard = ({
         textTransform: 'uppercase',
         letterSpacing: theme.typography.letterSpacing.wider,
         marginBottom: theme.spacing.padding.xsHalf,
-      }}>
+      }}
+    >
       {label}
     </Text>
     <Text
@@ -82,7 +84,8 @@ const MacroCard = ({
         fontSize: theme.typography.fontSize.sm,
         fontWeight: theme.typography.fontWeight.bold,
         color: theme.colors.text.primary,
-      }}>
+      }}
+    >
       {value}
     </Text>
     <View
@@ -93,7 +96,8 @@ const MacroCard = ({
         borderRadius: theme.borderRadius.xs / 2,
         marginTop: theme.spacing.padding.sm,
         overflow: 'hidden',
-      }}>
+      }}
+    >
       <View
         style={{
           height: '100%',
@@ -124,7 +128,8 @@ const MealMacrosSummary = ({
         borderColor: theme.colors.border.light,
         position: 'relative',
         overflow: 'hidden',
-      }}>
+      }}
+    >
       {/* Background Glows */}
       <View
         style={{
@@ -158,14 +163,16 @@ const MealMacrosSummary = ({
             justifyContent: 'space-between',
             alignItems: 'flex-start',
             marginBottom: theme.spacing.margin.lg,
-          }}>
+          }}
+        >
           <View>
             <Text
               style={{
                 fontSize: theme.typography.fontSize.base,
                 fontWeight: theme.typography.fontWeight.bold,
                 color: theme.colors.text.primary,
-              }}>
+              }}
+            >
               {t('food.createMeal.totalNutrition')}
             </Text>
             <Text
@@ -173,7 +180,8 @@ const MealMacrosSummary = ({
                 fontSize: theme.typography.fontSize.sm,
                 fontWeight: theme.typography.fontWeight.medium,
                 color: theme.colors.text.secondary,
-              }}>
+              }}
+            >
               854 {t('common.kcal')}
             </Text>
           </View>
@@ -185,7 +193,8 @@ const MealMacrosSummary = ({
               borderRadius: theme.borderRadius.full,
               borderWidth: theme.borderWidth.thin,
               borderColor: theme.colors.border.light,
-            }}>
+            }}
+          >
             <Text
               style={{
                 fontSize: theme.typography.fontSize.xs,
@@ -193,7 +202,8 @@ const MealMacrosSummary = ({
                 color: theme.colors.text.secondary,
                 textTransform: 'uppercase',
                 letterSpacing: theme.typography.letterSpacing.wider,
-              }}>
+              }}
+            >
               {t('food.createMeal.estimated')}
             </Text>
           </View>
@@ -266,7 +276,8 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
             onPress={handleSave}
           />
         </View>
-      }>
+      }
+    >
       <View className="flex-1 px-4 py-6">
         {/* Meal Name Input Section */}
         <View className="mb-6 space-y-2">
@@ -278,7 +289,8 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
               textTransform: 'uppercase',
               letterSpacing: theme.typography.letterSpacing.extraWide,
               marginLeft: theme.spacing.margin.xs,
-            }}>
+            }}
+          >
             {t('food.createMeal.mealName')}
           </Text>
           <View
@@ -295,7 +307,8 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
               shadowOpacity: theme.colors.opacity.subtle,
               shadowRadius: theme.shadows.radius8.shadowRadius,
               elevation: isFocused ? theme.elevation.sm : theme.elevation.none,
-            }}>
+            }}
+          >
             <TextInput
               value={mealName}
               onChangeText={setMealName}
@@ -325,7 +338,8 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
                 color: theme.colors.text.secondary,
                 textTransform: 'uppercase',
                 letterSpacing: theme.typography.letterSpacing.extraWide,
-              }}>
+              }}
+            >
               {t('food.createMeal.ingredients', { count: ingredients.length })}
             </Text>
             <Pressable>
@@ -336,7 +350,8 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
                   color: theme.colors.accent.primary,
                   textTransform: 'uppercase',
                   letterSpacing: theme.typography.letterSpacing.wider,
-                }}>
+                }}
+              >
                 {t('food.createMeal.editList')}
               </Text>
             </Pressable>
@@ -356,7 +371,8 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
                     borderRadius: theme.borderRadius.md,
                     borderWidth: theme.borderWidth.thin,
                     borderColor: theme.colors.border.light,
-                  }}>
+                  }}
+                >
                   <View
                     style={{
                       width: theme.iconSize['5xl'],
@@ -368,7 +384,8 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
                       borderWidth: theme.borderWidth.thin,
                       borderColor: theme.colors.border.light,
                       marginRight: theme.spacing.padding.md,
-                    }}>
+                    }}
+                  >
                     <Icon size={theme.iconSize.lg} color={theme.colors.text.secondary} />
                   </View>
                   <View style={{ flex: 1 }}>
@@ -377,7 +394,8 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
                         fontSize: theme.typography.fontSize.sm,
                         fontWeight: theme.typography.fontWeight.bold,
                         color: theme.colors.text.primary,
-                      }}>
+                      }}
+                    >
                       {item.name}
                     </Text>
                     <View
@@ -386,12 +404,14 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
                         alignItems: 'center',
                         gap: theme.spacing.gap.sm,
                         marginTop: theme.size.xs / 2,
-                      }}>
+                      }}
+                    >
                       <Text
                         style={{
                           fontSize: theme.typography.fontSize.xs,
                           color: theme.colors.text.secondary,
-                        }}>
+                        }}
+                      >
                         {item.amount}
                       </Text>
                       <View
@@ -406,7 +426,8 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
                         style={{
                           fontSize: theme.typography.fontSize.xs,
                           color: theme.colors.text.secondary,
-                        }}>
+                        }}
+                      >
                         {item.calories} {t('common.kcal')}
                       </Text>
                     </View>
@@ -432,7 +453,8 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
                 borderStyle: 'dashed',
                 borderColor: theme.colors.border.dashed,
                 backgroundColor: pressed ? theme.colors.accent.primary5 : 'transparent',
-              })}>
+              })}
+            >
               <View
                 style={{
                   width: theme.iconSize.xl,
@@ -441,7 +463,8 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
                   backgroundColor: theme.colors.background.secondaryDark,
                   alignItems: 'center',
                   justifyContent: 'center',
-                }}>
+                }}
+              >
                 <Plus
                   size={theme.iconSize.sm}
                   color={theme.colors.text.secondary}
@@ -453,7 +476,8 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
                   fontSize: theme.typography.fontSize.sm,
                   fontWeight: theme.typography.fontWeight.bold,
                   color: theme.colors.text.secondary,
-                }}>
+                }}
+              >
                 {t('food.createMeal.addFoodItem')}
               </Text>
             </Pressable>

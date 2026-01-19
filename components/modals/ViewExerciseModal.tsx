@@ -134,10 +134,12 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
         <Pressable
           onPress={() => setIsMenuVisible(true)}
           className="h-10 w-10 items-center justify-center rounded-full"
-          style={{ backgroundColor: theme.colors.background.black40 }}>
+          style={{ backgroundColor: theme.colors.background.black40 }}
+        >
           <MoreVertical size={theme.iconSize.lg} color={theme.colors.text.white} />
         </Pressable>
-      }>
+      }
+    >
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Hero Section with Background Image */}
         <View style={{ height: theme.size['384'], overflow: 'hidden', position: 'relative' }}>
@@ -162,7 +164,8 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
             colors={theme.colors.gradients.overlayDark}
             locations={[0, 0.7, 1]}
             className="absolute bottom-0 left-0 right-0"
-            style={{ padding: theme.spacing.padding.xl, zIndex: theme.zIndex.overlayLow }}>
+            style={{ padding: theme.spacing.padding.xl, zIndex: theme.zIndex.overlayLow }}
+          >
             <Button
               label={t('exercises.viewExercise.watchTechnique')}
               onPress={handleWatchTechnique}
@@ -187,10 +190,12 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
                 className="flex-row items-center gap-2 rounded-full px-4 py-2"
                 style={{
                   borderRadius: theme.borderRadius.full,
-                }}>
+                }}
+              >
                 <Text
                   className="text-xs font-medium uppercase tracking-wide"
-                  style={{ color: theme.colors.overlay.white80 }}>
+                  style={{ color: theme.colors.overlay.white80 }}
+                >
                   {t('exercises.viewExercise.primaryMuscle')}
                 </Text>
                 <Text className="font-bold" style={{ color: theme.colors.text.white }}>
@@ -202,10 +207,12 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
                 style={{
                   backgroundColor: theme.colors.background.darkGreenVariant,
                   borderColor: theme.colors.background.gray700,
-                }}>
+                }}
+              >
                 <Text
                   className="text-xs font-medium uppercase tracking-wide"
-                  style={{ color: theme.colors.overlay.white80 }}>
+                  style={{ color: theme.colors.overlay.white80 }}
+                >
                   {t('exercises.viewExercise.equipment')}
                 </Text>
                 <Text className="font-bold" style={{ color: theme.colors.text.white }}>
@@ -217,10 +224,12 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
                 style={{
                   backgroundColor: theme.colors.background.darkGreenVariant,
                   borderColor: theme.colors.background.gray700,
-                }}>
+                }}
+              >
                 <Text
                   className="text-xs font-medium uppercase tracking-wide"
-                  style={{ color: theme.colors.overlay.white80 }}>
+                  style={{ color: theme.colors.overlay.white80 }}
+                >
                   {t('exercises.viewExercise.mechanic')}
                 </Text>
                 <Text className="font-bold" style={{ color: theme.colors.text.white }}>
@@ -237,13 +246,15 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
             <View className="p-6">
               <Text
                 className="mb-2 text-xs font-medium uppercase tracking-wide"
-                style={{ color: theme.colors.text.gray400 }}>
+                style={{ color: theme.colors.text.gray400 }}
+              >
                 {t('exercises.viewExercise.personalBest')}
               </Text>
               <View className="flex-row items-baseline gap-2">
                 <Text
                   className="text-5xl font-bold"
-                  style={{ color: theme.colors.accent.secondary }}>
+                  style={{ color: theme.colors.accent.secondary }}
+                >
                   {EXERCISE_DATA.personalBest.value}
                 </Text>
                 <Text className="text-xl" style={{ color: theme.colors.text.gray400 }}>
@@ -256,13 +267,15 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
             <View className="p-6">
               <Text
                 className="mb-2 text-xs font-medium uppercase tracking-wide"
-                style={{ color: theme.colors.text.gray400 }}>
+                style={{ color: theme.colors.text.gray400 }}
+              >
                 {t('exercises.viewExercise.avgFrequency')}
               </Text>
               <View className="flex-row items-baseline gap-2">
                 <Text
                   className="text-5xl font-bold"
-                  style={{ color: theme.colors.status.indigoLight }}>
+                  style={{ color: theme.colors.status.indigoLight }}
+                >
                   {EXERCISE_DATA.avgFrequency.value}
                 </Text>
                 <Text className="text-xl" style={{ color: theme.colors.text.gray400 }}>
@@ -281,7 +294,8 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
             </Text>
             <View
               className="rounded-full px-3 py-1.5"
-              style={{ backgroundColor: theme.colors.accent.secondary20 }}>
+              style={{ backgroundColor: theme.colors.accent.secondary20 }}
+            >
               <Text className="text-xs font-bold" style={{ color: theme.colors.accent.secondary }}>
                 {EXERCISE_DATA.workouts.length} {t('exercises.viewExercise.templates')}
               </Text>
@@ -296,7 +310,8 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
                   <LinearGradient
                     colors={workout.iconGradient}
                     className="h-full w-full items-center justify-center"
-                    style={{ borderRadius: theme.borderRadius['2xl'] }}>
+                    style={{ borderRadius: theme.borderRadius['2xl'] }}
+                  >
                     <workout.icon
                       size={theme.iconSize['3xl']}
                       color={theme.colors.text.white}

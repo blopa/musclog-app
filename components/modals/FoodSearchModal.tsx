@@ -131,7 +131,8 @@ function UnderlineTabs({ tabs, activeTab, onTabChange }: UnderlineTabsProps) {
         paddingHorizontal: theme.spacing.padding.base,
         paddingTop: theme.spacing.padding.sm,
         gap: theme.spacing.gap.xl,
-      }}>
+      }}
+    >
       {tabs.map((tab) => {
         const isActive = activeTab === tab.id;
         return (
@@ -142,7 +143,8 @@ function UnderlineTabs({ tabs, activeTab, onTabChange }: UnderlineTabsProps) {
             style={{
               borderBottomWidth: theme.borderWidth.medium,
               borderBottomColor: isActive ? theme.colors.accent.secondary : 'transparent',
-            }}>
+            }}
+          >
             <Text
               className="whitespace-nowrap text-sm"
               style={{
@@ -150,7 +152,8 @@ function UnderlineTabs({ tabs, activeTab, onTabChange }: UnderlineTabsProps) {
                 fontWeight: isActive
                   ? theme.typography.fontWeight.semibold
                   : theme.typography.fontWeight.medium,
-              }}>
+              }}
+            >
               {tab.label}
             </Text>
           </Pressable>
@@ -176,7 +179,8 @@ function FoodItemCard({ food, onAddPress }: FoodItemCardProps) {
           borderColor: food.iconColor
             ? addOpacityToHex(food.iconColor, theme.colors.opacity.subtle)
             : 'transparent',
-        }}>
+        }}
+      >
         {food.image ? (
           <Image
             source={food.image}
@@ -207,13 +211,15 @@ function FoodItemCard({ food, onAddPress }: FoodItemCardProps) {
                 borderColor: food.gradeColor
                   ? addOpacityToHex(food.gradeColor, theme.colors.opacity.subtle)
                   : theme.colors.accent.primary20,
-              }}>
+              }}
+            >
               <Text
                 className="font-bold"
                 style={{
                   fontSize: theme.typography.fontSize.xs,
                   color: food.gradeColor || theme.colors.accent.primary,
-                }}>
+                }}
+              >
                 {food.grade}
               </Text>
             </View>
@@ -230,7 +236,8 @@ function FoodItemCard({ food, onAddPress }: FoodItemCardProps) {
         onPress={onAddPress}
         style={{
           backgroundColor: theme.colors.background.secondaryDark,
-        }}>
+        }}
+      >
         <Plus size={theme.iconSize.lg} color={theme.colors.accent.primary} />
       </Pressable>
     </Pressable>
@@ -299,14 +306,16 @@ export function FoodSearchModal({
       onClose={onClose}
       title={t('food.meals.addFoodTo', { meal: mealType })}
       headerRight={headerRight}
-      scrollable={false}>
+      scrollable={false}
+    >
       <View className="flex-1 bg-bg-primary">
         {/* Search Bar */}
         <View className="border-b border-border-light bg-bg-primary px-4 pb-2">
           <View className="relative">
             <View
               className="absolute inset-y-0 left-0 z-10 items-center justify-center pl-3.5"
-              style={{ pointerEvents: 'none' }}>
+              style={{ pointerEvents: 'none' }}
+            >
               <Search
                 size={theme.iconSize.md}
                 color={searchQuery ? theme.colors.accent.secondary : theme.colors.text.secondary}
@@ -328,7 +337,8 @@ export function FoodSearchModal({
             />
             <Pressable
               className="absolute inset-y-0 right-0 items-center justify-center pr-2"
-              onPress={onBarcodeScanPress}>
+              onPress={onBarcodeScanPress}
+            >
               <View className="rounded-lg p-1.5">
                 <QrCode size={theme.iconSize.lg} color={theme.colors.text.secondary} />
               </View>
@@ -349,7 +359,8 @@ export function FoodSearchModal({
         <ScrollView
           className="flex-1 bg-bg-primary"
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ backgroundColor: theme.colors.background.primary }}>
+          contentContainerStyle={{ backgroundColor: theme.colors.background.primary }}
+        >
           <View className="gap-4 p-4 pb-20">
             {/* Recent History Section */}
             <View>

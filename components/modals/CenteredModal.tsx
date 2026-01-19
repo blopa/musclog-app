@@ -46,12 +46,14 @@ export function CenteredModal({
       transparent
       animationType="fade"
       onRequestClose={onClose}
-      statusBarTranslucent={Platform.OS !== 'web'}>
+      statusBarTranslucent={Platform.OS !== 'web'}
+    >
       {/* Backdrop */}
       <Pressable
         className="flex-1 items-center justify-center p-4"
         style={[{ backgroundColor: theme.colors.overlay.black60 }, webBackdropStyle]}
-        onPress={onClose}>
+        onPress={onClose}
+      >
         {/* Modal */}
         <Pressable
           className="w-full overflow-hidden rounded-xl border border-border-dark"
@@ -59,7 +61,8 @@ export function CenteredModal({
             backgroundColor: theme.colors.background.cardElevated,
             maxWidth,
           }}
-          onPress={(e) => e.stopPropagation()}>
+          onPress={(e) => e.stopPropagation()}
+        >
           {/* Gradient Header */}
           <LinearGradient
             colors={[theme.colors.status.purple40, theme.colors.accent.secondary10, 'transparent']}
@@ -68,7 +71,8 @@ export function CenteredModal({
             style={{
               borderBottomWidth: theme.borderWidth.thin,
               borderBottomColor: theme.colors.border.dark,
-            }}>
+            }}
+          >
             <View className="flex-row items-center justify-between px-6 py-5">
               <View className="flex-1">
                 <Text className="text-xl font-bold text-text-primary">{title}</Text>

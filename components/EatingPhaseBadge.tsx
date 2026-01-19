@@ -57,7 +57,8 @@ export function EatingPhaseBadge({
         backgroundColor,
         paddingVertical: paddingY,
         ...(showBorder && { borderColor }),
-      }}>
+      }}
+    >
       <Text className="font-bold" style={{ color: textColor, fontSize }}>
         {label}
       </Text>

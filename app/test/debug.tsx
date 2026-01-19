@@ -189,7 +189,8 @@ export default function DebugTestScreen() {
                     <Pressable
                       key={screen.route}
                       className="flex-row items-center justify-between rounded-lg border border-border-light bg-bg-primary p-3"
-                      onPress={() => router.push(screen.route as any)}>
+                      onPress={() => router.push(screen.route as any)}
+                    >
                       <Text className="flex-1 text-base font-medium text-text-primary">
                         {screen.name}
                       </Text>
@@ -238,7 +239,8 @@ export default function DebugTestScreen() {
             </View>
             <Pressable
               className="flex-row items-center justify-center gap-2 rounded-lg bg-accent-primary p-4"
-              onPress={addExercise}>
+              onPress={addExercise}
+            >
               <Plus size={theme.iconSize.lg} color={theme.colors.text.black} />
               <Text className="font-bold text-text-black">Add Exercise</Text>
             </Pressable>
@@ -324,7 +326,8 @@ export default function DebugTestScreen() {
                   {settings.map((setting) => (
                     <View
                       key={setting.id}
-                      className="rounded-lg border border-border-light bg-bg-primary p-3">
+                      className="rounded-lg border border-border-light bg-bg-primary p-3"
+                    >
                       <Text className="text-text-primary">
                         <Text className="font-bold">Type:</Text> {setting.type}
                       </Text>
@@ -354,7 +357,8 @@ export default function DebugTestScreen() {
                   {userMetrics.slice(0, 10).map((metric) => (
                     <View
                       key={metric.id}
-                      className="rounded-lg border border-border-light bg-bg-primary p-3">
+                      className="rounded-lg border border-border-light bg-bg-primary p-3"
+                    >
                       <Text className="text-text-primary">
                         <Text className="font-bold">{metric.type}:</Text> {metric.value}{' '}
                         {metric.unit || 'N/A'}
@@ -385,7 +389,8 @@ export default function DebugTestScreen() {
               <Text className="text-lg font-bold text-text-primary">Exercises</Text>
               <Text
                 className="rounded-full bg-bg-overlay px-2 text-xs text-text-secondary"
-                style={{ paddingVertical: theme.spacing.padding.xsHalf }}>
+                style={{ paddingVertical: theme.spacing.padding.xsHalf }}
+              >
                 {exercises.length}
               </Text>
             </View>
@@ -411,7 +416,8 @@ export default function DebugTestScreen() {
               exercises.map((exercise) => (
                 <View
                   key={exercise.id}
-                  className="flex-row items-center justify-between rounded-xl border border-border-accent bg-bg-overlay p-4">
+                  className="flex-row items-center justify-between rounded-xl border border-border-accent bg-bg-overlay p-4"
+                >
                   <View>
                     <Text className="text-lg font-bold text-text-primary">{exercise.name}</Text>
                     <Text className="text-sm text-text-secondary">{exercise.muscleGroup}</Text>

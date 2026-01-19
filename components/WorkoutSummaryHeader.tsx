@@ -16,7 +16,8 @@ export function WorkoutSummaryHeader() {
           textAlign: 'center',
           letterSpacing: theme.typography.letterSpacing.tight,
           marginBottom: theme.spacing.padding.sm,
-        }}>
+        }}
+      >
         {t('workoutSummary.youCrushedIt')}
       </GradientText>
 

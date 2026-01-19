@@ -27,7 +27,8 @@ function MenuItem({ icon, label, onPress }: MenuItemProps) {
   return (
     <Pressable
       className="active:bg-bg-card-elevated flex-row items-center gap-4 rounded-2xl bg-bg-overlay p-4"
-      onPress={onPress}>
+      onPress={onPress}
+    >
       <View className="bg-bg-card-elevated h-12 w-12 items-center justify-center rounded-full">
         {icon}
       </View>
@@ -67,19 +68,22 @@ export function UserMenuModal({
       transparent
       animationType="fade"
       onRequestClose={onClose}
-      statusBarTranslucent={Platform.OS !== 'web'}>
+      statusBarTranslucent={Platform.OS !== 'web'}
+    >
       {/* Backdrop */}
       <Pressable
         className="flex-1"
         style={[{ backgroundColor: theme.colors.overlay.black60 }, webBackdropStyle]}
-        onPress={onClose}>
+        onPress={onClose}
+      >
         <View
           className="flex-1 justify-start"
           style={
             Platform.OS === 'web'
               ? { display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }
               : undefined
-          }>
+          }
+        >
           {/* Modal Content */}
           <View className="overflow-hidden rounded-b-3xl border-b border-border-dark bg-bg-card">
             {/* Gradient Header */}
@@ -91,12 +95,14 @@ export function UserMenuModal({
               ]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
-              className="border-b border-border-dark">
+              className="border-b border-border-dark"
+            >
               <View className="flex-row items-center justify-between p-6">
                 <View className="flex-row items-center gap-4">
                   <View
                     className="h-14 w-14 overflow-hidden rounded-full border-2 border-accent-primary"
-                    style={{ backgroundColor: theme.colors.background.imageLight }}>
+                    style={{ backgroundColor: theme.colors.background.imageLight }}
+                  >
                     <Image source={user.avatar} className="h-full w-full" resizeMode="cover" />
                   </View>
                   <View>
@@ -106,7 +112,8 @@ export function UserMenuModal({
                 </View>
                 <Pressable
                   className="active:bg-bg-card-elevated h-10 w-10 items-center justify-center rounded-full bg-bg-overlay"
-                  onPress={onClose}>
+                  onPress={onClose}
+                >
                   <X size={theme.iconSize.md} color={theme.colors.text.secondary} />
                 </Pressable>
               </View>
@@ -143,7 +150,8 @@ export function UserMenuModal({
                 onPress={() => {
                   onDebugMenuPress?.();
                   onClose();
-                }}>
+                }}
+              >
                 <Text className="flex-1 text-lg font-semibold text-text-primary">
                   {t('userMenu.debugPage')}
                 </Text>

@@ -298,7 +298,8 @@ export function EditFitnessDetailsBody({
                       borderColor: isSelected
                         ? theme.colors.accent.primary
                         : theme.colors.background.white5,
-                    }}>
+                    }}
+                  >
                     <View
                       className={`h-10 w-10 items-center justify-center rounded-full ${
                         isSelected ? 'bg-accent-primary' : ''
@@ -307,7 +308,8 @@ export function EditFitnessDetailsBody({
                         backgroundColor: isSelected
                           ? theme.colors.accent.primary
                           : theme.colors.background.white5,
-                      }}>
+                      }}
+                    >
                       <Icon
                         size={theme.iconSize.lg}
                         color={isSelected ? theme.colors.text.black : theme.colors.text.tertiary}
@@ -340,7 +342,8 @@ export function EditFitnessDetailsBody({
           {onMaybeLater && (
             <Pressable
               className="mt-3 w-full items-center py-2 active:opacity-70"
-              onPress={onMaybeLater}>
+              onPress={onMaybeLater}
+            >
               <Text className="text-sm font-medium" style={{ color: theme.colors.text.gray500 }}>
                 {t('onboarding.healthConnect.maybeLater')}
               </Text>

@@ -32,7 +32,8 @@ export function DateTimeSelectorCard({
       <View className="flex-row items-center gap-3">
         <View
           className="h-10 w-10 items-center justify-center rounded-lg"
-          style={{ backgroundColor: iconBg }}>
+          style={{ backgroundColor: iconBg }}
+        >
           <Icon size={theme.iconSize.xl} color={iconColor} />
         </View>
         <View>

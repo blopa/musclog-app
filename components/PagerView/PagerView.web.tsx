@@ -77,21 +77,24 @@ export const PagerView = forwardRef<PagerViewRef, PagerViewProps>(
             overflow: 'hidden',
             position: 'relative',
           },
-        ]}>
+        ]}
+      >
         <AnimatedDiv
           style={{
             display: 'flex',
             flexDirection: 'row',
             width: `${totalPages * 100}%`,
             transform: springProps.x.to((x) => `translateX(${x}%)`),
-          }}>
+          }}
+        >
           {childrenArray.map((child, index) => (
             <View
               key={index}
               style={{
                 width: `${100 / totalPages}%`,
                 flexShrink: 0,
-              }}>
+              }}
+            >
               {child}
             </View>
           ))}

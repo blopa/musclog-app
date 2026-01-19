@@ -40,7 +40,8 @@ export function NotificationsModal({ visible, onClose, onClearAll }: Notificatio
               style={{
                 fontSize: theme.typography.fontSize.base,
                 color: theme.colors.text.gray300,
-              }}>
+              }}
+            >
               {t('notifications.types.workoutReminder.description', {
                 workoutName: 'Upper Body Power',
                 time: '6:00 PM',
@@ -67,7 +68,8 @@ export function NotificationsModal({ visible, onClose, onClearAll }: Notificatio
               style={{
                 fontSize: theme.typography.fontSize.base,
                 color: theme.colors.text.gray300,
-              }}>
+              }}
+            >
               {t('notifications.types.workoutCompleted.description', {
                 workoutName: 'Morning Run',
                 calories: 310,
@@ -88,7 +90,8 @@ export function NotificationsModal({ visible, onClose, onClearAll }: Notificatio
               style={{
                 fontSize: theme.typography.fontSize.base,
                 color: theme.colors.text.gray300,
-              }}>
+              }}
+            >
               {t('notifications.types.kudosReceived.description', {
                 name: 'Sarah',
                 count: 3,
@@ -127,7 +130,8 @@ export function NotificationsModal({ visible, onClose, onClearAll }: Notificatio
             {t('notifications.header.clearAll')}
           </Text>
         </Pressable>
-      }>
+      }
+    >
       <View className="gap-8 p-4">
         {NOTIFICATIONS_DATA.map((section) => (
           <View key={section.section} className="gap-4">

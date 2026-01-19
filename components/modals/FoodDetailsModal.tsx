@@ -78,7 +78,8 @@ export function FoodDetailsModal({
             onPress={handleAddFood}
           />
         </View>
-      }>
+      }
+    >
       <View className="flex-1 px-4 pb-6">
         {/* Food Info Card */}
         <View className="mt-6">
@@ -111,13 +112,15 @@ export function FoodDetailsModal({
             </Text>
             <Pressable
               className="flex-row items-center justify-between rounded-lg border border-white/10 bg-bg-cardDark p-4"
-              onPress={() => setIsDatePickerVisible(true)}>
+              onPress={() => setIsDatePickerVisible(true)}
+            >
               <View className="flex-row items-center gap-3">
                 <View
                   className="h-10 w-10 items-center justify-center rounded-full"
                   style={{
                     backgroundColor: theme.colors.status.indigo20,
-                  }}>
+                  }}
+                >
                   <Calendar size={theme.iconSize.md} color={theme.colors.accent.primary} />
                 </View>
                 <View>

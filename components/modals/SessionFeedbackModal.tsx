@@ -59,12 +59,14 @@ function RatingSlider({ label, value, onChange, leftLabel, rightLabel }: RatingS
       <View className="flex-row justify-between">
         <Text
           className="font-medium uppercase tracking-wider text-text-secondary"
-          style={{ fontSize: theme.typography.fontSize.xs }}>
+          style={{ fontSize: theme.typography.fontSize.xs }}
+        >
           {leftLabel}
         </Text>
         <Text
           className="font-medium uppercase tracking-wider text-text-secondary"
-          style={{ fontSize: theme.typography.fontSize.xs }}>
+          style={{ fontSize: theme.typography.fontSize.xs }}
+        >
           {rightLabel}
         </Text>
       </View>
@@ -109,7 +111,8 @@ export function SessionFeedbackModal({ visible, onClose, onSubmit }: SessionFeed
   const headerIcon = (
     <View
       className="h-10 w-10 items-center justify-center rounded-full"
-      style={{ backgroundColor: theme.colors.accent.primary10 }}>
+      style={{ backgroundColor: theme.colors.accent.primary10 }}
+    >
       <ThumbsUp size={theme.iconSize.md} color={theme.colors.accent.primary} />
     </View>
   );
@@ -121,13 +124,15 @@ export function SessionFeedbackModal({ visible, onClose, onSubmit }: SessionFeed
       title={t('sessionFeedback.title')}
       subtitle={t('sessionFeedback.subtitle')}
       headerIcon={headerIcon}
-      footer={footer}>
+      footer={footer}
+    >
       <ScrollView
         showsVerticalScrollIndicator={false}
         style={webScrollViewStyle}
         contentContainerStyle={{
           paddingBottom: theme.spacing.padding.xl,
-        }}>
+        }}
+      >
         <View className="gap-8">
           {/* Rating Sliders */}
           <RatingSlider

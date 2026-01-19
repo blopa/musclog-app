@@ -56,7 +56,8 @@ export function Accordion({
 
   return (
     <View
-      className={`mb-4 overflow-hidden rounded-lg border border-border-dark bg-bg-card ${className}`}>
+      className={`mb-4 overflow-hidden rounded-lg border border-border-dark bg-bg-card ${className}`}
+    >
       <Pressable onPress={handlePress} className="flex-row items-center justify-between px-4 py-4">
         <View className="flex-1 flex-row items-center gap-3">
           {headerContent ? (
@@ -71,7 +72,8 @@ export function Accordion({
                     {' '}
                     <Text
                       className="text-sm font-normal"
-                      style={{ color: theme.colors.status.customGreen }}>
+                      style={{ color: theme.colors.status.customGreen }}
+                    >
                       ({count})
                     </Text>
                   </>

@@ -76,19 +76,22 @@ export function BottomPopUp({
       transparent
       animationType="fade"
       onRequestClose={onClose}
-      statusBarTranslucent={Platform.OS !== 'web'}>
+      statusBarTranslucent={Platform.OS !== 'web'}
+    >
       {/* Backdrop */}
       <TouchableWithoutFeedback onPress={onClose}>
         <View
           className="flex-1"
-          style={[{ backgroundColor: theme.colors.overlay.black60 }, webBackdropStyle]}>
+          style={[{ backgroundColor: theme.colors.overlay.black60 }, webBackdropStyle]}
+        >
           <View
             className="flex-1 justify-end"
             style={
               Platform.OS === 'web'
                 ? { display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }
                 : undefined
-            }>
+            }
+          >
             {/* Modal Content */}
             <TouchableWithoutFeedback>
               <Animated.View
@@ -104,7 +107,8 @@ export function BottomPopUp({
                   borderTopRightRadius: theme.borderRadius['3xl'],
                   maxHeight: maxHeight || '90%',
                   width: '100%',
-                }}>
+                }}
+              >
                 {/* Header */}
                 <LinearGradient
                   colors={[
@@ -114,7 +118,8 @@ export function BottomPopUp({
                   ]}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 0 }}
-                  className="border-b border-border-dark">
+                  className="border-b border-border-dark"
+                >
                   <View className="flex-row items-center justify-between p-6">
                     <View className="flex-1 flex-row items-center gap-3">
                       {headerIcon && <View>{headerIcon}</View>}
@@ -127,7 +132,8 @@ export function BottomPopUp({
                     </View>
                     <Pressable
                       className="active:bg-bg-card-elevated h-10 w-10 items-center justify-center rounded-full bg-bg-overlay"
-                      onPress={onClose}>
+                      onPress={onClose}
+                    >
                       <X size={theme.iconSize.md} color={theme.colors.text.secondary} />
                     </Pressable>
                   </View>
@@ -141,7 +147,8 @@ export function BottomPopUp({
                       !footer
                         ? { paddingBottom: Math.max(insets.bottom, theme.spacing.padding.xl) }
                         : undefined
-                    }>
+                    }
+                  >
                     {children}
                   </View>
                 )}
@@ -152,7 +159,8 @@ export function BottomPopUp({
                     className="border-t border-border-dark px-6 pt-2"
                     style={{
                       paddingBottom: Math.max(insets.bottom, theme.spacing.padding.xl),
-                    }}>
+                    }}
+                  >
                     {footer}
                   </View>
                 )}

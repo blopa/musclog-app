@@ -28,7 +28,8 @@ export function MoodSelectorCard({ value, onChange }: MoodSelectorCardProps) {
           </View>
           <View
             className="rounded px-2 py-0.5"
-            style={{ backgroundColor: theme.colors.accent.primary10 }}>
+            style={{ backgroundColor: theme.colors.accent.primary10 }}
+          >
             <Text className="text-xs font-bold text-accent-primary">
               {t(`bodyMetrics.addEntry.moods.${value}`)}
             </Text>
@@ -58,13 +59,15 @@ export function MoodSelectorCard({ value, onChange }: MoodSelectorCardProps) {
                 <Pressable
                   key={moodValue}
                   onPress={() => onChange(moodValue)}
-                  className="flex-col items-center gap-1">
+                  className="flex-col items-center gap-1"
+                >
                   <Text className="text-xl">{MOOD_EMOJIS[moodValue]}</Text>
                   <Text
                     className={`text-[10px] font-bold uppercase ${
                       isSelected ? 'text-accent-primary' : 'text-text-tertiary'
                     }`}
-                    style={{ opacity: isSelected ? 1 : 0.4 }}>
+                    style={{ opacity: isSelected ? 1 : 0.4 }}
+                  >
                     {t(`bodyMetrics.addEntry.moods.${moodValue}`)}
                   </Text>
                 </Pressable>

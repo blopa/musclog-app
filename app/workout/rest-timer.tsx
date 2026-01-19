@@ -94,13 +94,15 @@ export default function RestTimerScreen() {
         style={{
           ...theme.shadows.purpleGlow,
           backgroundColor: theme.colors.background.purpleBlob,
-        }}></View>
+        }}
+      ></View>
       <View
         className="absolute bottom-[-40%] left-[-20%] h-[50%] w-[110%] overflow-hidden rounded-full"
         style={{
           ...theme.shadows.purpleGlow,
           backgroundColor: theme.colors.background.greenBlob,
-        }}></View>
+        }}
+      ></View>
 
       {/* Header */}
       <View className="relative z-20">

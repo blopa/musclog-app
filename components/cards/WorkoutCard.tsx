@@ -49,7 +49,8 @@ export function WorkoutCard({
           </View>
           <View
             className="ml-4 h-20 w-20 overflow-hidden rounded-2xl"
-            style={{ backgroundColor: theme.colors.background.iconDark }}>
+            style={{ backgroundColor: theme.colors.background.iconDark }}
+          >
             <Image source={image} className="h-full w-full opacity-70" resizeMode="cover" />
           </View>
         </View>
@@ -60,7 +61,8 @@ export function WorkoutCard({
             <Pressable
               className="w-14 items-center justify-center rounded-2xl"
               style={{ backgroundColor: theme.colors.background.iconDark }}
-              onPress={onMore}>
+              onPress={onMore}
+            >
               <MoreVertical size={theme.iconSize.sm} color={theme.colors.text.secondary} />
             </Pressable>
           </View>
@@ -78,7 +80,8 @@ export function WorkoutCard({
             <Pressable
               className="ml-auto w-14 items-center justify-center rounded-2xl"
               style={{ backgroundColor: theme.colors.background.iconDark }}
-              onPress={onMore}>
+              onPress={onMore}
+            >
               <MoreVertical size={theme.iconSize.sm} color={theme.colors.text.secondary} />
             </Pressable>
           </View>

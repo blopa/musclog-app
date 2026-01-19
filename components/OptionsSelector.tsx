@@ -49,14 +49,16 @@ const OptionItem = React.memo(
               backgroundColor: theme.colors.background.card,
               transform: [{ scale: pressed ? 0.98 : 1 }],
               ...(isSelected ? theme.shadows.accentGlow : {}),
-            }}>
+            }}
+          >
             <View
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
                 gap: theme.spacing.gap.base,
                 flex: 1,
-              }}>
+              }}
+            >
               <View
                 style={{
                   width: theme.size['10'],
@@ -65,7 +67,8 @@ const OptionItem = React.memo(
                   backgroundColor: option.iconBgColor,
                   alignItems: 'center',
                   justifyContent: 'center',
-                }}>
+                }}
+              >
                 <Icon size={theme.iconSize.lg} color={option.iconColor} />
               </View>
               <View style={{ flex: 1 }}>
@@ -74,7 +77,8 @@ const OptionItem = React.memo(
                     fontSize: theme.typography.fontSize.base,
                     fontWeight: theme.typography.fontWeight.bold,
                     color: theme.colors.text.primary,
-                  }}>
+                  }}
+                >
                   {option.label}
                 </Text>
                 <Text
@@ -82,7 +86,8 @@ const OptionItem = React.memo(
                     fontSize: theme.typography.fontSize.xs,
                     color: theme.colors.text.secondary,
                     marginTop: theme.spacing.padding.xsHalf,
-                  }}>
+                  }}
+                >
                   {option.description}
                 </Text>
               </View>
@@ -97,7 +102,8 @@ const OptionItem = React.memo(
                 backgroundColor: isSelected ? theme.colors.accent.primary : 'transparent',
                 alignItems: 'center',
                 justifyContent: 'center',
-              }}>
+              }}
+            >
               {isSelected && (
                 <Check
                   size={theme.iconSize.xs}
@@ -156,7 +162,8 @@ export function OptionsSelector<T extends string | number>({
           letterSpacing: theme.typography.letterSpacing.extraWide,
           marginBottom: theme.spacing.padding.base,
           paddingHorizontal: theme.spacing.padding.xs,
-        }}>
+        }}
+      >
         {title}
       </Text>
       <View style={{ gap: theme.spacing.gap.md }}>{optionItems}</View>

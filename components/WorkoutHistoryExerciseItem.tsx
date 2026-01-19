@@ -46,7 +46,8 @@ export function ExerciseItem({ exercise, isLast }: ExerciseItemProps) {
           style={{
             borderColor: hasCurrentSet ? theme.colors.accent.primary : theme.colors.border.light,
             backgroundColor: theme.colors.background.primary,
-          }}>
+          }}
+        >
           <Check
             size={theme.iconSize.lg}
             color={hasCurrentSet ? theme.colors.accent.primary : theme.colors.text.tertiary}
@@ -83,14 +84,16 @@ export function ExerciseItem({ exercise, isLast }: ExerciseItemProps) {
           style={{
             backgroundColor: theme.colors.background.card,
             borderColor: theme.colors.border.accent,
-          }}>
+          }}
+        >
           {/* Table Header */}
           <View
             className="flex-row border-b"
             style={{
               borderBottomColor: theme.colors.border.light,
               backgroundColor: theme.colors.background.white3,
-            }}>
+            }}
+          >
             <View className="w-8 items-center py-2">
               <Text className="text-sm font-semibold uppercase tracking-wider text-text-secondary">
                 #
@@ -109,7 +112,8 @@ export function ExerciseItem({ exercise, isLast }: ExerciseItemProps) {
             <View className="flex-1 items-center py-2">
               <Text
                 className="text-sm font-semibold uppercase tracking-wider"
-                style={{ color: theme.colors.accent.primary }}>
+                style={{ color: theme.colors.accent.primary }}
+              >
                 {t('workoutSession.partials')}
               </Text>
             </View>
@@ -129,14 +133,16 @@ export function ExerciseItem({ exercise, isLast }: ExerciseItemProps) {
               style={{
                 borderTopColor: theme.colors.border.light,
                 height: theme.size['12'],
-              }}>
+              }}
+            >
               {exercise.setProgress.map((progress, index) => {
                 const isCurrent = exercise.sets[index]?.isCurrent;
                 return (
                   <View key={index} className="flex-1 gap-1">
                     <View
                       className="h-1 overflow-hidden rounded-full"
-                      style={{ backgroundColor: theme.colors.background.gray800 }}>
+                      style={{ backgroundColor: theme.colors.background.gray800 }}
+                    >
                       <View
                         className="h-full rounded-full"
                         style={{
@@ -152,7 +158,8 @@ export function ExerciseItem({ exercise, isLast }: ExerciseItemProps) {
                       style={{
                         color: isCurrent ? theme.colors.accent.primary : theme.colors.text.tertiary,
                         fontWeight: isCurrent ? 'bold' : 'normal',
-                      }}>
+                      }}
+                    >
                       {t('workoutHistory.set', { number: index + 1 })}
                     </Text>
                   </View>

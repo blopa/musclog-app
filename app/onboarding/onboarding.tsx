@@ -32,7 +32,8 @@ function OnboardingStepFour({ title, description }: OnboardingBodyProps) {
         style={{
           aspectRatio: theme.aspectRatio.portrait,
           maxHeight: Dimensions.get('window').height * 0.45,
-        }}>
+        }}
+      >
         {/* Ambient Background Glow */}
         <View className="absolute inset-0 rounded-full opacity-60">
           <LinearGradient
@@ -61,12 +62,14 @@ function OnboardingStepFour({ title, description }: OnboardingBodyProps) {
             fontWeight: theme.typography.fontWeight.extrabold,
             lineHeight: theme.typography.fontSize['3xl'] * 1.25,
             letterSpacing: theme.typography.letterSpacing.tight,
-          }}>
+          }}
+        >
           {title}
         </GradientText>
         <Text
           className="px-2 text-base font-normal leading-relaxed"
-          style={{ color: theme.colors.text.gray400 }}>
+          style={{ color: theme.colors.text.gray400 }}
+        >
           {description}
         </Text>
       </View>
@@ -82,7 +85,8 @@ function OnboardingStepThree({ imageUrl, title, description, badge }: Onboarding
         className="relative mb-6 flex w-full items-center justify-center"
         style={{
           aspectRatio: 1,
-        }}>
+        }}
+      >
         {/* Ambient Background Glow */}
         <View className="absolute inset-0 rounded-full opacity-60">
           <LinearGradient
@@ -103,7 +107,8 @@ function OnboardingStepThree({ imageUrl, title, description, badge }: Onboarding
             ...theme.shadows.lg,
             borderColor: theme.colors.background.white10,
             overflow: 'hidden',
-          }}>
+          }}
+        >
           <ImageBackground
             source={require('../../assets/app-insights.png')}
             style={{
@@ -115,7 +120,8 @@ function OnboardingStepThree({ imageUrl, title, description, badge }: Onboarding
             resizeMode="contain"
             imageStyle={{
               resizeMode: 'contain',
-            }}>
+            }}
+          >
             {/* Gradient Overlay */}
             <LinearGradient
               colors={[theme.colors.overlay.backdrop90, 'transparent', 'transparent']}
@@ -128,7 +134,8 @@ function OnboardingStepThree({ imageUrl, title, description, badge }: Onboarding
             {badge && (
               <View
                 className="absolute bottom-6 left-6 right-6 flex-row items-center gap-4 rounded-xl border p-4"
-                style={{ borderColor: theme.colors.background.white10 }}>
+                style={{ borderColor: theme.colors.background.white10 }}
+              >
                 <LinearGradient
                   colors={theme.colors.gradients.whiteSubtle}
                   style={{
@@ -178,12 +185,14 @@ function OnboardingStepThree({ imageUrl, title, description, badge }: Onboarding
             fontWeight: theme.typography.fontWeight.extrabold,
             lineHeight: theme.typography.fontSize['3xl'] * 1.25,
             letterSpacing: theme.typography.letterSpacing.tight,
-          }}>
+          }}
+        >
           {title}
         </GradientText>
         <Text
           className="px-2 text-base font-normal leading-relaxed"
-          style={{ color: theme.colors.text.gray400 }}>
+          style={{ color: theme.colors.text.gray400 }}
+        >
           {description}
         </Text>
       </View>
@@ -199,7 +208,8 @@ function OnboardingStepTwo({ imageUrl, title, description, badge }: OnboardingBo
         className="relative mb-6 flex w-full items-center justify-center"
         style={{
           aspectRatio: 1,
-        }}>
+        }}
+      >
         {/* Ambient Background Glow */}
         <View className="absolute inset-0 rounded-full opacity-60">
           <LinearGradient
@@ -220,7 +230,8 @@ function OnboardingStepTwo({ imageUrl, title, description, badge }: OnboardingBo
             ...theme.shadows.lg,
             borderColor: theme.colors.background.white10,
             overflow: 'hidden',
-          }}>
+          }}
+        >
           <ImageBackground
             source={require('../../assets/nutrition-tracking.png')}
             style={{
@@ -232,7 +243,8 @@ function OnboardingStepTwo({ imageUrl, title, description, badge }: OnboardingBo
             resizeMode="contain"
             imageStyle={{
               resizeMode: 'contain',
-            }}>
+            }}
+          >
             {/* Gradient Overlay */}
             <LinearGradient
               colors={[theme.colors.overlay.backdrop90, 'transparent', 'transparent']}
@@ -245,7 +257,8 @@ function OnboardingStepTwo({ imageUrl, title, description, badge }: OnboardingBo
             {badge && (
               <View
                 className="absolute bottom-6 left-6 right-6 flex-row items-center gap-4 rounded-xl border p-4"
-                style={{ borderColor: theme.colors.background.white10 }}>
+                style={{ borderColor: theme.colors.background.white10 }}
+              >
                 <LinearGradient
                   colors={theme.colors.gradients.whiteSubtle}
                   style={{
@@ -295,12 +308,14 @@ function OnboardingStepTwo({ imageUrl, title, description, badge }: OnboardingBo
             fontWeight: theme.typography.fontWeight.extrabold,
             lineHeight: theme.typography.fontSize['3xl'] * 1.25,
             letterSpacing: theme.typography.letterSpacing.tight,
-          }}>
+          }}
+        >
           {title}
         </GradientText>
         <Text
           className="px-2 text-base font-normal leading-relaxed"
-          style={{ color: theme.colors.text.gray400 }}>
+          style={{ color: theme.colors.text.gray400 }}
+        >
           {description}
         </Text>
       </View>
@@ -316,7 +331,8 @@ function OnboardingStepOne({ imageUrl, title, description, badge }: OnboardingBo
         className="relative mb-6 flex w-full items-center justify-center"
         style={{
           aspectRatio: 1,
-        }}>
+        }}
+      >
         {/* Ambient Background Glow */}
         <View className="absolute inset-0 rounded-full opacity-60">
           <LinearGradient
@@ -337,7 +353,8 @@ function OnboardingStepOne({ imageUrl, title, description, badge }: OnboardingBo
             ...theme.shadows.lg,
             borderColor: theme.colors.background.white10,
             overflow: 'hidden',
-          }}>
+          }}
+        >
           <ImageBackground
             source={require('../../assets/efordless-tracking.png')}
             style={{
@@ -349,7 +366,8 @@ function OnboardingStepOne({ imageUrl, title, description, badge }: OnboardingBo
             resizeMode="contain"
             imageStyle={{
               resizeMode: 'contain',
-            }}>
+            }}
+          >
             {/* Gradient Overlay */}
             <LinearGradient
               colors={[theme.colors.overlay.backdrop90, 'transparent', 'transparent']}
@@ -362,7 +380,8 @@ function OnboardingStepOne({ imageUrl, title, description, badge }: OnboardingBo
             {badge && (
               <View
                 className="absolute bottom-6 left-6 right-6 flex-row items-center gap-4 rounded-xl border p-4"
-                style={{ borderColor: theme.colors.background.white10 }}>
+                style={{ borderColor: theme.colors.background.white10 }}
+              >
                 <LinearGradient
                   colors={theme.colors.gradients.whiteSubtle}
                   style={{
@@ -412,12 +431,14 @@ function OnboardingStepOne({ imageUrl, title, description, badge }: OnboardingBo
             fontWeight: theme.typography.fontWeight.extrabold,
             lineHeight: theme.typography.fontSize['3xl'] * 1.25,
             letterSpacing: theme.typography.letterSpacing.tight,
-          }}>
+          }}
+        >
           {title}
         </GradientText>
         <Text
           className="px-2 text-base font-normal leading-relaxed"
-          style={{ color: theme.colors.text.gray400 }}>
+          style={{ color: theme.colors.text.gray400 }}
+        >
           {description}
         </Text>
       </View>
@@ -463,10 +484,12 @@ export default function OnboardingScreen() {
             onPress={() => {
               // Navigate to home or skip onboarding
               router.push('/onboarding/health-connect');
-            }}>
+            }}
+          >
             <Text
               className="text-sm font-bold leading-normal tracking-wide"
-              style={{ color: theme.colors.text.gray500 }}>
+              style={{ color: theme.colors.text.gray500 }}
+            >
               {t('onboarding.skip')}
             </Text>
           </Pressable>
@@ -484,7 +507,8 @@ export default function OnboardingScreen() {
             setCurrentStep(newStep);
           }}
           scrollEnabled={true}
-          overdrag={false}>
+          overdrag={false}
+        >
           {/* Step 1 */}
           <View key="step1">
             <OnboardingStepOne

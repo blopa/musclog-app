@@ -72,7 +72,8 @@ export function Snackbar({ snackbar, onDismiss }: SnackbarProps) {
       style={{
         transform: [{ translateX: pan.x }],
         opacity,
-      }}>
+      }}
+    >
       <View
         className="mx-4 mb-3 flex-row items-center gap-4 rounded-2xl p-4"
         style={{
@@ -82,13 +83,15 @@ export function Snackbar({ snackbar, onDismiss }: SnackbarProps) {
           borderLeftWidth: theme.borderWidth.accent,
           borderLeftColor: isSuccess ? theme.colors.status.success : theme.colors.status.error,
           ...theme.shadows.lg,
-        }}>
+        }}
+      >
         {/* Icon */}
         <View
           className="h-10 w-10 flex-shrink-0 items-center justify-center rounded-full"
           style={{
             backgroundColor: isSuccess ? theme.colors.status.success : theme.colors.status.error,
-          }}>
+          }}
+        >
           {isSuccess ? (
             <CheckCircle size={theme.iconSize.xl} color={theme.colors.background.snackbarSuccess} />
           ) : (
@@ -114,12 +117,14 @@ export function Snackbar({ snackbar, onDismiss }: SnackbarProps) {
           className="flex-shrink-0 rounded-lg px-3 py-1"
           style={{
             backgroundColor: 'transparent',
-          }}>
+          }}
+        >
           <Text
             className="text-sm font-bold"
             style={{
               color: isSuccess ? theme.colors.status.success : theme.colors.status.error,
-            }}>
+            }}
+          >
             {snackbar.action}
           </Text>
         </Pressable>

@@ -14,11 +14,13 @@ export function CheckRadioBox({ label, value, onValueChange, type = 'checkbox' }
   return (
     <Pressable
       className="flex-row items-center gap-3 active:opacity-90"
-      onPress={() => onValueChange(!value)}>
+      onPress={() => onValueChange(!value)}
+    >
       <View
         className={`h-6 w-6 items-center justify-center border border-white/20 bg-bg-card ${
           type === 'radio' ? 'rounded-full' : 'rounded'
-        }`}>
+        }`}
+      >
         {value &&
           (type === 'checkbox' ? (
             <Check size={theme.iconSize.sm} color={theme.colors.accent.primary} />

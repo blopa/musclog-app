@@ -192,7 +192,8 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
             onPress={handleNewGoal}
           />
         }
-        scrollable={false}>
+        scrollable={false}
+      >
         {isLoading ? (
           <View className="flex-1 items-center justify-center">
             <ActivityIndicator size="large" color={theme.colors.accent.primary} />
@@ -208,7 +209,8 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
                   <View className="mb-3 flex-row items-center justify-between">
                     <Text
                       className="font-bold uppercase tracking-widest text-text-secondary"
-                      style={{ fontSize: theme.typography.fontSize.xs }}>
+                      style={{ fontSize: theme.typography.fontSize.xs }}
+                    >
                       {t('goalsManagement.currentGoals')}
                     </Text>
                     <View
@@ -217,10 +219,12 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
                         backgroundColor: theme.colors.accent.primary10,
                         borderColor: theme.colors.accent.primary20,
                         paddingVertical: theme.spacing.padding.xsHalf,
-                      }}>
+                      }}
+                    >
                       <Text
                         className="font-bold text-accent-primary"
-                        style={{ fontSize: theme.typography.fontSize.xs }}>
+                        style={{ fontSize: theme.typography.fontSize.xs }}
+                      >
                         {t('goalsManagement.active')}
                       </Text>
                     </View>
@@ -236,7 +240,8 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
                 <View className="mb-6">
                   <Text
                     className="mb-6 font-bold uppercase tracking-widest text-text-secondary"
-                    style={{ fontSize: theme.typography.fontSize.xs }}>
+                    style={{ fontSize: theme.typography.fontSize.xs }}
+                  >
                     {t('goalsManagement.history')}
                   </Text>
 

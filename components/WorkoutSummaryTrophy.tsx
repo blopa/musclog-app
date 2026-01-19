@@ -61,7 +61,8 @@ export function WorkoutSummaryTrophy() {
       className="relative mb-8"
       style={{
         transform: [{ translateY: floatTranslateY }],
-      }}>
+      }}
+    >
       <View
         className="relative z-10 h-32 w-32 items-center justify-center rounded-full border"
         style={{
@@ -72,7 +73,8 @@ export function WorkoutSummaryTrophy() {
           shadowOpacity: theme.shadowOpacity.light,
           shadowRadius: theme.shadowRadius['2xl'],
           elevation: theme.elevation['3xl'],
-        }}>
+        }}
+      >
         <LinearGradient
           colors={[theme.colors.status.indigo10, theme.colors.status.emerald10]}
           start={{ x: 0, y: 0 }}
@@ -95,7 +97,8 @@ export function WorkoutSummaryTrophy() {
         className="absolute -right-2 -top-2"
         style={{
           transform: [{ scale: star1Anim }, { rotate: '12deg' }],
-        }}>
+        }}
+      >
         <Star
           size={theme.iconSize.lg}
           color={theme.colors.status.amber}
@@ -106,7 +109,8 @@ export function WorkoutSummaryTrophy() {
         className="absolute -bottom-1 -left-4"
         style={{
           transform: [{ scale: star2Anim }, { rotate: '-12deg' }],
-        }}>
+        }}
+      >
         <Star
           size={theme.iconSize.md}
           color={theme.colors.accent.primary}
@@ -117,7 +121,8 @@ export function WorkoutSummaryTrophy() {
         className="absolute -left-2 top-0"
         style={{
           transform: [{ scale: star3Anim }, { rotate: '-45deg' }],
-        }}>
+        }}
+      >
         <Star
           size={theme.iconSize.sm}
           color={theme.colors.status.indigoLight}

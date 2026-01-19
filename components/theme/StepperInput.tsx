@@ -78,7 +78,8 @@ export const StepperInput: React.FC<StepperInputProps> = ({
     <View className="flex flex-col gap-2">
       <Text
         className="text-xs font-bold uppercase tracking-tighter"
-        style={{ color: theme.colors.accent.primary }}>
+        style={{ color: theme.colors.accent.primary }}
+      >
         {label}
       </Text>
       <View className="flex flex-row items-center gap-2 overflow-hidden">
@@ -90,13 +91,15 @@ export const StepperInput: React.FC<StepperInputProps> = ({
             handleChange(newVal);
             onDecrement();
           }}
-          accessibilityLabel={t('common.decreaseValue')}>
+          accessibilityLabel={t('common.decreaseValue')}
+        >
           <Minus size={theme.iconSize.lg} color={theme.colors.accent.primary} />
         </Pressable>
         {editing ? (
           <View
             className="h-14 min-w-0 flex-1 flex-row items-center justify-center rounded-xl"
-            style={{ backgroundColor: theme.colors.background.card }}>
+            style={{ backgroundColor: theme.colors.background.card }}
+          >
             <TextInput
               ref={inputRef}
               value={inputValue}
@@ -123,11 +126,13 @@ export const StepperInput: React.FC<StepperInputProps> = ({
           <Pressable
             className="h-14 min-w-0 flex-1 items-center justify-center rounded-xl"
             style={{ backgroundColor: theme.colors.background.card }}
-            onPress={handleValuePress}>
+            onPress={handleValuePress}
+          >
             <Text
               className="text-center text-2xl font-bold text-text-primary"
               numberOfLines={1}
-              ellipsizeMode="tail">
+              ellipsizeMode="tail"
+            >
               {internalValue.toFixed(1)}{' '}
               {unit && <Text className="font-normal text-text-tertiary">{unit}</Text>}
             </Text>
@@ -141,7 +146,8 @@ export const StepperInput: React.FC<StepperInputProps> = ({
             handleChange(newVal);
             onIncrement();
           }}
-          accessibilityLabel={t('common.increaseValue')}>
+          accessibilityLabel={t('common.increaseValue')}
+        >
           <Plus size={theme.iconSize.lg} color={theme.colors.accent.primary} />
         </Pressable>
       </View>

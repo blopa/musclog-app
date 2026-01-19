@@ -21,12 +21,14 @@ export function ManagementItem({
   return (
     <Pressable
       className="active:bg-bg-card-elevated flex-row items-center gap-4 rounded-2xl border border-border-default bg-bg-overlay p-4"
-      onPress={onPress}>
+      onPress={onPress}
+    >
       <View
         className="h-12 w-12 items-center justify-center rounded-xl"
         style={{
           backgroundColor: addOpacityToHex(iconColor, theme.colors.opacity.subtle),
-        }}>
+        }}
+      >
         <Icon size={theme.iconSize.md} color={iconColor} />
       </View>
       <View className="flex-1">

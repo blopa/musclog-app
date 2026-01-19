@@ -56,7 +56,8 @@ export default function WorkoutSessionScreen() {
           source={exerciseData.image}
           className="absolute inset-0"
           style={{ height: theme.size['3xl'] * 10 }}
-          resizeMode="cover">
+          resizeMode="cover"
+        >
           <LinearGradient
             colors={[
               ...theme.colors.gradients.workoutSessionOverlay,

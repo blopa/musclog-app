@@ -28,7 +28,8 @@ export function WeekdayPicker({ days, selectedDays, onToggleDay }: WeekdayPicker
                   borderWidth: theme.borderWidth.thin,
                   borderColor: isSelected ? theme.colors.accent.primary : theme.colors.border.light,
                   transform: [{ scale: pressed ? 0.95 : 1 }],
-                }}>
+                }}
+              >
                 <Text
                   style={{
                     fontSize: theme.typography.fontSize.xs,
@@ -36,7 +37,8 @@ export function WeekdayPicker({ days, selectedDays, onToggleDay }: WeekdayPicker
                     color: isSelected
                       ? theme.colors.background.primary
                       : theme.colors.text.secondary,
-                  }}>
+                  }}
+                >
                   {day}
                 </Text>
               </View>

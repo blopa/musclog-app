@@ -34,7 +34,8 @@ export function NotificationCard({
       {/* Icon */}
       <View
         className="h-14 w-14 flex-shrink-0 items-center justify-center rounded-full"
-        style={{ backgroundColor: iconBg }}>
+        style={{ backgroundColor: iconBg }}
+      >
         {icon}
       </View>
 
@@ -53,7 +54,8 @@ export function NotificationCard({
               style={{
                 fontSize: theme.typography.fontSize.base,
                 color: theme.colors.text.gray300,
-              }}>
+              }}
+            >
               {description}
             </Text>
           ) : (

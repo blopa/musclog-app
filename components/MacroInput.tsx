@@ -71,7 +71,8 @@ export function MacroInput({
           shadowRadius: theme.shadows.radius8.shadowRadius,
           elevation: theme.elevation.sm,
         } as any
-      }>
+      }
+    >
       <View className="mb-1 flex-row items-start justify-between">
         <Text className="text-xs font-bold uppercase tracking-widest text-text-secondary">
           {label}

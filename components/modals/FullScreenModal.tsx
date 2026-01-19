@@ -60,7 +60,8 @@ export function FullScreenModal({
       transparent={false}
       animationType="slide"
       onRequestClose={onClose}
-      statusBarTranslucent={Platform.OS !== 'web'}>
+      statusBarTranslucent={Platform.OS !== 'web'}
+    >
       <View
         className="flex-1 bg-bg-primary"
         style={[
@@ -69,7 +70,8 @@ export function FullScreenModal({
             paddingTop: Platform.OS !== 'web' ? insets.top : 0,
             paddingBottom: Platform.OS !== 'web' ? insets.bottom : 0,
           },
-        ]}>
+        ]}
+      >
         {/* Header */}
         <View className="border-b border-border-light bg-bg-primary">
           <LinearGradient
@@ -80,7 +82,8 @@ export function FullScreenModal({
             }
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
-            className="flex-row items-center gap-4 px-4 py-4">
+            className="flex-row items-center gap-4 px-4 py-4"
+          >
             <Pressable className="-ml-2 rounded-full p-2" onPress={onClose}>
               <ArrowLeft size={theme.iconSize.md} color={theme.colors.text.primary} />
             </Pressable>
@@ -101,7 +104,8 @@ export function FullScreenModal({
               style={webScrollViewStyle}
               contentContainerStyle={{
                 paddingBottom: footer ? theme.spacing.padding['4xl'] : theme.spacing.padding.lg,
-              }}>
+              }}
+            >
               {children}
             </ScrollView>
           ) : (
@@ -115,7 +119,8 @@ export function FullScreenModal({
                 paddingBottom: Platform.OS === 'web' ? theme.spacing.padding.lg : insets.bottom,
                 paddingHorizontal: theme.spacing.padding.zero,
                 backgroundColor: 'transparent',
-              }}>
+              }}
+            >
               {footer}
             </View>
           )}

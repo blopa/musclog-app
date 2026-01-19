@@ -21,12 +21,14 @@ export function MainSettingsModal({ visible, onClose }: { visible: boolean; onCl
         style={{
           flex: 1,
           marginHorizontal: theme.spacing.padding.base,
-        }}>
+        }}
+      >
         <View
           style={{
             marginTop: theme.spacing.padding.base,
             marginBottom: theme.spacing.padding.sm,
-          }}>
+          }}
+        >
           <ThemedTextInput
             label=""
             value={search}
@@ -53,7 +55,8 @@ export function MainSettingsModal({ visible, onClose }: { visible: boolean; onCl
             color: theme.colors.text.secondary,
             textTransform: 'uppercase',
             letterSpacing: theme.typography.letterSpacing.extraWide,
-          }}>
+          }}
+        >
           {t('settings.configuration')}
         </Text>
 
@@ -141,7 +144,8 @@ export function MainSettingsModal({ visible, onClose }: { visible: boolean; onCl
         <View
           style={{
             marginBottom: theme.spacing.padding.sm,
-          }}>
+          }}
+        >
           <Pressable
             style={({ pressed }) => [
               {
@@ -154,20 +158,23 @@ export function MainSettingsModal({ visible, onClose }: { visible: boolean; onCl
                 backgroundColor: pressed ? theme.colors.background.overlay : 'transparent',
               },
             ]}
-            onPress={() => {}}>
+            onPress={() => {}}
+          >
             <Text
               style={{
                 fontSize: theme.typography.fontSize.sm,
                 color: theme.colors.text.primary,
                 fontWeight: theme.typography.fontWeight.medium,
-              }}>
+              }}
+            >
               {t('settings.aboutMusclog')}
             </Text>
             <Text
               style={{
                 fontSize: theme.typography.fontSize.xs,
                 color: theme.colors.text.secondary,
-              }}>
+              }}
+            >
               v1.0.4
             </Text>
           </Pressable>
@@ -183,13 +190,15 @@ export function MainSettingsModal({ visible, onClose }: { visible: boolean; onCl
                 backgroundColor: pressed ? theme.colors.background.overlay : 'transparent',
               },
             ]}
-            onPress={() => {}}>
+            onPress={() => {}}
+          >
             <Text
               style={{
                 fontSize: theme.typography.fontSize.sm,
                 color: theme.colors.text.primary,
                 fontWeight: theme.typography.fontWeight.medium,
-              }}>
+              }}
+            >
               {t('settings.privacyPolicy')}
             </Text>
           </Pressable>
@@ -198,7 +207,8 @@ export function MainSettingsModal({ visible, onClose }: { visible: boolean; onCl
         <View
           style={{
             marginTop: theme.spacing.padding.md,
-          }}>
+          }}
+        >
           <Button
             label={t('settings.signOut')}
             variant="discard"

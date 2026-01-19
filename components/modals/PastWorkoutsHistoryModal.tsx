@@ -329,14 +329,16 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
       visible={visible}
       onClose={onClose}
       title={t('pastWorkoutHistory.title')}
-      scrollable={false}>
+      scrollable={false}
+    >
       <View className="flex-1">
         {/* Header */}
         <View
           className="px-4 pb-4 pt-4"
           style={{
             backgroundColor: theme.colors.background.darkBackground,
-          }}>
+          }}
+        >
           {/* Search and Filter */}
           <View className="flex-row items-center gap-2">
             <View className="relative flex-1">
@@ -348,7 +350,8 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
                   bottom: 0,
                   justifyContent: 'center',
                   zIndex: 1,
-                }}>
+                }}
+              >
                 <Search size={theme.iconSize.sm} color={theme.colors.text.secondary} />
               </View>
               <TextInput
@@ -375,7 +378,8 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
                 borderColor: theme.colors.background.white5,
                 borderRadius: theme.borderRadius.md,
               }}
-              onPress={() => setIsFilterMenuVisible(true)}>
+              onPress={() => setIsFilterMenuVisible(true)}
+            >
               <SlidersHorizontal size={theme.iconSize.sm} color={theme.colors.text.primary} />
             </Pressable>
           </View>
@@ -394,7 +398,8 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
                   fontSize: theme.typography.fontSize.base,
                   color: theme.colors.text.secondary,
                   textAlign: 'center',
-                }}>
+                }}
+              >
                 {searchQuery
                   ? t('pastWorkoutHistory.noWorkoutsFound')
                   : t('pastWorkoutHistory.noWorkoutHistory')}
@@ -411,7 +416,8 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
                       fontSize: theme.typography.fontSize.xs,
                       color: theme.colors.text.secondary,
                       opacity: sectionIndex === filteredWorkoutHistoryData.length - 1 ? 0.8 : 1,
-                    }}>
+                    }}
+                  >
                     {section.month}
                   </Text>
 
@@ -427,13 +433,15 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
                           key={workout.id}
                           style={{
                             opacity,
-                          }}>
+                          }}
+                        >
                           <GenericCard
                             variant="card"
                             isPressable={true}
                             onPress={() => {
                               // Handle press if needed
-                            }}>
+                            }}
+                          >
                             <View className="flex-col gap-4 p-4">
                               {/* Card Header */}
                               <View className="flex-row items-start justify-between">
@@ -442,7 +450,8 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
                                     className="h-12 w-12 items-center justify-center rounded-lg"
                                     style={{
                                       backgroundColor: workout.iconBgOpacity,
-                                    }}>
+                                    }}
+                                  >
                                     <Icon size={theme.iconSize.xl} color={workout.iconBgColor} />
                                   </View>
                                   <View>
@@ -451,14 +460,16 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
                                       style={{
                                         fontSize: theme.typography.fontSize.base,
                                         color: theme.colors.text.primary,
-                                      }}>
+                                      }}
+                                    >
                                       {workout.name}
                                     </Text>
                                     <Text
                                       className="text-xs"
                                       style={{
                                         color: theme.colors.text.gray400,
-                                      }}>
+                                      }}
+                                    >
                                       {workout.date}
                                     </Text>
                                   </View>
@@ -468,7 +479,8 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
                                     className="flex-row items-center gap-1 rounded px-2 py-0.5"
                                     style={{
                                       backgroundColor: theme.colors.status.emerald400_10,
-                                    }}>
+                                    }}
+                                  >
                                     <Trophy
                                       size={theme.iconSize.xs}
                                       color={theme.colors.status.emeraldLight}
@@ -480,7 +492,8 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
                                         color: theme.colors.status.emeraldLight,
                                         textTransform: 'uppercase',
                                         letterSpacing: theme.typography.letterSpacing.wider,
-                                      }}>
+                                      }}
+                                    >
                                       {workout.prCount === 1
                                         ? t('pastWorkoutHistory.prBadge.singular', {
                                             count: workout.prCount,
@@ -501,13 +514,15 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
                                     className="flex-1 rounded-lg p-2"
                                     style={{
                                       backgroundColor: theme.colors.background.white5,
-                                    }}>
+                                    }}
+                                  >
                                     <Text
                                       className="text-center"
                                       style={{
                                         fontSize: theme.typography.fontSize.xs,
                                         color: theme.colors.text.gray400,
-                                      }}>
+                                      }}
+                                    >
                                       {stat.label}
                                     </Text>
                                     <Text
@@ -515,7 +530,8 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
                                       style={{
                                         fontSize: theme.typography.fontSize.sm,
                                         color: theme.colors.text.primary,
-                                      }}>
+                                      }}
+                                    >
                                       {stat.value}
                                     </Text>
                                   </View>

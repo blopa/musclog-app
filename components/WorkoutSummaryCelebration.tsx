@@ -79,7 +79,8 @@ export function WorkoutSummaryCelebration({
             paddingBottom:
               Platform.OS !== 'web' ? Math.max(insets.bottom, theme.spacing.padding.base) : 0,
           },
-        ]}>
+        ]}
+      >
         <View className="flex-1 items-center justify-center px-6 py-8">
           {/* Background Glow Effects */}
           <Animated.View

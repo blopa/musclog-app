@@ -43,7 +43,8 @@ export function RestOverStatusIcon() {
           shadowOpacity: theme.shadowOpacity.medium,
           shadowRadius: theme.shadowRadius.xl,
           elevation: theme.elevation['2xl'],
-        }}>
+        }}
+      >
         <Dumbbell
           size={theme.iconSize['5xl']}
           color={theme.colors.accent.primary}
@@ -56,7 +57,8 @@ export function RestOverStatusIcon() {
         style={{
           backgroundColor: theme.colors.status.error,
           borderColor: theme.colors.background.primary,
-        }}>
+        }}
+      >
         <AlertCircle
           size={theme.iconSize.sm}
           color={theme.colors.text.white}

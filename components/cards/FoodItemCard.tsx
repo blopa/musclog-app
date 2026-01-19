@@ -26,7 +26,8 @@ export function FoodItemCard({
       <View className="flex-row items-center gap-4 p-4">
         <View
           className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl"
-          style={{ backgroundColor: theme.colors.background.gray700 }}>
+          style={{ backgroundColor: theme.colors.background.gray700 }}
+        >
           <Image source={image} className="h-full w-full" resizeMode="cover" />
         </View>
         <View className="min-w-0 flex-1">

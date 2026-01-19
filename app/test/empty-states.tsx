@@ -16,7 +16,8 @@ export default function EmptyStatesTestScreen() {
       <View className="flex-row items-center justify-between bg-bg-primary/90 px-4 pb-2 pt-4">
         <Pressable
           className="h-10 w-10 shrink-0 items-center justify-center rounded-full"
-          style={{ backgroundColor: theme.colors.background.white10 }}>
+          style={{ backgroundColor: theme.colors.background.white10 }}
+        >
           <ArrowLeft size={theme.iconSize.xl} color={theme.colors.text.primary} />
         </Pressable>
         <Text className="flex-1 text-center text-lg font-bold leading-tight tracking-tight text-text-primary">
@@ -32,7 +33,8 @@ export default function EmptyStatesTestScreen() {
         <View className="px-6 pb-2 pt-6">
           <Text
             className="font-extrabold leading-tight tracking-tight text-text-primary"
-            style={{ fontSize: theme.typography.fontSize['3xl'] }}>
+            style={{ fontSize: theme.typography.fontSize['3xl'] }}
+          >
             System States
           </Text>
           <Text className="pt-3 text-base font-normal leading-relaxed text-text-secondary">
@@ -71,7 +73,8 @@ export default function EmptyStatesTestScreen() {
             {/* Workout Card Skeleton */}
             <View
               className="flex-col gap-4 rounded-lg border bg-bg-card p-4"
-              style={{ borderColor: theme.colors.background.white5 }}>
+              style={{ borderColor: theme.colors.background.white5 }}
+            >
               <View className="flex-row items-center gap-3">
                 <SkeletonLoader
                   width={theme.size['12']}
@@ -100,7 +103,8 @@ export default function EmptyStatesTestScreen() {
             {/* Food Item Skeleton */}
             <View
               className="flex-row items-center justify-between rounded-lg border bg-bg-card p-4"
-              style={{ borderColor: theme.colors.background.white5 }}>
+              style={{ borderColor: theme.colors.background.white5 }}
+            >
               <View className="flex-row items-center gap-3">
                 <SkeletonLoader
                   width={theme.size['10']}

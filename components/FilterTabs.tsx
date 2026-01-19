@@ -33,7 +33,8 @@ export function FilterTabs({
       contentContainerStyle={
         scrollViewContentContainerStyle || { paddingHorizontal: theme.spacing.padding.xl }
       }
-      className="flex-row">
+      className="flex-row"
+    >
       {tabs.map((tab, index) => {
         const isActive = activeTab === tab.id;
 
@@ -44,12 +45,14 @@ export function FilterTabs({
               isActive ? 'bg-accent-primary' : 'border border-border-light bg-bg-filterTab'
             }`}
             style={{ marginRight: index < tabs.length - 1 ? theme.spacing.gap.md : 0 }}
-            onPress={() => onTabChange(tab.id)}>
+            onPress={() => onTabChange(tab.id)}
+          >
             <Text
               className={`text-sm font-medium ${isActive ? 'font-semibold' : ''}`}
               style={{
                 color: isActive ? theme.colors.text.black : theme.colors.text.gray300,
-              }}>
+              }}
+            >
               {tab.label}
             </Text>
             {isActive && withCheckmark && (

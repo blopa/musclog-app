@@ -37,10 +37,12 @@ export function ActionButton({ variant, label, onPress }: ActionButtonProps) {
     <Pressable
       className={`relative flex-1 justify-between overflow-hidden rounded-3xl ${config.bgColor} p-6`}
       style={{ minHeight: theme.size['180'] }}
-      onPress={onPress}>
+      onPress={onPress}
+    >
       <View
         className="h-12 w-12 items-center justify-center rounded-full"
-        style={{ backgroundColor: config.iconBgColor }}>
+        style={{ backgroundColor: config.iconBgColor }}
+      >
         <Icon
           size={theme.iconSize.xl}
           color={config.iconColor}
@@ -50,7 +52,8 @@ export function ActionButton({ variant, label, onPress }: ActionButtonProps) {
       <Text className={`text-2xl font-bold leading-tight ${config.textColor}`}>{label}</Text>
       <View
         className="absolute -bottom-6 -right-6"
-        style={{ opacity: theme.colors.opacity.veryLight }}>
+        style={{ opacity: theme.colors.opacity.veryLight }}
+      >
         <Icon
           size={theme.iconSize.background}
           color={config.backgroundIconColor}

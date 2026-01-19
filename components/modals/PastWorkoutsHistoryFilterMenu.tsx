@@ -170,7 +170,8 @@ export function PastWorkoutsHistoryFilterMenu({
             flexDirection: 'row',
             gap: theme.spacing.gap.base,
             paddingTop: theme.spacing.padding.md,
-          }}>
+          }}
+        >
           <Button
             label={t('pastWorkoutHistory.filters.reset') || 'Reset'}
             variant="outline"
@@ -186,13 +187,15 @@ export function PastWorkoutsHistoryFilterMenu({
             onPress={handleApply}
           />
         </View>
-      }>
+      }
+    >
       <ScrollView
         showsVerticalScrollIndicator={false}
         style={{ flex: 1 }}
         contentContainerStyle={{
           gap: theme.spacing.gap['2xl'],
-        }}>
+        }}
+      >
         {/* Drag Handle */}
         <View
           style={{
@@ -216,7 +219,8 @@ export function PastWorkoutsHistoryFilterMenu({
               textTransform: 'uppercase',
               letterSpacing: theme.typography.letterSpacing.extraWide,
               marginBottom: theme.spacing.padding.base,
-            }}>
+            }}
+          >
             {t('pastWorkoutHistory.filters.workoutType') || 'WORKOUT TYPE'}
           </Text>
           <FilterTabs
@@ -238,7 +242,8 @@ export function PastWorkoutsHistoryFilterMenu({
               textTransform: 'uppercase',
               letterSpacing: theme.typography.letterSpacing.extraWide,
               marginBottom: theme.spacing.padding.base,
-            }}>
+            }}
+          >
             {t('pastWorkoutHistory.filters.dateRange.title') || 'DATE RANGE'}
           </Text>
           <SegmentedControl
@@ -259,7 +264,8 @@ export function PastWorkoutsHistoryFilterMenu({
               textTransform: 'uppercase',
               letterSpacing: theme.typography.letterSpacing.extraWide,
               marginBottom: theme.spacing.padding.base,
-            }}>
+            }}
+          >
             {t('pastWorkoutHistory.filters.muscleGroups.title') || 'MUSCLE GROUP (MULTI-SELECT)'}
           </Text>
           <View
@@ -267,7 +273,8 @@ export function PastWorkoutsHistoryFilterMenu({
               flexDirection: 'row',
               flexWrap: 'wrap',
               gap: theme.spacing.gap.sm,
-            }}>
+            }}
+          >
             {muscleGroups.map((muscle) => {
               const isSelected = selectedMuscleGroups.includes(muscle.id as MuscleGroup);
               return (
@@ -283,11 +290,13 @@ export function PastWorkoutsHistoryFilterMenu({
                     borderColor: isSelected
                       ? theme.colors.accent.primary30
                       : theme.colors.border.light,
-                  }}>
+                  }}
+                >
                   <Text
                     className={`text-sm font-medium ${
                       isSelected ? 'font-semibold text-accent-primary' : 'text-text-secondary'
-                    }`}>
+                    }`}
+                  >
                     {muscle.label}
                   </Text>
                 </Pressable>
@@ -304,7 +313,8 @@ export function PastWorkoutsHistoryFilterMenu({
               alignItems: 'center',
               justifyContent: 'space-between',
               marginBottom: theme.spacing.padding.base,
-            }}>
+            }}
+          >
             <Text
               style={{
                 fontSize: theme.typography.fontSize.xs,
@@ -312,7 +322,8 @@ export function PastWorkoutsHistoryFilterMenu({
                 color: theme.colors.text.secondary,
                 textTransform: 'uppercase',
                 letterSpacing: theme.typography.letterSpacing.extraWide,
-              }}>
+              }}
+            >
               {t('pastWorkoutHistory.filters.minDuration') || 'MIN. DURATION'}
             </Text>
             <Text
@@ -320,14 +331,16 @@ export function PastWorkoutsHistoryFilterMenu({
                 fontSize: theme.typography.fontSize.sm,
                 fontWeight: theme.typography.fontWeight.bold,
                 color: theme.colors.accent.primary,
-              }}>
+              }}
+            >
               {formatDurationDisplay(minDuration)}
             </Text>
           </View>
           <View
             style={{
               marginBottom: theme.spacing.padding.sm,
-            }}>
+            }}
+          >
             <Slider
               value={minDuration}
               min={0}
@@ -344,13 +357,15 @@ export function PastWorkoutsHistoryFilterMenu({
             style={{
               flexDirection: 'row',
               justifyContent: 'space-between',
-            }}>
+            }}
+          >
             <Text
               style={{
                 fontSize: 10,
                 fontWeight: theme.typography.fontWeight.medium,
                 color: theme.colors.text.tertiary,
-              }}>
+              }}
+            >
               {t('pastWorkoutHistory.filters.durationFormats.zero')}
             </Text>
             <Text
@@ -358,7 +373,8 @@ export function PastWorkoutsHistoryFilterMenu({
                 fontSize: 10,
                 fontWeight: theme.typography.fontWeight.medium,
                 color: theme.colors.text.tertiary,
-              }}>
+              }}
+            >
               {t('pastWorkoutHistory.filters.durationFormats.max')}
             </Text>
           </View>

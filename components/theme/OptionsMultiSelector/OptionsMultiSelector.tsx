@@ -179,7 +179,8 @@ export function OptionsMultiSelector<T extends string | number>({
           alignItems: 'center',
           marginRight: theme.spacing.gap.sm,
           position: 'relative',
-        }}>
+        }}
+      >
         {/* Main vertical line */}
         <View
           style={{
@@ -237,7 +238,8 @@ export function OptionsMultiSelector<T extends string | number>({
             flexDirection: 'row',
             alignItems: 'stretch',
             zIndex: isHighestSelected ? theme.zIndex.max : theme.zIndex.base + 1,
-          }}>
+          }}
+        >
           {renderGroupIndicator(groupPosition, item.groupId, isFirstInGroup)}
           <View style={{ flex: 1 }}>
             {isHighestSelected && canGroup && (
@@ -251,7 +253,8 @@ export function OptionsMultiSelector<T extends string | number>({
               delayLongPress={150}
               onPress={() => !isActive && showCheckboxes && toggle(item.id)}
               disabled={isActive || !showCheckboxes}
-              style={{ flex: 1 }}>
+              style={{ flex: 1 }}
+            >
               {({ pressed }) => (
                 <View
                   style={{
@@ -277,13 +280,15 @@ export function OptionsMultiSelector<T extends string | number>({
                       : pressed
                         ? theme.colors.opacity.strong
                         : theme.colors.opacity.full,
-                  }}>
+                  }}
+                >
                   {/* Drag Handle */}
                   <View
                     style={{
                       marginRight: theme.spacing.gap.sm,
                       opacity: theme.colors.opacity.medium,
-                    }}>
+                    }}
+                  >
                     <GripVertical
                       size={theme.iconSize.md}
                       color={theme.colors.text.secondary}
@@ -297,14 +302,16 @@ export function OptionsMultiSelector<T extends string | number>({
                       flexDirection: 'row',
                       alignItems: 'center',
                       justifyContent: 'space-between',
-                    }}>
+                    }}
+                  >
                     <View
                       style={{
                         flexDirection: 'row',
                         alignItems: 'center',
                         gap: theme.spacing.gap.base,
                         flex: 1,
-                      }}>
+                      }}
+                    >
                       <View
                         style={{
                           width: theme.size['10'],
@@ -313,7 +320,8 @@ export function OptionsMultiSelector<T extends string | number>({
                           backgroundColor: item.iconBgColor,
                           alignItems: 'center',
                           justifyContent: 'center',
-                        }}>
+                        }}
+                      >
                         <Icon size={theme.iconSize.lg} color={item.iconColor} />
                       </View>
                       <View style={{ flex: 1 }}>
@@ -322,7 +330,8 @@ export function OptionsMultiSelector<T extends string | number>({
                             fontSize: theme.typography.fontSize.base,
                             fontWeight: theme.typography.fontWeight.bold,
                             color: theme.colors.text.primary,
-                          }}>
+                          }}
+                        >
                           {item.label}
                         </Text>
                         <Text
@@ -330,7 +339,8 @@ export function OptionsMultiSelector<T extends string | number>({
                             fontSize: theme.typography.fontSize.xs,
                             color: theme.colors.text.secondary,
                             marginTop: theme.spacing.padding.xsHalf,
-                          }}>
+                          }}
+                        >
                           {item.description}
                         </Text>
                       </View>
@@ -348,7 +358,8 @@ export function OptionsMultiSelector<T extends string | number>({
                           backgroundColor: selected ? theme.colors.accent.primary : 'transparent',
                           alignItems: 'center',
                           justifyContent: 'center',
-                        }}>
+                        }}
+                      >
                         {selected && (
                           <Check
                             size={theme.iconSize.xs}
@@ -384,7 +395,8 @@ export function OptionsMultiSelector<T extends string | number>({
           flexDirection: 'row',
           alignItems: 'stretch',
           zIndex: isHighestSelected ? theme.zIndex.max : theme.zIndex.aboveBase,
-        }}>
+        }}
+      >
         {renderGroupIndicator(groupPosition, option.groupId, isFirstInGroup)}
         <View style={{ flex: 1 }}>
           {isHighestSelected && canGroup && (
@@ -396,7 +408,8 @@ export function OptionsMultiSelector<T extends string | number>({
           <Pressable
             onPress={() => showCheckboxes && toggle(option.id)}
             disabled={!showCheckboxes}
-            style={{ flex: 1 }}>
+            style={{ flex: 1 }}
+          >
             {({ pressed }) => (
               <View
                 style={{
@@ -415,14 +428,16 @@ export function OptionsMultiSelector<T extends string | number>({
                   backgroundColor: groupColor ? groupColor + '08' : theme.colors.background.card,
                   transform: [{ scale: pressed ? 0.98 : 1 }],
                   ...(selected ? theme.shadows.accentGlow : {}),
-                }}>
+                }}
+              >
                 <View
                   style={{
                     flexDirection: 'row',
                     alignItems: 'center',
                     gap: theme.spacing.gap.base,
                     flex: 1,
-                  }}>
+                  }}
+                >
                   <View
                     style={{
                       width: theme.size['10'],
@@ -431,7 +446,8 @@ export function OptionsMultiSelector<T extends string | number>({
                       backgroundColor: option.iconBgColor,
                       alignItems: 'center',
                       justifyContent: 'center',
-                    }}>
+                    }}
+                  >
                     <Icon size={theme.iconSize.lg} color={option.iconColor} />
                   </View>
                   <View style={{ flex: 1 }}>
@@ -440,7 +456,8 @@ export function OptionsMultiSelector<T extends string | number>({
                         fontSize: theme.typography.fontSize.base,
                         fontWeight: theme.typography.fontWeight.bold,
                         color: theme.colors.text.primary,
-                      }}>
+                      }}
+                    >
                       {option.label}
                     </Text>
                     <Text
@@ -448,7 +465,8 @@ export function OptionsMultiSelector<T extends string | number>({
                         fontSize: theme.typography.fontSize.xs,
                         color: theme.colors.text.secondary,
                         marginTop: theme.spacing.padding.xsHalf,
-                      }}>
+                      }}
+                    >
                       {option.description}
                     </Text>
                   </View>
@@ -466,7 +484,8 @@ export function OptionsMultiSelector<T extends string | number>({
                       backgroundColor: selected ? theme.colors.accent.primary : 'transparent',
                       alignItems: 'center',
                       justifyContent: 'center',
-                    }}>
+                    }}
+                  >
                     {selected && (
                       <Check
                         size={theme.iconSize.xs}
@@ -495,7 +514,8 @@ export function OptionsMultiSelector<T extends string | number>({
           justifyContent: 'space-between',
           marginBottom: theme.spacing.padding.base,
           paddingHorizontal: theme.spacing.padding.xs,
-        }}>
+        }}
+      >
         <Text
           style={{
             fontSize: theme.typography.fontSize.xs,
@@ -503,7 +523,8 @@ export function OptionsMultiSelector<T extends string | number>({
             color: theme.colors.text.secondary,
             textTransform: 'uppercase',
             letterSpacing: theme.typography.letterSpacing.extraWide,
-          }}>
+          }}
+        >
           {title}
         </Text>
         {isEditable ? (
@@ -518,26 +539,30 @@ export function OptionsMultiSelector<T extends string | number>({
                 }
                 setSelectionEnabled(false);
               }}
-              style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}>
+              style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}
+            >
               <Text
                 style={{
                   color: theme.colors.accent.primary,
                   fontWeight: theme.typography.fontWeight.bold,
                   fontSize: theme.typography.fontSize.xs,
-                }}>
+                }}
+              >
                 {t('optionsSelector.done')}
               </Text>
             </Pressable>
           ) : (
             <Pressable
               onPress={() => setSelectionEnabled(true)}
-              style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}>
+              style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}
+            >
               <Text
                 style={{
                   color: theme.colors.accent.primary,
                   fontWeight: theme.typography.fontWeight.bold,
                   fontSize: theme.typography.fontSize.xs,
-                }}>
+                }}
+              >
                 {t('optionsSelector.edit')}
               </Text>
             </Pressable>

@@ -218,7 +218,8 @@ export default function HomeScreen() {
     return (
       <View
         className="flex-1 items-center justify-center"
-        style={{ backgroundColor: theme.colors.background.primary }}>
+        style={{ backgroundColor: theme.colors.background.primary }}
+      >
         <ActivityIndicator size="large" color={theme.colors.accent.primary} />
       </View>
     );
@@ -231,11 +232,13 @@ export default function HomeScreen() {
         <View className="flex-row items-center justify-between px-6 py-6">
           <Pressable
             className="flex-row items-center gap-3"
-            onPress={() => setIsUserMenuVisible(true)}>
+            onPress={() => setIsUserMenuVisible(true)}
+          >
             <View className="relative">
               <View
                 className="h-14 w-14 overflow-hidden rounded-full border-4 border-accent-primary"
-                style={{ backgroundColor: theme.colors.background.imageLight }}>
+                style={{ backgroundColor: theme.colors.background.imageLight }}
+              >
                 <Image source={user.avatar} className="h-full w-full" resizeMode="cover" />
               </View>
               <View className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-bg-primary bg-accent-primary" />
@@ -247,7 +250,8 @@ export default function HomeScreen() {
           </Pressable>
           <Pressable
             className="relative rounded-full bg-bg-overlay p-3"
-            onPress={() => setIsNotificationsVisible(true)}>
+            onPress={() => setIsNotificationsVisible(true)}
+          >
             <Bell size={theme.iconSize.md} color={theme.colors.text.primary} />
             {user.hasNotifications && (
               <View
@@ -294,7 +298,8 @@ export default function HomeScreen() {
                 <View
                   key={i}
                   className="rounded-lg border bg-bg-card p-4"
-                  style={{ borderColor: theme.colors.background.white5 }}>
+                  style={{ borderColor: theme.colors.background.white5 }}
+                >
                   <View className="flex-row items-center gap-3">
                     <SkeletonLoader
                       width={theme.size['12']}

@@ -37,7 +37,8 @@ function StatCard({ label, value, suffix, muted }: StatCardProps) {
       <View className="flex-row items-baseline gap-1">
         <Text
           className="text-3xl font-bold tracking-tight"
-          style={{ color: muted ? theme.colors.text.tertiary : theme.colors.text.primary }}>
+          style={{ color: muted ? theme.colors.text.tertiary : theme.colors.text.primary }}
+        >
           {value}
         </Text>
         {suffix && <Text className="text-sm font-medium text-text-secondary">{suffix}</Text>}
@@ -125,13 +126,15 @@ export function LogSetPerformanceModal({
       onClose={onClose}
       title={t('logSetPerformance.title')}
       subtitle={`${setLabel} • ${exerciseName}`}
-      footer={footer}>
+      footer={footer}
+    >
       <ScrollView
         showsVerticalScrollIndicator={false}
         style={webScrollViewStyle}
         contentContainerStyle={{
           paddingBottom: theme.spacing.padding.xl,
-        }}>
+        }}
+      >
         <View className="gap-6">
           {/* Stats Cards */}
           <View className="flex-row gap-3">
@@ -152,7 +155,8 @@ export function LogSetPerformanceModal({
           <Pressable
             className="-mt-2 flex-row items-center justify-center gap-2 rounded-lg border border-dashed border-accent-primary/30 py-2.5"
             style={{ backgroundColor: theme.colors.accent.primary5 }}
-            onPress={() => setIsEditModalVisible(true)}>
+            onPress={() => setIsEditModalVisible(true)}
+          >
             <Edit size={theme.iconSize.xs} color={theme.colors.accent.primary} />
             <Text className="text-sm font-bold" style={{ color: theme.colors.accent.primary }}>
               {t('logSetPerformance.editSetDetails')}
@@ -167,7 +171,8 @@ export function LogSetPerformanceModal({
               </Text>
               <Text
                 className="text-2xl font-bold tabular-nums"
-                style={{ color: theme.colors.accent.primary }}>
+                style={{ color: theme.colors.accent.primary }}
+              >
                 {rpe}
               </Text>
             </View>
@@ -188,17 +193,20 @@ export function LogSetPerformanceModal({
             <View className="flex-row justify-between">
               <Text
                 className="font-medium uppercase tracking-wider text-text-secondary"
-                style={{ fontSize: theme.typography.fontSize.xs }}>
+                style={{ fontSize: theme.typography.fontSize.xs }}
+              >
                 {t('logSetPerformance.easy')}
               </Text>
               <Text
                 className="font-medium uppercase tracking-wider text-text-secondary"
-                style={{ fontSize: theme.typography.fontSize.xs }}>
+                style={{ fontSize: theme.typography.fontSize.xs }}
+              >
                 {t('logSetPerformance.moderate')}
               </Text>
               <Text
                 className="font-medium uppercase tracking-wider text-text-secondary"
-                style={{ fontSize: theme.typography.fontSize.xs }}>
+                style={{ fontSize: theme.typography.fontSize.xs }}
+              >
                 {t('logSetPerformance.failure')}
               </Text>
             </View>

@@ -35,11 +35,13 @@ export function MasterLayout({ children }: MasterLayoutProps) {
               className="items-center gap-1"
               onPress={() => {
                 if (!isActive('/')) router.push('/');
-              }}>
+              }}
+            >
               <View
                 className={`h-10 w-16 items-center justify-center rounded-lg ${
                   isActive('/') ? 'bg-bg-navActive' : ''
-                }`}>
+                }`}
+              >
                 <Home
                   size={theme.iconSize.md}
                   color={isActive('/') ? theme.colors.accent.primary : theme.colors.text.tertiary}
@@ -49,7 +51,8 @@ export function MasterLayout({ children }: MasterLayoutProps) {
               <Text
                 className={`text-xs font-medium ${
                   isActive('/') ? 'text-text-accent' : 'text-text-tertiary'
-                }`}>
+                }`}
+              >
                 {t('home.navigation.home')}
               </Text>
             </Pressable>
@@ -59,11 +62,13 @@ export function MasterLayout({ children }: MasterLayoutProps) {
               className="items-center gap-1"
               onPress={() => {
                 if (!isActive('/workouts')) router.push('/workouts');
-              }}>
+              }}
+            >
               <View
                 className={`h-10 w-16 items-center justify-center rounded-lg ${
                   isActive('/workouts') ? 'bg-bg-navActive' : ''
-                }`}>
+                }`}
+              >
                 <Dumbbell
                   size={theme.iconSize.md}
                   color={
@@ -77,7 +82,8 @@ export function MasterLayout({ children }: MasterLayoutProps) {
               <Text
                 className={`text-xs font-medium ${
                   isActive('/workouts') ? 'text-text-accent' : 'text-text-tertiary'
-                }`}>
+                }`}
+              >
                 {t('home.navigation.workouts')}
               </Text>
             </Pressable>
@@ -98,11 +104,13 @@ export function MasterLayout({ children }: MasterLayoutProps) {
               className="items-center gap-1"
               onPress={() => {
                 if (!isActive('/food')) router.push('/food');
-              }}>
+              }}
+            >
               <View
                 className={`h-10 w-16 items-center justify-center rounded-lg ${
                   isActive('/food') ? 'bg-bg-navActive' : ''
-                }`}>
+                }`}
+              >
                 <UtensilsCrossed
                   size={theme.iconSize.md}
                   color={
@@ -114,7 +122,8 @@ export function MasterLayout({ children }: MasterLayoutProps) {
                 />
               </View>
               <Text
-                className={`text-xs font-medium ${isActive('/food') ? 'text-text-accent' : 'text-text-tertiary'}`}>
+                className={`text-xs font-medium ${isActive('/food') ? 'text-text-accent' : 'text-text-tertiary'}`}
+              >
                 {t('home.navigation.food')}
               </Text>
             </Pressable>
@@ -131,7 +140,8 @@ export function MasterLayout({ children }: MasterLayoutProps) {
               <Text
                 className={`text-xs font-medium ${
                   isActive('/coach') ? 'text-text-accent' : 'text-text-tertiary'
-                }`}>
+                }`}
+              >
                 {t('home.navigation.coach')}
               </Text>
             </Pressable>

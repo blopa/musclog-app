@@ -79,16 +79,19 @@ export function EndWorkoutModal({
       transparent
       animationType="fade"
       onRequestClose={onClose}
-      statusBarTranslucent={Platform.OS !== 'web'}>
+      statusBarTranslucent={Platform.OS !== 'web'}
+    >
       {/* Backdrop */}
       <Pressable
         className="flex-1 items-center justify-center p-4"
         style={[{ backgroundColor: theme.colors.overlay.black60 }, webBackdropStyle]}
-        onPress={onClose}>
+        onPress={onClose}
+      >
         {/* Modal Content */}
         <Pressable
           onPress={(e) => e.stopPropagation()}
-          style={{ width: '100%', maxWidth: theme.size['384'] }}>
+          style={{ width: '100%', maxWidth: theme.size['384'] }}
+        >
           <Animated.View
             style={{
               transform: [{ scale: scaleAnim }],
@@ -98,7 +101,8 @@ export function EndWorkoutModal({
               borderColor: theme.colors.border.dark,
               overflow: 'hidden',
               width: '100%',
-            }}>
+            }}
+          >
             <LinearGradient
               colors={[
                 theme.colors.background.cardElevated,
@@ -109,7 +113,8 @@ export function EndWorkoutModal({
               end={{ x: 1, y: 1 }}
               style={{
                 borderRadius: theme.borderRadius['3xl'],
-              }}>
+              }}
+            >
               {/* Gradient Header */}
               <LinearGradient
                 colors={[
@@ -122,7 +127,8 @@ export function EndWorkoutModal({
                 style={{
                   borderBottomWidth: theme.borderWidth.thin,
                   borderBottomColor: theme.colors.border.dark,
-                }}>
+                }}
+              >
                 <View className="flex-row items-center justify-between p-6">
                   <View className="flex-row items-center gap-3">
                     <View className="h-12 w-12 items-center justify-center rounded-full bg-bg-overlay">
@@ -138,7 +144,8 @@ export function EndWorkoutModal({
                   </View>
                   <Pressable
                     className="active:bg-bg-card-elevated h-10 w-10 items-center justify-center rounded-full bg-bg-overlay"
-                    onPress={onClose}>
+                    onPress={onClose}
+                  >
                     <X size={theme.iconSize.md} color={theme.colors.text.secondary} />
                   </Pressable>
                 </View>

@@ -68,7 +68,8 @@ export default function LandingScreen() {
                   width: theme.size['12'],
                   height: theme.size['12'],
                   ...theme.shadows.lg,
-                }}>
+                }}
+              >
                 <Dumbbell size={theme.iconSize['3xl']} color={theme.colors.text.white} />
               </LinearGradient>
             </View>
@@ -83,7 +84,8 @@ export default function LandingScreen() {
                   fontSize: theme.typography.fontSize['4xl'],
                   letterSpacing: theme.typography.letterSpacing.tight,
                   lineHeight: theme.typography.fontSize['4xl'] * 1.1,
-                }}>
+                }}
+              >
                 Musclog
               </Text>
 
@@ -94,7 +96,8 @@ export default function LandingScreen() {
                   color: theme.colors.text.gray400,
                   fontSize: theme.typography.fontSize.lg,
                   letterSpacing: theme.typography.letterSpacing.wide,
-                }}>
+                }}
+              >
                 Lift, Log, Repeat
               </Text>
 
@@ -106,7 +109,8 @@ export default function LandingScreen() {
                   fontSize: theme.typography.fontSize.sm,
                   maxWidth: theme.maxWidth.md,
                   lineHeight: theme.typography.fontSize.sm * 1.5,
-                }}>
+                }}
+              >
                 Track your progress with data-driven insights and crush your fitness goals.
               </Text>
             </View>
@@ -134,7 +138,8 @@ export default function LandingScreen() {
               style={{
                 color: theme.colors.text.gray500,
                 fontSize: theme.typography.fontSize.xs,
-              }}>
+              }}
+            >
               {t('onboarding.landing.termsAndPrivacy')}
             </Text>
           </View>

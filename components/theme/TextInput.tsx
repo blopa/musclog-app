@@ -26,7 +26,8 @@ export function TextInput({
   return (
     <View className="flex-col gap-2">
       <Text
-        className={`ml-1 text-sm font-medium ${focused ? 'text-accent-primary' : 'text-text-secondary'}`}>
+        className={`ml-1 text-sm font-medium ${focused ? 'text-accent-primary' : 'text-text-secondary'}`}
+      >
         {label}
       </Text>
       <View
@@ -44,7 +45,8 @@ export function TextInput({
                 elevation: theme.elevation.sm,
               }
             : {}
-        }>
+        }
+      >
         <RNTextInput
           className="flex-1 border-none bg-transparent p-0 text-text-primary"
           placeholder={placeholder}

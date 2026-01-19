@@ -34,7 +34,8 @@ export function RestTimer({ restTime, rotationAnim }: RestTimerProps) {
   return (
     <View
       className="relative aspect-square w-full items-center justify-center"
-      style={{ maxWidth: theme.maxWidth['400'] }}>
+      style={{ maxWidth: theme.maxWidth['400'] }}
+    >
       {/* Background glow */}
       <View className="absolute inset-4 overflow-hidden rounded-full">
         <LinearGradient
@@ -51,7 +52,8 @@ export function RestTimer({ restTime, rotationAnim }: RestTimerProps) {
           width="100%"
           height="100%"
           viewBox="0 0 100 100"
-          style={{ transform: [{ rotate: '-90deg' }] }}>
+          style={{ transform: [{ rotate: '-90deg' }] }}
+        >
           {/* Background circle */}
           <Circle
             cx="50"
@@ -82,7 +84,8 @@ export function RestTimer({ restTime, rotationAnim }: RestTimerProps) {
       <View className="absolute inset-0 items-center justify-center">
         <Text
           className="font-bold tabular-nums leading-none tracking-tighter text-text-primary"
-          style={{ fontSize: theme.typography.fontSize['7xl'] }}>
+          style={{ fontSize: theme.typography.fontSize['7xl'] }}
+        >
           {formatRestTime(restTime)}
         </Text>
         <View className="mt-2 flex-row items-center gap-2">

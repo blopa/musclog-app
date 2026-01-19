@@ -74,7 +74,8 @@ export function FoodInfoCard({ food }: FoodInfoCardProps) {
             }
           }}
           scrollEventThrottle={16}
-          className="mb-4">
+          className="mb-4"
+        >
           {/* Grid View */}
           <View className="flex-none" style={{ width: scrollViewWidth || '100%' }}>
             <View className="mb-2 flex-row gap-3">

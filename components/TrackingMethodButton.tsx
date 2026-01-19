@@ -38,13 +38,15 @@ export function TrackingMethodButton({
         borderRadius: theme.borderRadius.xl,
         overflow: 'hidden',
         ...theme.shadows.md,
-      }}>
+      }}
+    >
       <Icon size={theme.iconSize.lg} color={theme.colors.text.white} />
     </LinearGradient>
   ) : (
     <View
       className="h-10 w-10 items-center justify-center rounded-lg"
-      style={{ backgroundColor: iconBgColor || theme.colors.background.secondaryDark }}>
+      style={{ backgroundColor: iconBgColor || theme.colors.background.secondaryDark }}
+    >
       <Icon size={theme.iconSize.md} color={theme.colors.text.primary} />
     </View>
   );
@@ -59,7 +61,8 @@ export function TrackingMethodButton({
       style={{
         borderColor: highlighted ? theme.colors.accent.primary40 : theme.colors.border.default,
       }}
-      onPress={onPress}>
+      onPress={onPress}
+    >
       {IconContainer}
       <View className="flex-1">
         <View className="flex-row items-center gap-2">
@@ -67,10 +70,12 @@ export function TrackingMethodButton({
           {badge && (
             <View
               className="rounded-full px-2 py-0.5"
-              style={{ backgroundColor: theme.colors.accent.primary }}>
+              style={{ backgroundColor: theme.colors.accent.primary }}
+            >
               <Text
                 className="font-extrabold uppercase text-text-black"
-                style={{ fontSize: theme.typography.fontSize.xs }}>
+                style={{ fontSize: theme.typography.fontSize.xs }}
+              >
                 {badge}
               </Text>
             </View>

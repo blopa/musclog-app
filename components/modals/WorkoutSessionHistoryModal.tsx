@@ -79,7 +79,8 @@ export function WorkoutSessionHistoryModal({
         <Pressable className="rounded-full p-2">
           <Share2 size={theme.iconSize.md} color={theme.colors.text.secondary} />
         </Pressable>
-      }>
+      }
+    >
       <View className="gap-6 px-4 pb-8 pt-4">
         {/* Workout Summary */}
         <View className="gap-2">
@@ -87,7 +88,8 @@ export function WorkoutSessionHistoryModal({
             <View className="flex-1">
               <Text
                 className="mb-0.5 block text-sm font-bold uppercase tracking-wider"
-                style={{ color: theme.colors.accent.primary }}>
+                style={{ color: theme.colors.accent.primary }}
+              >
                 {t('workoutHistory.workoutInProgress')}
               </Text>
               <Text className="text-3xl font-bold leading-tight text-text-primary">
@@ -108,7 +110,8 @@ export function WorkoutSessionHistoryModal({
           <View className="mt-1 flex-row items-center gap-3">
             <View
               className="flex-row items-center gap-1.5 rounded-lg px-3 py-1.5"
-              style={{ backgroundColor: theme.colors.status.info20 }}>
+              style={{ backgroundColor: theme.colors.status.info20 }}
+            >
               <Weight size={theme.iconSize.md} color={theme.colors.status.info} />
               <Text className="text-sm font-semibold" style={{ color: theme.colors.status.info }}>
                 {totalVolume.toLocaleString()}kg {t('workoutHistory.volume')}
@@ -116,7 +119,8 @@ export function WorkoutSessionHistoryModal({
             </View>
             <View
               className="flex-row items-center gap-1.5 rounded-lg px-3 py-1.5"
-              style={{ backgroundColor: theme.colors.background.white5 }}>
+              style={{ backgroundColor: theme.colors.background.white5 }}
+            >
               <Dumbbell size={theme.iconSize.md} color={theme.colors.text.secondary} />
               <Text className="text-sm font-semibold text-text-secondary">
                 {totalSets} {t('workoutHistory.setsDone')}

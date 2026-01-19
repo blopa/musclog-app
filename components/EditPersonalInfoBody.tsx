@@ -46,12 +46,14 @@ export function EditPersonalInfoBody({
         <View className="relative">
           <View
             className="h-32 w-32 overflow-hidden rounded-full border-4 shadow-xl"
-            style={{ borderColor: theme.colors.background.white10 }}>
+            style={{ borderColor: theme.colors.background.white10 }}
+          >
             <Image source={{ uri: photoUri }} className="h-full w-full" resizeMode="cover" />
           </View>
           <Pressable
             className="absolute bottom-0 right-0 h-10 w-10 items-center justify-center rounded-full border-4 border-bg-primary bg-accent-primary active:scale-110"
-            onPress={() => console.log('Change photo')}>
+            onPress={() => console.log('Change photo')}
+          >
             <Camera size={theme.iconSize.lg} color={theme.colors.text.black} />
           </Pressable>
         </View>

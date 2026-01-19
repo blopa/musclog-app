@@ -22,7 +22,8 @@ export const GroupActionButton: React.FC<GroupActionButtonProps> = ({
         justifyContent: 'center',
         alignItems: 'center',
         gap: theme.spacing.gap.xs,
-      }}>
+      }}
+    >
       <View style={{ flexDirection: 'row', gap: theme.size.xs }}>
         <View
           style={{
@@ -82,7 +83,8 @@ export const GroupActionButton: React.FC<GroupActionButtonProps> = ({
         paddingVertical: theme.spacing.padding.md,
         zIndex: theme.zIndex.max,
         width: '100%',
-      }}>
+      }}
+    >
       <Pressable
         onPress={onPress}
         style={({ pressed }) => [
@@ -108,7 +110,8 @@ export const GroupActionButton: React.FC<GroupActionButtonProps> = ({
             shadowRadius: theme.shadows.radius3.shadowRadius,
             elevation: theme.elevation.md,
           },
-        ]}>
+        ]}
+      >
         <ActionIcon color={theme.colors.text.white} />
         <Text
           style={{
@@ -117,7 +120,8 @@ export const GroupActionButton: React.FC<GroupActionButtonProps> = ({
             fontSize: theme.typography.fontSize.sm,
             textTransform: 'uppercase',
             letterSpacing: theme.typography.letterSpacing.extraWide,
-          }}>
+          }}
+        >
           {allSelectedInSameGroup ? t('optionsSelector.unlink') : t('optionsSelector.link')}
         </Text>
       </Pressable>

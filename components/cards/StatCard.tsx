@@ -51,7 +51,8 @@ export function StatCard({
                   changeType === 'positive'
                     ? theme.colors.accent.primary
                     : theme.colors.status.warning,
-              }}>
+              }}
+            >
               {change}
             </Text>
           </View>

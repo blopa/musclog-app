@@ -288,7 +288,8 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
       visible={visible}
       onClose={onClose}
       title={t('workouts.addExercise.title')}
-      scrollable={true}>
+      scrollable={true}
+    >
       <View className="flex-1 px-4 py-6">
         {selectedExercise ? (
           <View className="mb-6">
@@ -313,7 +314,8 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
                     color: theme.colors.text.secondary,
                     textTransform: 'uppercase',
                     letterSpacing: theme.typography.letterSpacing.extraWide,
-                  }}>
+                  }}
+                >
                   {t('workouts.addExercise.targetMuscle')}
                 </Text>
               </View>
@@ -333,7 +335,8 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
               style={{
                 height: theme.components.button.height.md,
                 borderColor: theme.colors.background.white5,
-              }}>
+              }}
+            >
               <Search size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
               <TextInput
                 className="ml-3 flex-1 text-base text-text-primary"
@@ -364,7 +367,8 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
                       fontSize: theme.typography.fontSize.base,
                       color: theme.colors.text.secondary,
                       textAlign: 'center',
-                    }}>
+                    }}
+                  >
                     {emptyStateMessage}
                   </Text>
                 </View>
@@ -376,14 +380,16 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
         {/* Create Set Card */}
         <View
           className="rounded-2xl border bg-bg-card p-5"
-          style={{ borderColor: theme.colors.background.white5 }}>
+          style={{ borderColor: theme.colors.background.white5 }}
+        >
           <View className="mb-6 flex-row items-center justify-between">
             <Text
               style={{
                 fontSize: theme.typography.fontSize.lg,
                 fontWeight: theme.typography.fontWeight.bold,
                 color: theme.colors.text.primary,
-              }}>
+              }}
+            >
               {t('workouts.addExercise.createSet')}
             </Text>
             <View className="flex-row items-center gap-2">
@@ -392,7 +398,8 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
                   fontSize: theme.typography.fontSize.xs,
                   fontWeight: theme.typography.fontWeight.medium,
                   color: theme.colors.text.secondary,
-                }}>
+                }}
+              >
                 {t('workouts.addExercise.bodyweight')}
               </Text>
               <Switch

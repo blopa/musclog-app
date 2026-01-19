@@ -87,7 +87,8 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
     <FullScreenModal
       visible={visible}
       onClose={onClose}
-      title={t('exercises.createExercise.title')}>
+      title={t('exercises.createExercise.title')}
+    >
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="px-4 py-2" style={{ gap: theme.spacing.gap.xl }}>
           {/* Exercise Name */}
@@ -115,14 +116,16 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
                   </Text>
                   <View
                     className="h-14 w-full flex-row items-center justify-between rounded-lg border bg-bg-card px-4"
-                    style={{ borderColor: theme.colors.background.white10 }}>
+                    style={{ borderColor: theme.colors.background.white10 }}
+                  >
                     <Text
                       className="font-medium"
                       style={{
                         color: primaryMuscle
                           ? theme.colors.text.primary
                           : theme.colors.text.tertiary,
-                      }}>
+                      }}
+                    >
                       {primaryMuscleLabel}
                     </Text>
                     <ChevronDown size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
@@ -151,7 +154,8 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
                         borderColor: isSelected
                           ? theme.colors.accent.primary + '80'
                           : 'transparent',
-                      }}>
+                      }}
+                    >
                       <Text
                         className="text-sm font-medium"
                         style={{
@@ -159,7 +163,8 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
                             ? theme.colors.accent.primary
                             : theme.colors.text.primary,
                           fontWeight: isSelected ? '600' : '500',
-                        }}>
+                        }}
+                      >
                         {muscle.label}
                       </Text>
                     </Pressable>
@@ -191,7 +196,8 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
               <Pressable
                 onPress={handleUploadImage}
                 className="flex-1 flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed bg-bg-card/30 p-4 active:border-accent-primary active:bg-accent-primary/5"
-                style={{ borderColor: theme.colors.background.white10 }}>
+                style={{ borderColor: theme.colors.background.white10 }}
+              >
                 <Camera size={theme.iconSize.xl} color={theme.colors.text.tertiary} />
                 <Text className="text-xs font-medium text-text-secondary">
                   {t('exercises.createExercise.uploadImage')}
@@ -200,7 +206,8 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
               <Pressable
                 onPress={handleVideoURL}
                 className="flex-1 flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed bg-bg-card/30 p-4 active:border-accent-primary active:bg-accent-primary/5"
-                style={{ borderColor: theme.colors.background.white10 }}>
+                style={{ borderColor: theme.colors.background.white10 }}
+              >
                 <Link size={theme.iconSize.xl} color={theme.colors.text.tertiary} />
                 <Text className="text-xs font-medium text-text-secondary">
                   {t('exercises.createExercise.videoURL')}
@@ -221,7 +228,8 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
           paddingBottom: Math.max(insets.bottom, theme.spacing.padding.base),
           paddingTop: theme.spacing.padding.base,
           backgroundColor: theme.colors.background.primary,
-        }}>
+        }}
+      >
         <Button
           label={t('exercises.createExercise.createButton')}
           onPress={handleCreateExercise}

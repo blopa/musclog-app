@@ -51,10 +51,12 @@ function ExerciseListItem({
   return (
     <Pressable
       onPress={onPress}
-      className="flex-row items-center gap-4 px-4 py-3 active:bg-bg-overlay">
+      className="flex-row items-center gap-4 px-4 py-3 active:bg-bg-overlay"
+    >
       <View
         className="h-14 w-14 rounded-lg bg-bg-card"
-        style={{ backgroundColor: theme.colors.background.exerciseCardBackground }}>
+        style={{ backgroundColor: theme.colors.background.exerciseCardBackground }}
+      >
         {imageUrl ? (
           <Image
             source={{ uri: imageUrl }}
@@ -75,7 +77,8 @@ function ExerciseListItem({
               tag.variant === 'primary'
                 ? 'border border-accent-primary/30 bg-accent-primary/20'
                 : 'border border-border-dark bg-bg-card'
-            }`}>
+            }`}
+          >
             <Text
               className="font-bold uppercase tracking-wider"
               style={{
@@ -84,7 +87,8 @@ function ExerciseListItem({
                   tag.variant === 'primary'
                     ? theme.colors.accent.primary
                     : theme.colors.status.customGreen,
-              }}>
+              }}
+            >
               {tag.label}
             </Text>
           </View>
@@ -244,7 +248,8 @@ export default function ExercisesModal({ visible, onClose }: ExercisesModalProps
       visible={visible}
       onClose={onClose}
       title={t('exercises.title')}
-      scrollable={false}>
+      scrollable={false}
+    >
       <SafeAreaView className="flex-1 bg-bg-primary" edges={['top']}>
         <ScrollView className="flex-1 px-4 pb-32" showsVerticalScrollIndicator={false}>
           <View className="py-3">
@@ -268,7 +273,8 @@ export default function ExercisesModal({ visible, onClose }: ExercisesModalProps
               {[1, 2, 3, 4].map((i) => (
                 <View
                   key={i}
-                  className="mb-4 overflow-hidden rounded-lg border border-border-dark bg-bg-card">
+                  className="mb-4 overflow-hidden rounded-lg border border-border-dark bg-bg-card"
+                >
                   <View className="flex-row items-center justify-between px-4 py-4">
                     <View className="flex-row items-center gap-3">
                       <SkeletonLoader
@@ -304,12 +310,14 @@ export default function ExercisesModal({ visible, onClose }: ExercisesModalProps
                     count={groupExercises.length}
                     icon={config.icon}
                     isOpen={openAccordions[group] || false}
-                    onToggle={() => toggleAccordion(group)}>
+                    onToggle={() => toggleAccordion(group)}
+                  >
                     {groupExercises.length === 0 ? (
                       <View className="border-t border-border-dark px-4 py-2">
                         <Text
                           className="text-sm"
-                          style={{ color: theme.colors.status.customGreen }}>
+                          style={{ color: theme.colors.status.customGreen }}
+                        >
                           {t('exercises.emptyGroupMessage', {
                             muscleGroup: config.name.toLowerCase(),
                           })}
