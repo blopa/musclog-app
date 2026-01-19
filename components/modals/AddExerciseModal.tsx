@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Switch } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, TextInput, Switch, ActivityIndicator } from 'react-native';
 import { Search, Dumbbell, User, PlusCircle } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
@@ -8,6 +8,9 @@ import { Button } from '../theme/Button';
 import { OptionsSelector, SelectorOption } from '../OptionsSelector';
 import { FilterTabs } from '../FilterTabs';
 import { NumericInput } from '../theme/NumericInput';
+import { database } from '../../database';
+import { Q } from '@nozbe/watermelondb';
+import Exercise from '../../database/models/Exercise';
 
 type MuscleGroup = 'chest' | 'back' | 'legs' | 'arms';
 
@@ -15,45 +18,7 @@ type ExerciseId = string;
 
 type ExerciseOption = SelectorOption<ExerciseId> & {
   category: string;
-  type: 'compound' | 'isolation' | 'bodyweight';
-};
-
-const exercises: Record<MuscleGroup, ExerciseOption[]> = {
-  chest: [
-    {
-      id: 'bench-press',
-      label: 'Barbell Bench Press',
-      description: 'Chest • Compound',
-      icon: Dumbbell,
-      iconBgColor: theme.colors.accent.primary10,
-      iconColor: theme.colors.accent.primary,
-      category: 'Chest',
-      type: 'compound',
-    },
-    {
-      id: 'incline-press',
-      label: 'Incline Dumbbell Press',
-      description: 'Chest • Isolation',
-      icon: Dumbbell,
-      iconBgColor: theme.colors.background.white5,
-      iconColor: theme.colors.text.secondary,
-      category: 'Chest',
-      type: 'isolation',
-    },
-    {
-      id: 'push-up',
-      label: 'Push Up',
-      description: 'Chest • Bodyweight',
-      icon: User,
-      iconBgColor: theme.colors.background.white5,
-      iconColor: theme.colors.text.secondary,
-      category: 'Chest',
-      type: 'bodyweight',
-    },
-  ],
-  back: [],
-  legs: [],
-  arms: [],
+  type: 'compound' | 'isolation' | 'bodyweight' | 'machine';
 };
 
 type AddExerciseModalProps = {
@@ -62,16 +27,65 @@ type AddExerciseModalProps = {
   onAddExercise?: (data: any) => void;
 };
 
+// Helper function to normalize muscle group names from database to UI categories
+const normalizeMuscleGroup = (muscleGroup: string): MuscleGroup | null => {
+  const normalized = muscleGroup.toLowerCase();
+  if (normalized.includes('chest')) {
+    return 'chest';
+  }
+  if (normalized.includes('back') || normalized.includes('lat')) {
+    return 'back';
+  }
+  if (normalized.includes('leg') || normalized.includes('quad') || normalized.includes('hamstring') || normalized.includes('calf') || normalized.includes('glute')) {
+    return 'legs';
+  }
+  if (normalized.includes('arm') || normalized.includes('bicep') || normalized.includes('tricep') || normalized.includes('shoulder') || normalized.includes('deltoid')) {
+    return 'arms';
+  }
+  return null;
+};
+
+// Helper function to determine exercise type from mechanic/equipment
+const getExerciseType = (mechanicType: string, equipmentType: string): 'compound' | 'isolation' | 'bodyweight' | 'machine' => {
+  const mechanic = mechanicType?.toLowerCase() || '';
+  const equipment = equipmentType?.toLowerCase() || '';
+  
+  if (equipment.includes('bodyweight') || equipment.includes('body weight')) {
+    return 'bodyweight';
+  }
+  if (mechanic.includes('compound')) {
+    return 'compound';
+  }
+  if (equipment.includes('machine')) {
+    return 'machine';
+  }
+  return 'isolation';
+};
+
+// Helper function to get icon for exercise type
+const getExerciseIcon = (type: string) => {
+  if (type === 'bodyweight') {
+    return User;
+  }
+  return Dumbbell;
+};
+
 export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExerciseModalProps) {
   const { t } = useTranslation();
   const [activeMuscle, setActiveMuscle] = useState<MuscleGroup>('chest');
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedExerciseId, setSelectedExerciseId] = useState<ExerciseId>('bench-press');
+  const [selectedExerciseId, setSelectedExerciseId] = useState<ExerciseId | null>(null);
   const [isBodyweight, setIsBodyweight] = useState(false);
   const [sets, setSets] = useState('3');
   const [reps, setReps] = useState('10');
   const [weight, setWeight] = useState('60');
-  const [extraWeight, setExtraWeight] = useState('0');
+  const [exercises, setExercises] = useState<Record<MuscleGroup, ExerciseOption[]>>({
+    chest: [],
+    back: [],
+    legs: [],
+    arms: [],
+  });
+  const [isLoading, setIsLoading] = useState(false);
 
   const muscleTabs = [
     { id: 'chest', label: t('workouts.addExercise.muscleGroups.chest') },
@@ -80,11 +94,101 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
     { id: 'arms', label: t('workouts.addExercise.muscleGroups.arms') },
   ];
 
+  // Load exercises from database
+  const loadExercises = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      // Fetch all non-deleted exercises
+      const allExercises = await database
+        .get<Exercise>('exercises')
+        .query(Q.where('deleted_at', Q.eq(null)))
+        .fetch();
+
+      // Group exercises by muscle group
+      const groupedExercises: Record<MuscleGroup, ExerciseOption[]> = {
+        chest: [],
+        back: [],
+        legs: [],
+        arms: [],
+      };
+
+      allExercises.forEach((exercise) => {
+        const muscleGroup = normalizeMuscleGroup(exercise.muscleGroup);
+        if (!muscleGroup) {
+          return; // Skip exercises that don't match our categories
+        }
+
+        const exerciseType = getExerciseType(exercise.mechanicType, exercise.equipmentType);
+        const Icon = getExerciseIcon(exerciseType);
+
+        const exerciseOption: ExerciseOption = {
+          id: exercise.id,
+          label: exercise.name,
+          description: `${exercise.muscleGroup} • ${exerciseType.charAt(0).toUpperCase() + exerciseType.slice(1)}`,
+          icon: Icon,
+          iconBgColor: exerciseType === 'bodyweight' 
+            ? theme.colors.background.white5 
+            : theme.colors.accent.primary10,
+          iconColor: exerciseType === 'bodyweight'
+            ? theme.colors.text.secondary
+            : theme.colors.accent.primary,
+          category: exercise.muscleGroup,
+          type: exerciseType,
+        };
+
+        groupedExercises[muscleGroup].push(exerciseOption);
+      });
+
+      // Sort exercises within each group by name
+      Object.keys(groupedExercises).forEach((key) => {
+        const group = key as MuscleGroup;
+        groupedExercises[group].sort((a, b) => a.label.localeCompare(b.label));
+      });
+
+      setExercises(groupedExercises);
+
+      // Auto-select first exercise if available
+      const currentGroupExercises = groupedExercises[activeMuscle];
+      if (currentGroupExercises.length > 0 && !selectedExerciseId) {
+        setSelectedExerciseId(currentGroupExercises[0].id);
+      }
+    } catch (error) {
+      console.error('Error loading exercises:', error);
+      setExercises({ chest: [], back: [], legs: [], arms: [] });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [activeMuscle, selectedExerciseId]);
+
+  // Load exercises when modal opens or active muscle changes
+  useEffect(() => {
+    if (visible) {
+      loadExercises();
+    }
+  }, [visible, loadExercises]);
+
+  // Update selected exercise when active muscle changes
+  useEffect(() => {
+    const currentGroupExercises = exercises[activeMuscle];
+    if (currentGroupExercises.length > 0) {
+      // Keep selection if it exists in the new group, otherwise select first
+      const exerciseExists = currentGroupExercises.some((ex) => ex.id === selectedExerciseId);
+      if (!exerciseExists) {
+        setSelectedExerciseId(currentGroupExercises[0].id);
+      }
+    } else {
+      setSelectedExerciseId(null);
+    }
+  }, [activeMuscle, exercises, selectedExerciseId]);
+
   const filteredExercises = exercises[activeMuscle].filter((ex) =>
     ex.label.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleAdd = () => {
+    if (!selectedExerciseId) {
+      return; // Don't add if no exercise selected
+    }
     onAddExercise?.({
       exerciseId: selectedExerciseId,
       sets: parseInt(sets),
@@ -115,17 +219,8 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
               }}>
               {t('workouts.addExercise.targetMuscle')}
             </Text>
-            <Text
-              style={{
-                fontSize: theme.typography.fontSize.xs,
-                fontWeight: theme.typography.fontWeight.bold,
-                color: theme.colors.accent.primary,
-                textTransform: 'uppercase',
-                letterSpacing: theme.typography.letterSpacing.wider,
-              }}>
-              {t('workouts.addExercise.multiSelect')}
-            </Text>
           </View>
+          {/*TODO: also add an option to select "all muscles"*/}
           <FilterTabs
             tabs={muscleTabs}
             activeTab={activeMuscle}
@@ -155,12 +250,32 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
 
         {/* Exercise List */}
         <View className="mb-8">
-          <OptionsSelector
-            title=""
-            options={filteredExercises}
-            selectedId={selectedExerciseId}
-            onSelect={(id) => setSelectedExerciseId(id)}
-          />
+          {isLoading ? (
+            <View className="items-center justify-center py-12">
+              <ActivityIndicator size="large" color={theme.colors.accent.primary} />
+            </View>
+          ) : filteredExercises.length > 0 ? (
+            <OptionsSelector
+              title=""
+              options={filteredExercises}
+              selectedId={selectedExerciseId || undefined}
+              onSelect={(id) => setSelectedExerciseId(id)}
+            />
+          ) : (
+            <View className="items-center justify-center py-12">
+              <Text
+                style={{
+                  fontSize: theme.typography.fontSize.base,
+                  color: theme.colors.text.secondary,
+                  textAlign: 'center',
+                }}>
+                {/*TODO: use translation*/}
+                {searchQuery
+                  ? `No exercises found matching "${searchQuery}"`
+                  : `No exercises available for ${muscleTabs.find((tab) => tab.id === activeMuscle)?.label || activeMuscle}`}
+              </Text>
+            </View>
+          )}
         </View>
 
         {/* Create Set Card */}
@@ -240,6 +355,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
           width="full"
           icon={PlusCircle}
           onPress={handleAdd}
+          disabled={!selectedExerciseId || isLoading}
         />
       </View>
     </FullScreenModal>
