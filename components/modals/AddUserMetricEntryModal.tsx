@@ -3,9 +3,9 @@ import { View, Text, ScrollView, Pressable } from 'react-native';
 import { CheckCircle, Minus, Plus } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
-import { LinearGradient } from 'expo-linear-gradient';
 import { theme } from '../../theme';
 import { SegmentedControl } from '../theme/SegmentedControl';
+import { Button } from '../theme/Button';
 import { GenericCard } from '../cards/GenericCard';
 import { DateTimeSelectorCard } from '../cards/DateTimeSelectorCard';
 import { MoodSelectorCard } from '../cards/MoodSelectorCard';
@@ -193,14 +193,18 @@ export default function AddUserMetricEntryModal({
           {/* Stepper Controls */}
           <View
             className="mb-6 flex-row items-center justify-between"
-            style={{ maxWidth: 280, width: '100%', alignSelf: 'center' }}>
+            style={{
+              maxWidth: theme.size['280'],
+              width: '100%',
+              alignSelf: 'center',
+            }}>
             <Pressable
               onPress={handleDecrement}
               className="h-14 w-14 items-center justify-center rounded-full"
               style={{
                 backgroundColor: theme.colors.background.cardElevated,
                 borderColor: theme.colors.background.white10,
-                borderWidth: 1,
+                borderWidth: theme.borderWidth.thin,
               }}>
               <Minus size={theme.iconSize.xl} color={theme.colors.text.primary} />
             </Pressable>
@@ -217,14 +221,16 @@ export default function AddUserMetricEntryModal({
               style={{
                 backgroundColor: theme.colors.background.cardElevated,
                 borderColor: theme.colors.background.white10,
-                borderWidth: 1,
+                borderWidth: theme.borderWidth.thin,
               }}>
               <Plus size={theme.iconSize.xl} color={theme.colors.text.primary} />
             </Pressable>
           </View>
 
           {/* Quick Increment Buttons */}
-          <View className="mb-6 flex-row justify-center gap-2">
+          <View
+            className="mb-6 flex-row justify-center"
+            style={{ gap: theme.spacing.gap['2'] }}>
             {config.quickIncrements.map((increment) => (
               <Pressable
                 key={increment}
@@ -246,7 +252,7 @@ export default function AddUserMetricEntryModal({
         <View
           className="mb-6"
           style={{
-            height: 1,
+            height: theme.borderWidth.thin,
             backgroundColor: theme.colors.background.white5,
           }}
         />
@@ -283,7 +289,7 @@ export default function AddUserMetricEntryModal({
       <View className="flex-1">
         {/* Content */}
         <ScrollView className="flex-1 px-4 pb-12" showsVerticalScrollIndicator={false}>
-          <View style={{ gap: 32 }}>
+          <View style={{ gap: theme.spacing.gap['2xl'] }}>
             {/* Metric Selector */}
             <SegmentedControl
               options={metricOptions}
@@ -308,7 +314,7 @@ export default function AddUserMetricEntryModal({
                 </View>
                 <PagerView
                   ref={pagerRef}
-                  style={{ height: pagerHeight || 400 }}
+                  style={{ height: pagerHeight || theme.size['400'] }}
                   initialPage={metricToPageIndex[selectedMetric]}
                   onPageSelected={(e) => {
                     const pageIndex = e.nativeEvent.position;
@@ -334,30 +340,15 @@ export default function AddUserMetricEntryModal({
         <View
           className="border-t p-6 pb-10"
           style={{ borderColor: theme.colors.background.white5 }}>
-          <Pressable
+          <Button
+            label={t('bodyMetrics.addEntry.saveEntry')}
             onPress={handleSave}
-            className="h-14 w-full items-center justify-center rounded-2xl active:scale-[0.98]"
-            style={{
-              shadowColor: theme.colors.accent.primary,
-              shadowOffset: { width: 0, height: 8 },
-              shadowOpacity: 0.3,
-              shadowRadius: 30,
-              elevation: 8,
-            }}>
-            <LinearGradient
-              colors={theme.colors.gradients.cta}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              className="h-full w-full flex-row items-center justify-center gap-2 rounded-2xl"
-              style={{
-                paddingVertical: 16,
-              }}>
-              <Text className="text-lg font-bold text-text-primary">
-                {t('bodyMetrics.addEntry.saveEntry')}
-              </Text>
-              <CheckCircle size={theme.iconSize.lg} color={theme.colors.text.primary} />
-            </LinearGradient>
-          </Pressable>
+            icon={CheckCircle}
+            iconPosition="right"
+            variant="gradientCta"
+            size="md"
+            width="full"
+          />
         </View>
       </View>
     </FullScreenModal>
