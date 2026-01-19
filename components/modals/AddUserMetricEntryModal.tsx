@@ -49,6 +49,7 @@ export default function AddUserMetricEntryModal({
   const [mood, setMood] = useState(3); // 0-4: Poor, Low, Okay, Good, Great
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedTime, setSelectedTime] = useState(new Date());
+  const [pagerHeight, setPagerHeight] = useState<number | null>(null);
 
   const pageIndexToMetric: MetricType[] = ['weight', 'bodyFat', 'height'];
 
@@ -126,6 +127,26 @@ export default function AddUserMetricEntryModal({
 
   // Sync PagerView when selectedMetric changes
   useEffect(() => {
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/b4248a4a-4b24-44a3-b918-17843b5d9fe0', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        location: 'AddUserMetricEntryModal.tsx:128',
+        message: 'useEffect sync PagerView',
+        data: {
+          selectedMetric,
+          pageIndex: metricToPageIndex[selectedMetric],
+          pagerRefExists: !!pagerRef.current,
+          visible,
+        },
+        timestamp: Date.now(),
+        sessionId: 'debug-session',
+        runId: 'run1',
+        hypothesisId: 'E',
+      }),
+    }).catch(() => {});
+    // #endregion
     const pageIndex = metricToPageIndex[selectedMetric];
     pagerRef.current?.setPage(pageIndex);
   }, [metricToPageIndex, selectedMetric]);
@@ -148,6 +169,21 @@ export default function AddUserMetricEntryModal({
 
   // Render full metric entry card content for a specific metric type
   const renderMetricEntry = (metric: MetricType) => {
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/b4248a4a-4b24-44a3-b918-17843b5d9fe0', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        location: 'AddUserMetricEntryModal.tsx:150',
+        message: 'renderMetricEntry called',
+        data: { metric, selectedMetric, visible },
+        timestamp: Date.now(),
+        sessionId: 'debug-session',
+        runId: 'run1',
+        hypothesisId: 'E',
+      }),
+    }).catch(() => {});
+    // #endregion
     const config = metricConfigs[metric];
     const value = metric === 'weight' ? weight : metric === 'bodyFat' ? bodyFat : height;
 
@@ -294,12 +330,53 @@ export default function AddUserMetricEntryModal({
             {/* Metric Entry Group - Input, Date, and Time */}
             <GenericCard variant="card" size="default">
               <View style={{ overflow: 'hidden' }}>
+                {/* Measure content height on first render */}
+                <View
+                  style={{ position: 'absolute', opacity: 0, pointerEvents: 'none' }}
+                  onLayout={(e) => {
+                    if (!pagerHeight) {
+                      const height = e.nativeEvent.layout.height;
+                      // #region agent log
+                      fetch('http://127.0.0.1:7242/ingest/b4248a4a-4b24-44a3-b918-17843b5d9fe0', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                          location: 'AddUserMetricEntryModal.tsx:296',
+                          message: 'Content measurement onLayout',
+                          data: { measuredHeight: height, pagerHeight },
+                          timestamp: Date.now(),
+                          sessionId: 'debug-session',
+                          runId: 'post-fix',
+                          hypothesisId: 'A',
+                        }),
+                      }).catch(() => {});
+                      // #endregion
+                      setPagerHeight(height);
+                    }
+                  }}>
+                  {renderMetricEntry(selectedMetric)}
+                </View>
                 <PagerView
                   ref={pagerRef}
-                  style={{ flex: 1 }}
+                  style={{ height: pagerHeight || 400 }}
                   initialPage={metricToPageIndex[selectedMetric]}
                   onPageSelected={(e) => {
                     const pageIndex = e.nativeEvent.position;
+                    // #region agent log
+                    fetch('http://127.0.0.1:7242/ingest/b4248a4a-4b24-44a3-b918-17843b5d9fe0', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        location: 'AddUserMetricEntryModal.tsx:301',
+                        message: 'PagerView onPageSelected',
+                        data: { pageIndex, selectedMetric },
+                        timestamp: Date.now(),
+                        sessionId: 'debug-session',
+                        runId: 'post-fix',
+                        hypothesisId: 'E',
+                      }),
+                    }).catch(() => {});
+                    // #endregion
                     handlePageChange(pageIndex);
                   }}
                   scrollEnabled={false}>
