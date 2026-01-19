@@ -340,12 +340,22 @@
       "targetMuscle": "Doelspier",
       "multiSelect": "MEERVOUDIGE SELECTIE",
       "searchPlaceholder": "Zoek {{muscle}} oefeningen...",
+      "searchPlaceholderAll": "Zoek oefeningen...",
       "createSet": "Serie Maken",
       "bodyweight": "Lichaamsgewicht",
       "sets": "Series",
       "reps": "Herhalingen",
       "weight": "Gewicht",
-      "addToWorkout": "Toevoegen aan Training"
+      "addToWorkout": "Toevoegen aan Training",
+      "muscleGroups": {
+        "all": "Alle",
+        "chest": "Borst",
+        "back": "Rug",
+        "legs": "Benen",
+        "arms": "Armen"
+      },
+      "noExercisesFound": "Geen oefeningen gevonden die overeenkomen met \"{{query}}\"",
+      "noExercisesAvailable": "Geen oefeningen beschikbaar voor {{muscle}}"
     }
   },
   "workoutDetails": {

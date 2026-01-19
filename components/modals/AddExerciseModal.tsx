@@ -12,7 +12,7 @@ import { database } from '../../database';
 import { Q } from '@nozbe/watermelondb';
 import Exercise from '../../database/models/Exercise';
 
-type MuscleGroup = 'chest' | 'back' | 'legs' | 'arms';
+type MuscleGroup = 'all' | 'chest' | 'back' | 'legs' | 'arms';
 
 type ExerciseId = string;
 
@@ -72,7 +72,7 @@ const getExerciseIcon = (type: string) => {
 
 export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExerciseModalProps) {
   const { t } = useTranslation();
-  const [activeMuscle, setActiveMuscle] = useState<MuscleGroup>('chest');
+  const [activeMuscle, setActiveMuscle] = useState<MuscleGroup>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedExerciseId, setSelectedExerciseId] = useState<ExerciseId | null>(null);
   const [isBodyweight, setIsBodyweight] = useState(false);
@@ -80,6 +80,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
   const [reps, setReps] = useState('10');
   const [weight, setWeight] = useState('60');
   const [exercises, setExercises] = useState<Record<MuscleGroup, ExerciseOption[]>>({
+    all: [],
     chest: [],
     back: [],
     legs: [],
@@ -88,6 +89,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
   const [isLoading, setIsLoading] = useState(false);
 
   const muscleTabs = [
+    { id: 'all', label: t('workouts.addExercise.muscleGroups.all') },
     { id: 'chest', label: t('workouts.addExercise.muscleGroups.chest') },
     { id: 'back', label: t('workouts.addExercise.muscleGroups.back') },
     { id: 'legs', label: t('workouts.addExercise.muscleGroups.legs') },
@@ -106,6 +108,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
 
       // Group exercises by muscle group
       const groupedExercises: Record<MuscleGroup, ExerciseOption[]> = {
+        all: [],
         chest: [],
         back: [],
         legs: [],
@@ -136,7 +139,10 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
           type: exerciseType,
         };
 
+        // Add to specific muscle group
         groupedExercises[muscleGroup].push(exerciseOption);
+        // Also add to 'all' group
+        groupedExercises.all.push(exerciseOption);
       });
 
       // Sort exercises within each group by name
@@ -154,7 +160,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
       }
     } catch (error) {
       console.error('Error loading exercises:', error);
-      setExercises({ chest: [], back: [], legs: [], arms: [] });
+      setExercises({ all: [], chest: [], back: [], legs: [], arms: [] });
     } finally {
       setIsLoading(false);
     }
@@ -220,7 +226,6 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
               {t('workouts.addExercise.targetMuscle')}
             </Text>
           </View>
-          {/*TODO: also add an option to select "all muscles"*/}
           <FilterTabs
             tabs={muscleTabs}
             activeTab={activeMuscle}
@@ -241,7 +246,9 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
           <Search size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
           <TextInput
             className="ml-3 flex-1 text-base text-text-primary"
-            placeholder={t('workouts.addExercise.searchPlaceholder', { muscle: activeMuscle })}
+            placeholder={activeMuscle === 'all' 
+              ? t('workouts.addExercise.searchPlaceholderAll')
+              : t('workouts.addExercise.searchPlaceholder', { muscle: muscleTabs.find((tab) => tab.id === activeMuscle)?.label || activeMuscle })}
             placeholderTextColor={theme.colors.text.tertiary}
             value={searchQuery}
             onChangeText={setSearchQuery}
@@ -269,10 +276,9 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
                   color: theme.colors.text.secondary,
                   textAlign: 'center',
                 }}>
-                {/*TODO: use translation*/}
                 {searchQuery
-                  ? `No exercises found matching "${searchQuery}"`
-                  : `No exercises available for ${muscleTabs.find((tab) => tab.id === activeMuscle)?.label || activeMuscle}`}
+                  ? t('workouts.addExercise.noExercisesFound', { query: searchQuery })
+                  : t('workouts.addExercise.noExercisesAvailable', { muscle: muscleTabs.find((tab) => tab.id === activeMuscle)?.label || activeMuscle })}
               </Text>
             </View>
           )}

@@ -390,11 +390,15 @@
       "weight": "Weight",
       "addToWorkout": "Add to Workout",
       "muscleGroups": {
+        "all": "All",
         "chest": "Chest",
         "back": "Back",
         "legs": "Legs",
         "arms": "Arms"
-      }
+      },
+      "searchPlaceholderAll": "Search exercises...",
+      "noExercisesFound": "No exercises found matching \"{{query}}\"",
+      "noExercisesAvailable": "No exercises available for {{muscle}}"
     },
     "filterWorkouts": {
       "title": "Filter Workouts",

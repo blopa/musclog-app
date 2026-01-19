@@ -340,12 +340,22 @@
       "targetMuscle": "Músculo Alvo",
       "multiSelect": "SELEÇÃO MÚLTIPLA",
       "searchPlaceholder": "Buscar exercícios de {{muscle}}...",
+      "searchPlaceholderAll": "Buscar exercícios...",
       "createSet": "Criar Série",
       "bodyweight": "Peso Corporal",
       "sets": "Séries",
       "reps": "Repetições",
       "weight": "Peso",
-      "addToWorkout": "Adicionar ao Treino"
+      "addToWorkout": "Adicionar ao Treino",
+      "muscleGroups": {
+        "all": "Todos",
+        "chest": "Peito",
+        "back": "Costas",
+        "legs": "Pernas",
+        "arms": "Braços"
+      },
+      "noExercisesFound": "Nenhum exercício encontrado correspondendo a \"{{query}}\"",
+      "noExercisesAvailable": "Nenhum exercício disponível para {{muscle}}"
     }
   },
   "workoutDetails": {
