@@ -8,6 +8,7 @@ import { Button } from '../theme/Button';
 import { OptionsSelector, SelectorOption } from '../OptionsSelector';
 import { FilterTabs } from '../FilterTabs';
 import { NumericInput } from '../theme/NumericInput';
+import { SelectedExerciseCard } from '../cards/SelectedExerciseCard';
 import { database } from '../../database';
 import { Q } from '@nozbe/watermelondb';
 import Exercise from '../../database/models/Exercise';
@@ -256,6 +257,18 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
     setSelectedExerciseId(id);
   }, []);
 
+  // Handle change button - clears selection to show the exercise list again
+  const handleChangeExercise = useCallback(() => {
+    setSelectedExerciseId(null);
+  }, []);
+
+  // Get the selected exercise data for display
+  const selectedExercise = useMemo(() => {
+    if (!selectedExerciseId) return null;
+    const allExercises = Object.values(exercises).flat();
+    return allExercises.find((ex) => ex.id === selectedExerciseId) || null;
+  }, [selectedExerciseId, exercises]);
+
   const handleAdd = () => {
     if (!selectedExerciseId) {
       return; // Don't add if no exercise selected
@@ -277,73 +290,88 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
       title={t('workouts.addExercise.title')}
       scrollable={true}>
       <View className="flex-1 px-4 py-6">
-        {/* Target Muscle Section */}
-        <View className="mb-6">
-          <View className="mb-4 flex-row items-center justify-between">
-            <Text
-              style={{
-                fontSize: theme.typography.fontSize.xs,
-                fontWeight: theme.typography.fontWeight.bold,
-                color: theme.colors.text.secondary,
-                textTransform: 'uppercase',
-                letterSpacing: theme.typography.letterSpacing.extraWide,
-              }}>
-              {t('workouts.addExercise.targetMuscle')}
-            </Text>
-          </View>
-          <FilterTabs
-            tabs={muscleTabs}
-            activeTab={activeMuscle}
-            onTabChange={(id) => setActiveMuscle(id as MuscleGroup)}
-            showContainer={false}
-            withCheckmark={true}
-            scrollViewContentContainerStyle={{ paddingHorizontal: theme.spacing.padding.zero }}
-          />
-        </View>
-
-        {/* Search Bar */}
-        <View
-          className="mb-6 flex-row items-center rounded-xl border bg-bg-card px-4 py-3"
-          style={{
-            height: theme.components.button.height.md,
-            borderColor: theme.colors.background.white5,
-          }}>
-          <Search size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
-          <TextInput
-            className="ml-3 flex-1 text-base text-text-primary"
-            placeholder={placeholderText}
-            placeholderTextColor={theme.colors.text.tertiary}
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-          />
-        </View>
-
-        {/* Exercise List */}
-        <View className="mb-8">
-          {isLoading ? (
-            <View className="items-center justify-center py-12">
-              <ActivityIndicator size="large" color={theme.colors.accent.primary} />
-            </View>
-          ) : filteredExercises.length > 0 ? (
-            <OptionsSelector
-              title=""
-              options={filteredExercises}
-              selectedId={selectedExerciseId || undefined}
-              onSelect={handleSelectExercise}
+        {selectedExercise ? (
+          <View className="mb-6">
+            <SelectedExerciseCard
+              exerciseName={selectedExercise.label}
+              exerciseCategory={selectedExercise.category}
+              exerciseType={
+                selectedExercise.type.charAt(0).toUpperCase() + selectedExercise.type.slice(1)
+              }
+              onChange={handleChangeExercise}
             />
-          ) : (
-            <View className="items-center justify-center py-12">
-              <Text
-                style={{
-                  fontSize: theme.typography.fontSize.base,
-                  color: theme.colors.text.secondary,
-                  textAlign: 'center',
-                }}>
-                {emptyStateMessage}
-              </Text>
+          </View>
+        ) : (
+          <>
+            {/* Target Muscle Section */}
+            <View className="mb-6">
+              <View className="mb-4 flex-row items-center justify-between">
+                <Text
+                  style={{
+                    fontSize: theme.typography.fontSize.xs,
+                    fontWeight: theme.typography.fontWeight.bold,
+                    color: theme.colors.text.secondary,
+                    textTransform: 'uppercase',
+                    letterSpacing: theme.typography.letterSpacing.extraWide,
+                  }}>
+                  {t('workouts.addExercise.targetMuscle')}
+                </Text>
+              </View>
+              <FilterTabs
+                tabs={muscleTabs}
+                activeTab={activeMuscle}
+                onTabChange={(id) => setActiveMuscle(id as MuscleGroup)}
+                showContainer={false}
+                withCheckmark={true}
+                scrollViewContentContainerStyle={{ paddingHorizontal: theme.spacing.padding.zero }}
+              />
             </View>
-          )}
-        </View>
+
+            {/* Search Bar */}
+            <View
+              className="mb-6 flex-row items-center rounded-xl border bg-bg-card px-4 py-3"
+              style={{
+                height: theme.components.button.height.md,
+                borderColor: theme.colors.background.white5,
+              }}>
+              <Search size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
+              <TextInput
+                className="ml-3 flex-1 text-base text-text-primary"
+                placeholder={placeholderText}
+                placeholderTextColor={theme.colors.text.tertiary}
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+              />
+            </View>
+
+            {/* Exercise List */}
+            <View className="mb-8">
+              {isLoading ? (
+                <View className="items-center justify-center py-12">
+                  <ActivityIndicator size="large" color={theme.colors.accent.primary} />
+                </View>
+              ) : filteredExercises.length > 0 ? (
+                <OptionsSelector
+                  title=""
+                  options={filteredExercises}
+                  selectedId={selectedExerciseId || undefined}
+                  onSelect={handleSelectExercise}
+                />
+              ) : (
+                <View className="items-center justify-center py-12">
+                  <Text
+                    style={{
+                      fontSize: theme.typography.fontSize.base,
+                      color: theme.colors.text.secondary,
+                      textAlign: 'center',
+                    }}>
+                    {emptyStateMessage}
+                  </Text>
+                </View>
+              )}
+            </View>
+          </>
+        )}
 
         {/* Create Set Card */}
         <View
