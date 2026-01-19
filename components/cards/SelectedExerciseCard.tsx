@@ -31,7 +31,7 @@ export function SelectedExerciseCard({
           className="h-12 w-12 shrink-0 items-center justify-center rounded-lg"
           style={{ backgroundColor: theme.colors.accent.primary20 }}>
           <MaterialIcons
-            name="fitness_center"
+            name="fitness-center"
             size={theme.iconSize['2xl']}
             color={theme.colors.accent.primary}
           />
