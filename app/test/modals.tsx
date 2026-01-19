@@ -40,6 +40,7 @@ import NewCustomFoodModal from '../../components/modals/NewCustomFoodModal';
 import GoalsManagementModal from '../../components/modals/GoalsManagementModal';
 import PastWorkoutsHistoryModal from '../../components/modals/PastWorkoutsHistoryModal';
 import BodyMetricsHistoryModal from '../../components/modals/BodyMetricsHistoryModal';
+import AddUserMetricEntryModal from '../../components/modals/AddUserMetricEntryModal';
 
 export default function ModalsTestScreen() {
   // Nutrition Goals Modal
@@ -148,6 +149,8 @@ export default function ModalsTestScreen() {
   const [isPastWorkoutsHistoryVisible, setIsPastWorkoutsHistoryVisible] = useState(false);
   // Body Metrics History Modal
   const [isBodyMetricsHistoryVisible, setIsBodyMetricsHistoryVisible] = useState(false);
+  // Add User Metric Entry Modal
+  const [isAddUserMetricEntryVisible, setIsAddUserMetricEntryVisible] = useState(false);
 
   const handleSaveGoals = (goals: NutritionGoals) => {
     console.log('Goals saved:', goals);
@@ -725,6 +728,22 @@ export default function ModalsTestScreen() {
             />
           </View>
 
+          {/* Add User Metric Entry Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">
+              Add User Metric Entry Modal
+            </Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              A full-screen modal for adding body metric entries (weight, body fat, height) with date, time, and mood selection.
+            </Text>
+            <Button
+              label="Open Add User Metric Entry Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsAddUserMetricEntryVisible(true)}
+            />
+          </View>
+
           {/* Bottom spacing */}
           <View className="h-8" />
         </View>
@@ -1070,6 +1089,11 @@ export default function ModalsTestScreen() {
       <BodyMetricsHistoryModal
         visible={isBodyMetricsHistoryVisible}
         onClose={() => setIsBodyMetricsHistoryVisible(false)}
+      />
+
+      <AddUserMetricEntryModal
+        visible={isAddUserMetricEntryVisible}
+        onClose={() => setIsAddUserMetricEntryVisible(false)}
       />
     </SafeAreaView>
   );

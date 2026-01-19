@@ -5,13 +5,13 @@ import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { theme } from '../../theme';
-import { SegmentedControl } from '../../components/theme/SegmentedControl';
-import { GenericCard } from '../../components/cards/GenericCard';
-import { DateTimeSelectorCard } from '../../components/cards/DateTimeSelectorCard';
-import { MoodSelectorCard } from '../../components/cards/MoodSelectorCard';
-import { PagerView, type PagerViewRef } from '../../components/PagerView/PagerView';
+import { SegmentedControl } from '../theme/SegmentedControl';
+import { GenericCard } from '../cards/GenericCard';
+import { DateTimeSelectorCard } from '../cards/DateTimeSelectorCard';
+import { MoodSelectorCard } from '../cards/MoodSelectorCard';
+import { PagerView, type PagerViewRef } from '../PagerView/PagerView';
 import { format } from 'date-fns';
-import { FullScreenModal } from '../../components/modals/FullScreenModal';
+import { FullScreenModal } from './FullScreenModal';
 
 type MetricType = 'weight' | 'bodyFat' | 'height';
 
