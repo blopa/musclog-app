@@ -10,7 +10,8 @@
     "tryAgain": "Try Again",
     "popular": "Popular",
     "loading": "Loading...",
-    "save": "Save"
+    "save": "Save",
+    "edit": "Edit"
   },
   "home": {
     "greeting": {
@@ -998,6 +999,21 @@
       "title": "History",
       "filter": "Filter",
       "viewAll": "View All History"
+    },
+    "addEntry": {
+      "title": "Add Entry",
+      "enterWeight": "Enter Weight",
+      "date": "Date",
+      "time": "Time",
+      "moodQuestion": "How do you feel today?",
+      "moods": {
+        "0": "Poor",
+        "1": "Low",
+        "2": "Okay",
+        "3": "Good",
+        "4": "Great"
+      },
+      "saveEntry": "Save Entry"
     }
   }
 }
