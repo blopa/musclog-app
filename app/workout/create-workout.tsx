@@ -285,10 +285,6 @@ export default function CreateWorkoutScreen() {
 
   // Update metadata when exercises are reordered or grouped
   const handleExerciseOrderChange = useCallback((reorderedExercises: SelectorOption<string>[]) => {
-    // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/b4248a4a-4b24-44a3-b918-17843b5d9fe0',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'create-workout.tsx:245',message:'handleExerciseOrderChange called with reordered exercises',data:{exerciseIds:reorderedExercises.map(e=>({id:e.id,groupId:e.groupId,label:e.label}))},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-    // #endregion
-
     setExercises(reorderedExercises);
     // Update groupId in metadata
     setExerciseMetadata((prev) => {
@@ -308,11 +304,6 @@ export default function CreateWorkoutScreen() {
           });
         }
       });
-
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/b4248a4a-4b24-44a3-b918-17843b5d9fe0',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'create-workout.tsx:265',message:'Updated exerciseMetadata with new groupIds',data:{metadataGroupIds:Array.from(updated.entries()).map(([id,m])=>({id,groupId:m.groupId}))},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-      // #endregion
-
       return updated;
     });
   }, []);
