@@ -36,6 +36,7 @@ import { SettingsCard } from '../../components/cards/SettingsCard';
 import { HealthCategoryCard } from '../../components/cards/HealthCategoryCard';
 import { CurrentGoalsCard } from '../../components/cards/CurrentGoalsCard';
 import { GoalHistoryCard } from '../../components/cards/GoalHistoryCard';
+import { SelectedExerciseCard } from '../../components/cards/SelectedExerciseCard';
 import { UpNextLabel } from '../../components/UpNextLabel';
 
 export default function CardsTestScreen() {
@@ -262,6 +263,15 @@ export default function CardsTestScreen() {
             }}
             onPress={() => console.log('Exercise pressed')}
             ctaLabel={<UpNextLabel />}
+          />
+        </TestSection>
+
+        <TestSection title="Selected Exercise" subtitle="Currently selected exercise display">
+          <SelectedExerciseCard
+            exerciseName="Barbell Bench Press"
+            exerciseCategory="Chest"
+            exerciseType="Compound"
+            onChange={() => console.log('Change exercise')}
           />
         </TestSection>
 
