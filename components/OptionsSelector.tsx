@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { Check, LucideIcon } from 'lucide-react-native';
 import { theme } from '../theme';
@@ -19,12 +19,132 @@ type OptionsSelectorProps<T extends string | number> = {
   onSelect: (id: T) => void;
 };
 
+const OptionItem = React.memo(
+  <T extends string | number>({
+    option,
+    isSelected,
+    onSelect,
+  }: {
+    option: SelectorOption<T>;
+    isSelected: boolean;
+    onSelect: (id: T) => void;
+  }) => {
+    const Icon = option.icon as any;
+    const handlePress = useCallback(() => {
+      onSelect(option.id);
+    }, [option.id, onSelect]);
+
+    return (
+      <Pressable key={option.id} onPress={handlePress}>
+        {({ pressed }) => (
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: theme.spacing.padding.base,
+              borderRadius: theme.borderRadius.md,
+              borderWidth: theme.borderWidth.thin,
+              borderColor: isSelected ? theme.colors.accent.primary : theme.colors.border.light,
+              backgroundColor: theme.colors.background.card,
+              transform: [{ scale: pressed ? 0.98 : 1 }],
+              ...(isSelected ? theme.shadows.accentGlow : {}),
+            }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: theme.spacing.gap.base,
+                flex: 1,
+              }}>
+              <View
+                style={{
+                  width: theme.size['10'],
+                  height: theme.size['10'],
+                  borderRadius: theme.borderRadius.full,
+                  backgroundColor: option.iconBgColor,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                <Icon size={theme.iconSize.lg} color={option.iconColor} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text
+                  style={{
+                    fontSize: theme.typography.fontSize.base,
+                    fontWeight: theme.typography.fontWeight.bold,
+                    color: theme.colors.text.primary,
+                  }}>
+                  {option.label}
+                </Text>
+                <Text
+                  style={{
+                    fontSize: theme.typography.fontSize.xs,
+                    color: theme.colors.text.secondary,
+                    marginTop: theme.spacing.padding.xsHalf,
+                  }}>
+                  {option.description}
+                </Text>
+              </View>
+            </View>
+            <View
+              style={{
+                width: theme.size['6'],
+                height: theme.size['6'],
+                borderRadius: theme.borderRadius.full,
+                borderWidth: theme.borderWidth.medium,
+                borderColor: isSelected ? theme.colors.accent.primary : theme.colors.border.default,
+                backgroundColor: isSelected ? theme.colors.accent.primary : 'transparent',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+              {isSelected && (
+                <Check
+                  size={theme.iconSize.xs}
+                  color={theme.colors.text.black}
+                  strokeWidth={theme.strokeWidth.thick}
+                />
+              )}
+            </View>
+          </View>
+        )}
+      </Pressable>
+    );
+  }
+) as <T extends string | number>(props: {
+  option: SelectorOption<T>;
+  isSelected: boolean;
+  onSelect: (id: T) => void;
+}) => React.ReactElement;
+
 export function OptionsSelector<T extends string | number>({
   title,
   options,
   selectedId,
   onSelect,
 }: OptionsSelectorProps<T>) {
+  // Memoize the onSelect callback to prevent OptionItem re-renders
+  const stableOnSelect = useCallback(
+    (id: T) => {
+      onSelect(id);
+    },
+    [onSelect]
+  );
+
+  // Memoize the options list with selection state
+  const optionItems = useMemo(
+    () =>
+      options.map((option) => (
+        <OptionItem
+          key={option.id}
+          option={option}
+          isSelected={selectedId === option.id}
+          onSelect={stableOnSelect}
+        />
+      )),
+    [options, selectedId, stableOnSelect]
+  );
+
   return (
     <View>
       <Text
@@ -39,92 +159,7 @@ export function OptionsSelector<T extends string | number>({
         }}>
         {title}
       </Text>
-      <View style={{ gap: theme.spacing.gap.md }}>
-        {options.map((option) => {
-          const Icon = option.icon as any;
-          const isSelected = selectedId === option.id;
-          return (
-            <Pressable key={option.id} onPress={() => onSelect(option.id)}>
-              {({ pressed }) => (
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: theme.spacing.padding.base,
-                    borderRadius: theme.borderRadius.md,
-                    borderWidth: theme.borderWidth.thin,
-                    borderColor: isSelected
-                      ? theme.colors.accent.primary
-                      : theme.colors.border.light,
-                    backgroundColor: theme.colors.background.card,
-                    transform: [{ scale: pressed ? 0.98 : 1 }],
-                    ...(isSelected ? theme.shadows.accentGlow : {}),
-                  }}>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      gap: theme.spacing.gap.base,
-                      flex: 1,
-                    }}>
-                    <View
-                      style={{
-                        width: theme.size['10'],
-                        height: theme.size['10'],
-                        borderRadius: theme.borderRadius.full,
-                        backgroundColor: option.iconBgColor,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}>
-                      <Icon size={theme.iconSize.lg} color={option.iconColor} />
-                    </View>
-                    <View style={{ flex: 1 }}>
-                      <Text
-                        style={{
-                          fontSize: theme.typography.fontSize.base,
-                          fontWeight: theme.typography.fontWeight.bold,
-                          color: theme.colors.text.primary,
-                        }}>
-                        {option.label}
-                      </Text>
-                      <Text
-                        style={{
-                          fontSize: theme.typography.fontSize.xs,
-                          color: theme.colors.text.secondary,
-                          marginTop: theme.spacing.padding.xsHalf,
-                        }}>
-                        {option.description}
-                      </Text>
-                    </View>
-                  </View>
-                  <View
-                    style={{
-                      width: theme.size['6'],
-                      height: theme.size['6'],
-                      borderRadius: theme.borderRadius.full,
-                      borderWidth: theme.borderWidth.medium,
-                      borderColor: isSelected
-                        ? theme.colors.accent.primary
-                        : theme.colors.border.default,
-                      backgroundColor: isSelected ? theme.colors.accent.primary : 'transparent',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}>
-                    {isSelected && (
-                      <Check
-                        size={theme.iconSize.xs}
-                        color={theme.colors.text.black}
-                        strokeWidth={theme.strokeWidth.thick}
-                      />
-                    )}
-                  </View>
-                </View>
-              )}
-            </Pressable>
-          );
-        })}
-      </View>
+      <View style={{ gap: theme.spacing.gap.md }}>{optionItems}</View>
     </View>
   );
 }

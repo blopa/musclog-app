@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { View, Text, TextInput, Switch, ActivityIndicator } from 'react-native';
 import { Search, Dumbbell, User, PlusCircle } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
@@ -36,20 +36,35 @@ const normalizeMuscleGroup = (muscleGroup: string): MuscleGroup | null => {
   if (normalized.includes('back') || normalized.includes('lat')) {
     return 'back';
   }
-  if (normalized.includes('leg') || normalized.includes('quad') || normalized.includes('hamstring') || normalized.includes('calf') || normalized.includes('glute')) {
+  if (
+    normalized.includes('leg') ||
+    normalized.includes('quad') ||
+    normalized.includes('hamstring') ||
+    normalized.includes('calf') ||
+    normalized.includes('glute')
+  ) {
     return 'legs';
   }
-  if (normalized.includes('arm') || normalized.includes('bicep') || normalized.includes('tricep') || normalized.includes('shoulder') || normalized.includes('deltoid')) {
+  if (
+    normalized.includes('arm') ||
+    normalized.includes('bicep') ||
+    normalized.includes('tricep') ||
+    normalized.includes('shoulder') ||
+    normalized.includes('deltoid')
+  ) {
     return 'arms';
   }
   return null;
 };
 
 // Helper function to determine exercise type from mechanic/equipment
-const getExerciseType = (mechanicType: string, equipmentType: string): 'compound' | 'isolation' | 'bodyweight' | 'machine' => {
+const getExerciseType = (
+  mechanicType: string,
+  equipmentType: string
+): 'compound' | 'isolation' | 'bodyweight' | 'machine' => {
   const mechanic = mechanicType?.toLowerCase() || '';
   const equipment = equipmentType?.toLowerCase() || '';
-  
+
   if (equipment.includes('bodyweight') || equipment.includes('body weight')) {
     return 'bodyweight';
   }
@@ -75,6 +90,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
   const [activeMuscle, setActiveMuscle] = useState<MuscleGroup>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedExerciseId, setSelectedExerciseId] = useState<ExerciseId | null>(null);
+  const selectedExerciseIdRef = useRef<ExerciseId | null>(null);
   const [isBodyweight, setIsBodyweight] = useState(false);
   const [sets, setSets] = useState('3');
   const [reps, setReps] = useState('10');
@@ -88,13 +104,17 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
   });
   const [isLoading, setIsLoading] = useState(false);
 
-  const muscleTabs = [
-    { id: 'all', label: t('workouts.addExercise.muscleGroups.all') },
-    { id: 'chest', label: t('workouts.addExercise.muscleGroups.chest') },
-    { id: 'back', label: t('workouts.addExercise.muscleGroups.back') },
-    { id: 'legs', label: t('workouts.addExercise.muscleGroups.legs') },
-    { id: 'arms', label: t('workouts.addExercise.muscleGroups.arms') },
-  ];
+  // Memoize muscleTabs to avoid recreating array and translation calls on every render
+  const muscleTabs = useMemo(
+    () => [
+      { id: 'all', label: t('workouts.addExercise.muscleGroups.all') },
+      { id: 'chest', label: t('workouts.addExercise.muscleGroups.chest') },
+      { id: 'back', label: t('workouts.addExercise.muscleGroups.back') },
+      { id: 'legs', label: t('workouts.addExercise.muscleGroups.legs') },
+      { id: 'arms', label: t('workouts.addExercise.muscleGroups.arms') },
+    ],
+    [t]
+  );
 
   // Load exercises from database
   const loadExercises = useCallback(async () => {
@@ -129,12 +149,14 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
           label: exercise.name,
           description: `${exercise.muscleGroup} • ${exerciseType.charAt(0).toUpperCase() + exerciseType.slice(1)}`,
           icon: Icon,
-          iconBgColor: exerciseType === 'bodyweight' 
-            ? theme.colors.background.white5 
-            : theme.colors.accent.primary10,
-          iconColor: exerciseType === 'bodyweight'
-            ? theme.colors.text.secondary
-            : theme.colors.accent.primary,
+          iconBgColor:
+            exerciseType === 'bodyweight'
+              ? theme.colors.background.white5
+              : theme.colors.accent.primary10,
+          iconColor:
+            exerciseType === 'bodyweight'
+              ? theme.colors.text.secondary
+              : theme.colors.accent.primary,
           category: exercise.muscleGroup,
           type: exerciseType,
         };
@@ -153,10 +175,15 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
 
       setExercises(groupedExercises);
 
-      // Auto-select first exercise if available
+      // Auto-select first exercise if available (only if nothing is selected or selection is invalid)
       const currentGroupExercises = groupedExercises[activeMuscle];
-      if (currentGroupExercises.length > 0 && !selectedExerciseId) {
-        setSelectedExerciseId(currentGroupExercises[0].id);
+      if (currentGroupExercises.length > 0) {
+        // Check if current selection exists in the loaded exercises (use ref to avoid stale closure)
+        const allExerciseIds = new Set(groupedExercises.all.map((ex) => ex.id));
+        const currentSelection = selectedExerciseIdRef.current;
+        if (!currentSelection || !allExerciseIds.has(currentSelection)) {
+          setSelectedExerciseId(currentGroupExercises[0].id);
+        }
       }
     } catch (error) {
       console.error('Error loading exercises:', error);
@@ -164,7 +191,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
     } finally {
       setIsLoading(false);
     }
-  }, [activeMuscle, selectedExerciseId]);
+  }, [activeMuscle]);
 
   // Load exercises when modal opens or active muscle changes
   useEffect(() => {
@@ -173,7 +200,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
     }
   }, [visible, loadExercises]);
 
-  // Update selected exercise when active muscle changes
+  // Update selected exercise when active muscle changes (only muscle group change, not selection)
   useEffect(() => {
     const currentGroupExercises = exercises[activeMuscle];
     if (currentGroupExercises.length > 0) {
@@ -185,11 +212,50 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
     } else {
       setSelectedExerciseId(null);
     }
-  }, [activeMuscle, exercises, selectedExerciseId]);
+    // Only run when activeMuscle or exercises change, not when selectedExerciseId changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeMuscle, exercises]);
 
-  const filteredExercises = exercises[activeMuscle].filter((ex) =>
-    ex.label.toLowerCase().includes(searchQuery.toLowerCase())
+  // Memoize filteredExercises to avoid recomputing on every render
+  const filteredExercises = useMemo(
+    () =>
+      exercises[activeMuscle].filter((ex) =>
+        ex.label.toLowerCase().includes(searchQuery.toLowerCase())
+      ),
+    [exercises, activeMuscle, searchQuery]
   );
+
+  // Memoize placeholder text to avoid translation calls and find() on every render
+  const placeholderText = useMemo(
+    () =>
+      activeMuscle === 'all'
+        ? t('workouts.addExercise.searchPlaceholderAll')
+        : t('workouts.addExercise.searchPlaceholder', {
+            muscle: muscleTabs.find((tab) => tab.id === activeMuscle)?.label || activeMuscle,
+          }),
+    [activeMuscle, muscleTabs, t]
+  );
+
+  // Memoize empty state message to avoid translation calls and find() on every render
+  const emptyStateMessage = useMemo(
+    () =>
+      searchQuery
+        ? t('workouts.addExercise.noExercisesFound', { query: searchQuery })
+        : t('workouts.addExercise.noExercisesAvailable', {
+            muscle: muscleTabs.find((tab) => tab.id === activeMuscle)?.label || activeMuscle,
+          }),
+    [searchQuery, activeMuscle, muscleTabs, t]
+  );
+
+  // Update ref whenever selectedExerciseId changes
+  useEffect(() => {
+    selectedExerciseIdRef.current = selectedExerciseId;
+  }, [selectedExerciseId]);
+
+  // Stabilize onSelect callback to prevent OptionsSelector from re-rendering
+  const handleSelectExercise = useCallback((id: ExerciseId) => {
+    setSelectedExerciseId(id);
+  }, []);
 
   const handleAdd = () => {
     if (!selectedExerciseId) {
@@ -246,9 +312,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
           <Search size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
           <TextInput
             className="ml-3 flex-1 text-base text-text-primary"
-            placeholder={activeMuscle === 'all' 
-              ? t('workouts.addExercise.searchPlaceholderAll')
-              : t('workouts.addExercise.searchPlaceholder', { muscle: muscleTabs.find((tab) => tab.id === activeMuscle)?.label || activeMuscle })}
+            placeholder={placeholderText}
             placeholderTextColor={theme.colors.text.tertiary}
             value={searchQuery}
             onChangeText={setSearchQuery}
@@ -266,7 +330,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
               title=""
               options={filteredExercises}
               selectedId={selectedExerciseId || undefined}
-              onSelect={(id) => setSelectedExerciseId(id)}
+              onSelect={handleSelectExercise}
             />
           ) : (
             <View className="items-center justify-center py-12">
@@ -276,9 +340,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
                   color: theme.colors.text.secondary,
                   textAlign: 'center',
                 }}>
-                {searchQuery
-                  ? t('workouts.addExercise.noExercisesFound', { query: searchQuery })
-                  : t('workouts.addExercise.noExercisesAvailable', { muscle: muscleTabs.find((tab) => tab.id === activeMuscle)?.label || activeMuscle })}
+                {emptyStateMessage}
               </Text>
             </View>
           )}

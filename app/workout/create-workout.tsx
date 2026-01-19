@@ -467,7 +467,7 @@ export default function CreateWorkoutScreen() {
               borderColor: theme.colors.border.light,
             }}>
             {isLoadingExercises ? (
-              <View className="py-8 items-center justify-center">
+              <View className="items-center justify-center py-8">
                 <ActivityIndicator size="large" color={theme.colors.accent.primary} />
               </View>
             ) : exercises.length > 0 ? (
@@ -480,7 +480,7 @@ export default function CreateWorkoutScreen() {
                 isEditable={true}
               />
             ) : (
-              <View className="py-8 items-center justify-center">
+              <View className="items-center justify-center py-8">
                 <Text className="text-center text-text-secondary">
                   {/* text: No exercises available. Add exercises to get started. */}
                   {t('createWorkout.noExercisesPlaceholder')}
