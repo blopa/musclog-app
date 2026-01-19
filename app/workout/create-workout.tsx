@@ -42,8 +42,10 @@ export default function CreateWorkoutScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const params = useLocalSearchParams<{ templateId?: string }>();
-  const isEditMode = !!params.templateId;
+  const params = useLocalSearchParams<{ templateId?: string; workoutId?: string }>();
+  // Support both templateId and workoutId (workoutId is an alias for clarity)
+  const templateId = params.templateId || params.workoutId;
+  const isEditMode = !!templateId;
 
   const [workoutTitle, setWorkoutTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -58,12 +60,12 @@ export default function CreateWorkoutScreen() {
 
   // Load template if in edit mode
   const loadTemplate = useCallback(async () => {
-    if (!isEditMode || !params.templateId) return;
+    if (!isEditMode || !templateId) return;
 
     setIsLoading(true);
     try {
       const { template, sets, schedule } = await WorkoutTemplateService.getTemplateWithDetails(
-        params.templateId
+        templateId
       );
 
       // Set basic template info
@@ -119,7 +121,7 @@ export default function CreateWorkoutScreen() {
     } finally {
       setIsLoading(false);
     }
-  }, [dayNameToIndex, isEditMode, params.templateId, t]);
+  }, [dayNameToIndex, isEditMode, templateId, t]);
 
   // Load template on mount if in edit mode
   useEffect(() => {
@@ -251,9 +253,9 @@ export default function CreateWorkoutScreen() {
         };
       });
 
-      // Save template
+      // Save template (update if editing, create if new)
       await WorkoutTemplateService.saveTemplate({
-        templateId: isEditMode ? params.templateId : undefined,
+        templateId: isEditMode ? templateId : undefined,
         name: workoutTitle.trim(),
         description: description.trim() || undefined,
         exercises: exercisesInWorkout,
@@ -278,7 +280,7 @@ export default function CreateWorkoutScreen() {
     exerciseMetadata,
     selectedDays,
     isEditMode,
-    params.templateId,
+    templateId,
     router,
     t,
   ]);

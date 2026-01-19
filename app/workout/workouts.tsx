@@ -316,8 +316,11 @@ export default function WorkoutsScreen() {
         onEdit={() => {
           if (selectedWorkoutId) {
             router.push(`/workout/create-workout?templateId=${selectedWorkoutId}`);
+            setIsMenuVisible(false);
+          } else {
+            console.error('Cannot edit workout: No workout ID selected');
+            setIsMenuVisible(false);
           }
-          setIsMenuVisible(false);
         }}
         onDuplicate={() => {
           // TODO: Implement duplicate functionality
