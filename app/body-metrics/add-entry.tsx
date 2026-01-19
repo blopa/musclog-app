@@ -12,13 +12,23 @@ import { DateTimeSelectorCard } from '../../components/cards/DateTimeSelectorCar
 import { MoodSelectorCard } from '../../components/cards/MoodSelectorCard';
 import { format } from 'date-fns';
 
-type MetricType = 'weight' | 'bodyFat' | 'bmi' | 'ffmi';
+type MetricType = 'weight' | 'bodyFat' | 'height';
+
+type MetricConfig = {
+  label: string;
+  unit: string;
+  defaultValue: number;
+  quickIncrements: number[];
+  step: number;
+};
 
 export default function AddEntryScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const [selectedMetric, setSelectedMetric] = useState<MetricType>('weight');
   const [weight, setWeight] = useState(78.5);
+  const [bodyFat, setBodyFat] = useState(15.0);
+  const [height, setHeight] = useState(180);
   const [mood, setMood] = useState(3); // 0-4: Poor, Low, Okay, Good, Great
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedTime, setSelectedTime] = useState(new Date());
@@ -26,22 +36,69 @@ export default function AddEntryScreen() {
   const metricOptions = [
     { label: t('bodyMetrics.metrics.weight'), value: 'weight' },
     { label: t('bodyMetrics.metrics.bodyFat'), value: 'bodyFat' },
-    { label: t('bodyMetrics.metrics.bmi'), value: 'bmi' },
-    { label: t('bodyMetrics.metrics.ffmi'), value: 'ffmi' },
+    { label: t('bodyMetrics.metrics.height'), value: 'height' },
   ];
 
-  const quickIncrements = [0.5, 1.0, 5.0];
+  const metricConfigs: Record<MetricType, MetricConfig> = {
+    weight: {
+      label: t('bodyMetrics.addEntry.enterWeight'),
+      unit: 'kg',
+      defaultValue: 78.5,
+      quickIncrements: [0.5, 1.0, 5.0],
+      step: 0.1,
+    },
+    bodyFat: {
+      label: t('bodyMetrics.addEntry.enterBodyFat'),
+      unit: '%',
+      defaultValue: 15.0,
+      quickIncrements: [0.5, 1.0, 2.0],
+      step: 0.1,
+    },
+    height: {
+      label: t('bodyMetrics.addEntry.enterHeight'),
+      unit: 'cm',
+      defaultValue: 180,
+      quickIncrements: [1, 5, 10],
+      step: 1,
+    },
+  };
+
+  const currentConfig = metricConfigs[selectedMetric];
+  const currentValue =
+    selectedMetric === 'weight'
+      ? weight
+      : selectedMetric === 'bodyFat'
+        ? bodyFat
+        : height;
 
   const handleIncrement = (amount: number) => {
-    setWeight((prev) => Math.round((prev + amount) * 10) / 10);
+    if (selectedMetric === 'weight') {
+      setWeight((prev) => Math.round((prev + amount) * 10) / 10);
+    } else if (selectedMetric === 'bodyFat') {
+      setBodyFat((prev) => Math.round((prev + amount) * 10) / 10);
+    } else {
+      setHeight((prev) => Math.round((prev + amount) * 10) / 10);
+    }
   };
 
   const handleDecrement = () => {
-    setWeight((prev) => Math.max(0, Math.round((prev - 0.1) * 10) / 10));
+    if (selectedMetric === 'weight') {
+      setWeight((prev) => Math.max(0, Math.round((prev - currentConfig.step) * 10) / 10));
+    } else if (selectedMetric === 'bodyFat') {
+      setBodyFat((prev) => Math.max(0, Math.round((prev - currentConfig.step) * 10) / 10));
+    } else {
+      setHeight((prev) => Math.max(0, Math.round((prev - currentConfig.step) * 10) / 10));
+    }
   };
 
   const handleIncrementAction = () => {
-    setWeight((prev) => Math.round((prev + 0.1) * 10) / 10);
+    if (selectedMetric === 'weight') {
+      setWeight((prev) => Math.round((prev + currentConfig.step) * 10) / 10);
+    } else if (selectedMetric === 'bodyFat') {
+      setBodyFat((prev) => Math.round((prev + currentConfig.step) * 10) / 10);
+    } else {
+      setHeight((prev) => Math.round((prev + currentConfig.step) * 10) / 10);
+    }
   };
 
   const formatDate = (date: Date) => {
@@ -85,11 +142,11 @@ export default function AddEntryScreen() {
               variant="gradient"
             />
 
-            {/* Weight Input Section */}
+            {/* Metric Input Section */}
             <GenericCard variant="card" size="default">
               <View className="p-6">
                 <Text className="mb-4 text-center text-xs font-bold uppercase tracking-wider text-text-secondary">
-                  {t('bodyMetrics.addEntry.enterWeight')} (kg)
+                  {currentConfig.label} ({currentConfig.unit})
                 </Text>
 
                 {/* Stepper Controls */}
@@ -109,7 +166,9 @@ export default function AddEntryScreen() {
 
                   <View className="flex-1 items-center">
                     <Text className="text-center text-6xl font-extrabold text-text-primary">
-                      {weight.toFixed(1)}
+                      {currentConfig.step < 1
+                        ? currentValue.toFixed(1)
+                        : Math.round(currentValue)}
                     </Text>
                   </View>
 
@@ -127,7 +186,7 @@ export default function AddEntryScreen() {
 
                 {/* Quick Increment Buttons */}
                 <View className="flex-row justify-center gap-2">
-                  {quickIncrements.map((increment) => (
+                  {currentConfig.quickIncrements.map((increment) => (
                     <Pressable
                       key={increment}
                       onPress={() => handleIncrement(increment)}
@@ -137,7 +196,7 @@ export default function AddEntryScreen() {
                         borderColor: theme.colors.accent.primary20,
                       }}>
                       <Text className="text-[10px] font-bold text-accent-primary">
-                        +{increment.toFixed(1)}
+                        +{increment % 1 === 0 ? increment : increment.toFixed(1)}
                       </Text>
                     </Pressable>
                   ))}
