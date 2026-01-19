@@ -57,7 +57,11 @@ export const PagerView = forwardRef<PagerViewRef, PagerViewProps>(
 
     // Call onPageSelected when currentPage changes (for initial page)
     useEffect(() => {
-      if (onPageSelected && currentPage === initialPage && currentPage === previousPageRef.current) {
+      if (
+        onPageSelected &&
+        currentPage === initialPage &&
+        currentPage === previousPageRef.current
+      ) {
         onPageSelected({ nativeEvent: { position: currentPage } });
       }
     }, [currentPage, initialPage, onPageSelected]);

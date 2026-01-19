@@ -433,7 +433,9 @@ export default function OnboardingScreen() {
 
   const handleNext = () => {
     if (currentStep < 3) {
-      pagerRef.current?.setPage(currentStep + 1);
+      const nextStep = currentStep + 1;
+      setCurrentStep(nextStep); // Update state optimistically
+      pagerRef.current?.setPage(nextStep);
     } else {
       // Navigate to home when on last step
       router.push('/onboarding/health-connect');
@@ -442,7 +444,9 @@ export default function OnboardingScreen() {
 
   const handleBack = () => {
     if (currentStep > 0) {
-      pagerRef.current?.setPage(currentStep - 1);
+      const prevStep = currentStep - 1;
+      setCurrentStep(prevStep); // Update state optimistically
+      pagerRef.current?.setPage(prevStep);
     } else {
       router.back();
     }
