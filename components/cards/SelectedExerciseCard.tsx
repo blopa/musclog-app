@@ -3,6 +3,7 @@ import { View, Text, Pressable } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { GenericCard } from './GenericCard';
 import { theme } from '../../theme';
+import { useTranslation } from 'react-i18next';
 
 type SelectedExerciseCardProps = {
   exerciseName: string;
@@ -21,6 +22,7 @@ export function SelectedExerciseCard({
   exerciseType,
   onChange,
 }: SelectedExerciseCardProps) {
+  const { t } = useTranslation();
   const detailsText = [exerciseCategory, exerciseType].filter(Boolean).join(' • ');
 
   return (
@@ -83,7 +85,7 @@ export function SelectedExerciseCard({
                 fontSize: theme.typography.fontSize.xxs + 1, // 9px
                 color: theme.colors.accent.primary,
               }}>
-              Change
+              {t('common.change')}
             </Text>
           </Pressable>
         )}
