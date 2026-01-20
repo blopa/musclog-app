@@ -332,7 +332,10 @@ describe('utils/workout', () => {
       });
 
       it('should include all required fields', () => {
-        const exercise = createMockExercise({ name: 'Bench Press', equipmentType: 'barbell' }) as Exercise;
+        const exercise = createMockExercise({
+          name: 'Bench Press',
+          equipmentType: 'barbell',
+        }) as Exercise;
         const params: CreateExerciseOptionParams = {
           exercise,
           sets: 5,
