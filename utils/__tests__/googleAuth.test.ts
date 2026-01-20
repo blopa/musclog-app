@@ -517,6 +517,23 @@ describe('utils/googleAuth', () => {
       await expect(handleGoogleSignIn(null)).rejects.toThrow('Google sign-in failed or cancelled.');
     });
 
+    it('should handle empty access token', async () => {
+      const authDataWithEmptyToken: GoogleAuthData = {
+        ...mockAuthData,
+        access_token: '',
+      };
+      mockIsValidAccessToken.mockResolvedValue(false);
+      mockGoogleAuthService.saveRefreshToken.mockResolvedValue();
+
+      const result = await handleGoogleSignIn(authDataWithEmptyToken);
+
+      expect(result).toBe(false);
+      expect(mockAsyncStorage.setItem).toHaveBeenCalledWith(GOOGLE_ACCESS_TOKEN, '');
+      expect(mockGoogleAuthService.setOAuthGeminiEnabled).not.toHaveBeenCalled();
+      expect(mockGoogleAuthService.setAISettingsEnabled).not.toHaveBeenCalled();
+      expect(mockIsValidAccessToken).toHaveBeenCalledWith('');
+    });
+
     it('should handle missing expires_in', async () => {
       const authDataWithoutExpires: GoogleAuthData = {
         ...mockAuthData,
