@@ -206,6 +206,7 @@ export function useWorkoutForm({ templateId }: UseWorkoutFormParams = {}) {
     setVolumeCalc,
     setFocusedField,
     setSelectedExercises,
+    setExercises,
 
     // Handlers
     toggleDay,
