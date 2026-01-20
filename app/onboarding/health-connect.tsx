@@ -53,7 +53,7 @@ export default function HealthConnectScreen() {
                 className="text-center font-normal leading-relaxed"
                 style={{
                   fontSize: theme.typography.fontSize.base,
-                  color: theme.colors.text.gray400,
+                  color: theme.colors.text.secondary,
                   maxWidth: '85%',
                   alignSelf: 'center',
                 }}

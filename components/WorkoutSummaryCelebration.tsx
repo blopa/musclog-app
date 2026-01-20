@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, Pressable, Modal, Platform, Animated, ScrollView } from 'react-native';
+import { View, Text, Pressable, Platform, Animated, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Home } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';

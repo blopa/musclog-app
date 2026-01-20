@@ -44,7 +44,7 @@ export const PagerView = forwardRef<PagerViewRef, PagerViewProps>(
         x: translateX,
         config: config.gentle,
       });
-    }, [currentPage, api, totalPages]);
+    }, [currentPage, api, totalPages, getTranslateX]);
 
     useImperativeHandle(ref, () => ({
       setPage: (page: number) => {

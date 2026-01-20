@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable, TextInput, ScrollView, Image } from 'react-native';
-import { Search, Check, Repeat } from 'lucide-react-native';
+import { View, TextInput, ScrollView, Image } from 'react-native';
+import { Search, Repeat } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
 import { BottomPopUpMenu } from '../BottomPopUpMenu';

@@ -246,7 +246,7 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
             <View className="p-6">
               <Text
                 className="mb-2 text-xs font-medium uppercase tracking-wide"
-                style={{ color: theme.colors.text.gray400 }}
+                style={{ color: theme.colors.text.secondary }}
               >
                 {t('exercises.viewExercise.personalBest')}
               </Text>
@@ -257,7 +257,7 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
                 >
                   {EXERCISE_DATA.personalBest.value}
                 </Text>
-                <Text className="text-xl" style={{ color: theme.colors.text.gray400 }}>
+                <Text className="text-xl" style={{ color: theme.colors.text.secondary }}>
                   {EXERCISE_DATA.personalBest.unit}
                 </Text>
               </View>
@@ -267,7 +267,7 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
             <View className="p-6">
               <Text
                 className="mb-2 text-xs font-medium uppercase tracking-wide"
-                style={{ color: theme.colors.text.gray400 }}
+                style={{ color: theme.colors.text.secondary }}
               >
                 {t('exercises.viewExercise.avgFrequency')}
               </Text>
@@ -278,7 +278,7 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
                 >
                   {EXERCISE_DATA.avgFrequency.value}
                 </Text>
-                <Text className="text-xl" style={{ color: theme.colors.text.gray400 }}>
+                <Text className="text-xl" style={{ color: theme.colors.text.secondary }}>
                   {EXERCISE_DATA.avgFrequency.unit}
                 </Text>
               </View>

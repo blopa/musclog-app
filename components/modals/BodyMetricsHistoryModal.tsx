@@ -188,9 +188,12 @@ export default function BodyMetricsHistoryModal({
   };
 
   // Helper to get label for metric type
-  const getMetricLabel = (type: MetricType): string => {
-    return t(`bodyMetrics.metrics.${type}`);
-  };
+  const getMetricLabel = useCallback(
+    (type: MetricType): string => {
+      return t(`bodyMetrics.metrics.${type}`);
+    },
+    [t]
+  );
 
   // Load metrics data
   const loadMetricsData = useCallback(async () => {
@@ -309,7 +312,7 @@ export default function BodyMetricsHistoryModal({
     } finally {
       setIsLoading(false);
     }
-  }, [selectedMetric, selectedPeriod, t]);
+  }, [getMetricLabel, selectedMetric, selectedPeriod, t]);
 
   // Load data when modal opens or metric/period changes
   useEffect(() => {

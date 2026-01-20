@@ -68,7 +68,7 @@ function OnboardingStepFour({ title, description }: OnboardingBodyProps) {
         </GradientText>
         <Text
           className="px-2 text-base font-normal leading-relaxed"
-          style={{ color: theme.colors.text.gray400 }}
+          style={{ color: theme.colors.text.secondary }}
         >
           {description}
         </Text>
@@ -191,7 +191,7 @@ function OnboardingStepThree({ imageUrl, title, description, badge }: Onboarding
         </GradientText>
         <Text
           className="px-2 text-base font-normal leading-relaxed"
-          style={{ color: theme.colors.text.gray400 }}
+          style={{ color: theme.colors.text.secondary }}
         >
           {description}
         </Text>
@@ -314,7 +314,7 @@ function OnboardingStepTwo({ imageUrl, title, description, badge }: OnboardingBo
         </GradientText>
         <Text
           className="px-2 text-base font-normal leading-relaxed"
-          style={{ color: theme.colors.text.gray400 }}
+          style={{ color: theme.colors.text.secondary }}
         >
           {description}
         </Text>
@@ -437,7 +437,7 @@ function OnboardingStepOne({ imageUrl, title, description, badge }: OnboardingBo
         </GradientText>
         <Text
           className="px-2 text-base font-normal leading-relaxed"
-          style={{ color: theme.colors.text.gray400 }}
+          style={{ color: theme.colors.text.secondary }}
         >
           {description}
         </Text>

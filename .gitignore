@@ -56,3 +56,6 @@ test-results/*
 test-results/.last-run.json
 
 dumps/*
+
+# Test coverage
+coverage/

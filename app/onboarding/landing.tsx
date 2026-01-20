@@ -93,7 +93,7 @@ export default function LandingScreen() {
               <Text
                 className="font-medium tracking-wide"
                 style={{
-                  color: theme.colors.text.gray400,
+                  color: theme.colors.text.secondary,
                   fontSize: theme.typography.fontSize.lg,
                   letterSpacing: theme.typography.letterSpacing.wide,
                 }}

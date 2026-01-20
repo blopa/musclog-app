@@ -303,7 +303,7 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
     } finally {
       setIsLoading(false);
     }
-  }, [filters.dateRange, filters.minDuration, filters.muscleGroups, filters.workoutType]);
+  }, [filters.dateRange, filters.minDuration, filters.muscleGroups, filters.workoutType, t]);
 
   // Load workout history when modal becomes visible or filters change
   useEffect(() => {
@@ -467,7 +467,7 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
                                     <Text
                                       className="text-xs"
                                       style={{
-                                        color: theme.colors.text.gray400,
+                                        color: theme.colors.text.secondary,
                                       }}
                                     >
                                       {workout.date}
@@ -520,7 +520,7 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
                                       className="text-center"
                                       style={{
                                         fontSize: theme.typography.fontSize.xs,
-                                        color: theme.colors.text.gray400,
+                                        color: theme.colors.text.secondary,
                                       }}
                                     >
                                       {stat.label}

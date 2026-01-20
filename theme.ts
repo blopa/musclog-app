@@ -75,7 +75,6 @@ export const theme = {
       accentLight: '#34d399', // Light accent text (emerald)
       black: '#000000', // Black text (for icons on light backgrounds)
       gray300: '#d1d5db', // Gray-300
-      gray400: '#9ca3af', // Gray-400
       gray500: '#6b7280', // Gray-500
       white: '#ffffff', // White
       // Text colors with opacity
