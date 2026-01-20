@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   getGoogleClientId,
   refreshAccessToken,
@@ -10,7 +9,6 @@ import {
 } from '../googleAuth';
 import { GoogleAuthService } from '../../database/services/GoogleAuthService';
 import { isValidAccessToken } from '../gemini';
-import { showSnackbar } from '../snackbarService';
 import {
   GOOGLE_ACCESS_TOKEN,
   GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE,
@@ -18,17 +16,9 @@ import {
   GOOGLE_CLIENT_ID_WEB,
 } from '../../constants/auth';
 
-// We'll access Platform directly from the mocked react-native module
-
-// Create shared storage data that both mock and tests can access
-const mockAsyncStorageData: Record<string, string> = {};
-
-// Mock AsyncStorage with a proper implementation
-// Create all functions directly in the factory to avoid hoisting issues
 jest.mock('@react-native-async-storage/async-storage', () => {
   const storageData: Record<string, string> = {};
-  
-  // Create all mock functions
+
   const getItem = jest.fn((key: string) => Promise.resolve(storageData[key] || null));
   const setItem = jest.fn((key: string, value: string) => {
     storageData[key] = value;
@@ -61,7 +51,6 @@ jest.mock('@react-native-async-storage/async-storage', () => {
   });
   const getAllKeys = jest.fn(() => Promise.resolve(Object.keys(storageData)));
 
-  // Return the default export with all methods
   const AsyncStorage = {
     getItem,
     setItem,
@@ -78,9 +67,8 @@ jest.mock('@react-native-async-storage/async-storage', () => {
     default: AsyncStorage,
   };
 });
-// Mock react-native Platform - create mutable Platform object
+
 jest.mock('react-native', () => {
-  // Create Platform object that can be modified
   const Platform = {
     OS: 'ios',
   };
@@ -88,11 +76,10 @@ jest.mock('react-native', () => {
     Platform,
   };
 });
-// Mock expo/fetch
 jest.mock('expo/fetch', () => ({
   fetch: jest.fn(),
 }));
-// Mock WatermelonDB before any database imports
+
 jest.mock('@nozbe/watermelondb', () => ({
   Q: {
     where: jest.fn((field: string, value: any) => ({ field, value })),
@@ -100,14 +87,14 @@ jest.mock('@nozbe/watermelondb', () => ({
   },
   Database: jest.fn(),
 }));
-// Mock database instance
+
 jest.mock('../../database/database-instance', () => ({
   database: {
     get: jest.fn(),
     write: jest.fn((callback: () => Promise<void>) => callback()),
   },
 }));
-// Mock GoogleAuthService after database mocks
+
 jest.mock('../../database/services/GoogleAuthService', () => ({
   GoogleAuthService: {
     getRefreshToken: jest.fn(),
@@ -117,7 +104,7 @@ jest.mock('../../database/services/GoogleAuthService', () => ({
     setAISettingsEnabled: jest.fn(),
   },
 }));
-// Mock Sentry before gemini (which imports it)
+
 jest.mock('@sentry/react-native', () => ({
   captureException: jest.fn(),
   captureMessage: jest.fn(),
@@ -136,28 +123,26 @@ jest.mock('../../lang/lang', () => {
     },
   };
 });
-jest.mock('../snackbarService', () => ({
-  showSnackbar: jest.fn(),
-}));
 
-// Create mockAsyncStorage object for easier access in tests
-// Access the mocked AsyncStorage to get the actual mock functions
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+let mockShowSnackbarFn: jest.MockedFunction<any>;
+jest.mock('../snackbarService', () => {
+  mockShowSnackbarFn = jest.fn();
+  return {
+    __esModule: true,
+    showSnackbar: mockShowSnackbarFn,
+  };
+});
+
 const mockAsyncStorageModule = require('@react-native-async-storage/async-storage');
 const mockAsyncStorage = mockAsyncStorageModule.default;
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const { fetch: mockFetch } = require('expo/fetch');
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const { Platform: mockPlatform } = require('react-native');
 const mockGoogleAuthService = GoogleAuthService as jest.Mocked<typeof GoogleAuthService>;
 const mockIsValidAccessToken = isValidAccessToken as jest.MockedFunction<typeof isValidAccessToken>;
-const mockShowSnackbar = showSnackbar as jest.MockedFunction<typeof showSnackbar>;
 
 describe('utils/googleAuth', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    // Reset all mocks to default implementations
-    // Use the mocked AsyncStorage from the module
     if (mockAsyncStorage) {
       if (typeof mockAsyncStorage.getItem === 'function') {
         mockAsyncStorage.getItem.mockResolvedValue(null);
@@ -169,8 +154,12 @@ describe('utils/googleAuth', () => {
         mockAsyncStorage.multiRemove.mockResolvedValue();
       }
     }
-    // Reset Platform OS
+
     mockPlatform.OS = 'ios';
+
+    if (mockShowSnackbarFn) {
+      mockShowSnackbarFn.mockClear();
+    }
   });
 
   describe('getGoogleClientId', () => {
@@ -220,10 +209,7 @@ describe('utils/googleAuth', () => {
           },
         })
       );
-      expect(mockAsyncStorage.setItem).toHaveBeenCalledWith(
-        GOOGLE_ACCESS_TOKEN,
-        mockAccessToken
-      );
+      expect(mockAsyncStorage.setItem).toHaveBeenCalledWith(GOOGLE_ACCESS_TOKEN, mockAccessToken);
       expect(mockAsyncStorage.setItem).toHaveBeenCalledWith(
         GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE,
         expect.any(String)
@@ -233,31 +219,34 @@ describe('utils/googleAuth', () => {
     it('should delete all data and show error when no refresh token exists', async () => {
       mockGoogleAuthService.getRefreshToken.mockResolvedValue(null);
       mockGoogleAuthService.clearRefreshToken.mockResolvedValue();
-      mockAsyncStorage.getItem.mockResolvedValue('true'); // hasCompletedOnboarding
+      mockAsyncStorage.getItem.mockResolvedValueOnce('true').mockResolvedValueOnce(null);
+      mockAsyncStorage.setItem.mockResolvedValue();
 
       const result = await refreshAccessToken();
 
       expect(result).toBeUndefined();
       expect(mockGoogleAuthService.clearRefreshToken).toHaveBeenCalled();
-      expect(mockShowSnackbar).toHaveBeenCalled();
+      await new Promise((resolve) => setTimeout(resolve, 10));
+      expect(mockShowSnackbarFn).toHaveBeenCalled();
     });
 
     it('should not show error when onboarding is not completed', async () => {
       mockGoogleAuthService.getRefreshToken.mockResolvedValue(null);
       mockGoogleAuthService.clearRefreshToken.mockResolvedValue();
-      mockAsyncStorage.getItem.mockResolvedValue(null); // hasCompletedOnboarding is false
+      mockAsyncStorage.getItem.mockResolvedValue(null);
 
       const result = await refreshAccessToken();
 
       expect(result).toBeUndefined();
       expect(mockGoogleAuthService.clearRefreshToken).toHaveBeenCalled();
-      expect(mockShowSnackbar).not.toHaveBeenCalled();
+      await new Promise((resolve) => setTimeout(resolve, 10));
+      expect(mockShowSnackbarFn).not.toHaveBeenCalled();
     });
 
     it('should handle invalid_grant error', async () => {
       mockGoogleAuthService.getRefreshToken.mockResolvedValue(mockRefreshToken);
       mockGoogleAuthService.clearRefreshToken.mockResolvedValue();
-      mockAsyncStorage.getItem.mockResolvedValue('true');
+      mockAsyncStorage.getItem.mockResolvedValueOnce('true').mockResolvedValueOnce(null);
       mockFetch.mockResolvedValue({
         ok: false,
         json: async () => ({ error: 'invalid_grant' }) as any,
@@ -267,13 +256,14 @@ describe('utils/googleAuth', () => {
 
       expect(result).toBeUndefined();
       expect(mockGoogleAuthService.clearRefreshToken).toHaveBeenCalled();
-      expect(mockShowSnackbar).toHaveBeenCalled();
+      await new Promise((resolve) => setTimeout(resolve, 10));
+      expect(mockShowSnackbarFn).toHaveBeenCalled();
     });
 
     it('should handle non-ok response', async () => {
       mockGoogleAuthService.getRefreshToken.mockResolvedValue(mockRefreshToken);
       mockGoogleAuthService.clearRefreshToken.mockResolvedValue();
-      mockAsyncStorage.getItem.mockResolvedValue('true');
+      mockAsyncStorage.getItem.mockResolvedValueOnce('true').mockResolvedValueOnce(null);
       mockFetch.mockResolvedValue({
         ok: false,
         json: async () => ({ error: 'server_error' }) as any,
@@ -283,20 +273,22 @@ describe('utils/googleAuth', () => {
 
       expect(result).toBeUndefined();
       expect(mockGoogleAuthService.clearRefreshToken).toHaveBeenCalled();
-      expect(mockShowSnackbar).toHaveBeenCalled();
+      await new Promise((resolve) => setTimeout(resolve, 10));
+      expect(mockShowSnackbarFn).toHaveBeenCalled();
     });
 
     it('should handle network errors', async () => {
       mockGoogleAuthService.getRefreshToken.mockResolvedValue(mockRefreshToken);
       mockGoogleAuthService.clearRefreshToken.mockResolvedValue();
-      mockAsyncStorage.getItem.mockResolvedValue('true');
+      mockAsyncStorage.getItem.mockResolvedValueOnce('true').mockResolvedValueOnce(null);
       mockFetch.mockRejectedValue(new Error('Network error'));
 
       const result = await refreshAccessToken();
 
       expect(result).toBeUndefined();
       expect(mockGoogleAuthService.clearRefreshToken).toHaveBeenCalled();
-      expect(mockShowSnackbar).toHaveBeenCalled();
+      await new Promise((resolve) => setTimeout(resolve, 10));
+      expect(mockShowSnackbarFn).toHaveBeenCalled();
     });
 
     it('should use correct client ID for refresh', async () => {
@@ -322,13 +314,12 @@ describe('utils/googleAuth', () => {
       const today = new Date().toISOString().split('T')[0];
       mockGoogleAuthService.getRefreshToken.mockResolvedValue(null);
       mockGoogleAuthService.clearRefreshToken.mockResolvedValue();
-      mockAsyncStorage.getItem
-        .mockResolvedValueOnce('true') // hasCompletedOnboarding
-        .mockResolvedValueOnce(today); // lastTimeGoogleAuthErrorWasShown
+      mockAsyncStorage.getItem.mockResolvedValueOnce('true').mockResolvedValueOnce(today);
 
       await refreshAccessToken();
 
-      expect(mockShowSnackbar).not.toHaveBeenCalled();
+      await new Promise((resolve) => setTimeout(resolve, 10));
+      expect(mockShowSnackbarFn).not.toHaveBeenCalled();
     });
   });
 
@@ -362,7 +353,7 @@ describe('utils/googleAuth', () => {
     });
 
     it('should return false when token is expired', async () => {
-      const expiredTime = new Date().getTime() - 100000; // 100 seconds ago
+      const expiredTime = new Date().getTime() - 100000;
       mockAsyncStorage.getItem
         .mockResolvedValueOnce('access_token_123')
         .mockResolvedValueOnce(expiredTime.toString());
@@ -373,7 +364,7 @@ describe('utils/googleAuth', () => {
     });
 
     it('should return false when token expires within 60 seconds', async () => {
-      const expiringSoon = new Date().getTime() + 30000; // 30 seconds from now
+      const expiringSoon = new Date().getTime() + 30000;
       mockAsyncStorage.getItem
         .mockResolvedValueOnce('access_token_123')
         .mockResolvedValueOnce(expiringSoon.toString());
@@ -384,7 +375,7 @@ describe('utils/googleAuth', () => {
     });
 
     it('should return true when token is valid', async () => {
-      const validTime = new Date().getTime() + 3600000; // 1 hour from now
+      const validTime = new Date().getTime() + 3600000;
       mockAsyncStorage.getItem
         .mockResolvedValueOnce('access_token_123')
         .mockResolvedValueOnce(validTime.toString());
@@ -397,7 +388,7 @@ describe('utils/googleAuth', () => {
 
   describe('getAccessToken', () => {
     it('should return existing valid token', async () => {
-      const validTime = new Date().getTime() + 3600000; // 1 hour from now
+      const validTime = new Date().getTime() + 3600000;
       mockAsyncStorage.getItem
         .mockResolvedValueOnce('access_token_123')
         .mockResolvedValueOnce(validTime.toString());
@@ -521,9 +512,7 @@ describe('utils/googleAuth', () => {
     });
 
     it('should throw error when response is null', async () => {
-      await expect(handleGoogleSignIn(null)).rejects.toThrow(
-        'Google sign-in failed or cancelled.'
-      );
+      await expect(handleGoogleSignIn(null)).rejects.toThrow('Google sign-in failed or cancelled.');
     });
 
     it('should handle missing expires_in', async () => {
