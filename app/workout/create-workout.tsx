@@ -1,13 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  Pressable,
-  ScrollView,
-  ActivityIndicator,
-  Alert,
-} from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, Pressable, ScrollView, ActivityIndicator } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Sparkles, PlusSquare } from 'lucide-react-native';
@@ -17,22 +9,9 @@ import { Button } from '../../components/theme/Button';
 import { SegmentedControl } from '../../components/theme/SegmentedControl';
 import { OptionsMultiSelector } from '../../components/theme/OptionsMultiSelector/OptionsMultiSelector';
 import { WeekdayPicker } from '../../components/theme/WeekdayPicker';
-import { SelectorOption } from '../../components/theme/OptionsMultiSelector/utils';
 import { AddExerciseModal } from '../../components/modals/AddExerciseModal';
-import { WorkoutTemplateService } from '../../database/services/WorkoutTemplateService';
-import Exercise from '../../database/models/Exercise';
-import { database } from '../../database';
-import {
-  WEEKDAY_LABELS,
-  transformExercisesToOptions,
-  transformScheduleDays,
-  createExerciseOption,
-  extractExerciseMetadata,
-  updateMetadataWithGroupIds,
-  exercisesToWorkoutFormat,
-  validateWorkoutTitle,
-  type ExerciseMetadata,
-} from '../../utils/workout';
+import { WEEKDAY_LABELS } from '../../utils/workout';
+import { useWorkoutForm } from '../../hooks/useWorkoutForm';
 
 export default function CreateWorkoutScreen() {
   const { t } = useTranslation();
@@ -40,188 +19,30 @@ export default function CreateWorkoutScreen() {
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{ templateId?: string }>();
   const templateId = params.templateId;
-  const isEditMode = !!templateId;
 
-  const [workoutTitle, setWorkoutTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [volumeCalc, setVolumeCalc] = useState('none');
-  const [selectedDays, setSelectedDays] = useState<number[]>([]);
-  const [focusedField, setFocusedField] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(isEditMode);
-  const [isSaving, setIsSaving] = useState(false);
-  const [selectedExercises, setSelectedExercises] = useState<string[]>([]);
   const [addExerciseVisible, setAddExerciseVisible] = useState(false);
-  const [exercises, setExercises] = useState<SelectorOption<string>[]>([]);
 
-  // Load template if in edit mode
-  const loadTemplate = useCallback(async () => {
-    if (!isEditMode || !templateId) return;
-
-    setIsLoading(true);
-    try {
-      const { template, sets, schedule } =
-        await WorkoutTemplateService.getTemplateWithDetails(templateId);
-
-      // Set basic template info
-      setWorkoutTitle(template.name);
-      setDescription(template.description || '');
-
-      // Convert schedule days to indices
-      const dayIndices = transformScheduleDays(schedule);
-      setSelectedDays(dayIndices);
-
-      // Convert template sets to exercises
-      const exercisesInWorkout = await WorkoutTemplateService.convertSetsToExercises(sets);
-
-      // Convert to SelectorOption format
-      const exerciseOptions = transformExercisesToOptions(exercisesInWorkout);
-      setExercises(exerciseOptions);
-
-      // Populate metadata map
-      const metadataMap = new Map<string, ExerciseMetadata>();
-      exercisesInWorkout.forEach((ex) => {
-        metadataMap.set(ex.id, extractExerciseMetadata(ex));
-      });
-      setExerciseMetadata(metadataMap);
-    } catch (error) {
-      console.error('Error loading template:', error);
-      Alert.alert(
-        t('common.error', 'Error'),
-        t('createWorkout.loadError', 'Failed to load workout template')
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  }, [isEditMode, templateId, t]);
-
-  // Load template on mount if in edit mode
-  useEffect(() => {
-    if (isEditMode) {
-      loadTemplate();
-    }
-  }, [isEditMode, loadTemplate]);
-
-  const toggleDay = (index: number) => {
-    if (selectedDays.includes(index)) {
-      setSelectedDays(selectedDays.filter((d) => d !== index));
-    } else {
-      setSelectedDays([...selectedDays, index].sort());
-    }
-  };
-
-  // Store exercise metadata (sets, reps, weight, isBodyweight) separately
-  // This is needed because SelectorOption doesn't include these fields
-  const [exerciseMetadata, setExerciseMetadata] = useState<Map<string, ExerciseMetadata>>(
-    new Map()
-  );
-
-  // Handle adding exercise from AddExerciseModal
-  const handleAddExerciseWithMetadata = useCallback(
-    async (exerciseData: {
-      exerciseId: string;
-      sets: number;
-      reps: number;
-      weight: number;
-      isBodyweight: boolean;
-    }) => {
-      try {
-        // Fetch exercise details from database
-        const exercise = await database.get<Exercise>('exercises').find(exerciseData.exerciseId);
-
-        // Create new exercise option using utility function
-        const newExercise = createExerciseOption({
-          exercise,
-          sets: exerciseData.sets,
-          reps: exerciseData.reps,
-          weight: exerciseData.weight,
-          isBodyweight: exerciseData.isBodyweight,
-          groupId: undefined,
-        });
-
-        // Store metadata
-        setExerciseMetadata((prev) => {
-          const updated = new Map(prev);
-          updated.set(exerciseData.exerciseId, {
-            sets: exerciseData.sets,
-            reps: exerciseData.reps,
-            weight: exerciseData.weight,
-            isBodyweight: exerciseData.isBodyweight,
-            groupId: undefined,
-          });
-          return updated;
-        });
-
-        // Add to exercises array
-        setExercises((prev) => [...prev, newExercise]);
-      } catch (error) {
-        console.error('Error adding exercise:', error);
-        Alert.alert(
-          t('common.error', 'Error'),
-          t('createWorkout.addExerciseError', 'Failed to add exercise')
-        );
-      }
-    },
-    [t]
-  );
-
-  // Handle saving workout template
-  const handleSave = useCallback(async () => {
-    // Validate
-    const titleValidation = validateWorkoutTitle(workoutTitle);
-    if (!titleValidation.valid) {
-      Alert.alert(
-        t('createWorkout.validation.titleRequired', 'Title Required'),
-        t('createWorkout.validation.titleRequiredMessage', 'Please enter a workout title')
-      );
-      return;
-    }
-
-    // Allow saving with no exercises (empty workout template)
-    // User can add exercises later or use it as a placeholder
-
-    setIsSaving(true);
-    try {
-      // Convert exercises with metadata to ExerciseInWorkout format
-      const exercisesInWorkout = exercisesToWorkoutFormat(exercises, exerciseMetadata);
-
-      // Save template (update if editing, create if new)
-      await WorkoutTemplateService.saveTemplate({
-        templateId: isEditMode ? templateId : undefined,
-        name: workoutTitle.trim(),
-        description: description.trim() || undefined,
-        exercises: exercisesInWorkout,
-        selectedDays,
-      });
-
-      // Navigate back
-      router.back();
-    } catch (error) {
-      console.error('Error saving template:', error);
-      Alert.alert(
-        t('common.error', 'Error'),
-        t('createWorkout.saveError', 'Failed to save workout template')
-      );
-    } finally {
-      setIsSaving(false);
-    }
-  }, [
+  const {
     workoutTitle,
     description,
-    exercises,
-    exerciseMetadata,
+    volumeCalc,
     selectedDays,
+    focusedField,
+    isLoading,
+    isSaving,
+    selectedExercises,
+    exercises,
     isEditMode,
-    templateId,
-    router,
-    t,
-  ]);
-
-  // Update metadata when exercises are reordered or grouped
-  const handleExerciseOrderChange = useCallback((reorderedExercises: SelectorOption<string>[]) => {
-    setExercises(reorderedExercises);
-    // Update groupId in metadata using utility function
-    setExerciseMetadata((prev) => updateMetadataWithGroupIds(prev, reorderedExercises));
-  }, []);
+    setWorkoutTitle,
+    setDescription,
+    setVolumeCalc,
+    setFocusedField,
+    setSelectedExercises,
+    toggleDay,
+    handleAddExerciseWithMetadata,
+    handleSave,
+    handleExerciseOrderChange,
+  } = useWorkoutForm({ templateId });
 
   const volumeOptions = [
     { label: t('createWorkout.volumeCalculation.none'), value: 'none' },
