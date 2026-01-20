@@ -68,6 +68,11 @@ const createMockSelectorOption = (
   ...overrides,
 });
 
+jest.mock('lucide-react-native', () => ({
+  User: jest.fn(() => 'User'),
+  Dumbbell: jest.fn(() => 'Dumbbell'),
+}));
+
 describe('utils/workout', () => {
   describe('Day Mapping Utilities', () => {
     describe('WEEKDAY_LABELS', () => {
