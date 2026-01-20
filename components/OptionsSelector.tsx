@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from 'react';
+import React, { memo,  useMemo, useCallback } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { Check, LucideIcon } from 'lucide-react-native';
 import { theme } from '../theme';
@@ -19,7 +19,7 @@ type OptionsSelectorProps<T extends string | number> = {
   onSelect: (id: T) => void;
 };
 
-const OptionItem = React.memo(
+const OptionItem = memo(
   <T extends string | number>({
     option,
     isSelected,
@@ -30,12 +30,12 @@ const OptionItem = React.memo(
     onSelect: (id: T) => void;
   }) => {
     const Icon = option.icon as any;
-    const handlePressIn = useCallback(() => {
+    const handlePress = useCallback(() => {
       onSelect(option.id);
     }, [option.id, onSelect]);
 
     return (
-      <Pressable key={option.id} onPressIn={handlePressIn}>
+      <Pressable key={option.id} onPress={handlePress}>
         {({ pressed }) => (
           <View
             style={{

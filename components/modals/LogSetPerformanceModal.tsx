@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Pressable, ScrollView, Platform } from 'react-native';
 import { Edit, Save } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
@@ -69,7 +69,7 @@ export function LogSetPerformanceModal({
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
 
   // Update local state when props change
-  React.useEffect(() => {
+  useEffect(() => {
     if (visible) {
       setWeight(initialWeight);
       setReps(initialReps);

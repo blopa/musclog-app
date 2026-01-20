@@ -2,10 +2,8 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { Check, GripVertical } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import DraggableFlatList, {
-  RenderItemParams,
-  ScaleDecorator,
-} from 'react-native-draggable-flatlist';
+import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { theme } from '../../../theme';
 import {
   normalizeGroups,
@@ -15,6 +13,30 @@ import {
   SelectorOption,
 } from './utils';
 import { GroupActionButton } from './GroupActionButton';
+
+const ScaleDecorator = ({
+  children,
+  isActive,
+}: {
+  children: React.ReactNode;
+  isActive?: boolean;
+}) => {
+  const scale = useSharedValue(1);
+
+  useEffect(() => {
+    if (isActive !== undefined) {
+      scale.value = withSpring(isActive ? 0.95 : 1, { damping: 15, stiffness: 150 });
+    }
+  }, [isActive, scale]);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: scale.value }],
+    };
+  });
+
+  return <Animated.View style={animatedStyle}>{children}</Animated.View>;
+};
 
 type OptionsMultiSelectorProps<T extends string | number> = {
   title: string;
@@ -234,7 +256,7 @@ export function OptionsMultiSelector<T extends string | number>({
     const isHighestSelected = index === firstSelectedIndex;
 
     return (
-      <ScaleDecorator>
+      <ScaleDecorator isActive={isActive}>
         <View
           style={{
             flexDirection: 'row',

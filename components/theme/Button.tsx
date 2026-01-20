@@ -1,7 +1,7 @@
 import { Text, Pressable, ViewStyle, View, ActivityIndicator } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { LucideIcon } from 'lucide-react-native';
-import React, { useState } from 'react';
+import React, { useState, isValidElement } from 'react';
 import { theme } from '../../theme';
 
 type ThemeButtonSize = 'sm' | 'md' | 'lg';
@@ -177,7 +177,7 @@ export function Button({
       );
     }
   } else if (Icon) {
-    if (React.isValidElement(Icon)) {
+    if (isValidElement(Icon)) {
       iconElement = Icon;
     } else if (typeof Icon === 'function') {
       // Try rendering as a component first

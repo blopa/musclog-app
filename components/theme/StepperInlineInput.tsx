@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, Pressable, TextInput } from 'react-native';
 import { Minus, Plus, LucideIcon } from 'lucide-react-native';
 import { theme } from '../../theme';
@@ -31,7 +31,7 @@ export function StepperInlineInput({
   const inputRef = useRef<TextInput>(null);
 
   // Sync inputValue with value prop when not editing
-  React.useEffect(() => {
+  useEffect(() => {
     if (!editing) {
       setInputValue(value.toFixed(1));
     }

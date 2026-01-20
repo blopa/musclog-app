@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, Pressable, TextInput } from 'react-native';
 import { Minus, Plus } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
@@ -27,12 +27,12 @@ export const StepperInput: React.FC<StepperInputProps> = ({
   const [inputValue, setInputValue] = useState(value.toFixed(1));
   const inputRef = useRef<TextInput>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setInternalValue(value);
   }, [value]);
 
   // Sync inputValue with value prop when not editing
-  React.useEffect(() => {
+  useEffect(() => {
     if (!editing) {
       setInputValue(value.toFixed(1));
     }

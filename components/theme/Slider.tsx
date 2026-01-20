@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View } from 'react-native';
 import SliderComponent from '@react-native-community/slider';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -31,11 +31,11 @@ export function Slider({
   solidColor = theme.colors.accent.primary,
   step = 1,
 }: SliderProps) {
-  const [containerWidth, setContainerWidth] = React.useState(0);
-  const [displayValue, setDisplayValue] = React.useState(value);
+  const [containerWidth, setContainerWidth] = useState(0);
+  const [displayValue, setDisplayValue] = useState(value);
 
   // Sync display value when prop changes
-  React.useEffect(() => {
+  useEffect(() => {
     setDisplayValue(value);
   }, [value]);
 
