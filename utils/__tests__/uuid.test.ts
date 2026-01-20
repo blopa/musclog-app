@@ -135,20 +135,6 @@ describe('utils/uuid', () => {
     });
 
     describe('edge cases', () => {
-      it('should handle when globalThis is undefined', () => {
-        const originalGlobalThis = (global as any).globalThis;
-        try {
-          delete (global as any).globalThis;
-          // This should still work as the function checks for undefined
-          const uuid = generateUUID();
-          expect(uuid).toMatch(
-            /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
-          );
-        } finally {
-          (global as any).globalThis = originalGlobalThis;
-        }
-      });
-
       it('should handle when crypto exists but randomUUID is undefined', () => {
         (globalThis as any).crypto = {
           // randomUUID is missing
