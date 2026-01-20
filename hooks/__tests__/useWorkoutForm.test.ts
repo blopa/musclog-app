@@ -34,8 +34,20 @@ jest.mock('react-i18next', () => ({
 jest.mock('../../database', () => ({
   database: {
     get: jest.fn(() => ({
-      find: jest.fn(),
+      find: jest.fn().mockResolvedValue(null), // Default immediate resolution
+      query: jest.fn(() => ({
+        fetch: jest.fn().mockResolvedValue([]),
+      })),
+      prepareCreate: jest.fn(),
+      create: jest.fn(),
+      fetch: jest.fn().mockResolvedValue([]),
     })),
+    write: jest.fn((callback) => {
+      // Execute callback immediately and return resolved promise
+      const result = callback();
+      return Promise.resolve(result);
+    }),
+    batch: jest.fn().mockResolvedValue(undefined),
   },
 }));
 
@@ -90,6 +102,7 @@ describe('hooks/useWorkoutForm', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockRouterBack.mockClear();
+    // All mocks return immediately for optimal performance
     mockWorkoutUtils.validateWorkoutTitle.mockReturnValue({ valid: true });
     // transformScheduleDays will be mocked per test
     mockWorkoutUtils.transformExercisesToOptions.mockReturnValue([mockExerciseOption]);
@@ -103,6 +116,14 @@ describe('hooks/useWorkoutForm', () => {
     });
     mockWorkoutUtils.updateMetadataWithGroupIds.mockImplementation((prev, reordered) => prev);
     mockWorkoutUtils.exercisesToWorkoutFormat.mockReturnValue([]);
+    // Ensure service mocks resolve immediately
+    mockWorkoutTemplateService.getTemplateWithDetails.mockResolvedValue({
+      template: {} as any,
+      sets: [],
+      schedule: [],
+    });
+    mockWorkoutTemplateService.convertSetsToExercises.mockResolvedValue([]);
+    mockWorkoutTemplateService.saveTemplate.mockResolvedValue(mockTemplate);
   });
 
   describe('initial state', () => {
@@ -207,6 +228,56 @@ describe('hooks/useWorkoutForm', () => {
       renderHook(() => useWorkoutForm({ templateId: null as unknown as string | undefined }));
 
       expect(mockWorkoutTemplateService.getTemplateWithDetails).not.toHaveBeenCalled();
+    });
+
+    it('should set description to empty string when template.description is null', async () => {
+      const mockTemplate = {
+        name: 'My Workout',
+        description: null,
+      };
+      const mockSets = [] as ExerciseMetadata[];
+      const mockSchedule = [{ dayOfWeek: 'Monday' }];
+
+      mockWorkoutTemplateService.getTemplateWithDetails.mockResolvedValue({
+        template: mockTemplate as any,
+        sets: mockSets as any,
+        schedule: mockSchedule as any,
+      });
+      mockWorkoutTemplateService.convertSetsToExercises.mockResolvedValue([]);
+      mockWorkoutUtils.transformScheduleDays.mockReturnValue([0]);
+
+      const { result } = renderHook(() => useWorkoutForm({ templateId: 'template-1' }));
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      expect(result.current.description).toBe('');
+    });
+
+    it('should set description to empty string when template.description is undefined', async () => {
+      const mockTemplate = {
+        name: 'My Workout',
+        description: undefined,
+      };
+      const mockSets = [] as ExerciseMetadata[];
+      const mockSchedule = [{ dayOfWeek: 'Monday' }];
+
+      mockWorkoutTemplateService.getTemplateWithDetails.mockResolvedValue({
+        template: mockTemplate as any,
+        sets: mockSets as any,
+        schedule: mockSchedule as any,
+      });
+      mockWorkoutTemplateService.convertSetsToExercises.mockResolvedValue([]);
+      mockWorkoutUtils.transformScheduleDays.mockReturnValue([0]);
+
+      const { result } = renderHook(() => useWorkoutForm({ templateId: 'template-1' }));
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      expect(result.current.description).toBe('');
     });
   });
 
@@ -363,6 +434,10 @@ describe('hooks/useWorkoutForm', () => {
       expect(mockWorkoutTemplateService.saveTemplate).not.toHaveBeenCalled();
     });
 
+    it.skip('should save workout template in edit mode', async () => {
+      // TODO: Implement edit mode save test
+    });
+
     it('should trim title and description', async () => {
       mockWorkoutTemplateService.saveTemplate.mockResolvedValue(mockTemplate);
 
@@ -384,6 +459,29 @@ describe('hooks/useWorkoutForm', () => {
         })
       );
       expect(mockRouterBack).toHaveBeenCalled();
+    });
+
+    it('should convert empty trimmed description to undefined', async () => {
+      mockWorkoutTemplateService.saveTemplate.mockResolvedValue(mockTemplate);
+
+      const { result } = renderHook(() => useWorkoutForm());
+
+      act(() => {
+        result.current.setWorkoutTitle('Test Workout');
+        result.current.setDescription('   '); // Whitespace only
+      });
+
+      await act(async () => {
+        await result.current.handleSave();
+      });
+
+      expect(mockWorkoutTemplateService.saveTemplate).toHaveBeenCalledWith({
+        templateId: undefined,
+        name: 'Test Workout',
+        description: undefined, // Empty trimmed description becomes undefined
+        exercises: [],
+        selectedDays: [],
+      });
     });
 
     it('should handle save error', async () => {
