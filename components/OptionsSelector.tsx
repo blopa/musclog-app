@@ -1,4 +1,4 @@
-import React, { memo,  useMemo, useCallback } from 'react';
+import React, { memo, useMemo, useCallback } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { Check, LucideIcon } from 'lucide-react-native';
 import { theme } from '../theme';

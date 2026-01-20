@@ -5,7 +5,13 @@ const baseConfig = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
   },
-  collectCoverageFrom: ['utils/**/*.ts', 'hooks/**/*.ts', '!utils/**/*.d.ts', '!utils/__tests__/**', '!hooks/__tests__/**'],
+  collectCoverageFrom: [
+    'utils/**/*.ts',
+    'hooks/**/*.ts',
+    '!utils/**/*.d.ts',
+    '!utils/__tests__/**',
+    '!hooks/__tests__/**',
+  ],
   coverageThreshold: {
     global: {
       statements: 90,

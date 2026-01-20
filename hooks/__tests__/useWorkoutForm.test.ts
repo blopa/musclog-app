@@ -1,7 +1,6 @@
 /**
  * @jest-environment jsdom
  */
-/* eslint-disable @typescript-eslint/no-require-imports */
 
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { Alert } from 'react-native';
@@ -19,9 +18,10 @@ jest.mock('react-native', () => ({
   },
 }));
 
+const mockRouterBack = jest.fn();
 jest.mock('expo-router', () => ({
   useRouter: () => ({
-    back: jest.fn(),
+    back: mockRouterBack,
   }),
 }));
 
@@ -57,7 +57,9 @@ jest.mock('../../utils/workout', () => ({
   validateWorkoutTitle: jest.fn(),
 }));
 
-const mockWorkoutTemplateService = WorkoutTemplateService as jest.Mocked<typeof WorkoutTemplateService>;
+const mockWorkoutTemplateService = WorkoutTemplateService as jest.Mocked<
+  typeof WorkoutTemplateService
+>;
 const mockDatabase = database as jest.Mocked<typeof database>;
 const mockWorkoutUtils = workoutUtils as jest.Mocked<typeof workoutUtils>;
 const mockAlert = Alert as jest.Mocked<typeof Alert>;
@@ -87,6 +89,7 @@ describe('hooks/useWorkoutForm', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    mockRouterBack.mockClear();
     mockWorkoutUtils.validateWorkoutTitle.mockReturnValue({ valid: true });
     // transformScheduleDays will be mocked per test
     mockWorkoutUtils.transformExercisesToOptions.mockReturnValue([mockExerciseOption]);
@@ -154,7 +157,9 @@ describe('hooks/useWorkoutForm', () => {
         sets: mockSets as any,
         schedule: mockSchedule as any,
       });
-      mockWorkoutTemplateService.convertSetsToExercises.mockResolvedValue(mockExercisesInWorkout as any);
+      mockWorkoutTemplateService.convertSetsToExercises.mockResolvedValue(
+        mockExercisesInWorkout as any
+      );
       // Mock transformScheduleDays to return the correct indices for Monday (0) and Wednesday (2)
       mockWorkoutUtils.transformScheduleDays.mockReturnValue([0, 2]);
 
@@ -296,7 +301,6 @@ describe('hooks/useWorkoutForm', () => {
 
   describe('handleSave', () => {
     it('should save workout template in create mode', async () => {
-      const mockRouter = require('expo-router').useRouter();
       mockWorkoutTemplateService.saveTemplate.mockResolvedValue(mockTemplate);
 
       const { result } = renderHook(() => useWorkoutForm());
@@ -318,7 +322,7 @@ describe('hooks/useWorkoutForm', () => {
         exercises: [],
         selectedDays: [],
       });
-      expect(mockRouter().back).toHaveBeenCalled();
+      expect(mockRouterBack).toHaveBeenCalled();
       expect(result.current.isSaving).toBe(false);
     });
 
@@ -346,7 +350,6 @@ describe('hooks/useWorkoutForm', () => {
     });
 
     it('should trim title and description', async () => {
-      const mockRouter = require('expo-router').useRouter();
       mockWorkoutTemplateService.saveTemplate.mockResolvedValue(mockTemplate);
 
       const { result } = renderHook(() => useWorkoutForm());
@@ -366,6 +369,7 @@ describe('hooks/useWorkoutForm', () => {
           description: 'Trimmed Description',
         })
       );
+      expect(mockRouterBack).toHaveBeenCalled();
     });
 
     it('should handle save error', async () => {
