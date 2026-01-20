@@ -327,7 +327,7 @@ describe('utils/workout', () => {
       });
 
       it('should include all required fields', () => {
-        const exercise = createMockExercise({ name: 'Bench Press' }) as Exercise;
+        const exercise = createMockExercise({ name: 'Bench Press', equipmentType: 'barbell' }) as Exercise;
         const params: CreateExerciseOptionParams = {
           exercise,
           sets: 5,
@@ -343,8 +343,8 @@ describe('utils/workout', () => {
           label: 'Bench Press',
           description: '5 sets × 8 reps',
           icon: Dumbbell,
-          iconBgColor: theme.colors.background.white5,
-          iconColor: theme.colors.text.secondary,
+          iconBgColor: theme.colors.accent.primary10,
+          iconColor: theme.colors.accent.primary,
           groupId: 'group-2',
         });
       });
