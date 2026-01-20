@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 import {
   getGoogleClientId,
   refreshAccessToken,
@@ -15,6 +16,11 @@ import {
   GOOGLE_CLIENT_ID_MOBILE,
   GOOGLE_CLIENT_ID_WEB,
 } from '../../constants/auth';
+
+const mockAsyncStorageModule = require('@react-native-async-storage/async-storage');
+const mockAsyncStorage = mockAsyncStorageModule.default;
+const { fetch: mockFetch } = require('expo/fetch');
+const { Platform: mockPlatform } = require('react-native');
 
 jest.mock('@react-native-async-storage/async-storage', () => {
   const storageData: Record<string, string> = {};
@@ -133,10 +139,6 @@ jest.mock('../snackbarService', () => {
   };
 });
 
-const mockAsyncStorageModule = require('@react-native-async-storage/async-storage');
-const mockAsyncStorage = mockAsyncStorageModule.default;
-const { fetch: mockFetch } = require('expo/fetch');
-const { Platform: mockPlatform } = require('react-native');
 const mockGoogleAuthService = GoogleAuthService as jest.Mocked<typeof GoogleAuthService>;
 const mockIsValidAccessToken = isValidAccessToken as jest.MockedFunction<typeof isValidAccessToken>;
 
