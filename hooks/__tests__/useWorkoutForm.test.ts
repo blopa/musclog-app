@@ -194,6 +194,20 @@ describe('hooks/useWorkoutForm', () => {
 
       expect(mockWorkoutTemplateService.getTemplateWithDetails).not.toHaveBeenCalled();
     });
+
+    it('should not load when templateId is empty string', () => {
+      renderHook(() => useWorkoutForm({ templateId: '' }));
+
+      expect(mockWorkoutTemplateService.getTemplateWithDetails).not.toHaveBeenCalled();
+    });
+
+    it('should not load when templateId is null', () => {
+      // TypeScript allows undefined but not null, so we need to cast
+      // This tests the runtime behavior when templateId is falsy
+      renderHook(() => useWorkoutForm({ templateId: null as unknown as string | undefined }));
+
+      expect(mockWorkoutTemplateService.getTemplateWithDetails).not.toHaveBeenCalled();
+    });
   });
 
   describe('toggleDay', () => {
