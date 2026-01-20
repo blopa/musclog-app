@@ -11,10 +11,10 @@ describe('utils/snackbarService', () => {
   beforeEach(() => {
     // Reset the service state before each test
     unregisterSnackbarService();
-    
+
     // Create a fresh mock function for each test
     mockSnackbarFunction = jest.fn();
-    
+
     // Mock console.warn to verify fallback behavior
     originalConsoleWarn = console.warn;
     console.warn = jest.fn();
@@ -63,7 +63,10 @@ describe('utils/snackbarService', () => {
 
       showSnackbar('success', 'Test message');
       expect(mockSnackbarFunction).not.toHaveBeenCalled();
-      expect(console.warn).toHaveBeenCalledWith('[Snackbar] Service not registered:', 'Test message');
+      expect(console.warn).toHaveBeenCalledWith(
+        '[Snackbar] Service not registered:',
+        'Test message'
+      );
     });
 
     it('should be safe to call when nothing is registered', () => {
@@ -149,13 +152,19 @@ describe('utils/snackbarService', () => {
         showSnackbar('success', 'Test message');
 
         expect(mockSnackbarFunction).not.toHaveBeenCalled();
-        expect(console.warn).toHaveBeenCalledWith('[Snackbar] Service not registered:', 'Test message');
+        expect(console.warn).toHaveBeenCalledWith(
+          '[Snackbar] Service not registered:',
+          'Test message'
+        );
       });
 
       it('should fall back to console.warn with error type', () => {
         showSnackbar('error', 'Error message');
 
-        expect(console.warn).toHaveBeenCalledWith('[Snackbar] Service not registered:', 'Error message');
+        expect(console.warn).toHaveBeenCalledWith(
+          '[Snackbar] Service not registered:',
+          'Error message'
+        );
       });
 
       it('should fall back to console.warn even with options', () => {
