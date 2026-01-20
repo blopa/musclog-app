@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Platform, Alert } from 'react-native';
+import { Platform } from 'react-native';
 import { fetch } from 'expo/fetch';
 import {
   GOOGLE_CLIENT_ID_MOBILE,
@@ -12,6 +12,7 @@ import {
 import { GoogleAuthService } from '../database/services/GoogleAuthService';
 import { isValidAccessToken } from './gemini';
 import i18n from '../lang/lang';
+import { showSnackbar } from './snackbarService';
 
 export interface GoogleUserInfo {
   email: string;
@@ -50,11 +51,10 @@ const handleGoogleAuthError = async () => {
     return;
   }
 
-  // TODO: use the snackbar system
-  Alert.alert(
-    i18n.t('your_google_auth_expired_reauth') ||
-      'Your Google authentication has expired. Please sign in again.'
-  );
+  const message = i18n.t('your_google_auth_expired_reauth');
+  showSnackbar('error', message, {
+    duration: 6000,
+  });
   await AsyncStorage.setItem(LAST_TIME_GOOGLE_AUTH_ERROR_WAS_SHOWN, today);
 };
 

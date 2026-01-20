@@ -1,9 +1,10 @@
-import { createContext, useContext, useState, ReactNode, useCallback } from 'react';
+import { createContext, useContext, useState, ReactNode, useCallback, useEffect } from 'react';
 import { View, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { Snackbar, type SnackbarType } from './Snackbar';
+import { registerSnackbarService, unregisterSnackbarService } from '../utils/snackbarService';
 
 type SnackbarContextType = {
   showSnackbar: (
@@ -61,6 +62,14 @@ export function SnackbarProvider({ children }: { children: ReactNode }) {
   const dismissSnackbar = useCallback((id: number) => {
     setSnackbars((prev) => prev.filter((s) => s.id !== id));
   }, []);
+
+  // Register the snackbar service for global access
+  useEffect(() => {
+    registerSnackbarService(showSnackbar);
+    return () => {
+      unregisterSnackbarService();
+    };
+  }, [showSnackbar]);
 
   // Web-specific styles for proper viewport positioning
   const webContainerStyle =
