@@ -477,6 +477,21 @@
     "delete": "Delete",
     "deleteDescription": "Permanently remove this workout"
   },
+  "workoutDetail": {
+    "totalTime": "Total Time",
+    "volume": "Volume",
+    "calories": "Calories",
+    "volumeTrend": "Volume Trend",
+    "volumeTrendPercentage": "+{{percentage}}% vs avg",
+    "exercises": "Exercises",
+    "exercisesCount": "Exercises ({{count}})",
+    "minsSpent": "{{minutes}} mins spent",
+    "set": "SET",
+    "weight": "WEIGHT",
+    "reps": "REPS",
+    "partial": "PARTIAL",
+    "rest": "REST"
+  },
   "replaceExercise": {
     "title": "Replace Exercise",
     "cancel": "Cancel",

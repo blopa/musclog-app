@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import { ArrowLeft, Share2, MoreHorizontal, Trophy } from 'lucide-react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
 import { GenericCard } from '../../components/cards/GenericCard';
 import { LineChart, LineChartDataPoint } from '../../components/LineChart';
@@ -109,6 +110,7 @@ const mockWorkoutData = {
 };
 
 export default function WorkoutDetailScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const workout = mockWorkoutData;
@@ -187,14 +189,14 @@ export default function WorkoutDetailScreen() {
                     className="text-[10px] font-bold uppercase tracking-wider text-white"
                     style={{ opacity: 0.8 }}
                   >
-                    Total Time
+                    {t('workoutDetail.totalTime')}
                   </Text>
                   <View className="flex-row items-baseline gap-1">
                     <Text className="text-2xl font-extrabold tracking-tight text-white">
                       {workout.totalTime}
                     </Text>
                     <Text className="text-xs font-medium text-white" style={{ opacity: 0.8 }}>
-                      min
+                      {t('common.min')}
                     </Text>
                   </View>
                 </View>
@@ -208,14 +210,14 @@ export default function WorkoutDetailScreen() {
                     className="text-[10px] font-bold uppercase tracking-wider text-white"
                     style={{ opacity: 0.8 }}
                   >
-                    Volume
+                    {t('workoutDetail.volume')}
                   </Text>
                   <View className="flex-row items-baseline gap-1">
                     <Text className="text-2xl font-extrabold tracking-tight text-white">
                       {workout.volume.toLocaleString()}
                     </Text>
                     <Text className="text-xs font-medium text-white" style={{ opacity: 0.8 }}>
-                      kg
+                      {t('workoutSession.kg')}
                     </Text>
                   </View>
                 </View>
@@ -229,14 +231,14 @@ export default function WorkoutDetailScreen() {
                     className="text-[10px] font-bold uppercase tracking-wider text-white"
                     style={{ opacity: 0.8 }}
                   >
-                    Calories
+                    {t('workoutDetail.calories')}
                   </Text>
                   <View className="flex-row items-baseline gap-1">
                     <Text className="text-2xl font-extrabold tracking-tight text-white">
                       {workout.calories}
                     </Text>
                     <Text className="text-xs font-medium text-white" style={{ opacity: 0.8 }}>
-                      kcal
+                      {t('common.kcal')}
                     </Text>
                   </View>
                 </View>
@@ -248,13 +250,13 @@ export default function WorkoutDetailScreen() {
           <GenericCard variant="card">
             <View style={{ padding: theme.spacing.padding.base }}>
               <View className="mb-4 flex-row items-center justify-between">
-                <Text className="text-sm font-bold text-text-primary">Volume Trend</Text>
+                <Text className="text-sm font-bold text-text-primary">{t('workoutDetail.volumeTrend')}</Text>
                 <View
                   className="rounded px-2 py-0.5"
                   style={{ backgroundColor: theme.colors.accent.primary10 }}
                 >
                   <Text className="text-[10px] font-bold uppercase text-accent-primary">
-                    +{workout.volumeTrend.percentage}% vs avg
+                    {t('workoutDetail.volumeTrendPercentage', { percentage: workout.volumeTrend.percentage })}
                   </Text>
                 </View>
               </View>
@@ -275,7 +277,7 @@ export default function WorkoutDetailScreen() {
           {/* Exercises Section */}
           <View className="flex-col gap-4">
             <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary px-1">
-              Exercises ({workout.exercises.length})
+              {t('workoutDetail.exercisesCount', { count: workout.exercises.length })}
             </Text>
 
             {workout.exercises.map((exercise) => (
@@ -313,7 +315,7 @@ export default function WorkoutDetailScreen() {
                         className="text-[10px] font-medium text-text-tertiary"
                         style={{ marginTop: theme.spacing.gap.xs }}
                       >
-                        {exercise.timeSpent} mins spent
+                        {t('workoutDetail.minsSpent', { minutes: exercise.timeSpent })}
                       </Text>
                     </View>
                   </View>
@@ -336,27 +338,27 @@ export default function WorkoutDetailScreen() {
                   >
                     <View className="w-12 items-center py-2">
                       <Text className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
-                        SET
+                        {t('workoutDetail.set')}
                       </Text>
                     </View>
                     <View className="flex-1 items-center py-2">
                       <Text className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
-                        WEIGHT
+                        {t('workoutDetail.weight')}
                       </Text>
                     </View>
                     <View className="flex-1 items-center py-2">
                       <Text className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
-                        REPS
+                        {t('workoutDetail.reps')}
                       </Text>
                     </View>
                     <View className="flex-1 items-center py-2">
                       <Text className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
-                        PARTIAL
+                        {t('workoutDetail.partial')}
                       </Text>
                     </View>
                     <View className="flex-1 items-center py-2">
                       <Text className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
-                        REST
+                        {t('workoutDetail.rest')}
                       </Text>
                     </View>
                   </View>

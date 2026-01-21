@@ -369,6 +369,21 @@
     "delete": "Verwijderen",
     "deleteDescription": "Verwijder deze training permanent"
   },
+  "workoutDetail": {
+    "totalTime": "Totale Tijd",
+    "volume": "Volume",
+    "calories": "Calorieën",
+    "volumeTrend": "Volume Trend",
+    "volumeTrendPercentage": "+{{percentage}}% vs gemiddelde",
+    "exercises": "Oefeningen",
+    "exercisesCount": "Oefeningen ({{count}})",
+    "minsSpent": "{{minutes}} minuten besteed",
+    "set": "SERIE",
+    "weight": "GEWICHT",
+    "reps": "HERH",
+    "partial": "GEDEELTELIJK",
+    "rest": "RUST"
+  },
   "endWorkout": {
     "title": "Training Beëindigen",
     "confirmation": "Weet je zeker dat je de huidige trainingssessie wilt beëindigen?",

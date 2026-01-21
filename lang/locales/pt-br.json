@@ -369,6 +369,21 @@
     "delete": "Excluir",
     "deleteDescription": "Remover permanentemente este treino"
   },
+  "workoutDetail": {
+    "totalTime": "Tempo Total",
+    "volume": "Volume",
+    "calories": "Calorias",
+    "volumeTrend": "Tendência de Volume",
+    "volumeTrendPercentage": "+{{percentage}}% vs média",
+    "exercises": "Exercícios",
+    "exercisesCount": "Exercícios ({{count}})",
+    "minsSpent": "{{minutes}} mins gastos",
+    "set": "SÉRIE",
+    "weight": "PESO",
+    "reps": "REP",
+    "partial": "PARCIAL",
+    "rest": "DESCANSO"
+  },
   "endWorkout": {
     "title": "Finalizar Treino",
     "confirmation": "Tem certeza de que deseja finalizar a sessão de treino atual?",

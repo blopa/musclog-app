@@ -368,6 +368,21 @@
     "delete": "Eliminar",
     "deleteDescription": "Eliminar permanentemente este entrenamiento"
   },
+  "workoutDetail": {
+    "totalTime": "Tiempo Total",
+    "volume": "Volumen",
+    "calories": "Calorías",
+    "volumeTrend": "Tendencia de Volumen",
+    "volumeTrendPercentage": "+{{percentage}}% vs promedio",
+    "exercises": "Ejercicios",
+    "exercisesCount": "Ejercicios ({{count}})",
+    "minsSpent": "{{minutes}} mins invertidos",
+    "set": "SERIE",
+    "weight": "PESO",
+    "reps": "REP",
+    "partial": "PARCIAL",
+    "rest": "DESCANSO"
+  },
   "foodSearch": {
     "recentHistory": "Historial Reciente",
     "viewAll": "Ver Todo",
