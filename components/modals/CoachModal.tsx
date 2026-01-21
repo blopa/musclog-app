@@ -14,7 +14,6 @@ import {
 } from 'react-native-gifted-chat';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
-  MoreVertical,
   Mic,
   Send as SendIcon,
   PlusCircle,
@@ -22,6 +21,7 @@ import {
   UtensilsCrossed,
 } from 'lucide-react-native';
 import { theme } from '../../theme';
+import { MenuButton } from '../theme/MenuButton';
 import { FullScreenModal } from './FullScreenModal';
 import { ChatWorkoutCard } from '../cards/ChatWorkoutCard';
 
@@ -365,11 +365,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
   }, [t]);
 
   const headerRight = useMemo(
-    () => (
-      <Pressable className="h-10 w-10 items-center justify-center rounded-full active:bg-white/5">
-        <MoreVertical size={theme.iconSize.lg} color={theme.colors.text.secondary} />
-      </Pressable>
-    ),
+    () => <MenuButton size="lg" onPress={() => {}} className="h-10 w-10 active:bg-white/5" />,
     []
   );
 

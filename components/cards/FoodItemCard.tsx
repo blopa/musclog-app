@@ -1,7 +1,7 @@
 import { View, Text, Image, Pressable, ImageSourcePropType } from 'react-native';
-import { MoreVertical } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
+import { MenuButton } from '../theme/MenuButton';
 import { GenericCard } from './GenericCard';
 
 type FoodItemCardProps = {
@@ -38,9 +38,7 @@ export function FoodItemCard({
           <Text className="text-2xl font-bold text-accent-secondary">{calories}</Text>
           <Text className="text-xs text-text-secondary">{t('food.common.kcal')}</Text>
         </View>
-        <Pressable className="flex-shrink-0" onPress={onMorePress}>
-          <MoreVertical size={theme.iconSize.sm} color={theme.colors.text.secondary} />
-        </Pressable>
+        <MenuButton size="sm" onPress={onMorePress} className="flex-shrink-0" />
       </View>
     </GenericCard>
   );

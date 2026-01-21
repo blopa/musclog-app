@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Pressable } from 'react-native';
-import { MoreVertical, Trash2, Plus, CheckCircle2, Egg, Info, Apple } from 'lucide-react-native';
+import { Trash2, Plus, CheckCircle2, Egg, Info, Apple } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
 import { FullScreenModal } from './FullScreenModal';
 import { Button } from '../theme/Button';
+import { MenuButton } from '../theme/MenuButton';
 import { AddFoodItemToMealModal } from './AddFoodItemToMealModal';
 
 type Ingredient = {
@@ -260,11 +261,7 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
       visible={visible}
       onClose={onClose}
       title={t('food.createMeal.title')}
-      headerRight={
-        <Pressable className="p-2">
-          <MoreVertical size={theme.iconSize.md} color={theme.colors.text.secondary} />
-        </Pressable>
-      }
+      headerRight={<MenuButton size="md" className="p-2" />}
       footer={
         <View className="px-4 pb-8 pt-2">
           <Button

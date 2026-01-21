@@ -1,10 +1,11 @@
 import { View, Text, Image, Pressable, ImageSourcePropType } from 'react-native';
-import { MoreVertical, Clock, Archive } from 'lucide-react-native';
+import { Clock, Archive } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { isToday, isYesterday } from 'date-fns';
 import { theme } from '../../theme';
 import { StartWorkoutButton } from '../StartWorkoutButton';
 import { Button } from '../theme/Button';
+import { MenuButton } from '../theme/MenuButton';
 import { GenericCard } from './GenericCard';
 
 type FeaturedWorkoutCardProps = {
@@ -94,13 +95,7 @@ export function WorkoutCard({
         {variant === 'featured' ? (
           <View className="flex-row gap-3">
             <StartWorkoutButton variant="primary" onPress={onStart} />
-            <Pressable
-              className="w-14 items-center justify-center rounded-2xl"
-              style={{ backgroundColor: theme.colors.background.iconDark }}
-              onPress={onMore}
-            >
-              <MoreVertical size={theme.iconSize.sm} color={theme.colors.text.secondary} />
-            </Pressable>
+            <MenuButton size="sm" onPress={onMore} className="w-14" />
           </View>
         ) : (
           <View className="flex-row gap-3">
@@ -113,13 +108,7 @@ export function WorkoutCard({
               onPress={onArchive}
             />
             <StartWorkoutButton variant="secondary" onPress={onStart} />
-            <Pressable
-              className="ml-auto w-14 items-center justify-center rounded-2xl"
-              style={{ backgroundColor: theme.colors.background.iconDark }}
-              onPress={onMore}
-            >
-              <MoreVertical size={theme.iconSize.sm} color={theme.colors.text.secondary} />
-            </Pressable>
+            <MenuButton size="sm" onPress={onMore} className="ml-auto w-14" />
           </View>
         )}
       </View>

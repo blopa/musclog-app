@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Pressable, ActivityIndicator } from 'react-native';
-import { Share2, MoreHorizontal, Trophy, Pencil, Trash2 } from 'lucide-react-native';
+import { Share2, Trophy, Pencil, Trash2 } from 'lucide-react-native';
+import { MenuButton } from '../theme/MenuButton';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
@@ -421,16 +422,12 @@ export default function PastWorkoutDetailModal({
   ];
 
   const headerRight = (
-    <Pressable
-      className="h-10 w-10 items-center justify-center rounded-full border"
-      style={{
-        backgroundColor: theme.colors.background.card,
-        borderColor: theme.colors.background.white5,
-      }}
+    <MenuButton
+      size="md"
+      color={theme.colors.text.primary}
       onPress={() => setIsMenuVisible(true)}
-    >
-      <MoreHorizontal size={theme.iconSize.md} color={theme.colors.text.primary} />
-    </Pressable>
+      className="h-10 w-10"
+    />
   );
 
   if (!workout) {

@@ -1,16 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, Pressable, Image } from 'react-native';
-import {
-  ChevronRight,
-  MoreVertical,
-  Video,
-  Pencil,
-  Copy,
-  Share2,
-  Trash2,
-  Zap,
-  Heart,
-} from 'lucide-react-native';
+import { ChevronRight, Video, Pencil, Copy, Share2, Trash2, Zap, Heart } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
@@ -18,6 +8,7 @@ import { BottomPopUpMenu, BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { SettingsCard } from '../cards/SettingsCard';
 import { GenericCard } from '../cards/GenericCard';
 import { Button } from '../theme/Button';
+import { MenuButton } from '../theme/MenuButton';
 import { FullScreenModal } from './FullScreenModal';
 
 // Mock data - replace with actual data from props or route params
@@ -131,13 +122,12 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
       onClose={onClose}
       title={EXERCISE_DATA.name}
       headerRight={
-        <Pressable
+        <MenuButton
+          size="lg"
+          color={theme.colors.text.white}
           onPress={() => setIsMenuVisible(true)}
-          className="h-10 w-10 items-center justify-center rounded-full"
-          style={{ backgroundColor: theme.colors.background.black40 }}
-        >
-          <MoreVertical size={theme.iconSize.lg} color={theme.colors.text.white} />
-        </Pressable>
+          className="h-10 w-10"
+        />
       }
     >
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>

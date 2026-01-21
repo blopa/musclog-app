@@ -180,7 +180,10 @@ export async function seedWorkoutTemplatesAndHistory(): Promise<{
 
   try {
     // Check if tables are empty
-    const existingTemplates = await database.get<WorkoutTemplate>('workout_templates').query().fetch();
+    const existingTemplates = await database
+      .get<WorkoutTemplate>('workout_templates')
+      .query()
+      .fetch();
     const existingLogs = await database.get<WorkoutLog>('workout_logs').query().fetch();
 
     if (existingTemplates.length > 0 || existingLogs.length > 0) {
@@ -232,12 +235,14 @@ export async function seedWorkoutTemplatesAndHistory(): Promise<{
       const legPress = await getOrCreateExercise('Leg Press', 'Legs');
 
       // Create workout templates
-      const upperBodyTemplate = await database.get<WorkoutTemplate>('workout_templates').create((t) => {
-        t.name = 'Upper Body Power';
-        t.description = 'Upper body strength and power workout';
-        t.createdAt = now;
-        t.updatedAt = now;
-      });
+      const upperBodyTemplate = await database
+        .get<WorkoutTemplate>('workout_templates')
+        .create((t) => {
+          t.name = 'Upper Body Power';
+          t.description = 'Upper body strength and power workout';
+          t.createdAt = now;
+          t.updatedAt = now;
+        });
       templatesCreated++;
 
       // Create template sets for Upper Body Power
@@ -278,12 +283,14 @@ export async function seedWorkoutTemplatesAndHistory(): Promise<{
         ts.updatedAt = now;
       });
 
-      const legDayTemplate = await database.get<WorkoutTemplate>('workout_templates').create((t) => {
-        t.name = 'Leg Day / Squats';
-        t.description = 'Lower body strength workout';
-        t.createdAt = now;
-        t.updatedAt = now;
-      });
+      const legDayTemplate = await database
+        .get<WorkoutTemplate>('workout_templates')
+        .create((t) => {
+          t.name = 'Leg Day / Squats';
+          t.description = 'Lower body strength workout';
+          t.createdAt = now;
+          t.updatedAt = now;
+        });
       templatesCreated++;
 
       // Create template sets for Leg Day
@@ -617,9 +624,28 @@ export async function seedWorkoutTemplatesAndHistory(): Promise<{
       let totalVolume = 0;
       let setOrder = 1;
       const pushDaySets = [
-        { exercise: benchPress, sets: [{ weight: 75, reps: 10 }, { weight: 80, reps: 8 }, { weight: 82.5, reps: 6 }] },
-        { exercise: overheadPress, sets: [{ weight: 48, reps: 10 }, { weight: 50, reps: 8 }] },
-        { exercise: tricepExtension, sets: [{ weight: 20, reps: 12 }, { weight: 22.5, reps: 10 }] },
+        {
+          exercise: benchPress,
+          sets: [
+            { weight: 75, reps: 10 },
+            { weight: 80, reps: 8 },
+            { weight: 82.5, reps: 6 },
+          ],
+        },
+        {
+          exercise: overheadPress,
+          sets: [
+            { weight: 48, reps: 10 },
+            { weight: 50, reps: 8 },
+          ],
+        },
+        {
+          exercise: tricepExtension,
+          sets: [
+            { weight: 20, reps: 12 },
+            { weight: 22.5, reps: 10 },
+          ],
+        },
       ];
 
       for (const exerciseData of pushDaySets) {

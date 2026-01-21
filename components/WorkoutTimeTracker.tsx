@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { View, Text, Pressable } from 'react-native';
-import { X, MoreVertical } from 'lucide-react-native';
+import { X } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
+import { MenuButton } from './theme/MenuButton';
 
 type WorkoutTimeTrackerProps = {
   onClose?: () => void;
@@ -57,9 +58,12 @@ export function WorkoutTimeTracker({
           {t('workoutSession.totalTime')}
         </Text>
       </View>
-      <Pressable className="h-12 w-12 items-center justify-center" onPress={onOptionsPress}>
-        <MoreVertical size={theme.iconSize.lg} color={theme.colors.text.primary} />
-      </Pressable>
+      <MenuButton
+        size="lg"
+        color={theme.colors.text.primary}
+        onPress={onOptionsPress}
+        className="h-12 w-12"
+      />
     </View>
   );
 }
