@@ -13,6 +13,7 @@ import { database } from '../../database';
 import { Q } from '@nozbe/watermelondb';
 import Exercise from '../../database/models/Exercise';
 import WorkoutLogSet from '../../database/models/WorkoutLogSet';
+import { SkeletonLoader } from '../theme/SkeletonLoader';
 
 type WorkoutHistorySection = {
   month: string;
@@ -464,7 +465,26 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
   // Load workout history when modal becomes visible or filters change
   useEffect(() => {
     if (visible) {
-      loadWorkoutHistory();
+      // Reset loading state immediately when modal opens for instant feedback
+      setIsLoading(true);
+      setWorkoutHistoryData([]);
+      setPageOffset(0);
+      setHasMore(true);
+      // Use setTimeout to defer data loading slightly, allowing modal to render first
+      // This makes the modal feel instant and snappy
+      const timeoutId = setTimeout(() => {
+        loadWorkoutHistory();
+      }, 0);
+      
+      return () => {
+        clearTimeout(timeoutId);
+      };
+    } else {
+      // Reset state when modal closes
+      setIsLoading(false);
+      setWorkoutHistoryData([]);
+      setPageOffset(0);
+      setHasMore(true);
     }
   }, [visible, filters, loadWorkoutHistory]);
 
@@ -544,8 +564,74 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
         {/* Main Content */}
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
           {isLoading ? (
-            <View className="flex-1 items-center justify-center py-20">
-              <ActivityIndicator size="large" color={theme.colors.accent.primary} />
+            <View className="flex-1 gap-6 p-4">
+              {/* Month header skeleton - only show once */}
+              <View>
+                <SkeletonLoader
+                  width={theme.size['24']}
+                  height={theme.size['3']}
+                  borderRadius={theme.borderRadius.sm}
+                  className="mb-3 px-1"
+                />
+                {/* Skeleton Loaders - Show 5 skeleton cards to match expected batch size */}
+                <View className="flex-col gap-3">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <View
+                      key={i}
+                      className="rounded-lg border p-4"
+                      style={{
+                        backgroundColor: theme.colors.background.card,
+                        borderColor: theme.colors.background.white5,
+                      }}
+                    >
+                      <View className="flex-col gap-4">
+                        {/* Card Header Skeleton */}
+                        <View className="flex-row items-start justify-between">
+                          <View className="flex-row items-center gap-3 flex-1">
+                            <SkeletonLoader
+                              width={theme.size['12']}
+                              height={theme.size['12']}
+                              borderRadius={theme.borderRadius.md}
+                            />
+                            <View className="flex-1 gap-2">
+                              <SkeletonLoader width="70%" height={theme.size['4']} />
+                              <SkeletonLoader width="50%" height={theme.size['3']} />
+                            </View>
+                          </View>
+                          {i % 3 === 0 && (
+                            <SkeletonLoader
+                              width={theme.size['12']}
+                              height={theme.size['5']}
+                              borderRadius={theme.borderRadius.md}
+                            />
+                          )}
+                        </View>
+                        {/* Stats Grid Skeleton */}
+                        <View className="flex-row gap-2">
+                          {[1, 2, 3].map((statIndex) => (
+                            <View
+                              key={statIndex}
+                              className="flex-1 gap-2 rounded-lg p-2"
+                              style={{ backgroundColor: theme.colors.background.white5 }}
+                            >
+                              <SkeletonLoader
+                                width="60%"
+                                height={theme.size['3']}
+                                borderRadius={theme.borderRadius.sm}
+                              />
+                              <SkeletonLoader
+                                width="80%"
+                                height={theme.size['4']}
+                                borderRadius={theme.borderRadius.sm}
+                              />
+                            </View>
+                          ))}
+                        </View>
+                      </View>
+                    </View>
+                  ))}
+                </View>
+              </View>
             </View>
           ) : filteredWorkoutHistoryData.length === 0 ? (
             <View className="flex-1 items-center justify-center px-4 py-20">
