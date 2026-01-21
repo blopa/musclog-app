@@ -422,6 +422,39 @@ describe('GoogleAuthService', () => {
       createCall(mockSetting);
       expect(mockSetting.value).toBe('false');
     });
+
+    it('should update existing setting with false value', async () => {
+      const mockSetting = createMockSetting({
+        type: GOOGLE_OAUTH_GEMINI_ENABLED_TYPE,
+        value: 'true',
+        update: jest.fn((callback) => {
+          callback({ value: 'false', updatedAt: Date.now() });
+          return Promise.resolve();
+        }),
+      });
+
+      const mockQuery = {
+        fetch: jest.fn().mockResolvedValue([mockSetting]),
+        extend: jest.fn().mockReturnThis(),
+      };
+
+      mockDatabase.get.mockReturnValue({
+        query: jest.fn().mockReturnValue(mockQuery),
+      } as any);
+      mockDatabase.write.mockImplementation(async (callback) => {
+        const mockWriter = {} as any;
+        await callback(mockWriter);
+        return Promise.resolve();
+      });
+
+      await GoogleAuthService.setOAuthGeminiEnabled(false);
+
+      expect(mockSetting.update).toHaveBeenCalled();
+      const updateCall = mockSetting.update.mock.calls[0][0];
+      const mockUpdated = {} as any;
+      updateCall(mockUpdated);
+      expect(mockUpdated.value).toBe('false');
+    });
   });
 
   describe('setAISettingsEnabled', () => {
@@ -508,6 +541,39 @@ describe('GoogleAuthService', () => {
       const mockSetting = {} as any;
       createCall(mockSetting);
       expect(mockSetting.value).toBe('false');
+    });
+
+    it('should update existing setting with false value', async () => {
+      const mockSetting = createMockSetting({
+        type: AI_SETTINGS_TYPE,
+        value: 'true',
+        update: jest.fn((callback) => {
+          callback({ value: 'false', updatedAt: Date.now() });
+          return Promise.resolve();
+        }),
+      });
+
+      const mockQuery = {
+        fetch: jest.fn().mockResolvedValue([mockSetting]),
+        extend: jest.fn().mockReturnThis(),
+      };
+
+      mockDatabase.get.mockReturnValue({
+        query: jest.fn().mockReturnValue(mockQuery),
+      } as any);
+      mockDatabase.write.mockImplementation(async (callback) => {
+        const mockWriter = {} as any;
+        await callback(mockWriter);
+        return Promise.resolve();
+      });
+
+      await GoogleAuthService.setAISettingsEnabled(false);
+
+      expect(mockSetting.update).toHaveBeenCalled();
+      const updateCall = mockSetting.update.mock.calls[0][0];
+      const mockUpdated = {} as any;
+      updateCall(mockUpdated);
+      expect(mockUpdated.value).toBe('false');
     });
   });
 });
