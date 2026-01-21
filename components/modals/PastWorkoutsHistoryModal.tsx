@@ -404,6 +404,11 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
     }
 
     setIsLoadingMore(true);
+    
+    // Small delay to ensure React processes the state update before async work
+    // This ensures the Button shows loading state immediately
+    await new Promise<void>((resolve) => setTimeout(resolve, 10));
+    
     try {
       // Calculate date range filter
       let timeframe: { startDate: number; endDate: number } | undefined;
@@ -471,6 +476,7 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
       setWorkoutHistoryData([]);
       setPageOffset(0);
       setHasMore(true);
+      setIsLoadingMore(false);
       // Use setTimeout to defer data loading slightly, allowing modal to render first
       // This makes the modal feel instant and snappy
       const timeoutId = setTimeout(() => {
@@ -486,6 +492,7 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
       setWorkoutHistoryData([]);
       setPageOffset(0);
       setHasMore(true);
+      setIsLoadingMore(false);
     }
   }, [visible, filters, loadWorkoutHistory]);
 
