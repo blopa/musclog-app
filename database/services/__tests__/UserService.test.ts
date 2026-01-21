@@ -204,8 +204,9 @@ describe('UserService', () => {
       };
 
       mockDatabase.get.mockReturnValue(mockCollection as any);
+      const mockWriter = {} as any;
       mockDatabase.write.mockImplementation(async (callback) => {
-        return await callback();
+        return await callback(mockWriter);
       });
 
       await UserService.initializeUser(initialData);
@@ -244,8 +245,9 @@ describe('UserService', () => {
       };
 
       mockDatabase.get.mockReturnValue(mockCollection as any);
+      const mockWriter = {} as any;
       mockDatabase.write.mockImplementation(async (callback) => {
-        return await callback();
+        return await callback(mockWriter);
       });
 
       await UserService.initializeUser(initialData);
