@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, Pressable } from 'react-native';
-import { Share2, MoreHorizontal, Trophy } from 'lucide-react-native';
+import { Share2, MoreHorizontal, Trophy, Pencil, Trash2 } from 'lucide-react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
@@ -9,6 +9,7 @@ import { theme } from '../../theme';
 import { FullScreenModal } from './FullScreenModal';
 import { GenericCard } from '../cards/GenericCard';
 import { LineChart, LineChartDataPoint } from '../LineChart';
+import { BottomPopUpMenu, BottomPopUpMenuItem } from '../BottomPopUpMenu';
 
 // Mock data - replace with actual data from props
 const mockWorkoutData = {
@@ -112,50 +113,83 @@ type PastWorkoutDetailModalProps = {
   visible: boolean;
   onClose: () => void;
   workout?: typeof mockWorkoutData;
+  onEdit?: () => void;
+  onShare?: () => void;
+  onDelete?: () => void;
 };
 
 export default function PastWorkoutDetailModal({
   visible,
   onClose,
   workout = mockWorkoutData,
+  onEdit,
+  onShare,
+  onDelete,
 }: PastWorkoutDetailModalProps) {
   const { t } = useTranslation();
+  const [isMenuVisible, setIsMenuVisible] = useState(false);
 
   const formatDate = (date: Date) => {
     return format(date, 'EEEE, MMM d • hh:mm a');
   };
 
+  const menuItems: BottomPopUpMenuItem[] = [
+    {
+      icon: Pencil,
+      iconColor: theme.colors.text.primary,
+      iconBgColor: theme.colors.text.primary20,
+      title: t('workoutDetails.edit'),
+      description: t('workoutDetails.editDescription'),
+      onPress: () => {
+        onEdit?.();
+      },
+    },
+    {
+      icon: Share2,
+      iconColor: theme.colors.text.primary,
+      iconBgColor: theme.colors.text.primary20,
+      title: t('workoutDetails.share'),
+      description: t('workoutDetails.shareDescription'),
+      onPress: () => {
+        onShare?.();
+      },
+    },
+    {
+      icon: Trash2,
+      iconColor: theme.colors.status.error,
+      iconBgColor: theme.colors.status.error20,
+      title: t('workoutDetails.delete'),
+      description: t('workoutDetails.deleteDescription'),
+      titleColor: theme.colors.status.error,
+      descriptionColor: theme.colors.status.error,
+      onPress: () => {
+        onDelete?.();
+      },
+    },
+  ];
+
   const headerRight = (
-    <View className="flex-row items-center gap-2">
-      <Pressable
-        className="h-10 w-10 items-center justify-center rounded-full border"
-        style={{
-          backgroundColor: theme.colors.background.card,
-          borderColor: theme.colors.background.white5,
-        }}
-      >
-        <Share2 size={theme.iconSize.md} color={theme.colors.text.primary} />
-      </Pressable>
-      <Pressable
-        className="h-10 w-10 items-center justify-center rounded-full border"
-        style={{
-          backgroundColor: theme.colors.background.card,
-          borderColor: theme.colors.background.white5,
-        }}
-      >
-        <MoreHorizontal size={theme.iconSize.md} color={theme.colors.text.primary} />
-      </Pressable>
-    </View>
+    <Pressable
+      className="h-10 w-10 items-center justify-center rounded-full border"
+      style={{
+        backgroundColor: theme.colors.background.card,
+        borderColor: theme.colors.background.white5,
+      }}
+      onPress={() => setIsMenuVisible(true)}
+    >
+      <MoreHorizontal size={theme.iconSize.md} color={theme.colors.text.primary} />
+    </Pressable>
   );
 
   return (
-    <FullScreenModal
-      visible={visible}
-      onClose={onClose}
-      title={workout.name}
-      subtitle={formatDate(workout.date)}
-      headerRight={headerRight}
-    >
+    <>
+      <FullScreenModal
+        visible={visible}
+        onClose={onClose}
+        title={workout.name}
+        subtitle={formatDate(workout.date)}
+        headerRight={headerRight}
+      >
       <View className="flex-1 gap-5 p-4">
         {/* Workout Summary Card with Gradient */}
         <View className="overflow-hidden rounded-xl">
@@ -409,5 +443,14 @@ export default function PastWorkoutDetailModal({
         </View>
       </View>
     </FullScreenModal>
+
+    <BottomPopUpMenu
+      visible={isMenuVisible}
+      onClose={() => setIsMenuVisible(false)}
+      title={workout.name}
+      subtitle={t('workoutDetails.subtitle')}
+      items={menuItems}
+    />
+  </>
   );
 }
