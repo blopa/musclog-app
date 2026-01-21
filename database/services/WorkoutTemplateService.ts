@@ -164,9 +164,10 @@ export class WorkoutTemplateService {
         // First exercise starts ungrouped by default
         exercise.groupId = undefined;
         currentGroupId = undefined;
-      } else if (lastSetOrderEnd !== null) {
+      } else {
+        // When index > 0, lastSetOrderEnd is always set from the previous iteration (line 186)
         // Check if consecutive with previous exercise
-        if (firstSetOrder === lastSetOrderEnd + 1) {
+        if (firstSetOrder === lastSetOrderEnd! + 1) {
           // Consecutive orders = potentially grouped
           // Start a new group if we don't have one, or continue existing group
           if (currentGroupId === undefined) {
@@ -366,7 +367,8 @@ export class WorkoutTemplateService {
               lastCompleted = '1 week ago';
             } else if (diffDays < 30) {
               const weeks = Math.floor(diffDays / 7);
-              lastCompleted = `${weeks} week${weeks > 1 ? 's' : ''} ago`;
+              // When diffDays >= 14, weeks >= 2, so always plural
+              lastCompleted = `${weeks} weeks ago`;
             } else {
               const months = Math.floor(diffDays / 30);
               lastCompleted = `${months} month${months > 1 ? 's' : ''} ago`;

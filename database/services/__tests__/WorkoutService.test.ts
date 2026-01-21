@@ -609,7 +609,9 @@ describe('WorkoutService', () => {
         find: jest.fn().mockResolvedValueOnce(workoutLog).mockResolvedValueOnce(completedWorkout),
       } as any);
 
-      mockWorkoutAnalytics.detectPersonalRecords.mockRejectedValue('String error from detectPersonalRecords');
+      mockWorkoutAnalytics.detectPersonalRecords.mockRejectedValue(
+        'String error from detectPersonalRecords'
+      );
 
       await expect(WorkoutService.completeWorkout('workout-1')).rejects.toThrow(
         'Failed to complete workout: Unknown error'

@@ -705,7 +705,9 @@ describe('WorkoutAnalytics', () => {
         name: 'Bench Press',
       });
 
-      workoutLog.logSets.fetch = jest.fn().mockResolvedValue([currentSet1, currentSet2, currentSet3]);
+      workoutLog.logSets.fetch = jest
+        .fn()
+        .mockResolvedValue([currentSet1, currentSet2, currentSet3]);
 
       const mockQuery = {
         fetch: jest.fn().mockResolvedValue([]), // No historical sets
@@ -1196,7 +1198,10 @@ describe('WorkoutAnalytics', () => {
       });
 
       const mockQuery = {
-        fetch: jest.fn().mockResolvedValueOnce([set1, set2, set3]).mockResolvedValueOnce([workout1]),
+        fetch: jest
+          .fn()
+          .mockResolvedValueOnce([set1, set2, set3])
+          .mockResolvedValueOnce([workout1]),
       };
 
       mockDatabase.get.mockReturnValue({
