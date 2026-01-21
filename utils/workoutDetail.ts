@@ -1,7 +1,9 @@
+import { format } from 'date-fns';
 import WorkoutLog from '../database/models/WorkoutLog';
 import WorkoutLogSet from '../database/models/WorkoutLogSet';
 import Exercise from '../database/models/Exercise';
 import { WorkoutAnalytics } from '../database/services/WorkoutAnalytics';
+import { WorkoutService } from '../database/services/WorkoutService';
 import { getWorkoutIcon } from './workoutHistory';
 import type { LineChartDataPoint } from '../components/LineChart';
 
@@ -61,6 +63,112 @@ function formatRestTime(seconds: number): string {
 }
 
 /**
+ * Calculate volume trend from historical workout logs
+ */
+async function calculateVolumeTrend(
+  currentWorkoutLog: WorkoutLog,
+  t: (key: string) => string
+): Promise<{
+  percentage: number;
+  data: LineChartDataPoint[];
+  labels: string[];
+}> {
+  if (!currentWorkoutLog.templateId || !currentWorkoutLog.totalVolume) {
+    return {
+      percentage: 0,
+      data: [],
+      labels: [],
+    };
+  }
+
+  const historicalLogs = await WorkoutService.getWorkoutLogsByTemplate(
+    currentWorkoutLog.templateId,
+    10
+  );
+
+  if (historicalLogs.length < 2) {
+    return {
+      percentage: 0,
+      data: [],
+      labels: [],
+    };
+  }
+
+  const allLogs = [...historicalLogs];
+  const isCurrentIncluded = allLogs.some((log) => log.id === currentWorkoutLog.id);
+
+  if (!isCurrentIncluded && currentWorkoutLog.totalVolume && currentWorkoutLog.completedAt) {
+    allLogs.unshift(currentWorkoutLog);
+  }
+
+  const sortedLogs = allLogs
+    .filter((log) => log.totalVolume && log.completedAt)
+    .sort((a, b) => (a.startedAt || 0) - (b.startedAt || 0));
+
+  if (sortedLogs.length < 2) {
+    return {
+      percentage: 0,
+      data: [],
+      labels: [],
+    };
+  }
+
+  const currentVolume = currentWorkoutLog.totalVolume || 0;
+  const currentIndex = sortedLogs.findIndex((log) => log.id === currentWorkoutLog.id);
+  const previousIndex = currentIndex > 0 ? currentIndex - 1 : currentIndex;
+  const previousVolume = sortedLogs[previousIndex].totalVolume || 0;
+  const percentageChange =
+    previousVolume > 0 && currentIndex > 0
+      ? Math.round(((currentVolume - previousVolume) / previousVolume) * 100)
+      : 0;
+
+  const maxVolume = Math.max(...sortedLogs.map((log) => log.totalVolume || 0));
+  const minVolume = Math.min(...sortedLogs.map((log) => log.totalVolume || 0));
+  const volumeRange = maxVolume - minVolume || 1;
+
+  const chartWidth = 400;
+  const chartHeight = 100;
+
+  const data: LineChartDataPoint[] = sortedLogs.map((log, index) => {
+    const x = (index / (sortedLogs.length - 1)) * chartWidth;
+    const normalizedVolume = ((log.totalVolume || 0) - minVolume) / volumeRange;
+    const y = chartHeight - normalizedVolume * chartHeight;
+    return { x, y };
+  });
+
+  const labels: string[] = [];
+  if (sortedLogs.length >= 4) {
+    const firstDate = new Date(sortedLogs[0].startedAt || sortedLogs[0].completedAt || Date.now());
+    const midDate = new Date(
+      sortedLogs[Math.floor(sortedLogs.length / 2)].startedAt ||
+        sortedLogs[Math.floor(sortedLogs.length / 2)].completedAt ||
+        Date.now()
+    );
+    const lastDate = new Date(
+      sortedLogs[sortedLogs.length - 1].startedAt ||
+        sortedLogs[sortedLogs.length - 1].completedAt ||
+        Date.now()
+    );
+
+    labels.push(format(firstDate, 'MMM d'));
+    labels.push(format(midDate, 'MMM d'));
+    labels.push(format(lastDate, 'MMM d'));
+    labels.push(t('common.today') || 'TODAY');
+  } else {
+    sortedLogs.forEach((log) => {
+      const date = new Date(log.startedAt || log.completedAt || Date.now());
+      labels.push(format(date, 'MMM d'));
+    });
+  }
+
+  return {
+    percentage: percentageChange,
+    data,
+    labels,
+  };
+}
+
+/**
  * Transform workout log data to modal format
  */
 export async function transformWorkoutToDetailData(
@@ -103,9 +211,7 @@ export async function transformWorkoutToDetailData(
         throw new Error(`Exercise ${exerciseId} not found`);
       }
 
-      const isBodyweight = exercise.equipmentType
-        ?.toLowerCase()
-        .includes('bodyweight') || false;
+      const isBodyweight = exercise.equipmentType?.toLowerCase().includes('bodyweight') || false;
 
       const iconData = getWorkoutIcon(exercise.name);
       const sortedSets = exerciseSets.sort((a, b) => a.setOrder - b.setOrder);
@@ -143,17 +249,15 @@ export async function transformWorkoutToDetailData(
 
   const workoutDate = new Date(workoutLog.startedAt || workoutLog.completedAt || Date.now());
 
+  const volumeTrend = await calculateVolumeTrend(workoutLog, t);
+
   return {
     name: workoutLog.workoutName,
     date: workoutDate,
     totalTime: durationMinutes,
     volume: workoutLog.totalVolume || 0,
     calories: workoutLog.caloriesBurned || 0,
-    volumeTrend: {
-      percentage: 0,
-      data: [],
-      labels: [],
-    },
+    volumeTrend,
     exercises: workoutExercises,
   };
 }

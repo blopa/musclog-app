@@ -370,9 +370,7 @@ export default function PastWorkoutDetailModal({
 
     setIsLoading(true);
     try {
-      const { workoutLog, sets, exercises } = await WorkoutService.getWorkoutWithDetails(
-        workoutId
-      );
+      const { workoutLog, sets, exercises } = await WorkoutService.getWorkoutWithDetails(workoutId);
       const transformedData = await transformWorkoutToDetailData(workoutLog, sets, exercises, t);
       setWorkout(transformedData);
     } catch (error) {
@@ -442,7 +440,9 @@ export default function PastWorkoutDetailModal({
           {isLoading ? (
             <ActivityIndicator size="large" color={theme.colors.accent.primary} />
           ) : (
-            <Text className="text-text-secondary">{t('common.error', 'Error loading workout')}</Text>
+            <Text className="text-text-secondary">
+              {t('common.error', 'Error loading workout')}
+            </Text>
           )}
         </View>
       </FullScreenModal>

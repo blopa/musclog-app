@@ -215,4 +215,24 @@ export class WorkoutService {
       exercises,
     };
   }
+
+  /**
+   * Get workout logs by template_id, ordered by date (newest first)
+   */
+  static async getWorkoutLogsByTemplate(templateId: string, limit?: number): Promise<WorkoutLog[]> {
+    let query = database
+      .get<WorkoutLog>('workout_logs')
+      .query(
+        Q.where('template_id', templateId),
+        Q.where('completed_at', Q.notEq(null)),
+        Q.where('deleted_at', Q.eq(null)),
+        Q.sortBy('started_at', Q.desc)
+      );
+
+    if (limit) {
+      query = query.extend(Q.take(limit));
+    }
+
+    return await query.fetch();
+  }
 }
