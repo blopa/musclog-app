@@ -5,7 +5,7 @@ import {
   Modal,
   Animated,
   Platform,
-  TouchableWithoutFeedback,
+  TouchableWithoutFeedback, // it's deprecated, but using Pressable instead causes a gap below the modal on mobile
   Pressable,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
