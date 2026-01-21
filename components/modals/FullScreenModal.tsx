@@ -89,7 +89,9 @@ export function FullScreenModal({
             </Pressable>
             <View className="flex-1">
               <Text className="text-xl font-bold tracking-tight text-text-primary">{title}</Text>
-              {subtitle && <Text className="mt-0.5 text-sm text-text-secondary">{subtitle}</Text>}
+              {subtitle && (
+                <Text className="mt-0.5 text-sm font-normal text-text-secondary">{subtitle}</Text>
+              )}
             </View>
             {headerRight && <View className="-mr-2">{headerRight}</View>}
           </LinearGradient>
