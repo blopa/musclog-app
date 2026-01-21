@@ -601,7 +601,8 @@ describe('WorkoutTemplateService', () => {
         extend: jest.fn().mockReturnThis(),
       };
 
-      const mockCreate = jest.fn().mockResolvedValue(createMockWorkoutTemplate());
+      const mockTemplate = createMockWorkoutTemplate();
+      const mockCreate = jest.fn().mockResolvedValue(mockTemplate);
       const mockPrepareCreate = jest.fn().mockReturnValue({});
       const mockCollection = {
         query: jest.fn().mockReturnValue(mockQuery),
@@ -620,6 +621,16 @@ describe('WorkoutTemplateService', () => {
 
       expect(mockCreate).toHaveBeenCalled();
       expect(mockDatabase.batch).toHaveBeenCalled();
+
+      // Verify the create callback sets correct values
+      const createCall = mockCreate.mock.calls[0][0];
+      expect(createCall).toBeInstanceOf(Function);
+      const mockTemplateObj = {} as any;
+      createCall(mockTemplateObj);
+      expect(mockTemplateObj.name).toBe('Test Workout');
+      expect(mockTemplateObj.description).toBe('Test Description');
+      expect(mockTemplateObj.createdAt).toBeDefined();
+      expect(mockTemplateObj.updatedAt).toBeDefined();
     });
 
     it('should update existing template (soft deletes old sets/schedule)', async () => {

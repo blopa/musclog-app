@@ -173,6 +173,31 @@ describe('WorkoutService', () => {
         'Failed to start workout: Database error'
       );
     });
+
+    it('should handle non-Error type exceptions', async () => {
+      const mockTemplate = createMockWorkoutTemplate({
+        id: 'template-1',
+        deletedAt: null,
+        startWorkout: jest.fn().mockRejectedValue('String error'),
+      });
+
+      const mockQuery = {
+        fetch: jest.fn().mockResolvedValue([]),
+        extend: jest.fn().mockReturnThis(),
+      };
+
+      mockDatabase.get
+        .mockReturnValueOnce({
+          find: jest.fn().mockResolvedValue(mockTemplate),
+        } as any)
+        .mockReturnValueOnce({
+          query: jest.fn().mockReturnValue(mockQuery),
+        } as any);
+
+      await expect(WorkoutService.startWorkoutFromTemplate('template-1')).rejects.toThrow(
+        'Failed to start workout: Unknown error'
+      );
+    });
   });
 
   describe('getActiveWorkout', () => {
@@ -505,6 +530,16 @@ describe('WorkoutService', () => {
 
       await expect(WorkoutService.completeWorkout('workout-1')).rejects.toThrow(
         'Failed to complete workout'
+      );
+    });
+
+    it('should handle non-Error type exceptions', async () => {
+      mockDatabase.get.mockReturnValue({
+        find: jest.fn().mockRejectedValue('String error'),
+      } as any);
+
+      await expect(WorkoutService.completeWorkout('workout-1')).rejects.toThrow(
+        'Failed to complete workout: Unknown error'
       );
     });
   });

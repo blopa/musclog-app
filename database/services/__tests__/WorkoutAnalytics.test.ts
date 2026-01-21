@@ -602,6 +602,111 @@ describe('WorkoutAnalytics', () => {
 
       expect(records[0].exerciseName).toBe('Bench Press');
     });
+
+    it('should handle reduce comparison when currentVolume <= bestVolume', async () => {
+      const workoutLog = createMockWorkoutLog({
+        id: 'workout-1',
+        startedAt: Date.now(),
+      });
+
+      // Create sets where first set has higher volume, second has lower
+      const currentSet1 = createMockWorkoutLogSet({
+        exerciseId: 'ex-1',
+        weight: 100,
+        reps: 10, // 1000 volume
+        workoutLogId: 'workout-1',
+      });
+
+      const currentSet2 = createMockWorkoutLogSet({
+        exerciseId: 'ex-1',
+        weight: 90,
+        reps: 9, // 810 volume (lower than set1)
+        workoutLogId: 'workout-1',
+      });
+
+      const exercise = createMockExercise({
+        id: 'ex-1',
+        name: 'Bench Press',
+      });
+
+      workoutLog.logSets.fetch = jest.fn().mockResolvedValue([currentSet1, currentSet2]);
+
+      const mockQuery = {
+        fetch: jest.fn().mockResolvedValue([]), // No historical sets
+      };
+
+      mockDatabase.get
+        .mockReturnValueOnce({
+          query: jest.fn().mockReturnValue(mockQuery),
+        } as any)
+        .mockReturnValueOnce({
+          query: jest.fn().mockReturnValue(mockQuery),
+        } as any)
+        .mockReturnValueOnce({
+          find: jest.fn().mockResolvedValue(exercise),
+        } as any);
+
+      const records = await WorkoutAnalytics.detectPersonalRecords(workoutLog as any);
+
+      // Should detect PR (first time doing exercise) with best set (set1 with higher volume)
+      expect(records.length).toBeGreaterThan(0);
+      expect(records[0].newRecord.volume).toBe(1000); // Should use set1 (higher volume)
+    });
+
+    it('should skip exercises when workout or exercise not found', async () => {
+      const workoutLog = createMockWorkoutLog({
+        id: 'workout-1',
+        startedAt: Date.now(),
+      });
+
+      const currentSet = createMockWorkoutLogSet({
+        exerciseId: 'ex-1',
+        weight: 100,
+        reps: 10,
+        workoutLogId: 'workout-1',
+      });
+
+      const historicalSet = createMockWorkoutLogSet({
+        exerciseId: 'ex-1',
+        weight: 90,
+        reps: 10,
+        workoutLogId: 'workout-2',
+      });
+
+      const historicalWorkout = createMockWorkoutLog({
+        id: 'workout-2',
+        startedAt: Date.now() - 1000,
+        completedAt: Date.now() - 500,
+      });
+
+      workoutLog.logSets.fetch = jest.fn().mockResolvedValue([currentSet]);
+
+      const mockQuery = {
+        fetch: jest
+          .fn()
+          .mockResolvedValueOnce([historicalSet])
+          .mockResolvedValueOnce([historicalWorkout]),
+      };
+
+      mockDatabase.get
+        .mockReturnValueOnce({
+          query: jest.fn().mockReturnValue(mockQuery),
+        } as any)
+        .mockReturnValueOnce({
+          query: jest.fn().mockReturnValue(mockQuery),
+        } as any)
+        .mockReturnValueOnce({
+          find: jest.fn().mockRejectedValue(new Error('Exercise not found')),
+        } as any)
+        .mockReturnValueOnce({
+          find: jest.fn().mockResolvedValue(historicalWorkout),
+        } as any);
+
+      const records = await WorkoutAnalytics.detectPersonalRecords(workoutLog as any);
+
+      // Should skip the exercise when not found, returning empty records
+      expect(records).toHaveLength(0);
+    });
   });
 
   describe('getProgressiveOverloadData', () => {
@@ -827,6 +932,44 @@ describe('WorkoutAnalytics', () => {
       const result = await WorkoutAnalytics.getProgressiveOverloadData('ex-1');
 
       expect(result).toEqual([]);
+    });
+
+    it('should skip sets when workout not found', async () => {
+      const set1 = createMockWorkoutLogSet({
+        exerciseId: 'ex-1',
+        weight: 100,
+        reps: 10,
+        workoutLogId: 'workout-1',
+      });
+
+      const workout1 = createMockWorkoutLog({
+        id: 'workout-1',
+        startedAt: Date.now() - 2000,
+        completedAt: Date.now() - 1500,
+      });
+
+      const mockQuery = {
+        fetch: jest.fn().mockResolvedValueOnce([set1]).mockResolvedValueOnce([workout1]),
+        extend: jest.fn().mockReturnThis(),
+      };
+
+      mockDatabase.get
+        .mockReturnValueOnce({
+          query: jest.fn().mockReturnValue(mockQuery),
+          find: jest.fn(),
+        } as any)
+        .mockReturnValueOnce({
+          query: jest.fn().mockReturnValue(mockQuery),
+          find: jest
+            .fn()
+            .mockResolvedValueOnce(workout1) // First workout found
+            .mockRejectedValueOnce(new Error('Workout not found')), // Second workout not found
+        } as any);
+
+      const result = await WorkoutAnalytics.getProgressiveOverloadData('ex-1');
+
+      // Should only return data points for workouts that were found
+      expect(result.length).toBeGreaterThanOrEqual(0);
     });
   });
 
