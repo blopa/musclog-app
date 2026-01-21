@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Pressable, ActivityIndicator } from 'react-native';
+import { View, Text, ActivityIndicator } from 'react-native';
 import { Share2, Trophy, Pencil, Trash2 } from 'lucide-react-native';
 import { MenuButton } from '../theme/MenuButton';
-import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
@@ -301,7 +300,6 @@ function ExerciseCard({ exercise }: ExerciseCardProps) {
             </Text>
           </View>
         </View>
-        <MaterialIcons name="info" size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
       </View>
 
       {/* Sets Table */}
