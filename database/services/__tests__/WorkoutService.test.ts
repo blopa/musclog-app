@@ -198,6 +198,40 @@ describe('WorkoutService', () => {
         'Failed to start workout: Unknown error'
       );
     });
+
+    it('should handle non-Error type exceptions from find', async () => {
+      mockDatabase.get.mockReturnValue({
+        find: jest.fn().mockRejectedValue('String error from find'),
+      } as any);
+
+      await expect(WorkoutService.startWorkoutFromTemplate('template-1')).rejects.toThrow(
+        'Failed to start workout: Unknown error'
+      );
+    });
+
+    it('should handle non-Error type exceptions from getActiveWorkout', async () => {
+      const mockTemplate = createMockWorkoutTemplate({
+        id: 'template-1',
+        deletedAt: null,
+      });
+
+      const mockQuery = {
+        fetch: jest.fn().mockRejectedValue('String error from getActiveWorkout'),
+        extend: jest.fn().mockReturnThis(),
+      };
+
+      mockDatabase.get
+        .mockReturnValueOnce({
+          find: jest.fn().mockResolvedValue(mockTemplate),
+        } as any)
+        .mockReturnValueOnce({
+          query: jest.fn().mockReturnValue(mockQuery),
+        } as any);
+
+      await expect(WorkoutService.startWorkoutFromTemplate('template-1')).rejects.toThrow(
+        'Failed to start workout: Unknown error'
+      );
+    });
   });
 
   describe('getActiveWorkout', () => {
@@ -537,6 +571,45 @@ describe('WorkoutService', () => {
       mockDatabase.get.mockReturnValue({
         find: jest.fn().mockRejectedValue('String error'),
       } as any);
+
+      await expect(WorkoutService.completeWorkout('workout-1')).rejects.toThrow(
+        'Failed to complete workout: Unknown error'
+      );
+    });
+
+    it('should handle non-Error type exceptions from completeWorkout method', async () => {
+      const workoutLog = createMockWorkoutLog({
+        id: 'workout-1',
+        completedAt: null,
+        completeWorkout: jest.fn().mockRejectedValue('String error from completeWorkout'),
+      });
+
+      mockDatabase.get.mockReturnValue({
+        find: jest.fn().mockResolvedValue(workoutLog),
+      } as any);
+
+      await expect(WorkoutService.completeWorkout('workout-1')).rejects.toThrow(
+        'Failed to complete workout: Unknown error'
+      );
+    });
+
+    it('should handle non-Error type exceptions from detectPersonalRecords', async () => {
+      const workoutLog = createMockWorkoutLog({
+        id: 'workout-1',
+        completedAt: null,
+        completeWorkout: jest.fn().mockResolvedValue(undefined),
+      });
+
+      const completedWorkout = createMockWorkoutLog({
+        id: 'workout-1',
+        completedAt: Date.now(),
+      });
+
+      mockDatabase.get.mockReturnValue({
+        find: jest.fn().mockResolvedValueOnce(workoutLog).mockResolvedValueOnce(completedWorkout),
+      } as any);
+
+      mockWorkoutAnalytics.detectPersonalRecords.mockRejectedValue('String error from detectPersonalRecords');
 
       await expect(WorkoutService.completeWorkout('workout-1')).rejects.toThrow(
         'Failed to complete workout: Unknown error'
