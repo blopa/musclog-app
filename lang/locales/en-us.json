@@ -286,6 +286,8 @@
     "searchPlaceholder": "Search sessions...",
     "noWorkoutsFound": "No workouts found matching your search.",
     "noWorkoutHistory": "No workout history yet.",
+    "loadMore": "Load More",
+    "loadingMore": "Loading...",
     "stats": {
       "duration": "Duration",
       "volume": "Volume",

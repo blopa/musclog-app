@@ -53,7 +53,8 @@ export class WorkoutService {
    */
   static async getWorkoutHistory(
     timeframe?: { startDate: number; endDate: number },
-    limit?: number
+    limit?: number,
+    offset?: number
   ): Promise<WorkoutLog[]> {
     let query = database
       .get<WorkoutLog>('workout_logs')
@@ -70,8 +71,15 @@ export class WorkoutService {
       );
     }
 
+    // WatermelonDB requires Q.take() when using Q.skip()
+    // Apply skip before take (if offset > 0), then always apply take
     if (limit) {
-      query = query.extend(Q.take(limit));
+      if (offset !== undefined && offset !== null && offset > 0) {
+        // Apply both skip and take together - skip must come before take
+        query = query.extend(Q.skip(offset), Q.take(limit));
+      } else {
+        query = query.extend(Q.take(limit));
+      }
     }
 
     return await query.fetch();

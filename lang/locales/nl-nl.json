@@ -394,6 +394,59 @@
     "feedbackSubmitted": "Trainingsfeedback succesvol verzonden.",
     "shareSummary": "Samenvatting delen"
   },
+  "pastWorkoutHistory": {
+    "title": "Trainingsgeschiedenis",
+    "searchPlaceholder": "Zoek sessies...",
+    "noWorkoutsFound": "Geen trainingen gevonden die overeenkomen met je zoekopdracht.",
+    "noWorkoutHistory": "Nog geen trainingsgeschiedenis.",
+    "loadMore": "Meer Laden",
+    "loadingMore": "Laden...",
+    "stats": {
+      "duration": "Duur",
+      "volume": "Volume",
+      "calories": "Calorieën"
+    },
+    "prBadge": {
+      "singular": "{{count}} PR",
+      "plural": "{{count}} PRs"
+    },
+    "filters": {
+      "title": "Trainingen Filteren",
+      "workoutType": "TRAININGSTYPE",
+      "minDuration": "MIN. DUUR",
+      "reset": "Resetten",
+      "applyFilters": "Filters Toepassen",
+      "durationFormats": {
+        "zero": "0m",
+        "minutes": "{{minutes}}m",
+        "minutesPlus": "{{minutes}}+ mins",
+        "max": "120m+"
+      },
+      "workoutTypes": {
+        "all": "Alle Typen",
+        "strength": "Kracht",
+        "cardio": "Cardio",
+        "hiit": "HIIT",
+        "yoga": "Yoga"
+      },
+      "dateRange": {
+        "title": "DATUMBEREIK",
+        "30days": "Laatste 30 Dagen",
+        "90days": "Laatste 90 Dagen",
+        "custom": "Aangepast"
+      },
+      "muscleGroups": {
+        "title": "SPIERGROEP (MEERVOUDIGE SELECTIE)",
+        "chest": "Borst",
+        "back": "Rug",
+        "legs": "Benen",
+        "shoulders": "Schouders",
+        "arms": "Armen",
+        "core": "Core",
+        "fullBody": "Volledige Lichaam"
+      }
+    }
+  },
   "recentWorkouts": {
     "prs": "PR"
   },

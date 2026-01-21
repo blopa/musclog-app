@@ -394,6 +394,59 @@
     "feedbackSubmitted": "Feedback do treino enviado com sucesso.",
     "shareSummary": "Compartilhar Resumo"
   },
+  "pastWorkoutHistory": {
+    "title": "Histórico de Treinos",
+    "searchPlaceholder": "Buscar sessões...",
+    "noWorkoutsFound": "Nenhum treino encontrado correspondendo à sua busca.",
+    "noWorkoutHistory": "Ainda não há histórico de treinos.",
+    "loadMore": "Carregar Mais",
+    "loadingMore": "Carregando...",
+    "stats": {
+      "duration": "Duração",
+      "volume": "Volume",
+      "calories": "Calorias"
+    },
+    "prBadge": {
+      "singular": "{{count}} PR",
+      "plural": "{{count}} PRs"
+    },
+    "filters": {
+      "title": "Filtrar Treinos",
+      "workoutType": "TIPO DE TREINO",
+      "minDuration": "DURAÇÃO MÍN.",
+      "reset": "Redefinir",
+      "applyFilters": "Aplicar Filtros",
+      "durationFormats": {
+        "zero": "0m",
+        "minutes": "{{minutes}}m",
+        "minutesPlus": "{{minutes}}+ mins",
+        "max": "120m+"
+      },
+      "workoutTypes": {
+        "all": "Todos os Tipos",
+        "strength": "Força",
+        "cardio": "Cardio",
+        "hiit": "HIIT",
+        "yoga": "Yoga"
+      },
+      "dateRange": {
+        "title": "PERÍODO",
+        "30days": "Últimos 30 Dias",
+        "90days": "Últimos 90 Dias",
+        "custom": "Personalizado"
+      },
+      "muscleGroups": {
+        "title": "GRUPO MUSCULAR (SELEÇÃO MÚLTIPLA)",
+        "chest": "Peito",
+        "back": "Costas",
+        "legs": "Pernas",
+        "shoulders": "Ombros",
+        "arms": "Braços",
+        "core": "Core",
+        "fullBody": "Corpo Inteiro"
+      }
+    }
+  },
   "recentWorkouts": {
     "prs": "PR"
   },

@@ -86,12 +86,17 @@ type WorkoutFilters = {
   minDuration: number;
 };
 
+const BATCH_SIZE = 5;
+
 export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHistoryModalProps) {
   const { t } = useTranslation();
   const [isFilterMenuVisible, setIsFilterMenuVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [workoutHistoryData, setWorkoutHistoryData] = useState<WorkoutHistorySection[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [pageOffset, setPageOffset] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
   const [filters, setFilters] = useState<WorkoutFilters>({
     workoutType: 'all',
     dateRange: '30',
@@ -156,26 +161,11 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
     return normalized;
   };
 
-  const loadWorkoutHistory = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      // Calculate date range filter
-      let timeframe: { startDate: number; endDate: number } | undefined;
-      if (filters.dateRange === '30') {
-        const endDate = Date.now();
-        const startDate = endDate - 30 * 24 * 60 * 60 * 1000;
-        timeframe = { startDate, endDate };
-      } else if (filters.dateRange === '90') {
-        const endDate = Date.now();
-        const startDate = endDate - 90 * 24 * 60 * 60 * 1000;
-        timeframe = { startDate, endDate };
-      }
-      // 'custom' date range would need a date picker, skip for now
-
-      // Fetch completed workouts from database with date range filter
-      const workouts = await WorkoutService.getWorkoutHistory(timeframe);
-
-      // Process each workout to get PR count and format data
+  // Helper function to process workouts and apply filters
+  const processWorkouts = useCallback(
+    async (
+      workouts: Awaited<ReturnType<typeof WorkoutService.getWorkoutHistory>>
+    ): Promise<WorkoutHistoryItem[]> => {
       const processedWorkouts: (WorkoutHistoryItem | null)[] = await Promise.all(
         workouts.map(async (workout) => {
           // Calculate duration
@@ -266,15 +256,17 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
       );
 
       // Filter out null values (workouts that didn't match filters)
-      const validWorkouts = processedWorkouts.filter(
-        (workout): workout is WorkoutHistoryItem => workout !== null
-      );
+      return processedWorkouts.filter((workout): workout is WorkoutHistoryItem => workout !== null);
+    },
+    [filters.minDuration, filters.muscleGroups, filters.workoutType, t]
+  );
 
-      // Group workouts by month
+  // Helper function to group workouts by month
+  const groupWorkoutsByMonth = useCallback(
+    (workouts: WorkoutHistoryItem[]): WorkoutHistorySection[] => {
       const groupedByMonth = new Map<string, WorkoutHistoryItem[]>();
 
-      validWorkouts.forEach((workout) => {
-        // Extract month-year from workout date timestamp
+      workouts.forEach((workout) => {
         const date = new Date(workout.dateTimestamp);
         const monthKey = format(date, 'MMMM yyyy');
 
@@ -284,8 +276,7 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
         groupedByMonth.get(monthKey)!.push(workout);
       });
 
-      // Convert to array format and sort by month (newest first)
-      const sections: WorkoutHistorySection[] = Array.from(groupedByMonth.entries())
+      return Array.from(groupedByMonth.entries())
         .map(([month, workouts]) => ({
           month,
           workouts,
@@ -295,15 +286,180 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
           const dateB = new Date(b.month);
           return dateB.getTime() - dateA.getTime();
         });
+    },
+    []
+  );
+
+  // Helper function to merge workout sections
+  const mergeWorkoutSections = useCallback(
+    (
+      existing: WorkoutHistorySection[],
+      newWorkouts: WorkoutHistoryItem[]
+    ): WorkoutHistorySection[] => {
+      // Create a map of existing sections and track existing workout IDs to avoid duplicates
+      const sectionMap = new Map<string, WorkoutHistoryItem[]>();
+      const existingWorkoutIds = new Set<string>();
+
+      existing.forEach((section) => {
+        sectionMap.set(section.month, [...section.workouts]);
+        section.workouts.forEach((workout) => {
+          existingWorkoutIds.add(workout.id);
+        });
+      });
+
+      // Add new workouts to appropriate sections (skip duplicates)
+      newWorkouts.forEach((workout) => {
+        // Skip if this workout already exists
+        if (existingWorkoutIds.has(workout.id)) {
+          return;
+        }
+
+        const date = new Date(workout.dateTimestamp);
+        const monthKey = format(date, 'MMMM yyyy');
+
+        if (!sectionMap.has(monthKey)) {
+          sectionMap.set(monthKey, []);
+        }
+        sectionMap.get(monthKey)!.push(workout);
+        existingWorkoutIds.add(workout.id);
+      });
+
+      // Convert back to array and sort
+      return Array.from(sectionMap.entries())
+        .map(([month, workouts]) => ({
+          month,
+          workouts: workouts.sort((a, b) => b.dateTimestamp - a.dateTimestamp), // Sort within month (newest first)
+        }))
+        .sort((a, b) => {
+          const dateA = new Date(a.month);
+          const dateB = new Date(b.month);
+          return dateB.getTime() - dateA.getTime();
+        });
+    },
+    []
+  );
+
+  const loadWorkoutHistory = useCallback(async () => {
+    setIsLoading(true);
+    setPageOffset(0);
+    setHasMore(true);
+    try {
+      // Calculate date range filter
+      let timeframe: { startDate: number; endDate: number } | undefined;
+      if (filters.dateRange === '30') {
+        const endDate = Date.now();
+        const startDate = endDate - 30 * 24 * 60 * 60 * 1000;
+        timeframe = { startDate, endDate };
+      } else if (filters.dateRange === '90') {
+        const endDate = Date.now();
+        const startDate = endDate - 90 * 24 * 60 * 60 * 1000;
+        timeframe = { startDate, endDate };
+      }
+      // 'custom' date range would need a date picker, skip for now
+
+      // Fetch initial batch of workouts (5 workouts)
+      // Don't pass offset when it's 0 to avoid WatermelonDB issues
+      const workouts = await WorkoutService.getWorkoutHistory(timeframe, BATCH_SIZE);
+
+      // Process workouts and apply filters
+      const validWorkouts = await processWorkouts(workouts);
+
+      // Group workouts by month
+      const sections = groupWorkoutsByMonth(validWorkouts);
 
       setWorkoutHistoryData(sections);
+      setPageOffset(BATCH_SIZE);
+
+      // Check if there are more workouts to load
+      // If we got fewer workouts than requested, or if all were filtered out, there's no more
+      if (workouts.length < BATCH_SIZE) {
+        setHasMore(false);
+      } else {
+        // We need to check if there are more workouts after filtering
+        // Since filtering happens client-side, we'll fetch one more to check
+        const nextBatch = await WorkoutService.getWorkoutHistory(timeframe, 1, BATCH_SIZE);
+        setHasMore(nextBatch.length > 0);
+      }
     } catch (error) {
       console.error('Error loading workout history:', error);
       setWorkoutHistoryData([]);
+      setHasMore(false);
     } finally {
       setIsLoading(false);
     }
-  }, [filters.dateRange, filters.minDuration, filters.muscleGroups, filters.workoutType, t]);
+  }, [
+    filters.dateRange,
+    filters.minDuration,
+    filters.muscleGroups,
+    filters.workoutType,
+    processWorkouts,
+    groupWorkoutsByMonth,
+  ]);
+
+  const loadMoreWorkouts = useCallback(async () => {
+    if (isLoadingMore || !hasMore) {
+      return;
+    }
+
+    setIsLoadingMore(true);
+    try {
+      // Calculate date range filter
+      let timeframe: { startDate: number; endDate: number } | undefined;
+      if (filters.dateRange === '30') {
+        const endDate = Date.now();
+        const startDate = endDate - 30 * 24 * 60 * 60 * 1000;
+        timeframe = { startDate, endDate };
+      } else if (filters.dateRange === '90') {
+        const endDate = Date.now();
+        const startDate = endDate - 90 * 24 * 60 * 60 * 1000;
+        timeframe = { startDate, endDate };
+      }
+
+      // Fetch next batch
+      const workouts = await WorkoutService.getWorkoutHistory(timeframe, BATCH_SIZE, pageOffset);
+
+      if (workouts.length === 0) {
+        setHasMore(false);
+        setIsLoadingMore(false);
+        return;
+      }
+
+      // Process workouts and apply filters
+      const validWorkouts = await processWorkouts(workouts);
+
+      if (validWorkouts.length > 0) {
+        // Merge new workouts with existing data
+        const mergedSections = mergeWorkoutSections(workoutHistoryData, validWorkouts);
+        setWorkoutHistoryData(mergedSections);
+      }
+
+      // Update offset
+      const newOffset = pageOffset + workouts.length;
+      setPageOffset(newOffset);
+
+      // Check if there are more workouts
+      if (workouts.length < BATCH_SIZE) {
+        setHasMore(false);
+      } else {
+        // Check if there's at least one more workout
+        const nextBatch = await WorkoutService.getWorkoutHistory(timeframe, 1, newOffset);
+        setHasMore(nextBatch.length > 0);
+      }
+    } catch (error) {
+      console.error('Error loading more workouts:', error);
+      setHasMore(false);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }, [
+    isLoadingMore,
+    hasMore,
+    pageOffset,
+    filters.dateRange,
+    processWorkouts,
+    mergeWorkoutSections,
+    workoutHistoryData,
+  ]);
 
   // Load workout history when modal becomes visible or filters change
   useEffect(() => {
@@ -545,6 +701,46 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
                   </View>
                 </View>
               ))}
+
+              {/* Load More Button */}
+              {hasMore && !searchQuery && (
+                <View className="py-4">
+                  <Pressable
+                    onPress={loadMoreWorkouts}
+                    disabled={isLoadingMore}
+                    className="items-center justify-center rounded-lg border py-3"
+                    style={{
+                      backgroundColor: theme.colors.background.card,
+                      borderColor: theme.colors.background.white5,
+                      opacity: isLoadingMore ? 0.6 : 1,
+                    }}
+                  >
+                    {isLoadingMore ? (
+                      <View className="flex-row items-center gap-2">
+                        <ActivityIndicator size="small" color={theme.colors.accent.primary} />
+                        <Text
+                          style={{
+                            fontSize: theme.typography.fontSize.sm,
+                            color: theme.colors.text.secondary,
+                          }}
+                        >
+                          {t('pastWorkoutHistory.loadingMore')}
+                        </Text>
+                      </View>
+                    ) : (
+                      <Text
+                        style={{
+                          fontSize: theme.typography.fontSize.sm,
+                          fontWeight: theme.typography.fontWeight.medium,
+                          color: theme.colors.text.accent,
+                        }}
+                      >
+                        {t('pastWorkoutHistory.loadMore')}
+                      </Text>
+                    )}
+                  </Pressable>
+                </View>
+              )}
             </View>
           )}
         </ScrollView>
