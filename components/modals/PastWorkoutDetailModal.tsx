@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, Pressable } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, Pressable, ActivityIndicator } from 'react-native';
 import { Share2, MoreHorizontal, Trophy, Pencil, Trash2 } from 'lucide-react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -10,104 +10,8 @@ import { FullScreenModal } from './FullScreenModal';
 import { GenericCard } from '../cards/GenericCard';
 import { LineChart, LineChartDataPoint } from '../LineChart';
 import { BottomPopUpMenu, BottomPopUpMenuItem } from '../BottomPopUpMenu';
-
-// Mock data - replace with actual data from props
-const mockWorkoutData = {
-  name: 'Upper Body Power',
-  date: new Date('2024-08-24T18:30:00'),
-  totalTime: 70, // minutes
-  volume: 4250, // kg
-  calories: 520,
-  volumeTrend: {
-    percentage: 12,
-    data: [
-      { x: 0, y: 80 },
-      { x: 50, y: 70 },
-      { x: 100, y: 75 },
-      { x: 200, y: 60 },
-      { x: 300, y: 40 },
-      { x: 400, y: 25 },
-    ] as LineChartDataPoint[],
-    labels: ['Jul 15', 'Aug 01', 'Aug 12', 'TODAY'],
-  },
-  exercises: [
-    {
-      id: '1',
-      name: 'Incline Bench Press (Dumbbell)',
-      timeSpent: 12,
-      iconColor: theme.colors.status.indigo600,
-      iconBgColor: theme.colors.status.indigo10,
-      sets: [
-        {
-          setNumber: 1,
-          weight: '28 kg',
-          reps: 12,
-          partial: '-',
-          rest: '90s',
-          isHighlighted: false,
-        },
-        {
-          setNumber: 2,
-          weight: '32 kg',
-          reps: 10,
-          partial: '2',
-          rest: '120s',
-          isHighlighted: true,
-        },
-        {
-          setNumber: 3,
-          weight: '32 kg',
-          reps: 8,
-          partial: '4',
-          rest: '150s',
-          isHighlighted: false,
-        },
-      ],
-    },
-    {
-      id: '2',
-      name: 'Pull Ups (Weighted)',
-      timeSpent: 15,
-      iconColor: theme.colors.status.emerald,
-      iconBgColor: theme.colors.status.emerald10,
-      sets: [
-        {
-          setNumber: 1,
-          weight: '+10 kg',
-          reps: 8,
-          partial: '-',
-          rest: '60s',
-          isHighlighted: false,
-        },
-        {
-          setNumber: 2,
-          weight: '+10 kg',
-          reps: 8,
-          partial: '-',
-          rest: '60s',
-          isHighlighted: false,
-        },
-      ],
-    },
-    {
-      id: '3',
-      name: 'Dumbbell Lateral Raise',
-      timeSpent: 8,
-      iconColor: theme.colors.status.warning,
-      iconBgColor: theme.colors.status.warning10,
-      sets: [
-        {
-          setNumber: 1,
-          weight: '12 kg',
-          reps: 15,
-          partial: '5',
-          rest: '45s',
-          isHighlighted: false,
-        },
-      ],
-    },
-  ],
-};
+import { WorkoutService } from '../../database/services/WorkoutService';
+import { transformWorkoutToDetailData, type WorkoutDetailData } from '../../utils/workoutDetail';
 
 // Types
 type WorkoutSet = {
@@ -125,10 +29,9 @@ type Exercise = {
   timeSpent: number;
   iconColor: string;
   iconBgColor: string;
+  icon: any;
   sets: WorkoutSet[];
 };
-
-type WorkoutData = typeof mockWorkoutData;
 
 // Component: Workout Summary Card
 type WorkoutSummaryCardProps = {
@@ -382,15 +285,10 @@ function ExerciseCard({ exercise }: ExerciseCardProps) {
             className="h-10 w-10 items-center justify-center rounded-full"
             style={{ backgroundColor: exercise.iconBgColor }}
           >
-            {exercise.id === '2' ? (
-              <MaterialIcons name="repeat" size={theme.iconSize.md} color={exercise.iconColor} />
-            ) : (
-              <MaterialIcons
-                name="fitness-center"
-                size={theme.iconSize.md}
-                color={exercise.iconColor}
-              />
-            )}
+            {React.createElement(exercise.icon, {
+              size: theme.iconSize.md,
+              color: exercise.iconColor,
+            })}
           </View>
           <View>
             <Text className="font-bold text-text-primary">{exercise.name}</Text>
@@ -439,7 +337,7 @@ function ExercisesSection({ exercises }: ExercisesSectionProps) {
 type PastWorkoutDetailModalProps = {
   visible: boolean;
   onClose: () => void;
-  workout?: WorkoutData;
+  workoutId?: string;
   onEdit?: () => void;
   onShare?: () => void;
   onDelete?: () => void;
@@ -448,13 +346,42 @@ type PastWorkoutDetailModalProps = {
 export default function PastWorkoutDetailModal({
   visible,
   onClose,
-  workout = mockWorkoutData,
+  workoutId,
   onEdit,
   onShare,
   onDelete,
 }: PastWorkoutDetailModalProps) {
   const { t } = useTranslation();
   const [isMenuVisible, setIsMenuVisible] = useState(false);
+  const [workout, setWorkout] = useState<WorkoutDetailData | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (visible && workoutId) {
+      loadWorkoutData();
+    } else {
+      setWorkout(null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visible, workoutId]);
+
+  const loadWorkoutData = async () => {
+    if (!workoutId) return;
+
+    setIsLoading(true);
+    try {
+      const { workoutLog, sets, exercises } = await WorkoutService.getWorkoutWithDetails(
+        workoutId
+      );
+      const transformedData = await transformWorkoutToDetailData(workoutLog, sets, exercises, t);
+      setWorkout(transformedData);
+    } catch (error) {
+      console.error('Error loading workout details:', error);
+      setWorkout(null);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const formatDate = (date: Date) => {
     return format(date, 'EEEE, MMM d • hh:mm a');
@@ -508,6 +435,20 @@ export default function PastWorkoutDetailModal({
     </Pressable>
   );
 
+  if (!workout) {
+    return (
+      <FullScreenModal visible={visible} onClose={onClose} title="" scrollable={false}>
+        <View className="flex-1 items-center justify-center">
+          {isLoading ? (
+            <ActivityIndicator size="large" color={theme.colors.accent.primary} />
+          ) : (
+            <Text className="text-text-secondary">{t('common.error', 'Error loading workout')}</Text>
+          )}
+        </View>
+      </FullScreenModal>
+    );
+  }
+
   return (
     <>
       <FullScreenModal
@@ -524,11 +465,13 @@ export default function PastWorkoutDetailModal({
             calories={workout.calories}
           />
 
-          <VolumeTrendCard
-            percentage={workout.volumeTrend.percentage}
-            data={workout.volumeTrend.data}
-            labels={workout.volumeTrend.labels}
-          />
+          {workout.volumeTrend.data.length > 0 && (
+            <VolumeTrendCard
+              percentage={workout.volumeTrend.percentage}
+              data={workout.volumeTrend.data}
+              labels={workout.volumeTrend.labels}
+            />
+          )}
 
           <ExercisesSection exercises={workout.exercises} />
         </View>

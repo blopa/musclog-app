@@ -1,6 +1,8 @@
 import { database } from '../index';
 import WorkoutTemplate from '../models/WorkoutTemplate';
 import WorkoutLog from '../models/WorkoutLog';
+import WorkoutLogSet from '../models/WorkoutLogSet';
+import Exercise from '../models/Exercise';
 import Schedule from '../models/Schedule';
 import { Q } from '@nozbe/watermelondb';
 import { WorkoutAnalytics } from './WorkoutAnalytics';
@@ -172,6 +174,45 @@ export class WorkoutService {
       totalVolume,
       averageVolumePerWorkout,
       muscleGroupVolume,
+    };
+  }
+
+  /**
+   * Get workout log with all sets and exercise details
+   */
+  static async getWorkoutWithDetails(workoutLogId: string): Promise<{
+    workoutLog: WorkoutLog;
+    sets: WorkoutLogSet[];
+    exercises: Exercise[];
+  }> {
+    const workoutLog = await database.get<WorkoutLog>('workout_logs').find(workoutLogId);
+
+    if (workoutLog.deletedAt) {
+      throw new Error('Workout log has been deleted');
+    }
+
+    const sets = await database
+      .get<WorkoutLogSet>('workout_log_sets')
+      .query(
+        Q.where('workout_log_id', workoutLogId),
+        Q.where('deleted_at', Q.eq(null)),
+        Q.sortBy('set_order', Q.asc)
+      )
+      .fetch();
+
+    const exerciseIds = [...new Set(sets.map((set) => set.exerciseId))];
+    const exercises =
+      exerciseIds.length > 0
+        ? await database
+            .get<Exercise>('exercises')
+            .query(Q.where('id', Q.oneOf(exerciseIds)), Q.where('deleted_at', Q.eq(null)))
+            .fetch()
+        : [];
+
+    return {
+      workoutLog,
+      sets,
+      exercises,
     };
   }
 }

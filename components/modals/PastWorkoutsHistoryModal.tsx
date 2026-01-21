@@ -10,6 +10,7 @@ import { SkeletonLoader } from '../theme/SkeletonLoader';
 import { Button } from '../theme/Button';
 import { type WorkoutHistoryItem, WorkoutHistorySection } from '../../utils/workoutHistory';
 import { usePastWorkoutsHistory } from '../../hooks/usePastWorkoutsHistory';
+import PastWorkoutDetailModal from './PastWorkoutDetailModal';
 
 type WorkoutHistoryModalProps = {
   visible: boolean;
@@ -186,7 +187,11 @@ type WorkoutCardProps = {
   opacity: number;
 };
 
-function WorkoutCard({ workout, opacity }: WorkoutCardProps) {
+type WorkoutCardPropsWithHandler = WorkoutCardProps & {
+  onPress: () => void;
+};
+
+function WorkoutCard({ workout, opacity, onPress }: WorkoutCardPropsWithHandler) {
   const { t } = useTranslation();
   const Icon = workout.icon;
 
@@ -196,13 +201,7 @@ function WorkoutCard({ workout, opacity }: WorkoutCardProps) {
         opacity,
       }}
     >
-      <GenericCard
-        variant="card"
-        isPressable={true}
-        onPress={() => {
-          // Handle press if needed
-        }}
-      >
+      <GenericCard variant="card" isPressable={true} onPress={onPress}>
         <View className="flex-col gap-4 p-4">
           <View className="flex-row items-start justify-between">
             <View className="flex-row items-center gap-3">
@@ -303,9 +302,10 @@ function WorkoutCard({ workout, opacity }: WorkoutCardProps) {
 type WorkoutMonthSectionProps = {
   section: WorkoutHistorySection;
   isLastMonth: boolean;
+  onWorkoutPress: (workoutId: string) => void;
 };
 
-function WorkoutMonthSection({ section, isLastMonth }: WorkoutMonthSectionProps) {
+function WorkoutMonthSection({ section, isLastMonth, onWorkoutPress }: WorkoutMonthSectionProps) {
   return (
     <View>
       <Text
@@ -321,7 +321,12 @@ function WorkoutMonthSection({ section, isLastMonth }: WorkoutMonthSectionProps)
 
       <View className="flex-col gap-3">
         {section.workouts.map((workout) => (
-          <WorkoutCard key={workout.id} workout={workout} opacity={isLastMonth ? 0.8 : 1} />
+          <WorkoutCard
+            key={workout.id}
+            workout={workout}
+            opacity={isLastMonth ? 0.8 : 1}
+            onPress={() => onWorkoutPress(workout.id)}
+          />
         ))}
       </View>
     </View>
@@ -357,6 +362,7 @@ function LoadMoreButton({ isLoadingMore, onPress }: LoadMoreButtonProps) {
 export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHistoryModalProps) {
   const { t } = useTranslation();
   const [isFilterMenuVisible, setIsFilterMenuVisible] = useState(false);
+  const [selectedWorkoutId, setSelectedWorkoutId] = useState<string | null>(null);
 
   const {
     isLoading,
@@ -397,6 +403,7 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
                   key={section.month}
                   section={section}
                   isLastMonth={sectionIndex === workoutHistoryData.length - 1}
+                  onWorkoutPress={setSelectedWorkoutId}
                 />
               ))}
 
@@ -428,6 +435,12 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
         }}
         onApplyFilters={handleApplyFilters}
         onClearFilters={handleClearFilters}
+      />
+
+      <PastWorkoutDetailModal
+        visible={!!selectedWorkoutId}
+        onClose={() => setSelectedWorkoutId(null)}
+        workoutId={selectedWorkoutId || undefined}
       />
     </FullScreenModal>
   );
