@@ -18,7 +18,22 @@ export function MasterLayout({ children }: MasterLayoutProps) {
   const pathname = usePathname();
   const [isCoachModalVisible, setIsCoachModalVisible] = useState(false);
 
-  const isActive = (path: string) => pathname === path;
+  const isActive = (path: string) => {
+    if (path === '/') {
+      // Home should only be active on exact root path
+      return pathname === '/';
+    }
+    // For other paths, check if pathname starts with the path
+    return pathname.startsWith(path);
+  };
+
+  const isFoodActive = () => {
+    // Food is active for /nutrition/food or /nutrition/meals, but not /nutrition/ai-camera
+    return (
+      (pathname.startsWith('/nutrition/food') || pathname.startsWith('/nutrition/meals')) &&
+      !pathname.startsWith('/nutrition/ai-camera')
+    );
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-bg-primary" edges={['top']}>
@@ -61,27 +76,27 @@ export function MasterLayout({ children }: MasterLayoutProps) {
             <Pressable
               className="items-center gap-1"
               onPress={() => {
-                if (!isActive('/workouts')) router.push('/workouts');
+                if (!isActive('/workout/workouts')) router.push('/workout/workouts');
               }}
             >
               <View
                 className={`h-10 w-16 items-center justify-center rounded-lg ${
-                  isActive('/workouts') ? 'bg-bg-navActive' : ''
+                  isActive('/workout') ? 'bg-bg-navActive' : ''
                 }`}
               >
                 <Dumbbell
                   size={theme.iconSize.md}
                   color={
-                    isActive('/workouts') ? theme.colors.accent.primary : theme.colors.text.tertiary
+                    isActive('/workout') ? theme.colors.accent.primary : theme.colors.text.tertiary
                   }
                   strokeWidth={
-                    isActive('/workouts') ? theme.strokeWidth.medium : theme.borderWidth.medium
+                    isActive('/workout') ? theme.strokeWidth.medium : theme.borderWidth.medium
                   }
                 />
               </View>
               <Text
                 className={`text-xs font-medium ${
-                  isActive('/workouts') ? 'text-text-accent' : 'text-text-tertiary'
+                  isActive('/workout') ? 'text-text-accent' : 'text-text-tertiary'
                 }`}
               >
                 {t('home.navigation.workouts')}
@@ -89,12 +104,31 @@ export function MasterLayout({ children }: MasterLayoutProps) {
             </Pressable>
 
             {/* Camera */}
-            <Pressable className="items-center gap-1">
-              <View className="h-20 w-20 items-center justify-center rounded-full bg-accent-primary shadow-lg shadow-accent-primary/50">
+            <Pressable
+              className="items-center gap-1"
+              onPress={() => {
+                if (!isActive('/nutrition/ai-camera')) router.push('/nutrition/ai-camera');
+              }}
+            >
+              <View
+                className={`h-20 w-20 items-center justify-center rounded-full shadow-lg shadow-accent-primary/50 ${
+                  isActive('/nutrition/ai-camera')
+                    ? 'bg-accent-primary'
+                    : 'bg-accent-primary opacity-80'
+                }`}
+              >
                 <Camera
                   size={theme.iconSize.md}
-                  color={theme.colors.text.tertiary}
-                  strokeWidth={theme.borderWidth.medium}
+                  color={
+                    isActive('/nutrition/ai-camera')
+                      ? theme.colors.text.primary
+                      : theme.colors.text.tertiary
+                  }
+                  strokeWidth={
+                    isActive('/nutrition/ai-camera')
+                      ? theme.strokeWidth.medium
+                      : theme.borderWidth.medium
+                  }
                 />
               </View>
             </Pressable>
@@ -103,26 +137,28 @@ export function MasterLayout({ children }: MasterLayoutProps) {
             <Pressable
               className="items-center gap-1"
               onPress={() => {
-                if (!isActive('/food')) router.push('/food');
+                if (!isFoodActive()) router.push('/nutrition/food');
               }}
             >
               <View
                 className={`h-10 w-16 items-center justify-center rounded-lg ${
-                  isActive('/food') ? 'bg-bg-navActive' : ''
+                  isFoodActive() ? 'bg-bg-navActive' : ''
                 }`}
               >
                 <UtensilsCrossed
                   size={theme.iconSize.md}
                   color={
-                    isActive('/food') ? theme.colors.accent.primary : theme.colors.text.tertiary
+                    isFoodActive() ? theme.colors.accent.primary : theme.colors.text.tertiary
                   }
                   strokeWidth={
-                    isActive('/food') ? theme.strokeWidth.medium : theme.borderWidth.medium
+                    isFoodActive() ? theme.strokeWidth.medium : theme.borderWidth.medium
                   }
                 />
               </View>
               <Text
-                className={`text-xs font-medium ${isActive('/food') ? 'text-text-accent' : 'text-text-tertiary'}`}
+                className={`text-xs font-medium ${
+                  isFoodActive() ? 'text-text-accent' : 'text-text-tertiary'
+                }`}
               >
                 {t('home.navigation.food')}
               </Text>
