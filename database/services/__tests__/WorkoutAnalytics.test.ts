@@ -43,9 +43,27 @@ jest.mock('../../index', () => {
 
 const mockDatabase = database as jest.Mocked<typeof database>;
 
+// Helper to create default mock collection
+const createMockCollection = () => {
+  const mockQuery = {
+    fetch: jest.fn().mockResolvedValue([]),
+    extend: jest.fn().mockReturnThis(),
+  };
+
+  return {
+    query: jest.fn().mockReturnValue(mockQuery),
+    find: jest.fn().mockResolvedValue(null),
+    create: jest.fn().mockResolvedValue({}),
+    prepareCreate: jest.fn().mockReturnValue({}),
+    fetch: jest.fn().mockResolvedValue([]),
+  };
+};
+
 describe('WorkoutAnalytics', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    // Reset mock implementation to default
+    mockDatabase.get.mockReturnValue(createMockCollection() as any);
   });
 
   describe('calculateEstimated1RM', () => {
@@ -737,17 +755,44 @@ describe('WorkoutAnalytics', () => {
         completedAt: Date.now() - 500,
       });
 
-      const mockQuery = {
-        fetch: jest
-          .fn()
-          .mockResolvedValueOnce([set1, set2])
-          .mockResolvedValueOnce([workout1, workout2]),
+      // First query: get sets
+      const setsQuery = {
+        fetch: jest.fn().mockResolvedValue([set1, set2]),
       };
 
-      mockDatabase.get.mockReturnValue({
-        query: jest.fn().mockReturnValue(mockQuery),
-        find: jest.fn().mockResolvedValueOnce(workout1).mockResolvedValueOnce(workout2),
-      } as any);
+      // Second query: get completed workouts
+      const workoutsQuery = {
+        fetch: jest.fn().mockResolvedValue([workout1, workout2]),
+      };
+
+      // Mock find for individual workouts - needs to be shared across all database.get calls
+      const findMock = jest.fn().mockResolvedValueOnce(workout1).mockResolvedValueOnce(workout2);
+
+      // Reset the mock to ensure clean state
+      mockDatabase.get.mockReset();
+
+      // Mock database.get to return different mocks based on collection name
+      // The method calls database.get() 3 times:
+      // 1. workout_log_sets.query() - to get sets
+      // 2. workout_logs.query() - to get completed workouts
+      // 3. workout_logs.find() - called in loop for each workout
+      mockDatabase.get.mockImplementation((collectionName: string) => {
+        if (collectionName === 'workout_log_sets') {
+          return {
+            query: jest.fn().mockReturnValue(setsQuery),
+            find: findMock,
+          } as any;
+        } else if (collectionName === 'workout_logs') {
+          return {
+            query: jest.fn().mockReturnValue(workoutsQuery),
+            find: findMock,
+          } as any;
+        }
+        return {
+          query: jest.fn().mockReturnValue({ fetch: jest.fn().mockResolvedValue([]) }),
+          find: findMock,
+        } as any;
+      });
 
       const result = await WorkoutAnalytics.getProgressiveOverloadData('ex-1');
 
