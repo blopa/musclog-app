@@ -41,6 +41,7 @@ import GoalsManagementModal from '../../components/modals/GoalsManagementModal';
 import PastWorkoutsHistoryModal from '../../components/modals/PastWorkoutsHistoryModal';
 import BodyMetricsHistoryModal from '../../components/modals/BodyMetricsHistoryModal';
 import AddUserMetricEntryModal from '../../components/modals/AddUserMetricEntryModal';
+import PastWorkoutDetailModal from '../../components/modals/PastWorkoutDetailModal';
 
 export default function ModalsTestScreen() {
   // Nutrition Goals Modal
@@ -151,6 +152,8 @@ export default function ModalsTestScreen() {
   const [isBodyMetricsHistoryVisible, setIsBodyMetricsHistoryVisible] = useState(false);
   // Add User Metric Entry Modal
   const [isAddUserMetricEntryVisible, setIsAddUserMetricEntryVisible] = useState(false);
+  // Past Workout Detail Modal
+  const [isPastWorkoutDetailVisible, setIsPastWorkoutDetailVisible] = useState(false);
 
   const handleSaveGoals = (goals: NutritionGoals) => {
     console.log('Goals saved:', goals);
@@ -745,6 +748,23 @@ export default function ModalsTestScreen() {
             />
           </View>
 
+          {/* Past Workout Detail Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">
+              Past Workout Detail Modal
+            </Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              A full-screen modal displaying detailed workout information including summary stats,
+              volume trends, and exercise breakdown with sets.
+            </Text>
+            <Button
+              label="Open Past Workout Detail Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsPastWorkoutDetailVisible(true)}
+            />
+          </View>
+
           {/* Bottom spacing */}
           <View className="h-8" />
         </View>
@@ -1097,6 +1117,11 @@ export default function ModalsTestScreen() {
       <AddUserMetricEntryModal
         visible={isAddUserMetricEntryVisible}
         onClose={() => setIsAddUserMetricEntryVisible(false)}
+      />
+
+      <PastWorkoutDetailModal
+        visible={isPastWorkoutDetailVisible}
+        onClose={() => setIsPastWorkoutDetailVisible(false)}
       />
     </SafeAreaView>
   );
