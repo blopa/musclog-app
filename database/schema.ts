@@ -83,6 +83,7 @@ export const schema = appSchema({
         { name: 'exercise_id', type: 'string', isIndexed: true },
         { name: 'reps', type: 'number' },
         { name: 'weight', type: 'number' },
+        { name: 'partials', type: 'number', isOptional: true }, // Partial reps (defaults to 0)
         { name: 'rest_time', type: 'number' },
         { name: 'difficulty_level', type: 'number' }, // 1-10 (RPE)
         { name: 'is_drop_set', type: 'boolean' },

@@ -15,6 +15,7 @@ export default class WorkoutLogSet extends Model {
   @field('exercise_id') exerciseId!: string;
   @field('reps') reps!: number;
   @field('weight') weight!: number;
+  @field('partials') partials?: number;
   @field('rest_time') restTime!: number;
   @field('difficulty_level') difficultyLevel!: number;
   @field('is_drop_set') isDropSet!: boolean;

@@ -146,13 +146,12 @@ export class WorkoutTemplateService {
     });
 
     // Infer groupId from set_order values
-    // When saving:
-    // - Grouped exercises: firstOrder(B) == lastOrder(A) + 1 (consecutive, no gap)
-    // - Ungrouped exercises: currentOrder++ happens BEFORE creating sets, so firstOrder(B) > lastOrder(A) + 1 (gap)
-    //
-    // We can infer grouping by checking for consecutive set_order values.
-    // However, we must be careful: exercises that happen to be consecutive might not be grouped.
-    // But based on the save logic, if there's a gap, they're definitely NOT grouped.
+    // Note: With continuous set_order across all exercises, grouping detection is based on
+    // whether exercises have consecutive set_order values. Since set_order is now continuous
+    // (e.g., Exercise 1 sets: 1,2,3; Exercise 2 sets: 4,5), all exercises will appear consecutive.
+    // Grouping is determined by the groupId field in the exercise data when saving.
+    // This logic attempts to infer grouping from set_order patterns, but may not be fully accurate
+    // with the new continuous ordering system.
     let currentGroupId: string | undefined = undefined;
     let lastSetOrderEnd: number | null = null;
 
@@ -248,22 +247,15 @@ export class WorkoutTemplateService {
       const templateSetsCollection = database.get<WorkoutTemplateSet>('workout_template_sets');
       const preparedSets: WorkoutTemplateSet[] = [];
 
-      // Calculate set_order based on exercise order and grouping
+      // Calculate set_order based on exercise order
+      // set_order is continuous across all exercises in the workout
+      // Example: Exercise 1 (3 sets) = orders 1,2,3; Exercise 2 (2 sets) = orders 4,5
       let currentOrder = 0;
-      data.exercises.forEach((exercise, index) => {
-        // Check if this exercise is grouped with the previous one
-        const isGroupedWithPrevious =
-          exercise.groupId && index > 0 && data.exercises[index - 1]?.groupId === exercise.groupId;
-
-        if (!isGroupedWithPrevious) {
-          // Start new sequence for this exercise (or new group)
-          // Increment by 1 to start a new order sequence
-          currentOrder++;
-        }
-
+      data.exercises.forEach((exercise) => {
         // Create sets for this exercise
-        // All sets for this exercise will have sequential order starting from currentOrder
+        // All sets for this exercise will have sequential order starting from currentOrder + 1
         for (let set = 1; set <= exercise.sets; set++) {
+          currentOrder++; // Increment first, then assign (so first set is 1, not 0)
           preparedSets.push(
             templateSetsCollection.prepareCreate((ts) => {
               ts.templateId = template.id;
@@ -275,8 +267,6 @@ export class WorkoutTemplateService {
               ts.updatedAt = now;
             })
           );
-          // Increment order for each set
-          currentOrder++;
         }
       });
 

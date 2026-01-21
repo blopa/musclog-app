@@ -147,12 +147,8 @@ export function MasterLayout({ children }: MasterLayoutProps) {
               >
                 <UtensilsCrossed
                   size={theme.iconSize.md}
-                  color={
-                    isFoodActive() ? theme.colors.accent.primary : theme.colors.text.tertiary
-                  }
-                  strokeWidth={
-                    isFoodActive() ? theme.strokeWidth.medium : theme.borderWidth.medium
-                  }
+                  color={isFoodActive() ? theme.colors.accent.primary : theme.colors.text.tertiary}
+                  strokeWidth={isFoodActive() ? theme.strokeWidth.medium : theme.borderWidth.medium}
                 />
               </View>
               <Text

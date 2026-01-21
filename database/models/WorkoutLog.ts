@@ -37,6 +37,7 @@ export default class WorkoutLog extends Model {
     data: {
       reps?: number;
       weight?: number;
+      partials?: number;
       restTime?: number;
       difficultyLevel?: number;
       isDropSet?: boolean;
@@ -56,6 +57,7 @@ export default class WorkoutLog extends Model {
     await set.update((updatedSet: WorkoutLogSet) => {
       if (data.reps !== undefined) updatedSet.reps = data.reps;
       if (data.weight !== undefined) updatedSet.weight = data.weight;
+      if (data.partials !== undefined) updatedSet.partials = data.partials;
       if (data.restTime !== undefined) updatedSet.restTime = data.restTime;
       if (data.difficultyLevel !== undefined) {
         if (data.difficultyLevel < 1 || data.difficultyLevel > 10) {
@@ -78,7 +80,8 @@ export default class WorkoutLog extends Model {
     exerciseId: string,
     reps: number,
     weight: number,
-    setOrder?: number
+    setOrder?: number,
+    partials?: number
   ): Promise<WorkoutLogSet> {
     if (this.completedAt) {
       throw new Error('Cannot add exercises to a completed workout');
@@ -96,6 +99,7 @@ export default class WorkoutLog extends Model {
       logSet.exerciseId = exerciseId;
       logSet.reps = reps;
       logSet.weight = weight;
+      logSet.partials = partials ?? 0;
       logSet.restTime = 0;
       logSet.difficultyLevel = 0;
       logSet.isDropSet = false;
