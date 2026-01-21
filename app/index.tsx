@@ -20,6 +20,7 @@ import { DailySummaryCard } from '../components/cards/DailySummaryCard';
 import { UserMenuModal } from '../components/modals/UserMenuModal';
 import { NotificationsModal } from '../components/modals/NotificationsModal';
 import PastWorkoutsHistoryModal from '../components/modals/PastWorkoutsHistoryModal';
+import PastWorkoutDetailModal from '../components/modals/PastWorkoutDetailModal';
 import { useRouter } from 'expo-router';
 import { SkeletonLoader } from '../components/theme/SkeletonLoader';
 import { EmptyStateCard } from '../components/theme/EmptyStateCard';
@@ -47,28 +48,6 @@ const PAGE_DATA = {
     },
     gradientColors: theme.colors.gradients.primary,
   },
-  recentWorkouts: [
-    {
-      id: '1',
-      name: 'Upper Body Power',
-      date: 'Yesterday',
-      duration: '1h 10m',
-      calories: 450,
-      prs: 4,
-      image: require('../assets/icon.png'),
-      imageBgColor: theme.colors.background.imageLight,
-    },
-    {
-      id: '2',
-      name: 'Morning Run',
-      date: 'Tuesday',
-      duration: '28m',
-      calories: 310,
-      prs: null,
-      image: require('../assets/icon.png'),
-      imageBgColor: theme.colors.background.imageMedium,
-    },
-  ],
   recentFoods: [
     {
       id: '1',
@@ -105,11 +84,13 @@ export default function HomeScreen() {
       image: any;
       imageBgColor: string;
     }[]
-  >(PAGE_DATA.recentWorkouts);
+  >([]);
+
   const [recentFoods, setRecentFoods] = useState(PAGE_DATA.recentFoods);
   const [isUserMenuVisible, setIsUserMenuVisible] = useState(false);
   const [isNotificationsVisible, setIsNotificationsVisible] = useState(false);
   const [isWorkoutHistoryVisible, setIsWorkoutHistoryVisible] = useState(false);
+  const [selectedWorkoutId, setSelectedWorkoutId] = useState<string | undefined>(undefined);
   const [isLoadingRecent, setIsLoadingRecent] = useState(false);
   const [isCheckingOnboarding, setIsCheckingOnboarding] = useState(true);
 
@@ -340,6 +321,7 @@ export default function HomeScreen() {
                     },
                   }}
                   description={`${workout.date} • ${workout.duration}`}
+                  onPress={() => setSelectedWorkoutId(workout.id)}
                 />
               ))}
             </View>
@@ -441,6 +423,13 @@ export default function HomeScreen() {
       <PastWorkoutsHistoryModal
         visible={isWorkoutHistoryVisible}
         onClose={() => setIsWorkoutHistoryVisible(false)}
+      />
+
+      {/* Workout Detail Modal */}
+      <PastWorkoutDetailModal
+        visible={!!selectedWorkoutId}
+        onClose={() => setSelectedWorkoutId(undefined)}
+        workoutId={selectedWorkoutId}
       />
     </MasterLayout>
   );
