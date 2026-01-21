@@ -208,7 +208,7 @@ describe('UserService', () => {
         return await callback();
       });
 
-      const result = await UserService.initializeUser(initialData);
+      await UserService.initializeUser(initialData);
 
       expect(mockDatabase.write).toHaveBeenCalled();
       expect(mockGenerateUUID).toHaveBeenCalled();
@@ -450,9 +450,9 @@ describe('UserService', () => {
       };
 
       const updatedUser = createMockUser({ id: 'user-123', syncId: 'generated-uuid-123' });
-      
+
       // First call: getCurrentUser() in getSyncId()
-      // Second call: getCurrentUser() in ensureSyncId() 
+      // Second call: getCurrentUser() in ensureSyncId()
       // Third call: find() to reload user after update
       mockDatabase.get
         .mockReturnValueOnce({
