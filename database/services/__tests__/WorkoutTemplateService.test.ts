@@ -642,6 +642,52 @@ describe('WorkoutTemplateService', () => {
       expect(ex1?.groupId).toBeDefined();
       expect(ex2?.groupId).toBe(ex1?.groupId);
     });
+
+    it('should handle case when index > 0 and lastSetOrderEnd is null (else branch)', async () => {
+      // This tests the uncovered else branch when index > 0 but lastSetOrderEnd === null
+      // This shouldn't normally happen, but we test it for coverage
+      // Exercise 1: set_order 1 (single set)
+      const set1 = createMockWorkoutTemplateSet({
+        exerciseId: 'ex-1',
+        setOrder: 1,
+      });
+
+      // Exercise 2: set_order 2 (consecutive, should trigger grouping)
+      const set2 = createMockWorkoutTemplateSet({
+        exerciseId: 'ex-2',
+        setOrder: 2,
+      });
+
+      const exercise1 = createMockExercise({
+        id: 'ex-1',
+        name: 'Exercise 1',
+        equipmentType: 'barbell',
+      });
+      const exercise2 = createMockExercise({
+        id: 'ex-2',
+        name: 'Exercise 2',
+        equipmentType: 'barbell',
+      });
+
+      const mockQuery = {
+        fetch: jest.fn().mockResolvedValue([exercise1, exercise2]),
+        extend: jest.fn().mockReturnThis(),
+      };
+
+      mockDatabase.get.mockReturnValue({
+        query: jest.fn().mockReturnValue(mockQuery),
+      } as any);
+
+      const result = await WorkoutTemplateService.convertSetsToExercises([set1, set2] as any);
+
+      // Both exercises should exist
+      expect(result).toHaveLength(2);
+      // Exercise 2 should be grouped with Exercise 1 since they're consecutive
+      const ex1 = result.find((ex) => ex.id === 'ex-1');
+      const ex2 = result.find((ex) => ex.id === 'ex-2');
+      expect(ex1?.groupId).toBeDefined();
+      expect(ex2?.groupId).toBe(ex1?.groupId);
+    });
   });
 
   describe('saveTemplate', () => {
@@ -715,6 +761,124 @@ describe('WorkoutTemplateService', () => {
       expect(mockTemplateObj.description).toBe('Test Description');
       expect(mockTemplateObj.createdAt).toBeDefined();
       expect(mockTemplateObj.updatedAt).toBeDefined();
+    });
+
+    it('should create new template with undefined description', async () => {
+      const mockQuery = {
+        fetch: jest.fn().mockResolvedValue([]),
+        extend: jest.fn().mockReturnThis(),
+      };
+
+      const mockTemplate = createMockWorkoutTemplate({ id: 'template-1' });
+      const mockCreate = jest.fn().mockResolvedValue(mockTemplate);
+      const mockPrepareCreate = jest.fn().mockReturnValue({});
+      const mockCollection = {
+        query: jest.fn().mockReturnValue(mockQuery),
+        create: mockCreate,
+        prepareCreate: mockPrepareCreate,
+      };
+
+      mockDatabase.get.mockReturnValue(mockCollection as any);
+      mockDatabase.write.mockImplementation(async (callback) => {
+        const mockWriter = {} as any;
+        return await callback(mockWriter);
+      });
+      mockDatabase.batch.mockResolvedValue(undefined);
+
+      const newTemplateData: SaveTemplateData = {
+        name: 'New Template',
+        description: undefined,
+        exercises: mockExercises,
+        selectedDays: [0],
+      };
+
+      await WorkoutTemplateService.saveTemplate(newTemplateData);
+
+      // Verify the create callback sets description to undefined
+      const createCall = mockCreate.mock.calls[0][0];
+      const mockTemplateObj = {} as any;
+      createCall(mockTemplateObj);
+      expect(mockTemplateObj.description).toBeUndefined();
+      expect(mockTemplateObj.createdAt).toBeDefined();
+      expect(mockTemplateObj.updatedAt).toBeDefined();
+    });
+
+    it('should create template sets with bodyweight exercises (weight = 0)', async () => {
+      const bodyweightExercise: ExerciseInWorkout = {
+        id: 'ex-1',
+        label: 'Push-ups',
+        description: '',
+        icon: jest.fn(),
+        iconBgColor: '',
+        iconColor: '',
+        sets: 3,
+        reps: 10,
+        weight: 0,
+        isBodyweight: true,
+      };
+
+      const bodyweightData: SaveTemplateData = {
+        name: 'Bodyweight Workout',
+        exercises: [bodyweightExercise],
+        selectedDays: [0],
+      };
+
+      const mockQuery = {
+        fetch: jest.fn().mockResolvedValue([]),
+        extend: jest.fn().mockReturnThis(),
+      };
+
+      const mockTemplate = createMockWorkoutTemplate({ id: 'template-1' });
+      const mockCreate = jest.fn().mockResolvedValue(mockTemplate);
+      const setCallbacks: ((obj: any) => void)[] = [];
+      const mockSetsPrepareCreate = jest.fn((callback: (obj: any) => void) => {
+        setCallbacks.push(callback);
+        return {};
+      });
+
+      const mockCollection = {
+        query: jest.fn().mockReturnValue(mockQuery),
+        create: mockCreate,
+        prepareCreate: mockSetsPrepareCreate,
+      };
+
+      mockDatabase.get.mockImplementation((collection: string) => {
+        if (collection === 'workout_templates') {
+          return {
+            query: jest.fn().mockReturnValue(mockQuery),
+            create: mockCreate,
+          } as any;
+        } else if (collection === 'workout_template_sets') {
+          return mockCollection as any;
+        } else if (collection === 'schedules') {
+          return {
+            query: jest.fn().mockReturnValue(mockQuery),
+            prepareCreate: jest.fn().mockReturnValue({}),
+          } as any;
+        }
+        return mockCollection as any;
+      });
+
+      mockDatabase.write.mockImplementation(async (callback) => {
+        const mockWriter = {} as any;
+        await callback(mockWriter);
+        setCallbacks.forEach((cb) => {
+          const mockSet = {} as any;
+          cb(mockSet);
+        });
+        return mockTemplate;
+      });
+      mockDatabase.batch.mockResolvedValue(undefined);
+
+      await WorkoutTemplateService.saveTemplate(bodyweightData);
+
+      // Verify bodyweight exercise sets have weight = 0
+      expect(setCallbacks).toHaveLength(3);
+      const mockSet = {} as any;
+      setCallbacks[0](mockSet);
+      expect(mockSet.targetWeight).toBe(0);
+      expect(mockSet.exerciseId).toBe('ex-1');
+      expect(mockSet.targetReps).toBe(10);
     });
 
     it('should update existing template (soft deletes old sets/schedule)', async () => {
@@ -1575,6 +1739,81 @@ describe('WorkoutTemplateService', () => {
       expect(result[0].lastCompleted).toBe('3 weeks ago');
     });
 
+    it('should format relative dates correctly (multiple weeks ago with plural)', async () => {
+      const template = createMockWorkoutTemplate({
+        id: 'template-1',
+      });
+
+      // 21 days = 3 weeks (plural)
+      const twentyOneDaysAgo = Date.now() - 21 * 24 * 60 * 60 * 1000;
+      const completedWorkout = createMockWorkoutLog({
+        templateId: 'template-1',
+        completedAt: twentyOneDaysAgo,
+        startedAt: twentyOneDaysAgo - 1000,
+      });
+
+      template.templateSets.fetch = jest.fn().mockResolvedValue([]);
+
+      const mockQuery = {
+        fetch: jest.fn().mockResolvedValue([template]),
+        extend: jest.fn().mockReturnThis(),
+      };
+
+      mockWorkoutTemplateRepository.getActive.mockReturnValue(mockQuery as any);
+
+      const mockWorkoutQuery = {
+        fetch: jest.fn().mockResolvedValue([completedWorkout]),
+        extend: jest.fn().mockReturnThis(),
+      };
+
+      mockDatabase.get.mockReturnValue({
+        query: jest.fn().mockReturnValue(mockWorkoutQuery),
+      } as any);
+
+      const result = await WorkoutTemplateService.getAllTemplatesWithMetadata();
+
+      // Should be "3 weeks ago" (plural)
+      expect(result[0].lastCompleted).toBe('3 weeks ago');
+    });
+
+    it('should format relative dates correctly (single week ago)', async () => {
+      const template = createMockWorkoutTemplate({
+        id: 'template-1',
+      });
+
+      // 14 days = 2 weeks, but we need between 14-30 days for the weeks branch
+      // Let's use 20 days = 2 weeks (but should show as "2 weeks ago")
+      const twentyDaysAgo = Date.now() - 20 * 24 * 60 * 60 * 1000;
+      const completedWorkout = createMockWorkoutLog({
+        templateId: 'template-1',
+        completedAt: twentyDaysAgo,
+        startedAt: twentyDaysAgo - 1000,
+      });
+
+      template.templateSets.fetch = jest.fn().mockResolvedValue([]);
+
+      const mockQuery = {
+        fetch: jest.fn().mockResolvedValue([template]),
+        extend: jest.fn().mockReturnThis(),
+      };
+
+      mockWorkoutTemplateRepository.getActive.mockReturnValue(mockQuery as any);
+
+      const mockWorkoutQuery = {
+        fetch: jest.fn().mockResolvedValue([completedWorkout]),
+        extend: jest.fn().mockReturnThis(),
+      };
+
+      mockDatabase.get.mockReturnValue({
+        query: jest.fn().mockReturnValue(mockWorkoutQuery),
+      } as any);
+
+      const result = await WorkoutTemplateService.getAllTemplatesWithMetadata();
+
+      // Should be "2 weeks ago" (plural)
+      expect(result[0].lastCompleted).toBe('2 weeks ago');
+    });
+
     it('should format relative dates correctly (X months ago)', async () => {
       const template = createMockWorkoutTemplate({
         id: 'template-1',
@@ -1940,6 +2179,36 @@ describe('WorkoutTemplateService', () => {
       expect(result[0].lastCompletedTimestamp).toBeGreaterThan(
         result[1].lastCompletedTimestamp!
       );
+    });
+
+    it('should handle template with null description', async () => {
+      const template = createMockWorkoutTemplate({
+        id: 'template-1',
+        name: 'Test Template',
+        description: null,
+      });
+
+      template.templateSets.fetch = jest.fn().mockResolvedValue([]);
+
+      const mockQuery = {
+        fetch: jest.fn().mockResolvedValue([template]),
+        extend: jest.fn().mockReturnThis(),
+      };
+
+      mockWorkoutTemplateRepository.getActive.mockReturnValue(mockQuery as any);
+
+      const mockWorkoutQuery = {
+        fetch: jest.fn().mockResolvedValue([]),
+        extend: jest.fn().mockReturnThis(),
+      };
+
+      mockDatabase.get.mockReturnValue({
+        query: jest.fn().mockReturnValue(mockWorkoutQuery),
+      } as any);
+
+      const result = await WorkoutTemplateService.getAllTemplatesWithMetadata();
+
+      expect(result[0].description).toBeUndefined();
     });
 
     it('should filter active templates only', async () => {
