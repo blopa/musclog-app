@@ -42,10 +42,10 @@ function formatRelativeDate(timestamp: number, t: (key: string) => string): stri
   const timeStr = format(date, 'hh:mm a');
 
   if (isToday(date)) {
-    return `Today, ${timeStr}`;
+    return `${t('bodyMetrics.dateFormats.today')}, ${timeStr}`;
   }
   if (isYesterday(date)) {
-    return `Yesterday, ${timeStr}`;
+    return `${t('bodyMetrics.dateFormats.yesterday')}, ${timeStr}`;
   }
   if (isThisWeek(date)) {
     return `${format(date, 'EEE')}, ${timeStr}`;
@@ -140,6 +140,7 @@ function LineChart({ data }: LineChartProps) {
       </VictoryChart>
       {/* Custom X-axis labels */}
       <View className="mt-4 flex-row justify-between px-1">
+        {/* TODO: Date labels should be dynamic later on */}
         <Text className="text-[10px] font-medium text-text-tertiary">May 12</Text>
         <Text className="text-[10px] font-medium text-text-tertiary">May 26</Text>
         <Text className="text-[10px] font-medium text-text-tertiary">Jun 11</Text>
@@ -261,11 +262,14 @@ export default function BodyMetricsHistoryModal({
         // Determine note based on context
         let note = '';
         if (index === metrics.length - 1) {
-          note = 'Baseline';
+          note = t('bodyMetrics.history.notes.baseline');
         } else if (!change) {
-          note = 'No change';
+          note = t('bodyMetrics.history.notes.noChange');
         } else {
-          note = changeType === 'down' ? 'Decreased' : 'Increased';
+          note =
+            changeType === 'down'
+              ? t('bodyMetrics.history.notes.decreased')
+              : t('bodyMetrics.history.notes.increased');
         }
 
         return {
@@ -457,7 +461,9 @@ export default function BodyMetricsHistoryModal({
           ) : (
             <GenericCard variant="card" size="default">
               <View className="p-5">
-                <Text className="text-center text-text-secondary">No data available</Text>
+                <Text className="text-center text-text-secondary">
+                  {t('bodyMetrics.noDataAvailable')}
+                </Text>
               </View>
             </GenericCard>
           )}
@@ -488,7 +494,7 @@ export default function BodyMetricsHistoryModal({
               </View>
             ) : (
               <Text className="py-4 text-center text-text-secondary">
-                No history data available
+                {t('bodyMetrics.noHistoryDataAvailable')}
               </Text>
             )}
 

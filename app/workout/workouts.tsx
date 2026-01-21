@@ -39,6 +39,7 @@ export default function WorkoutsScreen() {
       id: string;
       name: string;
       lastCompleted?: string;
+      lastCompletedTimestamp?: number;
       exerciseCount: number;
       duration?: string;
       image?: any;
@@ -48,6 +49,7 @@ export default function WorkoutsScreen() {
     id: string;
     name: string;
     lastCompleted?: string;
+    lastCompletedTimestamp?: number;
     exerciseCount: number;
     duration?: string;
     image?: any;
@@ -75,6 +77,7 @@ export default function WorkoutsScreen() {
         id: featured.id,
         name: featured.name,
         lastCompleted: featured.lastCompleted,
+        lastCompletedTimestamp: featured.lastCompletedTimestamp,
         exerciseCount: featured.exerciseCount,
         duration: featured.duration,
         image: featured.image,
@@ -85,6 +88,7 @@ export default function WorkoutsScreen() {
         id: template.id,
         name: template.name,
         lastCompleted: template.lastCompleted,
+        lastCompletedTimestamp: template.lastCompletedTimestamp,
         exerciseCount: template.exerciseCount,
         duration: template.duration,
         image: template.image,
@@ -243,6 +247,7 @@ export default function WorkoutsScreen() {
               <WorkoutCard
                 name={featuredWorkout.name}
                 lastCompleted={featuredWorkout.lastCompleted}
+                lastCompletedTimestamp={featuredWorkout.lastCompletedTimestamp}
                 exerciseCount={featuredWorkout.exerciseCount}
                 duration={featuredWorkout.duration}
                 image={featuredWorkout.image}
@@ -272,6 +277,7 @@ export default function WorkoutsScreen() {
                     key={workout.id}
                     name={workout.name}
                     lastCompleted={workout.lastCompleted}
+                    lastCompletedTimestamp={workout.lastCompletedTimestamp}
                     exerciseCount={workout.exerciseCount}
                     duration={workout.duration}
                     variant="standard"

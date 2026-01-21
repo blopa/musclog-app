@@ -137,10 +137,10 @@ export default function HomeScreen() {
   const formatRelativeDate = (timestamp: number): string => {
     const date = new Date(timestamp);
     if (isToday(date)) {
-      return 'Today';
+      return t('common.today');
     }
     if (isYesterday(date)) {
-      return 'Yesterday';
+      return t('common.yesterday');
     }
     if (isThisWeek(date)) {
       return format(date, 'EEEE'); // Day name like "Monday"
