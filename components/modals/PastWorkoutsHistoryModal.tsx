@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { Search, SlidersHorizontal, Trophy } from 'lucide-react-native';
 import { theme } from '../../theme';
@@ -6,26 +6,15 @@ import { FullScreenModal } from './FullScreenModal';
 import { useTranslation } from 'react-i18next';
 import { GenericCard } from '../cards/GenericCard';
 import { PastWorkoutsHistoryFilterMenu } from './PastWorkoutsHistoryFilterMenu';
-import { WorkoutService } from '../../database/services/WorkoutService';
 import { SkeletonLoader } from '../theme/SkeletonLoader';
 import { Button } from '../theme/Button';
-import {
-  type WorkoutHistorySection,
-  type WorkoutHistoryItem,
-  type WorkoutFilters,
-  calculateDateRange,
-  processWorkouts,
-  groupWorkoutsByMonth,
-  mergeWorkoutSections,
-  filterWorkoutsBySearch,
-} from '../../utils/workoutHistory';
+import { type WorkoutHistoryItem, WorkoutHistorySection } from '../../utils/workoutHistory';
+import { usePastWorkoutsHistory } from '../../hooks/usePastWorkoutsHistory';
 
 type WorkoutHistoryModalProps = {
   visible: boolean;
   onClose: () => void;
 };
-
-const BATCH_SIZE = 5;
 
 // Search and Filter Header Component
 type SearchAndFilterHeaderProps = {
@@ -34,7 +23,11 @@ type SearchAndFilterHeaderProps = {
   onFilterPress: () => void;
 };
 
-function SearchAndFilterHeader({ searchQuery, onSearchChange, onFilterPress }: SearchAndFilterHeaderProps) {
+function SearchAndFilterHeader({
+  searchQuery,
+  onSearchChange,
+  onFilterPress,
+}: SearchAndFilterHeaderProps) {
   const { t } = useTranslation();
 
   return (
@@ -114,7 +107,7 @@ function WorkoutHistorySkeleton() {
             >
               <View className="flex-col gap-4">
                 <View className="flex-row items-start justify-between">
-                  <View className="flex-row items-center gap-3 flex-1">
+                  <View className="flex-1 flex-row items-center gap-3">
                     <SkeletonLoader
                       width={theme.size['12']}
                       height={theme.size['12']}
@@ -248,10 +241,7 @@ function WorkoutCard({ workout, opacity }: WorkoutCardProps) {
                   backgroundColor: theme.colors.status.emerald400_10,
                 }}
               >
-                <Trophy
-                  size={theme.iconSize.xs}
-                  color={theme.colors.status.emeraldLight}
-                />
+                <Trophy size={theme.iconSize.xs} color={theme.colors.status.emeraldLight} />
                 <Text
                   style={{
                     fontSize: 10,
@@ -350,7 +340,9 @@ function LoadMoreButton({ isLoadingMore, onPress }: LoadMoreButtonProps) {
   return (
     <View className="py-4">
       <Button
-        label={isLoadingMore ? t('pastWorkoutHistory.loadingMore') : t('pastWorkoutHistory.loadMore')}
+        label={
+          isLoadingMore ? t('pastWorkoutHistory.loadingMore') : t('pastWorkoutHistory.loadMore')
+        }
         onPress={onPress}
         size="sm"
         variant="outline"
@@ -365,149 +357,19 @@ function LoadMoreButton({ isLoadingMore, onPress }: LoadMoreButtonProps) {
 export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHistoryModalProps) {
   const { t } = useTranslation();
   const [isFilterMenuVisible, setIsFilterMenuVisible] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [workoutHistoryData, setWorkoutHistoryData] = useState<WorkoutHistorySection[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [pageOffset, setPageOffset] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
-  const [filters, setFilters] = useState<WorkoutFilters>({
-    workoutType: 'all',
-    dateRange: '30',
-    muscleGroups: [],
-    minDuration: 0,
-  });
 
-  const loadWorkoutHistory = useCallback(async () => {
-    setIsLoading(true);
-    setPageOffset(0);
-    setHasMore(true);
-    try {
-      // Calculate date range filter
-      const timeframe = calculateDateRange(filters.dateRange || '30');
-
-      // Fetch initial batch of workouts (5 workouts)
-      // Don't pass offset when it's 0 to avoid WatermelonDB issues
-      const workouts = await WorkoutService.getWorkoutHistory(timeframe, BATCH_SIZE);
-
-      // Process workouts and apply filters
-      const validWorkouts = await processWorkouts(workouts, filters, t);
-
-      // Group workouts by month
-      const sections = groupWorkoutsByMonth(validWorkouts);
-
-      setWorkoutHistoryData(sections);
-      setPageOffset(BATCH_SIZE);
-
-      // Check if there are more workouts to load
-      // If we got fewer workouts than requested, or if all were filtered out, there's no more
-      if (workouts.length < BATCH_SIZE) {
-        setHasMore(false);
-      } else {
-        // We need to check if there are more workouts after filtering
-        // Since filtering happens client-side, we'll fetch one more to check
-        const nextBatch = await WorkoutService.getWorkoutHistory(timeframe, 1, BATCH_SIZE);
-        setHasMore(nextBatch.length > 0);
-      }
-    } catch (error) {
-      console.error('Error loading workout history:', error);
-      setWorkoutHistoryData([]);
-      setHasMore(false);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [filters, t]);
-
-  const loadMoreWorkouts = useCallback(async () => {
-    if (isLoadingMore || !hasMore) {
-      return;
-    }
-
-    setIsLoadingMore(true);
-    
-    // Small delay to ensure React processes the state update before async work
-    // This ensures the Button shows loading state immediately
-    await new Promise<void>((resolve) => setTimeout(resolve, 10));
-    
-    try {
-      // Calculate date range filter
-      const timeframe = calculateDateRange(filters.dateRange || '30');
-
-      // Fetch next batch
-      const workouts = await WorkoutService.getWorkoutHistory(timeframe, BATCH_SIZE, pageOffset);
-
-      if (workouts.length === 0) {
-        setHasMore(false);
-        setIsLoadingMore(false);
-        return;
-      }
-
-      // Process workouts and apply filters
-      const validWorkouts = await processWorkouts(workouts, filters, t);
-
-      if (validWorkouts.length > 0) {
-        // Merge new workouts with existing data
-        const mergedSections = mergeWorkoutSections(workoutHistoryData, validWorkouts);
-        setWorkoutHistoryData(mergedSections);
-      }
-
-      // Update offset
-      const newOffset = pageOffset + workouts.length;
-      setPageOffset(newOffset);
-
-      // Check if there are more workouts
-      if (workouts.length < BATCH_SIZE) {
-        setHasMore(false);
-      } else {
-        // Check if there's at least one more workout
-        const nextBatch = await WorkoutService.getWorkoutHistory(timeframe, 1, newOffset);
-        setHasMore(nextBatch.length > 0);
-      }
-    } catch (error) {
-      console.error('Error loading more workouts:', error);
-      setHasMore(false);
-    } finally {
-      setIsLoadingMore(false);
-    }
-  }, [
+  const {
+    isLoading,
     isLoadingMore,
-    hasMore,
-    pageOffset,
-    filters,
-    t,
     workoutHistoryData,
-  ]);
-
-  // Load workout history when modal becomes visible or filters change
-  useEffect(() => {
-    if (visible) {
-      // Reset loading state immediately when modal opens for instant feedback
-      setIsLoading(true);
-      setWorkoutHistoryData([]);
-      setPageOffset(0);
-      setHasMore(true);
-      setIsLoadingMore(false);
-      // Use setTimeout to defer data loading slightly, allowing modal to render first
-      // This makes the modal feel instant and snappy
-      const timeoutId = setTimeout(() => {
-        loadWorkoutHistory();
-      }, 0);
-      
-      return () => {
-        clearTimeout(timeoutId);
-      };
-    } else {
-      // Reset state when modal closes
-      setIsLoading(false);
-      setWorkoutHistoryData([]);
-      setPageOffset(0);
-      setHasMore(true);
-      setIsLoadingMore(false);
-    }
-  }, [visible, filters, loadWorkoutHistory]);
-
-  // Filter workouts based on search query
-  const filteredWorkoutHistoryData = filterWorkoutsBySearch(workoutHistoryData, searchQuery);
+    searchQuery,
+    hasMore,
+    filters,
+    setSearchQuery,
+    loadMoreWorkouts,
+    handleApplyFilters,
+    handleClearFilters,
+  } = usePastWorkoutsHistory({ visible });
 
   return (
     <FullScreenModal
@@ -526,15 +388,15 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
           {isLoading ? (
             <WorkoutHistorySkeleton />
-          ) : filteredWorkoutHistoryData.length === 0 ? (
+          ) : workoutHistoryData.length === 0 ? (
             <EmptyState hasSearchQuery={!!searchQuery} />
           ) : (
             <View className="flex-1 gap-6 p-4">
-              {filteredWorkoutHistoryData.map((section, sectionIndex) => (
+              {workoutHistoryData.map((section, sectionIndex) => (
                 <WorkoutMonthSection
                   key={section.month}
                   section={section}
-                  isLastMonth={sectionIndex === filteredWorkoutHistoryData.length - 1}
+                  isLastMonth={sectionIndex === workoutHistoryData.length - 1}
                 />
               ))}
 
@@ -564,22 +426,8 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
           )[],
           minDuration: filters.minDuration,
         }}
-        onApplyFilters={(newFilters) => {
-          setFilters({
-            workoutType: newFilters.workoutType || 'all',
-            dateRange: newFilters.dateRange || '30',
-            muscleGroups: newFilters.muscleGroups || [],
-            minDuration: newFilters.minDuration || 0,
-          });
-        }}
-        onClearFilters={() => {
-          setFilters({
-            workoutType: 'all',
-            dateRange: '30',
-            muscleGroups: [],
-            minDuration: 0,
-          });
-        }}
+        onApplyFilters={handleApplyFilters}
+        onClearFilters={handleClearFilters}
       />
     </FullScreenModal>
   );
