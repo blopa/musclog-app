@@ -271,7 +271,8 @@ export default function BodyMetricsHistoryModal({
           const normalizedY = ((metric.value - minValue + padding) / (range + padding * 2)) * 150;
           // X-axis: distribute evenly across 400 width
           // Handle single data point case
-          const normalizedX = chartMetrics.length === 1 ? 200 : (index / (chartMetrics.length - 1)) * 400;
+          const normalizedX =
+            chartMetrics.length === 1 ? 200 : (index / (chartMetrics.length - 1)) * 400;
           return { x: normalizedX, y: Math.max(0, Math.min(150, 150 - normalizedY)) }; // Invert Y for chart
         });
 
@@ -369,7 +370,14 @@ export default function BodyMetricsHistoryModal({
     } finally {
       setIsLoadingMore(false);
     }
-  }, [isLoadingMore, hasMore, selectedMetric, selectedPeriod, pageOffsets, processMetricsToEntries]);
+  }, [
+    isLoadingMore,
+    hasMore,
+    selectedMetric,
+    selectedPeriod,
+    pageOffsets,
+    processMetricsToEntries,
+  ]);
 
   // Load data when modal opens or metric/period changes
   useEffect(() => {
@@ -447,14 +455,33 @@ export default function BodyMetricsHistoryModal({
                       <SkeletonLoader width={theme.size['8']} height={theme.size['5']} />
                     </View>
                   </View>
-                  <View className="flex-row gap-1 rounded-lg p-1" style={{ backgroundColor: theme.colors.background.gray800Opacity50 }}>
-                    <SkeletonLoader width={theme.size['12']} height={theme.size['6']} borderRadius={theme.borderRadius.md} />
-                    <SkeletonLoader width={theme.size['12']} height={theme.size['6']} borderRadius={theme.borderRadius.md} />
-                    <SkeletonLoader width={theme.size['12']} height={theme.size['6']} borderRadius={theme.borderRadius.md} />
+                  <View
+                    className="flex-row gap-1 rounded-lg p-1"
+                    style={{ backgroundColor: theme.colors.background.gray800Opacity50 }}
+                  >
+                    <SkeletonLoader
+                      width={theme.size['12']}
+                      height={theme.size['6']}
+                      borderRadius={theme.borderRadius.md}
+                    />
+                    <SkeletonLoader
+                      width={theme.size['12']}
+                      height={theme.size['6']}
+                      borderRadius={theme.borderRadius.md}
+                    />
+                    <SkeletonLoader
+                      width={theme.size['12']}
+                      height={theme.size['6']}
+                      borderRadius={theme.borderRadius.md}
+                    />
                   </View>
                 </View>
                 {/* Chart skeleton */}
-                <SkeletonLoader width="100%" height={theme.size['40']} borderRadius={theme.borderRadius.lg} />
+                <SkeletonLoader
+                  width="100%"
+                  height={theme.size['40']}
+                  borderRadius={theme.borderRadius.lg}
+                />
               </View>
             </GenericCard>
           ) : currentMetric ? (
@@ -588,7 +615,11 @@ export default function BodyMetricsHistoryModal({
                           <SkeletonLoader width="40%" height={theme.size['5']} />
                         </View>
                       </View>
-                      <SkeletonLoader width={theme.size['16']} height={theme.size['6']} borderRadius={theme.borderRadius.full} />
+                      <SkeletonLoader
+                        width={theme.size['16']}
+                        height={theme.size['6']}
+                        borderRadius={theme.borderRadius.full}
+                      />
                     </View>
                   </GenericCard>
                 ))}
@@ -603,7 +634,11 @@ export default function BodyMetricsHistoryModal({
                 {hasMore[selectedMetric] && (
                   <View className="py-4">
                     <Button
-                      label={isLoadingMore ? t('bodyMetrics.history.loadingMore') : t('bodyMetrics.history.loadMore')}
+                      label={
+                        isLoadingMore
+                          ? t('bodyMetrics.history.loadingMore')
+                          : t('bodyMetrics.history.loadMore')
+                      }
                       onPress={loadMoreHistory}
                       size="sm"
                       variant="outline"

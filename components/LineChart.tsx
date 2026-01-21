@@ -36,7 +36,14 @@ export type LineChartProps = {
   /** Custom Y-axis domain [min, max] (default: [0, chartHeight]) */
   yDomain?: [number, number];
   /** Interpolation method for the line (default: "monotoneX") */
-  interpolation?: 'linear' | 'monotoneX' | 'monotoneY' | 'natural' | 'step' | 'stepBefore' | 'stepAfter';
+  interpolation?:
+    | 'linear'
+    | 'monotoneX'
+    | 'monotoneY'
+    | 'natural'
+    | 'step'
+    | 'stepBefore'
+    | 'stepAfter';
   /** Whether to show grid lines (default: true) */
   showGridLines?: boolean;
   /** Color of grid lines (default: theme border light) */
