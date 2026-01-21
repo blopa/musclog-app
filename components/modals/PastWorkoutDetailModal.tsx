@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
-import { Share2, Trophy, Pencil, Trash2 } from 'lucide-react-native';
+import { Trophy } from 'lucide-react-native';
 import { MenuButton } from '../theme/MenuButton';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
@@ -9,9 +9,8 @@ import { theme } from '../../theme';
 import { FullScreenModal } from './FullScreenModal';
 import { GenericCard } from '../cards/GenericCard';
 import { LineChart, LineChartDataPoint } from '../LineChart';
-import { BottomPopUpMenu, BottomPopUpMenuItem } from '../BottomPopUpMenu';
-import { WorkoutService } from '../../database/services/WorkoutService';
-import { transformWorkoutToDetailData, type WorkoutDetailData } from '../../utils/workoutDetail';
+import { BottomPopUpMenu } from '../BottomPopUpMenu';
+import { usePastWorkoutDetail } from '../../hooks/usePastWorkoutDetail';
 
 // Types
 type WorkoutSet = {
@@ -351,73 +350,18 @@ export default function PastWorkoutDetailModal({
   onDelete,
 }: PastWorkoutDetailModalProps) {
   const { t } = useTranslation();
-  const [isMenuVisible, setIsMenuVisible] = useState(false);
-  const [workout, setWorkout] = useState<WorkoutDetailData | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    if (visible && workoutId) {
-      loadWorkoutData();
-    } else {
-      setWorkout(null);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [visible, workoutId]);
-
-  const loadWorkoutData = async () => {
-    if (!workoutId) return;
-
-    setIsLoading(true);
-    try {
-      const { workoutLog, sets, exercises } = await WorkoutService.getWorkoutWithDetails(workoutId);
-      const transformedData = await transformWorkoutToDetailData(workoutLog, sets, exercises, t);
-      setWorkout(transformedData);
-    } catch (error) {
-      console.error('Error loading workout details:', error);
-      setWorkout(null);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const { workout, isLoading, isMenuVisible, menuItems, setIsMenuVisible } = usePastWorkoutDetail({
+    visible,
+    workoutId,
+    onEdit,
+    onShare,
+    onDelete,
+  });
 
   const formatDate = (date: Date) => {
     return format(date, 'EEEE, MMM d • hh:mm a');
   };
-
-  const menuItems: BottomPopUpMenuItem[] = [
-    {
-      icon: Pencil,
-      iconColor: theme.colors.text.primary,
-      iconBgColor: theme.colors.text.primary20,
-      title: t('workoutDetails.edit'),
-      description: t('workoutDetails.editDescription'),
-      onPress: () => {
-        onEdit?.();
-      },
-    },
-    {
-      icon: Share2,
-      iconColor: theme.colors.text.primary,
-      iconBgColor: theme.colors.text.primary20,
-      title: t('workoutDetails.share'),
-      description: t('workoutDetails.shareDescription'),
-      onPress: () => {
-        onShare?.();
-      },
-    },
-    {
-      icon: Trash2,
-      iconColor: theme.colors.status.error,
-      iconBgColor: theme.colors.status.error20,
-      title: t('workoutDetails.delete'),
-      description: t('workoutDetails.deleteDescription'),
-      titleColor: theme.colors.status.error,
-      descriptionColor: theme.colors.status.error,
-      onPress: () => {
-        onDelete?.();
-      },
-    },
-  ];
 
   const headerRight = (
     <MenuButton
