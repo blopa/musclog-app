@@ -9,8 +9,8 @@ import { theme } from '../../theme';
 import { FullScreenModal } from './FullScreenModal';
 import { GenericCard } from '../cards/GenericCard';
 import { LineChart, LineChartDataPoint } from '../LineChart';
-import { BottomPopUpMenu } from '../BottomPopUpMenu';
 import { usePastWorkoutDetail } from '../../hooks/usePastWorkoutDetail';
+import { PastWorkoutBottomMenu } from './PastWorkoutBottomMenu';
 
 // Types
 type WorkoutSet = {
@@ -351,12 +351,9 @@ export default function PastWorkoutDetailModal({
 }: PastWorkoutDetailModalProps) {
   const { t } = useTranslation();
 
-  const { workout, isLoading, isMenuVisible, menuItems, setIsMenuVisible } = usePastWorkoutDetail({
+  const { workout, isLoading, isMenuVisible, setIsMenuVisible } = usePastWorkoutDetail({
     visible,
     workoutId,
-    onEdit,
-    onShare,
-    onDelete,
   });
 
   const formatDate = (date: Date) => {
@@ -416,12 +413,13 @@ export default function PastWorkoutDetailModal({
         </View>
       </FullScreenModal>
 
-      <BottomPopUpMenu
+      <PastWorkoutBottomMenu
         visible={isMenuVisible}
         onClose={() => setIsMenuVisible(false)}
-        title={workout.name}
-        subtitle={t('workoutDetails.subtitle')}
-        items={menuItems}
+        workoutName={workout.name}
+        onEdit={onEdit}
+        onShare={onShare}
+        onDelete={onDelete}
       />
     </>
   );
