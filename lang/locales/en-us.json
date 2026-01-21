@@ -1011,6 +1011,8 @@
       "title": "History",
       "filter": "Filter",
       "viewAll": "View All History",
+      "loadMore": "Load More",
+      "loadingMore": "Loading...",
       "notes": {
         "baseline": "Baseline",
         "noChange": "No change",
