@@ -14,6 +14,7 @@ import { Q } from '@nozbe/watermelondb';
 import Exercise from '../../database/models/Exercise';
 import WorkoutLogSet from '../../database/models/WorkoutLogSet';
 import { SkeletonLoader } from '../theme/SkeletonLoader';
+import { Button } from '../theme/Button';
 
 type WorkoutHistorySection = {
   month: string;
@@ -791,40 +792,15 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
               {/* Load More Button */}
               {hasMore && !searchQuery && (
                 <View className="py-4">
-                  <Pressable
+                  <Button
+                    label={isLoadingMore ? t('pastWorkoutHistory.loadingMore') : t('pastWorkoutHistory.loadMore')}
                     onPress={loadMoreWorkouts}
+                    size="sm"
+                    variant="outline"
                     disabled={isLoadingMore}
-                    className="items-center justify-center rounded-lg border py-3"
-                    style={{
-                      backgroundColor: theme.colors.background.card,
-                      borderColor: theme.colors.background.white5,
-                      opacity: isLoadingMore ? 0.6 : 1,
-                    }}
-                  >
-                    {isLoadingMore ? (
-                      <View className="flex-row items-center gap-2">
-                        <ActivityIndicator size="small" color={theme.colors.accent.primary} />
-                        <Text
-                          style={{
-                            fontSize: theme.typography.fontSize.sm,
-                            color: theme.colors.text.secondary,
-                          }}
-                        >
-                          {t('pastWorkoutHistory.loadingMore')}
-                        </Text>
-                      </View>
-                    ) : (
-                      <Text
-                        style={{
-                          fontSize: theme.typography.fontSize.sm,
-                          fontWeight: theme.typography.fontWeight.medium,
-                          color: theme.colors.text.accent,
-                        }}
-                      >
-                        {t('pastWorkoutHistory.loadMore')}
-                      </Text>
-                    )}
-                  </Pressable>
+                    loading={isLoadingMore}
+                    width="full"
+                  />
                 </View>
               )}
             </View>
