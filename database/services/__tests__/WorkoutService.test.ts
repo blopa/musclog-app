@@ -759,6 +759,47 @@ describe('WorkoutService', () => {
 
       expect(result.averageVolumePerWorkout).toBe(0);
     });
+
+    it('should handle workouts with null or undefined totalVolume', async () => {
+      const workout1 = createMockWorkoutLog({
+        totalVolume: 1000,
+      });
+
+      const workout2 = createMockWorkoutLog({
+        totalVolume: null,
+      });
+
+      const workout3 = createMockWorkoutLog({
+        totalVolume: undefined,
+      });
+
+      const workout4 = createMockWorkoutLog({
+        totalVolume: 0,
+      });
+
+      const timeframe = {
+        startDate: Date.now() - 10000,
+        endDate: Date.now(),
+      };
+
+      const mockQuery = {
+        fetch: jest.fn().mockResolvedValue([workout1, workout2, workout3, workout4]),
+        extend: jest.fn().mockReturnThis(),
+      };
+
+      mockDatabase.get.mockReturnValue({
+        query: jest.fn().mockReturnValue(mockQuery),
+      } as any);
+
+      mockWorkoutAnalytics.calculateMuscleGroupVolume.mockResolvedValue([]);
+
+      const result = await WorkoutService.getWorkoutStatistics(timeframe);
+
+      // Should only count workout1's volume (1000), others should default to 0
+      expect(result.totalVolume).toBe(1000);
+      expect(result.totalWorkouts).toBe(4);
+      expect(result.averageVolumePerWorkout).toBe(250);
+    });
   });
 
   describe('getWorkoutWithDetails', () => {
