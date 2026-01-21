@@ -671,6 +671,155 @@ describe('WorkoutAnalytics', () => {
       expect(records[0].newRecord.volume).toBe(1000); // Should use set1 (higher volume)
     });
 
+    it('should handle reduce comparison when currentVolume <= bestVolume (reverse order)', async () => {
+      const workoutLog = createMockWorkoutLog({
+        id: 'workout-1',
+        startedAt: Date.now(),
+      });
+
+      // Create sets where first set has lower volume, second has higher
+      // This ensures the reduce function processes both branches: > and <=
+      const currentSet1 = createMockWorkoutLogSet({
+        exerciseId: 'ex-1',
+        weight: 90,
+        reps: 9, // 810 volume (lower)
+        workoutLogId: 'workout-1',
+      });
+
+      const currentSet2 = createMockWorkoutLogSet({
+        exerciseId: 'ex-1',
+        weight: 100,
+        reps: 10, // 1000 volume (higher - will become best)
+        workoutLogId: 'workout-1',
+      });
+
+      const currentSet3 = createMockWorkoutLogSet({
+        exerciseId: 'ex-1',
+        weight: 80,
+        reps: 8, // 640 volume (lower - will test <= branch)
+        workoutLogId: 'workout-1',
+      });
+
+      const exercise = createMockExercise({
+        id: 'ex-1',
+        name: 'Bench Press',
+      });
+
+      workoutLog.logSets.fetch = jest.fn().mockResolvedValue([currentSet1, currentSet2, currentSet3]);
+
+      const mockQuery = {
+        fetch: jest.fn().mockResolvedValue([]), // No historical sets
+      };
+
+      mockDatabase.get
+        .mockReturnValueOnce({
+          query: jest.fn().mockReturnValue(mockQuery),
+        } as any)
+        .mockReturnValueOnce({
+          query: jest.fn().mockReturnValue(mockQuery),
+        } as any)
+        .mockReturnValueOnce({
+          find: jest.fn().mockResolvedValue(exercise),
+        } as any);
+
+      const records = await WorkoutAnalytics.detectPersonalRecords(workoutLog as any);
+
+      // Should detect PR with best set (set2 with highest volume)
+      expect(records.length).toBeGreaterThan(0);
+      expect(records[0].newRecord.volume).toBe(1000); // Should use set2 (highest volume)
+    });
+
+    it('should handle reduce comparison for historical sets when currentVolume <= bestVolume', async () => {
+      const workoutLog = createMockWorkoutLog({
+        id: 'workout-1',
+        startedAt: Date.now(),
+      });
+
+      const currentSet = createMockWorkoutLogSet({
+        exerciseId: 'ex-1',
+        weight: 100,
+        reps: 10,
+        workoutLogId: 'workout-1',
+      });
+
+      // Create multiple historical sets where we need to test the reduce function
+      // First set has lower volume, second has higher, third has lower (to test <= branch)
+      const historicalSet1 = createMockWorkoutLogSet({
+        exerciseId: 'ex-1',
+        weight: 90,
+        reps: 9, // 810 volume (lower)
+        workoutLogId: 'workout-2',
+      });
+
+      const historicalSet2 = createMockWorkoutLogSet({
+        exerciseId: 'ex-1',
+        weight: 100,
+        reps: 9, // 900 volume (higher - will become best)
+        workoutLogId: 'workout-3',
+      });
+
+      const historicalSet3 = createMockWorkoutLogSet({
+        exerciseId: 'ex-1',
+        weight: 80,
+        reps: 8, // 640 volume (lower - will test <= branch)
+        workoutLogId: 'workout-4',
+      });
+
+      const exercise = createMockExercise({
+        id: 'ex-1',
+        name: 'Bench Press',
+      });
+
+      const historicalWorkout1 = createMockWorkoutLog({
+        id: 'workout-2',
+        startedAt: Date.now() - 3000,
+        completedAt: Date.now() - 2500,
+      });
+
+      const historicalWorkout2 = createMockWorkoutLog({
+        id: 'workout-3',
+        startedAt: Date.now() - 2000,
+        completedAt: Date.now() - 1500,
+      });
+
+      const historicalWorkout3 = createMockWorkoutLog({
+        id: 'workout-4',
+        startedAt: Date.now() - 1000,
+        completedAt: Date.now() - 500,
+      });
+
+      workoutLog.logSets.fetch = jest.fn().mockResolvedValue([currentSet]);
+
+      const mockQuery = {
+        fetch: jest
+          .fn()
+          .mockResolvedValueOnce([historicalSet1, historicalSet2, historicalSet3])
+          .mockResolvedValueOnce([historicalWorkout1, historicalWorkout2, historicalWorkout3]),
+      };
+
+      mockDatabase.get
+        .mockReturnValueOnce({
+          query: jest.fn().mockReturnValue(mockQuery),
+        } as any)
+        .mockReturnValueOnce({
+          query: jest.fn().mockReturnValue(mockQuery),
+        } as any)
+        .mockReturnValueOnce({
+          find: jest.fn().mockResolvedValue(exercise),
+        } as any)
+        .mockReturnValueOnce({
+          find: jest.fn().mockResolvedValue(historicalWorkout2), // Best historical workout
+        } as any);
+
+      const records = await WorkoutAnalytics.detectPersonalRecords(workoutLog as any);
+
+      // Should detect volume PR (current 1000 > historical best 900)
+      expect(records.length).toBeGreaterThan(0);
+      const volumePR = records.find((r) => r.type === 'volume');
+      expect(volumePR).toBeDefined();
+      expect(volumePR?.previousBest.volume).toBe(900); // Best historical (set2)
+    });
+
     it('should skip exercises when workout or exercise not found', async () => {
       const workoutLog = createMockWorkoutLog({
         id: 'workout-1',
@@ -1015,6 +1164,54 @@ describe('WorkoutAnalytics', () => {
 
       // Should only return data points for workouts that were found
       expect(result.length).toBeGreaterThanOrEqual(0);
+    });
+
+    it('should not update workoutData when existing set has higher or equal volume', async () => {
+      // Test line 286: when existing set exists and new set has volume <= existing
+      const set1 = createMockWorkoutLogSet({
+        exerciseId: 'ex-1',
+        weight: 100,
+        reps: 10, // 1000 volume (higher)
+        workoutLogId: 'workout-1',
+      });
+
+      const set2 = createMockWorkoutLogSet({
+        exerciseId: 'ex-1',
+        weight: 90,
+        reps: 9, // 810 volume (lower - should not replace set1)
+        workoutLogId: 'workout-1',
+      });
+
+      const set3 = createMockWorkoutLogSet({
+        exerciseId: 'ex-1',
+        weight: 100,
+        reps: 10, // 1000 volume (equal - should not replace set1)
+        workoutLogId: 'workout-1',
+      });
+
+      const workout1 = createMockWorkoutLog({
+        id: 'workout-1',
+        startedAt: Date.now() - 1000,
+        completedAt: Date.now() - 500,
+      });
+
+      const mockQuery = {
+        fetch: jest.fn().mockResolvedValueOnce([set1, set2, set3]).mockResolvedValueOnce([workout1]),
+      };
+
+      mockDatabase.get.mockReturnValue({
+        query: jest.fn().mockReturnValue(mockQuery),
+        find: jest.fn().mockResolvedValue(workout1),
+      } as any);
+
+      const result = await WorkoutAnalytics.getProgressiveOverloadData('ex-1');
+
+      // Should only have one data point (best set per workout)
+      expect(result).toHaveLength(1);
+      // Should use set1 (first set with highest volume), not set2 or set3
+      expect(result[0].weight).toBe(100);
+      expect(result[0].reps).toBe(10);
+      expect(result[0].volume).toBe(1000);
     });
   });
 
