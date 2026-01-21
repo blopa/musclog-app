@@ -4,7 +4,7 @@ import { SlidersHorizontal, Calendar, Clock, Plus } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { format, isToday, isYesterday, isThisWeek } from 'date-fns';
 import { theme } from '../../theme';
-import { VictoryChart, VictoryArea, VictoryLine, VictoryScatter, VictoryAxis } from 'victory';
+import { LineChart } from '../LineChart';
 import { SegmentedControl } from '../theme/SegmentedControl';
 import { GenericCard } from '../cards/GenericCard';
 import { HistoryBodyMetricCard } from '../cards/HistoryBodyMetricCard';
@@ -51,102 +51,6 @@ function formatRelativeDate(timestamp: number, t: (key: string) => string): stri
     return `${format(date, 'EEE')}, ${timeStr}`;
   }
   return format(date, 'MMM d, hh:mm a');
-}
-
-// Simple line chart component using Victory Native
-type LineChartProps = {
-  data: { x: number; y: number }[];
-};
-
-function LineChart({ data }: LineChartProps) {
-  if (data.length === 0) {
-    return null;
-  }
-
-  // Last data point for the circle marker
-  const lastPoint = data[data.length - 1];
-
-  return (
-    <View className="relative mt-4 h-48 w-full">
-      <VictoryChart
-        height={192}
-        padding={{ left: 0, right: 0, top: 0, bottom: 0 }}
-        domain={{ x: [0, 400], y: [0, 150] }}
-        style={{
-          parent: {
-            height: 192,
-            width: '100%',
-          },
-        }}
-      >
-        {/* Grid lines - horizontal dashed lines */}
-        <VictoryAxis
-          dependentAxis
-          style={{
-            axis: { stroke: 'transparent' },
-            grid: {
-              stroke: theme.colors.border.light,
-              strokeDasharray: '4,4',
-              strokeWidth: 1,
-            },
-            ticks: { stroke: 'transparent' },
-            tickLabels: { fill: 'transparent' },
-          }}
-          tickValues={[37.5, 75, 112.5]}
-        />
-        {/* Area fill with gradient */}
-        <VictoryArea
-          data={data}
-          interpolation="monotoneX"
-          style={{
-            data: {
-              fill: theme.colors.accent.primary30,
-            },
-          }}
-        />
-        {/* Line */}
-        <VictoryLine
-          data={data}
-          interpolation="monotoneX"
-          style={{
-            data: {
-              stroke: theme.colors.accent.primary,
-              strokeWidth: 3,
-              strokeLinecap: 'round',
-            },
-          }}
-        />
-        {/* Data point circle at the end */}
-        <VictoryScatter
-          data={[lastPoint]}
-          size={10}
-          style={{
-            data: {
-              fill: theme.colors.accent.primary,
-              stroke: theme.colors.background.card,
-              strokeWidth: 2,
-            },
-          }}
-        />
-        {/* Hidden independent axis (x-axis) */}
-        <VictoryAxis
-          style={{
-            axis: { stroke: 'transparent' },
-            grid: { stroke: 'transparent' },
-            ticks: { stroke: 'transparent' },
-            tickLabels: { fill: 'transparent' },
-          }}
-        />
-      </VictoryChart>
-      {/* Custom X-axis labels */}
-      <View className="mt-4 flex-row justify-between px-1">
-        {/* TODO: Date labels should be dynamic later on */}
-        <Text className="text-[10px] font-medium text-text-tertiary">May 12</Text>
-        <Text className="text-[10px] font-medium text-text-tertiary">May 26</Text>
-        <Text className="text-[10px] font-medium text-text-tertiary">Jun 11</Text>
-      </View>
-    </View>
-  );
 }
 
 type BodyMetricsHistoryModalProps = {
@@ -455,7 +359,10 @@ export default function BodyMetricsHistoryModal({
                 </View>
 
                 {/* Chart */}
-                <LineChart data={chartData} />
+                <LineChart
+                  data={chartData}
+                  xAxisLabels={['May 12', 'May 26', 'Jun 11']} // TODO: Make these dynamic based on actual dates
+                />
               </View>
             </GenericCard>
           ) : (
