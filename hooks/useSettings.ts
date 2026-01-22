@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Q } from '@nozbe/watermelondb';
 import { database } from '../database';
 import Setting from '../database/models/Setting';
@@ -35,10 +35,14 @@ export function useSettings(): UseSettingsResult {
     return () => subscription.unsubscribe();
   }, []);
 
-  return {
-    units,
-    isLoading,
-    weightUnit: getWeightUnit(units),
-    heightUnit: getHeightUnit(units),
-  };
+  // Memoize the return value to prevent unnecessary re-renders
+  return useMemo(
+    () => ({
+      units,
+      isLoading,
+      weightUnit: getWeightUnit(units),
+      heightUnit: getHeightUnit(units),
+    }),
+    [units, isLoading]
+  );
 }
