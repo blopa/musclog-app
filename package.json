@@ -51,7 +51,7 @@
     "date-fns": "4.1.0",
     "dotenv": "17.2.3",
     "embla-carousel-react": "8.6.0",
-    "expo": "54.0.31",
+    "expo": "54.0.32",
     "expo-auth-session": "7.0.10",
     "expo-background-task": "1.0.10",
     "expo-blur": "15.0.8",
