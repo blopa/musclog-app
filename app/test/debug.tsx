@@ -8,6 +8,7 @@ import { database, Exercise, User, Setting, UserMetric } from '../../database';
 import { UserService } from '../../database/services/UserService';
 import { Q } from '@nozbe/watermelondb';
 import { Button } from '../../components/theme/Button';
+import { UNITS_SETTING_TYPE } from '../../constants/settings';
 
 // All app screens for navigation
 const APP_SCREENS = [
@@ -333,7 +334,7 @@ export default function DebugTestScreen() {
                       </Text>
                       <Text className="text-text-primary">
                         <Text className="font-bold">Value:</Text>{' '}
-                        {setting.type === 'units'
+                        {setting.type === UNITS_SETTING_TYPE
                           ? setting.value === '0'
                             ? 'metric'
                             : 'imperial'

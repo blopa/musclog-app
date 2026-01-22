@@ -5,6 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
 import { CenteredModal } from './CenteredModal';
 import { Button } from '../theme/Button';
+import { useSettings } from '../../hooks/useSettings';
+import { getWeightUnitI18nKey } from '../../utils/units';
 
 type EditSetDetailsModalProps = {
   visible: boolean;
@@ -121,6 +123,8 @@ export function EditSetDetailsModal({
   initialPartials,
 }: EditSetDetailsModalProps) {
   const { t } = useTranslation();
+  const { units } = useSettings();
+  const weightUnitKey = getWeightUnitI18nKey(units);
   const [weight, setWeight] = useState(initialWeight);
   const [reps, setReps] = useState(initialReps);
   const [partials, setPartials] = useState(initialPartials);
@@ -167,7 +171,7 @@ export function EditSetDetailsModal({
       <View className="gap-6">
         {/* Weight */}
         <NumberInputField
-          label={`${t('workoutSession.weight')} (${t('workoutSession.kg')})`}
+          label={`${t('workoutSession.weight')} (${t(weightUnitKey)})`}
           value={weight}
           onChange={setWeight}
           min={0}

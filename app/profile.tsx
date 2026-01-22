@@ -9,6 +9,7 @@ import { StatCard } from '../components/cards/StatCard';
 import { ManagementItem } from '../components/ManagementItem';
 import { ProgressIndicator } from '../components/theme/ProgressIndicator';
 import BodyMetricsHistoryModal from '../components/modals/BodyMetricsHistoryModal';
+import { useSettings } from '../hooks/useSettings';
 
 const PROFILE_DATA = {
   user: {
@@ -98,9 +99,16 @@ const PROFILE_DATA = {
 export default function ProfileScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const { weightUnit, heightUnit } = useSettings();
   const { user, stats, management } = PROFILE_DATA;
   const [isSyncing, setIsSyncing] = useState(false);
   const [isBodyMetricsHistoryVisible, setIsBodyMetricsHistoryVisible] = useState(false);
+
+  const getStatUnit = (stat: (typeof stats)[0]) => {
+    if (stat.id === 'weight') return weightUnit;
+    if (stat.id === 'height') return heightUnit;
+    return 'unit' in stat ? (stat as { unit?: string }).unit : undefined;
+  };
 
   // Simulate syncing with HealthKit or external services
   const syncData = async () => {
@@ -176,7 +184,7 @@ export default function ProfileScreen() {
                 <StatCard
                   title={t(stat.titleKey)}
                   value={stat.value}
-                  unit={stat.unit}
+                  unit={getStatUnit(stat)}
                   change={stat.change}
                   changeType={stat.changeType}
                   icon={stat.icon}

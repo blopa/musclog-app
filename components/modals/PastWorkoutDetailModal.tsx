@@ -11,6 +11,8 @@ import { GenericCard } from '../cards/GenericCard';
 import { LineChart, LineChartDataPoint } from '../LineChart';
 import { usePastWorkoutDetail } from '../../hooks/usePastWorkoutDetail';
 import { PastWorkoutBottomMenu } from './PastWorkoutBottomMenu';
+import { useSettings } from '../../hooks/useSettings';
+import { getWeightUnitI18nKey } from '../../utils/units';
 
 // Types
 type WorkoutSet = {
@@ -37,9 +39,15 @@ type WorkoutSummaryCardProps = {
   totalTime: number;
   volume: number;
   calories: number;
+  weightUnitKey: 'workoutSession.kg' | 'workoutSession.lb';
 };
 
-function WorkoutSummaryCard({ totalTime, volume, calories }: WorkoutSummaryCardProps) {
+function WorkoutSummaryCard({
+  totalTime,
+  volume,
+  calories,
+  weightUnitKey,
+}: WorkoutSummaryCardProps) {
   const { t } = useTranslation();
 
   return (
@@ -86,7 +94,7 @@ function WorkoutSummaryCard({ totalTime, volume, calories }: WorkoutSummaryCardP
                 {volume.toLocaleString()}
               </Text>
               <Text className="text-xs font-medium text-white" style={{ opacity: 0.8 }}>
-                {t('workoutSession.kg')}
+                {t(weightUnitKey)}
               </Text>
             </View>
           </View>
@@ -350,6 +358,8 @@ export default function PastWorkoutDetailModal({
   onDelete,
 }: PastWorkoutDetailModalProps) {
   const { t } = useTranslation();
+  const { units } = useSettings();
+  const weightUnitKey = getWeightUnitI18nKey(units);
 
   const { workout, isLoading, isMenuVisible, setIsMenuVisible } = usePastWorkoutDetail({
     visible,
@@ -399,6 +409,7 @@ export default function PastWorkoutDetailModal({
             totalTime={workout.totalTime}
             volume={workout.volume}
             calories={workout.calories}
+            weightUnitKey={weightUnitKey}
           />
 
           {workout.volumeTrend.data.length > 0 && (

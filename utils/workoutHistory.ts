@@ -7,6 +7,8 @@ import WorkoutLog from '../database/models/WorkoutLog';
 import WorkoutLogSet from '../database/models/WorkoutLogSet';
 import Exercise from '../database/models/Exercise';
 import { WorkoutAnalytics } from '../database/services/WorkoutAnalytics';
+import type { Units } from '../constants/settings';
+import { getWeightUnitI18nKey } from './units';
 
 // Type definitions
 export type WorkoutType = 'strength' | 'cardio' | 'hiit' | 'yoga';
@@ -63,14 +65,14 @@ export function formatDuration(minutes: number, t: TranslationFunction): string 
 }
 
 /**
- * Format volume with kg suffix
+ * Format volume with weight unit suffix (kg or lb)
  */
-export function formatVolume(volume: number, t: TranslationFunction): string {
-  const kg = t('workoutSession.kg');
+export function formatVolume(volume: number, t: TranslationFunction, units: Units): string {
+  const unit = t(getWeightUnitI18nKey(units));
   if (volume >= 1000) {
-    return `${(volume / 1000).toFixed(1)}k ${kg}`;
+    return `${(volume / 1000).toFixed(1)}k ${unit}`;
   }
-  return `${Math.round(volume).toLocaleString()} ${kg}`;
+  return `${Math.round(volume).toLocaleString()} ${unit}`;
 }
 
 // Workout Classification
@@ -189,7 +191,8 @@ export function calculateDateRange(dateRange: '30' | '90' | 'custom'): DateRange
 export async function processWorkouts(
   workouts: WorkoutLog[],
   filters: WorkoutFilters,
-  t: TranslationFunction
+  t: TranslationFunction,
+  units: Units
 ): Promise<WorkoutHistoryItem[]> {
   const processedWorkouts: (WorkoutHistoryItem | null)[] = await Promise.all(
     workouts.map(async (workout) => {
@@ -254,7 +257,7 @@ export async function processWorkouts(
       if (workout.totalVolume && workout.totalVolume > 0) {
         stats.push({
           label: t('pastWorkoutHistory.stats.volume'),
-          value: formatVolume(workout.totalVolume, t),
+          value: formatVolume(workout.totalVolume, t, units),
         });
       }
 

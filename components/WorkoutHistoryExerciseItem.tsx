@@ -18,9 +18,14 @@ export type ExerciseData = {
 type ExerciseItemProps = {
   exercise: ExerciseData;
   isLast: boolean;
+  weightUnitKey?: 'workoutSession.kg' | 'workoutSession.lb';
 };
 
-export function ExerciseItem({ exercise, isLast }: ExerciseItemProps) {
+export function ExerciseItem({
+  exercise,
+  isLast,
+  weightUnitKey = 'workoutSession.kg',
+}: ExerciseItemProps) {
   const { t } = useTranslation();
   const hasCurrentSet = exercise.sets.some((set) => set.isCurrent);
 
@@ -101,7 +106,7 @@ export function ExerciseItem({ exercise, isLast }: ExerciseItemProps) {
             </View>
             <View className="flex-1 items-center py-2">
               <Text className="text-sm font-semibold uppercase tracking-wider text-text-secondary">
-                {t('workoutSession.kg')}
+                {t(weightUnitKey)}
               </Text>
             </View>
             <View className="flex-1 items-center py-2">

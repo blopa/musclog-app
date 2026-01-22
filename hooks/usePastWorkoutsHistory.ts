@@ -10,6 +10,7 @@ import {
   mergeWorkoutSections,
   filterWorkoutsBySearch,
 } from '../utils/workoutHistory';
+import { useSettings } from './useSettings';
 
 const BATCH_SIZE = 5;
 
@@ -19,6 +20,7 @@ export interface UsePastWorkoutsHistoryParams {
 
 export function usePastWorkoutsHistory({ visible }: UsePastWorkoutsHistoryParams) {
   const { t } = useTranslation();
+  const { units } = useSettings();
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [workoutHistoryData, setWorkoutHistoryData] = useState<WorkoutHistorySection[]>([]);
@@ -41,7 +43,7 @@ export function usePastWorkoutsHistory({ visible }: UsePastWorkoutsHistoryParams
 
       const workouts = await WorkoutService.getWorkoutHistory(timeframe, BATCH_SIZE);
 
-      const validWorkouts = await processWorkouts(workouts, filters, t);
+      const validWorkouts = await processWorkouts(workouts, filters, t, units);
 
       const sections = groupWorkoutsByMonth(validWorkouts);
 
@@ -61,7 +63,7 @@ export function usePastWorkoutsHistory({ visible }: UsePastWorkoutsHistoryParams
     } finally {
       setIsLoading(false);
     }
-  }, [filters, t]);
+  }, [filters, t, units]);
 
   const loadMoreWorkouts = useCallback(async () => {
     if (isLoadingMore || !hasMore) {
@@ -83,7 +85,7 @@ export function usePastWorkoutsHistory({ visible }: UsePastWorkoutsHistoryParams
         return;
       }
 
-      const validWorkouts = await processWorkouts(workouts, filters, t);
+      const validWorkouts = await processWorkouts(workouts, filters, t, units);
 
       if (validWorkouts.length > 0) {
         const mergedSections = mergeWorkoutSections(workoutHistoryData, validWorkouts);
@@ -105,7 +107,7 @@ export function usePastWorkoutsHistory({ visible }: UsePastWorkoutsHistoryParams
     } finally {
       setIsLoadingMore(false);
     }
-  }, [isLoadingMore, hasMore, pageOffset, filters, t, workoutHistoryData]);
+  }, [isLoadingMore, hasMore, pageOffset, filters, t, units, workoutHistoryData]);
 
   useEffect(() => {
     if (visible) {

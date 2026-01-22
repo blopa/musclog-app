@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { WorkoutService } from '../database/services/WorkoutService';
 import { transformWorkoutToDetailData, type WorkoutDetailData } from '../utils/workoutDetail';
+import { useSettings } from './useSettings';
 
 export interface UsePastWorkoutDetailParams {
   visible: boolean;
@@ -10,6 +11,7 @@ export interface UsePastWorkoutDetailParams {
 
 export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetailParams) {
   const { t } = useTranslation();
+  const { units } = useSettings();
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [workout, setWorkout] = useState<WorkoutDetailData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -20,7 +22,13 @@ export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetai
     setIsLoading(true);
     try {
       const { workoutLog, sets, exercises } = await WorkoutService.getWorkoutWithDetails(workoutId);
-      const transformedData = await transformWorkoutToDetailData(workoutLog, sets, exercises, t);
+      const transformedData = await transformWorkoutToDetailData(
+        workoutLog,
+        sets,
+        exercises,
+        t,
+        units
+      );
       setWorkout(transformedData);
     } catch (error) {
       console.error('Error loading workout details:', error);
@@ -28,7 +36,7 @@ export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetai
     } finally {
       setIsLoading(false);
     }
-  }, [workoutId, t]);
+  }, [workoutId, t, units]);
 
   useEffect(() => {
     if (visible && workoutId) {

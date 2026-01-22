@@ -5,6 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
 import { ExerciseItem, ExerciseData } from '../WorkoutHistoryExerciseItem';
 import { FullScreenModal } from './FullScreenModal';
+import { useSettings } from '../../hooks/useSettings';
+import { getWeightUnitI18nKey } from '../../utils/units';
 
 export type { SetData } from '../WorkoutHistorySetRow';
 
@@ -69,6 +71,8 @@ export function WorkoutSessionHistoryModal({
   exercises = MOCK_EXERCISES,
 }: WorkoutHistoryModalProps) {
   const { t } = useTranslation();
+  const { units } = useSettings();
+  const weightUnitKey = getWeightUnitI18nKey(units);
 
   return (
     <FullScreenModal
@@ -114,7 +118,7 @@ export function WorkoutSessionHistoryModal({
             >
               <Weight size={theme.iconSize.md} color={theme.colors.status.info} />
               <Text className="text-sm font-semibold" style={{ color: theme.colors.status.info }}>
-                {totalVolume.toLocaleString()}kg {t('workoutHistory.volume')}
+                {totalVolume.toLocaleString()} {t(weightUnitKey)} {t('workoutHistory.volume')}
               </Text>
             </View>
             <View
@@ -139,6 +143,7 @@ export function WorkoutSessionHistoryModal({
               key={exercise.id}
               exercise={exercise}
               isLast={index === exercises.length - 1}
+              weightUnitKey={weightUnitKey}
             />
           ))}
         </View>

@@ -7,6 +7,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
+import { useSettings } from '../../hooks/useSettings';
+import { getWeightUnitI18nKey } from '../../utils/units';
 import { WorkoutOptionsModal } from '../../components/modals/WorkoutOptionsModal';
 import { EndWorkoutModal } from '../../components/modals/EndWorkoutModal';
 import { WorkoutTimeTracker } from '../../components/WorkoutTimeTracker';
@@ -23,6 +25,8 @@ import { Button } from '../../components/theme/Button';
 export default function WorkoutSessionScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const { units } = useSettings();
+  const weightUnitKey = getWeightUnitI18nKey(units);
   const [weight, setWeight] = useState(24);
   const [reps, setReps] = useState(10);
   const [partials, setPartials] = useState(0);
@@ -98,7 +102,7 @@ export default function WorkoutSessionScreen() {
             <WorkoutStatCard
               title={t('workoutSession.weight')}
               value={weight}
-              unit={t('workoutSession.kg')}
+              unit={t(weightUnitKey)}
               onPress={() => {
                 setIsEditSetModalVisible(true);
               }}
@@ -124,9 +128,8 @@ export default function WorkoutSessionScreen() {
             <Text className="text-text-secondary">
               {t('workoutSession.previous')}:{' '}
               <Text className="text-text-primary">
-                {exerciseData.previousSet.weight}
-                {t('workoutSession.kg')} × {exerciseData.previousSet.reps}{' '}
-                {t('workoutSession.reps')}
+                {exerciseData.previousSet.weight} {t(weightUnitKey)} ×{' '}
+                {exerciseData.previousSet.reps} {t('workoutSession.reps')}
               </Text>
             </Text>
             <Pressable onPress={() => setIsHistoryModalVisible(true)}>

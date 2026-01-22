@@ -11,30 +11,23 @@ import { Q } from '@nozbe/watermelondb';
 import UserMetric from '../../database/models/UserMetric';
 import Setting from '../../database/models/Setting';
 import { setOnboardingCompleted } from '../../utils/onboardingService';
+import { useSettings } from '../../hooks/useSettings';
+import { UNITS_SETTING_TYPE } from '../../constants/settings';
 
 export default function FitnessInfo() {
   const { t } = useTranslation();
   const router = useRouter();
+  const { units, isLoading: isSettingsLoading } = useSettings();
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [initialData, setInitialData] = useState<Partial<FitnessDetails> | undefined>(undefined);
 
-  // Load user data, settings, and metrics on mount
+  // Load user data and metrics on mount (units come from useSettings)
   useEffect(() => {
     const loadFitnessData = async () => {
       try {
-        // Fetch user
         const user = await UserService.getCurrentUser();
 
-        // Fetch settings (units)
-        const settings = await database
-          .get<Setting>('settings')
-          .query(Q.where('type', 'units'), Q.where('deleted_at', Q.eq(null)))
-          .fetch();
-        const unitsSetting = settings.length > 0 ? settings[0] : null;
-        const units = unitsSetting?.value === '1' ? 'imperial' : 'metric';
-
-        // Fetch latest weight metric
         const weightMetrics = await database
           .get<UserMetric>('user_metrics')
           .query(
@@ -45,7 +38,6 @@ export default function FitnessInfo() {
           .fetch();
         const latestWeight = weightMetrics.length > 0 ? weightMetrics[0] : null;
 
-        // Fetch latest height metric
         const heightMetrics = await database
           .get<UserMetric>('user_metrics')
           .query(
@@ -56,7 +48,6 @@ export default function FitnessInfo() {
           .fetch();
         const latestHeight = heightMetrics.length > 0 ? heightMetrics[0] : null;
 
-        // Convert to FitnessDetails format
         if (user) {
           setInitialData({
             units,
@@ -67,7 +58,6 @@ export default function FitnessInfo() {
             experience: user.liftingExperience || 'intermediate',
           });
         } else {
-          // No user, but still set defaults
           setInitialData({
             units,
             weight: latestWeight ? String(latestWeight.value) : '0.0',
@@ -79,7 +69,6 @@ export default function FitnessInfo() {
         }
       } catch (error) {
         console.error('Error loading fitness data:', error);
-        // Continue with defaults if loading fails
         setInitialData({
           units: 'metric',
           weight: '0.0',
@@ -93,8 +82,10 @@ export default function FitnessInfo() {
       }
     };
 
-    loadFitnessData();
-  }, []);
+    if (!isSettingsLoading) {
+      loadFitnessData();
+    }
+  }, [units, isSettingsLoading]);
 
   const handleSave = async (data: FitnessDetails) => {
     setIsSaving(true);
@@ -201,10 +192,10 @@ export default function FitnessInfo() {
         });
       }
 
-      // Save units to settings table
+      // TODO: cant we get this from the useSettings hook?
       const existingUnitsSetting = await database
         .get<Setting>('settings')
-        .query(Q.where('type', 'units'), Q.where('deleted_at', Q.eq(null)))
+        .query(Q.where('type', UNITS_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)))
         .fetch();
 
       // Convert units to numeric value (0 = metric, 1 = imperial)
@@ -220,7 +211,7 @@ export default function FitnessInfo() {
         } else {
           // Create new setting
           await database.get<Setting>('settings').create((setting) => {
-            setting.type = 'units';
+            setting.type = UNITS_SETTING_TYPE;
             setting.value = unitsValue.toString();
             setting.createdAt = now;
             setting.updatedAt = now;
@@ -255,7 +246,7 @@ export default function FitnessInfo() {
     }
   };
 
-  if (isLoading) {
+  if (isSettingsLoading || isLoading) {
     return (
       <SafeAreaView className="flex-1" edges={['top', 'bottom']}>
         <View className="flex-1 items-center justify-center">

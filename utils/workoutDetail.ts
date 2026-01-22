@@ -6,6 +6,8 @@ import { WorkoutAnalytics } from '../database/services/WorkoutAnalytics';
 import { WorkoutService } from '../database/services/WorkoutService';
 import { getWorkoutIcon } from './workoutHistory';
 import type { LineChartDataPoint } from '../components/LineChart';
+import type { Units } from '../constants/settings';
+import { getWeightUnitI18nKey } from './units';
 
 export type WorkoutSet = {
   setNumber: number;
@@ -43,11 +45,17 @@ export type WorkoutDetailData = {
 /**
  * Format weight for display
  */
-function formatWeight(weight: number, isBodyweight: boolean, t: (key: string) => string): string {
+function formatWeight(
+  weight: number,
+  isBodyweight: boolean,
+  t: (key: string) => string,
+  units: Units
+): string {
+  const unitKey = getWeightUnitI18nKey(units);
   if (isBodyweight) {
-    return weight > 0 ? `+${weight} ${t('workoutSession.kg')}` : t('workoutSession.bodyweight');
+    return weight > 0 ? `+${weight} ${t(unitKey)}` : t('workoutSession.bodyweight');
   }
-  return `${weight} ${t('workoutSession.kg')}`;
+  return `${weight} ${t(unitKey)}`;
 }
 
 /**
@@ -175,7 +183,8 @@ export async function transformWorkoutToDetailData(
   workoutLog: WorkoutLog,
   sets: WorkoutLogSet[],
   exercises: Exercise[],
-  t: (key: string) => string
+  t: (key: string) => string,
+  units: Units
 ): Promise<WorkoutDetailData> {
   const exerciseMap = new Map<string, Exercise>();
   exercises.forEach((ex) => exerciseMap.set(ex.id, ex));
@@ -220,7 +229,7 @@ export async function transformWorkoutToDetailData(
         const isHighlighted = prSetIds.has(set.id);
         return {
           setNumber: index + 1,
-          weight: formatWeight(set.weight, isBodyweight, t),
+          weight: formatWeight(set.weight, isBodyweight, t, units),
           reps: set.reps,
           partial: set.difficultyLevel > 0 ? set.difficultyLevel.toString() : '-',
           rest: formatRestTime(set.restTime),

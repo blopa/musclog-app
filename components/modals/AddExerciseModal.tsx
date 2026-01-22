@@ -12,6 +12,8 @@ import { SelectedExerciseCard } from '../cards/SelectedExerciseCard';
 import { database } from '../../database';
 import { Q } from '@nozbe/watermelondb';
 import Exercise from '../../database/models/Exercise';
+import { useSettings } from '../../hooks/useSettings';
+import { getWeightUnitI18nKey } from '../../utils/units';
 
 type MuscleGroup = 'all' | 'chest' | 'back' | 'legs' | 'arms';
 
@@ -88,6 +90,8 @@ const getExerciseIcon = (type: string) => {
 
 export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExerciseModalProps) {
   const { t } = useTranslation();
+  const { units } = useSettings();
+  const weightUnitKey = getWeightUnitI18nKey(units);
   const [activeMuscle, setActiveMuscle] = useState<MuscleGroup>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedExerciseId, setSelectedExerciseId] = useState<ExerciseId | null>(null);
@@ -441,7 +445,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
                 label={t('workouts.addExercise.weight')}
                 value={weight}
                 onChangeText={setWeight}
-                unit={t('workoutSession.kg')}
+                unit={t(weightUnitKey)}
                 onIncrement={() => setWeight((prev) => (parseFloat(prev) + 2.5).toString())}
                 onDecrement={() => setWeight((prev) => (parseFloat(prev) - 2.5).toString())}
               />

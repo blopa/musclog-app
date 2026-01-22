@@ -7,6 +7,8 @@ import { BottomPopUpMenu } from '../BottomPopUpMenu';
 import { EditSetDetailsModal } from './EditSetDetailsModal';
 import { Button } from '../theme/Button';
 import { Slider } from '../theme/Slider';
+import { useSettings } from '../../hooks/useSettings';
+import { getWeightUnitI18nKey } from '../../utils/units';
 
 type LogSetPerformanceModalProps = {
   visible: boolean;
@@ -60,6 +62,8 @@ export function LogSetPerformanceModal({
   onEditSetDetails,
 }: LogSetPerformanceModalProps) {
   const { t } = useTranslation();
+  const { units } = useSettings();
+  const weightUnitKey = getWeightUnitI18nKey(units);
   const [rpe, setRpe] = useState(initialRpe);
   const [weight, setWeight] = useState(initialWeight);
   const [reps, setReps] = useState(initialReps);
@@ -138,11 +142,7 @@ export function LogSetPerformanceModal({
         <View className="gap-6">
           {/* Stats Cards */}
           <View className="flex-row gap-3">
-            <StatCard
-              label={t('workoutSession.weight')}
-              value={weight}
-              suffix={t('workoutSession.kg')}
-            />
+            <StatCard label={t('workoutSession.weight')} value={weight} suffix={t(weightUnitKey)} />
             <StatCard label={t('workoutSession.reps')} value={reps} />
             <StatCard
               label={t('workoutSession.partials')}

@@ -14,6 +14,7 @@ import { database } from '../../database';
 import { Q } from '@nozbe/watermelondb';
 import UserMetric from '../../database/models/UserMetric';
 import { SkeletonLoader } from '../theme/SkeletonLoader';
+import { useSettings } from '../../hooks/useSettings';
 
 type MetricType = 'weight' | 'bodyFat' | 'bmi' | 'ffmi';
 type TimePeriod = '30D' | '3M' | '1Y';
@@ -66,6 +67,7 @@ export default function BodyMetricsHistoryModal({
   onClose,
 }: BodyMetricsHistoryModalProps) {
   const { t } = useTranslation();
+  const { units } = useSettings();
   const [selectedMetric, setSelectedMetric] = useState<MetricType>('weight');
   const [selectedPeriod, setSelectedPeriod] = useState<TimePeriod>('30D');
   const [isLoading, setIsLoading] = useState(false);
@@ -94,20 +96,23 @@ export default function BodyMetricsHistoryModal({
     { label: t('bodyMetrics.metrics.ffmi'), value: 'ffmi' },
   ];
 
-  // Helper to get unit for metric type
-  const getMetricUnit = (type: MetricType): string => {
-    switch (type) {
-      case 'weight':
-        return 'kg';
-      case 'bodyFat':
-        return '%';
-      case 'bmi':
-      case 'ffmi':
-        return '';
-      default:
-        return '';
-    }
-  };
+  // Helper to get unit for metric type (uses settings for weight)
+  const getMetricUnit = useCallback(
+    (type: MetricType): string => {
+      switch (type) {
+        case 'weight':
+          return units === 'imperial' ? 'lbs' : 'kg';
+        case 'bodyFat':
+          return '%';
+        case 'bmi':
+        case 'ffmi':
+          return '';
+        default:
+          return '';
+      }
+    },
+    [units]
+  );
 
   // Helper to get label for metric type
   const getMetricLabel = useCallback(
@@ -165,7 +170,7 @@ export default function BodyMetricsHistoryModal({
         };
       });
     },
-    [selectedMetric, t]
+    [selectedMetric, t, getMetricUnit]
   );
 
   // Load metrics data (initial load - only 5 entries)
@@ -376,6 +381,7 @@ export default function BodyMetricsHistoryModal({
     selectedMetric,
     selectedPeriod,
     pageOffsets,
+    getMetricUnit,
     processMetricsToEntries,
   ]);
 
