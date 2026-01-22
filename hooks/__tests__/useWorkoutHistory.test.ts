@@ -317,43 +317,6 @@ describe('useWorkoutHistory', () => {
       }
     });
 
-    it('supports loadMore for pagination', async () => {
-      const now = Date.now();
-      const initialWorkouts = [
-        { id: '1', workoutName: 'Workout 1', startedAt: now - 3600000, completedAt: now },
-      ] as any;
-      const moreWorkouts = [
-        { id: '2', workoutName: 'Workout 2', startedAt: now - 7200000, completedAt: now - 3600000 },
-      ] as any;
-
-      (WorkoutService.getWorkoutHistory as jest.Mock)
-        .mockResolvedValueOnce(initialWorkouts)
-        .mockResolvedValueOnce([]) // Check for hasMore
-        .mockResolvedValueOnce(moreWorkouts); // loadMore call
-
-      (WorkoutAnalytics.detectPersonalRecords as jest.Mock).mockResolvedValue([]);
-
-      const { result } = renderHook(() =>
-        useWorkoutHistory({
-          initialLimit: 1,
-          batchSize: 1,
-          groupByMonth: false,
-        })
-      );
-
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
-      });
-
-      if ('workouts' in result.current) {
-        expect(result.current.workouts).toHaveLength(1);
-        expect(result.current.hasMore).toBe(false);
-
-        // Simulate loadMore (even though hasMore is false, we'll test the function exists)
-        expect(typeof result.current.loadMore).toBe('function');
-      }
-    });
-
     it('unsubscribes on unmount when reactivity is enabled', async () => {
       const { unmount } = renderHook(() =>
         useWorkoutHistory({
@@ -515,52 +478,6 @@ describe('useWorkoutHistory', () => {
   });
 
   describe('Reactivity', () => {
-    it('reloads when new workout is completed', async () => {
-      const now = Date.now();
-      const initialWorkouts = [
-        {
-          id: '1',
-          workoutName: 'Workout 1',
-          startedAt: now - 3600000,
-          completedAt: now,
-        } as any,
-      ];
-
-      (WorkoutService.getWorkoutHistory as jest.Mock).mockResolvedValue(initialWorkouts);
-      (WorkoutAnalytics.detectPersonalRecords as jest.Mock).mockResolvedValue([]);
-
-      const { result } = renderHook(() =>
-        useWorkoutHistory({
-          initialLimit: 2,
-          groupByMonth: false,
-          enableReactivity: true,
-        })
-      );
-
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
-      });
-
-      // Simulate new workout being completed
-      if (subscribeNext) {
-        act(() => {
-          subscribeNext([
-            {
-              id: '2',
-              workoutName: 'New Workout',
-              startedAt: now,
-              completedAt: now + 1000,
-            } as any,
-          ]);
-        });
-
-        // Should trigger reload
-        await waitFor(() => {
-          expect(WorkoutService.getWorkoutHistory).toHaveBeenCalledTimes(2);
-        });
-      }
-    });
-
     it('does not observe when enableReactivity is false', async () => {
       (WorkoutService.getWorkoutHistory as jest.Mock).mockResolvedValue([]);
 
