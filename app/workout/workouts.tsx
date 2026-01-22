@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useMemo } from 'react';
 import { View, ScrollView, Pressable } from 'react-native';
 import { Search, SlidersHorizontal, Dumbbell, WifiOff } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
@@ -13,10 +13,10 @@ import { WorkoutDetailsMenu } from '../../components/WorkoutDetailsMenu';
 import { EmptyStateCard } from '../../components/theme/EmptyStateCard';
 import { SkeletonLoader } from '../../components/theme/SkeletonLoader';
 import { ErrorStateCard } from '../../components/theme/ErrorStateCard';
-import { WorkoutTemplateService } from '../../database/services/WorkoutTemplateService';
 import { WorkoutService } from '../../database/services/WorkoutService';
 import { database } from '../../database';
 import WorkoutTemplate from '../../database/models/WorkoutTemplate';
+import { useWorkoutTemplates } from '../../hooks/useWorkoutTemplates';
 
 export default function WorkoutsScreen() {
   const { t } = useTranslation();
@@ -33,79 +33,43 @@ export default function WorkoutsScreen() {
   const [selectedWorkoutName, setSelectedWorkoutName] = useState<string>('');
   const [selectedWorkoutId, setSelectedWorkoutId] = useState<string>('');
 
-  // State management for workouts data
-  const [workouts, setWorkouts] = useState<
-    {
-      id: string;
-      name: string;
-      lastCompleted?: string;
-      lastCompletedTimestamp?: number;
-      exerciseCount: number;
-      duration?: string;
-      image?: any;
-    }[]
-  >([]);
-  const [featuredWorkout, setFeaturedWorkout] = useState<{
-    id: string;
-    name: string;
-    lastCompleted?: string;
-    lastCompletedTimestamp?: number;
-    exerciseCount: number;
-    duration?: string;
-    image?: any;
-  } | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // Use reactive hook for workout templates
+  const { templates, isLoading, error } = useWorkoutTemplates();
 
-  // Load workouts from database
-  const loadWorkouts = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      // Load all templates with metadata
-      const templatesWithMetadata = await WorkoutTemplateService.getAllTemplatesWithMetadata();
-
-      if (templatesWithMetadata.length === 0) {
-        setWorkouts([]);
-        setFeaturedWorkout(null);
-        return;
-      }
-
-      // First template is the featured workout (most recently completed, or most recently created)
-      const featured = templatesWithMetadata[0];
-      setFeaturedWorkout({
-        id: featured.id,
-        name: featured.name,
-        lastCompleted: featured.lastCompleted,
-        lastCompletedTimestamp: featured.lastCompletedTimestamp,
-        exerciseCount: featured.exerciseCount,
-        duration: featured.duration,
-        image: featured.image,
-      });
-
-      // Rest are regular workouts
-      const regularWorkouts = templatesWithMetadata.slice(1).map((template) => ({
-        id: template.id,
-        name: template.name,
-        lastCompleted: template.lastCompleted,
-        lastCompletedTimestamp: template.lastCompletedTimestamp,
-        exerciseCount: template.exerciseCount,
-        duration: template.duration,
-        image: template.image,
-      }));
-
-      setWorkouts(regularWorkouts);
-    } catch (err) {
-      console.error('Error loading workouts:', err);
-      setError(err instanceof Error ? err.message : 'Failed to load workouts');
-    } finally {
-      setIsLoading(false);
+  // Process templates to separate featured vs regular
+  const { featuredWorkout, workouts } = useMemo(() => {
+    if (templates.length === 0) {
+      return { featuredWorkout: null, workouts: [] };
     }
-  }, []);
 
-  useEffect(() => {
-    loadWorkouts();
-  }, [loadWorkouts]);
+    // First template is the featured workout (most recently completed, or most recently created)
+    const featured = templates[0];
+    const featuredWorkoutData = {
+      id: featured.id,
+      name: featured.name,
+      lastCompleted: featured.lastCompleted,
+      lastCompletedTimestamp: featured.lastCompletedTimestamp,
+      exerciseCount: featured.exerciseCount,
+      duration: featured.duration,
+      image: featured.image,
+    };
+
+    // Rest are regular workouts
+    const regularWorkouts = templates.slice(1).map((template) => ({
+      id: template.id,
+      name: template.name,
+      lastCompleted: template.lastCompleted,
+      lastCompletedTimestamp: template.lastCompletedTimestamp,
+      exerciseCount: template.exerciseCount,
+      duration: template.duration,
+      image: template.image,
+    }));
+
+    return {
+      featuredWorkout: featuredWorkoutData,
+      workouts: regularWorkouts,
+    };
+  }, [templates]);
 
   // Filter workouts based on active filter
   const filteredWorkouts = workouts.filter((workout) => {
@@ -154,7 +118,10 @@ export default function WorkoutsScreen() {
                 title={t('errors.connectionTimeout.title')}
                 description={t('errors.connectionTimeout.description')}
                 buttonLabel={t('errors.connectionTimeout.tryAgain')}
-                onButtonPress={loadWorkouts}
+                onButtonPress={() => {
+                  // Error will clear automatically when data updates
+                  // No manual reload needed with reactive hooks
+                }}
               />
             )}
 
@@ -345,8 +312,7 @@ export default function WorkoutsScreen() {
                 .get<WorkoutTemplate>('workout_templates')
                 .find(selectedWorkoutId);
               await template.markAsDeleted();
-              // Reload workouts after deletion
-              await loadWorkouts();
+              // Templates list will update automatically via reactive hook
             } catch (err) {
               console.error('Error deleting workout:', err);
             }

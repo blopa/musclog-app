@@ -9,7 +9,7 @@ import { PastWorkoutsHistoryFilterMenu } from './PastWorkoutsHistoryFilterMenu';
 import { SkeletonLoader } from '../theme/SkeletonLoader';
 import { Button } from '../theme/Button';
 import { type WorkoutHistoryItem, WorkoutHistorySection } from '../../utils/workoutHistory';
-import { usePastWorkoutsHistory } from '../../hooks/usePastWorkoutsHistory';
+import { useWorkoutHistory } from '../../hooks/useWorkoutHistory';
 import PastWorkoutDetailModal from './PastWorkoutDetailModal';
 
 type WorkoutHistoryModalProps = {
@@ -365,17 +365,23 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
   const [selectedWorkoutId, setSelectedWorkoutId] = useState<string | null>(null);
 
   const {
+    sections: workoutHistoryData,
     isLoading,
     isLoadingMore,
-    workoutHistoryData,
-    searchQuery,
     hasMore,
-    filters,
+    loadMore: loadMoreWorkouts,
+    searchQuery,
     setSearchQuery,
-    loadMoreWorkouts,
+    filters,
     handleApplyFilters,
     handleClearFilters,
-  } = usePastWorkoutsHistory({ visible });
+  } = useWorkoutHistory({
+    initialLimit: 5,
+    batchSize: 5,
+    groupByMonth: true,
+    enableReactivity: true,
+    visible,
+  });
 
   return (
     <FullScreenModal

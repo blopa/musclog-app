@@ -1,0 +1,417 @@
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import { Q } from '@nozbe/watermelondb';
+import { database } from '../database';
+import WorkoutLog from '../database/models/WorkoutLog';
+import { WorkoutService } from '../database/services/WorkoutService';
+import { WorkoutAnalytics } from '../database/services/WorkoutAnalytics';
+import { format, isToday, isYesterday, isThisWeek } from 'date-fns';
+import { useTranslation } from 'react-i18next';
+import { theme } from '../theme';
+import { useSettings } from './useSettings';
+import {
+  type WorkoutHistorySection,
+  type WorkoutFilters,
+  calculateDateRange,
+  processWorkouts,
+  groupWorkoutsByMonth,
+  mergeWorkoutSections,
+  filterWorkoutsBySearch,
+} from '../utils/workoutHistory';
+
+// Types for simple workout format (home screen)
+export type ProcessedRecentWorkout = {
+  id: string;
+  name: string;
+  date: string;
+  duration: string;
+  calories: number;
+  prs: number | null;
+  image: any;
+  imageBgColor: string;
+};
+
+// Hook parameters
+export interface UseWorkoutHistoryParams {
+  initialLimit?: number; // Default: 2 for home screen, 5 for modal
+  batchSize?: number; // Default: 5
+  filters?: WorkoutFilters; // Optional filters
+  groupByMonth?: boolean; // Whether to group workouts by month
+  enableReactivity?: boolean; // Whether to observe database changes (default: true)
+  visible?: boolean; // For modal visibility control
+}
+
+// Return type when groupByMonth = false
+export type UseWorkoutHistoryResultFlat = {
+  workouts: ProcessedRecentWorkout[];
+  sections?: never;
+  isLoading: boolean;
+  isLoadingMore: boolean;
+  hasMore: boolean;
+  loadMore: () => Promise<void>;
+};
+
+// Return type when groupByMonth = true
+export type UseWorkoutHistoryResultGrouped = {
+  workouts?: never;
+  sections: WorkoutHistorySection[];
+  isLoading: boolean;
+  isLoadingMore: boolean;
+  hasMore: boolean;
+  loadMore: () => Promise<void>;
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
+  filters: WorkoutFilters;
+  handleApplyFilters: (filters: Partial<WorkoutFilters>) => void;
+  handleClearFilters: () => void;
+};
+
+export type UseWorkoutHistoryResult = UseWorkoutHistoryResultFlat | UseWorkoutHistoryResultGrouped;
+
+const DEFAULT_BATCH_SIZE = 5;
+
+// Format relative date for simple display (home screen)
+function formatRelativeDate(timestamp: number, t: (key: string) => string): string {
+  const date = new Date(timestamp);
+  if (isToday(date)) {
+    return t('common.today');
+  }
+  if (isYesterday(date)) {
+    return t('common.yesterday');
+  }
+  if (isThisWeek(date)) {
+    return format(date, 'EEEE'); // Day name like "Monday"
+  }
+  // For older dates, show formatted date
+  return format(date, 'MMM d'); // "Jan 15"
+}
+
+function formatDuration(minutes: number): string {
+  if (minutes < 60) {
+    return `${minutes}m`;
+  }
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
+}
+
+// Process workout for simple display (home screen)
+async function processWorkoutSimple(
+  workout: WorkoutLog,
+  t: (key: string) => string
+): Promise<ProcessedRecentWorkout> {
+  // Calculate duration
+  const durationMinutes =
+    workout.completedAt && workout.startedAt
+      ? Math.round((workout.completedAt - workout.startedAt) / 60000)
+      : 0;
+
+  // Get PR count
+  const prs = await WorkoutAnalytics.detectPersonalRecords(workout);
+  const prCount = prs.length > 0 ? prs.length : null;
+
+  // Format date
+  const dateTimestamp = workout.startedAt || workout.completedAt || Date.now();
+  const dateStr = formatRelativeDate(dateTimestamp, t);
+
+  return {
+    id: workout.id,
+    name: workout.workoutName,
+    date: dateStr,
+    duration: formatDuration(durationMinutes),
+    calories: workout.caloriesBurned || 0,
+    prs: prCount,
+    image: require('../assets/icon.png'), // Default image
+    imageBgColor: theme.colors.background.imageLight,
+  };
+}
+
+// Function overloads for proper type narrowing
+export function useWorkoutHistory(
+  params: UseWorkoutHistoryParams & { groupByMonth: true }
+): UseWorkoutHistoryResultGrouped;
+export function useWorkoutHistory(
+  params?: UseWorkoutHistoryParams & { groupByMonth?: false }
+): UseWorkoutHistoryResultFlat;
+export function useWorkoutHistory({
+  initialLimit = 2,
+  batchSize = DEFAULT_BATCH_SIZE,
+  filters,
+  groupByMonth = false,
+  enableReactivity = true,
+  visible = true,
+}: UseWorkoutHistoryParams = {}): UseWorkoutHistoryResult {
+  const { t } = useTranslation();
+  const { units } = useSettings();
+
+  // State for flat array (home screen)
+  const [workouts, setWorkouts] = useState<ProcessedRecentWorkout[]>([]);
+
+  // State for grouped sections (modal)
+  const [sections, setSections] = useState<WorkoutHistorySection[]>([]);
+
+  // Common state
+  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [currentOffset, setCurrentOffset] = useState(0);
+
+  // State for filters (only used when groupByMonth = true)
+  const [searchQuery, setSearchQuery] = useState('');
+  const [workoutFilters, setWorkoutFilters] = useState<WorkoutFilters>(
+    filters || {
+      workoutType: 'all',
+      dateRange: '30',
+      muscleGroups: [],
+      minDuration: 0,
+    }
+  );
+
+  // Load initial batch of workouts
+  const loadInitialWorkouts = useCallback(async () => {
+    if (!visible) {
+      setIsLoading(false);
+      return;
+    }
+
+    setIsLoading(true);
+    setCurrentOffset(0);
+    setHasMore(true);
+
+    try {
+      // Calculate timeframe from filters
+      const timeframe = workoutFilters?.dateRange
+        ? calculateDateRange(workoutFilters.dateRange)
+        : undefined;
+
+      // Fetch initial batch
+      const workoutLogs = await WorkoutService.getWorkoutHistory(timeframe, initialLimit);
+
+      if (workoutLogs.length === 0) {
+        if (groupByMonth) {
+          setSections([]);
+        } else {
+          setWorkouts([]);
+        }
+        setHasMore(false);
+        setIsLoading(false);
+        return;
+      }
+
+      if (groupByMonth && workoutFilters) {
+        // Process with filters and group by month
+        const validWorkouts = await processWorkouts(workoutLogs, workoutFilters, t, units);
+        const groupedSections = groupWorkoutsByMonth(validWorkouts);
+        setSections(groupedSections);
+      } else {
+        // Simple processing for home screen
+        const processedWorkouts = await Promise.all(
+          workoutLogs.map((workout) => processWorkoutSimple(workout, t))
+        );
+        setWorkouts(processedWorkouts);
+      }
+
+      setCurrentOffset(initialLimit);
+
+      // Check if there are more workouts
+      if (workoutLogs.length < initialLimit) {
+        setHasMore(false);
+      } else {
+        // Check if there's a next batch
+        const nextBatch = await WorkoutService.getWorkoutHistory(timeframe, 1, initialLimit);
+        setHasMore(nextBatch.length > 0);
+      }
+    } catch (err) {
+      console.error('Error loading workout history:', err);
+      if (groupByMonth) {
+        setSections([]);
+      } else {
+        setWorkouts([]);
+      }
+      setHasMore(false);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [visible, initialLimit, workoutFilters, groupByMonth, t, units]);
+
+  // Load more workouts (pagination)
+  const loadMore = useCallback(async () => {
+    if (isLoadingMore || !hasMore || !visible) {
+      return;
+    }
+
+    setIsLoadingMore(true);
+
+    try {
+      // Calculate timeframe from filters
+      const timeframe = workoutFilters?.dateRange
+        ? calculateDateRange(workoutFilters.dateRange)
+        : undefined;
+
+      // Fetch next batch
+      const workoutLogs = await WorkoutService.getWorkoutHistory(
+        timeframe,
+        batchSize,
+        currentOffset
+      );
+
+      if (workoutLogs.length === 0) {
+        setHasMore(false);
+        setIsLoadingMore(false);
+        return;
+      }
+
+      if (groupByMonth && workoutFilters) {
+        // Process with filters
+        const validWorkouts = await processWorkouts(workoutLogs, workoutFilters, t, units);
+
+        if (validWorkouts.length > 0) {
+          // Merge with existing sections
+          setSections((prev) => mergeWorkoutSections(prev, validWorkouts));
+        }
+      } else {
+        // Simple processing
+        const processedWorkouts = await Promise.all(
+          workoutLogs.map((workout) => processWorkoutSimple(workout, t))
+        );
+        // Append to existing workouts
+        setWorkouts((prev) => [...prev, ...processedWorkouts]);
+      }
+
+      const newOffset = currentOffset + workoutLogs.length;
+      setCurrentOffset(newOffset);
+
+      // Check if there are more workouts
+      if (workoutLogs.length < batchSize) {
+        setHasMore(false);
+      } else {
+        // Check if there's a next batch
+        const nextBatch = await WorkoutService.getWorkoutHistory(timeframe, 1, newOffset);
+        setHasMore(nextBatch.length > 0);
+      }
+    } catch (err) {
+      console.error('Error loading more workouts:', err);
+      setHasMore(false);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }, [
+    isLoadingMore,
+    hasMore,
+    visible,
+    currentOffset,
+    batchSize,
+    workoutFilters,
+    groupByMonth,
+    t,
+    units,
+  ]);
+
+  // Handle filter changes
+  const handleApplyFilters = useCallback((newFilters: Partial<WorkoutFilters>) => {
+    setWorkoutFilters((prev) => ({
+      workoutType: newFilters.workoutType ?? prev.workoutType ?? 'all',
+      dateRange: newFilters.dateRange ?? prev.dateRange ?? '30',
+      muscleGroups: newFilters.muscleGroups ?? prev.muscleGroups ?? [],
+      minDuration: newFilters.minDuration ?? prev.minDuration ?? 0,
+    }));
+  }, []);
+
+  const handleClearFilters = useCallback(() => {
+    setWorkoutFilters({
+      workoutType: 'all',
+      dateRange: '30',
+      muscleGroups: [],
+      minDuration: 0,
+    });
+  }, []);
+
+  // React to filter changes
+  useEffect(() => {
+    if (visible && groupByMonth) {
+      loadInitialWorkouts();
+    }
+  }, [visible, workoutFilters, loadInitialWorkouts, groupByMonth]);
+
+  // Observe for new completed workouts to trigger reload (reactivity)
+  useEffect(() => {
+    if (!enableReactivity || !visible) {
+      // Still load initial data even if reactivity is disabled
+      if (visible) {
+        loadInitialWorkouts();
+      }
+      return;
+    }
+
+    // Observe completed workouts to detect when new ones are added
+    const query = database.get<WorkoutLog>('workout_logs').query(
+      Q.where('completed_at', Q.notEq(null)),
+      Q.where('deleted_at', Q.eq(null)),
+      Q.sortBy('completed_at', Q.desc),
+      Q.take(1) // Only need to know if there are any changes
+    );
+
+    const subscription = query.observe().subscribe({
+      next: () => {
+        // When a new workout is completed, reload the initial batch
+        loadInitialWorkouts();
+      },
+      error: (err) => {
+        console.error('Error observing workout history:', err);
+      },
+    });
+
+    // Load initial data
+    loadInitialWorkouts();
+
+    return () => subscription.unsubscribe();
+  }, [enableReactivity, visible, loadInitialWorkouts]);
+
+  // Apply search filter for grouped sections
+  const filteredSections = useMemo(() => {
+    if (!groupByMonth || !searchQuery) {
+      return sections;
+    }
+    return filterWorkoutsBySearch(sections, searchQuery);
+  }, [groupByMonth, sections, searchQuery]);
+
+  // Always call both useMemo hooks (React Hooks rules)
+  const flatResult = useMemo(
+    () => ({
+      workouts: workouts, // Always return array, never undefined
+      isLoading,
+      isLoadingMore,
+      hasMore,
+      loadMore,
+    }),
+    [workouts, isLoading, isLoadingMore, hasMore, loadMore]
+  );
+
+  const groupedResult = useMemo(
+    () => ({
+      sections: filteredSections,
+      isLoading,
+      isLoadingMore,
+      hasMore,
+      loadMore,
+      searchQuery,
+      setSearchQuery,
+      filters: workoutFilters,
+      handleApplyFilters,
+      handleClearFilters,
+    }),
+    [
+      filteredSections,
+      isLoading,
+      isLoadingMore,
+      hasMore,
+      loadMore,
+      searchQuery,
+      workoutFilters,
+      handleApplyFilters,
+      handleClearFilters,
+    ]
+  );
+
+  // Return appropriate type based on groupByMonth
+  return (groupByMonth ? groupedResult : flatResult) as UseWorkoutHistoryResult;
+}

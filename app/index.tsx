@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, Image, Pressable, ScrollView, ActivityIndicator } from 'react-native';
 import {
   Bell,
@@ -25,9 +25,7 @@ import { useRouter } from 'expo-router';
 import { SkeletonLoader } from '../components/theme/SkeletonLoader';
 import { EmptyStateCard } from '../components/theme/EmptyStateCard';
 import { isOnboardingCompleted } from '../utils/onboardingService';
-import { WorkoutService } from '../database/services/WorkoutService';
-import { WorkoutAnalytics } from '../database/services/WorkoutAnalytics';
-import { format, isToday, isYesterday, isThisWeek } from 'date-fns';
+import { useWorkoutHistory } from '../hooks/useWorkoutHistory';
 
 const PAGE_DATA = {
   user: {
@@ -73,26 +71,18 @@ export default function HomeScreen() {
   const router = useRouter();
   const [user, setUser] = useState(PAGE_DATA.user);
   const [dailySummary, setDailySummary] = useState(PAGE_DATA.dailySummary);
-  const [recentWorkouts, setRecentWorkouts] = useState<
-    {
-      id: string;
-      name: string;
-      date: string;
-      duration: string;
-      calories: number;
-      prs: number | null;
-      image: any;
-      imageBgColor: string;
-    }[]
-  >([]);
-
   const [recentFoods, setRecentFoods] = useState(PAGE_DATA.recentFoods);
   const [isUserMenuVisible, setIsUserMenuVisible] = useState(false);
   const [isNotificationsVisible, setIsNotificationsVisible] = useState(false);
   const [isWorkoutHistoryVisible, setIsWorkoutHistoryVisible] = useState(false);
   const [selectedWorkoutId, setSelectedWorkoutId] = useState<string | undefined>(undefined);
-  const [isLoadingRecent, setIsLoadingRecent] = useState(false);
   const [isCheckingOnboarding, setIsCheckingOnboarding] = useState(true);
+
+  // Use reactive hook for recent workouts
+  const { workouts: recentWorkouts, isLoading: isLoadingRecent } = useWorkoutHistory({
+    initialLimit: 2,
+    groupByMonth: false,
+  });
 
   // Check onboarding status on mount
   useEffect(() => {
@@ -113,86 +103,6 @@ export default function HomeScreen() {
 
     checkOnboarding();
   }, [router]);
-
-  // Helper function to format relative date
-  const formatRelativeDate = (timestamp: number): string => {
-    const date = new Date(timestamp);
-    if (isToday(date)) {
-      return t('common.today');
-    }
-    if (isYesterday(date)) {
-      return t('common.yesterday');
-    }
-    if (isThisWeek(date)) {
-      return format(date, 'EEEE'); // Day name like "Monday"
-    }
-    // For older dates, show formatted date
-    return format(date, 'MMM d'); // "Jan 15"
-  };
-
-  // Helper function to format duration
-  const formatDuration = (minutes: number): string => {
-    if (minutes < 60) {
-      return `${minutes}m`;
-    }
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
-  };
-
-  // Load recent workouts from database
-  const loadRecentData = useCallback(async () => {
-    setIsLoadingRecent(true);
-    try {
-      // Fetch recent completed workouts (limit to 2 for homepage)
-      const workouts = await WorkoutService.getWorkoutHistory(undefined, 2);
-
-      // Process workouts for display
-      const processedWorkouts = await Promise.all(
-        workouts.map(async (workout) => {
-          // Calculate duration
-          const durationMinutes =
-            workout.completedAt && workout.startedAt
-              ? Math.round((workout.completedAt - workout.startedAt) / 60000)
-              : 0;
-
-          // Get PR count
-          const prs = await WorkoutAnalytics.detectPersonalRecords(workout);
-          const prCount = prs.length > 0 ? prs.length : null;
-
-          // Format date
-          const dateTimestamp = workout.startedAt || workout.completedAt || Date.now();
-          const dateStr = formatRelativeDate(dateTimestamp);
-
-          return {
-            id: workout.id,
-            name: workout.workoutName,
-            date: dateStr,
-            duration: formatDuration(durationMinutes),
-            calories: workout.caloriesBurned || 0,
-            prs: prCount,
-            image: require('../assets/icon.png'), // Default image
-            imageBgColor: theme.colors.background.imageLight,
-          };
-        })
-      );
-
-      setRecentWorkouts(processedWorkouts);
-      // Keep foods as is for now (will be replaced with real data later)
-      setRecentFoods(PAGE_DATA.recentFoods);
-    } catch (err) {
-      console.error('Failed to load recent data:', err);
-      // Fallback to empty array on error
-      setRecentWorkouts([]);
-    } finally {
-      setIsLoadingRecent(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    // Load recent data when component mounts
-    loadRecentData();
-  }, [loadRecentData]);
 
   // Show loading spinner while checking onboarding
   if (isCheckingOnboarding) {

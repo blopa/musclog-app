@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, ScrollView, Pressable, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, Pressable } from 'react-native';
 import { SlidersHorizontal, Calendar, Clock, Plus } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { format, isToday, isYesterday, isThisWeek } from 'date-fns';
