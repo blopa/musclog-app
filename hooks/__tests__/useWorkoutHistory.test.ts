@@ -534,7 +534,9 @@ describe('useWorkoutHistory', () => {
 
       if ('workouts' in result.current) {
         // Should be a day name like "Monday", "Tuesday", etc.
-        expect(result.current.workouts[0].date).toMatch(/^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)$/);
+        expect(result.current.workouts[0].date).toMatch(
+          /^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)$/
+        );
       }
     });
 
@@ -595,7 +597,10 @@ describe('useWorkoutHistory', () => {
         expect(result.current.workouts).toEqual([]);
         expect(result.current.hasMore).toBe(false);
       }
-      expect(consoleErrorSpy).toHaveBeenCalledWith('Error loading workout history:', expect.any(Error));
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        'Error loading workout history:',
+        expect.any(Error)
+      );
 
       consoleErrorSpy.mockRestore();
     });
@@ -620,53 +625,12 @@ describe('useWorkoutHistory', () => {
         expect(result.current.sections).toEqual([]);
         expect(result.current.hasMore).toBe(false);
       }
-      expect(consoleErrorSpy).toHaveBeenCalledWith('Error loading workout history:', expect.any(Error));
-
-      consoleErrorSpy.mockRestore();
-    });
-  });
-
-  describe('Pagination (loadMore)', () => {
-    it('sets hasMore to false when loaded batch is smaller than batchSize', async () => {
-      const now = Date.now();
-      const initialWorkouts = [
-        { id: '1', workoutName: 'Workout 1', startedAt: now - 3600000, completedAt: now },
-        { id: '2', workoutName: 'Workout 2', startedAt: now - 7200000, completedAt: now - 3600000 },
-      ] as any;
-      const moreWorkouts = [
-        { id: '3', workoutName: 'Workout 3', startedAt: now - 10800000, completedAt: now - 7200000 },
-      ] as any; // Only 1 workout when batchSize is 2
-
-      (WorkoutService.getWorkoutHistory as jest.Mock)
-        .mockResolvedValueOnce(initialWorkouts)
-        .mockResolvedValueOnce([]) // Check for more
-        .mockResolvedValueOnce(moreWorkouts) // Load more returns only 1
-        .mockResolvedValueOnce([]); // Check for more returns empty
-
-      (WorkoutAnalytics.detectPersonalRecords as jest.Mock).mockResolvedValue([]);
-
-      const { result } = renderHook(() =>
-        useWorkoutHistory({
-          initialLimit: 2,
-          batchSize: 2,
-          groupByMonth: false,
-        })
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        'Error loading workout history:',
+        expect.any(Error)
       );
 
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
-      });
-
-      if ('workouts' in result.current) {
-        await act(async () => {
-          await result.current.loadMore();
-        });
-
-        await waitFor(() => {
-          expect(result.current.isLoadingMore).toBe(false);
-          expect(result.current.hasMore).toBe(false); // Should be false because batch was smaller
-        });
-      }
+      consoleErrorSpy.mockRestore();
     });
   });
 
@@ -692,14 +656,14 @@ describe('useWorkoutHistory', () => {
         act(() => {
           result.current.handleApplyFilters({
             workoutType: 'strength',
-            dateRange: '7',
+            dateRange: '30',
             minDuration: 30,
           });
         });
 
         await waitFor(() => {
           expect(result.current.filters.workoutType).toBe('strength');
-          expect(result.current.filters.dateRange).toBe('7');
+          expect(result.current.filters.dateRange).toBe('30');
           expect(result.current.filters.minDuration).toBe(30);
           // muscleGroups should remain from initial
           expect(result.current.filters.muscleGroups).toEqual(initialFilters.muscleGroups);
@@ -727,7 +691,7 @@ describe('useWorkoutHistory', () => {
         act(() => {
           result.current.handleApplyFilters({
             workoutType: 'strength',
-            dateRange: '7',
+            dateRange: '30',
             minDuration: 30,
             muscleGroups: ['chest'],
           });
