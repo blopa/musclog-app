@@ -498,4 +498,294 @@ describe('useWorkoutHistory', () => {
       // (though it might be called for the initial load check)
     });
   });
+
+  describe('Date formatting', () => {
+    it('formats this week date correctly', async () => {
+      // Get a date from earlier this week (not today, not yesterday)
+      const today = new Date();
+      const daysFromMonday = today.getDay() === 0 ? 6 : today.getDay() - 1; // Convert Sunday=0 to 6
+      const thisWeekDate = new Date(today);
+      thisWeekDate.setDate(today.getDate() - (daysFromMonday > 0 ? daysFromMonday : 1));
+      const thisWeekTimestamp = thisWeekDate.getTime();
+
+      const mockWorkoutLogs = [
+        {
+          id: '1',
+          workoutName: 'This Week Workout',
+          startedAt: thisWeekTimestamp - 3600000,
+          completedAt: thisWeekTimestamp,
+          caloriesBurned: 200,
+        } as any,
+      ];
+
+      (WorkoutService.getWorkoutHistory as jest.Mock).mockResolvedValue(mockWorkoutLogs);
+      (WorkoutAnalytics.detectPersonalRecords as jest.Mock).mockResolvedValue([]);
+
+      const { result } = renderHook(() =>
+        useWorkoutHistory({
+          initialLimit: 2,
+          groupByMonth: false,
+        })
+      );
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      if ('workouts' in result.current) {
+        // Should be a day name like "Monday", "Tuesday", etc.
+        expect(result.current.workouts[0].date).toMatch(/^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)$/);
+      }
+    });
+
+    it('formats older dates correctly', async () => {
+      // Use a date from more than a week ago
+      const olderDate = new Date();
+      olderDate.setDate(olderDate.getDate() - 10);
+      const olderTimestamp = olderDate.getTime();
+
+      const mockWorkoutLogs = [
+        {
+          id: '1',
+          workoutName: 'Older Workout',
+          startedAt: olderTimestamp - 3600000,
+          completedAt: olderTimestamp,
+          caloriesBurned: 200,
+        } as any,
+      ];
+
+      (WorkoutService.getWorkoutHistory as jest.Mock).mockResolvedValue(mockWorkoutLogs);
+      (WorkoutAnalytics.detectPersonalRecords as jest.Mock).mockResolvedValue([]);
+
+      const { result } = renderHook(() =>
+        useWorkoutHistory({
+          initialLimit: 2,
+          groupByMonth: false,
+        })
+      );
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      if ('workouts' in result.current) {
+        // Should be formatted as "MMM d" like "Jan 15"
+        expect(result.current.workouts[0].date).toMatch(/^[A-Za-z]{3} \d{1,2}$/);
+      }
+    });
+  });
+
+  describe('Error handling', () => {
+    it('handles error in loadInitialWorkouts for flat mode', async () => {
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
+      (WorkoutService.getWorkoutHistory as jest.Mock).mockRejectedValue(new Error('Network error'));
+
+      const { result } = renderHook(() =>
+        useWorkoutHistory({
+          initialLimit: 2,
+          groupByMonth: false,
+        })
+      );
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      if ('workouts' in result.current) {
+        expect(result.current.workouts).toEqual([]);
+        expect(result.current.hasMore).toBe(false);
+      }
+      expect(consoleErrorSpy).toHaveBeenCalledWith('Error loading workout history:', expect.any(Error));
+
+      consoleErrorSpy.mockRestore();
+    });
+
+    it('handles error in loadInitialWorkouts for grouped mode', async () => {
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
+      (WorkoutService.getWorkoutHistory as jest.Mock).mockRejectedValue(new Error('Network error'));
+
+      const { result } = renderHook(() =>
+        useWorkoutHistory({
+          initialLimit: 5,
+          groupByMonth: true,
+          visible: true,
+        })
+      );
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      if ('sections' in result.current) {
+        expect(result.current.sections).toEqual([]);
+        expect(result.current.hasMore).toBe(false);
+      }
+      expect(consoleErrorSpy).toHaveBeenCalledWith('Error loading workout history:', expect.any(Error));
+
+      consoleErrorSpy.mockRestore();
+    });
+  });
+
+  describe('Pagination (loadMore)', () => {
+    it('sets hasMore to false when loaded batch is smaller than batchSize', async () => {
+      const now = Date.now();
+      const initialWorkouts = [
+        { id: '1', workoutName: 'Workout 1', startedAt: now - 3600000, completedAt: now },
+        { id: '2', workoutName: 'Workout 2', startedAt: now - 7200000, completedAt: now - 3600000 },
+      ] as any;
+      const moreWorkouts = [
+        { id: '3', workoutName: 'Workout 3', startedAt: now - 10800000, completedAt: now - 7200000 },
+      ] as any; // Only 1 workout when batchSize is 2
+
+      (WorkoutService.getWorkoutHistory as jest.Mock)
+        .mockResolvedValueOnce(initialWorkouts)
+        .mockResolvedValueOnce([]) // Check for more
+        .mockResolvedValueOnce(moreWorkouts) // Load more returns only 1
+        .mockResolvedValueOnce([]); // Check for more returns empty
+
+      (WorkoutAnalytics.detectPersonalRecords as jest.Mock).mockResolvedValue([]);
+
+      const { result } = renderHook(() =>
+        useWorkoutHistory({
+          initialLimit: 2,
+          batchSize: 2,
+          groupByMonth: false,
+        })
+      );
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      if ('workouts' in result.current) {
+        await act(async () => {
+          await result.current.loadMore();
+        });
+
+        await waitFor(() => {
+          expect(result.current.isLoadingMore).toBe(false);
+          expect(result.current.hasMore).toBe(false); // Should be false because batch was smaller
+        });
+      }
+    });
+  });
+
+  describe('Filter handling', () => {
+    it('applies filters correctly', async () => {
+      (WorkoutService.getWorkoutHistory as jest.Mock).mockResolvedValue([]);
+
+      const { result } = renderHook(() =>
+        useWorkoutHistory({
+          initialLimit: 5,
+          groupByMonth: true,
+          visible: true,
+        })
+      );
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      if ('sections' in result.current) {
+        const initialFilters = result.current.filters;
+
+        act(() => {
+          result.current.handleApplyFilters({
+            workoutType: 'strength',
+            dateRange: '7',
+            minDuration: 30,
+          });
+        });
+
+        await waitFor(() => {
+          expect(result.current.filters.workoutType).toBe('strength');
+          expect(result.current.filters.dateRange).toBe('7');
+          expect(result.current.filters.minDuration).toBe(30);
+          // muscleGroups should remain from initial
+          expect(result.current.filters.muscleGroups).toEqual(initialFilters.muscleGroups);
+        });
+      }
+    });
+
+    it('clears filters correctly', async () => {
+      (WorkoutService.getWorkoutHistory as jest.Mock).mockResolvedValue([]);
+
+      const { result } = renderHook(() =>
+        useWorkoutHistory({
+          initialLimit: 5,
+          groupByMonth: true,
+          visible: true,
+        })
+      );
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      if ('sections' in result.current) {
+        // Apply some filters first
+        act(() => {
+          result.current.handleApplyFilters({
+            workoutType: 'strength',
+            dateRange: '7',
+            minDuration: 30,
+            muscleGroups: ['chest'],
+          });
+        });
+
+        await waitFor(() => {
+          expect(result.current.filters.workoutType).toBe('strength');
+        });
+
+        // Now clear filters
+        act(() => {
+          result.current.handleClearFilters();
+        });
+
+        await waitFor(() => {
+          expect(result.current.filters).toEqual({
+            workoutType: 'all',
+            dateRange: '30',
+            muscleGroups: [],
+            minDuration: 0,
+          });
+        });
+      }
+    });
+
+    it('handles partial filter updates', async () => {
+      (WorkoutService.getWorkoutHistory as jest.Mock).mockResolvedValue([]);
+
+      const { result } = renderHook(() =>
+        useWorkoutHistory({
+          initialLimit: 5,
+          groupByMonth: true,
+          visible: true,
+        })
+      );
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      if ('sections' in result.current) {
+        const initialFilters = { ...result.current.filters };
+
+        // Apply only workoutType
+        act(() => {
+          result.current.handleApplyFilters({
+            workoutType: 'cardio',
+          });
+        });
+
+        await waitFor(() => {
+          expect(result.current.filters.workoutType).toBe('cardio');
+          // Other filters should remain unchanged
+          expect(result.current.filters.dateRange).toBe(initialFilters.dateRange);
+          expect(result.current.filters.muscleGroups).toEqual(initialFilters.muscleGroups);
+          expect(result.current.filters.minDuration).toBe(initialFilters.minDuration);
+        });
+      }
+    });
+  });
 });
