@@ -19,14 +19,31 @@ type FakeWorkoutLog = {
 let subscribeNext: (val: FakeWorkoutLog[]) => void;
 let unsubscribeFn: jest.Mock;
 
-const createMockObservable = (initialEmit: FakeWorkoutLog[]) => ({
-  subscribe: (handlers: { next: (v: FakeWorkoutLog[]) => void; error?: (e: unknown) => void }) => {
-    subscribeNext = handlers.next;
-    handlers.next(initialEmit);
-    unsubscribeFn = jest.fn();
-    return { unsubscribe: unsubscribeFn };
-  },
-});
+const createMockObservable = (initialEmit: FakeWorkoutLog[], shouldError = false) => {
+  let errorHandler: ((e: unknown) => void) | undefined;
+  return {
+    subscribe: (handlers: {
+      next: (v: FakeWorkoutLog[]) => void;
+      error?: (e: unknown) => void;
+    }) => {
+      subscribeNext = handlers.next;
+      errorHandler = handlers.error;
+      if (shouldError && handlers.error) {
+        // Call error handler immediately if shouldError is true
+        setTimeout(() => handlers.error!(new Error('Observable error')), 0);
+      } else {
+        handlers.next(initialEmit);
+      }
+      unsubscribeFn = jest.fn();
+      return { unsubscribe: unsubscribeFn };
+    },
+    triggerError: (error: Error) => {
+      if (errorHandler) {
+        errorHandler(error);
+      }
+    },
+  };
+};
 
 const mockQuery = {
   observe: jest.fn(),
@@ -57,9 +74,18 @@ jest.mock('../../database/services/WorkoutAnalytics', () => ({
 
 jest.mock('../../utils/workoutHistory', () => ({
   calculateDateRange: jest.fn((range: string) => {
+    const endDate = Date.now();
     if (range === '30') {
-      const endDate = Date.now();
       const startDate = endDate - 30 * 24 * 60 * 60 * 1000;
+      return { startDate, endDate };
+    }
+    if (range === '90') {
+      const startDate = endDate - 90 * 24 * 60 * 60 * 1000;
+      return { startDate, endDate };
+    }
+    if (range === 'custom') {
+      // For custom, return a specific range (e.g., last 7 days)
+      const startDate = endDate - 7 * 24 * 60 * 60 * 1000;
       return { startDate, endDate };
     }
     return undefined;
@@ -164,7 +190,7 @@ jest.mock('../../assets/icon.png', () => 'mock-icon.png', { virtual: true });
 describe('useWorkoutHistory', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockQuery.observe.mockReturnValue(createMockObservable([]));
+    mockQuery.observe.mockReturnValue(createMockObservable([], false) as any);
     (WorkoutService.getWorkoutHistory as jest.Mock).mockResolvedValue([]);
     (WorkoutAnalytics.detectPersonalRecords as jest.Mock).mockResolvedValue([]);
   });
@@ -497,9 +523,94 @@ describe('useWorkoutHistory', () => {
       // The observe should not be called when reactivity is disabled
       // (though it might be called for the initial load check)
     });
+
+    it('handles error in reactivity subscription', async () => {
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
+      (WorkoutService.getWorkoutHistory as jest.Mock).mockResolvedValue([]);
+
+      // Create observable that will call error handler
+      let errorHandler: ((e: unknown) => void) | undefined;
+      const mockObservable = {
+        subscribe: (handlers: {
+          next: (v: FakeWorkoutLog[]) => void;
+          error?: (e: unknown) => void;
+        }) => {
+          subscribeNext = handlers.next;
+          errorHandler = handlers.error;
+          handlers.next([]); // Initial emit
+          unsubscribeFn = jest.fn();
+          return { unsubscribe: unsubscribeFn };
+        },
+      };
+      mockQuery.observe.mockReturnValue(mockObservable as any);
+
+      renderHook(() =>
+        useWorkoutHistory({
+          initialLimit: 2,
+          groupByMonth: false,
+          enableReactivity: true,
+        })
+      );
+
+      await waitFor(() => {
+        expect(mockQuery.observe).toHaveBeenCalled();
+        expect(errorHandler).toBeDefined();
+      });
+
+      // Trigger error in subscription
+      const testError = new Error('Observable subscription error');
+      if (errorHandler) {
+        errorHandler(testError);
+      }
+
+      await waitFor(() => {
+        expect(consoleErrorSpy).toHaveBeenCalledWith('Error observing workout history:', testError);
+      });
+
+      // Hook should continue to work after error
+      expect(WorkoutService.getWorkoutHistory).toHaveBeenCalled();
+
+      consoleErrorSpy.mockRestore();
+    });
   });
 
   describe('Date formatting', () => {
+    it('formats today date correctly', async () => {
+      // Create a date for today at noon to avoid edge cases at midnight
+      const today = new Date();
+      today.setHours(12, 0, 0, 0);
+      const todayTimestamp = today.getTime();
+
+      const mockWorkoutLogs = [
+        {
+          id: '1',
+          workoutName: 'Today Workout',
+          startedAt: todayTimestamp - 3600000, // 1 hour before noon
+          completedAt: todayTimestamp,
+          caloriesBurned: 200,
+        } as any,
+      ];
+
+      (WorkoutService.getWorkoutHistory as jest.Mock).mockResolvedValue(mockWorkoutLogs);
+      (WorkoutAnalytics.detectPersonalRecords as jest.Mock).mockResolvedValue([]);
+
+      const { result } = renderHook(() =>
+        useWorkoutHistory({
+          initialLimit: 2,
+          groupByMonth: false,
+        })
+      );
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      if ('workouts' in result.current) {
+        // Should be "Today" (translated)
+        expect(result.current.workouts[0].date).toBe('Today');
+      }
+    });
+
     it('formats this week date correctly', async () => {
       // Get a date from earlier this week (not today, not yesterday)
       const today = new Date();
@@ -634,6 +745,86 @@ describe('useWorkoutHistory', () => {
     });
   });
 
+  describe('Pagination (loadMore)', () => {
+    describe('Early return conditions', () => {
+      it('returns early when visible is false', async () => {
+        const { result } = renderHook(() =>
+          useWorkoutHistory({
+            initialLimit: 2,
+            batchSize: 2,
+            groupByMonth: false,
+            visible: false,
+          })
+        );
+
+        // When visible is false, should not load
+        expect(result.current.isLoading).toBe(true);
+
+        if ('workouts' in result.current) {
+          const initialCallCount = (WorkoutService.getWorkoutHistory as jest.Mock).mock.calls
+            .length;
+
+          await act(async () => {
+            await result.current.loadMore();
+          });
+
+          // Should not have made additional calls since visible is false
+          expect(WorkoutService.getWorkoutHistory).toHaveBeenCalledTimes(initialCallCount);
+        }
+      });
+    });
+  });
+
+  describe('Initial load hasMore check', () => {
+    it('sets hasMore to false when initial load returns fewer than initialLimit', async () => {
+      const now = Date.now();
+      const mockWorkoutLogs = [
+        { id: '1', workoutName: 'Workout 1', startedAt: now - 3600000, completedAt: now },
+      ] as any; // Only 1 workout when initialLimit is 2
+
+      (WorkoutService.getWorkoutHistory as jest.Mock).mockResolvedValue(mockWorkoutLogs);
+      (WorkoutAnalytics.detectPersonalRecords as jest.Mock).mockResolvedValue([]);
+
+      const { result } = renderHook(() =>
+        useWorkoutHistory({
+          initialLimit: 2,
+          groupByMonth: false,
+        })
+      );
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+        expect(result.current.hasMore).toBe(false); // Should be false because fewer than initialLimit
+      });
+    });
+
+    it('sets hasMore to false when initial load equals initialLimit and next batch is empty', async () => {
+      const now = Date.now();
+      const initialWorkouts = [
+        { id: '1', workoutName: 'Workout 1', startedAt: now - 3600000, completedAt: now },
+        { id: '2', workoutName: 'Workout 2', startedAt: now - 7200000, completedAt: now - 3600000 },
+      ] as any; // Exactly initialLimit (2)
+
+      (WorkoutService.getWorkoutHistory as jest.Mock)
+        .mockResolvedValueOnce(initialWorkouts)
+        .mockResolvedValueOnce([]); // hasMore check - no more
+
+      (WorkoutAnalytics.detectPersonalRecords as jest.Mock).mockResolvedValue([]);
+
+      const { result } = renderHook(() =>
+        useWorkoutHistory({
+          initialLimit: 2,
+          groupByMonth: false,
+        })
+      );
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+        expect(result.current.hasMore).toBe(false); // Should be false because no next batch
+      });
+    });
+  });
+
   describe('Filter handling', () => {
     it('applies filters correctly', async () => {
       (WorkoutService.getWorkoutHistory as jest.Mock).mockResolvedValue([]);
@@ -749,6 +940,234 @@ describe('useWorkoutHistory', () => {
           expect(result.current.filters.muscleGroups).toEqual(initialFilters.muscleGroups);
           expect(result.current.filters.minDuration).toBe(initialFilters.minDuration);
         });
+      }
+    });
+
+    it('triggers reload when workoutType filter changes', async () => {
+      const now = Date.now();
+      const initialWorkouts = [
+        { id: '1', workoutName: 'Workout 1', startedAt: now - 3600000, completedAt: now },
+      ] as any;
+      const filteredWorkouts = [
+        {
+          id: '2',
+          workoutName: 'Strength Workout',
+          startedAt: now - 7200000,
+          completedAt: now - 3600000,
+        },
+      ] as any;
+
+      (WorkoutService.getWorkoutHistory as jest.Mock)
+        .mockResolvedValueOnce(initialWorkouts)
+        .mockResolvedValueOnce([]) // hasMore check
+        .mockResolvedValueOnce(filteredWorkouts) // Reload after filter change
+        .mockResolvedValueOnce([]); // hasMore check after filter change
+
+      (WorkoutAnalytics.detectPersonalRecords as jest.Mock).mockResolvedValue([]);
+
+      const { result } = renderHook(() =>
+        useWorkoutHistory({
+          initialLimit: 5,
+          groupByMonth: true,
+          visible: true,
+        })
+      );
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      if ('sections' in result.current) {
+        // Change workoutType filter - this should trigger reload
+        act(() => {
+          result.current.handleApplyFilters({
+            workoutType: 'strength',
+          });
+        });
+
+        await waitFor(() => {
+          expect(result.current.isLoading).toBe(false);
+          expect(result.current.filters.workoutType).toBe('strength');
+        });
+      }
+    });
+
+    it('uses dateRange 90 when filter is set to 90', async () => {
+      const { calculateDateRange } = require('../../utils/workoutHistory');
+      const now = Date.now();
+      const mockWorkouts = [
+        { id: '1', workoutName: 'Workout 1', startedAt: now - 3600000, completedAt: now },
+      ] as any;
+
+      (WorkoutService.getWorkoutHistory as jest.Mock).mockResolvedValue(mockWorkouts);
+      (WorkoutAnalytics.detectPersonalRecords as jest.Mock).mockResolvedValue([]);
+
+      const { result } = renderHook(() =>
+        useWorkoutHistory({
+          initialLimit: 5,
+          groupByMonth: true,
+          visible: true,
+        })
+      );
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      if ('sections' in result.current) {
+        act(() => {
+          result.current.handleApplyFilters({
+            dateRange: '90',
+          });
+        });
+
+        await waitFor(() => {
+          expect(result.current.isLoading).toBe(false);
+          expect(calculateDateRange).toHaveBeenCalledWith('90');
+        });
+      }
+    });
+
+    it('uses dateRange custom when filter is set to custom', async () => {
+      const { calculateDateRange } = require('../../utils/workoutHistory');
+      const now = Date.now();
+      const mockWorkouts = [
+        { id: '1', workoutName: 'Workout 1', startedAt: now - 3600000, completedAt: now },
+      ] as any;
+
+      (WorkoutService.getWorkoutHistory as jest.Mock).mockResolvedValue(mockWorkouts);
+      (WorkoutAnalytics.detectPersonalRecords as jest.Mock).mockResolvedValue([]);
+
+      const { result } = renderHook(() =>
+        useWorkoutHistory({
+          initialLimit: 5,
+          groupByMonth: true,
+          visible: true,
+        })
+      );
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      if ('sections' in result.current) {
+        act(() => {
+          result.current.handleApplyFilters({
+            dateRange: 'custom',
+          });
+        });
+
+        await waitFor(() => {
+          expect(result.current.isLoading).toBe(false);
+          expect(calculateDateRange).toHaveBeenCalledWith('custom');
+        });
+      }
+    });
+  });
+
+  describe('Edge cases', () => {
+    it('handles empty workout processing in grouped mode', async () => {
+      const { processWorkouts } = require('../../utils/workoutHistory');
+      const now = Date.now();
+      const mockWorkouts = [
+        { id: '1', workoutName: 'Workout 1', startedAt: now - 3600000, completedAt: now },
+      ] as any;
+
+      // Mock processWorkouts to return empty array
+      (processWorkouts as jest.Mock).mockResolvedValueOnce([]);
+
+      (WorkoutService.getWorkoutHistory as jest.Mock)
+        .mockResolvedValueOnce(mockWorkouts)
+        .mockResolvedValueOnce([]); // hasMore check
+
+      (WorkoutAnalytics.detectPersonalRecords as jest.Mock).mockResolvedValue([]);
+
+      const { result } = renderHook(() =>
+        useWorkoutHistory({
+          initialLimit: 5,
+          groupByMonth: true,
+          visible: true,
+        })
+      );
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      if ('sections' in result.current) {
+        // Sections should be empty when processWorkouts returns empty
+        expect(result.current.sections).toEqual([]);
+      }
+    });
+
+    it('handles workout without completedAt', async () => {
+      const now = Date.now();
+      const mockWorkoutLogs = [
+        {
+          id: '1',
+          workoutName: 'Incomplete Workout',
+          startedAt: now - 3600000,
+          completedAt: null, // No completedAt
+          caloriesBurned: 0,
+        } as any,
+      ];
+
+      (WorkoutService.getWorkoutHistory as jest.Mock).mockResolvedValue(mockWorkoutLogs);
+      (WorkoutAnalytics.detectPersonalRecords as jest.Mock).mockResolvedValue([]);
+
+      const { result } = renderHook(() =>
+        useWorkoutHistory({
+          initialLimit: 2,
+          groupByMonth: false,
+        })
+      );
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      if ('workouts' in result.current) {
+        expect(result.current.workouts).toHaveLength(1);
+        expect(result.current.workouts[0].name).toBe('Incomplete Workout');
+        // Duration should be 0 when completedAt is null
+        expect(result.current.workouts[0].duration).toBe('0m');
+        // Date should use startedAt or fallback
+        expect(result.current.workouts[0].date).toBeDefined();
+      }
+    });
+
+    it('handles workout with neither startedAt nor completedAt', async () => {
+      const mockWorkoutLogs = [
+        {
+          id: '1',
+          workoutName: 'No Date Workout',
+          startedAt: null,
+          completedAt: null,
+          caloriesBurned: 0,
+        } as any,
+      ];
+
+      (WorkoutService.getWorkoutHistory as jest.Mock).mockResolvedValue(mockWorkoutLogs);
+      (WorkoutAnalytics.detectPersonalRecords as jest.Mock).mockResolvedValue([]);
+
+      const { result } = renderHook(() =>
+        useWorkoutHistory({
+          initialLimit: 2,
+          groupByMonth: false,
+        })
+      );
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      if ('workouts' in result.current) {
+        expect(result.current.workouts).toHaveLength(1);
+        expect(result.current.workouts[0].name).toBe('No Date Workout');
+        // Duration should be 0
+        expect(result.current.workouts[0].duration).toBe('0m');
+        // Date should fallback to current time
+        expect(result.current.workouts[0].date).toBeDefined();
       }
     });
   });
