@@ -59,3 +59,6 @@ dumps/*
 
 # Test coverage
 coverage/
+
+.cursor/
+.cursor/*
