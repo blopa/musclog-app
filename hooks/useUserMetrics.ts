@@ -17,8 +17,9 @@ export interface UseUserMetricsParams {
   mode?: 'latest' | 'history'; // Default: 'latest'
   metricType?: string; // For history mode: filter by type ('weight', 'height', 'bodyFat', etc.)
   dateRange?: { startDate: number; endDate: number }; // For history mode: filter by date range
-  initialLimit?: number; // For history mode, default: 5
-  batchSize?: number; // For history mode, default: 5
+  initialLimit?: number; // For history mode, default: 5 (ignored if getAll is true)
+  batchSize?: number; // For history mode, default: 5 (ignored if getAll is true)
+  getAll?: boolean; // For history mode: if true, fetch all metrics of the specified type (no pagination)
   enableReactivity?: boolean; // Default: true
   visible?: boolean; // For modal visibility control, default: true
 }
@@ -83,7 +84,7 @@ function calculateBMI(
 function convertMetricsToUserMetrics(
   weightMetric: UserMetric | null,
   heightMetric: UserMetric | null,
-  bodyFatMetric: UserMetric | null,
+  bodyFatMetric: UserMetric | null
 ): UserMetrics | null {
   const weight = weightMetric?.value;
   const height = heightMetric?.value;
@@ -116,15 +117,18 @@ function convertMetricsToUserMetrics(
 export function useUserMetrics(
   params?: UseUserMetricsParams & { mode?: 'latest' }
 ): UseUserMetricsResultLatest;
+
 export function useUserMetrics(
   params: UseUserMetricsParams & { mode: 'history' }
 ): UseUserMetricsResultHistory;
+
 export function useUserMetrics({
   mode = 'latest',
   metricType,
   dateRange,
   initialLimit = 5,
   batchSize = DEFAULT_BATCH_SIZE,
+  getAll = false,
   enableReactivity = true,
   visible = true,
 }: UseUserMetricsParams = {}): UseUserMetricsResult {
@@ -151,51 +155,67 @@ export function useUserMetrics({
 
     setIsLoading(true);
     setCurrentOffset(0);
-    setHasMore(true);
 
     try {
-      // Fetch initial batch
-      const metricsHistory = await UserMetricService.getMetricsHistory(
-        metricType,
-        dateRange,
-        initialLimit
-      );
+      let metricsHistory: UserMetric[];
+
+      if (getAll) {
+        // Fetch all metrics of the specified type (no pagination)
+        metricsHistory = await UserMetricService.getMetricsHistory(
+          metricType,
+          dateRange
+          // No limit or offset - gets all
+        );
+        setHasMore(false); // No more to load when getAll is true
+      } else {
+        // Fetch initial batch with pagination
+        setHasMore(true);
+        metricsHistory = await UserMetricService.getMetricsHistory(
+          metricType,
+          dateRange,
+          initialLimit
+        );
+
+        if (metricsHistory.length === 0) {
+          setMetrics([]);
+          setLatestValues(null);
+          setHasMore(false);
+          setIsLoading(false);
+          return;
+        }
+
+        setCurrentOffset(initialLimit);
+
+        // Check if there are more metrics
+        if (metricsHistory.length < initialLimit) {
+          setHasMore(false);
+        } else {
+          // Check if there's a next batch
+          const nextBatch = await UserMetricService.getMetricsHistory(
+            metricType,
+            dateRange,
+            1,
+            initialLimit
+          );
+          setHasMore(nextBatch.length > 0);
+        }
+      }
 
       if (metricsHistory.length === 0) {
         setMetrics([]);
         setLatestValues(null);
-        setHasMore(false);
         setIsLoading(false);
         return;
       }
 
       setMetrics(metricsHistory);
-      setCurrentOffset(initialLimit);
 
       // Get latest values for convenience
       const weightMetric = await UserMetricService.getLatest('weight');
       const heightMetric = await UserMetricService.getLatest('height');
       const bodyFatMetric = await UserMetricService.getLatest('bodyFat');
-      const latest = convertMetricsToUserMetrics(
-        weightMetric,
-        heightMetric,
-        bodyFatMetric
-      );
+      const latest = convertMetricsToUserMetrics(weightMetric, heightMetric, bodyFatMetric);
       setLatestValues(latest);
-
-      // Check if there are more metrics
-      if (metricsHistory.length < initialLimit) {
-        setHasMore(false);
-      } else {
-        // Check if there's a next batch
-        const nextBatch = await UserMetricService.getMetricsHistory(
-          metricType,
-          dateRange,
-          1,
-          initialLimit
-        );
-        setHasMore(nextBatch.length > 0);
-      }
     } catch (err) {
       console.error('Error loading user metrics history:', err);
       setMetrics([]);
@@ -204,11 +224,12 @@ export function useUserMetrics({
     } finally {
       setIsLoading(false);
     }
-  }, [visible, initialLimit, metricType, dateRange]);
+  }, [visible, initialLimit, metricType, dateRange, getAll]);
 
   // Load more metrics (pagination)
   const loadMore = useCallback(async () => {
-    if (isLoadingMore || !hasMore || !visible) {
+    if (isLoadingMore || !hasMore || !visible || getAll) {
+      // Don't load more if getAll is true (all metrics already loaded)
       return;
     }
 
@@ -254,7 +275,7 @@ export function useUserMetrics({
     } finally {
       setIsLoadingMore(false);
     }
-  }, [isLoadingMore, hasMore, visible, currentOffset, batchSize, metricType, dateRange]);
+  }, [isLoadingMore, hasMore, visible, currentOffset, batchSize, metricType, dateRange, getAll]);
 
   // Latest mode: Observe latest values for weight, height, bodyFat
   useEffect(() => {
