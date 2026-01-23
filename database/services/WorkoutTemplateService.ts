@@ -323,82 +323,149 @@ export class WorkoutTemplateService {
 
     // Process each template to get metadata
     const templatesWithMetadata = await Promise.all(
-      templates.map(async (template) => {
-        // Get exercise count from template sets (count unique exercises)
-        const templateSets = await template.templateSets.fetch();
-        const uniqueExerciseIds = new Set(
-          templateSets.filter((set) => !set.deletedAt).map((set) => set.exerciseId)
-        );
-        const exerciseCount = uniqueExerciseIds.size;
+      templates.map((template) => this.processTemplateMetadata(template))
+    );
 
-        // Get last completed workout log for this template
-        const workoutLogs = await database
-          .get<WorkoutLog>('workout_logs')
-          .query(
-            Q.where('template_id', template.id),
-            Q.where('completed_at', Q.notEq(null)),
-            Q.where('deleted_at', Q.eq(null)),
-            Q.sortBy('completed_at', Q.desc)
-          )
-          .fetch();
+    // Sort by last completed (most recent first), then by creation date
+    templatesWithMetadata.sort((a, b) => {
+      // If one has lastCompleted and other doesn't, prioritize the one with lastCompleted
+      if (a.lastCompletedTimestamp && !b.lastCompletedTimestamp) return -1;
+      if (!a.lastCompletedTimestamp && b.lastCompletedTimestamp) return 1;
+      // If both have lastCompleted, sort by timestamp (most recent first)
+      if (a.lastCompletedTimestamp && b.lastCompletedTimestamp) {
+        return b.lastCompletedTimestamp - a.lastCompletedTimestamp;
+      }
+      // If neither has lastCompleted, maintain original order (by created_at desc)
+      return 0;
+    });
 
-        let lastCompleted: string | undefined;
-        let lastCompletedTimestamp: number | undefined;
-        let duration: string | undefined;
+    return templatesWithMetadata;
+  }
 
-        if (workoutLogs.length > 0) {
-          const lastLog = workoutLogs[0];
-          lastCompletedTimestamp = lastLog.completedAt || undefined;
+  /**
+   * Helper function to process a single template and get its metadata
+   */
+  private static async processTemplateMetadata(template: WorkoutTemplate): Promise<{
+    id: string;
+    name: string;
+    description?: string;
+    exerciseCount: number;
+    lastCompleted?: string;
+    lastCompletedTimestamp?: number;
+    duration?: string;
+    image?: any;
+  }> {
+    // Get exercise count from template sets (count unique exercises)
+    const templateSets = await template.templateSets.fetch();
+    const uniqueExerciseIds = new Set(
+      templateSets.filter((set) => !set.deletedAt).map((set) => set.exerciseId)
+    );
+    const exerciseCount = uniqueExerciseIds.size;
 
-          if (lastCompletedTimestamp) {
-            // Format relative date
-            const date = new Date(lastCompletedTimestamp);
-            const now = new Date();
-            const diffMs = now.getTime() - date.getTime();
-            const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    // Get last completed workout log for this template
+    const workoutLogs = await database
+      .get<WorkoutLog>('workout_logs')
+      .query(
+        Q.where('template_id', template.id),
+        Q.where('completed_at', Q.notEq(null)),
+        Q.where('deleted_at', Q.eq(null)),
+        Q.sortBy('completed_at', Q.desc)
+      )
+      .fetch();
 
-            if (diffDays === 0) {
-              lastCompleted = 'Today';
-            } else if (diffDays === 1) {
-              lastCompleted = 'Yesterday';
-            } else if (diffDays < 7) {
-              lastCompleted = `${diffDays} days ago`;
-            } else if (diffDays < 14) {
-              lastCompleted = '1 week ago';
-            } else if (diffDays < 30) {
-              const weeks = Math.floor(diffDays / 7);
-              // When diffDays >= 14, weeks >= 2, so always plural
-              lastCompleted = `${weeks} weeks ago`;
-            } else {
-              const months = Math.floor(diffDays / 30);
-              lastCompleted = `${months} month${months > 1 ? 's' : ''} ago`;
-            }
+    let lastCompleted: string | undefined;
+    let lastCompletedTimestamp: number | undefined;
+    let duration: string | undefined;
 
-            // Calculate duration if available
-            if (lastLog.startedAt && lastLog.completedAt) {
-              const durationMinutes = Math.round((lastLog.completedAt - lastLog.startedAt) / 60000);
-              if (durationMinutes < 60) {
-                duration = `${durationMinutes} mins`;
-              } else {
-                const hours = Math.floor(durationMinutes / 60);
-                const mins = durationMinutes % 60;
-                duration = mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
-              }
-            }
-          }
+    if (workoutLogs.length > 0) {
+      const lastLog = workoutLogs[0];
+      lastCompletedTimestamp = lastLog.completedAt || undefined;
+
+      if (lastCompletedTimestamp) {
+        // Format relative date
+        const date = new Date(lastCompletedTimestamp);
+        const now = new Date();
+        const diffMs = now.getTime() - date.getTime();
+        const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+        if (diffDays === 0) {
+          lastCompleted = 'Today';
+        } else if (diffDays === 1) {
+          lastCompleted = 'Yesterday';
+        } else if (diffDays < 7) {
+          lastCompleted = `${diffDays} days ago`;
+        } else if (diffDays < 14) {
+          lastCompleted = '1 week ago';
+        } else if (diffDays < 30) {
+          const weeks = Math.floor(diffDays / 7);
+          // When diffDays >= 14, weeks >= 2, so always plural
+          lastCompleted = `${weeks} weeks ago`;
+        } else {
+          const months = Math.floor(diffDays / 30);
+          lastCompleted = `${months} month${months > 1 ? 's' : ''} ago`;
         }
 
-        return {
-          id: template.id,
-          name: template.name,
-          description: template.description || undefined,
-          exerciseCount,
-          lastCompleted,
-          lastCompletedTimestamp,
-          duration,
-          image: require('../../assets/icon.png'), // Default image for now
-        };
-      })
+        // Calculate duration if available
+        if (lastLog.startedAt && lastLog.completedAt) {
+          const durationMinutes = Math.round((lastLog.completedAt - lastLog.startedAt) / 60000);
+          if (durationMinutes < 60) {
+            duration = `${durationMinutes} mins`;
+          } else {
+            const hours = Math.floor(durationMinutes / 60);
+            const mins = durationMinutes % 60;
+            duration = mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
+          }
+        }
+      }
+    }
+
+    return {
+      id: template.id,
+      name: template.name,
+      description: template.description || undefined,
+      exerciseCount,
+      lastCompleted,
+      lastCompletedTimestamp,
+      duration,
+      image: require('../../assets/icon.png'), // Default image for now
+    };
+  }
+
+  /**
+   * Get templates with metadata and pagination support
+   */
+  static async getTemplatesWithMetadataPaginated(
+    limit?: number,
+    offset?: number
+  ): Promise<
+    {
+      id: string;
+      name: string;
+      description?: string;
+      exerciseCount: number;
+      lastCompleted?: string;
+      lastCompletedTimestamp?: number;
+      duration?: string;
+      image?: any;
+    }[]
+  > {
+    // Fetch templates with pagination
+    let query = WorkoutTemplateRepository.getActive();
+
+    if (limit) {
+      if (offset !== undefined && offset !== null && offset > 0) {
+        // Apply both skip and take together - skip must come before take
+        query = query.extend(Q.skip(offset), Q.take(limit));
+      } else {
+        query = query.extend(Q.take(limit));
+      }
+    }
+
+    const templates = await query.fetch();
+
+    // Process each template to get metadata
+    const templatesWithMetadata = await Promise.all(
+      templates.map((template) => this.processTemplateMetadata(template))
     );
 
     // Sort by last completed (most recent first), then by creation date

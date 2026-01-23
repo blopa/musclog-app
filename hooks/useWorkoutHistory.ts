@@ -129,9 +129,11 @@ async function processWorkoutSimple(
 export function useWorkoutHistory(
   params: UseWorkoutHistoryParams & { groupByMonth: true }
 ): UseWorkoutHistoryResultGrouped;
+
 export function useWorkoutHistory(
   params?: UseWorkoutHistoryParams & { groupByMonth?: false }
 ): UseWorkoutHistoryResultFlat;
+
 export function useWorkoutHistory({
   initialLimit = 2,
   batchSize = DEFAULT_BATCH_SIZE,
