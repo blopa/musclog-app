@@ -17,6 +17,7 @@ import {
   mergeWorkoutSections,
   filterWorkoutsBySearch,
 } from '../utils/workoutHistory';
+import { DEFAULT_BATCH_SIZE } from '../constants/database';
 
 // Types for simple workout format (home screen)
 export type ProcessedRecentWorkout = {
@@ -66,8 +67,6 @@ export type UseWorkoutHistoryResultGrouped = {
 };
 
 export type UseWorkoutHistoryResult = UseWorkoutHistoryResultFlat | UseWorkoutHistoryResultGrouped;
-
-const DEFAULT_BATCH_SIZE = 5;
 
 // Format relative date for simple display (home screen)
 function formatRelativeDate(timestamp: number, t: (key: string) => string): string {

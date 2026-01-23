@@ -4,6 +4,7 @@ import { database } from '../database';
 import UserMetric from '../database/models/UserMetric';
 import { useSettings } from './useSettings';
 import { UserMetricService } from '../database/services/UserMetricService';
+import { DEFAULT_BATCH_SIZE } from '../constants/database';
 
 export interface UserMetrics {
   weight?: number;
@@ -41,8 +42,6 @@ export type UseUserMetricsResultHistory = {
 };
 
 export type UseUserMetricsResult = UseUserMetricsResultLatest | UseUserMetricsResultHistory;
-
-const DEFAULT_BATCH_SIZE = 5;
 
 /**
  * Calculate BMI from weight and height

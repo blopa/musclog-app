@@ -3,6 +3,7 @@ import { Q } from '@nozbe/watermelondb';
 import { database } from '../database';
 import WorkoutTemplate from '../database/models/WorkoutTemplate';
 import { WorkoutTemplateService } from '../database/services/WorkoutTemplateService';
+import { DEFAULT_BATCH_SIZE } from '../constants/database';
 
 export type WorkoutTemplateWithMetadata = {
   id: string;
@@ -45,8 +46,6 @@ export type UseWorkoutTemplatesResultPaginated = {
 export type UseWorkoutTemplatesResult =
   | UseWorkoutTemplatesResultAll
   | UseWorkoutTemplatesResultPaginated;
-
-const DEFAULT_BATCH_SIZE = 5;
 
 // Function overloads for proper type narrowing
 export function useWorkoutTemplates(

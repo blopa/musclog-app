@@ -3,6 +3,7 @@ import { Q } from '@nozbe/watermelondb';
 import { database } from '../database';
 import NutritionGoal from '../database/models/NutritionGoal';
 import { NutritionGoalService } from '../database/services/NutritionGoalService';
+import { DEFAULT_BATCH_SIZE } from '../constants/database';
 
 // Hook parameters
 export interface UseCurrentNutritionGoalParams {
@@ -32,8 +33,6 @@ export type UseCurrentNutritionGoalResultHistory = {
 export type UseCurrentNutritionGoalResult =
   | UseCurrentNutritionGoalResultCurrent
   | UseCurrentNutritionGoalResultHistory;
-
-const DEFAULT_BATCH_SIZE = 5;
 
 // Function overloads for proper type narrowing
 export function useCurrentNutritionGoal(
