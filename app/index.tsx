@@ -16,6 +16,7 @@ import { theme } from '../theme';
 import { MasterLayout } from '../components/MasterLayout';
 import { DetailedItemCard } from '../components/cards/DetailedItemCard';
 import { ActionButton } from '../components/ActionButton';
+import ShowMoreButton from '../components/ShowMoreButton';
 import { DailySummaryCard } from '../components/cards/DailySummaryCard';
 import { UserMenuModal } from '../components/modals/UserMenuModal';
 import { NotificationsModal } from '../components/modals/NotificationsModal';
@@ -194,9 +195,7 @@ export default function HomeScreen() {
             <Text className="text-2xl font-bold text-text-primary">
               {t('home.sections.recentWorkouts')}
             </Text>
-            <Pressable onPress={() => setIsWorkoutHistoryVisible(true)}>
-              <Text className="text-sm font-medium text-text-accent">{t('common.seeAll')}</Text>
-            </Pressable>
+            <ShowMoreButton onPress={() => setIsWorkoutHistoryVisible(true)} />
           </View>
 
           {isLoadingRecent ? (
