@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { View, Text, ScrollView, Pressable } from 'react-native';
 import { SlidersHorizontal, Calendar, Clock, Plus } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
@@ -10,11 +10,10 @@ import { GenericCard } from '../cards/GenericCard';
 import { HistoryBodyMetricCard } from '../cards/HistoryBodyMetricCard';
 import { FullScreenModal } from './FullScreenModal';
 import { Button } from '../theme/Button';
-import { database } from '../../database';
-import { Q } from '@nozbe/watermelondb';
 import UserMetric from '../../database/models/UserMetric';
 import { SkeletonLoader } from '../theme/SkeletonLoader';
 import { useSettings } from '../../hooks/useSettings';
+import { useUserMetrics } from '../../hooks/useUserMetrics';
 
 type MetricType = 'weight' | 'bodyFat' | 'bmi' | 'ffmi';
 type TimePeriod = '30D' | '3M' | '1Y';
@@ -55,8 +54,6 @@ function formatRelativeDate(timestamp: number, t: (key: string) => string): stri
   return format(date, 'MMM d, hh:mm a');
 }
 
-const BATCH_SIZE = 5;
-
 type BodyMetricsHistoryModalProps = {
   visible: boolean;
   onClose: () => void;
@@ -70,24 +67,6 @@ export default function BodyMetricsHistoryModal({
   const { units } = useSettings();
   const [selectedMetric, setSelectedMetric] = useState<MetricType>('weight');
   const [selectedPeriod, setSelectedPeriod] = useState<TimePeriod>('30D');
-  const [isLoading, setIsLoading] = useState(false);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [currentMetric, setCurrentMetric] = useState<MetricData | null>(null);
-  const [historyEntries, setHistoryEntries] = useState<HistoryEntry[]>([]);
-  const [chartData, setChartData] = useState<{ x: number; y: number }[]>([]);
-  // Pagination state for each metric type
-  const [pageOffsets, setPageOffsets] = useState<Record<MetricType, number>>({
-    weight: 0,
-    bodyFat: 0,
-    bmi: 0,
-    ffmi: 0,
-  });
-  const [hasMore, setHasMore] = useState<Record<MetricType, boolean>>({
-    weight: true,
-    bodyFat: true,
-    bmi: true,
-    ffmi: true,
-  });
 
   const metricOptions = [
     { label: t('bodyMetrics.metrics.weight'), value: 'weight' },
@@ -95,6 +74,47 @@ export default function BodyMetricsHistoryModal({
     { label: t('bodyMetrics.metrics.bmi'), value: 'bmi' },
     { label: t('bodyMetrics.metrics.ffmi'), value: 'ffmi' },
   ];
+
+  // Calculate date range based on selected period
+  const dateRange = useMemo(() => {
+    const now = Date.now();
+    let startDate = now;
+    if (selectedPeriod === '30D') {
+      startDate = now - 30 * 24 * 60 * 60 * 1000;
+    } else if (selectedPeriod === '3M') {
+      startDate = now - 90 * 24 * 60 * 60 * 1000;
+    } else if (selectedPeriod === '1Y') {
+      startDate = now - 365 * 24 * 60 * 60 * 1000;
+    }
+    return { startDate, endDate: now };
+  }, [selectedPeriod]);
+
+  // Use hook for paginated history (for list display)
+  const {
+    metrics: paginatedMetrics,
+    isLoading,
+    isLoadingMore,
+    hasMore,
+    loadMore,
+  } = useUserMetrics({
+    mode: 'history',
+    metricType: selectedMetric,
+    dateRange,
+    initialLimit: 5,
+    batchSize: 5,
+    enableReactivity: true,
+    visible,
+  });
+
+  // Use hook for all metrics (for chart display)
+  const { metrics: allMetricsForChart } = useUserMetrics({
+    mode: 'history',
+    metricType: selectedMetric,
+    dateRange,
+    getAll: true,
+    enableReactivity: false, // Chart doesn't need reactivity
+    visible,
+  });
 
   // Helper to get unit for metric type (uses settings for weight)
   const getMetricUnit = useCallback(
@@ -136,7 +156,7 @@ export default function BodyMetricsHistoryModal({
           if (absDiff > 0.01) {
             changeType = diff > 0 ? 'up' : 'down';
             const sign = diff > 0 ? '+' : '';
-            change = `${sign}${absDiff.toFixed(selectedMetric === 'weight' || selectedMetric === 'bodyFat' ? 1 : 2)} ${unit}`;
+            change = `${sign}${absDiff.toFixed(selectedMetric === 'weight' || selectedMetric === 'bodyFat' ? 1 : 2)}${unit ? ` ${unit}` : ''}`;
           }
         }
 
@@ -173,244 +193,55 @@ export default function BodyMetricsHistoryModal({
     [selectedMetric, t, getMetricUnit]
   );
 
-  // Load metrics data (initial load - only 5 entries)
-  const loadMetricsData = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      // Calculate date range based on selected period
-      const now = Date.now();
-      let startDate = now;
-      if (selectedPeriod === '30D') {
-        startDate = now - 30 * 24 * 60 * 60 * 1000;
-      } else if (selectedPeriod === '3M') {
-        startDate = now - 90 * 24 * 60 * 60 * 1000;
-      } else if (selectedPeriod === '1Y') {
-        startDate = now - 365 * 24 * 60 * 60 * 1000;
-      }
-
-      // Reset pagination for this metric type
-      setPageOffsets((prev) => ({ ...prev, [selectedMetric]: 0 }));
-      setHasMore((prev) => ({ ...prev, [selectedMetric]: true }));
-
-      // Fetch initial batch (5 metrics) for selected type within date range
-      let query = database
-        .get<UserMetric>('user_metrics')
-        .query(
-          Q.where('type', selectedMetric),
-          Q.where('date', Q.gte(startDate)),
-          Q.where('deleted_at', Q.eq(null)),
-          Q.sortBy('date', Q.desc)
-        );
-
-      // Apply pagination
-      query = query.extend(Q.take(BATCH_SIZE));
-
-      const metrics = await query.fetch();
-
-      if (metrics.length === 0) {
-        setCurrentMetric(null);
-        setHistoryEntries([]);
-        setChartData([]);
-        setHasMore((prev) => ({ ...prev, [selectedMetric]: false }));
-        return;
-      }
-
-      // Get current (latest) metric
-      const latest = metrics[0];
-      const unit = latest.unit || getMetricUnit(selectedMetric);
-      setCurrentMetric({
-        current: latest.value.toFixed(
-          selectedMetric === 'weight' || selectedMetric === 'bodyFat' ? 1 : 2
-        ),
-        unit,
-        label: getMetricLabel(selectedMetric),
-      });
-
-      // Create history entries with changes
-      const entries = processMetricsToEntries(metrics, unit);
-      setHistoryEntries(entries);
-
-      // Update pagination state
-      setPageOffsets((prev) => ({ ...prev, [selectedMetric]: metrics.length }));
-
-      // Check if there are more metrics
-      if (metrics.length < BATCH_SIZE) {
-        setHasMore((prev) => ({ ...prev, [selectedMetric]: false }));
-      } else {
-        // Check if there's at least one more metric
-        const nextBatch = await database
-          .get<UserMetric>('user_metrics')
-          .query(
-            Q.where('type', selectedMetric),
-            Q.where('date', Q.gte(startDate)),
-            Q.where('deleted_at', Q.eq(null)),
-            Q.sortBy('date', Q.desc),
-            Q.skip(metrics.length),
-            Q.take(1)
-          )
-          .fetch();
-        setHasMore((prev) => ({ ...prev, [selectedMetric]: nextBatch.length > 0 }));
-      }
-
-      // For chart, we need ALL metrics for the selected period (not paginated)
-      // This ensures the chart shows the complete trend over time
-      const chartMetrics = await database
-        .get<UserMetric>('user_metrics')
-        .query(
-          Q.where('type', selectedMetric),
-          Q.where('date', Q.gte(startDate)),
-          Q.where('deleted_at', Q.eq(null)),
-          Q.sortBy('date', Q.asc) // Sort ascending (oldest to newest) for chart
-        )
-        .fetch();
-
-      // Generate chart data (already in chronological order from oldest to newest)
-      if (chartMetrics.length > 0) {
-        const minValue = Math.min(...chartMetrics.map((m) => m.value));
-        const maxValue = Math.max(...chartMetrics.map((m) => m.value));
-        const range = maxValue - minValue || 1; // Avoid division by zero
-        const padding = range * 0.1; // 10% padding
-
-        const normalizedData = chartMetrics.map((metric, index) => {
-          // Normalize y to 0-150 range for chart (matching original design)
-          const normalizedY = ((metric.value - minValue + padding) / (range + padding * 2)) * 150;
-          // X-axis: distribute evenly across 400 width
-          // Handle single data point case
-          const normalizedX =
-            chartMetrics.length === 1 ? 200 : (index / (chartMetrics.length - 1)) * 400;
-          return { x: normalizedX, y: Math.max(0, Math.min(150, 150 - normalizedY)) }; // Invert Y for chart
-        });
-
-        setChartData(normalizedData);
-      } else {
-        setChartData([]);
-      }
-    } catch (error) {
-      console.error('Error loading metrics data:', error);
-      setCurrentMetric(null);
-      setHistoryEntries([]);
-      setChartData([]);
-      setHasMore((prev) => ({ ...prev, [selectedMetric]: false }));
-    } finally {
-      setIsLoading(false);
+  // Process paginated metrics into history entries
+  const historyEntries = useMemo(() => {
+    if (!paginatedMetrics || paginatedMetrics.length === 0) {
+      return [];
     }
-  }, [getMetricLabel, selectedMetric, selectedPeriod, t, processMetricsToEntries]);
+    const unit = getMetricUnit(selectedMetric);
+    return processMetricsToEntries(paginatedMetrics, unit);
+  }, [paginatedMetrics, selectedMetric, getMetricUnit, processMetricsToEntries]);
 
-  // Load more history entries
-  const loadMoreHistory = useCallback(async () => {
-    if (isLoadingMore || !hasMore[selectedMetric]) {
-      return;
+  // Get current metric data from latest entry
+  const currentMetric = useMemo<MetricData | null>(() => {
+    if (!paginatedMetrics || paginatedMetrics.length === 0) {
+      return null;
+    }
+    const latest = paginatedMetrics[0];
+    const unit = latest.unit || getMetricUnit(selectedMetric);
+    return {
+      current: latest.value.toFixed(
+        selectedMetric === 'weight' || selectedMetric === 'bodyFat' ? 1 : 2
+      ),
+      unit,
+      label: getMetricLabel(selectedMetric),
+    };
+  }, [paginatedMetrics, selectedMetric, getMetricUnit, getMetricLabel]);
+
+  // Generate chart data from all metrics
+  const chartData = useMemo(() => {
+    if (!allMetricsForChart || allMetricsForChart.length === 0) {
+      return [];
     }
 
-    setIsLoadingMore(true);
+    // Sort ascending (oldest to newest) for chart
+    const sortedMetrics = [...allMetricsForChart].sort((a, b) => a.date - b.date);
 
-    // Small delay to ensure React processes the state update
-    await new Promise<void>((resolve) => setTimeout(resolve, 10));
+    const minValue = Math.min(...sortedMetrics.map((m) => m.value));
+    const maxValue = Math.max(...sortedMetrics.map((m) => m.value));
+    const range = maxValue - minValue || 1; // Avoid division by zero
+    const padding = range * 0.1; // 10% padding
 
-    try {
-      // Calculate date range based on selected period
-      const now = Date.now();
-      let startDate = now;
-      if (selectedPeriod === '30D') {
-        startDate = now - 30 * 24 * 60 * 60 * 1000;
-      } else if (selectedPeriod === '3M') {
-        startDate = now - 90 * 24 * 60 * 60 * 1000;
-      } else if (selectedPeriod === '1Y') {
-        startDate = now - 365 * 24 * 60 * 60 * 1000;
-      }
-
-      const currentOffset = pageOffsets[selectedMetric];
-
-      // Fetch next batch
-      const metrics = await database
-        .get<UserMetric>('user_metrics')
-        .query(
-          Q.where('type', selectedMetric),
-          Q.where('date', Q.gte(startDate)),
-          Q.where('deleted_at', Q.eq(null)),
-          Q.sortBy('date', Q.desc),
-          Q.skip(currentOffset),
-          Q.take(BATCH_SIZE)
-        )
-        .fetch();
-
-      if (metrics.length === 0) {
-        setHasMore((prev) => ({ ...prev, [selectedMetric]: false }));
-        setIsLoadingMore(false);
-        return;
-      }
-
-      // Process new entries
-      const unit = getMetricUnit(selectedMetric);
-      const newEntries = processMetricsToEntries(metrics, unit);
-
-      // Append to existing entries
-      setHistoryEntries((prev) => [...prev, ...newEntries]);
-
-      // Update pagination state
-      const newOffset = currentOffset + metrics.length;
-      setPageOffsets((prev) => ({ ...prev, [selectedMetric]: newOffset }));
-
-      // Check if there are more metrics
-      if (metrics.length < BATCH_SIZE) {
-        setHasMore((prev) => ({ ...prev, [selectedMetric]: false }));
-      } else {
-        // Check if there's at least one more metric
-        const nextBatch = await database
-          .get<UserMetric>('user_metrics')
-          .query(
-            Q.where('type', selectedMetric),
-            Q.where('date', Q.gte(startDate)),
-            Q.where('deleted_at', Q.eq(null)),
-            Q.sortBy('date', Q.desc),
-            Q.skip(newOffset),
-            Q.take(1)
-          )
-          .fetch();
-        setHasMore((prev) => ({ ...prev, [selectedMetric]: nextBatch.length > 0 }));
-      }
-    } catch (error) {
-      console.error('Error loading more history:', error);
-      setHasMore((prev) => ({ ...prev, [selectedMetric]: false }));
-    } finally {
-      setIsLoadingMore(false);
-    }
-  }, [
-    isLoadingMore,
-    hasMore,
-    selectedMetric,
-    selectedPeriod,
-    pageOffsets,
-    getMetricUnit,
-    processMetricsToEntries,
-  ]);
-
-  // Load data when modal opens or metric/period changes
-  useEffect(() => {
-    if (visible) {
-      // Reset loading state immediately when modal opens for instant feedback
-      setIsLoading(true);
-      setCurrentMetric(null);
-      setHistoryEntries([]);
-      setChartData([]);
-      // Use setTimeout to defer data loading slightly, allowing modal to render first
-      // This makes the modal feel instant and snappy
-      const timeoutId = setTimeout(() => {
-        loadMetricsData();
-      }, 0);
-
-      return () => {
-        clearTimeout(timeoutId);
-      };
-    } else {
-      // Reset state when modal closes
-      setIsLoading(false);
-      setCurrentMetric(null);
-      setHistoryEntries([]);
-      setChartData([]);
-      setIsLoadingMore(false);
-    }
-  }, [visible, selectedMetric, selectedPeriod, loadMetricsData]);
+    return sortedMetrics.map((metric, index) => {
+      // Normalize y to 0-150 range for chart (matching original design)
+      const normalizedY = ((metric.value - minValue + padding) / (range + padding * 2)) * 150;
+      // X-axis: distribute evenly across 400 width
+      // Handle single data point case
+      const normalizedX =
+        sortedMetrics.length === 1 ? 200 : (index / (sortedMetrics.length - 1)) * 400;
+      return { x: normalizedX, y: Math.max(0, Math.min(150, 150 - normalizedY)) }; // Invert Y for chart
+    });
+  }, [allMetricsForChart]);
 
   const handleNewMetric = () => {
     // TODO: Open add new metric modal or form
@@ -637,7 +468,7 @@ export default function BodyMetricsHistoryModal({
                 ))}
 
                 {/* Load More Button */}
-                {hasMore[selectedMetric] && (
+                {hasMore && (
                   <View className="py-4">
                     <Button
                       label={
@@ -645,7 +476,7 @@ export default function BodyMetricsHistoryModal({
                           ? t('bodyMetrics.history.loadingMore')
                           : t('bodyMetrics.history.loadMore')
                       }
-                      onPress={loadMoreHistory}
+                      onPress={loadMore}
                       size="sm"
                       variant="outline"
                       disabled={isLoadingMore}
