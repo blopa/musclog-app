@@ -158,7 +158,7 @@ export function createMockWorkoutLogSet(overrides: Partial<any> = {}) {
     reps: 10,
     weight: 100,
     partials: 0,
-    restTime: 60,
+    restTimeAfter: 60,
     difficultyLevel: 5,
     isDropSet: false,
     setOrder: 1,

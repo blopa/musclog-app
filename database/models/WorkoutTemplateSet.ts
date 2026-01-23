@@ -15,6 +15,7 @@ export default class WorkoutTemplateSet extends Model {
   @field('exercise_id') exerciseId!: string;
   @field('target_reps') targetReps!: number;
   @field('target_weight') targetWeight!: number;
+  @field('rest_time_after') restTimeAfter?: number;
   @field('set_order') setOrder!: number;
   @field('created_at') createdAt!: number;
   @field('updated_at') updatedAt!: number;

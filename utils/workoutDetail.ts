@@ -232,7 +232,7 @@ export async function transformWorkoutToDetailData(
           weight: formatWeight(set.weight, isBodyweight, t, units),
           reps: set.reps,
           partial: set.difficultyLevel > 0 ? set.difficultyLevel.toString() : '-',
-          rest: formatRestTime(set.restTime),
+          rest: formatRestTime(set.restTimeAfter),
           isHighlighted,
         };
       });

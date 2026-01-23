@@ -38,7 +38,7 @@ export default class WorkoutLog extends Model {
       reps?: number;
       weight?: number;
       partials?: number;
-      restTime?: number;
+      restTimeAfter?: number;
       difficultyLevel?: number;
       isDropSet?: boolean;
     }
@@ -58,7 +58,7 @@ export default class WorkoutLog extends Model {
       if (data.reps !== undefined) updatedSet.reps = data.reps;
       if (data.weight !== undefined) updatedSet.weight = data.weight;
       if (data.partials !== undefined) updatedSet.partials = data.partials;
-      if (data.restTime !== undefined) updatedSet.restTime = data.restTime;
+      if (data.restTimeAfter !== undefined) updatedSet.restTimeAfter = data.restTimeAfter;
       if (data.difficultyLevel !== undefined) {
         if (data.difficultyLevel < 1 || data.difficultyLevel > 10) {
           throw new Error('Difficulty level must be between 1 and 10');
@@ -100,7 +100,7 @@ export default class WorkoutLog extends Model {
       logSet.reps = reps;
       logSet.weight = weight;
       logSet.partials = partials ?? 0;
-      logSet.restTime = 0;
+      logSet.restTimeAfter = 0;
       logSet.difficultyLevel = 0;
       logSet.isDropSet = false;
       logSet.setOrder = newOrder;

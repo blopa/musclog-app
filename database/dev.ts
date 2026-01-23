@@ -359,7 +359,7 @@ export async function seedWorkoutTemplatesAndHistory(): Promise<{
               logSet.exerciseId = exerciseData.exercise.id;
               logSet.reps = set.reps;
               logSet.weight = set.weight;
-              logSet.restTime = 60; // 60 seconds rest
+              logSet.restTimeAfter = 60; // 60 seconds rest
               logSet.difficultyLevel = 7; // RPE 7
               logSet.isDropSet = false;
               logSet.setOrder = setOrder;
@@ -656,7 +656,7 @@ export async function seedWorkoutTemplatesAndHistory(): Promise<{
             logSet.exerciseId = exerciseData.exercise.id;
             logSet.reps = set.reps;
             logSet.weight = set.weight;
-            logSet.restTime = 60;
+            logSet.restTimeAfter = 60;
             logSet.difficultyLevel = 7;
             logSet.isDropSet = false;
             logSet.setOrder = setOrder;
@@ -760,7 +760,7 @@ export async function seedWorkoutHistory(): Promise<{ created: number }> {
               logSet.exerciseId = exerciseData.exercise.id;
               logSet.reps = set.reps;
               logSet.weight = set.weight;
-              logSet.restTime = 60; // 60 seconds rest
+              logSet.restTimeAfter = 60; // 60 seconds rest
               logSet.difficultyLevel = 7; // RPE 7
               logSet.isDropSet = false;
               logSet.setOrder = setOrder;
