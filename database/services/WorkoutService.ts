@@ -6,6 +6,11 @@ import Exercise from '../models/Exercise';
 import Schedule from '../models/Schedule';
 import { Q } from '@nozbe/watermelondb';
 import { WorkoutAnalytics } from './WorkoutAnalytics';
+import {
+  getActiveWorkoutLogId,
+  setActiveWorkoutLogId,
+  clearActiveWorkoutLogId,
+} from '../../utils/activeWorkoutStorage';
 
 export class WorkoutService {
   /**
@@ -19,13 +24,32 @@ export class WorkoutService {
         throw new Error('Cannot start workout from a deleted template');
       }
 
-      // Check if there's already an active workout
-      const activeWorkout = await this.getActiveWorkout();
-      if (activeWorkout) {
-        throw new Error('There is already an active workout. Please complete it first.');
+      // Check if there's already an active workout in AsyncStorage
+      const activeWorkoutLogId = await getActiveWorkoutLogId();
+      if (activeWorkoutLogId) {
+        // Verify the workout still exists and is not completed
+        try {
+          const activeWorkout = await database
+            .get<WorkoutLog>('workout_logs')
+            .find(activeWorkoutLogId);
+          if (!activeWorkout.deletedAt && !activeWorkout.completedAt) {
+            throw new Error('There is already an active workout. Please complete it first.');
+          } else {
+            // Workout was completed or deleted, clear it from storage
+            await clearActiveWorkoutLogId();
+          }
+        } catch (error) {
+          // Workout doesn't exist, clear it from storage
+          await clearActiveWorkoutLogId();
+        }
       }
 
-      return await template.startWorkout();
+      const workoutLog = await template.startWorkout();
+
+      // Store the active workout log ID in AsyncStorage
+      await setActiveWorkoutLogId(workoutLog.id);
+
+      return workoutLog;
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(`Failed to start workout: ${error.message}`);
@@ -36,18 +60,30 @@ export class WorkoutService {
 
   /**
    * Get the currently active workout (not completed)
+   * Uses AsyncStorage to track the active workout
    */
   static async getActiveWorkout(): Promise<WorkoutLog | null> {
-    const activeWorkouts = await database
-      .get<WorkoutLog>('workout_logs')
-      .query(
-        Q.where('completed_at', Q.eq(null)),
-        Q.where('deleted_at', Q.eq(null)),
-        Q.sortBy('started_at', Q.desc)
-      )
-      .fetch();
+    const activeWorkoutLogId = await getActiveWorkoutLogId();
+    if (!activeWorkoutLogId) {
+      return null;
+    }
 
-    return activeWorkouts.length > 0 ? activeWorkouts[0] : null;
+    try {
+      const workoutLog = await database.get<WorkoutLog>('workout_logs').find(activeWorkoutLogId);
+
+      // Verify the workout is still active (not completed or deleted)
+      if (workoutLog.completedAt || workoutLog.deletedAt) {
+        // Clear from storage if it's no longer active
+        await clearActiveWorkoutLogId();
+        return null;
+      }
+
+      return workoutLog;
+    } catch (error) {
+      // Workout doesn't exist, clear from storage
+      await clearActiveWorkoutLogId();
+      return null;
+    }
   }
 
   /**
@@ -128,6 +164,12 @@ export class WorkoutService {
 
       // Complete the workout (this calculates volume)
       await workoutLog.completeWorkout();
+
+      // Clear active workout from AsyncStorage
+      const activeWorkoutLogId = await getActiveWorkoutLogId();
+      if (activeWorkoutLogId === workoutLogId) {
+        await clearActiveWorkoutLogId();
+      }
 
       // Reload to get updated values
       const completedWorkout = await database.get<WorkoutLog>('workout_logs').find(workoutLogId);
@@ -234,5 +276,100 @@ export class WorkoutService {
     }
 
     return await query.fetch();
+  }
+
+  /**
+   * Get the current set (first unlogged set) for a workout
+   */
+  static async getCurrentSet(workoutLogId: string): Promise<{
+    set: WorkoutLogSet;
+    exercise: Exercise;
+  } | null> {
+    const sets = await database
+      .get<WorkoutLogSet>('workout_log_sets')
+      .query(
+        Q.where('workout_log_id', workoutLogId),
+        Q.where('deleted_at', Q.eq(null)),
+        Q.sortBy('set_order', Q.asc)
+      )
+      .fetch();
+
+    // Find first set with difficultyLevel === 0 (unlogged)
+    const currentSet = sets.find((set) => set.difficultyLevel === 0);
+    if (!currentSet) {
+      return null;
+    }
+
+    const exercise = await database.get<Exercise>('exercises').find(currentSet.exerciseId);
+    return { set: currentSet, exercise };
+  }
+
+  /**
+   * Get the next set after the current set order
+   */
+  static async getNextSet(
+    workoutLogId: string,
+    currentSetOrder: number
+  ): Promise<{
+    set: WorkoutLogSet;
+    exercise: Exercise;
+  } | null> {
+    const sets = await database
+      .get<WorkoutLogSet>('workout_log_sets')
+      .query(
+        Q.where('workout_log_id', workoutLogId),
+        Q.where('deleted_at', Q.eq(null)),
+        Q.sortBy('set_order', Q.asc)
+      )
+      .fetch();
+
+    // Find next unlogged set after current set order
+    const nextSet = sets.find((set) => set.setOrder > currentSetOrder && set.difficultyLevel === 0);
+    if (!nextSet) {
+      return null;
+    }
+
+    const exercise = await database.get<Exercise>('exercises').find(nextSet.exerciseId);
+    return { set: nextSet, exercise };
+  }
+
+  /**
+   * Get workout progress metadata
+   */
+  static async getWorkoutProgress(workoutLogId: string): Promise<{
+    totalSets: number;
+    completedSets: number;
+    currentSetOrder: number | null;
+    exerciseGrouping: Map<string, number[]>; // exerciseId -> set_order[]
+  }> {
+    const sets = await database
+      .get<WorkoutLogSet>('workout_log_sets')
+      .query(
+        Q.where('workout_log_id', workoutLogId),
+        Q.where('deleted_at', Q.eq(null)),
+        Q.sortBy('set_order', Q.asc)
+      )
+      .fetch();
+
+    const totalSets = sets.length;
+    const completedSets = sets.filter((set) => set.difficultyLevel > 0).length;
+    const currentSet = sets.find((set) => set.difficultyLevel === 0);
+    const currentSetOrder = currentSet?.setOrder ?? null;
+
+    // Group sets by exercise
+    const exerciseGrouping = new Map<string, number[]>();
+    sets.forEach((set) => {
+      if (!exerciseGrouping.has(set.exerciseId)) {
+        exerciseGrouping.set(set.exerciseId, []);
+      }
+      exerciseGrouping.get(set.exerciseId)!.push(set.setOrder);
+    });
+
+    return {
+      totalSets,
+      completedSets,
+      currentSetOrder,
+      exerciseGrouping,
+    };
   }
 }

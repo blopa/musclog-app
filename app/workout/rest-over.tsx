@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Animated, Platform } from 'react-native';
-import { Play } from 'lucide-react-native';
-import { useRouter } from 'expo-router';
+import { View, Animated, Platform, ActivityIndicator } from 'react-native';
+import { Play, WifiOff } from 'lucide-react-native';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '../../theme';
@@ -12,14 +12,34 @@ import { EndWorkoutModal } from '../../components/modals/EndWorkoutModal';
 import { RestOverStatusIcon } from '../../components/RestOverStatusIcon';
 import { RestOverTitle } from '../../components/RestOverTitle';
 import { RestOverNextExercise } from '../../components/RestOverNextExercise';
+import { WorkoutService } from '../../database/services/WorkoutService';
+import { database } from '../../database';
+import WorkoutLog from '../../database/models/WorkoutLog';
+import { ErrorStateCard } from '../../components/theme/ErrorStateCard';
+import { StatusBar } from 'expo-status-bar';
+import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
 
 export default function RestOverScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const params = useLocalSearchParams<{ workoutLogId?: string; nextSetOrder?: string }>();
+  const workoutLogId = params.workoutLogId;
+  const nextSetOrder = params.nextSetOrder ? parseInt(params.nextSetOrder, 10) : null;
+
   const pulseAnim = useRef(new Animated.Value(0.3)).current;
   const [isOptionsModalVisible, setIsOptionsModalVisible] = useState(false);
   const [isEndWorkoutModalVisible, setIsEndWorkoutModalVisible] = useState(false);
+  const [workoutLog, setWorkoutLog] = useState<WorkoutLog | null>(null);
+  const [nextExercise, setNextExercise] = useState<{
+    name: string;
+    weight: string;
+    reps: number;
+    set: number;
+    totalSets: number;
+  } | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     // Pulse animation for the glow
@@ -39,22 +59,83 @@ export default function RestOverScreen() {
     ).start();
   }, [pulseAnim]);
 
+  // Load next set data
+  useEffect(() => {
+    const loadData = async () => {
+      if (!workoutLogId) {
+        setError('No workout ID provided');
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        // Load workout log
+        const log = await database.get<WorkoutLog>('workout_logs').find(workoutLogId);
+        if (log.deletedAt) {
+          throw new Error('Workout has been deleted');
+        }
+        setWorkoutLog(log);
+
+        // Load next set
+        if (nextSetOrder !== null) {
+          const next = await WorkoutService.getNextSet(workoutLogId, nextSetOrder - 1);
+          if (next) {
+            // Calculate set number within exercise
+            const allSets = await WorkoutService.getWorkoutWithDetails(workoutLogId);
+            const exerciseSets = allSets.sets.filter((s) => s.exerciseId === next.set.exerciseId);
+            const setNumber = exerciseSets.findIndex((s) => s.id === next.set.id) + 1;
+
+            setNextExercise({
+              name: next.exercise.name,
+              weight: `${next.set.weight}kg`,
+              reps: next.set.reps,
+              set: setNumber,
+              totalSets: exerciseSets.length,
+            });
+          }
+        } else {
+          // Get current set if no next set order provided
+          const current = await WorkoutService.getCurrentSet(workoutLogId);
+          if (current) {
+            const allSets = await WorkoutService.getWorkoutWithDetails(workoutLogId);
+            const exerciseSets = allSets.sets.filter(
+              (s) => s.exerciseId === current.set.exerciseId
+            );
+            const setNumber = exerciseSets.findIndex((s) => s.id === current.set.id) + 1;
+
+            setNextExercise({
+              name: current.exercise.name,
+              weight: `${current.set.weight}kg`,
+              reps: current.set.reps,
+              set: setNumber,
+              totalSets: exerciseSets.length,
+            });
+          }
+        }
+
+        setIsLoading(false);
+      } catch (err) {
+        console.error('Error loading rest over data:', err);
+        setError(err instanceof Error ? err.message : 'Failed to load workout data');
+        setIsLoading(false);
+      }
+    };
+
+    loadData();
+  }, [workoutLogId, nextSetOrder]);
+
   const handleStartNextSet = () => {
-    router.back();
+    if (workoutLogId) {
+      router.replace(`/workout/workout-session?workoutLogId=${workoutLogId}`);
+    }
   };
 
   const handleEndWorkout = () => {
     setIsOptionsModalVisible(false);
     setIsEndWorkoutModalVisible(true);
-  };
-
-  // Default values - these would come from props or route params in real app
-  const nextExercise = {
-    name: 'Incline Dumbbell Fly',
-    weight: '20kg',
-    reps: 12,
-    set: 2,
-    totalSets: 4,
   };
 
   const webScreenStyle =
@@ -69,6 +150,42 @@ export default function RestOverScreen() {
           height: '100vh',
         } as any)
       : {};
+
+  if (isLoading) {
+    return (
+      <SafeAreaView
+        className="flex-1 bg-bg-primary"
+        edges={['top', 'bottom']}
+        style={webScreenStyle}
+      >
+        <StatusBar style="light" />
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator size="large" color={theme.colors.accent.primary} />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (error || !workoutLog) {
+    return (
+      <SafeAreaView
+        className="flex-1 bg-bg-primary"
+        edges={['top', 'bottom']}
+        style={webScreenStyle}
+      >
+        <StatusBar style="light" />
+        <View className="flex-1 items-center justify-center px-6">
+          <ErrorStateCard
+            icon={WifiOff}
+            title={error || 'Workout not found'}
+            description="Unable to load rest over screen. Please try again."
+            buttonLabel="Go Back"
+            onButtonPress={() => router.replace('/workout/workouts')}
+          />
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView className="flex-1 bg-bg-primary" edges={['top', 'bottom']} style={webScreenStyle}>
@@ -92,7 +209,7 @@ export default function RestOverScreen() {
         <WorkoutTimeTracker
           onClose={() => router.back()}
           onOptionsPress={() => setIsOptionsModalVisible(true)}
-          initialTime={{ hours: 0, minutes: 45, seconds: 20 }}
+          startTime={workoutLog.startedAt}
         />
       </View>
 
@@ -100,7 +217,7 @@ export default function RestOverScreen() {
       <View className="z-10 w-full flex-1 items-center justify-center gap-8 px-6">
         <RestOverStatusIcon />
         <RestOverTitle />
-        <RestOverNextExercise exercise={nextExercise} />
+        {nextExercise && <RestOverNextExercise exercise={nextExercise} />}
       </View>
 
       {/* Footer */}
@@ -128,10 +245,21 @@ export default function RestOverScreen() {
       <EndWorkoutModal
         visible={isEndWorkoutModalVisible}
         onClose={() => setIsEndWorkoutModalVisible(false)}
-        onFinishAndSave={() => {
-          router.back();
+        onFinishAndSave={async () => {
+          if (workoutLogId) {
+            try {
+              await WorkoutService.completeWorkout(workoutLogId);
+              router.replace(`/workout/workout-summary?workoutLogId=${workoutLogId}`);
+            } catch (err) {
+              console.error('Error completing workout:', err);
+            }
+          }
         }}
-        onFinishAndDiscard={() => {
+        onFinishAndDiscard={async () => {
+          // Clear active workout from storage when discarding
+          if (workoutLogId) {
+            await clearActiveWorkoutLogId();
+          }
           router.back();
         }}
       />

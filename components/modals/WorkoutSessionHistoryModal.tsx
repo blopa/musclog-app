@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { Share2, Weight, Dumbbell } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
@@ -7,72 +7,149 @@ import { ExerciseItem, ExerciseData } from '../WorkoutHistoryExerciseItem';
 import { FullScreenModal } from './FullScreenModal';
 import { useSettings } from '../../hooks/useSettings';
 import { getWeightUnitI18nKey } from '../../utils/units';
+import WorkoutLog from '../../database/models/WorkoutLog';
+import WorkoutLogSet from '../../database/models/WorkoutLogSet';
+import Exercise from '../../database/models/Exercise';
 
 export type { SetData } from '../WorkoutHistorySetRow';
 
 export type WorkoutHistoryModalProps = {
   visible: boolean;
   onClose: () => void;
-  exerciseName?: string;
-  workoutName?: string;
-  duration?: string;
-  totalVolume?: number;
-  totalSets?: number;
-  exercises?: ExerciseData[];
+  workoutLog?: WorkoutLog | null;
+  sets?: WorkoutLogSet[];
+  exercises?: Exercise[];
+  currentSetOrder?: number | null;
 };
-
-// Mock data - replace with actual data from props or state
-const MOCK_EXERCISES: ExerciseData[] = [
-  {
-    id: '1',
-    name: 'Incline Dumbbell Press',
-    time: '10:15 AM',
-    exerciseNumber: 1,
-    sets: [
-      { setNumber: 1, weight: 24, reps: 12, partials: 0 },
-      { setNumber: 2, weight: 26, reps: 10, partials: 0 },
-      { setNumber: 3, weight: 26, reps: 8, partials: 3, isCurrent: true },
-    ],
-    setProgress: [80, 90, 100],
-  },
-  {
-    id: '2',
-    name: 'Lateral Raises',
-    time: '10:28 AM',
-    exerciseNumber: 2,
-    sets: [
-      { setNumber: 1, weight: 12, reps: 15, partials: 0 },
-      { setNumber: 2, weight: 12, reps: 14, partials: 4 },
-      { setNumber: 3, weight: 12, reps: 12, partials: 5 },
-    ],
-    setProgress: [100, 100, 100],
-  },
-  {
-    id: '3',
-    name: 'Machine Chest Fly',
-    time: '10:45 AM',
-    exerciseNumber: 3,
-    sets: [
-      { setNumber: 1, weight: 54, reps: 15, partials: 0 },
-      { setNumber: 2, weight: 59, reps: 12, partials: 3 },
-    ],
-    setProgress: [100, 100],
-  },
-];
 
 export function WorkoutSessionHistoryModal({
   visible,
   onClose,
-  exerciseName,
-  workoutName = 'Push & Shoulders',
-  duration = '00:45',
-  totalVolume = 3450,
-  totalSets = 12,
-  exercises = MOCK_EXERCISES,
+  workoutLog,
+  sets = [],
+  exercises = [],
+  currentSetOrder = null,
 }: WorkoutHistoryModalProps) {
   const { t } = useTranslation();
   const { units } = useSettings();
   const weightUnitKey = getWeightUnitI18nKey(units);
+
+  // Transform workout data into ExerciseData format
+  const exerciseDataList = useMemo(() => {
+    if (!workoutLog || sets.length === 0 || exercises.length === 0) {
+      return [];
+    }
+
+    // Group sets by exercise
+    const exerciseMap = new Map<string, Exercise>();
+    exercises.forEach((ex) => exerciseMap.set(ex.id, ex));
+
+    const exerciseGroups = new Map<string, WorkoutLogSet[]>();
+    sets.forEach((set) => {
+      if (!exerciseGroups.has(set.exerciseId)) {
+        exerciseGroups.set(set.exerciseId, []);
+      }
+      exerciseGroups.get(set.exerciseId)!.push(set);
+    });
+
+    // Sort sets within each exercise by set_order
+    exerciseGroups.forEach((exerciseSets) => {
+      exerciseSets.sort((a, b) => a.setOrder - b.setOrder);
+    });
+
+    // Create exercise data list
+    const exerciseOrder = Array.from(exerciseGroups.keys());
+    const result: ExerciseData[] = [];
+
+    exerciseOrder.forEach((exerciseId, index) => {
+      const exercise = exerciseMap.get(exerciseId);
+      if (!exercise) return;
+
+      const exerciseSets = exerciseGroups.get(exerciseId) || [];
+      
+      // Find the first set's time (use startedAt for first exercise, estimate for others)
+      let exerciseTime = '';
+      if (index === 0 && workoutLog.startedAt) {
+        const date = new Date(workoutLog.startedAt);
+        const hours = date.getHours();
+        const minutes = date.getMinutes();
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        const displayHours = hours % 12 || 12;
+        exerciseTime = `${displayHours}:${String(minutes).padStart(2, '0')} ${ampm}`;
+      } else {
+        // Estimate time for subsequent exercises (could be improved with actual timestamps)
+        exerciseTime = '';
+      }
+
+      // Transform sets
+      const transformedSets = exerciseSets.map((set, setIndex) => {
+        const isCurrent = set.setOrder === currentSetOrder;
+        return {
+          setNumber: setIndex + 1,
+          weight: set.weight,
+          reps: set.reps,
+          partials: set.partials || 0,
+          isCurrent,
+        };
+      });
+
+      // Calculate set progress (100% if completed, 0% if not started, partial if current)
+      const setProgress = exerciseSets.map((set) => {
+        if (set.difficultyLevel > 0) {
+          return 100; // Completed
+        } else if (set.setOrder === currentSetOrder) {
+          return 50; // Current set (in progress)
+        } else {
+          return 0; // Not started
+        }
+      });
+
+      result.push({
+        id: exerciseId,
+        name: exercise.name,
+        time: exerciseTime,
+        exerciseNumber: index + 1,
+        sets: transformedSets,
+        setProgress,
+      });
+    });
+
+    return result;
+  }, [workoutLog, sets, exercises, currentSetOrder]);
+
+  // Calculate duration
+  const duration = useMemo(() => {
+    if (!workoutLog || !workoutLog.startedAt) return '00:00';
+    
+    const now = Date.now();
+    const elapsedMs = now - workoutLog.startedAt;
+    const totalSeconds = Math.floor(elapsedMs / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    
+    if (hours > 0) {
+      return `${hours}:${String(minutes).padStart(2, '0')}`;
+    }
+    return `00:${String(minutes).padStart(2, '0')}`;
+  }, [workoutLog]);
+
+  // Calculate total volume
+  const totalVolume = useMemo(() => {
+    return sets.reduce((sum, set) => {
+      if (set.difficultyLevel > 0) {
+        // Only count completed sets
+        return sum + set.reps * set.weight;
+      }
+      return sum;
+    }, 0);
+  }, [sets]);
+
+  // Count completed sets
+  const completedSetsCount = useMemo(() => {
+    return sets.filter((set) => set.difficultyLevel > 0).length;
+  }, [sets]);
+
+  const workoutName = workoutLog?.workoutName || 'Workout';
 
   return (
     <FullScreenModal
@@ -127,7 +204,7 @@ export function WorkoutSessionHistoryModal({
             >
               <Dumbbell size={theme.iconSize.md} color={theme.colors.text.secondary} />
               <Text className="text-sm font-semibold text-text-secondary">
-                {totalSets} {t('workoutHistory.setsDone')}
+                {completedSetsCount} {t('workoutHistory.setsDone')}
               </Text>
             </View>
           </View>
@@ -138,14 +215,18 @@ export function WorkoutSessionHistoryModal({
 
         {/* Exercises List */}
         <View className="flex-col gap-3">
-          {exercises.map((exercise, index) => (
-            <ExerciseItem
-              key={exercise.id}
-              exercise={exercise}
-              isLast={index === exercises.length - 1}
-              weightUnitKey={weightUnitKey}
-            />
-          ))}
+          {exerciseDataList.length > 0 ? (
+            exerciseDataList.map((exercise, index) => (
+              <ExerciseItem
+                key={exercise.id}
+                exercise={exercise}
+                isLast={index === exerciseDataList.length - 1}
+                weightUnitKey={weightUnitKey}
+              />
+            ))
+          ) : (
+            <Text className="text-text-secondary">No exercises yet</Text>
+          )}
         </View>
 
         {/* Bottom spacing */}

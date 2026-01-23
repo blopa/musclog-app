@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, Animated } from 'react-native';
+import { View, Text, Animated, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { CheckCircle, ChevronRight, Dumbbell, Repeat } from 'lucide-react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
 import { WorkoutOptionsModal } from '../../components/modals/WorkoutOptionsModal';
@@ -13,18 +13,101 @@ import { DetailedItemCard } from '../../components/cards/DetailedItemCard';
 import { RestTimerControls } from '../../components/RestTimerControls';
 import { RestTimer } from '../../components/RestTimer';
 import { UpNextLabel } from '../../components/UpNextLabel';
+import { WorkoutService } from '../../database/services/WorkoutService';
+import { database } from '../../database';
+import WorkoutLog from '../../database/models/WorkoutLog';
+import WorkoutLogSet from '../../database/models/WorkoutLogSet';
+import Exercise from '../../database/models/Exercise';
+import { Q } from '@nozbe/watermelondb';
+import { getWeightUnitI18nKey } from '../../utils/units';
+import { useSettings } from '../../hooks/useSettings';
+import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
 
 export default function RestTimerScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const [restTime, setRestTime] = useState(90); // 1:30 in seconds
+  const params = useLocalSearchParams<{ workoutLogId?: string; completedSetOrder?: string }>();
+  const { units } = useSettings();
+  const weightUnitKey = getWeightUnitI18nKey(units);
+
+  const workoutLogId = params.workoutLogId;
+  const completedSetOrder = params.completedSetOrder ? parseInt(params.completedSetOrder, 10) : null;
+
+  const [restTime, setRestTime] = useState(90); // Will be updated from database
+  const [initialRestTime, setInitialRestTime] = useState(90);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [workoutLog, setWorkoutLog] = useState<WorkoutLog | null>(null);
+  const [completedSet, setCompletedSet] = useState<{ set: WorkoutLogSet; exercise: Exercise } | null>(null);
+  const [nextSet, setNextSet] = useState<{ set: WorkoutLogSet; exercise: Exercise } | null>(null);
   const [isOptionsModalVisible, setIsOptionsModalVisible] = useState(false);
   const [isEndWorkoutModalVisible, setIsEndWorkoutModalVisible] = useState(false);
   const rotationAnim = useRef(new Animated.Value(0)).current;
 
+  // Load workout data
+  useEffect(() => {
+    const loadData = async () => {
+      if (!workoutLogId || completedSetOrder === null) {
+        setError('Missing workout data');
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        // Load workout log
+        const log = await database.get<WorkoutLog>('workout_logs').find(workoutLogId);
+        setWorkoutLog(log);
+
+        // Load all sets
+        const sets = await database
+          .get<WorkoutLogSet>('workout_log_sets')
+          .query(
+            Q.where('workout_log_id', workoutLogId),
+            Q.where('deleted_at', Q.eq(null)),
+            Q.sortBy('set_order', Q.asc)
+          )
+          .fetch();
+
+        // Find completed set
+        const completed = sets.find((s) => s.setOrder === completedSetOrder);
+        if (!completed) {
+          throw new Error('Completed set not found');
+        }
+
+        // Load exercise for completed set
+        const completedExercise = await database.get<Exercise>('exercises').find(completed.exerciseId);
+
+        setCompletedSet({ set: completed, exercise: completedExercise });
+
+        // Get rest time from completed set
+        const restTimeValue = completed.restTimeAfter || 0;
+        setRestTime(restTimeValue);
+        setInitialRestTime(restTimeValue);
+
+        // Find next set
+        const next = sets.find((s) => s.setOrder > completedSetOrder && s.difficultyLevel === 0);
+        if (next) {
+          const nextExercise = await database.get<Exercise>('exercises').find(next.exerciseId);
+          setNextSet({ set: next, exercise: nextExercise });
+        }
+
+        setIsLoading(false);
+      } catch (err) {
+        console.error('Error loading rest timer data:', err);
+        setError(err instanceof Error ? err.message : 'Failed to load data');
+        setIsLoading(false);
+      }
+    };
+
+    loadData();
+  }, [workoutLogId, completedSetOrder]);
+
   // Rest timer countdown
   useEffect(() => {
-    if (restTime > 0) {
+    if (restTime > 0 && !isLoading) {
       const interval = setInterval(() => {
         setRestTime((prev) => {
           if (prev <= 0) {
@@ -36,8 +119,14 @@ export default function RestTimerScreen() {
       }, 1000);
 
       return () => clearInterval(interval);
+    } else if (restTime === 0 && !isLoading && workoutLogId) {
+      // Auto-navigate to next set when timer reaches 0
+      const timer = setTimeout(() => {
+        router.replace(`/workout/workout-session?workoutLogId=${workoutLogId}`);
+      }, 500);
+      return () => clearTimeout(timer);
     }
-  }, [restTime]);
+  }, [restTime, isLoading, workoutLogId, router]);
 
   // Spinning loader animation
   useEffect(() => {
@@ -59,9 +148,11 @@ export default function RestTimerScreen() {
   };
 
   const handleSkipRest = () => {
-    setRestTime(0);
-    // Navigate back to workout session
-    router.back();
+    if (workoutLogId) {
+      router.replace(`/workout/workout-session?workoutLogId=${workoutLogId}`);
+    } else {
+      router.back();
+    }
   };
 
   const handleEndWorkout = () => {
@@ -69,20 +160,27 @@ export default function RestTimerScreen() {
     setIsEndWorkoutModalVisible(true);
   };
 
-  const exerciseData = {
-    completed: {
-      name: 'Bench Press',
-      weight: 80,
-      reps: 8,
-    },
-    next: {
-      name: 'Incline Dumbbell Fly',
-      weight: 20,
-      reps: 12,
-      sets: 4,
-      image: require('../../assets/icon.png'),
-    },
-  };
+  if (isLoading) {
+    return (
+      <SafeAreaView className="flex-1 bg-bg-primary" edges={['top', 'bottom']}>
+        <StatusBar style="light" />
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator size="large" color={theme.colors.accent.primary} />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (error || !completedSet || !workoutLog) {
+    return (
+      <SafeAreaView className="flex-1 bg-bg-primary" edges={['top', 'bottom']}>
+        <StatusBar style="light" />
+        <View className="flex-1 items-center justify-center px-6">
+          <Text className="text-text-primary">{error || 'Failed to load data'}</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView className="flex-1 bg-bg-primary" edges={['top', 'bottom']}>
@@ -94,29 +192,27 @@ export default function RestTimerScreen() {
         style={{
           ...theme.shadows.purpleGlow,
           backgroundColor: theme.colors.background.purpleBlob,
-        }}
-      ></View>
+        }}></View>
       <View
         className="absolute bottom-[-40%] left-[-20%] h-[50%] w-[110%] overflow-hidden rounded-full"
         style={{
           ...theme.shadows.purpleGlow,
           backgroundColor: theme.colors.background.greenBlob,
-        }}
-      ></View>
+        }}></View>
 
       {/* Header */}
       <View className="relative z-20">
         <WorkoutTimeTracker
           onClose={() => router.back()}
           onOptionsPress={() => setIsOptionsModalVisible(true)}
-          initialTime={{ hours: 0, minutes: 45, seconds: 12 }}
+          startTime={workoutLog.startedAt}
         />
       </View>
 
       {/* Main Content */}
       <View className="z-10 flex-1 items-center justify-center gap-10 px-6">
         {/* Timer */}
-        <RestTimer restTime={restTime} rotationAnim={rotationAnim} />
+        <RestTimer restTime={restTime} rotationAnim={rotationAnim} initialRestTime={initialRestTime} />
 
         {/* Controls */}
         <RestTimerControls
@@ -134,30 +230,33 @@ export default function RestTimerScreen() {
             <CheckCircle size={theme.iconSize.md} color={theme.colors.accent.primary} />
             <Text className="text-sm" style={{ color: theme.colors.overlay.white50 }}>
               {t('restTimer.done')}:{' '}
-              <Text className="font-medium text-text-primary">{exerciseData.completed.name}</Text>
+              <Text className="font-medium text-text-primary">{completedSet.exercise.name}</Text>
             </Text>
           </View>
           <Text className="font-medium" style={{ color: theme.colors.overlay.white70 }}>
-            {exerciseData.completed.weight}kg{' '}
+            {completedSet.set.weight} {t(weightUnitKey)}{' '}
             <Text style={{ color: theme.colors.overlay.white30 }}>×</Text>{' '}
-            {exerciseData.completed.reps} {t('restTimer.reps')}
+            {completedSet.set.reps} {t('restTimer.reps')}
           </Text>
         </View>
 
         {/* Next Exercise Card */}
-        <DetailedItemCard
-          item={{
-            name: exerciseData.next.name,
-            media: exerciseData.next.image,
-            itemOne: { value: `${exerciseData.next.weight}kg`, icon: Dumbbell },
-            itemTwo: { value: `${exerciseData.next.reps} reps`, icon: Repeat },
-            itemThree: { value: `${exerciseData.next.sets} sets`, icon: ChevronRight },
-          }}
-          onPress={() => {
-            // Handle navigation to exercise details or start exercise
-          }}
-          ctaLabel={<UpNextLabel />}
-        />
+        {nextSet && (
+          <DetailedItemCard
+            item={{
+              name: nextSet.exercise.name,
+              media: require('../../assets/icon.png'), // Default image for now
+              itemOne: { value: `${nextSet.set.weight} ${t(weightUnitKey)}`, icon: Dumbbell },
+              itemTwo: { value: `${nextSet.set.reps} reps`, icon: Repeat },
+              itemThree: { value: `${nextSet.set.reps} reps`, icon: ChevronRight },
+            }}
+            onPress={() => {
+              // Navigate to next set
+              router.replace(`/workout/workout-session?workoutLogId=${workoutLogId}`);
+            }}
+            ctaLabel={<UpNextLabel />}
+          />
+        )}
       </View>
 
       {/* Workout Options Modal */}
@@ -173,10 +272,16 @@ export default function RestTimerScreen() {
       <EndWorkoutModal
         visible={isEndWorkoutModalVisible}
         onClose={() => setIsEndWorkoutModalVisible(false)}
-        onFinishAndSave={() => {
-          router.back();
+        onFinishAndSave={async () => {
+          if (workoutLog) {
+            await WorkoutService.completeWorkout(workoutLog.id);
+            router.replace(`/workout/workout-summary?workoutLogId=${workoutLog.id}`);
+          }
         }}
-        onFinishAndDiscard={() => {
+        onFinishAndDiscard={async () => {
+          if (workoutLog) {
+            await clearActiveWorkoutLogId();
+          }
           router.back();
         }}
       />

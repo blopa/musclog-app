@@ -1005,10 +1005,10 @@ export default function ModalsTestScreen() {
       <WorkoutSessionHistoryModal
         visible={isWorkoutHistoryVisible}
         onClose={() => setIsWorkoutHistoryVisible(false)}
-        workoutName="Push Day"
-        duration="1h 15m"
-        totalVolume={12500}
-        totalSets={18}
+        workoutLog={null}
+        sets={[]}
+        exercises={[]}
+        currentSetOrder={null}
       />
 
       <DatePickerModal

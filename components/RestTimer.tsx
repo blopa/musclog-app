@@ -8,9 +8,10 @@ import { theme } from '../theme';
 type RestTimerProps = {
   restTime: number; // in seconds
   rotationAnim: Animated.Value;
+  initialRestTime?: number; // Initial rest time for progress calculation
 };
 
-export function RestTimer({ restTime, rotationAnim }: RestTimerProps) {
+export function RestTimer({ restTime, rotationAnim, initialRestTime }: RestTimerProps) {
   const { t } = useTranslation();
 
   const formatTime = (value: number) => String(value).padStart(2, '0');
@@ -21,8 +22,8 @@ export function RestTimer({ restTime, rotationAnim }: RestTimerProps) {
   };
 
   // Calculate progress for circular ring (0 to 1)
-  const totalRestTime = 90; // Initial rest time
-  const progress = 1 - restTime / totalRestTime;
+  const totalRestTime = initialRestTime || 90; // Use provided initial time or default to 90
+  const progress = totalRestTime > 0 ? Math.max(0, Math.min(1, 1 - restTime / totalRestTime)) : 0;
   const circumference = 2 * Math.PI * 46; // radius = 46
   const strokeDashoffset = circumference * (1 - progress);
 

@@ -1,10 +1,17 @@
-import { useState } from 'react';
-import { View, Text, Pressable, ScrollView, ImageBackground } from 'react-native';
+import { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  Pressable,
+  ScrollView,
+  ImageBackground,
+  ActivityIndicator,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { SkipForward, Edit, Repeat, CheckCircle } from 'lucide-react-native';
+import { SkipForward, Edit, Repeat, CheckCircle, WifiOff } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
 import { useSettings } from '../../hooks/useSettings';
@@ -21,14 +28,28 @@ import { ReplaceExerciseModal, Exercise } from '../../components/modals/ReplaceE
 import { WorkoutSessionHistoryModal } from '../../components/modals/WorkoutSessionHistoryModal';
 import { SessionFeedbackModal } from '../../components/modals/SessionFeedbackModal';
 import { Button } from '../../components/theme/Button';
+import { useActiveWorkout } from '../../hooks/useActiveWorkout';
+import { WorkoutService } from '../../database/services/WorkoutService';
+import { database } from '../../database';
+import WorkoutLog from '../../database/models/WorkoutLog';
+import WorkoutLogSet from '../../database/models/WorkoutLogSet';
+import { Q } from '@nozbe/watermelondb';
+import { ErrorStateCard } from '../../components/theme/ErrorStateCard';
+import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
 
 export default function WorkoutSessionScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const params = useLocalSearchParams<{ workoutLogId?: string }>();
   const { units } = useSettings();
   const weightUnitKey = getWeightUnitI18nKey(units);
-  const [weight, setWeight] = useState(24);
-  const [reps, setReps] = useState(10);
+
+  const workoutLogId = params.workoutLogId;
+  const { workoutLog, sets, exercises, currentSetData, progress, isLoading, error, isWorkoutComplete, refresh } =
+    useActiveWorkout(workoutLogId);
+
+  const [weight, setWeight] = useState(0);
+  const [reps, setReps] = useState(0);
   const [partials, setPartials] = useState(0);
   const [isOptionsModalVisible, setIsOptionsModalVisible] = useState(false);
   const [isEndWorkoutModalVisible, setIsEndWorkoutModalVisible] = useState(false);
@@ -38,18 +59,227 @@ export default function WorkoutSessionScreen() {
   const [isReplaceExerciseModalVisible, setIsReplaceExerciseModalVisible] = useState(false);
   const [isHistoryModalVisible, setIsHistoryModalVisible] = useState(false);
   const [isSessionFeedbackModalVisible, setIsSessionFeedbackModalVisible] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
-  const exerciseData = {
-    name: 'Incline Dumbbell Press',
-    category: 'Chest • Strength',
-    set: 2,
-    totalSets: 4,
-    image: require('../../assets/icon.png'), // Replace with actual exercise image
-    previousSet: {
-      weight: 22,
-      reps: 12,
-    },
+  // Update weight/reps when current set changes
+  useEffect(() => {
+    if (currentSetData) {
+      setWeight(currentSetData.set.weight);
+      setReps(currentSetData.set.reps);
+      setPartials(currentSetData.set.partials || 0);
+    }
+  }, [currentSetData]);
+
+  // Redirect if no active workout
+  useEffect(() => {
+    if (!isLoading && !workoutLog && !workoutLogId) {
+      router.replace('/workout/workouts');
+    }
+  }, [isLoading, workoutLog, workoutLogId, router]);
+
+  // Redirect if workout is complete
+  useEffect(() => {
+    if (!isLoading && isWorkoutComplete() && workoutLog) {
+      router.replace(`/workout/workout-summary?workoutLogId=${workoutLog.id}`);
+    }
+  }, [isLoading, isWorkoutComplete, workoutLog, router]);
+
+  const handleCompleteSet = async (rpe: number) => {
+    if (!currentSetData || !workoutLog) return;
+
+    try {
+      setIsSaving(true);
+      
+      // Store rest time BEFORE updating the set (since currentSetData will change after update)
+      const restTime = currentSetData.set.restTimeAfter || 0;
+      const completedSetOrder = currentSetData.set.setOrder;
+
+      await workoutLog.updateSet(currentSetData.set.id, {
+        difficultyLevel: rpe,
+        weight,
+        reps,
+        partials,
+      });
+
+      // Refresh to get updated data
+      await refresh();
+
+      // Check if workout is complete
+      if (isWorkoutComplete()) {
+        setIsLogSetModalVisible(false);
+        router.replace(`/workout/workout-summary?workoutLogId=${workoutLog.id}`);
+        return;
+      }
+
+      // Check if there's a next set
+      const nextSet = await WorkoutService.getNextSet(workoutLog.id, completedSetOrder);
+      if (!nextSet) {
+        // No next set, workout is complete
+        setIsLogSetModalVisible(false);
+        router.replace(`/workout/workout-summary?workoutLogId=${workoutLog.id}`);
+        return;
+      }
+
+      // Navigate to rest timer
+      setIsLogSetModalVisible(false);
+      if (restTime > 0) {
+        router.push(
+          `/workout/rest-timer?workoutLogId=${workoutLog.id}&completedSetOrder=${completedSetOrder}`
+        );
+      } else {
+        // No rest time, go directly to next set
+        router.replace(`/workout/workout-session?workoutLogId=${workoutLog.id}`);
+      }
+    } catch (err) {
+      console.error('Error completing set:', err);
+      // Show error to user
+    } finally {
+      setIsSaving(false);
+    }
   };
+
+  const handleSkipSet = async () => {
+    if (!currentSetData || !workoutLog) return;
+
+    try {
+      setIsSaving(true);
+      // Mark set as skipped (set difficultyLevel to 0, but we'll track it differently)
+      // For now, we'll just move to next set without saving RPE
+      await refresh();
+
+      // Navigate to next set
+      const nextSet = await WorkoutService.getNextSet(workoutLog.id, currentSetData.set.setOrder);
+      if (!nextSet) {
+        router.replace(`/workout/workout-summary?workoutLogId=${workoutLog.id}`);
+      } else {
+        router.replace(`/workout/workout-session?workoutLogId=${workoutLog.id}`);
+      }
+    } catch (err) {
+      console.error('Error skipping set:', err);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleEditSet = async (data: { weight: number; reps: number; partials: number }) => {
+    if (!currentSetData || !workoutLog) return;
+
+    try {
+      setIsSaving(true);
+      await workoutLog.updateSet(currentSetData.set.id, {
+        weight: data.weight,
+        reps: data.reps,
+        partials: data.partials,
+      });
+
+      setWeight(data.weight);
+      setReps(data.reps);
+      setPartials(data.partials);
+      await refresh();
+    } catch (err) {
+      console.error('Error updating set:', err);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleReplaceExercise = async (exercise: Exercise) => {
+    if (!currentSetData || !workoutLog) return;
+
+    try {
+      setIsSaving(true);
+      // Update all remaining sets of the same exercise
+      const exerciseSets = await database
+        .get<WorkoutLogSet>('workout_log_sets')
+        .query(
+          Q.where('workout_log_id', workoutLog.id),
+          Q.where('exercise_id', currentSetData.set.exerciseId),
+          Q.where('set_order', Q.gte(currentSetData.set.setOrder))
+        )
+        .fetch();
+
+      // Update all sets to use new exercise
+      await database.write(async () => {
+        for (const set of exerciseSets) {
+          await set.update((s) => {
+            s.exerciseId = exercise.id;
+          });
+        }
+      });
+
+      await refresh();
+    } catch (err) {
+      console.error('Error replacing exercise:', err);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleFinishWorkout = async () => {
+    if (!workoutLog) return;
+
+    try {
+      setIsSaving(true);
+      await WorkoutService.completeWorkout(workoutLog.id);
+      setIsEndWorkoutModalVisible(false);
+      setIsSessionFeedbackModalVisible(true);
+    } catch (err) {
+      console.error('Error completing workout:', err);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Get exercise image - use default if not available
+  const getExerciseImage = () => {
+    if (currentSetData?.exercise.imageUrl) {
+      // For now, use default image. In production, you'd load from imageUrl
+      return require('../../assets/icon.png');
+    }
+    return require('../../assets/icon.png');
+  };
+
+  // Get exercise category string
+  const getExerciseCategory = () => {
+    if (!currentSetData) return '';
+    const exercise = currentSetData.exercise;
+    const parts = [];
+    if (exercise.muscleGroup) parts.push(exercise.muscleGroup);
+    if (exercise.equipmentType) parts.push(exercise.equipmentType);
+    return parts.join(' • ') || 'Exercise';
+  };
+
+  if (isLoading) {
+    return (
+      <SafeAreaView className="flex-1 bg-bg-primary" edges={['top', 'bottom']}>
+        <StatusBar style="light" />
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator size="large" color={theme.colors.accent.primary} />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (error || !currentSetData || !workoutLog) {
+    return (
+      <SafeAreaView className="flex-1 bg-bg-primary" edges={['top', 'bottom']}>
+        <StatusBar style="light" />
+        <View className="flex-1 items-center justify-center px-6">
+          <ErrorStateCard
+            icon={WifiOff}
+            title={error || 'Workout not found'}
+            description="Unable to load workout session. Please try again."
+            buttonLabel="Go Back"
+            onButtonPress={() => router.replace('/workout/workouts')}
+          />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  const exerciseImage = getExerciseImage();
+  const exerciseCategory = getExerciseCategory();
+  const previousSet = currentSetData.previousSet;
 
   return (
     <SafeAreaView className="flex-1 bg-bg-primary" edges={['top', 'bottom']}>
@@ -57,7 +287,7 @@ export default function WorkoutSessionScreen() {
       <View className="flex-1">
         {/* Hero Image Background */}
         <ImageBackground
-          source={exerciseData.image}
+          source={exerciseImage}
           className="absolute inset-0"
           style={{ height: theme.size['3xl'] * 10 }}
           resizeMode="cover"
@@ -78,22 +308,24 @@ export default function WorkoutSessionScreen() {
           <WorkoutTimeTracker
             onClose={() => setIsEndWorkoutModalVisible(true)}
             onOptionsPress={() => setIsOptionsModalVisible(true)}
-            initialTime={{ hours: 0, minutes: 45, seconds: 12 }}
+            startTime={workoutLog.startedAt}
           />
 
           {/* Exercise Info */}
           <View className="mt-48 px-6">
-            <Text className="mb-3 text-5xl font-bold text-text-primary">{exerciseData.name}</Text>
+            <Text className="mb-3 text-5xl font-bold text-text-primary">
+              {currentSetData.exercise.name}
+            </Text>
             <View className="mb-2 flex-row items-center gap-3">
               <View className="rounded-full bg-accent-primary px-4 py-1.5">
                 <Text className="text-sm font-bold text-text-black">
                   {t('workoutSession.setOf', {
-                    current: exerciseData.set,
-                    total: exerciseData.totalSets,
+                    current: currentSetData.setNumber,
+                    total: currentSetData.totalSetsInExercise,
                   })}
                 </Text>
               </View>
-              <Text className="text-lg text-text-secondary">{exerciseData.category}</Text>
+              <Text className="text-lg text-text-secondary">{exerciseCategory}</Text>
             </View>
           </View>
 
@@ -125,13 +357,17 @@ export default function WorkoutSessionScreen() {
 
           {/* Previous & History */}
           <View className="mt-6 flex-row items-center justify-between px-6">
-            <Text className="text-text-secondary">
-              {t('workoutSession.previous')}:{' '}
-              <Text className="text-text-primary">
-                {exerciseData.previousSet.weight} {t(weightUnitKey)} ×{' '}
-                {exerciseData.previousSet.reps} {t('workoutSession.reps')}
+            {previousSet ? (
+              <Text className="text-text-secondary">
+                {t('workoutSession.previous')}:{' '}
+                <Text className="text-text-primary">
+                  {previousSet.weight} {t(weightUnitKey)} × {previousSet.reps}{' '}
+                  {t('workoutSession.reps')}
+                </Text>
               </Text>
-            </Text>
+            ) : (
+              <Text className="text-text-secondary">{t('workoutSession.previous')}: -</Text>
+            )}
             <Pressable onPress={() => setIsHistoryModalVisible(true)}>
               <Text className="font-semibold text-accent-primary">
                 {t('workoutSession.history')}
@@ -174,6 +410,7 @@ export default function WorkoutSessionScreen() {
               onPress={() => {
                 setIsLogSetModalVisible(true);
               }}
+              disabled={isSaving}
             />
           </View>
         </ScrollView>
@@ -195,12 +432,12 @@ export default function WorkoutSessionScreen() {
       <EndWorkoutModal
         visible={isEndWorkoutModalVisible}
         onClose={() => setIsEndWorkoutModalVisible(false)}
-        onFinishAndSave={() => {
-          setIsEndWorkoutModalVisible(false);
-          setIsSessionFeedbackModalVisible(true);
-        }}
-        onFinishAndDiscard={() => {
-          // Handle discard workout logic
+        onFinishAndSave={handleFinishWorkout}
+        onFinishAndDiscard={async () => {
+          // Clear active workout from storage when discarding
+          if (workoutLog) {
+            await clearActiveWorkoutLogId();
+          }
           router.back();
         }}
       />
@@ -210,12 +447,11 @@ export default function WorkoutSessionScreen() {
         visible={isSessionFeedbackModalVisible}
         onClose={() => {
           setIsSessionFeedbackModalVisible(false);
-          router.back();
+          router.replace('/workout/workout-summary?workoutLogId=' + workoutLog.id);
         }}
         onSubmit={(data) => {
-          // Handle feedback submission
           console.log('Feedback submitted:', data);
-          router.back();
+          router.replace('/workout/workout-summary?workoutLogId=' + workoutLog.id);
         }}
       />
 
@@ -223,22 +459,19 @@ export default function WorkoutSessionScreen() {
       <LogSetPerformanceModal
         visible={isLogSetModalVisible}
         onClose={() => setIsLogSetModalVisible(false)}
-        exerciseName={exerciseData.name}
+        exerciseName={currentSetData.exercise.name}
         setLabel={t('workoutSession.setOf', {
-          current: exerciseData.set,
-          total: exerciseData.totalSets,
+          current: currentSetData.setNumber,
+          total: currentSetData.totalSetsInExercise,
         })}
         weight={weight}
         reps={reps}
-        partials="-"
+        partials={partials}
         initialRpe={8}
         onConfirm={(data) => {
-          // Handle log set with RPE
-          console.log('Set logged with RPE:', data.rpe);
-          // You can update state, save to database, etc.
+          handleCompleteSet(data.rpe);
         }}
         onEditSetDetails={(data) => {
-          // Update weight and reps from edit modal
           setWeight(data.weight);
           setReps(data.reps);
           setPartials(data.partials);
@@ -249,15 +482,10 @@ export default function WorkoutSessionScreen() {
       <EditSetDetailsModal
         visible={isEditSetModalVisible}
         onClose={() => setIsEditSetModalVisible(false)}
-        onSave={(data) => {
-          setWeight(data.weight);
-          setReps(data.reps);
-          setPartials(data.partials);
-          setIsEditSetModalVisible(false);
-        }}
+        onSave={handleEditSet}
         setLabel={t('workoutSession.setOf', {
-          current: exerciseData.set,
-          total: exerciseData.totalSets,
+          current: currentSetData.setNumber,
+          total: currentSetData.totalSetsInExercise,
         })}
         initialWeight={weight}
         initialReps={reps}
@@ -268,10 +496,7 @@ export default function WorkoutSessionScreen() {
       <ConfirmationModal
         visible={isSkipSetModalVisible}
         onClose={() => setIsSkipSetModalVisible(false)}
-        onConfirm={() => {
-          // Handle skip set logic
-          console.log('Set skipped');
-        }}
+        onConfirm={handleSkipSet}
         title={t('workoutSession.skipSet.title')}
         message={t('workoutSession.skipSet.message')}
         confirmLabel={t('workoutSession.skipSet.confirm')}
@@ -283,19 +508,18 @@ export default function WorkoutSessionScreen() {
       <ReplaceExerciseModal
         visible={isReplaceExerciseModalVisible}
         onClose={() => setIsReplaceExerciseModalVisible(false)}
-        onReplace={(exercise: Exercise) => {
-          // Handle replace exercise logic
-          console.log('Exercise replaced:', exercise);
-          // You can update the exercise data here
-        }}
-        currentExercise={exerciseData.name}
+        onReplace={handleReplaceExercise}
+        currentExercise={currentSetData.exercise.name}
       />
 
       {/* Workout History Modal */}
       <WorkoutSessionHistoryModal
         visible={isHistoryModalVisible}
         onClose={() => setIsHistoryModalVisible(false)}
-        exerciseName={exerciseData.name}
+        workoutLog={workoutLog}
+        sets={sets}
+        exercises={exercises}
+        currentSetOrder={progress.currentSetOrder}
       />
     </SafeAreaView>
   );

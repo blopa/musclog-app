@@ -221,8 +221,10 @@ export default function WorkoutsScreen() {
                 onStart={async () => {
                   try {
                     if (featuredWorkout.id) {
-                      await WorkoutService.startWorkoutFromTemplate(featuredWorkout.id);
-                      router.push('/workout/workout-session');
+                      const workoutLog = await WorkoutService.startWorkoutFromTemplate(
+                        featuredWorkout.id
+                      );
+                      router.push(`/workout/workout-session?workoutLogId=${workoutLog.id}`);
                     }
                   } catch (err) {
                     console.error('Error starting workout:', err);
@@ -251,8 +253,10 @@ export default function WorkoutsScreen() {
                     image={workout.image}
                     onStart={async () => {
                       try {
-                        await WorkoutService.startWorkoutFromTemplate(workout.id);
-                        router.push('/workout/workout-session');
+                        const workoutLog = await WorkoutService.startWorkoutFromTemplate(
+                          workout.id
+                        );
+                        router.push(`/workout/workout-session?workoutLogId=${workoutLog.id}`);
                       } catch (err) {
                         console.error('Error starting workout:', err);
                         // Show error to user (you might want to add an alert here)

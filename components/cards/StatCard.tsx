@@ -9,7 +9,7 @@ type StatCardProps = {
   value: string;
   unit?: string;
   change?: string;
-  changeType?: 'positive' | 'warning';
+  changeType?: 'positive' | 'warning' | 'negative';
   icon: React.ComponentType<{ size: number; color: string }>;
   iconColor: string;
 };
@@ -41,7 +41,9 @@ export function StatCard({
               color={
                 changeType === 'positive'
                   ? theme.colors.accent.primary
-                  : theme.colors.status.warning
+                  : changeType === 'negative'
+                    ? theme.colors.status.error
+                    : theme.colors.status.warning
               }
             />
             <Text
@@ -50,7 +52,9 @@ export function StatCard({
                 color:
                   changeType === 'positive'
                     ? theme.colors.accent.primary
-                    : theme.colors.status.warning,
+                    : changeType === 'negative'
+                      ? theme.colors.status.error
+                      : theme.colors.status.warning,
               }}
             >
               {change}

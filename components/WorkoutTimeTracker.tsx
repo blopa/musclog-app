@@ -8,40 +8,62 @@ import { MenuButton } from './theme/MenuButton';
 type WorkoutTimeTrackerProps = {
   onClose?: () => void;
   onOptionsPress?: () => void;
-  initialTime?: { hours: number; minutes: number; seconds: number };
+  startTime?: number; // Timestamp in milliseconds
+  initialTime?: { hours: number; minutes: number; seconds: number }; // Fallback for backwards compatibility
 };
 
 export function WorkoutTimeTracker({
   onClose,
   onOptionsPress,
+  startTime,
   initialTime = { hours: 0, minutes: 0, seconds: 0 },
 }: WorkoutTimeTrackerProps) {
   const { t } = useTranslation();
   const [time, setTime] = useState(initialTime);
 
-  // Timer effect
+  // Timer effect - calculate elapsed time from startTime
   useEffect(() => {
-    const interval = setInterval(() => {
-      setTime((prev) => {
-        let newSeconds = prev.seconds + 1;
-        let newMinutes = prev.minutes;
-        let newHours = prev.hours;
+    if (startTime) {
+      const updateTime = () => {
+        const now = Date.now();
+        const elapsedMs = now - startTime;
+        const totalSeconds = Math.floor(elapsedMs / 1000);
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+        setTime({ hours, minutes, seconds });
+      };
 
-        if (newSeconds >= 60) {
-          newSeconds = 0;
-          newMinutes += 1;
-        }
-        if (newMinutes >= 60) {
-          newMinutes = 0;
-          newHours += 1;
-        }
+      // Update immediately
+      updateTime();
 
-        return { hours: newHours, minutes: newMinutes, seconds: newSeconds };
-      });
-    }, 1000);
+      // Then update every second
+      const interval = setInterval(updateTime, 1000);
+      return () => clearInterval(interval);
+    } else {
+      // Fallback to incrementing timer if no startTime provided
+      const interval = setInterval(() => {
+        setTime((prev) => {
+          let newSeconds = prev.seconds + 1;
+          let newMinutes = prev.minutes;
+          let newHours = prev.hours;
 
-    return () => clearInterval(interval);
-  }, []);
+          if (newSeconds >= 60) {
+            newSeconds = 0;
+            newMinutes += 1;
+          }
+          if (newMinutes >= 60) {
+            newMinutes = 0;
+            newHours += 1;
+          }
+
+          return { hours: newHours, minutes: newMinutes, seconds: newSeconds };
+        });
+      }, 1000);
+
+      return () => clearInterval(interval);
+    }
+  }, [startTime]);
 
   const formatTime = (value: number) => String(value).padStart(2, '0');
 

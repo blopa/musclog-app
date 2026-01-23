@@ -251,6 +251,7 @@ export async function seedWorkoutTemplatesAndHistory(): Promise<{
         ts.exerciseId = benchPress.id;
         ts.targetReps = 8;
         ts.targetWeight = 80;
+        ts.restTimeAfter = 60;
         ts.setOrder = 1;
         ts.createdAt = now;
         ts.updatedAt = now;
@@ -260,6 +261,7 @@ export async function seedWorkoutTemplatesAndHistory(): Promise<{
         ts.exerciseId = overheadPress.id;
         ts.targetReps = 10;
         ts.targetWeight = 50;
+        ts.restTimeAfter = 60;
         ts.setOrder = 2;
         ts.createdAt = now;
         ts.updatedAt = now;
@@ -269,6 +271,7 @@ export async function seedWorkoutTemplatesAndHistory(): Promise<{
         ts.exerciseId = latPulldown.id;
         ts.targetReps = 10;
         ts.targetWeight = 70;
+        ts.restTimeAfter = 60;
         ts.setOrder = 3;
         ts.createdAt = now;
         ts.updatedAt = now;
@@ -278,6 +281,7 @@ export async function seedWorkoutTemplatesAndHistory(): Promise<{
         ts.exerciseId = bicepCurl.id;
         ts.targetReps = 12;
         ts.targetWeight = 15;
+        ts.restTimeAfter = 60;
         ts.setOrder = 4;
         ts.createdAt = now;
         ts.updatedAt = now;
@@ -299,6 +303,7 @@ export async function seedWorkoutTemplatesAndHistory(): Promise<{
         ts.exerciseId = squat.id;
         ts.targetReps = 8;
         ts.targetWeight = 120;
+        ts.restTimeAfter = 60;
         ts.setOrder = 1;
         ts.createdAt = now;
         ts.updatedAt = now;
@@ -307,6 +312,7 @@ export async function seedWorkoutTemplatesAndHistory(): Promise<{
         ts.templateId = legDayTemplate.id;
         ts.exerciseId = legPress.id;
         ts.targetReps = 12;
+        ts.restTimeAfter = 60;
         ts.targetWeight = 180;
         ts.setOrder = 2;
         ts.createdAt = now;
@@ -317,6 +323,7 @@ export async function seedWorkoutTemplatesAndHistory(): Promise<{
         ts.exerciseId = deadlift.id;
         ts.targetReps = 6;
         ts.targetWeight = 140;
+        ts.restTimeAfter = 60;
         ts.setOrder = 3;
         ts.createdAt = now;
         ts.updatedAt = now;
