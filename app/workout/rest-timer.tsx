@@ -31,14 +31,19 @@ export default function RestTimerScreen() {
   const weightUnitKey = getWeightUnitI18nKey(units);
 
   const workoutLogId = params.workoutLogId;
-  const completedSetOrder = params.completedSetOrder ? parseInt(params.completedSetOrder, 10) : null;
+  const completedSetOrder = params.completedSetOrder
+    ? parseInt(params.completedSetOrder, 10)
+    : null;
 
   const [restTime, setRestTime] = useState(90); // Will be updated from database
   const [initialRestTime, setInitialRestTime] = useState(90);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [workoutLog, setWorkoutLog] = useState<WorkoutLog | null>(null);
-  const [completedSet, setCompletedSet] = useState<{ set: WorkoutLogSet; exercise: Exercise } | null>(null);
+  const [completedSet, setCompletedSet] = useState<{
+    set: WorkoutLogSet;
+    exercise: Exercise;
+  } | null>(null);
   const [nextSet, setNextSet] = useState<{ set: WorkoutLogSet; exercise: Exercise } | null>(null);
   const [isOptionsModalVisible, setIsOptionsModalVisible] = useState(false);
   const [isEndWorkoutModalVisible, setIsEndWorkoutModalVisible] = useState(false);
@@ -78,14 +83,15 @@ export default function RestTimerScreen() {
         }
 
         // Load exercise for completed set
-        const completedExercise = await database.get<Exercise>('exercises').find(completed.exerciseId);
+        const completedExercise = await database
+          .get<Exercise>('exercises')
+          .find(completed.exerciseId);
 
         setCompletedSet({ set: completed, exercise: completedExercise });
 
         // Get rest time from completed set, default to 60 seconds if not set
-        const restTimeValue = completed.restTimeAfter && completed.restTimeAfter > 0 
-          ? completed.restTimeAfter 
-          : 60;
+        const restTimeValue =
+          completed.restTimeAfter && completed.restTimeAfter > 0 ? completed.restTimeAfter : 60;
         setRestTime(restTimeValue);
         setInitialRestTime(restTimeValue);
 
@@ -194,13 +200,15 @@ export default function RestTimerScreen() {
         style={{
           ...theme.shadows.purpleGlow,
           backgroundColor: theme.colors.background.purpleBlob,
-        }}></View>
+        }}
+      />
       <View
         className="absolute bottom-[-40%] left-[-20%] h-[50%] w-[110%] overflow-hidden rounded-full"
         style={{
           ...theme.shadows.purpleGlow,
           backgroundColor: theme.colors.background.greenBlob,
-        }}></View>
+        }}
+      />
 
       {/* Header */}
       <View className="relative z-20">
@@ -214,7 +222,11 @@ export default function RestTimerScreen() {
       {/* Main Content */}
       <View className="z-10 flex-1 items-center justify-center gap-10 px-6">
         {/* Timer */}
-        <RestTimer restTime={restTime} rotationAnim={rotationAnim} initialRestTime={initialRestTime} />
+        <RestTimer
+          restTime={restTime}
+          rotationAnim={rotationAnim}
+          initialRestTime={initialRestTime}
+        />
 
         {/* Controls */}
         <RestTimerControls
@@ -237,8 +249,8 @@ export default function RestTimerScreen() {
           </View>
           <Text className="font-medium" style={{ color: theme.colors.overlay.white70 }}>
             {completedSet.set.weight} {t(weightUnitKey)}{' '}
-            <Text style={{ color: theme.colors.overlay.white30 }}>×</Text>{' '}
-            {completedSet.set.reps} {t('restTimer.reps')}
+            <Text style={{ color: theme.colors.overlay.white30 }}>×</Text> {completedSet.set.reps}{' '}
+            {t('restTimer.reps')}
           </Text>
         </View>
 

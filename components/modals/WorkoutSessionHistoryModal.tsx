@@ -66,7 +66,7 @@ export function WorkoutSessionHistoryModal({
       if (!exercise) return;
 
       const exerciseSets = exerciseGroups.get(exerciseId) || [];
-      
+
       // Find the first set's time (use startedAt for first exercise, estimate for others)
       let exerciseTime = '';
       if (index === 0 && workoutLog.startedAt) {
@@ -120,13 +120,13 @@ export function WorkoutSessionHistoryModal({
   // Calculate duration
   const duration = useMemo(() => {
     if (!workoutLog || !workoutLog.startedAt) return '00:00';
-    
+
     const now = Date.now();
     const elapsedMs = now - workoutLog.startedAt;
     const totalSeconds = Math.floor(elapsedMs / 1000);
     const hours = Math.floor(totalSeconds / 3600);
     const minutes = Math.floor((totalSeconds % 3600) / 60);
-    
+
     if (hours > 0) {
       return `${hours}:${String(minutes).padStart(2, '0')}`;
     }

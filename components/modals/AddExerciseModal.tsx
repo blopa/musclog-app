@@ -454,13 +454,22 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
                 onChangeValue={(num) => setWeight((Math.round(num * 10) / 10).toString())}
               />
             </View>
+            <View
+              style={{
+                height: theme.spacing.gap['1'],
+                backgroundColor: theme.colors.background.white5,
+                marginVertical: theme.spacing.gap.sm,
+              }}
+            />
             <View className="mb-4">
               <StepperInlineInput
                 label={t('workouts.addExercise.restTime')}
                 value={parseInt(restTime) || 0}
                 unit={t('workouts.addExercise.seconds')}
                 onIncrement={() => setRestTime((prev) => (parseInt(prev) + 5).toString())}
-                onDecrement={() => setRestTime((prev) => Math.max(0, parseInt(prev) - 5).toString())}
+                onDecrement={() =>
+                  setRestTime((prev) => Math.max(0, parseInt(prev) - 5).toString())
+                }
                 onChangeValue={(num) => setRestTime(Math.max(0, Math.round(num)).toString())}
               />
             </View>

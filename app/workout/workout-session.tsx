@@ -45,8 +45,17 @@ export default function WorkoutSessionScreen() {
   const weightUnitKey = getWeightUnitI18nKey(units);
 
   const workoutLogId = params.workoutLogId;
-  const { workoutLog, sets, exercises, currentSetData, progress, isLoading, error, isWorkoutComplete, refresh } =
-    useActiveWorkout(workoutLogId);
+  const {
+    workoutLog,
+    sets,
+    exercises,
+    currentSetData,
+    progress,
+    isLoading,
+    error,
+    isWorkoutComplete,
+    refresh,
+  } = useActiveWorkout(workoutLogId);
 
   const [weight, setWeight] = useState(0);
   const [reps, setReps] = useState(0);
@@ -89,12 +98,12 @@ export default function WorkoutSessionScreen() {
 
     try {
       setIsSaving(true);
-      
-      // Store rest time BEFORE updating the set (since currentSetData will change after update)
-      // Default to 60 seconds if not set
-      const restTime = currentSetData.set.restTimeAfter && currentSetData.set.restTimeAfter > 0
-        ? currentSetData.set.restTimeAfter
-        : 60;
+
+      // TODO: store the resttime
+      const restTime =
+        currentSetData.set.restTimeAfter && currentSetData.set.restTimeAfter > 0
+          ? currentSetData.set.restTimeAfter
+          : 60;
       const completedSetOrder = currentSetData.set.setOrder;
 
       await workoutLog.updateSet(currentSetData.set.id, {
