@@ -1,0 +1,59 @@
+import { database } from '../index';
+import UserMetric from '../models/UserMetric';
+import { Q } from '@nozbe/watermelondb';
+
+export class UserMetricService {
+  /**
+   * Get latest metric value for a specific type
+   */
+  static async getLatest(type: string): Promise<UserMetric | null> {
+    const metrics = await database
+      .get<UserMetric>('user_metrics')
+      .query(
+        Q.where('type', type),
+        Q.where('deleted_at', Q.eq(null)),
+        Q.sortBy('date', Q.desc),
+        Q.take(1)
+      )
+      .fetch();
+    return metrics.length > 0 ? metrics[0] : null;
+  }
+
+  /**
+   * Get metrics history with pagination support
+   */
+  static async getMetricsHistory(
+    type?: string, // Optional filter by metric type
+    dateRange?: { startDate: number; endDate: number }, // Optional date range
+    limit?: number,
+    offset?: number
+  ): Promise<UserMetric[]> {
+    let query = database.get<UserMetric>('user_metrics').query(
+      Q.where('deleted_at', Q.eq(null)),
+      Q.sortBy('date', Q.desc) // Most recent first
+    );
+
+    if (type) {
+      query = query.extend(Q.where('type', type));
+    }
+
+    if (dateRange) {
+      query = query.extend(
+        Q.where('date', Q.gte(dateRange.startDate)),
+        Q.where('date', Q.lte(dateRange.endDate))
+      );
+    }
+
+    // Apply pagination (same pattern as WorkoutService.getWorkoutHistory)
+    if (limit) {
+      if (offset !== undefined && offset !== null && offset > 0) {
+        // Apply both skip and take together - skip must come before take
+        query = query.extend(Q.skip(offset), Q.take(limit));
+      } else {
+        query = query.extend(Q.take(limit));
+      }
+    }
+
+    return await query.fetch();
+  }
+}
