@@ -91,7 +91,10 @@ export default function WorkoutSessionScreen() {
       setIsSaving(true);
       
       // Store rest time BEFORE updating the set (since currentSetData will change after update)
-      const restTime = currentSetData.set.restTimeAfter || 0;
+      // Default to 60 seconds if not set
+      const restTime = currentSetData.set.restTimeAfter && currentSetData.set.restTimeAfter > 0
+        ? currentSetData.set.restTimeAfter
+        : 60;
       const completedSetOrder = currentSetData.set.setOrder;
 
       await workoutLog.updateSet(currentSetData.set.id, {
@@ -120,16 +123,11 @@ export default function WorkoutSessionScreen() {
         return;
       }
 
-      // Navigate to rest timer
+      // Navigate to rest timer (always show rest timer since we default to 60 seconds)
       setIsLogSetModalVisible(false);
-      if (restTime > 0) {
-        router.push(
-          `/workout/rest-timer?workoutLogId=${workoutLog.id}&completedSetOrder=${completedSetOrder}`
-        );
-      } else {
-        // No rest time, go directly to next set
-        router.replace(`/workout/workout-session?workoutLogId=${workoutLog.id}`);
-      }
+      router.push(
+        `/workout/rest-timer?workoutLogId=${workoutLog.id}&completedSetOrder=${completedSetOrder}`
+      );
     } catch (err) {
       console.error('Error completing set:', err);
       // Show error to user

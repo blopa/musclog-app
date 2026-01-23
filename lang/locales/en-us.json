@@ -398,6 +398,8 @@
       "reps": "Reps",
       "weight": "Weight",
       "addToWorkout": "Add to Workout",
+      "restTime": "REST TIME",
+      "seconds": "sec",
       "muscleGroups": {
         "all": "All",
         "chest": "Chest",

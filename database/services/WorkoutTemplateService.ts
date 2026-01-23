@@ -22,6 +22,7 @@ export type ExerciseInWorkout = {
   reps: number;
   weight: number;
   isBodyweight: boolean;
+  restTimeAfter?: number; // Rest time in seconds after completing this set
 };
 
 export interface SaveTemplateData {
@@ -133,6 +134,7 @@ export class WorkoutTemplateService {
         reps: firstSet.targetReps,
         weight: firstSet.targetWeight,
         isBodyweight,
+        restTimeAfter: firstSet.restTimeAfter,
       });
     });
 
@@ -263,6 +265,7 @@ export class WorkoutTemplateService {
               ts.exerciseId = exercise.id;
               ts.targetReps = exercise.reps;
               ts.targetWeight = exercise.isBodyweight ? 0 : exercise.weight;
+              ts.restTimeAfter = exercise.restTimeAfter ?? 60; // Default to 60 seconds if not provided
               ts.setOrder = currentOrder;
               ts.createdAt = now;
               ts.updatedAt = now;

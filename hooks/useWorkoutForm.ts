@@ -27,6 +27,7 @@ export interface AddExerciseData {
   reps: number;
   weight: number;
   isBodyweight: boolean;
+  restTimeAfter?: number; // Rest time in seconds after completing this set
 }
 
 export function useWorkoutForm({ templateId }: UseWorkoutFormParams = {}) {
@@ -120,6 +121,7 @@ export function useWorkoutForm({ templateId }: UseWorkoutFormParams = {}) {
             reps: exerciseData.reps,
             weight: exerciseData.weight,
             isBodyweight: exerciseData.isBodyweight,
+            restTimeAfter: exerciseData.restTimeAfter ?? 60, // Default to 60 seconds if not provided
             groupId: undefined,
           });
           return updated;

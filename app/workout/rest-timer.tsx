@@ -82,8 +82,10 @@ export default function RestTimerScreen() {
 
         setCompletedSet({ set: completed, exercise: completedExercise });
 
-        // Get rest time from completed set
-        const restTimeValue = completed.restTimeAfter || 0;
+        // Get rest time from completed set, default to 60 seconds if not set
+        const restTimeValue = completed.restTimeAfter && completed.restTimeAfter > 0 
+          ? completed.restTimeAfter 
+          : 60;
         setRestTime(restTimeValue);
         setInitialRestTime(restTimeValue);
 

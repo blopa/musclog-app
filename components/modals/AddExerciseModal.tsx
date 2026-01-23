@@ -100,6 +100,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
   const [sets, setSets] = useState('3');
   const [reps, setReps] = useState('10');
   const [weight, setWeight] = useState('60');
+  const [restTime, setRestTime] = useState('60'); // Rest time in seconds
   const [exercises, setExercises] = useState<Record<MuscleGroup, ExerciseOption[]>>({
     all: [],
     chest: [],
@@ -283,6 +284,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
       reps: parseInt(reps),
       weight: parseFloat(weight),
       isBodyweight,
+      restTimeAfter: parseInt(restTime) || 60, // Default to 60 if invalid
     });
     onClose();
   };
@@ -439,8 +441,8 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
               />
             </View>
 
-            {/* Weight */}
-            <View className="flex-row">
+            {/* Weight & Rest Time */}
+            <View className="flex-row gap-4">
               <NumericInput
                 label={t('workouts.addExercise.weight')}
                 value={weight}
@@ -448,6 +450,14 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
                 unit={t(weightUnitKey)}
                 onIncrement={() => setWeight((prev) => (parseFloat(prev) + 2.5).toString())}
                 onDecrement={() => setWeight((prev) => (parseFloat(prev) - 2.5).toString())}
+              />
+              <NumericInput
+                label={t('workouts.addExercise.restTime')}
+                value={restTime}
+                onChangeText={setRestTime}
+                unit={t('workouts.addExercise.seconds')}
+                onIncrement={() => setRestTime((prev) => (parseInt(prev) + 5).toString())}
+                onDecrement={() => setRestTime((prev) => Math.max(0, parseInt(prev) - 5).toString())}
               />
             </View>
           </View>

@@ -85,6 +85,7 @@ export interface ExerciseMetadata {
   reps: number;
   weight: number;
   isBodyweight: boolean;
+  restTimeAfter?: number; // Rest time in seconds after completing this set
   groupId?: string;
 }
 
@@ -131,6 +132,7 @@ export function extractExerciseMetadata(exercise: ExerciseInWorkout): ExerciseMe
     reps: exercise.reps,
     weight: exercise.weight,
     isBodyweight: exercise.isBodyweight,
+    restTimeAfter: exercise.restTimeAfter,
     groupId: exercise.groupId,
   };
 }
@@ -155,6 +157,7 @@ export function updateMetadataWithGroupIds(
         reps: 10,
         weight: 0,
         isBodyweight: false,
+        restTimeAfter: 60, // Default to 60 seconds
         groupId: ex.groupId,
       });
     }
@@ -176,6 +179,7 @@ export function exercisesToWorkoutFormat(
       reps: 10,
       weight: 0,
       isBodyweight: false,
+      restTimeAfter: 60, // Default to 60 seconds
       groupId: undefined,
     };
 
@@ -191,6 +195,7 @@ export function exercisesToWorkoutFormat(
       reps: meta.reps,
       weight: meta.weight,
       isBodyweight: meta.isBodyweight,
+      restTimeAfter: meta.restTimeAfter,
     };
   });
 }
