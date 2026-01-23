@@ -241,6 +241,9 @@ export function useWorkoutHistory({
 
     setIsLoadingMore(true);
 
+    // Small delay to ensure React processes the state update and shows loading state
+    await new Promise<void>((resolve) => setTimeout(resolve, 10));
+
     try {
       // Calculate timeframe from filters
       const timeframe = workoutFilters?.dateRange
