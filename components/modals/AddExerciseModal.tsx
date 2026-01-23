@@ -7,7 +7,7 @@ import { FullScreenModal } from './FullScreenModal';
 import { Button } from '../theme/Button';
 import { OptionsSelector, SelectorOption } from '../OptionsSelector';
 import { FilterTabs } from '../FilterTabs';
-import { NumericInput } from '../theme/NumericInput';
+import { StepperInlineInput } from '../theme/StepperInlineInput';
 import { SelectedExerciseCard } from '../cards/SelectedExerciseCard';
 import { database } from '../../database';
 import { Q } from '@nozbe/watermelondb';
@@ -422,42 +422,46 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
 
           <View className="gap-6">
             {/* Sets & Reps */}
-            <View className="flex-row gap-4">
-              <NumericInput
+            <View className="mb-4">
+              <StepperInlineInput
                 label={t('workouts.addExercise.sets')}
-                value={sets}
-                onChangeText={setSets}
+                value={parseInt(sets) || 0}
                 unit=""
                 onIncrement={() => setSets((prev) => (parseInt(prev) + 1).toString())}
                 onDecrement={() => setSets((prev) => Math.max(1, parseInt(prev) - 1).toString())}
+                onChangeValue={(num) => setSets(Math.max(1, Math.round(num)).toString())}
               />
-              <NumericInput
+            </View>
+            <View className="mb-4">
+              <StepperInlineInput
                 label={t('workouts.addExercise.reps')}
-                value={reps}
-                onChangeText={setReps}
+                value={parseInt(reps) || 0}
                 unit=""
                 onIncrement={() => setReps((prev) => (parseInt(prev) + 1).toString())}
                 onDecrement={() => setReps((prev) => Math.max(1, parseInt(prev) - 1).toString())}
+                onChangeValue={(num) => setReps(Math.max(1, Math.round(num)).toString())}
               />
             </View>
 
             {/* Weight & Rest Time */}
-            <View className="flex-row gap-4">
-              <NumericInput
+            <View className="mb-4">
+              <StepperInlineInput
                 label={t('workouts.addExercise.weight')}
-                value={weight}
-                onChangeText={setWeight}
+                value={parseFloat(weight) || 0}
                 unit={t(weightUnitKey)}
                 onIncrement={() => setWeight((prev) => (parseFloat(prev) + 2.5).toString())}
                 onDecrement={() => setWeight((prev) => (parseFloat(prev) - 2.5).toString())}
+                onChangeValue={(num) => setWeight((Math.round(num * 10) / 10).toString())}
               />
-              <NumericInput
+            </View>
+            <View className="mb-4">
+              <StepperInlineInput
                 label={t('workouts.addExercise.restTime')}
-                value={restTime}
-                onChangeText={setRestTime}
+                value={parseInt(restTime) || 0}
                 unit={t('workouts.addExercise.seconds')}
                 onIncrement={() => setRestTime((prev) => (parseInt(prev) + 5).toString())}
                 onDecrement={() => setRestTime((prev) => Math.max(0, parseInt(prev) - 5).toString())}
+                onChangeValue={(num) => setRestTime(Math.max(0, Math.round(num)).toString())}
               />
             </View>
           </View>

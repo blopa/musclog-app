@@ -70,7 +70,7 @@ export function StepperInlineInput({
   return (
     <View className="flex-row items-center justify-between overflow-hidden rounded-xl border border-emerald-900/20 bg-bg-card p-5">
       <View className="min-w-0 flex-1 flex-row items-center gap-3 pr-3">
-        {Icon && (
+        {Icon ? (
           <View
             className={`${iconSize === 'sm' ? 'h-8 w-8' : 'h-10 w-10'} flex-shrink-0 items-center justify-center rounded-lg`}
             style={{ backgroundColor: theme.colors.status.emerald20 }}
@@ -80,16 +80,16 @@ export function StepperInlineInput({
               color={theme.colors.status.emeraldLight}
             />
           </View>
-        )}
+        ) : null}
         <View className="min-w-0 flex-1">
           <Text className="font-semibold text-white" numberOfLines={1} ellipsizeMode="tail">
             {label}
           </Text>
-          {subtitle && (
+          {subtitle ? (
             <Text className="text-xs text-gray-500" numberOfLines={1} ellipsizeMode="tail">
               {subtitle}
             </Text>
-          )}
+          ) : null}
         </View>
       </View>
       <View className="flex-shrink-0 flex-row items-center gap-2">
@@ -122,28 +122,28 @@ export function StepperInlineInput({
               returnKeyType="done"
               selectTextOnFocus
             />
-            {unit && (
+            {unit ? (
               <Text
                 className="text-xs text-gray-500"
                 style={{ fontSize: theme.typography.fontSize.xs }}
               >
                 {unit}
               </Text>
-            )}
+            ) : null}
           </View>
         ) : (
           <Pressable onPress={handleValuePress} className="w-16 items-center">
             <Text className="text-xl font-bold text-white">
               {value % 1 === 0 ? value : value.toFixed(1)}
             </Text>
-            {unit && (
+            {unit ? (
               <Text
                 className="text-xs text-gray-500"
                 style={{ fontSize: theme.typography.fontSize.xs }}
               >
                 {unit}
               </Text>
-            )}
+            ) : null}
           </Pressable>
         )}
         <Pressable
