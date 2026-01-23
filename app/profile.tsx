@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { View, Text, ScrollView, Pressable, Image } from 'react-native';
 import { Settings, Edit, TrendingUp, CheckCircle, User, Dumbbell, List } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
@@ -10,6 +10,8 @@ import { ManagementItem } from '../components/ManagementItem';
 import { ProgressIndicator } from '../components/theme/ProgressIndicator';
 import BodyMetricsHistoryModal from '../components/modals/BodyMetricsHistoryModal';
 import { useSettings } from '../hooks/useSettings';
+import { useUser } from '../hooks/useUser';
+import { useUserMetrics } from '../hooks/useUserMetrics';
 
 const PROFILE_DATA = {
   user: {
@@ -100,14 +102,116 @@ export default function ProfileScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const { weightUnit, heightUnit } = useSettings();
-  const { user, stats, management } = PROFILE_DATA;
+  const { user: dbUser, isLoading: isLoadingUser } = useUser();
+  const { metrics, isLoading: isLoadingMetrics } = useUserMetrics();
+  const { management } = PROFILE_DATA;
   const [isSyncing, setIsSyncing] = useState(false);
   const [isBodyMetricsHistoryVisible, setIsBodyMetricsHistoryVisible] = useState(false);
+
+  // Transform metrics and user data into stats array format
+  const stats = useMemo(() => {
+    const statsArray: {
+      id: string;
+      titleKey: string;
+      value: string;
+      unit?: string;
+      change?: string;
+      changeType?: 'positive' | 'negative' | 'warning';
+      status?: string;
+      statusColor?: string;
+      icon: typeof TrendingUp | typeof CheckCircle | typeof User;
+      iconColor: string;
+    }[] = [];
+
+    // Weight stat
+    if (metrics?.weight !== undefined) {
+      statsArray.push({
+        id: 'weight',
+        titleKey: 'profile.stats.weight',
+        value: metrics.weight.toFixed(1),
+        unit: weightUnit,
+        icon: TrendingUp,
+        iconColor: theme.colors.accent.primary,
+      });
+    }
+
+    // Height stat
+    if (metrics?.height !== undefined) {
+      statsArray.push({
+        id: 'height',
+        titleKey: 'profile.stats.height',
+        value: metrics.height.toFixed(0),
+        unit: heightUnit,
+        status: 'Verified',
+        icon: CheckCircle,
+        iconColor: theme.colors.text.secondary,
+      });
+    }
+
+    // Body fat stat
+    if (metrics?.bodyFat !== undefined) {
+      statsArray.push({
+        id: 'bodyFat',
+        titleKey: 'profile.stats.bodyFat',
+        value: metrics.bodyFat.toFixed(1),
+        unit: '%',
+        icon: TrendingUp,
+        iconColor: theme.colors.status.warning,
+      });
+    }
+
+    // BMI stat
+    if (metrics?.bmi !== undefined) {
+      const bmiStatus =
+        metrics.bmi < 18.5
+          ? 'Underweight'
+          : metrics.bmi < 25
+            ? 'Normal'
+            : metrics.bmi < 30
+              ? 'Overweight'
+              : 'Obese';
+      statsArray.push({
+        id: 'bmi',
+        titleKey: 'profile.stats.bmi',
+        value: metrics.bmi.toFixed(1),
+        status: bmiStatus,
+        statusColor: theme.colors.status.info,
+        icon: User,
+        iconColor: theme.colors.status.info,
+      });
+    }
+
+    // Age stat (from user)
+    if (dbUser) {
+      statsArray.push({
+        id: 'age',
+        titleKey: 'profile.stats.age',
+        value: dbUser.getAge().toString(),
+        icon: User,
+        iconColor: theme.colors.text.secondary,
+      });
+    }
+
+    // Gender stat (from user)
+    if (dbUser) {
+      const genderLabel =
+        dbUser.gender === 'male' ? 'Male' : dbUser.gender === 'female' ? 'Female' : 'Other';
+      statsArray.push({
+        id: 'gender',
+        titleKey: 'profile.stats.gender',
+        value: genderLabel,
+        icon: User,
+        iconColor: theme.colors.text.secondary,
+      });
+    }
+
+    return statsArray;
+  }, [metrics, dbUser, weightUnit, heightUnit]);
 
   const getStatUnit = (stat: (typeof stats)[0]) => {
     if (stat.id === 'weight') return weightUnit;
     if (stat.id === 'height') return heightUnit;
-    return 'unit' in stat ? (stat as { unit?: string }).unit : undefined;
+    return stat.unit;
   };
 
   // Simulate syncing with HealthKit or external services
@@ -151,7 +255,19 @@ export default function ProfileScreen() {
               className="h-32 w-32 overflow-hidden rounded-full border-4"
               style={{ borderColor: theme.colors.accent.primary }}
             >
-              <Image source={user.avatar} className="h-full w-full" resizeMode="cover" />
+              {dbUser?.photoUri ? (
+                <Image
+                  source={{ uri: dbUser.photoUri }}
+                  className="h-full w-full"
+                  resizeMode="cover"
+                />
+              ) : (
+                <Image
+                  source={PROFILE_DATA.user.avatar}
+                  className="h-full w-full"
+                  resizeMode="cover"
+                />
+              )}
             </View>
             <Pressable
               className="absolute bottom-0 right-0 h-10 w-10 items-center justify-center rounded-full border-2 border-bg-primary"
@@ -160,10 +276,14 @@ export default function ProfileScreen() {
               <Edit size={theme.iconSize.sm} color={theme.colors.text.black} />
             </Pressable>
           </View>
-          <Text className="mb-3 text-3xl font-bold text-text-primary">{user.name}</Text>
-          <Text className="text-base text-text-primary">
-            {t('profile.goal')}: {user.goal}
+          <Text className="mb-3 text-3xl font-bold text-text-primary">
+            {dbUser?.fullName || PROFILE_DATA.user.name}
           </Text>
+          {dbUser?.fitnessGoal && (
+            <Text className="text-base text-text-primary">
+              {t('profile.goal')}: {dbUser.fitnessGoal}
+            </Text>
+          )}
         </View>
 
         {/* Current Stats Section */}

@@ -26,7 +26,9 @@ import { SkeletonLoader } from '../components/theme/SkeletonLoader';
 import { EmptyStateCard } from '../components/theme/EmptyStateCard';
 import { isOnboardingCompleted } from '../utils/onboardingService';
 import { useWorkoutHistory } from '../hooks/useWorkoutHistory';
+import { useUser } from '../hooks/useUser';
 
+// TODO: stop using mocked data
 const PAGE_DATA = {
   user: {
     greeting: 'Good Evening',
@@ -69,7 +71,7 @@ const PAGE_DATA = {
 export default function HomeScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const [user, setUser] = useState(PAGE_DATA.user);
+  const { user: dbUser, isLoading: isLoadingUser } = useUser();
   const [dailySummary, setDailySummary] = useState(PAGE_DATA.dailySummary);
   const [recentFoods, setRecentFoods] = useState(PAGE_DATA.recentFoods);
   const [isUserMenuVisible, setIsUserMenuVisible] = useState(false);
@@ -130,13 +132,27 @@ export default function HomeScreen() {
                 className="h-14 w-14 overflow-hidden rounded-full border-4 border-accent-primary"
                 style={{ backgroundColor: theme.colors.background.imageLight }}
               >
-                <Image source={user.avatar} className="h-full w-full" resizeMode="cover" />
+                {dbUser?.photoUri ? (
+                  <Image
+                    source={{ uri: dbUser.photoUri }}
+                    className="h-full w-full"
+                    resizeMode="cover"
+                  />
+                ) : (
+                  <Image
+                    source={PAGE_DATA.user.avatar}
+                    className="h-full w-full"
+                    resizeMode="cover"
+                  />
+                )}
               </View>
               <View className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-bg-primary bg-accent-primary" />
             </View>
             <View>
               <Text className="text-sm text-text-secondary">{t('home.greeting.goodEvening')}</Text>
-              <Text className="text-xl font-bold text-text-primary">{user.name}</Text>
+              <Text className="text-xl font-bold text-text-primary">
+                {dbUser?.fullName || PAGE_DATA.user.name}
+              </Text>
             </View>
           </Pressable>
           <Pressable
@@ -144,7 +160,7 @@ export default function HomeScreen() {
             onPress={() => setIsNotificationsVisible(true)}
           >
             <Bell size={theme.iconSize.md} color={theme.colors.text.primary} />
-            {user.hasNotifications && (
+            {PAGE_DATA.user.hasNotifications && (
               <View
                 className="absolute right-2 top-2 h-2.5 w-2.5 rounded-full"
                 style={{ backgroundColor: theme.colors.status.notificationBadge }}
@@ -310,7 +326,16 @@ export default function HomeScreen() {
       <UserMenuModal
         visible={isUserMenuVisible}
         onClose={() => setIsUserMenuVisible(false)}
-        user={user}
+        user={
+          dbUser
+            ? {
+                greeting: 'Good Evening',
+                name: dbUser.fullName,
+                avatar: dbUser.photoUri ? { uri: dbUser.photoUri } : PAGE_DATA.user.avatar,
+                hasNotifications: PAGE_DATA.user.hasNotifications,
+              }
+            : PAGE_DATA.user
+        }
         onProfilePress={() => router.push('/profile')}
         onSettingsPress={() => router.push('/settings')}
         onProgressPress={() => router.push('/progress')}
