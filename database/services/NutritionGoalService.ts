@@ -77,4 +77,27 @@ export class NutritionGoalService {
     }
     return await query.fetch();
   }
+
+  /**
+   * Get goals history with pagination support (similar to WorkoutService.getWorkoutHistory).
+   * Most recent first.
+   */
+  static async getGoalsHistory(limit?: number, offset?: number): Promise<NutritionGoal[]> {
+    let query = database.get<NutritionGoal>('nutrition_goals').query(
+      Q.where('deleted_at', Q.eq(null)),
+      Q.sortBy('created_at', Q.desc) // Most recent first
+    );
+
+    // Apply pagination (same pattern as WorkoutService.getWorkoutHistory)
+    if (limit) {
+      if (offset !== undefined && offset !== null && offset > 0) {
+        // Apply both skip and take together - skip must come before take
+        query = query.extend(Q.skip(offset), Q.take(limit));
+      } else {
+        query = query.extend(Q.take(limit));
+      }
+    }
+
+    return await query.fetch();
+  }
 }
