@@ -1,45 +1,37 @@
 import { useRouter } from 'expo-router';
-import { useState, useEffect } from 'react';
+import { useMemo } from 'react';
 import { NutritionGoalsBody, NutritionGoals } from '../../components/NutritionGoalsBody';
 import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
 import { NutritionGoalService } from '../../database/services/NutritionGoalService';
+import { useCurrentNutritionGoal } from '../../hooks/useCurrentNutritionGoal';
 
 export default function NutritionGoalsScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(true);
-  const [initialGoals, setInitialGoals] = useState<Partial<NutritionGoals> | undefined>(undefined);
+  const { goal, isLoading } = useCurrentNutritionGoal();
 
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const row = await NutritionGoalService.getCurrent();
-        if (row) {
-          setInitialGoals({
-            totalCalories: row.totalCalories,
-            protein: row.protein,
-            carbs: row.carbs,
-            fats: row.fats,
-            fiber: row.fiber,
-            eatingPhase: row.eatingPhase as 'cut' | 'maintain' | 'bulk',
-            targetWeight: row.targetWeight,
-            targetBodyFat: row.targetBodyFat,
-            targetBMI: row.targetBmi,
-            targetFFMI: row.targetFfmi,
-            targetDate: row.targetDate ?? null,
-          });
-        }
-      } catch (e) {
-        console.error('Error loading nutrition goals:', e);
-      } finally {
-        setIsLoading(false);
-      }
+  // Map goal data to initialGoals format when goal changes
+  const initialGoals = useMemo<Partial<NutritionGoals> | undefined>(() => {
+    if (!goal) {
+      return undefined;
+    }
+    return {
+      totalCalories: goal.totalCalories,
+      protein: goal.protein,
+      carbs: goal.carbs,
+      fats: goal.fats,
+      fiber: goal.fiber,
+      eatingPhase: goal.eatingPhase as 'cut' | 'maintain' | 'bulk',
+      targetWeight: goal.targetWeight,
+      targetBodyFat: goal.targetBodyFat,
+      targetBMI: goal.targetBmi,
+      targetFFMI: goal.targetFfmi,
+      targetDate: goal.targetDate ?? null,
     };
-    load();
-  }, []);
+  }, [goal]);
 
   const handleSave = async (goals: NutritionGoals) => {
     try {
