@@ -97,7 +97,8 @@ export default function InputsTestScreen() {
         <View className="px-6 pb-2 pt-6">
           <Text
             className="font-extrabold leading-tight tracking-tight text-text-primary"
-            style={{ fontSize: theme.typography.fontSize['3xl'] }}>
+            style={{ fontSize: theme.typography.fontSize['3xl'] }}
+          >
             Input Components
           </Text>
           <Text className="pt-3 text-base font-normal leading-relaxed text-text-secondary">
@@ -222,7 +223,8 @@ export default function InputsTestScreen() {
         <TestSection title="Interactive Sliders" subtitle="Difficulty & Goals">
           <View
             className="rounded-lg border bg-bg-card p-6"
-            style={{ borderColor: theme.colors.background.white10 }}>
+            style={{ borderColor: theme.colors.background.white10 }}
+          >
             <View className="mb-6 flex-row items-center justify-between">
               <Text className="text-sm font-medium text-text-secondary">Workout Difficulty</Text>
               <Text className="text-xl font-bold text-accent-primary">{difficulty}/10</Text>

@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TextInput, Pressable } from 'react-native';
 import { Minus, Plus } from 'lucide-react-native';
+import { theme } from '../../theme';
 
 interface NewNumericalInputProps {
   label: string;
@@ -18,6 +19,7 @@ export default function NewNumericalInput({
   step = 1,
 }: NewNumericalInputProps) {
   const [inputValue, setInputValue] = useState(value.toString());
+  const inputRef = useRef<TextInput | null>(null);
 
   useEffect(() => {
     setInputValue(value.toString());
@@ -56,13 +58,13 @@ export default function NewNumericalInput({
     <View className="w-full">
       <Text
         className="mb-3 text-xs font-semibold uppercase tracking-wide"
-        style={{ color: '#8ba9a5' }}
+        style={{ color: theme.colors.background.workoutIcon }}
       >
         {label}
       </Text>
       <View
         className="flex w-full flex-row items-center justify-between gap-2 rounded-full px-4 py-3"
-        style={{ backgroundColor: '#2a4a46' }}
+        style={{ backgroundColor: theme.colors.background.filterTab }}
       >
         <Pressable
           onPress={handleDecrement}
@@ -72,6 +74,7 @@ export default function NewNumericalInput({
           <Minus size={20} color="#00ff99" strokeWidth={3} />
         </Pressable>
         <TextInput
+          ref={inputRef}
           value={inputValue}
           onChangeText={handleInputChange}
           onBlur={handleInputBlur}
@@ -79,6 +82,7 @@ export default function NewNumericalInput({
           style={{ color: '#e8f5f3' }}
           keyboardType="numeric"
           placeholderTextColor="#8ba9a5"
+          selectTextOnFocus={true}
         />
         <Pressable
           onPress={handleIncrement}
