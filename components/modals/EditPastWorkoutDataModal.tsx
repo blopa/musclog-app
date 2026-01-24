@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable, ScrollView } from 'react-native';
 import { Trash2, Plus as PlusIcon } from 'lucide-react-native';
+import { GenericCard } from '../cards/GenericCard';
 import NewNumericalInput from '../theme/NewNumericalInput';
 import { theme } from '../../theme';
 import { FullScreenModal } from './FullScreenModal';
@@ -33,66 +34,67 @@ function SetCard({
   onRemove: (id: string) => void;
 }) {
   const accentStyle = item.isPR
-    ? { borderColor: theme.colors.accent.primary, borderLeftWidth: 6 }
-    : { borderColor: theme.colors.border.gray600, borderLeftWidth: 1 };
+    ? { borderLeftColor: theme.colors.accent.primary, borderLeftWidth: 6 }
+    : { borderLeftColor: theme.colors.border.gray600, borderLeftWidth: 1 };
 
   return (
-    <View
-      className="dark:bg-surface relative overflow-hidden rounded-lg border bg-white p-4 shadow-sm"
-      style={accentStyle}
-    >
-      <View className="mb-4 flex-row items-center justify-between">
-        <View className="flex-row items-center gap-2">
-          <Text
-            className={`text-xs font-bold ${item.isPR ? 'text-primary' : 'text-gray-400'} uppercase tracking-widest`}
-          >
-            Set {index + 1}
-          </Text>
-          {item.isPR && (
-            <View className="bg-primary/10 flex-row items-center rounded px-2 py-0.5">
-              <Text className="text-primary text-[10px] font-extrabold">PR</Text>
+    <View style={accentStyle} className="mb-4">
+      <GenericCard variant="card">
+        <View className="p-4">
+          <View className="mb-4 flex-row items-center justify-between">
+            <View className="flex-row items-center gap-2">
+              <Text
+                className={`text-xs font-bold ${item.isPR ? 'text-primary' : 'text-gray-400'} uppercase tracking-widest`}
+              >
+                Set {index + 1}
+              </Text>
+              {item.isPR && (
+                <View className="bg-primary/10 flex-row items-center rounded px-2 py-0.5">
+                  <Text className="text-primary text-[10px] font-extrabold">PR</Text>
+                </View>
+              )}
             </View>
-          )}
+            <Pressable onPress={() => onRemove(item.id)} className="flex-row items-center gap-1">
+              <Trash2 size={14} color="#ef4444" />
+              <Text className="text-xs font-bold uppercase tracking-wider text-red-500">Remove</Text>
+            </Pressable>
+          </View>
+
+          <View className="mb-4 grid grid-cols-2 gap-4">
+            <NewNumericalInput
+              label="Weight (kg)"
+              value={item.weight}
+              onChange={(v) => onChange(item.id, { weight: v })}
+              min={0}
+              step={1}
+            />
+            <NewNumericalInput
+              label="Reps"
+              value={item.reps}
+              onChange={(v) => onChange(item.id, { reps: v })}
+              min={0}
+              step={1}
+            />
+          </View>
+
+          <View className="grid grid-cols-2 gap-4">
+            <NewNumericalInput
+              label="Partial Reps"
+              value={item.partialReps}
+              onChange={(v) => onChange(item.id, { partialReps: v })}
+              min={0}
+              step={1}
+            />
+            <NewNumericalInput
+              label="Rest (sec)"
+              value={item.rest}
+              onChange={(v) => onChange(item.id, { rest: v })}
+              min={0}
+              step={5}
+            />
+          </View>
         </View>
-        <Pressable onPress={() => onRemove(item.id)} className="flex-row items-center gap-1">
-          <Trash2 size={14} color="#ef4444" />
-          <Text className="text-xs font-bold uppercase tracking-wider text-red-500">Remove</Text>
-        </Pressable>
-      </View>
-
-      <View className="mb-4 grid grid-cols-2 gap-4">
-        <NewNumericalInput
-          label="Weight (kg)"
-          value={item.weight}
-          onChange={(v) => onChange(item.id, { weight: v })}
-          min={0}
-          step={1}
-        />
-        <NewNumericalInput
-          label="Reps"
-          value={item.reps}
-          onChange={(v) => onChange(item.id, { reps: v })}
-          min={0}
-          step={1}
-        />
-      </View>
-
-      <View className="grid grid-cols-2 gap-4">
-        <NewNumericalInput
-          label="Partial Reps"
-          value={item.partialReps}
-          onChange={(v) => onChange(item.id, { partialReps: v })}
-          min={0}
-          step={1}
-        />
-        <NewNumericalInput
-          label="Rest (sec)"
-          value={item.rest}
-          onChange={(v) => onChange(item.id, { rest: v })}
-          min={0}
-          step={5}
-        />
-      </View>
+      </GenericCard>
     </View>
   );
 }
