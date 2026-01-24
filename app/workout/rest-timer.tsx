@@ -148,11 +148,36 @@ export default function RestTimerScreen() {
   }, [rotationAnim]);
 
   const handleMinus5s = () => {
-    setRestTime((prev) => Math.max(0, prev - 5));
+    setRestTime((prev) => {
+      const next = Math.max(0, prev - 5);
+      // Persist change to DB
+      (async () => {
+        try {
+          if (workoutLog && completedSet) {
+            await workoutLog.updateSet(completedSet.set.id, { restTimeAfter: next });
+          }
+        } catch (err) {
+          console.error('Error saving rest time:', err);
+        }
+      })();
+      return next;
+    });
   };
 
   const handlePlus5s = () => {
-    setRestTime((prev) => prev + 5);
+    setRestTime((prev) => {
+      const next = prev + 5;
+      (async () => {
+        try {
+          if (workoutLog && completedSet) {
+            await workoutLog.updateSet(completedSet.set.id, { restTimeAfter: next });
+          }
+        } catch (err) {
+          console.error('Error saving rest time:', err);
+        }
+      })();
+      return next;
+    });
   };
 
   const handleSkipRest = () => {

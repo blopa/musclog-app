@@ -86,6 +86,7 @@ export const schema = appSchema({
         { name: 'weight', type: 'number' },
         { name: 'partials', type: 'number', isOptional: true }, // Partial reps (defaults to 0)
         { name: 'rest_time_after', type: 'number' },
+        { name: 'is_skipped', type: 'boolean', isOptional: true },
         { name: 'difficulty_level', type: 'number' }, // 1-10 (RPE)
         { name: 'is_drop_set', type: 'boolean' },
         { name: 'set_order', type: 'number' },

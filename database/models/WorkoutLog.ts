@@ -40,6 +40,7 @@ export default class WorkoutLog extends Model {
       partials?: number;
       restTimeAfter?: number;
       difficultyLevel?: number;
+      isSkipped?: boolean;
       isDropSet?: boolean;
     }
   ): Promise<void> {
@@ -59,6 +60,7 @@ export default class WorkoutLog extends Model {
       if (data.weight !== undefined) updatedSet.weight = data.weight;
       if (data.partials !== undefined) updatedSet.partials = data.partials;
       if (data.restTimeAfter !== undefined) updatedSet.restTimeAfter = data.restTimeAfter;
+      if (data.isSkipped !== undefined) updatedSet.isSkipped = data.isSkipped;
       if (data.difficultyLevel !== undefined) {
         if (data.difficultyLevel < 1 || data.difficultyLevel > 10) {
           throw new Error('Difficulty level must be between 1 and 10');

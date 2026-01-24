@@ -100,7 +100,6 @@ export default function WorkoutSessionScreen() {
     try {
       setIsSaving(true);
 
-      // TODO: store the resttime
       const restTime =
         currentSetData.set.restTimeAfter && currentSetData.set.restTimeAfter > 0
           ? currentSetData.set.restTimeAfter
@@ -112,6 +111,7 @@ export default function WorkoutSessionScreen() {
         weight,
         reps,
         partials,
+        restTimeAfter: restTime,
       });
 
       // Refresh to get updated data
@@ -151,8 +151,16 @@ export default function WorkoutSessionScreen() {
 
     try {
       setIsSaving(true);
-      // Mark set as skipped (set difficultyLevel to 0, but we'll track it differently)
-      // For now, we'll just move to next set without saving RPE
+      // Mark set as skipped and persist it
+      try {
+        await workoutLog.updateSet(currentSetData.set.id, {
+          isSkipped: true,
+          difficultyLevel: 0,
+        });
+      } catch (err) {
+        console.error('Error persisting skip:', err);
+      }
+
       await refresh();
 
       // Navigate to next set
