@@ -21,6 +21,7 @@ import { EndWorkoutModal } from '../../components/modals/EndWorkoutModal';
 import { WorkoutTimeTracker } from '../../components/WorkoutTimeTracker';
 import { WorkoutStatCard } from '../../components/cards/WorkoutStatCard';
 import { WorkoutActionButton } from '../../components/WorkoutActionButton';
+import ShowMoreButton from '../../components/ShowMoreButton';
 import { LogSetPerformanceModal } from '../../components/modals/LogSetPerformanceModal';
 import { EditSetDetailsModal } from '../../components/modals/EditSetDetailsModal';
 import { ConfirmationModal } from '../../components/modals/ConfirmationModal';
@@ -375,11 +376,10 @@ export default function WorkoutSessionScreen() {
             ) : (
               <Text className="text-text-secondary">{t('workoutSession.previous')}: -</Text>
             )}
-            <Pressable onPress={() => setIsHistoryModalVisible(true)}>
-              <Text className="font-semibold text-accent-primary">
-                {t('workoutSession.history')}
-              </Text>
-            </Pressable>
+            <ShowMoreButton
+              onPress={() => setIsHistoryModalVisible(true)}
+              label={t('workoutSession.history')}
+            />
           </View>
 
           {/* Action Buttons */}

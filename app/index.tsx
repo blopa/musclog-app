@@ -195,7 +195,10 @@ export default function HomeScreen() {
             <Text className="text-2xl font-bold text-text-primary">
               {t('home.sections.recentWorkouts')}
             </Text>
-            <ShowMoreButton onPress={() => setIsWorkoutHistoryVisible(true)} />
+            <ShowMoreButton
+              onPress={() => setIsWorkoutHistoryVisible(true)}
+              label={t('common.seeAll')}
+            />
           </View>
 
           {isLoadingRecent ? (

@@ -12,6 +12,7 @@ import BodyMetricsHistoryModal from '../components/modals/BodyMetricsHistoryModa
 import { useSettings } from '../hooks/useSettings';
 import { useUser } from '../hooks/useUser';
 import { useUserMetrics } from '../hooks/useUserMetrics';
+import ShowMoreButton from '../components/ShowMoreButton';
 
 const PROFILE_DATA = {
   user: {
@@ -292,11 +293,10 @@ export default function ProfileScreen() {
             <Text className="text-2xl font-bold text-text-primary">
               {t('profile.currentStats')}
             </Text>
-            <Pressable onPress={() => setIsBodyMetricsHistoryVisible(true)}>
-              <Text className="text-sm font-semibold text-accent-primary">
-                {t('profile.history')}
-              </Text>
-            </Pressable>
+            <ShowMoreButton
+              onPress={() => setIsBodyMetricsHistoryVisible(true)}
+              label={t('profile.history')}
+            />
           </View>
           <View className="flex-row flex-wrap" style={{ gap: theme.spacing.gap.md }}>
             {stats.map((stat) => (
