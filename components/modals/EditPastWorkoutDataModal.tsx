@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable, ScrollView } from 'react-native';
-import { Trash2, Plus as PlusIcon } from 'lucide-react-native';
+import { Trash2 } from 'lucide-react-native';
+import AddNewSetButton from './AddNewSetButton';
 import { GenericCard } from '../cards/GenericCard';
 import NewNumericalInput from '../theme/NewNumericalInput';
 import { theme } from '../../theme';
@@ -45,13 +46,26 @@ function SetCard({
             <View className="flex-row items-center gap-2">
               <Text
                 className="text-xs font-bold uppercase tracking-widest"
-                style={{ color: item.isPR ? theme.colors.accent.primary : theme.colors.text.secondary }}
+                style={{
+                  color: item.isPR ? theme.colors.accent.primary : theme.colors.text.secondary,
+                }}
               >
                 Set {index + 1}
               </Text>
               {item.isPR && (
-                <View style={{ backgroundColor: theme.colors.accent.primary10 }} className="flex-row items-center rounded px-2 py-0.5">
-                  <Text style={{ color: theme.colors.accent.primary, fontWeight: theme.typography.fontWeight.extrabold }} className="text-[10px]">PR</Text>
+                <View
+                  style={{ backgroundColor: theme.colors.accent.primary10 }}
+                  className="flex-row items-center rounded px-2 py-0.5"
+                >
+                  <Text
+                    style={{
+                      color: theme.colors.accent.primary,
+                      fontWeight: theme.typography.fontWeight.extrabold,
+                    }}
+                    className="text-[10px]"
+                  >
+                    PR
+                  </Text>
                 </View>
               )}
             </View>
@@ -155,17 +169,9 @@ export default function EditPastWorkoutDataModal({
               onRemove={handleRemove}
             />
           ))}
-
-          <Pressable
-            onPress={handleAdd}
-            className="w-full flex-row items-center justify-center gap-2 rounded-lg border-2 border-dashed border-slate-200 py-4 dark:border-white/10"
-          >
-            <PlusIcon size={16} color={theme.colors.background.workoutIcon} />
-            <Text className="text-sm font-bold text-gray-400">Add New Set</Text>
-          </Pressable>
+          <AddNewSetButton onPress={handleAdd} />
         </View>
       </ScrollView>
-      {/*TODO: implement save button*/}
     </FullScreenModal>
   );
 }

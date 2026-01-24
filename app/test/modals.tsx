@@ -753,7 +753,9 @@ export default function ModalsTestScreen() {
 
           {/* Edit Past Workout Data Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Edit Past Workout Data Modal</Text>
+            <Text className="mb-2 text-lg font-bold text-text-primary">
+              Edit Past Workout Data Modal
+            </Text>
             <Text className="mb-4 text-sm text-text-secondary">
               Edit sets and details of a past workout session.
             </Text>
