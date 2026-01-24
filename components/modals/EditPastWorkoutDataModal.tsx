@@ -157,6 +157,7 @@ export default function EditPastWorkoutDataModal({
     try {
       await onSave(sets);
       onClose();
+      setIsSaving(false);
     } catch (err) {
       setIsSaving(false);
       console.error('Failed to save sets:', err);
