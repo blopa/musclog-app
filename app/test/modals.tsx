@@ -42,6 +42,7 @@ import PastWorkoutsHistoryModal from '../../components/modals/PastWorkoutsHistor
 import BodyMetricsHistoryModal from '../../components/modals/BodyMetricsHistoryModal';
 import AddUserMetricEntryModal from '../../components/modals/AddUserMetricEntryModal';
 import PastWorkoutDetailModal from '../../components/modals/PastWorkoutDetailModal';
+import EditPastWorkoutDataModal from '../../components/modals/EditPastWorkoutDataModal';
 
 export default function ModalsTestScreen() {
   // Nutrition Goals Modal
@@ -154,6 +155,8 @@ export default function ModalsTestScreen() {
   const [isAddUserMetricEntryVisible, setIsAddUserMetricEntryVisible] = useState(false);
   // Past Workout Detail Modal
   const [isPastWorkoutDetailVisible, setIsPastWorkoutDetailVisible] = useState(false);
+  // Edit Past Workout Data Modal
+  const [isEditPastWorkoutDataVisible, setIsEditPastWorkoutDataVisible] = useState(false);
 
   const handleSaveGoals = (goals: NutritionGoals) => {
     console.log('Goals saved:', goals);
@@ -748,6 +751,20 @@ export default function ModalsTestScreen() {
             />
           </View>
 
+          {/* Edit Past Workout Data Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Edit Past Workout Data Modal</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Edit sets and details of a past workout session.
+            </Text>
+            <Button
+              label="Open Edit Past Workout Data Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsEditPastWorkoutDataVisible(true)}
+            />
+          </View>
+
           {/* Past Workout Detail Modal */}
           <View className="mb-6">
             <Text className="mb-2 text-lg font-bold text-text-primary">
@@ -1117,6 +1134,15 @@ export default function ModalsTestScreen() {
       <AddUserMetricEntryModal
         visible={isAddUserMetricEntryVisible}
         onClose={() => setIsAddUserMetricEntryVisible(false)}
+      />
+
+      <EditPastWorkoutDataModal
+        visible={isEditPastWorkoutDataVisible}
+        onClose={() => setIsEditPastWorkoutDataVisible(false)}
+        onSave={() => {
+          console.log('Edit past workout data saved');
+          setIsEditPastWorkoutDataVisible(false);
+        }}
       />
 
       <PastWorkoutDetailModal

@@ -33,8 +33,8 @@ function SetCard({
   onRemove: (id: string) => void;
 }) {
   const accentStyle = item.isPR
-    ? { borderColor: theme.colors.border.gray600, borderLeftWidth: 4 }
-    : { borderColor: 'rgba(148,163,184,0.18)', borderLeftWidth: 1 };
+    ? { borderColor: theme.colors.accent.primary, borderLeftWidth: 6 }
+    : { borderColor: theme.colors.border.gray600, borderLeftWidth: 1 };
 
   return (
     <View
@@ -132,20 +132,11 @@ export default function EditPastWorkoutDataModal({
     <FullScreenModal
       visible={visible}
       onClose={onClose}
-      title={t('workoutHistory.title')}
+      title={'Dumbbell • Upper Body Power'}
+      subtitle={'Aug 24, 2023'}
       scrollable={false}
     >
       <ScrollView contentContainerStyle={{ paddingBottom: 160 }} className="p-4">
-        <View className="mb-4 flex-row items-center gap-4 px-2">
-          <View className="bg-indigo-brand/10 h-12 w-12 items-center justify-center rounded-xl">
-            <Text className="text-indigo-brand text-2xl">💪</Text>
-          </View>
-          <View>
-            <Text className="text-sm font-medium text-gray-300">Dumbbell • Upper Body Power</Text>
-            <Text className="text-xs text-gray-400">Aug 24, 2023</Text>
-          </View>
-        </View>
-
         <View className="flex flex-col gap-4">
           {sets.map((s, idx) => (
             <SetCard
