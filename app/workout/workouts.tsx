@@ -1,13 +1,12 @@
 import { useState, useMemo } from 'react';
 import { View, ScrollView, Pressable } from 'react-native';
-import { Search, SlidersHorizontal, Dumbbell, WifiOff } from 'lucide-react-native';
+import { Search, SlidersHorizontal, Dumbbell, WifiOff, Plus } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
 import { theme } from '../../theme';
 import { MasterLayout } from '../../components/MasterLayout';
 import { WorkoutCard } from '../../components/cards/WorkoutCard';
 import { FilterTabs } from '../../components/FilterTabs';
-import { CreateTemplateButton } from '../../components/CreateTemplateButton';
 import { GradientText } from '../../components/GradientText';
 import { WorkoutDetailsMenu } from '../../components/WorkoutDetailsMenu';
 import { EmptyStateCard } from '../../components/theme/EmptyStateCard';
@@ -17,6 +16,7 @@ import { WorkoutService } from '../../database/services/WorkoutService';
 import { database } from '../../database';
 import WorkoutTemplate from '../../database/models/WorkoutTemplate';
 import { useWorkoutTemplates } from '../../hooks/useWorkoutTemplates';
+import DashedButton from '../../components/theme/DashedButton';
 
 export default function WorkoutsScreen() {
   const { t } = useTranslation();
@@ -274,8 +274,12 @@ export default function WorkoutsScreen() {
                   />
                 ))}
 
-                {/* Create Template Button */}
-                <CreateTemplateButton />
+                <DashedButton
+                  label={t('workouts.createTemplate')}
+                  onPress={() => {}}
+                  size="lg"
+                  icon={<Plus size={theme.iconSize.lg} color={theme.colors.text.primary} />}
+                />
               </>
             )}
           </View>

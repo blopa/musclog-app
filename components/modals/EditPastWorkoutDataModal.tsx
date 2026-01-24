@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable, ScrollView } from 'react-native';
-import { Trash2 } from 'lucide-react-native';
-import AddNewSetButton from './AddNewSetButton';
+import { Plus as PlusIcon, Trash2 } from 'lucide-react-native';
 import { GenericCard } from '../cards/GenericCard';
 import NewNumericalInput from '../theme/NewNumericalInput';
 import { theme } from '../../theme';
 import { FullScreenModal } from './FullScreenModal';
 import { useTranslation } from 'react-i18next';
+import DashedButton from '../theme/DashedButton';
 
 type SetItem = {
   id: string;
@@ -169,7 +169,12 @@ export default function EditPastWorkoutDataModal({
               onRemove={handleRemove}
             />
           ))}
-          <AddNewSetButton onPress={handleAdd} />
+          <DashedButton
+            label="Add New Set"
+            onPress={handleAdd}
+            size="sm"
+            icon={<PlusIcon size={theme.iconSize.sm} color={theme.colors.background.workoutIcon} />}
+          />
         </View>
       </ScrollView>
     </FullScreenModal>

@@ -20,7 +20,6 @@ import { WorkoutCard } from '../../components/cards/WorkoutCard';
 import { DailySummaryCard } from '../../components/cards/DailySummaryCard';
 import { WorkoutStatCard } from '../../components/cards/WorkoutStatCard';
 import { CaloriesRemainingCard } from '../../components/cards/CaloriesRemainingCard';
-import { CreateTemplateButton } from '../../components/CreateTemplateButton';
 import { FoodInfoCard } from '../../components/cards/FoodInfoCard';
 import { NotificationCard } from '../../components/cards/NotificationCard';
 import { MacroCard } from '../../components/cards/MacroCard';
@@ -162,10 +161,6 @@ export default function CardsTestScreen() {
               },
             }}
           />
-        </TestSection>
-
-        <TestSection title="Create Template" subtitle="Design your workout templates">
-          <CreateTemplateButton onPress={() => console.log('Template created')} />
         </TestSection>
 
         <TestSection title="Workout Card" subtitle="Standard workout display">
