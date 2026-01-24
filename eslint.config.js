@@ -2,15 +2,23 @@
 const { defineConfig } = require('eslint/config');
 const expoConfig = require('eslint-config-expo/flat');
 
+// Local plugin with custom rules
+const localRulesPlugin = require('./eslint-rules');
+
 module.exports = defineConfig([
   expoConfig,
   {
     ignores: ['dist/*'],
   },
   {
+    plugins: {
+      local: localRulesPlugin,
+    },
     rules: {
       'react/display-name': 'off',
       'react/jsx-closing-bracket-location': ['warn', 'line-aligned'],
+      // Disallow using `&&` inside JSX expression containers (fixable)
+      'local/no-jsx-logical-expression': 'error',
     },
   },
   {

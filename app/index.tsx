@@ -161,12 +161,12 @@ export default function HomeScreen() {
             onPress={() => setIsNotificationsVisible(true)}
           >
             <Bell size={theme.iconSize.md} color={theme.colors.text.primary} />
-            {PAGE_DATA.user.hasNotifications && (
+            {PAGE_DATA.user.hasNotifications ? (
               <View
                 className="absolute right-2 top-2 h-2.5 w-2.5 rounded-full"
                 style={{ backgroundColor: theme.colors.status.notificationBadge }}
               />
-            )}
+            ) : null}
           </Pressable>
         </View>
 

@@ -69,7 +69,7 @@ export function ToggleInput(props: TogglableSettingsProps) {
                     >
                       {it.label}
                     </Text>
-                    {it.subtitle && (
+                    {it.subtitle ? (
                       <Text
                         style={{
                           fontSize: theme.typography.fontSize.sm,
@@ -79,7 +79,7 @@ export function ToggleInput(props: TogglableSettingsProps) {
                       >
                         {it.subtitle}
                       </Text>
-                    )}
+                    ) : null}
                   </View>
                 </View>
                 <Switch
@@ -94,7 +94,7 @@ export function ToggleInput(props: TogglableSettingsProps) {
               </View>
             )}
           </Pressable>
-          {idx < items.length - 1 && (
+          {idx < items.length - 1 ? (
             <View
               style={{
                 height: theme.borderWidth.thin,
@@ -102,7 +102,7 @@ export function ToggleInput(props: TogglableSettingsProps) {
                 marginHorizontal: theme.spacing.padding.sm,
               }}
             />
-          )}
+          ) : null}
         </React.Fragment>
       ))}
     </View>

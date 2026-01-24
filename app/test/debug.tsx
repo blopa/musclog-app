@@ -265,11 +265,11 @@ export default function DebugTestScreen() {
                   <Text className="text-text-primary">
                     <Text className="font-bold">Name:</Text> {user.fullName}
                   </Text>
-                  {user.email && (
+                  {user.email ? (
                     <Text className="text-text-primary">
                       <Text className="font-bold">Email:</Text> {user.email}
                     </Text>
-                  )}
+                  ) : null}
                   <Text className="text-text-primary">
                     <Text className="font-bold">DOB:</Text>{' '}
                     {new Date(user.dateOfBirth).toLocaleDateString()}
@@ -280,12 +280,12 @@ export default function DebugTestScreen() {
                   <Text className="text-text-primary">
                     <Text className="font-bold">Gender:</Text> {user.gender}
                   </Text>
-                  {user.photoUri && (
+                  {user.photoUri ? (
                     <Text className="text-text-primary">
                       <Text className="font-bold">Photo URI:</Text> {user.photoUri.substring(0, 50)}
                       ...
                     </Text>
-                  )}
+                  ) : null}
                 </View>
 
                 <View className="rounded-lg border border-border-light bg-bg-primary p-3">
@@ -372,11 +372,11 @@ export default function DebugTestScreen() {
                       </Text>
                     </View>
                   ))}
-                  {userMetrics.length > 10 && (
+                  {userMetrics.length > 10 ? (
                     <Text className="text-xs text-text-tertiary">
                       ... and {userMetrics.length - 10} more
                     </Text>
-                  )}
+                  ) : null}
                 </View>
               ) : (
                 <Text className="py-2 text-sm text-text-tertiary">No metrics found</Text>

@@ -187,7 +187,7 @@ const renderBubble = (props: BubbleProps<ExtendedIMessage>) => {
   if (isUser) {
     return (
       <View style={styles.userBubbleContainer}>
-        {!!currentMessage?.text && (
+        {!!currentMessage?.text ? (
           <LinearGradient
             colors={theme.colors.gradients.userBubble}
             start={{ x: 0, y: 0 }}
@@ -196,9 +196,9 @@ const renderBubble = (props: BubbleProps<ExtendedIMessage>) => {
           >
             {renderMessageText(props)}
           </LinearGradient>
-        )}
-        {!!currentMessage?.workout && renderCustomView(props)}
-        {!!currentMessage?.createdAt && (
+        ) : null}
+        {!!currentMessage?.workout ? renderCustomView(props) : null}
+        {!!currentMessage?.createdAt ? (
           <Text
             className="mr-1 mt-1 text-right text-xs"
             style={{ color: theme.colors.text.tertiary }}
@@ -208,21 +208,21 @@ const renderBubble = (props: BubbleProps<ExtendedIMessage>) => {
               minute: '2-digit',
             })}
           </Text>
-        )}
+        ) : null}
       </View>
     );
   } else {
     return (
       <View style={styles.aiBubbleContainer}>
-        {!!currentMessage?.user.name && (
+        {!!currentMessage?.user.name ? (
           <Text className="mb-1 ml-1 text-xs" style={{ color: theme.colors.text.secondary }}>
             {currentMessage.user.name}
           </Text>
-        )}
-        {!!currentMessage?.text && (
+        ) : null}
+        {!!currentMessage?.text ? (
           <View style={styles.aiBubbleContent}>{renderMessageText(props)}</View>
-        )}
-        {!!currentMessage?.workout && renderCustomView(props)}
+        ) : null}
+        {!!currentMessage?.workout ? renderCustomView(props) : null}
       </View>
     );
   }

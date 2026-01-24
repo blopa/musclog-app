@@ -55,13 +55,13 @@ export function FilterTabs({
             >
               {tab.label}
             </Text>
-            {isActive && withCheckmark && (
+            {isActive && withCheckmark ? (
               <Check
                 size={theme.iconSize.sm}
                 color={theme.colors.text.black}
                 style={{ marginLeft: theme.spacing.margin['1half'] }}
               />
-            )}
+            ) : null}
           </Pressable>
         );
       })}

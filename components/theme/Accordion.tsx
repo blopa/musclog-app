@@ -64,10 +64,10 @@ export function Accordion({
             headerContent
           ) : (
             <>
-              {Icon && <Icon size={theme.iconSize.md} color={theme.colors.accent.primary} />}
+              {Icon ? <Icon size={theme.iconSize.md} color={theme.colors.accent.primary} /> : null}
               <Text className="text-base font-semibold text-text-primary">
                 {title}
-                {count !== undefined && (
+                {count !== undefined ? (
                   <>
                     {' '}
                     <Text
@@ -77,7 +77,7 @@ export function Accordion({
                       ({count})
                     </Text>
                   </>
-                )}
+                ) : null}
               </Text>
             </>
           )}

@@ -57,7 +57,7 @@ export function TextInput({
           secureTextEntry={secureTextEntry}
           style={{ borderWidth: theme.borderWidth.none }}
         />
-        {icon && <View className="ml-2">{icon}</View>}
+        {icon ? <View className="ml-2">{icon}</View> : null}
       </View>
     </View>
   );

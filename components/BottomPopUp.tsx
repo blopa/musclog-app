@@ -122,12 +122,12 @@ export function BottomPopUp({
                 >
                   <View className="flex-row items-center justify-between p-6">
                     <View className="flex-1 flex-row items-center gap-3">
-                      {headerIcon && <View>{headerIcon}</View>}
+                      {headerIcon ? <View>{headerIcon}</View> : null}
                       <View className="flex-1">
                         <Text className="text-2xl font-bold text-text-primary">{title}</Text>
-                        {subtitle && (
+                        {subtitle ? (
                           <Text className="mt-1 text-sm text-text-secondary">{subtitle}</Text>
-                        )}
+                        ) : null}
                       </View>
                     </View>
                     <Pressable
@@ -140,7 +140,7 @@ export function BottomPopUp({
                 </LinearGradient>
 
                 {/* Content */}
-                {children && (
+                {children ? (
                   <View
                     className="p-6"
                     style={
@@ -151,10 +151,10 @@ export function BottomPopUp({
                   >
                     {children}
                   </View>
-                )}
+                ) : null}
 
                 {/* Footer */}
-                {footer && (
+                {footer ? (
                   <View
                     className="border-t border-border-dark px-6 pt-2"
                     style={{
@@ -163,7 +163,7 @@ export function BottomPopUp({
                   >
                     {footer}
                   </View>
-                )}
+                ) : null}
               </Animated.View>
             </TouchableWithoutFeedback>
           </View>

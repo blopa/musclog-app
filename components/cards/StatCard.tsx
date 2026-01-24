@@ -32,9 +32,9 @@ export function StatCard({
         </View>
         <View className="mb-1 flex-row items-baseline gap-1">
           <Text className="text-3xl font-bold text-text-primary">{value}</Text>
-          {unit && <Text className="text-lg text-text-secondary">{unit}</Text>}
+          {unit ? <Text className="text-lg text-text-secondary">{unit}</Text> : null}
         </View>
-        {change && (
+        {change ? (
           <View className="flex-row items-center gap-1">
             <TrendingUp
               size={theme.iconSize.xs}
@@ -60,7 +60,7 @@ export function StatCard({
               {change}
             </Text>
           </View>
-        )}
+        ) : null}
       </View>
     </GenericCard>
   );

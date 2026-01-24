@@ -116,11 +116,11 @@ export const StepperInput: React.FC<StepperInputProps> = ({
               returnKeyType="done"
               selectTextOnFocus
             />
-            {unit && (
+            {unit ? (
               <Text className="ml-1 flex-shrink-0 text-2xl font-normal text-text-tertiary">
                 {unit}
               </Text>
-            )}
+            ) : null}
           </View>
         ) : (
           <Pressable
@@ -134,7 +134,7 @@ export const StepperInput: React.FC<StepperInputProps> = ({
               ellipsizeMode="tail"
             >
               {internalValue.toFixed(1)}{' '}
-              {unit && <Text className="font-normal text-text-tertiary">{unit}</Text>}
+              {unit ? <Text className="font-normal text-text-tertiary">{unit}</Text> : null}
             </Text>
           </Pressable>
         )}

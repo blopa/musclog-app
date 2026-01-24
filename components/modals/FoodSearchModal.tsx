@@ -201,7 +201,7 @@ function FoodItemCard({ food, onAddPress }: FoodItemCardProps) {
           <Text className="flex-1 truncate pr-2 font-semibold text-text-primary" numberOfLines={1}>
             {food.name}
           </Text>
-          {food.grade && (
+          {food.grade ? (
             <View
               className="rounded border px-1.5 py-0.5"
               style={{
@@ -223,7 +223,7 @@ function FoodItemCard({ food, onAddPress }: FoodItemCardProps) {
                 {food.grade}
               </Text>
             </View>
-          )}
+          ) : null}
         </View>
         <Text className="truncate text-sm text-text-secondary" numberOfLines={1}>
           {food.description}
@@ -257,16 +257,16 @@ function SectionHeader({ title, icon: Icon, rightAction }: SectionHeaderProps) {
   return (
     <View className="mb-3 flex-row items-center justify-between px-1">
       <View className="flex-row items-center gap-2">
-        {Icon && <Icon size={theme.iconSize.sm} color={theme.colors.accent.secondary} />}
+        {Icon ? <Icon size={theme.iconSize.sm} color={theme.colors.accent.secondary} /> : null}
         <Text className="text-xs font-bold uppercase tracking-wider text-text-secondary">
           {title}
         </Text>
       </View>
-      {rightAction && (
+      {rightAction ? (
         <Pressable onPress={rightAction.onPress}>
           <Text className="text-xs font-bold text-accent-secondary">{rightAction.label}</Text>
         </Pressable>
-      )}
+      ) : null}
     </View>
   );
 }
@@ -408,7 +408,7 @@ export function FoodSearchModal({
       </View>
 
       {/* Food Details Modal */}
-      {selectedFood && (
+      {selectedFood ? (
         <FoodDetailsModal
           visible={isFoodDetailsVisible}
           onClose={() => {
@@ -435,7 +435,7 @@ export function FoodSearchModal({
             setSelectedFood(null);
           }}
         />
-      )}
+      ) : null}
     </FullScreenModal>
   );
 }

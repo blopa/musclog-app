@@ -119,13 +119,13 @@ function WorkoutHistorySkeleton() {
                       <SkeletonLoader width="50%" height={theme.size['3']} />
                     </View>
                   </View>
-                  {i % 3 === 0 && (
+                  {i % 3 === 0 ? (
                     <SkeletonLoader
                       width={theme.size['12']}
                       height={theme.size['5']}
                       borderRadius={theme.borderRadius.md}
                     />
-                  )}
+                  ) : null}
                 </View>
                 <View className="flex-row gap-2">
                   {[1, 2, 3].map((statIndex) => (
@@ -233,7 +233,7 @@ function WorkoutCard({ workout, opacity, onPress }: WorkoutCardPropsWithHandler)
                 </Text>
               </View>
             </View>
-            {workout.prCount && (
+            {workout.prCount ? (
               <View
                 className="flex-row items-center gap-1 rounded px-2 py-0.5"
                 style={{
@@ -259,7 +259,7 @@ function WorkoutCard({ workout, opacity, onPress }: WorkoutCardPropsWithHandler)
                       })}
                 </Text>
               </View>
-            )}
+            ) : null}
           </View>
 
           <View className="flex-row gap-2">
@@ -413,9 +413,9 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
                 />
               ))}
 
-              {hasMore && !searchQuery && (
+              {hasMore && !searchQuery ? (
                 <LoadMoreButton isLoadingMore={isLoadingMore} onPress={loadMoreWorkouts} />
-              )}
+              ) : null}
             </View>
           )}
         </ScrollView>

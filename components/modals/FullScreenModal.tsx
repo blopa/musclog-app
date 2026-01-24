@@ -89,11 +89,11 @@ export function FullScreenModal({
             </Pressable>
             <View className="flex-1">
               <Text className="text-xl font-bold tracking-tight text-text-primary">{title}</Text>
-              {subtitle && (
+              {subtitle ? (
                 <Text className="mt-0.5 text-sm font-normal text-text-secondary">{subtitle}</Text>
-              )}
+              ) : null}
             </View>
-            {headerRight && <View className="-mr-2">{headerRight}</View>}
+            {headerRight ? <View className="-mr-2">{headerRight}</View> : null}
           </LinearGradient>
         </View>
 
@@ -114,7 +114,7 @@ export function FullScreenModal({
             <View className="flex-1">{children}</View>
           )}
 
-          {footer && (
+          {footer ? (
             <View
               className="absolute bottom-0 left-0 right-0"
               style={{
@@ -125,7 +125,7 @@ export function FullScreenModal({
             >
               {footer}
             </View>
-          )}
+          ) : null}
         </View>
       </View>
     </Modal>

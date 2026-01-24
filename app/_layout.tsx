@@ -43,9 +43,9 @@ export default function RootLayout() {
     <GestureHandlerRootView>
       <SafeAreaProvider>
         <SnackbarProvider>
-          {Platform.OS === 'android' && (
+          {Platform.OS === 'android' ? (
             <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
-          )}
+          ) : null}
           <Stack
             screenOptions={{
               headerShown: false,

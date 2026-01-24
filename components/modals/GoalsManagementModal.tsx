@@ -204,7 +204,7 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
             {/* Scrollable content */}
             <View className="flex-1 px-6 pb-32">
               {/* Current Goals Section */}
-              {currentGoal && (
+              {currentGoal ? (
                 <View className="mb-8">
                   <View className="mb-3 flex-row items-center justify-between">
                     <Text
@@ -233,10 +233,10 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
                   {/* Current Goal Card */}
                   <CurrentGoalsCard goal={currentGoal} />
                 </View>
-              )}
+              ) : null}
 
               {/* Goals History Section */}
-              {goalsHistory.length > 0 && (
+              {goalsHistory.length > 0 ? (
                 <View className="mb-6">
                   <Text
                     className="mb-6 font-bold uppercase tracking-widest text-text-secondary"
@@ -252,10 +252,10 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
                     })}
                   </View>
                 </View>
-              )}
+              ) : null}
 
               {/* Empty state */}
-              {!currentGoal && goalsHistory.length === 0 && (
+              {!currentGoal && goalsHistory.length === 0 ? (
                 <View className="flex-1 items-center justify-center py-16">
                   <Text className="text-center text-text-secondary">
                     {t('goalsManagement.subtitle')}
@@ -264,7 +264,7 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
                     {t('goalsManagement.newGoal')} to get started
                   </Text>
                 </View>
-              )}
+              ) : null}
             </View>
 
             {/* Bottom spacing for navigation */}

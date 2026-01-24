@@ -65,7 +65,7 @@ export function MacrosPizzaChart({
         }}
       />
 
-      {showInsight && (
+      {showInsight ? (
         <View className="absolute items-center">
           <Text
             className="font-bold uppercase text-text-secondary"
@@ -75,7 +75,7 @@ export function MacrosPizzaChart({
           </Text>
           <Text className="text-lg font-bold text-text-primary">{t('nutritionGoals.optimal')}</Text>
         </View>
-      )}
+      ) : null}
     </View>
   );
 }

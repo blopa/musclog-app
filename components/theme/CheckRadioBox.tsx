@@ -21,15 +21,16 @@ export function CheckRadioBox({ label, value, onValueChange, type = 'checkbox' }
           type === 'radio' ? 'rounded-full' : 'rounded'
         }`}
       >
-        {value &&
-          (type === 'checkbox' ? (
+        {value ? (
+          type === 'checkbox' ? (
             <Check size={theme.iconSize.sm} color={theme.colors.accent.primary} />
           ) : (
             <View
               className="h-3 w-3 rounded-full"
               style={{ backgroundColor: theme.colors.accent.primary }}
             />
-          ))}
+          )
+        ) : null}
       </View>
       <Text className="text-sm font-medium text-text-primary">{label}</Text>
     </Pressable>

@@ -222,7 +222,7 @@ export function OptionsMultiSelector<T extends string | number>({
           }}
         />
         {/* Small circle indicator at the top of each group */}
-        {isFirstInGroup && (
+        {isFirstInGroup ? (
           <View
             style={{
               position: 'absolute',
@@ -236,7 +236,7 @@ export function OptionsMultiSelector<T extends string | number>({
               borderColor: theme.colors.background.primary,
             }}
           />
-        )}
+        ) : null}
       </View>
     );
   };
@@ -266,12 +266,12 @@ export function OptionsMultiSelector<T extends string | number>({
         >
           {renderGroupIndicator(groupPosition, item.groupId, isFirstInGroup)}
           <View style={{ flex: 1 }}>
-            {isHighestSelected && canGroup && (
+            {isHighestSelected && canGroup ? (
               <GroupActionButton
                 onPress={handleGroupAction}
                 allSelectedInSameGroup={allSelectedInSameGroup}
               />
-            )}
+            ) : null}
             <Pressable
               onLongPress={drag}
               delayLongPress={150}
@@ -369,7 +369,7 @@ export function OptionsMultiSelector<T extends string | number>({
                         </Text>
                       </View>
                     </View>
-                    {showCheckboxes && (
+                    {showCheckboxes ? (
                       <View
                         style={{
                           width: theme.size['6'],
@@ -384,15 +384,15 @@ export function OptionsMultiSelector<T extends string | number>({
                           justifyContent: 'center',
                         }}
                       >
-                        {selected && (
+                        {selected ? (
                           <Check
                             size={theme.iconSize.xs}
                             color={theme.colors.text.black}
                             strokeWidth={theme.strokeWidth.thick}
                           />
-                        )}
+                        ) : null}
                       </View>
-                    )}
+                    ) : null}
                   </View>
                 </View>
               )}
@@ -423,12 +423,12 @@ export function OptionsMultiSelector<T extends string | number>({
       >
         {renderGroupIndicator(groupPosition, option.groupId, isFirstInGroup)}
         <View style={{ flex: 1 }}>
-          {isHighestSelected && canGroup && (
+          {isHighestSelected && canGroup ? (
             <GroupActionButton
               onPress={handleGroupAction}
               allSelectedInSameGroup={allSelectedInSameGroup}
             />
-          )}
+          ) : null}
           <Pressable
             onPress={() => showCheckboxes && toggle(option.id)}
             disabled={!showCheckboxes}
@@ -510,13 +510,13 @@ export function OptionsMultiSelector<T extends string | number>({
                       justifyContent: 'center',
                     }}
                   >
-                    {selected && (
+                    {selected ? (
                       <Check
                         size={theme.iconSize.xs}
                         color={theme.colors.text.black}
                         strokeWidth={theme.strokeWidth.thick}
                       />
-                    )}
+                    ) : null}
                   </View>
                 ) : (
                   <View />

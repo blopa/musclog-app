@@ -169,7 +169,7 @@ function MacrosDistributionChart({
             {Math.round(fatsPercentage)}% {t('food.macros.fatLegend')}
           </Text>
         </View>
-        {fiber > 0 && (
+        {fiber > 0 ? (
           <View className="flex-row items-center gap-2">
             <View
               className="h-2 w-2 rounded-full"
@@ -179,7 +179,7 @@ function MacrosDistributionChart({
               {Math.round(fiberPercentage)}% {t('food.macros.fiberLegend')}
             </Text>
           </View>
-        )}
+        ) : null}
       </View>
     </View>
   );
@@ -247,9 +247,9 @@ export function NutritionGoalsBody({
     <ScrollView className="flex-1" showsVerticalScrollIndicator={false} style={webScrollViewStyle}>
       <View className="gap-4 px-6 pb-6 pt-2">
         {/* Subtitle */}
-        {showSubtitle && (
+        {showSubtitle ? (
           <Text className="mb-2 text-sm text-text-secondary">{t('nutritionGoals.subtitle')}</Text>
-        )}
+        ) : null}
 
         {/* Total Daily Calories Card */}
         <View
@@ -403,14 +403,14 @@ export function NutritionGoalsBody({
             className="flex-row items-center justify-between rounded-xl border border-emerald-900/20 bg-bg-card p-5"
           >
             <View className="flex-1 flex-row items-center gap-3 pr-3">
-              {showIcons && (
+              {showIcons ? (
                 <View
                   className="h-8 w-8 items-center justify-center rounded-lg"
                   style={{ backgroundColor: theme.colors.status.emerald20 }}
                 >
                   <Calendar size={theme.iconSize.sm} color={theme.colors.status.emeraldLight} />
                 </View>
-              )}
+              ) : null}
               <View className="flex-1">
                 <Text className="font-semibold text-white">{t('nutritionGoals.targetDate')}</Text>
                 <Text className="text-xs text-gray-500" numberOfLines={1}>
@@ -424,7 +424,7 @@ export function NutritionGoalsBody({
                   ? format(new Date(targetDate), 'MMM d, yyyy')
                   : t('nutritionGoals.targetDateNotSet')}
               </Text>
-              {targetDate != null && (
+              {targetDate != null ? (
                 <Pressable
                   hitSlop={8}
                   onPress={(e) => {
@@ -436,7 +436,7 @@ export function NutritionGoalsBody({
                     {t('nutritionGoals.targetDateClear')}
                   </Text>
                 </Pressable>
-              )}
+              ) : null}
             </View>
           </Pressable>
         </View>
@@ -452,7 +452,7 @@ export function NutritionGoalsBody({
         />
 
         {/* Save Button */}
-        {showSaveButton && (
+        {showSaveButton ? (
           <View
             className="mt-8 border-t pt-6"
             style={{ borderTopColor: theme.colors.background.white5 }}
@@ -473,7 +473,7 @@ export function NutritionGoalsBody({
               {t('nutritionGoals.settingsNote')}
             </Text>
           </View>
-        )}
+        ) : null}
       </View>
     </ScrollView>
   );

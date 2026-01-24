@@ -39,7 +39,7 @@ export function HistoryBodyMetricCard({ entry }: { entry: HistoryEntry }) {
             </View>
           </View>
           <View className="items-end gap-1">
-            {entry.change && (
+            {entry.change ? (
               <View
                 className="flex-row items-center rounded-full px-2.5 py-1"
                 style={{
@@ -63,15 +63,15 @@ export function HistoryBodyMetricCard({ entry }: { entry: HistoryEntry }) {
                   {entry.change}
                 </Text>
               </View>
-            )}
-            {!entry.change && (
+            ) : null}
+            {!entry.change ? (
               <View
                 className="flex-row items-center rounded-full px-2.5 py-1"
                 style={{ backgroundColor: 'rgba(107, 114, 128, 0.15)' }}
               >
                 <Text className="text-xs font-bold text-text-tertiary">{entry.note}</Text>
               </View>
-            )}
+            ) : null}
             <Text className="text-[10px] font-medium text-text-tertiary">{entry.note}</Text>
           </View>
         </View>

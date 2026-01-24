@@ -231,7 +231,7 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
                 />
               </Pressable>
 
-              {microOpen && (
+              {microOpen ? (
                 <View className="flex-row flex-wrap gap-4">
                   <MacroInput
                     label={t('food.newCustomFood.sugar')}
@@ -274,7 +274,7 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
                     size="half"
                   />
                 </View>
-              )}
+              ) : null}
             </View>
           </View>
           <View className="gap-3 px-4 pb-8 pt-4">

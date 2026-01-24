@@ -87,7 +87,7 @@ export function NewWorkoutCard({
             )}
           </View>
 
-          {isPopular && (
+          {isPopular ? (
             <View
               style={{
                 backgroundColor: theme.colors.background.white10,
@@ -108,7 +108,7 @@ export function NewWorkoutCard({
                 {t('common.popular')}
               </Text>
             </View>
-          )}
+          ) : null}
         </View>
         <View style={!isPopular ? { flex: 1 } : null}>
           <Text
@@ -120,7 +120,7 @@ export function NewWorkoutCard({
           >
             {title}
           </Text>
-          {subtitle && (
+          {subtitle ? (
             <Text
               style={{
                 fontSize: theme.typography.fontSize.xs,
@@ -131,10 +131,12 @@ export function NewWorkoutCard({
             >
               {subtitle}
             </Text>
-          )}
+          ) : null}
         </View>
 
-        {!isPopular && <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />}
+        {!isPopular ? (
+          <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
+        ) : null}
       </View>
     </GenericCard>
   );

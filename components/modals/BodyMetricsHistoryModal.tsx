@@ -468,7 +468,7 @@ export default function BodyMetricsHistoryModal({
                 ))}
 
                 {/* Load More Button */}
-                {hasMore && (
+                {hasMore ? (
                   <View className="py-4">
                     <Button
                       label={
@@ -485,7 +485,7 @@ export default function BodyMetricsHistoryModal({
                       iconPosition="left"
                     />
                   </View>
-                )}
+                ) : null}
               </View>
             ) : (
               <Text className="py-4 text-center text-text-secondary">

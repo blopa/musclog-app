@@ -43,7 +43,7 @@ function StatCard({ label, value, suffix, muted }: StatCardProps) {
         >
           {value}
         </Text>
-        {suffix && <Text className="text-sm font-medium text-text-secondary">{suffix}</Text>}
+        {suffix ? <Text className="text-sm font-medium text-text-secondary">{suffix}</Text> : null}
       </View>
     </View>
   );

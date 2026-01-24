@@ -154,13 +154,13 @@ function FoodResultCard({
               shadowRadius: theme.shadows.radius4.shadowRadius,
             }}
           >
-            {isSelected && (
+            {isSelected ? (
               <Check
                 size={theme.iconSize.sm}
                 color={theme.colors.text.black}
                 strokeWidth={theme.strokeWidth.thick}
               />
-            )}
+            ) : null}
           </View>
         </View>
 
@@ -258,7 +258,7 @@ function FoodResultCard({
         </View>
       </Pressable>
 
-      {isSelected && (
+      {isSelected ? (
         <View
           style={{
             marginTop: theme.spacing.padding.md,
@@ -322,7 +322,7 @@ function FoodResultCard({
             </Text>
           </View>
         </View>
-      )}
+      ) : null}
     </View>
   );
 }

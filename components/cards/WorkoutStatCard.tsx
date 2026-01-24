@@ -21,7 +21,7 @@ export function WorkoutStatCard({ title, value, unit, onPress }: WorkoutStatCard
         >
           {value}
         </Text>
-        {unit && <Text className="mt-1 text-lg text-text-secondary">{unit}</Text>}
+        {unit ? <Text className="mt-1 text-lg text-text-secondary">{unit}</Text> : null}
       </View>
     </GenericCard>
   );

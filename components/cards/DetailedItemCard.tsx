@@ -52,7 +52,7 @@ export function DetailedItemCard({ item, onPress, ctaLabel, description }: Detai
           <Text className="mt-1 truncate text-lg font-bold leading-tight text-text-primary">
             {item.name}
           </Text>
-          {description && <Text className="text-sm text-text-secondary">{description}</Text>}
+          {description ? <Text className="text-sm text-text-secondary">{description}</Text> : null}
 
           <View className="mt-1 flex-row items-center gap-3">
             <View className="flex-row items-center gap-1">

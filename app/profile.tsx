@@ -233,11 +233,11 @@ export default function ProfileScreen() {
     <MasterLayout>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Syncing Indicator */}
-        {isSyncing && (
+        {isSyncing ? (
           <View className="px-6 pt-6">
             <ProgressIndicator message={t('profile.syncing.healthKit')} />
           </View>
-        )}
+        ) : null}
         {/* Header */}
         <View className="flex-row items-center justify-between px-6 py-6">
           <Text className="text-4xl font-bold text-text-primary">{t('profile.header.title')}</Text>
@@ -280,11 +280,11 @@ export default function ProfileScreen() {
           <Text className="mb-3 text-3xl font-bold text-text-primary">
             {dbUser?.fullName || PROFILE_DATA.user.name}
           </Text>
-          {dbUser?.fitnessGoal && (
+          {dbUser?.fitnessGoal ? (
             <Text className="text-base text-text-primary">
               {t('profile.goal')}: {dbUser.fitnessGoal}
             </Text>
-          )}
+          ) : null}
         </View>
 
         {/* Current Stats Section */}

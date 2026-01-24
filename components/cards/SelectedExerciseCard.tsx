@@ -61,7 +61,7 @@ export function SelectedExerciseCard({
           >
             {exerciseName}
           </Text>
-          {detailsText && (
+          {detailsText ? (
             <Text
               className="truncate"
               numberOfLines={1}
@@ -72,11 +72,11 @@ export function SelectedExerciseCard({
             >
               {detailsText}
             </Text>
-          )}
+          ) : null}
         </View>
 
         {/* Change Button */}
-        {onChange && (
+        {onChange ? (
           <Pressable onPress={onChange} className="flex-col items-center justify-center gap-0.5">
             <MaterialIcons
               name="swap-horiz"
@@ -93,7 +93,7 @@ export function SelectedExerciseCard({
               {t('common.change')}
             </Text>
           </Pressable>
-        )}
+        ) : null}
       </View>
     </GenericCard>
   );

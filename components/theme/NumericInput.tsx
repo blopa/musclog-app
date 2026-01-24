@@ -45,14 +45,14 @@ export function NumericInput({
       >
         {label}
       </Text>
-      {onIncrement && (
+      {onIncrement ? (
         <Pressable
           className="w-full items-center justify-center rounded-lg bg-accent-primary py-1.5 active:opacity-80"
           onPress={onIncrement}
         >
           <ChevronUp size={theme.iconSize.sm} color={theme.colors.text.black} />
         </Pressable>
-      )}
+      ) : null}
       <TextInput
         ref={inputRef}
         selectTextOnFocus
@@ -66,14 +66,14 @@ export function NumericInput({
       <Text className="text-xs font-medium" style={{ color: unitColor }}>
         {unit}
       </Text>
-      {onDecrement && (
+      {onDecrement ? (
         <Pressable
           className="w-full items-center justify-center rounded-lg bg-accent-primary py-1.5 active:opacity-80"
           onPress={onDecrement}
         >
           <ChevronDown size={theme.iconSize.sm} color={theme.colors.text.black} />
         </Pressable>
-      )}
+      ) : null}
     </View>
   );
 }

@@ -35,17 +35,17 @@ export function WorkoutSummaryStatRow({
         <Text className="font-medium text-text-secondary">{label}</Text>
       </View>
       <View className="flex-row items-center gap-1">
-        {showStarIcon && (
+        {showStarIcon ? (
           <Star
             size={theme.iconSize.sm}
             color={theme.colors.status.amber}
             fill={theme.colors.status.amber}
           />
-        )}
+        ) : null}
         <Text className="text-2xl font-bold tracking-tight text-text-primary">{value}</Text>
-        {valueSuffix && (
+        {valueSuffix ? (
           <Text className="text-sm font-normal text-text-tertiary">{valueSuffix}</Text>
-        )}
+        ) : null}
       </View>
     </View>
   );

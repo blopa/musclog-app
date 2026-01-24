@@ -217,7 +217,7 @@ export default function RestOverScreen() {
       <View className="z-10 w-full flex-1 items-center justify-center gap-8 px-6">
         <RestOverStatusIcon />
         <RestOverTitle />
-        {nextExercise && <RestOverNextExercise exercise={nextExercise} />}
+        {nextExercise ? <RestOverNextExercise exercise={nextExercise} /> : null}
       </View>
 
       {/* Footer */}

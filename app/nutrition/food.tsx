@@ -155,7 +155,7 @@ export default function FoodScreen() {
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
           <View className="gap-6 px-4 pt-6">
             {/* Error State */}
-            {error && (
+            {error ? (
               <ErrorStateCard
                 icon={WifiOff}
                 title={t('errors.connectionTimeout.title')}
@@ -163,10 +163,10 @@ export default function FoodScreen() {
                 buttonLabel={t('errors.connectionTimeout.tryAgain')}
                 onButtonPress={loadFoodData}
               />
-            )}
+            ) : null}
 
             {/* Loading State */}
-            {isLoading && !error && (
+            {isLoading && !error ? (
               <>
                 {/* Calories Card Skeleton */}
                 <View
@@ -226,10 +226,10 @@ export default function FoodScreen() {
                   </View>
                 ))}
               </>
-            )}
+            ) : null}
 
             {/* Empty State */}
-            {!isLoading && !error && hasNoFood && (
+            {!isLoading && !error && hasNoFood ? (
               <EmptyStateCard
                 icon={UtensilsCrossed}
                 title={t('emptyStates.food.title')}
@@ -238,10 +238,10 @@ export default function FoodScreen() {
                 buttonVariant="secondary"
                 onButtonPress={() => setIsAddFoodModalVisible(true)}
               />
-            )}
+            ) : null}
 
             {/* Normal State */}
-            {!isLoading && !error && !hasNoFood && (
+            {!isLoading && !error && !hasNoFood ? (
               <>
                 {/* Calories Remaining Card */}
                 <CaloriesRemainingCard calories={calories} macros={macros} />
@@ -281,7 +281,7 @@ export default function FoodScreen() {
                 </View>
 
                 {/* Breakfast Section */}
-                {meals.breakfast.items && meals.breakfast.items.length > 0 && (
+                {meals.breakfast.items && meals.breakfast.items.length > 0 ? (
                   <MealSection
                     title={t('food.meals.breakfast')}
                     totalCalories={meals.breakfast.totalCalories}
@@ -296,10 +296,10 @@ export default function FoodScreen() {
                       />
                     ))}
                   </MealSection>
-                )}
+                ) : null}
 
                 {/* Lunch Section */}
-                {meals.lunch.items && meals.lunch.items.length > 0 && (
+                {meals.lunch.items && meals.lunch.items.length > 0 ? (
                   <MealSection
                     title={t('food.meals.lunch')}
                     totalCalories={meals.lunch.totalCalories}
@@ -314,9 +314,9 @@ export default function FoodScreen() {
                       />
                     ))}
                   </MealSection>
-                )}
+                ) : null}
               </>
-            )}
+            ) : null}
 
             {/* Bottom spacing for navigation */}
             <View className="h-32" />

@@ -69,7 +69,7 @@ function AIIntegrationCard({
         }}
       >
         {/* Optional Header Content (e.g., Connect Button) */}
-        {headerContent && (
+        {headerContent ? (
           <View
             className="w-full items-center"
             style={{
@@ -80,7 +80,7 @@ function AIIntegrationCard({
           >
             {headerContent}
           </View>
-        )}
+        ) : null}
 
         {/* API Key Input */}
         <View
@@ -96,7 +96,7 @@ function AIIntegrationCard({
             onChangeText={onApiKeyChange}
             placeholder={apiKeyPlaceholder}
           />
-          {apiKeyHelper && (
+          {apiKeyHelper ? (
             <Text
               style={{
                 fontSize: theme.typography.fontSize.xs,
@@ -107,7 +107,7 @@ function AIIntegrationCard({
             >
               {apiKeyHelper}
             </Text>
-          )}
+          ) : null}
         </View>
 
         {/* Model Selector */}

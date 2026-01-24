@@ -112,7 +112,7 @@ export default function WorkoutsScreen() {
           {/* Workouts List */}
           <View className="mx-6 mb-8 gap-4">
             {/* Error State */}
-            {error && (
+            {error ? (
               <ErrorStateCard
                 icon={WifiOff}
                 title={t('errors.connectionTimeout.title')}
@@ -123,10 +123,10 @@ export default function WorkoutsScreen() {
                   // No manual reload needed with reactive hooks
                 }}
               />
-            )}
+            ) : null}
 
             {/* Loading State */}
-            {isLoading && !error && (
+            {isLoading && !error ? (
               <>
                 {/* Featured Workout Skeleton */}
                 <View
@@ -192,10 +192,10 @@ export default function WorkoutsScreen() {
                   </View>
                 ))}
               </>
-            )}
+            ) : null}
 
             {/* Empty State */}
-            {!isLoading && !error && !featuredWorkout && filteredWorkouts.length === 0 && (
+            {!isLoading && !error && !featuredWorkout && filteredWorkouts.length === 0 ? (
               <EmptyStateCard
                 icon={Dumbbell}
                 title={t('emptyStates.workouts.title')}
@@ -207,10 +207,10 @@ export default function WorkoutsScreen() {
                   router.push('/workout/create-workout');
                 }}
               />
-            )}
+            ) : null}
 
             {/* Normal State - Featured Workout */}
-            {!isLoading && !error && featuredWorkout && (
+            {!isLoading && !error && featuredWorkout ? (
               <WorkoutCard
                 name={featuredWorkout.name}
                 lastCompleted={featuredWorkout.lastCompleted}
@@ -236,10 +236,10 @@ export default function WorkoutsScreen() {
                   setIsMenuVisible(true);
                 }}
               />
-            )}
+            ) : null}
 
             {/* Normal State - Regular Workouts */}
-            {!isLoading && !error && filteredWorkouts.length > 0 && (
+            {!isLoading && !error && filteredWorkouts.length > 0 ? (
               <>
                 {filteredWorkouts.map((workout) => (
                   <WorkoutCard
@@ -281,7 +281,7 @@ export default function WorkoutsScreen() {
                   icon={<Plus size={theme.iconSize.lg} color={theme.colors.text.primary} />}
                 />
               </>
-            )}
+            ) : null}
           </View>
 
           {/* Bottom spacing for navigation and FAB */}

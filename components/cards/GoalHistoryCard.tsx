@@ -31,7 +31,7 @@ export function GoalHistoryCard({ goal, isLast = false }: GoalHistoryCardProps) 
   return (
     <View className="relative mb-6 flex-row gap-4">
       {/* Timeline line */}
-      {!isLast && (
+      {!isLast ? (
         <View
           className="absolute left-[19px] top-10"
           style={{
@@ -40,7 +40,7 @@ export function GoalHistoryCard({ goal, isLast = false }: GoalHistoryCardProps) 
             backgroundColor: theme.colors.border.emerald,
           }}
         />
-      )}
+      ) : null}
 
       {/* Timeline dot */}
       <View

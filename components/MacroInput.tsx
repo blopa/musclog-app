@@ -93,12 +93,12 @@ export function MacroInput({
           fontSize: config.fontSize,
         }}
       />
-      {isFocused && (
+      {isFocused ? (
         <View
           className="absolute bottom-0 left-0 right-0 h-1 rounded-b-xl"
           style={{ backgroundColor: highlightColor }}
         />
-      )}
+      ) : null}
     </View>
   );
 }

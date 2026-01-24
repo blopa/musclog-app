@@ -104,13 +104,13 @@ const OptionItem = memo(
                 justifyContent: 'center',
               }}
             >
-              {isSelected && (
+              {isSelected ? (
                 <Check
                   size={theme.iconSize.xs}
                   color={theme.colors.text.black}
                   strokeWidth={theme.strokeWidth.thick}
                 />
-              )}
+              ) : null}
             </View>
           </View>
         )}

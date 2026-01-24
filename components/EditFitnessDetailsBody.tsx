@@ -319,9 +319,9 @@ export function EditFitnessDetailsBody({
                       <Text className="text-sm font-bold text-text-primary">{option.title}</Text>
                       <Text className="text-xs text-text-tertiary">{option.description}</Text>
                     </View>
-                    {isSelected && (
+                    {isSelected ? (
                       <CheckCircle2 size={theme.iconSize.lg} color={theme.colors.accent.primary} />
-                    )}
+                    ) : null}
                   </Pressable>
                 );
               })}
@@ -339,7 +339,7 @@ export function EditFitnessDetailsBody({
             loading={isLoading}
             onPress={handleSave}
           />
-          {onMaybeLater && (
+          {onMaybeLater ? (
             <Pressable
               className="mt-3 w-full items-center py-2 active:opacity-70"
               onPress={onMaybeLater}
@@ -348,7 +348,7 @@ export function EditFitnessDetailsBody({
                 {t('onboarding.healthConnect.maybeLater')}
               </Text>
             </Pressable>
-          )}
+          ) : null}
         </View>
       </View>
       <BottomPopUpMenu

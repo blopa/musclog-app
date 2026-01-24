@@ -53,7 +53,9 @@ export function GoogleSignInButton({
       />
 
       {/* Disabled overlay (dark only) */}
-      {!isLight && disabled && <View className="absolute inset-0 bg-[#e3e3e3] opacity-[12%]" />}
+      {!isLight && disabled ? (
+        <View className="absolute inset-0 bg-[#e3e3e3] opacity-[12%]" />
+      ) : null}
 
       <View className="flex-row items-center">
         {/* Google icon */}

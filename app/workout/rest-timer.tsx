@@ -280,7 +280,7 @@ export default function RestTimerScreen() {
         </View>
 
         {/* Next Exercise Card */}
-        {nextSet && (
+        {nextSet ? (
           <DetailedItemCard
             item={{
               name: nextSet.exercise.name,
@@ -295,7 +295,7 @@ export default function RestTimerScreen() {
             }}
             ctaLabel={<UpNextLabel />}
           />
-        )}
+        ) : null}
       </View>
 
       {/* Workout Options Modal */}

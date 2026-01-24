@@ -56,15 +56,15 @@ export function Slider({
       onLayout={(e) => setContainerWidth(e.nativeEvent.layout.width)}
     >
       {/* Custom background track (only for gradient variant) */}
-      {variant === 'gradient' && (
+      {variant === 'gradient' ? (
         <View
           className="absolute left-0.5 right-0.5 h-1.5 rounded-full"
           style={{ backgroundColor: trackColor }}
         />
-      )}
+      ) : null}
 
       {/* Progress Fill (Custom mask for gradient only) */}
-      {variant === 'gradient' && useGradient && containerWidth > 0 && (
+      {variant === 'gradient' && useGradient && containerWidth > 0 ? (
         <View
           className="absolute left-0.5 h-1.5 overflow-hidden rounded-full"
           style={{ width: fillWidth }}
@@ -76,7 +76,7 @@ export function Slider({
             style={{ width: containerWidth, height: '100%' }}
           />
         </View>
-      )}
+      ) : null}
 
       <SliderComponent
         style={{

@@ -132,7 +132,7 @@ export function LineChart({
         }}
       >
         {/* Grid lines - horizontal dashed lines */}
-        {showGridLines && (
+        {showGridLines ? (
           <VictoryAxis
             dependentAxis
             style={{
@@ -147,7 +147,7 @@ export function LineChart({
             }}
             tickValues={defaultGridTickValues}
           />
-        )}
+        ) : null}
         {/* Area fill with gradient */}
         <VictoryArea
           data={data}
@@ -171,7 +171,7 @@ export function LineChart({
           }}
         />
         {/* Data point circle at the end */}
-        {showLastPoint && (
+        {showLastPoint ? (
           <VictoryScatter
             data={[lastPoint]}
             size={lastPointSize}
@@ -183,7 +183,7 @@ export function LineChart({
               },
             }}
           />
-        )}
+        ) : null}
         {/* Hidden independent axis (x-axis) */}
         <VictoryAxis
           style={{
@@ -195,7 +195,7 @@ export function LineChart({
         />
       </VictoryChart>
       {/* Custom X-axis labels */}
-      {xAxisLabels && xAxisLabels.length > 0 && (
+      {xAxisLabels && xAxisLabels.length > 0 ? (
         <View className="mt-4 flex-row justify-between px-1" style={{ marginTop: marginBottom }}>
           {xAxisLabels.map((label, index) => (
             <Text key={index} className="text-[10px] font-medium text-text-tertiary">
@@ -203,7 +203,7 @@ export function LineChart({
             </Text>
           ))}
         </View>
-      )}
+      ) : null}
     </View>
   );
 }

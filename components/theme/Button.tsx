@@ -267,7 +267,7 @@ export function Button({
         ...(width === 'auto' ? {} : { width: '100%' }),
       }}
     >
-      {iconPosition === 'left' && iconElement}
+      {iconPosition === 'left' ? iconElement : null}
       <View
         style={{
           flexShrink: 1,
@@ -279,7 +279,7 @@ export function Button({
       >
         {textElement}
       </View>
-      {iconPosition === 'right' && iconElement}
+      {iconPosition === 'right' ? iconElement : null}
     </View>
   );
 
@@ -386,7 +386,7 @@ export function Button({
           >
             {buttonContent}
           </LinearGradient>
-          {isGradientCtaVariant && isPressed && !isDisabled && (
+          {(isGradientCtaVariant && isPressed && !isDisabled) ? (
             <View
               style={{
                 position: 'absolute',
@@ -398,7 +398,7 @@ export function Button({
                 borderRadius: config.borderRadius,
               }}
             />
-          )}
+          ) : null}
         </View>
       )}
     </Pressable>

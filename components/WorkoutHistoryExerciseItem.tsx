@@ -32,7 +32,7 @@ export function ExerciseItem({
   return (
     <View className="relative mb-6">
       {/* Timeline line */}
-      {!isLast && (
+      {!isLast ? (
         <View
           className="absolute top-12 w-0.5"
           style={{
@@ -41,7 +41,7 @@ export function ExerciseItem({
             backgroundColor: theme.colors.border.light,
           }}
         />
-      )}
+      ) : null}
 
       {/* Exercise Header */}
       <View className="relative z-10 mb-3 flex-row items-center gap-3">
@@ -75,11 +75,11 @@ export function ExerciseItem({
         </View>
 
         {/* Exercise Image */}
-        {exercise.image && (
+        {exercise.image ? (
           <View className="h-8 w-8 overflow-hidden rounded-lg border border-border-light">
             <Image source={exercise.image} className="h-full w-full" resizeMode="cover" />
           </View>
-        )}
+        ) : null}
       </View>
 
       {/* Sets Table */}
@@ -132,7 +132,7 @@ export function ExerciseItem({
           </View>
 
           {/* Progress Bars */}
-          {exercise.setProgress && exercise.setProgress.length > 0 && (
+          {exercise.setProgress && exercise.setProgress.length > 0 ? (
             <View
               className="flex-row items-end gap-1 border-t px-4 pb-3 pt-1"
               style={{
@@ -171,7 +171,7 @@ export function ExerciseItem({
                 );
               })}
             </View>
-          )}
+          ) : null}
         </View>
       </View>
     </View>

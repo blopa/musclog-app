@@ -67,7 +67,7 @@ export function TrackingMethodButton({
       <View className="flex-1">
         <View className="flex-row items-center gap-2">
           <Text className="text-lg font-bold text-text-primary">{title}</Text>
-          {badge && (
+          {badge ? (
             <View
               className="rounded-full px-2 py-0.5"
               style={{ backgroundColor: theme.colors.accent.primary }}
@@ -79,7 +79,7 @@ export function TrackingMethodButton({
                 {badge}
               </Text>
             </View>
-          )}
+          ) : null}
         </View>
         <Text className="mt-0.5 text-xs text-text-secondary">{description}</Text>
       </View>

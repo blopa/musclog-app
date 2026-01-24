@@ -74,7 +74,7 @@ export function ProgressIndicator({ message, size = 'large' }: ProgressIndicator
             />
           </View>
 
-          {displayMessage && (
+          {displayMessage ? (
             <Text
               style={{
                 marginTop: theme.spacing.padding.lg,
@@ -86,7 +86,7 @@ export function ProgressIndicator({ message, size = 'large' }: ProgressIndicator
             >
               {displayMessage}
             </Text>
-          )}
+          ) : null}
         </View>
       </View>
     </View>

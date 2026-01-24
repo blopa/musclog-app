@@ -110,25 +110,25 @@ export function CurrentGoalsCard({ goal }: CurrentGoalsCardProps) {
         </View>
 
         {/* Goal Date */}
-        {goal.goalDate && (
+        {goal.goalDate ? (
           <View className="mt-4">
             <View className="flex-row items-center gap-2">
               <Calendar size={theme.iconSize.md} color={theme.colors.text.secondary} />
               <Text className="text-xs font-semibold text-text-secondary">{goal.goalDate}</Text>
             </View>
           </View>
-        )}
+        ) : null}
 
         {/* Target Metrics */}
         {(goal.targetWeight !== undefined ||
           goal.bodyFat !== undefined ||
           goal.ffmi !== undefined ||
-          goal.bmi !== undefined) && (
+          goal.bmi !== undefined) ? (
           <View
             className="mt-4 flex-row flex-wrap gap-4 rounded-lg p-3"
             style={{ backgroundColor: theme.colors.background.darkGreen50 }}
           >
-            {goal.targetWeight !== undefined && (
+            {goal.targetWeight !== undefined ? (
               <View className="min-w-[45%] flex-1 flex-row items-center gap-3">
                 <Scale size={theme.iconSize.lg} color={theme.colors.accent.primary} />
                 <View>
@@ -149,8 +149,8 @@ export function CurrentGoalsCard({ goal }: CurrentGoalsCardProps) {
                   </Text>
                 </View>
               </View>
-            )}
-            {goal.bodyFat !== undefined && (
+            ) : null}
+            {goal.bodyFat !== undefined ? (
               <View className="min-w-[45%] flex-1 flex-row items-center gap-3">
                 <Percent size={theme.iconSize.lg} color={theme.colors.accent.primary} />
                 <View>
@@ -171,8 +171,8 @@ export function CurrentGoalsCard({ goal }: CurrentGoalsCardProps) {
                   </Text>
                 </View>
               </View>
-            )}
-            {goal.ffmi !== undefined && (
+            ) : null}
+            {goal.ffmi !== undefined ? (
               <View className="min-w-[45%] flex-1 flex-row items-center gap-3">
                 <Activity size={theme.iconSize.lg} color={theme.colors.accent.primary} />
                 <View>
@@ -187,8 +187,8 @@ export function CurrentGoalsCard({ goal }: CurrentGoalsCardProps) {
                   </Text>
                 </View>
               </View>
-            )}
-            {goal.bmi !== undefined && (
+            ) : null}
+            {goal.bmi !== undefined ? (
               <View className="min-w-[45%] flex-1 flex-row items-center gap-3">
                 <Calculator size={theme.iconSize.lg} color={theme.colors.accent.primary} />
                 <View>
@@ -201,9 +201,9 @@ export function CurrentGoalsCard({ goal }: CurrentGoalsCardProps) {
                   <Text className="text-sm font-bold text-text-primary">{goal.bmi.toFixed(1)}</Text>
                 </View>
               </View>
-            )}
+            ) : null}
           </View>
-        )}
+        ) : null}
       </View>
     </GenericCard>
   );

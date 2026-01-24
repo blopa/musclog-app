@@ -76,9 +76,9 @@ export function CenteredModal({
             <View className="flex-row items-center justify-between px-6 py-5">
               <View className="flex-1">
                 <Text className="text-xl font-bold text-text-primary">{title}</Text>
-                {subtitle && (
+                {subtitle ? (
                   <Text className="mt-1 text-xs font-medium text-text-secondary">{subtitle}</Text>
-                )}
+                ) : null}
               </View>
               <Pressable className="h-10 w-10 items-center justify-center" onPress={onClose}>
                 <X size={theme.iconSize.sm} color={theme.colors.text.secondary} />
@@ -90,9 +90,9 @@ export function CenteredModal({
           <View className="p-6">{children}</View>
 
           {/* Footer */}
-          {footer && (
+          {footer ? (
             <View className="border-t border-border-dark bg-bg-overlay/50 px-6 py-4">{footer}</View>
-          )}
+          ) : null}
         </Pressable>
       </Pressable>
     </Modal>

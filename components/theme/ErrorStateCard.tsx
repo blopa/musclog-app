@@ -38,7 +38,7 @@ export function ErrorStateCard({
       </View>
 
       {/* Button */}
-      {onButtonPress && (
+      {onButtonPress ? (
         <Pressable
           className="mt-2 flex-row items-center gap-2 rounded-lg border border-accent-primary px-6 py-2 active:scale-95"
           onPress={onButtonPress}
@@ -46,7 +46,7 @@ export function ErrorStateCard({
           <RefreshCw size={theme.iconSize.sm} color={theme.colors.accent.primary} />
           <Text className="text-sm font-bold text-accent-primary">{defaultButtonLabel}</Text>
         </Pressable>
-      )}
+      ) : null}
     </View>
   );
 }

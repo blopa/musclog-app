@@ -90,7 +90,7 @@ export function DailySummaryCard({ calories, activity, macros }: DailySummaryCar
         </View>
 
         {/* Macros Row */}
-        {macros && (
+        {macros ? (
           <View className="mt-6 flex-row gap-3">
             {macroData.map((macro) => (
               <View
@@ -114,7 +114,7 @@ export function DailySummaryCard({ calories, activity, macros }: DailySummaryCar
               </View>
             ))}
           </View>
-        )}
+        ) : null}
       </View>
     </GenericCard>
   );

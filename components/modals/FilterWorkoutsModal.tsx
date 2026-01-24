@@ -259,13 +259,13 @@ export function FilterWorkoutsModal({
                   >
                     {muscle.label}
                   </Text>
-                  {isSelected && (
+                  {isSelected ? (
                     <Check
                       size={theme.iconSize.xs}
                       color={theme.colors.text.black}
                       strokeWidth={theme.strokeWidth.thick}
                     />
-                  )}
+                  ) : null}
                 </Pressable>
               );
             })}

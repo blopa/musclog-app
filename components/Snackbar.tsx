@@ -104,11 +104,11 @@ export function Snackbar({ snackbar, onDismiss }: SnackbarProps) {
           <Text className="font-semibold" style={{ color: theme.colors.text.white }}>
             {snackbar.message}
           </Text>
-          {snackbar.subtitle && (
+          {snackbar.subtitle ? (
             <Text className="mt-0.5 text-sm" style={{ color: theme.colors.text.secondary }}>
               {snackbar.subtitle}
             </Text>
-          )}
+          ) : null}
         </View>
 
         {/* Action Button */}

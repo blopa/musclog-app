@@ -131,7 +131,7 @@ function OnboardingStepThree({ imageUrl, title, description, badge }: Onboarding
             />
 
             {/* Floating Badge Overlay */}
-            {badge && (
+            {badge ? (
               <View
                 className="absolute bottom-6 left-6 right-6 flex-row items-center gap-4 rounded-xl border p-4"
                 style={{ borderColor: theme.colors.background.white10 }}
@@ -167,7 +167,7 @@ function OnboardingStepThree({ imageUrl, title, description, badge }: Onboarding
                   </Text>
                 </View>
               </View>
-            )}
+            ) : null}
           </ImageBackground>
         </View>
       </View>
@@ -254,7 +254,7 @@ function OnboardingStepTwo({ imageUrl, title, description, badge }: OnboardingBo
             />
 
             {/* Floating Badge Overlay */}
-            {badge && (
+            {badge ? (
               <View
                 className="absolute bottom-6 left-6 right-6 flex-row items-center gap-4 rounded-xl border p-4"
                 style={{ borderColor: theme.colors.background.white10 }}
@@ -290,7 +290,7 @@ function OnboardingStepTwo({ imageUrl, title, description, badge }: OnboardingBo
                   </Text>
                 </View>
               </View>
-            )}
+            ) : null}
           </ImageBackground>
         </View>
       </View>
@@ -377,7 +377,7 @@ function OnboardingStepOne({ imageUrl, title, description, badge }: OnboardingBo
             />
 
             {/* Floating Badge Overlay */}
-            {badge && (
+            {badge ? (
               <View
                 className="absolute bottom-6 left-6 right-6 flex-row items-center gap-4 rounded-xl border p-4"
                 style={{ borderColor: theme.colors.background.white10 }}
@@ -413,7 +413,7 @@ function OnboardingStepOne({ imageUrl, title, description, badge }: OnboardingBo
                   </Text>
                 </View>
               </View>
-            )}
+            ) : null}
           </ImageBackground>
         </View>
       </View>

@@ -233,7 +233,7 @@ export function GenericCard({
   // ============================================================================
   const cardContent = (
     <>
-      {isWorkoutVariant && renderWorkoutGradientOverlay()}
+      {isWorkoutVariant ? renderWorkoutGradientOverlay() : null}
       {renderCardContent()}
     </>
   );
