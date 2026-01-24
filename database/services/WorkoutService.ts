@@ -281,27 +281,48 @@ export class WorkoutService {
         throw new Error('Workout log has been deleted');
       }
 
-      // Apply updates using the model writer method
-      for (const update of updates) {
-        await workoutLog.updateSet(update.setId, {
-          reps: update.reps,
-          weight: update.weight,
-          partials: update.partials,
-          restTimeAfter: update.restTimeAfter,
-          difficultyLevel: update.difficultyLevel,
-          isSkipped: update.isSkipped,
-          isDropSet: update.isDropSet,
-        });
-      }
+      const logSetsCollection = database.get<WorkoutLogSet>('workout_log_sets');
 
-      // Recalculate total volume and persist on parent log
-      const totalVolume = await workoutLog.calculateVolume();
-      await workoutLog.update((log) => {
-        log.totalVolume = totalVolume;
-        log.updatedAt = Date.now();
+      // Perform direct writes so we can edit sets even if the workout is marked completed.
+      // This intentionally bypasses WorkoutLog.updateSet which prevents edits on completed workouts.
+      await database.write(async () => {
+        for (const update of updates) {
+          try {
+            const setModel = await logSetsCollection.find(update.setId);
+            await setModel.update((s: WorkoutLogSet) => {
+              if (update.reps !== undefined) s.reps = update.reps;
+              if (update.weight !== undefined) s.weight = update.weight;
+              if (update.partials !== undefined) s.partials = update.partials;
+              if (update.restTimeAfter !== undefined) s.restTimeAfter = update.restTimeAfter;
+              if (update.difficultyLevel !== undefined) s.difficultyLevel = update.difficultyLevel;
+              if (update.isSkipped !== undefined) s.isSkipped = update.isSkipped;
+              if (update.isDropSet !== undefined) s.isDropSet = update.isDropSet;
+              s.updatedAt = Date.now();
+            });
+          } catch (err) {
+            // If a set is not found or other error occurs, surface it but continue with others
+            console.warn(`Failed to update set ${update.setId}:`, err);
+          }
+        }
+
+        // Recalculate total volume and update parent workout log
+        const sets = await logSetsCollection
+          .query(Q.where('workout_log_id', workoutLogId), Q.where('deleted_at', Q.eq(null)))
+          .fetch();
+
+        const totalVolume = sets.reduce(
+          (sum: number, s: WorkoutLogSet) => sum + (s.reps * s.weight || 0),
+          0
+        );
+
+        await workoutLog.update((log) => {
+          log.totalVolume = totalVolume;
+          log.updatedAt = Date.now();
+        });
       });
 
-      return { workoutLogId, totalVolume };
+      const finalTotal = await workoutLog.calculateVolume();
+      return { workoutLogId, totalVolume: finalTotal };
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(`Failed to update workout sets: ${error.message}`);

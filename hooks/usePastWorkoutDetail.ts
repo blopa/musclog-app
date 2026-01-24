@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { WorkoutService } from '../database/services/WorkoutService';
 import { transformWorkoutToDetailData, type WorkoutDetailData } from '../utils/workoutDetail';
 import { useSettings } from './useSettings';
+import { Q } from '@nozbe/watermelondb';
+import { database } from '../database';
 
 export interface UsePastWorkoutDetailParams {
   visible: boolean;
@@ -40,12 +42,41 @@ export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetai
     }
   }, [workoutId, t, units]);
 
+  // Observe workout_log_sets for reactive updates while modal is visible.
   useEffect(() => {
-    if (visible && workoutId) {
-      loadWorkoutData();
-    } else {
+    if (!visible || !workoutId) {
       setWorkout(null);
+      return;
     }
+
+    // Query sets for this workout
+    const query = database
+      .get('workout_log_sets')
+      .query(
+        Q.where('workout_log_id', workoutId),
+        Q.where('deleted_at', Q.eq(null)),
+        Q.sortBy('set_order', Q.asc)
+      );
+
+    const subscription = query.observe().subscribe({
+      next: async (sets: any[]) => {
+        try {
+          setRawSets(sets as any[]);
+          // Re-load and transform workout details when sets change
+          await loadWorkoutData();
+        } catch (err) {
+          console.error('Error handling sets subscription update:', err);
+        }
+      },
+      error: (err) => {
+        console.error('Workout sets subscription error:', err);
+      },
+    });
+
+    // Trigger an initial load
+    loadWorkoutData();
+
+    return () => subscription.unsubscribe();
   }, [visible, workoutId, loadWorkoutData]);
 
   return {

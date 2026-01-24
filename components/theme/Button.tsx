@@ -386,7 +386,7 @@ export function Button({
           >
             {buttonContent}
           </LinearGradient>
-          {(isGradientCtaVariant && isPressed && !isDisabled) ? (
+          {isGradientCtaVariant && isPressed && !isDisabled ? (
             <View
               style={{
                 position: 'absolute',

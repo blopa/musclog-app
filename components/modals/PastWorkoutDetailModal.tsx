@@ -12,6 +12,7 @@ import { LineChart, LineChartDataPoint } from '../LineChart';
 import { usePastWorkoutDetail } from '../../hooks/usePastWorkoutDetail';
 import EditPastWorkoutDataModal from './EditPastWorkoutDataModal';
 import { WorkoutService } from '../../database/services/WorkoutService';
+import { useEditWorkoutSets } from '../../hooks/useEditWorkoutSets';
 import { PastWorkoutBottomMenu } from './PastWorkoutBottomMenu';
 import { useSettings } from '../../hooks/useSettings';
 import { getWeightUnitI18nKey } from '../../utils/units';
@@ -382,6 +383,8 @@ export default function PastWorkoutDetailModal({
       workoutId,
     });
 
+  const { isSaving: isSavingSets, error: saveError, saveSets } = useEditWorkoutSets();
+
   const [editingExerciseId, setEditingExerciseId] = React.useState<string | null>(null);
   const [isEditModalVisible, setIsEditModalVisible] = React.useState(false);
 
@@ -472,8 +475,13 @@ export default function PastWorkoutDetailModal({
               partials: s.partialReps,
               restTimeAfter: s.rest,
             }));
-            await WorkoutService.updateWorkoutSets(workoutId, updates as any);
-            await reload();
+            try {
+              await saveSets(workoutId, updates as any);
+              // reload handled reactively by subscription, but keep reload for safety
+              await reload();
+            } catch (err) {
+              console.error('Failed to save edited sets:', err);
+            }
           }}
           workoutId={workoutId!}
           exerciseId={editingExerciseId}

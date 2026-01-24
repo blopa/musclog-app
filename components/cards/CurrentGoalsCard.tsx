@@ -120,10 +120,10 @@ export function CurrentGoalsCard({ goal }: CurrentGoalsCardProps) {
         ) : null}
 
         {/* Target Metrics */}
-        {(goal.targetWeight !== undefined ||
-          goal.bodyFat !== undefined ||
-          goal.ffmi !== undefined ||
-          goal.bmi !== undefined) ? (
+        {goal.targetWeight !== undefined ||
+        goal.bodyFat !== undefined ||
+        goal.ffmi !== undefined ||
+        goal.bmi !== undefined ? (
           <View
             className="mt-4 flex-row flex-wrap gap-4 rounded-lg p-3"
             style={{ backgroundColor: theme.colors.background.darkGreen50 }}
