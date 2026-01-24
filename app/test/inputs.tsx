@@ -7,6 +7,7 @@ import { TestSection } from './components/TestSection';
 import { TextInput } from '../../components/theme/TextInput';
 import { StepperInlineInput } from '../../components/theme/StepperInlineInput';
 import { NumericInput } from '../../components/theme/NumericInput';
+import NewNumericalInput from '../../components/theme/NewNumericalInput';
 import { SegmentedControl } from '../../components/theme/SegmentedControl';
 import { CheckRadioBox } from '../../components/theme/CheckRadioBox';
 import { PickerButton } from '../../components/theme/PickerButton';
@@ -29,6 +30,7 @@ export default function InputsTestScreen() {
   const [difficulty, setDifficulty] = useState(8);
   const [fullName, setFullName] = useState('Alex Johnson');
   const [bodyMetric, setBodyMetric] = useState(70);
+  const [newNumeric, setNewNumeric] = useState(5);
   const [singleSelection, setSingleSelection] = useState<string | number | undefined>('1');
   const [multiSelection, setMultiSelection] = useState<(string | number)[]>(['a']);
 
@@ -95,8 +97,7 @@ export default function InputsTestScreen() {
         <View className="px-6 pb-2 pt-6">
           <Text
             className="font-extrabold leading-tight tracking-tight text-text-primary"
-            style={{ fontSize: theme.typography.fontSize['3xl'] }}
-          >
+            style={{ fontSize: theme.typography.fontSize['3xl'] }}>
             Input Components
           </Text>
           <Text className="pt-3 text-base font-normal leading-relaxed text-text-secondary">
@@ -183,6 +184,14 @@ export default function InputsTestScreen() {
               onDecrement={() => setReps(String(Math.max(0, (parseInt(reps) || 0) - 1)))}
             />
           </View>
+          <View className="h-4" />
+          <NewNumericalInput
+            label="New Numerical"
+            value={newNumeric}
+            onChange={setNewNumeric}
+            min={0}
+            step={1}
+          />
         </TestSection>
 
         <TestSection title="Selection Controls" subtitle="Choices & Toggles">
@@ -213,8 +222,7 @@ export default function InputsTestScreen() {
         <TestSection title="Interactive Sliders" subtitle="Difficulty & Goals">
           <View
             className="rounded-lg border bg-bg-card p-6"
-            style={{ borderColor: theme.colors.background.white10 }}
-          >
+            style={{ borderColor: theme.colors.background.white10 }}>
             <View className="mb-6 flex-row items-center justify-between">
               <Text className="text-sm font-medium text-text-secondary">Workout Difficulty</Text>
               <Text className="text-xl font-bold text-accent-primary">{difficulty}/10</Text>
