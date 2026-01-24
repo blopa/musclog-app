@@ -316,7 +316,6 @@ function ExerciseCard({ exercise, onEdit, onClose }: ExerciseCardProps) {
           color={theme.colors.text.primary}
           onPress={() => {
             onEdit?.(exercise.id);
-            onClose?.();
           }}
           icon={Edit}
           className="h-10 w-10"
