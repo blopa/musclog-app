@@ -89,6 +89,7 @@ export function WorkoutSummaryCelebration({
               height: theme.size['256'],
               width: theme.size['256'],
               backgroundColor: theme.colors.status.indigo10,
+              borderRadius: theme.size['256'] / 2,
               transform: [{ translateX: -theme.size['32'] }, { translateY: -theme.size['32'] }],
               opacity: glowAnim1,
             }}
@@ -99,11 +100,11 @@ export function WorkoutSummaryCelebration({
               height: theme.size['48'],
               width: theme.size['48'],
               backgroundColor: theme.colors.status.emerald20,
+              borderRadius: theme.size['48'] / 2,
               transform: [{ translateX: -theme.size['24'] }, { translateY: -theme.size['24'] }],
               opacity: glowAnim2,
             }}
           />
-
           <WorkoutSummaryTrophy />
           <WorkoutSummaryHeader />
           <WorkoutSummaryStatsCard
