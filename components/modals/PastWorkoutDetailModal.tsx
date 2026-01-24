@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
-import { Trophy } from 'lucide-react-native';
+import { Trophy, Edit } from 'lucide-react-native';
 import { MenuButton } from '../theme/MenuButton';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
@@ -272,9 +272,11 @@ function SetsTable({ sets }: SetsTableProps) {
 // Component: Exercise Card
 type ExerciseCardProps = {
   exercise: Exercise;
+  onEdit?: (exerciseId?: string) => void;
+  onClose?: () => void;
 };
 
-function ExerciseCard({ exercise }: ExerciseCardProps) {
+function ExerciseCard({ exercise, onEdit, onClose }: ExerciseCardProps) {
   const { t } = useTranslation();
 
   return (
@@ -307,6 +309,16 @@ function ExerciseCard({ exercise }: ExerciseCardProps) {
             </Text>
           </View>
         </View>
+        <MenuButton
+          size="md"
+          color={theme.colors.text.primary}
+          onPress={() => {
+            onEdit?.(exercise.id);
+            onClose?.();
+          }}
+          icon={Edit}
+          className="h-10 w-10"
+        />
       </View>
 
       {/* Sets Table */}
@@ -318,9 +330,11 @@ function ExerciseCard({ exercise }: ExerciseCardProps) {
 // Component: Exercises Section
 type ExercisesSectionProps = {
   exercises: Exercise[];
+  onEdit?: (exerciseId?: string) => void;
+  onClose?: () => void;
 };
 
-function ExercisesSection({ exercises }: ExercisesSectionProps) {
+function ExercisesSection({ exercises, onEdit, onClose }: ExercisesSectionProps) {
   const { t } = useTranslation();
 
   return (
@@ -330,7 +344,12 @@ function ExercisesSection({ exercises }: ExercisesSectionProps) {
       </Text>
 
       {exercises.map((exercise) => (
-        <ExerciseCard key={exercise.id} exercise={exercise} />
+        <ExerciseCard
+          key={exercise.id}
+          exercise={exercise}
+          onEdit={onEdit}
+          onClose={onClose}
+        />
       ))}
 
       {/* Bottom spacing */}
