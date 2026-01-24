@@ -170,7 +170,7 @@ export async function seedExercisesIfEmpty(): Promise<boolean> {
  * Creates workout templates, then workout logs linked to those templates with varying volumes
  * Only runs if workout_templates or workout_logs tables are empty
  */
-export async function seedWorkoutTemplatesAndHistory(): Promise<{
+export async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false): Promise<{
   templatesCreated: number;
   workoutsCreated: number;
 }> {
@@ -186,10 +186,16 @@ export async function seedWorkoutTemplatesAndHistory(): Promise<{
       .fetch();
     const existingLogs = await database.get<WorkoutLog>('workout_logs').query().fetch();
 
-    if (existingTemplates.length > 0 || existingLogs.length > 0) {
+    const templatesExist = existingTemplates.length > 0;
+    const logsExist = existingLogs.length > 0;
+
+    // If templates already exist and either logs already exist or the caller
+    // explicitly disabled seeding workout history, there's nothing to do.
+    if (templatesExist && (logsExist || !shouldSeedWorkoutHistory)) {
       console.log(
-        `Skipping workout seeding: ${existingTemplates.length} templates and ${existingLogs.length} workout logs already exist`
+        `Skipping workout seeding: ${existingTemplates.length} templates and ${existingLogs.length} workout logs already exist or history seeding disabled`
       );
+
       return { templatesCreated: 0, workoutsCreated: 0 };
     }
 
@@ -234,450 +240,459 @@ export async function seedWorkoutTemplatesAndHistory(): Promise<{
       const latPulldown = await getOrCreateExercise('Lat Pulldown', 'Back');
       const legPress = await getOrCreateExercise('Leg Press', 'Legs');
 
-      // Create workout templates
-      const upperBodyTemplate = await database
-        .get<WorkoutTemplate>('workout_templates')
-        .create((t) => {
+      // Create or find workout templates
+      let upperBodyTemplate: WorkoutTemplate | undefined = existingTemplates.find(
+        (t) => t.name === 'Upper Body Power'
+      );
+      let legDayTemplate: WorkoutTemplate | undefined = existingTemplates.find(
+        (t) => t.name === 'Leg Day / Squats'
+      );
+
+      if (!upperBodyTemplate) {
+        upperBodyTemplate = await database.get<WorkoutTemplate>('workout_templates').create((t) => {
           t.name = 'Upper Body Power';
           t.description = 'Upper body strength and power workout';
           t.createdAt = now;
           t.updatedAt = now;
         });
-      templatesCreated++;
+        templatesCreated++;
 
-      // Create template sets for Upper Body Power
-      await database.get<WorkoutTemplateSet>('workout_template_sets').create((ts) => {
-        ts.templateId = upperBodyTemplate.id;
-        ts.exerciseId = benchPress.id;
-        ts.targetReps = 8;
-        ts.targetWeight = 80;
-        ts.restTimeAfter = 60;
-        ts.setOrder = 1;
-        ts.createdAt = now;
-        ts.updatedAt = now;
-      });
-      await database.get<WorkoutTemplateSet>('workout_template_sets').create((ts) => {
-        ts.templateId = upperBodyTemplate.id;
-        ts.exerciseId = overheadPress.id;
-        ts.targetReps = 10;
-        ts.targetWeight = 50;
-        ts.restTimeAfter = 60;
-        ts.setOrder = 2;
-        ts.createdAt = now;
-        ts.updatedAt = now;
-      });
-      await database.get<WorkoutTemplateSet>('workout_template_sets').create((ts) => {
-        ts.templateId = upperBodyTemplate.id;
-        ts.exerciseId = latPulldown.id;
-        ts.targetReps = 10;
-        ts.targetWeight = 70;
-        ts.restTimeAfter = 60;
-        ts.setOrder = 3;
-        ts.createdAt = now;
-        ts.updatedAt = now;
-      });
-      await database.get<WorkoutTemplateSet>('workout_template_sets').create((ts) => {
-        ts.templateId = upperBodyTemplate.id;
-        ts.exerciseId = bicepCurl.id;
-        ts.targetReps = 12;
-        ts.targetWeight = 15;
-        ts.restTimeAfter = 60;
-        ts.setOrder = 4;
-        ts.createdAt = now;
-        ts.updatedAt = now;
-      });
+        // Create template sets for Upper Body Power
+        await database.get<WorkoutTemplateSet>('workout_template_sets').create((ts) => {
+          ts.templateId = upperBodyTemplate!.id;
+          ts.exerciseId = benchPress.id;
+          ts.targetReps = 8;
+          ts.targetWeight = 80;
+          ts.restTimeAfter = 60;
+          ts.setOrder = 1;
+          ts.createdAt = now;
+          ts.updatedAt = now;
+        });
+        await database.get<WorkoutTemplateSet>('workout_template_sets').create((ts) => {
+          ts.templateId = upperBodyTemplate!.id;
+          ts.exerciseId = overheadPress.id;
+          ts.targetReps = 10;
+          ts.targetWeight = 50;
+          ts.restTimeAfter = 60;
+          ts.setOrder = 2;
+          ts.createdAt = now;
+          ts.updatedAt = now;
+        });
+        await database.get<WorkoutTemplateSet>('workout_template_sets').create((ts) => {
+          ts.templateId = upperBodyTemplate!.id;
+          ts.exerciseId = latPulldown.id;
+          ts.targetReps = 10;
+          ts.targetWeight = 70;
+          ts.restTimeAfter = 60;
+          ts.setOrder = 3;
+          ts.createdAt = now;
+          ts.updatedAt = now;
+        });
+        await database.get<WorkoutTemplateSet>('workout_template_sets').create((ts) => {
+          ts.templateId = upperBodyTemplate!.id;
+          ts.exerciseId = bicepCurl.id;
+          ts.targetReps = 12;
+          ts.targetWeight = 15;
+          ts.restTimeAfter = 60;
+          ts.setOrder = 4;
+          ts.createdAt = now;
+          ts.updatedAt = now;
+        });
+      }
 
-      const legDayTemplate = await database
-        .get<WorkoutTemplate>('workout_templates')
-        .create((t) => {
+      if (!legDayTemplate) {
+        legDayTemplate = await database.get<WorkoutTemplate>('workout_templates').create((t) => {
           t.name = 'Leg Day / Squats';
           t.description = 'Lower body strength workout';
           t.createdAt = now;
           t.updatedAt = now;
         });
-      templatesCreated++;
+        templatesCreated++;
 
-      // Create template sets for Leg Day
-      await database.get<WorkoutTemplateSet>('workout_template_sets').create((ts) => {
-        ts.templateId = legDayTemplate.id;
-        ts.exerciseId = squat.id;
-        ts.targetReps = 8;
-        ts.targetWeight = 120;
-        ts.restTimeAfter = 60;
-        ts.setOrder = 1;
-        ts.createdAt = now;
-        ts.updatedAt = now;
-      });
-      await database.get<WorkoutTemplateSet>('workout_template_sets').create((ts) => {
-        ts.templateId = legDayTemplate.id;
-        ts.exerciseId = legPress.id;
-        ts.targetReps = 12;
-        ts.restTimeAfter = 60;
-        ts.targetWeight = 180;
-        ts.setOrder = 2;
-        ts.createdAt = now;
-        ts.updatedAt = now;
-      });
-      await database.get<WorkoutTemplateSet>('workout_template_sets').create((ts) => {
-        ts.templateId = legDayTemplate.id;
-        ts.exerciseId = deadlift.id;
-        ts.targetReps = 6;
-        ts.targetWeight = 140;
-        ts.restTimeAfter = 60;
-        ts.setOrder = 3;
-        ts.createdAt = now;
-        ts.updatedAt = now;
-      });
+        // Create template sets for Leg Day
+        await database.get<WorkoutTemplateSet>('workout_template_sets').create((ts) => {
+          ts.templateId = legDayTemplate!.id;
+          ts.exerciseId = squat.id;
+          ts.targetReps = 8;
+          ts.targetWeight = 120;
+          ts.restTimeAfter = 60;
+          ts.setOrder = 1;
+          ts.createdAt = now;
+          ts.updatedAt = now;
+        });
+        await database.get<WorkoutTemplateSet>('workout_template_sets').create((ts) => {
+          ts.templateId = legDayTemplate!.id;
+          ts.exerciseId = legPress.id;
+          ts.targetReps = 12;
+          ts.restTimeAfter = 60;
+          ts.targetWeight = 180;
+          ts.setOrder = 2;
+          ts.createdAt = now;
+          ts.updatedAt = now;
+        });
+        await database.get<WorkoutTemplateSet>('workout_template_sets').create((ts) => {
+          ts.templateId = legDayTemplate!.id;
+          ts.exerciseId = deadlift.id;
+          ts.targetReps = 6;
+          ts.targetWeight = 140;
+          ts.restTimeAfter = 60;
+          ts.setOrder = 3;
+          ts.createdAt = now;
+          ts.updatedAt = now;
+        });
+      }
 
-      // Helper to create a workout log with sets
-      const createWorkoutLog = async (
-        templateId: string,
-        workoutName: string,
-        startedAt: number,
-        durationMinutes: number,
-        exerciseSets: { exercise: Exercise; sets: { weight: number; reps: number }[] }[],
-        caloriesBurned?: number
-      ): Promise<WorkoutLog> => {
-        const completedAt = startedAt + durationMinutes * 60000;
+      if (shouldSeedWorkoutHistory && !logsExist) {
+        // Helper to create a workout log with sets
+        const createWorkoutLog = async (
+          templateId: string,
+          workoutName: string,
+          startedAt: number,
+          durationMinutes: number,
+          exerciseSets: { exercise: Exercise; sets: { weight: number; reps: number }[] }[],
+          caloriesBurned?: number
+        ): Promise<WorkoutLog> => {
+          const completedAt = startedAt + durationMinutes * 60000;
 
-        // Create workout log
-        const workoutLog = await database.get<WorkoutLog>('workout_logs').create((log) => {
-          log.templateId = templateId;
-          log.workoutName = workoutName;
-          log.startedAt = startedAt;
-          log.completedAt = completedAt;
-          log.totalVolume = 0; // Will be calculated
-          log.caloriesBurned = caloriesBurned;
+          // Create workout log
+          const workoutLog = await database.get<WorkoutLog>('workout_logs').create((log) => {
+            log.templateId = templateId;
+            log.workoutName = workoutName;
+            log.startedAt = startedAt;
+            log.completedAt = completedAt;
+            log.totalVolume = 0; // Will be calculated
+            log.caloriesBurned = caloriesBurned;
+            log.createdAt = now;
+            log.updatedAt = now;
+          });
+
+          // Create sets and calculate total volume
+          let totalVolume = 0;
+          let setOrder = 1;
+
+          for (const exerciseData of exerciseSets) {
+            for (const set of exerciseData.sets) {
+              const setVolume = set.weight * set.reps;
+              totalVolume += setVolume;
+
+              await database.get<WorkoutLogSet>('workout_log_sets').create((logSet) => {
+                logSet.workoutLogId = workoutLog.id;
+                logSet.exerciseId = exerciseData.exercise.id;
+                logSet.reps = set.reps;
+                logSet.weight = set.weight;
+                logSet.restTimeAfter = 60; // 60 seconds rest
+                logSet.difficultyLevel = 7; // RPE 7
+                logSet.isDropSet = false;
+                logSet.setOrder = setOrder;
+                logSet.createdAt = now;
+                logSet.updatedAt = now;
+              });
+
+              setOrder++;
+            }
+          }
+
+          // Update workout log with total volume
+          await workoutLog.update((log) => {
+            log.totalVolume = totalVolume;
+          });
+
+          return workoutLog;
+        };
+
+        // Helper to create a date N days ago
+        const daysAgo = (days: number): number => {
+          const date = new Date();
+          date.setDate(date.getDate() - days);
+          date.setHours(18, 30, 0, 0); // 6:30 PM
+          return date.getTime();
+        };
+
+        // Helper to create a date in a specific month
+        const dateInMonth = (
+          year: number,
+          month: number,
+          day: number,
+          hour: number = 18,
+          minute: number = 30
+        ): number => {
+          const date = new Date(year, month, day, hour, minute, 0, 0);
+          return date.getTime();
+        };
+
+        const today = new Date();
+        const currentYear = today.getFullYear();
+        const currentMonth = today.getMonth();
+
+        // Create workout logs with varying volumes to show progression
+        // Upper Body Power workouts - showing volume progression
+        const upperBodyWorkouts = [
+          // Most recent (highest volume)
+          {
+            startedAt: daysAgo(2),
+            durationMinutes: 70,
+            caloriesBurned: 520,
+            exerciseSets: [
+              {
+                exercise: benchPress,
+                sets: [
+                  { weight: 80, reps: 8 },
+                  { weight: 80, reps: 8 },
+                  { weight: 85, reps: 6 },
+                ],
+              },
+              {
+                exercise: overheadPress,
+                sets: [
+                  { weight: 50, reps: 10 },
+                  { weight: 52.5, reps: 8 },
+                  { weight: 55, reps: 6 },
+                ],
+              },
+              {
+                exercise: latPulldown,
+                sets: [
+                  { weight: 70, reps: 10 },
+                  { weight: 72.5, reps: 8 },
+                ],
+              },
+              {
+                exercise: bicepCurl,
+                sets: [
+                  { weight: 15, reps: 12 },
+                  { weight: 17.5, reps: 10 },
+                ],
+              },
+            ],
+          },
+          // Previous month
+          {
+            startedAt: dateInMonth(currentYear, currentMonth - 1, 24, 18, 30),
+            durationMinutes: 70,
+            caloriesBurned: 500,
+            exerciseSets: [
+              {
+                exercise: benchPress,
+                sets: [
+                  { weight: 78, reps: 8 },
+                  { weight: 80, reps: 7 },
+                  { weight: 82, reps: 6 },
+                ],
+              },
+              {
+                exercise: overheadPress,
+                sets: [
+                  { weight: 49, reps: 10 },
+                  { weight: 51, reps: 8 },
+                ],
+              },
+              {
+                exercise: bicepCurl,
+                sets: [
+                  { weight: 14, reps: 12 },
+                  { weight: 16, reps: 10 },
+                ],
+              },
+            ],
+          },
+          // Two months ago
+          {
+            startedAt: dateInMonth(currentYear, currentMonth - 2, 26, 18, 0),
+            durationMinutes: 65,
+            caloriesBurned: 480,
+            exerciseSets: [
+              {
+                exercise: benchPress,
+                sets: [
+                  { weight: 75, reps: 10 },
+                  { weight: 78, reps: 8 },
+                ],
+              },
+              {
+                exercise: overheadPress,
+                sets: [
+                  { weight: 47, reps: 10 },
+                  { weight: 49, reps: 8 },
+                ],
+              },
+              {
+                exercise: tricepExtension,
+                sets: [
+                  { weight: 18, reps: 12 },
+                  { weight: 20, reps: 10 },
+                ],
+              },
+            ],
+          },
+        ];
+
+        // Leg Day workouts - showing volume progression
+        const legDayWorkouts = [
+          // Most recent
+          {
+            startedAt: daysAgo(4),
+            durationMinutes: 55,
+            caloriesBurned: 410,
+            exerciseSets: [
+              {
+                exercise: squat,
+                sets: [
+                  { weight: 120, reps: 8 },
+                  { weight: 125, reps: 6 },
+                  { weight: 130, reps: 5 },
+                ],
+              },
+              {
+                exercise: legPress,
+                sets: [
+                  { weight: 180, reps: 12 },
+                  { weight: 200, reps: 10 },
+                ],
+              },
+              {
+                exercise: deadlift,
+                sets: [
+                  { weight: 140, reps: 6 },
+                  { weight: 150, reps: 5 },
+                ],
+              },
+            ],
+          },
+          // Previous month
+          {
+            startedAt: dateInMonth(currentYear, currentMonth - 1, 20, 17, 45),
+            durationMinutes: 55,
+            caloriesBurned: 420,
+            exerciseSets: [
+              {
+                exercise: squat,
+                sets: [
+                  { weight: 118, reps: 8 },
+                  { weight: 122, reps: 7 },
+                  { weight: 125, reps: 6 },
+                ],
+              },
+              {
+                exercise: legPress,
+                sets: [
+                  { weight: 175, reps: 12 },
+                  { weight: 190, reps: 10 },
+                ],
+              },
+            ],
+          },
+          // Two months ago
+          {
+            startedAt: dateInMonth(currentYear, currentMonth - 2, 15, 10, 0),
+            durationMinutes: 50,
+            caloriesBurned: 380,
+            exerciseSets: [
+              {
+                exercise: squat,
+                sets: [
+                  { weight: 115, reps: 8 },
+                  { weight: 120, reps: 7 },
+                ],
+              },
+              {
+                exercise: legPress,
+                sets: [
+                  { weight: 170, reps: 12 },
+                  { weight: 180, reps: 10 },
+                ],
+              },
+            ],
+          },
+        ];
+
+        // Create all Upper Body Power workouts
+        for (const workoutData of upperBodyWorkouts) {
+          await createWorkoutLog(
+            upperBodyTemplate!.id,
+            'Upper Body Power',
+            workoutData.startedAt,
+            workoutData.durationMinutes,
+            workoutData.exerciseSets,
+            workoutData.caloriesBurned
+          );
+          workoutsCreated++;
+        }
+
+        // Create all Leg Day workouts
+        for (const workoutData of legDayWorkouts) {
+          await createWorkoutLog(
+            legDayTemplate!.id,
+            'Leg Day / Squats',
+            workoutData.startedAt,
+            workoutData.durationMinutes,
+            workoutData.exerciseSets,
+            workoutData.caloriesBurned
+          );
+          workoutsCreated++;
+        }
+
+        // Create a few more workouts without templates (ad-hoc workouts)
+        const pushDayLog = await database.get<WorkoutLog>('workout_logs').create((log) => {
+          log.workoutName = 'Push Day';
+          log.startedAt = daysAgo(7);
+          log.completedAt = daysAgo(7) + 60 * 60000;
+          log.totalVolume = 0;
+          log.caloriesBurned = 450;
           log.createdAt = now;
           log.updatedAt = now;
         });
 
-        // Create sets and calculate total volume
         let totalVolume = 0;
         let setOrder = 1;
+        const pushDaySets = [
+          {
+            exercise: benchPress,
+            sets: [
+              { weight: 75, reps: 10 },
+              { weight: 80, reps: 8 },
+              { weight: 82.5, reps: 6 },
+            ],
+          },
+          {
+            exercise: overheadPress,
+            sets: [
+              { weight: 48, reps: 10 },
+              { weight: 50, reps: 8 },
+            ],
+          },
+          {
+            exercise: tricepExtension,
+            sets: [
+              { weight: 20, reps: 12 },
+              { weight: 22.5, reps: 10 },
+            ],
+          },
+        ];
 
-        for (const exerciseData of exerciseSets) {
+        for (const exerciseData of pushDaySets) {
           for (const set of exerciseData.sets) {
-            const setVolume = set.weight * set.reps;
-            totalVolume += setVolume;
-
+            totalVolume += set.weight * set.reps;
             await database.get<WorkoutLogSet>('workout_log_sets').create((logSet) => {
-              logSet.workoutLogId = workoutLog.id;
+              logSet.workoutLogId = pushDayLog.id;
               logSet.exerciseId = exerciseData.exercise.id;
               logSet.reps = set.reps;
               logSet.weight = set.weight;
-              logSet.restTimeAfter = 60; // 60 seconds rest
-              logSet.difficultyLevel = 7; // RPE 7
+              logSet.restTimeAfter = 60;
+              logSet.difficultyLevel = 7;
               logSet.isDropSet = false;
               logSet.setOrder = setOrder;
               logSet.createdAt = now;
               logSet.updatedAt = now;
             });
-
             setOrder++;
           }
         }
 
-        // Update workout log with total volume
-        await workoutLog.update((log) => {
+        await pushDayLog.update((log) => {
           log.totalVolume = totalVolume;
         });
-
-        return workoutLog;
-      };
-
-      // Helper to create a date N days ago
-      const daysAgo = (days: number): number => {
-        const date = new Date();
-        date.setDate(date.getDate() - days);
-        date.setHours(18, 30, 0, 0); // 6:30 PM
-        return date.getTime();
-      };
-
-      // Helper to create a date in a specific month
-      const dateInMonth = (
-        year: number,
-        month: number,
-        day: number,
-        hour: number = 18,
-        minute: number = 30
-      ): number => {
-        const date = new Date(year, month, day, hour, minute, 0, 0);
-        return date.getTime();
-      };
-
-      const today = new Date();
-      const currentYear = today.getFullYear();
-      const currentMonth = today.getMonth();
-
-      // Create workout logs with varying volumes to show progression
-      // Upper Body Power workouts - showing volume progression
-      const upperBodyWorkouts = [
-        // Most recent (highest volume)
-        {
-          startedAt: daysAgo(2),
-          durationMinutes: 70,
-          caloriesBurned: 520,
-          exerciseSets: [
-            {
-              exercise: benchPress,
-              sets: [
-                { weight: 80, reps: 8 },
-                { weight: 80, reps: 8 },
-                { weight: 85, reps: 6 },
-              ],
-            },
-            {
-              exercise: overheadPress,
-              sets: [
-                { weight: 50, reps: 10 },
-                { weight: 52.5, reps: 8 },
-                { weight: 55, reps: 6 },
-              ],
-            },
-            {
-              exercise: latPulldown,
-              sets: [
-                { weight: 70, reps: 10 },
-                { weight: 72.5, reps: 8 },
-              ],
-            },
-            {
-              exercise: bicepCurl,
-              sets: [
-                { weight: 15, reps: 12 },
-                { weight: 17.5, reps: 10 },
-              ],
-            },
-          ],
-        },
-        // Previous month
-        {
-          startedAt: dateInMonth(currentYear, currentMonth - 1, 24, 18, 30),
-          durationMinutes: 70,
-          caloriesBurned: 500,
-          exerciseSets: [
-            {
-              exercise: benchPress,
-              sets: [
-                { weight: 78, reps: 8 },
-                { weight: 80, reps: 7 },
-                { weight: 82, reps: 6 },
-              ],
-            },
-            {
-              exercise: overheadPress,
-              sets: [
-                { weight: 49, reps: 10 },
-                { weight: 51, reps: 8 },
-              ],
-            },
-            {
-              exercise: bicepCurl,
-              sets: [
-                { weight: 14, reps: 12 },
-                { weight: 16, reps: 10 },
-              ],
-            },
-          ],
-        },
-        // Two months ago
-        {
-          startedAt: dateInMonth(currentYear, currentMonth - 2, 26, 18, 0),
-          durationMinutes: 65,
-          caloriesBurned: 480,
-          exerciseSets: [
-            {
-              exercise: benchPress,
-              sets: [
-                { weight: 75, reps: 10 },
-                { weight: 78, reps: 8 },
-              ],
-            },
-            {
-              exercise: overheadPress,
-              sets: [
-                { weight: 47, reps: 10 },
-                { weight: 49, reps: 8 },
-              ],
-            },
-            {
-              exercise: tricepExtension,
-              sets: [
-                { weight: 18, reps: 12 },
-                { weight: 20, reps: 10 },
-              ],
-            },
-          ],
-        },
-      ];
-
-      // Leg Day workouts - showing volume progression
-      const legDayWorkouts = [
-        // Most recent
-        {
-          startedAt: daysAgo(4),
-          durationMinutes: 55,
-          caloriesBurned: 410,
-          exerciseSets: [
-            {
-              exercise: squat,
-              sets: [
-                { weight: 120, reps: 8 },
-                { weight: 125, reps: 6 },
-                { weight: 130, reps: 5 },
-              ],
-            },
-            {
-              exercise: legPress,
-              sets: [
-                { weight: 180, reps: 12 },
-                { weight: 200, reps: 10 },
-              ],
-            },
-            {
-              exercise: deadlift,
-              sets: [
-                { weight: 140, reps: 6 },
-                { weight: 150, reps: 5 },
-              ],
-            },
-          ],
-        },
-        // Previous month
-        {
-          startedAt: dateInMonth(currentYear, currentMonth - 1, 20, 17, 45),
-          durationMinutes: 55,
-          caloriesBurned: 420,
-          exerciseSets: [
-            {
-              exercise: squat,
-              sets: [
-                { weight: 118, reps: 8 },
-                { weight: 122, reps: 7 },
-                { weight: 125, reps: 6 },
-              ],
-            },
-            {
-              exercise: legPress,
-              sets: [
-                { weight: 175, reps: 12 },
-                { weight: 190, reps: 10 },
-              ],
-            },
-          ],
-        },
-        // Two months ago
-        {
-          startedAt: dateInMonth(currentYear, currentMonth - 2, 15, 10, 0),
-          durationMinutes: 50,
-          caloriesBurned: 380,
-          exerciseSets: [
-            {
-              exercise: squat,
-              sets: [
-                { weight: 115, reps: 8 },
-                { weight: 120, reps: 7 },
-              ],
-            },
-            {
-              exercise: legPress,
-              sets: [
-                { weight: 170, reps: 12 },
-                { weight: 180, reps: 10 },
-              ],
-            },
-          ],
-        },
-      ];
-
-      // Create all Upper Body Power workouts
-      for (const workoutData of upperBodyWorkouts) {
-        await createWorkoutLog(
-          upperBodyTemplate.id,
-          'Upper Body Power',
-          workoutData.startedAt,
-          workoutData.durationMinutes,
-          workoutData.exerciseSets,
-          workoutData.caloriesBurned
-        );
         workoutsCreated++;
       }
-
-      // Create all Leg Day workouts
-      for (const workoutData of legDayWorkouts) {
-        await createWorkoutLog(
-          legDayTemplate.id,
-          'Leg Day / Squats',
-          workoutData.startedAt,
-          workoutData.durationMinutes,
-          workoutData.exerciseSets,
-          workoutData.caloriesBurned
-        );
-        workoutsCreated++;
-      }
-
-      // Create a few more workouts without templates (ad-hoc workouts)
-      const pushDayLog = await database.get<WorkoutLog>('workout_logs').create((log) => {
-        log.workoutName = 'Push Day';
-        log.startedAt = daysAgo(7);
-        log.completedAt = daysAgo(7) + 60 * 60000;
-        log.totalVolume = 0;
-        log.caloriesBurned = 450;
-        log.createdAt = now;
-        log.updatedAt = now;
-      });
-
-      let totalVolume = 0;
-      let setOrder = 1;
-      const pushDaySets = [
-        {
-          exercise: benchPress,
-          sets: [
-            { weight: 75, reps: 10 },
-            { weight: 80, reps: 8 },
-            { weight: 82.5, reps: 6 },
-          ],
-        },
-        {
-          exercise: overheadPress,
-          sets: [
-            { weight: 48, reps: 10 },
-            { weight: 50, reps: 8 },
-          ],
-        },
-        {
-          exercise: tricepExtension,
-          sets: [
-            { weight: 20, reps: 12 },
-            { weight: 22.5, reps: 10 },
-          ],
-        },
-      ];
-
-      for (const exerciseData of pushDaySets) {
-        for (const set of exerciseData.sets) {
-          totalVolume += set.weight * set.reps;
-          await database.get<WorkoutLogSet>('workout_log_sets').create((logSet) => {
-            logSet.workoutLogId = pushDayLog.id;
-            logSet.exerciseId = exerciseData.exercise.id;
-            logSet.reps = set.reps;
-            logSet.weight = set.weight;
-            logSet.restTimeAfter = 60;
-            logSet.difficultyLevel = 7;
-            logSet.isDropSet = false;
-            logSet.setOrder = setOrder;
-            logSet.createdAt = now;
-            logSet.updatedAt = now;
-          });
-          setOrder++;
-        }
-      }
-
-      await pushDayLog.update((log) => {
-        log.totalVolume = totalVolume;
-      });
-      workoutsCreated++;
     });
 
     console.log(
