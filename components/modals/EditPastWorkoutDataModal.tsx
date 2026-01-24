@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Pressable, ScrollView } from 'react-native';
+import { View, Text, Pressable, ScrollView, ActivityIndicator } from 'react-native';
 import { Plus as PlusIcon, Trash2 } from 'lucide-react-native';
 import { GenericCard } from '../cards/GenericCard';
 import NewNumericalInput from '../theme/NewNumericalInput';
@@ -150,17 +150,26 @@ export default function EditPastWorkoutDataModal({
   };
 
   const handleSave = async () => {
+    setIsSaving(true);
+
+    // Small delay to allow React to render the loading state before closing
+    await new Promise<void>((resolve) => setTimeout(resolve, 10));
     try {
-      setIsSaving(true);
       await onSave(sets);
       onClose();
-    } finally {
+    } catch (err) {
       setIsSaving(false);
+      console.error('Failed to save sets:', err);
     }
   };
 
   const headerRight = (
-    <Pressable onPress={handleSave} className="px-3 py-1" disabled={isSaving}>
+    <Pressable
+      onPress={handleSave}
+      className="flex-row items-center gap-2 px-3 py-1"
+      disabled={isSaving}
+    >
+      {isSaving ? <ActivityIndicator size="small" color={theme.colors.accent.primary} /> : null}
       <Text
         style={{ color: isSaving ? theme.colors.text.tertiary : theme.colors.accent.primary }}
         className="font-bold"
