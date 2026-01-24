@@ -259,12 +259,14 @@ export class WorkoutService {
   }
 
   /**
-   * Update multiple workout log sets and recompute parent workout totals
+   * Update multiple workout log sets (existing or new) and recompute parent workout totals
+   * Separates new sets (create) from existing sets (update) based on isNew flag
    */
   static async updateWorkoutSets(
     workoutLogId: string,
     updates: {
       setId: string;
+      exerciseId?: string; // Required for new sets
       reps?: number;
       weight?: number;
       partials?: number;
@@ -272,6 +274,7 @@ export class WorkoutService {
       difficultyLevel?: number;
       isSkipped?: boolean;
       isDropSet?: boolean;
+      isNew?: boolean; // Flag to indicate if this is a new set
     }[]
   ): Promise<{ workoutLogId: string; totalVolume: number }> {
     try {
@@ -288,6 +291,24 @@ export class WorkoutService {
       await database.write(async () => {
         for (const update of updates) {
           try {
+            if (update.isNew && update.exerciseId) {
+              // Create a new set
+              await logSetsCollection.create((logSet) => {
+                logSet.workoutLogId = workoutLogId;
+                logSet.exerciseId = update.exerciseId!;
+                logSet.reps = update.reps ?? 0;
+                logSet.weight = update.weight ?? 0;
+                logSet.partials = update.partials ?? 0;
+                logSet.restTimeAfter = update.restTimeAfter ?? 0;
+                logSet.difficultyLevel = update.difficultyLevel ?? 0;
+                logSet.isSkipped = update.isSkipped ?? false;
+                logSet.isDropSet = update.isDropSet ?? false;
+                logSet.setOrder = 0; // Will be recalculated
+                logSet.createdAt = Date.now();
+                logSet.updatedAt = Date.now();
+              });
+            } else {
+              // Update an existing set
             const setModel = await logSetsCollection.find(update.setId);
             await setModel.update((s: WorkoutLogSet) => {
               if (update.reps !== undefined) s.reps = update.reps;
@@ -299,8 +320,8 @@ export class WorkoutService {
               if (update.isDropSet !== undefined) s.isDropSet = update.isDropSet;
               s.updatedAt = Date.now();
             });
+            }
           } catch (err) {
-            // If a set is not found or other error occurs, surface it but continue with others
             console.warn(`Failed to update set ${update.setId}:`, err);
           }
         }

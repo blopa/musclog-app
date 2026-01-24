@@ -1145,6 +1145,9 @@ export default function ModalsTestScreen() {
           console.log('Edit past workout data saved');
           setIsEditPastWorkoutDataVisible(false);
         }}
+        workoutId={"test-workout-id"}
+        exerciseId={"test-exercise-id"}
+        initialSets={[]}
       />
 
       <PastWorkoutDetailModal

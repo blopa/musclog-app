@@ -468,13 +468,19 @@ export default function PastWorkoutDetailModal({
           onClose={() => setIsEditModalVisible(false)}
           onSave={async (updatedSets) => {
             if (!workoutId) return;
-            const updates = updatedSets.map((s) => ({
-              setId: s.id,
-              reps: s.reps,
-              weight: s.weight,
-              partials: s.partialReps,
-              restTimeAfter: s.rest,
-            }));
+            const updates = updatedSets.map((s) => {
+              // Check if this is a new set (temporary ID from Date.now())
+              const isNew = !rawSets?.some((rs) => rs.id === s.id);
+              return {
+                setId: s.id,
+                exerciseId: isNew ? editingExerciseId : undefined,
+                reps: s.reps,
+                weight: s.weight,
+                partials: s.partialReps,
+                restTimeAfter: s.rest,
+                isNew,
+              };
+            });
             try {
               await saveSets(workoutId, updates as any);
               // reload handled reactively by subscription, but keep reload for safety
