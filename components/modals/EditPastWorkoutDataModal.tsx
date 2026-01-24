@@ -34,8 +34,8 @@ function SetCard({
   onRemove: (id: string) => void;
 }) {
   const accentStyle = item.isPR
-    ? { borderLeftColor: theme.colors.accent.primary, borderLeftWidth: 6 }
-    : { borderLeftColor: theme.colors.border.gray600, borderLeftWidth: 1 };
+    ? { borderLeftColor: theme.colors.accent.primary, borderLeftWidth: theme.borderWidth.thick6 }
+    : { borderLeftColor: theme.colors.border.gray600, borderLeftWidth: theme.borderWidth.thin };
 
   return (
     <View style={accentStyle} className="mb-4">
@@ -55,8 +55,13 @@ function SetCard({
               )}
             </View>
             <Pressable onPress={() => onRemove(item.id)} className="flex-row items-center gap-1">
-              <Trash2 size={14} color="#ef4444" />
-              <Text className="text-xs font-bold uppercase tracking-wider text-red-500">Remove</Text>
+              <Trash2 size={theme.iconSize.xs} color={theme.colors.status.error} />
+              <Text
+                className="text-xs font-bold uppercase tracking-wider"
+                style={{ color: theme.colors.status.errorSolid }}
+              >
+                Remove
+              </Text>
             </Pressable>
           </View>
 
@@ -138,7 +143,7 @@ export default function EditPastWorkoutDataModal({
       subtitle={'Aug 24, 2023'}
       scrollable={false}
     >
-      <ScrollView contentContainerStyle={{ paddingBottom: 160 }} className="p-4">
+      <ScrollView contentContainerStyle={{ paddingBottom: theme.size['160'] }} className="p-4">
         <View className="flex flex-col gap-4">
           {sets.map((s, idx) => (
             <SetCard
