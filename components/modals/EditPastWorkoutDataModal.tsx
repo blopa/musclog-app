@@ -38,19 +38,20 @@ function SetCard({
     : { borderLeftColor: theme.colors.border.gray600, borderLeftWidth: theme.borderWidth.thin };
 
   return (
-    <View style={accentStyle} className="mb-4">
-      <GenericCard variant="card">
+    <View className="mb-4">
+      <GenericCard variant="card" containerStyle={accentStyle}>
         <View className="p-4">
           <View className="mb-4 flex-row items-center justify-between">
             <View className="flex-row items-center gap-2">
               <Text
-                className={`text-xs font-bold ${item.isPR ? 'text-primary' : 'text-gray-400'} uppercase tracking-widest`}
+                className="text-xs font-bold uppercase tracking-widest"
+                style={{ color: item.isPR ? theme.colors.accent.primary : theme.colors.text.secondary }}
               >
                 Set {index + 1}
               </Text>
               {item.isPR && (
-                <View className="bg-primary/10 flex-row items-center rounded px-2 py-0.5">
-                  <Text className="text-primary text-[10px] font-extrabold">PR</Text>
+                <View style={{ backgroundColor: theme.colors.accent.primary10 }} className="flex-row items-center rounded px-2 py-0.5">
+                  <Text style={{ color: theme.colors.accent.primary, fontWeight: theme.typography.fontWeight.extrabold }} className="text-[10px]">PR</Text>
                 </View>
               )}
             </View>

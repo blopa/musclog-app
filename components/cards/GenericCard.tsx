@@ -1,4 +1,4 @@
-import { Pressable, View, ViewStyle } from 'react-native';
+import { Pressable, View, ViewStyle, StyleProp } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { theme } from '../../theme';
 
@@ -10,6 +10,7 @@ type GenericCardProps = {
   backgroundVariant?: 'default' | 'dark-green' | 'gradient' | 'colorful-gradient';
   isPressable?: boolean;
   size?: 'sm' | 'default' | 'lg';
+  containerStyle?: StyleProp<ViewStyle>;
 };
 
 /**
@@ -24,6 +25,7 @@ export function GenericCard({
   variant = 'default',
   backgroundVariant,
   size = 'default',
+  containerStyle,
 }: GenericCardProps) {
   // ============================================================================
   // Computed Values
@@ -249,7 +251,7 @@ export function GenericCard({
   const workoutClassName = isWorkoutVariant ? 'mb-8 w-full overflow-hidden border p-6' : undefined;
 
   return (
-    <View className={workoutClassName} style={getCardStyle()}>
+    <View className={workoutClassName} style={[getCardStyle(), containerStyle]}>
       {hasGradientBackground ? (
         <>
           <View
