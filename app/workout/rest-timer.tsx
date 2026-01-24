@@ -170,7 +170,7 @@ export default function RestTimerScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 bg-bg-primary" edges={['top', 'bottom']}>
+      <SafeAreaView className="flex-1 bg-bg-primary overflow-hidden" edges={['top', 'bottom']}>
         <StatusBar style="light" />
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color={theme.colors.accent.primary} />
@@ -181,7 +181,7 @@ export default function RestTimerScreen() {
 
   if (error || !completedSet || !workoutLog) {
     return (
-      <SafeAreaView className="flex-1 bg-bg-primary" edges={['top', 'bottom']}>
+      <SafeAreaView className="flex-1 bg-bg-primary overflow-hidden" edges={['top', 'bottom']}>
         <StatusBar style="light" />
         <View className="flex-1 items-center justify-center px-6">
           <Text className="text-text-primary">{error || 'Failed to load data'}</Text>
@@ -191,7 +191,7 @@ export default function RestTimerScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-bg-primary" edges={['top', 'bottom']}>
+    <SafeAreaView className="flex-1 bg-bg-primary overflow-hidden" edges={['top', 'bottom']}>
       <StatusBar style="light" />
 
       {/* Ambient Background Gradients */}
