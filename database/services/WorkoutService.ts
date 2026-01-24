@@ -259,6 +259,58 @@ export class WorkoutService {
   }
 
   /**
+   * Update multiple workout log sets and recompute parent workout totals
+   */
+  static async updateWorkoutSets(
+    workoutLogId: string,
+    updates: {
+      setId: string;
+      reps?: number;
+      weight?: number;
+      partials?: number;
+      restTimeAfter?: number;
+      difficultyLevel?: number;
+      isSkipped?: boolean;
+      isDropSet?: boolean;
+    }[]
+  ): Promise<{ workoutLogId: string; totalVolume: number }> {
+    try {
+      const workoutLog = await database.get<WorkoutLog>('workout_logs').find(workoutLogId);
+
+      if (workoutLog.deletedAt) {
+        throw new Error('Workout log has been deleted');
+      }
+
+      // Apply updates using the model writer method
+      for (const update of updates) {
+        await workoutLog.updateSet(update.setId, {
+          reps: update.reps,
+          weight: update.weight,
+          partials: update.partials,
+          restTimeAfter: update.restTimeAfter,
+          difficultyLevel: update.difficultyLevel,
+          isSkipped: update.isSkipped,
+          isDropSet: update.isDropSet,
+        });
+      }
+
+      // Recalculate total volume and persist on parent log
+      const totalVolume = await workoutLog.calculateVolume();
+      await workoutLog.update((log) => {
+        log.totalVolume = totalVolume;
+        log.updatedAt = Date.now();
+      });
+
+      return { workoutLogId, totalVolume };
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`Failed to update workout sets: ${error.message}`);
+      }
+      throw new Error('Failed to update workout sets: Unknown error');
+    }
+  }
+
+  /**
    * Get workout logs by template_id, ordered by date (newest first)
    */
   static async getWorkoutLogsByTemplate(templateId: string, limit?: number): Promise<WorkoutLog[]> {

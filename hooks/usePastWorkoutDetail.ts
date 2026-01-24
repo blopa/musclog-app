@@ -14,6 +14,7 @@ export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetai
   const { units } = useSettings();
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [workout, setWorkout] = useState<WorkoutDetailData | null>(null);
+  const [rawSets, setRawSets] = useState<any[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const loadWorkoutData = useCallback(async () => {
@@ -22,6 +23,7 @@ export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetai
     setIsLoading(true);
     try {
       const { workoutLog, sets, exercises } = await WorkoutService.getWorkoutWithDetails(workoutId);
+      setRawSets(sets as any[]);
       const transformedData = await transformWorkoutToDetailData(
         workoutLog,
         sets,
@@ -51,5 +53,7 @@ export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetai
     isLoading,
     isMenuVisible,
     setIsMenuVisible,
+    rawSets,
+    reload: loadWorkoutData,
   };
 }

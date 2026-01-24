@@ -10,6 +10,8 @@ import { FullScreenModal } from './FullScreenModal';
 import { GenericCard } from '../cards/GenericCard';
 import { LineChart, LineChartDataPoint } from '../LineChart';
 import { usePastWorkoutDetail } from '../../hooks/usePastWorkoutDetail';
+import EditPastWorkoutDataModal from './EditPastWorkoutDataModal';
+import { WorkoutService } from '../../database/services/WorkoutService';
 import { PastWorkoutBottomMenu } from './PastWorkoutBottomMenu';
 import { useSettings } from '../../hooks/useSettings';
 import { getWeightUnitI18nKey } from '../../utils/units';
@@ -200,7 +202,7 @@ function SetRow({ set }: SetRowProps) {
       </View>
       <View className="flex-1 items-center py-3">
         <View className="flex-row items-center gap-1">
-          {set.isHighlighted && <Trophy size={12} color={theme.colors.accent.primary} />}
+          {set.isHighlighted ? <Trophy size={12} color={theme.colors.accent.primary} /> : null}
           <Text className="text-xs text-text-tertiary">{set.rest}</Text>
         </View>
       </View>
@@ -375,10 +377,14 @@ export default function PastWorkoutDetailModal({
   const { units } = useSettings();
   const weightUnitKey = getWeightUnitI18nKey(units);
 
-  const { workout, isLoading, isMenuVisible, setIsMenuVisible } = usePastWorkoutDetail({
-    visible,
-    workoutId,
-  });
+  const { workout, isLoading, isMenuVisible, setIsMenuVisible, rawSets, reload } =
+    usePastWorkoutDetail({
+      visible,
+      workoutId,
+    });
+
+  const [editingExerciseId, setEditingExerciseId] = React.useState<string | null>(null);
+  const [isEditModalVisible, setIsEditModalVisible] = React.useState(false);
 
   const formatDate = (date: Date) => {
     return format(date, 'EEEE, MMM d • hh:mm a');
@@ -426,15 +432,23 @@ export default function PastWorkoutDetailModal({
             weightUnitKey={weightUnitKey}
           />
 
-          {workout.volumeTrend.data.length > 0 && (
+          {workout.volumeTrend.data.length > 0 ? (
             <VolumeTrendCard
               percentage={workout.volumeTrend.percentage}
               data={workout.volumeTrend.data}
               labels={workout.volumeTrend.labels}
             />
-          )}
+          ) : null}
 
-          <ExercisesSection exercises={workout.exercises} />
+          <ExercisesSection
+            exercises={workout.exercises}
+            onEdit={(exerciseId?: string) => {
+              if (!exerciseId) return;
+              setEditingExerciseId(exerciseId);
+              setIsEditModalVisible(true);
+            }}
+            onClose={onClose}
+          />
         </View>
       </FullScreenModal>
 
@@ -446,6 +460,35 @@ export default function PastWorkoutDetailModal({
         onShare={onShare}
         onDelete={onDelete}
       />
+      {editingExerciseId ? (
+        <EditPastWorkoutDataModal
+          visible={isEditModalVisible}
+          onClose={() => setIsEditModalVisible(false)}
+          onSave={async (updatedSets) => {
+            if (!workoutId) return;
+            const updates = updatedSets.map((s) => ({
+              setId: s.id,
+              reps: s.reps,
+              weight: s.weight,
+              partials: s.partialReps,
+              restTimeAfter: s.rest,
+            }));
+            await WorkoutService.updateWorkoutSets(workoutId, updates as any);
+            await reload();
+          }}
+          workoutId={workoutId!}
+          exerciseId={editingExerciseId}
+          initialSets={(rawSets || [])
+            .filter((s) => s.exerciseId === editingExerciseId)
+            .map((s) => ({
+              id: s.id,
+              weight: s.weight,
+              reps: s.reps,
+              partialReps: s.partials ?? 0,
+              rest: s.restTimeAfter ?? 0,
+            }))}
+        />
+      ) : null}
     </>
   );
 }

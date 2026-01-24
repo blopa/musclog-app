@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Pressable, ScrollView } from 'react-native';
 import { Plus as PlusIcon, Trash2 } from 'lucide-react-native';
 import { GenericCard } from '../cards/GenericCard';
@@ -16,12 +16,6 @@ type SetItem = {
   rest: number;
   isPR?: boolean;
 };
-
-const sampleSets: SetItem[] = [
-  { id: '1', weight: 28, reps: 12, partialReps: 0, rest: 90 },
-  { id: '2', weight: 32, reps: 10, partialReps: 2, rest: 120, isPR: true },
-  { id: '3', weight: 32, reps: 0, partialReps: 0, rest: 0 },
-];
 
 function SetCard({
   item,
@@ -52,7 +46,7 @@ function SetCard({
               >
                 Set {index + 1}
               </Text>
-              {item.isPR && (
+              {item.isPR ? (
                 <View
                   style={{ backgroundColor: theme.colors.accent.primary10 }}
                   className="flex-row items-center rounded px-2 py-0.5"
@@ -67,7 +61,7 @@ function SetCard({
                     PR
                   </Text>
                 </View>
-              )}
+              ) : null}
             </View>
             <Pressable onPress={() => onRemove(item.id)} className="flex-row items-center gap-1">
               <Trash2 size={theme.iconSize.xs} color={theme.colors.status.error} />
@@ -122,16 +116,25 @@ function SetCard({
 type EditPastWorkoutDataModalProps = {
   visible: boolean;
   onClose: () => void;
-  onSave: () => void;
+  onSave: (updatedSets: SetItem[]) => Promise<void> | void;
+  workoutId: string;
+  exerciseId: string;
+  initialSets: SetItem[];
 };
 
 export default function EditPastWorkoutDataModal({
   visible,
   onClose,
   onSave,
+  initialSets,
 }: EditPastWorkoutDataModalProps) {
-  const [sets, setSets] = useState<SetItem[]>(sampleSets);
+  const [sets, setSets] = useState<SetItem[]>(initialSets ?? []);
+  const [isSaving, setIsSaving] = useState(false);
   const { t } = useTranslation();
+
+  useEffect(() => {
+    setSets(initialSets ?? []);
+  }, [initialSets, visible]);
 
   const handleChange = (id: string, patch: Partial<SetItem>) => {
     setSets((s) => s.map((it) => (it.id === id ? { ...it, ...patch } : it)));
@@ -146,17 +149,35 @@ export default function EditPastWorkoutDataModal({
     setSets((s) => [...s, next]);
   };
 
-  const handleSave = () => {
-    onSave();
+  const handleSave = async () => {
+    try {
+      setIsSaving(true);
+      await onSave(sets);
+      onClose();
+    } finally {
+      setIsSaving(false);
+    }
   };
+
+  const headerRight = (
+    <Pressable onPress={handleSave} className="px-3 py-1" disabled={isSaving}>
+      <Text
+        style={{ color: isSaving ? theme.colors.text.tertiary : theme.colors.accent.primary }}
+        className="font-bold"
+      >
+        {isSaving ? 'Saving...' : t('common.save')}
+      </Text>
+    </Pressable>
+  );
 
   return (
     <FullScreenModal
       visible={visible}
       onClose={onClose}
-      title={'Dumbbell • Upper Body Power'}
-      subtitle={'Aug 24, 2023'}
+      title={t('workoutDetail.editSetsTitle') || 'Edit Sets'}
+      subtitle={''}
       scrollable={false}
+      headerRight={headerRight}
     >
       <ScrollView contentContainerStyle={{ paddingBottom: theme.size['160'] }} className="p-4">
         <View className="flex flex-col gap-4">
@@ -170,7 +191,7 @@ export default function EditPastWorkoutDataModal({
             />
           ))}
           <DashedButton
-            label="Add New Set"
+            label={t('workoutDetail.addSet') || 'Add New Set'}
             onPress={handleAdd}
             size="sm"
             icon={<PlusIcon size={theme.iconSize.sm} color={theme.colors.background.workoutIcon} />}
