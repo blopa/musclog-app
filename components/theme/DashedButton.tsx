@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Pressable, Text, View, ViewStyle } from 'react-native';
 import { theme } from '../../theme';
 
@@ -17,17 +17,22 @@ export default function DashedButton({
   icon,
   style,
 }: DashedButtonProps) {
+  const [isPressed, setIsPressed] = useState(false);
   const isLarge = size === 'lg';
 
   if (isLarge) {
     return (
       <Pressable
         onPress={onPress}
-        className="w-full items-center justify-center gap-4 rounded-xl border-2 border-dashed active:opacity-80"
+        onPressIn={() => setIsPressed(true)}
+        onPressOut={() => setIsPressed(false)}
+        className="w-full items-center justify-center gap-4 rounded-xl border-2 border-dashed"
         style={{
           borderColor: theme.colors.border.gray600,
           padding: theme.spacing.padding['4xl'] / 15 || theme.spacing.padding.lg, // approximate p-8
-          backgroundColor: theme.colors.background.card,
+          backgroundColor: isPressed
+            ? theme.colors.background.cardElevated
+            : theme.colors.background.card,
           ...(style || {}),
         }}
       >
@@ -53,8 +58,14 @@ export default function DashedButton({
   return (
     <Pressable
       onPress={onPress}
+      onPressIn={() => setIsPressed(true)}
+      onPressOut={() => setIsPressed(false)}
       className="w-full flex-row items-center justify-center gap-2 rounded-lg border-2 border-dashed py-4"
-      style={[{ borderColor: theme.colors.border.dashed }, style]}
+      style={{
+        borderColor: theme.colors.border.dashed,
+        backgroundColor: isPressed ? theme.colors.background.cardElevated : 'transparent',
+        ...(style || {}),
+      }}
     >
       {icon}
       <Text
