@@ -344,12 +344,7 @@ function ExercisesSection({ exercises, onEdit, onClose }: ExercisesSectionProps)
       </Text>
 
       {exercises.map((exercise) => (
-        <ExerciseCard
-          key={exercise.id}
-          exercise={exercise}
-          onEdit={onEdit}
-          onClose={onClose}
-        />
+        <ExerciseCard key={exercise.id} exercise={exercise} onEdit={onEdit} onClose={onClose} />
       ))}
 
       {/* Bottom spacing */}
