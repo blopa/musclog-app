@@ -61,7 +61,13 @@ export function EmptyStateCard({
         </View>
 
         {/* Button */}
-        <Button label={buttonLabel} variant={buttonVariant} width="full" onPress={onButtonPress} size="md" />
+        <Button
+          label={buttonLabel}
+          variant={buttonVariant}
+          width="full"
+          onPress={onButtonPress}
+          size="md"
+        />
       </View>
     </GenericCard>
   );

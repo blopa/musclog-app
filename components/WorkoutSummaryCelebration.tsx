@@ -69,20 +69,37 @@ export function WorkoutSummaryCelebration({
       : {};
 
   return (
-    <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+    <ScrollView
+      className="flex-1"
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={{ flexGrow: 1 }}
+    >
       <View
         className="flex-1 bg-bg-primary"
         style={[
           webModalStyle,
           {
+            // Ensure absolutely positioned background blobs are clipped
+            position: 'relative',
+            overflow: 'hidden',
             paddingTop: Platform.OS !== 'web' ? insets.top : 0,
             paddingBottom:
               Platform.OS !== 'web' ? Math.max(insets.bottom, theme.spacing.padding.base) : 0,
           },
         ]}
       >
-        <View className="flex-1 items-center justify-center px-6 py-8">
-          {/* Background Glow Effects */}
+        {/* Background layer (absolutely positioned, non-interactive) */}
+        <View
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 0,
+            pointerEvents: 'none',
+          }}
+        >
           <Animated.View
             className="absolute left-1/2 top-1/4 rounded-full blur-3xl"
             style={{
@@ -105,6 +122,9 @@ export function WorkoutSummaryCelebration({
               opacity: glowAnim2,
             }}
           />
+        </View>
+
+        <View className="flex-1 items-center justify-center px-6 py-8" style={{ zIndex: 1 }}>
           <WorkoutSummaryTrophy />
           <WorkoutSummaryHeader />
           <WorkoutSummaryStatsCard
