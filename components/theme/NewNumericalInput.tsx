@@ -63,7 +63,7 @@ export default function NewNumericalInput({
         {label}
       </Text>
       <View
-        className="flex w-full flex-row items-center justify-between gap-2 rounded-full px-4 py-3"
+        className="flex w-full flex-row items-center justify-between gap-2 rounded-2xl px-4 py-3"
         style={{ backgroundColor: theme.colors.background.filterTab }}
       >
         <Pressable
