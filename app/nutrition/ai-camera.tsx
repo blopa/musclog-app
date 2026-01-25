@@ -222,8 +222,11 @@ export default function AICameraScreen() {
             className="mt-6 text-center text-sm font-medium drop-shadow-md"
             style={{ color: theme.colors.overlay.white90 }}
           >
-            {/* TODO: change this text depending on the camera mode */}
-            {t('food.aiCamera.mealInstruction')}
+            {cameraMode === 'ai-meal-photo'
+              ? t('food.aiCamera.mealInstruction')
+              : cameraMode === 'ai-label-scan'
+                ? t('food.aiCamera.labelInstruction')
+                : t('food.aiCamera.barcodeInstruction')}
           </Text>
         </View>
 
