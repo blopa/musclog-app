@@ -297,7 +297,7 @@ export default function WorkoutSessionScreen() {
 
   return (
     <MasterLayout showNavigationMenu={false}>
-      <ScrollView className="flex-1">
+      <View className="flex-1">
         <ImageBackground
           source={exerciseImage}
           className="absolute inset-0"
@@ -315,7 +315,11 @@ export default function WorkoutSessionScreen() {
         </ImageBackground>
 
         {/* Content */}
-        <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+        <ScrollView
+          className="flex-1"
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ flexGrow: 1 }}
+        >
           {/* Header */}
           <WorkoutTimeTracker
             onClose={() => setIsEndWorkoutModalVisible(true)}
@@ -425,7 +429,7 @@ export default function WorkoutSessionScreen() {
             />
           </View>
         </ScrollView>
-      </ScrollView>
+      </View>
 
       {/* Workout Options Modal */}
       <WorkoutOptionsModal
