@@ -3,7 +3,6 @@ import { View, Text, Pressable, StyleSheet, Dimensions, StatusBar, Animated } fr
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { CameraView, useCameraPermissions } from 'expo-camera';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
   X,
@@ -16,6 +15,8 @@ import {
 } from 'lucide-react-native';
 import { theme } from '../../theme';
 import { AINutritionTrackingContextModal } from '../../components/modals/AINutritionTrackingContextModal';
+import { CameraView, useCameraPermissions } from '../../components/CameraView';
+import type { CameraView as CameraViewType } from 'expo-camera';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const CAMERA_ASPECT_RATIO = theme.aspectRatio.portrait;
@@ -31,7 +32,7 @@ export default function AICameraScreen() {
   const [cameraMode, setCameraMode] = useState<CameraMode>('ai-meal-photo');
   const [isDetecting, setIsDetecting] = useState(true);
   const [isContextModalVisible, setIsContextModalVisible] = useState(false);
-  const cameraRef = useRef<CameraView>(null);
+  const cameraRef = useRef<CameraViewType>(null);
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
   // Pulse animation for AI detecting indicator
