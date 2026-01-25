@@ -1,8 +1,6 @@
 import React from 'react';
-import { View, Text, Image, Pressable, ImageSourcePropType } from 'react-native';
+import { View, Text, Image, TouchableOpacity } from 'react-native';
 import { Plus } from 'lucide-react-native';
-import { useTranslation } from 'react-i18next';
-import { theme } from '../../theme';
 import { GenericCard } from './GenericCard';
 
 type MacroProps = {
@@ -12,192 +10,69 @@ type MacroProps = {
 };
 
 const Macro = ({ label, value, color }: MacroProps) => (
-  <View className="gap-0.5">
-    <Text
-      style={{
-        fontSize: theme.typography.fontSize.xs,
-        fontWeight: theme.typography.fontWeight.bold,
-        color,
-        textTransform: 'uppercase',
-      }}
-    >
+  <View className="flex-col gap-y-0.5">
+    <Text className="text-[10px] font-bold uppercase" style={{ color }}>
       {label}
     </Text>
-    <Text
-      style={{
-        fontSize: theme.typography.fontSize.sm,
-        fontWeight: theme.typography.fontWeight.bold,
-        color: theme.colors.text.primary,
-      }}
-    >
-      {value}
-    </Text>
+    <Text className="text-sm font-bold text-slate-900 dark:text-white">{value}</Text>
   </View>
 );
-
-type MealItemCardProps = {
-  title: string;
-  tags: string[];
-  calories: number;
-  macros: {
-    protein: string;
-    carbs: string;
-    fat: string;
-  };
-  image: ImageSourcePropType;
-  onTrackPress?: () => void;
-};
 
 export function MealItemCard({
   title,
   tags,
   calories,
   macros,
-  image,
+  imageUrl,
   onTrackPress,
-}: MealItemCardProps) {
-  const { t } = useTranslation();
+  proteinColor = '#FF6B6B',
+  carbsColor = '#4ECDC4',
+  fatColor = '#FFE66D',
+}: any) {
   return (
-    <GenericCard variant="highlighted">
-      <View
-        style={{
-          flexDirection: 'row',
-          padding: theme.spacing.padding.md,
-          gap: theme.spacing.gap.base,
-        }}
-      >
+    <GenericCard variant="default" containerStyle={{}}>
+      <View className="flex-row gap-x-4 p-4">
         {/* Image Container */}
-        <View style={{ position: 'relative' }}>
-          <View
-            style={{
-              width: theme.size['100'],
-              height: theme.size['100'],
-              borderRadius: theme.borderRadius.lg,
-              overflow: 'hidden',
-              backgroundColor: theme.colors.background.secondaryDark,
-            }}
-          >
-            <Image source={image} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
+        <View className="relative">
+          <View className="h-24 w-24 overflow-hidden rounded-lg bg-slate-200 dark:bg-slate-700">
+            <Image
+              source={{ uri: imageUrl || 'https://via.placeholder.com/150' }}
+              className="h-full w-full"
+            />
           </View>
-          {/* Calories Badge */}
-          <View
-            style={{
-              position: 'absolute',
-              bottom: theme.offset.badge,
-              right: theme.offset.badge,
-              backgroundColor: theme.colors.accent.primary,
-              paddingHorizontal: theme.spacing.padding.sm,
-              paddingVertical: theme.spacing.padding.xs,
-              borderRadius: theme.borderRadius.full,
-              borderWidth: theme.borderWidth.medium,
-              borderColor: theme.colors.background.card,
-            }}
-          >
-            <Text
-              style={{
-                fontSize: theme.typography.fontSize.xs,
-                fontWeight: theme.typography.fontWeight.bold,
-                color: theme.colors.text.black,
-              }}
-            >
-              {calories} {t('common.kcal')}
-            </Text>
+
+          <View className="absolute bottom-[-6] right-[-6] rounded-full border-2 border-slate-100 bg-green-500 px-2 py-1 dark:border-slate-800">
+            <Text className="text-[10px] font-black text-black">{calories} kcal</Text>
           </View>
         </View>
 
         {/* Content */}
-        <View style={{ flex: 1, justifyContent: 'space-between' }}>
+        <View className="flex-1 justify-between">
           <View>
-            <Text
-              style={{
-                fontSize: theme.typography.fontSize.base,
-                fontWeight: theme.typography.fontWeight.bold,
-                color: theme.colors.text.primary,
-                marginBottom: theme.spacing.padding.xs,
-              }}
-            >
+            <Text className="mb-0.5 text-base font-bold text-slate-900 dark:text-white">
               {title}
             </Text>
-            <Text
-              style={{
-                fontSize: theme.typography.fontSize.xs,
-                color: theme.colors.text.accent,
-                fontWeight: theme.typography.fontWeight.medium,
-              }}
-            >
-              {tags.join(' • ')}
-            </Text>
+            <Text className="text-xs font-medium text-slate-500">{tags.join(' • ')}</Text>
           </View>
 
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'flex-end',
-              justifyContent: 'space-between',
-            }}
-          >
-            <View style={{ flexDirection: 'row', gap: theme.spacing.gap.md }}>
-              <Macro
-                label={t('food.macros.proteinLegend')}
-                value={macros.protein}
-                color={theme.colors.macros.protein.text}
-              />
-              <View
-                style={{
-                  width: theme.borderWidth.thin,
-                  height: theme.size['20'],
-                  backgroundColor: theme.colors.border.light,
-                  alignSelf: 'center',
-                }}
-              />
-              <Macro
-                label={t('food.macros.carbsLegend')}
-                value={macros.carbs}
-                color={theme.colors.macros.carbs.text}
-              />
-              <View
-                style={{
-                  width: theme.borderWidth.thin,
-                  height: theme.size['20'],
-                  backgroundColor: theme.colors.border.light,
-                  alignSelf: 'center',
-                }}
-              />
-              <Macro
-                label={t('food.macros.fatLegend')}
-                value={macros.fat}
-                color={theme.colors.macros.fat.text}
-              />
+          <View className="flex-row items-end justify-between">
+            <View className="flex-row items-center gap-x-3">
+              <Macro label="PROT" value={macros.protein} color={proteinColor} />
+              <View className="h-5 w-[1px] bg-slate-300 dark:bg-slate-600" />
+              <Macro label="CARBS" value={macros.carbs} color={carbsColor} />
+              <View className="h-5 w-[1px] bg-slate-300 dark:bg-slate-600" />
+              <Macro label="FATS" value={macros.fat} color={fatColor} />
             </View>
 
-            <Pressable
+            <TouchableOpacity
               onPress={onTrackPress}
-              style={({ pressed }) => ({
-                flexDirection: 'row',
-                alignItems: 'center',
-                backgroundColor: theme.colors.accent.primary10,
-                paddingHorizontal: theme.spacing.padding.md,
-                paddingVertical: theme.spacing.padding['1half'],
-                borderRadius: theme.borderRadius.full,
-                gap: theme.spacing.gap.xs,
-                opacity: pressed ? theme.colors.opacity.strong : theme.colors.opacity.full,
-              })}
+              activeOpacity={0.7}
+              className="flex-row items-center gap-x-1 rounded-lg bg-green-500/20 px-3 py-2"
             >
-              <Plus
-                size={theme.iconSize.xs}
-                color={theme.colors.accent.primary}
-                strokeWidth={theme.strokeWidth.thick}
-              />
-              <Text
-                style={{
-                  fontSize: theme.typography.fontSize.xs,
-                  fontWeight: theme.typography.fontWeight.bold,
-                  color: theme.colors.accent.primary,
-                }}
-              >
-                {t('mealItemCard.track')}
-              </Text>
-            </Pressable>
+              {/* For icons, we still use props for color/size for best performance */}
+              <Plus size={14} color="#22c55e" strokeWidth={3} />
+              <Text className="text-xs font-bold text-green-600">Track</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </View>
