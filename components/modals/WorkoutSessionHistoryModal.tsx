@@ -10,6 +10,7 @@ import { getWeightUnitI18nKey } from '../../utils/units';
 import WorkoutLog from '../../database/models/WorkoutLog';
 import WorkoutLogSet from '../../database/models/WorkoutLogSet';
 import Exercise from '../../database/models/Exercise';
+import { useSessionTotalTime } from '../../hooks/useSessionTotalTime';
 
 export type { SetData } from '../WorkoutHistorySetRow';
 
@@ -33,6 +34,8 @@ export function WorkoutSessionHistoryModal({
   const { t } = useTranslation();
   const { units } = useSettings();
   const weightUnitKey = getWeightUnitI18nKey(units);
+
+  const sessionTime = useSessionTotalTime({ startTime: workoutLog?.startedAt });
 
   // Transform workout data into ExerciseData format
   const exerciseDataList = useMemo(() => {
@@ -179,7 +182,7 @@ export function WorkoutSessionHistoryModal({
             </View>
             <View className="items-end">
               <Text className="font-mono text-3xl font-bold tabular-nums tracking-tight text-text-primary">
-                {duration}
+                {`${String(sessionTime.hours).padStart(2, '0')}:${String(sessionTime.minutes).padStart(2, '0')}:${String(sessionTime.seconds).padStart(2, '0')}`}
               </Text>
               <Text className="text-sm font-medium text-text-secondary">
                 {t('workoutHistory.duration')}
