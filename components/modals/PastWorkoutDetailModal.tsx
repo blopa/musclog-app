@@ -469,10 +469,16 @@ export default function PastWorkoutDetailModal({
           onSave={async (updatedSets) => {
             if (!workoutId) return;
             // Determine original setOrder slots for this exercise
-            const originalOrders = (rawSets || [])
+            const originalSets = (rawSets || [])
               .filter((rs) => rs.exerciseId === editingExerciseId)
-              .sort((a: any, b: any) => (a.setOrder ?? 0) - (b.setOrder ?? 0))
-              .map((rs: any) => rs.setOrder ?? 0);
+              .sort((a: any, b: any) => (a.setOrder ?? 0) - (b.setOrder ?? 0));
+
+            const originalOrders = originalSets.map((rs: any) => rs.setOrder ?? 0);
+
+            // Track which sets were deleted
+            const deletedSetIds = originalSets
+              .filter((os) => !updatedSets.some((us) => us.id === os.id))
+              .map((os) => os.id);
 
             const updates = updatedSets.map((s, idx) => {
               // Check if this is a new set (temporary ID from Date.now())
@@ -493,7 +499,7 @@ export default function PastWorkoutDetailModal({
               };
             });
             try {
-              await saveSets(workoutId, updates as any);
+              await saveSets(workoutId, updates as any, deletedSetIds);
               // reload handled reactively by subscription, but keep reload for safety
               await reload();
             } catch (err) {

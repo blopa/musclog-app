@@ -16,12 +16,13 @@ export function useEditWorkoutSets() {
       difficultyLevel?: number;
       isSkipped?: boolean;
       isDropSet?: boolean;
-    }[]
+    }[],
+    deletedSetIds?: string[]
   ) => {
     setIsSaving(true);
     setError(null);
     try {
-      const res = await WorkoutService.updateWorkoutSets(workoutId, updates as any);
+      const res = await WorkoutService.updateWorkoutSets(workoutId, updates as any, deletedSetIds);
       setIsSaving(false);
       return res;
     } catch (err) {

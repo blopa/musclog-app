@@ -261,6 +261,7 @@ export class WorkoutService {
   /**
    * Update multiple workout log sets (existing or new) and recompute parent workout totals
    * Separates new sets (create) from existing sets (update) based on isNew flag
+   * Also handles deletion of removed sets
    */
   static async updateWorkoutSets(
     workoutLogId: string,
@@ -276,7 +277,8 @@ export class WorkoutService {
       isDropSet?: boolean;
       isNew?: boolean; // Flag to indicate if this is a new set
       setOrder?: number; // Optional: explicit ordering for the set
-    }[]
+    }[],
+    deletedSetIds?: string[] // IDs of sets to delete
   ): Promise<{ workoutLogId: string; totalVolume: number }> {
     try {
       const workoutLog = await database.get<WorkoutLog>('workout_logs').find(workoutLogId);
@@ -290,6 +292,18 @@ export class WorkoutService {
       // Perform direct writes so we can edit sets even if the workout is marked completed.
       // This intentionally bypasses WorkoutLog.updateSet which prevents edits on completed workouts.
       await database.write(async () => {
+        // Delete removed sets
+        if (deletedSetIds && deletedSetIds.length > 0) {
+          for (const deletedId of deletedSetIds) {
+            try {
+              const setToDelete = await logSetsCollection.find(deletedId);
+              await setToDelete.markAsDeleted();
+            } catch (err) {
+              console.warn(`Failed to delete set ${deletedId}:`, err);
+            }
+          }
+        }
+
         for (const update of updates) {
           try {
             if (update.isNew && update.exerciseId) {
