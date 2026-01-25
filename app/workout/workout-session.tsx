@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
 import { View, Text, ScrollView, ImageBackground, ActivityIndicator } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { StatusBar } from 'expo-status-bar';
 import { SkipForward, Edit, Repeat, CheckCircle, WifiOff } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
+import { MasterLayout } from '../../components/MasterLayout';
 import { useSettings } from '../../hooks/useSettings';
 import { getWeightUnitI18nKey } from '../../utils/units';
 import { WorkoutOptionsModal } from '../../components/modals/WorkoutOptionsModal';
@@ -268,19 +267,17 @@ export default function WorkoutSessionScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 bg-bg-primary" edges={['top', 'bottom']}>
-        <StatusBar style="light" />
-        <View className="flex-1 items-center justify-center">
+      <MasterLayout showNavigationMenu={false}>
+        <View className="flex-1 items-center justify-center px-6">
           <ActivityIndicator size="large" color={theme.colors.accent.primary} />
         </View>
-      </SafeAreaView>
+      </MasterLayout>
     );
   }
 
   if (error || !currentSetData || !workoutLog) {
     return (
-      <SafeAreaView className="flex-1 bg-bg-primary" edges={['top', 'bottom']}>
-        <StatusBar style="light" />
+      <MasterLayout showNavigationMenu={false}>
         <View className="flex-1 items-center justify-center px-6">
           <ErrorStateCard
             icon={WifiOff}
@@ -290,7 +287,7 @@ export default function WorkoutSessionScreen() {
             onButtonPress={() => router.replace('/workout/workouts')}
           />
         </View>
-      </SafeAreaView>
+      </MasterLayout>
     );
   }
 
@@ -299,10 +296,8 @@ export default function WorkoutSessionScreen() {
   const previousSet = currentSetData.previousSet;
 
   return (
-    <SafeAreaView className="flex-1 bg-bg-primary" edges={['top', 'bottom']}>
-      <StatusBar style="light" />
-      <View className="flex-1">
-        {/* Hero Image Background */}
+    <MasterLayout showNavigationMenu={false}>
+      <ScrollView className="flex-1">
         <ImageBackground
           source={exerciseImage}
           className="absolute inset-0"
@@ -430,7 +425,7 @@ export default function WorkoutSessionScreen() {
             />
           </View>
         </ScrollView>
-      </View>
+      </ScrollView>
 
       {/* Workout Options Modal */}
       <WorkoutOptionsModal
@@ -540,6 +535,6 @@ export default function WorkoutSessionScreen() {
         exercises={exercises}
         currentSetOrder={progress.currentSetOrder}
       />
-    </SafeAreaView>
+    </MasterLayout>
   );
 }

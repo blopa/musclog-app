@@ -10,9 +10,11 @@ import { CoachModal } from './modals/CoachModal';
 
 type MasterLayoutProps = {
   children: ReactNode;
+  showNavigationMenu: boolean;
 };
 
-export function MasterLayout({ children }: MasterLayoutProps) {
+// TODO: use showNavigationMenu
+export function MasterLayout({ children, showNavigationMenu = true }: MasterLayoutProps) {
   const { t } = useTranslation();
   const router = useRouter();
   const pathname = usePathname();
@@ -40,146 +42,149 @@ export function MasterLayout({ children }: MasterLayoutProps) {
       <StatusBar style="light" />
       <CoachModal visible={isCoachModalVisible} onClose={() => setIsCoachModalVisible(false)} />
       <View className="flex-1">{children}</View>
-
-      {/* Bottom Navigation */}
-      <View className="absolute bottom-0 left-0 right-0 border-t border-border-dark bg-bg-navBar">
-        <SafeAreaView edges={['bottom']}>
-          <View className="relative flex-row items-center justify-around px-6 py-4">
-            {/* Home */}
-            <Pressable
-              className="items-center gap-1"
-              onPress={() => {
-                if (!isActive('/')) router.push('/');
-              }}
-            >
-              <View
-                className={`h-10 w-16 items-center justify-center rounded-lg ${
-                  isActive('/') ? 'bg-bg-navActive' : ''
-                }`}
+      {showNavigationMenu ? (
+        <View className="absolute bottom-0 left-0 right-0 border-t border-border-dark bg-bg-navBar">
+          <SafeAreaView edges={['bottom']}>
+            <View className="relative flex-row items-center justify-around px-6 py-4">
+              {/* Home */}
+              <Pressable
+                className="items-center gap-1"
+                onPress={() => {
+                  if (!isActive('/')) router.push('/');
+                }}
               >
-                <Home
-                  size={theme.iconSize.md}
-                  color={isActive('/') ? theme.colors.accent.primary : theme.colors.text.tertiary}
-                  strokeWidth={isActive('/') ? theme.strokeWidth.medium : theme.borderWidth.medium}
-                />
-              </View>
-              <Text
-                className={`text-xs font-medium ${
-                  isActive('/') ? 'text-text-accent' : 'text-text-tertiary'
-                }`}
+                <View
+                  className={`h-10 w-16 items-center justify-center rounded-lg ${
+                    isActive('/') ? 'bg-bg-navActive' : ''
+                  }`}
+                >
+                  <Home
+                    size={theme.iconSize.md}
+                    color={isActive('/') ? theme.colors.accent.primary : theme.colors.text.tertiary}
+                    strokeWidth={
+                      isActive('/') ? theme.strokeWidth.medium : theme.borderWidth.medium
+                    }
+                  />
+                </View>
+                <Text
+                  className={`text-xs font-medium ${
+                    isActive('/') ? 'text-text-accent' : 'text-text-tertiary'
+                  }`}
+                >
+                  {t('home.navigation.home')}
+                </Text>
+              </Pressable>
+              <Pressable
+                className="items-center gap-1"
+                onPress={() => {
+                  if (!isActive('/workout/workouts')) router.push('/workout/workouts');
+                }}
               >
-                {t('home.navigation.home')}
-              </Text>
-            </Pressable>
-
-            {/* Workouts */}
-            <Pressable
-              className="items-center gap-1"
-              onPress={() => {
-                if (!isActive('/workout/workouts')) router.push('/workout/workouts');
-              }}
-            >
-              <View
-                className={`h-10 w-16 items-center justify-center rounded-lg ${
-                  isActive('/workout') ? 'bg-bg-navActive' : ''
-                }`}
+                <View
+                  className={`h-10 w-16 items-center justify-center rounded-lg ${
+                    isActive('/workout') ? 'bg-bg-navActive' : ''
+                  }`}
+                >
+                  <Dumbbell
+                    size={theme.iconSize.md}
+                    color={
+                      isActive('/workout')
+                        ? theme.colors.accent.primary
+                        : theme.colors.text.tertiary
+                    }
+                    strokeWidth={
+                      isActive('/workout') ? theme.strokeWidth.medium : theme.borderWidth.medium
+                    }
+                  />
+                </View>
+                <Text
+                  className={`text-xs font-medium ${
+                    isActive('/workout') ? 'text-text-accent' : 'text-text-tertiary'
+                  }`}
+                >
+                  {t('home.navigation.workouts')}
+                </Text>
+              </Pressable>
+              <Pressable
+                className="items-center gap-1"
+                onPress={() => {
+                  if (!isActive('/nutrition/ai-camera')) router.push('/nutrition/ai-camera');
+                }}
               >
-                <Dumbbell
-                  size={theme.iconSize.md}
-                  color={
-                    isActive('/workout') ? theme.colors.accent.primary : theme.colors.text.tertiary
-                  }
-                  strokeWidth={
-                    isActive('/workout') ? theme.strokeWidth.medium : theme.borderWidth.medium
-                  }
-                />
-              </View>
-              <Text
-                className={`text-xs font-medium ${
-                  isActive('/workout') ? 'text-text-accent' : 'text-text-tertiary'
-                }`}
-              >
-                {t('home.navigation.workouts')}
-              </Text>
-            </Pressable>
-
-            {/* Camera */}
-            <Pressable
-              className="items-center gap-1"
-              onPress={() => {
-                if (!isActive('/nutrition/ai-camera')) router.push('/nutrition/ai-camera');
-              }}
-            >
-              <View
-                className={`h-20 w-20 items-center justify-center rounded-full shadow-lg shadow-accent-primary/50 ${
-                  isActive('/nutrition/ai-camera')
-                    ? 'bg-accent-primary'
-                    : 'bg-accent-primary opacity-80'
-                }`}
-              >
-                <Camera
-                  size={theme.iconSize.md}
-                  color={
+                <View
+                  className={`h-20 w-20 items-center justify-center rounded-full shadow-lg shadow-accent-primary/50 ${
                     isActive('/nutrition/ai-camera')
-                      ? theme.colors.text.primary
-                      : theme.colors.text.tertiary
-                  }
-                  strokeWidth={
-                    isActive('/nutrition/ai-camera')
-                      ? theme.strokeWidth.medium
-                      : theme.borderWidth.medium
-                  }
-                />
-              </View>
-            </Pressable>
-
-            {/* Food */}
-            <Pressable
-              className="items-center gap-1"
-              onPress={() => {
-                if (!isFoodActive()) router.push('/nutrition/food');
-              }}
-            >
-              <View
-                className={`h-10 w-16 items-center justify-center rounded-lg ${
-                  isFoodActive() ? 'bg-bg-navActive' : ''
-                }`}
+                      ? 'bg-accent-primary'
+                      : 'bg-accent-primary opacity-80'
+                  }`}
+                >
+                  <Camera
+                    size={theme.iconSize.md}
+                    color={
+                      isActive('/nutrition/ai-camera')
+                        ? theme.colors.text.primary
+                        : theme.colors.text.tertiary
+                    }
+                    strokeWidth={
+                      isActive('/nutrition/ai-camera')
+                        ? theme.strokeWidth.medium
+                        : theme.borderWidth.medium
+                    }
+                  />
+                </View>
+              </Pressable>
+              <Pressable
+                className="items-center gap-1"
+                onPress={() => {
+                  if (!isFoodActive()) router.push('/nutrition/food');
+                }}
               >
-                <UtensilsCrossed
-                  size={theme.iconSize.md}
-                  color={isFoodActive() ? theme.colors.accent.primary : theme.colors.text.tertiary}
-                  strokeWidth={isFoodActive() ? theme.strokeWidth.medium : theme.borderWidth.medium}
-                />
-              </View>
-              <Text
-                className={`text-xs font-medium ${
-                  isFoodActive() ? 'text-text-accent' : 'text-text-tertiary'
-                }`}
+                <View
+                  className={`h-10 w-16 items-center justify-center rounded-lg ${
+                    isFoodActive() ? 'bg-bg-navActive' : ''
+                  }`}
+                >
+                  <UtensilsCrossed
+                    size={theme.iconSize.md}
+                    color={
+                      isFoodActive() ? theme.colors.accent.primary : theme.colors.text.tertiary
+                    }
+                    strokeWidth={
+                      isFoodActive() ? theme.strokeWidth.medium : theme.borderWidth.medium
+                    }
+                  />
+                </View>
+                <Text
+                  className={`text-xs font-medium ${
+                    isFoodActive() ? 'text-text-accent' : 'text-text-tertiary'
+                  }`}
+                >
+                  {t('home.navigation.food')}
+                </Text>
+              </Pressable>
+              <Pressable
+                className="items-center gap-1"
+                onPress={() => setIsCoachModalVisible(true)}
               >
-                {t('home.navigation.food')}
-              </Text>
-            </Pressable>
-
-            {/* Coach */}
-            <Pressable className="items-center gap-1" onPress={() => setIsCoachModalVisible(true)}>
-              <View className={`h-10 w-16 items-center justify-center rounded-lg`}>
-                <MessageSquare
-                  size={theme.iconSize.md}
-                  color={theme.colors.text.tertiary}
-                  strokeWidth={theme.borderWidth.medium}
-                />
-              </View>
-              <Text
-                className={`text-xs font-medium ${
-                  isActive('/coach') ? 'text-text-accent' : 'text-text-tertiary'
-                }`}
-              >
-                {t('home.navigation.coach')}
-              </Text>
-            </Pressable>
-          </View>
-        </SafeAreaView>
-      </View>
+                <View className={`h-10 w-16 items-center justify-center rounded-lg`}>
+                  <MessageSquare
+                    size={theme.iconSize.md}
+                    color={theme.colors.text.tertiary}
+                    strokeWidth={theme.borderWidth.medium}
+                  />
+                </View>
+                <Text
+                  className={`text-xs font-medium ${
+                    isActive('/coach') ? 'text-text-accent' : 'text-text-tertiary'
+                  }`}
+                >
+                  {t('home.navigation.coach')}
+                </Text>
+              </Pressable>
+            </View>
+          </SafeAreaView>
+        </View>
+      ) : null}
     </SafeAreaView>
   );
 }
