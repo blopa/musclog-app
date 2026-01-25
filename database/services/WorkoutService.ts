@@ -275,6 +275,7 @@ export class WorkoutService {
       isSkipped?: boolean;
       isDropSet?: boolean;
       isNew?: boolean; // Flag to indicate if this is a new set
+      setOrder?: number; // Optional: explicit ordering for the set
     }[]
   ): Promise<{ workoutLogId: string; totalVolume: number }> {
     try {
@@ -303,23 +304,25 @@ export class WorkoutService {
                 logSet.difficultyLevel = update.difficultyLevel ?? 0;
                 logSet.isSkipped = update.isSkipped ?? false;
                 logSet.isDropSet = update.isDropSet ?? false;
-                logSet.setOrder = 0; // Will be recalculated
+                logSet.setOrder = update.setOrder ?? 0; // Caller can provide order
                 logSet.createdAt = Date.now();
                 logSet.updatedAt = Date.now();
               });
             } else {
               // Update an existing set
-            const setModel = await logSetsCollection.find(update.setId);
-            await setModel.update((s: WorkoutLogSet) => {
-              if (update.reps !== undefined) s.reps = update.reps;
-              if (update.weight !== undefined) s.weight = update.weight;
-              if (update.partials !== undefined) s.partials = update.partials;
-              if (update.restTimeAfter !== undefined) s.restTimeAfter = update.restTimeAfter;
-              if (update.difficultyLevel !== undefined) s.difficultyLevel = update.difficultyLevel;
-              if (update.isSkipped !== undefined) s.isSkipped = update.isSkipped;
-              if (update.isDropSet !== undefined) s.isDropSet = update.isDropSet;
-              s.updatedAt = Date.now();
-            });
+              const setModel = await logSetsCollection.find(update.setId);
+              await setModel.update((s: WorkoutLogSet) => {
+                if (update.reps !== undefined) s.reps = update.reps;
+                if (update.weight !== undefined) s.weight = update.weight;
+                if (update.partials !== undefined) s.partials = update.partials;
+                if (update.restTimeAfter !== undefined) s.restTimeAfter = update.restTimeAfter;
+                if (update.difficultyLevel !== undefined)
+                  s.difficultyLevel = update.difficultyLevel;
+                if (update.isSkipped !== undefined) s.isSkipped = update.isSkipped;
+                if (update.isDropSet !== undefined) s.isDropSet = update.isDropSet;
+                if (update.setOrder !== undefined) s.setOrder = update.setOrder;
+                s.updatedAt = Date.now();
+              });
             }
           } catch (err) {
             console.warn(`Failed to update set ${update.setId}:`, err);

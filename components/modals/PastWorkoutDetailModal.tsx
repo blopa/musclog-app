@@ -468,9 +468,19 @@ export default function PastWorkoutDetailModal({
           onClose={() => setIsEditModalVisible(false)}
           onSave={async (updatedSets) => {
             if (!workoutId) return;
-            const updates = updatedSets.map((s) => {
+            // Determine original setOrder slots for this exercise
+            const originalOrders = (rawSets || [])
+              .filter((rs) => rs.exerciseId === editingExerciseId)
+              .sort((a: any, b: any) => (a.setOrder ?? 0) - (b.setOrder ?? 0))
+              .map((rs: any) => rs.setOrder ?? 0);
+
+            const updates = updatedSets.map((s, idx) => {
               // Check if this is a new set (temporary ID from Date.now())
               const isNew = !rawSets?.some((rs) => rs.id === s.id);
+              const setOrder =
+                originalOrders[idx] ??
+                (originalOrders[originalOrders.length - 1] ?? 0) +
+                  (idx - originalOrders.length + 1);
               return {
                 setId: s.id,
                 exerciseId: isNew ? editingExerciseId : undefined,
@@ -479,6 +489,7 @@ export default function PastWorkoutDetailModal({
                 partials: s.partialReps,
                 restTimeAfter: s.rest,
                 isNew,
+                setOrder,
               };
             });
             try {
@@ -493,6 +504,7 @@ export default function PastWorkoutDetailModal({
           exerciseId={editingExerciseId}
           initialSets={(rawSets || [])
             .filter((s) => s.exerciseId === editingExerciseId)
+            .sort((a: any, b: any) => (a.setOrder ?? 0) - (b.setOrder ?? 0))
             .map((s) => ({
               id: s.id,
               weight: s.weight,
