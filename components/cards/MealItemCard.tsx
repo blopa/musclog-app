@@ -15,7 +15,9 @@ const Macro = ({ label, value, color }: MacroProps) => (
     <Text className="text-[10px] font-bold uppercase" style={{ color }}>
       {label}
     </Text>
-    <Text className="text-sm font-bold text-slate-900 dark:text-white">{value}</Text>
+    <Text className="text-sm font-bold" style={{ color: theme.colors.text.gray300 }}>
+      {value}
+    </Text>
   </View>
 );
 
@@ -43,46 +45,77 @@ export function MealItemCard({
   return (
     <GenericCard variant="default" containerStyle={{}}>
       <View className="flex-row gap-x-4 p-4">
-        {/* Image Container */}
         <View className="relative">
-          <View className="h-24 w-24 overflow-hidden rounded-lg bg-slate-200 dark:bg-slate-700">
+          <View
+            className="h-24 w-24 overflow-hidden rounded-lg"
+            style={{ backgroundColor: theme.colors.background.separatorLight }}
+          >
             <Image
               source={{ uri: imageUrl || 'https://via.placeholder.com/150' }}
               className="h-full w-full"
             />
           </View>
 
-          <View className="absolute bottom-[-6] right-[-6] rounded-full border-2 border-slate-100 bg-green-500 px-2 py-1 dark:border-slate-800">
-            <Text className="text-[10px] font-black text-black">{calories} kcal</Text>
+          <View
+            className="absolute rounded-full px-2 py-1"
+            style={{
+              bottom: theme.offset.badge,
+              right: theme.offset.badge,
+              borderWidth: theme.borderWidth.medium,
+              borderColor: theme.colors.background.separatorLight,
+              backgroundColor: theme.colors.accent.primary,
+            }}
+          >
+            <Text className="text-[10px] font-black" style={{ color: theme.colors.text.black }}>
+              {calories} kcal
+            </Text>
           </View>
         </View>
 
         {/* Content */}
         <View className="flex-1 justify-between">
           <View>
-            <Text className="mb-0.5 text-base font-bold text-slate-900 dark:text-white">
+            <Text
+              className="mb-0.5 text-base font-bold"
+              style={{ color: theme.colors.text.gray300 }}
+            >
               {title}
             </Text>
-            <Text className="text-xs font-medium text-slate-500">{tags.join(' • ')}</Text>
+            <Text className="text-xs font-medium" style={{ color: theme.colors.text.gray500 }}>
+              {tags.join(' • ')}
+            </Text>
           </View>
 
           <View className="flex-row items-end justify-between">
             <View className="flex-row items-center gap-x-3">
               <Macro label="PROT" value={macros.protein} color={theme.colors.status.red400} />
-              <View className="h-5 w-[1px] bg-slate-300 dark:bg-slate-600" />
+              <View
+                className="h-5 w-[1px]"
+                style={{ backgroundColor: theme.colors.border.gray600 }}
+              />
               <Macro label="CARBS" value={macros.carbs} color={theme.colors.status.teal400} />
-              <View className="h-5 w-[1px] bg-slate-300 dark:bg-slate-600" />
+              <View
+                className="h-5 w-[1px]"
+                style={{ backgroundColor: theme.colors.border.gray600 }}
+              />
               <Macro label="FATS" value={macros.fat} color={theme.colors.status.amber} />
             </View>
 
             <TouchableOpacity
               onPress={onTrackPress}
               activeOpacity={0.7}
-              className="flex-row items-center gap-x-1 rounded-lg bg-green-500/20 px-3 py-2"
+              className="flex-row items-center gap-x-1 rounded-lg"
+              style={{
+                backgroundColor: theme.colors.accent.primary20,
+                paddingHorizontal: theme.spacing.padding.sm,
+                paddingVertical: theme.spacing.padding.xs,
+              }}
             >
               {/* For icons, we still use props for color/size for best performance */}
               <Plus size={14} color={theme.colors.accent.primary} strokeWidth={3} />
-              <Text className="text-xs font-bold text-green-600">Track</Text>
+              <Text className="text-xs font-bold" style={{ color: theme.colors.status.greenDark }}>
+                Track
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
