@@ -1,4 +1,4 @@
-import { View, Text, Image, Pressable, ImageSourcePropType } from 'react-native';
+import { View, Text, Image, ImageSourcePropType } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
 import { MenuButton } from '../theme/MenuButton';

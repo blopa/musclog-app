@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity } from 'react-native';
-import { Plus } from 'lucide-react-native';
+import { View, Text, Image } from 'react-native';
+import { Button } from '../theme/Button';
 import { GenericCard } from './GenericCard';
 import { theme } from '../../theme';
+import { useTranslation } from 'react-i18next';
 
 type MacroProps = {
   label: string;
@@ -42,6 +43,8 @@ export function MealItemCard({
   imageUrl,
   onTrackPress,
 }: MealItemCardProps) {
+  const { t } = useTranslation();
+
   return (
     <GenericCard variant="default" containerStyle={{}}>
       <View className="flex-row gap-x-4 p-4">
@@ -55,7 +58,6 @@ export function MealItemCard({
               className="h-full w-full"
             />
           </View>
-
           <View
             className="absolute rounded-full px-2 py-1"
             style={{
@@ -71,8 +73,6 @@ export function MealItemCard({
             </Text>
           </View>
         </View>
-
-        {/* Content */}
         <View className="flex-1 justify-between">
           <View>
             <Text
@@ -85,7 +85,6 @@ export function MealItemCard({
               {tags.join(' • ')}
             </Text>
           </View>
-
           <View className="flex-row items-end justify-between">
             <View className="flex-row items-center gap-x-3">
               <Macro label="PROT" value={macros.protein} color={theme.colors.status.red400} />
@@ -100,23 +99,13 @@ export function MealItemCard({
               />
               <Macro label="FATS" value={macros.fat} color={theme.colors.status.amber} />
             </View>
-
-            <TouchableOpacity
+            <Button
+              label="Track"
               onPress={onTrackPress}
-              activeOpacity={0.7}
-              className="flex-row items-center gap-x-1 rounded-lg"
-              style={{
-                backgroundColor: theme.colors.accent.primary20,
-                paddingHorizontal: theme.spacing.padding.sm,
-                paddingVertical: theme.spacing.padding.xs,
-              }}
-            >
-              {/* For icons, we still use props for color/size for best performance */}
-              <Plus size={14} color={theme.colors.accent.primary} strokeWidth={3} />
-              <Text className="text-xs font-bold" style={{ color: theme.colors.status.greenDark }}>
-                Track
-              </Text>
-            </TouchableOpacity>
+              size="sm"
+              width="auto"
+              variant="accent"
+            />
           </View>
         </View>
       </View>
