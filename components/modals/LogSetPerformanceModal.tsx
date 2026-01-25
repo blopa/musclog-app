@@ -150,36 +150,46 @@ export function LogSetPerformanceModal({
         }}
       >
         <View className="gap-6">
-          {/* Stats Cards */}
           <View className="flex-row gap-3">
-            <StatCard label={t('workoutSession.weight')} value={weight} suffix={t(weightUnitKey)} />
-            <StatCard label={t('workoutSession.reps')} value={reps} />
-            <StatCard
-              label={t('workoutSession.partials')}
-              value={partials === 0 ? '-' : partials}
-              muted={partials === 0}
-            />
+            <View className="flex-1">
+              <NewNumericalInput
+                label={`${t('workoutSession.weight')} (${t(weightUnitKey)})`}
+                value={weight}
+                onChange={setWeight}
+                min={0}
+                step={0.5}
+              />
+            </View>
+            <View className="flex-1">
+              <NewNumericalInput
+                label={t('workoutSession.reps')}
+                value={reps}
+                onChange={setReps}
+                min={0}
+                step={1}
+              />
+            </View>
           </View>
-
-          {/* Edit Set Details Button */}
-          <Pressable
-            className="-mt-2 flex-row items-center justify-center gap-2 rounded-lg border border-dashed border-accent-primary/30 py-2.5"
-            style={{ backgroundColor: theme.colors.accent.primary5 }}
-            onPress={() => setIsEditModalVisible(true)}
-          >
-            <Edit size={theme.iconSize.xs} color={theme.colors.accent.primary} />
-            <Text className="text-sm font-bold" style={{ color: theme.colors.accent.primary }}>
-              {t('logSetPerformance.editSetDetails')}
-            </Text>
-          </Pressable>
-
-          <NewNumericalInput
-            label={t('editSetDetails.repsInReserve')}
-            value={repsInReserve}
-            onChange={setRepsInReserve}
-            min={0}
-            step={1}
-          />
+          <View className="flex-row gap-3">
+            <View className="flex-1">
+              <NewNumericalInput
+                label={t('workoutSession.partials')}
+                value={partials}
+                onChange={setPartials}
+                min={0}
+                step={1}
+              />
+            </View>
+            <View className="flex-1">
+              <NewNumericalInput
+                label={t('editSetDetails.repsInReserve')}
+                value={repsInReserve}
+                onChange={setRepsInReserve}
+                min={0}
+                step={1}
+              />
+            </View>
+          </View>
 
           {/* RPE Section */}
           <View className="rounded-xl border border-border-accent bg-bg-overlay p-5">
@@ -231,25 +241,6 @@ export function LogSetPerformanceModal({
           </View>
         </View>
       </ScrollView>
-
-      {/* Edit Set Details Modal */}
-      <EditSetDetailsModal
-        visible={isEditModalVisible}
-        onClose={() => setIsEditModalVisible(false)}
-        onSave={(data) => {
-          setWeight(data.weight);
-          setReps(data.reps);
-          setPartials(data.partials);
-          setRepsInReserve(data.repsInReserve);
-          setIsEditModalVisible(false);
-          onEditSetDetails?.(data);
-        }}
-        setLabel={setLabel}
-        initialWeight={weight}
-        initialReps={reps}
-        initialPartials={partials}
-        initialRepsInReserve={repsInReserve}
-      />
     </BottomPopUpMenu>
   );
 }
