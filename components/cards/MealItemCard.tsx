@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 import { Plus } from 'lucide-react-native';
 import { GenericCard } from './GenericCard';
+import { theme } from '../../theme';
 
 type MacroProps = {
   label: string;
@@ -18,6 +19,19 @@ const Macro = ({ label, value, color }: MacroProps) => (
   </View>
 );
 
+type MealItemCardProps = {
+  title: string;
+  tags: string[];
+  calories: number;
+  macros: {
+    protein: string;
+    carbs: string;
+    fat: string;
+  };
+  imageUrl?: string;
+  onTrackPress: () => void;
+};
+
 export function MealItemCard({
   title,
   tags,
@@ -25,10 +39,7 @@ export function MealItemCard({
   macros,
   imageUrl,
   onTrackPress,
-  proteinColor = '#FF6B6B',
-  carbsColor = '#4ECDC4',
-  fatColor = '#FFE66D',
-}: any) {
+}: MealItemCardProps) {
   return (
     <GenericCard variant="default" containerStyle={{}}>
       <View className="flex-row gap-x-4 p-4">
@@ -57,11 +68,11 @@ export function MealItemCard({
 
           <View className="flex-row items-end justify-between">
             <View className="flex-row items-center gap-x-3">
-              <Macro label="PROT" value={macros.protein} color={proteinColor} />
+              <Macro label="PROT" value={macros.protein} color={theme.colors.status.red400} />
               <View className="h-5 w-[1px] bg-slate-300 dark:bg-slate-600" />
-              <Macro label="CARBS" value={macros.carbs} color={carbsColor} />
+              <Macro label="CARBS" value={macros.carbs} color={theme.colors.status.teal400} />
               <View className="h-5 w-[1px] bg-slate-300 dark:bg-slate-600" />
-              <Macro label="FATS" value={macros.fat} color={fatColor} />
+              <Macro label="FATS" value={macros.fat} color={theme.colors.status.amber} />
             </View>
 
             <TouchableOpacity
@@ -70,7 +81,7 @@ export function MealItemCard({
               className="flex-row items-center gap-x-1 rounded-lg bg-green-500/20 px-3 py-2"
             >
               {/* For icons, we still use props for color/size for best performance */}
-              <Plus size={14} color="#22c55e" strokeWidth={3} />
+              <Plus size={14} color={theme.colors.accent.primary} strokeWidth={3} />
               <Text className="text-xs font-bold text-green-600">Track</Text>
             </TouchableOpacity>
           </View>
