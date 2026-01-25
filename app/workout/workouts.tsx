@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { View, ScrollView, Pressable } from 'react-native';
+import { View, ScrollView, Pressable, Share } from 'react-native';
 import { Search, SlidersHorizontal, Dumbbell, WifiOff, Plus } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
@@ -15,6 +15,8 @@ import { ErrorStateCard } from '../../components/theme/ErrorStateCard';
 import { WorkoutService } from '../../database/services/WorkoutService';
 import { database } from '../../database';
 import WorkoutTemplate from '../../database/models/WorkoutTemplate';
+import { CreateWorkoutOptionsModal } from '../../components/modals/CreateWorkoutOptionsModal';
+import CreateWorkoutModal from '../../components/modals/CreateWorkoutModal';
 import { useWorkoutTemplates } from '../../hooks/useWorkoutTemplates';
 import DashedButton from '../../components/theme/DashedButton';
 
@@ -32,6 +34,9 @@ export default function WorkoutsScreen() {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [selectedWorkoutName, setSelectedWorkoutName] = useState<string>('');
   const [selectedWorkoutId, setSelectedWorkoutId] = useState<string>('');
+  const [isCreateOptionsVisible, setIsCreateOptionsVisible] = useState(false);
+  const [isCreateWorkoutModalVisible, setIsCreateWorkoutModalVisible] = useState(false);
+  const [editingTemplateId, setEditingTemplateId] = useState<string | undefined>(undefined);
 
   // Use reactive hook for workout templates
   const { templates, isLoading, error } = useWorkoutTemplates();
@@ -193,8 +198,6 @@ export default function WorkoutsScreen() {
                 ))}
               </>
             ) : null}
-
-            {/* Empty State */}
             {!isLoading && !error && !featuredWorkout && filteredWorkouts.length === 0 ? (
               <EmptyStateCard
                 icon={Dumbbell}
@@ -204,8 +207,7 @@ export default function WorkoutsScreen() {
                 iconGradient={true}
                 buttonVariant="gradientCta"
                 onButtonPress={() => {
-                  // TODO: this route doesn't exist anymore, instead open the CreateWorkoutModal
-                  router.push('/workout/create-workout');
+                  setIsCreateOptionsVisible(true);
                 }}
               />
             ) : null}
@@ -277,15 +279,15 @@ export default function WorkoutsScreen() {
 
                 <DashedButton
                   label={t('workouts.createTemplate')}
-                  onPress={() => {}}
+                  onPress={() => {
+                    setIsCreateWorkoutModalVisible(true);
+                  }}
                   size="lg"
                   icon={<Plus size={theme.iconSize.lg} color={theme.colors.text.primary} />}
                 />
               </>
             ) : null}
           </View>
-
-          {/* Bottom spacing for navigation and FAB */}
           <View className="h-32" />
         </ScrollView>
       </View>
@@ -297,8 +299,8 @@ export default function WorkoutsScreen() {
         workoutName={selectedWorkoutName}
         onEdit={() => {
           if (selectedWorkoutId) {
-            // TODO: this route doesn't exist anymore, instead open the CreateWorkoutModal
-            router.push(`/workout/create-workout?templateId=${selectedWorkoutId}`);
+            setEditingTemplateId(selectedWorkoutId);
+            setIsCreateWorkoutModalVisible(true);
             setIsMenuVisible(false);
           } else {
             console.error('Cannot edit workout: No workout ID selected');
@@ -322,13 +324,39 @@ export default function WorkoutsScreen() {
                 .get<WorkoutTemplate>('workout_templates')
                 .find(selectedWorkoutId);
               await template.markAsDeleted();
-              // Templates list will update automatically via reactive hook
             } catch (err) {
               console.error('Error deleting workout:', err);
             }
           }
           setIsMenuVisible(false);
         }}
+      />
+      <CreateWorkoutOptionsModal
+        visible={isCreateOptionsVisible}
+        onClose={() => setIsCreateOptionsVisible(false)}
+        onGenerateWithAi={() => {
+          setIsCreateOptionsVisible(false);
+          setEditingTemplateId(undefined);
+          setIsCreateWorkoutModalVisible(true);
+        }}
+        onCreateEmptyTemplate={() => {
+          setIsCreateOptionsVisible(false);
+          setEditingTemplateId(undefined);
+          setIsCreateWorkoutModalVisible(true);
+        }}
+        onBrowseTemplates={() => {
+          setIsCreateOptionsVisible(false);
+          // Navigate to templates browser if exists
+          router.push('/workout/templates');
+        }}
+      />
+      <CreateWorkoutModal
+        visible={isCreateWorkoutModalVisible}
+        onClose={() => {
+          setIsCreateWorkoutModalVisible(false);
+          setEditingTemplateId(undefined);
+        }}
+        templateId={editingTemplateId}
       />
     </MasterLayout>
   );

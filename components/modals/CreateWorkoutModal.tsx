@@ -130,7 +130,7 @@ export default function CreateWorkoutModal({
           }}
         />
       </View>
-
+      <View style={{ height: theme.size.md }} />
       <ScrollView
         className="flex-1"
         showsVerticalScrollIndicator={false}
