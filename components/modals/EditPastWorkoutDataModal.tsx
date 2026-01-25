@@ -39,6 +39,8 @@ function SetCard({
     : { borderLeftColor: theme.colors.border.gray600, borderLeftWidth: theme.borderWidth.thin };
   const displayIndex = Number.isFinite(index) ? index + 1 : 1;
 
+  const { t } = useTranslation();
+
   return (
     <View className="mb-4">
       <GenericCard variant="card" containerStyle={accentStyle}>
@@ -57,7 +59,7 @@ function SetCard({
                     color: item.isPR ? theme.colors.accent.primary : theme.colors.text.secondary,
                   }}
                 >
-                  Set {displayIndex}
+                  {t('workoutDetail.setLabel', { index: displayIndex })}
                 </Text>
                 {item.isPR ? (
                   <View
@@ -82,7 +84,7 @@ function SetCard({
                   className="text-xs font-bold uppercase tracking-wider"
                   style={{ color: theme.colors.status.errorSolid }}
                 >
-                  Remove
+                  {t('workoutDetail.remove')}
                 </Text>
               </Pressable>
             </View>
@@ -90,14 +92,14 @@ function SetCard({
             {/* Inputs */}
             <View className="mb-4 grid grid-cols-2 gap-4">
               <NewNumericalInput
-                label="Weight (kg)"
+                label={t('workoutDetail.inputs.weightKg')}
                 value={item.weight}
                 onChange={(v) => onChange(item.id, { weight: v })}
                 min={0}
                 step={1}
               />
               <NewNumericalInput
-                label="Reps"
+                label={t('workoutDetail.reps')}
                 value={item.reps}
                 onChange={(v) => onChange(item.id, { reps: v })}
                 min={0}
@@ -107,14 +109,14 @@ function SetCard({
 
             <View className="grid grid-cols-2 gap-4">
               <NewNumericalInput
-                label="Partial Reps"
+                label={t('workoutDetail.partial')}
                 value={item.partialReps}
                 onChange={(v) => onChange(item.id, { partialReps: v })}
                 min={0}
                 step={1}
               />
               <NewNumericalInput
-                label="Rest (sec)"
+                label={t('workoutDetail.inputs.restSec')}
                 value={item.rest}
                 onChange={(v) => onChange(item.id, { rest: v })}
                 min={0}
@@ -124,7 +126,7 @@ function SetCard({
 
             <View className="mt-4">
               <NewNumericalInput
-                label="RIR (Reps in Reserve)"
+                label={t('workoutDetail.rir')}
                 value={item.repsInReserve}
                 onChange={(v) => onChange(item.id, { repsInReserve: v })}
                 min={0}
@@ -207,7 +209,7 @@ export default function EditPastWorkoutDataModal({
         style={{ color: isSaving ? theme.colors.text.tertiary : theme.colors.accent.primary }}
         className="font-bold"
       >
-        {isSaving ? 'Saving...' : t('common.save')}
+        {isSaving ? t('common.saving') : t('common.save')}
       </Text>
     </Pressable>
   );
@@ -244,7 +246,7 @@ export default function EditPastWorkoutDataModal({
         />
         <View style={{ marginTop: theme.spacing.gap.base }}>
           <DashedButton
-            label={t('workoutDetail.addSet') || 'Add New Set'}
+            label={t('workoutDetail.addSet')}
             onPress={handleAdd}
             size="sm"
             icon={<PlusIcon size={theme.iconSize.sm} color={theme.colors.background.workoutIcon} />}

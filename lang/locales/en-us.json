@@ -15,6 +15,7 @@
     "tryAgain": "Try Again",
     "popular": "Popular",
     "loading": "Loading...",
+    "saving": "Saving...",
     "save": "Save",
     "edit": "Edit"
   },
@@ -261,6 +262,10 @@
       "cancel": "Cancel",
       "confirm": "Yes, Skip"
     }
+    ,
+    "notFoundTitle": "Workout not found",
+    "notFoundDescription": "Unable to load workout session. Please try again.",
+    "goBack": "Go Back"
   },
   "logSetPerformance": {
     "title": "Log Set Performance",
@@ -285,6 +290,7 @@
     "duration": "Duration",
     "volume": "Vol",
     "setsDone": "Sets Done",
+    "noExercisesYet": "No exercises yet",
     "exercise": "Exercise {{number}}",
     "set": "Set {{number}}"
   },
@@ -495,6 +501,17 @@
     "reps": "REPS",
     "partial": "PARTIAL",
     "rest": "REST"
+    ,
+    "editSetsTitle": "Edit Sets",
+    "addSet": "Add New Set",
+    "setLabel": "Set {{index}}",
+    "remove": "Remove",
+    "prBadge": "PR",
+    "rir": "RIR (Reps in Reserve)",
+    "inputs": {
+      "weightKg": "Weight (kg)",
+      "restSec": "Rest (sec)"
+    }
   },
   "replaceExercise": {
     "title": "Replace Exercise",

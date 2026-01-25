@@ -159,7 +159,7 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
                     backgroundColor: theme.colors.accent.primary10,
                   }}
                 >
-                  <Text className="text-xs font-medium text-accent-primary">kcal</Text>
+                  <Text className="text-xs font-medium text-accent-primary">{t('food.common.kcal')}</Text>
                 </View>
               }
               variant="default"

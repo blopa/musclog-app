@@ -292,9 +292,9 @@ export default function WorkoutSessionScreen() {
         <View className="flex-1 items-center justify-center px-6">
           <ErrorStateCard
             icon={WifiOff}
-            title={error || 'Workout not found'}
-            description="Unable to load workout session. Please try again."
-            buttonLabel="Go Back"
+            title={error ? error : t('workoutSession.notFoundTitle')}
+            description={t('workoutSession.notFoundDescription')}
+            buttonLabel={t('workoutSession.goBack')}
             onButtonPress={() => router.replace('/workout/workouts')}
           />
         </View>

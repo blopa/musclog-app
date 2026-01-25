@@ -225,7 +225,7 @@ export function WorkoutSessionHistoryModal({
               />
             ))
           ) : (
-            <Text className="text-text-secondary">No exercises yet</Text>
+            <Text className="text-text-secondary">{t('workoutHistory.noExercisesYet')}</Text>
           )}
         </View>
 
