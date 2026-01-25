@@ -69,6 +69,7 @@
     },
     "actions": {
       "scanBarcode": "Scan Barcode",
+      "track": "Track",
       "aiCamera": "AI Camera",
       "moreFoodOptions": "More Food Options"
     },

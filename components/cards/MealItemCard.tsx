@@ -69,7 +69,7 @@ export function MealItemCard({
             }}
           >
             <Text className="text-[10px] font-black" style={{ color: theme.colors.text.black }}>
-              {calories} kcal
+              {calories} {t('food.common.kcal')}
             </Text>
           </View>
         </View>
@@ -87,20 +87,20 @@ export function MealItemCard({
           </View>
           <View className="flex-row items-end justify-between">
             <View className="flex-row items-center gap-x-3">
-              <Macro label="PROT" value={macros.protein} color={theme.colors.status.red400} />
+              <Macro label={t('food.macros.proteinLegend')} value={macros.protein} color={theme.colors.status.red400} />
               <View
                 className="h-5 w-[1px]"
                 style={{ backgroundColor: theme.colors.border.gray600 }}
               />
-              <Macro label="CARBS" value={macros.carbs} color={theme.colors.status.teal400} />
+              <Macro label={t('food.macros.carbsLegend')} value={macros.carbs} color={theme.colors.status.teal400} />
               <View
                 className="h-5 w-[1px]"
                 style={{ backgroundColor: theme.colors.border.gray600 }}
               />
-              <Macro label="FATS" value={macros.fat} color={theme.colors.status.amber} />
+              <Macro label={t('food.macros.fatLegend')} value={macros.fat} color={theme.colors.status.amber} />
             </View>
             <Button
-              label="Track"
+              label={t('food.actions.track')}
               onPress={onTrackPress}
               size="sm"
               width="auto"
