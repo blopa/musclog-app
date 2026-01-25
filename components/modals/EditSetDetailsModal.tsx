@@ -17,6 +17,7 @@ type EditSetDetailsModalProps = {
   initialReps: number;
   initialPartials: number;
   initialRepsInReserve: number;
+  showRir?: boolean;
 };
 
 type NumberInputFieldProps = {
@@ -27,7 +28,6 @@ type NumberInputFieldProps = {
   max?: number;
   step?: number;
   allowDecimals?: boolean;
-  showRir?: boolean;
 };
 
 function NumberInputField({
@@ -38,8 +38,6 @@ function NumberInputField({
   max = 9999,
   step = 1,
   allowDecimals = false,
-  // TODO: implement showRir usage
-  showRir = true,
 }: NumberInputFieldProps) {
   const handleDecrement = useCallback(() => {
     const newValue = Math.max(min, value - step);
@@ -126,6 +124,8 @@ export function EditSetDetailsModal({
   initialReps,
   initialPartials,
   initialRepsInReserve,
+  // TODO: implement showRir usage
+  showRir = true,
 }: EditSetDetailsModalProps) {
   const { t } = useTranslation();
   const { units } = useSettings();
