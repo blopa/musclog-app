@@ -245,7 +245,7 @@ export const theme = {
       accent: ['#34d399', '#14b8a6'] as const,
       card: ['#1a2520', '#0f1812'] as const,
       button: ['#1a3530', '#0f1f1a'] as const,
-      progress: ['#6366f1', '#2dd4bf', '#34d399'] as const,
+      progress: ['#6366f1', '#40bdae', '#25956c'] as const,
       workoutsTitle: ['#a78bfa', '#60a5fa', '#34d399'] as const,
       notification: ['#1a3d2f', '#0f2419'] as const,
       upNextCard: ['#1a2f2a', '#141a17', '#1a2520'] as const,
