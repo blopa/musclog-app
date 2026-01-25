@@ -60,10 +60,7 @@ export function MealItemCard({
               width: theme.size[24],
             }}
           >
-            <Image
-              source={{ uri: imageUrl }}
-              className="h-full w-full"
-            />
+            <Image source={{ uri: imageUrl }} className="h-full w-full" />
           </View>
           <View
             className="absolute rounded-full px-2 py-1"

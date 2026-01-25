@@ -70,8 +70,8 @@ export function DailySummaryCard({ calories, activity, macros }: DailySummaryCar
             style={{ backgroundColor: theme.colors.overlay.white50 }}
           >
             <Text
-              className="text-xs font-medium"
-              style={{ color: theme.colors.text.primary }}
+              className="font-bold"
+              style={{ color: theme.colors.text.tertiary, fontSize: theme.typography.fontSize.xs }}
             >
               {t('common.today')}
             </Text>
@@ -108,10 +108,7 @@ export function DailySummaryCard({ calories, activity, macros }: DailySummaryCar
                   style={{ color: theme.colors.text.primary }}
                 >
                   {macro.label}
-                  <Text
-                    className="ml-1 font-normal"
-                    style={{ color: theme.colors.text.primary }}
-                  >
+                  <Text className="ml-1 font-normal" style={{ color: theme.colors.text.primary }}>
                     {macro.percent}%
                   </Text>
                 </Text>
