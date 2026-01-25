@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, Animated, ActivityIndicator } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { CheckCircle, ChevronRight, Dumbbell, Repeat } from 'lucide-react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -22,6 +21,7 @@ import { Q } from '@nozbe/watermelondb';
 import { getWeightUnitI18nKey } from '../../utils/units';
 import { useSettings } from '../../hooks/useSettings';
 import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
+import { MasterLayout } from '../../components/MasterLayout';
 
 export default function RestTimerScreen() {
   const { t } = useTranslation();
@@ -195,31 +195,29 @@ export default function RestTimerScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 overflow-hidden bg-bg-primary" edges={['top', 'bottom']}>
+      <MasterLayout showNavigationMenu={false}>
         <StatusBar style="light" />
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color={theme.colors.accent.primary} />
         </View>
-      </SafeAreaView>
+      </MasterLayout>
     );
   }
 
   if (error || !completedSet || !workoutLog) {
     return (
-      <SafeAreaView className="flex-1 overflow-hidden bg-bg-primary" edges={['top', 'bottom']}>
+      <MasterLayout showNavigationMenu={false}>
         <StatusBar style="light" />
         <View className="flex-1 items-center justify-center px-6">
           <Text className="text-text-primary">{error || 'Failed to load data'}</Text>
         </View>
-      </SafeAreaView>
+      </MasterLayout>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 overflow-hidden bg-bg-primary" edges={['top', 'bottom']}>
+    <MasterLayout showNavigationMenu={false}>
       <StatusBar style="light" />
-
-      {/* Ambient Background Gradients */}
       <View
         className="absolute right-[-40%] top-[-20%] h-[20%] w-[110%] overflow-hidden rounded-full"
         style={{
@@ -324,6 +322,6 @@ export default function RestTimerScreen() {
           router.back();
         }}
       />
-    </SafeAreaView>
+    </MasterLayout>
   );
 }

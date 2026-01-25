@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import {
   BarChart,
@@ -84,213 +83,210 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
 
   return (
     <FullScreenModal visible={visible} onClose={onClose} title={t('food.newCustomFood.title')}>
-      <SafeAreaView className="flex-1 bg-bg-primary" edges={['top']}>
-        {/* Main Content */}
-        <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-          <View className="gap-6 px-4 pb-40 pt-6">
-            {/* Food Name */}
-            <TextInput
-              label={t('food.newCustomFood.foodName')}
-              value={foodName}
-              onChangeText={setFoodName}
-              placeholder={t('food.newCustomFood.foodNamePlaceholder')}
-              icon={<Pencil size={theme.iconSize.md} color={theme.colors.text.tertiary} />}
-            />
+      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+        <View className="gap-6 px-4 pb-40 pt-6">
+          {/* Food Name */}
+          <TextInput
+            label={t('food.newCustomFood.foodName')}
+            value={foodName}
+            onChangeText={setFoodName}
+            placeholder={t('food.newCustomFood.foodNamePlaceholder')}
+            icon={<Pencil size={theme.iconSize.md} color={theme.colors.text.tertiary} />}
+          />
 
-            {/* Barcode */}
-            <View className="relative">
-              <TextInput
-                label={t('food.newCustomFood.barcode')}
-                value={barcode}
-                onChangeText={setBarcode}
-                placeholder={t('food.newCustomFood.barcodePlaceholder')}
-              />
-              <Pressable
-                className="absolute right-2 items-center justify-center"
+          {/* Barcode */}
+          <View className="relative">
+            <TextInput
+              label={t('food.newCustomFood.barcode')}
+              value={barcode}
+              onChangeText={setBarcode}
+              placeholder={t('food.newCustomFood.barcodePlaceholder')}
+            />
+            <Pressable
+              className="absolute right-2 items-center justify-center"
+              style={{
+                ...(Platform.OS !== 'web'
+                  ? {
+                      top: theme.size['14'] / 2,
+                    }
+                  : {
+                      top: theme.size['18'] / 2,
+                    }),
+                width: theme.size['10'],
+                height: theme.size['10'],
+                backgroundColor: theme.colors.accent.primary10,
+                borderRadius: theme.borderRadius.sm,
+              }}
+            >
+              <ScanLine size={theme.iconSize.md} color={theme.colors.accent.primary} />
+            </Pressable>
+          </View>
+
+          {/* Measurement Unit */}
+          <View>
+            <Text className="mb-2 ml-1 text-sm font-medium text-text-secondary">
+              {t('food.newCustomFood.measurementUnit')}
+            </Text>
+            <SegmentedControl
+              options={measurementOptions}
+              value={measurementUnit}
+              onValueChange={(value) => setMeasurementUnit(value as MeasurementUnit)}
+              variant="elevated"
+            />
+          </View>
+
+          {/* Macronutrients Header */}
+          <View className="flex-row items-center gap-2">
+            <BarChart size={theme.iconSize.lg} color={theme.colors.accent.primary} />
+            <Text className="text-xl font-bold text-text-primary">
+              {t('food.newCustomFood.macronutrients')}
+            </Text>
+          </View>
+
+          {/* Calories */}
+          <MacroInput
+            label={t('food.newCustomFood.calories')}
+            value={calories}
+            onChange={(value) => handleNumericChange(value, setCalories)}
+            topRightElement={
+              <View
+                className="rounded-full px-2"
                 style={{
-                  ...(Platform.OS !== 'web'
-                    ? {
-                        top: theme.size['14'] / 2,
-                      }
-                    : {
-                        top: theme.size['18'] / 2,
-                      }),
-                  width: theme.size['10'],
-                  height: theme.size['10'],
+                  paddingVertical: theme.spacing.padding.xsHalf,
                   backgroundColor: theme.colors.accent.primary10,
-                  borderRadius: theme.borderRadius.sm,
                 }}
               >
-                <ScanLine size={theme.iconSize.md} color={theme.colors.accent.primary} />
-              </Pressable>
-            </View>
+                <Text className="text-xs font-medium text-accent-primary">
+                  {t('food.common.kcal')}
+                </Text>
+              </View>
+            }
+            variant="default"
+            size="full"
+          />
 
-            {/* Measurement Unit */}
-            <View>
-              <Text className="mb-2 ml-1 text-sm font-medium text-text-secondary">
-                {t('food.newCustomFood.measurementUnit')}
-              </Text>
-              <SegmentedControl
-                options={measurementOptions}
-                value={measurementUnit}
-                onValueChange={(value) => setMeasurementUnit(value as MeasurementUnit)}
-                variant="elevated"
-              />
-            </View>
-
-            {/* Macronutrients Header */}
-            <View className="flex-row items-center gap-2">
-              <BarChart size={theme.iconSize.lg} color={theme.colors.accent.primary} />
-              <Text className="text-xl font-bold text-text-primary">
-                {t('food.newCustomFood.macronutrients')}
-              </Text>
-            </View>
-
-            {/* Calories */}
+          {/* Macro Grid */}
+          <View className="flex-row flex-wrap gap-4">
             <MacroInput
-              label={t('food.newCustomFood.calories')}
-              value={calories}
-              onChange={(value) => handleNumericChange(value, setCalories)}
+              label={t('food.newCustomFood.protein')}
+              value={protein}
+              onChange={(value) => handleNumericChange(value, setProtein)}
               topRightElement={
-                <View
-                  className="rounded-full px-2"
-                  style={{
-                    paddingVertical: theme.spacing.padding.xsHalf,
-                    backgroundColor: theme.colors.accent.primary10,
-                  }}
-                >
-                  <Text className="text-xs font-medium text-accent-primary">
-                    {t('food.common.kcal')}
-                  </Text>
-                </View>
+                <Dumbbell size={theme.iconSize.sm} color={theme.colors.status.emeraldLight} />
               }
-              variant="default"
-              size="full"
+              variant="success"
+              size="half"
             />
+            <MacroInput
+              label={t('food.newCustomFood.carbs')}
+              value={carbs}
+              onChange={(value) => handleNumericChange(value, setCarbs)}
+              topRightElement={
+                <Cookie size={theme.iconSize.sm} color={theme.colors.status.amber} />
+              }
+              variant="warning"
+              size="half"
+            />
+            <MacroInput
+              label={t('food.newCustomFood.fat')}
+              value={fat}
+              onChange={(value) => handleNumericChange(value, setFat)}
+              topRightElement={
+                <Droplet size={theme.iconSize.sm} color={theme.colors.status.red400} />
+              }
+              variant="error"
+              size="half"
+            />
+            <MacroInput
+              label={t('food.newCustomFood.fiber')}
+              value={fiber}
+              onChange={(value) => handleNumericChange(value, setFiber)}
+              topRightElement={
+                <Leaf size={theme.iconSize.sm} color={theme.colors.status.purple400} />
+              }
+              variant="accent"
+              size="half"
+            />
+          </View>
 
-            {/* Macro Grid */}
-            <View className="flex-row flex-wrap gap-4">
-              <MacroInput
-                label={t('food.newCustomFood.protein')}
-                value={protein}
-                onChange={(value) => handleNumericChange(value, setProtein)}
-                topRightElement={
-                  <Dumbbell size={theme.iconSize.sm} color={theme.colors.status.emeraldLight} />
-                }
-                variant="success"
-                size="half"
+          {/* Micronutrients Accordion */}
+          <View>
+            <Pressable
+              className="flex-row items-center justify-between py-4"
+              onPress={() => setMicroOpen(!microOpen)}
+            >
+              <View className="flex-row items-center gap-2">
+                <FlaskConical size={theme.iconSize.lg} color={theme.colors.accent.primary} />
+                <Text className="text-xl font-bold text-text-primary">
+                  {t('food.newCustomFood.micronutrients')}
+                </Text>
+              </View>
+              <ChevronDown
+                size={theme.iconSize.lg}
+                color={theme.colors.text.tertiary}
+                style={{
+                  transform: [{ rotate: microOpen ? '180deg' : '0deg' }],
+                }}
               />
-              <MacroInput
-                label={t('food.newCustomFood.carbs')}
-                value={carbs}
-                onChange={(value) => handleNumericChange(value, setCarbs)}
-                topRightElement={
-                  <Cookie size={theme.iconSize.sm} color={theme.colors.status.amber} />
-                }
-                variant="warning"
-                size="half"
-              />
-              <MacroInput
-                label={t('food.newCustomFood.fat')}
-                value={fat}
-                onChange={(value) => handleNumericChange(value, setFat)}
-                topRightElement={
-                  <Droplet size={theme.iconSize.sm} color={theme.colors.status.red400} />
-                }
-                variant="error"
-                size="half"
-              />
-              <MacroInput
-                label={t('food.newCustomFood.fiber')}
-                value={fiber}
-                onChange={(value) => handleNumericChange(value, setFiber)}
-                topRightElement={
-                  <Leaf size={theme.iconSize.sm} color={theme.colors.status.purple400} />
-                }
-                variant="accent"
-                size="half"
-              />
-            </View>
+            </Pressable>
 
-            {/* Micronutrients Accordion */}
-            <View>
-              <Pressable
-                className="flex-row items-center justify-between py-4"
-                onPress={() => setMicroOpen(!microOpen)}
-              >
-                <View className="flex-row items-center gap-2">
-                  <FlaskConical size={theme.iconSize.lg} color={theme.colors.accent.primary} />
-                  <Text className="text-xl font-bold text-text-primary">
-                    {t('food.newCustomFood.micronutrients')}
-                  </Text>
-                </View>
-                <ChevronDown
-                  size={theme.iconSize.lg}
-                  color={theme.colors.text.tertiary}
-                  style={{
-                    transform: [{ rotate: microOpen ? '180deg' : '0deg' }],
-                  }}
+            {microOpen ? (
+              <View className="flex-row flex-wrap gap-4">
+                <MacroInput
+                  label={t('food.newCustomFood.sugar')}
+                  value={sugar}
+                  onChange={(value) => handleNumericChange(value, setSugar)}
+                  topRightElement={
+                    <IceCream size={theme.iconSize.sm} color={theme.colors.status.pink500} />
+                  }
+                  variant="accent"
+                  size="half"
                 />
-              </Pressable>
-
-              {microOpen ? (
-                <View className="flex-row flex-wrap gap-4">
-                  <MacroInput
-                    label={t('food.newCustomFood.sugar')}
-                    value={sugar}
-                    onChange={(value) => handleNumericChange(value, setSugar)}
-                    topRightElement={
-                      <IceCream size={theme.iconSize.sm} color={theme.colors.status.pink500} />
-                    }
-                    variant="accent"
-                    size="half"
-                  />
-                  <MacroInput
-                    label={t('food.newCustomFood.alcohol')}
-                    value={alcohol}
-                    onChange={(value) => handleNumericChange(value, setAlcohol)}
-                    topRightElement={
-                      <Wine size={theme.iconSize.sm} color={theme.colors.status.indigo} />
-                    }
-                    variant="info"
-                    size="half"
-                  />
-                  <MacroInput
-                    label={t('food.newCustomFood.monounsatFat')}
-                    value={monoFat}
-                    onChange={(value) => handleNumericChange(value, setMonoFat)}
-                    topRightElement={
-                      <Droplet size={theme.iconSize.sm} color={theme.colors.status.teal400} />
-                    }
-                    variant="accent"
-                    size="half"
-                  />
-                  <MacroInput
-                    label={t('food.newCustomFood.polyunsatFat')}
-                    value={polyFat}
-                    onChange={(value) => handleNumericChange(value, setPolyFat)}
-                    topRightElement={
-                      <Waves size={theme.iconSize.sm} color={theme.colors.status.violet500} />
-                    }
-                    variant="accent"
-                    size="half"
-                  />
-                </View>
-              ) : null}
-            </View>
+                <MacroInput
+                  label={t('food.newCustomFood.alcohol')}
+                  value={alcohol}
+                  onChange={(value) => handleNumericChange(value, setAlcohol)}
+                  topRightElement={
+                    <Wine size={theme.iconSize.sm} color={theme.colors.status.indigo} />
+                  }
+                  variant="info"
+                  size="half"
+                />
+                <MacroInput
+                  label={t('food.newCustomFood.monounsatFat')}
+                  value={monoFat}
+                  onChange={(value) => handleNumericChange(value, setMonoFat)}
+                  topRightElement={
+                    <Droplet size={theme.iconSize.sm} color={theme.colors.status.teal400} />
+                  }
+                  variant="accent"
+                  size="half"
+                />
+                <MacroInput
+                  label={t('food.newCustomFood.polyunsatFat')}
+                  value={polyFat}
+                  onChange={(value) => handleNumericChange(value, setPolyFat)}
+                  topRightElement={
+                    <Waves size={theme.iconSize.sm} color={theme.colors.status.violet500} />
+                  }
+                  variant="accent"
+                  size="half"
+                />
+              </View>
+            ) : null}
           </View>
-          <View className="gap-3 px-4 pb-8 pt-4">
-            <Button
-              label={t('common.save')}
-              variant="gradientCta"
-              size="md"
-              width="full"
-              icon={PlusCircle}
-              onPress={handleSave}
-            />
-          </View>
-        </ScrollView>
-      </SafeAreaView>
+        </View>
+        <View className="gap-3 px-4 pb-8 pt-4">
+          <Button
+            label={t('common.save')}
+            variant="gradientCta"
+            size="md"
+            width="full"
+            icon={PlusCircle}
+            onPress={handleSave}
+          />
+        </View>
+      </ScrollView>
     </FullScreenModal>
   );
 }

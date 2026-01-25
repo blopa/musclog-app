@@ -52,14 +52,14 @@ export default function AICameraScreen() {
     );
     pulse.start();
     return () => pulse.stop();
-  }, []);
+  }, [pulseAnim]);
 
   // Request camera permission on mount
   useEffect(() => {
     if (!permission) {
       requestPermission();
     }
-  }, [permission]);
+  }, [permission, requestPermission]);
 
   const handleTakePicture = async () => {
     if (!cameraRef.current) return;

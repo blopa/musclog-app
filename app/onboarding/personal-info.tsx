@@ -9,6 +9,7 @@ import {
   PersonalInfo as PersonalInfoType,
 } from '../../components/EditPersonalInfoBody';
 import { UserService } from '../../database/services/UserService';
+import { MasterLayout } from '../../components/MasterLayout';
 
 // Helper function to format date of birth timestamp to MM/DD/YYYY
 function formatDateOfBirth(timestamp: number): string {
@@ -104,16 +105,16 @@ export default function PersonalInfo() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1" edges={['top', 'bottom']}>
+      <MasterLayout showNavigationMenu={false}>
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color={theme.colors.accent.primary} />
         </View>
-      </SafeAreaView>
+      </MasterLayout>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1" edges={['top', 'bottom']}>
+    <MasterLayout showNavigationMenu={false}>
       <ScrollView>
         <View className="px-6 pb-2 pt-4">
           <Text
@@ -125,6 +126,6 @@ export default function PersonalInfo() {
         </View>
         <EditPersonalInfoBody onSave={handleSave} initialData={initialData} isLoading={isSaving} />
       </ScrollView>
-    </SafeAreaView>
+    </MasterLayout>
   );
 }

@@ -1,9 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Animated, Platform, ActivityIndicator } from 'react-native';
+import { View, Animated, ActivityIndicator } from 'react-native';
 import { Play, WifiOff } from 'lucide-react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '../../theme';
 import { Button } from '../../components/theme/Button';
 import { WorkoutTimeTracker } from '../../components/WorkoutTimeTracker';
@@ -18,11 +17,11 @@ import WorkoutLog from '../../database/models/WorkoutLog';
 import { ErrorStateCard } from '../../components/theme/ErrorStateCard';
 import { StatusBar } from 'expo-status-bar';
 import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
+import { MasterLayout } from '../../components/MasterLayout';
 
 export default function RestOverScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{ workoutLogId?: string; nextSetOrder?: string }>();
   const workoutLogId = params.workoutLogId;
   const nextSetOrder = params.nextSetOrder ? parseInt(params.nextSetOrder, 10) : null;
@@ -138,41 +137,20 @@ export default function RestOverScreen() {
     setIsEndWorkoutModalVisible(true);
   };
 
-  const webScreenStyle =
-    Platform.OS === 'web'
-      ? ({
-          position: 'fixed' as const,
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          width: '100vw',
-          height: '100vh',
-        } as any)
-      : {};
-
   if (isLoading) {
     return (
-      <SafeAreaView
-        className="flex-1 bg-bg-primary"
-        edges={['top', 'bottom']}
-        style={webScreenStyle}
-      >
+      <MasterLayout showNavigationMenu={false}>
         <StatusBar style="light" />
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color={theme.colors.accent.primary} />
         </View>
-      </SafeAreaView>
+      </MasterLayout>
     );
   }
 
   if (error || !workoutLog) {
     return (
-      <SafeAreaView
-        className="flex-1 bg-bg-primary"
-        edges={['top', 'bottom']}
-        style={webScreenStyle}
-      >
+      <MasterLayout showNavigationMenu={false}>
         <StatusBar style="light" />
         <View className="flex-1 items-center justify-center px-6">
           <ErrorStateCard
@@ -183,13 +161,12 @@ export default function RestOverScreen() {
             onButtonPress={() => router.replace('/workout/workouts')}
           />
         </View>
-      </SafeAreaView>
+      </MasterLayout>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-bg-primary" edges={['top', 'bottom']} style={webScreenStyle}>
-      {/* Background Glow Effects */}
+    <MasterLayout showNavigationMenu={false}>
       <Animated.View
         className="absolute right-[-10%] top-[-20%] h-[50%] w-[80%] rounded-full blur-3xl"
         style={{
@@ -263,6 +240,6 @@ export default function RestOverScreen() {
           router.back();
         }}
       />
-    </SafeAreaView>
+    </MasterLayout>
   );
 }
