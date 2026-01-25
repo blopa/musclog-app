@@ -9,6 +9,7 @@ import { Button } from '../theme/Button';
 import { Slider } from '../theme/Slider';
 import { useSettings } from '../../hooks/useSettings';
 import { getWeightUnitI18nKey } from '../../utils/units';
+import NewNumericalInput from '../theme/NewNumericalInput';
 
 type LogSetPerformanceModalProps = {
   visible: boolean;
@@ -171,6 +172,14 @@ export function LogSetPerformanceModal({
               {t('logSetPerformance.editSetDetails')}
             </Text>
           </Pressable>
+
+          <NewNumericalInput
+            label={t('editSetDetails.repsInReserve')}
+            value={repsInReserve}
+            onChange={setRepsInReserve}
+            min={0}
+            step={1}
+          />
 
           {/* RPE Section */}
           <View className="rounded-xl border border-border-accent bg-bg-overlay p-5">
