@@ -467,26 +467,24 @@ export default function PastWorkoutDetailModal({
           visible={isEditModalVisible}
           onClose={() => setIsEditModalVisible(false)}
           onSave={async (updatedSets) => {
-            if (!workoutId) return;
+            if (!workoutId) {
+              return;
+            }
+
             // Determine original setOrder slots for this exercise
             const originalSets = (rawSets || [])
               .filter((rs) => rs.exerciseId === editingExerciseId)
               .sort((a: any, b: any) => (a.setOrder ?? 0) - (b.setOrder ?? 0));
-
-            const originalOrders = originalSets.map((rs: any) => rs.setOrder ?? 0);
 
             // Track which sets were deleted
             const deletedSetIds = originalSets
               .filter((os) => !updatedSets.some((us) => us.id === os.id))
               .map((os) => os.id);
 
+            // Assign consecutive order numbers (0, 1, 2, 3, ...) to all remaining sets
             const updates = updatedSets.map((s, idx) => {
               // Check if this is a new set (temporary ID from Date.now())
               const isNew = !rawSets?.some((rs) => rs.id === s.id);
-              const setOrder =
-                originalOrders[idx] ??
-                (originalOrders[originalOrders.length - 1] ?? 0) +
-                  (idx - originalOrders.length + 1);
               return {
                 setId: s.id,
                 exerciseId: isNew ? editingExerciseId : undefined,
@@ -495,7 +493,7 @@ export default function PastWorkoutDetailModal({
                 partials: s.partialReps,
                 restTimeAfter: s.rest,
                 isNew,
-                setOrder,
+                setOrder: idx, // Consecutive order: 0, 1, 2, 3, ...
               };
             });
             try {
