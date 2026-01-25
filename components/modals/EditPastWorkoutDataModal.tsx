@@ -121,6 +121,17 @@ function SetCard({
                 step={5}
               />
             </View>
+
+            <View className="mt-4">
+              <NewNumericalInput
+                label="RIR (Reps in Reserve)"
+                value={item.repsInReserve}
+                onChange={(v) => onChange(item.id, { repsInReserve: v })}
+                min={0}
+                max={10}
+                step={1}
+              />
+            </View>
           </View>
         </Pressable>
       </GenericCard>
