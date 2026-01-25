@@ -18,9 +18,15 @@ type LogSetPerformanceModalProps = {
   weight: number;
   reps: number;
   partials?: string | number;
+  repsInReserve?: number;
   initialRpe?: number;
   onConfirm?: (data: { rpe: number }) => void;
-  onEditSetDetails?: (data: { weight: number; reps: number; partials: number }) => void;
+  onEditSetDetails?: (data: {
+    weight: number;
+    reps: number;
+    partials: number;
+    repsInReserve: number;
+  }) => void;
 };
 
 type StatCardProps = {
@@ -57,6 +63,7 @@ export function LogSetPerformanceModal({
   weight: initialWeight,
   reps: initialReps,
   partials: initialPartials = '-',
+  repsInReserve: initialRepsInReserve = 0,
   initialRpe = 8,
   onConfirm,
   onEditSetDetails,
@@ -70,6 +77,7 @@ export function LogSetPerformanceModal({
   const [partials, setPartials] = useState(
     typeof initialPartials === 'number' ? initialPartials : 0
   );
+  const [repsInReserve, setRepsInReserve] = useState(initialRepsInReserve);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
 
   // Update local state when props change
@@ -78,9 +86,10 @@ export function LogSetPerformanceModal({
       setWeight(initialWeight);
       setReps(initialReps);
       setPartials(typeof initialPartials === 'number' ? initialPartials : 0);
+      setRepsInReserve(initialRepsInReserve);
       setRpe(initialRpe);
     }
-  }, [visible, initialWeight, initialReps, initialPartials, initialRpe]);
+  }, [visible, initialWeight, initialReps, initialPartials, initialRepsInReserve, initialRpe]);
 
   const handleConfirm = () => {
     onConfirm?.({ rpe });
@@ -222,6 +231,7 @@ export function LogSetPerformanceModal({
           setWeight(data.weight);
           setReps(data.reps);
           setPartials(data.partials);
+          setRepsInReserve(data.repsInReserve);
           setIsEditModalVisible(false);
           onEditSetDetails?.(data);
         }}
@@ -229,6 +239,7 @@ export function LogSetPerformanceModal({
         initialWeight={weight}
         initialReps={reps}
         initialPartials={partials}
+        initialRepsInReserve={repsInReserve}
       />
     </BottomPopUpMenu>
   );

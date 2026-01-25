@@ -11,11 +11,12 @@ import { getWeightUnitI18nKey } from '../../utils/units';
 type EditSetDetailsModalProps = {
   visible: boolean;
   onClose: () => void;
-  onSave: (data: { weight: number; reps: number; partials: number }) => void;
+  onSave: (data: { weight: number; reps: number; partials: number; repsInReserve: number }) => void;
   setLabel: string;
   initialWeight: number;
   initialReps: number;
   initialPartials: number;
+  initialRepsInReserve: number;
 };
 
 type NumberInputFieldProps = {
@@ -121,6 +122,7 @@ export function EditSetDetailsModal({
   initialWeight,
   initialReps,
   initialPartials,
+  initialRepsInReserve,
 }: EditSetDetailsModalProps) {
   const { t } = useTranslation();
   const { units } = useSettings();
@@ -128,6 +130,7 @@ export function EditSetDetailsModal({
   const [weight, setWeight] = useState(initialWeight);
   const [reps, setReps] = useState(initialReps);
   const [partials, setPartials] = useState(initialPartials);
+  const [repsInReserve, setRepsInReserve] = useState(initialRepsInReserve);
 
   // Reset values when modal opens
   useEffect(() => {
@@ -135,11 +138,12 @@ export function EditSetDetailsModal({
       setWeight(initialWeight);
       setReps(initialReps);
       setPartials(initialPartials);
+      setRepsInReserve(initialRepsInReserve);
     }
-  }, [visible, initialWeight, initialReps, initialPartials]);
+  }, [visible, initialWeight, initialReps, initialPartials, initialRepsInReserve]);
 
   const handleSave = () => {
-    onSave({ weight, reps, partials });
+    onSave({ weight, reps, partials, repsInReserve });
     onClose();
   };
 
@@ -198,6 +202,17 @@ export function EditSetDetailsModal({
           onChange={setPartials}
           min={0}
           max={999}
+          step={1}
+          allowDecimals={false}
+        />
+
+        {/* Reps in Reserve */}
+        <NumberInputField
+          label={t('editSetDetails.repsInReserve', 'RIR (Reps in Reserve)')}
+          value={repsInReserve}
+          onChange={setRepsInReserve}
+          min={0}
+          max={10}
           step={1}
           allowDecimals={false}
         />

@@ -61,6 +61,7 @@ export default function WorkoutSessionScreen() {
   const [weight, setWeight] = useState(0);
   const [reps, setReps] = useState(0);
   const [partials, setPartials] = useState(0);
+  const [repsInReserve, setRepsInReserve] = useState(0);
   const [isOptionsModalVisible, setIsOptionsModalVisible] = useState(false);
   const [isEndWorkoutModalVisible, setIsEndWorkoutModalVisible] = useState(false);
   const [isLogSetModalVisible, setIsLogSetModalVisible] = useState(false);
@@ -77,6 +78,7 @@ export default function WorkoutSessionScreen() {
       setWeight(currentSetData.set.weight);
       setReps(currentSetData.set.reps);
       setPartials(currentSetData.set.partials || 0);
+      setRepsInReserve(currentSetData.set.repsInReserve ?? 0);
     }
   }, [currentSetData]);
 
@@ -177,7 +179,12 @@ export default function WorkoutSessionScreen() {
     }
   };
 
-  const handleEditSet = async (data: { weight: number; reps: number; partials: number }) => {
+  const handleEditSet = async (data: {
+    weight: number;
+    reps: number;
+    partials: number;
+    repsInReserve: number;
+  }) => {
     if (!currentSetData || !workoutLog) return;
 
     try {
@@ -186,11 +193,13 @@ export default function WorkoutSessionScreen() {
         weight: data.weight,
         reps: data.reps,
         partials: data.partials,
+        repsInReserve: data.repsInReserve,
       });
 
       setWeight(data.weight);
       setReps(data.reps);
       setPartials(data.partials);
+      setRepsInReserve(data.repsInReserve);
       await refresh();
     } catch (err) {
       console.error('Error updating set:', err);
@@ -482,6 +491,7 @@ export default function WorkoutSessionScreen() {
         weight={weight}
         reps={reps}
         partials={partials}
+        repsInReserve={repsInReserve}
         initialRpe={8}
         onConfirm={(data) => {
           handleCompleteSet(data.rpe);
@@ -490,6 +500,7 @@ export default function WorkoutSessionScreen() {
           setWeight(data.weight);
           setReps(data.reps);
           setPartials(data.partials);
+          setRepsInReserve(data.repsInReserve);
         }}
       />
 
@@ -505,6 +516,7 @@ export default function WorkoutSessionScreen() {
         initialWeight={weight}
         initialReps={reps}
         initialPartials={partials}
+        initialRepsInReserve={repsInReserve}
       />
 
       {/* Skip Set Confirmation Modal */}

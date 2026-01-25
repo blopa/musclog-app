@@ -891,6 +891,7 @@ export default function ModalsTestScreen() {
         initialWeight={24}
         initialReps={10}
         initialPartials={0}
+        initialRepsInReserve={2}
       />
 
       <LogSetPerformanceModal
@@ -901,6 +902,7 @@ export default function ModalsTestScreen() {
         weight={80}
         reps={8}
         partials={0}
+        repsInReserve={2}
         initialRpe={8}
         onConfirm={(data) => {
           console.log('Set logged:', data);

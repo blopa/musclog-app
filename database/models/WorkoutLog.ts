@@ -39,6 +39,7 @@ export default class WorkoutLog extends Model {
       weight?: number;
       partials?: number;
       restTimeAfter?: number;
+      repsInReserve?: number;
       difficultyLevel?: number;
       isSkipped?: boolean;
       isDropSet?: boolean;
@@ -60,6 +61,7 @@ export default class WorkoutLog extends Model {
       if (data.weight !== undefined) updatedSet.weight = data.weight;
       if (data.partials !== undefined) updatedSet.partials = data.partials;
       if (data.restTimeAfter !== undefined) updatedSet.restTimeAfter = data.restTimeAfter;
+      if (data.repsInReserve !== undefined) updatedSet.repsInReserve = data.repsInReserve;
       if (data.isSkipped !== undefined) updatedSet.isSkipped = data.isSkipped;
       if (data.difficultyLevel !== undefined) {
         if (data.difficultyLevel < 1 || data.difficultyLevel > 10) {

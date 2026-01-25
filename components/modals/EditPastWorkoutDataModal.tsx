@@ -160,7 +160,14 @@ export default function EditPastWorkoutDataModal({
   };
 
   const handleAdd = () => {
-    const next: SetItem = { id: String(Date.now()), weight: 0, reps: 0, partialReps: 0, rest: 0, repsInReserve: 0 };
+    const next: SetItem = {
+      id: String(Date.now()),
+      weight: 0,
+      reps: 0,
+      partialReps: 0,
+      rest: 0,
+      repsInReserve: 0,
+    };
     setSets((s) => [...s, next]);
   };
 
