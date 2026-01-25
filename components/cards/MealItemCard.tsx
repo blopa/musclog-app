@@ -54,7 +54,7 @@ export function MealItemCard({
             style={{ backgroundColor: theme.colors.background.separatorLight }}
           >
             <Image
-              source={{ uri: imageUrl || 'https://via.placeholder.com/150' }}
+              source={{ uri: imageUrl }}
               className="h-full w-full"
             />
           </View>
