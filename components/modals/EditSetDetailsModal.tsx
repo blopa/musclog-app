@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, Pressable, TextInput, Platform } from 'react-native';
 import { Minus, Plus } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
@@ -27,6 +27,7 @@ type NumberInputFieldProps = {
   max?: number;
   step?: number;
   allowDecimals?: boolean;
+  showRir?: boolean;
 };
 
 function NumberInputField({
@@ -37,22 +38,24 @@ function NumberInputField({
   max = 9999,
   step = 1,
   allowDecimals = false,
+  // TODO: implement showRir usage
+  showRir = true,
 }: NumberInputFieldProps) {
-  const handleDecrement = () => {
+  const handleDecrement = useCallback(() => {
     const newValue = Math.max(min, value - step);
     onChange(allowDecimals ? newValue : Math.round(newValue));
-  };
+  }, [allowDecimals, min, onChange, step, value]);
 
-  const handleIncrement = () => {
+  const handleIncrement = useCallback(() => {
     const newValue = Math.min(max, value + step);
     onChange(allowDecimals ? newValue : Math.round(newValue));
-  };
+  }, [allowDecimals, max, onChange, step, value]);
 
-  const handleTextChange = (text: string) => {
+  const handleTextChange = useCallback((text: string) => {
     const num = allowDecimals ? parseFloat(text) || 0 : parseInt(text, 10) || 0;
     const clampedValue = Math.max(min, Math.min(max, num));
     onChange(allowDecimals ? clampedValue : Math.round(clampedValue));
-  };
+  }, [allowDecimals, max, min, onChange]);
 
   return (
     <View className="gap-3">
