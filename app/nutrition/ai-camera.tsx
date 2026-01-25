@@ -158,32 +158,6 @@ export default function AICameraScreen() {
             <X size={theme.iconSize.lg} color={theme.colors.text.primary} />
           </Pressable>
 
-          {/* AI Detecting Indicator */}
-          <View
-            className="flex-row items-center gap-1 rounded-full px-3 py-1"
-            style={{
-              backgroundColor: theme.colors.background.black30,
-              borderWidth: theme.borderWidth.thin,
-              borderColor: theme.colors.background.white5,
-            }}
-          >
-            <Animated.View
-              style={{
-                width: theme.size.sm,
-                height: theme.size.sm,
-                borderRadius: theme.size.xs,
-                backgroundColor: theme.colors.status.error,
-                transform: [{ scale: pulseAnim }],
-              }}
-            />
-            <Text
-              className="text-xs font-semibold uppercase tracking-wide"
-              style={{ color: theme.colors.overlay.white90 }}
-            >
-              {t('food.aiCamera.aiDetecting')}
-            </Text>
-          </View>
-
           <Pressable
             onPress={handleFlashToggle}
             className="h-10 w-10 items-center justify-center rounded-full"
@@ -248,7 +222,8 @@ export default function AICameraScreen() {
             className="mt-6 text-center text-sm font-medium drop-shadow-md"
             style={{ color: theme.colors.overlay.white90 }}
           >
-            {t('food.aiCamera.instruction')}
+            {/* TODO: change this text depending on the camera mode */}
+            {t('food.aiCamera.mealInstruction')}
           </Text>
         </View>
 

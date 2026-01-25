@@ -157,7 +157,7 @@
       "permissionRequired": "Camera permission is required to use this feature",
       "grantPermission": "Grant Permission",
       "aiDetecting": "AI Detecting",
-      "instruction": "Point at your meal for instant estimation",
+      "mealInstruction": "Point at your meal for instant estimation",
       "modes": {
         "mealPhoto": "AI Meal Photo",
         "labelScan": "AI Label Scan",
