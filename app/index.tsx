@@ -188,6 +188,74 @@ export default function HomeScreen() {
           <ActionButton variant="workout" label={t('home.actions.startWorkout')} />
           <ActionButton variant="food" label={t('home.actions.trackFood')} />
         </View>
+        <View className="mx-6 mb-8">
+          <View className="mb-4 flex-row items-center justify-between">
+            <Text className="text-2xl font-bold text-text-primary">
+              {t('home.sections.recentFoods')}
+            </Text>
+            <ShowMoreButton
+              onPress={() => router.push('/food/recent')}
+              label={t('common.seeAll')}
+            />
+          </View>
+
+          {isLoadingRecent ? (
+            <View className="gap-3">
+              {[1, 2].map((i) => (
+                <View key={i} className="flex-row items-center gap-4 rounded-2xl bg-bg-overlay p-5">
+                  <View className="flex-row items-center gap-3">
+                    <SkeletonLoader
+                      width={theme.size['10']}
+                      height={theme.size['10']}
+                      borderRadius={theme.borderRadius.xl}
+                    />
+                    <View className="flex-1 gap-2">
+                      <SkeletonLoader width="60%" height={theme.size['4']} />
+                      <View className="flex-row gap-2">
+                        <SkeletonLoader
+                          width={theme.size['60']}
+                          height={theme.size['5']}
+                          borderRadius={theme.borderRadius['10']}
+                        />
+                        <SkeletonLoader
+                          width={theme.size['60']}
+                          height={theme.size['5']}
+                          borderRadius={theme.borderRadius['10']}
+                        />
+                        <SkeletonLoader
+                          width={theme.size['60']}
+                          height={theme.size['5']}
+                          borderRadius={theme.borderRadius['10']}
+                        />
+                      </View>
+                    </View>
+                  </View>
+                  <SkeletonLoader width={theme.size['12']} height={theme.size['4']} />
+                </View>
+              ))}
+            </View>
+          ) : (
+            <View className="gap-3">
+              {recentFoods.map((food) => (
+                <DetailedItemCard
+                  key={food.id}
+                  item={{
+                    name: food.name,
+                    media: { icon: UtensilsCrossed, color: theme.colors.text.secondary },
+                    itemOne: { value: `${food.protein}G P`, icon: Zap },
+                    itemTwo: { value: `${food.carbs}G C`, icon: Wheat },
+                    itemThree: { value: `${food.fat}G F`, icon: Droplet },
+                  }}
+                  ctaLabel={
+                    <Text className="text-lg font-bold text-text-primary">
+                      {food.calories} {t('common.kcal')}
+                    </Text>
+                  }
+                />
+              ))}
+            </View>
+          )}
+        </View>
 
         {/* Recent Workouts */}
         <View className="mx-6 mb-8">
@@ -250,70 +318,6 @@ export default function HomeScreen() {
                   }}
                   description={`${workout.date} • ${workout.duration}`}
                   onPress={() => setSelectedWorkoutId(workout.id)}
-                />
-              ))}
-            </View>
-          )}
-        </View>
-
-        {/* Recent Foods */}
-        <View className="mx-6 mb-8">
-          <Text className="mb-4 text-2xl font-bold text-text-primary">
-            {t('home.sections.recentFoods')}
-          </Text>
-
-          {isLoadingRecent ? (
-            <View className="gap-3">
-              {[1, 2].map((i) => (
-                <View key={i} className="flex-row items-center gap-4 rounded-2xl bg-bg-overlay p-5">
-                  <View className="flex-row items-center gap-3">
-                    <SkeletonLoader
-                      width={theme.size['10']}
-                      height={theme.size['10']}
-                      borderRadius={theme.borderRadius.xl}
-                    />
-                    <View className="flex-1 gap-2">
-                      <SkeletonLoader width="60%" height={theme.size['4']} />
-                      <View className="flex-row gap-2">
-                        <SkeletonLoader
-                          width={theme.size['60']}
-                          height={theme.size['5']}
-                          borderRadius={theme.borderRadius['10']}
-                        />
-                        <SkeletonLoader
-                          width={theme.size['60']}
-                          height={theme.size['5']}
-                          borderRadius={theme.borderRadius['10']}
-                        />
-                        <SkeletonLoader
-                          width={theme.size['60']}
-                          height={theme.size['5']}
-                          borderRadius={theme.borderRadius['10']}
-                        />
-                      </View>
-                    </View>
-                  </View>
-                  <SkeletonLoader width={theme.size['12']} height={theme.size['4']} />
-                </View>
-              ))}
-            </View>
-          ) : (
-            <View className="gap-3">
-              {recentFoods.map((food) => (
-                <DetailedItemCard
-                  key={food.id}
-                  item={{
-                    name: food.name,
-                    media: { icon: UtensilsCrossed, color: theme.colors.text.secondary },
-                    itemOne: { value: `${food.protein}G P`, icon: Zap },
-                    itemTwo: { value: `${food.carbs}G C`, icon: Wheat },
-                    itemThree: { value: `${food.fat}G F`, icon: Droplet },
-                  }}
-                  ctaLabel={
-                    <Text className="text-lg font-bold text-text-primary">
-                      {food.calories} {t('common.kcal')}
-                    </Text>
-                  }
                 />
               ))}
             </View>
