@@ -272,6 +272,7 @@ export class WorkoutService {
       weight?: number;
       partials?: number;
       restTimeAfter?: number;
+      repsInReserve?: number;
       difficultyLevel?: number;
       isSkipped?: boolean;
       isDropSet?: boolean;
@@ -315,6 +316,7 @@ export class WorkoutService {
                 logSet.weight = update.weight ?? 0;
                 logSet.partials = update.partials ?? 0;
                 logSet.restTimeAfter = update.restTimeAfter ?? 0;
+                logSet.repsInReserve = update.repsInReserve ?? 0;
                 logSet.difficultyLevel = update.difficultyLevel ?? 0;
                 logSet.isSkipped = update.isSkipped ?? false;
                 logSet.isDropSet = update.isDropSet ?? false;
@@ -330,6 +332,7 @@ export class WorkoutService {
                 if (update.weight !== undefined) s.weight = update.weight;
                 if (update.partials !== undefined) s.partials = update.partials;
                 if (update.restTimeAfter !== undefined) s.restTimeAfter = update.restTimeAfter;
+                if (update.repsInReserve !== undefined) s.repsInReserve = update.repsInReserve;
                 if (update.difficultyLevel !== undefined)
                   s.difficultyLevel = update.difficultyLevel;
                 if (update.isSkipped !== undefined) s.isSkipped = update.isSkipped;

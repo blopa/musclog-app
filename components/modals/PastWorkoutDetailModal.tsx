@@ -492,6 +492,7 @@ export default function PastWorkoutDetailModal({
                 weight: s.weight,
                 partials: s.partialReps,
                 restTimeAfter: s.rest,
+                repsInReserve: s.repsInReserve,
                 isNew,
                 setOrder: idx, // Consecutive order: 0, 1, 2, 3, ...
               };
@@ -515,6 +516,7 @@ export default function PastWorkoutDetailModal({
               reps: s.reps,
               partialReps: s.partials ?? 0,
               rest: s.restTimeAfter ?? 0,
+              repsInReserve: s.repsInReserve ?? 0,
             }))}
         />
       ) : null}

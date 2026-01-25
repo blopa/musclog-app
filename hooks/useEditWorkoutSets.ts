@@ -13,6 +13,7 @@ export function useEditWorkoutSets() {
       weight?: number;
       partials?: number;
       restTimeAfter?: number;
+      repsInReserve?: number;
       difficultyLevel?: number;
       isSkipped?: boolean;
       isDropSet?: boolean;

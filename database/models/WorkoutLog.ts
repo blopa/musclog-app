@@ -103,6 +103,7 @@ export default class WorkoutLog extends Model {
       logSet.weight = weight;
       logSet.partials = partials ?? 0;
       logSet.restTimeAfter = 0;
+      logSet.repsInReserve = 0;
       logSet.difficultyLevel = 0;
       logSet.isDropSet = false;
       logSet.setOrder = newOrder;
