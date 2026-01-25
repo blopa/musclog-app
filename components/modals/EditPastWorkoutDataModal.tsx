@@ -128,7 +128,6 @@ function SetCard({
                 value={item.repsInReserve}
                 onChange={(v) => onChange(item.id, { repsInReserve: v })}
                 min={0}
-                max={10}
                 step={1}
               />
             </View>
