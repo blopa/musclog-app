@@ -109,7 +109,7 @@ export function EditSetDetailsModal({
         {/* Reps in Reserve */}
         {showRir ? (
           <NewNumericalInput
-            label={t('editSetDetails.repsInReserve', 'RIR (Reps in Reserve)')}
+            label={t('editSetDetails.repsInReserve')}
             value={repsInReserve}
             onChange={setRepsInReserve}
             min={0}
