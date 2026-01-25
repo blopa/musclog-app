@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, Animated, ActivityIndicator } from 'react-native';
+import { View, Text, Animated, ActivityIndicator, ScrollView } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { CheckCircle, ChevronRight, Dumbbell, Repeat } from 'lucide-react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -217,86 +217,83 @@ export default function RestTimerScreen() {
 
   return (
     <MasterLayout showNavigationMenu={false}>
-      <StatusBar style="light" />
-      <View
-        className="absolute right-[-40%] top-[-20%] h-[20%] w-[110%] overflow-hidden rounded-full"
-        style={{
-          ...theme.shadows.purpleGlow,
-          backgroundColor: theme.colors.background.purpleBlob,
-        }}
-      />
-      <View
-        className="absolute bottom-[-40%] left-[-20%] h-[50%] w-[110%] overflow-hidden rounded-full"
-        style={{
-          ...theme.shadows.purpleGlow,
-          backgroundColor: theme.colors.background.greenBlob,
-        }}
-      />
-
-      {/* Header */}
-      <View className="relative z-20">
-        <WorkoutTimeTracker
-          onClose={() => router.back()}
-          onOptionsPress={() => setIsOptionsModalVisible(true)}
-          startTime={workoutLog.startedAt}
+      <View className="flex-1">
+        <View
+          className="absolute right-[-40%] top-[-20%] h-[20%] w-[110%] overflow-hidden rounded-full"
+          style={{
+            ...theme.shadows.purpleGlow,
+            backgroundColor: theme.colors.background.purpleBlob,
+          }}
         />
-      </View>
-
-      {/* Main Content */}
-      <View className="z-10 flex-1 items-center justify-center gap-10 px-6">
-        {/* Timer */}
-        <RestTimer
-          restTime={restTime}
-          rotationAnim={rotationAnim}
-          initialRestTime={initialRestTime}
+        <View
+          className="absolute bottom-[-40%] left-[-20%] h-[50%] w-[110%] overflow-hidden rounded-full"
+          style={{
+            ...theme.shadows.purpleGlow,
+            backgroundColor: theme.colors.background.greenBlob,
+          }}
         />
 
-        {/* Controls */}
-        <RestTimerControls
-          onMinus5s={handleMinus5s}
-          onSkipRest={handleSkipRest}
-          onPlus5s={handlePlus5s}
-        />
-      </View>
-
-      {/* Footer */}
-      <View className="z-10 mx-auto w-full max-w-lg gap-4 px-4 pb-8">
-        {/* Completed Exercise */}
-        <View className="flex-row items-center justify-between px-2">
-          <View className="flex-row items-center gap-2">
-            <CheckCircle size={theme.iconSize.md} color={theme.colors.accent.primary} />
-            <Text className="text-sm" style={{ color: theme.colors.overlay.white50 }}>
-              {t('restTimer.done')}:{' '}
-              <Text className="font-medium text-text-primary">{completedSet.exercise.name}</Text>
-            </Text>
-          </View>
-          <Text className="font-medium" style={{ color: theme.colors.overlay.white70 }}>
-            {completedSet.set.weight} {t(weightUnitKey)}{' '}
-            <Text style={{ color: theme.colors.overlay.white30 }}>×</Text> {completedSet.set.reps}{' '}
-            {t('restTimer.reps')}
-          </Text>
+        {/* Header */}
+        <View className="relative z-20">
+          <WorkoutTimeTracker
+            onClose={() => router.back()}
+            onOptionsPress={() => setIsOptionsModalVisible(true)}
+            startTime={workoutLog.startedAt}
+          />
         </View>
 
-        {/* Next Exercise Card */}
-        {nextSet ? (
-          <DetailedItemCard
-            item={{
-              name: nextSet.exercise.name,
-              media: require('../../assets/icon.png'), // Default image for now
-              itemOne: { value: `${nextSet.set.weight} ${t(weightUnitKey)}`, icon: Dumbbell },
-              itemTwo: { value: `${nextSet.set.reps} reps`, icon: Repeat },
-              itemThree: { value: `${nextSet.set.reps} reps`, icon: ChevronRight },
-            }}
-            onPress={() => {
-              // Navigate to next set
-              router.replace(`/workout/workout-session?workoutLogId=${workoutLogId}`);
-            }}
-            ctaLabel={<UpNextLabel />}
+        {/* Main Content */}
+        <View className="z-10 flex-1 items-center justify-center gap-10 px-6">
+          {/* Timer */}
+          <RestTimer
+            restTime={restTime}
+            rotationAnim={rotationAnim}
+            initialRestTime={initialRestTime}
           />
-        ) : null}
-      </View>
 
-      {/* Workout Options Modal */}
+          {/* Controls */}
+          <RestTimerControls
+            onMinus5s={handleMinus5s}
+            onSkipRest={handleSkipRest}
+            onPlus5s={handlePlus5s}
+          />
+        </View>
+        <View className="z-10 mx-auto w-full max-w-lg gap-4 px-4 pb-8">
+          {/* Completed Exercise */}
+          <View className="flex-row items-center justify-between px-2">
+            <View className="flex-row items-center gap-2">
+              <CheckCircle size={theme.iconSize.md} color={theme.colors.accent.primary} />
+              <Text className="text-sm" style={{ color: theme.colors.overlay.white50 }}>
+                {t('restTimer.done')}:{' '}
+                <Text className="font-medium text-text-primary">{completedSet.exercise.name}</Text>
+              </Text>
+            </View>
+            <Text className="font-medium" style={{ color: theme.colors.overlay.white70 }}>
+              {completedSet.set.weight} {t(weightUnitKey)}{' '}
+              <Text style={{ color: theme.colors.overlay.white30 }}>×</Text> {completedSet.set.reps}{' '}
+              {t('restTimer.reps')}
+            </Text>
+          </View>
+
+          {/* Next Exercise Card */}
+          {nextSet ? (
+            <DetailedItemCard
+              item={{
+                name: nextSet.exercise.name,
+                media: require('../../assets/icon.png'), // Default image for now
+                itemOne: { value: `${nextSet.set.weight} ${t(weightUnitKey)}`, icon: Dumbbell },
+                itemTwo: { value: `${nextSet.set.reps} reps`, icon: Repeat },
+                itemThree: { value: `${nextSet.set.reps} reps`, icon: ChevronRight },
+              }}
+              onPress={() => {
+                // Navigate to next set
+                router.replace(`/workout/workout-session?workoutLogId=${workoutLogId}`);
+              }}
+              ctaLabel={<UpNextLabel />}
+            />
+          ) : null}
+        </View>
+      </View>
       <WorkoutOptionsModal
         visible={isOptionsModalVisible}
         onClose={() => setIsOptionsModalVisible(false)}
@@ -304,8 +301,6 @@ export default function RestTimerScreen() {
         onWorkoutSettings={() => router.push('/workout-settings')}
         onEndWorkout={handleEndWorkout}
       />
-
-      {/* End Workout Confirmation Modal */}
       <EndWorkoutModal
         visible={isEndWorkoutModalVisible}
         onClose={() => setIsEndWorkoutModalVisible(false)}
