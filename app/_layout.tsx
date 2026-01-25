@@ -1,25 +1,41 @@
 import { Stack } from 'expo-router';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { Platform, StatusBar } from 'react-native';
+import { Platform, StatusBar, AppState, AppStateStatus } from 'react-native';
 import * as NavigationBar from 'expo-navigation-bar';
 import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { theme } from '../theme';
 import { SnackbarProvider } from '../components/SnackbarContext';
 import { seedDevData } from '../database/dev';
+import { QueryClient, QueryClientProvider, focusManager } from '@tanstack/react-query';
 
 import '../database';
 import '../lang/lang';
 import '../global.css';
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 2,
+    },
+  },
+});
+
 export default function RootLayout() {
   useEffect(() => {
-    // Configure Android navigation bar to be transparent
-    // Note: setBackgroundColorAsync is not supported when edge-to-edge is enabled (Android 15+)
-    // We wrap it in try-catch to gracefully handle this case
+    // 2. Setup Focus Management for Mobile
+    // This ensures TanStack Query knows when the app is active/foregrounded
+    function onAppStateChange(status: AppStateStatus) {
+      if (Platform.OS !== 'web') {
+        focusManager.setFocused(status === 'active');
+      }
+    }
+
+    const subscription = AppState.addEventListener('change', onAppStateChange);
+
+    // Existing Android Navigation Bar Logic
     if (Platform.OS === 'android') {
       NavigationBar.setBackgroundColorAsync(theme.colors.background.primary).catch((error) => {
-        // Silently handle edge-to-edge incompatibility - this is expected on Android 15+
         if (__DEV__) {
           console.warn(
             'NavigationBar.setBackgroundColorAsync not available (edge-to-edge enabled):',
@@ -30,30 +46,34 @@ export default function RootLayout() {
       NavigationBar.setButtonStyleAsync('light');
     }
 
-    // Seed exercises database in development mode if it's empty
-    // This runs after the database is created and initialized
+    // Seed exercises database
     if (__DEV__) {
       seedDevData().catch((error) => {
         console.error('Error seeding exercises database:', error);
       });
     }
+
+    // Cleanup listeners
+    return () => subscription.remove();
   }, []);
 
   return (
     <GestureHandlerRootView>
-      <SafeAreaProvider>
-        <SnackbarProvider>
-          {Platform.OS === 'android' ? (
-            <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
-          ) : null}
-          <Stack
-            screenOptions={{
-              headerShown: false,
-              contentStyle: { backgroundColor: theme.colors.background.primary },
-            }}
-          />
-        </SnackbarProvider>
-      </SafeAreaProvider>
+      <QueryClientProvider client={queryClient}>
+        <SafeAreaProvider>
+          <SnackbarProvider>
+            {Platform.OS === 'android' ? (
+              <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+            ) : null}
+            <Stack
+              screenOptions={{
+                headerShown: false,
+                contentStyle: { backgroundColor: theme.colors.background.primary },
+              }}
+            />
+          </SnackbarProvider>
+        </SafeAreaProvider>
+      </QueryClientProvider>
     </GestureHandlerRootView>
   );
 }

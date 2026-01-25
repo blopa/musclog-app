@@ -41,6 +41,7 @@
     "@nozbe/watermelondb": "0.28.0",
     "@openfoodfacts/openfoodfacts-nodejs": "^2.0.0-alpha.19",
     "@react-native-async-storage/async-storage": "2.2.0",
+    "@react-native-community/netinfo": "11.4.1",
     "@react-native-community/slider": "5.0.1",
     "@react-native-masked-view/masked-view": "0.3.2",
     "@react-spring/web": "10.0.3",
