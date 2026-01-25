@@ -26,15 +26,57 @@ const WebCameraView = ({ children, onBarcodeScanned, style, ...otherProps }: Cam
   });
 
   return (
-    <View style={[{ flex: 1 }, style]}>
+    <View
+      // make the camera view cover the whole viewport on web
+      style={[
+        {
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 0,
+          overflow: 'hidden',
+          backgroundColor: 'black',
+        } as any,
+        style,
+      ]}
+    >
       <video
         autoPlay
         muted
         playsInline
         ref={ref as RefObject<HTMLVideoElement>}
-        style={{ height: '100%', width: '100%' }}
+        // make the video fill the container and crop as needed
+        style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          minWidth: '100%',
+          minHeight: '100%',
+          width: 'auto',
+          height: 'auto',
+          objectFit: 'cover',
+          zIndex: 0,
+        }}
       />
-      {children}
+
+      {/* overlay children (controls/UI) above the video */}
+      <View
+        style={
+          {
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 1,
+          } as any
+        }
+      >
+        {children}
+      </View>
     </View>
   );
 };

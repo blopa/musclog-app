@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Image } from 'react-native';
+import { View, Text, Image, ImageSourcePropType } from 'react-native';
 import { Button } from '../theme/Button';
 import { GenericCard } from './GenericCard';
 import { theme } from '../../theme';
@@ -34,7 +34,8 @@ type MealItemCardProps = {
     carbs: string;
     fat: string;
   };
-  imageUrl?: string;
+  /** optional image source (local require or remote uri) */
+  image?: ImageSourcePropType;
   onTrackPress: () => void;
 };
 
@@ -43,7 +44,7 @@ export function MealItemCard({
   tags,
   calories,
   macros,
-  imageUrl,
+  image,
   onTrackPress,
 }: MealItemCardProps) {
   const { t } = useTranslation();
@@ -60,7 +61,7 @@ export function MealItemCard({
               width: theme.size[24],
             }}
           >
-            <Image source={{ uri: imageUrl }} className="h-full w-full" />
+            <Image source={image} className="h-full w-full" />
           </View>
           <View
             className="absolute rounded-full px-2 py-1"
