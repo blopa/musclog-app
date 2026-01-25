@@ -391,7 +391,7 @@ export default function WorkoutSessionScreen() {
           </View>
 
           {/* Action Buttons */}
-          <View className="mt-8 px-6 pb-32">
+          <View className="mt-8 px-6 pb-8">
             <View className="mb-6 flex-row gap-6">
               <WorkoutActionButton
                 icon={SkipForward}
