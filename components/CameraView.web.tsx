@@ -38,7 +38,7 @@ const WebCameraView = ({ children, onBarcodeScanned, style, ...otherProps }: Cam
           zIndex: 0,
           overflow: 'hidden',
           backgroundColor: 'black',
-        } as any,
+        },
         style,
       ]}
     >
@@ -64,16 +64,14 @@ const WebCameraView = ({ children, onBarcodeScanned, style, ...otherProps }: Cam
 
       {/* overlay children (controls/UI) above the video */}
       <View
-        style={
-          {
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            zIndex: 1,
-          } as any
-        }
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 1,
+        }}
       >
         {children}
       </View>
