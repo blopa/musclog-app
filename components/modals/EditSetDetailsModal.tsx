@@ -124,8 +124,7 @@ export function EditSetDetailsModal({
   initialReps,
   initialPartials,
   initialRepsInReserve,
-  // TODO: implement showRir usage
-  showRir = true,
+  showRir = false,
 }: EditSetDetailsModalProps) {
   const { t } = useTranslation();
   const { units } = useSettings();
@@ -141,12 +140,12 @@ export function EditSetDetailsModal({
       setWeight(initialWeight);
       setReps(initialReps);
       setPartials(initialPartials);
-      setRepsInReserve(initialRepsInReserve);
+      setRepsInReserve(showRir ? initialRepsInReserve : 0);
     }
-  }, [visible, initialWeight, initialReps, initialPartials, initialRepsInReserve]);
+  }, [visible, initialWeight, initialReps, initialPartials, initialRepsInReserve, showRir]);
 
   const handleSave = () => {
-    onSave({ weight, reps, partials, repsInReserve });
+    onSave({ weight, reps, partials, repsInReserve: showRir ? repsInReserve : 0 });
     onClose();
   };
 
@@ -210,15 +209,15 @@ export function EditSetDetailsModal({
         />
 
         {/* Reps in Reserve */}
-        <NumberInputField
-          label={t('editSetDetails.repsInReserve', 'RIR (Reps in Reserve)')}
-          value={repsInReserve}
-          onChange={setRepsInReserve}
-          min={0}
-          max={10}
-          step={1}
-          allowDecimals={false}
-        />
+        {showRir ? <NumberInputField
+            label={t('editSetDetails.repsInReserve', 'RIR (Reps in Reserve)')}
+            value={repsInReserve}
+            onChange={setRepsInReserve}
+            min={0}
+            max={10}
+            step={1}
+            allowDecimals={false}
+        /> : null}
       </View>
     </CenteredModal>
   );
