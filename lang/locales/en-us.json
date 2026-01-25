@@ -261,8 +261,7 @@
       "message": "Are you sure you want to skip this set?",
       "cancel": "Cancel",
       "confirm": "Yes, Skip"
-    }
-    ,
+    },
     "notFoundTitle": "Workout not found",
     "notFoundDescription": "Unable to load workout session. Please try again.",
     "goBack": "Go Back"
@@ -500,8 +499,7 @@
     "weight": "WEIGHT",
     "reps": "REPS",
     "partial": "PARTIAL",
-    "rest": "REST"
-    ,
+    "rest": "REST",
     "editSetsTitle": "Edit Sets",
     "addSet": "Add New Set",
     "setLabel": "Set {{index}}",

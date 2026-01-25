@@ -190,7 +190,7 @@ export default function BodyMetricsHistoryModal({
         };
       });
     },
-    [selectedMetric, t, getMetricUnit]
+    [selectedMetric, t]
   );
 
   // Process paginated metrics into history entries

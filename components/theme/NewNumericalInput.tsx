@@ -71,7 +71,7 @@ export default function NewNumericalInput({
           className="flex-shrink-0"
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Minus size={20} color="#00ff99" strokeWidth={3} />
+          <Minus size={20} color={theme.colors.accent.secondary} strokeWidth={3} />
         </Pressable>
         <TextInput
           ref={inputRef}
@@ -79,9 +79,9 @@ export default function NewNumericalInput({
           onChangeText={handleInputChange}
           onBlur={handleInputBlur}
           className="min-w-0 flex-1 bg-transparent text-center text-2xl font-bold"
-          style={{ color: '#e8f5f3' }}
+          style={{ color: theme.colors.text.white }}
           keyboardType="numeric"
-          placeholderTextColor="#8ba9a5"
+          placeholderTextColor={theme.colors.text.secondary}
           selectTextOnFocus={true}
         />
         <Pressable
@@ -89,7 +89,7 @@ export default function NewNumericalInput({
           className="flex-shrink-0"
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Plus size={20} color="#00ff99" strokeWidth={3} />
+          <Plus size={20} color={theme.colors.accent.secondary} strokeWidth={3} />
         </Pressable>
       </View>
     </View>

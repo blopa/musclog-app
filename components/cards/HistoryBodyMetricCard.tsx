@@ -45,19 +45,22 @@ export function HistoryBodyMetricCard({ entry }: { entry: HistoryEntry }) {
                 style={{
                   backgroundColor:
                     entry.changeType === 'down'
-                      ? 'rgba(34, 197, 94, 0.15)' // Green at 15% opacity
-                      : 'rgba(249, 115, 22, 0.15)', // Orange at 15% opacity
+                      ? theme.colors.accent.primary20
+                      : theme.colors.status.warning10,
                 }}
               >
                 {entry.changeType === 'down' ? (
-                  <TrendingDown size={14} color="#22c55e" />
+                  <TrendingDown size={14} color={theme.colors.accent.primary} />
                 ) : (
-                  <TrendingUp size={14} color="#f97316" />
+                  <TrendingUp size={14} color={theme.colors.status.warning} />
                 )}
                 <Text
                   className="ml-1 text-xs font-bold"
                   style={{
-                    color: entry.changeType === 'down' ? '#22c55e' : '#f97316',
+                    color:
+                      entry.changeType === 'down'
+                        ? theme.colors.accent.primary
+                        : theme.colors.status.warning,
                   }}
                 >
                   {entry.change}
@@ -67,7 +70,7 @@ export function HistoryBodyMetricCard({ entry }: { entry: HistoryEntry }) {
             {!entry.change ? (
               <View
                 className="flex-row items-center rounded-full px-2.5 py-1"
-                style={{ backgroundColor: 'rgba(107, 114, 128, 0.15)' }}
+                style={{ backgroundColor: theme.colors.status.gray10 }}
               >
                 <Text className="text-xs font-bold text-text-tertiary">{entry.note}</Text>
               </View>
