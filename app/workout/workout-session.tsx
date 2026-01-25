@@ -1,12 +1,5 @@
 import { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  Pressable,
-  ScrollView,
-  ImageBackground,
-  ActivityIndicator,
-} from 'react-native';
+import { View, Text, ScrollView, ImageBackground, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { SkipForward, Edit, Repeat, CheckCircle, WifiOff } from 'lucide-react-native';
@@ -32,7 +25,6 @@ import { Button } from '../../components/theme/Button';
 import { useActiveWorkout } from '../../hooks/useActiveWorkout';
 import { WorkoutService } from '../../database/services/WorkoutService';
 import { database } from '../../database';
-import WorkoutLog from '../../database/models/WorkoutLog';
 import WorkoutLogSet from '../../database/models/WorkoutLogSet';
 import { Q } from '@nozbe/watermelondb';
 import { ErrorStateCard } from '../../components/theme/ErrorStateCard';
