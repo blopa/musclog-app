@@ -78,6 +78,9 @@ export default function AICameraScreen() {
 
   const handleClose = () => {
     router.back();
+
+    // TODO: if not able to go back, navigate to home
+    // router.replace('/');
   };
 
   const handleFlashToggle = () => {
