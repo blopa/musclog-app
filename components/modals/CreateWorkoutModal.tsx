@@ -1,24 +1,31 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Pressable, ScrollView, ActivityIndicator } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Sparkles, PlusSquare } from 'lucide-react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Sparkles, PlusSquare } from 'lucide-react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '../../theme';
-import { Button } from '../../components/theme/Button';
-import { SegmentedControl } from '../../components/theme/SegmentedControl';
-import { OptionsMultiSelector } from '../../components/theme/OptionsMultiSelector/OptionsMultiSelector';
-import { WeekdayPicker } from '../../components/theme/WeekdayPicker';
-import { AddExerciseModal } from '../../components/modals/AddExerciseModal';
+import { Button } from '../theme/Button';
+import { SegmentedControl } from '../theme/SegmentedControl';
+import { OptionsMultiSelector } from '../theme/OptionsMultiSelector/OptionsMultiSelector';
+import { WeekdayPicker } from '../theme/WeekdayPicker';
+import { AddExerciseModal } from './AddExerciseModal';
 import { WEEKDAY_LABELS } from '../../utils/workout';
 import { useWorkoutForm } from '../../hooks/useWorkoutForm';
+import { FullScreenModal } from './FullScreenModal';
 
-export default function CreateWorkoutScreen() {
+type CreateWorkoutModalProps = {
+  visible: boolean;
+  onClose: () => void;
+  templateId?: string;
+};
+
+export default function CreateWorkoutModal({
+  visible,
+  onClose,
+  templateId,
+}: CreateWorkoutModalProps) {
   const { t } = useTranslation();
-  const router = useRouter();
   const insets = useSafeAreaInsets();
-  const params = useLocalSearchParams<{ templateId?: string }>();
-  const templateId = params.templateId;
 
   const [addExerciseVisible, setAddExerciseVisible] = useState(false);
 
@@ -60,7 +67,42 @@ export default function CreateWorkoutScreen() {
   ];
 
   return (
-    <SafeAreaView className="flex-1 bg-bg-primary" edges={['top', 'bottom']}>
+    <FullScreenModal
+      visible={visible}
+      onClose={onClose}
+      title={isEditMode ? t('createWorkout.editTitle') : t('createWorkout.title')}
+      scrollable={false}
+      headerRight={
+        <View>
+          {isSaving ? (
+            <ActivityIndicator size="small" color={theme.colors.accent.primary} />
+          ) : (
+            <Pressable
+              onPress={handleSave}
+              disabled={isSaving}
+              style={({ pressed }) => [
+                {
+                  paddingHorizontal: theme.spacing.padding.sm,
+                  paddingVertical: theme.spacing.padding.xs,
+                  opacity:
+                    pressed || isSaving ? theme.colors.opacity.strong : theme.colors.opacity.full,
+                },
+              ]}
+            >
+              <Text
+                style={{
+                  fontSize: theme.typography.fontSize.base,
+                  fontWeight: theme.typography.fontWeight.bold,
+                  color: theme.colors.accent.primary,
+                }}
+              >
+                {t('createWorkout.save')}
+              </Text>
+            </Pressable>
+          )}
+        </View>
+      }
+    >
       {/* Background Glows */}
       <View style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
         <View
@@ -87,69 +129,6 @@ export default function CreateWorkoutScreen() {
             opacity: theme.colors.opacity.subtle,
           }}
         />
-      </View>
-
-      {/* Header */}
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          paddingHorizontal: theme.spacing.padding.base,
-          paddingVertical: theme.spacing.padding.sm,
-          zIndex: theme.zIndex.dropdown,
-        }}
-      >
-        <Pressable
-          onPress={() => router.back()}
-          style={({ pressed }) => [
-            {
-              width: theme.size['10'],
-              height: theme.size['10'],
-              borderRadius: theme.borderRadius.full,
-              alignItems: 'center',
-              justifyContent: 'center',
-              opacity: pressed ? theme.colors.opacity.strong : theme.colors.opacity.full,
-            },
-          ]}
-        >
-          <ArrowLeft size={theme.iconSize.xl} color={theme.colors.text.secondary} />
-        </Pressable>
-        <Text
-          style={{
-            fontSize: theme.typography.fontSize.lg,
-            fontWeight: theme.typography.fontWeight.bold,
-            color: theme.colors.text.primary,
-          }}
-        >
-          {isEditMode ? t('createWorkout.editTitle', 'Edit Workout') : t('createWorkout.title')}
-        </Text>
-        {isSaving ? (
-          <ActivityIndicator size="small" color={theme.colors.accent.primary} />
-        ) : (
-          <Pressable
-            onPress={handleSave}
-            disabled={isSaving}
-            style={({ pressed }) => [
-              {
-                paddingHorizontal: theme.spacing.padding.sm,
-                paddingVertical: theme.spacing.padding.xs,
-                opacity:
-                  pressed || isSaving ? theme.colors.opacity.strong : theme.colors.opacity.full,
-              },
-            ]}
-          >
-            <Text
-              style={{
-                fontSize: theme.typography.fontSize.base,
-                fontWeight: theme.typography.fontWeight.bold,
-                color: theme.colors.accent.primary,
-              }}
-            >
-              {t('createWorkout.save')}
-            </Text>
-          </Pressable>
-        )}
       </View>
 
       <ScrollView
@@ -470,6 +449,6 @@ export default function CreateWorkoutScreen() {
         onClose={() => setAddExerciseVisible(false)}
         onAddExercise={handleAddExerciseWithMetadata}
       />
-    </SafeAreaView>
+    </FullScreenModal>
   );
 }

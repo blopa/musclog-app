@@ -20,7 +20,6 @@ const APP_SCREENS = [
   { name: 'Workouts', route: '/workout/workouts', category: 'Workout' },
   { name: 'Workout Session', route: '/workout/workout-session', category: 'Workout' },
   { name: 'Workout Summary', route: '/workout/workout-summary', category: 'Workout' },
-  { name: 'Create Workout', route: '/workout/create-workout', category: 'Workout' },
   { name: 'Rest Timer', route: '/workout/rest-timer', category: 'Workout' },
   { name: 'Rest Over', route: '/workout/rest-over', category: 'Workout' },
   { name: 'Landing', route: '/onboarding/landing', category: 'Onboarding' },

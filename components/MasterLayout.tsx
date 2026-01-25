@@ -10,10 +10,9 @@ import { CoachModal } from './modals/CoachModal';
 
 type MasterLayoutProps = {
   children: ReactNode;
-  showNavigationMenu: boolean;
+  showNavigationMenu?: boolean;
 };
 
-// TODO: use showNavigationMenu
 export function MasterLayout({ children, showNavigationMenu = true }: MasterLayoutProps) {
   const { t } = useTranslation();
   const router = useRouter();

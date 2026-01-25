@@ -204,6 +204,7 @@ export default function WorkoutsScreen() {
                 iconGradient={true}
                 buttonVariant="gradientCta"
                 onButtonPress={() => {
+                  // TODO: this route doesn't exist anymore, instead open the CreateWorkoutModal
                   router.push('/workout/create-workout');
                 }}
               />
@@ -296,6 +297,7 @@ export default function WorkoutsScreen() {
         workoutName={selectedWorkoutName}
         onEdit={() => {
           if (selectedWorkoutId) {
+            // TODO: this route doesn't exist anymore, instead open the CreateWorkoutModal
             router.push(`/workout/create-workout?templateId=${selectedWorkoutId}`);
             setIsMenuVisible(false);
           } else {
