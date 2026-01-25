@@ -77,10 +77,17 @@ export default function AICameraScreen() {
   };
 
   const handleClose = () => {
-    router.back();
-
-    // TODO: if not able to go back, navigate to home
-    // router.replace('/');
+    try {
+      const canGoBack =
+        typeof router.canGoBack === 'function' ? router.canGoBack() : !!(router as any).canGoBack;
+      if (canGoBack) {
+        router.back();
+      } else {
+        router.replace('/');
+      }
+    } catch {
+      router.replace('/');
+    }
   };
 
   const handleFlashToggle = () => {
