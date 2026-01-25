@@ -11,7 +11,6 @@ import { GenericCard } from '../cards/GenericCard';
 import { LineChart, LineChartDataPoint } from '../LineChart';
 import { usePastWorkoutDetail } from '../../hooks/usePastWorkoutDetail';
 import EditPastWorkoutDataModal from './EditPastWorkoutDataModal';
-import { WorkoutService } from '../../database/services/WorkoutService';
 import { useEditWorkoutSets } from '../../hooks/useEditWorkoutSets';
 import { PastWorkoutBottomMenu } from './PastWorkoutBottomMenu';
 import { useSettings } from '../../hooks/useSettings';
@@ -23,7 +22,7 @@ type WorkoutSet = {
   weight: string;
   reps: number;
   partial: string;
-  rest: string;
+  repsInReserve: number;
   isHighlighted: boolean;
 };
 
@@ -204,7 +203,7 @@ function SetRow({ set }: SetRowProps) {
       <View className="flex-1 items-center py-3">
         <View className="flex-row items-center gap-1">
           {set.isHighlighted ? <Trophy size={12} color={theme.colors.accent.primary} /> : null}
-          <Text className="text-xs text-text-tertiary">{set.rest}</Text>
+          <Text className="text-xs text-text-tertiary">{set.repsInReserve}</Text>
         </View>
       </View>
     </View>
@@ -257,7 +256,7 @@ function SetsTable({ sets }: SetsTableProps) {
         </View>
         <View className="flex-1 items-center py-2">
           <Text className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
-            {t('workoutDetail.rest')}
+            {t('workoutDetail.rir', 'RIR')}
           </Text>
         </View>
       </View>

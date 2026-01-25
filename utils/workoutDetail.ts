@@ -14,7 +14,7 @@ export type WorkoutSet = {
   weight: string;
   reps: number;
   partial: string;
-  rest: string;
+  repsInReserve: number;
   isHighlighted: boolean;
 };
 
@@ -232,7 +232,7 @@ export async function transformWorkoutToDetailData(
           weight: formatWeight(set.weight, isBodyweight, t, units),
           reps: set.reps,
           partial: set.difficultyLevel > 0 ? set.difficultyLevel.toString() : '-',
-          rest: formatRestTime(set.restTimeAfter),
+          repsInReserve: set.repsInReserve ?? 0,
           isHighlighted,
         };
       });
