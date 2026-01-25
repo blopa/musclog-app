@@ -311,10 +311,13 @@ export default function RestTimerScreen() {
           }
         }}
         onFinishAndDiscard={async () => {
+          // Clear active workout from storage when discarding
           if (workoutLog) {
             await clearActiveWorkoutLogId();
           }
-          router.back();
+
+          // navigate to workout screen
+          router.replace('/workout/workouts');
         }}
       />
     </MasterLayout>

@@ -453,7 +453,9 @@ export default function WorkoutSessionScreen() {
           if (workoutLog) {
             await clearActiveWorkoutLogId();
           }
-          router.back();
+
+          // navigate to workout screen
+          router.replace('/workout/workouts');
         }}
       />
 

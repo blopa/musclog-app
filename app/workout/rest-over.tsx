@@ -234,10 +234,12 @@ export default function RestOverScreen() {
         }}
         onFinishAndDiscard={async () => {
           // Clear active workout from storage when discarding
-          if (workoutLogId) {
+          if (workoutLog) {
             await clearActiveWorkoutLogId();
           }
-          router.back();
+
+          // navigate to workout screen
+          router.replace('/workout/workouts');
         }}
       />
     </MasterLayout>
