@@ -182,14 +182,17 @@ function SetRow({ set }: SetRowProps) {
       }}
     >
       <View className="w-12 items-center py-3">
-        <Text
-          className="font-bold"
-          style={{
-            color: set.isHighlighted ? theme.colors.accent.primary : theme.colors.text.tertiary,
-          }}
-        >
-          {set.setNumber}
-        </Text>
+        <View className="flex-row items-center gap-1">
+          {set.isHighlighted ? <Trophy size={12} color={theme.colors.accent.primary} /> : null}
+          <Text
+            className="font-bold"
+            style={{
+              color: set.isHighlighted ? theme.colors.accent.primary : theme.colors.text.tertiary,
+            }}
+          >
+            {set.setNumber}
+          </Text>
+        </View>
       </View>
       <View className="flex-1 items-center py-3">
         <Text className="text-sm text-text-primary">{set.weight}</Text>
@@ -201,10 +204,7 @@ function SetRow({ set }: SetRowProps) {
         <Text className="text-sm text-text-primary">{set.partial}</Text>
       </View>
       <View className="flex-1 items-center py-3">
-        <View className="flex-row items-center gap-1">
-          {set.isHighlighted ? <Trophy size={12} color={theme.colors.accent.primary} /> : null}
-          <Text className="text-xs text-text-tertiary">{set.repsInReserve}</Text>
-        </View>
+        <Text className="text-sm text-text-primary">{set.repsInReserve}</Text>
       </View>
     </View>
   );
