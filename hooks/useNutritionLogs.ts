@@ -219,7 +219,10 @@ export function useNutritionLogs({
 
       // Get total count for basic (non-special) modes
       if (!['daily', 'range', 'meal-type', 'recent'].includes(mode)) {
-        const allLogs = await NutritionService.getNutritionLogsForDateRange(new Date(0), new Date());
+        const allLogs = await NutritionService.getNutritionLogsForDateRange(
+          new Date(0),
+          new Date()
+        );
         setTotalCount(allLogs.length);
       }
     } catch (err) {
@@ -350,7 +353,19 @@ export function useNutritionLogs({
     refresh();
 
     return () => subscription.unsubscribe();
-  }, [enableReactivity, visible, mode, date, startDate, endDate, mealType, sortBy, sortOrder, refresh, loadInitialLogs]);
+  }, [
+    enableReactivity,
+    visible,
+    mode,
+    date,
+    startDate,
+    endDate,
+    mealType,
+    sortBy,
+    sortOrder,
+    refresh,
+    loadInitialLogs,
+  ]);
 
   // Memoized result for basic modes
   const basicResult = useMemo(
