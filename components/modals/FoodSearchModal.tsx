@@ -272,16 +272,16 @@ export function FoodSearchModal({
   });
 
   // Use unified search for both local and API results
-  const { 
-    resultsBySource, 
+  const {
+    resultsBySource,
     isLoadingLocal,
-    isLoadingAPI, 
+    isLoadingAPI,
     error,
-    localCount, 
+    localCount,
     apiCount,
     hasLocalResults,
     hasApiResults,
-    isInitialLoad
+    isInitialLoad,
   } = useUnifiedFoodSearch({
     searchTerm: searchQuery,
     enabled: visible,
@@ -402,19 +402,21 @@ export function FoodSearchModal({
               <View>
                 <SectionHeader
                   title={
-                    isInitialLoad 
-                      ? 'SEARCHING...' 
-                      : hasLocalResults || hasApiResults 
-                        ? 'BEST MATCHES' 
+                    isInitialLoad
+                      ? 'SEARCHING...'
+                      : hasLocalResults || hasApiResults
+                        ? 'BEST MATCHES'
                         : 'NO RESULTS'
                   }
                   rightAction={
-                    !isInitialLoad && (hasLocalResults || hasApiResults) ? {
-                      label: t('foodSearch.viewAll'),
-                      onPress: () => {
-                        // Handle view all
-                      },
-                    } : undefined
+                    !isInitialLoad && (hasLocalResults || hasApiResults)
+                      ? {
+                          label: t('foodSearch.viewAll'),
+                          onPress: () => {
+                            // Handle view all
+                          },
+                        }
+                      : undefined
                   }
                 />
                 <View className="gap-1.5">
@@ -433,22 +435,66 @@ export function FoodSearchModal({
                   ) : null}
 
                   {/* Show results when available */}
-                  {!isInitialLoad && !error && filteredResults.length > 0
-                    ? filteredResults.map((food: UnifiedFoodResult) => (
-                        <FoodItemCard
-                          key={`${food.source}-${food.id}`}
-                          food={{
-                            ...food,
-                            icon: food.source === 'local' ? '🍽️' : undefined,
-                            iconColor:
-                              food.source === 'local' ? theme.colors.accent.primary : undefined,
-                            iconBgColor:
-                              food.source === 'local' ? theme.colors.accent.primary10 : undefined,
-                          }}
-                          onAddPress={() => handleFoodClick(food)}
-                        />
-                      ))
-                    : null}
+                  {!isInitialLoad && !error && filteredResults.length > 0 ? (
+                    <>
+                      {/* Local Results Section */}
+                      {resultsBySource.local.length > 0 ? (
+                        <View className="mb-4">
+                          <View className="mb-3 flex-row items-center gap-2">
+                            <View className="h-0.5 flex-1 bg-accent-primary/20" />
+                            <View className="flex-row items-center gap-2">
+                              <Text className="text-xs font-medium text-accent-primary">🍽️</Text>
+                              <Text className="text-xs font-medium uppercase text-accent-primary">
+                                Your Foods ({resultsBySource.local.length})
+                              </Text>
+                              <Text className="text-xs font-medium text-accent-primary">🍽️</Text>
+                            </View>
+                            <View className="h-0.5 flex-1 bg-accent-primary/20" />
+                          </View>
+                          <View className="gap-1.5">
+                            {resultsBySource.local.map((food: UnifiedFoodResult) => (
+                              <FoodItemCard
+                                key={`local-${food.id}`}
+                                food={{
+                                  ...food,
+                                  icon: '🍽️',
+                                  iconColor: theme.colors.accent.primary,
+                                  iconBgColor: theme.colors.accent.primary10,
+                                }}
+                                onAddPress={() => handleFoodClick(food)}
+                              />
+                            ))}
+                          </View>
+                        </View>
+                      ) : null}
+
+                      {/* API Results Section */}
+                      {resultsBySource.api.length > 0 ? (
+                        <View className="mb-4">
+                          <View className="mb-3 flex-row items-center gap-2">
+                            <View className="h-0.5 flex-1 bg-text-tertiary/30" />
+                            <View className="flex-row items-center gap-2">
+                              <Text className="text-xs font-medium text-text-tertiary">🌐</Text>
+                              <Text className="text-xs font-medium uppercase text-text-tertiary">
+                                Open Food Facts ({resultsBySource.api.length})
+                              </Text>
+                              <Text className="text-xs font-medium text-text-tertiary">🌐</Text>
+                            </View>
+                            <View className="h-0.5 flex-1 bg-text-tertiary/30" />
+                          </View>
+                          <View className="gap-1.5">
+                            {resultsBySource.api.map((food: UnifiedFoodResult) => (
+                              <FoodItemCard
+                                key={`api-${food.id}`}
+                                food={food}
+                                onAddPress={() => handleFoodClick(food)}
+                              />
+                            ))}
+                          </View>
+                        </View>
+                      ) : null}
+                    </>
+                  ) : null}
                   {!isInitialLoad && isLoadingAPI && hasLocalResults ? (
                     <View className="flex items-center justify-center py-4">
                       <ActivityIndicator size="small" color={theme.colors.accent.primary} />

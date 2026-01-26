@@ -177,8 +177,8 @@ export function useUnifiedFoodSearch({
       localCount: localResults.length,
       apiCount: apiResultsFormatted.length,
       totalBefore: allResults.length,
-      localItems: localResults.map(r => ({ name: r.name, barcode: r.id })),
-      apiItems: apiResultsFormatted.map(r => ({ name: r.name, barcode: r.id }))
+      localItems: localResults.map((r) => ({ name: r.name, barcode: r.id })),
+      apiItems: apiResultsFormatted.map((r) => ({ name: r.name, barcode: r.id })),
     });
 
     // Deduplication logic:
