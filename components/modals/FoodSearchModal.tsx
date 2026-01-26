@@ -370,6 +370,7 @@ export function FoodSearchModal({
       headerRight={headerRight}
       scrollable={false}
     >
+      <View className="h-4" />
       <View className="flex-1 bg-bg-primary">
         {/* Search Bar */}
         <View className="border-b border-border-light bg-bg-primary px-4 pb-2">
