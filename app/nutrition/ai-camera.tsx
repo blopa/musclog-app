@@ -25,9 +25,11 @@ import {
 } from 'lucide-react-native';
 import { theme } from '../../theme';
 import { AINutritionTrackingContextModal } from '../../components/modals/AINutritionTrackingContextModal';
+import { FoodDetailsModal } from '../../components/modals/FoodDetailsModal';
 import { CameraView, useCameraPermissions } from '../../components/CameraView';
 import type { CameraView as CameraViewType } from 'expo-camera';
 import { detectBarcodes } from '../../utils/file';
+import { useFoodProductDetails } from '../../hooks/useFoodProductDetails';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const CAMERA_ASPECT_RATIO = theme.aspectRatio.portrait;
@@ -35,6 +37,7 @@ const CAMERA_MAX_HEIGHT = SCREEN_HEIGHT * 0.6;
 
 type CameraMode = 'ai-meal-photo' | 'ai-label-scan' | 'barcode-scan';
 
+// TODO: move this into a full screen modal too
 export default function AICameraScreen() {
   const { t } = useTranslation();
   const router = useRouter();
@@ -43,8 +46,13 @@ export default function AICameraScreen() {
   const [cameraMode, setCameraMode] = useState<CameraMode>('ai-meal-photo');
   const [isDetecting, setIsDetecting] = useState(true);
   const [isContextModalVisible, setIsContextModalVisible] = useState(false);
+  const [isFoodDetailsModalVisible, setIsFoodDetailsModalVisible] = useState(false);
+  const [detectedBarcode, setDetectedBarcode] = useState<string | null>(null);
   const cameraRef = useRef<CameraViewType>(null);
   const pulseAnim = useRef(new Animated.Value(1)).current;
+
+  // Fetch product details when barcode is detected
+  const { data: productDetails } = useFoodProductDetails(detectedBarcode);
 
   // Pulse animation for AI detecting indicator
   useEffect(() => {
@@ -110,10 +118,15 @@ export default function AICameraScreen() {
     setCameraMode(mode);
   }, []);
 
-  const handleApplyContext = useCallback((context: { description: string; tags: string[] }) => {
+  const handleApplyContext = (context: { description: string; tags: string[] }) => {
     // TODO: Apply context to AI processing
     console.log('Context applied:', context);
-  }, []);
+  };
+
+  const handleFoodDetailsClose = () => {
+    setIsFoodDetailsModalVisible(false);
+    setDetectedBarcode(null);
+  };
 
   const handleGalleryPress = useCallback(async () => {
     try {
@@ -142,9 +155,17 @@ export default function AICameraScreen() {
         console.log('Image selected from gallery:', selectedAsset.uri);
 
         if (cameraMode === 'barcode-scan') {
-          const barcodes = await detectBarcodes(selectedAsset.uri);
-          // TODO: get the food details from barcode using the useFoodProductDetails hook
-          // then show the FoodDetailsModal
+          const barcode = await detectBarcodes(selectedAsset.uri);
+          if (barcode) {
+            setDetectedBarcode(barcode);
+            setIsFoodDetailsModalVisible(true);
+          } else {
+            Alert.alert(
+              t('common.noBarcode'),
+              t('food.aiCamera.noBarcodeFound'),
+              [{ text: t('common.ok') }]
+            );
+          }
         }
       }
     } catch (error) {
@@ -501,6 +522,14 @@ export default function AICameraScreen() {
         visible={isContextModalVisible}
         onClose={() => setIsContextModalVisible(false)}
         onApply={handleApplyContext}
+      />
+
+      {/* Food Details Modal */}
+      <FoodDetailsModal
+        visible={isFoodDetailsModalVisible}
+        onClose={handleFoodDetailsClose}
+        barcode={detectedBarcode}
+        source="api"
       />
     </View>
   );

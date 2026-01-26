@@ -26,7 +26,7 @@ type FoodDetailsModalProps = {
     fat: number;
   };
   // Additional props for API data
-  barcode?: string;
+  barcode?: string | null;
   serving_size?: string;
   nutriments?: any;
   _raw?: any;
