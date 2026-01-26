@@ -96,6 +96,111 @@ export const schema = appSchema({
         { name: 'deleted_at', type: 'number', isOptional: true },
       ],
     }),
+    // Represents 100g (or 100ml) of a product typically, or a single unit if indicated.
+    tableSchema({
+      name: 'foods',
+      columns: [
+        { name: 'is_ai_generated', type: 'boolean' },
+        { name: 'name', type: 'string', isIndexed: true },
+        { name: 'brand', type: 'string', isOptional: true, isIndexed: true },
+        { name: 'barcode', type: 'string', isOptional: true, isIndexed: true },
+
+        // Macros per standard serving (usually 100g or 1 serving)
+        { name: 'calories', type: 'number' },
+        { name: 'protein', type: 'number' },
+        { name: 'carbs', type: 'number' },
+        { name: 'fat', type: 'number' },
+
+        // Base measurement (e.g., 100g) that the above numbers refer to
+        { name: 'serving_unit', type: 'string' }, // 'g', 'ml', 'oz'
+        { name: 'serving_amount', type: 'number' }, // e.g., 100
+
+        // Extended data (Fiber, Sugar, Sodium, Vitamins, Alcohol, etc.) stored as JSON
+        // Usage: @json decorator in the Model
+        { name: 'micros_json', type: 'string', isOptional: true },
+
+        { name: 'is_favorite', type: 'boolean' }, // Quick access
+        { name: 'source', type: 'string', isOptional: true }, // 'user', 'api', 'scanned'
+
+        { name: 'created_at', type: 'number' },
+        { name: 'updated_at', type: 'number' },
+        { name: 'deleted_at', type: 'number', isOptional: true },
+      ],
+    }),
+
+    // 2. Food Portions (Serving Sizes)
+    // Allows "1 slice" (30g) or "1 cup" (240g) mapping for a Food
+    tableSchema({
+      name: 'food_portions',
+      columns: [
+        { name: 'food_id', type: 'string', isIndexed: true },
+        { name: 'name', type: 'string' }, // e.g., "Slice", "Cup", "Bowl"
+        { name: 'gram_weight', type: 'number' }, // How many grams is this portion?
+        { name: 'created_at', type: 'number' },
+        { name: 'updated_at', type: 'number' },
+        { name: 'deleted_at', type: 'number', isOptional: true },
+      ],
+    }),
+
+    // 3. Meals (Collections/Recipes)
+    // The "Header" for a recipe. Macros are inferred from children.
+    tableSchema({
+      name: 'meals',
+      columns: [
+        { name: 'is_ai_generated', type: 'boolean' },
+        { name: 'name', type: 'string' },
+        { name: 'description', type: 'string', isOptional: true },
+        { name: 'is_favorite', type: 'boolean' },
+        { name: 'created_at', type: 'number' },
+        { name: 'updated_at', type: 'number' },
+        { name: 'deleted_at', type: 'number', isOptional: true },
+      ],
+    }),
+
+    // 4. Meal Ingredients
+    // Links Meals -> Foods with a specific quantity
+    tableSchema({
+      name: 'meal_foods',
+      columns: [
+        { name: 'meal_id', type: 'string', isIndexed: true },
+        { name: 'food_id', type: 'string', isIndexed: true },
+
+        // How much of the food?
+        // We store the raw amount (e.g., 200) and the unit used (e.g., 'g' or 'portion_id')
+        // Ideally, normalize to grams for easiest math, OR store reference to portion
+        { name: 'amount', type: 'number' },
+        { name: 'portion_id', type: 'string', isOptional: true }, // If null, assume base unit (grams)
+
+        { name: 'created_at', type: 'number' },
+        { name: 'updated_at', type: 'number' },
+        { name: 'deleted_at', type: 'number', isOptional: true },
+      ],
+    }),
+
+    // 5. Nutrition Logs (The Daily Diary)
+    // Records an instance of eating a food
+    tableSchema({
+      name: 'nutrition_logs',
+      columns: [
+        { name: 'food_id', type: 'string', isIndexed: true },
+        { name: 'date', type: 'number', isIndexed: true }, // Midnight timestamp for the day
+        { name: 'type', type: 'string' }, // 'breakfast', 'lunch', 'dinner', 'snack'
+
+        { name: 'amount', type: 'number' }, // Quantity eaten
+        { name: 'portion_id', type: 'string', isOptional: true }, // Unit used (e.g., linked to food_portions)
+
+        // Snapshot of macros at time of logging - not really needed now
+        // { name: 'logged_calories', type: 'number' },
+        // { name: 'logged_protein', type: 'number' },
+        // { name: 'logged_carbs', type: 'number' },
+        // { name: 'logged_fat', type: 'number' },
+        // { name: 'logged_fiber', type: 'number' },
+
+        { name: 'created_at', type: 'number' },
+        { name: 'updated_at', type: 'number' },
+        { name: 'deleted_at', type: 'number', isOptional: true },
+      ],
+    }),
 
     // User Metrics
     tableSchema({
