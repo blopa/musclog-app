@@ -153,6 +153,7 @@ export const schema = appSchema({
         { name: 'is_ai_generated', type: 'boolean' },
         { name: 'name', type: 'string' },
         { name: 'description', type: 'string', isOptional: true },
+        { name: 'image_url', type: 'string', isOptional: true }, // URL to meal image
         { name: 'is_favorite', type: 'boolean' },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
