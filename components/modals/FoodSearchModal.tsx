@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -7,12 +7,14 @@ import {
   ScrollView,
   Image,
   ImageSourcePropType,
+  ActivityIndicator,
 } from 'react-native';
 import { Search, QrCode, Plus, Sparkles } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { theme, addOpacityToHex } from '../../theme';
 import { FullScreenModal } from './FullScreenModal';
 import { FoodDetailsModal } from './FoodDetailsModal';
+import { useFoodSearch, useProductDetails, type FoodProduct } from '../../hooks/useSearchFood';
 
 type FoodItem = {
   id: string;
@@ -22,6 +24,7 @@ type FoodItem = {
   iconColor?: string;
   iconBgColor?: string;
   image?: ImageSourcePropType;
+  imageUrl?: string; // For remote images
   grade?: string; // e.g., "A", "A+"
   gradeColor?: string;
   // Nutritional data (optional)
@@ -29,6 +32,11 @@ type FoodItem = {
   protein?: number;
   carbs?: number;
   fat?: number;
+  // Additional data from API
+  brand?: string;
+  serving_size?: string;
+  nutriments?: any;
+  _raw?: any;
 };
 
 type FoodSearchModalProps = {
@@ -188,6 +196,13 @@ function FoodItemCard({ food, onAddPress }: FoodItemCardProps) {
             resizeMode="cover"
             style={{ borderRadius: theme.borderRadius.xl }}
           />
+        ) : food.imageUrl ? (
+          <Image
+            source={{ uri: food.imageUrl }}
+            className="h-full w-full"
+            resizeMode="cover"
+            style={{ borderRadius: theme.borderRadius.xl }}
+          />
         ) : food.icon ? (
           <Text className="text-xl">{food.icon}</Text>
         ) : (
@@ -281,9 +296,24 @@ export function FoodSearchModal({
 }: FoodSearchModalProps) {
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [activeFilter, setActiveFilter] = useState('all');
   const [selectedFood, setSelectedFood] = useState<FoodItem | null>(null);
+  const [selectedBarcode, setSelectedBarcode] = useState<string | null>(null);
   const [isFoodDetailsVisible, setIsFoodDetailsVisible] = useState(false);
+
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Use the search hooks
+  const { data: foods = [], isLoading, error } = useFoodSearch(debouncedSearch);
+  const { data: productDetails, isLoading: isLoadingDetails } = useProductDetails(selectedBarcode);
 
   const FILTER_TABS = [
     { id: 'all', label: t('foodSearch.filters.allResults') },
@@ -291,6 +321,38 @@ export function FoodSearchModal({
     { id: 'meals', label: t('foodSearch.filters.meals') },
     { id: 'recipes', label: t('foodSearch.filters.recipes') },
   ];
+
+  const handleFoodClick = (food: FoodProduct) => {
+    setSelectedBarcode(food.id);
+
+    // Convert FoodProduct to FoodItem format
+    const foodItem: FoodItem = {
+      id: food.id,
+      name: food.name,
+      description: `${food.brand || 'Generic'} • ${formatCalories(food)}`,
+      brand: food.brand,
+      imageUrl: food.image_url,
+      serving_size: food.serving_size,
+      nutriments: food.nutriments,
+      _raw: food._raw,
+    };
+
+    setSelectedFood(foodItem);
+    setIsFoodDetailsVisible(true);
+  };
+
+  const formatCalories = useCallback((food: FoodProduct) => {
+    const kcalPer100g = food.nutriments?.['energy-kcal_100g'];
+    const kcalServing = food.nutriments?.['energy-kcal_serving'];
+
+    if (kcalPer100g) {
+      return `${Math.round(kcalPer100g)} kcal / 100g`;
+    }
+    if (kcalServing && food.serving_size) {
+      return `${Math.round(kcalServing)} kcal / ${food.serving_size}`;
+    }
+    return 'Nutrition info unavailable';
+  }, []);
 
   const headerRight = (
     <Pressable onPress={onCreatePress}>
@@ -362,47 +424,108 @@ export function FoodSearchModal({
           contentContainerStyle={{ backgroundColor: theme.colors.background.primary }}
         >
           <View className="gap-4 p-4 pb-20">
-            {/* Recent History Section */}
-            <View>
-              <SectionHeader
-                title={t('foodSearch.recentHistory')}
-                rightAction={{
-                  label: t('foodSearch.viewAll'),
-                  onPress: () => {
-                    // Handle view all
-                  },
-                }}
-              />
-              <View className="gap-1.5">
-                {RECENT_HISTORY.map((food) => (
-                  <FoodItemCard
-                    key={food.id}
-                    food={food}
-                    onAddPress={() => {
-                      setSelectedFood(food);
-                      setIsFoodDetailsVisible(true);
-                    }}
-                  />
-                ))}
-              </View>
-            </View>
+            {/* Search Results Section */}
+            {searchQuery ? (
+              <View>
+                <SectionHeader
+                  title={isLoading ? 'SEARCHING...' : 'BEST MATCHES'}
+                  rightAction={{
+                    label: t('foodSearch.viewAll'),
+                    onPress: () => {
+                      // Handle view all
+                    },
+                  }}
+                />
+                <View className="gap-1.5">
+                  {isLoading ? (
+                    <View className="flex items-center justify-center py-12">
+                      <ActivityIndicator size="large" color={theme.colors.accent.primary} />
+                    </View>
+                  ) : null}
 
-            {/* Common Foods Section */}
-            <View>
-              <SectionHeader title={t('foodSearch.commonBreakfastFoods')} icon={Sparkles} />
-              <View className="gap-1.5">
-                {COMMON_FOODS.map((food) => (
-                  <FoodItemCard
-                    key={food.id}
-                    food={food}
-                    onAddPress={() => {
-                      setSelectedFood(food);
-                      setIsFoodDetailsVisible(true);
-                    }}
-                  />
-                ))}
+                  {error ? (
+                    <View className="py-8 text-center">
+                      <Text className="text-center text-text-secondary">
+                        Error loading food data. Please try again.
+                      </Text>
+                    </View>
+                  ) : null}
+
+                  {!isLoading && !error && foods.length === 0 && debouncedSearch ? (
+                    <View className="py-8 text-center">
+                      <Text className="text-center text-text-secondary">
+                        {`No results found for "${debouncedSearch}"`}
+                      </Text>
+                    </View>
+                  ) : null}
+
+                  {!isLoading && !error && foods.length > 0
+                    ? foods.map((food) => (
+                        <FoodItemCard
+                          key={food.id}
+                          food={{
+                            id: food.id,
+                            name: food.name,
+                            description: `${food.brand || 'Generic'} • ${formatCalories(food)}`,
+                            brand: food.brand,
+                            imageUrl: food.image_url,
+                            serving_size: food.serving_size,
+                            nutriments: food.nutriments,
+                            _raw: food._raw,
+                          }}
+                          onAddPress={() => handleFoodClick(food)}
+                        />
+                      ))
+                    : null}
+                </View>
               </View>
-            </View>
+            ) : null}
+
+            {/* Recent History Section - Only show when not searching */}
+            {!searchQuery ? (
+              <View>
+                <SectionHeader
+                  title={t('foodSearch.recentHistory')}
+                  rightAction={{
+                    label: t('foodSearch.viewAll'),
+                    onPress: () => {
+                      // Handle view all
+                    },
+                  }}
+                />
+                <View className="gap-1.5">
+                  {RECENT_HISTORY.map((food) => (
+                    <FoodItemCard
+                      key={food.id}
+                      food={food}
+                      onAddPress={() => {
+                        setSelectedFood(food);
+                        setIsFoodDetailsVisible(true);
+                      }}
+                    />
+                  ))}
+                </View>
+              </View>
+            ) : null}
+
+            {/* Common Foods Section - Only show when not searching */}
+            {!searchQuery ? (
+              <View>
+                <SectionHeader title={t('foodSearch.commonBreakfastFoods')} icon={Sparkles} />
+                <View className="gap-1.5">
+                  {COMMON_FOODS.map((food) => (
+                    <FoodItemCard
+                      key={food.id}
+                      food={food}
+                      onAddPress={() => {
+                        setSelectedFood(food);
+                        setIsFoodDetailsVisible(true);
+                      }}
+                    />
+                  ))}
+                </View>
+              </View>
+            ) : null}
           </View>
         </ScrollView>
       </View>
