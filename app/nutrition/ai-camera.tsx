@@ -1,9 +1,19 @@
-import { useState, useRef, useEffect } from 'react';
-import { View, Text, Pressable, StyleSheet, Dimensions, StatusBar, Animated } from 'react-native';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import {
+  View,
+  Text,
+  Pressable,
+  StyleSheet,
+  Dimensions,
+  StatusBar,
+  Animated,
+  Alert,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { LinearGradient } from 'expo-linear-gradient';
+import * as ImagePicker from 'expo-image-picker';
 import {
   X,
   LightbulbOff,
@@ -62,7 +72,7 @@ export default function AICameraScreen() {
     }
   }, [permission, requestPermission]);
 
-  const handleTakePicture = async () => {
+  const handleTakePicture = useCallback(async () => {
     if (!cameraRef.current) return;
 
     try {
@@ -75,9 +85,9 @@ export default function AICameraScreen() {
     } catch (error) {
       console.error('Error taking picture:', error);
     }
-  };
+  }, []);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     try {
       const canGoBack =
         typeof router.canGoBack === 'function' ? router.canGoBack() : !!(router as any).canGoBack;
@@ -89,20 +99,56 @@ export default function AICameraScreen() {
     } catch {
       router.replace('/');
     }
-  };
+  }, [router]);
 
-  const handleFlashToggle = () => {
+  const handleFlashToggle = useCallback(() => {
     setFlashEnabled(!flashEnabled);
-  };
+  }, [flashEnabled]);
 
-  const handleModeChange = (mode: CameraMode) => {
+  const handleModeChange = useCallback((mode: CameraMode) => {
     setCameraMode(mode);
-  };
+  }, []);
 
-  const handleApplyContext = (context: { description: string; tags: string[] }) => {
+  const handleApplyContext = useCallback((context: { description: string; tags: string[] }) => {
     // TODO: Apply context to AI processing
     console.log('Context applied:', context);
-  };
+  }, []);
+
+  const handleGalleryPress = useCallback(async () => {
+    try {
+      // Request media library permissions
+      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+      if (!permissionResult.granted) {
+        Alert.alert(t('common.permissionRequired'), t('food.aiCamera.galleryPermissionRequired'), [
+          { text: t('common.ok') },
+        ]);
+
+        return;
+      }
+
+      // Launch image picker
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 0.8,
+        base64: false,
+      });
+
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        const selectedAsset = result.assets[0];
+        console.log('Image selected from gallery:', selectedAsset.uri);
+
+        // TODO: Process the selected image based on current camera mode
+        // For now, just log the selection
+        // You could navigate to a processing screen or handle the image here
+      }
+    } catch (error) {
+      console.error('Error picking image from gallery:', error);
+      Alert.alert(t('common.error'), t('food.aiCamera.galleryError'), [{ text: t('common.ok') }]);
+    }
+  }, [t]);
 
   if (!permission) {
     return (
@@ -389,7 +435,6 @@ export default function AICameraScreen() {
 
           {/* Camera Controls */}
           <View className="flex-row items-center justify-between px-2">
-            {/* Gallery Thumbnail */}
             <Pressable
               className="h-12 w-12 items-center justify-center overflow-hidden rounded-lg"
               style={{
@@ -397,6 +442,7 @@ export default function AICameraScreen() {
                 borderWidth: theme.borderWidth.thin,
                 borderColor: theme.colors.background.white10,
               }}
+              onPress={handleGalleryPress}
             >
               <View className="h-full w-full p-1">
                 <View
