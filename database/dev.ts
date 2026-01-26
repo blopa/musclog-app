@@ -1405,6 +1405,46 @@ export async function seedFoods(): Promise<{ created: number }> {
         });
         created++;
       }
+
+      // Seed a few nutrition logs referencing the foods we just created
+      const seededFoods = await database.get<Food>('foods').query().fetch();
+      const foodByName = new Map<string, Food>(
+        seededFoods.map((f) => [f.name.toLowerCase(), f])
+      );
+
+      const daysAgo = (days: number): number => {
+        const date = new Date();
+        date.setDate(date.getDate() - days);
+        date.setHours(0, 0, 0, 0); // midnight for the day
+        return date.getTime();
+      };
+
+      const nutritionLogs = [
+        { name: 'Banana', daysAgo: 0, type: 'breakfast', amount: 1 },
+        { name: 'Greek Yogurt', daysAgo: 0, type: 'snack', amount: 150 },
+        { name: 'Chicken Breast', daysAgo: 0, type: 'lunch', amount: 200 },
+        { name: 'Brown Rice', daysAgo: 0, type: 'lunch', amount: 150 },
+        { name: 'Salmon', daysAgo: 0, type: 'dinner', amount: 180 },
+        { name: 'Sweet Potato', daysAgo: 0, type: 'dinner', amount: 200 },
+        { name: 'Protein Power Smoothie', daysAgo: 2, type: 'snack', amount: 1 },
+        { name: 'Mediterranean Quinoa Bowl', daysAgo: 3, type: 'lunch', amount: 1 },
+      ];
+
+      for (const nl of nutritionLogs) {
+        const f = foodByName.get(nl.name.toLowerCase());
+        if (!f) continue;
+
+        await database.get<any>('nutrition_logs').create((log: any) => {
+          log.foodId = f.id;
+          log.date = daysAgo(nl.daysAgo);
+          log.type = nl.type;
+          log.amount = nl.amount;
+          log.portionId = undefined;
+          log.createdAt = now;
+          log.updatedAt = now;
+        });
+        created++;
+      }
     });
 
     console.log(`Seeded foods database: ${created} foods created`);
