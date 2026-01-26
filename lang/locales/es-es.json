@@ -264,7 +264,10 @@
     "goHome": "Ir a Inicio",
     "youCrushedIt": "¡Lo Lograste!",
     "feedbackSubmitted": "Feedback del entrenamiento enviado exitosamente.",
-    "shareSummary": "Compartir Resumen"
+    "shareSummary": "Compartir Resumen",
+    "noWorkoutId": "No se proporcionó ID de entrenamiento",
+    "failedToLoad": "Error al cargar resumen del entrenamiento",
+    "unableToLoad": "No se pudo cargar el resumen del entrenamiento. Por favor intenta de nuevo."
   },
   "pastWorkoutHistory": {
     "title": "Historial de Entrenamientos",
@@ -393,9 +396,22 @@
     "filters": {
       "allResults": "Todos los Resultados",
       "myFoods": "Mis Alimentos",
+      "openFoodFacts": "Open Food Facts",
       "meals": "Comidas",
       "recipes": "Recetas"
-    }
+    },
+    "searching": "BUSCANDO...",
+    "bestMatches": "MEJORES RESULTADOS",
+    "noResults": "SIN RESULTADOS",
+    "searchingLocalAndAPI": "Buscando alimentos locales y Open Food Facts...",
+    "searchingLocal": "Buscando alimentos locales...",
+    "searchingAPI": "Buscando en Open Food Facts...",
+    "loadingMore": "Cargando más...",
+    "loadMoreLocal": "Cargar más alimentos locales",
+    "loadMoreAPI": "Cargar más de Open Food Facts",
+    "noResultsFor": "No se encontraron resultados para \"{{query}}\"",
+    "trySomethingElse": "Intenta buscar algo más o crea un alimento personalizado",
+    "noRecentFoods": "No se encontraron alimentos recientes. ¡Comienza a buscar o agrega alimentos personalizados!"
   },
   "startWorkout": {
     "label": "Iniciar Entrenamiento",

@@ -527,9 +527,22 @@
     "filters": {
       "allResults": "All Results",
       "myFoods": "My Foods",
+      "openFoodFacts": "Open Food Facts",
       "meals": "Meals",
       "recipes": "Recipes"
-    }
+    },
+    "searching": "SEARCHING...",
+    "bestMatches": "BEST MATCHES",
+    "noResults": "NO RESULTS",
+    "searchingLocalAndAPI": "Searching local foods and Open Food Facts...",
+    "searchingLocal": "Searching local foods...",
+    "searchingAPI": "Searching Open Food Facts...",
+    "loadingMore": "Loading more...",
+    "loadMoreLocal": "Load more local foods",
+    "loadMoreAPI": "Load more from Open Food Facts",
+    "noResultsFor": "No results found for \"{{query}}\"",
+    "trySomethingElse": "Try searching for something else or create a custom food",
+    "noRecentFoods": "No recent foods found. Start searching or add custom foods!"
   },
   "endWorkout": {
     "title": "End Workout",
@@ -719,7 +732,10 @@
     "goHome": "Go Home",
     "youCrushedIt": "You Crushed It!",
     "feedbackSubmitted": "Workout feedback submitted successfully.",
-    "shareSummary": "Share Summary"
+    "shareSummary": "Share Summary",
+    "noWorkoutId": "No workout ID provided",
+    "failedToLoad": "Failed to load workout summary",
+    "unableToLoad": "Unable to load workout summary. Please try again."
   },
   "nutritionGoals": {
     "title": "Set Nutrition & Body Goals",

@@ -409,7 +409,10 @@
     "goHome": "Naar huis",
     "youCrushedIt": "Je hebt het gedaan!",
     "feedbackSubmitted": "Trainingsfeedback succesvol verzonden.",
-    "shareSummary": "Samenvatting delen"
+    "shareSummary": "Samenvatting delen",
+    "noWorkoutId": "Geen training ID verstrekt",
+    "failedToLoad": "Kan samenvatting van training niet laden",
+    "unableToLoad": "Kan samenvatting van training niet laden. Probeer het opnieuw."
   },
   "pastWorkoutHistory": {
     "title": "Trainingsgeschiedenis",
@@ -543,5 +546,30 @@
     },
     "connectWithGoogle": "Verbinden met Google",
     "maybeLater": "Misschien later"
+  },
+  "foodSearch": {
+    "recentHistory": "Recente Geschiedenis",
+    "viewAll": "Alles Bekijken",
+    "commonBreakfastFoods": "Gebruikelijke Ontbijtgerechten",
+    "createMeal": "+ Maaltijd Maken",
+    "filters": {
+      "allResults": "Alle Resultaten",
+      "myFoods": "Mijn Voeding",
+      "openFoodFacts": "Open Food Facts",
+      "meals": "Maaltijden",
+      "recipes": "Recepten"
+    },
+    "searching": "ZOEKEN...",
+    "bestMatches": "BESTE RESULTATEN",
+    "noResults": "GEEN RESULTATEN",
+    "searchingLocalAndAPI": "Lokale voeding en Open Food Facts doorzoeken...",
+    "searchingLocal": "Lokale voeding doorzoeken...",
+    "searchingAPI": "Open Food Facts doorzoeken...",
+    "loadingMore": "Meer laden...",
+    "loadMoreLocal": "Meer lokale voeding laden",
+    "loadMoreAPI": "Meer van Open Food Facts laden",
+    "noResultsFor": "Geen resultaten gevonden voor \"{{query}}\"",
+    "trySomethingElse": "Probeer iets anders te zoeken of maak aangepast voedsel",
+    "noRecentFoods": "Geen recente voeding gevonden. Begin met zoeken of voeg aangepaste voeding toe!"
   }
 }

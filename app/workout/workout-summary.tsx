@@ -5,9 +5,11 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { WorkoutService } from '../../database/services/WorkoutService';
 import { ErrorStateCard } from '../../components/theme/ErrorStateCard';
 import { WifiOff } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
 
 export default function WorkoutSummaryScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const params = useLocalSearchParams<{ workoutLogId?: string }>();
   const workoutLogId = params.workoutLogId;
@@ -21,7 +23,7 @@ export default function WorkoutSummaryScreen() {
   useEffect(() => {
     const loadWorkoutData = async () => {
       if (!workoutLogId) {
-        setError('No workout ID provided');
+        setError(t('workout.summary.noWorkoutId'));
         setIsLoading(false);
         return;
       }
@@ -78,7 +80,7 @@ export default function WorkoutSummaryScreen() {
         setIsLoading(false);
       } catch (err) {
         console.error('Error loading workout summary:', err);
-        setError(err instanceof Error ? err.message : 'Failed to load workout summary');
+        setError(err instanceof Error ? err.message : t('workout.summary.failedToLoad'));
         setIsLoading(false);
       }
     };
@@ -109,8 +111,8 @@ export default function WorkoutSummaryScreen() {
         <ErrorStateCard
           icon={WifiOff}
           title={error}
-          description="Unable to load workout summary. Please try again."
-          buttonLabel="Go Home"
+          description={t('workout.summary.unableToLoad')}
+          buttonLabel={t('common.goHome')}
           onButtonPress={handleGoHome}
         />
       </View>

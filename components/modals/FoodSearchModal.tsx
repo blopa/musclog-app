@@ -315,7 +315,7 @@ export function FoodSearchModal({
   const FILTER_TABS = [
     { id: 'all', label: `${t('foodSearch.filters.allResults')} (${resultsBySource.all.length})` },
     { id: 'myFoods', label: `${t('foodSearch.filters.myFoods')} (${localCount})` },
-    { id: 'api', label: `Open Food Facts (${apiCount})` },
+    { id: 'api', label: `${t('foodSearch.filters.openFoodFacts')} (${apiCount})` },
     { id: 'meals', label: t('foodSearch.filters.meals') },
     { id: 'recipes', label: t('foodSearch.filters.recipes') },
   ];
@@ -410,10 +410,10 @@ export function FoodSearchModal({
                 <SectionHeader
                   title={
                     isInitialLoad
-                      ? 'SEARCHING...'
+                      ? t('foodSearch.searching')
                       : hasLocalResults || hasApiResults || isLoadingAPI
-                        ? 'BEST MATCHES'
-                        : 'NO RESULTS'
+                        ? t('foodSearch.bestMatches')
+                        : t('foodSearch.noResults')
                   }
                 />
                 <View className="gap-1.5">
@@ -423,10 +423,10 @@ export function FoodSearchModal({
                       <ActivityIndicator size="large" color={theme.colors.accent.primary} />
                       <Text className="mt-2 text-sm text-text-secondary">
                         {isLoadingLocal && isLoadingAPI
-                          ? 'Searching local foods and Open Food Facts...'
+                          ? t('foodSearch.searchingLocalAndAPI')
                           : isLoadingLocal
-                            ? 'Searching local foods...'
-                            : 'Searching Open Food Facts...'}
+                            ? t('foodSearch.searchingLocal')
+                            : t('foodSearch.searchingAPI')}
                       </Text>
                     </View>
                   ) : null}
@@ -468,7 +468,9 @@ export function FoodSearchModal({
                             <View className="py-3">
                               <Button
                                 label={
-                                  isLoadingMoreLocal ? 'Loading more...' : `Load more local foods`
+                                  isLoadingMoreLocal
+                                    ? t('foodSearch.loadingMore')
+                                    : t('foodSearch.loadMoreLocal')
                                 }
                                 onPress={loadMoreLocal}
                                 size="sm"
@@ -513,8 +515,8 @@ export function FoodSearchModal({
                               <Button
                                 label={
                                   isLoadingMoreAPI
-                                    ? 'Loading more...'
-                                    : `Load more from Open Food Facts`
+                                    ? t('foodSearch.loadingMore')
+                                    : t('foodSearch.loadMoreAPI')
                                 }
                                 onPress={loadMoreAPI}
                                 size="sm"
@@ -534,7 +536,7 @@ export function FoodSearchModal({
                     <View className="flex items-center justify-center py-4">
                       <ActivityIndicator size="small" color={theme.colors.accent.primary} />
                       <Text className="ml-2 text-xs text-text-secondary">
-                        Searching Open Food Facts...
+                        {t('foodSearch.searchingAPI')}
                       </Text>
                     </View>
                   ) : null}
@@ -547,11 +549,11 @@ export function FoodSearchModal({
                   searchQuery ? (
                     <View className="py-8 text-center">
                       <Text className="text-center text-text-secondary">
-                        {`No results found for "${searchQuery}"`}
+                        {t('foodSearch.noResultsFor', { query: searchQuery })}
                       </Text>
                       {localCount === 0 && apiCount === 0 ? (
                         <Text className="mt-2 text-center text-sm text-text-tertiary">
-                          Try searching for something else or create a custom food
+                          {t('foodSearch.trySomethingElse')}
                         </Text>
                       ) : null}
                     </View>
@@ -605,7 +607,7 @@ export function FoodSearchModal({
                   ) : (
                     <View className="py-8 text-center">
                       <Text className="text-center text-text-tertiary">
-                        No recent foods found. Start searching or add custom foods!
+                        {t('foodSearch.noRecentFoods')}
                       </Text>
                     </View>
                   )}
