@@ -171,15 +171,42 @@ export function useUnifiedFoodSearch({
 
     const allResults = [...localResults, ...apiResultsFormatted];
 
-    // Simple deduplication by name (case-insensitive)
-    const seen = new Set<string>();
+    // Debug logging
+    console.log('🔍 Deduplication Debug:', {
+      searchTerm: debouncedSearchTerm,
+      localCount: localResults.length,
+      apiCount: apiResultsFormatted.length,
+      totalBefore: allResults.length,
+      localItems: localResults.map(r => ({ name: r.name, barcode: r.id })),
+      apiItems: apiResultsFormatted.map(r => ({ name: r.name, barcode: r.id }))
+    });
+
+    // Deduplication logic:
+    // 1. If same barcode exists, keep local version (user's data)
+    // 2. If no barcode, deduplicate by name (case-insensitive)
+    const seenBarcodes = new Set<string>();
+    const seenNames = new Set<string>();
+
     return allResults.filter((result) => {
+      const barcode = result.id; // Both local and API foods use 'id' for barcode
       const normalizedName = result.name.toLowerCase().trim();
-      if (seen.has(normalizedName)) {
+
+      // Priority 1: Deduplicate by barcode
+      if (barcode) {
+        if (seenBarcodes.has(barcode)) {
+          return false;
+        }
+
+        seenBarcodes.add(barcode);
+        return true;
+      }
+
+      // Priority 2: For items without barcode, deduplicate by name
+      if (seenNames.has(normalizedName)) {
         return false;
       }
 
-      seen.add(normalizedName);
+      seenNames.add(normalizedName);
       return true;
     });
   }, [localResults, apiResultsFormatted, debouncedSearchTerm]);

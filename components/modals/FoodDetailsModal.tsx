@@ -212,6 +212,7 @@ export function FoodDetailsModal({
           sodium: nutritionalData.sodium,
           salt: nutritionalData.salt,
         });
+
         foodId = newFood.id;
       } else {
         // This is a local food, we need to find its ID
