@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable, Alert } from 'react-native';
 import { Calendar, Edit, PlusCircle } from 'lucide-react-native';
 import { format, isSameDay } from 'date-fns';
 import { useTranslation } from 'react-i18next';
@@ -12,6 +12,7 @@ import { FoodInfoCard } from '../cards/FoodInfoCard';
 import { ServingSizeSelector } from '../ServingSizeSelector';
 import { useProductDetails } from '../../hooks/useSearchFood';
 import { isSuccessFoodProductState } from '../../types/guards/openFoodFacts';
+import { FoodService, NutritionService } from '../../database/services';
 
 type FoodDetailsModalProps = {
   visible: boolean;
@@ -29,6 +30,7 @@ type FoodDetailsModalProps = {
   serving_size?: string;
   nutriments?: any;
   _raw?: any;
+  source?: 'local' | 'api'; // Determine if food is from local DB or API
   onAddFood?: (data: { servingSize: number; meal: string; date: Date }) => void;
 };
 
@@ -48,6 +50,7 @@ export function FoodDetailsModal({
   serving_size,
   nutriments,
   _raw,
+  source = 'local', // Default to local
   onAddFood,
 }: FoodDetailsModalProps) {
   const { t } = useTranslation();
@@ -192,13 +195,64 @@ export function FoodDetailsModal({
     { id: 'other', label: t('food.meals.trackOther') },
   ];
 
-  const handleAddFood = () => {
-    onAddFood?.({
-      servingSize,
-      meal: selectedMeal,
-      date: selectedDate,
-    });
-    onClose();
+  const handleAddFood = async () => {
+    try {
+      let foodId: string;
+
+      if (source === 'api' && _raw) {
+        // This is an API food, save it to local database first
+        const newFood = await FoodService.createFromV3Product(_raw, {
+          calories: nutritionalData.calories,
+          protein: nutritionalData.protein,
+          carbs: nutritionalData.carbs,
+          fat: nutritionalData.fat,
+          fiber: nutritionalData.fiber,
+          sugars: nutritionalData.sugars,
+          saturatedFat: nutritionalData.saturatedFat,
+          sodium: nutritionalData.sodium,
+          salt: nutritionalData.salt,
+        });
+        foodId = newFood.id;
+      } else {
+        // This is a local food, we need to find its ID
+        // For now, we'll assume the food object has an id or we need to search for it
+        // This is a limitation - ideally the parent component should pass the food ID
+        if ('id' in food && typeof food.id === 'string') {
+          foodId = food.id;
+        } else {
+          // Try to find the food by name (this is not ideal but a fallback)
+          const existingFoods = await FoodService.searchFoods(food.name);
+          const matchingFood = existingFoods.find((f) => f.name === food.name);
+          if (!matchingFood) {
+            throw new Error('Local food not found in database');
+          }
+          foodId = matchingFood.id;
+        }
+      }
+
+      // Create nutrition log
+      await NutritionService.logFood(
+        foodId,
+        selectedDate,
+        selectedMeal as any, // Type assertion since our meal types match
+        servingSize
+      );
+
+      // Call the original callback if provided
+      onAddFood?.({
+        servingSize,
+        meal: selectedMeal,
+        date: selectedDate,
+      });
+
+      onClose();
+
+      // Show success message
+      Alert.alert('Success', 'Food tracked successfully!', [{ text: 'OK' }]);
+    } catch (error) {
+      console.error('Error tracking food:', error);
+      Alert.alert('Error', 'Failed to track food. Please try again.', [{ text: 'OK' }]);
+    }
   };
 
   return (

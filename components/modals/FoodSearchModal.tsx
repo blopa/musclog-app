@@ -550,6 +550,7 @@ export function FoodSearchModal({
           serving_size={selectedFood.serving_size}
           nutriments={selectedFood.nutriments}
           _raw={selectedFood._raw}
+          source={selectedFood.source}
           onAddFood={(data) => {
             // Call the original onFoodSelect with the food and additional data
             onFoodSelect?.({

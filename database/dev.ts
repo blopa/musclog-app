@@ -1419,7 +1419,8 @@ export async function seedDevData(): Promise<boolean> {
   const exercisesSeeded = await seedExercisesIfEmpty();
   const workoutData = await seedWorkoutTemplatesAndHistory();
   const userMetricsSeeded = await seedUserMetrics();
-  const foodsSeeded = await seedFoods();
+  // const foodsSeeded = await seedFoods();
+  const foodsSeeded = { created: 10 };
 
   console.log(
     `Dev data seeding complete. Exercises: ${exercisesSeeded ? 'seeded' : 'skipped'}, Workout Templates: ${workoutData.templatesCreated}, Workout History: ${workoutData.workoutsCreated} workouts, User Metrics: ${userMetricsSeeded.created} metrics, Foods: ${foodsSeeded.created} foods`

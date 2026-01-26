@@ -371,7 +371,6 @@ export default function FoodScreen() {
           console.log('Barcode scan pressed');
         }}
         onFoodSelect={(food) => {
-          console.log('Food selected:', food);
           // Handle food selection (e.g., add to meal)
           setIsFoodSearchModalVisible(false);
         }}
