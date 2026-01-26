@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -407,16 +407,6 @@ export function FoodSearchModal({
                       : hasLocalResults || hasApiResults || isLoadingAPI
                         ? 'BEST MATCHES' 
                         : 'NO RESULTS'
-                  }
-                  rightAction={
-                    !isInitialLoad && (hasLocalResults || hasApiResults)
-                      ? {
-                          label: t('foodSearch.viewAll'),
-                          onPress: () => {
-                            // Handle view all
-                          },
-                        }
-                      : undefined
                   }
                 />
                 <View className="gap-1.5">
