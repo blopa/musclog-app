@@ -43,22 +43,25 @@ export function useUnifiedFoodSearch({
   debounceMs = 300,
 }: UseUnifiedFoodSearchProps) {
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
+  const [apiCompleted, setApiCompleted] = useState(false);
 
   // Debounce search term
   useEffect(() => {
     if (!searchTerm || searchTerm.trim().length < 2) {
       setDebouncedSearchTerm('');
+      setApiCompleted(false);
       return;
     }
 
     const timer = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm.trim());
+      setApiCompleted(false);
     }, debounceMs);
 
     return () => clearTimeout(timer);
   }, [searchTerm, debounceMs]);
 
-  // Local database search
+  // Local database search - immediate results
   const { foods: localFoods, isLoading: isLoadingLocal } = useFoods({
     mode: 'search',
     searchTerm: includeLocal ? debouncedSearchTerm : '',
@@ -66,11 +69,12 @@ export function useUnifiedFoodSearch({
     enableReactivity: true,
   });
 
-  // API search using existing hook logic
+  // API search using existing hook logic - runs in background
   const {
     data: apiResults = [],
     isLoading: isLoadingAPI,
     error: apiError,
+    isSuccess: isApiSuccess,
   } = useQuery({
     queryKey: ['food-search-api', debouncedSearchTerm],
     queryFn: async () => {
@@ -103,6 +107,13 @@ export function useUnifiedFoodSearch({
       enabled && includeAPI && Boolean(debouncedSearchTerm && debouncedSearchTerm.length >= 2),
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
+
+  // Track when API completes
+  useEffect(() => {
+    if (isApiSuccess && !isLoadingAPI) {
+      setApiCompleted(true);
+    }
+  }, [isApiSuccess, isLoadingAPI]);
 
   // Convert local foods to unified format
   const localResults = useMemo(() => {
@@ -152,7 +163,7 @@ export function useUnifiedFoodSearch({
     });
   }, [apiResults, includeAPI]);
 
-  // Combine and deduplicate results
+  // Combine and deduplicate results - updates when API completes
   const combinedResults = useMemo(() => {
     if (!debouncedSearchTerm || debouncedSearchTerm.length < 2) {
       return [];
@@ -183,16 +194,26 @@ export function useUnifiedFoodSearch({
     [combinedResults, localResults, apiResultsFormatted]
   );
 
+  // Optimized loading states
+  const isLoading = isLoadingLocal; // Only show loading for local search
+  const isApiLoading = isLoadingAPI;
+  const hasApiResults = apiResultsFormatted.length > 0;
+
   return {
     results: combinedResults,
     resultsBySource,
-    isLoading: isLoadingLocal || isLoadingAPI,
+    isLoading,
     isLoadingLocal,
-    isLoadingAPI,
+    isLoadingAPI: isApiLoading,
+    apiCompleted,
     error: apiError,
     hasResults: combinedResults.length > 0,
     localCount: localResults.length,
     apiCount: apiResultsFormatted.length,
     totalCount: combinedResults.length,
+    // Additional states for UI optimization
+    hasLocalResults: localResults.length > 0,
+    hasApiResults,
+    isInitialLoad: isLoadingLocal && !apiCompleted,
   };
 }

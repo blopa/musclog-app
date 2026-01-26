@@ -272,16 +272,25 @@ export function FoodSearchModal({
   });
 
   // Use unified search for both local and API results
-  const { resultsBySource, isLoading, isLoadingLocal, isLoadingAPI, error, localCount, apiCount } =
-    useUnifiedFoodSearch({
-      searchTerm: searchQuery,
-      enabled: visible,
-      includeLocal: true,
-      includeAPI: true,
-      localLimit: 10,
-      apiLimit: 20,
-      debounceMs: 300,
-    });
+  const { 
+    resultsBySource, 
+    isLoadingLocal,
+    isLoadingAPI, 
+    error,
+    localCount, 
+    apiCount,
+    hasLocalResults,
+    hasApiResults,
+    isInitialLoad
+  } = useUnifiedFoodSearch({
+    searchTerm: searchQuery,
+    enabled: visible,
+    includeLocal: true,
+    includeAPI: true,
+    localLimit: 10,
+    apiLimit: 20,
+    debounceMs: 300,
+  });
 
   // Get filtered results based on active filter
   const filteredResults = useMemo(() => {
@@ -392,16 +401,25 @@ export function FoodSearchModal({
             {searchQuery ? (
               <View>
                 <SectionHeader
-                  title={isLoading ? 'SEARCHING...' : 'BEST MATCHES'}
-                  rightAction={{
-                    label: t('foodSearch.viewAll'),
-                    onPress: () => {
-                      // Handle view all
-                    },
-                  }}
+                  title={
+                    isInitialLoad 
+                      ? 'SEARCHING...' 
+                      : hasLocalResults || hasApiResults 
+                        ? 'BEST MATCHES' 
+                        : 'NO RESULTS'
+                  }
+                  rightAction={
+                    !isInitialLoad && (hasLocalResults || hasApiResults) ? {
+                      label: t('foodSearch.viewAll'),
+                      onPress: () => {
+                        // Handle view all
+                      },
+                    } : undefined
+                  }
                 />
                 <View className="gap-1.5">
-                  {isLoading ? (
+                  {/* Show initial loading state */}
+                  {isInitialLoad ? (
                     <View className="flex items-center justify-center py-12">
                       <ActivityIndicator size="large" color={theme.colors.accent.primary} />
                       <Text className="mt-2 text-sm text-text-secondary">
@@ -414,6 +432,16 @@ export function FoodSearchModal({
                     </View>
                   ) : null}
 
+                  {/* Show API loading indicator at the bottom when local results are already displayed */}
+                  {!isInitialLoad && isLoadingAPI && hasLocalResults ? (
+                    <View className="flex items-center justify-center py-4">
+                      <ActivityIndicator size="small" color={theme.colors.accent.primary} />
+                      <Text className="ml-2 text-xs text-text-secondary">
+                        Searching Open Food Facts...
+                      </Text>
+                    </View>
+                  ) : null}
+
                   {error ? (
                     <View className="py-8 text-center">
                       <Text className="text-center text-text-secondary">
@@ -422,20 +450,8 @@ export function FoodSearchModal({
                     </View>
                   ) : null}
 
-                  {!isLoading && !error && filteredResults.length === 0 && searchQuery ? (
-                    <View className="py-8 text-center">
-                      <Text className="text-center text-text-secondary">
-                        {`No results found for "${searchQuery}"`}
-                      </Text>
-                      {localCount === 0 && apiCount === 0 ? (
-                        <Text className="mt-2 text-center text-sm text-text-tertiary">
-                          Try searching for something else or create a custom food
-                        </Text>
-                      ) : null}
-                    </View>
-                  ) : null}
-
-                  {!isLoading && !error && filteredResults.length > 0
+                  {/* Show results when available */}
+                  {!isInitialLoad && !error && filteredResults.length > 0
                     ? filteredResults.map((food: UnifiedFoodResult) => (
                         <FoodItemCard
                           key={`${food.source}-${food.id}`}
@@ -451,6 +467,20 @@ export function FoodSearchModal({
                         />
                       ))
                     : null}
+
+                  {/* Show no results state */}
+                  {!isInitialLoad && !error && filteredResults.length === 0 && searchQuery ? (
+                    <View className="py-8 text-center">
+                      <Text className="text-center text-text-secondary">
+                        {`No results found for "${searchQuery}"`}
+                      </Text>
+                      {localCount === 0 && apiCount === 0 ? (
+                        <Text className="mt-2 text-center text-sm text-text-tertiary">
+                          Try searching for something else or create a custom food
+                        </Text>
+                      ) : null}
+                    </View>
+                  ) : null}
                 </View>
               </View>
             ) : null}
