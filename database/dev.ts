@@ -1408,9 +1408,7 @@ export async function seedFoods(): Promise<{ created: number }> {
 
       // Seed a few nutrition logs referencing the foods we just created
       const seededFoods = await database.get<Food>('foods').query().fetch();
-      const foodByName = new Map<string, Food>(
-        seededFoods.map((f) => [f.name.toLowerCase(), f])
-      );
+      const foodByName = new Map<string, Food>(seededFoods.map((f) => [f.name.toLowerCase(), f]));
 
       const daysAgo = (days: number): number => {
         const date = new Date();
@@ -1442,6 +1440,28 @@ export async function seedFoods(): Promise<{ created: number }> {
           log.portionId = undefined;
           log.createdAt = now;
           log.updatedAt = now;
+        });
+        created++;
+      }
+
+      // Seed a default nutrition goal if none exist
+      const existingNutritionGoals = await database.get<any>('nutrition_goals').query().fetch();
+      if (existingNutritionGoals.length === 0) {
+        await database.get<any>('nutrition_goals').create((goal: any) => {
+          goal.totalCalories = 2500;
+          goal.protein = 180; // grams
+          goal.carbs = 300; // grams
+          goal.fats = 80; // grams
+          goal.fiber = 30; // grams
+          goal.eatingPhase = 'maintain';
+          goal.targetWeight = 78.5; // kg
+          goal.targetBodyFat = 15.0; // %
+          goal.targetBmi = 24.2;
+          goal.targetFfmi = 19.5;
+          goal.targetDate = undefined;
+          goal.effectiveUntil = undefined;
+          goal.createdAt = now;
+          goal.updatedAt = now;
         });
         created++;
       }
