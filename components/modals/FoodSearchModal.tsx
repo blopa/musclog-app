@@ -547,6 +547,10 @@ export function FoodSearchModal({
             carbs: selectedFood.carbs || 0,
             fat: selectedFood.fat || 0,
           }}
+          barcode={selectedFood.id}
+          serving_size={selectedFood.serving_size}
+          nutriments={selectedFood.nutriments}
+          _raw={selectedFood._raw}
           onAddFood={(data) => {
             // Call the original onFoodSelect with the food and additional data
             onFoodSelect?.({
