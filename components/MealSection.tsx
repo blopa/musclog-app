@@ -42,7 +42,7 @@ export function MealSection({ title, totalCalories, children, onAddFood }: MealS
       <View className="mb-4 flex-row items-center justify-between">
         <Text className="text-2xl font-bold text-text-primary">{title}</Text>
         <Text className="text-lg text-text-secondary">
-          {totalCalories} {t('food.common.kcal')}
+          {totalCalories.toLocaleString('en-US', { useGrouping: false })} {t('food.common.kcal')}
         </Text>
       </View>
 

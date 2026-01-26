@@ -105,12 +105,12 @@ export default function FoodScreen() {
   // Calculate calories remaining and macros
   const caloriesData = useMemo(() => {
     const totalCalories = nutritionGoal?.totalCalories || 2500;
-    const consumedCalories = dailyNutrients?.calories || 0;
+    const consumedCalories = Math.ceil(dailyNutrients?.calories || 0);
     const remainingCalories = Math.max(0, totalCalories - consumedCalories);
     const percentage = Math.round((consumedCalories / totalCalories) * 100);
 
     return {
-      remaining: remainingCalories,
+      remaining: Math.ceil(remainingCalories),
       total: totalCalories,
       percentage,
     };
@@ -350,14 +350,14 @@ export default function FoodScreen() {
                 {mealsByType.breakfast && mealsByType.breakfast.length > 0 ? (
                   <MealSection
                     title={t('food.meals.breakfast')}
-                    totalCalories={dailyNutrients?.byMealType?.breakfast?.calories || 0}
+                    totalCalories={Math.ceil(dailyNutrients?.byMealType?.breakfast?.calories || 0)}
                   >
                     {mealsByType.breakfast.map((entry) => (
                       <FoodItemCard
                         key={entry.log.id}
                         name={entry.food.name}
                         description={`${Math.round(entry.gramWeight)} ${entry.food.servingUnit || 'g'}`}
-                        calories={Math.round(entry.nutrients.calories)}
+                        calories={Math.ceil(entry.nutrients.calories)}
                         image={
                           entry.food.imageUrl
                             ? { uri: entry.food.imageUrl }
@@ -372,14 +372,14 @@ export default function FoodScreen() {
                 {mealsByType.lunch && mealsByType.lunch.length > 0 ? (
                   <MealSection
                     title={t('food.meals.lunch')}
-                    totalCalories={dailyNutrients?.byMealType?.lunch?.calories || 0}
+                    totalCalories={Math.ceil(dailyNutrients?.byMealType?.lunch?.calories || 0)}
                   >
                     {mealsByType.lunch.map((entry) => (
                       <FoodItemCard
                         key={entry.log.id}
                         name={entry.food.name}
                         description={`${Math.round(entry.gramWeight)} ${entry.food.servingUnit || 'g'}`}
-                        calories={Math.round(entry.nutrients.calories)}
+                        calories={Math.ceil(entry.nutrients.calories)}
                         image={
                           entry.food.imageUrl
                             ? { uri: entry.food.imageUrl }
@@ -394,14 +394,14 @@ export default function FoodScreen() {
                 {mealsByType.dinner && mealsByType.dinner.length > 0 ? (
                   <MealSection
                     title={t('food.meals.dinner')}
-                    totalCalories={dailyNutrients?.byMealType?.dinner?.calories || 0}
+                    totalCalories={Math.ceil(dailyNutrients?.byMealType?.dinner?.calories || 0)}
                   >
                     {mealsByType.dinner.map((entry) => (
                       <FoodItemCard
                         key={entry.log.id}
                         name={entry.food.name}
                         description={`${Math.round(entry.gramWeight)} ${entry.food.servingUnit || 'g'}`}
-                        calories={Math.round(entry.nutrients.calories)}
+                        calories={Math.ceil(entry.nutrients.calories)}
                         image={
                           entry.food.imageUrl
                             ? { uri: entry.food.imageUrl }
@@ -416,14 +416,14 @@ export default function FoodScreen() {
                 {mealsByType.snack && mealsByType.snack.length > 0 ? (
                   <MealSection
                     title={t('food.meals.snacks')}
-                    totalCalories={dailyNutrients?.byMealType?.snack?.calories || 0}
+                    totalCalories={Math.ceil(dailyNutrients?.byMealType?.snack?.calories || 0)}
                   >
                     {mealsByType.snack.map((entry) => (
                       <FoodItemCard
                         key={entry.log.id}
                         name={entry.food.name}
                         description={`${Math.round(entry.gramWeight)} ${entry.food.servingUnit || 'g'}`}
-                        calories={Math.round(entry.nutrients.calories)}
+                        calories={Math.ceil(entry.nutrients.calories)}
                         image={
                           entry.food.imageUrl
                             ? { uri: entry.food.imageUrl }

@@ -43,10 +43,10 @@ export function CaloriesRemainingCard({ calories, macros }: CaloriesRemainingCar
           <Text className="mb-2 text-sm text-text-secondary">{t('food.caloriesRemaining')}</Text>
           <View className="mb-1 flex-row items-baseline gap-2">
             <Text className="text-6xl font-bold text-text-primary">
-              {calories.remaining.toLocaleString()}
+              {calories.remaining.toLocaleString('en-US', { useGrouping: false })}
             </Text>
             <Text className="text-2xl text-text-secondary">
-              / {calories.total.toLocaleString()}
+              / {calories.total.toLocaleString('en-US', { useGrouping: false })}
             </Text>
             <Text
               className="ml-auto text-3xl font-semibold"

@@ -35,7 +35,9 @@ export function FoodItemCard({
           <Text className="truncate text-sm text-text-secondary">{description}</Text>
         </View>
         <View className="flex-shrink-0 items-end">
-          <Text className="text-2xl font-bold text-accent-secondary">{calories}</Text>
+          <Text className="text-2xl font-bold text-accent-secondary">
+            {calories.toLocaleString('en-US', { useGrouping: false })}
+          </Text>
           <Text className="text-xs text-text-secondary">{t('food.common.kcal')}</Text>
         </View>
         <MenuButton size="sm" onPress={onMorePress} className="flex-shrink-0" />
