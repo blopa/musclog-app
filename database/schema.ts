@@ -96,6 +96,7 @@ export const schema = appSchema({
         { name: 'deleted_at', type: 'number', isOptional: true },
       ],
     }),
+
     // Represents 100g (or 100ml) of a product typically, or a single unit if indicated.
     tableSchema({
       name: 'foods',
