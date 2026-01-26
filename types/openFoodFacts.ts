@@ -17,21 +17,6 @@ export interface SuccessFoodProductState {
   status: 'success';
   product: ProductV3 & {
     product_type: 'food';
-    nutrition?: {
-      aggregated_set?: {
-        nutrients?: {
-          'energy-kcal'?: { value?: number };
-          proteins?: { value?: number };
-          carbohydrates?: { value?: number };
-          fat?: { value?: number };
-          fiber?: { value?: number };
-          sugars?: { value?: number };
-          'saturated-fat'?: { value?: number };
-          sodium?: { value?: number };
-          salt?: { value?: number };
-          [key: string]: { value?: number } | undefined;
-        };
-      };
-    };
+    nutriments: ProductV3['nutriments'];
   };
 }
