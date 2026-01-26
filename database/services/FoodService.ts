@@ -120,6 +120,10 @@ export class FoodService {
    * Get all foods (non-deleted)
    */
   static async getAllFoods(): Promise<Food[]> {
+    if (!database) {
+      return [];
+    }
+
     return await database
       .get<Food>('foods')
       .query(Q.where('deleted_at', Q.eq(null)))
@@ -130,6 +134,10 @@ export class FoodService {
    * Get favorite foods
    */
   static async getFavoriteFoods(): Promise<Food[]> {
+    if (!database) {
+      return [];
+    }
+    
     return await database
       .get<Food>('foods')
       .query(Q.where('deleted_at', Q.eq(null)), Q.where('is_favorite', true))
@@ -140,6 +148,10 @@ export class FoodService {
    * Search foods by name
    */
   static async searchFoods(searchTerm: string): Promise<Food[]> {
+    if (!database) {
+      return [];
+    }
+    
     return await database
       .get<Food>('foods')
       .query(Q.where('deleted_at', Q.eq(null)), Q.where('name', Q.like(`%${searchTerm}%`)))
