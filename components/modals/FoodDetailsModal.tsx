@@ -62,17 +62,17 @@ export function FoodDetailsModal({
   // Extract nutritional data from API response
   const getNutritionalData = () => {
     if (isSuccessFoodProductState(productDetails)) {
-      const apiNutriments = productDetails.product.nutriments;
+      const nutrients = productDetails.product.nutrition.aggregated_set?.nutrients;
       return {
-        calories: apiNutriments['energy-kcal_100g'] || apiNutriments['energy-kcal'] || 0,
-        protein: apiNutriments['proteins_100g'] || apiNutriments['proteins'] || 0,
-        carbs: apiNutriments['carbohydrates_100g'] || apiNutriments['carbohydrates'] || 0,
-        fat: apiNutriments['fat_100g'] || apiNutriments['fat'] || 0,
-        fiber: apiNutriments['fiber_100g'] || apiNutriments['fiber'] || 0,
-        sugars: apiNutriments['sugars_100g'] || apiNutriments['sugars'] || 0,
-        saturatedFat: apiNutriments['saturated-fat_100g'] || apiNutriments['saturated-fat'] || 0,
-        sodium: apiNutriments['sodium_100g'] || apiNutriments['sodium'] || 0,
-        salt: apiNutriments['salt_100g'] || apiNutriments['salt'] || 0,
+        calories: nutrients?.['energy-kcal']?.value || 0,
+        protein: nutrients?.proteins?.value || 0,
+        carbs: nutrients?.carbohydrates?.value || 0,
+        fat: nutrients?.fat?.value || 0,
+        fiber: nutrients?.fiber?.value || 0,
+        sugars: nutrients?.sugars?.value || 0,
+        saturatedFat: nutrients?.['saturated-fat']?.value || 0,
+        sodium: nutrients?.sodium?.value || 0,
+        salt: nutrients?.salt?.value || 0,
       };
     }
 

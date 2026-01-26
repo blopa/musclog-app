@@ -14,7 +14,8 @@ import { useTranslation } from 'react-i18next';
 import { theme, addOpacityToHex } from '../../theme';
 import { FullScreenModal } from './FullScreenModal';
 import { FoodDetailsModal } from './FoodDetailsModal';
-import { useFoodSearch, useProductDetails, type FoodProduct } from '../../hooks/useSearchFood';
+import { useFoodSearch, useProductDetails } from '../../hooks/useSearchFood';
+import { type FoodProduct } from '../../types/openFoodFacts';
 
 type FoodItem = {
   id: string;
