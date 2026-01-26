@@ -3,7 +3,7 @@ import { field, writer, relation } from '@nozbe/watermelondb/decorators';
 import Food from './Food';
 import FoodPortion from './FoodPortion';
 
-export type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack';
+export type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'other';
 
 export default class NutritionLog extends Model {
   static table = 'nutrition_logs';
@@ -15,7 +15,7 @@ export default class NutritionLog extends Model {
 
   @field('food_id') foodId!: string;
   @field('date') date!: number; // Midnight timestamp for the day
-  @field('type') type!: MealType; // 'breakfast', 'lunch', 'dinner', 'snack'
+  @field('type') type!: MealType; // 'breakfast', 'lunch', 'dinner', 'snack', 'other'
 
   @field('amount') amount!: number; // Quantity eaten
   @field('portion_id') portionId?: string; // Unit used (e.g., linked to food_portions)
@@ -114,6 +114,7 @@ export default class NutritionLog extends Model {
       lunch: 'Lunch',
       dinner: 'Dinner',
       snack: 'Snack',
+      other: 'Other',
     };
     return labels[this.type] || this.type;
   }

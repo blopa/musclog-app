@@ -185,7 +185,7 @@ export const schema = appSchema({
       columns: [
         { name: 'food_id', type: 'string', isIndexed: true },
         { name: 'date', type: 'number', isIndexed: true }, // Midnight timestamp for the day
-        { name: 'type', type: 'string' }, // 'breakfast', 'lunch', 'dinner', 'snack'
+        { name: 'type', type: 'string' }, // 'breakfast', 'lunch', 'dinner', 'snack', 'other'
 
         { name: 'amount', type: 'number' }, // Quantity eaten
         { name: 'portion_id', type: 'string', isOptional: true }, // Unit used (e.g., linked to food_portions)

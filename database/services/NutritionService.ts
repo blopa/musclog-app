@@ -116,6 +116,7 @@ export class NutritionService {
         lunch: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
         dinner: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
         snack: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
+        other: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
       },
     };
 
