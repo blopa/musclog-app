@@ -126,6 +126,7 @@ export function useUnifiedFoodSearch({
       name: food.name,
       description: `${food.brand || 'Custom Food'} • ${food.calories || 0} kcal per 100g`,
       brand: food.brand,
+      imageUrl: food.imageUrl, // Include image URL from local database
       serving_size: `${food.servingAmount || 100} ${food.servingUnit || 'g'}`,
       calories: food.calories,
       protein: food.protein,

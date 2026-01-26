@@ -51,6 +51,7 @@ export default class Food extends Model {
 
   @field('is_favorite') isFavorite!: boolean;
   @field('source') source?: string; // 'user', 'api', 'scanned'
+  @field('image_url') imageUrl?: string; // URL to product image
 
   @field('created_at') createdAt!: number;
   @field('updated_at') updatedAt!: number;

@@ -29,6 +29,7 @@ export class FoodService {
         food.name = product.product_name || 'Unknown Product';
         food.brand = product.brands;
         food.barcode = product.code;
+        food.imageUrl = product.image_url; // Save image URL from API
 
         food.calories = nutritionData.calories;
         food.protein = nutritionData.protein;

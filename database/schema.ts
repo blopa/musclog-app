@@ -123,6 +123,7 @@ export const schema = appSchema({
 
         { name: 'is_favorite', type: 'boolean' }, // Quick access
         { name: 'source', type: 'string', isOptional: true }, // 'user', 'api', 'scanned'
+        { name: 'image_url', type: 'string', isOptional: true }, // URL to product image
 
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
