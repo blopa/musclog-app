@@ -12,7 +12,7 @@ export interface UseNutritionLogsParams {
   date?: Date; // For daily and meal-type modes
   startDate?: Date; // For range mode
   endDate?: Date; // For range mode
-  mealType?: 'breakfast' | 'lunch' | 'dinner' | 'snack'; // For meal-type mode
+  mealType?: 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'other'; // For meal-type mode
   initialLimit?: number; // Default: 20
   batchSize?: number; // Default: 20
   getAll?: boolean; // If true, fetch all logs (no pagination)
@@ -49,7 +49,7 @@ export type UseNutritionLogsResultDaily = {
     fat: number;
     fiber: number;
     byMealType: Record<
-      'breakfast' | 'lunch' | 'dinner' | 'snack',
+      'breakfast' | 'lunch' | 'dinner' | 'snack' | 'other',
       {
         calories: number;
         protein: number;
@@ -90,6 +90,28 @@ export type UseNutritionLogsResult =
   | UseNutritionLogsResultRange
   | UseNutritionLogsResultRecent;
 
+export function useNutritionLogs(
+  params: UseNutritionLogsParams & { mode?: 'daily'; date: Date }
+): UseNutritionLogsResultDaily;
+
+export function useNutritionLogs(
+  params: UseNutritionLogsParams & { mode: 'range'; startDate: Date; endDate: Date }
+): UseNutritionLogsResultRange;
+
+export function useNutritionLogs(
+  params: UseNutritionLogsParams & { mode: 'recent' }
+): UseNutritionLogsResultRecent;
+
+export function useNutritionLogs(
+  params: UseNutritionLogsParams & {
+    mode: 'meal-type';
+    date: Date;
+    mealType: NonNullable<UseNutritionLogsParams['mealType']>;
+  }
+): UseNutritionLogsResultBasic;
+
+export function useNutritionLogs(params?: UseNutritionLogsParams): UseNutritionLogsResult;
+
 /**
  * Hook for managing nutrition logs data with reactive updates
  */
@@ -107,6 +129,24 @@ export function useNutritionLogs({
   sortBy = 'date',
   sortOrder = 'desc',
 }: UseNutritionLogsParams = {}): UseNutritionLogsResult {
+  const defaultDailyNutrients = useMemo(
+    () => ({
+      calories: 0,
+      protein: 0,
+      carbs: 0,
+      fat: 0,
+      fiber: 0,
+      byMealType: {
+        breakfast: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
+        lunch: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
+        dinner: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
+        snack: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
+        other: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
+      },
+    }),
+    []
+  );
+
   // State for basic modes
   const [logs, setLogs] = useState<NutritionLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -119,26 +159,7 @@ export function useNutritionLogs({
   const [recentFoods, setRecentFoods] = useState<Food[]>([]);
 
   // State for daily mode
-  const [dailyNutrients, setDailyNutrients] = useState<
-    | {
-        calories: number;
-        protein: number;
-        carbs: number;
-        fat: number;
-        fiber: number;
-        byMealType: Record<
-          'breakfast' | 'lunch' | 'dinner' | 'snack',
-          {
-            calories: number;
-            protein: number;
-            carbs: number;
-            fat: number;
-            fiber: number;
-          }
-        >;
-      }
-    | undefined
-  >();
+  const [dailyNutrients, setDailyNutrients] = useState(defaultDailyNutrients);
 
   // State for range mode
   const [rangeNutrients, setRangeNutrients] = useState<
@@ -395,7 +416,7 @@ export function useNutritionLogs({
   const dailyResult = useMemo(
     () => ({
       logs,
-      dailyNutrients: dailyNutrients!,
+      dailyNutrients,
       isLoading,
       refresh,
     }),

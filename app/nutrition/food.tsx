@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { View, Text, ScrollView, Pressable } from 'react-native';
 import {
   ChevronLeft,
@@ -8,7 +8,6 @@ import {
   Sparkles,
   ListPlus,
   UtensilsCrossed,
-  WifiOff,
 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
@@ -23,112 +22,182 @@ import { AddFoodModal } from '../../components/modals/AddFoodModal';
 import { FoodSearchModal } from '../../components/modals/FoodSearchModal';
 import { EmptyStateCard } from '../../components/theme/EmptyStateCard';
 import { SkeletonLoader } from '../../components/theme/SkeletonLoader';
-import { ErrorStateCard } from '../../components/theme/ErrorStateCard';
-
-const FOOD_DATA = {
-  date: 'Today, Oct 24',
-  calories: {
-    remaining: 1250,
-    total: 2500,
-    percentage: 50,
-  },
-  macros: {
-    protein: {
-      percentage: 40,
-      amount: '120g',
-      color: theme.colors.macros.protein.text,
-      progressColor: theme.colors.macros.protein.bg,
-    },
-    carbs: {
-      percentage: 45,
-      amount: '150g',
-      color: theme.colors.macros.carbs.text,
-      progressColor: theme.colors.macros.carbs.bg,
-    },
-    fat: {
-      percentage: 25,
-      amount: '60g',
-      color: theme.colors.macros.fat.text,
-      progressColor: theme.colors.macros.fat.bg,
-    },
-  },
-  meals: {
-    breakfast: {
-      totalCalories: 350,
-      items: [
-        {
-          id: '1',
-          name: 'Oatmeal & Berries',
-          description: '1 cup oats • 1/2 cup blueberries',
-          calories: 350,
-          image: require('../../assets/icon.png'),
-        },
-        {
-          id: '2',
-          name: 'Orange Juice',
-          description: '1 glass (250ml)',
-          calories: 110,
-          image: require('../../assets/icon.png'),
-        },
-      ],
-    },
-    lunch: {
-      totalCalories: 450,
-      items: [
-        {
-          id: '3',
-          name: 'Grilled Chicken Salad',
-          description: '200g Chicken • Mixed Greens...',
-          calories: 450,
-          image: require('../../assets/icon.png'),
-        },
-      ],
-    },
-  },
-};
+import { useNutritionLogs } from '../../hooks/useNutritionLogs';
+import { useSettings } from '../../hooks/useSettings';
+import { useCurrentNutritionGoal } from '../../hooks/useCurrentNutritionGoal';
+import NutritionLog from '../../database/models/NutritionLog';
+import Food from '../../database/models/Food';
 
 export default function FoodScreen() {
   const { t } = useTranslation();
+  const { units } = useSettings();
   const [isAddFoodModalVisible, setIsAddFoodModalVisible] = useState(false);
   const [isFoodSearchModalVisible, setIsFoodSearchModalVisible] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState(t('food.meals.breakfast'));
+  const [selectedDate, setSelectedDate] = useState(new Date()); // Add date state
   const currentLanguage = (i18n.language || 'en-US') as LanguageKeys;
   const locale = LOCALE_MAP[currentLanguage] || LOCALE_MAP['en-US'];
-  const today = new Date();
-  const formattedDate = format(today, 'MMM d', { locale });
 
-  // State management for food data
-  const [meals, setMeals] = useState(FOOD_DATA.meals);
-  const [calories, setCalories] = useState(FOOD_DATA.calories);
-  const [macros, setMacros] = useState(FOOD_DATA.macros);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { logs, dailyNutrients, isLoading } = useNutritionLogs({
+    mode: 'daily',
+    date: selectedDate,
+    enableReactivity: true,
+    visible: true,
+  });
 
-  // Simulate loading food data - replace with actual API call
-  const loadFoodData = async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      // Simulate API call delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      // In real app, replace with: const data = await fetchFoodData();
-      setMeals(FOOD_DATA.meals);
-      setCalories(FOOD_DATA.calories);
-      setMacros(FOOD_DATA.macros);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load food data');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const [resolvedLogs, setResolvedLogs] = useState<
+    {
+      log: NutritionLog;
+      food: Food;
+      nutrients: { calories: number; protein: number; carbs: number; fat: number; fiber: number };
+      gramWeight: number;
+    }[]
+  >([]);
+  const [isResolvingRelations, setIsResolvingRelations] = useState(false);
+
+  // Get current nutrition goal
+  const { goal: nutritionGoal } = useCurrentNutritionGoal({
+    mode: 'current',
+    enableReactivity: true,
+    visible: true,
+  });
 
   useEffect(() => {
-    // Uncomment to simulate initial load
-    // loadFoodData();
-  }, []);
+    let cancelled = false;
+
+    const resolve = async () => {
+      setIsResolvingRelations(true);
+      setResolvedLogs([]);
+
+      try {
+        const resolved = await Promise.all(
+          logs.map(async (log) => {
+            const [food, nutrients, gramWeight] = await Promise.all([
+              log.food,
+              log.getNutrients(),
+              log.getGramWeight(),
+            ]);
+
+            return { log, food, nutrients, gramWeight };
+          })
+        );
+
+        if (!cancelled) {
+          setResolvedLogs(resolved);
+          setIsResolvingRelations(false);
+        }
+      } catch {
+        if (!cancelled) {
+          setResolvedLogs([]);
+          setIsResolvingRelations(false);
+        }
+      }
+    };
+
+    resolve();
+    return () => {
+      cancelled = true;
+    };
+  }, [logs]);
+
+  const isScreenLoading = isLoading || isResolvingRelations;
+
+  // Calculate calories remaining and macros
+  const caloriesData = useMemo(() => {
+    const totalCalories = nutritionGoal?.totalCalories || 2500;
+    const consumedCalories = dailyNutrients?.calories || 0;
+    const remainingCalories = Math.max(0, totalCalories - consumedCalories);
+    const percentage = Math.round((consumedCalories / totalCalories) * 100);
+
+    return {
+      remaining: remainingCalories,
+      total: totalCalories,
+      percentage,
+    };
+  }, [dailyNutrients, nutritionGoal]);
+
+  const macrosData = useMemo(() => {
+    const totalProtein = nutritionGoal?.protein || 150;
+    const totalCarbs = nutritionGoal?.carbs || 250;
+    const totalFat = nutritionGoal?.fats || 80;
+
+    return {
+      protein: {
+        percentage: Math.round(((dailyNutrients?.protein || 0) / totalProtein) * 100),
+        amount: `${Math.round(dailyNutrients?.protein || 0)}g`,
+        color: theme.colors.macros.protein.text,
+        progressColor: theme.colors.macros.protein.bg,
+      },
+      carbs: {
+        percentage: Math.round(((dailyNutrients?.carbs || 0) / totalCarbs) * 100),
+        amount: `${Math.round(dailyNutrients?.carbs || 0)}g`,
+        color: theme.colors.macros.carbs.text,
+        progressColor: theme.colors.macros.carbs.bg,
+      },
+      fat: {
+        percentage: Math.round(((dailyNutrients?.fat || 0) / totalFat) * 100),
+        amount: `${Math.round(dailyNutrients?.fat || 0)}g`,
+        color: theme.colors.macros.fat.text,
+        progressColor: theme.colors.macros.fat.bg,
+      },
+    };
+  }, [dailyNutrients, nutritionGoal]);
+
+  // Group logs by meal type
+  const mealsByType = useMemo(() => {
+    const meals: Record<string, (typeof resolvedLogs)[number][]> = {
+      breakfast: [],
+      lunch: [],
+      dinner: [],
+      snack: [],
+      other: [],
+    };
+
+    resolvedLogs.forEach((entry) => {
+      if (entry.log.type && meals[entry.log.type]) {
+        meals[entry.log.type].push(entry);
+      }
+    });
+
+    return meals;
+  }, [resolvedLogs]);
 
   // Check if all meals are empty
-  const hasNoFood = Object.values(meals).every((meal) => !meal.items || meal.items.length === 0);
+  const hasNoFood = !isScreenLoading && logs.length === 0;
+
+  // Date navigation functions
+  const goToPreviousDay = () => {
+    const previousDay = new Date(selectedDate);
+    previousDay.setDate(previousDay.getDate() - 1);
+    setSelectedDate(previousDay);
+  };
+
+  const goToNextDay = () => {
+    const nextDay = new Date(selectedDate);
+    nextDay.setDate(nextDay.getDate() + 1);
+    setSelectedDate(nextDay);
+  };
+
+  const goToToday = () => {
+    setSelectedDate(new Date());
+  };
+
+  // Format date for display
+  const getDisplayDate = () => {
+    const now = new Date();
+    const isToday = selectedDate.toDateString() === now.toDateString();
+    const yesterday = new Date(now);
+    yesterday.setDate(now.getDate() - 1);
+    const isYesterday = selectedDate.toDateString() === yesterday.toDateString();
+
+    if (isToday) {
+      return t('food.header.today');
+    } else if (isYesterday) {
+      return t('food.header.yesterday');
+    } else {
+      return format(selectedDate, 'MMM d', { locale });
+    }
+  };
 
   return (
     <MasterLayout>
@@ -136,16 +205,14 @@ export default function FoodScreen() {
         {/* Header with Date Navigation */}
         <View className="border-b border-border-dark bg-bg-primary">
           <View className="flex-row items-center justify-between px-4 py-4">
-            <Pressable>
+            <Pressable onPress={goToPreviousDay}>
               <ChevronLeft size={theme.iconSize.md} color={theme.colors.text.primary} />
             </Pressable>
             <View className="flex-row items-center gap-2">
-              <Text className="text-xl font-semibold text-text-primary">
-                {t('food.header.today')}, {formattedDate}
-              </Text>
+              <Text className="text-xl font-semibold text-text-primary">{getDisplayDate()}</Text>
               <Calendar size={theme.iconSize.sm} color={theme.colors.accent.secondary} />
             </View>
-            <Pressable>
+            <Pressable onPress={goToNextDay}>
               <ChevronRight size={theme.iconSize.md} color={theme.colors.text.primary} />
             </Pressable>
           </View>
@@ -154,19 +221,8 @@ export default function FoodScreen() {
         {/* Main Content */}
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
           <View className="gap-6 px-4 pt-6">
-            {/* Error State */}
-            {error ? (
-              <ErrorStateCard
-                icon={WifiOff}
-                title={t('errors.connectionTimeout.title')}
-                description={t('errors.connectionTimeout.description')}
-                buttonLabel={t('errors.connectionTimeout.tryAgain')}
-                onButtonPress={loadFoodData}
-              />
-            ) : null}
-
             {/* Loading State */}
-            {isLoading && !error ? (
+            {isScreenLoading ? (
               <>
                 {/* Calories Card Skeleton */}
                 <View
@@ -229,7 +285,7 @@ export default function FoodScreen() {
             ) : null}
 
             {/* Empty State */}
-            {!isLoading && !error && hasNoFood ? (
+            {!isScreenLoading && hasNoFood ? (
               <EmptyStateCard
                 icon={UtensilsCrossed}
                 title={t('emptyStates.food.title')}
@@ -241,10 +297,10 @@ export default function FoodScreen() {
             ) : null}
 
             {/* Normal State */}
-            {!isLoading && !error && !hasNoFood ? (
+            {!isScreenLoading && !hasNoFood ? (
               <>
                 {/* Calories Remaining Card */}
-                <CaloriesRemainingCard calories={calories} macros={macros} />
+                <CaloriesRemainingCard calories={caloriesData} macros={macrosData} />
 
                 {/* Scan Buttons */}
                 <View className="gap-4">
@@ -270,47 +326,109 @@ export default function FoodScreen() {
                       }}
                     />
                   </View>
-                  <Button
-                    label={t('food.actions.moreFoodOptions')}
-                    icon={ListPlus}
-                    variant="secondaryGradient"
-                    size="md"
-                    width="full"
-                    onPress={() => setIsAddFoodModalVisible(true)}
-                  />
+                  <View className="flex-row gap-4">
+                    <Button
+                      label={t('food.actions.goToToday')}
+                      icon={Calendar}
+                      variant="secondary"
+                      size="md"
+                      width="flex-1"
+                      onPress={goToToday}
+                    />
+                    <Button
+                      label={t('food.actions.moreFoodOptions')}
+                      icon={ListPlus}
+                      variant="secondaryGradient"
+                      size="md"
+                      width="flex-1"
+                      onPress={() => setIsAddFoodModalVisible(true)}
+                    />
+                  </View>
                 </View>
 
                 {/* Breakfast Section */}
-                {meals.breakfast.items && meals.breakfast.items.length > 0 ? (
+                {mealsByType.breakfast && mealsByType.breakfast.length > 0 ? (
                   <MealSection
                     title={t('food.meals.breakfast')}
-                    totalCalories={meals.breakfast.totalCalories}
+                    totalCalories={dailyNutrients?.byMealType?.breakfast?.calories || 0}
                   >
-                    {meals.breakfast.items.map((item) => (
+                    {mealsByType.breakfast.map((entry) => (
                       <FoodItemCard
-                        key={item.id}
-                        name={item.name}
-                        description={item.description}
-                        calories={item.calories}
-                        image={item.image}
+                        key={entry.log.id}
+                        name={entry.food.name}
+                        description={`${Math.round(entry.gramWeight)} ${entry.food.servingUnit || 'g'}`}
+                        calories={Math.round(entry.nutrients.calories)}
+                        image={
+                          entry.food.imageUrl
+                            ? { uri: entry.food.imageUrl }
+                            : require('../../assets/icon.png')
+                        }
                       />
                     ))}
                   </MealSection>
                 ) : null}
 
                 {/* Lunch Section */}
-                {meals.lunch.items && meals.lunch.items.length > 0 ? (
+                {mealsByType.lunch && mealsByType.lunch.length > 0 ? (
                   <MealSection
                     title={t('food.meals.lunch')}
-                    totalCalories={meals.lunch.totalCalories}
+                    totalCalories={dailyNutrients?.byMealType?.lunch?.calories || 0}
                   >
-                    {meals.lunch.items.map((item) => (
+                    {mealsByType.lunch.map((entry) => (
                       <FoodItemCard
-                        key={item.id}
-                        name={item.name}
-                        description={item.description}
-                        calories={item.calories}
-                        image={item.image}
+                        key={entry.log.id}
+                        name={entry.food.name}
+                        description={`${Math.round(entry.gramWeight)} ${entry.food.servingUnit || 'g'}`}
+                        calories={Math.round(entry.nutrients.calories)}
+                        image={
+                          entry.food.imageUrl
+                            ? { uri: entry.food.imageUrl }
+                            : require('../../assets/icon.png')
+                        }
+                      />
+                    ))}
+                  </MealSection>
+                ) : null}
+
+                {/* Dinner Section */}
+                {mealsByType.dinner && mealsByType.dinner.length > 0 ? (
+                  <MealSection
+                    title={t('food.meals.dinner')}
+                    totalCalories={dailyNutrients?.byMealType?.dinner?.calories || 0}
+                  >
+                    {mealsByType.dinner.map((entry) => (
+                      <FoodItemCard
+                        key={entry.log.id}
+                        name={entry.food.name}
+                        description={`${Math.round(entry.gramWeight)} ${entry.food.servingUnit || 'g'}`}
+                        calories={Math.round(entry.nutrients.calories)}
+                        image={
+                          entry.food.imageUrl
+                            ? { uri: entry.food.imageUrl }
+                            : require('../../assets/icon.png')
+                        }
+                      />
+                    ))}
+                  </MealSection>
+                ) : null}
+
+                {/* Snack Section */}
+                {mealsByType.snack && mealsByType.snack.length > 0 ? (
+                  <MealSection
+                    title={t('food.meals.snacks')}
+                    totalCalories={dailyNutrients?.byMealType?.snack?.calories || 0}
+                  >
+                    {mealsByType.snack.map((entry) => (
+                      <FoodItemCard
+                        key={entry.log.id}
+                        name={entry.food.name}
+                        description={`${Math.round(entry.gramWeight)} ${entry.food.servingUnit || 'g'}`}
+                        calories={Math.round(entry.nutrients.calories)}
+                        image={
+                          entry.food.imageUrl
+                            ? { uri: entry.food.imageUrl }
+                            : require('../../assets/icon.png')
+                        }
                       />
                     ))}
                   </MealSection>

@@ -1418,14 +1418,14 @@ export async function seedFoods(): Promise<{ created: number }> {
       };
 
       const nutritionLogs = [
-        { name: 'Banana', daysAgo: 0, type: 'breakfast', amount: 1 },
+        { name: 'Banana', daysAgo: 0, type: 'breakfast', amount: 120 }, // 120g banana
         { name: 'Greek Yogurt', daysAgo: 0, type: 'snack', amount: 150 },
         { name: 'Chicken Breast', daysAgo: 0, type: 'lunch', amount: 200 },
         { name: 'Brown Rice', daysAgo: 0, type: 'lunch', amount: 150 },
         { name: 'Salmon', daysAgo: 0, type: 'dinner', amount: 180 },
         { name: 'Sweet Potato', daysAgo: 0, type: 'dinner', amount: 200 },
-        { name: 'Protein Power Smoothie', daysAgo: 2, type: 'snack', amount: 1 },
-        { name: 'Mediterranean Quinoa Bowl', daysAgo: 3, type: 'lunch', amount: 1 },
+        { name: 'Protein Power Smoothie', daysAgo: 2, type: 'snack', amount: 250 }, // 250ml smoothie
+        { name: 'Mediterranean Quinoa Bowl', daysAgo: 3, type: 'lunch', amount: 350 }, // 350g bowl
       ];
 
       for (const nl of nutritionLogs) {
