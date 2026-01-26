@@ -5,10 +5,6 @@ import { ProductV3 } from '../../types/openFoodFacts';
 
 export class FoodService {
   /**
-   * Create a new food from search result
-   */
-
-  /**
    * Create a new food from V3 product details
    */
   static async createFromV3Product(
