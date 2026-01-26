@@ -4,6 +4,9 @@ export { NutritionService } from './NutritionService';
 export { MealService } from './MealService';
 export { FoodPortionService } from './FoodPortionService';
 
+// Export exercise service
+export { ExerciseService } from './ExerciseService';
+
 // Export existing services
 export { WorkoutService } from './WorkoutService';
 export { WorkoutTemplateService } from './WorkoutTemplateService';
