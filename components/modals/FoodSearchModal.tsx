@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -14,30 +14,16 @@ import { useTranslation } from 'react-i18next';
 import { theme, addOpacityToHex } from '../../theme';
 import { FullScreenModal } from './FullScreenModal';
 import { FoodDetailsModal } from './FoodDetailsModal';
-import { useFoodSearch, useProductDetails } from '../../hooks/useSearchFood';
-import { type SearchResultProduct } from '../../types/openFoodFacts';
+import { useUnifiedFoodSearch, type UnifiedFoodResult } from '../../hooks/useUnifiedFoodSearch';
+import { useFoods } from '../../hooks/useFoods';
 
-type FoodItem = {
-  id: string;
-  name: string;
-  description: string;
+type FoodItem = UnifiedFoodResult & {
   icon?: string; // Emoji or icon name
   iconColor?: string;
   iconBgColor?: string;
   image?: ImageSourcePropType;
-  imageUrl?: string; // For remote images
   grade?: string; // e.g., "A", "A+"
   gradeColor?: string;
-  // Nutritional data (optional)
-  calories?: number;
-  protein?: number;
-  carbs?: number;
-  fat?: number;
-  // Additional data from API
-  brand?: string;
-  serving_size?: string;
-  nutriments?: any;
-  _raw?: any;
 };
 
 type FoodSearchModalProps = {
@@ -49,36 +35,6 @@ type FoodSearchModalProps = {
   onFoodSelect?: (food: FoodItem) => void;
 };
 
-const RECENT_HISTORY: FoodItem[] = [
-  {
-    id: '1',
-    name: 'Banana (Large)',
-    description: '1 large (136g) • 121 kcal',
-    icon: '🍌',
-    iconColor: theme.colors.status.warning,
-    iconBgColor: theme.colors.status.warning10,
-    grade: 'A',
-    gradeColor: theme.colors.accent.primary,
-    calories: 121,
-    protein: 1.5,
-    carbs: 31,
-    fat: 0.4,
-  },
-  {
-    id: '2',
-    name: 'Large Egg',
-    description: '1 large • 72 kcal • 6g Protein',
-    iconColor: theme.colors.status.info,
-    iconBgColor: theme.colors.status.info10,
-    grade: 'A+',
-    gradeColor: theme.colors.status.success,
-    calories: 72,
-    protein: 6,
-    carbs: 0.4,
-    fat: 5,
-  },
-];
-
 const COMMON_FOODS: FoodItem[] = [
   {
     id: '3',
@@ -88,6 +44,7 @@ const COMMON_FOODS: FoodItem[] = [
     protein: 12,
     carbs: 55,
     fat: 8,
+    source: 'local',
   },
   {
     id: '4',
@@ -99,6 +56,7 @@ const COMMON_FOODS: FoodItem[] = [
     protein: 0.3,
     carbs: 0,
     fat: 0,
+    source: 'local',
   },
   {
     id: '5',
@@ -110,6 +68,7 @@ const COMMON_FOODS: FoodItem[] = [
     protein: 8,
     carbs: 32,
     fat: 3,
+    source: 'local',
   },
   {
     id: '6',
@@ -121,6 +80,7 @@ const COMMON_FOODS: FoodItem[] = [
     protein: 18,
     carbs: 6,
     fat: 0,
+    source: 'local',
   },
 ];
 
@@ -297,61 +257,65 @@ export function FoodSearchModal({
 }: FoodSearchModalProps) {
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [activeFilter, setActiveFilter] = useState('all');
   const [selectedFood, setSelectedFood] = useState<FoodItem | null>(null);
-  const [selectedBarcode, setSelectedBarcode] = useState<string | null>(null);
   const [isFoodDetailsVisible, setIsFoodDetailsVisible] = useState(false);
 
-  // Debounce search input
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearch(searchQuery);
-    }, 500);
+  // Get recent local foods for the "Recent History" section
+  const { foods: recentFoods } = useFoods({
+    mode: 'list',
+    visible,
+    enableReactivity: true,
+    sortBy: 'updated_at',
+    sortOrder: 'desc',
+    initialLimit: 5,
+  });
 
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
+  // Use unified search for both local and API results
+  const { resultsBySource, isLoading, isLoadingLocal, isLoadingAPI, error, localCount, apiCount } =
+    useUnifiedFoodSearch({
+      searchTerm: searchQuery,
+      enabled: visible,
+      includeLocal: true,
+      includeAPI: true,
+      localLimit: 10,
+      apiLimit: 20,
+      debounceMs: 300,
+    });
 
-  // Use the search hooks
-  const { data: foods = [], isLoading, error } = useFoodSearch(debouncedSearch);
-  const { data: productDetails, isLoading: isLoadingDetails } = useProductDetails(selectedBarcode);
+  // Get filtered results based on active filter
+  const filteredResults = useMemo(() => {
+    switch (activeFilter) {
+      case 'myFoods':
+        return resultsBySource.local;
+      case 'api':
+        return resultsBySource.api;
+      case 'all':
+      default:
+        return resultsBySource.all;
+    }
+  }, [activeFilter, resultsBySource]);
 
   const FILTER_TABS = [
-    { id: 'all', label: t('foodSearch.filters.allResults') },
-    { id: 'myFoods', label: t('foodSearch.filters.myFoods') },
+    { id: 'all', label: `${t('foodSearch.filters.allResults')} (${resultsBySource.all.length})` },
+    { id: 'myFoods', label: `${t('foodSearch.filters.myFoods')} (${localCount})` },
+    { id: 'api', label: `Open Food Facts (${apiCount})` },
     { id: 'meals', label: t('foodSearch.filters.meals') },
     { id: 'recipes', label: t('foodSearch.filters.recipes') },
   ];
 
-  const handleFoodClick = (food: SearchResultProduct) => {
-    setSelectedBarcode(food.code || null);
-
-    // Convert SearchResultProduct to FoodItem format
+  const handleFoodClick = (food: UnifiedFoodResult) => {
+    // Convert to FoodItem format
     const foodItem: FoodItem = {
-      id: food.code || String(Math.random()),
-      name: food.product_name || 'Unknown Product',
-      description: `${food.brands || food.generic_name || 'Generic'} • ${formatCalories(food)}`,
-      brand: food.brands,
-      imageUrl: food.image_url,
-      serving_size: food.serving_size,
-      nutriments: food.nutriments,
-      _raw: food,
+      ...food,
+      icon: food.source === 'local' ? '🍽️' : undefined,
+      iconColor: food.source === 'local' ? theme.colors.accent.primary : undefined,
+      iconBgColor: food.source === 'local' ? theme.colors.accent.primary10 : undefined,
     };
 
     setSelectedFood(foodItem);
     setIsFoodDetailsVisible(true);
   };
-
-  const formatCalories = useCallback((food: SearchResultProduct) => {
-    const kcal = food.nutriments?.['energy-kcal'];
-
-    if (kcal) {
-      return `${Math.round(kcal)} kcal`;
-    }
-
-    // TODO: calculate using macro values
-    return 'N/A';
-  }, []);
 
   const headerRight = (
     <Pressable onPress={onCreatePress}>
@@ -440,6 +404,13 @@ export function FoodSearchModal({
                   {isLoading ? (
                     <View className="flex items-center justify-center py-12">
                       <ActivityIndicator size="large" color={theme.colors.accent.primary} />
+                      <Text className="mt-2 text-sm text-text-secondary">
+                        {isLoadingLocal && isLoadingAPI
+                          ? 'Searching local foods and Open Food Facts...'
+                          : isLoadingLocal
+                            ? 'Searching local foods...'
+                            : 'Searching Open Food Facts...'}
+                      </Text>
                     </View>
                   ) : null}
 
@@ -451,27 +422,30 @@ export function FoodSearchModal({
                     </View>
                   ) : null}
 
-                  {!isLoading && !error && foods.length === 0 && debouncedSearch ? (
+                  {!isLoading && !error && filteredResults.length === 0 && searchQuery ? (
                     <View className="py-8 text-center">
                       <Text className="text-center text-text-secondary">
-                        {`No results found for "${debouncedSearch}"`}
+                        {`No results found for "${searchQuery}"`}
                       </Text>
+                      {localCount === 0 && apiCount === 0 ? (
+                        <Text className="mt-2 text-center text-sm text-text-tertiary">
+                          Try searching for something else or create a custom food
+                        </Text>
+                      ) : null}
                     </View>
                   ) : null}
 
-                  {!isLoading && !error && foods.length > 0
-                    ? foods.map((food) => (
+                  {!isLoading && !error && filteredResults.length > 0
+                    ? filteredResults.map((food: UnifiedFoodResult) => (
                         <FoodItemCard
-                          key={food.code}
+                          key={`${food.source}-${food.id}`}
                           food={{
-                            id: food.code || String(Math.random()),
-                            name: food.product_name || 'Unknown Product',
-                            description: `${food.brands || food.generic_name || 'Generic'} • ${formatCalories(food)}`,
-                            brand: food.brands,
-                            imageUrl: food.image_url,
-                            serving_size: food.serving_size,
-                            nutriments: food.nutriments,
-                            _raw: food,
+                            ...food,
+                            icon: food.source === 'local' ? '🍽️' : undefined,
+                            iconColor:
+                              food.source === 'local' ? theme.colors.accent.primary : undefined,
+                            iconBgColor:
+                              food.source === 'local' ? theme.colors.accent.primary10 : undefined,
                           }}
                           onAddPress={() => handleFoodClick(food)}
                         />
@@ -494,16 +468,42 @@ export function FoodSearchModal({
                   }}
                 />
                 <View className="gap-1.5">
-                  {RECENT_HISTORY.map((food) => (
-                    <FoodItemCard
-                      key={food.id}
-                      food={food}
-                      onAddPress={() => {
-                        setSelectedFood(food);
-                        setIsFoodDetailsVisible(true);
-                      }}
-                    />
-                  ))}
+                  {recentFoods.length > 0 ? (
+                    recentFoods.map((food) => {
+                      const foodItem: FoodItem = {
+                        ...food,
+                        id: food.id,
+                        name: food.name,
+                        description: `${food.brand || 'Custom Food'} • ${food.calories || 0} kcal per 100g`,
+                        brand: food.brand,
+                        serving_size: `${food.servingAmount || 100} ${food.servingUnit || 'g'}`,
+                        calories: food.calories,
+                        protein: food.protein,
+                        carbs: food.carbs,
+                        fat: food.fat,
+                        fiber: food.fiber,
+                        source: 'local',
+                        icon: '🍽️',
+                        iconColor: theme.colors.accent.primary,
+                        iconBgColor: theme.colors.accent.primary10,
+                        _raw: food,
+                      };
+
+                      return (
+                        <FoodItemCard
+                          key={food.id}
+                          food={foodItem}
+                          onAddPress={() => handleFoodClick(foodItem)}
+                        />
+                      );
+                    })
+                  ) : (
+                    <View className="py-8 text-center">
+                      <Text className="text-center text-text-tertiary">
+                        No recent foods found. Start searching or add custom foods!
+                      </Text>
+                    </View>
+                  )}
                 </View>
               </View>
             ) : null}

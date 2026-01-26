@@ -5,6 +5,7 @@ import WorkoutLogSet from './models/WorkoutLogSet';
 import WorkoutTemplate from './models/WorkoutTemplate';
 import WorkoutTemplateSet from './models/WorkoutTemplateSet';
 import UserMetric from './models/UserMetric';
+import Food from './models/Food';
 import exercisesData from '../data/exercisesEnUS.json';
 
 interface ExerciseJsonData {
@@ -1243,19 +1244,192 @@ export async function seedUserMetrics(): Promise<{ created: number }> {
   }
 }
 
+/**
+ * Seeds the foods database with test data for the unified search functionality
+ * Only runs if the foods table is empty
+ * Returns true if seeding was performed, false if database already had foods
+ */
+export async function seedFoods(): Promise<{ created: number }> {
+  const now = Date.now();
+  let created = 0;
+
+  try {
+    // Check if there are any foods in the database
+    const existingFoods = await database.get<Food>('foods').query().fetch();
+
+    // If database already has foods, skip seeding
+    if (existingFoods.length > 0) {
+      console.log(`Skipping food seeding: ${existingFoods.length} foods already exist`);
+      return { created: 0 };
+    }
+
+    await database.write(async () => {
+      // Simple foods for easy testing
+      const simpleFoods = [
+        {
+          name: 'Banana',
+          brand: 'Nature',
+          calories: 89,
+          protein: 1.1,
+          carbs: 22.8,
+          fat: 0.3,
+          fiber: 2.6,
+          isFavorite: true,
+        },
+        {
+          name: 'Chicken Breast',
+          brand: 'Farm Fresh',
+          calories: 165,
+          protein: 31,
+          carbs: 0,
+          fat: 3.6,
+          fiber: 0,
+          isFavorite: true,
+        },
+        {
+          name: 'Brown Rice',
+          brand: 'Organic Farms',
+          calories: 111,
+          protein: 2.6,
+          carbs: 23,
+          fat: 0.9,
+          fiber: 1.8,
+          isFavorite: false,
+        },
+        {
+          name: 'Eggs',
+          brand: 'Happy Hens',
+          calories: 155,
+          protein: 13,
+          carbs: 1.1,
+          fat: 11,
+          fiber: 0,
+          isFavorite: true,
+        },
+        {
+          name: 'Greek Yogurt',
+          brand: 'Dairy Fresh',
+          calories: 100,
+          protein: 17,
+          carbs: 6,
+          fat: 0.7,
+          fiber: 0,
+          isFavorite: false,
+        },
+        {
+          name: 'Oatmeal',
+          brand: 'Whole Grains',
+          calories: 68,
+          protein: 2.4,
+          carbs: 12,
+          fat: 1.4,
+          fiber: 1.7,
+          isFavorite: false,
+        },
+        {
+          name: 'Salmon',
+          brand: 'Ocean Fresh',
+          calories: 208,
+          protein: 20,
+          carbs: 0,
+          fat: 13,
+          fiber: 0,
+          isFavorite: true,
+        },
+        {
+          name: 'Sweet Potato',
+          brand: 'Root Vegetables',
+          calories: 86,
+          protein: 1.6,
+          carbs: 20,
+          fat: 0.1,
+          fiber: 3,
+          isFavorite: false,
+        },
+      ];
+
+      // Complex foods for testing
+      const complexFoods = [
+        {
+          name: 'Chinese Corn Noodles with Chicken Broth',
+          brand: 'Asian Kitchen',
+          calories: 320,
+          protein: 18,
+          carbs: 42,
+          fat: 8,
+          fiber: 3.5,
+          isFavorite: false,
+        },
+        {
+          name: 'Mediterranean Quinoa Bowl',
+          brand: 'Healthy Bowls',
+          calories: 380,
+          protein: 14,
+          carbs: 52,
+          fat: 14,
+          fiber: 8,
+          isFavorite: true,
+        },
+        {
+          name: 'Protein Power Smoothie',
+          brand: 'Fitness Fuel',
+          calories: 280,
+          protein: 25,
+          carbs: 35,
+          fat: 6,
+          fiber: 4,
+          isFavorite: false,
+        },
+      ];
+
+      const allFoods = [...simpleFoods, ...complexFoods];
+
+      for (const foodData of allFoods) {
+        await database.get<Food>('foods').create((food) => {
+          food.isAiGenerated = false;
+          food.name = foodData.name;
+          food.brand = foodData.brand;
+          food.barcode = undefined;
+          food.calories = foodData.calories;
+          food.protein = foodData.protein;
+          food.carbs = foodData.carbs;
+          food.fat = foodData.fat;
+          food.fiber = foodData.fiber;
+          food.servingUnit = 'g';
+          food.servingAmount = 100;
+          food.micros = {}; // Empty micros for now
+          food.isFavorite = foodData.isFavorite;
+          food.source = 'user';
+          food.createdAt = now;
+          food.updatedAt = now;
+        });
+        created++;
+      }
+    });
+
+    console.log(`Seeded foods database: ${created} foods created`);
+    return { created };
+  } catch (error) {
+    console.error('Error seeding foods database:', error);
+    throw error;
+  }
+}
+
 export async function seedDevData(): Promise<boolean> {
   const exercisesSeeded = await seedExercisesIfEmpty();
   const workoutData = await seedWorkoutTemplatesAndHistory();
   const userMetricsSeeded = await seedUserMetrics();
+  const foodsSeeded = await seedFoods();
 
   console.log(
-    `Dev data seeding complete. Exercises: ${exercisesSeeded ? 'seeded' : 'skipped'}, Workout Templates: ${workoutData.templatesCreated}, Workout History: ${workoutData.workoutsCreated} workouts, User Metrics: ${userMetricsSeeded.created} metrics`
+    `Dev data seeding complete. Exercises: ${exercisesSeeded ? 'seeded' : 'skipped'}, Workout Templates: ${workoutData.templatesCreated}, Workout History: ${workoutData.workoutsCreated} workouts, User Metrics: ${userMetricsSeeded.created} metrics, Foods: ${foodsSeeded.created} foods`
   );
 
   return (
     exercisesSeeded ||
     workoutData.templatesCreated > 0 ||
     workoutData.workoutsCreated > 0 ||
-    userMetricsSeeded.created > 0
+    userMetricsSeeded.created > 0 ||
+    foodsSeeded.created > 0
   );
 }

@@ -137,7 +137,7 @@ export class FoodService {
     if (!database) {
       return [];
     }
-    
+
     return await database
       .get<Food>('foods')
       .query(Q.where('deleted_at', Q.eq(null)), Q.where('is_favorite', true))
@@ -151,7 +151,7 @@ export class FoodService {
     if (!database) {
       return [];
     }
-    
+
     return await database
       .get<Food>('foods')
       .query(Q.where('deleted_at', Q.eq(null)), Q.where('name', Q.like(`%${searchTerm}%`)))
