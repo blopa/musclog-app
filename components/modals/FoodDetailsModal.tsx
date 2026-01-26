@@ -10,7 +10,7 @@ import { DatePickerModal } from './DatePickerModal';
 import { Button } from '../theme/Button';
 import { FoodInfoCard } from '../cards/FoodInfoCard';
 import { ServingSizeSelector } from '../ServingSizeSelector';
-import { useProductDetails } from '../../hooks/useSearchFood';
+import { useFoodProductDetails } from '../../hooks/useFoodProductDetails';
 import { isSuccessFoodProductState } from '../../types/guards/openFoodFacts';
 import { FoodService, NutritionService } from '../../database/services';
 
@@ -60,7 +60,7 @@ export function FoodDetailsModal({
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
 
   // Fetch detailed product data if barcode is provided
-  const { data: productDetails } = useProductDetails(barcode || null);
+  const { data: productDetails } = useFoodProductDetails(barcode || null);
 
   // Extract nutritional data from API response
   const getNutritionalData = () => {

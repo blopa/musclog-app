@@ -7,6 +7,7 @@ const getClient = () => {
   return new OpenFoodFacts(fetch as any);
 };
 
+/** @deprecated */
 export function useFoodSearch(searchTerm: string) {
   return useQuery({
     queryKey: ['food-search', searchTerm],
@@ -42,7 +43,7 @@ export function useFoodSearch(searchTerm: string) {
   });
 }
 
-export function useProductDetails(barcode: string | null) {
+export function useFoodProductDetails(barcode: string | null) {
   return useQuery({
     queryKey: ['product-details', barcode],
     queryFn: async () => {

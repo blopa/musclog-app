@@ -1,3 +1,5 @@
+import Quagga from '@ericblade/quagga2';
+
 export async function resizeImage(photoUri: string, width: number = 256): Promise<string> {
   try {
     const image = new Image();
@@ -27,4 +29,23 @@ export async function resizeImage(photoUri: string, width: number = 256): Promis
     console.error('Failed to resize image:', error);
     throw new Error('Failed to resize image');
   }
+}
+
+export async function detectBarcodes(imageUri: string) {
+  let result: any = null;
+
+  await Quagga.decodeSingle(
+    {
+      decoder: { readers: ['ean_reader', 'ean_8_reader'] },
+      inputStream: { size: 800 },
+      src: imageUri,
+    },
+    async (quaggaResult) => {
+      if (quaggaResult?.codeResult?.code) {
+        result = quaggaResult.codeResult.code;
+      }
+    }
+  );
+
+  return result;
 }

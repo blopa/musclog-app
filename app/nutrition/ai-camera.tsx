@@ -27,6 +27,7 @@ import { theme } from '../../theme';
 import { AINutritionTrackingContextModal } from '../../components/modals/AINutritionTrackingContextModal';
 import { CameraView, useCameraPermissions } from '../../components/CameraView';
 import type { CameraView as CameraViewType } from 'expo-camera';
+import { detectBarcodes } from '../../utils/file';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const CAMERA_ASPECT_RATIO = theme.aspectRatio.portrait;
@@ -129,7 +130,7 @@ export default function AICameraScreen() {
 
       // Launch image picker
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ['images'],
         allowsEditing: true,
         aspect: [4, 3],
         quality: 0.8,
@@ -140,15 +141,17 @@ export default function AICameraScreen() {
         const selectedAsset = result.assets[0];
         console.log('Image selected from gallery:', selectedAsset.uri);
 
-        // TODO: Process the selected image based on current camera mode
-        // For now, just log the selection
-        // You could navigate to a processing screen or handle the image here
+        if (cameraMode === 'barcode-scan') {
+          const barcodes = await detectBarcodes(selectedAsset.uri);
+          // TODO: get the food details from barcode using the useFoodProductDetails hook
+          // then show the FoodDetailsModal
+        }
       }
     } catch (error) {
       console.error('Error picking image from gallery:', error);
       Alert.alert(t('common.error'), t('food.aiCamera.galleryError'), [{ text: t('common.ok') }]);
     }
-  }, [t]);
+  }, [cameraMode, t]);
 
   if (!permission) {
     return (

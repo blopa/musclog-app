@@ -161,9 +161,9 @@
       "labelInstruction": "Point at food label or nutrition facts",
       "barcodeInstruction": "Align the barcode inside the frame to scan",
       "modes": {
-        "mealPhoto": "AI Meal Photo",
-        "labelScan": "AI Label Scan",
-        "barcodeScan": "Barcode Scan"
+        "mealPhoto": "AI Meal",
+        "labelScan": "AI Label",
+        "barcodeScan": "Barcode"
       }
     },
     "aiNutritionContext": {
