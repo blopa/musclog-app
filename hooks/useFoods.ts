@@ -111,7 +111,14 @@ export function useFoods({
 
   // Load more foods (pagination)
   const loadMore = useCallback(async () => {
-    if (isLoadingMore || !hasMore || !visible || getAll || mode === 'search' || mode === 'favorites') {
+    if (
+      isLoadingMore ||
+      !hasMore ||
+      !visible ||
+      getAll ||
+      mode === 'search' ||
+      mode === 'favorites'
+    ) {
       // Don't load more for search/favorites modes or if getAll is true
       return;
     }

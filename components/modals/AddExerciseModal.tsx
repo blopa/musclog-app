@@ -9,9 +9,7 @@ import { OptionsSelector, SelectorOption } from '../OptionsSelector';
 import { FilterTabs } from '../FilterTabs';
 import { StepperInlineInput } from '../theme/StepperInlineInput';
 import { SelectedExerciseCard } from '../cards/SelectedExerciseCard';
-import { database } from '../../database';
-import { Q } from '@nozbe/watermelondb';
-import Exercise from '../../database/models/Exercise';
+import { useExercises } from '../../hooks/useExercises';
 import { useSettings } from '../../hooks/useSettings';
 import { getWeightUnitI18nKey } from '../../utils/units';
 
@@ -101,14 +99,63 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
   const [reps, setReps] = useState('10');
   const [weight, setWeight] = useState('60');
   const [restTime, setRestTime] = useState('60'); // Rest time in seconds
-  const [exercises, setExercises] = useState<Record<MuscleGroup, ExerciseOption[]>>({
-    all: [],
-    chest: [],
-    back: [],
-    legs: [],
-    arms: [],
+
+  // Use the useExercises hook
+  const { exercises: allExercises, isLoading } = useExercises({
+    visible,
+    enableReactivity: true,
+    sortBy: 'name',
+    sortOrder: 'asc',
   });
-  const [isLoading, setIsLoading] = useState(false);
+
+  // Group exercises by muscle group
+  const exercises = useMemo(() => {
+    const groupedExercises: Record<MuscleGroup, ExerciseOption[]> = {
+      all: [],
+      chest: [],
+      back: [],
+      legs: [],
+      arms: [],
+    };
+
+    allExercises.forEach((exercise) => {
+      const muscleGroup = normalizeMuscleGroup(exercise.muscleGroup);
+      if (!muscleGroup) {
+        return; // Skip exercises that don't match our categories
+      }
+
+      const exerciseType = getExerciseType(exercise.mechanicType, exercise.equipmentType);
+      const Icon = getExerciseIcon(exerciseType);
+
+      const exerciseOption: ExerciseOption = {
+        id: exercise.id,
+        label: exercise.name,
+        description: `${exercise.muscleGroup} • ${exerciseType.charAt(0).toUpperCase() + exerciseType.slice(1)}`,
+        icon: Icon,
+        iconBgColor:
+          exerciseType === 'bodyweight'
+            ? theme.colors.background.white5
+            : theme.colors.accent.primary10,
+        iconColor:
+          exerciseType === 'bodyweight' ? theme.colors.text.secondary : theme.colors.accent.primary,
+        category: exercise.muscleGroup,
+        type: exerciseType,
+      };
+
+      // Add to specific muscle group
+      groupedExercises[muscleGroup].push(exerciseOption);
+      // Also add to 'all' group
+      groupedExercises.all.push(exerciseOption);
+    });
+
+    // Sort exercises within each group by name
+    Object.keys(groupedExercises).forEach((key) => {
+      const group = key as MuscleGroup;
+      groupedExercises[group].sort((a, b) => a.label.localeCompare(b.label));
+    });
+
+    return groupedExercises;
+  }, [allExercises]);
 
   // Memoize muscleTabs to avoid recreating array and translation calls on every render
   const muscleTabs = useMemo(
@@ -122,88 +169,13 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
     [t]
   );
 
-  // Load exercises from database
-  const loadExercises = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      // Fetch all non-deleted exercises
-      const allExercises = await database
-        .get<Exercise>('exercises')
-        .query(Q.where('deleted_at', Q.eq(null)))
-        .fetch();
-
-      // Group exercises by muscle group
-      const groupedExercises: Record<MuscleGroup, ExerciseOption[]> = {
-        all: [],
-        chest: [],
-        back: [],
-        legs: [],
-        arms: [],
-      };
-
-      allExercises.forEach((exercise) => {
-        const muscleGroup = normalizeMuscleGroup(exercise.muscleGroup);
-        if (!muscleGroup) {
-          return; // Skip exercises that don't match our categories
-        }
-
-        const exerciseType = getExerciseType(exercise.mechanicType, exercise.equipmentType);
-        const Icon = getExerciseIcon(exerciseType);
-
-        const exerciseOption: ExerciseOption = {
-          id: exercise.id,
-          label: exercise.name,
-          description: `${exercise.muscleGroup} • ${exerciseType.charAt(0).toUpperCase() + exerciseType.slice(1)}`,
-          icon: Icon,
-          iconBgColor:
-            exerciseType === 'bodyweight'
-              ? theme.colors.background.white5
-              : theme.colors.accent.primary10,
-          iconColor:
-            exerciseType === 'bodyweight'
-              ? theme.colors.text.secondary
-              : theme.colors.accent.primary,
-          category: exercise.muscleGroup,
-          type: exerciseType,
-        };
-
-        // Add to specific muscle group
-        groupedExercises[muscleGroup].push(exerciseOption);
-        // Also add to 'all' group
-        groupedExercises.all.push(exerciseOption);
-      });
-
-      // Sort exercises within each group by name
-      Object.keys(groupedExercises).forEach((key) => {
-        const group = key as MuscleGroup;
-        groupedExercises[group].sort((a, b) => a.label.localeCompare(b.label));
-      });
-
-      setExercises(groupedExercises);
-
-      // Validate current selection - clear it if it no longer exists
-      const allExerciseIds = new Set(groupedExercises.all.map((ex) => ex.id));
-      const currentSelection = selectedExerciseIdRef.current;
-      if (currentSelection && !allExerciseIds.has(currentSelection)) {
-        setSelectedExerciseId(null);
-      }
-    } catch (error) {
-      console.error('Error loading exercises:', error);
-      setExercises({ all: [], chest: [], back: [], legs: [], arms: [] });
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  // Load exercises when modal opens or active muscle changes
+  // Reset selection when modal opens
   useEffect(() => {
     if (visible) {
-      // Reset selection when modal opens
       setSelectedExerciseId(null);
       selectedExerciseIdRef.current = null;
-      loadExercises();
     }
-  }, [visible, loadExercises]);
+  }, [visible]);
 
   // Update selected exercise when active muscle changes - clear selection if it doesn't exist in new group
   useEffect(() => {

@@ -41,13 +41,16 @@ export type UseNutritionLogsResultDaily = {
     carbs: number;
     fat: number;
     fiber: number;
-    byMealType: Record<'breakfast' | 'lunch' | 'dinner' | 'snack', {
-      calories: number;
-      protein: number;
-      carbs: number;
-      fat: number;
-      fiber: number;
-    }>;
+    byMealType: Record<
+      'breakfast' | 'lunch' | 'dinner' | 'snack',
+      {
+        calories: number;
+        protein: number;
+        carbs: number;
+        fat: number;
+        fiber: number;
+      }
+    >;
   };
   isLoading: boolean;
   refresh: () => Promise<void>;
@@ -74,9 +77,9 @@ export type UseNutritionLogsResultRange = {
   refresh: () => Promise<void>;
 };
 
-export type UseNutritionLogsResult = 
-  | UseNutritionLogsResultBasic 
-  | UseNutritionLogsResultDaily 
+export type UseNutritionLogsResult =
+  | UseNutritionLogsResultBasic
+  | UseNutritionLogsResultDaily
   | UseNutritionLogsResultRange;
 
 /**
@@ -105,36 +108,45 @@ export function useNutritionLogs({
   const [totalCount, setTotalCount] = useState<number | undefined>();
 
   // State for daily mode
-  const [dailyNutrients, setDailyNutrients] = useState<{
-    calories: number;
-    protein: number;
-    carbs: number;
-    fat: number;
-    fiber: number;
-    byMealType: Record<'breakfast' | 'lunch' | 'dinner' | 'snack', {
-      calories: number;
-      protein: number;
-      carbs: number;
-      fat: number;
-      fiber: number;
-    }>;
-  } | undefined>();
+  const [dailyNutrients, setDailyNutrients] = useState<
+    | {
+        calories: number;
+        protein: number;
+        carbs: number;
+        fat: number;
+        fiber: number;
+        byMealType: Record<
+          'breakfast' | 'lunch' | 'dinner' | 'snack',
+          {
+            calories: number;
+            protein: number;
+            carbs: number;
+            fat: number;
+            fiber: number;
+          }
+        >;
+      }
+    | undefined
+  >();
 
   // State for range mode
-  const [rangeNutrients, setRangeNutrients] = useState<{
-    calories: number;
-    protein: number;
-    carbs: number;
-    fat: number;
-    fiber: number;
-    dailyAverages: {
-      calories: number;
-      protein: number;
-      carbs: number;
-      fat: number;
-      fiber: number;
-    };
-  } | undefined>();
+  const [rangeNutrients, setRangeNutrients] = useState<
+    | {
+        calories: number;
+        protein: number;
+        carbs: number;
+        fat: number;
+        fiber: number;
+        dailyAverages: {
+          calories: number;
+          protein: number;
+          carbs: number;
+          fat: number;
+          fiber: number;
+        };
+      }
+    | undefined
+  >();
 
   // Load initial batch of nutrition logs
   const loadInitialLogs = useCallback(async () => {
@@ -153,7 +165,7 @@ export function useNutritionLogs({
         // Daily mode
         logsList = await NutritionService.getNutritionLogsForDate(date);
         setHasMore(false); // No pagination for daily mode
-        
+
         // Calculate daily nutrients
         const nutrients = await NutritionService.getDailyNutrients(date);
         setDailyNutrients(nutrients);
@@ -161,7 +173,7 @@ export function useNutritionLogs({
         // Range mode
         logsList = await NutritionService.getNutritionLogsForDateRange(startDate, endDate);
         setHasMore(false); // No pagination for range mode
-        
+
         // Calculate range nutrients
         const nutrients = await NutritionService.getRangeNutrients(startDate, endDate);
         setRangeNutrients(nutrients);
@@ -179,9 +191,9 @@ export function useNutritionLogs({
         // Default: get all logs with client-side pagination
         const allLogs = await NutritionService.getNutritionLogsForDateRange(
           new Date(0), // Beginning of time
-          new Date()    // Now
+          new Date() // Now
         );
-        
+
         if (getAll) {
           logsList = allLogs;
           setHasMore(false);
@@ -213,8 +225,16 @@ export function useNutritionLogs({
 
   // Load more logs (pagination)
   const loadMore = useCallback(async () => {
-    if (isLoadingMore || !hasMore || !visible || getAll || 
-        mode === 'daily' || mode === 'range' || mode === 'meal-type' || mode === 'recent') {
+    if (
+      isLoadingMore ||
+      !hasMore ||
+      !visible ||
+      getAll ||
+      mode === 'daily' ||
+      mode === 'range' ||
+      mode === 'meal-type' ||
+      mode === 'recent'
+    ) {
       // Don't load more for modes that don't support pagination
       return;
     }
@@ -226,10 +246,7 @@ export function useNutritionLogs({
 
     try {
       // Get all logs and slice the next batch
-      const allLogs = await NutritionService.getNutritionLogsForDateRange(
-        new Date(0),
-        new Date()
-      );
+      const allLogs = await NutritionService.getNutritionLogsForDateRange(new Date(0), new Date());
       const moreLogs = allLogs.slice(currentOffset, currentOffset + batchSize);
 
       if (moreLogs.length === 0) {
@@ -289,8 +306,14 @@ export function useNutritionLogs({
         Q.where('date', Q.lt(nextDayTimestamp))
       );
     } else if (mode === 'range' && startDate && endDate) {
-      const startTimestamp = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()).getTime();
-      const endTimestamp = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()).getTime() + 24 * 60 * 60 * 1000;
+      const startTimestamp = new Date(
+        startDate.getFullYear(),
+        startDate.getMonth(),
+        startDate.getDate()
+      ).getTime();
+      const endTimestamp =
+        new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()).getTime() +
+        24 * 60 * 60 * 1000;
       query = query.extend(
         Q.where('date', Q.gte(startTimestamp)),
         Q.where('date', Q.lt(endTimestamp))
@@ -319,7 +342,18 @@ export function useNutritionLogs({
     refresh();
 
     return () => subscription.unsubscribe();
-  }, [enableReactivity, visible, mode, date, startDate, endDate, mealType, sortBy, sortOrder, refresh]);
+  }, [
+    enableReactivity,
+    visible,
+    mode,
+    date,
+    startDate,
+    endDate,
+    mealType,
+    sortBy,
+    sortOrder,
+    refresh,
+  ]);
 
   // Memoized result for basic modes
   const basicResult = useMemo(

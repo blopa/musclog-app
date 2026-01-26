@@ -19,10 +19,7 @@ export class ExerciseService {
   static async getExercisesByMuscleGroup(muscleGroup: string): Promise<Exercise[]> {
     return await database
       .get<Exercise>('exercises')
-      .query(
-        Q.where('deleted_at', Q.eq(null)),
-        Q.where('muscle_group', muscleGroup)
-      )
+      .query(Q.where('deleted_at', Q.eq(null)), Q.where('muscle_group', muscleGroup))
       .fetch();
   }
 
@@ -32,10 +29,7 @@ export class ExerciseService {
   static async getExercisesByEquipmentType(equipmentType: string): Promise<Exercise[]> {
     return await database
       .get<Exercise>('exercises')
-      .query(
-        Q.where('deleted_at', Q.eq(null)),
-        Q.where('equipment_type', equipmentType)
-      )
+      .query(Q.where('deleted_at', Q.eq(null)), Q.where('equipment_type', equipmentType))
       .fetch();
   }
 
@@ -45,10 +39,7 @@ export class ExerciseService {
   static async getExercisesByMechanicType(mechanicType: string): Promise<Exercise[]> {
     return await database
       .get<Exercise>('exercises')
-      .query(
-        Q.where('deleted_at', Q.eq(null)),
-        Q.where('mechanic_type', mechanicType)
-      )
+      .query(Q.where('deleted_at', Q.eq(null)), Q.where('mechanic_type', mechanicType))
       .fetch();
   }
 
@@ -58,10 +49,7 @@ export class ExerciseService {
   static async searchExercises(searchTerm: string): Promise<Exercise[]> {
     return await database
       .get<Exercise>('exercises')
-      .query(
-        Q.where('deleted_at', Q.eq(null)),
-        Q.where('name', Q.like(`%${searchTerm}%`))
-      )
+      .query(Q.where('deleted_at', Q.eq(null)), Q.where('name', Q.like(`%${searchTerm}%`)))
       .fetch();
   }
 
@@ -90,8 +78,8 @@ export class ExerciseService {
   ): Promise<Exercise> {
     return await database.write(async () => {
       const now = Date.now();
-      
-      return await database.get<Exercise>('exercises').create(exercise => {
+
+      return await database.get<Exercise>('exercises').create((exercise) => {
         exercise.name = name;
         exercise.description = description;
         exercise.imageUrl = imageUrl;
@@ -120,12 +108,12 @@ export class ExerciseService {
   ): Promise<Exercise> {
     return await database.write(async () => {
       const exercise = await database.get<Exercise>('exercises').find(id);
-      
+
       if (exercise.deletedAt) {
         throw new Error('Cannot update deleted exercise');
       }
-      
-      await exercise.update(record => {
+
+      await exercise.update((record) => {
         if (updates.name !== undefined) record.name = updates.name;
         if (updates.description !== undefined) record.description = updates.description;
         if (updates.imageUrl !== undefined) record.imageUrl = updates.imageUrl;
@@ -134,7 +122,7 @@ export class ExerciseService {
         if (updates.mechanicType !== undefined) record.mechanicType = updates.mechanicType;
         record.updatedAt = Date.now();
       });
-      
+
       return exercise;
     });
   }
@@ -155,13 +143,11 @@ export class ExerciseService {
   static async getMuscleGroups(): Promise<string[]> {
     const exercises = await database
       .get<Exercise>('exercises')
-      .query(
-        Q.where('deleted_at', Q.eq(null))
-      )
+      .query(Q.where('deleted_at', Q.eq(null)))
       .fetch();
-    
+
     // Extract unique muscle groups
-    const muscleGroups = [...new Set(exercises.map(ex => ex.muscleGroup))];
+    const muscleGroups = [...new Set(exercises.map((ex) => ex.muscleGroup))];
     return muscleGroups.sort();
   }
 
@@ -171,13 +157,11 @@ export class ExerciseService {
   static async getEquipmentTypes(): Promise<string[]> {
     const exercises = await database
       .get<Exercise>('exercises')
-      .query(
-        Q.where('deleted_at', Q.eq(null))
-      )
+      .query(Q.where('deleted_at', Q.eq(null)))
       .fetch();
-    
+
     // Extract unique equipment types
-    const equipmentTypes = [...new Set(exercises.map(ex => ex.equipmentType))];
+    const equipmentTypes = [...new Set(exercises.map((ex) => ex.equipmentType))];
     return equipmentTypes.sort();
   }
 
@@ -189,11 +173,7 @@ export class ExerciseService {
     // For now, we'll return exercises ordered by creation date (most recent first)
     return await database
       .get<Exercise>('exercises')
-      .query(
-        Q.where('deleted_at', Q.eq(null)),
-        Q.sortBy('created_at', Q.desc),
-        Q.take(limit)
-      )
+      .query(Q.where('deleted_at', Q.eq(null)), Q.sortBy('created_at', Q.desc), Q.take(limit))
       .fetch();
   }
 
@@ -208,7 +188,7 @@ export class ExerciseService {
         Q.take(0) // Just get count
       )
       .fetch();
-    
+
     return exercises.length;
   }
 }

@@ -74,13 +74,16 @@ export function useMeals({
   // State for with-foods mode
   const [meal, setMeal] = useState<Meal | null>(null);
   const [foods, setFoods] = useState<MealFood[]>([]);
-  const [totalNutrients, setTotalNutrients] = useState<{
-    calories: number;
-    protein: number;
-    carbs: number;
-    fat: number;
-    fiber: number;
-  } | undefined>();
+  const [totalNutrients, setTotalNutrients] = useState<
+    | {
+        calories: number;
+        protein: number;
+        carbs: number;
+        fat: number;
+        fiber: number;
+      }
+    | undefined
+  >();
 
   // Load initial batch of meals (basic modes)
   const loadInitialMeals = useCallback(async () => {
@@ -151,11 +154,11 @@ export function useMeals({
 
     try {
       const result = await MealService.getMealWithFoods(mealId);
-      
+
       if (result) {
         setMeal(result.meal);
         setFoods(result.foods);
-        
+
         // Calculate total nutrients
         const nutrients = await result.meal.getTotalNutrients();
         setTotalNutrients(nutrients);
@@ -176,7 +179,15 @@ export function useMeals({
 
   // Load more meals (pagination)
   const loadMore = useCallback(async () => {
-    if (isLoadingMore || !hasMore || !visible || getAll || mode === 'search' || mode === 'favorites' || mode === 'with-foods') {
+    if (
+      isLoadingMore ||
+      !hasMore ||
+      !visible ||
+      getAll ||
+      mode === 'search' ||
+      mode === 'favorites' ||
+      mode === 'with-foods'
+    ) {
       // Don't load more for search/favorites/with-foods modes or if getAll is true
       return;
     }

@@ -118,12 +118,12 @@ export function useExercises({
       exercisesList = exercisesList.sort((a, b) => {
         let aValue: any = a[sortBy as keyof Exercise];
         let bValue: any = b[sortBy as keyof Exercise];
-        
+
         if (typeof aValue === 'string') {
           aValue = aValue.toLowerCase();
           bValue = (bValue as string).toLowerCase();
         }
-        
+
         if (sortOrder === 'asc') {
           return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
         } else {
@@ -143,7 +143,7 @@ export function useExercises({
       if (mode === 'list') {
         const [muscleGroupsList, equipmentTypesList] = await Promise.all([
           ExerciseService.getMuscleGroups(),
-          ExerciseService.getEquipmentTypes()
+          ExerciseService.getEquipmentTypes(),
         ]);
         setMuscleGroups(muscleGroupsList);
         setEquipmentTypes(equipmentTypesList);
@@ -155,13 +155,32 @@ export function useExercises({
     } finally {
       setIsLoading(false);
     }
-  }, [visible, mode, searchTerm, muscleGroup, equipmentType, mechanicType, initialLimit, getAll, sortBy, sortOrder]);
+  }, [
+    visible,
+    mode,
+    searchTerm,
+    muscleGroup,
+    equipmentType,
+    mechanicType,
+    initialLimit,
+    getAll,
+    sortBy,
+    sortOrder,
+  ]);
 
   // Load more exercises (pagination)
   const loadMore = useCallback(async () => {
-    if (isLoadingMore || !hasMore || !visible || getAll || 
-        mode === 'search' || mode === 'by-muscle' || mode === 'by-equipment' || 
-        mode === 'by-mechanic' || mode === 'frequent') {
+    if (
+      isLoadingMore ||
+      !hasMore ||
+      !visible ||
+      getAll ||
+      mode === 'search' ||
+      mode === 'by-muscle' ||
+      mode === 'by-equipment' ||
+      mode === 'by-mechanic' ||
+      mode === 'frequent'
+    ) {
       // Don't load more for filtered modes or if getAll is true
       return;
     }
@@ -186,12 +205,12 @@ export function useExercises({
       moreExercises.sort((a, b) => {
         let aValue: any = a[sortBy as keyof Exercise];
         let bValue: any = b[sortBy as keyof Exercise];
-        
+
         if (typeof aValue === 'string') {
           aValue = aValue.toLowerCase();
           bValue = (bValue as string).toLowerCase();
         }
-        
+
         if (sortOrder === 'asc') {
           return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
         } else {
@@ -264,7 +283,17 @@ export function useExercises({
     loadInitialExercises();
 
     return () => subscription.unsubscribe();
-  }, [enableReactivity, visible, mode, muscleGroup, equipmentType, mechanicType, sortBy, sortOrder, loadInitialExercises]);
+  }, [
+    enableReactivity,
+    visible,
+    mode,
+    muscleGroup,
+    equipmentType,
+    mechanicType,
+    sortBy,
+    sortOrder,
+    loadInitialExercises,
+  ]);
 
   // Memoized result
   const result = useMemo(
@@ -279,7 +308,17 @@ export function useExercises({
       muscleGroups,
       equipmentTypes,
     }),
-    [exercises, isLoading, isLoadingMore, hasMore, loadMore, refresh, totalCount, muscleGroups, equipmentTypes]
+    [
+      exercises,
+      isLoading,
+      isLoadingMore,
+      hasMore,
+      loadMore,
+      refresh,
+      totalCount,
+      muscleGroups,
+      equipmentTypes,
+    ]
   );
 
   return result;
