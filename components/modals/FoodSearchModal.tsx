@@ -402,10 +402,10 @@ export function FoodSearchModal({
               <View>
                 <SectionHeader
                   title={
-                    isInitialLoad
-                      ? 'SEARCHING...'
-                      : hasLocalResults || hasApiResults
-                        ? 'BEST MATCHES'
+                    isInitialLoad 
+                      ? 'SEARCHING...' 
+                      : hasLocalResults || hasApiResults || isLoadingAPI
+                        ? 'BEST MATCHES' 
                         : 'NO RESULTS'
                   }
                   rightAction={
@@ -495,7 +495,7 @@ export function FoodSearchModal({
                       ) : null}
                     </>
                   ) : null}
-                  {!isInitialLoad && isLoadingAPI && hasLocalResults ? (
+                  {!isInitialLoad && isLoadingAPI ? (
                     <View className="flex items-center justify-center py-4">
                       <ActivityIndicator size="small" color={theme.colors.accent.primary} />
                       <Text className="ml-2 text-xs text-text-secondary">
@@ -504,8 +504,8 @@ export function FoodSearchModal({
                     </View>
                   ) : null}
 
-                  {/* Show no results state */}
-                  {!isInitialLoad && !error && filteredResults.length === 0 && searchQuery ? (
+                  {/* Show no results state - only when API is completely done */}
+                  {!isInitialLoad && !isLoadingAPI && !error && filteredResults.length === 0 && searchQuery ? (
                     <View className="py-8 text-center">
                       <Text className="text-center text-text-secondary">
                         {`No results found for "${searchQuery}"`}
