@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Q } from '@nozbe/watermelondb';
 import { database } from '../database';
 import NutritionLog from '../database/models/NutritionLog';
+import Food from '../database/models/Food';
 import { NutritionService } from '../database/services';
 import { DEFAULT_BATCH_SIZE } from '../constants/database';
 
@@ -30,6 +31,12 @@ export type UseNutritionLogsResultBasic = {
   loadMore: () => Promise<void>;
   refresh: () => Promise<void>;
   totalCount?: number;
+};
+
+export type UseNutritionLogsResultRecent = {
+  recentFoods: Food[];
+  isLoading: boolean;
+  refresh: () => Promise<void>;
 };
 
 // Return type for daily mode (with nutrients)
@@ -80,7 +87,8 @@ export type UseNutritionLogsResultRange = {
 export type UseNutritionLogsResult =
   | UseNutritionLogsResultBasic
   | UseNutritionLogsResultDaily
-  | UseNutritionLogsResultRange;
+  | UseNutritionLogsResultRange
+  | UseNutritionLogsResultRecent;
 
 /**
  * Hook for managing nutrition logs data with reactive updates
@@ -106,6 +114,9 @@ export function useNutritionLogs({
   const [hasMore, setHasMore] = useState(true);
   const [currentOffset, setCurrentOffset] = useState(0);
   const [totalCount, setTotalCount] = useState<number | undefined>();
+
+  // State for recent mode
+  const [recentFoods, setRecentFoods] = useState<Food[]>([]);
 
   // State for daily mode
   const [dailyNutrients, setDailyNutrients] = useState<
@@ -182,9 +193,9 @@ export function useNutritionLogs({
         logsList = await NutritionService.getNutritionLogsForMeal(date, mealType);
         setHasMore(false); // No pagination for meal-type mode
       } else if (mode === 'recent') {
-        // Recent mode
-        const recentFoods = await NutritionService.getRecentFoods(initialLimit);
-        // Convert foods to logs format (this is a simplified approach)
+        // Recent mode: return recently eaten foods for quick logging
+        const recent = await NutritionService.getRecentFoods(initialLimit);
+        setRecentFoods(recent);
         logsList = [];
         setHasMore(false);
       } else {
@@ -206,12 +217,9 @@ export function useNutritionLogs({
 
       setLogs(logsList);
 
-      // Get total count for basic mode
-      if (mode === 'recent' || (!mode && !date && !startDate)) {
-        const allLogs = await NutritionService.getNutritionLogsForDateRange(
-          new Date(0),
-          new Date()
-        );
+      // Get total count for basic (non-special) modes
+      if (!['daily', 'range', 'meal-type', 'recent'].includes(mode)) {
+        const allLogs = await NutritionService.getNutritionLogsForDateRange(new Date(0), new Date());
         setTotalCount(allLogs.length);
       }
     } catch (err) {
@@ -342,18 +350,7 @@ export function useNutritionLogs({
     refresh();
 
     return () => subscription.unsubscribe();
-  }, [
-    enableReactivity,
-    visible,
-    mode,
-    date,
-    startDate,
-    endDate,
-    mealType,
-    sortBy,
-    sortOrder,
-    refresh,
-  ]);
+  }, [enableReactivity, visible, mode, date, startDate, endDate, mealType, sortBy, sortOrder, refresh, loadInitialLogs]);
 
   // Memoized result for basic modes
   const basicResult = useMemo(
@@ -367,6 +364,16 @@ export function useNutritionLogs({
       totalCount,
     }),
     [logs, isLoading, isLoadingMore, hasMore, loadMore, refresh, totalCount]
+  );
+
+  // Memoized result for recent mode
+  const recentResult = useMemo(
+    () => ({
+      recentFoods,
+      isLoading,
+      refresh,
+    }),
+    [recentFoods, isLoading, refresh]
   );
 
   // Memoized result for daily mode
@@ -396,6 +403,8 @@ export function useNutritionLogs({
     return dailyResult as UseNutritionLogsResult;
   } else if (mode === 'range') {
     return rangeResult as UseNutritionLogsResult;
+  } else if (mode === 'recent') {
+    return recentResult as UseNutritionLogsResult;
   } else {
     return basicResult as UseNutritionLogsResult;
   }
