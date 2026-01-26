@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useFoods } from './useFoods';
 import { SearchResultProduct } from '../types/openFoodFacts';
@@ -45,45 +45,62 @@ export function useUnifiedFoodSearch({
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
   const [apiCompleted, setApiCompleted] = useState(false);
 
+  // API pagination states
+  const [apiOffset, setApiOffset] = useState(0);
+  const [isLoadingMoreAPI, setIsLoadingMoreAPI] = useState(false);
+  const [accumulatedApiResults, setAccumulatedApiResults] = useState<SearchResultProduct[]>([]);
+
   // Debounce search term
   useEffect(() => {
     if (!searchTerm || searchTerm.trim().length < 2) {
       setDebouncedSearchTerm('');
       setApiCompleted(false);
+      setApiOffset(0);
+      setAccumulatedApiResults([]);
       return;
     }
 
     const timer = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm.trim());
       setApiCompleted(false);
+      setApiOffset(0);
+      setAccumulatedApiResults([]);
     }, debounceMs);
 
     return () => clearTimeout(timer);
   }, [searchTerm, debounceMs]);
 
-  // Local database search - immediate results
-  const { foods: localFoods, isLoading: isLoadingLocal } = useFoods({
+  // Local database search - using built-in pagination from useFoods
+  const {
+    foods: localFoods,
+    isLoading: isLoadingLocal,
+    loadMore: loadMoreFoods,
+    hasMore: hasMoreFoods,
+    isLoadingMore: isLoadingMoreFoods,
+  } = useFoods({
     mode: 'search',
     searchTerm: includeLocal ? debouncedSearchTerm : '',
     visible: enabled && includeLocal,
     enableReactivity: true,
+    initialLimit: localLimit,
+    batchSize: localLimit,
   });
 
-  // API search using existing hook logic - runs in background
+  // API search using existing hook logic - with pagination
   const {
-    data: apiResults = [],
+    data: apiPageResults = [],
     isLoading: isLoadingAPI,
     error: apiError,
     isSuccess: isApiSuccess,
   } = useQuery({
-    queryKey: ['food-search-api', debouncedSearchTerm],
+    queryKey: ['food-search-api', debouncedSearchTerm, apiOffset],
     queryFn: async () => {
       if (!includeAPI || !debouncedSearchTerm || debouncedSearchTerm.length < 2) {
         return [];
       }
 
       // v2 API doesn't support text search, so we use the v1 search endpoint directly
-      const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(debouncedSearchTerm)}&json=1&page_size=${apiLimit}&fields=code,product_name,brands,generic_name,nutriments,serving_size,categories,image_url,image_small_url`;
+      const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(debouncedSearchTerm)}&json=1&page_size=${apiLimit}&page=${Math.floor(apiOffset / apiLimit) + 1}&fields=code,product_name,brands,generic_name,nutriments,serving_size,categories,image_url,image_small_url`;
 
       const response = await fetch(url);
 
@@ -108,12 +125,24 @@ export function useUnifiedFoodSearch({
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
-  // Track when API completes
+  // Accumulate API results when new page is loaded
   useEffect(() => {
+    if (isApiSuccess && apiPageResults.length > 0) {
+      if (apiOffset === 0) {
+        // First page - replace accumulated results
+        setAccumulatedApiResults(apiPageResults);
+      } else {
+        // Additional pages - append to accumulated results
+        setAccumulatedApiResults((prev) => [...prev, ...apiPageResults]);
+      }
+      setIsLoadingMoreAPI(false);
+    }
+
+    // Track when API completes (for initial load)
     if (isApiSuccess && !isLoadingAPI) {
       setApiCompleted(true);
     }
-  }, [isApiSuccess, isLoadingAPI]);
+  }, [isApiSuccess, apiPageResults, apiOffset, isLoadingAPI]);
 
   // Convert local foods to unified format
   const localResults = useMemo(() => {
@@ -121,7 +150,7 @@ export function useUnifiedFoodSearch({
       return [];
     }
 
-    return localFoods.slice(0, localLimit).map((food) => ({
+    return localFoods.map((food) => ({
       id: food.id,
       name: food.name,
       description: `${food.brand || 'Custom Food'} • ${food.calories || 0} kcal per 100g`,
@@ -142,7 +171,7 @@ export function useUnifiedFoodSearch({
   const apiResultsFormatted = useMemo(() => {
     if (!includeAPI) return [];
 
-    return apiResults.map((product) => {
+    return accumulatedApiResults.map((product) => {
       const kcal = product.nutriments?.['energy-kcal'];
       const calories = kcal ? Math.round(kcal) : undefined;
 
@@ -162,7 +191,7 @@ export function useUnifiedFoodSearch({
         _raw: product,
       };
     });
-  }, [apiResults, includeAPI]);
+  }, [accumulatedApiResults, includeAPI]);
 
   // Combine and deduplicate results - updates when API completes
   const combinedResults = useMemo(() => {
@@ -222,6 +251,23 @@ export function useUnifiedFoodSearch({
     [combinedResults, localResults, apiResultsFormatted]
   );
 
+  // Load more functions
+  const loadMoreLocal = useCallback(async () => {
+    if (isLoadingMoreFoods) return;
+    await loadMoreFoods();
+  }, [isLoadingMoreFoods, loadMoreFoods]);
+
+  const loadMoreAPI = useCallback(async () => {
+    if (isLoadingMoreAPI) return;
+
+    setIsLoadingMoreAPI(true);
+    setApiOffset((prev) => prev + apiLimit);
+  }, [isLoadingMoreAPI, apiLimit]);
+
+  // Check if there might be more results
+  const hasMoreLocal = hasMoreFoods;
+  const hasMoreAPI = apiPageResults.length === apiLimit; // If we got a full page, there might be more
+
   // Optimized loading states
   const isLoading = isLoadingLocal; // Only show loading for local search
   const isApiLoading = isLoadingAPI;
@@ -243,5 +289,12 @@ export function useUnifiedFoodSearch({
     hasLocalResults: localResults.length > 0,
     hasApiResults,
     isInitialLoad: isLoadingLocal && !apiCompleted,
+    // Pagination states
+    hasMoreLocal,
+    hasMoreAPI,
+    isLoadingMoreLocal: isLoadingMoreFoods,
+    isLoadingMoreAPI,
+    loadMoreLocal,
+    loadMoreAPI,
   };
 }

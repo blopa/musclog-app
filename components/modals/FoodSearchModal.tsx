@@ -16,6 +16,7 @@ import { FullScreenModal } from './FullScreenModal';
 import { FoodDetailsModal } from './FoodDetailsModal';
 import { useUnifiedFoodSearch, type UnifiedFoodResult } from '../../hooks/useUnifiedFoodSearch';
 import { useFoods } from '../../hooks/useFoods';
+import { Button } from '../theme/Button';
 
 type FoodItem = UnifiedFoodResult & {
   icon?: string; // Emoji or icon name
@@ -282,6 +283,12 @@ export function FoodSearchModal({
     hasLocalResults,
     hasApiResults,
     isInitialLoad,
+    hasMoreLocal,
+    hasMoreAPI,
+    isLoadingMoreLocal,
+    isLoadingMoreAPI,
+    loadMoreLocal,
+    loadMoreAPI,
   } = useUnifiedFoodSearch({
     searchTerm: searchQuery,
     enabled: visible,
@@ -402,10 +409,10 @@ export function FoodSearchModal({
               <View>
                 <SectionHeader
                   title={
-                    isInitialLoad 
-                      ? 'SEARCHING...' 
+                    isInitialLoad
+                      ? 'SEARCHING...'
                       : hasLocalResults || hasApiResults || isLoadingAPI
-                        ? 'BEST MATCHES' 
+                        ? 'BEST MATCHES'
                         : 'NO RESULTS'
                   }
                 />
@@ -455,6 +462,24 @@ export function FoodSearchModal({
                               />
                             ))}
                           </View>
+
+                          {/* Load More Local Button */}
+                          {hasMoreLocal ? (
+                            <View className="py-3">
+                              <Button
+                                label={
+                                  isLoadingMoreLocal ? 'Loading more...' : `Load more local foods`
+                                }
+                                onPress={loadMoreLocal}
+                                size="sm"
+                                variant="outline"
+                                disabled={isLoadingMoreLocal}
+                                loading={isLoadingMoreLocal}
+                                width="full"
+                                iconPosition="left"
+                              />
+                            </View>
+                          ) : null}
                         </View>
                       ) : null}
 
@@ -481,6 +506,26 @@ export function FoodSearchModal({
                               />
                             ))}
                           </View>
+
+                          {/* Load More API Button */}
+                          {hasMoreAPI ? (
+                            <View className="py-3">
+                              <Button
+                                label={
+                                  isLoadingMoreAPI
+                                    ? 'Loading more...'
+                                    : `Load more from Open Food Facts`
+                                }
+                                onPress={loadMoreAPI}
+                                size="sm"
+                                variant="outline"
+                                disabled={isLoadingMoreAPI}
+                                loading={isLoadingMoreAPI}
+                                width="full"
+                                iconPosition="left"
+                              />
+                            </View>
+                          ) : null}
                         </View>
                       ) : null}
                     </>
@@ -495,7 +540,11 @@ export function FoodSearchModal({
                   ) : null}
 
                   {/* Show no results state - only when API is completely done */}
-                  {!isInitialLoad && !isLoadingAPI && !error && filteredResults.length === 0 && searchQuery ? (
+                  {!isInitialLoad &&
+                  !isLoadingAPI &&
+                  !error &&
+                  filteredResults.length === 0 &&
+                  searchQuery ? (
                     <View className="py-8 text-center">
                       <Text className="text-center text-text-secondary">
                         {`No results found for "${searchQuery}"`}
