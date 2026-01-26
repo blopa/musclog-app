@@ -3,7 +3,6 @@ import { field, children, writer, json } from '@nozbe/watermelondb/decorators';
 import { FoodPortion, NutritionLog, MealFood } from './index';
 
 export interface MicrosData {
-  fiber?: number;
   sugars?: number;
   saturatedFat?: number;
   sodium?: number;
@@ -30,6 +29,7 @@ export default class Food extends Model {
   @field('protein') protein!: number;
   @field('carbs') carbs!: number;
   @field('fat') fat!: number;
+  @field('fiber') fiber!: number;
 
   // Base measurement that the above numbers refer to
   @field('serving_unit') servingUnit!: string; // 'g', 'ml', 'oz'
@@ -39,7 +39,6 @@ export default class Food extends Model {
   @json('micros_json', (data: any): MicrosData => {
     if (typeof data === 'object' && data !== null) {
       return {
-        fiber: typeof data.fiber === 'number' ? data.fiber : undefined,
         sugars: typeof data.sugars === 'number' ? data.sugars : undefined,
         saturatedFat: typeof data.saturatedFat === 'number' ? data.saturatedFat : undefined,
         sodium: typeof data.sodium === 'number' ? data.sodium : undefined,
@@ -47,7 +46,8 @@ export default class Food extends Model {
       };
     }
     return {};
-  }) micros?: MicrosData;
+  })
+  micros?: MicrosData;
 
   @field('is_favorite') isFavorite!: boolean;
   @field('source') source?: string; // 'user', 'api', 'scanned'
@@ -62,7 +62,7 @@ export default class Food extends Model {
 
   @writer
   async markAsDeleted(): Promise<void> {
-    await this.update(record => {
+    await this.update((record) => {
       record.deletedAt = Date.now();
       record.updatedAt = Date.now();
     });
@@ -70,7 +70,7 @@ export default class Food extends Model {
 
   @writer
   async toggleFavorite(): Promise<void> {
-    await this.update(record => {
+    await this.update((record) => {
       record.isFavorite = !record.isFavorite;
       record.updatedAt = Date.now();
     });
@@ -78,7 +78,7 @@ export default class Food extends Model {
 
   @writer
   async updateMicros(micros: MicrosData): Promise<void> {
-    await this.update(record => {
+    await this.update((record) => {
       record.micros = micros;
       record.updatedAt = Date.now();
     });
@@ -106,6 +106,13 @@ export default class Food extends Model {
     return (this.carbs / this.servingAmount) * 100;
   }
 
+  getFiberPer100g(): number {
+    if (this.servingUnit === 'g' && this.servingAmount === 100) {
+      return this.fiber;
+    }
+    return (this.fiber / this.servingAmount) * 100;
+  }
+
   getFatPer100g(): number {
     if (this.servingUnit === 'g' && this.servingAmount === 100) {
       return this.fat;
@@ -113,16 +120,20 @@ export default class Food extends Model {
     return (this.fat / this.servingAmount) * 100;
   }
 
-  getNutrientsForAmount(amount: number, unit: string = this.servingUnit): {
+  getNutrientsForAmount(
+    amount: number,
+    unit: string = this.servingUnit
+  ): {
     calories: number;
     protein: number;
     carbs: number;
     fat: number;
+    fiber: number;
     micros?: MicrosData;
   } {
     // Convert to base unit (grams) for calculation
     let multiplier = 1;
-    
+
     if (unit === 'g') {
       multiplier = amount / this.servingAmount;
     } else if (unit === 'ml' && this.servingUnit === 'ml') {
@@ -137,9 +148,15 @@ export default class Food extends Model {
       protein: this.protein * multiplier,
       carbs: this.carbs * multiplier,
       fat: this.fat * multiplier,
-      micros: this.micros ? Object.fromEntries(
-        Object.entries(this.micros).map(([key, value]) => [key, value ? value * multiplier : undefined])
-      ) : undefined,
+      fiber: this.fiber * multiplier,
+      micros: this.micros
+        ? Object.fromEntries(
+            Object.entries(this.micros).map(([key, value]) => [
+              key,
+              value ? value * multiplier : undefined,
+            ])
+          )
+        : undefined,
     };
   }
 }

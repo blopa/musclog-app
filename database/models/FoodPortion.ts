@@ -23,7 +23,7 @@ export default class FoodPortion extends Model {
 
   @writer
   async markAsDeleted(): Promise<void> {
-    await this.update(record => {
+    await this.update((record) => {
       record.deletedAt = Date.now();
       record.updatedAt = Date.now();
     });
@@ -31,7 +31,7 @@ export default class FoodPortion extends Model {
 
   @writer
   async updateName(name: string): Promise<void> {
-    await this.update(record => {
+    await this.update((record) => {
       record.name = name;
       record.updatedAt = Date.now();
     });
@@ -39,7 +39,7 @@ export default class FoodPortion extends Model {
 
   @writer
   async updateGramWeight(gramWeight: number): Promise<void> {
-    await this.update(record => {
+    await this.update((record) => {
       record.gramWeight = gramWeight;
       record.updatedAt = Date.now();
     });

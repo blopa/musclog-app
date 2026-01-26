@@ -110,6 +110,7 @@ export const schema = appSchema({
         { name: 'protein', type: 'number' },
         { name: 'carbs', type: 'number' },
         { name: 'fat', type: 'number' },
+        { name: 'fiber', type: 'number' },
 
         // Base measurement (e.g., 100g) that the above numbers refer to
         { name: 'serving_unit', type: 'string' }, // 'g', 'ml', 'oz'

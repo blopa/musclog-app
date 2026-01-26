@@ -22,7 +22,7 @@ export default class Meal extends Model {
 
   @writer
   async markAsDeleted(): Promise<void> {
-    await this.update(record => {
+    await this.update((record) => {
       record.deletedAt = Date.now();
       record.updatedAt = Date.now();
     });
@@ -30,7 +30,7 @@ export default class Meal extends Model {
 
   @writer
   async toggleFavorite(): Promise<void> {
-    await this.update(record => {
+    await this.update((record) => {
       record.isFavorite = !record.isFavorite;
       record.updatedAt = Date.now();
     });
@@ -38,7 +38,7 @@ export default class Meal extends Model {
 
   @writer
   async updateName(name: string): Promise<void> {
-    await this.update(record => {
+    await this.update((record) => {
       record.name = name;
       record.updatedAt = Date.now();
     });
@@ -46,7 +46,7 @@ export default class Meal extends Model {
 
   @writer
   async updateDescription(description?: string): Promise<void> {
-    await this.update(record => {
+    await this.update((record) => {
       record.description = description;
       record.updatedAt = Date.now();
     });
@@ -58,21 +58,24 @@ export default class Meal extends Model {
     protein: number;
     carbs: number;
     fat: number;
+    fiber: number;
   }> {
     const mealFoods = await this.mealFoods.fetch();
-    
+
     let totalCalories = 0;
     let totalProtein = 0;
     let totalCarbs = 0;
     let totalFat = 0;
+    let totalFiber = 0;
 
     for (const mealFood of mealFoods) {
       const nutrients = await mealFood.getNutrients();
-      
+
       totalCalories += nutrients.calories;
       totalProtein += nutrients.protein;
       totalCarbs += nutrients.carbs;
       totalFat += nutrients.fat;
+      totalFiber += nutrients.fiber;
     }
 
     return {
@@ -80,6 +83,7 @@ export default class Meal extends Model {
       protein: totalProtein,
       carbs: totalCarbs,
       fat: totalFat,
+      fiber: totalFiber,
     };
   }
 
@@ -89,14 +93,16 @@ export default class Meal extends Model {
     protein: number;
     carbs: number;
     fat: number;
+    fiber: number;
   }> {
     const totals = await this.getTotalNutrients();
-    
+
     return {
       calories: totals.calories / servings,
       protein: totals.protein / servings,
       carbs: totals.carbs / servings,
       fat: totals.fat / servings,
+      fiber: totals.fiber / servings,
     };
   }
 }

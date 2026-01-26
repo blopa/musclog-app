@@ -28,7 +28,7 @@ export default class MealFood extends Model {
 
   @writer
   async markAsDeleted(): Promise<void> {
-    await this.update(record => {
+    await this.update((record) => {
       record.deletedAt = Date.now();
       record.updatedAt = Date.now();
     });
@@ -36,7 +36,7 @@ export default class MealFood extends Model {
 
   @writer
   async updateAmount(amount: number): Promise<void> {
-    await this.update(record => {
+    await this.update((record) => {
       record.amount = amount;
       record.updatedAt = Date.now();
     });
@@ -44,7 +44,7 @@ export default class MealFood extends Model {
 
   @writer
   async updatePortion(portionId?: string): Promise<void> {
-    await this.update(record => {
+    await this.update((record) => {
       record.portionId = portionId;
       record.updatedAt = Date.now();
     });
@@ -58,7 +58,7 @@ export default class MealFood extends Model {
         return this.amount * portion.gramWeight;
       }
     }
-    
+
     // If no portion, assume amount is in grams
     return this.amount;
   }
@@ -69,9 +69,10 @@ export default class MealFood extends Model {
     protein: number;
     carbs: number;
     fat: number;
+    fiber: number;
   }> {
     const food = await this.food;
-    
+
     if (this.portionId) {
       const portion = await this.portion;
       if (portion) {
@@ -82,10 +83,11 @@ export default class MealFood extends Model {
           protein: food.protein * (portion.gramWeight / food.servingAmount) * multiplier,
           carbs: food.carbs * (portion.gramWeight / food.servingAmount) * multiplier,
           fat: food.fat * (portion.gramWeight / food.servingAmount) * multiplier,
+          fiber: food.fiber * (portion.gramWeight / food.servingAmount) * multiplier,
         };
       }
     }
-    
+
     // Use direct amount (assume grams)
     return food.getNutrientsForAmount(this.amount, 'g');
   }

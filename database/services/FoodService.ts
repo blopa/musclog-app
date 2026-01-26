@@ -23,47 +23,49 @@ export class FoodService {
   ): Promise<Food> {
     return await database.write(async () => {
       const now = Date.now();
-      
-      return await database.get<Food>('foods').create(food => {
+
+      return await database.get<Food>('foods').create((food) => {
         food.isAiGenerated = false;
         food.name = searchResult.product_name || 'Unknown Product';
         food.brand = searchResult.brands;
         food.barcode = searchResult.code;
-        
+
         // Use provided nutrition data or extract from search result
         if (nutritionData) {
           food.calories = nutritionData.calories;
           food.protein = nutritionData.protein;
           food.carbs = nutritionData.carbs;
           food.fat = nutritionData.fat;
+          food.fiber = nutritionData.fiber || 0;
         } else if (searchResult.nutriments) {
           food.calories = searchResult.nutriments['energy-kcal'] || 0;
           food.protein = searchResult.nutriments.proteins || 0;
           food.carbs = searchResult.nutriments.carbohydrates || 0;
           food.fat = searchResult.nutriments.fat || 0;
+          food.fiber = 0; // V2 API doesn't have fiber, default to 0
         } else {
           food.calories = 0;
           food.protein = 0;
           food.carbs = 0;
           food.fat = 0;
+          food.fiber = 0;
         }
-        
+
         food.servingUnit = 'g';
         food.servingAmount = 100;
-        
+
         // Store micros if available
         const micros = {
-          fiber: nutritionData?.fiber || searchResult.nutriments?.['carbohydrates-total'], // Use fiber if available, otherwise use total carbs
           sugars: nutritionData?.sugars || searchResult.nutriments?.sugars,
           saturatedFat: nutritionData?.saturatedFat || searchResult.nutriments?.['saturated-fat'],
           sodium: nutritionData?.sodium || searchResult.nutriments?.sodium,
           salt: nutritionData?.salt || searchResult.nutriments?.salt,
         };
-        
+
         food.micros = Object.fromEntries(
           Object.entries(micros).filter(([_, value]) => value !== undefined)
         );
-        
+
         food.isFavorite = false;
         food.source = 'api';
         food.createdAt = now;
@@ -91,34 +93,34 @@ export class FoodService {
   ): Promise<Food> {
     return await database.write(async () => {
       const now = Date.now();
-      
-      return await database.get<Food>('foods').create(food => {
+
+      return await database.get<Food>('foods').create((food) => {
         food.isAiGenerated = false;
         food.name = product.product_name || 'Unknown Product';
         food.brand = product.brands;
         food.barcode = product.code;
-        
+
         food.calories = nutritionData.calories;
         food.protein = nutritionData.protein;
         food.carbs = nutritionData.carbs;
         food.fat = nutritionData.fat;
-        
+        food.fiber = nutritionData.fiber || 0;
+
         food.servingUnit = 'g';
         food.servingAmount = 100;
-        
+
         // Store micros
         const micros = {
-          fiber: nutritionData.fiber,
           sugars: nutritionData.sugars,
           saturatedFat: nutritionData.saturatedFat,
           sodium: nutritionData.sodium,
           salt: nutritionData.salt,
         };
-        
+
         food.micros = Object.fromEntries(
           Object.entries(micros).filter(([_, value]) => value !== undefined)
         );
-        
+
         food.isFavorite = false;
         food.source = 'api';
         food.createdAt = now;
@@ -149,33 +151,33 @@ export class FoodService {
   ): Promise<Food> {
     return await database.write(async () => {
       const now = Date.now();
-      
-      return await database.get<Food>('foods').create(food => {
+
+      return await database.get<Food>('foods').create((food) => {
         food.isAiGenerated = false;
         food.name = name;
         food.brand = brand;
-        
+
         food.calories = nutritionData.calories;
         food.protein = nutritionData.protein;
         food.carbs = nutritionData.carbs;
         food.fat = nutritionData.fat;
-        
+        food.fiber = nutritionData.fiber || 0;
+
         food.servingUnit = servingUnit;
         food.servingAmount = servingAmount;
-        
+
         // Store micros
         const micros = {
-          fiber: nutritionData.fiber,
           sugars: nutritionData.sugars,
           saturatedFat: nutritionData.saturatedFat,
           sodium: nutritionData.sodium,
           salt: nutritionData.salt,
         };
-        
+
         food.micros = Object.fromEntries(
           Object.entries(micros).filter(([_, value]) => value !== undefined)
         );
-        
+
         food.isFavorite = false;
         food.source = 'user';
         food.createdAt = now;
@@ -200,10 +202,7 @@ export class FoodService {
   static async getFavoriteFoods(): Promise<Food[]> {
     return await database
       .get<Food>('foods')
-      .query(
-        Q.where('deleted_at', Q.eq(null)),
-        Q.where('is_favorite', true)
-      )
+      .query(Q.where('deleted_at', Q.eq(null)), Q.where('is_favorite', true))
       .fetch();
   }
 
@@ -213,10 +212,7 @@ export class FoodService {
   static async searchFoods(searchTerm: string): Promise<Food[]> {
     return await database
       .get<Food>('foods')
-      .query(
-        Q.where('deleted_at', Q.eq(null)),
-        Q.where('name', Q.like(`%${searchTerm}%`))
-      )
+      .query(Q.where('deleted_at', Q.eq(null)), Q.where('name', Q.like(`%${searchTerm}%`)))
       .fetch();
   }
 
@@ -227,12 +223,9 @@ export class FoodService {
     try {
       const foods = await database
         .get<Food>('foods')
-        .query(
-          Q.where('deleted_at', Q.eq(null)),
-          Q.where('barcode', barcode)
-        )
+        .query(Q.where('deleted_at', Q.eq(null)), Q.where('barcode', barcode))
         .fetch();
-      
+
       return foods.length > 0 ? foods[0] : null;
     } catch (error) {
       return null;
@@ -263,6 +256,7 @@ export class FoodService {
       protein?: number;
       carbs?: number;
       fat?: number;
+      fiber?: number;
       servingAmount?: number;
       servingUnit?: string;
       micros?: any;
@@ -270,24 +264,25 @@ export class FoodService {
   ): Promise<Food> {
     return await database.write(async () => {
       const food = await database.get<Food>('foods').find(id);
-      
+
       if (food.deletedAt) {
         throw new Error('Cannot update deleted food');
       }
-      
-      await food.update(record => {
+
+      await food.update((record) => {
         if (updates.name !== undefined) record.name = updates.name;
         if (updates.brand !== undefined) record.brand = updates.brand;
         if (updates.calories !== undefined) record.calories = updates.calories;
         if (updates.protein !== undefined) record.protein = updates.protein;
         if (updates.carbs !== undefined) record.carbs = updates.carbs;
         if (updates.fat !== undefined) record.fat = updates.fat;
+        if (updates.fiber !== undefined) record.fiber = updates.fiber;
         if (updates.servingAmount !== undefined) record.servingAmount = updates.servingAmount;
         if (updates.servingUnit !== undefined) record.servingUnit = updates.servingUnit;
         if (updates.micros !== undefined) record.micros = updates.micros;
         record.updatedAt = Date.now();
       });
-      
+
       return food;
     });
   }
