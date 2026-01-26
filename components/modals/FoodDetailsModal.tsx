@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { Calendar, Edit, PlusCircle } from 'lucide-react-native';
 import { format, isSameDay } from 'date-fns';
@@ -11,39 +11,7 @@ import { Button } from '../theme/Button';
 import { FoodInfoCard } from '../cards/FoodInfoCard';
 import { ServingSizeSelector } from '../ServingSizeSelector';
 import { useProductDetails } from '../../hooks/useSearchFood';
-
-// Type definitions based on Open Food Facts API v2 schema
-interface Nutriments {
-  'energy-kcal'?: number;
-  'energy-kcal_100g'?: number;
-  proteins?: number;
-  proteins_100g?: number;
-  carbohydrates?: number;
-  carbohydrates_100g?: number;
-  fat?: number;
-  fat_100g?: number;
-  fiber?: number;
-  fiber_100g?: number;
-  sugars?: number;
-  sugars_100g?: number;
-  'saturated-fat'?: number;
-  'saturated-fat_100g'?: number;
-  sodium?: number;
-  sodium_100g?: number;
-  salt?: number;
-  salt_100g?: number;
-  [key: string]: number | undefined;
-}
-
-interface FoodProduct {
-  product_type: 'food' | 'beauty' | 'petfood' | 'product';
-  nutriments?: Nutriments;
-  product_name?: string;
-  brands?: string;
-  categories?: string;
-  serving_size?: string;
-  [key: string]: any;
-}
+import { isSuccessFoodProductState } from '../../types/guards/openFoodFacts';
 
 type FoodDetailsModalProps = {
   visible: boolean;
@@ -90,20 +58,6 @@ export function FoodDetailsModal({
 
   // Fetch detailed product data if barcode is provided
   const { data: productDetails } = useProductDetails(barcode || null);
-
-  // Type guard function to check if productDetails is a success state with food product and nutriments
-  const isSuccessFoodProductState = (
-    state: any
-  ): state is {
-    status: 'success';
-    product: FoodProduct & { nutriments: Nutriments };
-  } => {
-    return (
-      state?.status === 'success' &&
-      state?.product?.product_type === 'food' &&
-      state?.product?.nutriments !== undefined
-    );
-  };
 
   // Extract nutritional data from API response
   const getNutritionalData = () => {
