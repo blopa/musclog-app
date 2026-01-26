@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { OpenFoodFacts } from '@openfoodfacts/openfoodfacts-nodejs';
 import { fetch } from 'expo/fetch';
-import { FoodProduct } from '../types/openFoodFacts';
+import { SearchResultProduct } from '../types/openFoodFacts';
 
 const getClient = () => {
   return new OpenFoodFacts(fetch as any);
@@ -31,20 +31,9 @@ export function useFoodSearch(searchTerm: string) {
         return [];
       }
 
-      const products: FoodProduct[] = result.products
-        .filter((product: FoodProduct) => product.product_name)
-        .map((product: FoodProduct) => ({
-          id: product.code || String(Math.random()),
-          name: product.product_name || 'Unknown Product',
-          brand: product.brands || product.generic_name || 'Generic',
-          nutriments: product.nutriments,
-          serving_size: product.serving_size,
-          product_name: product.product_name,
-          brands: product.brands,
-          categories: product.categories,
-          image_url: product.image_small_url || product.image_url,
-          _raw: product,
-        }));
+      const products: SearchResultProduct[] = result.products.filter(
+        (product: SearchResultProduct) => product.product_name
+      );
 
       return products;
     },

@@ -61,8 +61,11 @@ export function FoodDetailsModal({
 
   // Extract nutritional data from API response
   const getNutritionalData = () => {
-    if (isSuccessFoodProductState(productDetails)) {
-      const nutrients = productDetails.product.nutrition.aggregated_set?.nutrients;
+    if (
+      isSuccessFoodProductState(productDetails) &&
+      productDetails.product.nutrition?.aggregated_set?.nutrients
+    ) {
+      const nutrients = productDetails.product.nutrition.aggregated_set.nutrients;
       return {
         calories: nutrients?.['energy-kcal']?.value || 0,
         protein: nutrients?.proteins?.value || 0,

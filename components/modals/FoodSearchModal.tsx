@@ -15,7 +15,7 @@ import { theme, addOpacityToHex } from '../../theme';
 import { FullScreenModal } from './FullScreenModal';
 import { FoodDetailsModal } from './FoodDetailsModal';
 import { useFoodSearch, useProductDetails } from '../../hooks/useSearchFood';
-import { type FoodProduct } from '../../types/openFoodFacts';
+import { type SearchResultProduct } from '../../types/openFoodFacts';
 
 type FoodItem = {
   id: string;
@@ -323,36 +323,34 @@ export function FoodSearchModal({
     { id: 'recipes', label: t('foodSearch.filters.recipes') },
   ];
 
-  const handleFoodClick = (food: FoodProduct) => {
-    setSelectedBarcode(food.id);
+  const handleFoodClick = (food: SearchResultProduct) => {
+    setSelectedBarcode(food.code || null);
 
-    // Convert FoodProduct to FoodItem format
+    // Convert SearchResultProduct to FoodItem format
     const foodItem: FoodItem = {
-      id: food.id,
-      name: food.name,
-      description: `${food.brand || 'Generic'} • ${formatCalories(food)}`,
-      brand: food.brand,
+      id: food.code || String(Math.random()),
+      name: food.product_name || 'Unknown Product',
+      description: `${food.brands || food.generic_name || 'Generic'} • ${formatCalories(food)}`,
+      brand: food.brands,
       imageUrl: food.image_url,
       serving_size: food.serving_size,
       nutriments: food.nutriments,
-      _raw: food._raw,
+      _raw: food,
     };
 
     setSelectedFood(foodItem);
     setIsFoodDetailsVisible(true);
   };
 
-  const formatCalories = useCallback((food: FoodProduct) => {
-    const kcalPer100g = food.nutriments?.['energy-kcal_100g'];
-    const kcalServing = food.nutriments?.['energy-kcal_serving'];
+  const formatCalories = useCallback((food: SearchResultProduct) => {
+    const kcal = food.nutriments?.['energy-kcal'];
 
-    if (kcalPer100g) {
-      return `${Math.round(kcalPer100g)} kcal / 100g`;
+    if (kcal) {
+      return `${Math.round(kcal)} kcal`;
     }
-    if (kcalServing && food.serving_size) {
-      return `${Math.round(kcalServing)} kcal / ${food.serving_size}`;
-    }
-    return 'Nutrition info unavailable';
+
+    // TODO: calculate using macro values
+    return 'N/A';
   }, []);
 
   const headerRight = (
@@ -464,16 +462,16 @@ export function FoodSearchModal({
                   {!isLoading && !error && foods.length > 0
                     ? foods.map((food) => (
                         <FoodItemCard
-                          key={food.id}
+                          key={food.code}
                           food={{
-                            id: food.id,
-                            name: food.name,
-                            description: `${food.brand || 'Generic'} • ${formatCalories(food)}`,
-                            brand: food.brand,
+                            id: food.code || String(Math.random()),
+                            name: food.product_name || 'Unknown Product',
+                            description: `${food.brands || food.generic_name || 'Generic'} • ${formatCalories(food)}`,
+                            brand: food.brands,
                             imageUrl: food.image_url,
                             serving_size: food.serving_size,
                             nutriments: food.nutriments,
-                            _raw: food._raw,
+                            _raw: food,
                           }}
                           onAddPress={() => handleFoodClick(food)}
                         />
