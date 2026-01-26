@@ -432,24 +432,6 @@ export function FoodSearchModal({
                     </View>
                   ) : null}
 
-                  {/* Show API loading indicator at the bottom when local results are already displayed */}
-                  {!isInitialLoad && isLoadingAPI && hasLocalResults ? (
-                    <View className="flex items-center justify-center py-4">
-                      <ActivityIndicator size="small" color={theme.colors.accent.primary} />
-                      <Text className="ml-2 text-xs text-text-secondary">
-                        Searching Open Food Facts...
-                      </Text>
-                    </View>
-                  ) : null}
-
-                  {error ? (
-                    <View className="py-8 text-center">
-                      <Text className="text-center text-text-secondary">
-                        Error loading food data. Please try again.
-                      </Text>
-                    </View>
-                  ) : null}
-
                   {/* Show results when available */}
                   {!isInitialLoad && !error && filteredResults.length > 0
                     ? filteredResults.map((food: UnifiedFoodResult) => (
@@ -467,6 +449,14 @@ export function FoodSearchModal({
                         />
                       ))
                     : null}
+                  {!isInitialLoad && isLoadingAPI && hasLocalResults ? (
+                    <View className="flex items-center justify-center py-4">
+                      <ActivityIndicator size="small" color={theme.colors.accent.primary} />
+                      <Text className="ml-2 text-xs text-text-secondary">
+                        Searching Open Food Facts...
+                      </Text>
+                    </View>
+                  ) : null}
 
                   {/* Show no results state */}
                   {!isInitialLoad && !error && filteredResults.length === 0 && searchQuery ? (
