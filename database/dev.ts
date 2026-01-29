@@ -242,7 +242,6 @@ export async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = 
       const legPress = await getOrCreateExercise('Leg Press', 'Legs');
 
       // --- Grouped Test Workout (for groupId persistence testing) ---
-      // TODO: also add some exercises without a group id
       let groupedTestTemplate: WorkoutTemplate | undefined = existingTemplates.find(
         (t) => t.name === 'Grouped Test Workout'
       );
@@ -280,6 +279,32 @@ export async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = 
           ts.restTimeAfter = 60;
           ts.setOrder = 2;
           ts.groupId = groupId;
+          ts.createdAt = now;
+          ts.updatedAt = now;
+        });
+
+        // Add an ungrouped exercise (no groupId)
+        await database.get<WorkoutTemplateSet>('workout_template_sets').create((ts) => {
+          ts.templateId = groupedTestTemplate!.id;
+          ts.exerciseId = bicepCurl.id;
+          ts.targetReps = 10;
+          ts.targetWeight = 15;
+          ts.restTimeAfter = 45;
+          ts.setOrder = 3;
+          // No groupId set here (ungrouped)
+          ts.createdAt = now;
+          ts.updatedAt = now;
+        });
+
+        // Add an ungrouped exercise (no groupId)
+        await database.get<WorkoutTemplateSet>('workout_template_sets').create((ts) => {
+          ts.templateId = groupedTestTemplate!.id;
+          ts.exerciseId = tricepExtension.id;
+          ts.targetReps = 10;
+          ts.targetWeight = 15;
+          ts.restTimeAfter = 45;
+          ts.setOrder = 3;
+          // No groupId set here (ungrouped)
           ts.createdAt = now;
           ts.updatedAt = now;
         });
