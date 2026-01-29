@@ -297,6 +297,7 @@ export default function RestTimerScreen() {
       <WorkoutOptionsModal
         visible={isOptionsModalVisible}
         onClose={() => setIsOptionsModalVisible(false)}
+        // TODO: instead of going to /workout-preview, open the WorkoutSessionOverviewModal modal
         onPreviewWorkout={() => router.push('/workout-preview')}
         onWorkoutSettings={() => router.push('/workout-settings')}
         onEndWorkout={handleEndWorkout}

@@ -33,11 +33,12 @@ import WorkoutSessionOverviewModal from '../../components/modals/WorkoutSessionO
 export default function WorkoutSessionScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const params = useLocalSearchParams<{ workoutLogId?: string }>();
+  const params = useLocalSearchParams<{ workoutLogId?: string; exerciseId?: string }>();
   const { units } = useSettings();
   const weightUnitKey = getWeightUnitI18nKey(units);
 
   const workoutLogId = params.workoutLogId;
+  const initialExerciseId = params.exerciseId;
   const {
     workoutLog,
     sets,
@@ -47,6 +48,7 @@ export default function WorkoutSessionScreen() {
     isLoading,
     error,
     isWorkoutComplete,
+    setCurrentExercise,
     refresh,
   } = useActiveWorkout(workoutLogId);
 
@@ -88,6 +90,13 @@ export default function WorkoutSessionScreen() {
       router.replace(`/workout/workout-summary?workoutLogId=${workoutLog.id}`);
     }
   }, [isLoading, isWorkoutComplete, workoutLog, router]);
+
+  // Set initial exercise if provided in URL
+  useEffect(() => {
+    if (!isLoading && initialExerciseId && setCurrentExercise) {
+      setCurrentExercise(initialExerciseId);
+    }
+  }, [isLoading, initialExerciseId, setCurrentExercise]);
 
   const handleCompleteSet = async (rpe: number) => {
     if (!currentSetData || !workoutLog) return;
@@ -555,7 +564,8 @@ export default function WorkoutSessionScreen() {
         }}
         onSelectExercise={async (exerciseId) => {
           setIsWorkoutOverviewModalVisible(false);
-          // TODO: Make the current exercise for the workout session to be this one
+          // Set the current exercise to jump to that exercise's first unlogged set
+          setCurrentExercise(exerciseId);
         }}
         onCancelWorkout={() => {
           setIsWorkoutOverviewModalVisible(false);

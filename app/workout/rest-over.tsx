@@ -213,6 +213,7 @@ export default function RestOverScreen() {
       <WorkoutOptionsModal
         visible={isOptionsModalVisible}
         onClose={() => setIsOptionsModalVisible(false)}
+        // TODO: instead of going to /workout-preview, open the WorkoutSessionOverviewModal modal
         onPreviewWorkout={() => router.push('/workout-preview' as any)}
         onWorkoutSettings={() => router.push('/workout-settings' as any)}
         onEndWorkout={handleEndWorkout}

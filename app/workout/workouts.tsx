@@ -374,9 +374,10 @@ export default function WorkoutsScreen() {
         }}
         onSelectExercise={(exerciseId) => {
           setIsWorkoutOverviewVisible(false);
-          // Navigate to workout session - for now just goes to first exercise
-          // TODO: Add exercise jumping functionality
-          router.push(`/workout/workout-session?workoutLogId=${selectedWorkoutLogId}`);
+          // Navigate to workout session with selected exercise
+          router.push(
+            `/workout/workout-session?workoutLogId=${selectedWorkoutLogId}&exerciseId=${exerciseId}`
+          );
         }}
         onCancelWorkout={async () => {
           setIsWorkoutOverviewVisible(false);

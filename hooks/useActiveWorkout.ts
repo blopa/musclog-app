@@ -35,6 +35,7 @@ export function useActiveWorkout(workoutLogId?: string) {
   const [sets, setSets] = useState<WorkoutLogSet[]>([]);
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [currentSetData, setCurrentSetData] = useState<CurrentSetData | null>(null);
+  const [targetExerciseId, setTargetExerciseId] = useState<string | null>(null);
   const [progress, setProgress] = useState<WorkoutProgress>({
     totalSets: 0,
     completedSets: 0,
@@ -44,142 +45,160 @@ export function useActiveWorkout(workoutLogId?: string) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const loadWorkoutData = useCallback(async (logId: string) => {
-    try {
-      setIsLoading(true);
-      setError(null);
+  const loadWorkoutData = useCallback(
+    async (logId: string) => {
+      try {
+        setIsLoading(true);
+        setError(null);
 
-      // Load workout log
-      const log = await database.get<WorkoutLog>('workout_logs').find(logId);
-      if (log.deletedAt) {
-        throw new Error('Workout has been deleted');
-      }
-      setWorkoutLog(log);
-
-      // Load all sets ordered by set_order
-      const workoutSets = await database
-        .get<WorkoutLogSet>('workout_log_sets')
-        .query(
-          Q.where('workout_log_id', logId),
-          Q.where('deleted_at', Q.eq(null)),
-          Q.sortBy('set_order', Q.asc)
-        )
-        .fetch();
-
-      setSets(workoutSets);
-
-      // Load exercise details
-      const exerciseIds = [...new Set(workoutSets.map((set) => set.exerciseId))];
-      const exerciseList =
-        exerciseIds.length > 0
-          ? await database
-              .get<Exercise>('exercises')
-              .query(Q.where('id', Q.oneOf(exerciseIds)), Q.where('deleted_at', Q.eq(null)))
-              .fetch()
-          : [];
-
-      setExercises(exerciseList);
-
-      // Create exercise map for quick lookup
-      const exerciseMap = new Map<string, Exercise>();
-      exerciseList.forEach((ex) => exerciseMap.set(ex.id, ex));
-
-      // Find current set (first set with difficultyLevel === 0)
-      const currentSet = workoutSets.find((set) => set.difficultyLevel === 0);
-
-      // Calculate progress
-      const completedSets = workoutSets.filter((set) => set.difficultyLevel > 0).length;
-      const totalSets = workoutSets.length;
-      const isComplete = currentSet === undefined && totalSets > 0;
-
-      setProgress({
-        totalSets,
-        completedSets,
-        currentSetOrder: currentSet?.setOrder ?? null,
-        isComplete,
-      });
-
-      // If no current set and workout is complete, set currentSetData to null
-      if (!currentSet) {
-        setCurrentSetData(null);
-        setIsLoading(false);
-        return;
-      }
-
-      // Group sets by exercise to calculate set numbers
-      const exerciseGroups = new Map<string, WorkoutLogSet[]>();
-      workoutSets.forEach((set) => {
-        if (!exerciseGroups.has(set.exerciseId)) {
-          exerciseGroups.set(set.exerciseId, []);
+        // Load workout log
+        const log = await database.get<WorkoutLog>('workout_logs').find(logId);
+        if (log.deletedAt) {
+          throw new Error('Workout has been deleted');
         }
-        exerciseGroups.get(set.exerciseId)!.push(set);
-      });
+        setWorkoutLog(log);
 
-      // Sort sets within each exercise by set_order
-      exerciseGroups.forEach((exerciseSets) => {
-        exerciseSets.sort((a, b) => a.setOrder - b.setOrder);
-      });
+        // Load all sets ordered by set_order
+        const workoutSets = await database
+          .get<WorkoutLogSet>('workout_log_sets')
+          .query(
+            Q.where('workout_log_id', logId),
+            Q.where('deleted_at', Q.eq(null)),
+            Q.sortBy('set_order', Q.asc)
+          )
+          .fetch();
 
-      // Find current exercise and calculate set number
-      const currentExercise = exerciseMap.get(currentSet.exerciseId);
-      if (!currentExercise) {
-        throw new Error(`Exercise not found for set: ${currentSet.exerciseId}`);
-      }
+        setSets(workoutSets);
 
-      const currentExerciseSets = exerciseGroups.get(currentSet.exerciseId) || [];
-      const setNumber = currentExerciseSets.findIndex((s) => s.id === currentSet.id) + 1;
-      const totalSetsInExercise = currentExerciseSets.length;
+        // Load exercise details
+        const exerciseIds = [...new Set(workoutSets.map((set) => set.exerciseId))];
+        const exerciseList =
+          exerciseIds.length > 0
+            ? await database
+                .get<Exercise>('exercises')
+                .query(Q.where('id', Q.oneOf(exerciseIds)), Q.where('deleted_at', Q.eq(null)))
+                .fetch()
+            : [];
 
-      // Calculate exercise number (order of first appearance in workout)
-      const exerciseOrder = Array.from(exerciseGroups.keys());
-      const exerciseNumber = exerciseOrder.indexOf(currentSet.exerciseId) + 1;
+        setExercises(exerciseList);
 
-      // Find previous set (last completed set before current set)
-      let previousSet: CurrentSetData['previousSet'] | undefined;
-      const previousSets = workoutSets.filter(
-        (set) => set.setOrder < currentSet.setOrder && set.difficultyLevel > 0
-      );
-      if (previousSets.length > 0) {
-        const lastPreviousSet = previousSets[previousSets.length - 1];
-        previousSet = {
-          weight: lastPreviousSet.weight,
-          reps: lastPreviousSet.reps,
-          exerciseId: lastPreviousSet.exerciseId,
-        };
-      }
+        // Create exercise map for quick lookup
+        const exerciseMap = new Map<string, Exercise>();
+        exerciseList.forEach((ex) => exerciseMap.set(ex.id, ex));
 
-      // Find next set
-      const nextSet = workoutSets.find(
-        (set) => set.setOrder > currentSet.setOrder && set.difficultyLevel === 0
-      );
-      let nextSetData: CurrentSetData['nextSet'] | undefined;
-      if (nextSet) {
-        const nextExercise = exerciseMap.get(nextSet.exerciseId);
-        if (nextExercise) {
-          nextSetData = {
-            set: nextSet,
-            exercise: nextExercise,
+        // Find current set based on target exercise or first unlogged set
+        let currentSet: WorkoutLogSet | undefined;
+
+        if (targetExerciseId) {
+          // Find first unlogged set for the target exercise
+          currentSet = workoutSets.find(
+            (set) => set.exerciseId === targetExerciseId && set.difficultyLevel === 0
+          );
+
+          // If no unlogged sets for target exercise, fall back to any unlogged set
+          if (!currentSet) {
+            currentSet = workoutSets.find((set) => set.difficultyLevel === 0);
+          }
+        } else {
+          // Default behavior: find first unlogged set
+          currentSet = workoutSets.find((set) => set.difficultyLevel === 0);
+        }
+
+        // Calculate progress
+        const completedSets = workoutSets.filter((set) => set.difficultyLevel > 0).length;
+        const totalSets = workoutSets.length;
+        const isComplete = currentSet === undefined && totalSets > 0;
+
+        setProgress({
+          totalSets,
+          completedSets,
+          currentSetOrder: currentSet?.setOrder ?? null,
+          isComplete,
+        });
+
+        // If no current set and workout is complete, set currentSetData to null
+        if (!currentSet) {
+          setCurrentSetData(null);
+          setIsLoading(false);
+          return;
+        }
+
+        // Group sets by exercise to calculate set numbers
+        const exerciseGroups = new Map<string, WorkoutLogSet[]>();
+        workoutSets.forEach((set) => {
+          if (!exerciseGroups.has(set.exerciseId)) {
+            exerciseGroups.set(set.exerciseId, []);
+          }
+          exerciseGroups.get(set.exerciseId)!.push(set);
+        });
+
+        // Sort sets within each exercise by set_order
+        exerciseGroups.forEach((exerciseSets) => {
+          exerciseSets.sort((a, b) => a.setOrder - b.setOrder);
+        });
+
+        // Find current exercise and calculate set number
+        const currentExercise = exerciseMap.get(currentSet.exerciseId);
+        if (!currentExercise) {
+          throw new Error(`Exercise not found for set: ${currentSet.exerciseId}`);
+        }
+
+        const currentExerciseSets = exerciseGroups.get(currentSet.exerciseId) || [];
+        const setNumber = currentExerciseSets.findIndex((s) => s.id === currentSet.id) + 1;
+        const totalSetsInExercise = currentExerciseSets.length;
+
+        // Calculate exercise number (order of first appearance in workout)
+        const exerciseOrder = Array.from(exerciseGroups.keys());
+        const exerciseNumber = exerciseOrder.indexOf(currentSet.exerciseId) + 1;
+
+        // Find previous set (last completed set before current set)
+        let previousSet: CurrentSetData['previousSet'] | undefined;
+        const previousSets = workoutSets.filter(
+          (set) => set.setOrder < currentSet.setOrder && set.difficultyLevel > 0
+        );
+        if (previousSets.length > 0) {
+          const lastPreviousSet = previousSets[previousSets.length - 1];
+          previousSet = {
+            weight: lastPreviousSet.weight,
+            reps: lastPreviousSet.reps,
+            exerciseId: lastPreviousSet.exerciseId,
           };
         }
+
+        // Find next set
+        const nextSet = workoutSets.find(
+          (set) => set.setOrder > currentSet.setOrder && set.difficultyLevel === 0
+        );
+        let nextSetData: CurrentSetData['nextSet'] | undefined;
+        if (nextSet) {
+          const nextExercise = exerciseMap.get(nextSet.exerciseId);
+          if (nextExercise) {
+            nextSetData = {
+              set: nextSet,
+              exercise: nextExercise,
+            };
+          }
+        }
+
+        setCurrentSetData({
+          set: currentSet,
+          exercise: currentExercise,
+          setNumber,
+          totalSetsInExercise,
+          exerciseNumber,
+          previousSet,
+          nextSet: nextSetData,
+        });
+
+        setIsLoading(false);
+      } catch (err) {
+        console.error('Error loading workout data:', err);
+        setError(err instanceof Error ? err.message : 'Failed to load workout data');
+        setIsLoading(false);
       }
-
-      setCurrentSetData({
-        set: currentSet,
-        exercise: currentExercise,
-        setNumber,
-        totalSetsInExercise,
-        exerciseNumber,
-        previousSet,
-        nextSet: nextSetData,
-      });
-
-      setIsLoading(false);
-    } catch (err) {
-      console.error('Error loading workout data:', err);
-      setError(err instanceof Error ? err.message : 'Failed to load workout data');
-      setIsLoading(false);
-    }
-  }, []);
+    },
+    [targetExerciseId]
+  );
 
   // Load workout on mount or when workoutLogId changes
   useEffect(() => {
@@ -242,6 +261,17 @@ export function useActiveWorkout(workoutLogId?: string) {
     return progress.isComplete;
   }, [progress.isComplete]);
 
+  const setCurrentExercise = useCallback(
+    (exerciseId: string | null) => {
+      setTargetExerciseId(exerciseId);
+      // Trigger a reload to recalculate current set
+      if (workoutLog) {
+        loadWorkoutData(workoutLog.id);
+      }
+    },
+    [workoutLog, loadWorkoutData]
+  );
+
   const getExerciseSets = useCallback(
     (exerciseId: string): WorkoutLogSet[] => {
       return sets.filter((set) => set.exerciseId === exerciseId);
@@ -267,6 +297,7 @@ export function useActiveWorkout(workoutLogId?: string) {
     getNextSet,
     isWorkoutComplete,
     getExerciseSets,
+    setCurrentExercise,
     refresh,
   };
 }
