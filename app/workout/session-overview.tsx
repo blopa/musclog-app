@@ -1,18 +1,21 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { View, Text, Pressable, ScrollView, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
   X,
-  MoreHorizontal,
   Clock,
   Dumbbell,
   CheckCircle,
   ChevronRight,
   Play,
+  XCircle,
+  CheckSquare,
 } from 'lucide-react-native';
 import { MasterLayout } from '../../components/MasterLayout';
 import { GenericCard } from '../../components/cards/GenericCard';
+import { MenuButton } from '../../components/theme/MenuButton';
+import { BottomPopUpMenu, BottomPopUpMenuItem } from '../../components/BottomPopUpMenu';
 import { theme } from '../../theme';
 
 type ExerciseStatus = 'completed' | 'in-progress' | 'pending' | 'skipped';
@@ -84,28 +87,59 @@ const exercises: Exercise[] = [
 ];
 
 function SessionHeader({ onClose }: { onClose: () => void }) {
+  const [isMenuVisible, setIsMenuVisible] = useState(false);
+
+  const menuItems: BottomPopUpMenuItem[] = [
+    {
+      icon: XCircle,
+      iconColor: theme.colors.status.error,
+      iconBgColor: theme.colors.status.error8,
+      title: 'Cancel Workout',
+      description: 'Discard this workout and return to workouts list',
+      onPress: () => {
+        // TODO: cancel workout logic
+        console.log('Cancel workout');
+      },
+    },
+    {
+      icon: CheckSquare,
+      iconColor: theme.colors.status.success,
+      iconBgColor: theme.colors.status.success20,
+      title: 'Finish Workout',
+      description: 'Complete this workout and view summary',
+      onPress: () => {
+        // TODO: finish workout logic
+        console.log('Finish workout');
+      },
+    },
+  ];
+
   return (
-    <View className="flex-row items-center justify-between bg-bg-primary/80 px-6 py-6">
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="Close"
-        className="-ml-2 rounded-full p-2"
-        onPress={onClose}
-      >
-        <X size={theme.iconSize['2xl']} color={theme.colors.text.primary} />
-      </Pressable>
-      <Text className="text-lg font-semibold text-text-primary">Session Overview</Text>
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="More options"
-        className="-mr-2 rounded-full p-2"
-        onPress={() => {
-          // no-op for now
-        }}
-      >
-        <MoreHorizontal size={theme.iconSize['2xl']} color={theme.colors.text.primary} />
-      </Pressable>
-    </View>
+    <>
+      <View className="flex-row items-center justify-between bg-bg-primary/80 px-6 py-6">
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Close"
+          className="-ml-2 rounded-full p-2"
+          onPress={onClose}
+        >
+          <X size={theme.iconSize['2xl']} color={theme.colors.text.primary} />
+        </Pressable>
+        <Text className="text-lg font-semibold text-text-primary">Session Overview</Text>
+        <MenuButton
+          size="lg"
+          color={theme.colors.text.primary}
+          onPress={() => setIsMenuVisible(true)}
+        />
+      </View>
+
+      <BottomPopUpMenu
+        visible={isMenuVisible}
+        onClose={() => setIsMenuVisible(false)}
+        title="Workout Options"
+        items={menuItems}
+      />
+    </>
   );
 }
 
