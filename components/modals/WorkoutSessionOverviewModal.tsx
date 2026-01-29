@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react';
 import { View, Text, ScrollView, Image } from 'react-native';
 import {
-  X,
   Clock,
   Dumbbell,
   CheckCircle,
@@ -17,10 +16,12 @@ import { BottomPopUpMenu, BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { theme } from '../../theme';
 import { FullScreenModal } from './FullScreenModal';
 import { useTranslation } from 'react-i18next';
+import { useActiveWorkout } from '../../hooks/useActiveWorkout';
+import WorkoutLogSet from '../../database/models/WorkoutLogSet';
 
 type ExerciseStatus = 'completed' | 'in-progress' | 'pending' | 'skipped';
 
-type Exercise = {
+type ExerciseUIData = {
   id: string;
   name: string;
   imageUrl: string;
@@ -29,70 +30,40 @@ type Exercise = {
   totalSets: number;
 };
 
-const exercises: Exercise[] = [
-  {
-    id: '1',
-    name: 'Incline Dumbbell Press',
-    imageUrl:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuDUk5DGE9te3WrUtEqNtvyCU3_ptGcI55yoTO1AXjHc8TexvZYJNWxtZhj39EsUA2CZAxipdIaXIzGCYVwrvzDV0jL2-eF1cb3iA204pu3bJod6GyBH-l-bqZ_M068fna28XuZQGTfWp-i1BNO8RcSWx6WvsLj3cX8xJ3I7J_tHe_4WH9_CXvZx8fhTBTS8Iu8jxD5BVES96tMJijA9pwDIqctJbktA5VkRbaTAGtP-EVrusaU-51wJSRL4mu82I-7g2aDlnHsw2Rwv',
-    status: 'completed',
-    setsCompleted: 4,
-    totalSets: 4,
-  },
-  {
-    id: '2',
-    name: 'Overhead Press (Dumbbell)',
-    imageUrl:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuBzB0Jf0btBTky8cioc5ZyFhkq-f9bGJ3nXx7ZdCeP3gjVS3ngN_21UHCaXCrPXgpaREV-2pVWD0rkLQEcCDog7H0HHT7xD8R-1u6ZbRou8sRtfXoZLcMvRTjfVJqO-WWVQojeETObgZyhNu3qRRFRey7mp1VQ-_NCeg8VnBjIclyAp5GeB5PXH9y6POGTNjuIm3EMwTk42wcJDcJaOCKKljZn_hZ1kyVfzDl-SWKBzJWa0Z97YSi__I7zMMMTfY7MHTYKxCnevDLZ1',
-    status: 'in-progress',
-    setsCompleted: 2,
-    totalSets: 3,
-  },
-  {
-    id: '3',
-    name: 'Lateral Side Raises',
-    imageUrl:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuBOhjsZK7Dppm6RjNHzeVNzfHm21l0ohRaicDvo7j2nXETV-xBKTqbnNXED_J1rg1Dn_vdNmAP8iZcmBF2wImgco2VKqMhoquHJVfVsp62htxWO5Bs6EfTfnp2fEsysvbdEXhxO4hYfLg2vSoxO2NEaAFYAcQKU7D_xzDJCMgSFzDxgelO1gBlhjxYaYmA_8BkN7eORtyHpC5BTrH_h7xgVfqfn-AHYpTNLcjaxawhsaH1vWv8fZ-e9eVUvOZP6SyF6FeYZxcL-zb3h',
-    status: 'pending',
-    setsCompleted: 0,
-    totalSets: 4,
-  },
-  {
-    id: '4',
-    name: 'Cable Tricep Pushdowns',
-    imageUrl:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuAEK2jixQ7LHtdzCX_hUoKM-iakcLdEVVPPntnMXRqSTSGbt3Q-Bf0w77HTHqtOK-z5BWkfxUFhyPX4luE3moX2-F0Uhn-4EVtzPHipdJ0d6hQRr7_Np_xBYPuv8JPRuolZ__LHM6QVSnC6Wdxp2t-73q2ujuj1vhy3lMFj74yVEdgG9Vfa0STU-57-I1lzAcrTSdJTMTNTl3PaxFBJOKwV0lwMIUIk_DOkhEarf3fRorJB6eFhEQ0Nc2F2uaFJkfF_G5P5yEQeO-j-',
-    status: 'skipped',
-    setsCompleted: 0,
-    totalSets: 3,
-  },
-  {
-    id: '5',
-    name: 'Overhead Tricep Extension',
-    imageUrl:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuB46tR61zAPRMOTWKhCOm3WUvkwA6W3eBOPufkeRVQDhbRI0RUxDzyjjQoFEUjbJsslRnDjTjoeabBs4wDzxwDla-TyD3dEZVJ1C3HMopB503fWLmDnDleqkM0BkzQ4nFY1xHab9IdC5BoE1otTnOThoqdxl-_lxQNGKWKTkYDkLRCwS4cBlE2fHaYuZEQiNmyMId13N-KHnsEW6Fh0sBNL8JfwADMuJMOqAGjbmbgX-PrY0CfUmP8Zgd0VVp4fVB3Hu2XPttdQtwwK',
-    status: 'pending',
-    setsCompleted: 0,
-    totalSets: 3,
-  },
-  {
-    id: '6',
-    name: 'Dumbbell Shrugs',
-    imageUrl:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuDQQxQqGOgOZufBPIHuKy21SgMHIcQCc3RdaCm8pe4Yxx2uGrZEGBDEeVdQt-DQfA0NPB8mJmooPNIyNSH1zCjW8Nc_z88IO3CFT5lJofEtfov-sYepYGan3faVCJOJV54MdLaTvJFWNBSl224LjSXvVUwcEm4uy3NGHQd0FePLWPW7x0cwB8X-kF86ZlbWvwsAfzVji4Ru-MGAgXspo-tRyJ2qGVQ7JTg04hYVp2xhtY1T-sTwZ52bowqYs-PWIpPuC7-fHhc06zl7',
-    status: 'pending',
-    setsCompleted: 0,
-    totalSets: 2,
-  },
-];
+function WorkoutInfo({
+  workoutLog,
+  exerciseCount,
+  isLoading,
+}: {
+  workoutLog: any;
+  exerciseCount: number;
+  isLoading: boolean;
+}) {
+  const { t } = useTranslation();
 
-function WorkoutInfo() {
+  if (isLoading) {
+    return (
+      <GenericCard variant="card" size="default">
+        <View className="p-6">
+          <View className="mb-2 flex-row items-start justify-between">
+            <View className="h-8 w-32 rounded bg-bg-secondary" />
+            <View className="h-6 w-20 rounded-full bg-bg-secondary" />
+          </View>
+          <View className="flex-row items-center gap-4">
+            <View className="h-5 w-24 rounded bg-bg-secondary" />
+            <View className="h-5 w-24 rounded bg-bg-secondary" />
+          </View>
+        </View>
+      </GenericCard>
+    );
+  }
+
   return (
     <GenericCard variant="card" size="default">
       <View className="p-6">
         <View className="mb-2 flex-row items-start justify-between">
           <Text className="text-3xl font-extrabold tracking-tight text-text-primary">
-            Push Day A
+            {workoutLog?.workoutName || t('workout.workout')}
           </Text>
           <View className="rounded-full bg-accent-primary/10 px-3 py-1">
             <Text className="text-xs font-bold uppercase tracking-widest text-text-accent">
@@ -104,11 +75,15 @@ function WorkoutInfo() {
         <View className="flex-row items-center gap-4">
           <View className="flex-row items-center gap-2">
             <Clock size={theme.iconSize.sm} color={theme.colors.text.secondary} />
-            <Text className="text-sm font-medium text-text-secondary">Est. 55 mins</Text>
+            <Text className="text-sm font-medium text-text-secondary">
+              {t('workout.inProgress')}
+            </Text>
           </View>
           <View className="flex-row items-center gap-2">
             <Dumbbell size={theme.iconSize.sm} color={theme.colors.text.secondary} />
-            <Text className="text-sm font-medium text-text-secondary">6 Exercises</Text>
+            <Text className="text-sm font-medium text-text-secondary">
+              {t('workout.exercises', { count: exerciseCount })}
+            </Text>
           </View>
         </View>
       </View>
@@ -122,12 +97,14 @@ function ExerciseCard({
   status,
   setsCompleted,
   totalSets,
+  onPress,
 }: {
   name: string;
   imageUrl: string;
   status: ExerciseStatus;
   setsCompleted: number;
   totalSets: number;
+  onPress?: () => void;
 }) {
   const isCompleted = status === 'completed';
   const isSkipped = status === 'skipped';
@@ -141,14 +118,7 @@ function ExerciseCard({
   }, [isCompleted, isInProgress, isSkipped]);
 
   return (
-    <GenericCard
-      variant="card"
-      size="default"
-      isPressable
-      onPress={() => {
-        // navigate to exercise details / logger
-      }}
-    >
+    <GenericCard variant="card" size="default" isPressable onPress={onPress}>
       <View className="p-4">
         <View className="flex-row items-center justify-between">
           <View className="flex-row items-center gap-4">
@@ -202,11 +172,19 @@ function ExerciseCard({
   );
 }
 
-function ExerciseList() {
+function ExerciseList({
+  exercises,
+  onSelectExercise,
+}: {
+  exercises: ExerciseUIData[];
+  onSelectExercise?: (exerciseId: string) => void;
+}) {
+  const { t } = useTranslation();
+
   return (
     <View className="gap-3">
       <Text className="px-2 text-xs font-bold uppercase tracking-widest text-text-muted">
-        Workout Sequence
+        {t('workout.workoutSequence')}
       </Text>
       <View className="gap-3">
         {exercises.map((exercise) => (
@@ -217,6 +195,7 @@ function ExerciseList() {
             status={exercise.status}
             setsCompleted={exercise.setsCompleted}
             totalSets={exercise.totalSets}
+            onPress={() => onSelectExercise?.(exercise.id)}
           />
         ))}
       </View>
@@ -227,13 +206,88 @@ function ExerciseList() {
 type WorkoutSessionOverviewModalProps = {
   visible: boolean;
   onClose: () => void;
+  workoutLogId?: string;
+  onStartWorkout?: () => void;
+  onResumeSession?: () => void;
+  onSelectExercise?: (exerciseId: string) => void;
+  onCancelWorkout?: () => void;
+  onFinishWorkout?: () => void;
 };
+
 export default function WorkoutSessionOverviewModal({
   visible,
   onClose,
+  workoutLogId,
+  onStartWorkout,
+  onResumeSession,
+  onSelectExercise,
+  onCancelWorkout,
+  onFinishWorkout,
 }: WorkoutSessionOverviewModalProps) {
   const { t } = useTranslation();
   const [isMenuVisible, setIsMenuVisible] = useState(false);
+
+  // Load real workout data
+  const {
+    workoutLog,
+    sets,
+    exercises: dbExercises,
+    progress,
+    isLoading,
+    error,
+  } = useActiveWorkout(workoutLogId);
+
+  // Transform database models to UI format
+  const exerciseData = useMemo(() => {
+    if (!sets || !dbExercises || sets.length === 0) return [];
+
+    // Group sets by exercise
+    const exerciseGroups = new Map<string, WorkoutLogSet[]>();
+    sets.forEach((set) => {
+      if (!exerciseGroups.has(set.exerciseId)) {
+        exerciseGroups.set(set.exerciseId, []);
+      }
+      exerciseGroups.get(set.exerciseId)!.push(set);
+    });
+
+    // Transform to UI format
+    const exerciseList: ExerciseUIData[] = [];
+    exerciseGroups.forEach((exerciseSets, exerciseId) => {
+      const exercise = dbExercises.find((ex) => ex.id === exerciseId);
+      if (!exercise) return;
+
+      const completedSets = exerciseSets.filter((set) => set.difficultyLevel > 0).length;
+      const skippedSets = exerciseSets.filter((set) => set.isSkipped).length;
+      const totalSets = exerciseSets.length;
+
+      let status: ExerciseStatus;
+      if (skippedSets === totalSets) {
+        status = 'skipped';
+      } else if (completedSets === totalSets) {
+        status = 'completed';
+      } else if (completedSets > 0) {
+        status = 'in-progress';
+      } else {
+        status = 'pending';
+      }
+
+      exerciseList.push({
+        id: exercise.id,
+        name: exercise.name,
+        imageUrl: exercise.imageUrl || '',
+        status,
+        setsCompleted: completedSets,
+        totalSets,
+      });
+    });
+
+    // Sort by first appearance in workout (set_order)
+    return exerciseList.sort((a, b) => {
+      const aFirstSet = sets.find((set) => set.exerciseId === a.id);
+      const bFirstSet = sets.find((set) => set.exerciseId === b.id);
+      return (aFirstSet?.setOrder || 0) - (bFirstSet?.setOrder || 0);
+    });
+  }, [sets, dbExercises]);
 
   const menuItems: BottomPopUpMenuItem[] = [
     {
@@ -243,8 +297,8 @@ export default function WorkoutSessionOverviewModal({
       title: 'Cancel Workout',
       description: 'Discard this workout and return to workouts list',
       onPress: () => {
-        // TODO: cancel workout logic
-        console.log('Cancel workout');
+        setIsMenuVisible(false);
+        onCancelWorkout?.();
       },
     },
     {
@@ -254,11 +308,30 @@ export default function WorkoutSessionOverviewModal({
       title: 'Finish Workout',
       description: 'Complete this workout and view summary',
       onPress: () => {
-        // TODO: finish workout logic
-        console.log('Finish workout');
+        setIsMenuVisible(false);
+        onFinishWorkout?.();
       },
     },
   ];
+
+  // Determine if workout has started (has any completed sets)
+  const hasStarted = progress.completedSets > 0;
+
+  // Determine button text and action
+  const getButtonProps = () => {
+    if (!hasStarted) {
+      return {
+        label: t('workout.startWorkout'),
+        onPress: onStartWorkout,
+      };
+    }
+    return {
+      label: t('workout.resumeSession'),
+      onPress: onResumeSession,
+    };
+  };
+
+  const buttonProps = getButtonProps();
 
   return (
     <FullScreenModal
@@ -276,14 +349,13 @@ export default function WorkoutSessionOverviewModal({
       withGradient
       footer={
         <Button
-          label={t('workout.resumeSession', 'Resume Session')}
+          label={buttonProps.label}
           icon={Play}
           size="md"
           width="full"
           variant="accent"
-          onPress={() => {
-            // resume session
-          }}
+          onPress={buttonProps.onPress}
+          disabled={isLoading}
         />
       }
     >
@@ -301,8 +373,12 @@ export default function WorkoutSessionOverviewModal({
         >
           <View style={{ height: theme.spacing.gap.lg }} />
           <View className="gap-4 px-4">
-            <WorkoutInfo />
-            <ExerciseList />
+            <WorkoutInfo
+              workoutLog={workoutLog}
+              exerciseCount={exerciseData.length}
+              isLoading={isLoading}
+            />
+            <ExerciseList exercises={exerciseData} onSelectExercise={onSelectExercise} />
           </View>
         </ScrollView>
       </View>

@@ -12,11 +12,13 @@ import { WorkoutDetailsMenu } from '../../components/WorkoutDetailsMenu';
 import { EmptyStateCard } from '../../components/theme/EmptyStateCard';
 import { SkeletonLoader } from '../../components/theme/SkeletonLoader';
 import { ErrorStateCard } from '../../components/theme/ErrorStateCard';
-import { WorkoutService } from '../../database/services/WorkoutService';
+import { WorkoutService } from '../../database/services';
 import { database } from '../../database';
 import WorkoutTemplate from '../../database/models/WorkoutTemplate';
+import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
 import { CreateWorkoutOptionsModal } from '../../components/modals/CreateWorkoutOptionsModal';
 import CreateWorkoutModal from '../../components/modals/CreateWorkoutModal';
+import WorkoutSessionOverviewModal from '../../components/modals/WorkoutSessionOverviewModal';
 import { useWorkoutTemplates } from '../../hooks/useWorkoutTemplates';
 import DashedButton from '../../components/theme/DashedButton';
 
@@ -36,6 +38,8 @@ export default function WorkoutsScreen() {
   const [selectedWorkoutId, setSelectedWorkoutId] = useState<string>('');
   const [isCreateOptionsVisible, setIsCreateOptionsVisible] = useState(false);
   const [isCreateWorkoutModalVisible, setIsCreateWorkoutModalVisible] = useState(false);
+  const [isWorkoutOverviewVisible, setIsWorkoutOverviewVisible] = useState(false);
+  const [selectedWorkoutLogId, setSelectedWorkoutLogId] = useState<string>('');
   const [editingTemplateId, setEditingTemplateId] = useState<string | undefined>(undefined);
 
   // Use reactive hook for workout templates
@@ -82,6 +86,18 @@ export default function WorkoutsScreen() {
     // Add filter logic based on workout type
     return true;
   });
+
+  // Helper function to start a workout and show overview modal
+  const handleStartWorkout = async (templateId: string) => {
+    try {
+      const workoutLog = await WorkoutService.startWorkoutFromTemplate(templateId);
+      setSelectedWorkoutLogId(workoutLog.id);
+      setIsWorkoutOverviewVisible(true);
+    } catch (err) {
+      console.error('Error starting workout:', err);
+      // Show error to user (you might want to add an alert here)
+    }
+  };
 
   return (
     <MasterLayout>
@@ -222,15 +238,8 @@ export default function WorkoutsScreen() {
                 duration={featuredWorkout.duration}
                 image={featuredWorkout.image}
                 onStart={async () => {
-                  try {
-                    if (featuredWorkout.id) {
-                      const workoutLog = await WorkoutService.startWorkoutFromTemplate(
-                        featuredWorkout.id
-                      );
-                      router.push(`/workout/workout-session?workoutLogId=${workoutLog.id}`);
-                    }
-                  } catch (err) {
-                    console.error('Error starting workout:', err);
+                  if (featuredWorkout.id) {
+                    await handleStartWorkout(featuredWorkout.id);
                   }
                 }}
                 onMore={() => {
@@ -255,15 +264,7 @@ export default function WorkoutsScreen() {
                     variant="standard"
                     image={workout.image}
                     onStart={async () => {
-                      try {
-                        const workoutLog = await WorkoutService.startWorkoutFromTemplate(
-                          workout.id
-                        );
-                        router.push(`/workout/workout-session?workoutLogId=${workoutLog.id}`);
-                      } catch (err) {
-                        console.error('Error starting workout:', err);
-                        // Show error to user (you might want to add an alert here)
-                      }
+                      await handleStartWorkout(workout.id);
                     }}
                     onArchive={() => {
                       // TODO: Implement archive functionality
@@ -357,6 +358,45 @@ export default function WorkoutsScreen() {
           setEditingTemplateId(undefined);
         }}
         templateId={editingTemplateId}
+      />
+      {/* Workout Session Overview Modal */}
+      <WorkoutSessionOverviewModal
+        visible={isWorkoutOverviewVisible}
+        onClose={() => setIsWorkoutOverviewVisible(false)}
+        workoutLogId={selectedWorkoutLogId}
+        onStartWorkout={() => {
+          setIsWorkoutOverviewVisible(false);
+          router.push(`/workout/workout-session?workoutLogId=${selectedWorkoutLogId}`);
+        }}
+        onResumeSession={() => {
+          setIsWorkoutOverviewVisible(false);
+          router.push(`/workout/workout-session?workoutLogId=${selectedWorkoutLogId}`);
+        }}
+        onSelectExercise={(exerciseId) => {
+          setIsWorkoutOverviewVisible(false);
+          // Navigate to workout session - for now just goes to first exercise
+          // TODO: Add exercise jumping functionality
+          router.push(`/workout/workout-session?workoutLogId=${selectedWorkoutLogId}`);
+        }}
+        onCancelWorkout={async () => {
+          setIsWorkoutOverviewVisible(false);
+          // Cancel the workout and navigate back
+          if (selectedWorkoutLogId) {
+            try {
+              // Clear active workout and delete the workout log
+              await clearActiveWorkoutLogId();
+              const log = await database.get('workout_logs').find(selectedWorkoutLogId);
+              await log.markAsDeleted();
+            } catch (err) {
+              console.error('Error canceling workout:', err);
+            }
+          }
+        }}
+        onFinishWorkout={() => {
+          setIsWorkoutOverviewVisible(false);
+          // Navigate to workout summary
+          router.push(`/workout/workout-summary?workoutLogId=${selectedWorkoutLogId}`);
+        }}
       />
     </MasterLayout>
   );

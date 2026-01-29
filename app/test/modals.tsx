@@ -1046,6 +1046,26 @@ export default function ModalsTestScreen() {
       <WorkoutSessionOverviewModal
         visible={isWorkoutOverviewVisible}
         onClose={() => setIsWorkoutOverviewVisible(false)}
+        workoutLogId={undefined} // Test with no workout data
+        onStartWorkout={() => {
+          console.log('Start workout pressed');
+          setIsWorkoutOverviewVisible(false);
+        }}
+        onResumeSession={() => {
+          console.log('Resume session pressed');
+          setIsWorkoutOverviewVisible(false);
+        }}
+        onSelectExercise={(exerciseId) => {
+          console.log('Selected exercise:', exerciseId);
+        }}
+        onCancelWorkout={() => {
+          console.log('Cancel workout pressed');
+          setIsWorkoutOverviewVisible(false);
+        }}
+        onFinishWorkout={() => {
+          console.log('Finish workout pressed');
+          setIsWorkoutOverviewVisible(false);
+        }}
       />
 
       <DatePickerModal

@@ -548,6 +548,23 @@ export default function WorkoutSessionScreen() {
       <WorkoutSessionOverviewModal
         visible={isWorkoutOverviewModalVisible}
         onClose={() => setIsWorkoutOverviewModalVisible(false)}
+        workoutLogId={workoutLog.id}
+        onResumeSession={() => {
+          setIsWorkoutOverviewModalVisible(false);
+          // Stay on current screen - already on workout session
+        }}
+        onSelectExercise={async (exerciseId) => {
+          setIsWorkoutOverviewModalVisible(false);
+          // TODO: Make the current exercise for the workout session to be this one
+        }}
+        onCancelWorkout={() => {
+          setIsWorkoutOverviewModalVisible(false);
+          setIsEndWorkoutModalVisible(true);
+        }}
+        onFinishWorkout={() => {
+          setIsWorkoutOverviewModalVisible(false);
+          setIsSessionFeedbackModalVisible(true);
+        }}
       />
     </MasterLayout>
   );
