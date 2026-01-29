@@ -263,7 +263,9 @@ export default function RestOverScreen() {
         }}
         onSelectExercise={(exerciseId) => {
           setIsWorkoutOverviewModalVisible(false);
-          router.replace(`/workout/workout-session?workoutLogId=${workoutLogId}&exerciseId=${exerciseId}`);
+          router.replace(
+            `/workout/workout-session?workoutLogId=${workoutLogId}&exerciseId=${exerciseId}`
+          );
         }}
         onCancelWorkout={() => {
           setIsWorkoutOverviewModalVisible(false);
