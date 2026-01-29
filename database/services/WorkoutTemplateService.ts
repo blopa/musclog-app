@@ -129,7 +129,7 @@ export class WorkoutTemplateService {
         icon: Icon,
         iconBgColor,
         iconColor,
-        groupId: undefined, // Groups are UI-only, start with undefined
+        groupId: firstSet.groupId, // Load groupId from database
         sets: setsCount,
         reps: firstSet.targetReps,
         weight: firstSet.targetWeight,
@@ -145,48 +145,6 @@ export class WorkoutTemplateService {
       const aOrder = aSets[0].setOrder;
       const bOrder = bSets[0].setOrder;
       return aOrder - bOrder;
-    });
-
-    // Infer groupId from set_order values
-    // Note: With continuous set_order across all exercises, grouping detection is based on
-    // whether exercises have consecutive set_order values. Since set_order is now continuous
-    // (e.g., Exercise 1 sets: 1,2,3; Exercise 2 sets: 4,5), all exercises will appear consecutive.
-    // Grouping is determined by the groupId field in the exercise data when saving.
-    // This logic attempts to infer grouping from set_order patterns, but may not be fully accurate
-    // with the new continuous ordering system.
-    let currentGroupId: string | undefined = undefined;
-    let lastSetOrderEnd: number | null = null;
-
-    exercisesInWorkout.forEach((exercise, index) => {
-      const exerciseSets = exerciseGroups.get(exercise.id)!;
-      const firstSetOrder = exerciseSets[0].setOrder;
-      const lastSetOrder = exerciseSets[exerciseSets.length - 1].setOrder;
-
-      if (index === 0) {
-        // First exercise starts ungrouped by default
-        exercise.groupId = undefined;
-        currentGroupId = undefined;
-      } else {
-        // When index > 0, lastSetOrderEnd is always set from the previous iteration (line 186)
-        // Check if consecutive with previous exercise
-        if (firstSetOrder === lastSetOrderEnd! + 1) {
-          // Consecutive orders = potentially grouped
-          // Start a new group if we don't have one, or continue existing group
-          if (currentGroupId === undefined) {
-            // Previous exercise was ungrouped, but they're consecutive - must be grouped
-            // Create a new group and update previous exercise
-            currentGroupId = `group-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-            exercisesInWorkout[index - 1].groupId = currentGroupId;
-          }
-          exercise.groupId = currentGroupId;
-        } else {
-          // Gap detected (firstOrder > lastOrder(prev) + 1) = explicitly ungrouped
-          exercise.groupId = undefined;
-          currentGroupId = undefined;
-        }
-      }
-
-      lastSetOrderEnd = lastSetOrder;
     });
 
     return exercisesInWorkout;
@@ -267,6 +225,7 @@ export class WorkoutTemplateService {
               ts.targetWeight = exercise.isBodyweight ? 0 : exercise.weight;
               ts.restTimeAfter = exercise.restTimeAfter ?? 60; // Default to 60 seconds if not provided
               ts.setOrder = currentOrder;
+              ts.groupId = exercise.groupId; // Persist groupId from UI
               ts.createdAt = now;
               ts.updatedAt = now;
             })

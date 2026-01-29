@@ -54,6 +54,7 @@ export const schema = appSchema({
         { name: 'target_weight', type: 'number' },
         { name: 'rest_time_after', type: 'number', isOptional: true },
         { name: 'set_order', type: 'number' },
+        { name: 'group_id', type: 'string', isOptional: true, isIndexed: true },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },

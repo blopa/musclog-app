@@ -587,26 +587,30 @@ describe('WorkoutTemplateService', () => {
       expect(ex2?.groupId).toBeUndefined();
     });
 
-    it('should handle grouping when lastSetOrderEnd is null', async () => {
-      // This tests the branch when index > 0 but lastSetOrderEnd is null
-      // Exercise 1: set_order 1-2
+    it('should handle grouping when exercises have the same groupId', async () => {
+      // This tests that groupId is read directly from the database
+      // Exercise 1: set_order 1-2, grouped
       const set1 = createMockWorkoutTemplateSet({
         exerciseId: 'ex-1',
         setOrder: 1,
+        groupId: 'group-test-123',
       });
       const set2 = createMockWorkoutTemplateSet({
         exerciseId: 'ex-1',
         setOrder: 2,
+        groupId: 'group-test-123',
       });
 
-      // Exercise 2: set_order 3-4 (consecutive with ex-1)
+      // Exercise 2: set_order 3-4, same group
       const set3 = createMockWorkoutTemplateSet({
         exerciseId: 'ex-2',
         setOrder: 3,
+        groupId: 'group-test-123',
       });
       const set4 = createMockWorkoutTemplateSet({
         exerciseId: 'ex-2',
         setOrder: 4,
+        groupId: 'group-test-123',
       });
 
       const exercise1 = createMockExercise({
@@ -636,26 +640,27 @@ describe('WorkoutTemplateService', () => {
         set4,
       ] as any);
 
-      // Exercise 2 should be grouped with Exercise 1 since they're consecutive
+      // Both exercises should have the same groupId from database
       const ex1 = result.find((ex) => ex.id === 'ex-1');
       const ex2 = result.find((ex) => ex.id === 'ex-2');
-      expect(ex1?.groupId).toBeDefined();
-      expect(ex2?.groupId).toBe(ex1?.groupId);
+      expect(ex1?.groupId).toBe('group-test-123');
+      expect(ex2?.groupId).toBe('group-test-123');
     });
 
     it('should handle case when index > 0 and lastSetOrderEnd is null (else branch)', async () => {
-      // This tests the uncovered else branch when index > 0 but lastSetOrderEnd === null
-      // This shouldn't normally happen, but we test it for coverage
-      // Exercise 1: set_order 1 (single set)
+      // This tests that groupId comes from database, not inference
+      // Exercise 1: set_order 1 (single set), grouped
       const set1 = createMockWorkoutTemplateSet({
         exerciseId: 'ex-1',
         setOrder: 1,
+        groupId: 'group-test-456',
       });
 
-      // Exercise 2: set_order 2 (consecutive, should trigger grouping)
+      // Exercise 2: set_order 2, same group
       const set2 = createMockWorkoutTemplateSet({
         exerciseId: 'ex-2',
         setOrder: 2,
+        groupId: 'group-test-456',
       });
 
       const exercise1 = createMockExercise({
@@ -682,11 +687,11 @@ describe('WorkoutTemplateService', () => {
 
       // Both exercises should exist
       expect(result).toHaveLength(2);
-      // Exercise 2 should be grouped with Exercise 1 since they're consecutive
+      // Both exercises should have the same groupId from database
       const ex1 = result.find((ex) => ex.id === 'ex-1');
       const ex2 = result.find((ex) => ex.id === 'ex-2');
-      expect(ex1?.groupId).toBeDefined();
-      expect(ex2?.groupId).toBe(ex1?.groupId);
+      expect(ex1?.groupId).toBe('group-test-456');
+      expect(ex2?.groupId).toBe('group-test-456');
     });
 
     it('should handle case when index > 0 and lastSetOrderEnd is null (uncovered branch)', async () => {
@@ -742,29 +747,19 @@ describe('WorkoutTemplateService', () => {
     });
 
     it('should handle case when index > 0 and lastSetOrderEnd is null (line 167 false branch)', async () => {
-      // Test line 167: else if (lastSetOrderEnd !== null) - the false branch
-      // The false branch occurs when index > 0 AND lastSetOrderEnd === null
-      // However, lastSetOrderEnd is always set at line 186, so this branch is unreachable in practice
-      // But for branch coverage, we need to test both branches of the condition
-      //
-      // The issue is that when index === 0, lastSetOrderEnd is set to lastSetOrder at line 186
-      // When index === 1, lastSetOrderEnd should be the value from the previous iteration
-      // So the false branch is unreachable.
-      //
-      // However, the condition itself is evaluated, and for branch coverage we need both branches.
-      // Since we can't make lastSetOrderEnd null when index > 0, this test verifies the true branch
-      // The false branch would be the implicit else (do nothing), which is unreachable
-
-      // Exercise 1: single set with set_order 1
+      // Test that groupId comes directly from database, not inference logic
+      // Exercise 1: single set with set_order 1, grouped
       const set1 = createMockWorkoutTemplateSet({
         exerciseId: 'ex-1',
         setOrder: 1,
+        groupId: 'group-test-789',
       });
 
-      // Exercise 2: single set with set_order 2 (consecutive)
+      // Exercise 2: single set with set_order 2, same group
       const set2 = createMockWorkoutTemplateSet({
         exerciseId: 'ex-2',
         setOrder: 2,
+        groupId: 'group-test-789',
       });
 
       const exercise1 = createMockExercise({
@@ -791,16 +786,14 @@ describe('WorkoutTemplateService', () => {
 
       // Both exercises should exist
       expect(result).toHaveLength(2);
-      // The condition at line 167 will be checked for exercise 2 (index = 1)
-      // lastSetOrderEnd should be 1 (from exercise 1), so the condition should be true
-      // This tests the true branch of the condition
+      // Both exercises should have the groupId from database
       const ex1 = result.find((ex) => ex.id === 'ex-1');
       const ex2 = result.find((ex) => ex.id === 'ex-2');
       expect(ex1).toBeDefined();
       expect(ex2).toBeDefined();
-      // Since they're consecutive, they should be grouped
-      expect(ex1?.groupId).toBeDefined();
-      expect(ex2?.groupId).toBe(ex1?.groupId);
+      // GroupId should come directly from database, not be inferred
+      expect(ex1?.groupId).toBe('group-test-789');
+      expect(ex2?.groupId).toBe('group-test-789');
     });
   });
 
