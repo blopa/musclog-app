@@ -241,6 +241,48 @@ export async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = 
       const latPulldown = await getOrCreateExercise('Lat Pulldown', 'Back');
       const legPress = await getOrCreateExercise('Leg Press', 'Legs');
 
+      // --- Grouped Test Workout (for groupId persistence testing) ---
+      let groupedTestTemplate: WorkoutTemplate | undefined = existingTemplates.find(
+        (t) => t.name === 'Grouped Test Workout'
+      );
+
+      if (!groupedTestTemplate) {
+        groupedTestTemplate = await database
+          .get<WorkoutTemplate>('workout_templates')
+          .create((t) => {
+            t.name = 'Grouped Test Workout';
+            t.description = 'A workout with two exercises grouped together';
+            t.createdAt = now;
+            t.updatedAt = now;
+          });
+        templatesCreated++;
+
+        // Use the same groupId for both exercises
+        const groupId = 'seed-group-1';
+        await database.get<WorkoutTemplateSet>('workout_template_sets').create((ts) => {
+          ts.templateId = groupedTestTemplate!.id;
+          ts.exerciseId = benchPress.id;
+          ts.targetReps = 8;
+          ts.targetWeight = 70;
+          ts.restTimeAfter = 60;
+          ts.setOrder = 1;
+          ts.groupId = groupId;
+          ts.createdAt = now;
+          ts.updatedAt = now;
+        });
+        await database.get<WorkoutTemplateSet>('workout_template_sets').create((ts) => {
+          ts.templateId = groupedTestTemplate!.id;
+          ts.exerciseId = overheadPress.id;
+          ts.targetReps = 8;
+          ts.targetWeight = 40;
+          ts.restTimeAfter = 60;
+          ts.setOrder = 2;
+          ts.groupId = groupId;
+          ts.createdAt = now;
+          ts.updatedAt = now;
+        });
+      }
+
       // Create or find workout templates
       let upperBodyTemplate: WorkoutTemplate | undefined = existingTemplates.find(
         (t) => t.name === 'Upper Body Power'
