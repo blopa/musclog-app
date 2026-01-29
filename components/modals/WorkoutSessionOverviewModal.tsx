@@ -12,12 +12,13 @@ import {
   XCircle,
   CheckSquare,
 } from 'lucide-react-native';
-import { MasterLayout } from '../../components/MasterLayout';
-import { GenericCard } from '../../components/cards/GenericCard';
-import { MenuButton } from '../../components/theme/MenuButton';
-import { Button } from '../../components/theme/Button';
-import { BottomPopUpMenu, BottomPopUpMenuItem } from '../../components/BottomPopUpMenu';
-import { theme } from '../../theme';
+import { GenericCard } from '../cards/GenericCard';
+import { MenuButton } from '../theme/MenuButton';
+import { Button } from '../theme/Button';
+import { BottomPopUpMenu, BottomPopUpMenuItem } from '../BottomPopUpMenu';
+import { addOpacityToHex, theme } from '../../theme';
+import { FullScreenModal } from './FullScreenModal';
+import { useTranslation } from 'react-i18next';
 
 type ExerciseStatus = 'completed' | 'in-progress' | 'pending' | 'skipped';
 
@@ -286,7 +287,11 @@ function ResumeButton() {
   return (
     <View className="absolute bottom-0 left-0 right-0">
       <LinearGradient
-        colors={[theme.colors.background.primary, 'rgba(10, 31, 26, 0.95)', 'transparent']}
+        colors={[
+          theme.colors.background.primary,
+          addOpacityToHex(theme.colors.background.primary, theme.colors.opacity.strong),
+          'transparent',
+        ]}
         start={{ x: 0.5, y: 1 }}
         end={{ x: 0.5, y: 0 }}
       >
@@ -307,11 +312,24 @@ function ResumeButton() {
   );
 }
 
-export default function SessionOverviewScreen() {
+type WorkoutSessionOverviewModalProps = {
+  visible: boolean;
+  onClose: () => void;
+};
+export default function WorkoutSessionOverviewModal({
+  visible,
+  onClose,
+}: WorkoutSessionOverviewModalProps) {
+  const { t } = useTranslation();
   const router = useRouter();
 
   return (
-    <MasterLayout showNavigationMenu={false}>
+    <FullScreenModal
+      visible={visible}
+      onClose={onClose}
+      title={t('workout.sessionOverview')}
+      scrollable={false}
+    >
       <View className="flex-1 bg-bg-primary">
         <SessionHeader onClose={() => router.back()} />
 
@@ -328,6 +346,6 @@ export default function SessionOverviewScreen() {
 
         <ResumeButton />
       </View>
-    </MasterLayout>
+    </FullScreenModal>
   );
 }

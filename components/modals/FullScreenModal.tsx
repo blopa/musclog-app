@@ -3,7 +3,7 @@ import { View, Text, Pressable, Modal, ScrollView, Platform } from 'react-native
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArrowLeft } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { theme } from '../../theme';
+import { addOpacityToHex, theme } from '../../theme';
 
 type FullScreenModalProps = {
   visible: boolean;
@@ -123,7 +123,17 @@ export function FullScreenModal({
                 backgroundColor: 'transparent',
               }}
             >
-              {footer}
+              <LinearGradient
+                colors={[
+                  theme.colors.background.primary,
+                  addOpacityToHex(theme.colors.background.primary, theme.colors.opacity.subtle),
+                  'transparent',
+                ]}
+                start={{ x: 0.5, y: 1 }}
+                end={{ x: 0.5, y: 0 }}
+              >
+                <View className="px-6 pb-6 pt-6">{footer}</View>
+              </LinearGradient>
             </View>
           ) : null}
         </View>
