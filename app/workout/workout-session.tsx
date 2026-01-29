@@ -128,15 +128,6 @@ export default function WorkoutSessionScreen() {
         return;
       }
 
-      // Check if there's a next set
-      const nextSet = await WorkoutService.getNextSet(workoutLog.id, completedSetOrder);
-      if (!nextSet) {
-        // No next set, workout is complete
-        setIsLogSetModalVisible(false);
-        router.replace(`/workout/workout-summary?workoutLogId=${workoutLog.id}`);
-        return;
-      }
-
       // Navigate to rest timer (always show rest timer since we default to 60 seconds)
       setIsLogSetModalVisible(false);
       router.push(
@@ -167,9 +158,8 @@ export default function WorkoutSessionScreen() {
 
       await refresh();
 
-      // Navigate to next set
-      const nextSet = await WorkoutService.getNextSet(workoutLog.id, currentSetData.set.setOrder);
-      if (!nextSet) {
+      // Check if workout is complete
+      if (isWorkoutComplete()) {
         router.replace(`/workout/workout-summary?workoutLogId=${workoutLog.id}`);
       } else {
         router.replace(`/workout/workout-session?workoutLogId=${workoutLog.id}`);
