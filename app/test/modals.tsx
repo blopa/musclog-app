@@ -19,6 +19,7 @@ import { NotificationsModal } from '../../components/modals/NotificationsModal';
 import { WorkoutOptionsModal } from '../../components/modals/WorkoutOptionsModal';
 import { ReplaceExerciseModal } from '../../components/modals/ReplaceExerciseModal';
 import { WorkoutSessionHistoryModal } from '../../components/modals/WorkoutSessionHistoryModal';
+import WorkoutSessionOverviewModal from '../../components/modals/WorkoutSessionOverviewModal';
 import { DatePickerModal } from '../../components/modals/DatePickerModal';
 import { CreateWorkoutOptionsModal } from '../../components/modals/CreateWorkoutOptionsModal';
 import { EditPersonalInfoModal } from '../../components/modals/EditPersonalInfoModal';
@@ -104,6 +105,9 @@ export default function ModalsTestScreen() {
 
   // Workout Options Modal
   const [isWorkoutOptionsVisible, setIsWorkoutOptionsVisible] = useState(false);
+
+  // Workout Session Overview Modal
+  const [isWorkoutOverviewVisible, setIsWorkoutOverviewVisible] = useState(false);
 
   // Create Workout Options Modal
   const [isCreateWorkoutOptionsVisible, setIsCreateWorkoutOptionsVisible] = useState(false);
@@ -525,6 +529,13 @@ export default function ModalsTestScreen() {
               variant="outline"
               width="full"
               onPress={() => setIsCreateWorkoutOptionsVisible(true)}
+            />
+            <View className="h-3" />
+            <Button
+              label="Open Session Overview"
+              variant="outline"
+              width="full"
+              onPress={() => setIsWorkoutOverviewVisible(true)}
             />
           </View>
 
@@ -1030,6 +1041,11 @@ export default function ModalsTestScreen() {
         sets={[]}
         exercises={[]}
         currentSetOrder={null}
+      />
+
+      <WorkoutSessionOverviewModal
+        visible={isWorkoutOverviewVisible}
+        onClose={() => setIsWorkoutOverviewVisible(false)}
       />
 
       <DatePickerModal
