@@ -609,7 +609,9 @@
     "link": "Link",
     "unlink": "Unlink",
     "edit": "Edit",
-    "done": "Done"
+    "done": "Done",
+    "deleteExercise": "Delete Exercise",
+    "deleteExercises": "Delete Exercises"
   },
   "restOver": {
     "startNextSet": "Start Next Set",

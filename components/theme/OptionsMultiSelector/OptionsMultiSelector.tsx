@@ -12,7 +12,7 @@ import {
   GroupPosition,
   SelectorOption,
 } from './utils';
-import { GroupActionButton } from './GroupActionButton';
+import { ActionButtonsArea } from './ActionButtonsArea';
 
 const ScaleDecorator = ({
   children,
@@ -45,6 +45,7 @@ type OptionsMultiSelectorProps<T extends string | number> = {
   onChange: (ids: T[]) => void;
   isEditable?: boolean;
   onOrderChange?: (reorderedOptions: SelectorOption<T>[]) => void;
+  onDelete?: (ids: T[]) => void;
 };
 
 export function OptionsMultiSelector<T extends string | number>({
@@ -54,6 +55,7 @@ export function OptionsMultiSelector<T extends string | number>({
   onChange,
   isEditable = false,
   onOrderChange,
+  onDelete,
 }: OptionsMultiSelectorProps<T>) {
   const { t } = useTranslation();
   const [selectionEnabled, setSelectionEnabled] = useState(false);
@@ -80,6 +82,7 @@ export function OptionsMultiSelector<T extends string | number>({
   // Check if we can group/ungroup selected items
   const selectedCount = selectedIds.length;
   const canGroup = selectedCount >= 2 && isEditable && selectionEnabled;
+  const canDelete = selectedCount >= 1 && isEditable && selectionEnabled && !!onDelete;
 
   // Check if all selected items are already in the same group
   const selectedItems = useMemo(() => {
@@ -131,6 +134,14 @@ export function OptionsMultiSelector<T extends string | number>({
 
     // Clear selection after grouping
     onChange([]);
+  };
+
+  // Handle delete
+  const handleDelete = () => {
+    if (!canDelete || !onDelete) return;
+
+    onDelete(selectedIds);
+    // Selection is cleared by the onDelete handler
   };
 
   const handleDragEnd = ({
@@ -266,10 +277,14 @@ export function OptionsMultiSelector<T extends string | number>({
         >
           {renderGroupIndicator(groupPosition, item.groupId, isFirstInGroup)}
           <View style={{ flex: 1 }}>
-            {isHighestSelected && canGroup ? (
-              <GroupActionButton
-                onPress={handleGroupAction}
+            {isHighestSelected && (canGroup || canDelete) ? (
+              <ActionButtonsArea
+                canGroup={canGroup}
+                canDelete={canDelete}
                 allSelectedInSameGroup={allSelectedInSameGroup}
+                selectedCount={selectedCount}
+                onGroupAction={handleGroupAction}
+                onDelete={handleDelete}
               />
             ) : null}
             <Pressable
@@ -423,10 +438,14 @@ export function OptionsMultiSelector<T extends string | number>({
       >
         {renderGroupIndicator(groupPosition, option.groupId, isFirstInGroup)}
         <View style={{ flex: 1 }}>
-          {isHighestSelected && canGroup ? (
-            <GroupActionButton
-              onPress={handleGroupAction}
+          {isHighestSelected && (canGroup || canDelete) ? (
+            <ActionButtonsArea
+              canGroup={canGroup}
+              canDelete={canDelete}
               allSelectedInSameGroup={allSelectedInSameGroup}
+              selectedCount={selectedCount}
+              onGroupAction={handleGroupAction}
+              onDelete={handleDelete}
             />
           ) : null}
           <Pressable

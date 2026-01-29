@@ -49,6 +49,7 @@ export default function CreateWorkoutModal({
     handleAddExerciseWithMetadata,
     handleSave,
     handleExerciseOrderChange,
+    handleDeleteExercises,
   } = useWorkoutForm({ templateId });
 
   const volumeOptions = [
@@ -409,6 +410,7 @@ export default function CreateWorkoutModal({
                 selectedIds={selectedExercises}
                 onChange={(ids) => setSelectedExercises(ids)}
                 onOrderChange={handleExerciseOrderChange}
+                onDelete={handleDeleteExercises}
                 isEditable={true}
               />
             ) : (

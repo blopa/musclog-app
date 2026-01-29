@@ -188,6 +188,21 @@ export function useWorkoutForm({ templateId }: UseWorkoutFormParams = {}) {
     setExerciseMetadata((prev) => updateMetadataWithGroupIds(prev, reorderedExercises));
   }, []);
 
+  const handleDeleteExercises = useCallback((exerciseIds: string[]) => {
+    // Remove exercises from the list
+    setExercises((prev) => prev.filter((exercise) => !exerciseIds.includes(exercise.id)));
+
+    // Remove metadata for deleted exercises
+    setExerciseMetadata((prev) => {
+      const updated = new Map(prev);
+      exerciseIds.forEach((id) => updated.delete(id));
+      return updated;
+    });
+
+    // Clear selection after deletion
+    setSelectedExercises([]);
+  }, []);
+
   return {
     // State
     workoutTitle,
@@ -215,5 +230,6 @@ export function useWorkoutForm({ templateId }: UseWorkoutFormParams = {}) {
     handleAddExerciseWithMetadata,
     handleSave,
     handleExerciseOrderChange,
+    handleDeleteExercises,
   };
 }
