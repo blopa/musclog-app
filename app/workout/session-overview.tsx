@@ -15,6 +15,7 @@ import {
 import { MasterLayout } from '../../components/MasterLayout';
 import { GenericCard } from '../../components/cards/GenericCard';
 import { MenuButton } from '../../components/theme/MenuButton';
+import { Button } from '../../components/theme/Button';
 import { BottomPopUpMenu, BottomPopUpMenuItem } from '../../components/BottomPopUpMenu';
 import { theme } from '../../theme';
 
@@ -290,25 +291,16 @@ function ResumeButton() {
         end={{ x: 0.5, y: 0 }}
       >
         <View className="px-6 pb-10 pt-6">
-          <LinearGradient
-            colors={[theme.colors.accent.primary, theme.colors.accent.secondary]}
-            start={{ x: 0, y: 0.5 }}
-            end={{ x: 1, y: 0.5 }}
-            style={{ borderRadius: theme.borderRadius.xl }}
-          >
-            <Pressable
-              accessibilityRole="button"
-              className="w-full flex-row items-center justify-center gap-2 py-5"
-              onPress={() => {
-                // resume session
-              }}
-            >
-              <Play size={theme.iconSize.md} color={theme.colors.text.primary} fill="#ffffff" />
-              <Text className="text-lg font-extrabold uppercase tracking-tight text-text-primary">
-                Resume Session
-              </Text>
-            </Pressable>
-          </LinearGradient>
+          <Button
+            label="Resume Session"
+            icon={Play}
+            size="md"
+            width="full"
+            variant="accent"
+            onPress={() => {
+              // resume session
+            }}
+          />
         </View>
       </LinearGradient>
     </View>
