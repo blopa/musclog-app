@@ -97,8 +97,11 @@ export default function RestTimerScreen() {
         setRestTime(restTimeValue);
         setInitialRestTime(restTimeValue);
 
-        // Find next set
-        const next = sets.find((s) => s.setOrder > completedSetOrder && s.difficultyLevel === 0);
+        // Find next set that is not skipped
+        const next = sets.find(
+          (s) => s.setOrder > completedSetOrder && s.difficultyLevel === 0 && !s.isSkipped
+        );
+
         if (next) {
           const nextExercise = await database.get<Exercise>('exercises').find(next.exerciseId);
           setNextSet({ set: next, exercise: nextExercise });

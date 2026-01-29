@@ -408,8 +408,8 @@ export class WorkoutService {
       )
       .fetch();
 
-    // Find first set with difficultyLevel === 0 (unlogged)
-    const currentSet = sets.find((set) => set.difficultyLevel === 0);
+    // Find first set with difficultyLevel === 0 (unlogged) and not skipped
+    const currentSet = sets.find((set) => set.difficultyLevel === 0 && !set.isSkipped);
     if (!currentSet) {
       return null;
     }
@@ -437,8 +437,11 @@ export class WorkoutService {
       )
       .fetch();
 
-    // Find next unlogged set after current set order
-    const nextSet = sets.find((set) => set.setOrder > currentSetOrder && set.difficultyLevel === 0);
+    // Find next unlogged, non-skipped set after current set order
+    const nextSet = sets.find(
+      (set) => set.setOrder > currentSetOrder && set.difficultyLevel === 0 && !set.isSkipped
+    );
+
     if (!nextSet) {
       return null;
     }
@@ -467,7 +470,7 @@ export class WorkoutService {
 
     const totalSets = sets.length;
     const completedSets = sets.filter((set) => set.difficultyLevel > 0).length;
-    const currentSet = sets.find((set) => set.difficultyLevel === 0);
+    const currentSet = sets.find((set) => set.difficultyLevel === 0 && !set.isSkipped);
     const currentSetOrder = currentSet?.setOrder ?? null;
 
     // Group sets by exercise

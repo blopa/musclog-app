@@ -81,11 +81,16 @@ export function useActiveWorkout(workoutLogId?: string) {
 
       setExercises(exerciseList);
 
-      // Calculate progress
+      // Calculate progress with proper completion logic
       const completedSets = workoutSets.filter((set) => set.difficultyLevel > 0).length;
+      const skippedSets = workoutSets.filter((set) => set.isSkipped).length;
       const totalSets = workoutSets.length;
-      const currentSet = workoutSets.find((set) => set.difficultyLevel === 0);
-      const isComplete = currentSet === undefined && totalSets > 0;
+
+      // Find the current set - one that is neither completed nor skipped
+      const currentSet = workoutSets.find((set) => set.difficultyLevel === 0 && !set.isSkipped);
+
+      // Workout is complete only if ALL sets are either completed or skipped
+      const isComplete = completedSets + skippedSets === totalSets && totalSets > 0;
 
       setProgress({
         totalSets,
@@ -109,22 +114,22 @@ export function useActiveWorkout(workoutLogId?: string) {
       return;
     }
 
-    // Find current set based on target exercise or first unlogged set
+    // Find current set based on target exercise or first unlogged, non-skipped set
     let currentSet: WorkoutLogSet | undefined;
 
     if (targetExerciseId) {
-      // Find first unlogged set for the target exercise
+      // Find first unlogged, non-skipped set for the target exercise
       currentSet = sets.find(
-        (set) => set.exerciseId === targetExerciseId && set.difficultyLevel === 0
+        (set) => set.exerciseId === targetExerciseId && set.difficultyLevel === 0 && !set.isSkipped
       );
 
-      // If no unlogged sets for target exercise, fall back to any unlogged set
+      // If no unlogged, non-skipped sets for target exercise, fall back to any unlogged, non-skipped set
       if (!currentSet) {
-        currentSet = sets.find((set) => set.difficultyLevel === 0);
+        currentSet = sets.find((set) => set.difficultyLevel === 0 && !set.isSkipped);
       }
     } else {
-      // Default behavior: find first unlogged set
-      currentSet = sets.find((set) => set.difficultyLevel === 0);
+      // Default behavior: find first unlogged, non-skipped set
+      currentSet = sets.find((set) => set.difficultyLevel === 0 && !set.isSkipped);
     }
 
     if (!currentSet) {
@@ -178,9 +183,9 @@ export function useActiveWorkout(workoutLogId?: string) {
       };
     }
 
-    // Find next set
+    // Find next set that is not skipped
     const nextSet = sets.find(
-      (set) => set.setOrder > currentSet.setOrder && set.difficultyLevel === 0
+      (set) => set.setOrder > currentSet.setOrder && set.difficultyLevel === 0 && !set.isSkipped
     );
     let nextSetData: CurrentSetData['nextSet'] | undefined;
     if (nextSet) {
