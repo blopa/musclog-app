@@ -242,6 +242,7 @@ export async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = 
       const legPress = await getOrCreateExercise('Leg Press', 'Legs');
 
       // --- Grouped Test Workout (for groupId persistence testing) ---
+      // TODO: also add some exercises without a group id
       let groupedTestTemplate: WorkoutTemplate | undefined = existingTemplates.find(
         (t) => t.name === 'Grouped Test Workout'
       );
@@ -270,6 +271,7 @@ export async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = 
           ts.createdAt = now;
           ts.updatedAt = now;
         });
+
         await database.get<WorkoutTemplateSet>('workout_template_sets').create((ts) => {
           ts.templateId = groupedTestTemplate!.id;
           ts.exerciseId = overheadPress.id;
