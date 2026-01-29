@@ -160,11 +160,9 @@ export default function AICameraScreen() {
             setDetectedBarcode(barcode);
             setIsFoodDetailsModalVisible(true);
           } else {
-            Alert.alert(
-              t('common.noBarcode'),
-              t('food.aiCamera.noBarcodeFound'),
-              [{ text: t('common.ok') }]
-            );
+            Alert.alert(t('common.noBarcode'), t('food.aiCamera.noBarcodeFound'), [
+              { text: t('common.ok') },
+            ]);
           }
         }
       }

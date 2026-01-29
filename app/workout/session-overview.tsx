@@ -12,6 +12,7 @@ import {
   Play,
 } from 'lucide-react-native';
 import { MasterLayout } from '../../components/MasterLayout';
+import { GenericCard } from '../../components/cards/GenericCard';
 import { theme } from '../../theme';
 
 type ExerciseStatus = 'completed' | 'in-progress' | 'pending' | 'skipped';
@@ -110,27 +111,31 @@ function SessionHeader({ onClose }: { onClose: () => void }) {
 
 function WorkoutInfo() {
   return (
-    <View className="rounded-2xl border border-border-default bg-bg-card p-6">
-      <View className="mb-2 flex-row items-start justify-between">
-        <Text className="text-3xl font-extrabold tracking-tight text-text-primary">Push Day A</Text>
-        <View className="rounded-full bg-accent-primary/10 px-3 py-1">
-          <Text className="text-xs font-bold uppercase tracking-widest text-text-accent">
-            In Progress
+    <GenericCard variant="card" size="default">
+      <View className="p-6">
+        <View className="mb-2 flex-row items-start justify-between">
+          <Text className="text-3xl font-extrabold tracking-tight text-text-primary">
+            Push Day A
           </Text>
+          <View className="rounded-full bg-accent-primary/10 px-3 py-1">
+            <Text className="text-xs font-bold uppercase tracking-widest text-text-accent">
+              In Progress
+            </Text>
+          </View>
         </View>
-      </View>
 
-      <View className="flex-row items-center gap-4">
-        <View className="flex-row items-center gap-2">
-          <Clock size={theme.iconSize.sm} color={theme.colors.text.secondary} />
-          <Text className="text-sm font-medium text-text-secondary">Est. 55 mins</Text>
-        </View>
-        <View className="flex-row items-center gap-2">
-          <Dumbbell size={theme.iconSize.sm} color={theme.colors.text.secondary} />
-          <Text className="text-sm font-medium text-text-secondary">6 Exercises</Text>
+        <View className="flex-row items-center gap-4">
+          <View className="flex-row items-center gap-2">
+            <Clock size={theme.iconSize.sm} color={theme.colors.text.secondary} />
+            <Text className="text-sm font-medium text-text-secondary">Est. 55 mins</Text>
+          </View>
+          <View className="flex-row items-center gap-2">
+            <Dumbbell size={theme.iconSize.sm} color={theme.colors.text.secondary} />
+            <Text className="text-sm font-medium text-text-secondary">6 Exercises</Text>
+          </View>
         </View>
       </View>
-    </View>
+    </GenericCard>
   );
 }
 
@@ -159,61 +164,64 @@ function ExerciseCard({
   }, [isCompleted, isInProgress, isSkipped]);
 
   return (
-    <Pressable
-      accessibilityRole="button"
-      className={`w-full flex-row items-center justify-between rounded-2xl border border-border-default bg-bg-card p-4 ${
-        isSkipped ? 'opacity-60' : ''
-      }`}
+    <GenericCard
+      variant="card"
+      size="default"
+      isPressable
       onPress={() => {
         // navigate to exercise details / logger
       }}
     >
-      <View className="flex-row items-center gap-4">
-        <View
-          className={`h-16 w-16 overflow-hidden rounded-lg border border-border-default bg-bg-secondary ${
-            isSkipped ? 'opacity-60' : ''
-          }`}
-        >
-          <Image
-            source={{ uri: imageUrl }}
-            style={{ width: '100%', height: '100%' }}
-            resizeMode="cover"
-          />
-        </View>
-
-        <View className="flex-1">
-          <View className="flex-row items-center gap-2">
-            <Text className={`text-lg font-bold leading-tight ${titleClassName}`}>{name}</Text>
-            {isSkipped ? (
-              <View className="rounded bg-bg-secondary px-2 py-1">
-                <Text className="text-[10px] font-bold text-text-muted">SKIPPED</Text>
-              </View>
-            ) : null}
-          </View>
-
-          <View className="mt-2 flex-row items-center gap-2">
-            {Array.from({ length: totalSets }).map((_, i) => (
-              <View
-                key={i}
-                className={`h-1.5 w-6 rounded-full ${
-                  isSkipped
-                    ? 'border border-border-light'
-                    : i < setsCompleted
-                      ? 'bg-accent-primary'
-                      : 'bg-bg-secondary'
-                }`}
+      <View className="p-4">
+        <View className="flex-row items-center justify-between">
+          <View className="flex-row items-center gap-4">
+            <View
+              className={`h-16 w-16 overflow-hidden rounded-lg border border-border-default bg-bg-secondary ${
+                isSkipped ? 'opacity-60' : ''
+              }`}
+            >
+              <Image
+                source={{ uri: imageUrl }}
+                style={{ width: '100%', height: '100%' }}
+                resizeMode="cover"
               />
-            ))}
+            </View>
+
+            <View className="flex-1">
+              <View className="flex-row items-center gap-2">
+                <Text className={`text-lg font-bold leading-tight ${titleClassName}`}>{name}</Text>
+                {isSkipped ? (
+                  <View className="rounded bg-bg-secondary px-2 py-1">
+                    <Text className="text-[10px] font-bold text-text-muted">SKIPPED</Text>
+                  </View>
+                ) : null}
+              </View>
+
+              <View className="mt-2 flex-row items-center gap-2">
+                {Array.from({ length: totalSets }).map((_, i) => (
+                  <View
+                    key={i}
+                    className={`h-1.5 w-6 rounded-full ${
+                      isSkipped
+                        ? 'border border-border-light'
+                        : i < setsCompleted
+                          ? 'bg-accent-primary'
+                          : 'bg-bg-secondary'
+                    }`}
+                  />
+                ))}
+              </View>
+            </View>
           </View>
+
+          {isCompleted ? (
+            <CheckCircle size={theme.iconSize.lg} color={theme.colors.accent.primary} />
+          ) : (
+            <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.secondary} />
+          )}
         </View>
       </View>
-
-      {isCompleted ? (
-        <CheckCircle size={theme.iconSize.lg} color={theme.colors.accent.primary} />
-      ) : (
-        <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.secondary} />
-      )}
-    </Pressable>
+    </GenericCard>
   );
 }
 
