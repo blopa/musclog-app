@@ -18,6 +18,7 @@ import { ErrorStateCard } from '../../components/theme/ErrorStateCard';
 import { StatusBar } from 'expo-status-bar';
 import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
 import { MasterLayout } from '../../components/MasterLayout';
+import WorkoutSessionOverviewModal from '../../components/modals/WorkoutSessionOverviewModal';
 
 export default function RestOverScreen() {
   const { t } = useTranslation();
@@ -28,6 +29,7 @@ export default function RestOverScreen() {
 
   const pulseAnim = useRef(new Animated.Value(0.3)).current;
   const [isOptionsModalVisible, setIsOptionsModalVisible] = useState(false);
+  const [isWorkoutOverviewModalVisible, setIsWorkoutOverviewModalVisible] = useState(false);
   const [isEndWorkoutModalVisible, setIsEndWorkoutModalVisible] = useState(false);
   const [workoutLog, setWorkoutLog] = useState<WorkoutLog | null>(null);
   const [nextExercise, setNextExercise] = useState<{
@@ -213,8 +215,10 @@ export default function RestOverScreen() {
       <WorkoutOptionsModal
         visible={isOptionsModalVisible}
         onClose={() => setIsOptionsModalVisible(false)}
-        // TODO: instead of going to /workout-preview, open the WorkoutSessionOverviewModal modal
-        onPreviewWorkout={() => router.push('/workout-preview' as any)}
+        onPreviewWorkout={() => {
+          setIsOptionsModalVisible(false);
+          setIsWorkoutOverviewModalVisible(true);
+        }}
         onWorkoutSettings={() => router.push('/workout-settings' as any)}
         onEndWorkout={handleEndWorkout}
       />
@@ -241,6 +245,40 @@ export default function RestOverScreen() {
 
           // navigate to workout screen
           router.replace('/workout/workouts');
+        }}
+      />
+
+      {/* Workout Session Overview Modal */}
+      <WorkoutSessionOverviewModal
+        visible={isWorkoutOverviewModalVisible}
+        onClose={() => setIsWorkoutOverviewModalVisible(false)}
+        workoutLogId={workoutLogId}
+        onStartWorkout={() => {
+          setIsWorkoutOverviewModalVisible(false);
+          router.replace(`/workout/workout-session?workoutLogId=${workoutLogId}`);
+        }}
+        onResumeSession={() => {
+          setIsWorkoutOverviewModalVisible(false);
+          router.replace(`/workout/workout-session?workoutLogId=${workoutLogId}`);
+        }}
+        onSelectExercise={(exerciseId) => {
+          setIsWorkoutOverviewModalVisible(false);
+          router.replace(`/workout/workout-session?workoutLogId=${workoutLogId}&exerciseId=${exerciseId}`);
+        }}
+        onCancelWorkout={() => {
+          setIsWorkoutOverviewModalVisible(false);
+          setIsEndWorkoutModalVisible(true);
+        }}
+        onFinishWorkout={async () => {
+          setIsWorkoutOverviewModalVisible(false);
+          if (workoutLogId) {
+            try {
+              await WorkoutService.completeWorkout(workoutLogId);
+              router.replace(`/workout/workout-summary?workoutLogId=${workoutLogId}`);
+            } catch (err) {
+              console.error('Error completing workout:', err);
+            }
+          }
         }}
       />
     </MasterLayout>
