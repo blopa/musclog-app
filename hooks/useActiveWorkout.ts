@@ -92,15 +92,6 @@ export function useActiveWorkout(workoutLogId?: string) {
       // Workout is complete only if ALL sets are either completed or skipped
       const isComplete = completedSets + skippedSets === totalSets && totalSets > 0;
 
-      // Debug logging for completion calculation
-      console.log('Workout progress:', {
-        completedSets,
-        skippedSets,
-        totalSets,
-        isComplete,
-        hasCurrentSet: !!currentSet,
-      });
-
       setProgress({
         totalSets,
         completedSets,

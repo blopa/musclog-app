@@ -97,10 +97,10 @@ export default function RestTimerScreen() {
         setRestTime(restTimeValue);
         setInitialRestTime(restTimeValue);
 
-        // Find next set that is not skipped
-        const next = sets.find(
-          (s) => s.setOrder > completedSetOrder && s.difficultyLevel === 0 && !s.isSkipped
-        );
+        // Find the next set to be done (first unlogged, non-skipped set in workout order)
+        const next = sets
+          .filter((s) => s.difficultyLevel === 0 && !s.isSkipped)
+          .sort((a, b) => a.setOrder - b.setOrder)[0];
 
         if (next) {
           const nextExercise = await database.get<Exercise>('exercises').find(next.exerciseId);
