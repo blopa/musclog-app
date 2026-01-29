@@ -1,7 +1,5 @@
 import { useMemo, useState } from 'react';
-import { View, Text, Pressable, ScrollView, Image } from 'react-native';
-import { useRouter } from 'expo-router';
-import { LinearGradient } from 'expo-linear-gradient';
+import { View, Text, ScrollView, Image } from 'react-native';
 import {
   X,
   Clock,
@@ -16,7 +14,7 @@ import { GenericCard } from '../cards/GenericCard';
 import { MenuButton } from '../theme/MenuButton';
 import { Button } from '../theme/Button';
 import { BottomPopUpMenu, BottomPopUpMenuItem } from '../BottomPopUpMenu';
-import { addOpacityToHex, theme } from '../../theme';
+import { theme } from '../../theme';
 import { FullScreenModal } from './FullScreenModal';
 import { useTranslation } from 'react-i18next';
 
@@ -87,63 +85,6 @@ const exercises: Exercise[] = [
     totalSets: 2,
   },
 ];
-
-function SessionHeader({ onClose }: { onClose: () => void }) {
-  const [isMenuVisible, setIsMenuVisible] = useState(false);
-
-  const menuItems: BottomPopUpMenuItem[] = [
-    {
-      icon: XCircle,
-      iconColor: theme.colors.status.error,
-      iconBgColor: theme.colors.status.error8,
-      title: 'Cancel Workout',
-      description: 'Discard this workout and return to workouts list',
-      onPress: () => {
-        // TODO: cancel workout logic
-        console.log('Cancel workout');
-      },
-    },
-    {
-      icon: CheckSquare,
-      iconColor: theme.colors.status.success,
-      iconBgColor: theme.colors.status.success20,
-      title: 'Finish Workout',
-      description: 'Complete this workout and view summary',
-      onPress: () => {
-        // TODO: finish workout logic
-        console.log('Finish workout');
-      },
-    },
-  ];
-
-  return (
-    <>
-      <View className="flex-row items-center justify-between bg-bg-primary/80 px-6 py-6">
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Close"
-          className="-ml-2 rounded-full p-2"
-          onPress={onClose}
-        >
-          <X size={theme.iconSize['2xl']} color={theme.colors.text.primary} />
-        </Pressable>
-        <Text className="text-lg font-semibold text-text-primary">Session Overview</Text>
-        <MenuButton
-          size="lg"
-          color={theme.colors.text.primary}
-          onPress={() => setIsMenuVisible(true)}
-        />
-      </View>
-
-      <BottomPopUpMenu
-        visible={isMenuVisible}
-        onClose={() => setIsMenuVisible(false)}
-        title="Workout Options"
-        items={menuItems}
-      />
-    </>
-  );
-}
 
 function WorkoutInfo() {
   return (
@@ -283,35 +224,6 @@ function ExerciseList() {
   );
 }
 
-function ResumeButton() {
-  return (
-    <View className="absolute bottom-0 left-0 right-0">
-      <LinearGradient
-        colors={[
-          theme.colors.background.primary,
-          addOpacityToHex(theme.colors.background.primary, theme.colors.opacity.strong),
-          'transparent',
-        ]}
-        start={{ x: 0.5, y: 1 }}
-        end={{ x: 0.5, y: 0 }}
-      >
-        <View className="px-6 pb-10 pt-6">
-          <Button
-            label="Resume Session"
-            icon={Play}
-            size="md"
-            width="full"
-            variant="accent"
-            onPress={() => {
-              // resume session
-            }}
-          />
-        </View>
-      </LinearGradient>
-    </View>
-  );
-}
-
 type WorkoutSessionOverviewModalProps = {
   visible: boolean;
   onClose: () => void;
@@ -321,7 +233,32 @@ export default function WorkoutSessionOverviewModal({
   onClose,
 }: WorkoutSessionOverviewModalProps) {
   const { t } = useTranslation();
-  const router = useRouter();
+  const [isMenuVisible, setIsMenuVisible] = useState(false);
+
+  const menuItems: BottomPopUpMenuItem[] = [
+    {
+      icon: XCircle,
+      iconColor: theme.colors.status.error,
+      iconBgColor: theme.colors.status.error8,
+      title: 'Cancel Workout',
+      description: 'Discard this workout and return to workouts list',
+      onPress: () => {
+        // TODO: cancel workout logic
+        console.log('Cancel workout');
+      },
+    },
+    {
+      icon: CheckSquare,
+      iconColor: theme.colors.status.success,
+      iconBgColor: theme.colors.status.success20,
+      title: 'Finish Workout',
+      description: 'Complete this workout and view summary',
+      onPress: () => {
+        // TODO: finish workout logic
+        console.log('Finish workout');
+      },
+    },
+  ];
 
   return (
     <FullScreenModal
@@ -329,22 +266,45 @@ export default function WorkoutSessionOverviewModal({
       onClose={onClose}
       title={t('workout.sessionOverview')}
       scrollable={false}
+      headerRight={
+        <MenuButton
+          size="lg"
+          color={theme.colors.text.primary}
+          onPress={() => setIsMenuVisible(true)}
+        />
+      }
+      withGradient
+      footer={
+        <Button
+          label={t('workout.resumeSession', 'Resume Session')}
+          icon={Play}
+          size="md"
+          width="full"
+          variant="accent"
+          onPress={() => {
+            // resume session
+          }}
+        />
+      }
     >
       <View className="flex-1 bg-bg-primary">
-        <SessionHeader onClose={() => router.back()} />
-
+        <BottomPopUpMenu
+          visible={isMenuVisible}
+          onClose={() => setIsMenuVisible(false)}
+          title="Workout Options"
+          items={menuItems}
+        />
         <ScrollView
           className="flex-1"
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 160 }}
         >
+          <View style={{ height: theme.spacing.gap.lg }} />
           <View className="gap-4 px-4">
             <WorkoutInfo />
             <ExerciseList />
           </View>
         </ScrollView>
-
-        <ResumeButton />
       </View>
     </FullScreenModal>
   );
