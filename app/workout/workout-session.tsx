@@ -22,12 +22,13 @@ import { WorkoutSessionHistoryModal } from '../../components/modals/WorkoutSessi
 import { SessionFeedbackModal } from '../../components/modals/SessionFeedbackModal';
 import { Button } from '../../components/theme/Button';
 import { useActiveWorkout } from '../../hooks/useActiveWorkout';
-import { WorkoutService } from '../../database/services/WorkoutService';
+import { WorkoutService } from '../../database/services';
 import { database } from '../../database';
 import WorkoutLogSet from '../../database/models/WorkoutLogSet';
 import { Q } from '@nozbe/watermelondb';
 import { ErrorStateCard } from '../../components/theme/ErrorStateCard';
 import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
+import WorkoutSessionOverviewModal from '../../components/modals/WorkoutSessionOverviewModal';
 
 export default function WorkoutSessionScreen() {
   const { t } = useTranslation();
@@ -61,6 +62,7 @@ export default function WorkoutSessionScreen() {
   const [isReplaceExerciseModalVisible, setIsReplaceExerciseModalVisible] = useState(false);
   const [isHistoryModalVisible, setIsHistoryModalVisible] = useState(false);
   const [isSessionFeedbackModalVisible, setIsSessionFeedbackModalVisible] = useState(false);
+  const [isWorkoutOverviewModalVisible, setIsWorkoutOverviewModalVisible] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
   // Update weight/reps when current set changes
@@ -435,7 +437,7 @@ export default function WorkoutSessionScreen() {
       <WorkoutOptionsModal
         visible={isOptionsModalVisible}
         onClose={() => setIsOptionsModalVisible(false)}
-        onPreviewWorkout={() => router.push('/workout-preview')}
+        onPreviewWorkout={() => setIsWorkoutOverviewModalVisible(true)}
         onWorkoutSettings={() => router.push('/workout-settings')}
         onEndWorkout={() => {
           setIsOptionsModalVisible(false);
@@ -540,6 +542,12 @@ export default function WorkoutSessionScreen() {
         sets={sets}
         exercises={exercises}
         currentSetOrder={progress.currentSetOrder}
+      />
+
+      {/* Workout Session Overview Modal */}
+      <WorkoutSessionOverviewModal
+        visible={isWorkoutOverviewModalVisible}
+        onClose={() => setIsWorkoutOverviewModalVisible(false)}
       />
     </MasterLayout>
   );
