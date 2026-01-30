@@ -29,7 +29,7 @@ import { isOnboardingCompleted } from '../utils/onboardingService';
 import { useWorkoutHistory } from '../hooks/useWorkoutHistory';
 import { useUser } from '../hooks/useUser';
 
-// TODO: stop using mocked data
+// TODO: stop using mocked data and use data from useUser instead
 const PAGE_DATA = {
   user: {
     greeting: 'Good Evening',
@@ -176,6 +176,7 @@ export default function HomeScreen() {
             calories={dailySummary.calories}
             activity={dailySummary.activity}
             macros={{
+              // TODO: load from useNutritionLogs and useCurrentNutritionGoals
               protein: { value: 180, goal: 200 },
               carbs: { value: 250, goal: 300 },
               fats: { value: 70, goal: 200 },
