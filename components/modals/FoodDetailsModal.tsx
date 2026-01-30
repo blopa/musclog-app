@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, Pressable, Alert } from 'react-native';
 import { Calendar, Edit, PlusCircle } from 'lucide-react-native';
 import { format, isSameDay } from 'date-fns';
@@ -18,6 +18,7 @@ type FoodDetailsModalProps = {
   visible: boolean;
   onClose: () => void;
   food?: {
+    id?: string;
     name: string;
     category: string;
     calories: number;
@@ -37,20 +38,12 @@ type FoodDetailsModalProps = {
 export function FoodDetailsModal({
   visible,
   onClose,
-  food = {
-    // TODO: remove hardcodded data
-    name: 'Grilled Chicken Breast',
-    category: 'Lean Meat • High Protein',
-    calories: 165,
-    protein: 31,
-    carbs: 0,
-    fat: 3.6,
-  },
+  food,
   barcode,
   serving_size,
   nutriments,
   _raw,
-  source = 'local', // Default to local
+  source = 'local',
   onAddFood,
 }: FoodDetailsModalProps) {
   const { t } = useTranslation();
@@ -85,10 +78,10 @@ export function FoodDetailsModal({
     // If we have nutriments from the search result
     if (nutriments) {
       return {
-        calories: nutriments['energy-kcal_100g'] || nutriments['energy-kcal'] || food.calories,
-        protein: nutriments['proteins_100g'] || nutriments['proteins'] || food.protein,
-        carbs: nutriments['carbohydrates_100g'] || nutriments['carbohydrates'] || food.carbs,
-        fat: nutriments['fat_100g'] || nutriments['fat'] || food.fat,
+        calories: nutriments['energy-kcal_100g'] || nutriments['energy-kcal'] || food?.calories,
+        protein: nutriments['proteins_100g'] || nutriments['proteins'] || food?.protein,
+        carbs: nutriments['carbohydrates_100g'] || nutriments['carbohydrates'] || food?.carbs,
+        fat: nutriments['fat_100g'] || nutriments['fat'] || food?.fat,
         fiber: nutriments['fiber_100g'] || nutriments['fiber'] || 0,
         sugars: nutriments['sugars_100g'] || nutriments['sugars'] || 0,
         saturatedFat: nutriments['saturated-fat_100g'] || nutriments['saturated-fat'] || 0,
@@ -99,10 +92,10 @@ export function FoodDetailsModal({
 
     // Fallback to original food data
     return {
-      calories: food.calories,
-      protein: food.protein,
-      carbs: food.carbs,
-      fat: food.fat,
+      calories: food?.calories,
+      protein: food?.protein,
+      carbs: food?.carbs,
+      fat: food?.fat,
       fiber: 0,
       sugars: 0,
       saturatedFat: 0,
@@ -118,10 +111,12 @@ export function FoodDetailsModal({
     if (isSuccessFoodProductState(productDetails) && productDetails.product.product_name) {
       return productDetails.product.product_name;
     }
+
     if (_raw?.product_name) {
       return _raw.product_name;
     }
-    return food.name;
+
+    return food?.name;
   };
 
   // Get product category/brand from API if available
@@ -142,11 +137,11 @@ export function FoodDetailsModal({
     if (categories) {
       return categories;
     }
-    return food.category;
+    return food?.category;
   };
 
   // Get default serving size from API if available
-  const getDefaultServingSize = () => {
+  const getDefaultServingSize = useCallback(() => {
     const apiServingSize = isSuccessFoodProductState(productDetails)
       ? productDetails.product.serving_size
       : serving_size;
@@ -161,8 +156,9 @@ export function FoodDetailsModal({
         return parseInt(numericMatch[1]);
       }
     }
+
     return 100; // Default to 100g
-  };
+  }, [productDetails, serving_size]);
 
   // Update serving size when product details load
   useEffect(() => {
@@ -215,15 +211,12 @@ export function FoodDetailsModal({
 
         foodId = newFood.id;
       } else {
-        // This is a local food, we need to find its ID
-        // For now, we'll assume the food object has an id or we need to search for it
-        // This is a limitation - ideally the parent component should pass the food ID
-        if ('id' in food && typeof food.id === 'string') {
-          foodId = food.id;
+        if (typeof food?.id === 'string') {
+          foodId = food?.id;
         } else {
           // Try to find the food by name (this is not ideal but a fallback)
-          const existingFoods = await FoodService.searchFoods(food.name);
-          const matchingFood = existingFoods.find((f) => f.name === food.name);
+          const existingFoods = await FoodService.searchFoods(food?.name || '');
+          const matchingFood = existingFoods.find((f) => f.name === food?.name);
           if (!matchingFood) {
             throw new Error('Local food not found in database');
           }

@@ -223,7 +223,6 @@ export default function CameraModal({ visible, onClose }: CameraModalProps) {
           const barcode = await detectBarcodes(selectedAsset.uri);
           if (barcode) {
             setDetectedBarcode(barcode);
-            setIsFoodDetailsModalVisible(true);
           } else {
             Alert.alert(t('common.noBarcode'), t('food.aiCamera.noBarcodeFound'), [
               { text: t('common.ok') },
@@ -616,6 +615,9 @@ export default function CameraModal({ visible, onClose }: CameraModalProps) {
           onClose={handleFoodDetailsClose}
           barcode={detectedBarcode}
           source="api"
+          // TODO: check the types and fix this, make sure it passes the right data
+          // check other places where FoodDetailsModal is used for it. 
+          food={productDetails}
         />
 
         {/* Food Not Found Modal */}
