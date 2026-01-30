@@ -26,11 +26,13 @@ import { theme } from '../../theme';
 import { AINutritionTrackingContextModal } from './AINutritionTrackingContextModal';
 import { FoodDetailsModal } from './FoodDetailsModal';
 import { FoodNotFoundModal } from './FoodNotFoundModal';
+import { AddFoodModal } from './AddFoodModal';
 import { CameraView, useCameraPermissions } from '../CameraView';
 import type { CameraView as CameraViewType } from 'expo-camera';
 import { detectBarcodes } from '../../utils/file';
 import { useFoodProductDetails } from '../../hooks/useFoodProductDetails';
 import { FullScreenModal } from './FullScreenModal';
+import NewCustomFoodModal from './NewCustomFoodModal';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const CAMERA_ASPECT_RATIO = theme.aspectRatio.portrait;
@@ -52,6 +54,8 @@ export default function CameraModal({ visible, onClose }: CameraModalProps) {
   const [isContextModalVisible, setIsContextModalVisible] = useState(false);
   const [isFoodDetailsModalVisible, setIsFoodDetailsModalVisible] = useState(false);
   const [isFoodNotFoundModalVisible, setIsFoodNotFoundModalVisible] = useState(false);
+  const [isAddFoodModalVisible, setIsAddFoodModalVisible] = useState(false);
+  const [isNewCustomFoodModalVisible, setIsNewCustomFoodModalVisible] = useState(false);
   const [detectedBarcode, setDetectedBarcode] = useState<string | null>(null);
   const cameraRef = useRef<CameraViewType>(null);
   const pulseAnim = useRef(new Animated.Value(1)).current;
@@ -147,8 +151,46 @@ export default function CameraModal({ visible, onClose }: CameraModalProps) {
   };
 
   const handleCreateCustom = () => {
-    // TODO: show AddFoodModal
-    console.log('Create custom food');
+    setIsAddFoodModalVisible(true);
+  };
+
+  const handleAddFoodClose = () => {
+    setIsAddFoodModalVisible(false);
+  };
+
+  const handleCreateCustomFood = () => {
+    setIsNewCustomFoodModalVisible(true);
+  };
+
+  const handleNewCustomFoodClose = () => {
+    setIsNewCustomFoodModalVisible(false);
+  };
+
+  const handleNewCustomFoodSave = (data: any) => {
+    setIsNewCustomFoodModalVisible(false);
+  };
+
+  const handleTrackCustomMeal = () => {
+    // TODO: Navigate to custom meal tracking
+    console.log('Track custom meal');
+  };
+
+  const handleMealTypeSelect = (mealType: string) => {
+    // TODO: do something with this
+    console.log('Selected meal type:', mealType);
+  };
+
+  const handleAiCameraPress = () => {
+    setCameraMode('ai-meal-photo');
+  };
+
+  const handleScanBarcodePress = () => {
+    setCameraMode('barcode-scan');
+  };
+
+  const handleSearchFoodPress = () => {
+    // TODO: Navigate to food search
+    console.log('Search food');
   };
 
   const handleGalleryPress = useCallback(async () => {
@@ -583,6 +625,25 @@ export default function CameraModal({ visible, onClose }: CameraModalProps) {
           onTryAiScan={handleTryAiScan}
           onSearchAgain={handleSearchAgain}
           onCreateCustom={handleCreateCustom}
+        />
+
+        {/* Add Food Modal */}
+        <AddFoodModal
+          visible={isAddFoodModalVisible}
+          onClose={handleAddFoodClose}
+          onMealTypeSelect={handleMealTypeSelect}
+          onAiCameraPress={handleAiCameraPress}
+          onScanBarcodePress={handleScanBarcodePress}
+          onSearchFoodPress={handleSearchFoodPress}
+          onCreateCustomFoodPress={handleCreateCustomFood}
+          onTrackCustomMealPress={handleTrackCustomMeal}
+        />
+
+        {/* New Custom Food Modal */}
+        <NewCustomFoodModal
+          visible={isNewCustomFoodModalVisible}
+          onClose={handleNewCustomFoodClose}
+          onSave={handleNewCustomFoodSave}
         />
       </View>
     </FullScreenModal>
