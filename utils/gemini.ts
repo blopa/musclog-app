@@ -184,24 +184,3 @@ const createConversationContent = (messages: ChatCompletionMessageParam[]): Cont
       parts: [{ text: msg.content } as Part],
       role: msg.role === 'assistant' ? 'model' : msg.role,
     }));
-
-/**
- * Validate if an access token is valid by making a test API call
- */
-export async function isValidAccessToken(accessToken: string): Promise<boolean> {
-  try {
-    const model = await configureBasicGenAI({ accessToken });
-
-    await model.generateContent({
-      contents: [{ parts: [{ text: 'hi' } as Part], role: 'user' }],
-      generationConfig: {
-        maxOutputTokens: 1,
-        temperature: 0.5,
-      },
-    } as GenerateContentRequest);
-
-    return true;
-  } catch (error) {
-    return false;
-  }
-}

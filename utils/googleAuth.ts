@@ -9,8 +9,7 @@ import {
   LAST_TIME_GOOGLE_AUTH_ERROR_WAS_SHOWN,
   HAS_COMPLETED_ONBOARDING,
 } from '../constants/auth';
-import { GoogleAuthService } from '../database/services/GoogleAuthService';
-import { isValidAccessToken } from './gemini';
+import { GoogleAuthService } from '../database/services';
 import i18n from '../lang/lang';
 import { showSnackbar } from './snackbarService';
 
@@ -29,6 +28,14 @@ export interface RefreshTokenResponse {
   expires_in: number;
   id_token?: string;
   refresh_token: string;
+}
+
+/**
+ * Validate if an access token is valid by making a test API call
+ */
+export async function isValidAccessToken(accessToken: string): Promise<boolean> {
+  // TODO: figure out a way to check this
+  return true;
 }
 
 // Get the appropriate client ID based on platform

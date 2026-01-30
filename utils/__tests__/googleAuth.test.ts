@@ -6,10 +6,10 @@ import {
   getAccessToken,
   handleGoogleSignIn,
   deleteAllData,
+  isValidAccessToken,
   type GoogleAuthData,
 } from '../googleAuth';
-import { GoogleAuthService } from '../../database/services/GoogleAuthService';
-import { isValidAccessToken } from '../gemini';
+import { GoogleAuthService } from '../../database/services';
 import {
   GOOGLE_ACCESS_TOKEN,
   GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE,
