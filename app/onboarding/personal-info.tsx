@@ -1,5 +1,4 @@
 import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
 import { useState, useEffect } from 'react';
@@ -8,8 +7,9 @@ import {
   EditPersonalInfoBody,
   PersonalInfo as PersonalInfoType,
 } from '../../components/EditPersonalInfoBody';
-import { UserService } from '../../database/services/UserService';
+import { UserService } from '../../database/services';
 import { MasterLayout } from '../../components/MasterLayout';
+import { setOnboardingCompleted } from '../../utils/onboardingService';
 
 // Helper function to format date of birth timestamp to MM/DD/YYYY
 function formatDateOfBirth(timestamp: number): string {
@@ -93,8 +93,9 @@ export default function PersonalInfo() {
         });
       }
 
-      // Navigate to next step (fitness-info)
-      router.push('/onboarding/fitness-info');
+      // Mark onboarding as completed and navigate to home
+      await setOnboardingCompleted();
+      router.push('/');
     } catch (error) {
       console.error('Error saving personal info:', error);
       // TODO: Show error message to user

@@ -219,11 +219,8 @@ export default function FitnessInfo() {
         }
       });
 
-      // Mark onboarding as completed before navigating to home
-      await setOnboardingCompleted();
-
-      // Navigate to next step or home
-      router.push('/');
+      // Navigate to next step (personal-info)
+      router.push('/onboarding/personal-info');
     } catch (error) {
       console.error('Error saving fitness info:', error);
       // TODO: Show error message to user
@@ -234,15 +231,12 @@ export default function FitnessInfo() {
 
   const handleSkip = async () => {
     try {
-      // Mark onboarding as completed before navigating to home
-      await setOnboardingCompleted();
-
-      // Navigate to home
-      router.push('/');
+      // Navigate to personal-info even when skipping
+      router.push('/onboarding/personal-info');
     } catch (error) {
       console.error('Error skipping fitness info:', error);
-      // Still navigate to home even if marking complete fails
-      router.push('/');
+      // Still navigate to personal-info even if an error occurs
+      router.push('/onboarding/personal-info');
     }
   };
 
