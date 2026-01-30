@@ -98,7 +98,7 @@ export default function FitnessInfo() {
           style: 'capital',
           separator: ' ',
         });
-        
+
         user = await UserService.initializeUser({
           fullName: generatedName,
           dateOfBirth: new Date().getTime(),

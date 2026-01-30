@@ -22,6 +22,7 @@ import { SegmentedControl } from './theme/SegmentedControl';
 import { Button } from './theme/Button';
 import { PickerButton } from './theme/PickerButton';
 import { BottomPopUpMenu } from './BottomPopUpMenu';
+import { MaybeLaterButton } from './MaybeLaterButton';
 import { getWeightUnit, getHeightUnit } from '../utils/units';
 
 type EditFitnessDetailsBodyProps = {
@@ -356,14 +357,10 @@ export function EditFitnessDetailsBody({
             onPress={handleSave}
           />
           {onMaybeLater ? (
-            <Pressable
-              className="mt-3 w-full items-center py-2 active:opacity-70"
+            <MaybeLaterButton
               onPress={onMaybeLater}
-            >
-              <Text className="text-sm font-medium" style={{ color: theme.colors.text.gray500 }}>
-                {t('onboarding.healthConnect.maybeLater')}
-              </Text>
-            </Pressable>
+              text={t('onboarding.healthConnect.maybeLater')}
+            />
           ) : null}
         </View>
       </View>

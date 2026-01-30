@@ -9,10 +9,7 @@ interface MaybeLaterButtonProps {
 
 export function MaybeLaterButton({ onPress, text }: MaybeLaterButtonProps) {
   return (
-    <Pressable
-      className="w-full items-center py-2 active:opacity-70"
-      onPress={onPress}
-    >
+    <Pressable className="w-full items-center py-2 active:opacity-70" onPress={onPress}>
       <Text className="text-sm font-medium" style={{ color: theme.colors.text.gray500 }}>
         {text}
       </Text>

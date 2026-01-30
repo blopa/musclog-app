@@ -1,9 +1,10 @@
-import { View, Text, Pressable } from 'react-native';
-import { LucideChartSpline, Sparkles, Key, CheckCircle2 } from 'lucide-react-native';
+import { View, Text } from 'react-native';
+import { LucideChartSpline, Sparkles, CheckCircle2 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { GoogleGeminiIllustration } from './GoogleGeminiIllustration';
 import { GoogleSignInButton } from './GoogleSignInButton';
+import { MaybeLaterButton } from './MaybeLaterButton';
 
 // Illustration Component
 type ConnectGoogleAccountBodyProps = {
@@ -134,14 +135,7 @@ export function ConnectGoogleAccountBody({
         <View className="w-full items-center">
           <GoogleSignInButton onPress={handleConnect} variant="dark" disabled={isSigningIn} />
         </View>
-        <Pressable
-          onPress={handleMaybeLater}
-          className="mt-4 w-full items-center justify-center rounded-lg px-4 py-2"
-        >
-          <Text className="text-sm font-medium" style={{ color: theme.colors.text.secondary }}>
-            {t('connectGoogleAccount.maybeLater')}
-          </Text>
-        </Pressable>
+        <MaybeLaterButton onPress={handleMaybeLater} text={t('connectGoogleAccount.maybeLater')} />
       </View>
     </>
   );
