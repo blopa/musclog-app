@@ -25,6 +25,7 @@ import {
 import { theme } from '../../theme';
 import { AINutritionTrackingContextModal } from './AINutritionTrackingContextModal';
 import { FoodDetailsModal } from './FoodDetailsModal';
+import { FoodNotFoundModal } from './FoodNotFoundModal';
 import { CameraView, useCameraPermissions } from '../CameraView';
 import type { CameraView as CameraViewType } from 'expo-camera';
 import { detectBarcodes } from '../../utils/file';
@@ -50,13 +51,23 @@ export default function CameraModal({ visible, onClose }: CameraModalProps) {
   const [isDetecting, setIsDetecting] = useState(true);
   const [isContextModalVisible, setIsContextModalVisible] = useState(false);
   const [isFoodDetailsModalVisible, setIsFoodDetailsModalVisible] = useState(false);
+  const [isFoodNotFoundModalVisible, setIsFoodNotFoundModalVisible] = useState(false);
   const [detectedBarcode, setDetectedBarcode] = useState<string | null>(null);
   const cameraRef = useRef<CameraViewType>(null);
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
-  // TODO: NOW: if food was found, then show food details modal
-  // if not, then show the FoodNotFoundModal
   const { data: productDetails } = useFoodProductDetails(detectedBarcode);
+
+  // Show appropriate modal based on product details availability
+  useEffect(() => {
+    if (detectedBarcode) {
+      if (productDetails) {
+        setIsFoodDetailsModalVisible(true);
+      } else {
+        setIsFoodNotFoundModalVisible(true);
+      }
+    }
+  }, [detectedBarcode, productDetails]);
 
   // Pulse animation for AI detecting indicator
   useEffect(() => {
@@ -120,6 +131,24 @@ export default function CameraModal({ visible, onClose }: CameraModalProps) {
   const handleFoodDetailsClose = () => {
     setIsFoodDetailsModalVisible(false);
     setDetectedBarcode(null);
+  };
+
+  const handleFoodNotFoundClose = () => {
+    setIsFoodNotFoundModalVisible(false);
+    setDetectedBarcode(null);
+  };
+
+  const handleTryAiScan = () => {
+    setCameraMode('ai-meal-photo');
+  };
+
+  const handleSearchAgain = () => {
+    setCameraMode('barcode-scan');
+  };
+
+  const handleCreateCustom = () => {
+    // TODO: show AddFoodModal
+    console.log('Create custom food');
   };
 
   const handleGalleryPress = useCallback(async () => {
@@ -545,6 +574,15 @@ export default function CameraModal({ visible, onClose }: CameraModalProps) {
           onClose={handleFoodDetailsClose}
           barcode={detectedBarcode}
           source="api"
+        />
+
+        {/* Food Not Found Modal */}
+        <FoodNotFoundModal
+          visible={isFoodNotFoundModalVisible}
+          onClose={handleFoodNotFoundClose}
+          onTryAiScan={handleTryAiScan}
+          onSearchAgain={handleSearchAgain}
+          onCreateCustom={handleCreateCustom}
         />
       </View>
     </FullScreenModal>
