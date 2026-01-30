@@ -91,7 +91,7 @@ function inferEquipmentFromName(name: string, defaultEquipment: string): string 
  * Loads exercises from exercisesEnUS.json and populates the Exercise collection
  * Skips exercises that already exist (by name) to allow re-running without duplicates
  */
-export async function loadExercisesFromJson(): Promise<{ created: number; skipped: number }> {
+async function loadExercisesFromJson(): Promise<{ created: number; skipped: number }> {
   const exercises = exercisesData as ExerciseJsonData[];
   const now = Date.now();
   let created = 0;
@@ -146,7 +146,7 @@ export async function loadExercisesFromJson(): Promise<{ created: number; skippe
  * Only runs if there are no exercises in the database
  * Returns true if seeding was performed, false if database already had exercises
  */
-export async function seedExercisesIfEmpty(): Promise<boolean> {
+async function seedExercisesIfEmpty(): Promise<boolean> {
   try {
     // Check if there are any exercises in the database
     const existingExercises = await database.get<Exercise>('exercises').query().fetch();
@@ -171,7 +171,7 @@ export async function seedExercisesIfEmpty(): Promise<boolean> {
  * Creates workout templates, then workout logs linked to those templates with varying volumes
  * Only runs if workout_templates or workout_logs tables are empty
  */
-export async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false): Promise<{
+async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false): Promise<{
   templatesCreated: number;
   workoutsCreated: number;
 }> {
@@ -780,7 +780,7 @@ export async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = 
  * Creates workout logs with different dates and associated workout log sets
  * @deprecated Use seedWorkoutTemplatesAndHistory instead
  */
-export async function seedWorkoutHistory(): Promise<{ created: number }> {
+async function seedWorkoutHistory(): Promise<{ created: number }> {
   const now = Date.now();
   let created = 0;
 
@@ -1187,7 +1187,7 @@ export async function seedWorkoutHistory(): Promise<{ created: number }> {
   }
 }
 
-export async function seedUserMetrics(): Promise<{ created: number }> {
+async function seedUserMetrics(): Promise<{ created: number }> {
   const now = Date.now();
   let created = 0;
 
@@ -1318,7 +1318,7 @@ export async function seedUserMetrics(): Promise<{ created: number }> {
  * Only runs if the foods table is empty
  * Returns true if seeding was performed, false if database already had foods
  */
-export async function seedFoods(): Promise<{ created: number }> {
+async function seedFoods(): Promise<{ created: number }> {
   const now = Date.now();
   let created = 0;
 
@@ -1545,6 +1545,7 @@ export async function seedFoods(): Promise<{ created: number }> {
 }
 
 export async function seedDevData(): Promise<boolean> {
+  return false;
   const exercisesSeeded = await seedExercisesIfEmpty();
   const workoutData = await seedWorkoutTemplatesAndHistory();
   const userMetricsSeeded = await seedUserMetrics();
