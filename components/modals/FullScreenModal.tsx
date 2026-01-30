@@ -137,7 +137,7 @@ export function FullScreenModal({
                 start={{ x: 0.5, y: 1 }}
                 end={{ x: 0.5, y: 0 }}
               >
-                <View 
+                <View
                   className="px-6 pb-6 pt-6"
                   style={{
                     paddingBottom: Platform.OS === 'web' ? theme.spacing.padding.lg : insets.bottom,

@@ -29,9 +29,20 @@ export function FoodDetailsModal({ visible, onClose, barcode, onAddFood }: FoodD
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [isFoodNotFoundModalVisible, setIsFoodNotFoundModalVisible] = useState(false);
+  const [isFoodDetailsModalVisible, setIsFoodDetailsModalVisible] = useState(false);
 
   // Fetch detailed product data if barcode is provided
   const { data: productDetails } = useFoodProductDetails(barcode || null);
+
+  useEffect(() => {
+    if (productDetails) {
+      if (productDetails?.status !== 'success') {
+        setIsFoodNotFoundModalVisible(true);
+      } else {
+        setIsFoodDetailsModalVisible(true);
+      }
+    }
+  }, [productDetails]);
 
   // Extract nutritional data from barcode lookup
   const getNutritionalData = useCallback(() => {
@@ -232,8 +243,13 @@ export function FoodDetailsModal({ visible, onClose, barcode, onAddFood }: FoodD
     setIsFoodNotFoundModalVisible(false);
   }, []);
 
-  return (
-    <>
+  if (!visible) {
+    // TODO: return an full screen overlay with a loading spinner
+    return null;
+  }
+
+  if (isFoodNotFoundModalVisible) {
+    return (
       <FoodNotFoundModal
         visible={isFoodNotFoundModalVisible}
         onClose={handleFoodNotFoundClose}
@@ -241,8 +257,13 @@ export function FoodDetailsModal({ visible, onClose, barcode, onAddFood }: FoodD
         onSearchAgain={handleSearchAgain}
         onCreateCustom={handleCreateCustom}
       />
+    );
+  }
+
+  return (
+    <>
       <FullScreenModal
-        visible={visible}
+        visible={isFoodDetailsModalVisible}
         onClose={onClose}
         title={t('food.foodDetails.title')}
         scrollable={true}
