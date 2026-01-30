@@ -34,8 +34,21 @@ export interface RefreshTokenResponse {
  * Validate if an access token is valid by making a test API call
  */
 export async function isValidAccessToken(accessToken: string): Promise<boolean> {
-  // TODO: figure out a way to check this
-  return true;
+  if (!accessToken) return false;
+
+  try {
+    const response = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    return response.ok;
+  } catch (error) {
+    console.error('Error validating Google access token:', error);
+    return false;
+  }
 }
 
 // Get the appropriate client ID based on platform
