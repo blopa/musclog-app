@@ -51,31 +51,13 @@ export function FoodDetailsModal({
   const [selectedMeal, setSelectedMeal] = useState('lunch');
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
+  const [isFoodNotFoundModalVisible, setIsFoodNotFoundModalVisible] = useState(false);
 
   // Fetch detailed product data if barcode is provided
   const { data: productDetails } = useFoodProductDetails(barcode || null);
 
   // Extract nutritional data from API response
   const getNutritionalData = useCallback(() => {
-    if (
-      isSuccessFoodDetailProductState(productDetails) &&
-      productDetails.product.nutrition?.aggregated_set?.nutrients
-    ) {
-      const nutrients = productDetails.product.nutrition.aggregated_set.nutrients;
-      return {
-        calories: nutrients?.['energy-kcal']?.value || 0,
-        protein: nutrients?.proteins?.value || 0,
-        carbs: nutrients?.carbohydrates?.value || 0,
-        fat: nutrients?.fat?.value || 0,
-        fiber: nutrients?.fiber?.value || 0,
-        sugars: nutrients?.sugars?.value || 0,
-        saturatedFat: nutrients?.['saturated-fat']?.value || 0,
-        sodium: nutrients?.sodium?.value || 0,
-        salt: nutrients?.salt?.value || 0,
-      };
-    }
-
-    // If we have nutriments from the search result
     if (nutriments) {
       return {
         calories: nutriments['energy-kcal_100g'] || nutriments['energy-kcal'] || food?.calories,
@@ -102,7 +84,7 @@ export function FoodDetailsModal({
       sodium: 0,
       salt: 0,
     };
-  }, [food?.calories, food?.carbs, food?.fat, food?.protein, nutriments, productDetails]);
+  }, [food?.calories, food?.carbs, food?.fat, food?.protein, nutriments]);
 
   const nutritionalData = getNutritionalData();
 
@@ -179,7 +161,15 @@ export function FoodDetailsModal({
       carbs: Math.round(nutritionalData.carbs * scaleFactor * 10) / 10,
       fat: Math.round(nutritionalData.fat * scaleFactor * 10) / 10,
     };
-  }, [getProductCategory, getProductName, nutritionalData.calories, nutritionalData.carbs, nutritionalData.fat, nutritionalData.protein, servingSize]);
+  }, [
+    getProductCategory,
+    getProductName,
+    nutritionalData.calories,
+    nutritionalData.carbs,
+    nutritionalData.fat,
+    nutritionalData.protein,
+    servingSize,
+  ]);
 
   const scaledFood = getScaledNutrition();
 
@@ -220,6 +210,7 @@ export function FoodDetailsModal({
           if (!matchingFood) {
             throw new Error('Local food not found in database');
           }
+
           foodId = matchingFood.id;
         }
       }
@@ -247,159 +238,193 @@ export function FoodDetailsModal({
       console.error('Error tracking food:', error);
       Alert.alert('Error', 'Failed to track food. Please try again.', [{ text: 'OK' }]);
     }
-  }, [_raw, food?.id, food?.name, nutritionalData.calories, nutritionalData.carbs, nutritionalData.fat, nutritionalData.fiber, nutritionalData.protein, nutritionalData.salt, nutritionalData.saturatedFat, nutritionalData.sodium, nutritionalData.sugars, onAddFood, onClose, selectedDate, selectedMeal, servingSize, source]);
+  }, [
+    _raw,
+    food?.id,
+    food?.name,
+    nutritionalData.calories,
+    nutritionalData.carbs,
+    nutritionalData.fat,
+    nutritionalData.fiber,
+    nutritionalData.protein,
+    nutritionalData.salt,
+    nutritionalData.saturatedFat,
+    nutritionalData.sodium,
+    nutritionalData.sugars,
+    onAddFood,
+    onClose,
+    selectedDate,
+    selectedMeal,
+    servingSize,
+    source,
+  ]);
 
-  // TODO: implement this
-  // if (foodNotFound) {
-  //   return (
-  //     // Food Not Found Modal
-  //     <FoodNotFoundModal
-  //       visible={isFoodNotFoundModalVisible}
-  //       onClose={handleFoodNotFoundClose}
-  //       onTryAiScan={handleTryAiScan}
-  //       onSearchAgain={handleSearchAgain}
-  //       onCreateCustom={handleCreateCustom}
-  //     />
-  //   );
-  // }
+  // Handlers for FoodNotFoundModal actions
+  const handleTryAiScan = useCallback(() => {
+    setIsFoodNotFoundModalVisible(false);
+    // Trigger AI scan logic
+  }, []);
+
+  const handleSearchAgain = useCallback(() => {
+    setIsFoodNotFoundModalVisible(false);
+    // Trigger search again logic
+  }, []);
+
+  const handleCreateCustom = useCallback(() => {
+    setIsFoodNotFoundModalVisible(false);
+    // Trigger create custom food logic
+  }, []);
+
+  const handleFoodNotFoundClose = useCallback(() => {
+    setIsFoodNotFoundModalVisible(false);
+  }, []);
 
   return (
-    <FullScreenModal
-      visible={visible}
-      onClose={onClose}
-      title={t('food.foodDetails.title')}
-      scrollable={true}
-      footer={
-        <View className="bg-transparent px-4 pb-6 pt-3">
-          <Button
-            label={t('food.foodDetails.addFood')}
-            icon={PlusCircle}
-            variant="gradientCta"
-            size="sm"
-            width="full"
-            onPress={handleAddFood}
-          />
-        </View>
-      }
-    >
-      <View className="flex-1 px-4 pb-6">
-        {/* Food Info Card */}
-        <View className="mt-6">
-          <FoodInfoCard food={scaledFood} />
-
-          {/* Additional Nutritional Info */}
-          {nutritionalData.fiber > 0 ||
-          nutritionalData.sugars > 0 ||
-          nutritionalData.saturatedFat > 0 ||
-          nutritionalData.salt > 0 ? (
-            <View className="mt-4 rounded-2xl border border-border-light bg-bg-overlay p-4">
-              <Text className="mb-3 text-sm font-bold uppercase tracking-wider text-text-secondary">
-                Additional Nutrition
-              </Text>
-              <View className="gap-2">
-                {nutritionalData.fiber > 0 ? (
-                  <View className="flex-row justify-between">
-                    <Text className="text-sm text-text-secondary">Fiber</Text>
-                    <Text className="text-sm font-medium text-text-primary">
-                      {Math.round(nutritionalData.fiber * (servingSize / 100) * 10) / 10}g
-                    </Text>
-                  </View>
-                ) : null}
-                {nutritionalData.sugars > 0 ? (
-                  <View className="flex-row justify-between">
-                    <Text className="text-sm text-text-secondary">Sugars</Text>
-                    <Text className="text-sm font-medium text-text-primary">
-                      {Math.round(nutritionalData.sugars * (servingSize / 100) * 10) / 10}g
-                    </Text>
-                  </View>
-                ) : null}
-                {nutritionalData.saturatedFat > 0 ? (
-                  <View className="flex-row justify-between">
-                    <Text className="text-sm text-text-secondary">Saturated Fat</Text>
-                    <Text className="text-sm font-medium text-text-primary">
-                      {Math.round(nutritionalData.saturatedFat * (servingSize / 100) * 10) / 10}g
-                    </Text>
-                  </View>
-                ) : null}
-                {nutritionalData.salt > 0 ? (
-                  <View className="flex-row justify-between">
-                    <Text className="text-sm text-text-secondary">Salt</Text>
-                    <Text className="text-sm font-medium text-text-primary">
-                      {Math.round(nutritionalData.salt * (servingSize / 100) * 1000) / 1000}g
-                    </Text>
-                  </View>
-                ) : null}
-              </View>
-            </View>
-          ) : null}
-        </View>
-
-        {/* Form Sections */}
-        <View className="gap-6">
-          {/* Serving Size */}
-          <ServingSizeSelector value={servingSize} onChange={setServingSize} />
-
-          {/* Meal Selection */}
-          <View>
-            <Text className="mb-3 text-xs font-bold uppercase tracking-wider text-text-secondary">
-              {t('food.foodDetails.meal')}
-            </Text>
-            <FilterTabs
-              tabs={mealTabs}
-              activeTab={selectedMeal}
-              onTabChange={setSelectedMeal}
-              showContainer={false}
-              scrollViewContentContainerStyle={{ paddingHorizontal: theme.spacing.padding.zero }}
+    <>
+      <FoodNotFoundModal
+        visible={isFoodNotFoundModalVisible}
+        onClose={handleFoodNotFoundClose}
+        onTryAiScan={handleTryAiScan}
+        onSearchAgain={handleSearchAgain}
+        onCreateCustom={handleCreateCustom}
+      />
+      <FullScreenModal
+        visible={visible}
+        onClose={onClose}
+        title={t('food.foodDetails.title')}
+        scrollable={true}
+        footer={
+          <View className="bg-transparent px-4 pb-6 pt-3">
+            <Button
+              label={t('food.foodDetails.addFood')}
+              icon={PlusCircle}
+              variant="gradientCta"
+              size="sm"
+              width="full"
+              onPress={handleAddFood}
             />
           </View>
+        }
+      >
+        <View className="flex-1 px-4 pb-6">
+          {/* Food Info Card */}
+          <View className="mt-6">
+            <FoodInfoCard food={scaledFood} />
 
-          {/* Date Selection */}
-          <View>
-            <Text className="mb-2 text-xs font-bold uppercase tracking-wider text-text-secondary">
-              {t('food.foodDetails.date')}
-            </Text>
-            <Pressable
-              className="flex-row items-center justify-between rounded-lg border border-white/10 bg-bg-cardDark p-4"
-              onPress={() => setIsDatePickerVisible(true)}
-            >
-              <View className="flex-row items-center gap-3">
-                <View
-                  className="h-10 w-10 items-center justify-center rounded-full"
-                  style={{
-                    backgroundColor: theme.colors.status.indigo20,
-                  }}
-                >
-                  <Calendar size={theme.iconSize.md} color={theme.colors.accent.primary} />
-                </View>
-                <View>
-                  <Text className="font-medium text-text-primary">
-                    {isSameDay(selectedDate, new Date())
-                      ? t('food.foodDetails.today')
-                      : format(selectedDate, 'EEEE')}
-                  </Text>
-                  <Text className="text-xs text-text-secondary">
-                    {format(selectedDate, 'MMMM d, yyyy')}
-                  </Text>
+            {/* Additional Nutritional Info */}
+            {nutritionalData.fiber > 0 ||
+            nutritionalData.sugars > 0 ||
+            nutritionalData.saturatedFat > 0 ||
+            nutritionalData.salt > 0 ? (
+              <View className="mt-4 rounded-2xl border border-border-light bg-bg-overlay p-4">
+                <Text className="mb-3 text-sm font-bold uppercase tracking-wider text-text-secondary">
+                  Additional Nutrition
+                </Text>
+                <View className="gap-2">
+                  {nutritionalData.fiber > 0 ? (
+                    <View className="flex-row justify-between">
+                      <Text className="text-sm text-text-secondary">Fiber</Text>
+                      <Text className="text-sm font-medium text-text-primary">
+                        {Math.round(nutritionalData.fiber * (servingSize / 100) * 10) / 10}g
+                      </Text>
+                    </View>
+                  ) : null}
+                  {nutritionalData.sugars > 0 ? (
+                    <View className="flex-row justify-between">
+                      <Text className="text-sm text-text-secondary">Sugars</Text>
+                      <Text className="text-sm font-medium text-text-primary">
+                        {Math.round(nutritionalData.sugars * (servingSize / 100) * 10) / 10}g
+                      </Text>
+                    </View>
+                  ) : null}
+                  {nutritionalData.saturatedFat > 0 ? (
+                    <View className="flex-row justify-between">
+                      <Text className="text-sm text-text-secondary">Saturated Fat</Text>
+                      <Text className="text-sm font-medium text-text-primary">
+                        {Math.round(nutritionalData.saturatedFat * (servingSize / 100) * 10) / 10}g
+                      </Text>
+                    </View>
+                  ) : null}
+                  {nutritionalData.salt > 0 ? (
+                    <View className="flex-row justify-between">
+                      <Text className="text-sm text-text-secondary">Salt</Text>
+                      <Text className="text-sm font-medium text-text-primary">
+                        {Math.round(nutritionalData.salt * (servingSize / 100) * 1000) / 1000}g
+                      </Text>
+                    </View>
+                  ) : null}
                 </View>
               </View>
-              <Edit size={theme.iconSize.sm} color={theme.colors.text.secondary} />
-            </Pressable>
+            ) : null}
+          </View>
+
+          {/* Form Sections */}
+          <View className="gap-6">
+            {/* Serving Size */}
+            <ServingSizeSelector value={servingSize} onChange={setServingSize} />
+
+            {/* Meal Selection */}
+            <View>
+              <Text className="mb-3 text-xs font-bold uppercase tracking-wider text-text-secondary">
+                {t('food.foodDetails.meal')}
+              </Text>
+              <FilterTabs
+                tabs={mealTabs}
+                activeTab={selectedMeal}
+                onTabChange={setSelectedMeal}
+                showContainer={false}
+                scrollViewContentContainerStyle={{ paddingHorizontal: theme.spacing.padding.zero }}
+              />
+            </View>
+
+            {/* Date Selection */}
+            <View>
+              <Text className="mb-2 text-xs font-bold uppercase tracking-wider text-text-secondary">
+                {t('food.foodDetails.date')}
+              </Text>
+              <Pressable
+                className="flex-row items-center justify-between rounded-lg border border-white/10 bg-bg-cardDark p-4"
+                onPress={() => setIsDatePickerVisible(true)}
+              >
+                <View className="flex-row items-center gap-3">
+                  <View
+                    className="h-10 w-10 items-center justify-center rounded-full"
+                    style={{
+                      backgroundColor: theme.colors.status.indigo20,
+                    }}
+                  >
+                    <Calendar size={theme.iconSize.md} color={theme.colors.accent.primary} />
+                  </View>
+                  <View>
+                    <Text className="font-medium text-text-primary">
+                      {isSameDay(selectedDate, new Date())
+                        ? t('food.foodDetails.today')
+                        : format(selectedDate, 'EEEE')}
+                    </Text>
+                    <Text className="text-xs text-text-secondary">
+                      {format(selectedDate, 'MMMM d, yyyy')}
+                    </Text>
+                  </View>
+                </View>
+                <Edit size={theme.iconSize.sm} color={theme.colors.text.secondary} />
+              </Pressable>
+            </View>
           </View>
         </View>
-      </View>
 
-      {/* footer is handled by FullScreenModal */}
+        {/* footer is handled by FullScreenModal */}
 
-      {/* Date Picker Modal */}
-      <DatePickerModal
-        visible={isDatePickerVisible}
-        onClose={() => setIsDatePickerVisible(false)}
-        selectedDate={selectedDate}
-        onDateSelect={(date) => {
-          setSelectedDate(date);
-          setIsDatePickerVisible(false);
-        }}
-      />
-    </FullScreenModal>
+        {/* Date Picker Modal */}
+        <DatePickerModal
+          visible={isDatePickerVisible}
+          onClose={() => setIsDatePickerVisible(false)}
+          selectedDate={selectedDate}
+          onDateSelect={(date) => {
+            setSelectedDate(date);
+            setIsDatePickerVisible(false);
+          }}
+        />
+      </FullScreenModal>
+    </>
   );
 }
