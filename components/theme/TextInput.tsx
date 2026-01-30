@@ -63,9 +63,11 @@ export function TextInput({
           onBlur={onBlur}
           style={{ borderWidth: theme.borderWidth.none, minWidth: 0 }}
         />
-        <View className="absolute right-4 w-16 items-center justify-center">
-          {icon || <View />}
-        </View>
+        {icon ? (
+          <View className="absolute right-4 w-16 items-center justify-center">
+            {icon}
+          </View>
+        ) : null}
       </View>
     </View>
   );
