@@ -4,6 +4,6 @@ export const isSuccessFoodDetailProductState = (state: any): state is SuccessFoo
   return (
     state?.status === 'success' &&
     state?.product?.product_type === 'food' &&
-    state?.product?.nutrition?.aggregated_set?.nutrients !== undefined
+    state?.product?.nutriments !== undefined
   );
 };
