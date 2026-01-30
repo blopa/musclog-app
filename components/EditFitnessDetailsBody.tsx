@@ -22,6 +22,7 @@ import { SegmentedControl } from './theme/SegmentedControl';
 import { Button } from './theme/Button';
 import { PickerButton } from './theme/PickerButton';
 import { BottomPopUpMenu } from './BottomPopUpMenu';
+import { getWeightUnit, getHeightUnit } from '../utils/units';
 
 type EditFitnessDetailsBodyProps = {
   onClose: () => void;
@@ -58,6 +59,7 @@ export function EditFitnessDetailsBody({
   );
   const [isGoalPickerVisible, setIsGoalPickerVisible] = useState(false);
   const [isActivityPickerVisible, setIsActivityPickerVisible] = useState(false);
+  const [focusedInput, setFocusedInput] = useState<'weight' | 'height' | null>(null);
 
   const handleSave = () => {
     onSave?.({
@@ -215,7 +217,14 @@ export function EditFitnessDetailsBody({
                 onChangeText={setWeight}
                 placeholder="0.0"
                 keyboardType="numeric"
-                icon={<Text className="text-sm font-medium text-text-tertiary">kg</Text>}
+                focused={focusedInput === 'weight'}
+                onFocus={() => setFocusedInput('weight')}
+                onBlur={() => setFocusedInput(null)}
+                icon={
+                  <Text className="text-center text-sm font-medium text-text-tertiary">
+                    {getWeightUnit(units)}
+                  </Text>
+                }
               />
             </View>
             <View className="flex-1">
@@ -225,7 +234,14 @@ export function EditFitnessDetailsBody({
                 onChangeText={setHeight}
                 placeholder="0"
                 keyboardType="numeric"
-                icon={<Text className="text-sm font-medium text-text-tertiary">cm</Text>}
+                focused={focusedInput === 'height'}
+                onFocus={() => setFocusedInput('height')}
+                onBlur={() => setFocusedInput(null)}
+                icon={
+                  <Text className="text-center text-sm font-medium text-text-tertiary">
+                    {getHeightUnit(units)}
+                  </Text>
+                }
               />
             </View>
           </View>

@@ -11,6 +11,8 @@ type TestInputProps = {
   keyboardType?: 'default' | 'email-address' | 'numeric';
   icon?: React.ReactNode;
   secureTextEntry?: boolean;
+  onFocus?: () => void;
+  onBlur?: () => void;
 };
 
 export function TextInput({
@@ -22,6 +24,8 @@ export function TextInput({
   keyboardType = 'default',
   icon,
   secureTextEntry,
+  onFocus,
+  onBlur,
 }: TestInputProps) {
   return (
     <View className="flex-col gap-2">
@@ -31,8 +35,8 @@ export function TextInput({
         {label}
       </Text>
       <View
-        className={`h-14 w-full flex-row items-center rounded-lg border bg-bg-card px-4 ${
-          focused ? 'border-2 border-accent-primary/50' : 'border-white/10'
+        className={`h-14 w-full flex-row items-center rounded-lg border-2 bg-bg-card px-4 ${
+          focused ? 'border-accent-primary/50' : 'border-white/10'
         }`}
         style={
           focused
@@ -48,16 +52,20 @@ export function TextInput({
         }
       >
         <RNTextInput
-          className="flex-1 border-none bg-transparent p-0 text-text-primary"
+          className="flex-1 border-none bg-transparent p-0 pr-20 text-text-primary"
           placeholder={placeholder}
           placeholderTextColor={theme.colors.text.tertiary}
           value={value}
           onChangeText={onChangeText}
           keyboardType={keyboardType}
           secureTextEntry={secureTextEntry}
-          style={{ borderWidth: theme.borderWidth.none }}
+          onFocus={onFocus}
+          onBlur={onBlur}
+          style={{ borderWidth: theme.borderWidth.none, minWidth: 0 }}
         />
-        {icon ? <View className="ml-2">{icon}</View> : null}
+        <View className="absolute right-4 w-16 items-center justify-center">
+          {icon || <View />}
+        </View>
       </View>
     </View>
   );
