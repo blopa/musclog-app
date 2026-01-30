@@ -96,7 +96,7 @@ export default function FitnessInfo() {
         // If no user exists, create one with minimal data
         // This shouldn't happen if personal-info was completed first
         user = await UserService.initializeUser({
-          fullName: 'User',
+          fullName: 'User', // TODO: use name generator using unique-names-generator
           dateOfBirth: new Date().getTime(),
           gender: 'other',
           fitnessGoal: data.fitnessGoal,

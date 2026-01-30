@@ -300,7 +300,6 @@ function FoodResultCard({
               onFocus={handleAmountFocus}
               onBlur={handleAmountBlur}
               selection={selection}
-              selectTextOnFocus={false}
               keyboardType="numeric"
               style={{
                 width: 80,
