@@ -54,7 +54,8 @@ export default function CameraModal({ visible, onClose }: CameraModalProps) {
   const cameraRef = useRef<CameraViewType>(null);
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
-  // Fetch product details when barcode is detected
+  // TODO: NOW: if food was found, then show food details modal
+  // if not, then show the FoodNotFoundModal
   const { data: productDetails } = useFoodProductDetails(detectedBarcode);
 
   // Pulse animation for AI detecting indicator
@@ -92,7 +93,7 @@ export default function CameraModal({ visible, onClose }: CameraModalProps) {
         quality: 0.8,
         base64: false,
       });
-      // TODO: Process the photo based on camera mode
+      // TODO: LATER: Process the photo based on camera mode
       console.log('Photo taken:', photo);
     } catch (error) {
       console.error('Error taking picture:', error);
@@ -112,7 +113,7 @@ export default function CameraModal({ visible, onClose }: CameraModalProps) {
   }, []);
 
   const handleApplyContext = (context: { description: string; tags: string[] }) => {
-    // TODO: Apply context to AI processing
+    // TODO: LATER: Apply context to AI processing
     console.log('Context applied:', context);
   };
 
