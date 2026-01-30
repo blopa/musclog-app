@@ -244,7 +244,6 @@ export function FoodDetailsModal({ visible, onClose, barcode, onAddFood }: FoodD
   }, []);
 
   if (!visible) {
-    // TODO: return an full screen overlay with a loading spinner
     return null;
   }
 
