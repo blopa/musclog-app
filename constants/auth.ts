@@ -11,6 +11,8 @@ export const GOOGLE_REDIRECT_URI_MOBILE = 'com.werules.logger://';
 export const GOOGLE_SCOPES = [
   'https://www.googleapis.com/auth/cloud-vision',
   'https://www.googleapis.com/auth/generative-language.retriever',
+  // 'https://www.googleapis.com/auth/userinfo.email',
+  'https://www.googleapis.com/auth/userinfo.profile',
 ].join(' ');
 
 // Setting Types (stored in WatermelonDB)
