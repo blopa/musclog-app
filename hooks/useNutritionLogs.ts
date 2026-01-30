@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { Q } from '@nozbe/watermelondb';
 import { database } from '../database';
 import NutritionLog from '../database/models/NutritionLog';
@@ -309,27 +309,41 @@ export function useNutritionLogs({
 
   // Refresh data
   const refresh = useCallback(async () => {
+    // Prevent infinite loops by checking if we're already loading
+    if (isLoading) {
+      return;
+    }
+
     await loadInitialLogs();
-  }, [loadInitialLogs]);
+  }, [loadInitialLogs, isLoading]);
+
+  // Ref to hold the latest refresh function to avoid dependency issues
+  const refreshRef = useRef(refresh);
+  refreshRef.current = refresh;
+
+  // Track if we've already loaded initial data to prevent duplicate calls
+  const hasLoadedInitial = useRef(false);
 
   // Observe database changes for reactivity
   useEffect(() => {
+    // Reset the loaded flag when key dependencies change
+    hasLoadedInitial.current = false;
+
     if (!enableReactivity || !visible) {
       // Still load initial data even if reactivity is disabled
-      if (visible) {
+      if (visible && !hasLoadedInitial.current) {
         loadInitialLogs();
+        hasLoadedInitial.current = true;
       }
       return;
     }
 
-    // Build query based on mode
-    let query = database.get<NutritionLog>('nutrition_logs').query(
-      Q.where('deleted_at', Q.eq(null)),
-      Q.sortBy(sortBy, sortOrder === 'asc' ? Q.asc : Q.desc),
-      Q.take(1) // Only need to know if there are any changes
-    );
+    // Build query based on mode - only observe relevant changes
+    let query = database
+      .get<NutritionLog>('nutrition_logs')
+      .query(Q.where('deleted_at', Q.eq(null)));
 
-    // Add mode-specific filters
+    // Add mode-specific filters to avoid unnecessary re-renders
     if (mode === 'daily' && date) {
       const dateTimestamp = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
       const nextDayTimestamp = dateTimestamp + 24 * 60 * 60 * 1000;
@@ -358,35 +372,34 @@ export function useNutritionLogs({
         Q.where('date', Q.lt(nextDayTimestamp)),
         Q.where('type', mealType)
       );
+    } else {
+      // For basic mode, don't observe at all to avoid infinite loops during onboarding
+      // Just load initial data once without reactivity
+      if (!hasLoadedInitial.current) {
+        loadInitialLogs();
+        hasLoadedInitial.current = true;
+      }
+      return;
     }
 
     const subscription = query.observe().subscribe({
       next: () => {
-        // When a nutrition log is created/updated, reload the data
-        refresh();
+        // Only refresh if we've already loaded initial data to prevent infinite loops
+        if (hasLoadedInitial.current) {
+          refreshRef.current();
+        }
       },
       error: (err) => {
         console.error('Error observing nutrition logs:', err);
       },
     });
 
-    // Load initial data
-    refresh();
+    // Load initial data and mark as loaded
+    loadInitialLogs();
+    hasLoadedInitial.current = true;
 
     return () => subscription.unsubscribe();
-  }, [
-    enableReactivity,
-    visible,
-    mode,
-    date,
-    startDate,
-    endDate,
-    mealType,
-    sortBy,
-    sortOrder,
-    refresh,
-    loadInitialLogs,
-  ]);
+  }, [enableReactivity, visible, mode, date, startDate, endDate, mealType]);
 
   // Memoized result for basic modes
   const basicResult = useMemo(

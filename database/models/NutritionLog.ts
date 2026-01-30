@@ -80,25 +80,41 @@ export default class NutritionLog extends Model {
     fat: number;
     fiber: number;
   }> {
-    const food = await this.food;
+    try {
+      const food = await this.food;
 
-    if (this.portionId) {
-      const portion = await this.portion;
-      if (portion) {
-        // Use portion-based calculation
-        const multiplier = this.amount; // Number of portions
-        return {
-          calories: food.calories * (portion.gramWeight / food.servingAmount) * multiplier,
-          protein: food.protein * (portion.gramWeight / food.servingAmount) * multiplier,
-          carbs: food.carbs * (portion.gramWeight / food.servingAmount) * multiplier,
-          fat: food.fat * (portion.gramWeight / food.servingAmount) * multiplier,
-          fiber: food.fiber * (portion.gramWeight / food.servingAmount) * multiplier,
-        };
+      if (!food) {
+        throw new Error('Food not found for nutrition log');
       }
-    }
 
-    // Use direct amount (assume grams)
-    return food.getNutrientsForAmount(this.amount, 'g');
+      if (this.portionId) {
+        const portion = await this.portion;
+        if (portion) {
+          // Use portion-based calculation
+          const multiplier = this.amount; // Number of portions
+          return {
+            calories: food.calories * (portion.gramWeight / food.servingAmount) * multiplier,
+            protein: food.protein * (portion.gramWeight / food.servingAmount) * multiplier,
+            carbs: food.carbs * (portion.gramWeight / food.servingAmount) * multiplier,
+            fat: food.fat * (portion.gramWeight / food.servingAmount) * multiplier,
+            fiber: food.fiber * (portion.gramWeight / food.servingAmount) * multiplier,
+          };
+        }
+      }
+
+      // Use direct amount (assume grams)
+      return food.getNutrientsForAmount(this.amount, 'g');
+    } catch (error) {
+      console.error('Error getting nutrients for nutrition log:', error);
+      // Return default values to prevent crashes
+      return {
+        calories: 0,
+        protein: 0,
+        carbs: 0,
+        fat: 0,
+        fiber: 0,
+      };
+    }
   }
 
   // Helper method to get formatted date string

@@ -36,6 +36,9 @@ export default function HomeScreen() {
   const router = useRouter();
   const { user: dbUser, isLoading: isLoadingUser } = useUser();
 
+  // Memoize today's date to prevent infinite re-renders
+  const today = useMemo(() => new Date(), []);
+
   // Get current nutrition goals
   const { goal: nutritionGoal, isLoading: isLoadingGoal } = useCurrentNutritionGoal({
     mode: 'current',
@@ -44,7 +47,7 @@ export default function HomeScreen() {
   // Get today's nutrition data
   const { dailyNutrients, isLoading: isLoadingNutrition } = useNutritionLogs({
     mode: 'daily',
-    date: new Date(),
+    date: today,
   });
 
   // Get recent foods for display

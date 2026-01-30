@@ -103,40 +103,65 @@ export class NutritionService {
       { calories: number; protein: number; carbs: number; fat: number; fiber: number }
     >;
   }> {
-    const logs = await this.getNutritionLogsForDate(date);
+    try {
+      const logs = await this.getNutritionLogsForDate(date);
 
-    const totals = {
-      calories: 0,
-      protein: 0,
-      carbs: 0,
-      fat: 0,
-      fiber: 0,
-      byMealType: {
-        breakfast: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
-        lunch: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
-        dinner: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
-        snack: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
-        other: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
-      },
-    };
+      const totals = {
+        calories: 0,
+        protein: 0,
+        carbs: 0,
+        fat: 0,
+        fiber: 0,
+        byMealType: {
+          breakfast: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
+          lunch: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
+          dinner: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
+          snack: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
+          other: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
+        },
+      };
 
-    for (const log of logs) {
-      const nutrients = await log.getNutrients();
+      for (const log of logs) {
+        try {
+          const nutrients = await log.getNutrients();
 
-      totals.calories += nutrients.calories;
-      totals.protein += nutrients.protein;
-      totals.carbs += nutrients.carbs;
-      totals.fat += nutrients.fat;
-      totals.fiber += nutrients.fiber;
+          totals.calories += nutrients.calories;
+          totals.protein += nutrients.protein;
+          totals.carbs += nutrients.carbs;
+          totals.fat += nutrients.fat;
+          totals.fiber += nutrients.fiber;
 
-      totals.byMealType[log.type].calories += nutrients.calories;
-      totals.byMealType[log.type].protein += nutrients.protein;
-      totals.byMealType[log.type].carbs += nutrients.carbs;
-      totals.byMealType[log.type].fat += nutrients.fat;
-      totals.byMealType[log.type].fiber += nutrients.fiber;
+          totals.byMealType[log.type].calories += nutrients.calories;
+          totals.byMealType[log.type].protein += nutrients.protein;
+          totals.byMealType[log.type].carbs += nutrients.carbs;
+          totals.byMealType[log.type].fat += nutrients.fat;
+          totals.byMealType[log.type].fiber += nutrients.fiber;
+        } catch (error) {
+          // Skip individual log errors to prevent total failure
+          console.error('Error calculating nutrients for log:', error);
+          continue;
+        }
+      }
+
+      return totals;
+    } catch (error) {
+      console.error('Error getting daily nutrients:', error);
+      // Return default values on error
+      return {
+        calories: 0,
+        protein: 0,
+        carbs: 0,
+        fat: 0,
+        fiber: 0,
+        byMealType: {
+          breakfast: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
+          lunch: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
+          dinner: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
+          snack: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
+          other: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
+        },
+      };
     }
-
-    return totals;
   }
 
   /**

@@ -132,6 +132,18 @@ export default class Food extends Model {
     fiber: number;
     micros?: MicrosData;
   } {
+    // Prevent division by zero
+    if (this.servingAmount <= 0) {
+      console.error('Invalid serving amount:', this.servingAmount);
+      return {
+        calories: 0,
+        protein: 0,
+        carbs: 0,
+        fat: 0,
+        fiber: 0,
+      };
+    }
+
     // Convert to base unit (grams) for calculation
     let multiplier = 1;
 
@@ -142,6 +154,12 @@ export default class Food extends Model {
     } else {
       // For other units, assume they're equivalent to the base serving amount
       multiplier = amount / this.servingAmount;
+    }
+
+    // Ensure multiplier is a valid number
+    if (!isFinite(multiplier) || isNaN(multiplier)) {
+      console.error('Invalid multiplier calculated:', multiplier);
+      multiplier = 1;
     }
 
     return {
