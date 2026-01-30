@@ -15,6 +15,7 @@ type FullScreenModalProps = {
   children: ReactNode;
   scrollable?: boolean;
   withGradient?: boolean;
+  showHeader?: boolean;
 };
 
 export function FullScreenModal({
@@ -27,6 +28,7 @@ export function FullScreenModal({
   scrollable = true,
   footer,
   withGradient = false,
+  showHeader = true,
 }: FullScreenModalProps) {
   const insets = useSafeAreaInsets();
   // Web-specific styles for proper viewport positioning
@@ -73,29 +75,31 @@ export function FullScreenModal({
         ]}
       >
         {/* Header */}
-        <View className="border-b border-border-light bg-bg-primary">
-          <LinearGradient
-            colors={
-              withGradient
-                ? [theme.colors.status.purple40, theme.colors.accent.secondary10, 'transparent']
-                : ['transparent', 'transparent']
-            }
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            className="flex-row items-center gap-4 px-4 py-4"
-          >
-            <Pressable className="-ml-2 rounded-full p-2" onPress={onClose}>
-              <ArrowLeft size={theme.iconSize.md} color={theme.colors.text.primary} />
-            </Pressable>
-            <View className="flex-1">
-              <Text className="text-xl font-bold tracking-tight text-text-primary">{title}</Text>
-              {subtitle ? (
-                <Text className="mt-0.5 text-sm font-normal text-text-secondary">{subtitle}</Text>
-              ) : null}
-            </View>
-            {headerRight ? <View className="-mr-2">{headerRight}</View> : null}
-          </LinearGradient>
-        </View>
+        {showHeader ? (
+          <View className="border-b border-border-light bg-bg-primary">
+            <LinearGradient
+              colors={
+                withGradient
+                  ? [theme.colors.status.purple40, theme.colors.accent.secondary10, 'transparent']
+                  : ['transparent', 'transparent']
+              }
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              className="flex-row items-center gap-4 px-4 py-4"
+            >
+              <Pressable className="-ml-2 rounded-full p-2" onPress={onClose}>
+                <ArrowLeft size={theme.iconSize.md} color={theme.colors.text.primary} />
+              </Pressable>
+              <View className="flex-1">
+                <Text className="text-xl font-bold tracking-tight text-text-primary">{title}</Text>
+                {subtitle ? (
+                  <Text className="mt-0.5 text-sm font-normal text-text-secondary">{subtitle}</Text>
+                ) : null}
+              </View>
+              {headerRight ? <View className="-mr-2">{headerRight}</View> : null}
+            </LinearGradient>
+          </View>
+        ) : null}
 
         {/* Content area + optional footer */}
         <View className="flex-1">

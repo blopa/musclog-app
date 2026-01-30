@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import React, { ReactNode, useState } from 'react';
 import { theme } from '../theme';
 import { CoachModal } from './modals/CoachModal';
+import CameraModal from './modals/CameraModal';
 
 type MasterLayoutProps = {
   children: ReactNode;
@@ -18,6 +19,7 @@ export function MasterLayout({ children, showNavigationMenu = true }: MasterLayo
   const router = useRouter();
   const pathname = usePathname();
   const [isCoachModalVisible, setIsCoachModalVisible] = useState(false);
+  const [isCameraModalVisible, setIsCameraModalVisible] = useState(false);
 
   const isActive = (path: string) => {
     if (path === '/') {
@@ -40,6 +42,7 @@ export function MasterLayout({ children, showNavigationMenu = true }: MasterLayo
     <SafeAreaView className="flex-1 bg-bg-primary" edges={['top']}>
       <StatusBar style="light" />
       <CoachModal visible={isCoachModalVisible} onClose={() => setIsCoachModalVisible(false)} />
+      <CameraModal visible={isCameraModalVisible} onClose={() => setIsCameraModalVisible(false)} />
       <View className="relative flex-1 overflow-hidden">{children}</View>
       {showNavigationMenu ? (
         <View className="absolute bottom-0 left-0 right-0 border-t border-border-dark bg-bg-navBar">
@@ -106,9 +109,7 @@ export function MasterLayout({ children, showNavigationMenu = true }: MasterLayo
               </Pressable>
               <Pressable
                 className="items-center gap-1"
-                onPress={() => {
-                  if (!isActive('/nutrition/ai-camera')) router.push('/nutrition/ai-camera');
-                }}
+                onPress={() => setIsCameraModalVisible(true)}
               >
                 <View
                   className={`h-20 w-20 items-center justify-center rounded-full shadow-lg shadow-accent-primary/50 ${
