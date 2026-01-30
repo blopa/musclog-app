@@ -1,4 +1,4 @@
-import { View, Text, Pressable, ScrollView } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { UtensilsCrossed, Moon, RefreshCw, Scale, Heart } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
@@ -8,6 +8,7 @@ import { GradientText } from '../../components/GradientText';
 import { Button } from '../../components/theme/Button';
 import { HealthCategoryCard } from '../../components/cards/HealthCategoryCard';
 import { HealthConnectIllustration } from '../../components/HealthConnectIllustration';
+import { MaybeLaterButton } from '../../components/MaybeLaterButton';
 
 export default function HealthConnectScreen() {
   const { t } = useTranslation();
@@ -116,19 +117,13 @@ export default function HealthConnectScreen() {
                 shadowOpacity: theme.colors.opacity.subtle,
               }}
             />
-
-            {/* Maybe Later Button */}
-            <Pressable
-              className="w-full items-center py-2 active:opacity-70"
+            <MaybeLaterButton
               onPress={() => {
                 // Navigate away or skip
                 router.push('/onboarding/connect-with-google');
               }}
-            >
-              <Text className="text-sm font-medium" style={{ color: theme.colors.text.gray500 }}>
-                {t('onboarding.healthConnect.maybeLater')}
-              </Text>
-            </Pressable>
+              text={t('onboarding.healthConnect.maybeLater')}
+            />
 
             {/* Privacy Statement */}
             <Text
