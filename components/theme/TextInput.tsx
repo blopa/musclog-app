@@ -52,7 +52,7 @@ export function TextInput({
         }
       >
         <RNTextInput
-          className="flex-1 border-none bg-transparent p-0 pr-20 text-text-primary"
+          className="flex-1 border-none bg-transparent p-0 pr-10 text-text-primary"
           placeholder={placeholder}
           placeholderTextColor={theme.colors.text.tertiary}
           value={value}
@@ -63,11 +63,7 @@ export function TextInput({
           onBlur={onBlur}
           style={{ borderWidth: theme.borderWidth.none, minWidth: 0 }}
         />
-        {icon ? (
-          <View className="absolute right-4 w-16 items-center justify-center">
-            {icon}
-          </View>
-        ) : null}
+        {icon ? <View className="absolute right-4 items-center justify-center">{icon}</View> : null}
       </View>
     </View>
   );
