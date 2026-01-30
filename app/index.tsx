@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { View, Text, Image, Pressable, ScrollView, ActivityIndicator } from 'react-native';
 import {
   Bell,
@@ -28,53 +28,67 @@ import { EmptyStateCard } from '../components/theme/EmptyStateCard';
 import { isOnboardingCompleted } from '../utils/onboardingService';
 import { useWorkoutHistory } from '../hooks/useWorkoutHistory';
 import { useUser } from '../hooks/useUser';
-
-// TODO: stop using mocked data and use data from useUser instead
-const PAGE_DATA = {
-  user: {
-    greeting: 'Good Evening',
-    name: 'Alex Johnson',
-    avatar: require('../assets/icon.png'),
-    hasNotifications: true,
-  },
-  dailySummary: {
-    calories: {
-      consumed: 1820,
-      remaining: 620,
-      goal: 2440, // consumed + remaining
-    },
-    activity: {
-      minutes: 45,
-      goal: 90,
-    },
-    gradientColors: theme.colors.gradients.primary,
-  },
-  recentFoods: [
-    {
-      id: '1',
-      name: 'Breakfast Burrito',
-      protein: 24,
-      carbs: 42,
-      fat: 18,
-      calories: 450,
-    },
-    {
-      id: '2',
-      name: 'Chicken & Rice Bowl',
-      protein: 45,
-      carbs: 60,
-      fat: 12,
-      calories: 620,
-    },
-  ],
-};
+import { useCurrentNutritionGoal } from '../hooks/useCurrentNutritionGoal';
+import { useNutritionLogs } from '../hooks/useNutritionLogs';
 
 export default function HomeScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const { user: dbUser, isLoading: isLoadingUser } = useUser();
-  const [dailySummary, setDailySummary] = useState(PAGE_DATA.dailySummary);
-  const [recentFoods, setRecentFoods] = useState(PAGE_DATA.recentFoods);
+
+  // Get current nutrition goals
+  const { goal: nutritionGoal, isLoading: isLoadingGoal } = useCurrentNutritionGoal({
+    mode: 'current',
+  });
+
+  // Get today's nutrition data
+  const { dailyNutrients, isLoading: isLoadingNutrition } = useNutritionLogs({
+    mode: 'daily',
+    date: new Date(),
+  });
+
+  // Get recent foods for display
+  const { recentFoods, isLoading: isLoadingRecentFoods } = useNutritionLogs({
+    mode: 'recent',
+  });
+
+  // Calculate daily summary from real data
+  const dailySummary = useMemo(() => {
+    const caloriesGoal = nutritionGoal?.totalCalories || 2000; // Default goal if not set
+    const caloriesConsumed = dailyNutrients.calories;
+    const caloriesRemaining = Math.max(0, caloriesGoal - caloriesConsumed);
+
+    return {
+      calories: {
+        consumed: caloriesConsumed,
+        remaining: caloriesRemaining,
+        goal: caloriesGoal,
+      },
+      activity: {
+        minutes: 45, // TODO: Get from workout data when available
+        goal: 90,
+      },
+      gradientColors: theme.colors.gradients.primary,
+    };
+  }, [nutritionGoal, dailyNutrients]);
+
+  // Calculate macros from real data
+  const macros = useMemo(() => {
+    return {
+      protein: {
+        value: Math.round(dailyNutrients.protein),
+        goal: nutritionGoal?.protein || 200,
+      },
+      carbs: {
+        value: Math.round(dailyNutrients.carbs),
+        goal: nutritionGoal?.carbs || 300,
+      },
+      fats: {
+        value: Math.round(dailyNutrients.fat),
+        goal: nutritionGoal?.fats || 200,
+      },
+    };
+  }, [dailyNutrients, nutritionGoal]);
   const [isUserMenuVisible, setIsUserMenuVisible] = useState(false);
   const [isNotificationsVisible, setIsNotificationsVisible] = useState(false);
   const [isWorkoutHistoryVisible, setIsWorkoutHistoryVisible] = useState(false);
@@ -140,19 +154,24 @@ export default function HomeScreen() {
                     resizeMode="cover"
                   />
                 ) : (
-                  <Image
-                    source={PAGE_DATA.user.avatar}
-                    className="h-full w-full"
-                    resizeMode="cover"
-                  />
+                  <View
+                    className="h-full w-full items-center justify-center rounded-full"
+                    style={{ backgroundColor: theme.colors.background.imageLight }}
+                  >
+                    <Text className="text-lg font-bold text-text-primary">
+                      {dbUser?.fullName?.charAt(0).toUpperCase() || 'G'}
+                    </Text>
+                  </View>
                 )}
               </View>
-              <View className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-bg-primary bg-accent-primary" />
+              {dbUser?.fullName ? (
+                <View className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-bg-primary bg-accent-primary" />
+              ) : null}
             </View>
             <View>
               <Text className="text-sm text-text-secondary">{t('home.greeting.goodEvening')}</Text>
               <Text className="text-xl font-bold text-text-primary">
-                {dbUser?.fullName || PAGE_DATA.user.name}
+                {dbUser?.fullName || 'Guest'}
               </Text>
             </View>
           </Pressable>
@@ -161,7 +180,7 @@ export default function HomeScreen() {
             onPress={() => setIsNotificationsVisible(true)}
           >
             <Bell size={theme.iconSize.md} color={theme.colors.text.primary} />
-            {PAGE_DATA.user.hasNotifications ? (
+            {false ? ( // TODO: Implement notifications logic
               <View
                 className="absolute right-2 top-2 h-2.5 w-2.5 rounded-full"
                 style={{ backgroundColor: theme.colors.status.notificationBadge }}
@@ -175,12 +194,7 @@ export default function HomeScreen() {
           <DailySummaryCard
             calories={dailySummary.calories}
             activity={dailySummary.activity}
-            macros={{
-              // TODO: load from useNutritionLogs and useCurrentNutritionGoals
-              protein: { value: 180, goal: 200 },
-              carbs: { value: 250, goal: 300 },
-              fats: { value: 70, goal: 200 },
-            }}
+            macros={macros}
           />
         </View>
 
@@ -200,7 +214,7 @@ export default function HomeScreen() {
             />
           </View>
 
-          {isLoadingRecent ? (
+          {isLoadingRecentFoods ? (
             <View className="gap-3">
               {[1, 2].map((i) => (
                 <View key={i} className="flex-row items-center gap-4 rounded-2xl bg-bg-overlay p-5">
@@ -237,19 +251,19 @@ export default function HomeScreen() {
             </View>
           ) : (
             <View className="gap-3">
-              {recentFoods.map((food) => (
+              {recentFoods.slice(0, 2).map((food) => (
                 <DetailedItemCard
                   key={food.id}
                   item={{
                     name: food.name,
                     media: { icon: UtensilsCrossed, color: theme.colors.text.secondary },
-                    itemOne: { value: `${food.protein}G P`, icon: Zap },
-                    itemTwo: { value: `${food.carbs}G C`, icon: Wheat },
-                    itemThree: { value: `${food.fat}G F`, icon: Droplet },
+                    itemOne: { value: `${Math.round(food.protein)}G P`, icon: Zap },
+                    itemTwo: { value: `${Math.round(food.carbs)}G C`, icon: Wheat },
+                    itemThree: { value: `${Math.round(food.fat)}G F`, icon: Droplet },
                   }}
                   ctaLabel={
                     <Text className="text-lg font-bold text-text-primary">
-                      {food.calories} {t('common.kcal')}
+                      {Math.round(food.calories)} {t('common.kcal')}
                     </Text>
                   }
                 />
@@ -333,16 +347,10 @@ export default function HomeScreen() {
       <UserMenuModal
         visible={isUserMenuVisible}
         onClose={() => setIsUserMenuVisible(false)}
-        user={
-          dbUser
-            ? {
-                greeting: 'Good Evening',
-                name: dbUser.fullName,
-                avatar: dbUser.photoUri ? { uri: dbUser.photoUri } : PAGE_DATA.user.avatar,
-                hasNotifications: PAGE_DATA.user.hasNotifications,
-              }
-            : PAGE_DATA.user
-        }
+        user={{
+          name: dbUser?.fullName || 'Guest',
+          avatar: dbUser?.photoUri ? { uri: dbUser.photoUri } : require('../assets/icon.png'),
+        }}
         onProfilePress={() => router.push('/profile')}
         onSettingsPress={() => router.push('/settings')}
         onProgressPress={() => router.push('/progress')}
