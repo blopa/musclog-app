@@ -1,10 +1,20 @@
 import { SuccessFoodProductState } from '../openFoodFacts';
 
-// Type guard function to check if productDetails is a success state with food product and nutrition data
-export const isSuccessFoodProductState = (state: any): state is SuccessFoodProductState => {
+const isSuccessFoodProductState = (state: any) => {
   return (
     state?.status === 'success' &&
     state?.product?.product_type === 'food' &&
+    state?.product?.nutriments !== undefined
+  );
+};
+
+export const isSuccessFoodDetailProductState = (state: any): state is SuccessFoodProductState => {
+  return isSuccessFoodProductState(state) && state?.product?.nutriments !== undefined;
+};
+
+export const isSuccessFoodSearchProductState = (state: any): state is SuccessFoodProductState => {
+  return (
+    isSuccessFoodProductState(state) &&
     state?.product?.nutrition?.aggregated_set?.nutrients !== undefined
   );
 };

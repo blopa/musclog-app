@@ -11,7 +11,7 @@ import { Button } from '../theme/Button';
 import { FoodInfoCard } from '../cards/FoodInfoCard';
 import { ServingSizeSelector } from '../ServingSizeSelector';
 import { useFoodProductDetails } from '../../hooks/useFoodProductDetails';
-import { isSuccessFoodProductState } from '../../types/guards/openFoodFacts';
+import { isSuccessFoodDetailProductState } from '../../types/guards/openFoodFacts';
 import { FoodService, NutritionService } from '../../database/services';
 
 type FoodDetailsModalProps = {
@@ -58,7 +58,7 @@ export function FoodDetailsModal({
   // Extract nutritional data from API response
   const getNutritionalData = () => {
     if (
-      isSuccessFoodProductState(productDetails) &&
+      isSuccessFoodDetailProductState(productDetails) &&
       productDetails.product.nutrition?.aggregated_set?.nutrients
     ) {
       const nutrients = productDetails.product.nutrition.aggregated_set.nutrients;
@@ -108,7 +108,7 @@ export function FoodDetailsModal({
 
   // Get product name from API if available
   const getProductName = () => {
-    if (isSuccessFoodProductState(productDetails) && productDetails.product.product_name) {
+    if (isSuccessFoodDetailProductState(productDetails) && productDetails.product.product_name) {
       return productDetails.product.product_name;
     }
 
@@ -121,10 +121,10 @@ export function FoodDetailsModal({
 
   // Get product category/brand from API if available
   const getProductCategory = () => {
-    const brand = isSuccessFoodProductState(productDetails)
+    const brand = isSuccessFoodDetailProductState(productDetails)
       ? productDetails.product.brands
       : _raw?.brands;
-    const categories = isSuccessFoodProductState(productDetails)
+    const categories = isSuccessFoodDetailProductState(productDetails)
       ? productDetails.product.categories
       : _raw?.categories;
 
@@ -142,7 +142,7 @@ export function FoodDetailsModal({
 
   // Get default serving size from API if available
   const getDefaultServingSize = useCallback(() => {
-    const apiServingSize = isSuccessFoodProductState(productDetails)
+    const apiServingSize = isSuccessFoodDetailProductState(productDetails)
       ? productDetails.product.serving_size
       : serving_size;
     if (apiServingSize) {

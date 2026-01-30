@@ -31,7 +31,7 @@ import { CameraView, useCameraPermissions } from '../CameraView';
 import type { CameraView as CameraViewType } from 'expo-camera';
 import { detectBarcodes } from '../../utils/file';
 import { useFoodProductDetails } from '../../hooks/useFoodProductDetails';
-import { isSuccessFoodProductState } from '../../types/guards/openFoodFacts';
+import { isSuccessFoodDetailProductState } from '../../types/guards/openFoodFacts';
 import { FullScreenModal } from './FullScreenModal';
 import NewCustomFoodModal from './NewCustomFoodModal';
 
@@ -66,10 +66,12 @@ export default function CameraModal({ visible, onClose }: CameraModalProps) {
   // Show appropriate modal based on product details availability
   useEffect(() => {
     if (detectedBarcode) {
-      if (productDetails) {
+      if (productDetails && isSuccessFoodDetailProductState(productDetails)) {
         setIsFoodDetailsModalVisible(true);
+        setIsFoodNotFoundModalVisible(false);
       } else {
         setIsFoodNotFoundModalVisible(true);
+        setIsFoodDetailsModalVisible(false);
       }
     }
   }, [detectedBarcode, productDetails]);
@@ -135,11 +137,13 @@ export default function CameraModal({ visible, onClose }: CameraModalProps) {
 
   const handleFoodDetailsClose = () => {
     setIsFoodDetailsModalVisible(false);
+    setIsFoodNotFoundModalVisible(false);
     setDetectedBarcode(null);
   };
 
   const handleFoodNotFoundClose = () => {
     setIsFoodNotFoundModalVisible(false);
+    setIsFoodDetailsModalVisible(false);
     setDetectedBarcode(null);
   };
 
@@ -617,24 +621,24 @@ export default function CameraModal({ visible, onClose }: CameraModalProps) {
           barcode={detectedBarcode}
           source="api"
           food={
-            productDetails && isSuccessFoodProductState(productDetails)
+            productDetails && isSuccessFoodDetailProductState(productDetails)
               ? {
-                  name: productDetails.product.product_name || '',
-                  category: productDetails.product.categories || '',
-                  calories: productDetails.product.nutriments?.['energy-kcal'] || 0,
-                  protein: productDetails.product.nutriments?.proteins || 0,
-                  carbs: productDetails.product.nutriments?.carbohydrates || 0,
-                  fat: productDetails.product.nutriments?.fat || 0,
+                  name: productDetails.product.product_name || 'Unknown Product',
+                  category: productDetails.product.categories || 'Unknown Category',
+                  calories: Number(productDetails.product.nutriments?.['energy-kcal']) || 0,
+                  protein: Number(productDetails.product.nutriments?.proteins) || 0,
+                  carbs: Number(productDetails.product.nutriments?.carbohydrates) || 0,
+                  fat: Number(productDetails.product.nutriments?.fat) || 0,
                 }
               : undefined
           }
           serving_size={
-            productDetails && isSuccessFoodProductState(productDetails)
+            productDetails && isSuccessFoodDetailProductState(productDetails)
               ? productDetails.product.serving_size
               : undefined
           }
           nutriments={
-            productDetails && isSuccessFoodProductState(productDetails)
+            productDetails && isSuccessFoodDetailProductState(productDetails)
               ? productDetails.product.nutriments
               : undefined
           }
