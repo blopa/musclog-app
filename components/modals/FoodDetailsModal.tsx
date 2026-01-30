@@ -13,6 +13,7 @@ import { ServingSizeSelector } from '../ServingSizeSelector';
 import { useFoodProductDetails } from '../../hooks/useFoodProductDetails';
 import { isSuccessFoodDetailProductState } from '../../types/guards/openFoodFacts';
 import { FoodService, NutritionService } from '../../database/services';
+import { FoodNotFoundModal } from './FoodNotFoundModal';
 
 type FoodDetailsModalProps = {
   visible: boolean;
@@ -26,12 +27,11 @@ type FoodDetailsModalProps = {
     carbs: number;
     fat: number;
   };
-  // Additional props for API data
   barcode?: string | null;
   serving_size?: string;
   nutriments?: any;
   _raw?: any;
-  source?: 'local' | 'api'; // Determine if food is from local DB or API
+  source?: 'local' | 'api';
   onAddFood?: (data: { servingSize: number; meal: string; date: Date }) => void;
 };
 
@@ -56,7 +56,7 @@ export function FoodDetailsModal({
   const { data: productDetails } = useFoodProductDetails(barcode || null);
 
   // Extract nutritional data from API response
-  const getNutritionalData = () => {
+  const getNutritionalData = useCallback(() => {
     if (
       isSuccessFoodDetailProductState(productDetails) &&
       productDetails.product.nutrition?.aggregated_set?.nutrients
@@ -102,12 +102,12 @@ export function FoodDetailsModal({
       sodium: 0,
       salt: 0,
     };
-  };
+  }, [food?.calories, food?.carbs, food?.fat, food?.protein, nutriments, productDetails]);
 
   const nutritionalData = getNutritionalData();
 
   // Get product name from API if available
-  const getProductName = () => {
+  const getProductName = useCallback(() => {
     if (isSuccessFoodDetailProductState(productDetails) && productDetails.product.product_name) {
       return productDetails.product.product_name;
     }
@@ -117,10 +117,10 @@ export function FoodDetailsModal({
     }
 
     return food?.name;
-  };
+  }, [_raw.product_name, food?.name, productDetails]);
 
   // Get product category/brand from API if available
-  const getProductCategory = () => {
+  const getProductCategory = useCallback(() => {
     const brand = isSuccessFoodDetailProductState(productDetails)
       ? productDetails.product.brands
       : _raw?.brands;
@@ -138,7 +138,7 @@ export function FoodDetailsModal({
       return categories;
     }
     return food?.category;
-  };
+  }, [_raw?.brands, _raw?.categories, food?.category, productDetails]);
 
   // Get default serving size from API if available
   const getDefaultServingSize = useCallback(() => {
@@ -169,7 +169,7 @@ export function FoodDetailsModal({
   }, [productDetails, nutriments, getDefaultServingSize]);
 
   // Calculate nutritional values based on serving size
-  const getScaledNutrition = () => {
+  const getScaledNutrition = useCallback(() => {
     const scaleFactor = servingSize / 100; // API data is per 100g
     return {
       name: getProductName(),
@@ -179,7 +179,7 @@ export function FoodDetailsModal({
       carbs: Math.round(nutritionalData.carbs * scaleFactor * 10) / 10,
       fat: Math.round(nutritionalData.fat * scaleFactor * 10) / 10,
     };
-  };
+  }, [getProductCategory, getProductName, nutritionalData.calories, nutritionalData.carbs, nutritionalData.fat, nutritionalData.protein, servingSize]);
 
   const scaledFood = getScaledNutrition();
 
@@ -191,7 +191,7 @@ export function FoodDetailsModal({
     { id: 'other', label: t('food.meals.trackOther') },
   ];
 
-  const handleAddFood = async () => {
+  const handleAddFood = useCallback(async () => {
     try {
       let foodId: string;
 
@@ -247,7 +247,21 @@ export function FoodDetailsModal({
       console.error('Error tracking food:', error);
       Alert.alert('Error', 'Failed to track food. Please try again.', [{ text: 'OK' }]);
     }
-  };
+  }, [_raw, food?.id, food?.name, nutritionalData.calories, nutritionalData.carbs, nutritionalData.fat, nutritionalData.fiber, nutritionalData.protein, nutritionalData.salt, nutritionalData.saturatedFat, nutritionalData.sodium, nutritionalData.sugars, onAddFood, onClose, selectedDate, selectedMeal, servingSize, source]);
+
+  // TODO: implement this
+  // if (foodNotFound) {
+  //   return (
+  //     // Food Not Found Modal
+  //     <FoodNotFoundModal
+  //       visible={isFoodNotFoundModalVisible}
+  //       onClose={handleFoodNotFoundClose}
+  //       onTryAiScan={handleTryAiScan}
+  //       onSearchAgain={handleSearchAgain}
+  //       onCreateCustom={handleCreateCustom}
+  //     />
+  //   );
+  // }
 
   return (
     <FullScreenModal

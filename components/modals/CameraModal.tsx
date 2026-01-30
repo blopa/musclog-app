@@ -54,27 +54,20 @@ export default function CameraModal({ visible, onClose }: CameraModalProps) {
   const [isDetecting, setIsDetecting] = useState(true);
   const [isContextModalVisible, setIsContextModalVisible] = useState(false);
   const [isFoodDetailsModalVisible, setIsFoodDetailsModalVisible] = useState(false);
-  const [isFoodNotFoundModalVisible, setIsFoodNotFoundModalVisible] = useState(false);
   const [isAddFoodModalVisible, setIsAddFoodModalVisible] = useState(false);
   const [isNewCustomFoodModalVisible, setIsNewCustomFoodModalVisible] = useState(false);
   const [detectedBarcode, setDetectedBarcode] = useState<string | null>(null);
   const cameraRef = useRef<CameraViewType>(null);
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
-  const { data: productDetails } = useFoodProductDetails(detectedBarcode);
-
   // Show appropriate modal based on product details availability
   useEffect(() => {
     if (detectedBarcode) {
-      if (productDetails && isSuccessFoodDetailProductState(productDetails)) {
-        setIsFoodDetailsModalVisible(true);
-        setIsFoodNotFoundModalVisible(false);
-      } else if (productDetails && productDetails.status !== 'success') {
-        setIsFoodNotFoundModalVisible(true);
-        setIsFoodDetailsModalVisible(false);
-      }
+      setIsFoodDetailsModalVisible(true);
+    } else {
+      setIsFoodDetailsModalVisible(false);
     }
-  }, [detectedBarcode, productDetails]);
+  }, [detectedBarcode]);
 
   // Pulse animation for AI detecting indicator
   useEffect(() => {
@@ -137,12 +130,10 @@ export default function CameraModal({ visible, onClose }: CameraModalProps) {
 
   const handleFoodDetailsClose = () => {
     setIsFoodDetailsModalVisible(false);
-    setIsFoodNotFoundModalVisible(false);
     setDetectedBarcode(null);
   };
 
   const handleFoodNotFoundClose = () => {
-    setIsFoodNotFoundModalVisible(false);
     setIsFoodDetailsModalVisible(false);
     setDetectedBarcode(null);
   };
@@ -620,38 +611,6 @@ export default function CameraModal({ visible, onClose }: CameraModalProps) {
           onClose={handleFoodDetailsClose}
           barcode={detectedBarcode}
           source="api"
-          food={
-            productDetails && isSuccessFoodDetailProductState(productDetails)
-              ? {
-                  name: productDetails.product.product_name || 'Unknown Product',
-                  category: productDetails.product.categories || 'Unknown Category',
-                  calories: Number(productDetails.product.nutriments?.['energy-kcal']) || 0,
-                  protein: Number(productDetails.product.nutriments?.proteins) || 0,
-                  carbs: Number(productDetails.product.nutriments?.carbohydrates) || 0,
-                  fat: Number(productDetails.product.nutriments?.fat) || 0,
-                }
-              : undefined
-          }
-          serving_size={
-            productDetails && isSuccessFoodDetailProductState(productDetails)
-              ? productDetails.product.serving_size
-              : undefined
-          }
-          nutriments={
-            productDetails && isSuccessFoodDetailProductState(productDetails)
-              ? productDetails.product.nutriments
-              : undefined
-          }
-          _raw={productDetails}
-        />
-
-        {/* Food Not Found Modal */}
-        <FoodNotFoundModal
-          visible={isFoodNotFoundModalVisible}
-          onClose={handleFoodNotFoundClose}
-          onTryAiScan={handleTryAiScan}
-          onSearchAgain={handleSearchAgain}
-          onCreateCustom={handleCreateCustom}
         />
 
         {/* Add Food Modal */}
