@@ -5,14 +5,14 @@ import { useRouter } from 'expo-router';
 import { useState, useEffect } from 'react';
 import { theme } from '../../theme';
 import { EditFitnessDetailsBody, FitnessDetails } from '../../components/EditFitnessDetailsBody';
-import { UserService } from '../../database/services/UserService';
+import { UserService } from '../../database/services';
 import { database } from '../../database';
 import { Q } from '@nozbe/watermelondb';
 import UserMetric from '../../database/models/UserMetric';
 import Setting from '../../database/models/Setting';
-import { setOnboardingCompleted } from '../../utils/onboardingService';
 import { useSettings } from '../../hooks/useSettings';
 import { UNITS_SETTING_TYPE } from '../../constants/settings';
+import { uniqueNamesGenerator, names } from 'unique-names-generator';
 
 export default function FitnessInfo() {
   const { t } = useTranslation();
@@ -93,10 +93,14 @@ export default function FitnessInfo() {
       // Get or ensure user exists
       let user = await UserService.getCurrentUser();
       if (!user) {
-        // If no user exists, create one with minimal data
-        // This shouldn't happen if personal-info was completed first
+        const generatedName = uniqueNamesGenerator({
+          dictionaries: [names],
+          style: 'capital',
+          separator: ' ',
+        });
+        
         user = await UserService.initializeUser({
-          fullName: 'User', // TODO: use name generator using unique-names-generator
+          fullName: generatedName,
           dateOfBirth: new Date().getTime(),
           gender: 'other',
           fitnessGoal: data.fitnessGoal,
