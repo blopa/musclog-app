@@ -101,7 +101,7 @@ export function FullScreenModal({
           </View>
         ) : null}
 
-        {/* Content area + optional footer */}
+        {/* Content area */}
         <View className="flex-1">
           {scrollable ? (
             <ScrollView
@@ -118,6 +118,7 @@ export function FullScreenModal({
             <View className="flex-1">{children}</View>
           )}
 
+          {/* optional footer */}
           {footer ? (
             <View
               className="absolute bottom-0 left-0 right-0"
