@@ -69,7 +69,7 @@ export default function CameraModal({ visible, onClose }: CameraModalProps) {
       if (productDetails && isSuccessFoodDetailProductState(productDetails)) {
         setIsFoodDetailsModalVisible(true);
         setIsFoodNotFoundModalVisible(false);
-      } else {
+      } else if (productDetails && productDetails.status !== 'success') {
         setIsFoodNotFoundModalVisible(true);
         setIsFoodDetailsModalVisible(false);
       }

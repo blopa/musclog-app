@@ -55,7 +55,11 @@ export function useFoodProductDetails(barcode: string | null) {
       const { data, error } = await client.getProductV3(barcode);
 
       if (error) {
-        throw new Error('Failed to fetch product details');
+        console.error('Failed to fetch product details', error);
+        return {
+          status: 'error',
+          error,
+        };
       }
 
       return data;
