@@ -123,7 +123,7 @@ export function FullScreenModal({
             <View
               className="absolute bottom-0 left-0 right-0"
               style={{
-                paddingBottom: Platform.OS === 'web' ? theme.spacing.padding.lg : insets.bottom,
+                paddingBottom: 0,
                 paddingHorizontal: theme.spacing.padding.zero,
                 backgroundColor: 'transparent',
               }}
@@ -137,7 +137,14 @@ export function FullScreenModal({
                 start={{ x: 0.5, y: 1 }}
                 end={{ x: 0.5, y: 0 }}
               >
-                <View className="px-6 pb-6 pt-6">{footer}</View>
+                <View 
+                  className="px-6 pb-6 pt-6"
+                  style={{
+                    paddingBottom: Platform.OS === 'web' ? theme.spacing.padding.lg : insets.bottom,
+                  }}
+                >
+                  {footer}
+                </View>
               </LinearGradient>
             </View>
           ) : null}
