@@ -44,6 +44,7 @@ import BodyMetricsHistoryModal from '../../components/modals/BodyMetricsHistoryM
 import AddUserMetricEntryModal from '../../components/modals/AddUserMetricEntryModal';
 import PastWorkoutDetailModal from '../../components/modals/PastWorkoutDetailModal';
 import EditPastWorkoutDataModal from '../../components/modals/EditPastWorkoutDataModal';
+import { FoodNotFoundModal } from '../../components/modals/FoodNotFoundModal';
 
 export default function ModalsTestScreen() {
   // Nutrition Goals Modal
@@ -99,6 +100,8 @@ export default function ModalsTestScreen() {
 
   // Food Search Modal
   const [isFoodSearchVisible, setIsFoodSearchVisible] = useState(false);
+  // Food Not Found Modal (test)
+  const [isFoodNotFoundVisible, setIsFoodNotFoundVisible] = useState(false);
 
   // Notifications Modal
   const [isNotificationsVisible, setIsNotificationsVisible] = useState(false);
@@ -479,6 +482,18 @@ export default function ModalsTestScreen() {
               variant="accent"
               width="full"
               onPress={() => setIsFoodSearchVisible(true)}
+            />
+          </View>
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Food Not Found Modal</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Empty-state modal when food isnt found.
+            </Text>
+            <Button
+              label="Open Food Not Found Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsFoodNotFoundVisible(true)}
             />
           </View>
           <View className="mb-6">
@@ -983,6 +998,18 @@ export default function ModalsTestScreen() {
         }}
         onFoodSelect={(food) => {
           console.log('Food selected:', food);
+        }}
+      />
+
+      <FoodNotFoundModal
+        visible={isFoodNotFoundVisible}
+        onClose={() => setIsFoodNotFoundVisible(false)}
+        onTryAiScan={() => console.log('AI Camera Scan pressed')}
+        onSearchAgain={() => console.log('Search again pressed')}
+        onCreateCustom={() => {
+          console.log('Create custom food pressed from not-found');
+          setIsFoodNotFoundVisible(false);
+          setIsNewCustomFoodVisible(true);
         }}
       />
 

@@ -1,0 +1,121 @@
+import React from 'react';
+import { View, Text, Pressable } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Search, Edit, ChevronRight, AlertTriangle } from 'lucide-react-native';
+import { BottomPopUpMenu } from '../BottomPopUpMenu';
+import { theme } from '../../theme';
+import { useTranslation } from 'react-i18next';
+
+type FoodNotFoundModalProps = {
+  visible: boolean;
+  onClose: () => void;
+  onTryAiScan?: () => void;
+  onSearchAgain?: () => void;
+  onCreateCustom?: () => void;
+};
+
+export function FoodNotFoundModal({
+  visible,
+  onClose,
+  onTryAiScan,
+  onSearchAgain,
+  onCreateCustom,
+}: FoodNotFoundModalProps) {
+  const { t } = useTranslation();
+
+  return (
+    <BottomPopUpMenu
+      visible={visible}
+      onClose={onClose}
+      title={t('nutrition.foodNotFound', 'Food Not Found')}
+      subtitle={t(
+        'nutrition.foodNotFoundDescription',
+        "We couldn't find this item in our database. What would you like to do?"
+      )}
+      headerIcon={
+        <View className="size-16 items-center justify-center rounded-full bg-orange-500/10">
+          <AlertTriangle size={theme.iconSize['2xl']} color={theme.colors.status.warning} />
+        </View>
+      }
+      maxHeight="60%"
+    >
+      <View className="gap-3 p-2">
+        {/* Try AI Camera Scan - gradient primary CTA */}
+        <Pressable
+          onPress={() => {
+            onTryAiScan?.();
+            onClose();
+          }}
+          className="overflow-hidden rounded-2xl"
+        >
+          <LinearGradient
+            colors={theme.colors.gradients.cta}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            className="flex-row items-center gap-4 p-4"
+          >
+            <View className="h-12 w-12 items-center justify-center rounded-lg bg-white/20">
+              <Text className="text-2xl">✨</Text>
+            </View>
+            <View className="flex-1">
+              <Text className="text-lg font-bold text-white">
+                {t('nutrition.tryAICamera', 'Try AI Camera Scan')}
+              </Text>
+              <Text className="text-xs text-white/80">
+                {t('nutrition.tryAICameraDesc', 'Instantly identify food from a photo')}
+              </Text>
+            </View>
+            <ChevronRight size={theme.iconSize.md} color={theme.colors.text.primary} />
+          </LinearGradient>
+        </Pressable>
+
+        {/* Search Again */}
+        <Pressable
+          onPress={() => {
+            onSearchAgain?.();
+            onClose();
+          }}
+          className="flex-row items-center gap-4 rounded-2xl border border-border-default bg-bg-overlay p-4"
+        >
+          <View className="h-12 w-12 items-center justify-center rounded-lg bg-white/10">
+            <Search size={theme.iconSize.md} color={theme.colors.accent.primary} />
+          </View>
+          <View className="flex-1">
+            <Text className="text-lg font-bold text-text-primary">
+              {t('nutrition.searchAgain', 'Search Again')}
+            </Text>
+            <Text className="text-xs text-text-secondary">
+              {t('nutrition.searchAgainDesc', 'Try different keywords or brand names')}
+            </Text>
+          </View>
+          <ChevronRight size={theme.iconSize.md} color={theme.colors.text.secondary} />
+        </Pressable>
+
+        {/* Create Custom Food */}
+        <Pressable
+          onPress={() => {
+            onCreateCustom?.();
+            onClose();
+          }}
+          className="flex-row items-center gap-4 rounded-2xl border border-border-default bg-bg-overlay p-4"
+        >
+          <View className="h-12 w-12 items-center justify-center rounded-lg bg-white/10">
+            <Edit
+              size={theme.iconSize.md}
+              color={theme.colors.gradients.accent?.[0] || theme.colors.status.indigo}
+            />
+          </View>
+          <View className="flex-1">
+            <Text className="text-lg font-bold text-text-primary">
+              {t('nutrition.createCustom', 'Create Custom Food')}
+            </Text>
+            <Text className="text-xs text-text-secondary">
+              {t('nutrition.createCustomDesc', 'Manually add nutrition details')}
+            </Text>
+          </View>
+          <ChevronRight size={theme.iconSize.md} color={theme.colors.text.secondary} />
+        </Pressable>
+      </View>
+    </BottomPopUpMenu>
+  );
+}
