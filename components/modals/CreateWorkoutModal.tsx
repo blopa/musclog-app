@@ -416,10 +416,7 @@ export default function CreateWorkoutModal({
             ) : (
               <View className="items-center justify-center py-8">
                 <Text className="text-center text-text-secondary">
-                  {t(
-                    'createWorkout.noExercisesPlaceholder',
-                    'No exercises added yet. Add exercises to get started.'
-                  )}
+                  {t('createWorkout.noExercisesPlaceholder')}
                 </Text>
               </View>
             )}

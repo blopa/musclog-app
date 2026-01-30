@@ -96,12 +96,6 @@ export function OptionsMultiSelector<T extends string | number>({
     return selectedItems.every((item) => item.groupId === firstGroupId);
   }, [selectedItems]);
 
-  // Find the highest selected item index
-  const firstSelectedIndex = useMemo(() => {
-    if (selectedIds.length === 0) return -1;
-    return orderedOptions.findIndex((o) => selectedIds.includes(o.id));
-  }, [orderedOptions, selectedIds]);
-
   // Generate a unique groupId
   const generateGroupId = () => {
     return `group-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -264,7 +258,6 @@ export function OptionsMultiSelector<T extends string | number>({
     const groupPosition = getGroupPosition(orderedOptions, index);
     const isFirstInGroup = groupPosition === 'first' || groupPosition === 'only';
     const groupColor = item.groupId ? getGroupColor(item.groupId, orderedOptions) : undefined;
-    const isHighestSelected = index === firstSelectedIndex;
 
     return (
       <ScaleDecorator isActive={isActive}>
@@ -272,21 +265,10 @@ export function OptionsMultiSelector<T extends string | number>({
           style={{
             flexDirection: 'row',
             alignItems: 'stretch',
-            zIndex: isHighestSelected ? theme.zIndex.max : theme.zIndex.base + 1,
           }}
         >
           {renderGroupIndicator(groupPosition, item.groupId, isFirstInGroup)}
           <View style={{ flex: 1 }}>
-            {isHighestSelected && (canGroup || canDelete) ? (
-              <ActionButtonsArea
-                canGroup={canGroup}
-                canDelete={canDelete}
-                allSelectedInSameGroup={allSelectedInSameGroup}
-                selectedCount={selectedCount}
-                onGroupAction={handleGroupAction}
-                onDelete={handleDelete}
-              />
-            ) : null}
             <Pressable
               onLongPress={drag}
               delayLongPress={150}
@@ -425,29 +407,16 @@ export function OptionsMultiSelector<T extends string | number>({
     const isFirstInGroup = groupPosition === 'first' || groupPosition === 'only';
     const groupColor = option.groupId ? getGroupColor(option.groupId, orderedOptions) : undefined;
 
-    const isHighestSelected = index === firstSelectedIndex;
-
     return (
       <View
         key={String(option.id)}
         style={{
           flexDirection: 'row',
           alignItems: 'stretch',
-          zIndex: isHighestSelected ? theme.zIndex.max : theme.zIndex.aboveBase,
         }}
       >
         {renderGroupIndicator(groupPosition, option.groupId, isFirstInGroup)}
         <View style={{ flex: 1 }}>
-          {isHighestSelected && (canGroup || canDelete) ? (
-            <ActionButtonsArea
-              canGroup={canGroup}
-              canDelete={canDelete}
-              allSelectedInSameGroup={allSelectedInSameGroup}
-              selectedCount={selectedCount}
-              onGroupAction={handleGroupAction}
-              onDelete={handleDelete}
-            />
-          ) : null}
           <Pressable
             onPress={() => showCheckboxes && toggle(option.id)}
             disabled={!showCheckboxes}
@@ -612,6 +581,18 @@ export function OptionsMultiSelector<T extends string | number>({
           )
         ) : null}
       </View>
+
+      {/* Fixed Action Buttons Area */}
+      {selectionEnabled && (canGroup || canDelete) ? (
+        <ActionButtonsArea
+          canGroup={canGroup}
+          canDelete={canDelete}
+          allSelectedInSameGroup={allSelectedInSameGroup}
+          selectedCount={selectedCount}
+          onGroupAction={handleGroupAction}
+          onDelete={handleDelete}
+        />
+      ) : null}
 
       {isDragMode ? (
         <DraggableFlatList
