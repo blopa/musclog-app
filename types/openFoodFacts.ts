@@ -17,6 +17,7 @@ export interface SuccessFoodProductState {
   status: 'success';
   product: ProductV3 & {
     product_type: 'food';
+    // for fiber, do carbohydrates-total - carbohydrates
     nutriments: ProductV3['nutriments'];
   };
 }

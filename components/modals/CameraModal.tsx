@@ -610,7 +610,6 @@ export default function CameraModal({ visible, onClose }: CameraModalProps) {
           visible={isFoodDetailsModalVisible}
           onClose={handleFoodDetailsClose}
           barcode={detectedBarcode}
-          source="api"
         />
 
         {/* Add Food Modal */}

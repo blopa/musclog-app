@@ -18,34 +18,11 @@ import { FoodNotFoundModal } from './FoodNotFoundModal';
 type FoodDetailsModalProps = {
   visible: boolean;
   onClose: () => void;
-  food?: {
-    id?: string;
-    name: string;
-    category: string;
-    calories: number;
-    protein: number;
-    carbs: number;
-    fat: number;
-  };
   barcode?: string | null;
-  serving_size?: string;
-  nutriments?: any;
-  _raw?: any;
-  source?: 'local' | 'api';
   onAddFood?: (data: { servingSize: number; meal: string; date: Date }) => void;
 };
 
-export function FoodDetailsModal({
-  visible,
-  onClose,
-  food,
-  barcode,
-  serving_size,
-  nutriments,
-  _raw,
-  source = 'local',
-  onAddFood,
-}: FoodDetailsModalProps) {
+export function FoodDetailsModal({ visible, onClose, barcode, onAddFood }: FoodDetailsModalProps) {
   const { t } = useTranslation();
   const [servingSize, setServingSize] = useState(100);
   const [selectedMeal, setSelectedMeal] = useState('lunch');
@@ -56,99 +33,93 @@ export function FoodDetailsModal({
   // Fetch detailed product data if barcode is provided
   const { data: productDetails } = useFoodProductDetails(barcode || null);
 
-  // Extract nutritional data from API response
+  // Extract nutritional data from barcode lookup
   const getNutritionalData = useCallback(() => {
-    if (nutriments) {
+    if (isSuccessFoodDetailProductState(productDetails)) {
+      const nutrients = productDetails.product.nutriments || {};
       return {
-        calories: nutriments['energy-kcal_100g'] || nutriments['energy-kcal'] || food?.calories,
-        protein: nutriments['proteins_100g'] || nutriments['proteins'] || food?.protein,
-        carbs: nutriments['carbohydrates_100g'] || nutriments['carbohydrates'] || food?.carbs,
-        fat: nutriments['fat_100g'] || nutriments['fat'] || food?.fat,
-        fiber: nutriments['fiber_100g'] || nutriments['fiber'] || 0,
-        sugars: nutriments['sugars_100g'] || nutriments['sugars'] || 0,
-        saturatedFat: nutriments['saturated-fat_100g'] || nutriments['saturated-fat'] || 0,
-        sodium: nutriments['sodium_100g'] || nutriments['sodium'] || 0,
-        salt: nutriments['salt_100g'] || nutriments['salt'] || 0,
+        calories: (nutrients['energy-kcal'] as number) || 0,
+        protein: (nutrients['proteins'] as number) || 0,
+        carbs: (nutrients['carbohydrates'] as number) || 0,
+        fat: (nutrients['fat'] as number) || 0,
+        fiber:
+          (nutrients['carbohydrates-total'] as number) - (nutrients['carbohydrates'] as number) ||
+          0,
+        sugars: (nutrients['sugars'] as number) || 0,
+        saturatedFat: (nutrients['saturated-fat'] as number) || 0,
+        sodium: (nutrients['sodium'] as number) || 0,
+        salt: (nutrients['salt'] as number) || 0,
       };
     }
 
-    // Fallback to original food data
     return {
-      calories: food?.calories,
-      protein: food?.protein,
-      carbs: food?.carbs,
-      fat: food?.fat,
+      calories: 0,
+      protein: 0,
+      carbs: 0,
+      fat: 0,
       fiber: 0,
       sugars: 0,
       saturatedFat: 0,
       sodium: 0,
       salt: 0,
     };
-  }, [food?.calories, food?.carbs, food?.fat, food?.protein, nutriments]);
+  }, [productDetails]);
 
   const nutritionalData = getNutritionalData();
 
-  // Get product name from API if available
+  // Get product name from barcode lookup
   const getProductName = useCallback(() => {
-    if (isSuccessFoodDetailProductState(productDetails) && productDetails.product.product_name) {
-      return productDetails.product.product_name;
+    if (isSuccessFoodDetailProductState(productDetails)) {
+      return productDetails.product.product_name || 'Unknown Food';
     }
+    return 'Unknown Food';
+  }, [productDetails]);
 
-    if (_raw?.product_name) {
-      return _raw.product_name;
-    }
-
-    return food?.name;
-  }, [_raw.product_name, food?.name, productDetails]);
-
-  // Get product category/brand from API if available
+  // Get product category/brand from barcode lookup
   const getProductCategory = useCallback(() => {
-    const brand = isSuccessFoodDetailProductState(productDetails)
-      ? productDetails.product.brands
-      : _raw?.brands;
-    const categories = isSuccessFoodDetailProductState(productDetails)
-      ? productDetails.product.categories
-      : _raw?.categories;
+    if (isSuccessFoodDetailProductState(productDetails)) {
+      const brand = productDetails.product.brands;
+      const categories = productDetails.product.categories;
 
-    if (brand && categories) {
-      return `${brand} • ${categories}`;
+      if (brand && categories) {
+        return `${brand} • ${categories}`;
+      }
+      if (brand) {
+        return brand;
+      }
+      if (categories) {
+        return categories;
+      }
     }
-    if (brand) {
-      return brand;
-    }
-    if (categories) {
-      return categories;
-    }
-    return food?.category;
-  }, [_raw?.brands, _raw?.categories, food?.category, productDetails]);
+    return '';
+  }, [productDetails]);
 
-  // Get default serving size from API if available
+  // Get default serving size from barcode lookup
   const getDefaultServingSize = useCallback(() => {
-    const apiServingSize = isSuccessFoodDetailProductState(productDetails)
-      ? productDetails.product.serving_size
-      : serving_size;
-    if (apiServingSize) {
-      // Extract numeric value from serving size (e.g., "1 loaf (30 g)" -> 30)
-      const match = apiServingSize.match(/\((\d+)\s*g\)/);
-      if (match) {
-        return parseInt(match[1]);
-      }
-      const numericMatch = apiServingSize.match(/(\d+)/);
-      if (numericMatch) {
-        return parseInt(numericMatch[1]);
+    if (isSuccessFoodDetailProductState(productDetails)) {
+      const servingSize = productDetails.product.serving_size;
+      if (servingSize) {
+        // Extract numeric value from serving size (e.g., "1 loaf (30 g)" -> 30)
+        const match = servingSize.match(/\((\d+)\s*g\)/);
+        if (match) {
+          return parseInt(match[1]);
+        }
+        const numericMatch = servingSize.match(/(\d+)/);
+        if (numericMatch) {
+          return parseInt(numericMatch[1]);
+        }
       }
     }
-
     return 100; // Default to 100g
-  }, [productDetails, serving_size]);
+  }, [productDetails]);
 
   // Update serving size when product details load
   useEffect(() => {
-    if (productDetails || nutriments) {
+    if (productDetails) {
       const defaultSize = getDefaultServingSize();
       setServingSize(defaultSize);
     }
-  }, [productDetails, nutriments, getDefaultServingSize]);
+  }, [productDetails, getDefaultServingSize]);
 
   // Calculate nutritional values based on serving size
   const getScaledNutrition = useCallback(() => {
@@ -183,41 +154,26 @@ export function FoodDetailsModal({
 
   const handleAddFood = useCallback(async () => {
     try {
-      let foodId: string;
-
-      if (source === 'api' && _raw) {
-        // This is an API food, save it to local database first
-        const newFood = await FoodService.createFromV3Product(_raw, {
-          calories: nutritionalData.calories,
-          protein: nutritionalData.protein,
-          carbs: nutritionalData.carbs,
-          fat: nutritionalData.fat,
-          fiber: nutritionalData.fiber,
-          sugars: nutritionalData.sugars,
-          saturatedFat: nutritionalData.saturatedFat,
-          sodium: nutritionalData.sodium,
-          salt: nutritionalData.salt,
-        });
-
-        foodId = newFood.id;
-      } else {
-        if (typeof food?.id === 'string') {
-          foodId = food?.id;
-        } else {
-          // Try to find the food by name (this is not ideal but a fallback)
-          const existingFoods = await FoodService.searchFoods(food?.name || '');
-          const matchingFood = existingFoods.find((f) => f.name === food?.name);
-          if (!matchingFood) {
-            throw new Error('Local food not found in database');
-          }
-
-          foodId = matchingFood.id;
-        }
+      if (!isSuccessFoodDetailProductState(productDetails)) {
+        throw new Error('Product details not loaded');
       }
+
+      // Save barcode product to local database
+      const newFood = await FoodService.createFromV3Product(productDetails.product, {
+        calories: nutritionalData.calories,
+        protein: nutritionalData.protein,
+        carbs: nutritionalData.carbs,
+        fat: nutritionalData.fat,
+        fiber: nutritionalData.fiber,
+        sugars: nutritionalData.sugars,
+        saturatedFat: nutritionalData.saturatedFat,
+        sodium: nutritionalData.sodium,
+        salt: nutritionalData.salt,
+      });
 
       // Create nutrition log
       await NutritionService.logFood(
-        foodId,
+        newFood.id,
         selectedDate,
         selectedMeal as any, // Type assertion since our meal types match
         servingSize
@@ -239,9 +195,7 @@ export function FoodDetailsModal({
       Alert.alert('Error', 'Failed to track food. Please try again.', [{ text: 'OK' }]);
     }
   }, [
-    _raw,
-    food?.id,
-    food?.name,
+    productDetails,
     nutritionalData.calories,
     nutritionalData.carbs,
     nutritionalData.fat,
@@ -256,7 +210,6 @@ export function FoodDetailsModal({
     selectedDate,
     selectedMeal,
     servingSize,
-    source,
   ]);
 
   // Handlers for FoodNotFoundModal actions

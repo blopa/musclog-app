@@ -937,18 +937,10 @@ export default function ModalsTestScreen() {
           console.log('Set details edited:', data);
         }}
       />
-
       <FoodDetailsModal
         visible={isFoodDetailsVisible}
         onClose={() => setIsFoodDetailsVisible(false)}
-        food={{
-          name: 'Grilled Chicken Breast',
-          category: 'Lean Meat • High Protein',
-          calories: 165,
-          protein: 31,
-          carbs: 0,
-          fat: 3.6,
-        }}
+        barcode="3017620425035"
       />
 
       <AddFoodModal
