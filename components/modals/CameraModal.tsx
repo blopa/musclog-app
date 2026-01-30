@@ -31,6 +31,7 @@ import { CameraView, useCameraPermissions } from '../CameraView';
 import type { CameraView as CameraViewType } from 'expo-camera';
 import { detectBarcodes } from '../../utils/file';
 import { useFoodProductDetails } from '../../hooks/useFoodProductDetails';
+import { isSuccessFoodProductState } from '../../types/guards/openFoodFacts';
 import { FullScreenModal } from './FullScreenModal';
 import NewCustomFoodModal from './NewCustomFoodModal';
 
@@ -615,9 +616,29 @@ export default function CameraModal({ visible, onClose }: CameraModalProps) {
           onClose={handleFoodDetailsClose}
           barcode={detectedBarcode}
           source="api"
-          // TODO: check the types and fix this, make sure it passes the right data
-          // check other places where FoodDetailsModal is used for it. 
-          food={productDetails}
+          food={
+            productDetails && isSuccessFoodProductState(productDetails)
+              ? {
+                  name: productDetails.product.product_name || '',
+                  category: productDetails.product.categories || '',
+                  calories: productDetails.product.nutriments?.['energy-kcal'] || 0,
+                  protein: productDetails.product.nutriments?.proteins || 0,
+                  carbs: productDetails.product.nutriments?.carbohydrates || 0,
+                  fat: productDetails.product.nutriments?.fat || 0,
+                }
+              : undefined
+          }
+          serving_size={
+            productDetails && isSuccessFoodProductState(productDetails)
+              ? productDetails.product.serving_size
+              : undefined
+          }
+          nutriments={
+            productDetails && isSuccessFoodProductState(productDetails)
+              ? productDetails.product.nutriments
+              : undefined
+          }
+          _raw={productDetails}
         />
 
         {/* Food Not Found Modal */}
