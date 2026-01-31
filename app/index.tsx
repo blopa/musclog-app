@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { lazy, useState, useEffect, useMemo } from 'react';
 import { View, Text, Pressable, ScrollView, ActivityIndicator } from 'react-native';
 import {
   Bell,
@@ -26,13 +26,43 @@ import { useCurrentNutritionGoal } from '../hooks/useCurrentNutritionGoal';
 import { useNutritionLogs } from '../hooks/useNutritionLogs';
 import { getAvatarDisplayProps } from '../utils/avatarUtils';
 
-import { DailySummaryCard } from '../components/cards/DailySummaryCard/DailySummaryCard';
-import { DailySummaryEmptyState } from '../components/cards/DailySummaryCard/DailySummaryEmptyState';
-import { UserMenuModal } from '../components/modals/UserMenuModal';
-import { NotificationsModal } from '../components/modals/NotificationsModal';
-import { AddFoodModal } from '../components/modals/AddFoodModal';
-import PastWorkoutsHistoryModal from '../components/modals/PastWorkoutsHistoryModal';
-import PastWorkoutDetailModal from '../components/modals/PastWorkoutDetailModal';
+// Lazy load components
+const DailySummaryCard = lazy(() =>
+  import('../components/cards/DailySummaryCard/DailySummaryCard').then((m) => ({
+    default: m.DailySummaryCard,
+  }))
+);
+
+const DailySummaryEmptyState = lazy(() =>
+  import('../components/cards/DailySummaryCard/DailySummaryEmptyState').then((m) => ({
+    default: m.DailySummaryEmptyState,
+  }))
+);
+
+const UserMenuModal = lazy(() =>
+  import('../components/modals/UserMenuModal').then((m) => ({
+    default: m.UserMenuModal,
+  }))
+);
+
+const NotificationsModal = lazy(() =>
+  import('../components/modals/NotificationsModal').then((m) => ({
+    default: m.NotificationsModal,
+  }))
+);
+
+const AddFoodModal = lazy(() =>
+  import('../components/modals/AddFoodModal').then((m) => ({
+    default: m.AddFoodModal,
+  }))
+);
+
+const PastWorkoutsHistoryModal = lazy(
+  () => import('../components/modals/PastWorkoutsHistoryModal')
+);
+
+const PastWorkoutDetailModal = lazy(() => import('../components/modals/PastWorkoutDetailModal'));
+
 
 // TODO: implement notifications eventually
 const SHOW_NOTIFICATIONS = false;
