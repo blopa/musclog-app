@@ -24,6 +24,8 @@ import PastWorkoutsHistoryModal from '../components/modals/PastWorkoutsHistoryMo
 import PastWorkoutDetailModal from '../components/modals/PastWorkoutDetailModal';
 import { useRouter } from 'expo-router';
 import { SkeletonLoader } from '../components/theme/SkeletonLoader';
+import { WorkoutsEmptyState } from '../components/theme/WorkoutsEmptyState';
+import { FoodsEmptyState } from '../components/theme/FoodsEmptyState';
 import { isOnboardingCompleted } from '../utils/onboardingService';
 import { useWorkoutHistory } from '../hooks/useWorkoutHistory';
 import { useUser } from '../hooks/useUser';
@@ -213,7 +215,11 @@ export default function HomeScreen() {
         {/* Action Buttons */}
         <View className="mx-6 mb-8 flex-row gap-4">
           <ActionButton variant="workout" label={t('home.actions.startWorkout')} />
-          <ActionButton variant="food" label={t('home.actions.trackFood')} onPress={() => setIsAddFoodVisible(true)} />
+          <ActionButton
+            variant="food"
+            label={t('home.actions.trackFood')}
+            onPress={() => setIsAddFoodVisible(true)}
+          />
         </View>
         <View className="mx-6 mb-8">
           <View className="mb-4 flex-row items-center justify-between">
@@ -261,6 +267,8 @@ export default function HomeScreen() {
                 </View>
               ))}
             </View>
+          ) : recentFoods.length === 0 ? (
+            <FoodsEmptyState onLogPress={() => setIsAddFoodVisible(true)} />
           ) : (
             <View className="gap-3">
               {recentFoods.slice(0, 2).map((food) => (
@@ -319,7 +327,7 @@ export default function HomeScreen() {
               ))}
             </View>
           ) : recentWorkouts.length === 0 ? (
-            null
+            <WorkoutsEmptyState onPlanPress={() => router.push('/workout/plan')} />
           ) : (
             <View className="gap-3">
               {recentWorkouts.map((workout) => (
