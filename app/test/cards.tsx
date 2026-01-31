@@ -17,7 +17,7 @@ import {
 } from 'lucide-react-native';
 import { TestSection } from './components/TestSection';
 import { WorkoutCard } from '../../components/cards/WorkoutCard';
-import { DailySummaryCard } from '../../components/cards/DailySummaryCard';
+import { DailySummaryCard } from '../../components/cards/DailySummaryCard/DailySummaryCard';
 import { WorkoutStatCard } from '../../components/cards/WorkoutStatCard';
 import { CaloriesRemainingCard } from '../../components/cards/CaloriesRemainingCard';
 import { FoodInfoCard } from '../../components/cards/FoodInfoCard';

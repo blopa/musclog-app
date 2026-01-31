@@ -16,7 +16,7 @@ import { MasterLayout } from '../components/MasterLayout';
 import { DetailedItemCard } from '../components/cards/DetailedItemCard';
 import { ActionButton } from '../components/ActionButton';
 import ShowMoreButton from '../components/ShowMoreButton';
-import { DailySummaryCard } from '../components/cards/DailySummaryCard';
+import { DailySummaryCard } from '../components/cards/DailySummaryCard/DailySummaryCard';
 import { UserMenuModal } from '../components/modals/UserMenuModal';
 import { NotificationsModal } from '../components/modals/NotificationsModal';
 import { AddFoodModal } from '../components/modals/AddFoodModal';
@@ -204,10 +204,7 @@ export default function HomeScreen() {
 
         {/* Daily Summary Card */}
         <View className="mb-6 px-6">
-          <DailySummaryCard
-            calories={dailySummary.calories}
-            macros={macros}
-          />
+          <DailySummaryCard calories={dailySummary.calories} macros={macros} />
         </View>
 
         {/* Action Buttons */}
