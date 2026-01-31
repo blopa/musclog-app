@@ -1,7 +1,9 @@
-import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, ActivityIndicator, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
 import { useState, useEffect } from 'react';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 import { theme } from '../../theme';
 import {
   EditPersonalInfoBody,
@@ -9,6 +11,7 @@ import {
 } from '../../components/EditPersonalInfoBody';
 import { UserService } from '../../database/services';
 import { MasterLayout } from '../../components/MasterLayout';
+import { Button } from '../../components/theme/Button';
 import { setOnboardingCompleted } from '../../utils/onboardingService';
 import { AvatarColor } from '../../types/AvatarColor';
 
@@ -24,9 +27,11 @@ function formatDateOfBirth(timestamp: number): string {
 export default function PersonalInfo() {
   const { t } = useTranslation();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [initialData, setInitialData] = useState<PersonalInfoType | undefined>(undefined);
+  const [currentFormData, setCurrentFormData] = useState<PersonalInfoType | undefined>(undefined);
 
   // Load user data on mount
   useEffect(() => {
@@ -108,6 +113,12 @@ export default function PersonalInfo() {
     }
   };
 
+  const handleFloatingSave = async () => {
+    if (currentFormData) {
+      await handleSave(currentFormData);
+    }
+  };
+
   if (isLoading) {
     return (
       <MasterLayout showNavigationMenu={false}>
@@ -120,17 +131,63 @@ export default function PersonalInfo() {
 
   return (
     <MasterLayout showNavigationMenu={false}>
-      <ScrollView>
-        <View className="px-6 pb-2 pt-4">
-          <Text
-            className="text-2xl font-bold tracking-tight"
-            style={{ color: theme.colors.text.white }}
+      <View className="flex-1">
+        <ScrollView
+          className="flex-1"
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{
+            paddingBottom: theme.spacing.padding['4xl'],
+          }}
+        >
+          <View className="px-6 pb-2 pt-4">
+            <Text
+              className="text-2xl font-bold tracking-tight"
+              style={{ color: theme.colors.text.white }}
+            >
+              {t('onboarding.personalInfo.title')}
+            </Text>
+          </View>
+          <EditPersonalInfoBody
+            onSave={handleSave}
+            onFormChange={setCurrentFormData}
+            initialData={initialData}
+            isLoading={isSaving}
+            hideSaveButton
+          />
+        </ScrollView>
+
+        {/* Floating Save Button */}
+        <View
+          className="absolute bottom-0 left-0 right-0"
+          style={{
+            paddingBottom: 0,
+            paddingHorizontal: theme.spacing.padding.zero,
+            backgroundColor: 'transparent',
+          }}
+        >
+          <LinearGradient
+            colors={[theme.colors.background.primary, 'transparent']}
+            start={{ x: 0.5, y: 1 }}
+            end={{ x: 0.5, y: 0 }}
           >
-            {t('onboarding.personalInfo.title')}
-          </Text>
+            <View
+              className="px-6 pb-6 pt-6"
+              style={{
+                paddingBottom: Platform.OS === 'web' ? theme.spacing.padding.lg : insets.bottom,
+              }}
+            >
+              <Button
+                label={t('onboarding.personalInfo.save')}
+                onPress={handleFloatingSave}
+                variant="accent"
+                size="md"
+                width="full"
+                loading={isSaving}
+              />
+            </View>
+          </LinearGradient>
         </View>
-        <EditPersonalInfoBody onSave={handleSave} initialData={initialData} isLoading={isSaving} />
-      </ScrollView>
+      </View>
     </MasterLayout>
   );
 }

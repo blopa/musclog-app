@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { User, Mail, Calendar, Check } from 'lucide-react-native';
@@ -13,7 +13,9 @@ import { AvatarColor } from '../types/AvatarColor';
 type EditPersonalInfoBodyProps = {
   initialData?: PersonalInfo;
   onSave?: (data: PersonalInfo) => void;
+  onFormChange?: (data: PersonalInfo) => void;
   isLoading?: boolean;
+  hideSaveButton?: boolean;
 };
 
 export type PersonalInfo = {
@@ -27,8 +29,10 @@ export type PersonalInfo = {
 
 export function EditPersonalInfoBody({
   onSave,
+  onFormChange,
   initialData,
   isLoading,
+  hideSaveButton = false,
 }: EditPersonalInfoBodyProps) {
   const { t } = useTranslation();
   const [fullName, setFullName] = useState(initialData?.fullName ?? '');
@@ -39,6 +43,20 @@ export function EditPersonalInfoBody({
   const [avatarColor, setAvatarColor] = useState<AvatarColor>(
     initialData?.avatarColor ?? 'emerald'
   );
+
+  // Call onFormChange whenever form data changes
+  useEffect(() => {
+    if (onFormChange) {
+      onFormChange({
+        fullName,
+        email,
+        dob,
+        gender,
+        avatarIcon,
+        avatarColor,
+      });
+    }
+  }, [fullName, email, dob, gender, avatarIcon, avatarColor, onFormChange]);
 
   const genderOptions = [
     { label: t('editPersonalInfo.male'), value: 'male' },
@@ -93,26 +111,28 @@ export function EditPersonalInfoBody({
         </View>
       </View>
 
-      <View className="bg-transparent px-4 pb-6 pt-3">
-        <Button
-          label={t('editPersonalInfo.saveChanges')}
-          icon={Check}
-          variant="accent"
-          size="md"
-          width="full"
-          loading={isLoading}
-          onPress={() =>
-            onSave?.({
-              fullName,
-              email,
-              dob,
-              gender,
-              avatarIcon,
-              avatarColor,
-            })
-          }
-        />
-      </View>
+      {!hideSaveButton ? (
+        <View className="bg-transparent px-4 pb-6 pt-3">
+          <Button
+            label={t('editPersonalInfo.saveChanges')}
+            icon={Check}
+            variant="accent"
+            size="md"
+            width="full"
+            loading={isLoading}
+            onPress={() =>
+              onSave?.({
+                fullName,
+                email,
+                dob,
+                gender,
+                avatarIcon,
+                avatarColor,
+              })
+            }
+          />
+        </View>
+      ) : null}
     </View>
   );
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import {
@@ -28,9 +28,12 @@ import { getWeightUnit, getHeightUnit } from '../utils/units';
 type EditFitnessDetailsBodyProps = {
   onClose: () => void;
   onSave?: (data: FitnessDetails) => void;
+  onFormChange?: (data: Partial<FitnessDetails>) => void;
   initialData?: Partial<FitnessDetails>;
   isLoading?: boolean;
   onMaybeLater?: () => void;
+  hideSaveButton?: boolean;
+  hideMaybeLaterButton?: boolean;
 };
 
 export type FitnessDetails = {
@@ -45,9 +48,12 @@ export type FitnessDetails = {
 export function EditFitnessDetailsBody({
   onClose,
   onSave,
+  onFormChange,
   initialData,
   isLoading,
   onMaybeLater,
+  hideSaveButton = false,
+  hideMaybeLaterButton = false,
 }: EditFitnessDetailsBodyProps) {
   const { t } = useTranslation();
   const [units, setUnits] = useState<'imperial' | 'metric'>(initialData?.units ?? 'metric');
@@ -58,6 +64,20 @@ export function EditFitnessDetailsBody({
   const [experience, setExperience] = useState<'beginner' | 'intermediate' | 'advanced'>(
     initialData?.experience ?? 'intermediate'
   );
+
+  // Call onFormChange whenever form data changes
+  useEffect(() => {
+    if (onFormChange) {
+      onFormChange({
+        units,
+        weight,
+        height,
+        fitnessGoal,
+        activityLevel,
+        experience,
+      });
+    }
+  }, [units, weight, height, fitnessGoal, activityLevel, experience, onFormChange]);
   const [isGoalPickerVisible, setIsGoalPickerVisible] = useState(false);
   const [isActivityPickerVisible, setIsActivityPickerVisible] = useState(false);
   const [focusedInput, setFocusedInput] = useState<'weight' | 'height' | null>(null);
@@ -346,23 +366,27 @@ export function EditFitnessDetailsBody({
           </View>
         </View>
 
-        <View className="px-4 pb-8 pt-4">
-          <Button
-            label={t('editFitnessDetails.saveChanges')}
-            icon={Save}
-            variant="accent"
-            size="md"
-            width="full"
-            loading={isLoading}
-            onPress={handleSave}
-          />
-          {onMaybeLater ? (
+        {!hideSaveButton ? (
+          <View className="px-4 pb-8 pt-4">
+            <Button
+              label={t('editFitnessDetails.saveChanges')}
+              icon={Save}
+              variant="accent"
+              size="md"
+              width="full"
+              loading={isLoading}
+              onPress={handleSave}
+            />
+          </View>
+        ) : null}
+        {!hideMaybeLaterButton && onMaybeLater ? (
+          <View className="px-4 pb-4">
             <MaybeLaterButton
               onPress={onMaybeLater}
               text={t('onboarding.healthConnect.maybeLater')}
             />
-          ) : null}
-        </View>
+          </View>
+        ) : null}
       </View>
       <BottomPopUpMenu
         visible={isGoalPickerVisible}

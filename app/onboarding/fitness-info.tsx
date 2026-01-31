@@ -1,10 +1,13 @@
-import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, Text, ScrollView, ActivityIndicator, Platform } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
 import { useState, useEffect } from 'react';
+import { LinearGradient } from 'expo-linear-gradient';
 import { theme } from '../../theme';
 import { EditFitnessDetailsBody, FitnessDetails } from '../../components/EditFitnessDetailsBody';
+import { Button } from '../../components/theme/Button';
+import { MaybeLaterButton } from '../../components/MaybeLaterButton';
 import { UserService } from '../../database/services';
 import { database } from '../../database';
 import { Q } from '@nozbe/watermelondb';
@@ -17,10 +20,14 @@ import { uniqueNamesGenerator, names } from 'unique-names-generator';
 export default function FitnessInfo() {
   const { t } = useTranslation();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { units, isLoading: isSettingsLoading } = useSettings();
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [initialData, setInitialData] = useState<Partial<FitnessDetails> | undefined>(undefined);
+  const [currentFormData, setCurrentFormData] = useState<Partial<FitnessDetails> | undefined>(
+    undefined
+  );
 
   // Load user data and metrics on mount (units come from useSettings)
   useEffect(() => {
@@ -244,6 +251,20 @@ export default function FitnessInfo() {
     }
   };
 
+  const handleFloatingSave = async () => {
+    if (
+      currentFormData &&
+      currentFormData.units &&
+      currentFormData.weight &&
+      currentFormData.height &&
+      currentFormData.fitnessGoal &&
+      currentFormData.activityLevel &&
+      currentFormData.experience
+    ) {
+      await handleSave(currentFormData as FitnessDetails);
+    }
+  };
+
   if (isSettingsLoading || isLoading) {
     return (
       <SafeAreaView className="flex-1" edges={['top', 'bottom']}>
@@ -256,23 +277,70 @@ export default function FitnessInfo() {
 
   return (
     <SafeAreaView className="flex-1" edges={['top', 'bottom']}>
-      <ScrollView>
-        <View className="px-6 pb-2 pt-4">
-          <Text
-            className="text-2xl font-bold tracking-tight"
-            style={{ color: theme.colors.text.white }}
+      <View className="flex-1">
+        <ScrollView
+          className="flex-1"
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{
+            paddingBottom: theme.spacing.padding['4xl'],
+          }}
+        >
+          <View className="px-6 pb-2 pt-4">
+            <Text
+              className="text-2xl font-bold tracking-tight"
+              style={{ color: theme.colors.text.white }}
+            >
+              {t('onboarding.fitnessInfo.title')}
+            </Text>
+          </View>
+          <EditFitnessDetailsBody
+            onClose={() => {}}
+            onSave={handleSave}
+            onFormChange={setCurrentFormData}
+            initialData={initialData}
+            isLoading={isSaving}
+            onMaybeLater={handleSkip}
+            hideSaveButton
+            hideMaybeLaterButton
+          />
+        </ScrollView>
+
+        {/* Floating Action Buttons */}
+        <View
+          className="absolute bottom-0 left-0 right-0"
+          style={{
+            paddingBottom: 0,
+            paddingHorizontal: theme.spacing.padding.zero,
+            backgroundColor: 'transparent',
+          }}
+        >
+          <LinearGradient
+            colors={[theme.colors.background.primary, 'transparent']}
+            start={{ x: 0.5, y: 1 }}
+            end={{ x: 0.5, y: 0 }}
           >
-            {t('onboarding.fitnessInfo.title')}
-          </Text>
+            <View
+              className="gap-3 px-6 pb-6 pt-6"
+              style={{
+                paddingBottom: Platform.OS === 'web' ? theme.spacing.padding.lg : insets.bottom,
+              }}
+            >
+              <Button
+                label={t('onboarding.fitnessInfo.save')}
+                onPress={handleFloatingSave}
+                variant="accent"
+                size="md"
+                width="full"
+                loading={isSaving}
+              />
+              <MaybeLaterButton
+                onPress={handleSkip}
+                text={t('onboarding.fitnessInfo.maybeLater')}
+              />
+            </View>
+          </LinearGradient>
         </View>
-        <EditFitnessDetailsBody
-          onClose={() => {}}
-          onSave={handleSave}
-          initialData={initialData}
-          isLoading={isSaving}
-          onMaybeLater={handleSkip}
-        />
-      </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }
