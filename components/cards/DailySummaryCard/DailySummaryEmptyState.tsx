@@ -1,38 +1,19 @@
 import React from 'react';
 import { View, Text } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Button } from '../../theme/Button';
 import { theme } from '../../../theme';
 import { useTranslation } from 'react-i18next';
+import { GenericCard } from '../GenericCard';
 
 interface DailySummaryEmptyStateProps {
   onSetGoals?: () => void;
 }
 
-export const DailySummaryEmptyState: React.FC<DailySummaryEmptyStateProps> = ({
-  onSetGoals,
-}) => {
+export const DailySummaryEmptyState: React.FC<DailySummaryEmptyStateProps> = ({ onSetGoals }) => {
   const { t } = useTranslation();
 
   return (
-    <View className="relative flex min-h-[170px] flex-col justify-between overflow-hidden rounded-2xl">
-      {/* Background gradient */}
-      <LinearGradient
-        colors={['#4f46e5', '#29e08e']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        className="absolute inset-0"
-      />
-
-      {/* Pattern overlay */}
-      <View
-        className="absolute inset-0 opacity-10"
-        style={{
-          backgroundColor: 'transparent',
-        }}
-      />
-
-      {/* Content */}
+    <GenericCard variant="default" size="lg" backgroundVariant="colorful-gradient">
       <View className="relative z-10 flex h-full flex-col gap-4 p-5">
         {/* Header */}
         <View className="flex-row items-center justify-between">
@@ -65,6 +46,6 @@ export const DailySummaryEmptyState: React.FC<DailySummaryEmptyStateProps> = ({
           />
         </View>
       </View>
-    </View>
+    </GenericCard>
   );
 };

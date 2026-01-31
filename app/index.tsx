@@ -203,6 +203,7 @@ export default function HomeScreen() {
 
         {/* Daily Summary Card */}
         <View className="mb-6 px-6">
+          {/* TODO: if no goal is set, show DailySummaryEmptyState */}
           <DailySummaryCard calories={dailySummary.calories} macros={macros} />
         </View>
 

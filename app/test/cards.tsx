@@ -91,9 +91,7 @@ export default function CardsTestScreen() {
         </TestSection>
 
         <TestSection title="Daily Summary Empty State" subtitle="When no goals are set">
-          <DailySummaryEmptyState
-            onSetGoals={() => console.log('Set goals pressed')}
-          />
+          <DailySummaryEmptyState onSetGoals={() => console.log('Set goals pressed')} />
         </TestSection>
 
         <TestSection title="Current Goals" subtitle="Display your current nutrition goals">
