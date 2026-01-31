@@ -2,6 +2,7 @@ import { database } from '../index';
 import User, { UserProfileUpdate } from '../models/User';
 import { Q } from '@nozbe/watermelondb';
 import { generateUUID } from '../../utils/uuid';
+import { AvatarIcon } from '../../types/AvatarIcon';
 
 export class UserService {
   /**
@@ -44,7 +45,7 @@ export class UserService {
     activityLevel: number;
     liftingExperience: 'beginner' | 'intermediate' | 'advanced';
     email?: string;
-    photoUri?: string;
+    avatarIcon?: AvatarIcon;
   }): Promise<User> {
     const existingUser = await this.getCurrentUser();
 
@@ -64,7 +65,7 @@ export class UserService {
         u.fitnessGoal = initialData.fitnessGoal;
         u.activityLevel = initialData.activityLevel;
         u.liftingExperience = initialData.liftingExperience;
-        u.photoUri = initialData.photoUri;
+        u.avatarIcon = initialData.avatarIcon;
         u.syncId = syncId;
         u.createdAt = now;
         u.updatedAt = now;

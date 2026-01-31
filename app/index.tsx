@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { View, Text, Image, Pressable, ScrollView, ActivityIndicator } from 'react-native';
 import {
   Bell,
@@ -30,6 +30,7 @@ import { useWorkoutHistory } from '../hooks/useWorkoutHistory';
 import { useUser } from '../hooks/useUser';
 import { useCurrentNutritionGoal } from '../hooks/useCurrentNutritionGoal';
 import { useNutritionLogs } from '../hooks/useNutritionLogs';
+import { getAvatarIcon } from '../utils/avatarUtils';
 
 export default function HomeScreen() {
   const { t } = useTranslation();
@@ -150,12 +151,16 @@ export default function HomeScreen() {
                 className="h-14 w-14 overflow-hidden rounded-full border-4 border-accent-primary"
                 style={{ backgroundColor: theme.colors.background.imageLight }}
               >
-                {dbUser?.photoUri ? (
-                  <Image
-                    source={{ uri: dbUser.photoUri }}
-                    className="h-full w-full"
-                    resizeMode="cover"
-                  />
+                {dbUser?.avatarIcon ? (
+                  <View
+                    className="h-full w-full items-center justify-center rounded-full"
+                    style={{ backgroundColor: theme.colors.accent.primary20 }}
+                  >
+                    {React.createElement(getAvatarIcon(dbUser.avatarIcon), {
+                      size: 24,
+                      color: theme.colors.accent.primary,
+                    })}
+                  </View>
                 ) : (
                   <View
                     className="h-full w-full items-center justify-center rounded-full"
@@ -352,7 +357,12 @@ export default function HomeScreen() {
         onClose={() => setIsUserMenuVisible(false)}
         user={{
           name: dbUser?.fullName || 'Guest',
-          avatar: dbUser?.photoUri ? { uri: dbUser.photoUri } : require('../assets/icon.png'),
+          avatar: dbUser?.avatarIcon
+            ? React.createElement(getAvatarIcon(dbUser.avatarIcon), {
+                size: 24,
+                color: theme.colors.accent.primary,
+              })
+            : require('../assets/icon.png'),
         }}
         onProfilePress={() => router.push('/profile')}
         onSettingsPress={() => router.push('/settings')}

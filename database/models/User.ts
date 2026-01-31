@@ -1,5 +1,6 @@
 import { Model } from '@nozbe/watermelondb';
 import { field, writer } from '@nozbe/watermelondb/decorators';
+import { AvatarIcon } from '../../types/AvatarIcon';
 
 export type Gender = 'male' | 'female' | 'other';
 export type LiftingExperience = 'beginner' | 'intermediate' | 'advanced';
@@ -12,7 +13,7 @@ export interface UserProfileUpdate {
   fitnessGoal?: string;
   activityLevel?: number;
   liftingExperience?: LiftingExperience;
-  photoUri?: string | null;
+  avatarIcon?: AvatarIcon | null;
   externalAccountId?: string | null;
   externalAccountProvider?: string | null;
 }
@@ -27,7 +28,7 @@ export default class User extends Model {
   @field('fitness_goal') fitnessGoal!: string;
   @field('activity_level') activityLevel!: number;
   @field('lifting_experience') liftingExperience!: LiftingExperience;
-  @field('photo_uri') photoUri?: string;
+  @field('avatar_icon') avatarIcon?: AvatarIcon;
   @field('sync_id') syncId!: string;
   @field('external_account_id') externalAccountId?: string;
   @field('external_account_provider') externalAccountProvider?: string;
@@ -67,7 +68,7 @@ export default class User extends Model {
         user.activityLevel = data.activityLevel;
       }
       if (data.liftingExperience !== undefined) user.liftingExperience = data.liftingExperience;
-      if (data.photoUri !== undefined) user.photoUri = data.photoUri ?? undefined;
+      if (data.avatarIcon !== undefined) user.avatarIcon = data.avatarIcon ?? undefined;
       if (data.externalAccountId !== undefined)
         user.externalAccountId = data.externalAccountId ?? undefined;
       if (data.externalAccountProvider !== undefined)

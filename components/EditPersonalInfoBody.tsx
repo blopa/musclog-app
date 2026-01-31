@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, Image, Pressable } from 'react-native';
+import { View, Text } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { User, Mail, Calendar, Camera, Check } from 'lucide-react-native';
+import { User, Mail, Calendar, Check } from 'lucide-react-native';
 import { theme } from '../theme';
 import { TextInput } from './theme/TextInput';
 import { SegmentedControl } from './theme/SegmentedControl';
 import { Button } from './theme/Button';
+import { AvatarSelector } from './AvatarSelector';
+import { AvatarIcon } from '../types/AvatarIcon';
 
 type EditPersonalInfoBodyProps = {
   initialData?: PersonalInfo;
@@ -18,7 +20,7 @@ export type PersonalInfo = {
   email: string;
   dob: string;
   gender: string;
-  photoUri?: string;
+  avatarIcon?: AvatarIcon;
 };
 
 export function EditPersonalInfoBody({
@@ -31,7 +33,7 @@ export function EditPersonalInfoBody({
   const [email, setEmail] = useState(initialData?.email ?? '');
   const [dob, setDob] = useState(initialData?.dob ?? '');
   const [gender, setGender] = useState(initialData?.gender ?? 'male');
-  const [photoUri, setPhotoUri] = useState(initialData?.photoUri ?? undefined);
+  const [avatarIcon, setAvatarIcon] = useState<AvatarIcon>(initialData?.avatarIcon ?? 'person');
 
   const genderOptions = [
     { label: t('editPersonalInfo.male'), value: 'male' },
@@ -42,26 +44,8 @@ export function EditPersonalInfoBody({
   return (
     <View className="flex-1 px-4 pt-2">
       {/* Avatar Section */}
-      <View className="items-center py-6">
-        <View className="relative">
-          <View
-            className="h-32 w-32 overflow-hidden rounded-full border-4 shadow-xl"
-            style={{ borderColor: theme.colors.background.white10 }}
-          >
-            <Image source={{ uri: photoUri }} className="h-full w-full" resizeMode="cover" />
-          </View>
-          <Pressable
-            className="absolute bottom-0 right-0 h-10 w-10 items-center justify-center rounded-full border-4 border-bg-primary bg-accent-primary active:scale-110"
-            onPress={() => console.log('Change photo')}
-          >
-            <Camera size={theme.iconSize.lg} color={theme.colors.text.black} />
-          </Pressable>
-        </View>
-        <Pressable className="mt-4" onPress={() => console.log('Change photo')}>
-          <Text className="text-sm font-semibold uppercase tracking-wide text-accent-primary">
-            {t('editPersonalInfo.changePhoto')}
-          </Text>
-        </Pressable>
+      <View className="py-6">
+        <AvatarSelector selectedAvatar={avatarIcon} onAvatarSelect={setAvatarIcon} />
       </View>
 
       {/* Form Fields */}
@@ -113,7 +97,7 @@ export function EditPersonalInfoBody({
               email,
               dob,
               gender,
-              photoUri,
+              avatarIcon,
             })
           }
         />

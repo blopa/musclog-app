@@ -5,7 +5,7 @@ import { useRouter } from 'expo-router';
 import { theme } from '../../theme';
 import { MasterLayout } from '../../components/MasterLayout';
 import { database, Exercise, User, Setting, UserMetric } from '../../database';
-import { UserService } from '../../database/services/UserService';
+import { UserService } from '../../database/services';
 import { Q } from '@nozbe/watermelondb';
 import { Button } from '../../components/theme/Button';
 import { UNITS_SETTING_TYPE } from '../../constants/settings';
@@ -279,10 +279,9 @@ export default function DebugTestScreen() {
                   <Text className="text-text-primary">
                     <Text className="font-bold">Gender:</Text> {user.gender}
                   </Text>
-                  {user.photoUri ? (
+                  {user.avatarIcon ? (
                     <Text className="text-text-primary">
-                      <Text className="font-bold">Photo URI:</Text> {user.photoUri.substring(0, 50)}
-                      ...
+                      <Text className="font-bold">Avatar Icon:</Text> {user.avatarIcon}
                     </Text>
                   ) : null}
                 </View>

@@ -39,7 +39,7 @@ export default function PersonalInfo() {
             email: user.email || '',
             dob: formatDateOfBirth(user.dateOfBirth),
             gender: user.gender,
-            photoUri: user.photoUri || undefined,
+            avatarIcon: user.avatarIcon || undefined,
           });
         }
       } catch (error) {
@@ -76,7 +76,7 @@ export default function PersonalInfo() {
           email: data.email || null,
           dateOfBirth,
           gender: data.gender as 'male' | 'female' | 'other',
-          photoUri: data.photoUri || null,
+          avatarIcon: data.avatarIcon || null,
         });
       } else {
         // Create new user with minimal required fields
@@ -86,7 +86,7 @@ export default function PersonalInfo() {
           dateOfBirth,
           gender: data.gender as 'male' | 'female' | 'other',
           email: data.email,
-          photoUri: data.photoUri,
+          avatarIcon: data.avatarIcon,
           fitnessGoal: '', // Will be set in fitness-info step
           activityLevel: 3, // Default, will be updated
           liftingExperience: 'beginner', // Default, will be updated

@@ -13,6 +13,7 @@ import { useSettings } from '../hooks/useSettings';
 import { useUser } from '../hooks/useUser';
 import { useUserMetrics } from '../hooks/useUserMetrics';
 import ShowMoreButton from '../components/ShowMoreButton';
+import { getAvatarIcon } from '../utils/avatarUtils';
 
 const PROFILE_DATA = {
   user: {
@@ -256,12 +257,16 @@ export default function ProfileScreen() {
               className="h-32 w-32 overflow-hidden rounded-full border-4"
               style={{ borderColor: theme.colors.accent.primary }}
             >
-              {dbUser?.photoUri ? (
-                <Image
-                  source={{ uri: dbUser.photoUri }}
-                  className="h-full w-full"
-                  resizeMode="cover"
-                />
+              {dbUser?.avatarIcon ? (
+                <View
+                  className="h-full w-full items-center justify-center rounded-full"
+                  style={{ backgroundColor: theme.colors.accent.primary20 }}
+                >
+                  {React.createElement(getAvatarIcon(dbUser.avatarIcon), {
+                    size: 40,
+                    color: theme.colors.accent.primary,
+                  })}
+                </View>
               ) : (
                 <Image
                   source={PROFILE_DATA.user.avatar}
