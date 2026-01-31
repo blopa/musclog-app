@@ -186,6 +186,8 @@ export function EditPersonalInfoBody({
         onClose={() => setIsDatePickerVisible(false)}
         selectedDate={currentDate}
         onDateSelect={handleDateSelect}
+        minYear={1900}
+        maxYear={new Date().getFullYear()}
       />
     </View>
   );

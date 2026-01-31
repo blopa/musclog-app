@@ -30,6 +30,8 @@ type DatePickerModalProps = {
   onClose: () => void;
   selectedDate: Date;
   onDateSelect: (date: Date) => void;
+  minYear?: number;
+  maxYear?: number;
 };
 
 export function DatePickerModal({
@@ -37,6 +39,8 @@ export function DatePickerModal({
   onClose,
   selectedDate,
   onDateSelect,
+  minYear,
+  maxYear,
 }: DatePickerModalProps) {
   const { t } = useTranslation();
   const [currentMonth, setCurrentMonth] = useState(selectedDate);
@@ -106,9 +110,13 @@ export function DatePickerModal({
     setIsMonthYearPickerVisible(true);
   };
 
-  // Generate years (current year ± 10 years)
+  // Generate years based on props or default to current year ± 10 years
   const currentYear = getYear(new Date());
-  const years = Array.from({ length: 21 }, (_, i) => currentYear - 10 + i);
+  const defaultMinYear = currentYear - 10;
+  const defaultMaxYear = currentYear + 10;
+  const minYearToUse = minYear ?? defaultMinYear;
+  const maxYearToUse = maxYear ?? defaultMaxYear;
+  const years = Array.from({ length: maxYearToUse - minYearToUse + 1 }, (_, i) => minYearToUse + i);
 
   // Generate month names using date-fns format with locale support
   const currentLanguage = (i18n.language || 'en-US') as LanguageKeys;
