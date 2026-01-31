@@ -63,7 +63,6 @@ const PastWorkoutsHistoryModal = lazy(
 
 const PastWorkoutDetailModal = lazy(() => import('../components/modals/PastWorkoutDetailModal'));
 
-
 // TODO: implement notifications eventually
 const SHOW_NOTIFICATIONS = false;
 
@@ -238,9 +237,11 @@ export default function HomeScreen() {
           {nutritionGoal ? (
             <DailySummaryCard calories={dailySummary.calories} macros={macros} />
           ) : (
-            <DailySummaryEmptyState onSetGoals={() => {
-              // TODO: open the NutritionGoalsModal modal
-            }} />
+            <DailySummaryEmptyState
+              onSetGoals={() => {
+                // TODO: open the NutritionGoalsModal modal
+              }}
+            />
           )}
         </View>
 
