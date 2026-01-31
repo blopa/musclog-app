@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
 import { useState, useEffect } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
-import { theme } from '../../theme';
+import { addOpacityToHex, theme } from '../../theme';
 import { EditFitnessDetailsBody, FitnessDetails } from '../../components/EditFitnessDetailsBody';
 import { Button } from '../../components/theme/Button';
 import { MaybeLaterButton } from '../../components/MaybeLaterButton';
@@ -315,7 +315,10 @@ export default function FitnessInfo() {
           }}
         >
           <LinearGradient
-            colors={[theme.colors.background.primary, 'transparent']}
+            colors={[
+              theme.colors.background.primary,
+              addOpacityToHex(theme.colors.background.primary, theme.colors.opacity.ultra),
+            ]}
             start={{ x: 0.5, y: 1 }}
             end={{ x: 0.5, y: 0 }}
           >

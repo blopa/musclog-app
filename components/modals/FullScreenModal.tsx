@@ -131,8 +131,7 @@ export function FullScreenModal({
               <LinearGradient
                 colors={[
                   theme.colors.background.primary,
-                  addOpacityToHex(theme.colors.background.primary, theme.colors.opacity.subtle),
-                  'transparent',
+                  addOpacityToHex(theme.colors.background.primary, theme.colors.opacity.ultra),
                 ]}
                 start={{ x: 0.5, y: 1 }}
                 end={{ x: 0.5, y: 0 }}

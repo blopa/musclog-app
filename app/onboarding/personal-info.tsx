@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { useState, useEffect } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { theme } from '../../theme';
+import { addOpacityToHex, theme } from '../../theme';
 import {
   EditPersonalInfoBody,
   PersonalInfo as PersonalInfoType,
@@ -166,7 +166,10 @@ export default function PersonalInfo() {
           }}
         >
           <LinearGradient
-            colors={[theme.colors.background.primary, 'transparent']}
+            colors={[
+              theme.colors.background.primary,
+              addOpacityToHex(theme.colors.background.primary, theme.colors.opacity.ultra),
+            ]}
             start={{ x: 0.5, y: 1 }}
             end={{ x: 0.5, y: 0 }}
           >

@@ -236,6 +236,7 @@ export const theme = {
       subtle: 0.2, // Subtle opacity
       medium: 0.5,
       strong: 0.7, // Strong opacity
+      ultra: 0.9, // Strong opacity
       full: 1.0,
     },
 
