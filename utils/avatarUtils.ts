@@ -1,5 +1,17 @@
 import { AvatarIcon } from '../types/AvatarIcon';
-import { User, Dumbbell, Zap, Activity, Trophy, Target, Heart, Flame, SunMedium } from 'lucide-react-native';
+import { AvatarColor } from '../types/AvatarColor';
+import {
+  User,
+  Dumbbell,
+  Zap,
+  Activity,
+  Trophy,
+  Target,
+  Heart,
+  Flame,
+  SunMedium,
+} from 'lucide-react-native';
+import { getAvatarColor, getAvatarBackgroundColor } from './avatarColorUtils';
 
 export function getAvatarIcon(avatarIcon?: AvatarIcon | null) {
   if (!avatarIcon) return User;
@@ -18,4 +30,19 @@ export function getAvatarIcon(avatarIcon?: AvatarIcon | null) {
   };
 
   return iconMap[avatarIcon] || User;
+}
+
+export function getAvatarDisplayProps(
+  avatarIcon?: AvatarIcon | null,
+  avatarColor?: AvatarColor | null
+) {
+  const IconComponent = getAvatarIcon(avatarIcon);
+  const color = getAvatarColor(avatarColor);
+  const backgroundColor = getAvatarBackgroundColor(avatarColor);
+
+  return {
+    IconComponent,
+    color,
+    backgroundColor,
+  };
 }

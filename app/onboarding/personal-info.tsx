@@ -10,6 +10,7 @@ import {
 import { UserService } from '../../database/services';
 import { MasterLayout } from '../../components/MasterLayout';
 import { setOnboardingCompleted } from '../../utils/onboardingService';
+import { AvatarColor } from '../../types/AvatarColor';
 
 // Helper function to format date of birth timestamp to MM/DD/YYYY
 function formatDateOfBirth(timestamp: number): string {
@@ -40,6 +41,7 @@ export default function PersonalInfo() {
             dob: formatDateOfBirth(user.dateOfBirth),
             gender: user.gender,
             avatarIcon: user.avatarIcon || undefined,
+            avatarColor: user.avatarColor || undefined,
           });
         }
       } catch (error) {
@@ -77,6 +79,7 @@ export default function PersonalInfo() {
           dateOfBirth,
           gender: data.gender as 'male' | 'female' | 'other',
           avatarIcon: data.avatarIcon || null,
+          avatarColor: data.avatarColor || null,
         });
       } else {
         // Create new user with minimal required fields
@@ -87,6 +90,7 @@ export default function PersonalInfo() {
           gender: data.gender as 'male' | 'female' | 'other',
           email: data.email,
           avatarIcon: data.avatarIcon,
+          avatarColor: data.avatarColor,
           fitnessGoal: '', // Will be set in fitness-info step
           activityLevel: 3, // Default, will be updated
           liftingExperience: 'beginner', // Default, will be updated

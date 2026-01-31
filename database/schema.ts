@@ -246,6 +246,7 @@ export const schema = appSchema({
         { name: 'activity_level', type: 'number' },
         { name: 'lifting_experience', type: 'string' }, // 'beginner', 'intermediate', 'advanced'
         { name: 'avatar_icon', type: 'string', isOptional: true }, // 'person', 'fitness_center', 'bolt', 'monitoring', 'directions_run', 'emoji_events'
+        { name: 'avatar_color', type: 'string', isOptional: true }, // 'emerald', 'blue', 'purple', 'pink', 'orange', 'teal'
         { name: 'sync_id', type: 'string', isIndexed: true }, // Primary sync identifier (UUID)
         { name: 'external_account_id', type: 'string', isIndexed: true, isOptional: true }, // OAuth provider ID
         { name: 'external_account_provider', type: 'string', isOptional: true }, // 'google', 'apple', etc.

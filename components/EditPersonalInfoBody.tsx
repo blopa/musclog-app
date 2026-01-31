@@ -8,6 +8,7 @@ import { SegmentedControl } from './theme/SegmentedControl';
 import { Button } from './theme/Button';
 import { AvatarSelector } from './AvatarSelector';
 import { AvatarIcon } from '../types/AvatarIcon';
+import { AvatarColor } from '../types/AvatarColor';
 
 type EditPersonalInfoBodyProps = {
   initialData?: PersonalInfo;
@@ -21,6 +22,7 @@ export type PersonalInfo = {
   dob: string;
   gender: string;
   avatarIcon?: AvatarIcon;
+  avatarColor?: AvatarColor;
 };
 
 export function EditPersonalInfoBody({
@@ -34,6 +36,9 @@ export function EditPersonalInfoBody({
   const [dob, setDob] = useState(initialData?.dob ?? '');
   const [gender, setGender] = useState(initialData?.gender ?? 'male');
   const [avatarIcon, setAvatarIcon] = useState<AvatarIcon>(initialData?.avatarIcon ?? 'person');
+  const [avatarColor, setAvatarColor] = useState<AvatarColor>(
+    initialData?.avatarColor ?? 'emerald'
+  );
 
   const genderOptions = [
     { label: t('editPersonalInfo.male'), value: 'male' },
@@ -45,7 +50,12 @@ export function EditPersonalInfoBody({
     <View className="flex-1 px-4 pt-2">
       {/* Avatar Section */}
       <View className="py-6">
-        <AvatarSelector selectedAvatar={avatarIcon} onAvatarSelect={setAvatarIcon} />
+        <AvatarSelector
+          selectedAvatar={avatarIcon}
+          selectedColor={avatarColor}
+          onAvatarSelect={setAvatarIcon}
+          onColorSelect={setAvatarColor}
+        />
       </View>
 
       {/* Form Fields */}
@@ -98,6 +108,7 @@ export function EditPersonalInfoBody({
               dob,
               gender,
               avatarIcon,
+              avatarColor,
             })
           }
         />

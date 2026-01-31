@@ -13,11 +13,15 @@ import {
 } from 'lucide-react-native';
 import { theme } from '../theme';
 import { AvatarIcon } from '../types/AvatarIcon';
+import { AvatarColor } from '../types/AvatarColor';
 import { getAvatarIcon } from '../utils/avatarUtils';
+import { getAvatarColor, getAvatarBackgroundColor } from '../utils/avatarColorUtils';
 
 interface AvatarSelectorProps {
   selectedAvatar: AvatarIcon;
+  selectedColor: AvatarColor;
   onAvatarSelect: (avatar: AvatarIcon) => void;
+  onColorSelect: (color: AvatarColor) => void;
 }
 
 const avatarOptions: { icon: AvatarIcon; component: React.ComponentType<any> }[] = [
@@ -33,7 +37,23 @@ const avatarOptions: { icon: AvatarIcon; component: React.ComponentType<any> }[]
   { icon: 'meditation', component: SunMedium },
 ];
 
-export function AvatarSelector({ selectedAvatar, onAvatarSelect }: AvatarSelectorProps) {
+const colorOptions: AvatarColor[] = [
+  'emerald',
+  'blue',
+  'purple',
+  'pink',
+  'orange',
+  'teal',
+  'yellow',
+  'indigo',
+];
+
+export function AvatarSelector({
+  selectedAvatar,
+  selectedColor,
+  onAvatarSelect,
+  onColorSelect,
+}: AvatarSelectorProps) {
   return (
     <View className="flex-col gap-2">
       <Text className="ml-1 text-sm font-medium text-text-secondary">Choose Avatar</Text>
@@ -44,13 +64,13 @@ export function AvatarSelector({ selectedAvatar, onAvatarSelect }: AvatarSelecto
           <View
             className="h-20 w-20 items-center justify-center rounded-full border-4"
             style={{
-              borderColor: theme.colors.accent.primary,
-              backgroundColor: theme.colors.accent.primary20,
+              borderColor: getAvatarColor(selectedColor),
+              backgroundColor: getAvatarBackgroundColor(selectedColor),
             }}
           >
             {React.createElement(getAvatarIcon(selectedAvatar), {
               size: 40,
-              color: theme.colors.accent.primary,
+              color: getAvatarColor(selectedColor),
             })}
           </View>
         </View>
@@ -64,18 +84,37 @@ export function AvatarSelector({ selectedAvatar, onAvatarSelect }: AvatarSelecto
             <Pressable
               key={icon}
               className={`h-14 w-14 flex-shrink-0 items-center justify-center rounded-full border-2 ${
-                selectedAvatar === icon
-                  ? 'bg-accent-primary10 border-accent-primary'
-                  : 'border-transparent bg-bg-card'
+                selectedAvatar === icon ? 'border-transparent' : 'border-transparent bg-bg-card'
               }`}
               onPress={() => onAvatarSelect(icon)}
             >
               <IconComponent
                 size={28}
                 color={
-                  selectedAvatar === icon ? theme.colors.accent.primary : theme.colors.text.tertiary
+                  selectedAvatar === icon
+                    ? getAvatarColor(selectedColor)
+                    : theme.colors.text.tertiary
                 }
               />
+            </Pressable>
+          ))}
+        </View>
+      </View>
+
+      {/* Color Selection */}
+      <View className="flex-col gap-2">
+        <Text className="ml-1 text-sm font-medium text-text-secondary">Choose Color</Text>
+        <View className="flex-row gap-3 overflow-x-auto rounded-2xl border border-white/10 bg-bg-card p-4">
+          {colorOptions.map((color) => (
+            <Pressable
+              key={color}
+              className={`h-12 w-12 items-center justify-center rounded-full border-2 ${
+                selectedColor === color ? 'border-white/50' : 'border-transparent'
+              }`}
+              style={{ backgroundColor: getAvatarColor(color) }}
+              onPress={() => onColorSelect(color)}
+            >
+              {selectedColor === color ? <View className="h-2 w-2 rounded-full bg-white" /> : null}
             </Pressable>
           ))}
         </View>

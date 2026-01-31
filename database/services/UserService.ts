@@ -3,6 +3,7 @@ import User, { UserProfileUpdate } from '../models/User';
 import { Q } from '@nozbe/watermelondb';
 import { generateUUID } from '../../utils/uuid';
 import { AvatarIcon } from '../../types/AvatarIcon';
+import { AvatarColor } from '../../types/AvatarColor';
 
 export class UserService {
   /**
@@ -46,6 +47,7 @@ export class UserService {
     liftingExperience: 'beginner' | 'intermediate' | 'advanced';
     email?: string;
     avatarIcon?: AvatarIcon;
+    avatarColor?: AvatarColor;
   }): Promise<User> {
     const existingUser = await this.getCurrentUser();
 
@@ -66,6 +68,7 @@ export class UserService {
         u.activityLevel = initialData.activityLevel;
         u.liftingExperience = initialData.liftingExperience;
         u.avatarIcon = initialData.avatarIcon;
+        u.avatarColor = initialData.avatarColor;
         u.syncId = syncId;
         u.createdAt = now;
         u.updatedAt = now;
