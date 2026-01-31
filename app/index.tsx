@@ -206,7 +206,6 @@ export default function HomeScreen() {
         <View className="mb-6 px-6">
           <DailySummaryCard
             calories={dailySummary.calories}
-            activity={dailySummary.activity}
             macros={macros}
           />
         </View>

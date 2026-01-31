@@ -1,8 +1,12 @@
 import { View, Text } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
-import { ProgressMetric } from '../ProgressMetric';
 import { GenericCard } from './GenericCard';
+
+type MacroValue = {
+  value: number;
+  goal: number;
+};
 
 type DailySummaryCardProps = {
   calories: {
@@ -10,122 +14,185 @@ type DailySummaryCardProps = {
     remaining: number;
     goal: number;
   };
-  activity: {
-    minutes: number;
-    goal: number;
-  };
   macros?: {
-    protein: { value: number; goal: number };
-    carbs: { value: number; goal: number };
-    fats: { value: number; goal: number };
+    protein: MacroValue;
+    carbs: MacroValue;
+    fats: MacroValue;
   };
 };
 
-export function DailySummaryCard({ calories, activity, macros }: DailySummaryCardProps) {
+export function DailySummaryCard({ calories, macros }: DailySummaryCardProps) {
   const { t } = useTranslation();
 
   // Calculate progress percentages
-  const caloriesProgress = (calories.consumed / calories.goal) * 100;
-  const activityProgress = (activity.minutes / activity.goal) * 100;
-
-  // Macros progress
-  const macroData = macros
-    ? [
-        {
-          key: 'protein',
-          label: t('home.macros.proteinLabel', 'PROTEIN'),
-          value: macros.protein.value,
-          goal: macros.protein.goal,
-          percent: Math.round((macros.protein.value / macros.protein.goal) * 100),
-        },
-        {
-          key: 'carbs',
-          label: t('home.macros.carbsLabel', 'CARBS'),
-          value: macros.carbs.value,
-          goal: macros.carbs.goal,
-          percent: Math.round((macros.carbs.value / macros.carbs.goal) * 100),
-        },
-        {
-          key: 'fats',
-          label: t('home.macros.fatsLabel', 'FATS'),
-          value: macros.fats.value,
-          goal: macros.fats.goal,
-          percent: Math.round((macros.fats.value / macros.fats.goal) * 100),
-        },
-      ]
-    : [];
+  const calorieProgress = (calories.consumed / calories.goal) * 100;
+  const proteinProgress = macros ? (macros.protein.value / macros.protein.goal) * 100 : 0;
+  const carbsProgress = macros ? (macros.carbs.value / macros.carbs.goal) * 100 : 0;
+  const fatsProgress = macros ? (macros.fats.value / macros.fats.goal) * 100 : 0;
 
   return (
     <GenericCard variant="default" size="lg" backgroundVariant="colorful-gradient">
-      <View className="p-6">
-        <View className="mb-6 flex-row items-start justify-between">
+      <View className="gap-4 p-5">
+        {/* Header with title and badge */}
+        <View className="flex-row items-center justify-between">
           <Text
-            className="text-sm font-semibold tracking-wide"
-            style={{ color: theme.colors.overlay.white90 }}
+            className="font-medium uppercase tracking-wider"
+            style={{
+              fontSize: theme.typography.fontSize.xs,
+              color: theme.colors.overlay.white70,
+            }}
           >
-            {t('home.dailySummary.title')}
+            {t('dailySummaryCard.dailySummary', 'Daily Summary')}
           </Text>
           <View
-            className="rounded-full px-4 py-1.5"
-            style={{ backgroundColor: theme.colors.overlay.white50 }}
+            className="rounded px-2 py-0.5 backdrop-blur-md"
+            style={{
+              backgroundColor: theme.colors.overlay.white20,
+              borderColor: theme.colors.overlay.white50,
+              borderWidth: theme.borderWidth.thin,
+            }}
           >
             <Text
-              className="font-bold"
-              style={{ color: theme.colors.text.tertiary, fontSize: theme.typography.fontSize.xs }}
+              className="font-bold uppercase tracking-tighter"
+              style={{
+                fontSize: theme.typography.fontSize.xs,
+                color: theme.colors.text.primary,
+              }}
             >
-              {t('common.today')}
+              {t('dailySummaryCard.today', 'Today')}
             </Text>
           </View>
         </View>
 
-        <View className="flex-row gap-8">
-          <ProgressMetric
-            value={calories.consumed}
-            unit={t('common.kcal')}
-            progress={caloriesProgress}
-            bottomText={`${calories.remaining} ${t('common.remaining')}`}
-            formatValue={(v) => v.toLocaleString()}
-          />
-          <ProgressMetric
-            value={activity.minutes}
-            unit={t('common.min')}
-            progress={activityProgress}
-            bottomText={`${t('common.goal')}: ${activity.goal} ${t('common.min')}`}
-          />
+        {/* Main calorie section */}
+        <View className="gap-3">
+          <View className="flex-row items-baseline gap-1.5">
+            <Text className="text-5xl font-extrabold tracking-tighter text-text-primary">
+              {calories.consumed.toLocaleString()}
+            </Text>
+            <Text
+              className="font-bold uppercase"
+              style={{
+                fontSize: theme.typography.fontSize.sm,
+                color: theme.colors.overlay.white70,
+              }}
+            >
+              {t('dailySummaryCard.kcal', 'Kcal')}
+            </Text>
+          </View>
+
+          {/* Progress bar */}
+          <View className="gap-1.5">
+            <View
+              className="h-1.5 overflow-hidden rounded-full"
+              style={{ backgroundColor: theme.colors.overlay.black60 }}
+            >
+              <View
+                className="h-full rounded-full"
+                style={{
+                  width: `${Math.min(calorieProgress, 100)}%`,
+                  backgroundColor: theme.colors.text.primary,
+                }}
+              />
+            </View>
+            <Text className="text-xs font-bold" style={{ color: theme.colors.overlay.white90 }}>
+              {calories.remaining} {t('dailySummaryCard.remaining', 'remaining')}
+            </Text>
+          </View>
         </View>
 
-        {/* Macros Row */}
+        {/* Macros grid */}
         {macros ? (
-          <View className="mt-6 flex-row gap-3">
-            {macroData.map((macro) => (
-              <View
-                key={macro.key}
-                className="flex-1 items-center rounded-2xl px-2.5 py-3"
-                style={{ backgroundColor: theme.colors.background.white20 }}
-              >
+          <View className="flex-row gap-3 pt-1">
+            {/* Protein */}
+            <View className="flex-1 gap-1.5">
+              <View className="flex-row items-end justify-between">
                 <Text
-                  className="mb-1 text-xs font-bold uppercase"
-                  style={{ color: theme.colors.text.primary }}
+                  className="font-bold uppercase"
+                  style={{
+                    fontSize: theme.typography.fontSize.xxs,
+                    color: theme.colors.overlay.white70,
+                  }}
                 >
-                  {macro.label}
-                  <Text className="ml-1 font-normal" style={{ color: theme.colors.text.primary }}>
-                    {macro.percent}%
-                  </Text>
+                  {t('dailySummaryCard.protein', 'Prot')}
                 </Text>
-                <View
-                  className="h-2 w-full overflow-hidden rounded-full"
-                  style={{ backgroundColor: theme.colors.overlay.white50 }}
-                >
-                  <View
-                    className="h-full rounded-full"
-                    style={{
-                      backgroundColor: theme.colors.text.primary,
-                      width: `${macro.percent}%`,
-                    }}
-                  />
-                </View>
+                <Text className="text-xs font-bold text-text-primary">
+                  {macros.protein.value}/{macros.protein.goal}g
+                </Text>
               </View>
-            ))}
+              <View
+                className="h-1 overflow-hidden rounded-full"
+                style={{ backgroundColor: theme.colors.overlay.black60 }}
+              >
+                <View
+                  className="h-full rounded-full"
+                  style={{
+                    width: `${Math.min(proteinProgress, 100)}%`,
+                    backgroundColor: theme.colors.overlay.white90,
+                  }}
+                />
+              </View>
+            </View>
+
+            {/* Carbs */}
+            <View className="flex-1 gap-1.5">
+              <View className="flex-row items-end justify-between">
+                <Text
+                  className="font-bold uppercase"
+                  style={{
+                    fontSize: theme.typography.fontSize.xxs,
+                    color: theme.colors.overlay.white70,
+                  }}
+                >
+                  {t('dailySummaryCard.carbs', 'Carb')}
+                </Text>
+                <Text className="text-xs font-bold text-text-primary">
+                  {macros.carbs.value}/{macros.carbs.goal}g
+                </Text>
+              </View>
+              <View
+                className="h-1 overflow-hidden rounded-full"
+                style={{ backgroundColor: theme.colors.overlay.black60 }}
+              >
+                <View
+                  className="h-full rounded-full"
+                  style={{
+                    width: `${Math.min(carbsProgress, 100)}%`,
+                    backgroundColor: theme.colors.overlay.white90,
+                  }}
+                />
+              </View>
+            </View>
+
+            {/* Fats */}
+            <View className="flex-1 gap-1.5">
+              <View className="flex-row items-end justify-between">
+                <Text
+                  className="font-bold uppercase"
+                  style={{
+                    fontSize: theme.typography.fontSize.xxs,
+                    color: theme.colors.overlay.white70,
+                  }}
+                >
+                  {t('dailySummaryCard.fats', 'Fat')}
+                </Text>
+                <Text className="text-xs font-bold text-text-primary">
+                  {macros.fats.value}/{macros.fats.goal}g
+                </Text>
+              </View>
+              <View
+                className="h-1 overflow-hidden rounded-full"
+                style={{ backgroundColor: theme.colors.overlay.black60 }}
+              >
+                <View
+                  className="h-full rounded-full"
+                  style={{
+                    width: `${Math.min(fatsProgress, 100)}%`,
+                    backgroundColor: theme.colors.overlay.white90,
+                  }}
+                />
+              </View>
+            </View>
           </View>
         ) : null}
       </View>

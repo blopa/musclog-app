@@ -81,7 +81,11 @@ export default function CardsTestScreen() {
         <TestSection title="Daily Summary" subtitle="Track your daily progress">
           <DailySummaryCard
             calories={{ consumed: 1800, remaining: 400, goal: 2200 }}
-            activity={{ minutes: 45, goal: 60 }}
+            macros={{
+              protein: { value: 165, goal: 220 },
+              carbs: { value: 210, goal: 220 },
+              fats: { value: 73, goal: 73 },
+            }}
           />
         </TestSection>
 
