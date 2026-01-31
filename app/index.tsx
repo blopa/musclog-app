@@ -70,7 +70,7 @@ export default function HomeScreen() {
       calories: {
         consumed: caloriesConsumed,
         remaining: caloriesRemaining,
-        goal: caloriesGoal,
+        goal: caloriesGoal ?? 0,
       },
       gradientColors: theme.colors.gradients.primary,
     };
@@ -81,15 +81,15 @@ export default function HomeScreen() {
     return {
       protein: {
         value: Math.round(dailyNutrients.protein),
-        goal: nutritionGoal?.protein || 200,
+        goal: nutritionGoal?.protein ?? 0,
       },
       carbs: {
         value: Math.round(dailyNutrients.carbs),
-        goal: nutritionGoal?.carbs || 300,
+        goal: nutritionGoal?.carbs ?? 0,
       },
       fats: {
         value: Math.round(dailyNutrients.fat),
-        goal: nutritionGoal?.fats || 200,
+        goal: nutritionGoal?.fats ?? 0,
       },
     };
   }, [dailyNutrients, nutritionGoal]);
