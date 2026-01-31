@@ -8,7 +8,7 @@ const localRulesPlugin = require('./eslint-rules');
 module.exports = defineConfig([
   expoConfig,
   {
-    ignores: ['dist/*'],
+    ignores: ['dist/*', 'coverage/**'],
   },
   {
     plugins: {
