@@ -83,7 +83,7 @@ export default function CardsTestScreen() {
             calories={{ consumed: 1800, remaining: 400, goal: 2200 }}
             macros={{
               protein: { value: 165, goal: 220 },
-              carbs: { value: 210, goal: 220 },
+              carbs: { value: 250, goal: 220 },
               fats: { value: 73, goal: 73 },
             }}
           />
