@@ -1,8 +1,9 @@
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
-import { Dumbbell, Zap, Activity, Trophy, Target, Heart, Flame, User } from 'lucide-react-native';
+import { Dumbbell, Zap, Activity, Trophy, Target, User } from 'lucide-react-native';
 import { theme } from '../theme';
 import { AvatarIcon } from '../types/AvatarIcon';
+import { getAvatarIcon } from '../utils/avatarUtils';
 
 interface AvatarSelectorProps {
   selectedAvatar: AvatarIcon;
@@ -33,7 +34,10 @@ export function AvatarSelector({ selectedAvatar, onAvatarSelect }: AvatarSelecto
               backgroundColor: theme.colors.accent.primary20,
             }}
           >
-            <User size={40} color={theme.colors.accent.primary} />
+            {React.createElement(getAvatarIcon(selectedAvatar), {
+              size: 40,
+              color: theme.colors.accent.primary,
+            })}
           </View>
         </View>
 
