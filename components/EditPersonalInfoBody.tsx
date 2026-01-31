@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { User, Mail, Calendar, Check } from 'lucide-react-native';
 import { theme } from '../theme';
@@ -9,6 +9,7 @@ import { Button } from './theme/Button';
 import { AvatarSelector } from './AvatarSelector';
 import { AvatarIcon } from '../types/AvatarIcon';
 import { AvatarColor } from '../types/AvatarColor';
+import { DatePickerModal } from './modals/DatePickerModal';
 
 type EditPersonalInfoBodyProps = {
   initialData?: PersonalInfo;
@@ -43,6 +44,38 @@ export function EditPersonalInfoBody({
   const [avatarColor, setAvatarColor] = useState<AvatarColor>(
     initialData?.avatarColor ?? 'emerald'
   );
+  const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
+
+  // Helper function to convert DOB string to Date object
+  const parseDobToDate = (dobString: string): Date => {
+    if (!dobString) return new Date();
+    const parts = dobString.split('/');
+    if (parts.length === 3) {
+      const month = parseInt(parts[0], 10) - 1; // Month is 0-indexed
+      const day = parseInt(parts[1], 10);
+      const year = parseInt(parts[2], 10);
+      return new Date(year, month, day);
+    }
+
+    return new Date();
+  };
+
+  // Helper function to convert Date object to DOB string
+  const formatDateToDob = (date: Date): string => {
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${month}/${day}/${year}`;
+  };
+
+  // Get current date as Date object for picker
+  const currentDate = parseDobToDate(dob);
+
+  // Handle date selection from picker
+  const handleDateSelect = (date: Date) => {
+    const newDob = formatDateToDob(date);
+    setDob(newDob);
+  };
 
   // Call onFormChange whenever form data changes
   useEffect(() => {
@@ -95,13 +128,22 @@ export function EditPersonalInfoBody({
           icon={<Mail size={theme.iconSize.lg} color={theme.colors.text.tertiary} />}
         />
 
-        <TextInput
-          label={t('editPersonalInfo.dateOfBirth')}
-          value={dob}
-          onChangeText={setDob}
-          placeholder={t('editPersonalInfo.dateOfBirthPlaceholder')}
-          icon={<Calendar size={theme.iconSize.lg} color={theme.colors.text.tertiary} />}
-        />
+        <View className="flex-col gap-2">
+          <Text className="ml-1 text-sm font-medium text-text-secondary">
+            {t('editPersonalInfo.dateOfBirth')}
+          </Text>
+          <Pressable
+            className="h-14 w-full flex-row items-center rounded-lg border-2 border-white/10 bg-bg-card px-4 active:opacity-80"
+            onPress={() => setIsDatePickerVisible(true)}
+          >
+            <View className="ml-3 flex-1">
+              <Text className={`text-base ${dob ? 'text-text-primary' : 'text-text-tertiary'}`}>
+                {dob || t('editPersonalInfo.dateOfBirthPlaceholder')}
+              </Text>
+            </View>
+            <Calendar size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
+          </Pressable>
+        </View>
 
         <View className="gap-2">
           <Text className="ml-1 text-sm font-medium text-text-secondary">
@@ -133,6 +175,14 @@ export function EditPersonalInfoBody({
           />
         </View>
       ) : null}
+
+      {/* Date Picker Modal */}
+      <DatePickerModal
+        visible={isDatePickerVisible}
+        onClose={() => setIsDatePickerVisible(false)}
+        selectedDate={currentDate}
+        onDateSelect={handleDateSelect}
+      />
     </View>
   );
 }
