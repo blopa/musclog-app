@@ -165,14 +165,15 @@ export function DailySummaryCard({
                 ) : null}
                 {!highlightThresholds || proteinStatus === 'not-reached' ? (
                   <Text
-                    className="text-xs font-bold"
+                    className="text-xs"
                     style={{
                       color: showColoredIndicators
                         ? getProgressBarColor(proteinStatus)
                         : theme.colors.text.primary,
                     }}
                   >
-                    {macros.protein.value}/{macros.protein.goal}g
+                    <Text style={{ fontWeight: '700' }}>{macros.protein.value}</Text>
+                    <Text style={{ fontWeight: '400' }}>{`/${macros.protein.goal}g`}</Text>
                   </Text>
                 ) : null}
               </View>
@@ -212,14 +213,15 @@ export function DailySummaryCard({
                 ) : null}
                 {!highlightThresholds || carbsStatus === 'not-reached' ? (
                   <Text
-                    className="text-xs font-bold"
+                    className="text-xs"
                     style={{
                       color: showColoredIndicators
                         ? getProgressBarColor(carbsStatus)
                         : theme.colors.text.primary,
                     }}
                   >
-                    {macros.carbs.value}/{macros.carbs.goal}g
+                    <Text style={{ fontWeight: '700' }}>{macros.carbs.value}</Text>
+                    <Text style={{ fontWeight: '400' }}>{`/${macros.carbs.goal}g`}</Text>
                   </Text>
                 ) : null}
               </View>
@@ -259,14 +261,15 @@ export function DailySummaryCard({
                 ) : null}
                 {!highlightThresholds || fatsStatus === 'not-reached' ? (
                   <Text
-                    className="text-xs font-bold"
+                    className="text-xs"
                     style={{
                       color: showColoredIndicators
                         ? getProgressBarColor(fatsStatus)
                         : theme.colors.text.primary,
                     }}
                   >
-                    {macros.fats.value}/{macros.fats.goal}g
+                    <Text style={{ fontWeight: '700' }}>{macros.fats.value}</Text>
+                    <Text style={{ fontWeight: '400' }}>{`/${macros.fats.goal}g`}</Text>
                   </Text>
                 ) : null}
               </View>
