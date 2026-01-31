@@ -37,6 +37,7 @@ import { CurrentGoalsCard } from '../../components/cards/CurrentGoalsCard';
 import { GoalHistoryCard } from '../../components/cards/GoalHistoryCard';
 import { SelectedExerciseCard } from '../../components/cards/SelectedExerciseCard';
 import { UpNextLabel } from '../../components/UpNextLabel';
+import { DailySummaryEmptyState } from '../../components/cards/DailySummaryCard/DailySummaryEmptyState';
 
 export default function CardsTestScreen() {
   return (
@@ -86,6 +87,12 @@ export default function CardsTestScreen() {
               carbs: { value: 250, goal: 220 },
               fats: { value: 73, goal: 73 },
             }}
+          />
+        </TestSection>
+
+        <TestSection title="Daily Summary Empty State" subtitle="When no goals are set">
+          <DailySummaryEmptyState
+            onSetGoals={() => console.log('Set goals pressed')}
           />
         </TestSection>
 

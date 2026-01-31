@@ -124,7 +124,7 @@ export function Button({
             ? theme.colors.text.primary
             : isRedVariant
               ? theme.colors.text.white
-              : theme.colors.text.black;
+              : theme.colors.text.white;
 
   const iconColor = isDisabled
     ? theme.colors.text.primary30
@@ -138,7 +138,7 @@ export function Button({
             ? theme.colors.accent.secondary
             : isRedVariant
               ? theme.colors.text.white
-              : theme.colors.text.black;
+              : theme.colors.text.white;
 
   const shadow =
     isDisabled ||
@@ -241,7 +241,7 @@ export function Button({
                   ? 'text-text-primary'
                   : isRedVariant
                     ? 'text-white'
-                    : 'text-text-black'
+                    : 'text-white'
       }`}
       style={{
         fontSize: config.fontSize,
