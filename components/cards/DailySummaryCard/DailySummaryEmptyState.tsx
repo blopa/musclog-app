@@ -1,8 +1,9 @@
 import { FC } from 'react';
-import { View, Text } from 'react-native';
-import { Button } from '../../theme/Button';
-import { theme } from '../../../theme';
 import { useTranslation } from 'react-i18next';
+import { Text, View } from 'react-native';
+
+import { theme } from '../../../theme';
+import { Button } from '../../theme/Button';
 import { GenericCard } from '../GenericCard';
 
 interface DailySummaryEmptyStateProps {

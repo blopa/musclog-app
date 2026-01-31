@@ -1,14 +1,15 @@
-import { useState, useEffect } from 'react';
-import { View, Text, ScrollView, Pressable, TextInput } from 'react-native';
-import { Plus, Trash2, RefreshCw, ArrowRight } from 'lucide-react-native';
-import { useRouter } from 'expo-router';
-import { theme } from '../../theme';
-import { MasterLayout } from '../../components/MasterLayout';
-import { database, Exercise, User, Setting, UserMetric } from '../../database';
-import { UserService } from '../../database/services';
 import { Q } from '@nozbe/watermelondb';
+import { useRouter } from 'expo-router';
+import { ArrowRight, Plus, RefreshCw, Trash2 } from 'lucide-react-native';
+import { useEffect, useState } from 'react';
+import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+
+import { MasterLayout } from '../../components/MasterLayout';
 import { Button } from '../../components/theme/Button';
 import { UNITS_SETTING_TYPE } from '../../constants/settings';
+import { database, Exercise, Setting, User, UserMetric } from '../../database';
+import { UserService } from '../../database/services';
+import { theme } from '../../theme';
 
 // All app screens for navigation
 const APP_SCREENS = [

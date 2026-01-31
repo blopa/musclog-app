@@ -1,24 +1,22 @@
-import { useState, useMemo, lazy } from 'react';
-
-import { View, ScrollView, Pressable } from 'react-native';
-import { Search, SlidersHorizontal, Dumbbell, WifiOff, Plus } from 'lucide-react-native';
-import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
-import { theme } from '../../theme';
-import { MasterLayout } from '../../components/MasterLayout';
+import { Dumbbell, Plus, Search, SlidersHorizontal, WifiOff } from 'lucide-react-native';
+import { lazy, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Pressable, ScrollView, View } from 'react-native';
 
 import { FilterTabs } from '../../components/FilterTabs';
 import { GradientText } from '../../components/GradientText';
+import { MasterLayout } from '../../components/MasterLayout';
+import CreateWorkoutModal from '../../components/modals/CreateWorkoutModal';
+import { CreateWorkoutOptionsModal } from '../../components/modals/CreateWorkoutOptionsModal';
+import WorkoutSessionOverviewModal from '../../components/modals/WorkoutSessionOverviewModal';
 import { WorkoutDetailsMenu } from '../../components/WorkoutDetailsMenu';
-
-import { WorkoutService } from '../../database/services';
 import { database } from '../../database';
 import WorkoutTemplate from '../../database/models/WorkoutTemplate';
-import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
-import { CreateWorkoutOptionsModal } from '../../components/modals/CreateWorkoutOptionsModal';
-import CreateWorkoutModal from '../../components/modals/CreateWorkoutModal';
-import WorkoutSessionOverviewModal from '../../components/modals/WorkoutSessionOverviewModal';
+import { WorkoutService } from '../../database/services';
 import { useWorkoutTemplates } from '../../hooks/useWorkoutTemplates';
+import { theme } from '../../theme';
+import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
 const EmptyStateCard = lazy(() =>
   import('../../components/theme/EmptyStateCard').then(({ EmptyStateCard }) => ({
     default: EmptyStateCard,

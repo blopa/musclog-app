@@ -1,19 +1,20 @@
-import { useState, useRef, useEffect } from 'react';
-import { View, Text, ScrollView, Pressable } from 'react-native';
-import { CheckCircle, Minus, Plus } from 'lucide-react-native';
-import { useTranslation } from 'react-i18next';
-import { useRouter } from 'expo-router';
-import { theme } from '../../theme';
-import { SegmentedControl } from '../theme/SegmentedControl';
-import { Button } from '../theme/Button';
-import { GenericCard } from '../cards/GenericCard';
-import { DateTimeSelectorCard } from '../cards/DateTimeSelectorCard';
-import { MoodSelectorCard } from '../cards/MoodSelectorCard';
-import { PagerView, type PagerViewRef } from '../PagerView/PagerView';
 import { format } from 'date-fns';
-import { FullScreenModal } from './FullScreenModal';
+import { useRouter } from 'expo-router';
+import { CheckCircle, Minus, Plus } from 'lucide-react-native';
+import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Pressable, ScrollView, Text, View } from 'react-native';
+
 import { database } from '../../database';
 import UserMetric from '../../database/models/UserMetric';
+import { theme } from '../../theme';
+import { DateTimeSelectorCard } from '../cards/DateTimeSelectorCard';
+import { GenericCard } from '../cards/GenericCard';
+import { MoodSelectorCard } from '../cards/MoodSelectorCard';
+import { PagerView, type PagerViewRef } from '../PagerView/PagerView';
+import { Button } from '../theme/Button';
+import { SegmentedControl } from '../theme/SegmentedControl';
+import { FullScreenModal } from './FullScreenModal';
 
 type MetricType = 'weight' | 'bodyFat' | 'height';
 

@@ -1,10 +1,11 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Q } from '@nozbe/watermelondb';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+
+import { DEFAULT_BATCH_SIZE } from '../constants/database';
 import { database } from '../database';
 import UserMetric from '../database/models/UserMetric';
-import { useSettings } from './useSettings';
 import { UserMetricService } from '../database/services/UserMetricService';
-import { DEFAULT_BATCH_SIZE } from '../constants/database';
+import { useSettings } from './useSettings';
 
 export interface UserMetrics {
   weight?: number;

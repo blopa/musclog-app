@@ -1,7 +1,8 @@
-import React from 'react';
-import { View, Text, Pressable } from 'react-native';
 import { Calendar, Clock, LucideIcon } from 'lucide-react-native';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { Pressable, Text, View } from 'react-native';
+
 import { theme } from '../../theme';
 import { GenericCard } from './GenericCard';
 

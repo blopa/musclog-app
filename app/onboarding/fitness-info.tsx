@@ -1,21 +1,22 @@
-import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useTranslation } from 'react-i18next';
-import { useRouter } from 'expo-router';
-import { useState, useEffect } from 'react';
-import { theme } from '../../theme';
-import { EditFitnessDetailsBody, FitnessDetails } from '../../components/EditFitnessDetailsBody';
-import { Button } from '../../components/theme/Button';
-import { MaybeLaterButton } from '../../components/MaybeLaterButton';
-import { BottomButtonWrapper } from '../../components/BottomButtonWrapper';
-import { UserService } from '../../database/services';
-import { database } from '../../database';
 import { Q } from '@nozbe/watermelondb';
-import UserMetric from '../../database/models/UserMetric';
-import Setting from '../../database/models/Setting';
-import { useSettings } from '../../hooks/useSettings';
+import { useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { names, uniqueNamesGenerator } from 'unique-names-generator';
+
+import { BottomButtonWrapper } from '../../components/BottomButtonWrapper';
+import { EditFitnessDetailsBody, FitnessDetails } from '../../components/EditFitnessDetailsBody';
+import { MaybeLaterButton } from '../../components/MaybeLaterButton';
+import { Button } from '../../components/theme/Button';
 import { UNITS_SETTING_TYPE } from '../../constants/settings';
-import { uniqueNamesGenerator, names } from 'unique-names-generator';
+import { database } from '../../database';
+import Setting from '../../database/models/Setting';
+import UserMetric from '../../database/models/UserMetric';
+import { UserService } from '../../database/services';
+import { useSettings } from '../../hooks/useSettings';
+import { theme } from '../../theme';
 
 export default function FitnessInfo() {
   const { t } = useTranslation();

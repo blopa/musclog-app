@@ -1,12 +1,13 @@
-import { useState } from 'react';
-import { View, Text, ScrollView, Pressable, Image } from 'react-native';
-import { ChevronRight, Video, Pencil, Copy, Share2, Trash2, Zap, Heart } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { ChevronRight, Copy, Heart, Pencil, Share2, Trash2, Video, Zap } from 'lucide-react-native';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Image, Pressable, ScrollView, Text, View } from 'react-native';
+
 import { theme } from '../../theme';
 import { BottomPopUpMenu, BottomPopUpMenuItem } from '../BottomPopUpMenu';
-import { SettingsCard } from '../cards/SettingsCard';
 import { GenericCard } from '../cards/GenericCard';
+import { SettingsCard } from '../cards/SettingsCard';
 import { Button } from '../theme/Button';
 import { MenuButton } from '../theme/MenuButton';
 import { FullScreenModal } from './FullScreenModal';

@@ -1,12 +1,13 @@
-import { useState, useMemo } from 'react';
-import { View, Text, Pressable } from 'react-native';
 import { Check, Dumbbell, LucideFootprints, PersonStanding } from 'lucide-react-native';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button } from '../theme/Button';
-import { OptionsSelector, SelectorOption } from '../OptionsSelector';
+import { Pressable, Text, View } from 'react-native';
+
 import { theme } from '../../theme';
-import { FullScreenModal } from './FullScreenModal';
+import { OptionsSelector, SelectorOption } from '../OptionsSelector';
+import { Button } from '../theme/Button';
 import { Slider } from '../theme/Slider';
+import { FullScreenModal } from './FullScreenModal';
 
 type WorkoutType = 'strength' | 'cardio' | 'flexibility';
 

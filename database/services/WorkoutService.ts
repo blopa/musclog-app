@@ -1,16 +1,17 @@
-import { database } from '../index';
-import WorkoutTemplate from '../models/WorkoutTemplate';
-import WorkoutLog from '../models/WorkoutLog';
-import WorkoutLogSet from '../models/WorkoutLogSet';
-import Exercise from '../models/Exercise';
-import Schedule from '../models/Schedule';
 import { Q } from '@nozbe/watermelondb';
-import { WorkoutAnalytics } from './WorkoutAnalytics';
+
 import {
+  clearActiveWorkoutLogId,
   getActiveWorkoutLogId,
   setActiveWorkoutLogId,
-  clearActiveWorkoutLogId,
 } from '../../utils/activeWorkoutStorage';
+import { database } from '../index';
+import Exercise from '../models/Exercise';
+import Schedule from '../models/Schedule';
+import WorkoutLog from '../models/WorkoutLog';
+import WorkoutLogSet from '../models/WorkoutLogSet';
+import WorkoutTemplate from '../models/WorkoutTemplate';
+import { WorkoutAnalytics } from './WorkoutAnalytics';
 
 export class WorkoutService {
   /**

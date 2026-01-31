@@ -1,8 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import {
+  CURRENT_ONBOARDING_VERSION,
   ONBOARDING_COMPLETED,
   ONBOARDING_VERSION,
-  CURRENT_ONBOARDING_VERSION,
 } from '../constants/auth';
 
 export interface OnboardingStatus {

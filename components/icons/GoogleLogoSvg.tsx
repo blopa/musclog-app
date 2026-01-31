@@ -1,6 +1,6 @@
+import classNames from 'classnames';
 import { View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
-import classNames from 'classnames';
 
 interface GoogleLogoSvgProps {
   size?: number;

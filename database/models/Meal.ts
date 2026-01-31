@@ -1,5 +1,6 @@
 import { Model, Query } from '@nozbe/watermelondb';
-import { field, children, writer } from '@nozbe/watermelondb/decorators';
+import { children, field, writer } from '@nozbe/watermelondb/decorators';
+
 import { MealFood } from './index';
 
 export default class Meal extends Model {

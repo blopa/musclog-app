@@ -1,6 +1,7 @@
-import { View, Text, Pressable, Animated, PanResponder } from 'react-native';
-import { CheckCircle, AlertTriangle } from 'lucide-react-native';
+import { AlertTriangle, CheckCircle } from 'lucide-react-native';
 import { useRef } from 'react';
+import { Animated, PanResponder, Pressable, Text, View } from 'react-native';
+
 import { theme } from '../theme';
 
 export type SnackbarType = {

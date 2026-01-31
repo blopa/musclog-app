@@ -1,6 +1,7 @@
+import { animated, config, useSpring } from '@react-spring/web';
+import { forwardRef, ReactNode, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { View } from 'react-native';
-import { forwardRef, useImperativeHandle, useState, useEffect, useRef, ReactNode } from 'react';
-import { useSpring, animated, config } from '@react-spring/web';
+
 import type { PagerViewRef } from './types';
 
 export interface PagerViewProps {

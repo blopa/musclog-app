@@ -1,5 +1,5 @@
-import { AvatarColor } from '../types/AvatarColor';
 import { theme } from '../theme';
+import { AvatarColor } from '../types/AvatarColor';
 
 export function getAvatarColor(avatarColor?: AvatarColor | null) {
   if (!avatarColor) return theme.colors.accent.primary;

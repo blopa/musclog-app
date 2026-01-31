@@ -1,5 +1,6 @@
-import { View } from 'react-native';
 import { ChevronRight } from 'lucide-react-native';
+import { View } from 'react-native';
+
 import { theme } from '../theme';
 
 export function CircularArrow() {

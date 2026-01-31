@@ -1,6 +1,7 @@
-import { ComponentType } from 'react';
-import { View, Text } from 'react-native';
 import { Star } from 'lucide-react-native';
+import { ComponentType } from 'react';
+import { Text, View } from 'react-native';
+
 import { theme } from '../theme';
 
 export type StatRowProps = {

@@ -1,11 +1,12 @@
+import { Bug, ChevronRight, Download, Trash2, Upload } from 'lucide-react-native';
 import React from 'react';
-import { View, Text } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Download, Upload, Bug, Trash2, ChevronRight } from 'lucide-react-native';
-import { FullScreenModal } from './FullScreenModal';
+import { Text, View } from 'react-native';
+
+import { theme } from '../../theme';
 import { SettingsCard } from '../cards/SettingsCard';
 import { ToggleInput } from '../theme/ToggleInput';
-import { theme } from '../../theme';
+import { FullScreenModal } from './FullScreenModal';
 
 type AdvancedSettingsModalProps = {
   visible: boolean;

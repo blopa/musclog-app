@@ -1,7 +1,8 @@
 import { ReactNode } from 'react';
 import { Text, View } from 'react-native';
-import { EditScreenInfo } from './EditScreenInfo';
+
 import { theme } from '../theme';
+import { EditScreenInfo } from './EditScreenInfo';
 
 type ScreenContentProps = {
   title: string;

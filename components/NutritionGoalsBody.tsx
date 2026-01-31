@@ -1,25 +1,25 @@
-import { useState, useEffect, lazy } from 'react';
-import { View, Text, Pressable, ScrollView, Platform, useWindowDimensions } from 'react-native';
+import { format } from 'date-fns';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
-  Minus,
-  Plus,
-  Scale,
-  Percent,
-  TrendingUp,
   Activity,
   Calendar,
   ChevronRight,
+  Minus,
+  Percent,
+  Plus,
+  Scale,
+  TrendingUp,
 } from 'lucide-react-native';
-import { format } from 'date-fns';
-import { DatePickerModal } from './modals/DatePickerModal';
+import { lazy, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { theme } from '../theme';
+import { Platform, Pressable, ScrollView, Text, useWindowDimensions, View } from 'react-native';
 
-import { Slider } from './theme/Slider';
+import { theme } from '../theme';
+import { DatePickerModal } from './modals/DatePickerModal';
 import { MacrosPizzaChart } from './theme/MacrosPizzaChart';
-import { StepperInlineInput } from './theme/StepperInlineInput';
 import { SegmentedControl } from './theme/SegmentedControl';
+import { Slider } from './theme/Slider';
+import { StepperInlineInput } from './theme/StepperInlineInput';
 const Button = lazy(() => import('./theme/Button').then(({ Button }) => ({ default: Button })));
 
 export type NutritionGoals = {

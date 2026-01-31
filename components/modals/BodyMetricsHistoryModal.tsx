@@ -1,21 +1,17 @@
-import { useState, useCallback, useMemo, lazy } from 'react';
-
-import { View, Text, ScrollView, Pressable } from 'react-native';
-import { SlidersHorizontal, Calendar, Clock, Plus } from 'lucide-react-native';
+import { format, isThisWeek, isToday, isYesterday } from 'date-fns';
+import type { TFunction } from 'i18next';
+import { Calendar, Clock, Plus, SlidersHorizontal } from 'lucide-react-native';
+import { lazy, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { format, isToday, isYesterday, isThisWeek } from 'date-fns';
-import { theme } from '../../theme';
-
-import { SegmentedControl } from '../theme/SegmentedControl';
-
-import { HistoryBodyMetricCard } from '../cards/HistoryBodyMetricCard';
-import { FullScreenModal } from './FullScreenModal';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import UserMetric from '../../database/models/UserMetric';
-
 import { useSettings } from '../../hooks/useSettings';
 import { useUserMetrics } from '../../hooks/useUserMetrics';
-import type { TFunction } from 'i18next';
+import { theme } from '../../theme';
+import { HistoryBodyMetricCard } from '../cards/HistoryBodyMetricCard';
+import { SegmentedControl } from '../theme/SegmentedControl';
+import { FullScreenModal } from './FullScreenModal';
 const LineChart = lazy(() =>
   import('../LineChart').then(({ LineChart }) => ({ default: LineChart }))
 );

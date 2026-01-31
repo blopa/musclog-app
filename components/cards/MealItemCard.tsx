@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, Text, Image, ImageSourcePropType } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { Image, ImageSourcePropType, Text, View } from 'react-native';
+
+import { theme } from '../../theme';
 import { Button } from '../theme/Button';
 import { GenericCard } from './GenericCard';
-import { theme } from '../../theme';
-import { useTranslation } from 'react-i18next';
 
 type MacroProps = {
   label: string;

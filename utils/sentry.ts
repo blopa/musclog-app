@@ -1,8 +1,7 @@
 // @ts-ignore
 import type { ExclusiveEventHintOrCaptureContext } from '@sentry/core/build/types/utils/prepareEvent';
-import type { CaptureContext, SeverityLevel } from '@sentry/types';
-
 import * as Sentry from '@sentry/react-native';
+import type { CaptureContext, SeverityLevel } from '@sentry/types';
 
 export const captureException = async (
   exception: any,

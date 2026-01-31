@@ -1,10 +1,11 @@
-import { useState, useEffect, useMemo } from 'react';
 import { Q } from '@nozbe/watermelondb';
+import { useEffect, useMemo, useState } from 'react';
+
+import type { Units, UseSettingsResult } from '../constants/settings';
+import { UNITS_SETTING_TYPE } from '../constants/settings';
 import { database } from '../database';
 import Setting from '../database/models/Setting';
-import { UNITS_SETTING_TYPE } from '../constants/settings';
-import type { Units, UseSettingsResult } from '../constants/settings';
-import { getWeightUnit, getHeightUnit } from '../utils/units';
+import { getHeightUnit, getWeightUnit } from '../utils/units';
 
 function parseUnitsFromSettings(settings: Setting[]): Units {
   if (settings.length === 0) return 'metric';

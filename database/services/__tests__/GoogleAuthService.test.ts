@@ -1,10 +1,10 @@
-import { GoogleAuthService } from '../GoogleAuthService';
 import {
-  GOOGLE_REFRESH_TOKEN_TYPE,
-  GOOGLE_OAUTH_GEMINI_ENABLED_TYPE,
   AI_SETTINGS_TYPE,
+  GOOGLE_OAUTH_GEMINI_ENABLED_TYPE,
+  GOOGLE_REFRESH_TOKEN_TYPE,
 } from '../../../constants/auth';
 import { database } from '../../database-instance';
+import { GoogleAuthService } from '../GoogleAuthService';
 import { createMockSetting } from './helpers';
 
 jest.mock('@nozbe/watermelondb', () => ({

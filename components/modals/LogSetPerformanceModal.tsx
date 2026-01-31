@@ -1,15 +1,16 @@
-import { useState, useEffect } from 'react';
-import { View, Text, Pressable, ScrollView, Platform } from 'react-native';
 import { Edit, Save } from 'lucide-react-native';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { theme } from '../../theme';
-import { BottomPopUpMenu } from '../BottomPopUpMenu';
-import { EditSetDetailsModal } from './EditSetDetailsModal';
-import { Button } from '../theme/Button';
-import { Slider } from '../theme/Slider';
+import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
+
 import { useSettings } from '../../hooks/useSettings';
+import { theme } from '../../theme';
 import { getWeightUnitI18nKey } from '../../utils/units';
+import { BottomPopUpMenu } from '../BottomPopUpMenu';
+import { Button } from '../theme/Button';
 import NewNumericalInput from '../theme/NewNumericalInput';
+import { Slider } from '../theme/Slider';
+import { EditSetDetailsModal } from './EditSetDetailsModal';
 
 type LogSetPerformanceModalProps = {
   visible: boolean;

@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
-import { View, Text, TextInput as RNTextInput } from 'react-native';
+import { Text, TextInput as RNTextInput, View } from 'react-native';
+
 import { theme } from '../../theme';
 
 type TestInputProps = {

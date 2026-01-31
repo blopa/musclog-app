@@ -1,7 +1,8 @@
 import { Model } from '@nozbe/watermelondb';
 import { field, writer } from '@nozbe/watermelondb/decorators';
-import { AvatarIcon } from '../../types/AvatarIcon';
+
 import { AvatarColor } from '../../types/AvatarColor';
+import { AvatarIcon } from '../../types/AvatarIcon';
 
 export type Gender = 'male' | 'female' | 'other';
 export type LiftingExperience = 'beginner' | 'intermediate' | 'advanced';

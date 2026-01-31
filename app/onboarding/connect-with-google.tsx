@@ -1,11 +1,12 @@
-import { View, Text, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useTranslation } from 'react-i18next';
-import { useState, useEffect } from 'react';
-import { theme } from '../../theme';
-import { ConnectGoogleAccountBody } from '../../components/ConnectGoogleAccountBody';
 import { useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { ScrollView, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { ConnectGoogleAccountBody } from '../../components/ConnectGoogleAccountBody';
 import { useGoogleAuth } from '../../hooks/useGoogleAuth';
+import { theme } from '../../theme';
 import { handleGoogleSignIn } from '../../utils/googleAuth';
 
 export default function ConnectWithGoogle() {

@@ -2,7 +2,8 @@
  * @jest-environment jsdom
  */
 
-import { renderHook, act, waitFor } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
+
 import { useSettings } from '../useSettings';
 
 type FakeSetting = { id: string; value: string };

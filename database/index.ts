@@ -5,17 +5,17 @@ export { database } from './database-instance';
 
 // Export models for convenience
 export { default as Exercise } from './models/Exercise';
-export { default as UserMetric } from './models/UserMetric';
-export { default as User } from './models/User';
-export { default as Setting } from './models/Setting';
-export { default as WorkoutTemplate } from './models/WorkoutTemplate';
+export { default as NutritionGoal } from './models/NutritionGoal';
 export { default as Schedule } from './models/Schedule';
-export { default as WorkoutTemplateSet } from './models/WorkoutTemplateSet';
+export { default as Setting } from './models/Setting';
+export { default as User } from './models/User';
+export { default as UserMetric } from './models/UserMetric';
 export { default as WorkoutLog } from './models/WorkoutLog';
 export { default as WorkoutLogSet } from './models/WorkoutLogSet';
-export { default as NutritionGoal } from './models/NutritionGoal';
+export { default as WorkoutTemplate } from './models/WorkoutTemplate';
+export { default as WorkoutTemplateSet } from './models/WorkoutTemplateSet';
 
 // Export repositories for query methods
-export { WorkoutTemplateRepository } from './repositories/WorkoutTemplateRepository';
 export { ScheduleRepository } from './repositories/ScheduleRepository';
 export { WorkoutLogRepository } from './repositories/WorkoutLogRepository';
+export { WorkoutTemplateRepository } from './repositories/WorkoutTemplateRepository';

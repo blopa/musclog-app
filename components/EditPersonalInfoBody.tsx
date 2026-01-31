@@ -1,16 +1,14 @@
-import { useState, useEffect, lazy } from 'react';
-
-import { View, Text, Pressable } from 'react-native';
+import { Calendar, Check, Mail, User } from 'lucide-react-native';
+import { lazy, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { User, Mail, Calendar, Check } from 'lucide-react-native';
+import { Pressable, Text, View } from 'react-native';
+
 import { theme } from '../theme';
-
-import { SegmentedControl } from './theme/SegmentedControl';
-
-import { AvatarSelector } from './AvatarSelector';
-import { AvatarIcon } from '../types/AvatarIcon';
 import { AvatarColor } from '../types/AvatarColor';
+import { AvatarIcon } from '../types/AvatarIcon';
+import { AvatarSelector } from './AvatarSelector';
 import { DatePickerModal } from './modals/DatePickerModal';
+import { SegmentedControl } from './theme/SegmentedControl';
 const TextInput = lazy(() =>
   import('./theme/TextInput').then(({ TextInput }) => ({ default: TextInput }))
 );

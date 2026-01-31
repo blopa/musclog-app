@@ -1,23 +1,24 @@
-import { useMemo, useState } from 'react';
-import { View, Text, ScrollView, Image } from 'react-native';
 import {
+  CheckCircle,
+  CheckSquare,
+  ChevronRight,
   Clock,
   Dumbbell,
-  CheckCircle,
-  ChevronRight,
   Play,
   XCircle,
-  CheckSquare,
 } from 'lucide-react-native';
-import { GenericCard } from '../cards/GenericCard';
-import { MenuButton } from '../theme/MenuButton';
-import { Button } from '../theme/Button';
-import { BottomPopUpMenu, BottomPopUpMenuItem } from '../BottomPopUpMenu';
-import { theme } from '../../theme';
-import { FullScreenModal } from './FullScreenModal';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useActiveWorkout } from '../../hooks/useActiveWorkout';
+import { Image, ScrollView, Text, View } from 'react-native';
+
 import WorkoutLogSet from '../../database/models/WorkoutLogSet';
+import { useActiveWorkout } from '../../hooks/useActiveWorkout';
+import { theme } from '../../theme';
+import { BottomPopUpMenu, BottomPopUpMenuItem } from '../BottomPopUpMenu';
+import { GenericCard } from '../cards/GenericCard';
+import { Button } from '../theme/Button';
+import { MenuButton } from '../theme/MenuButton';
+import { FullScreenModal } from './FullScreenModal';
 
 type ExerciseStatus = 'completed' | 'in-progress' | 'pending' | 'skipped';
 

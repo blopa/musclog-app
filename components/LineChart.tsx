@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text } from 'react-native';
-import { VictoryChart, VictoryArea, VictoryLine, VictoryScatter, VictoryAxis } from 'victory';
+import { Text, View } from 'react-native';
+import { VictoryArea, VictoryAxis, VictoryChart, VictoryLine, VictoryScatter } from 'victory';
+
 import { theme } from '../theme';
 
 export type LineChartDataPoint = {

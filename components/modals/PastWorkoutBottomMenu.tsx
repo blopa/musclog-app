@@ -1,5 +1,6 @@
-import { Share2, Pencil, Trash2 } from 'lucide-react-native';
+import { Pencil, Share2, Trash2 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
+
 import { theme } from '../../theme';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
 

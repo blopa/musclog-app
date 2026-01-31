@@ -1,42 +1,43 @@
-import { View, Text, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import {
-  UtensilsCrossed,
-  Scale,
-  Moon,
-  Heart,
-  Sparkles,
-  Bell,
-  Trophy,
   Activity,
-  Zap,
-  Dumbbell,
-  Repeat,
+  Bell,
   ChevronRight,
+  Dumbbell,
+  Heart,
+  Moon,
+  Repeat,
+  Scale,
+  Sparkles,
+  Trophy,
+  UtensilsCrossed,
+  Zap,
 } from 'lucide-react-native';
-import { TestSection } from './components/TestSection';
-import { WorkoutCard } from '../../components/cards/WorkoutCard';
-import { DailySummaryCard } from '../../components/cards/DailySummaryCard/DailySummaryCard';
-import { WorkoutStatCard } from '../../components/cards/WorkoutStatCard';
+import { ScrollView, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 import { CaloriesRemainingCard } from '../../components/cards/CaloriesRemainingCard';
-import { FoodInfoCard } from '../../components/cards/FoodInfoCard';
-import { NotificationCard } from '../../components/cards/NotificationCard';
-import { MacroCard } from '../../components/cards/MacroCard';
-import { DetailedItemCard } from '../../components/cards/DetailedItemCard';
-import { FoodItemCard } from '../../components/cards/FoodItemCard';
-import { NewWorkoutCard } from '../../components/cards/NewWorkoutCard';
-import { WorkoutSummaryStatsCard } from '../../components/cards/WorkoutSummaryStatsCard';
-import { StatCard } from '../../components/cards/StatCard';
-import { theme } from '../../theme';
 import { ChatWorkoutCard } from '../../components/cards/ChatWorkoutCard';
-import { MealItemCard } from '../../components/cards/MealItemCard';
-import { SettingsCard } from '../../components/cards/SettingsCard';
-import { HealthCategoryCard } from '../../components/cards/HealthCategoryCard';
 import { CurrentGoalsCard } from '../../components/cards/CurrentGoalsCard';
-import { GoalHistoryCard } from '../../components/cards/GoalHistoryCard';
-import { SelectedExerciseCard } from '../../components/cards/SelectedExerciseCard';
-import { UpNextLabel } from '../../components/UpNextLabel';
+import { DailySummaryCard } from '../../components/cards/DailySummaryCard/DailySummaryCard';
 import { DailySummaryEmptyState } from '../../components/cards/DailySummaryCard/DailySummaryEmptyState';
+import { DetailedItemCard } from '../../components/cards/DetailedItemCard';
+import { FoodInfoCard } from '../../components/cards/FoodInfoCard';
+import { FoodItemCard } from '../../components/cards/FoodItemCard';
+import { GoalHistoryCard } from '../../components/cards/GoalHistoryCard';
+import { HealthCategoryCard } from '../../components/cards/HealthCategoryCard';
+import { MacroCard } from '../../components/cards/MacroCard';
+import { MealItemCard } from '../../components/cards/MealItemCard';
+import { NewWorkoutCard } from '../../components/cards/NewWorkoutCard';
+import { NotificationCard } from '../../components/cards/NotificationCard';
+import { SelectedExerciseCard } from '../../components/cards/SelectedExerciseCard';
+import { SettingsCard } from '../../components/cards/SettingsCard';
+import { StatCard } from '../../components/cards/StatCard';
+import { WorkoutCard } from '../../components/cards/WorkoutCard';
+import { WorkoutStatCard } from '../../components/cards/WorkoutStatCard';
+import { WorkoutSummaryStatsCard } from '../../components/cards/WorkoutSummaryStatsCard';
+import { UpNextLabel } from '../../components/UpNextLabel';
+import { theme } from '../../theme';
+import { TestSection } from './components/TestSection';
 
 export default function CardsTestScreen() {
   return (

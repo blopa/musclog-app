@@ -1,10 +1,11 @@
-import { Dumbbell, User } from 'lucide-react-native';
-import { theme } from '../theme';
 import type { LucideIcon } from 'lucide-react-native';
+import { Dumbbell, User } from 'lucide-react-native';
+
 import type { SelectorOption } from '../components/theme/OptionsMultiSelector/utils';
-import type { ExerciseInWorkout } from '../database/services/WorkoutTemplateService';
 import Exercise from '../database/models/Exercise';
 import Schedule from '../database/models/Schedule';
+import type { ExerciseInWorkout } from '../database/services/WorkoutTemplateService';
+import { theme } from '../theme';
 
 // ============================================================================
 // Day Mapping Utilities

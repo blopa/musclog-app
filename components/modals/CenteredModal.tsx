@@ -1,7 +1,8 @@
-import { ReactNode } from 'react';
-import { View, Text, Pressable, Modal, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { X } from 'lucide-react-native';
+import { ReactNode } from 'react';
+import { Modal, Platform, Pressable, Text, View } from 'react-native';
+
 import { theme } from '../../theme';
 
 type CenteredModalProps = {

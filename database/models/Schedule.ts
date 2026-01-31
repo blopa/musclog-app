@@ -1,5 +1,6 @@
 import { Model } from '@nozbe/watermelondb';
 import { field, relation } from '@nozbe/watermelondb/decorators';
+
 import WorkoutTemplate from './WorkoutTemplate';
 
 export default class Schedule extends Model {

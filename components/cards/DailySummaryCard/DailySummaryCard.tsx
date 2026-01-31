@@ -1,13 +1,14 @@
-import { View, Text } from 'react-native';
+import { AlertCircle, CheckCircle2 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { CheckCircle2, AlertCircle } from 'lucide-react-native';
+import { Text, View } from 'react-native';
+
 import { theme } from '../../../theme';
 import { GenericCard } from '../GenericCard';
 import {
-  MacroValue,
+  calculateDailySummaryMetrics,
   getProgressBarColor,
   getStatusLabel,
-  calculateDailySummaryMetrics,
+  MacroValue,
 } from './utils';
 
 type DailySummaryCardProps = {

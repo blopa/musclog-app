@@ -2,14 +2,15 @@
  * @jest-environment jsdom
  */
 
-import { renderHook, act, waitFor } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { Alert } from 'react-native';
-import { useWorkoutForm, type AddExerciseData } from '../useWorkoutForm';
-import { WorkoutTemplateService } from '../../database/services/WorkoutTemplateService';
-import Exercise from '../../database/models/Exercise';
+
 import { database } from '../../database';
+import Exercise from '../../database/models/Exercise';
+import { WorkoutTemplateService } from '../../database/services/WorkoutTemplateService';
 import * as workoutUtils from '../../utils/workout';
 import { ExerciseMetadata } from '../../utils/workout';
+import { type AddExerciseData, useWorkoutForm } from '../useWorkoutForm';
 
 // Mock dependencies
 jest.mock('react-native', () => ({

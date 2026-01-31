@@ -1,5 +1,6 @@
-import { View, Text, Pressable, ScrollView, ViewStyle } from 'react-native';
 import { Check } from 'lucide-react-native';
+import { Pressable, ScrollView, Text, View, ViewStyle } from 'react-native';
+
 import { theme } from '../theme';
 
 type FilterTab = {

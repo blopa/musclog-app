@@ -1,6 +1,7 @@
-import React from 'react';
 import { List, Settings, Square } from 'lucide-react-native';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
+
 import { theme } from '../../theme';
 import { BottomPopUpMenu } from '../BottomPopUpMenu';
 

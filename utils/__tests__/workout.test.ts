@@ -1,27 +1,28 @@
-import { User, Dumbbell } from 'lucide-react-native';
-import {
-  WEEKDAY_LABELS,
-  WEEKDAY_NAMES,
-  dayNameToIndex,
-  indexToDayName,
-  isBodyweightExercise,
-  getExerciseIconConfig,
-  formatExerciseDescription,
-  createExerciseOption,
-  extractExerciseMetadata,
-  updateMetadataWithGroupIds,
-  exercisesToWorkoutFormat,
-  transformExercisesToOptions,
-  transformScheduleDays,
-  validateWorkoutTitle,
-  type ExerciseMetadata,
-  type CreateExerciseOptionParams,
-} from '../workout';
-import type { ExerciseInWorkout } from '../../database/services/WorkoutTemplateService';
+import { Dumbbell, User } from 'lucide-react-native';
+
 import type { SelectorOption } from '../../components/theme/OptionsMultiSelector/utils';
 import Exercise from '../../database/models/Exercise';
 import Schedule from '../../database/models/Schedule';
+import type { ExerciseInWorkout } from '../../database/services/WorkoutTemplateService';
 import { theme } from '../../theme';
+import {
+  createExerciseOption,
+  type CreateExerciseOptionParams,
+  dayNameToIndex,
+  type ExerciseMetadata,
+  exercisesToWorkoutFormat,
+  extractExerciseMetadata,
+  formatExerciseDescription,
+  getExerciseIconConfig,
+  indexToDayName,
+  isBodyweightExercise,
+  transformExercisesToOptions,
+  transformScheduleDays,
+  updateMetadataWithGroupIds,
+  validateWorkoutTitle,
+  WEEKDAY_LABELS,
+  WEEKDAY_NAMES,
+} from '../workout';
 
 // Mock Exercise model
 const createMockExercise = (overrides: Partial<Exercise> = {}): Partial<Exercise> => ({

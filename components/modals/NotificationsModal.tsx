@@ -1,6 +1,7 @@
-import { View, Text, Pressable } from 'react-native';
+import { CheckCircle2, Clock, Dumbbell, Sparkles, ThumbsUp } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { Sparkles, Dumbbell, CheckCircle2, ThumbsUp, Clock } from 'lucide-react-native';
+import { Pressable, Text, View } from 'react-native';
+
 import { theme } from '../../theme';
 import { NotificationCard } from '../cards/NotificationCard';
 import { FullScreenModal } from './FullScreenModal';

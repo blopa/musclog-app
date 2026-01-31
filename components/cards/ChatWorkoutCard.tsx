@@ -1,8 +1,9 @@
-import React from 'react';
-import { View, Text, Image, Pressable, ImageSourcePropType } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Dumbbell, Flame, ArrowRight } from 'lucide-react-native';
+import { ArrowRight, Dumbbell, Flame } from 'lucide-react-native';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { Image, ImageSourcePropType, Pressable, Text, View } from 'react-native';
+
 import { theme } from '../../theme';
 import { GenericCard } from './GenericCard';
 

@@ -1,13 +1,14 @@
+import { Q } from '@nozbe/watermelondb';
 import { format } from 'date-fns';
 import { Activity, Dumbbell, Square } from 'lucide-react-native';
-import { Q } from '@nozbe/watermelondb';
-import { theme } from '../theme';
+
+import type { Units } from '../constants/settings';
 import { database } from '../database';
+import Exercise from '../database/models/Exercise';
 import WorkoutLog from '../database/models/WorkoutLog';
 import WorkoutLogSet from '../database/models/WorkoutLogSet';
-import Exercise from '../database/models/Exercise';
 import { WorkoutAnalytics } from '../database/services/WorkoutAnalytics';
-import type { Units } from '../constants/settings';
+import { theme } from '../theme';
 import { getWeightUnitI18nKey } from './units';
 
 // Type definitions

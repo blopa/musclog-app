@@ -1,31 +1,28 @@
-import { useState, useMemo, useEffect, lazy } from 'react';
-
-import { View, Text, ScrollView, Pressable } from 'react-native';
+import { format } from 'date-fns';
 import {
+  Calendar,
   ChevronLeft,
   ChevronRight,
-  Calendar,
+  ListPlus,
   ScanLine,
   Sparkles,
-  ListPlus,
   UtensilsCrossed,
 } from 'lucide-react-native';
+import { lazy, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { format } from 'date-fns';
-import i18n, { LOCALE_MAP, LanguageKeys } from '../../lang/lang';
-import { theme } from '../../theme';
-import { MasterLayout } from '../../components/MasterLayout';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { FoodItemCard } from '../../components/cards/FoodItemCard';
-
+import { MasterLayout } from '../../components/MasterLayout';
 import { AddFoodModal } from '../../components/modals/AddFoodModal';
 import { FoodSearchModal } from '../../components/modals/FoodSearchModal';
-
+import Food from '../../database/models/Food';
+import NutritionLog from '../../database/models/NutritionLog';
+import { useCurrentNutritionGoal } from '../../hooks/useCurrentNutritionGoal';
 import { useNutritionLogs } from '../../hooks/useNutritionLogs';
 import { useSettings } from '../../hooks/useSettings';
-import { useCurrentNutritionGoal } from '../../hooks/useCurrentNutritionGoal';
-import NutritionLog from '../../database/models/NutritionLog';
-import Food from '../../database/models/Food';
+import i18n, { LanguageKeys, LOCALE_MAP } from '../../lang/lang';
+import { theme } from '../../theme';
 const CaloriesRemainingCard = lazy(() =>
   import('../../components/cards/CaloriesRemainingCard').then(({ CaloriesRemainingCard }) => ({
     default: CaloriesRemainingCard,

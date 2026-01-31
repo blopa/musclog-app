@@ -1,21 +1,22 @@
-import { ComponentType, createElement } from 'react';
-import { View, Text, Pressable } from 'react-native';
 import {
-  Dumbbell,
-  Zap,
   Activity,
-  Trophy,
-  Target,
-  User,
-  Heart,
+  Dumbbell,
   Flame,
+  Heart,
   SunMedium,
+  Target,
+  Trophy,
+  User,
+  Zap,
 } from 'lucide-react-native';
+import { ComponentType, createElement } from 'react';
+import { Pressable, Text, View } from 'react-native';
+
 import { theme } from '../theme';
-import { AvatarIcon } from '../types/AvatarIcon';
 import { AvatarColor } from '../types/AvatarColor';
+import { AvatarIcon } from '../types/AvatarIcon';
+import { getAvatarBackgroundColor, getAvatarColor } from '../utils/avatarColorUtils';
 import { getAvatarIcon } from '../utils/avatarUtils';
-import { getAvatarColor, getAvatarBackgroundColor } from '../utils/avatarColorUtils';
 
 interface AvatarSelectorProps {
   selectedAvatar: AvatarIcon;

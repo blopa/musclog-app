@@ -1,7 +1,8 @@
-import { useState, useRef, useEffect, FC } from 'react';
-import { View, Text, Pressable, TextInput } from 'react-native';
 import { Minus, Plus } from 'lucide-react-native';
+import { FC, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Pressable, Text, TextInput, View } from 'react-native';
+
 import { theme } from '../../theme';
 
 interface StepperInputProps {

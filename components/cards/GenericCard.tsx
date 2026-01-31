@@ -1,7 +1,8 @@
-import { Pressable, View, ViewStyle, StyleProp } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { theme } from '../../theme';
 import { ReactNode } from 'react';
+import { Pressable, StyleProp, View, ViewStyle } from 'react-native';
+
+import { theme } from '../../theme';
 
 type GenericCardProps = {
   children: ReactNode;

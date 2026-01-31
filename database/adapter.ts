@@ -1,6 +1,7 @@
 import SQLiteAdapter from '@nozbe/watermelondb/adapters/sqlite';
-import { schema } from './schema';
+
 import { migrations } from './migrations';
+import { schema } from './schema';
 
 // Note: The JSI SQLiteAdapter warning ("JSI SQLiteAdapter not available... falling back to asynchronous operation")
 // is expected and harmless in the following scenarios:

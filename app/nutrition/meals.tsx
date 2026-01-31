@@ -1,14 +1,15 @@
-import { useState } from 'react';
-import { View, Text, ScrollView, Pressable } from 'react-native';
 import { Search } from 'lucide-react-native';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Pressable, ScrollView, Text, View } from 'react-native';
+
+import { MealItemCard } from '../../components/cards/MealItemCard';
+import { FilterTabs } from '../../components/FilterTabs';
+import { MasterLayout } from '../../components/MasterLayout';
 import { AddMealModal } from '../../components/modals/AddMealModal';
 import { CreateMealModal } from '../../components/modals/CreateMealModal';
-import { theme } from '../../theme';
 import { MenuButton } from '../../components/theme/MenuButton';
-import { MasterLayout } from '../../components/MasterLayout';
-import { FilterTabs } from '../../components/FilterTabs';
-import { MealItemCard } from '../../components/cards/MealItemCard';
+import { theme } from '../../theme';
 
 const MEALS_DATA = [
   {

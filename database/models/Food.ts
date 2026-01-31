@@ -1,6 +1,7 @@
 import { Model, Query } from '@nozbe/watermelondb';
-import { field, children, writer, json } from '@nozbe/watermelondb/decorators';
-import { FoodPortion, NutritionLog, MealFood } from './index';
+import { children, field, json, writer } from '@nozbe/watermelondb/decorators';
+
+import { FoodPortion, MealFood, NutritionLog } from './index';
 
 export interface MicrosData {
   sugars?: number;

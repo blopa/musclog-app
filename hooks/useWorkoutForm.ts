@@ -1,21 +1,22 @@
-import { useState, useEffect, useCallback } from 'react';
-import { Alert } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Alert } from 'react-native';
+
+import type { SelectorOption } from '../components/theme/OptionsMultiSelector/utils';
 import { database } from '../database';
 import Exercise from '../database/models/Exercise';
 import { WorkoutTemplateService } from '../database/services/WorkoutTemplateService';
 import {
+  createExerciseOption,
+  type ExerciseMetadata,
+  exercisesToWorkoutFormat,
+  extractExerciseMetadata,
   transformExercisesToOptions,
   transformScheduleDays,
-  createExerciseOption,
-  extractExerciseMetadata,
   updateMetadataWithGroupIds,
-  exercisesToWorkoutFormat,
   validateWorkoutTitle,
-  type ExerciseMetadata,
 } from '../utils/workout';
-import type { SelectorOption } from '../components/theme/OptionsMultiSelector/utils';
 
 export interface UseWorkoutFormParams {
   templateId?: string;

@@ -1,7 +1,8 @@
+import { Dumbbell, Timer, TrendingUp } from 'lucide-react-native';
 import React from 'react';
-import { View } from 'react-native';
-import { Timer, Dumbbell, TrendingUp } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
+import { View } from 'react-native';
+
 import { theme } from '../../theme';
 import { WorkoutSummaryStatRow } from '../WorkoutSummaryStatRow';
 import { GenericCard } from './GenericCard';

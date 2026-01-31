@@ -1,10 +1,10 @@
-import { ReactNode, lazy } from 'react';
-import { View, Text, Pressable, Modal, ScrollView, Platform } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ArrowLeft } from 'lucide-react-native';
-import { theme } from '../../theme';
-
 import { LinearGradient } from 'expo-linear-gradient';
+import { ArrowLeft } from 'lucide-react-native';
+import { lazy, ReactNode } from 'react';
+import { Modal, Platform, Pressable, ScrollView, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { theme } from '../../theme';
 const BottomButtonWrapper = lazy(() =>
   import('../BottomButtonWrapper').then(({ BottomButtonWrapper }) => ({
     default: BottomButtonWrapper,

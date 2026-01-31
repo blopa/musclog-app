@@ -1,6 +1,7 @@
+import { Q } from '@nozbe/watermelondb';
+
 import { database } from '../index';
 import NutritionGoal from '../models/NutritionGoal';
-import { Q } from '@nozbe/watermelondb';
 
 export interface NutritionGoalInput {
   totalCalories: number;

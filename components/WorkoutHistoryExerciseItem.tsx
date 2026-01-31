@@ -1,8 +1,9 @@
-import { View, Text, Image } from 'react-native';
 import { Check } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
+import { Image, Text, View } from 'react-native';
+
 import { theme } from '../theme';
-import { SetRow, SetData } from './WorkoutHistorySetRow';
+import { SetData, SetRow } from './WorkoutHistorySetRow';
 
 export type ExerciseData = {
   id: string;

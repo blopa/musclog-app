@@ -1,21 +1,22 @@
-import React from 'react';
-import { View, Text, ScrollView } from 'react-native';
 import {
   Clock,
+  Edit,
+  MoreHorizontal,
   QrCode,
-  Sparkles,
   ScanLine,
   Search,
-  Edit,
+  Sparkles,
   UtensilsCrossed,
-  MoreHorizontal,
 } from 'lucide-react-native';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { ScrollView, Text, View } from 'react-native';
+
 import { theme } from '../../theme';
 import { BottomPopUpMenu } from '../BottomPopUpMenu';
+import { MealTypeButton } from '../MealTypeButton';
 import { Button } from '../theme/Button';
 import { TrackingMethodButton } from '../TrackingMethodButton';
-import { MealTypeButton } from '../MealTypeButton';
 
 type AddFoodModalProps = {
   visible: boolean;

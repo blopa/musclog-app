@@ -1,30 +1,30 @@
-import { lazy, useState, useEffect, useMemo, createElement } from 'react';
-import { View, Text, Pressable, ScrollView, ActivityIndicator } from 'react-native';
+import { useRouter } from 'expo-router';
 import {
   Bell,
-  Zap,
-  Wheat,
-  Droplet,
-  UtensilsCrossed,
-  Flame,
   Clock,
+  Droplet,
+  Flame,
   Trophy,
+  UtensilsCrossed,
+  Wheat,
+  Zap,
 } from 'lucide-react-native';
+import { createElement, lazy, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { theme } from '../theme';
-import { MasterLayout } from '../components/MasterLayout';
-import { DetailedItemCard } from '../components/cards/DetailedItemCard';
-import { ActionButton } from '../components/ActionButton';
-import ShowMoreButton from '../components/ShowMoreButton';
-import { useRouter } from 'expo-router';
-import { SkeletonLoader } from '../components/theme/SkeletonLoader';
+import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 
-import { isOnboardingCompleted } from '../utils/onboardingService';
-import { useWorkoutHistory } from '../hooks/useWorkoutHistory';
-import { useUser } from '../hooks/useUser';
+import { ActionButton } from '../components/ActionButton';
+import { DetailedItemCard } from '../components/cards/DetailedItemCard';
+import { MasterLayout } from '../components/MasterLayout';
+import ShowMoreButton from '../components/ShowMoreButton';
+import { SkeletonLoader } from '../components/theme/SkeletonLoader';
 import { useCurrentNutritionGoal } from '../hooks/useCurrentNutritionGoal';
 import { useNutritionLogs } from '../hooks/useNutritionLogs';
+import { useUser } from '../hooks/useUser';
+import { useWorkoutHistory } from '../hooks/useWorkoutHistory';
+import { theme } from '../theme';
 import { getAvatarDisplayProps } from '../utils/avatarUtils';
+import { isOnboardingCompleted } from '../utils/onboardingService';
 const WorkoutFoodEmptyState = lazy(() =>
   import('../components/WorkoutFoodEmptyState').then(({ WorkoutFoodEmptyState }) => ({
     default: WorkoutFoodEmptyState,

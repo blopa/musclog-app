@@ -1,13 +1,14 @@
-import { useState, useMemo, useEffect } from 'react';
-import { View, Text, Pressable, ScrollView } from 'react-native';
 import { Calendar } from 'lucide-react-native';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Pressable, ScrollView, Text, View } from 'react-native';
+
 import { theme } from '../../theme';
 import { BottomPopUp } from '../BottomPopUp';
 import { FilterTabs } from '../FilterTabs';
+import { Button } from '../theme/Button';
 import { SegmentedControl } from '../theme/SegmentedControl';
 import { Slider } from '../theme/Slider';
-import { Button } from '../theme/Button';
 
 type WorkoutType = 'all' | 'strength' | 'cardio' | 'hiit' | 'yoga';
 type DateRange = '30' | '90' | 'custom';

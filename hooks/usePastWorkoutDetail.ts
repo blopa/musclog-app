@@ -1,10 +1,11 @@
-import { useState, useEffect, useCallback } from 'react';
+import { Q } from '@nozbe/watermelondb';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import { database } from '../database';
 import { WorkoutService } from '../database/services/WorkoutService';
 import { transformWorkoutToDetailData, type WorkoutDetailData } from '../utils/workoutDetail';
 import { useSettings } from './useSettings';
-import { Q } from '@nozbe/watermelondb';
-import { database } from '../database';
 
 export interface UsePastWorkoutDetailParams {
   visible: boolean;

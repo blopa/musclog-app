@@ -1,5 +1,6 @@
-import * as RNPagerView from 'react-native-pager-view';
 import { forwardRef } from 'react';
+import * as RNPagerView from 'react-native-pager-view';
+
 import type { PagerViewRef } from './types';
 
 export type PagerViewProps = RNPagerView.PagerViewProps;

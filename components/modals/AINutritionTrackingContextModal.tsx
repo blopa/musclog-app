@@ -1,8 +1,9 @@
-import { useState } from 'react';
-import { View, Text, Pressable, TextInput as RNTextInput } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Sparkles, CheckCircle } from 'lucide-react-native';
+import { CheckCircle, Sparkles } from 'lucide-react-native';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Pressable, Text, TextInput as RNTextInput, View } from 'react-native';
+
 import { theme } from '../../theme';
 import { BottomPopUp } from '../BottomPopUp';
 

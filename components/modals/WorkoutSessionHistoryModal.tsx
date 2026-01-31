@@ -1,16 +1,17 @@
+import { Dumbbell, Share2, Weight } from 'lucide-react-native';
 import { useMemo } from 'react';
-import { View, Text, Pressable } from 'react-native';
-import { Share2, Weight, Dumbbell } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { theme } from '../../theme';
-import { ExerciseItem, ExerciseData } from '../WorkoutHistoryExerciseItem';
-import { FullScreenModal } from './FullScreenModal';
-import { useSettings } from '../../hooks/useSettings';
-import { getWeightUnitI18nKey } from '../../utils/units';
+import { Pressable, Text, View } from 'react-native';
+
+import Exercise from '../../database/models/Exercise';
 import WorkoutLog from '../../database/models/WorkoutLog';
 import WorkoutLogSet from '../../database/models/WorkoutLogSet';
-import Exercise from '../../database/models/Exercise';
 import { useSessionTotalTime } from '../../hooks/useSessionTotalTime';
+import { useSettings } from '../../hooks/useSettings';
+import { theme } from '../../theme';
+import { getWeightUnitI18nKey } from '../../utils/units';
+import { ExerciseData, ExerciseItem } from '../WorkoutHistoryExerciseItem';
+import { FullScreenModal } from './FullScreenModal';
 
 export type { SetData } from '../WorkoutHistorySetRow';
 

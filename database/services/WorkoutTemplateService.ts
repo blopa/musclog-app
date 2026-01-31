@@ -1,14 +1,15 @@
-import { database } from '../index';
-import WorkoutTemplate from '../models/WorkoutTemplate';
-import WorkoutTemplateSet from '../models/WorkoutTemplateSet';
-import Schedule from '../models/Schedule';
-import Exercise from '../models/Exercise';
-import WorkoutLog from '../models/WorkoutLog';
 import { Q } from '@nozbe/watermelondb';
 import { Dumbbell, User } from 'lucide-react-native';
+
 import { theme } from '../../theme';
+import { indexToDayName, WEEKDAY_NAMES } from '../../utils/workout';
+import { database } from '../index';
+import Exercise from '../models/Exercise';
+import Schedule from '../models/Schedule';
+import WorkoutLog from '../models/WorkoutLog';
+import WorkoutTemplate from '../models/WorkoutTemplate';
+import WorkoutTemplateSet from '../models/WorkoutTemplateSet';
 import { WorkoutTemplateRepository } from '../repositories/WorkoutTemplateRepository';
-import { WEEKDAY_NAMES, indexToDayName } from '../../utils/workout';
 
 export type ExerciseInWorkout = {
   id: string; // exerciseId

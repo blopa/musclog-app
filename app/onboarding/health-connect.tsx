@@ -1,14 +1,15 @@
-import { View, Text, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { UtensilsCrossed, Moon, RefreshCw, Scale, Heart } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
+import { Heart, Moon, RefreshCw, Scale, UtensilsCrossed } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { theme } from '../../theme';
-import { GradientText } from '../../components/GradientText';
-import { Button } from '../../components/theme/Button';
+import { ScrollView, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 import { HealthCategoryCard } from '../../components/cards/HealthCategoryCard';
+import { GradientText } from '../../components/GradientText';
 import { HealthConnectIllustration } from '../../components/HealthConnectIllustration';
 import { MaybeLaterButton } from '../../components/MaybeLaterButton';
+import { Button } from '../../components/theme/Button';
+import { theme } from '../../theme';
 
 export default function HealthConnectScreen() {
   const { t } = useTranslation();

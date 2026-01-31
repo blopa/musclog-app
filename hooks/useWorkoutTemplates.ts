@@ -1,9 +1,10 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Q } from '@nozbe/watermelondb';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+
+import { DEFAULT_BATCH_SIZE } from '../constants/database';
 import { database } from '../database';
 import WorkoutTemplate from '../database/models/WorkoutTemplate';
 import { WorkoutTemplateService } from '../database/services/WorkoutTemplateService';
-import { DEFAULT_BATCH_SIZE } from '../constants/database';
 
 export type WorkoutTemplateWithMetadata = {
   id: string;

@@ -1,4 +1,5 @@
 import { TFunction } from 'i18next';
+
 import { theme } from '../../../theme';
 
 export type MacroValue = {

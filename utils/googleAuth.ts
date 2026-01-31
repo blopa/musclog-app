@@ -1,13 +1,14 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Platform } from 'react-native';
 import { fetch } from 'expo/fetch';
+import { Platform } from 'react-native';
+
 import {
-  GOOGLE_CLIENT_ID_MOBILE,
-  GOOGLE_CLIENT_ID_WEB,
   GOOGLE_ACCESS_TOKEN,
   GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE,
-  LAST_TIME_GOOGLE_AUTH_ERROR_WAS_SHOWN,
+  GOOGLE_CLIENT_ID_MOBILE,
+  GOOGLE_CLIENT_ID_WEB,
   HAS_COMPLETED_ONBOARDING,
+  LAST_TIME_GOOGLE_AUTH_ERROR_WAS_SHOWN,
 } from '../constants/auth';
 import { GoogleAuthService } from '../database/services';
 import i18n from '../lang/lang';

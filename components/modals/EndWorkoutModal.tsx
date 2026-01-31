@@ -1,8 +1,9 @@
-import { useEffect, useRef } from 'react';
-import { View, Text, Pressable, Modal, Animated, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { X, Flag, Save, Trash2 } from 'lucide-react-native';
+import { Flag, Save, Trash2, X } from 'lucide-react-native';
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Animated, Modal, Platform, Pressable, Text, View } from 'react-native';
+
 import { theme } from '../../theme';
 import { Button } from '../theme/Button';
 

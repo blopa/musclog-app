@@ -1,11 +1,12 @@
-import React from 'react';
-import { View, Text } from 'react-native';
+import type { TFunction } from 'i18next';
 import { Dumbbell, Utensils } from 'lucide-react-native';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { Text, View } from 'react-native';
+
 import { theme } from '../theme';
 import { GenericCard } from './cards/GenericCard';
 import { Button } from './theme/Button';
-import type { TFunction } from 'i18next';
 
 type EmptyStateType = 'workout' | 'food';
 

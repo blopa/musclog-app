@@ -1,10 +1,11 @@
-import { createContext, useContext, useState, ReactNode, useCallback, useEffect } from 'react';
-import { View, Platform } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Platform, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import { theme } from '../theme';
-import { Snackbar, type SnackbarType } from './Snackbar';
 import { registerSnackbarService, unregisterSnackbarService } from '../utils/snackbarService';
+import { Snackbar, type SnackbarType } from './Snackbar';
 
 type SnackbarContextType = {
   showSnackbar: (

@@ -1,8 +1,9 @@
 import { Model } from '@nozbe/watermelondb';
-import { field, writer, relation } from '@nozbe/watermelondb/decorators';
+import { field, relation, writer } from '@nozbe/watermelondb/decorators';
+
 import Food from './Food';
-import Meal from './Meal';
 import FoodPortion from './FoodPortion';
+import Meal from './Meal';
 
 export default class MealFood extends Model {
   static table = 'meal_foods';

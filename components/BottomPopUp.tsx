@@ -1,17 +1,18 @@
-import { useEffect, useRef, ReactNode } from 'react';
+import { LinearGradient } from 'expo-linear-gradient';
+import { X } from 'lucide-react-native';
+import { ReactNode, useEffect, useRef } from 'react';
 import {
-  View,
-  Text,
-  Modal,
   Animated,
+  Modal,
   Platform,
-  TouchableWithoutFeedback, // it's deprecated, but using Pressable instead causes a gap below the modal on mobile
   Pressable,
+  Text,
+  TouchableWithoutFeedback, // it's deprecated, but using Pressable instead causes a gap below the modal on mobile
+  View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { X } from 'lucide-react-native';
+
 import { theme } from '../theme';
-import { LinearGradient } from 'expo-linear-gradient';
 
 type BottomPopUpProps = {
   visible: boolean;

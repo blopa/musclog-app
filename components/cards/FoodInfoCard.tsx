@@ -1,6 +1,7 @@
-import { useState, useRef } from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { ScrollView, Text, View } from 'react-native';
+
 import { theme } from '../../theme';
 import { MacrosPizzaChart } from '../theme/MacrosPizzaChart';
 import { GenericCard } from './GenericCard';

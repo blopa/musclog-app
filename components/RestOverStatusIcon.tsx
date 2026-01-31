@@ -1,6 +1,7 @@
+import { AlertCircle, Dumbbell } from 'lucide-react-native';
 import { useEffect, useRef } from 'react';
-import { View, Animated } from 'react-native';
-import { Dumbbell, AlertCircle } from 'lucide-react-native';
+import { Animated, View } from 'react-native';
+
 import { theme } from '../theme';
 
 export function RestOverStatusIcon() {

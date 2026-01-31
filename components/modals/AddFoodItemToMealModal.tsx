@@ -1,18 +1,19 @@
-import { useState, useMemo, useRef } from 'react';
-import {
-  View,
-  Text,
-  Pressable,
-  TextInput as RNTextInput,
-  ScrollView,
-  Platform,
-} from 'react-native';
-import { Search, Check, PlusCircle } from 'lucide-react-native';
+import { Check, PlusCircle, Search } from 'lucide-react-native';
+import { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import {
+  Platform,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput as RNTextInput,
+  View,
+} from 'react-native';
+
 import { theme } from '../../theme';
-import { FullScreenModal } from './FullScreenModal';
 import { Button } from '../theme/Button';
 import { TextInput } from '../theme/TextInput';
+import { FullScreenModal } from './FullScreenModal';
 
 type FoodResult = {
   id: string;

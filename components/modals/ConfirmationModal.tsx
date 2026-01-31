@@ -1,7 +1,8 @@
-import React from 'react';
-import { View, Text, Pressable, Modal, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { Modal, Platform, Pressable, Text, View } from 'react-native';
+
 import { theme } from '../../theme';
 import { Button } from '../theme/Button';
 

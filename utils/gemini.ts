@@ -1,5 +1,3 @@
-import type { ChatCompletionMessageParam } from 'openai/resources';
-
 import {
   Content,
   GenerateContentRequest,
@@ -12,9 +10,11 @@ import {
 } from '@google/generative-ai';
 // import fetch from 'isomorphic-fetch';
 import { fetch } from 'expo/fetch';
+import type { ChatCompletionMessageParam } from 'openai/resources';
+
 import { GEMINI_MODELS } from '../constants/ai';
-import { captureMessage } from './sentry';
 import { getAccessToken } from './googleAuth';
+import { captureMessage } from './sentry';
 
 const getModel = async () => {
   const defaultModel = GEMINI_MODELS.GEMINI_2_5_FLASH.model;

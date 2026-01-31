@@ -1,10 +1,11 @@
-import React from 'react';
-import { View, Text } from 'react-native';
 import { History } from 'lucide-react-native';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { Text, View } from 'react-native';
+
 import { theme } from '../../theme';
-import { GenericCard } from './GenericCard';
 import { EatingPhaseBadge } from '../EatingPhaseBadge';
+import { GenericCard } from './GenericCard';
 
 type EatingPhase = 'cutting' | 'maintenance' | 'bulking' | 'lean-bulk';
 

@@ -1,13 +1,14 @@
+import { Camera, ChevronDown, Dumbbell, Link } from 'lucide-react-native';
 import { useState } from 'react';
-import { View, Text, ScrollView, Pressable } from 'react-native';
-import { Camera, Link, ChevronDown, Dumbbell } from 'lucide-react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
+import { Pressable, ScrollView, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import { theme } from '../../theme';
-import { TextInput } from '../theme/TextInput';
-import { Button } from '../theme/Button';
-import { ToggleInput } from '../theme/ToggleInput';
 import { BottomPopUpMenu } from '../BottomPopUpMenu';
+import { Button } from '../theme/Button';
+import { TextInput } from '../theme/TextInput';
+import { ToggleInput } from '../theme/ToggleInput';
 import { FullScreenModal } from './FullScreenModal';
 
 // Muscle groups will be translated using useTranslation hook

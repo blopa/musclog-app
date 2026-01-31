@@ -1,6 +1,7 @@
-import { View, Text, Pressable } from 'react-native';
 import { SkipForward } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
+import { Pressable, Text, View } from 'react-native';
+
 import { theme } from '../theme';
 import { Button } from './theme/Button';
 

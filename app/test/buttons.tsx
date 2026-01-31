@@ -1,9 +1,10 @@
-import { ReactNode, useState } from 'react';
-import { View, Text, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowRight, CheckCircle, X } from 'lucide-react-native';
-import { Button } from '../../components/theme/Button';
+import { ReactNode, useState } from 'react';
+import { ScrollView, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 import { GoogleSignInButton } from '../../components/GoogleSignInButton';
+import { Button } from '../../components/theme/Button';
 
 type ButtonVariant =
   | 'accent'

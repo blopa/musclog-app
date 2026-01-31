@@ -1,8 +1,9 @@
 import React from 'react';
-import { Text } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { GradientText } from './GradientText';
+import { Text } from 'react-native';
+
 import { theme } from '../theme';
+import { GradientText } from './GradientText';
 
 export function WorkoutSummaryHeader() {
   const { t } = useTranslation();

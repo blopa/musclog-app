@@ -1,20 +1,20 @@
-import { createElement, useState, lazy } from 'react';
-import { View, Text, ActivityIndicator } from 'react-native';
-import { Trophy, Edit } from 'lucide-react-native';
-import { MenuButton } from '../theme/MenuButton';
-import { LinearGradient } from 'expo-linear-gradient';
-import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
-import { theme } from '../../theme';
-import { FullScreenModal } from './FullScreenModal';
-import { GenericCard } from '../cards/GenericCard';
-import { LineChart, LineChartDataPoint } from '../LineChart';
-import { usePastWorkoutDetail } from '../../hooks/usePastWorkoutDetail';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Edit, Trophy } from 'lucide-react-native';
+import { createElement, lazy, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { ActivityIndicator, Text, View } from 'react-native';
 
 import { useEditWorkoutSets } from '../../hooks/useEditWorkoutSets';
-import { PastWorkoutBottomMenu } from './PastWorkoutBottomMenu';
+import { usePastWorkoutDetail } from '../../hooks/usePastWorkoutDetail';
 import { useSettings } from '../../hooks/useSettings';
+import { theme } from '../../theme';
 import { getWeightUnitI18nKey } from '../../utils/units';
+import { GenericCard } from '../cards/GenericCard';
+import { LineChart, LineChartDataPoint } from '../LineChart';
+import { MenuButton } from '../theme/MenuButton';
+import { FullScreenModal } from './FullScreenModal';
+import { PastWorkoutBottomMenu } from './PastWorkoutBottomMenu';
 const EditPastWorkoutDataModal = lazy(() => import('./EditPastWorkoutDataModal'));
 
 // Types

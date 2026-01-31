@@ -1,8 +1,9 @@
-import { View, Text } from 'react-native';
 import { TrendingDown, TrendingUp } from 'lucide-react-native';
+import { ComponentType } from 'react';
+import { Text, View } from 'react-native';
+
 import { theme } from '../../theme';
 import { GenericCard } from './GenericCard';
-import { ComponentType } from 'react';
 
 type HistoryEntry = {
   id: string;

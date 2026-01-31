@@ -1,10 +1,11 @@
-import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { Q } from '@nozbe/watermelondb';
-import { database } from '../database';
-import NutritionLog from '../database/models/NutritionLog';
-import Food from '../database/models/Food';
-import { NutritionService } from '../database/services';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
 import { DEFAULT_BATCH_SIZE } from '../constants/database';
+import { database } from '../database';
+import Food from '../database/models/Food';
+import NutritionLog from '../database/models/NutritionLog';
+import { NutritionService } from '../database/services';
 
 // Hook parameters
 export interface UseNutritionLogsParams {

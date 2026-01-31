@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
-import { View } from 'react-native';
 import SliderComponent from '@react-native-community/slider';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useEffect, useState } from 'react';
+import { View } from 'react-native';
+
 import { theme } from '../../theme';
 
 type SliderProps = {

@@ -1,8 +1,9 @@
-import { Platform, StyleSheet, Text } from 'react-native';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { LinearGradient } from 'expo-linear-gradient';
-import { theme } from '../theme';
 import { ReactNode } from 'react';
+import { Platform, StyleSheet, Text } from 'react-native';
+
+import { theme } from '../theme';
 
 type GradientTextProps = {
   colors: readonly [string, string, ...string[]];

@@ -1,11 +1,12 @@
+import { ArrowRight, ThumbsUp } from 'lucide-react-native';
 import { useState } from 'react';
-import { View, Text, Platform, ScrollView } from 'react-native';
-import { ThumbsUp, ArrowRight } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
+import { Platform, ScrollView, Text, View } from 'react-native';
+
 import { theme } from '../../theme';
 import { BottomPopUpMenu } from '../BottomPopUpMenu';
-import { Slider } from '../theme/Slider';
 import { Button } from '../theme/Button';
+import { Slider } from '../theme/Slider';
 
 type SessionFeedbackModalProps = {
   visible: boolean;

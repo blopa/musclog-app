@@ -1,8 +1,9 @@
-import { View, Text } from 'react-native';
-import { useTranslation } from 'react-i18next';
-import { ReactNode } from 'react';
-import { Button } from './theme/Button';
 import { Plus } from 'lucide-react-native';
+import { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Text, View } from 'react-native';
+
+import { Button } from './theme/Button';
 
 type MealSectionProps = {
   title: string;

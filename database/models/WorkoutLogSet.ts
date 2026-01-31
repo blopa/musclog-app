@@ -1,7 +1,8 @@
 import { Model } from '@nozbe/watermelondb';
 import { field, relation } from '@nozbe/watermelondb/decorators';
-import WorkoutLog from './WorkoutLog';
+
 import Exercise from './Exercise';
+import WorkoutLog from './WorkoutLog';
 
 export default class WorkoutLogSet extends Model {
   static table = 'workout_log_sets';

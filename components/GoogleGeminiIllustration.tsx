@@ -1,7 +1,8 @@
-import React from 'react';
-import { View, Image } from 'react-native';
-import { Sparkles, Zap } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Sparkles, Zap } from 'lucide-react-native';
+import React from 'react';
+import { Image, View } from 'react-native';
+
 import { theme } from '../theme';
 import { GoogleLogoSvg } from './icons/GoogleLogoSvg';
 

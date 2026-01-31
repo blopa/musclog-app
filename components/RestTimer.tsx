@@ -1,8 +1,9 @@
-import { View, Text, Animated } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Activity } from 'lucide-react-native';
-import Svg, { Circle } from 'react-native-svg';
 import { useTranslation } from 'react-i18next';
+import { Animated, Text, View } from 'react-native';
+import Svg, { Circle } from 'react-native-svg';
+
 import { theme } from '../theme';
 
 type RestTimerProps = {

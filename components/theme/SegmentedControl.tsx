@@ -1,6 +1,7 @@
-import { ReactNode } from 'react';
-import { View, Text, Pressable } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { ReactNode } from 'react';
+import { Pressable, Text, View } from 'react-native';
+
 import { theme } from '../../theme';
 
 type Option = {

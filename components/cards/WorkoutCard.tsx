@@ -1,11 +1,10 @@
-import { lazy } from 'react';
-
-import { View, Text, Image, Pressable, ImageSourcePropType } from 'react-native';
-import { Clock, Archive } from 'lucide-react-native';
-import { useTranslation } from 'react-i18next';
 import { isToday, isYesterday } from 'date-fns';
-import { theme } from '../../theme';
+import { Archive, Clock } from 'lucide-react-native';
+import { lazy } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Image, ImageSourcePropType, Pressable, Text, View } from 'react-native';
 
+import { theme } from '../../theme';
 import { GenericCard } from './GenericCard';
 const Button = lazy(() => import('../theme/Button').then(({ Button }) => ({ default: Button })));
 const MenuButton = lazy(() =>

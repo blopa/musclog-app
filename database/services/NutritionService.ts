@@ -1,8 +1,9 @@
+import { Q } from '@nozbe/watermelondb';
+
 import { database } from '../index';
-import NutritionLog, { MealType } from '../models/NutritionLog';
 import Food from '../models/Food';
 import FoodPortion from '../models/FoodPortion';
-import { Q } from '@nozbe/watermelondb';
+import NutritionLog, { MealType } from '../models/NutritionLog';
 
 export class NutritionService {
   /**

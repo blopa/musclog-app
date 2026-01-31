@@ -1,9 +1,10 @@
+import { Q } from '@nozbe/watermelondb';
+
+import { AvatarColor } from '../../types/AvatarColor';
+import { AvatarIcon } from '../../types/AvatarIcon';
+import { generateUUID } from '../../utils/uuid';
 import { database } from '../index';
 import User, { UserProfileUpdate } from '../models/User';
-import { Q } from '@nozbe/watermelondb';
-import { generateUUID } from '../../utils/uuid';
-import { AvatarIcon } from '../../types/AvatarIcon';
-import { AvatarColor } from '../../types/AvatarColor';
 
 export class UserService {
   /**

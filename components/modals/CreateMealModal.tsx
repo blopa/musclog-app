@@ -1,12 +1,13 @@
+import { Apple, CheckCircle2, Egg, Info, Plus, Trash2 } from 'lucide-react-native';
 import { ElementType, useState } from 'react';
-import { View, Text, TextInput, Pressable } from 'react-native';
-import { Trash2, Plus, CheckCircle2, Egg, Info, Apple } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
+import { Pressable, Text, TextInput, View } from 'react-native';
+
 import { theme } from '../../theme';
-import { FullScreenModal } from './FullScreenModal';
 import { Button } from '../theme/Button';
 import { MenuButton } from '../theme/MenuButton';
 import { AddFoodItemToMealModal } from './AddFoodItemToMealModal';
+import { FullScreenModal } from './FullScreenModal';
 
 type Ingredient = {
   id: string;

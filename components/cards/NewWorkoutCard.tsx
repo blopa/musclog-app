@@ -1,10 +1,11 @@
-import { View, Text } from 'react-native';
-import { ChevronRight } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { ChevronRight } from 'lucide-react-native';
+import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Text, View } from 'react-native';
+
 import { theme } from '../../theme';
 import { GenericCard } from './GenericCard';
-import { ReactNode } from 'react';
 
 type NewWorkoutCardProps = {
   variant?: 'default' | 'popular';

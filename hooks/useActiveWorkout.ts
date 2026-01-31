@@ -1,9 +1,10 @@
-import { useState, useEffect, useCallback } from 'react';
 import { Q } from '@nozbe/watermelondb';
+import { useCallback, useEffect, useState } from 'react';
+
 import { database } from '../database';
+import Exercise from '../database/models/Exercise';
 import WorkoutLog from '../database/models/WorkoutLog';
 import WorkoutLogSet from '../database/models/WorkoutLogSet';
-import Exercise from '../database/models/Exercise';
 import { WorkoutService } from '../database/services';
 
 export type CurrentSetData = {

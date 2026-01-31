@@ -1,15 +1,16 @@
-import { useState, useEffect, useMemo, ReactNode, lazy } from 'react';
-import { View, Text, Pressable } from 'react-native';
 import { Check, GripVertical } from 'lucide-react-native';
+import { lazy, ReactNode, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Pressable, Text, View } from 'react-native';
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+
 import { theme } from '../../../theme';
 import {
-  normalizeGroups,
-  getGroupPosition,
   getGroupColor,
+  getGroupPosition,
   GroupPosition,
+  normalizeGroups,
   SelectorOption,
 } from './utils';
 const ActionButtonsArea = lazy(() =>

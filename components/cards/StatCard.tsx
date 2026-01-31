@@ -1,6 +1,7 @@
-import { ComponentType, ReactNode } from 'react';
-import { View, Text } from 'react-native';
 import { TrendingUp } from 'lucide-react-native';
+import { ComponentType, ReactNode } from 'react';
+import { Text, View } from 'react-native';
+
 import { theme } from '../../theme';
 import { GenericCard } from './GenericCard';
 

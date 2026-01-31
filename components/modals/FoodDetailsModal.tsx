@@ -1,19 +1,20 @@
-import { useState, useEffect, useCallback } from 'react';
-import { View, Text, Pressable, Alert } from 'react-native';
-import { Calendar, Edit, PlusCircle } from 'lucide-react-native';
 import { format, isSameDay } from 'date-fns';
+import { Calendar, Edit, PlusCircle } from 'lucide-react-native';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { theme } from '../../theme';
-import { FullScreenModal } from './FullScreenModal';
-import { FilterTabs } from '../FilterTabs';
-import { DatePickerModal } from './DatePickerModal';
-import { Button } from '../theme/Button';
-import { FoodInfoCard } from '../cards/FoodInfoCard';
-import { ServingSizeSelector } from '../ServingSizeSelector';
-import { useFoodProductDetails } from '../../hooks/useFoodProductDetails';
-import { isSuccessFoodDetailProductState } from '../../types/guards/openFoodFacts';
+import { Alert, Pressable, Text, View } from 'react-native';
+
 import { FoodService, NutritionService } from '../../database/services';
+import { useFoodProductDetails } from '../../hooks/useFoodProductDetails';
+import { theme } from '../../theme';
+import { isSuccessFoodDetailProductState } from '../../types/guards/openFoodFacts';
+import { FoodInfoCard } from '../cards/FoodInfoCard';
+import { FilterTabs } from '../FilterTabs';
+import { ServingSizeSelector } from '../ServingSizeSelector';
+import { Button } from '../theme/Button';
+import { DatePickerModal } from './DatePickerModal';
 import { FoodNotFoundModal } from './FoodNotFoundModal';
+import { FullScreenModal } from './FullScreenModal';
 
 type FoodDetailsModalProps = {
   visible: boolean;

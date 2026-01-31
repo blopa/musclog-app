@@ -1,5 +1,6 @@
 import { Model } from '@nozbe/watermelondb';
-import { field, writer, relation } from '@nozbe/watermelondb/decorators';
+import { field, relation, writer } from '@nozbe/watermelondb/decorators';
+
 import Food from './Food';
 
 export default class FoodPortion extends Model {

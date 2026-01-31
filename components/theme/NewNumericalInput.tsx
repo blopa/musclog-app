@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef } from 'react';
-import { View, Text, TextInput, Pressable } from 'react-native';
 import { Minus, Plus } from 'lucide-react-native';
+import { useEffect, useRef, useState } from 'react';
+import { Pressable, Text, TextInput, View } from 'react-native';
+
 import { theme } from '../../theme';
 
 interface NewNumericalInputProps {

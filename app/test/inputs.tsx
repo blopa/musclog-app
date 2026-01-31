@@ -1,22 +1,23 @@
+import { ArrowLeft, Calendar, Clock, Search, User } from 'lucide-react-native';
 import { useState } from 'react';
-import { View, Text, Pressable, ScrollView } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ArrowLeft, User, Search, Calendar, Clock } from 'lucide-react-native';
+
+import { MacroInput } from '../../components/MacroInput';
+import { OptionsSelector } from '../../components/OptionsSelector';
+import { CheckRadioBox } from '../../components/theme/CheckRadioBox';
+import NewNumericalInput from '../../components/theme/NewNumericalInput';
+import { NumericInput } from '../../components/theme/NumericInput';
+import { OptionsMultiSelector } from '../../components/theme/OptionsMultiSelector/OptionsMultiSelector';
+import { PickerButton } from '../../components/theme/PickerButton';
+import { SegmentedControl } from '../../components/theme/SegmentedControl';
+import { Slider } from '../../components/theme/Slider';
+import { StepperInlineInput } from '../../components/theme/StepperInlineInput';
+import { StepperInput } from '../../components/theme/StepperInput';
+import { TextInput } from '../../components/theme/TextInput';
+import { ToggleInput } from '../../components/theme/ToggleInput';
 import { theme } from '../../theme';
 import { TestSection } from './components/TestSection';
-import { TextInput } from '../../components/theme/TextInput';
-import { StepperInlineInput } from '../../components/theme/StepperInlineInput';
-import { NumericInput } from '../../components/theme/NumericInput';
-import NewNumericalInput from '../../components/theme/NewNumericalInput';
-import { SegmentedControl } from '../../components/theme/SegmentedControl';
-import { CheckRadioBox } from '../../components/theme/CheckRadioBox';
-import { PickerButton } from '../../components/theme/PickerButton';
-import { Slider } from '../../components/theme/Slider';
-import { StepperInput } from '../../components/theme/StepperInput';
-import { OptionsSelector } from '../../components/OptionsSelector';
-import { OptionsMultiSelector } from '../../components/theme/OptionsMultiSelector/OptionsMultiSelector';
-import { ToggleInput } from '../../components/theme/ToggleInput';
-import { MacroInput } from '../../components/MacroInput';
 
 export default function InputsTestScreen() {
   const [name, setName] = useState('');

@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
-import { FullScreenModal } from './FullScreenModal';
+
 import { ConnectGoogleAccountBody } from '../ConnectGoogleAccountBody';
+import { FullScreenModal } from './FullScreenModal';
 
 // Illustration Component
 type ConnectGoogleAccountModalProps = {

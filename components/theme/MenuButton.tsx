@@ -1,5 +1,6 @@
+import { LucideIcon, MoreVertical } from 'lucide-react-native';
 import { Pressable, ViewStyle } from 'react-native';
-import { MoreVertical, LucideIcon } from 'lucide-react-native';
+
 import { theme } from '../../theme';
 
 type MenuButtonSize = 'sm' | 'md' | 'lg';

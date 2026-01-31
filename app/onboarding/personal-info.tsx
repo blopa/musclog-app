@@ -1,16 +1,17 @@
-import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
-import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
-import { useState, useEffect } from 'react';
-import { theme } from '../../theme';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
+
+import { BottomButtonWrapper } from '../../components/BottomButtonWrapper';
 import {
   EditPersonalInfoBody,
   PersonalInfo as PersonalInfoType,
 } from '../../components/EditPersonalInfoBody';
-import { UserService } from '../../database/services';
 import { MasterLayout } from '../../components/MasterLayout';
 import { Button } from '../../components/theme/Button';
-import { BottomButtonWrapper } from '../../components/BottomButtonWrapper';
+import { UserService } from '../../database/services';
+import { theme } from '../../theme';
 import { setOnboardingCompleted } from '../../utils/onboardingService';
 
 // Helper function to format date of birth timestamp to MM/DD/YYYY

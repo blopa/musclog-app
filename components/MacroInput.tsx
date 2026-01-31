@@ -1,5 +1,6 @@
 import { ReactNode, useState } from 'react';
 import { Text, TextInput as RNTextInput, View } from 'react-native';
+
 import { theme } from '../theme';
 
 type MacroInputVariant = 'default' | 'success' | 'warning' | 'error' | 'info' | 'accent';

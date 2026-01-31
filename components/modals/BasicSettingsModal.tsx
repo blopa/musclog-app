@@ -1,13 +1,14 @@
-import React from 'react';
-import { View, Text } from 'react-native';
-import { useTranslation } from 'react-i18next';
-import { Settings, Sun, Moon, ChevronRight, Heart } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { FullScreenModal } from './FullScreenModal';
+import { ChevronRight, Heart, Moon, Settings, Sun } from 'lucide-react-native';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { Text, View } from 'react-native';
+
+import { theme } from '../../theme';
 import { SettingsCard } from '../cards/SettingsCard';
 import { SegmentedControl } from '../theme/SegmentedControl';
 import { ToggleInput } from '../theme/ToggleInput';
-import { theme } from '../../theme';
+import { FullScreenModal } from './FullScreenModal';
 
 type ThemeOption = 'system' | 'light' | 'dark';
 

@@ -1,34 +1,35 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
-import {
-  View,
-  Text,
-  Pressable,
-  StyleSheet,
-  Dimensions,
-  StatusBar,
-  Animated,
-  Alert,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useTranslation } from 'react-i18next';
-import { LinearGradient } from 'expo-linear-gradient';
+import type { CameraView as CameraViewType } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
+import { LinearGradient } from 'expo-linear-gradient';
 import {
-  X,
-  LightbulbOff,
+  FileText,
   Lightbulb,
+  LightbulbOff,
   MessageSquareText,
   ScanBarcode,
   Sparkles,
-  FileText,
+  X,
 } from 'lucide-react-native';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import {
+  Alert,
+  Animated,
+  Dimensions,
+  Pressable,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 import { theme } from '../../theme';
+import { detectBarcodes } from '../../utils/file';
+import { CameraView, useCameraPermissions } from '../CameraView';
+import { AddFoodModal } from './AddFoodModal';
 import { AINutritionTrackingContextModal } from './AINutritionTrackingContextModal';
 import { FoodDetailsModal } from './FoodDetailsModal';
-import { AddFoodModal } from './AddFoodModal';
-import { CameraView, useCameraPermissions } from '../CameraView';
-import type { CameraView as CameraViewType } from 'expo-camera';
-import { detectBarcodes } from '../../utils/file';
 import { FullScreenModal } from './FullScreenModal';
 import NewCustomFoodModal from './NewCustomFoodModal';
 

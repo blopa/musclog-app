@@ -1,5 +1,10 @@
 // Global mocks
 
+// mock the __DEV__ global variable
+Object.defineProperty(global, '__DEV__', {
+  value: true,
+});
+
 // Skip React Native setup for jsdom environment (used for hook tests)
 if (process.env.JEST_ENVIRONMENT !== 'jsdom') {
   // React Native's jest setup runs here for node environment

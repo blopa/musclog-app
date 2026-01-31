@@ -1,12 +1,13 @@
+import { Apple, Bot, ChevronDown, Dumbbell, Link } from 'lucide-react-native';
 import { ReactNode, useState } from 'react';
-import { View, Text, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Bot, Link, ChevronDown, Apple, Dumbbell } from 'lucide-react-native';
-import { FullScreenModal } from './FullScreenModal';
+import { Pressable, Text, View } from 'react-native';
+
+import { theme } from '../../theme';
+import { GoogleSignInButton } from '../GoogleSignInButton';
 import { SecretInput } from '../theme/SecretInput';
 import { ToggleInput } from '../theme/ToggleInput';
-import { GoogleSignInButton } from '../GoogleSignInButton';
-import { theme } from '../../theme';
+import { FullScreenModal } from './FullScreenModal';
 
 type AIIntegrationCardProps = {
   sectionTitle: string;

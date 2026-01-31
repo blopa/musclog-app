@@ -1,10 +1,11 @@
-import React from 'react';
-import { View, Text, Pressable } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Search, Edit, ChevronRight, AlertTriangle } from 'lucide-react-native';
-import { BottomPopUpMenu } from '../BottomPopUpMenu';
-import { theme } from '../../theme';
+import { AlertTriangle, ChevronRight, Edit, Search } from 'lucide-react-native';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { Pressable, Text, View } from 'react-native';
+
+import { theme } from '../../theme';
+import { BottomPopUpMenu } from '../BottomPopUpMenu';
 
 type FoodNotFoundModalProps = {
   visible: boolean;

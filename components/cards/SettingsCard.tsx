@@ -1,7 +1,8 @@
-import { View, Text } from 'react-native';
+import { ReactNode } from 'react';
+import { Text, View } from 'react-native';
+
 import { theme } from '../../theme';
 import { GenericCard } from './GenericCard';
-import { ReactNode } from 'react';
 
 export function SettingsCard({
   icon,

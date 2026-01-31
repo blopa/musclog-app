@@ -1,13 +1,13 @@
 // Import types from Open Food Facts library
 import type {
+  Product as ProductV2,
   Product as ProductV3,
   ProductStateV3,
-  Product as ProductV2,
   SearchResult as V2SearchResult,
 } from '@openfoodfacts/openfoodfacts-nodejs';
 
 // Re-export the main types we need from the library
-export type { ProductV3, ProductStateV3 as ProductState, ProductV2, V2SearchResult };
+export type { ProductStateV3 as ProductState, ProductV2, ProductV3, V2SearchResult };
 
 // Type for search results (using V2 types from the library)
 export type SearchResultProduct = ProductV2;

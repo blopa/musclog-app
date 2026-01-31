@@ -1,7 +1,8 @@
+import { Q } from '@nozbe/watermelondb';
+
+import { ProductV3 } from '../../types/openFoodFacts';
 import { database } from '../index';
 import Food from '../models/Food';
-import { Q } from '@nozbe/watermelondb';
-import { ProductV3 } from '../../types/openFoodFacts';
 
 export class FoodService {
   /**

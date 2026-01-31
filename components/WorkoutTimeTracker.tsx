@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
-import { View, Text, Pressable } from 'react-native';
 import { X } from 'lucide-react-native';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Pressable, Text, View } from 'react-native';
+
+import { useSessionTotalTime } from '../hooks/useSessionTotalTime';
 import { theme } from '../theme';
 import { MenuButton } from './theme/MenuButton';
-import { useSessionTotalTime } from '../hooks/useSessionTotalTime';
 
 type WorkoutTimeTrackerProps = {
   onClose?: () => void;

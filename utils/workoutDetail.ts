@@ -1,13 +1,14 @@
 import { format } from 'date-fns';
-import WorkoutLog from '../database/models/WorkoutLog';
-import WorkoutLogSet from '../database/models/WorkoutLogSet';
-import Exercise from '../database/models/Exercise';
-import { WorkoutService, WorkoutAnalytics } from '../database/services';
-import { getWorkoutIcon } from './workoutHistory';
+import type { TFunction } from 'i18next';
+
 import type { LineChartDataPoint } from '../components/LineChart';
 import type { Units } from '../constants/settings';
+import Exercise from '../database/models/Exercise';
+import WorkoutLog from '../database/models/WorkoutLog';
+import WorkoutLogSet from '../database/models/WorkoutLogSet';
+import { WorkoutAnalytics, WorkoutService } from '../database/services';
 import { getWeightUnitI18nKey } from './units';
-import type { TFunction } from 'i18next';
+import { getWorkoutIcon } from './workoutHistory';
 
 export type WorkoutSet = {
   setNumber: number;

@@ -1,8 +1,9 @@
+import { Eye, EyeOff } from 'lucide-react-native';
 import { useState } from 'react';
 import { Pressable } from 'react-native';
-import { Eye, EyeOff } from 'lucide-react-native';
-import { TextInput } from './TextInput';
+
 import { theme } from '../../theme';
+import { TextInput } from './TextInput';
 
 type SecretInputProps = {
   label?: string;

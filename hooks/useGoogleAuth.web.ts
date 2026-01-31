@@ -9,8 +9,9 @@
 import * as WebBrowser from 'expo-web-browser';
 import { useEffect, useState } from 'react';
 import { Alert } from 'react-native';
-import { getGoogleClientId } from '../utils/googleAuth';
+
 import { GOOGLE_SCOPES } from '../constants/auth';
+import { getGoogleClientId } from '../utils/googleAuth';
 
 const GOOGLE_AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
 

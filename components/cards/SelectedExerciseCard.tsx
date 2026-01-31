@@ -1,9 +1,10 @@
-import React from 'react';
-import { View, Text, Pressable } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { GenericCard } from './GenericCard';
-import { theme } from '../../theme';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { Pressable, Text, View } from 'react-native';
+
+import { theme } from '../../theme';
+import { GenericCard } from './GenericCard';
 
 type SelectedExerciseCardProps = {
   exerciseName: string;

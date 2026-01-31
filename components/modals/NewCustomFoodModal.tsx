@@ -1,5 +1,3 @@
-import { useState, lazy } from 'react';
-import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import {
   BarChart,
@@ -16,12 +14,15 @@ import {
   Waves,
   Wine,
 } from 'lucide-react-native';
-import { theme } from '../../theme';
-import { FullScreenModal } from './FullScreenModal';
+import { lazy, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
+
+import { theme } from '../../theme';
 import { Button } from '../theme/Button';
-import { TextInput } from '../theme/TextInput';
 import { SegmentedControl } from '../theme/SegmentedControl';
+import { TextInput } from '../theme/TextInput';
+import { FullScreenModal } from './FullScreenModal';
 const MacroInput = lazy(() =>
   import('../MacroInput').then(({ MacroInput }) => ({ default: MacroInput }))
 );

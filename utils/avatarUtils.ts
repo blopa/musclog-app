@@ -1,17 +1,18 @@
-import { AvatarIcon } from '../types/AvatarIcon';
-import { AvatarColor } from '../types/AvatarColor';
 import {
-  User,
-  Dumbbell,
-  Zap,
   Activity,
-  Trophy,
-  Target,
-  Heart,
+  Dumbbell,
   Flame,
+  Heart,
   SunMedium,
+  Target,
+  Trophy,
+  User,
+  Zap,
 } from 'lucide-react-native';
-import { getAvatarColor, getAvatarBackgroundColor } from './avatarColorUtils';
+
+import { AvatarColor } from '../types/AvatarColor';
+import { AvatarIcon } from '../types/AvatarIcon';
+import { getAvatarBackgroundColor, getAvatarColor } from './avatarColorUtils';
 
 export function getAvatarIcon(avatarIcon?: AvatarIcon | null) {
   if (!avatarIcon) return User;

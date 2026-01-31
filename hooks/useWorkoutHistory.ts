@@ -1,23 +1,24 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Q } from '@nozbe/watermelondb';
+import { format, isThisWeek, isToday, isYesterday } from 'date-fns';
+import type { TFunction } from 'i18next';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import { DEFAULT_BATCH_SIZE } from '../constants/database';
 import { database } from '../database';
 import WorkoutLog from '../database/models/WorkoutLog';
 import { WorkoutAnalytics, WorkoutService } from '../database/services';
-import { format, isToday, isYesterday, isThisWeek } from 'date-fns';
-import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
-import { useSettings } from './useSettings';
 import {
-  type WorkoutHistorySection,
-  type WorkoutFilters,
   calculateDateRange,
-  processWorkouts,
+  filterWorkoutsBySearch,
   groupWorkoutsByMonth,
   mergeWorkoutSections,
-  filterWorkoutsBySearch,
+  processWorkouts,
+  type WorkoutFilters,
+  type WorkoutHistorySection,
 } from '../utils/workoutHistory';
-import { DEFAULT_BATCH_SIZE } from '../constants/database';
-import type { TFunction } from 'i18next';
+import { useSettings } from './useSettings';
 
 // Types for simple workout format (home screen)
 export type ProcessedRecentWorkout = {

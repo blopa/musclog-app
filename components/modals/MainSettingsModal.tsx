@@ -1,13 +1,14 @@
-import { useState } from 'react';
-import { View, Text, Pressable } from 'react-native';
-import { useTranslation } from 'react-i18next';
-import { TextInput as ThemedTextInput } from '../theme/TextInput';
-import { theme } from '../../theme';
 import { MaterialIcons } from '@expo/vector-icons';
-import { Button } from '../theme/Button';
-import { FullScreenModal } from './FullScreenModal';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Pressable, Text, View } from 'react-native';
+
+import { theme } from '../../theme';
 import { SettingsCard } from '../cards/SettingsCard';
+import { Button } from '../theme/Button';
+import { TextInput as ThemedTextInput } from '../theme/TextInput';
 import { ToggleInput } from '../theme/ToggleInput';
+import { FullScreenModal } from './FullScreenModal';
 
 export function MainSettingsModal({ visible, onClose }: { visible: boolean; onClose: () => void }) {
   const { t } = useTranslation();

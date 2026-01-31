@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, Text, PressableProps } from 'react-native';
+import { Pressable, PressableProps, Text } from 'react-native';
 
 type ShowMoreButtonProps = {
   onPress: () => void;

@@ -1,15 +1,15 @@
-import { useState, useEffect, lazy } from 'react';
-import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
-import { useTranslation } from 'react-i18next';
-import { Plus } from 'lucide-react-native';
 import { format } from 'date-fns';
-import { theme } from '../../theme';
+import { Plus } from 'lucide-react-native';
+import { lazy, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
-import { GoalHistoryCard } from '../cards/GoalHistoryCard';
-import { FullScreenModal } from './FullScreenModal';
-import { NutritionGoalsModal, NutritionGoals } from './NutritionGoalsModal';
-import { Button } from '../theme/Button';
 import { NutritionGoalService } from '../../database/services/NutritionGoalService';
+import { theme } from '../../theme';
+import { GoalHistoryCard } from '../cards/GoalHistoryCard';
+import { Button } from '../theme/Button';
+import { FullScreenModal } from './FullScreenModal';
+import { NutritionGoals, NutritionGoalsModal } from './NutritionGoalsModal';
 const CurrentGoalsCard = lazy(() =>
   import('../cards/CurrentGoalsCard').then(({ CurrentGoalsCard }) => ({
     default: CurrentGoalsCard,

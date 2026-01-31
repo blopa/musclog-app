@@ -1,13 +1,14 @@
-import { View, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Dumbbell, TrendingUp } from 'lucide-react-native';
+import { Dimensions, View } from 'react-native';
 import Svg, {
+  Circle,
   Defs,
   LinearGradient as SvgLinearGradient,
-  Stop,
-  Circle,
   Path,
+  Stop,
 } from 'react-native-svg';
-import { TrendingUp, Dumbbell } from 'lucide-react-native';
+
 import { theme } from '../theme';
 
 export default function PreRegistrationIntro() {

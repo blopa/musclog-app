@@ -1,5 +1,6 @@
-import { View, Text, Image, ImageSourcePropType } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { Image, ImageSourcePropType, Text, View } from 'react-native';
+
 import { theme } from '../../theme';
 import { MenuButton } from '../theme/MenuButton';
 import { GenericCard } from './GenericCard';

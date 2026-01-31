@@ -1,7 +1,8 @@
-import { Text, Pressable, ViewStyle, View, ActivityIndicator } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { LucideIcon } from 'lucide-react-native';
-import { ReactNode, useState, isValidElement } from 'react';
+import { isValidElement, ReactNode, useState } from 'react';
+import { ActivityIndicator, Pressable, Text, View, ViewStyle } from 'react-native';
+
 import { theme } from '../../theme';
 
 type ThemeButtonSize = 'sm' | 'md' | 'lg';

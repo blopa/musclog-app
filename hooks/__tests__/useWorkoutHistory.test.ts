@@ -2,10 +2,11 @@
  * @jest-environment jsdom
  */
 
-import { renderHook, act, waitFor } from '@testing-library/react';
-import { useWorkoutHistory } from '../useWorkoutHistory';
-import { WorkoutService } from '../../database/services/WorkoutService';
+import { act, renderHook, waitFor } from '@testing-library/react';
+
 import { WorkoutAnalytics } from '../../database/services/WorkoutAnalytics';
+import { WorkoutService } from '../../database/services/WorkoutService';
+import { useWorkoutHistory } from '../useWorkoutHistory';
 
 type FakeWorkoutLog = {
   id: string;

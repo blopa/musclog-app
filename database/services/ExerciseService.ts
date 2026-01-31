@@ -1,6 +1,7 @@
+import { Q } from '@nozbe/watermelondb';
+
 import { database } from '../index';
 import Exercise from '../models/Exercise';
-import { Q } from '@nozbe/watermelondb';
 
 export class ExerciseService {
   /**

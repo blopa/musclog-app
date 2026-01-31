@@ -1,5 +1,6 @@
 import { Model, Query } from '@nozbe/watermelondb';
-import { field, children, relation, writer } from '@nozbe/watermelondb/decorators';
+import { children, field, relation, writer } from '@nozbe/watermelondb/decorators';
+
 import WorkoutLogSet from './WorkoutLogSet';
 import WorkoutTemplate from './WorkoutTemplate';
 

@@ -1,6 +1,7 @@
-import { useState, useRef, useEffect } from 'react';
-import { View, Text, Pressable, TextInput } from 'react-native';
-import { Minus, Plus, LucideIcon } from 'lucide-react-native';
+import { LucideIcon, Minus, Plus } from 'lucide-react-native';
+import { useEffect, useRef, useState } from 'react';
+import { Pressable, Text, TextInput, View } from 'react-native';
+
 import { theme } from '../../theme';
 
 type TestStepperProps = {

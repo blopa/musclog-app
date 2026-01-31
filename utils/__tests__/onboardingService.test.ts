@@ -1,16 +1,16 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 import {
-  getOnboardingStatus,
-  isOnboardingCompleted,
-  getOnboardingVersion,
-  setOnboardingCompleted,
-  resetOnboarding,
-} from '../onboardingService';
-import {
+  CURRENT_ONBOARDING_VERSION,
   ONBOARDING_COMPLETED,
   ONBOARDING_VERSION,
-  CURRENT_ONBOARDING_VERSION,
 } from '../../constants/auth';
+import {
+  getOnboardingStatus,
+  getOnboardingVersion,
+  isOnboardingCompleted,
+  resetOnboarding,
+  setOnboardingCompleted,
+} from '../onboardingService';
 
 const mockAsyncStorageModule = require('@react-native-async-storage/async-storage');
 const mockAsyncStorage = mockAsyncStorageModule.default;

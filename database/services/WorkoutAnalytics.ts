@@ -1,8 +1,9 @@
+import { Q } from '@nozbe/watermelondb';
+
 import { database } from '../index';
+import Exercise from '../models/Exercise';
 import WorkoutLog from '../models/WorkoutLog';
 import WorkoutLogSet from '../models/WorkoutLogSet';
-import Exercise from '../models/Exercise';
-import { Q } from '@nozbe/watermelondb';
 
 export interface PersonalRecord {
   exerciseId: string;

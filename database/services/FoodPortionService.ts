@@ -1,7 +1,8 @@
-import { database } from '../index';
-import FoodPortion from '../models/FoodPortion';
-import Food from '../models/Food';
 import { Q } from '@nozbe/watermelondb';
+
+import { database } from '../index';
+import Food from '../models/Food';
+import FoodPortion from '../models/FoodPortion';
 
 export class FoodPortionService {
   /**

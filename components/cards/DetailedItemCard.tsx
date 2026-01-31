@@ -1,9 +1,10 @@
-import { View, Text, Image, ImageSourcePropType } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ChevronRight, LucideIcon } from 'lucide-react-native';
+import { ReactNode } from 'react';
+import { Image, ImageSourcePropType, Text, View } from 'react-native';
+
 import { theme } from '../../theme';
 import { GenericCard } from './GenericCard';
-import { ReactNode } from 'react';
 
 type DetailedItemCardProps = {
   item: {

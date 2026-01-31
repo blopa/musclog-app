@@ -1,11 +1,12 @@
-import { View, Text, Pressable, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Dumbbell, ArrowRight } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
+import { ArrowRight, Dumbbell } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { theme } from '../../theme';
+import { Dimensions, Pressable, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 import { Button } from '../../components/theme/Button';
+import { theme } from '../../theme';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 

@@ -1,14 +1,15 @@
-import { useState, useMemo, useEffect, ComponentType } from 'react';
-import { View, Text, ScrollView, Pressable, TextInput, Image } from 'react-native';
 import { Q } from '@nozbe/watermelondb';
-import { Search, Dumbbell, ChevronRight, Activity, Footprints } from 'lucide-react-native';
-import { theme } from '../../theme';
+import { Activity, ChevronRight, Dumbbell, Footprints, Search } from 'lucide-react-native';
+import { ComponentType, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Image, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+
 import { database } from '../../database';
 import Exercise from '../../database/models/Exercise';
-import { SkeletonLoader } from '../theme/SkeletonLoader';
+import { theme } from '../../theme';
 import { Accordion } from '../theme/Accordion';
+import { SkeletonLoader } from '../theme/SkeletonLoader';
 import { FullScreenModal } from './FullScreenModal';
-import { useTranslation } from 'react-i18next';
 
 // Type for exercise data used in the component
 type ExerciseData = {

@@ -1,8 +1,9 @@
-import { Pressable, View, Text, PressableProps } from 'react-native';
 import classNames from 'classnames';
-import { useTranslation } from 'react-i18next';
-import { GoogleLogoSvg } from './icons/GoogleLogoSvg';
 import { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Pressable, PressableProps, Text, View } from 'react-native';
+
+import { GoogleLogoSvg } from './icons/GoogleLogoSvg';
 
 interface GoogleSignInButtonProps extends PressableProps {
   children?: ReactNode;

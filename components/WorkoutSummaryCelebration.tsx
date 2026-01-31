@@ -1,13 +1,14 @@
-import { useEffect, useRef } from 'react';
-import { View, Text, Pressable, Platform, Animated, ScrollView } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Home } from 'lucide-react-native';
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Animated, Platform, Pressable, ScrollView, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import { theme } from '../theme';
-import { Button } from './theme/Button';
-import { WorkoutSummaryTrophy } from './WorkoutSummaryTrophy';
-import { WorkoutSummaryHeader } from './WorkoutSummaryHeader';
 import { WorkoutSummaryStatsCard } from './cards/WorkoutSummaryStatsCard';
+import { Button } from './theme/Button';
+import { WorkoutSummaryHeader } from './WorkoutSummaryHeader';
+import { WorkoutSummaryTrophy } from './WorkoutSummaryTrophy';
 
 type WorkoutSummaryCelebrationProps = {
   onGoHome: () => void;

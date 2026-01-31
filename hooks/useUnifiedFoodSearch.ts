@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useFoods } from './useFoods';
-import { SearchResultProduct } from '../types/openFoodFacts';
 import { fetch } from 'expo/fetch';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+
+import { SearchResultProduct } from '../types/openFoodFacts';
+import { useFoods } from './useFoods';
 
 // Unified search result type
 export type UnifiedFoodResult = {

@@ -1,8 +1,9 @@
-import { ReactNode } from 'react';
-import { View, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { addOpacityToHex, theme } from '../theme';
+import { ReactNode } from 'react';
+import { Platform, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { addOpacityToHex, theme } from '../theme';
 
 type BottomButtonWrapperProps = {
   children: ReactNode;

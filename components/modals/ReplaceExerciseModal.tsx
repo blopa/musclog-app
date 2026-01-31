@@ -1,12 +1,13 @@
+import { Repeat, Search } from 'lucide-react-native';
 import { useState } from 'react';
-import { View, TextInput, ScrollView, Image } from 'react-native';
-import { Search, Repeat } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
+import { Image, ScrollView, TextInput, View } from 'react-native';
+
 import { theme } from '../../theme';
 import { BottomPopUpMenu } from '../BottomPopUpMenu';
-import { Button } from '../theme/Button';
 import { FilterTabs } from '../FilterTabs';
 import { OptionsSelector, SelectorOption } from '../OptionsSelector';
+import { Button } from '../theme/Button';
 
 export type Exercise = {
   id: string;

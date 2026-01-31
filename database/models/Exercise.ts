@@ -1,8 +1,9 @@
 import { Model, Q, Query } from '@nozbe/watermelondb';
-import { field, children, writer } from '@nozbe/watermelondb/decorators';
-import WorkoutTemplateSet from './WorkoutTemplateSet';
-import WorkoutLogSet from './WorkoutLogSet';
+import { children, field, writer } from '@nozbe/watermelondb/decorators';
+
 import WorkoutLog from './WorkoutLog';
+import WorkoutLogSet from './WorkoutLogSet';
+import WorkoutTemplateSet from './WorkoutTemplateSet';
 
 export default class Exercise extends Model {
   static table = 'exercises';

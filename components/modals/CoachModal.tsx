@@ -1,30 +1,31 @@
-import { useState, useCallback, useEffect, useMemo } from 'react';
-import { View, Text, Image, Pressable, ScrollView, StyleSheet } from 'react-native';
-import { useTranslation } from 'react-i18next';
-import {
-  GiftedChat,
-  IMessage,
-  BubbleProps,
-  Send,
-  Composer,
-  InputToolbar,
-  SendProps,
-  ComposerProps,
-  InputToolbarProps,
-} from 'react-native-gifted-chat';
 import { LinearGradient } from 'expo-linear-gradient';
+import type { TFunction } from 'i18next';
 import {
   Mic,
-  Send as SendIcon,
   PlusCircle,
+  Send as SendIcon,
   TrendingUp,
   UtensilsCrossed,
 } from 'lucide-react-native';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  BubbleProps,
+  Composer,
+  ComposerProps,
+  GiftedChat,
+  IMessage,
+  InputToolbar,
+  InputToolbarProps,
+  Send,
+  SendProps,
+} from 'react-native-gifted-chat';
+
 import { theme } from '../../theme';
+import { ChatWorkoutCard } from '../cards/ChatWorkoutCard';
 import { MenuButton } from '../theme/MenuButton';
 import { FullScreenModal } from './FullScreenModal';
-import { ChatWorkoutCard } from '../cards/ChatWorkoutCard';
-import type { TFunction } from 'i18next';
 
 // AI Coach avatar URL
 const AI_COACH_AVATAR =

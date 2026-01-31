@@ -1,21 +1,21 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 import {
-  getGoogleClientId,
-  refreshAccessToken,
-  isGoogleSignedIn,
-  getAccessToken,
-  handleGoogleSignIn,
-  deleteAllData,
-  isValidAccessToken,
-  type GoogleAuthData,
-} from '../googleAuth';
-import { GoogleAuthService } from '../../database/services';
-import {
   GOOGLE_ACCESS_TOKEN,
   GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE,
   GOOGLE_CLIENT_ID_MOBILE,
   GOOGLE_CLIENT_ID_WEB,
 } from '../../constants/auth';
+import { GoogleAuthService } from '../../database/services';
+import {
+  deleteAllData,
+  getAccessToken,
+  getGoogleClientId,
+  type GoogleAuthData,
+  handleGoogleSignIn,
+  isGoogleSignedIn,
+  isValidAccessToken,
+  refreshAccessToken,
+} from '../googleAuth';
 
 const mockAsyncStorageModule = require('@react-native-async-storage/async-storage');
 const mockAsyncStorage = mockAsyncStorageModule.default;

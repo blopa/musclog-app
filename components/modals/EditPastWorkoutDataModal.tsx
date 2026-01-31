@@ -1,13 +1,14 @@
-import { useState, useEffect } from 'react';
-import { View, Text, Pressable, ActivityIndicator } from 'react-native';
-import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
 import { GripVertical, Plus as PlusIcon, Trash2 } from 'lucide-react-native';
-import { GenericCard } from '../cards/GenericCard';
-import NewNumericalInput from '../theme/NewNumericalInput';
-import { theme } from '../../theme';
-import { FullScreenModal } from './FullScreenModal';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { ActivityIndicator, Pressable, Text, View } from 'react-native';
+import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
+
+import { theme } from '../../theme';
+import { GenericCard } from '../cards/GenericCard';
 import DashedButton from '../theme/DashedButton';
+import NewNumericalInput from '../theme/NewNumericalInput';
+import { FullScreenModal } from './FullScreenModal';
 
 type SetItem = {
   id: string;

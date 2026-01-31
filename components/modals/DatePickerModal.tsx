@@ -1,29 +1,30 @@
-import { useState } from 'react';
-import { View, Text, Pressable, ScrollView, Modal } from 'react-native';
-import { ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react-native';
 import {
-  format,
-  startOfMonth,
-  endOfMonth,
-  eachDayOfInterval,
-  isSameMonth,
-  isSameDay,
-  addMonths,
-  subMonths,
   addDays,
-  startOfWeek,
+  addMonths,
+  eachDayOfInterval,
+  endOfMonth,
   endOfWeek,
+  format,
+  getMonth,
+  getYear,
+  isSameDay,
+  isSameMonth,
   nextMonday,
   setMonth,
   setYear,
-  getYear,
-  getMonth,
+  startOfMonth,
+  startOfWeek,
+  subMonths,
 } from 'date-fns';
+import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react-native';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import i18n, { LOCALE_MAP, LanguageKeys } from '../../lang/lang';
+import { Modal, Pressable, ScrollView, Text, View } from 'react-native';
+
+import i18n, { LanguageKeys, LOCALE_MAP } from '../../lang/lang';
 import { theme } from '../../theme';
-import { FullScreenModal } from './FullScreenModal';
 import { Button } from '../theme/Button';
+import { FullScreenModal } from './FullScreenModal';
 
 type DatePickerModalProps = {
   visible: boolean;

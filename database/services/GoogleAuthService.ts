@@ -1,11 +1,12 @@
 import { Q } from '@nozbe/watermelondb';
+
+import {
+  AI_SETTINGS_TYPE,
+  GOOGLE_OAUTH_GEMINI_ENABLED_TYPE,
+  GOOGLE_REFRESH_TOKEN_TYPE,
+} from '../../constants/auth';
 import { database } from '../database-instance';
 import Setting from '../models/Setting';
-import {
-  GOOGLE_REFRESH_TOKEN_TYPE,
-  GOOGLE_OAUTH_GEMINI_ENABLED_TYPE,
-  AI_SETTINGS_TYPE,
-} from '../../constants/auth';
 
 export class GoogleAuthService {
   /**

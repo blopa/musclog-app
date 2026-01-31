@@ -1,12 +1,13 @@
-import { createElement, ReactNode } from 'react';
-import { View, Text, Pressable, Modal, Image, ImageSourcePropType, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { X, User, Settings, BarChart3 } from 'lucide-react-native';
+import { BarChart3, Settings, User, X } from 'lucide-react-native';
+import { createElement, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Image, ImageSourcePropType, Modal, Platform, Pressable, Text, View } from 'react-native';
+
 import { theme } from '../../theme';
-import { getAvatarDisplayProps } from '../../utils/avatarUtils';
 import { AvatarColor } from '../../types/AvatarColor';
 import { AvatarIcon } from '../../types/AvatarIcon';
+import { getAvatarDisplayProps } from '../../utils/avatarUtils';
 
 type UserMenuModalProps = {
   visible: boolean;

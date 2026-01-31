@@ -1,6 +1,6 @@
-import { WorkoutAnalytics } from '../WorkoutAnalytics';
 import { database } from '../../index';
-import { createMockWorkoutLog, createMockWorkoutLogSet, createMockExercise } from './helpers';
+import { WorkoutAnalytics } from '../WorkoutAnalytics';
+import { createMockExercise, createMockWorkoutLog, createMockWorkoutLogSet } from './helpers';
 
 jest.mock('@nozbe/watermelondb', () => ({
   Q: {

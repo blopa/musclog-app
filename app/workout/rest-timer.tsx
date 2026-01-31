@@ -1,29 +1,27 @@
-import { useState, useEffect, useRef, lazy } from 'react';
-
-import { View, Text, Animated, ActivityIndicator, ScrollView } from 'react-native';
+import { Q } from '@nozbe/watermelondb';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { CheckCircle, ChevronRight, Dumbbell, Repeat } from 'lucide-react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import { lazy, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { theme } from '../../theme';
-import { WorkoutOptionsModal } from '../../components/modals/WorkoutOptionsModal';
+import { ActivityIndicator, Animated, ScrollView, Text, View } from 'react-native';
+
+import { MasterLayout } from '../../components/MasterLayout';
 import { EndWorkoutModal } from '../../components/modals/EndWorkoutModal';
-import { WorkoutTimeTracker } from '../../components/WorkoutTimeTracker';
-
-import { RestTimerControls } from '../../components/RestTimerControls';
+import { WorkoutOptionsModal } from '../../components/modals/WorkoutOptionsModal';
+import WorkoutSessionOverviewModal from '../../components/modals/WorkoutSessionOverviewModal';
 import { RestTimer } from '../../components/RestTimer';
-
-import { WorkoutService } from '../../database/services/WorkoutService';
+import { RestTimerControls } from '../../components/RestTimerControls';
+import { WorkoutTimeTracker } from '../../components/WorkoutTimeTracker';
 import { database } from '../../database';
+import Exercise from '../../database/models/Exercise';
 import WorkoutLog from '../../database/models/WorkoutLog';
 import WorkoutLogSet from '../../database/models/WorkoutLogSet';
-import Exercise from '../../database/models/Exercise';
-import { Q } from '@nozbe/watermelondb';
-import { getWeightUnitI18nKey } from '../../utils/units';
+import { WorkoutService } from '../../database/services/WorkoutService';
 import { useSettings } from '../../hooks/useSettings';
+import { theme } from '../../theme';
 import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
-import { MasterLayout } from '../../components/MasterLayout';
-import WorkoutSessionOverviewModal from '../../components/modals/WorkoutSessionOverviewModal';
+import { getWeightUnitI18nKey } from '../../utils/units';
 const DetailedItemCard = lazy(() =>
   import('../../components/cards/DetailedItemCard').then(({ DetailedItemCard }) => ({
     default: DetailedItemCard,

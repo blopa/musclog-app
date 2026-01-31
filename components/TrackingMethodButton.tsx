@@ -1,7 +1,8 @@
-import React from 'react';
-import { View, Text, Pressable } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { LucideIcon, ArrowRight, ChevronRight } from 'lucide-react-native';
+import { ArrowRight, ChevronRight, LucideIcon } from 'lucide-react-native';
+import React from 'react';
+import { Pressable, Text, View } from 'react-native';
+
 import { theme } from '../theme';
 
 type TrackingMethodButtonProps = {

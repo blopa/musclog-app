@@ -1,6 +1,7 @@
-import { View, Text, Pressable, TextInput } from 'react-native';
 import { BookmarkPlus, Minus, Plus } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
+import { Pressable, Text, TextInput, View } from 'react-native';
+
 import { theme } from '../theme';
 
 type ServingSizeSelectorProps = {

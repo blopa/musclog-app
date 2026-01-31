@@ -1,22 +1,22 @@
 import { Database } from '@nozbe/watermelondb';
-import adapter from './adapter';
 
+import adapter from './adapter';
 // Import all models
 import Exercise from './models/Exercise';
-import UserMetric from './models/UserMetric';
-import User from './models/User';
-import Setting from './models/Setting';
-import WorkoutTemplate from './models/WorkoutTemplate';
-import Schedule from './models/Schedule';
-import WorkoutTemplateSet from './models/WorkoutTemplateSet';
-import WorkoutLog from './models/WorkoutLog';
-import WorkoutLogSet from './models/WorkoutLogSet';
-import NutritionGoal from './models/NutritionGoal';
 import Food from './models/Food';
 import FoodPortion from './models/FoodPortion';
 import Meal from './models/Meal';
 import MealFood from './models/MealFood';
+import NutritionGoal from './models/NutritionGoal';
 import NutritionLog from './models/NutritionLog';
+import Schedule from './models/Schedule';
+import Setting from './models/Setting';
+import User from './models/User';
+import UserMetric from './models/UserMetric';
+import WorkoutLog from './models/WorkoutLog';
+import WorkoutLogSet from './models/WorkoutLogSet';
+import WorkoutTemplate from './models/WorkoutTemplate';
+import WorkoutTemplateSet from './models/WorkoutTemplateSet';
 
 // Create database instance
 // This file is separate from index.ts to avoid require cycles

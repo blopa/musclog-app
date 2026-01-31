@@ -1,17 +1,18 @@
-import { Stack } from 'expo-router';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { Platform, StatusBar, AppState, AppStateStatus } from 'react-native';
-import * as NavigationBar from 'expo-navigation-bar';
-import { useEffect } from 'react';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { theme } from '../theme';
-import { SnackbarProvider } from '../components/SnackbarContext';
-import { seedDevData } from '../database/dev';
-import { QueryClient, QueryClientProvider, focusManager } from '@tanstack/react-query';
-
 import '../database';
 import '../lang/lang';
 import '../global.css';
+
+import { focusManager, QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import * as NavigationBar from 'expo-navigation-bar';
+import { Stack } from 'expo-router';
+import { useEffect } from 'react';
+import { AppState, AppStateStatus, Platform, StatusBar } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+
+import { SnackbarProvider } from '../components/SnackbarContext';
+import { seedDevData } from '../database/dev';
+import { theme } from '../theme';
 
 const queryClient = new QueryClient({
   defaultOptions: {

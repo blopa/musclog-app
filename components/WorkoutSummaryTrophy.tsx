@@ -1,7 +1,8 @@
-import { useEffect, useRef } from 'react';
-import { View, Animated } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Star, Trophy } from 'lucide-react-native';
+import { useEffect, useRef } from 'react';
+import { Animated, View } from 'react-native';
+
 import { theme } from '../theme';
 
 export function WorkoutSummaryTrophy() {

@@ -1,9 +1,10 @@
 import { Model, Query } from '@nozbe/watermelondb';
-import { field, children, writer } from '@nozbe/watermelondb/decorators';
-import WorkoutTemplateSet from './WorkoutTemplateSet';
+import { children, field, writer } from '@nozbe/watermelondb/decorators';
+
 import Schedule from './Schedule';
 import WorkoutLog from './WorkoutLog';
 import WorkoutLogSet from './WorkoutLogSet';
+import WorkoutTemplateSet from './WorkoutTemplateSet';
 
 export default class WorkoutTemplate extends Model {
   static table = 'workout_templates';

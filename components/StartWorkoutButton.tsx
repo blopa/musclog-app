@@ -1,5 +1,6 @@
-import { Play, ArrowRight } from 'lucide-react-native';
+import { ArrowRight, Play } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
+
 import { Button } from './theme/Button';
 
 type StartWorkoutButtonProps = {

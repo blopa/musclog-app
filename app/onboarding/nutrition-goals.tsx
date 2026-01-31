@@ -1,12 +1,13 @@
 import { useRouter } from 'expo-router';
 import { useMemo } from 'react';
-import { NutritionGoalsBody, NutritionGoals } from '../../components/NutritionGoalsBody';
-import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
-import { theme } from '../../theme';
+import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { NutritionGoals, NutritionGoalsBody } from '../../components/NutritionGoalsBody';
 import { NutritionGoalService } from '../../database/services/NutritionGoalService';
 import { useCurrentNutritionGoal } from '../../hooks/useCurrentNutritionGoal';
+import { theme } from '../../theme';
 
 export default function NutritionGoalsScreen() {
   const { t } = useTranslation();

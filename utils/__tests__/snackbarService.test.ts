@@ -1,7 +1,7 @@
 import {
   registerSnackbarService,
-  unregisterSnackbarService,
   showSnackbar,
+  unregisterSnackbarService,
 } from '../snackbarService';
 
 describe('utils/snackbarService', () => {

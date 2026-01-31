@@ -1,5 +1,6 @@
 import { FC, lazy } from 'react';
 import { View } from 'react-native';
+
 import { theme } from '../../../theme';
 
 const DeleteActionButton = lazy(() =>

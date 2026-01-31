@@ -1,4 +1,5 @@
 import { Q, Query } from '@nozbe/watermelondb';
+
 import { database } from '../database-instance';
 import Schedule from '../models/Schedule';
 

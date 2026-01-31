@@ -1,10 +1,11 @@
-import React from 'react';
-import { View, Text } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { LucideIcon } from 'lucide-react-native';
+import React from 'react';
+import { Text, View } from 'react-native';
+
 import { theme } from '../../theme';
-import { Button } from './Button';
 import { GenericCard } from '../cards/GenericCard';
+import { Button } from './Button';
 
 type EmptyStateCardProps = {
   icon: LucideIcon;

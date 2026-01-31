@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react';
-import { View, ActivityIndicator } from 'react-native';
-import { WorkoutSummaryCelebration } from '../../components/WorkoutSummaryCelebration';
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import { WorkoutService } from '../../database/services/WorkoutService';
-import { ErrorStateCard } from '../../components/theme/ErrorStateCard';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { WifiOff } from 'lucide-react-native';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { ActivityIndicator, View } from 'react-native';
+
+import { ErrorStateCard } from '../../components/theme/ErrorStateCard';
+import { WorkoutSummaryCelebration } from '../../components/WorkoutSummaryCelebration';
+import { WorkoutService } from '../../database/services/WorkoutService';
 import { theme } from '../../theme';
 
 export default function WorkoutSummaryScreen() {

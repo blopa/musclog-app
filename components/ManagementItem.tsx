@@ -1,7 +1,8 @@
-import { ComponentType } from 'react';
-import { View, Text, Pressable } from 'react-native';
 import { ChevronRight } from 'lucide-react-native';
-import { theme, addOpacityToHex } from '../theme';
+import { ComponentType } from 'react';
+import { Pressable, Text, View } from 'react-native';
+
+import { addOpacityToHex, theme } from '../theme';
 
 type ManagementItemProps = {
   title: string;

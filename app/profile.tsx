@@ -1,18 +1,18 @@
-import { useState, useMemo, createElement, lazy } from 'react';
-import { View, Text, ScrollView, Pressable, Image } from 'react-native';
-import { Settings, Edit, TrendingUp, CheckCircle, User, Dumbbell, List } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
+import { CheckCircle, Dumbbell, Edit, List, Settings, TrendingUp, User } from 'lucide-react-native';
+import { createElement, lazy, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { theme } from '../theme';
-import { MasterLayout } from '../components/MasterLayout';
+import { Image, Pressable, ScrollView, Text, View } from 'react-native';
+
 import { StatCard } from '../components/cards/StatCard';
 import { ManagementItem } from '../components/ManagementItem';
-
+import { MasterLayout } from '../components/MasterLayout';
 import BodyMetricsHistoryModal from '../components/modals/BodyMetricsHistoryModal';
+import ShowMoreButton from '../components/ShowMoreButton';
 import { useSettings } from '../hooks/useSettings';
 import { useUser } from '../hooks/useUser';
 import { useUserMetrics } from '../hooks/useUserMetrics';
-import ShowMoreButton from '../components/ShowMoreButton';
+import { theme } from '../theme';
 import { getAvatarDisplayProps } from '../utils/avatarUtils';
 const ProgressIndicator = lazy(() =>
   import('../components/theme/ProgressIndicator').then(({ ProgressIndicator }) => ({

@@ -1,16 +1,16 @@
-import { useState, lazy } from 'react';
-import { View, Text, TextInput, Pressable, ScrollView, ActivityIndicator } from 'react-native';
+import { PlusSquare, Sparkles } from 'lucide-react-native';
+import { lazy, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Sparkles, PlusSquare } from 'lucide-react-native';
-import { theme } from '../../theme';
-import { Button } from '../theme/Button';
-import { SegmentedControl } from '../theme/SegmentedControl';
-import type { SelectorOption } from '../theme/OptionsMultiSelector/utils';
+import { ActivityIndicator, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 
+import { useWorkoutForm } from '../../hooks/useWorkoutForm';
+import { theme } from '../../theme';
+import { WEEKDAY_LABELS } from '../../utils/workout';
+import { Button } from '../theme/Button';
+import type { SelectorOption } from '../theme/OptionsMultiSelector/utils';
+import { SegmentedControl } from '../theme/SegmentedControl';
 import { WeekdayPicker } from '../theme/WeekdayPicker';
 import { AddExerciseModal } from './AddExerciseModal';
-import { WEEKDAY_LABELS } from '../../utils/workout';
-import { useWorkoutForm } from '../../hooks/useWorkoutForm';
 import { FullScreenModal } from './FullScreenModal';
 const OptionsMultiSelector = lazy(() =>
   import('../theme/OptionsMultiSelector/OptionsMultiSelector').then(({ OptionsMultiSelector }) => ({

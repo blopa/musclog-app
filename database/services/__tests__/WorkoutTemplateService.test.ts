@@ -1,16 +1,16 @@
-import {
-  WorkoutTemplateService,
-  ExerciseInWorkout,
-  SaveTemplateData,
-} from '../WorkoutTemplateService';
 import { database } from '../../index';
 import { WorkoutTemplateRepository } from '../../repositories/WorkoutTemplateRepository';
 import {
+  ExerciseInWorkout,
+  SaveTemplateData,
+  WorkoutTemplateService,
+} from '../WorkoutTemplateService';
+import {
+  createMockExercise,
+  createMockSchedule,
+  createMockWorkoutLog,
   createMockWorkoutTemplate,
   createMockWorkoutTemplateSet,
-  createMockSchedule,
-  createMockExercise,
-  createMockWorkoutLog,
 } from './helpers';
 
 jest.mock('@nozbe/watermelondb', () => ({

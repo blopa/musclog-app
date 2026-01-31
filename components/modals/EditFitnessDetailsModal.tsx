@@ -1,9 +1,10 @@
+import { Check } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Check } from 'lucide-react-native';
-import { FullScreenModal } from './FullScreenModal';
-import { Button } from '../theme/Button';
+
 import { EditFitnessDetailsBody } from '../EditFitnessDetailsBody';
+import { Button } from '../theme/Button';
+import { FullScreenModal } from './FullScreenModal';
 
 type EditFitnessDetailsModalProps = {
   visible: boolean;

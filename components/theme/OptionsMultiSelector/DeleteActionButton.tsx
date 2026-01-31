@@ -1,7 +1,8 @@
-import { FC } from 'react';
-import { View, Text, Pressable } from 'react-native';
 import { Trash2 } from 'lucide-react-native';
+import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Pressable, Text, View } from 'react-native';
+
 import { theme } from '../../../theme';
 
 type DeleteActionButtonProps = {

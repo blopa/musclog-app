@@ -1,6 +1,7 @@
-import { memo, useMemo, useCallback, ComponentType, ReactElement } from 'react';
-import { View, Text, Pressable } from 'react-native';
 import { Check, LucideIcon } from 'lucide-react-native';
+import { ComponentType, memo, ReactElement, useCallback, useMemo } from 'react';
+import { Pressable, Text, View } from 'react-native';
+
 import { theme } from '../theme';
 
 export type SelectorOption<T extends string | number> = {

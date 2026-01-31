@@ -1,10 +1,11 @@
-import { View, Text, Platform } from 'react-native';
-import { Sparkles, PlusCircle, Library } from 'lucide-react-native';
+import { Library, PlusCircle, Sparkles } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
+import { Platform, Text, View } from 'react-native';
+
 import { theme } from '../../theme';
-import { FullScreenModal } from './FullScreenModal';
-import { GradientText } from '../GradientText';
 import { NewWorkoutCard } from '../cards/NewWorkoutCard';
+import { GradientText } from '../GradientText';
+import { FullScreenModal } from './FullScreenModal';
 
 type CreateWorkoutOptionsModalProps = {
   visible: boolean;

@@ -1,9 +1,10 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Q } from '@nozbe/watermelondb';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+
+import { DEFAULT_BATCH_SIZE } from '../constants/database';
 import { database } from '../database';
 import NutritionGoal from '../database/models/NutritionGoal';
 import { NutritionGoalService } from '../database/services/NutritionGoalService';
-import { DEFAULT_BATCH_SIZE } from '../constants/database';
 
 // Hook parameters
 export interface UseCurrentNutritionGoalParams {

@@ -1,22 +1,21 @@
-import { useState, useMemo, lazy } from 'react';
-
+import { Plus, QrCode, Search, Sparkles } from 'lucide-react-native';
+import { lazy, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
-  View,
-  Text,
-  Pressable,
-  TextInput,
-  ScrollView,
+  ActivityIndicator,
   Image,
   ImageSourcePropType,
-  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
 } from 'react-native';
-import { Search, QrCode, Plus, Sparkles } from 'lucide-react-native';
-import { useTranslation } from 'react-i18next';
-import { theme, addOpacityToHex } from '../../theme';
-import { FullScreenModal } from './FullScreenModal';
 
-import { useUnifiedFoodSearch, type UnifiedFoodResult } from '../../hooks/useUnifiedFoodSearch';
 import { useFoods } from '../../hooks/useFoods';
+import { type UnifiedFoodResult, useUnifiedFoodSearch } from '../../hooks/useUnifiedFoodSearch';
+import { addOpacityToHex, theme } from '../../theme';
+import { FullScreenModal } from './FullScreenModal';
 const Button = lazy(() => import('../theme/Button').then(({ Button }) => ({ default: Button })));
 const FoodDetailsModal = lazy(() =>
   import('./FoodDetailsModal').then(({ FoodDetailsModal }) => ({ default: FoodDetailsModal }))

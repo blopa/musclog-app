@@ -1,10 +1,11 @@
-import { useState, useEffect, lazy } from 'react';
-import { View } from 'react-native';
+import { lazy, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { CenteredModal } from './CenteredModal';
-import { Button } from '../theme/Button';
+import { View } from 'react-native';
+
 import { useSettings } from '../../hooks/useSettings';
 import { getWeightUnitI18nKey } from '../../utils/units';
+import { Button } from '../theme/Button';
+import { CenteredModal } from './CenteredModal';
 const NewNumericalInput = lazy(() => import('../theme/NewNumericalInput'));
 
 type EditSetDetailsModalProps = {

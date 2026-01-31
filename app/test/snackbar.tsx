@@ -1,10 +1,11 @@
-import { View, Text, Pressable, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { StatusBar } from 'expo-status-bar';
 import { useRouter } from 'expo-router';
-import { ChevronLeft, CheckCircle, AlertTriangle } from 'lucide-react-native';
-import { theme } from '../../theme';
+import { StatusBar } from 'expo-status-bar';
+import { AlertTriangle, CheckCircle, ChevronLeft } from 'lucide-react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 import { useSnackbar } from '../../components/SnackbarContext';
+import { theme } from '../../theme';
 
 export default function SnackbarTestScreen() {
   const router = useRouter();

@@ -1,13 +1,14 @@
-import { View, Pressable, Text } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { usePathname, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useRouter, usePathname } from 'expo-router';
-import { Home, Dumbbell, MessageSquare, Camera, UtensilsCrossed } from 'lucide-react-native';
-import { useTranslation } from 'react-i18next';
+import { Camera, Dumbbell, Home, MessageSquare, UtensilsCrossed } from 'lucide-react-native';
 import { ReactNode, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Pressable, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 import { theme } from '../theme';
-import { CoachModal } from './modals/CoachModal';
 import CameraModal from './modals/CameraModal';
+import { CoachModal } from './modals/CoachModal';
 
 type MasterLayoutProps = {
   children: ReactNode;

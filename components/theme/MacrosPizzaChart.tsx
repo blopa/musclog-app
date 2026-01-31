@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text } from 'react-native';
-import { PolarChart, Pie } from 'victory-native';
 import { useTranslation } from 'react-i18next';
+import { Text, View } from 'react-native';
+import { Pie, PolarChart } from 'victory-native';
+
 import { theme } from '../../theme';
 
 type MacroColor =

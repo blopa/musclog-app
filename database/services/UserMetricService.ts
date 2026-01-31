@@ -1,6 +1,7 @@
+import { Q } from '@nozbe/watermelondb';
+
 import { database } from '../index';
 import UserMetric from '../models/UserMetric';
-import { Q } from '@nozbe/watermelondb';
 
 export class UserMetricService {
   /**

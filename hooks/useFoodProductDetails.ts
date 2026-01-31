@@ -1,6 +1,7 @@
-import { useQuery } from '@tanstack/react-query';
 import { OpenFoodFacts } from '@openfoodfacts/openfoodfacts-nodejs';
+import { useQuery } from '@tanstack/react-query';
 import { fetch } from 'expo/fetch';
+
 import { SearchResultProduct } from '../types/openFoodFacts';
 
 const getClient = () => {

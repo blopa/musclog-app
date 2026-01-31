@@ -1,5 +1,5 @@
-import { NutritionGoalService, NutritionGoalInput } from '../NutritionGoalService';
 import { database } from '../../index';
+import { NutritionGoalInput, NutritionGoalService } from '../NutritionGoalService';
 import { createMockNutritionGoal } from './helpers';
 
 jest.mock('@nozbe/watermelondb', () => ({

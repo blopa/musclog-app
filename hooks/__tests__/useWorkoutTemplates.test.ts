@@ -2,9 +2,10 @@
  * @jest-environment jsdom
  */
 
-import { renderHook, act, waitFor } from '@testing-library/react';
-import { useWorkoutTemplates } from '../useWorkoutTemplates';
+import { act, renderHook, waitFor } from '@testing-library/react';
+
 import { WorkoutTemplateService } from '../../database/services/WorkoutTemplateService';
+import { useWorkoutTemplates } from '../useWorkoutTemplates';
 
 type FakeTemplate = { id: string; name: string };
 let subscribeNext: (val: FakeTemplate[]) => void;
