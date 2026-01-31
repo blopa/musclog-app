@@ -207,7 +207,9 @@ export default function HomeScreen() {
           {nutritionGoal ? (
             <DailySummaryCard calories={dailySummary.calories} macros={macros} />
           ) : (
-            <DailySummaryEmptyState onSetGoals={() => router.push('/nutrition/goals')} />
+            <DailySummaryEmptyState onSetGoals={() => {
+              // TODO: open the NutritionGoalsModal modal
+            }} />
           )}
         </View>
 
