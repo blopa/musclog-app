@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { View, Text, Image, Pressable, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, Pressable, ScrollView, ActivityIndicator } from 'react-native';
 import {
   Bell,
   Zap,
@@ -9,7 +9,6 @@ import {
   Flame,
   Clock,
   Trophy,
-  Dumbbell,
 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
@@ -25,7 +24,6 @@ import PastWorkoutsHistoryModal from '../components/modals/PastWorkoutsHistoryMo
 import PastWorkoutDetailModal from '../components/modals/PastWorkoutDetailModal';
 import { useRouter } from 'expo-router';
 import { SkeletonLoader } from '../components/theme/SkeletonLoader';
-import { EmptyStateCard } from '../components/theme/EmptyStateCard';
 import { isOnboardingCompleted } from '../utils/onboardingService';
 import { useWorkoutHistory } from '../hooks/useWorkoutHistory';
 import { useUser } from '../hooks/useUser';
@@ -321,15 +319,7 @@ export default function HomeScreen() {
               ))}
             </View>
           ) : recentWorkouts.length === 0 ? (
-            <EmptyStateCard
-              icon={Dumbbell}
-              title={t('emptyStates.workouts.title')}
-              description={t('emptyStates.workouts.description')}
-              buttonLabel={t('emptyStates.workouts.buttonLabel')}
-              iconGradient={true}
-              buttonVariant="gradientCta"
-              onButtonPress={() => router.push('/workout/workouts')}
-            />
+            null
           ) : (
             <View className="gap-3">
               {recentWorkouts.map((workout) => (
