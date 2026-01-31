@@ -61,19 +61,15 @@ export default function HomeScreen() {
 
   // Calculate daily summary from real data
   const dailySummary = useMemo(() => {
-    const caloriesGoal = nutritionGoal?.totalCalories || 2000; // Default goal if not set
+    const caloriesGoal = nutritionGoal?.totalCalories;
     const caloriesConsumed = dailyNutrients.calories;
-    const caloriesRemaining = Math.max(0, caloriesGoal - caloriesConsumed);
+    const caloriesRemaining = Math.max(0, (caloriesGoal ?? 0) - caloriesConsumed);
 
     return {
       calories: {
         consumed: caloriesConsumed,
         remaining: caloriesRemaining,
         goal: caloriesGoal,
-      },
-      activity: {
-        minutes: 45, // TODO: Get from workout data when available
-        goal: 90,
       },
       gradientColors: theme.colors.gradients.primary,
     };
