@@ -24,8 +24,7 @@ import PastWorkoutsHistoryModal from '../components/modals/PastWorkoutsHistoryMo
 import PastWorkoutDetailModal from '../components/modals/PastWorkoutDetailModal';
 import { useRouter } from 'expo-router';
 import { SkeletonLoader } from '../components/theme/SkeletonLoader';
-import { WorkoutsEmptyState } from '../components/theme/WorkoutsEmptyState';
-import { FoodsEmptyState } from '../components/theme/FoodsEmptyState';
+import { WorkoutFoodEmptyState } from '../components/WorkoutFoodEmptyState';
 import { isOnboardingCompleted } from '../utils/onboardingService';
 import { useWorkoutHistory } from '../hooks/useWorkoutHistory';
 import { useUser } from '../hooks/useUser';
@@ -268,7 +267,7 @@ export default function HomeScreen() {
               ))}
             </View>
           ) : recentFoods.length === 0 ? (
-            <FoodsEmptyState onLogPress={() => setIsAddFoodVisible(true)} />
+            <WorkoutFoodEmptyState type="food" onButtonPress={() => setIsAddFoodVisible(true)} />
           ) : (
             <View className="gap-3">
               {recentFoods.slice(0, 2).map((food) => (
@@ -327,7 +326,10 @@ export default function HomeScreen() {
               ))}
             </View>
           ) : recentWorkouts.length === 0 ? (
-            <WorkoutsEmptyState onPlanPress={() => router.push('/workout/plan')} />
+            <WorkoutFoodEmptyState
+              type="workout"
+              onButtonPress={() => router.push('/workout/plan')}
+            />
           ) : (
             <View className="gap-3">
               {recentWorkouts.map((workout) => (
