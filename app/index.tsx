@@ -17,6 +17,7 @@ import { DetailedItemCard } from '../components/cards/DetailedItemCard';
 import { ActionButton } from '../components/ActionButton';
 import ShowMoreButton from '../components/ShowMoreButton';
 import { DailySummaryCard } from '../components/cards/DailySummaryCard/DailySummaryCard';
+import { DailySummaryEmptyState } from '../components/cards/DailySummaryCard/DailySummaryEmptyState';
 import { UserMenuModal } from '../components/modals/UserMenuModal';
 import { NotificationsModal } from '../components/modals/NotificationsModal';
 import { AddFoodModal } from '../components/modals/AddFoodModal';
@@ -203,8 +204,11 @@ export default function HomeScreen() {
 
         {/* Daily Summary Card */}
         <View className="mb-6 px-6">
-          {/* TODO: if no goal is set, show DailySummaryEmptyState */}
-          <DailySummaryCard calories={dailySummary.calories} macros={macros} />
+          {nutritionGoal ? (
+            <DailySummaryCard calories={dailySummary.calories} macros={macros} />
+          ) : (
+            <DailySummaryEmptyState onSetGoals={() => router.push('/nutrition/goals')} />
+          )}
         </View>
 
         {/* Action Buttons */}
