@@ -1,6 +1,16 @@
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
-import { Dumbbell, Zap, Activity, Trophy, Target, User } from 'lucide-react-native';
+import {
+  Dumbbell,
+  Zap,
+  Activity,
+  Trophy,
+  Target,
+  User,
+  Heart,
+  Flame,
+  SunMedium,
+} from 'lucide-react-native';
 import { theme } from '../theme';
 import { AvatarIcon } from '../types/AvatarIcon';
 import { getAvatarIcon } from '../utils/avatarUtils';
@@ -16,7 +26,11 @@ const avatarOptions: { icon: AvatarIcon; component: React.ComponentType<any> }[]
   { icon: 'bolt', component: Zap },
   { icon: 'monitoring', component: Activity },
   { icon: 'directions_run', component: Target },
+  { icon: 'sports', component: Dumbbell },
   { icon: 'emoji_events', component: Trophy },
+  { icon: 'heart', component: Heart },
+  { icon: 'flame', component: Flame },
+  { icon: 'meditation', component: SunMedium },
 ];
 
 export function AvatarSelector({ selectedAvatar, onAvatarSelect }: AvatarSelectorProps) {

@@ -4,4 +4,8 @@ export type AvatarIcon =
   | 'bolt'
   | 'monitoring'
   | 'directions_run'
-  | 'emoji_events';
+  | 'sports'
+  | 'emoji_events'
+  | 'heart'
+  | 'flame'
+  | 'meditation';
