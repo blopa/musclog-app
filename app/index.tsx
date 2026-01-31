@@ -361,15 +361,8 @@ export default function HomeScreen() {
         onClose={() => setIsUserMenuVisible(false)}
         user={{
           name: dbUser?.fullName || 'Guest',
-          avatar: dbUser?.avatarIcon
-            ? React.createElement(
-                getAvatarDisplayProps(dbUser.avatarIcon, dbUser.avatarColor).IconComponent,
-                {
-                  size: 24,
-                  color: getAvatarDisplayProps(dbUser.avatarIcon, dbUser.avatarColor).color,
-                }
-              )
-            : require('../assets/icon.png'),
+          avatarIcon: dbUser?.avatarIcon,
+          avatarColor: dbUser?.avatarColor,
         }}
         onProfilePress={() => router.push('/profile')}
         onSettingsPress={() => router.push('/settings')}

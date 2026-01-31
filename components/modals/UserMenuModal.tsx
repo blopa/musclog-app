@@ -1,15 +1,21 @@
+import React from 'react';
 import { View, Text, Pressable, Modal, Image, ImageSourcePropType, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { X, User, Settings, BarChart3 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
+import { getAvatarDisplayProps } from '../../utils/avatarUtils';
+import { AvatarColor } from '../../types/AvatarColor';
+import { AvatarIcon } from '../../types/AvatarIcon';
 
 type UserMenuModalProps = {
   visible: boolean;
   onClose: () => void;
   user: {
     name: string;
-    avatar: ImageSourcePropType;
+    avatar?: ImageSourcePropType;
+    avatarIcon?: AvatarIcon;
+    avatarColor?: AvatarColor;
   };
   onProfilePress?: () => void;
   onSettingsPress?: () => void;
@@ -100,10 +106,35 @@ export function UserMenuModal({
               <View className="flex-row items-center justify-between p-6">
                 <View className="flex-row items-center gap-4">
                   <View
-                    className="h-14 w-14 overflow-hidden rounded-full border-2 border-accent-primary"
-                    style={{ backgroundColor: theme.colors.background.imageLight }}
+                    className="h-14 w-14 overflow-hidden rounded-full border-2"
+                    style={{
+                      borderColor: user.avatarIcon
+                        ? getAvatarDisplayProps(user.avatarIcon, user.avatarColor).color
+                        : theme.colors.accent.primary,
+                      backgroundColor: user.avatarIcon
+                        ? getAvatarDisplayProps(user.avatarIcon, user.avatarColor).backgroundColor
+                        : theme.colors.background.imageLight,
+                    }}
                   >
-                    <Image source={user.avatar} className="h-full w-full" resizeMode="cover" />
+                    {user.avatarIcon ? (
+                      <View className="h-full w-full items-center justify-center rounded-full">
+                        {React.createElement(
+                          getAvatarDisplayProps(user.avatarIcon, user.avatarColor).IconComponent,
+                          {
+                            size: 24,
+                            color: getAvatarDisplayProps(user.avatarIcon, user.avatarColor).color,
+                          }
+                        )}
+                      </View>
+                    ) : user.avatar ? (
+                      <Image source={user.avatar} className="h-full w-full" resizeMode="cover" />
+                    ) : (
+                      <View className="h-full w-full items-center justify-center rounded-full">
+                        <Text className="text-lg font-bold text-text-primary">
+                          {user.name?.charAt(0).toUpperCase() || 'G'}
+                        </Text>
+                      </View>
+                    )}
                   </View>
                   <View>
                     <Text className="text-sm text-text-secondary">{t('userMenu.greeting')}</Text>
