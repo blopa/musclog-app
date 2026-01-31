@@ -13,7 +13,7 @@ import { useSettings } from '../hooks/useSettings';
 import { useUser } from '../hooks/useUser';
 import { useUserMetrics } from '../hooks/useUserMetrics';
 import ShowMoreButton from '../components/ShowMoreButton';
-import { getAvatarIcon } from '../utils/avatarUtils';
+import { getAvatarDisplayProps } from '../utils/avatarUtils';
 
 const PROFILE_DATA = {
   user: {
@@ -255,17 +255,24 @@ export default function ProfileScreen() {
           <View className="relative mb-4">
             <View
               className="h-32 w-32 overflow-hidden rounded-full border-4"
-              style={{ borderColor: theme.colors.accent.primary }}
+              style={{
+                borderColor: dbUser
+                  ? getAvatarDisplayProps(dbUser.avatarIcon, dbUser.avatarColor).color
+                  : theme.colors.accent.primary,
+                backgroundColor: dbUser
+                  ? getAvatarDisplayProps(dbUser.avatarIcon, dbUser.avatarColor).backgroundColor
+                  : theme.colors.accent.primary20,
+              }}
             >
               {dbUser?.avatarIcon ? (
-                <View
-                  className="h-full w-full items-center justify-center rounded-full"
-                  style={{ backgroundColor: theme.colors.accent.primary20 }}
-                >
-                  {React.createElement(getAvatarIcon(dbUser.avatarIcon), {
-                    size: 40,
-                    color: theme.colors.accent.primary,
-                  })}
+                <View className="h-full w-full items-center justify-center rounded-full">
+                  {React.createElement(
+                    getAvatarDisplayProps(dbUser.avatarIcon, dbUser.avatarColor).IconComponent,
+                    {
+                      size: 40,
+                      color: getAvatarDisplayProps(dbUser.avatarIcon, dbUser.avatarColor).color,
+                    }
+                  )}
                 </View>
               ) : (
                 <Image

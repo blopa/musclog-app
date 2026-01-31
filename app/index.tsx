@@ -30,7 +30,7 @@ import { useWorkoutHistory } from '../hooks/useWorkoutHistory';
 import { useUser } from '../hooks/useUser';
 import { useCurrentNutritionGoal } from '../hooks/useCurrentNutritionGoal';
 import { useNutritionLogs } from '../hooks/useNutritionLogs';
-import { getAvatarIcon } from '../utils/avatarUtils';
+import { getAvatarDisplayProps } from '../utils/avatarUtils';
 
 export default function HomeScreen() {
   const { t } = useTranslation();
@@ -148,18 +148,25 @@ export default function HomeScreen() {
           >
             <View className="relative">
               <View
-                className="h-14 w-14 overflow-hidden rounded-full border-4 border-accent-primary"
-                style={{ backgroundColor: theme.colors.background.imageLight }}
+                className="h-14 w-14 overflow-hidden rounded-full border-4"
+                style={{
+                  borderColor: dbUser
+                    ? getAvatarDisplayProps(dbUser.avatarIcon, dbUser.avatarColor).color
+                    : theme.colors.accent.primary,
+                  backgroundColor: dbUser
+                    ? getAvatarDisplayProps(dbUser.avatarIcon, dbUser.avatarColor).backgroundColor
+                    : theme.colors.accent.primary20,
+                }}
               >
                 {dbUser?.avatarIcon ? (
-                  <View
-                    className="h-full w-full items-center justify-center rounded-full"
-                    style={{ backgroundColor: theme.colors.accent.primary20 }}
-                  >
-                    {React.createElement(getAvatarIcon(dbUser.avatarIcon), {
-                      size: 24,
-                      color: theme.colors.accent.primary,
-                    })}
+                  <View className="h-full w-full items-center justify-center rounded-full">
+                    {React.createElement(
+                      getAvatarDisplayProps(dbUser.avatarIcon, dbUser.avatarColor).IconComponent,
+                      {
+                        size: 24,
+                        color: getAvatarDisplayProps(dbUser.avatarIcon, dbUser.avatarColor).color,
+                      }
+                    )}
                   </View>
                 ) : (
                   <View
@@ -358,10 +365,13 @@ export default function HomeScreen() {
         user={{
           name: dbUser?.fullName || 'Guest',
           avatar: dbUser?.avatarIcon
-            ? React.createElement(getAvatarIcon(dbUser.avatarIcon), {
-                size: 24,
-                color: theme.colors.accent.primary,
-              })
+            ? React.createElement(
+                getAvatarDisplayProps(dbUser.avatarIcon, dbUser.avatarColor).IconComponent,
+                {
+                  size: 24,
+                  color: getAvatarDisplayProps(dbUser.avatarIcon, dbUser.avatarColor).color,
+                }
+              )
             : require('../assets/icon.png'),
         }}
         onProfilePress={() => router.push('/profile')}
