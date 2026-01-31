@@ -25,13 +25,10 @@ import {
 import { theme } from '../../theme';
 import { AINutritionTrackingContextModal } from './AINutritionTrackingContextModal';
 import { FoodDetailsModal } from './FoodDetailsModal';
-import { FoodNotFoundModal } from './FoodNotFoundModal';
 import { AddFoodModal } from './AddFoodModal';
 import { CameraView, useCameraPermissions } from '../CameraView';
 import type { CameraView as CameraViewType } from 'expo-camera';
 import { detectBarcodes } from '../../utils/file';
-import { useFoodProductDetails } from '../../hooks/useFoodProductDetails';
-import { isSuccessFoodDetailProductState } from '../../types/guards/openFoodFacts';
 import { FullScreenModal } from './FullScreenModal';
 import NewCustomFoodModal from './NewCustomFoodModal';
 
@@ -44,14 +41,14 @@ type CameraMode = 'ai-meal-photo' | 'ai-label-scan' | 'barcode-scan';
 type CameraModalProps = {
   visible: boolean;
   onClose: () => void;
+  mode?: CameraMode;
 };
 
-export default function CameraModal({ visible, onClose }: CameraModalProps) {
+export default function CameraModal({ visible, onClose, mode = 'barcode-scan' }: CameraModalProps) {
   const { t } = useTranslation();
   const [permission, requestPermission] = useCameraPermissions();
   const [flashEnabled, setFlashEnabled] = useState(false);
-  const [cameraMode, setCameraMode] = useState<CameraMode>('ai-meal-photo');
-  const [isDetecting, setIsDetecting] = useState(true);
+  const [cameraMode, setCameraMode] = useState<CameraMode>(mode || 'ai-meal-photo');
   const [isContextModalVisible, setIsContextModalVisible] = useState(false);
   const [isFoodDetailsModalVisible, setIsFoodDetailsModalVisible] = useState(false);
   const [isAddFoodModalVisible, setIsAddFoodModalVisible] = useState(false);
@@ -59,6 +56,13 @@ export default function CameraModal({ visible, onClose }: CameraModalProps) {
   const [detectedBarcode, setDetectedBarcode] = useState<string | null>(null);
   const cameraRef = useRef<CameraViewType>(null);
   const pulseAnim = useRef(new Animated.Value(1)).current;
+
+  // Update camera mode when mode prop changes
+  useEffect(() => {
+    if (mode) {
+      setCameraMode(mode);
+    }
+  }, [mode]);
 
   // Show appropriate modal based on product details availability
   useEffect(() => {
