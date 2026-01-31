@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text } from 'react-native';
+import { Utensils } from 'lucide-react-native';
 import { theme } from '../../theme';
 import { GenericCard } from '../cards/GenericCard';
 import { Button } from './Button';
@@ -15,9 +16,9 @@ export function FoodsEmptyState({ onLogPress }: FoodsEmptyStateProps) {
         <View className="flex-1 flex-row items-center gap-3">
           <View
             className="h-10 w-10 items-center justify-center rounded-full"
-            style={{ backgroundColor: theme.colors.background.imageLight }}
+            style={{ backgroundColor: theme.colors.background.overlay }}
           >
-            <Text style={{ color: theme.colors.text.tertiary }}>🍽️</Text>
+            <Utensils size={20} color={theme.colors.text.tertiary} />
           </View>
           <View className="flex-col">
             <Text className="text-sm font-semibold text-text-primary">Nothing logged today</Text>
