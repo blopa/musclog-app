@@ -179,9 +179,6 @@ export default function HomeScreen() {
                   </View>
                 )}
               </View>
-              {dbUser?.fullName ? (
-                <View className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-bg-primary bg-accent-primary" />
-              ) : null}
             </View>
             <View>
               <Text className="text-sm text-text-secondary">{t('home.greeting.goodEvening')}</Text>
