@@ -2,8 +2,9 @@ import React, { ReactNode } from 'react';
 import { View, Text, Pressable, Modal, ScrollView, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArrowLeft } from 'lucide-react-native';
+import { theme } from '../../theme';
+import { BottomButtonWrapper } from '../BottomButtonWrapper';
 import { LinearGradient } from 'expo-linear-gradient';
-import { addOpacityToHex, theme } from '../../theme';
 
 type FullScreenModalProps = {
   visible: boolean;
@@ -119,34 +120,7 @@ export function FullScreenModal({
           )}
 
           {/* optional footer */}
-          {footer ? (
-            <View
-              className="absolute bottom-0 left-0 right-0"
-              style={{
-                paddingBottom: 0,
-                paddingHorizontal: theme.spacing.padding.zero,
-                backgroundColor: 'transparent',
-              }}
-            >
-              <LinearGradient
-                colors={[
-                  theme.colors.background.primary,
-                  addOpacityToHex(theme.colors.background.primary, theme.colors.opacity.ultra),
-                ]}
-                start={{ x: 0.5, y: 1 }}
-                end={{ x: 0.5, y: 0 }}
-              >
-                <View
-                  className="px-6 pb-6 pt-6"
-                  style={{
-                    paddingBottom: Platform.OS === 'web' ? theme.spacing.padding.lg : insets.bottom,
-                  }}
-                >
-                  {footer}
-                </View>
-              </LinearGradient>
-            </View>
-          ) : null}
+          {footer ? <BottomButtonWrapper>{footer}</BottomButtonWrapper> : null}
         </View>
       </View>
     </Modal>

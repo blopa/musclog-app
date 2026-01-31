@@ -1,13 +1,13 @@
-import { View, Text, ScrollView, ActivityIndicator, Platform } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
 import { useState, useEffect } from 'react';
-import { LinearGradient } from 'expo-linear-gradient';
-import { addOpacityToHex, theme } from '../../theme';
+import { theme } from '../../theme';
 import { EditFitnessDetailsBody, FitnessDetails } from '../../components/EditFitnessDetailsBody';
 import { Button } from '../../components/theme/Button';
 import { MaybeLaterButton } from '../../components/MaybeLaterButton';
+import { BottomButtonWrapper } from '../../components/BottomButtonWrapper';
 import { UserService } from '../../database/services';
 import { database } from '../../database';
 import { Q } from '@nozbe/watermelondb';
@@ -20,7 +20,6 @@ import { uniqueNamesGenerator, names } from 'unique-names-generator';
 export default function FitnessInfo() {
   const { t } = useTranslation();
   const router = useRouter();
-  const insets = useSafeAreaInsets();
   const { units, isLoading: isSettingsLoading } = useSettings();
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -303,46 +302,23 @@ export default function FitnessInfo() {
             hideSaveButton
             hideMaybeLaterButton
           />
+          <View className="h-4" />
         </ScrollView>
 
         {/* Floating Action Buttons */}
-        <View
-          className="absolute bottom-0 left-0 right-0"
-          style={{
-            paddingBottom: 0,
-            paddingHorizontal: theme.spacing.padding.zero,
-            backgroundColor: 'transparent',
-          }}
-        >
-          <LinearGradient
-            colors={[
-              theme.colors.background.primary,
-              addOpacityToHex(theme.colors.background.primary, theme.colors.opacity.ultra),
-            ]}
-            start={{ x: 0.5, y: 1 }}
-            end={{ x: 0.5, y: 0 }}
-          >
-            <View
-              className="gap-3 px-6 pb-6 pt-6"
-              style={{
-                paddingBottom: Platform.OS === 'web' ? theme.spacing.padding.lg : insets.bottom,
-              }}
-            >
-              <Button
-                label={t('onboarding.fitnessInfo.save')}
-                onPress={handleFloatingSave}
-                variant="accent"
-                size="md"
-                width="full"
-                loading={isSaving}
-              />
-              <MaybeLaterButton
-                onPress={handleSkip}
-                text={t('onboarding.fitnessInfo.maybeLater')}
-              />
-            </View>
-          </LinearGradient>
-        </View>
+        <BottomButtonWrapper>
+          <View className="gap-3">
+            <Button
+              label={t('onboarding.fitnessInfo.save')}
+              onPress={handleFloatingSave}
+              variant="accent"
+              size="md"
+              width="full"
+              loading={isSaving}
+            />
+            <MaybeLaterButton onPress={handleSkip} text={t('onboarding.fitnessInfo.maybeLater')} />
+          </View>
+        </BottomButtonWrapper>
       </View>
     </SafeAreaView>
   );

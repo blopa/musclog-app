@@ -1,10 +1,8 @@
-import { View, Text, ScrollView, ActivityIndicator, Platform } from 'react-native';
+import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
 import { useState, useEffect } from 'react';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
-import { addOpacityToHex, theme } from '../../theme';
+import { theme } from '../../theme';
 import {
   EditPersonalInfoBody,
   PersonalInfo as PersonalInfoType,
@@ -12,8 +10,8 @@ import {
 import { UserService } from '../../database/services';
 import { MasterLayout } from '../../components/MasterLayout';
 import { Button } from '../../components/theme/Button';
+import { BottomButtonWrapper } from '../../components/BottomButtonWrapper';
 import { setOnboardingCompleted } from '../../utils/onboardingService';
-import { AvatarColor } from '../../types/AvatarColor';
 
 // Helper function to format date of birth timestamp to MM/DD/YYYY
 function formatDateOfBirth(timestamp: number): string {
@@ -27,7 +25,6 @@ function formatDateOfBirth(timestamp: number): string {
 export default function PersonalInfo() {
   const { t } = useTranslation();
   const router = useRouter();
-  const insets = useSafeAreaInsets();
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [initialData, setInitialData] = useState<PersonalInfoType | undefined>(undefined);
@@ -154,42 +151,20 @@ export default function PersonalInfo() {
             isLoading={isSaving}
             hideSaveButton
           />
+          <View className="h-4" />
         </ScrollView>
 
         {/* Floating Save Button */}
-        <View
-          className="absolute bottom-0 left-0 right-0"
-          style={{
-            paddingBottom: 0,
-            paddingHorizontal: theme.spacing.padding.zero,
-            backgroundColor: 'transparent',
-          }}
-        >
-          <LinearGradient
-            colors={[
-              theme.colors.background.primary,
-              addOpacityToHex(theme.colors.background.primary, theme.colors.opacity.ultra),
-            ]}
-            start={{ x: 0.5, y: 1 }}
-            end={{ x: 0.5, y: 0 }}
-          >
-            <View
-              className="px-6 pb-6 pt-6"
-              style={{
-                paddingBottom: Platform.OS === 'web' ? theme.spacing.padding.lg : insets.bottom,
-              }}
-            >
-              <Button
-                label={t('onboarding.personalInfo.save')}
-                onPress={handleFloatingSave}
-                variant="accent"
-                size="md"
-                width="full"
-                loading={isSaving}
-              />
-            </View>
-          </LinearGradient>
-        </View>
+        <BottomButtonWrapper>
+          <Button
+            label={t('onboarding.personalInfo.save')}
+            onPress={handleFloatingSave}
+            variant="accent"
+            size="md"
+            width="full"
+            loading={isSaving}
+          />
+        </BottomButtonWrapper>
       </View>
     </MasterLayout>
   );
