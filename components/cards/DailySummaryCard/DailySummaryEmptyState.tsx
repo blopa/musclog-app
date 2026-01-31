@@ -51,12 +51,18 @@ export const DailySummaryEmptyState: React.FC<DailySummaryEmptyStateProps> = ({
         <View className="flex flex-1 flex-col items-center justify-center gap-4 py-1">
           <Text
             className="text-center text-sm font-medium"
-            style={{ color: 'rgba(255, 255, 255, 0.9)' }}
+            style={{ color: theme.colors.overlay.white70 }}
           >
-            Set your nutrition goals to track your progress.
+            {t('dailySummaryCard.setGoalsToTrack')}
           </Text>
 
-          <Button label={'Set Goals'} variant="accent" size="sm" width="full" onPress={() => {}} />
+          <Button
+            label={t('dailySummaryCard.setGoals', 'Set Goals')}
+            variant="accent"
+            size="sm"
+            width="full"
+            onPress={onSetGoals}
+          />
         </View>
       </View>
     </View>
