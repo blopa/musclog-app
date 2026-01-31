@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, ReactNode } from 'react';
+import { useState, useEffect, useMemo, ReactNode, lazy } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { Check, GripVertical } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
@@ -12,15 +12,11 @@ import {
   GroupPosition,
   SelectorOption,
 } from './utils';
-import { ActionButtonsArea } from './ActionButtonsArea';
+const ActionButtonsArea = lazy(() =>
+  import('./ActionButtonsArea').then(({ ActionButtonsArea }) => ({ default: ActionButtonsArea }))
+);
 
-const ScaleDecorator = ({
-  children,
-  isActive,
-}: {
-  children: ReactNode;
-  isActive?: boolean;
-}) => {
+const ScaleDecorator = ({ children, isActive }: { children: ReactNode; isActive?: boolean }) => {
   const scale = useSharedValue(1);
 
   useEffect(() => {

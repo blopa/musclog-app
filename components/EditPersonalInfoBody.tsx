@@ -1,15 +1,20 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy } from 'react';
+
 import { View, Text, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { User, Mail, Calendar, Check } from 'lucide-react-native';
 import { theme } from '../theme';
-import { TextInput } from './theme/TextInput';
+
 import { SegmentedControl } from './theme/SegmentedControl';
-import { Button } from './theme/Button';
+
 import { AvatarSelector } from './AvatarSelector';
 import { AvatarIcon } from '../types/AvatarIcon';
 import { AvatarColor } from '../types/AvatarColor';
 import { DatePickerModal } from './modals/DatePickerModal';
+const TextInput = lazy(() =>
+  import('./theme/TextInput').then(({ TextInput }) => ({ default: TextInput }))
+);
+const Button = lazy(() => import('./theme/Button').then(({ Button }) => ({ default: Button })));
 
 type EditPersonalInfoBodyProps = {
   initialData?: PersonalInfo;

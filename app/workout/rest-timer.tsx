@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, lazy } from 'react';
+
 import { View, Text, Animated, ActivityIndicator, ScrollView } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { CheckCircle, ChevronRight, Dumbbell, Repeat } from 'lucide-react-native';
@@ -8,10 +9,10 @@ import { theme } from '../../theme';
 import { WorkoutOptionsModal } from '../../components/modals/WorkoutOptionsModal';
 import { EndWorkoutModal } from '../../components/modals/EndWorkoutModal';
 import { WorkoutTimeTracker } from '../../components/WorkoutTimeTracker';
-import { DetailedItemCard } from '../../components/cards/DetailedItemCard';
+
 import { RestTimerControls } from '../../components/RestTimerControls';
 import { RestTimer } from '../../components/RestTimer';
-import { UpNextLabel } from '../../components/UpNextLabel';
+
 import { WorkoutService } from '../../database/services/WorkoutService';
 import { database } from '../../database';
 import WorkoutLog from '../../database/models/WorkoutLog';
@@ -23,6 +24,14 @@ import { useSettings } from '../../hooks/useSettings';
 import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
 import { MasterLayout } from '../../components/MasterLayout';
 import WorkoutSessionOverviewModal from '../../components/modals/WorkoutSessionOverviewModal';
+const DetailedItemCard = lazy(() =>
+  import('../../components/cards/DetailedItemCard').then(({ DetailedItemCard }) => ({
+    default: DetailedItemCard,
+  }))
+);
+const UpNextLabel = lazy(() =>
+  import('../../components/UpNextLabel').then(({ UpNextLabel }) => ({ default: UpNextLabel }))
+);
 
 export default function RestTimerScreen() {
   const { t } = useTranslation();

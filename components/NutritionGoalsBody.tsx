@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy } from 'react';
 import { View, Text, Pressable, ScrollView, Platform, useWindowDimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
@@ -15,11 +15,12 @@ import { format } from 'date-fns';
 import { DatePickerModal } from './modals/DatePickerModal';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
-import { Button } from './theme/Button';
+
 import { Slider } from './theme/Slider';
 import { MacrosPizzaChart } from './theme/MacrosPizzaChart';
 import { StepperInlineInput } from './theme/StepperInlineInput';
 import { SegmentedControl } from './theme/SegmentedControl';
+const Button = lazy(() => import('./theme/Button').then(({ Button }) => ({ default: Button })));
 
 export type NutritionGoals = {
   totalCalories: number;

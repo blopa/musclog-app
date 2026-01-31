@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, lazy } from 'react';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { Search, SlidersHorizontal, Trophy } from 'lucide-react-native';
 import { theme } from '../../theme';
@@ -6,11 +6,14 @@ import { FullScreenModal } from './FullScreenModal';
 import { useTranslation } from 'react-i18next';
 import { GenericCard } from '../cards/GenericCard';
 import { PastWorkoutsHistoryFilterMenu } from './PastWorkoutsHistoryFilterMenu';
-import { SkeletonLoader } from '../theme/SkeletonLoader';
+
 import { Button } from '../theme/Button';
 import { type WorkoutHistoryItem, WorkoutHistorySection } from '../../utils/workoutHistory';
 import { useWorkoutHistory } from '../../hooks/useWorkoutHistory';
 import PastWorkoutDetailModal from './PastWorkoutDetailModal';
+const SkeletonLoader = lazy(() =>
+  import('../theme/SkeletonLoader').then(({ SkeletonLoader }) => ({ default: SkeletonLoader }))
+);
 
 type WorkoutHistoryModalProps = {
   visible: boolean;

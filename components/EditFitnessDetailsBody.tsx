@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, lazy } from 'react';
+
 import { View, Text, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import {
@@ -19,11 +20,15 @@ import {
 import { theme } from '../theme';
 import { TextInput } from './theme/TextInput';
 import { SegmentedControl } from './theme/SegmentedControl';
-import { Button } from './theme/Button';
+
 import { PickerButton } from './theme/PickerButton';
 import { BottomPopUpMenu } from './BottomPopUpMenu';
-import { MaybeLaterButton } from './MaybeLaterButton';
+
 import { getWeightUnit, getHeightUnit } from '../utils/units';
+const Button = lazy(() => import('./theme/Button').then(({ Button }) => ({ default: Button })));
+const MaybeLaterButton = lazy(() =>
+  import('./MaybeLaterButton').then(({ MaybeLaterButton }) => ({ default: MaybeLaterButton }))
+);
 
 type EditFitnessDetailsBodyProps = {
   onClose: () => void;

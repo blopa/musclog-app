@@ -19,6 +19,8 @@ module.exports = defineConfig([
       'react/jsx-closing-bracket-location': ['warn', 'line-aligned'],
       // Disallow using `&&` inside JSX expression containers (fixable)
       'local/no-jsx-logical-expression': 'error',
+      // Require lazy imports for conditionally rendered components (fixable)
+      'local/prefer-react-lazy': 'warn',
     },
   },
   {

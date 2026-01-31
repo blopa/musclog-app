@@ -1,17 +1,16 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, lazy } from 'react';
+
 import { View, ScrollView, Pressable } from 'react-native';
 import { Search, SlidersHorizontal, Dumbbell, WifiOff, Plus } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
 import { theme } from '../../theme';
 import { MasterLayout } from '../../components/MasterLayout';
-import { WorkoutCard } from '../../components/cards/WorkoutCard';
+
 import { FilterTabs } from '../../components/FilterTabs';
 import { GradientText } from '../../components/GradientText';
 import { WorkoutDetailsMenu } from '../../components/WorkoutDetailsMenu';
-import { EmptyStateCard } from '../../components/theme/EmptyStateCard';
-import { SkeletonLoader } from '../../components/theme/SkeletonLoader';
-import { ErrorStateCard } from '../../components/theme/ErrorStateCard';
+
 import { WorkoutService } from '../../database/services';
 import { database } from '../../database';
 import WorkoutTemplate from '../../database/models/WorkoutTemplate';
@@ -20,7 +19,25 @@ import { CreateWorkoutOptionsModal } from '../../components/modals/CreateWorkout
 import CreateWorkoutModal from '../../components/modals/CreateWorkoutModal';
 import WorkoutSessionOverviewModal from '../../components/modals/WorkoutSessionOverviewModal';
 import { useWorkoutTemplates } from '../../hooks/useWorkoutTemplates';
-import DashedButton from '../../components/theme/DashedButton';
+const EmptyStateCard = lazy(() =>
+  import('../../components/theme/EmptyStateCard').then(({ EmptyStateCard }) => ({
+    default: EmptyStateCard,
+  }))
+);
+const DashedButton = lazy(() => import('../../components/theme/DashedButton'));
+const SkeletonLoader = lazy(() =>
+  import('../../components/theme/SkeletonLoader').then(({ SkeletonLoader }) => ({
+    default: SkeletonLoader,
+  }))
+);
+const ErrorStateCard = lazy(() =>
+  import('../../components/theme/ErrorStateCard').then(({ ErrorStateCard }) => ({
+    default: ErrorStateCard,
+  }))
+);
+const WorkoutCard = lazy(() =>
+  import('../../components/cards/WorkoutCard').then(({ WorkoutCard }) => ({ default: WorkoutCard }))
+);
 
 export default function WorkoutsScreen() {
   const { t } = useTranslation();

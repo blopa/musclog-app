@@ -1,17 +1,29 @@
-import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef, lazy } from 'react';
+
 import { View, Text, TextInput, Switch, ActivityIndicator } from 'react-native';
 import { Search, Dumbbell, User, PlusCircle } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
 import { FullScreenModal } from './FullScreenModal';
 import { Button } from '../theme/Button';
-import { OptionsSelector, SelectorOption } from '../OptionsSelector';
-import { FilterTabs } from '../FilterTabs';
+import { SelectorOption } from '../OptionsSelector';
+
 import { StepperInlineInput } from '../theme/StepperInlineInput';
-import { SelectedExerciseCard } from '../cards/SelectedExerciseCard';
+
 import { useExercises } from '../../hooks/useExercises';
 import { useSettings } from '../../hooks/useSettings';
 import { getWeightUnitI18nKey } from '../../utils/units';
+const OptionsSelector = lazy(() =>
+  import('../OptionsSelector').then(({ OptionsSelector }) => ({ default: OptionsSelector }))
+);
+const SelectedExerciseCard = lazy(() =>
+  import('../cards/SelectedExerciseCard').then(({ SelectedExerciseCard }) => ({
+    default: SelectedExerciseCard,
+  }))
+);
+const FilterTabs = lazy(() =>
+  import('../FilterTabs').then(({ FilterTabs }) => ({ default: FilterTabs }))
+);
 
 type MuscleGroup = 'all' | 'chest' | 'back' | 'legs' | 'arms';
 
@@ -347,7 +359,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
                   title=""
                   options={filteredExercises}
                   selectedId={selectedExerciseId || undefined}
-                  onSelect={handleSelectExercise}
+                  onSelect={handleSelectExercise as any}
                 />
               ) : (
                 <View className="items-center justify-center py-12">

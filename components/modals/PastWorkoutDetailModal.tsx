@@ -1,4 +1,4 @@
-import { createElement, useState } from 'react';
+import { createElement, useState, lazy } from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
 import { Trophy, Edit } from 'lucide-react-native';
 import { MenuButton } from '../theme/MenuButton';
@@ -10,11 +10,12 @@ import { FullScreenModal } from './FullScreenModal';
 import { GenericCard } from '../cards/GenericCard';
 import { LineChart, LineChartDataPoint } from '../LineChart';
 import { usePastWorkoutDetail } from '../../hooks/usePastWorkoutDetail';
-import EditPastWorkoutDataModal from './EditPastWorkoutDataModal';
+
 import { useEditWorkoutSets } from '../../hooks/useEditWorkoutSets';
 import { PastWorkoutBottomMenu } from './PastWorkoutBottomMenu';
 import { useSettings } from '../../hooks/useSettings';
 import { getWeightUnitI18nKey } from '../../utils/units';
+const EditPastWorkoutDataModal = lazy(() => import('./EditPastWorkoutDataModal'));
 
 // Types
 type WorkoutSet = {

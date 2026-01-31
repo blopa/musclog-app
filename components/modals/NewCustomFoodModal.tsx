@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, lazy } from 'react';
 import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import {
@@ -22,7 +22,9 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '../theme/Button';
 import { TextInput } from '../theme/TextInput';
 import { SegmentedControl } from '../theme/SegmentedControl';
-import { MacroInput } from '../MacroInput';
+const MacroInput = lazy(() =>
+  import('../MacroInput').then(({ MacroInput }) => ({ default: MacroInput }))
+);
 
 type MeasurementUnit = '100g' | 'serving' | 'container';
 

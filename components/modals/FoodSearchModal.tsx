@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, lazy } from 'react';
+
 import {
   View,
   Text,
@@ -13,10 +14,13 @@ import { Search, QrCode, Plus, Sparkles } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { theme, addOpacityToHex } from '../../theme';
 import { FullScreenModal } from './FullScreenModal';
-import { FoodDetailsModal } from './FoodDetailsModal';
+
 import { useUnifiedFoodSearch, type UnifiedFoodResult } from '../../hooks/useUnifiedFoodSearch';
 import { useFoods } from '../../hooks/useFoods';
-import { Button } from '../theme/Button';
+const Button = lazy(() => import('../theme/Button').then(({ Button }) => ({ default: Button })));
+const FoodDetailsModal = lazy(() =>
+  import('./FoodDetailsModal').then(({ FoodDetailsModal }) => ({ default: FoodDetailsModal }))
+);
 
 type FoodItem = UnifiedFoodResult & {
   icon?: string; // Emoji or icon name

@@ -4,14 +4,17 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeft, ArrowRight, LucideIcon } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { useState, useRef } from 'react';
+import { useState, useRef, lazy } from 'react';
 import { PagerView, type PagerViewRef } from '../../components/PagerView/PagerView';
 import { theme } from '../../theme';
 import { GradientText } from '../../components/GradientText';
 import { PageIndicators } from '../../components/theme/PageIndicators';
-import { Button } from '../../components/theme/Button';
+
 import { MaybeLaterButton } from '../../components/MaybeLaterButton';
 import PreRegistrationIntro from '../../components/PreRegistrationIntro';
+const Button = lazy(() =>
+  import('../../components/theme/Button').then(({ Button }) => ({ default: Button }))
+);
 
 type OnboardingBodyProps = {
   imageUrl?: string;

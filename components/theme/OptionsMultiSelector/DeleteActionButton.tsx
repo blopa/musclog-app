@@ -9,10 +9,7 @@ type DeleteActionButtonProps = {
   selectedCount: number;
 };
 
-export const DeleteActionButton: FC<DeleteActionButtonProps> = ({
-  onPress,
-  selectedCount,
-}) => {
+export const DeleteActionButton: FC<DeleteActionButtonProps> = ({ onPress, selectedCount }) => {
   const { t } = useTranslation();
 
   return (

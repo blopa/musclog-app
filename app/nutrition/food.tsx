@@ -1,4 +1,5 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, lazy } from 'react';
+
 import { View, Text, ScrollView, Pressable } from 'react-native';
 import {
   ChevronLeft,
@@ -14,19 +15,38 @@ import { format } from 'date-fns';
 import i18n, { LOCALE_MAP, LanguageKeys } from '../../lang/lang';
 import { theme } from '../../theme';
 import { MasterLayout } from '../../components/MasterLayout';
-import { CaloriesRemainingCard } from '../../components/cards/CaloriesRemainingCard';
+
 import { FoodItemCard } from '../../components/cards/FoodItemCard';
-import { MealSection } from '../../components/MealSection';
-import { Button } from '../../components/theme/Button';
+
 import { AddFoodModal } from '../../components/modals/AddFoodModal';
 import { FoodSearchModal } from '../../components/modals/FoodSearchModal';
-import { EmptyStateCard } from '../../components/theme/EmptyStateCard';
-import { SkeletonLoader } from '../../components/theme/SkeletonLoader';
+
 import { useNutritionLogs } from '../../hooks/useNutritionLogs';
 import { useSettings } from '../../hooks/useSettings';
 import { useCurrentNutritionGoal } from '../../hooks/useCurrentNutritionGoal';
 import NutritionLog from '../../database/models/NutritionLog';
 import Food from '../../database/models/Food';
+const CaloriesRemainingCard = lazy(() =>
+  import('../../components/cards/CaloriesRemainingCard').then(({ CaloriesRemainingCard }) => ({
+    default: CaloriesRemainingCard,
+  }))
+);
+const EmptyStateCard = lazy(() =>
+  import('../../components/theme/EmptyStateCard').then(({ EmptyStateCard }) => ({
+    default: EmptyStateCard,
+  }))
+);
+const MealSection = lazy(() =>
+  import('../../components/MealSection').then(({ MealSection }) => ({ default: MealSection }))
+);
+const SkeletonLoader = lazy(() =>
+  import('../../components/theme/SkeletonLoader').then(({ SkeletonLoader }) => ({
+    default: SkeletonLoader,
+  }))
+);
+const Button = lazy(() =>
+  import('../../components/theme/Button').then(({ Button }) => ({ default: Button }))
+);
 
 export default function FoodScreen() {
   const { t } = useTranslation();

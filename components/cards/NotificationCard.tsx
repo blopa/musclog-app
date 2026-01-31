@@ -1,9 +1,10 @@
 import { View, Text } from 'react-native';
-import { ReactNode } from 'react';
+import { ReactNode, lazy } from 'react';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
-import { Button } from '../theme/Button';
+
 import { GenericCard } from './GenericCard';
+const Button = lazy(() => import('../theme/Button').then(({ Button }) => ({ default: Button })));
 
 type NotificationCardProps = {
   type: 'ai-insight' | 'workout-reminder' | 'workout-completed' | 'kudos' | 'weekly-report';

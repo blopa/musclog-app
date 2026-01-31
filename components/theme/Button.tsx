@@ -22,10 +22,7 @@ type ThemeButtonProps = {
   onPress?: () => void;
   iconBgColor?: string;
   iconColor?: string;
-  icon?:
-    | LucideIcon
-    | ReactNode
-    | ((props: { size?: number; color?: string }) => ReactNode);
+  icon?: LucideIcon | ReactNode | ((props: { size?: number; color?: string }) => ReactNode);
   iconPosition?: 'left' | 'right';
   size?: ThemeButtonSize;
   width?: ThemeButtonWidth;

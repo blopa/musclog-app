@@ -1,12 +1,21 @@
+import { lazy } from 'react';
+
 import { View, Text, Image, Pressable, ImageSourcePropType } from 'react-native';
 import { Clock, Archive } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { isToday, isYesterday } from 'date-fns';
 import { theme } from '../../theme';
-import { StartWorkoutButton } from '../StartWorkoutButton';
-import { Button } from '../theme/Button';
-import { MenuButton } from '../theme/MenuButton';
+
 import { GenericCard } from './GenericCard';
+const Button = lazy(() => import('../theme/Button').then(({ Button }) => ({ default: Button })));
+const MenuButton = lazy(() =>
+  import('../theme/MenuButton').then(({ MenuButton }) => ({ default: MenuButton }))
+);
+const StartWorkoutButton = lazy(() =>
+  import('../StartWorkoutButton').then(({ StartWorkoutButton }) => ({
+    default: StartWorkoutButton,
+  }))
+);
 
 type FeaturedWorkoutCardProps = {
   name: string;

@@ -1,16 +1,22 @@
-import { useState } from 'react';
+import { useState, lazy } from 'react';
 import { View, Text, TextInput, Pressable, ScrollView, ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Sparkles, PlusSquare } from 'lucide-react-native';
 import { theme } from '../../theme';
 import { Button } from '../theme/Button';
 import { SegmentedControl } from '../theme/SegmentedControl';
-import { OptionsMultiSelector } from '../theme/OptionsMultiSelector/OptionsMultiSelector';
+import type { SelectorOption } from '../theme/OptionsMultiSelector/utils';
+
 import { WeekdayPicker } from '../theme/WeekdayPicker';
 import { AddExerciseModal } from './AddExerciseModal';
 import { WEEKDAY_LABELS } from '../../utils/workout';
 import { useWorkoutForm } from '../../hooks/useWorkoutForm';
 import { FullScreenModal } from './FullScreenModal';
+const OptionsMultiSelector = lazy(() =>
+  import('../theme/OptionsMultiSelector/OptionsMultiSelector').then(({ OptionsMultiSelector }) => ({
+    default: OptionsMultiSelector,
+  }))
+);
 
 type CreateWorkoutModalProps = {
   visible: boolean;
@@ -416,9 +422,9 @@ export default function CreateWorkoutModal({
                 title={t('createWorkout.exercisesInWorkout')}
                 options={exercises}
                 selectedIds={selectedExercises}
-                onChange={(ids) => setSelectedExercises(ids)}
-                onOrderChange={handleExerciseOrderChange}
-                onDelete={handleDeleteExercises}
+                onChange={((ids: any) => setSelectedExercises(ids)) as any}
+                onOrderChange={handleExerciseOrderChange as any}
+                onDelete={handleDeleteExercises as any}
                 isEditable={true}
               />
             ) : (

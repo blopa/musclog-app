@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, lazy } from 'react';
 import { View, Animated, ActivityIndicator } from 'react-native';
 import { Play, WifiOff } from 'lucide-react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -10,7 +10,7 @@ import { WorkoutOptionsModal } from '../../components/modals/WorkoutOptionsModal
 import { EndWorkoutModal } from '../../components/modals/EndWorkoutModal';
 import { RestOverStatusIcon } from '../../components/RestOverStatusIcon';
 import { RestOverTitle } from '../../components/RestOverTitle';
-import { RestOverNextExercise } from '../../components/RestOverNextExercise';
+
 import { WorkoutService } from '../../database/services/WorkoutService';
 import { database } from '../../database';
 import WorkoutLog from '../../database/models/WorkoutLog';
@@ -19,6 +19,11 @@ import { StatusBar } from 'expo-status-bar';
 import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
 import { MasterLayout } from '../../components/MasterLayout';
 import WorkoutSessionOverviewModal from '../../components/modals/WorkoutSessionOverviewModal';
+const RestOverNextExercise = lazy(() =>
+  import('../../components/RestOverNextExercise').then(({ RestOverNextExercise }) => ({
+    default: RestOverNextExercise,
+  }))
+);
 
 export default function RestOverScreen() {
   const { t } = useTranslation();

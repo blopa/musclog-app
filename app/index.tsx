@@ -18,13 +18,18 @@ import { ActionButton } from '../components/ActionButton';
 import ShowMoreButton from '../components/ShowMoreButton';
 import { useRouter } from 'expo-router';
 import { SkeletonLoader } from '../components/theme/SkeletonLoader';
-import { WorkoutFoodEmptyState } from '../components/WorkoutFoodEmptyState';
+
 import { isOnboardingCompleted } from '../utils/onboardingService';
 import { useWorkoutHistory } from '../hooks/useWorkoutHistory';
 import { useUser } from '../hooks/useUser';
 import { useCurrentNutritionGoal } from '../hooks/useCurrentNutritionGoal';
 import { useNutritionLogs } from '../hooks/useNutritionLogs';
 import { getAvatarDisplayProps } from '../utils/avatarUtils';
+const WorkoutFoodEmptyState = lazy(() =>
+  import('../components/WorkoutFoodEmptyState').then(({ WorkoutFoodEmptyState }) => ({
+    default: WorkoutFoodEmptyState,
+  }))
+);
 
 // Lazy load components
 const DailySummaryCard = lazy(() =>
