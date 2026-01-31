@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Pressable, ScrollView, Platform, useWindowDimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
@@ -37,6 +37,7 @@ export type NutritionGoals = {
 
 type NutritionGoalsModalBodyProps = {
   onSave?: (goals: NutritionGoals) => void;
+  onFormChange?: (goals: NutritionGoals) => void;
   initialGoals?: Partial<NutritionGoals>;
   showSaveButton?: boolean;
   showSubtitle?: boolean;
@@ -187,6 +188,7 @@ function MacrosDistributionChart({
 
 export function NutritionGoalsBody({
   onSave,
+  onFormChange,
   initialGoals,
   showSaveButton = true,
   showSubtitle = true,
@@ -208,6 +210,38 @@ export function NutritionGoalsBody({
   const [targetFFMI, setTargetFFMI] = useState(initialGoals?.targetFFMI ?? 21.0);
   const [targetDate, setTargetDate] = useState<number | null>(initialGoals?.targetDate ?? null);
   const [isTargetDatePickerVisible, setIsTargetDatePickerVisible] = useState(false);
+
+  // Call onFormChange whenever form data changes
+  useEffect(() => {
+    if (onFormChange) {
+      onFormChange({
+        totalCalories,
+        protein,
+        carbs,
+        fats,
+        fiber,
+        eatingPhase,
+        targetWeight,
+        targetBodyFat,
+        targetBMI,
+        targetFFMI,
+        targetDate,
+      });
+    }
+  }, [
+    totalCalories,
+    protein,
+    carbs,
+    fats,
+    fiber,
+    eatingPhase,
+    targetWeight,
+    targetBodyFat,
+    targetBMI,
+    targetFFMI,
+    targetDate,
+    onFormChange,
+  ]);
 
   const handleSave = () => {
     const goals: NutritionGoals = {

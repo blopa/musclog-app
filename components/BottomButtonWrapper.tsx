@@ -23,6 +23,7 @@ export function BottomButtonWrapper({ children }: BottomButtonWrapperProps) {
       <LinearGradient
         colors={[
           theme.colors.background.primary,
+          addOpacityToHex(theme.colors.background.primary, theme.colors.opacity.medium),
           addOpacityToHex(theme.colors.background.primary, theme.colors.opacity.ultra),
         ]}
         start={{ x: 0.5, y: 1 }}

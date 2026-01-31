@@ -354,6 +354,19 @@ export default function AddUserMetricEntryModal({
       onClose={onClose}
       title={t('bodyMetrics.addEntry.title')}
       scrollable={false}
+      footer={
+        <Button
+          label={t('bodyMetrics.addEntry.saveEntry')}
+          onPress={handleSave}
+          icon={CheckCircle}
+          iconPosition="right"
+          variant="gradientCta"
+          size="md"
+          width="full"
+          loading={isSaving}
+          disabled={isSaving}
+        />
+      }
     >
       <View className="flex-1">
         {/* Content */}
@@ -407,25 +420,8 @@ export default function AddUserMetricEntryModal({
             {/* Mood Slider Section */}
             <MoodSelectorCard value={mood} onChange={setMood} />
           </View>
+          <View style={{ height: theme.spacing.padding['3xl'] * 2 }} />
         </ScrollView>
-
-        {/* Save Button Footer */}
-        <View
-          className="border-t p-6 pb-10"
-          style={{ borderColor: theme.colors.background.white5 }}
-        >
-          <Button
-            label={t('bodyMetrics.addEntry.saveEntry')}
-            onPress={handleSave}
-            icon={CheckCircle}
-            iconPosition="right"
-            variant="gradientCta"
-            size="md"
-            width="full"
-            loading={isSaving}
-            disabled={isSaving}
-          />
-        </View>
       </View>
     </FullScreenModal>
   );

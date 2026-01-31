@@ -400,6 +400,17 @@ export function AddFoodItemToMealModal({
           {t('food.addFoodItemToMeal.selectedCount', { count: selectedCount })}
         </Text>
       }
+      footer={
+        <Button
+          label={t('food.addFoodItemToMeal.addSelectedFoods', { count: selectedCount })}
+          variant="gradientCta"
+          size="md"
+          width="full"
+          icon={PlusCircle}
+          onPress={handleAdd}
+          style={{ position: 'relative' }}
+        />
+      }
     >
       <View className="flex-1 px-4 py-2">
         {/* Search Bar */}
@@ -450,18 +461,6 @@ export function AddFoodItemToMealModal({
           ))}
           <View style={{ height: theme.size['100'] }} />
         </ScrollView>
-
-        <View className="px-4 pb-8 pt-2">
-          <Button
-            label={t('food.addFoodItemToMeal.addSelectedFoods', { count: selectedCount })}
-            variant="gradientCta"
-            size="md"
-            width="full"
-            icon={PlusCircle}
-            onPress={handleAdd}
-            style={{ position: 'relative' }}
-          />
-        </View>
       </View>
     </FullScreenModal>
   );

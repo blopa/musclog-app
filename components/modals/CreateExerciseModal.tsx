@@ -88,6 +88,15 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
       visible={visible}
       onClose={onClose}
       title={t('exercises.createExercise.title')}
+      footer={
+        <Button
+          label={t('exercises.createExercise.createButton')}
+          onPress={handleCreateExercise}
+          variant="gradientCta"
+          size="md"
+          width="full"
+        />
+      }
     >
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="px-4 py-2" style={{ gap: theme.spacing.gap.xl }}>
@@ -215,29 +224,8 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
               </Pressable>
             </View>
           </View>
-
-          {/* Bottom spacing for fixed button */}
-          <View style={{ height: theme.size['100'] }} />
         </View>
       </ScrollView>
-
-      {/* Fixed Bottom Button */}
-      <View
-        className="px-4"
-        style={{
-          paddingBottom: Math.max(insets.bottom, theme.spacing.padding.base),
-          paddingTop: theme.spacing.padding.base,
-          backgroundColor: theme.colors.background.primary,
-        }}
-      >
-        <Button
-          label={t('exercises.createExercise.createButton')}
-          onPress={handleCreateExercise}
-          variant="gradientCta"
-          size="md"
-          width="full"
-        />
-      </View>
 
       {/* Primary Muscle Picker */}
       <BottomPopUpMenu

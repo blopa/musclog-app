@@ -39,6 +39,7 @@ import ViewExerciseModal from '../../components/modals/ViewExerciseModal';
 import CreateExerciseModal from '../../components/modals/CreateExerciseModal';
 import NewCustomFoodModal from '../../components/modals/NewCustomFoodModal';
 import GoalsManagementModal from '../../components/modals/GoalsManagementModal';
+import CreateWorkoutModal from '../../components/modals/CreateWorkoutModal';
 import PastWorkoutsHistoryModal from '../../components/modals/PastWorkoutsHistoryModal';
 import BodyMetricsHistoryModal from '../../components/modals/BodyMetricsHistoryModal';
 import AddUserMetricEntryModal from '../../components/modals/AddUserMetricEntryModal';
@@ -164,6 +165,8 @@ export default function ModalsTestScreen() {
   const [isPastWorkoutDetailVisible, setIsPastWorkoutDetailVisible] = useState(false);
   // Edit Past Workout Data Modal
   const [isEditPastWorkoutDataVisible, setIsEditPastWorkoutDataVisible] = useState(false);
+  // Create Workout Modal
+  const [isCreateWorkoutVisible, setIsCreateWorkoutVisible] = useState(false);
 
   const handleSaveGoals = (goals: NutritionGoals) => {
     console.log('Goals saved:', goals);
@@ -810,6 +813,20 @@ export default function ModalsTestScreen() {
             />
           </View>
 
+          {/* Create Workout Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Create Workout Modal</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Modal for creating a new workout with exercises, goals, and scheduling options.
+            </Text>
+            <Button
+              label="Open Create Workout Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsCreateWorkoutVisible(true)}
+            />
+          </View>
+
           {/* Bottom spacing */}
           <View className="h-8" />
         </View>
@@ -1210,6 +1227,11 @@ export default function ModalsTestScreen() {
       <PastWorkoutDetailModal
         visible={isPastWorkoutDetailVisible}
         onClose={() => setIsPastWorkoutDetailVisible(false)}
+      />
+
+      <CreateWorkoutModal
+        visible={isCreateWorkoutVisible}
+        onClose={() => setIsCreateWorkoutVisible(false)}
       />
     </SafeAreaView>
   );

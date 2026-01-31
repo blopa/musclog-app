@@ -82,7 +82,21 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
   ];
 
   return (
-    <FullScreenModal visible={visible} onClose={onClose} title={t('food.newCustomFood.title')}>
+    <FullScreenModal
+      visible={visible}
+      onClose={onClose}
+      title={t('food.newCustomFood.title')}
+      footer={
+        <Button
+          label={t('common.save')}
+          variant="gradientCta"
+          size="md"
+          width="full"
+          icon={PlusCircle}
+          onPress={handleSave}
+        />
+      }
+    >
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="gap-6 px-4 pb-40 pt-6">
           {/* Food Name */}
@@ -275,16 +289,6 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
               </View>
             ) : null}
           </View>
-        </View>
-        <View className="gap-3 px-4 pb-8 pt-4">
-          <Button
-            label={t('common.save')}
-            variant="gradientCta"
-            size="md"
-            width="full"
-            icon={PlusCircle}
-            onPress={handleSave}
-          />
         </View>
       </ScrollView>
     </FullScreenModal>

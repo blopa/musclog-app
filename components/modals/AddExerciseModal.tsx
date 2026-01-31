@@ -267,6 +267,17 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
       onClose={onClose}
       title={t('workouts.addExercise.title')}
       scrollable={true}
+      footer={
+        <Button
+          label={t('workouts.addExercise.addToWorkout')}
+          variant="gradientCta"
+          size="md"
+          width="full"
+          icon={PlusCircle}
+          onPress={handleAdd}
+          disabled={!selectedExerciseId || isLoading}
+        />
+      }
     >
       <View className="flex-1 px-4 py-6">
         {selectedExercise ? (
@@ -447,17 +458,6 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
             </View>
           </View>
         </View>
-        <View style={{ height: theme.spacing.padding.xl }} />
-
-        <Button
-          label={t('workouts.addExercise.addToWorkout')}
-          variant="gradientCta"
-          size="md"
-          width="full"
-          icon={PlusCircle}
-          onPress={handleAdd}
-          disabled={!selectedExerciseId || isLoading}
-        />
       </View>
     </FullScreenModal>
   );

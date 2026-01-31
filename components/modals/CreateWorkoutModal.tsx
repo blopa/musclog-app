@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Pressable, ScrollView, ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Sparkles, PlusSquare } from 'lucide-react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '../../theme';
 import { Button } from '../theme/Button';
 import { SegmentedControl } from '../theme/SegmentedControl';
@@ -25,7 +24,6 @@ export default function CreateWorkoutModal({
   templateId,
 }: CreateWorkoutModalProps) {
   const { t } = useTranslation();
-  const insets = useSafeAreaInsets();
 
   const [addExerciseVisible, setAddExerciseVisible] = useState(false);
 
@@ -73,6 +71,16 @@ export default function CreateWorkoutModal({
       onClose={onClose}
       title={isEditMode ? t('createWorkout.editTitle') : t('createWorkout.title')}
       scrollable={false}
+      footer={
+        <Button
+          label={t('workouts.addExercise.title')}
+          variant="gradientCta"
+          size="md"
+          width="full"
+          icon={PlusSquare}
+          onPress={() => setAddExerciseVisible(true)}
+        />
+      }
       headerRight={
         <View>
           {isSaving ? (
@@ -420,26 +428,6 @@ export default function CreateWorkoutModal({
                 </Text>
               </View>
             )}
-          </View>
-        </View>
-
-        {/* Fixed Bottom Button */}
-        <View
-          style={{
-            padding: theme.spacing.padding.base,
-            paddingBottom: Math.max(insets.bottom, theme.spacing.padding.base),
-            backgroundColor: 'transparent',
-          }}
-        >
-          <View style={{ backgroundColor: theme.colors.background.primary }}>
-            <Button
-              label={t('workouts.addExercise.title')}
-              variant="gradientCta"
-              size="md"
-              width="full"
-              icon={PlusSquare}
-              onPress={() => setAddExerciseVisible(true)}
-            />
           </View>
         </View>
       </ScrollView>

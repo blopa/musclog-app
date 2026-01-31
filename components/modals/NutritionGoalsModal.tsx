@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { ChevronRight } from 'lucide-react-native';
 import { FullScreenModal } from './FullScreenModal';
+import { Button } from '../theme/Button';
 import { NutritionGoalsBody, NutritionGoals } from '../NutritionGoalsBody';
 
 type NutritionGoalsModalProps = {
@@ -20,9 +22,17 @@ export function NutritionGoalsModal({
   initialGoals,
 }: NutritionGoalsModalProps) {
   const { t } = useTranslation();
+  const [currentGoals, setCurrentGoals] = useState<NutritionGoals | undefined>(undefined);
+
   const handleSave = (goals: NutritionGoals) => {
     onSave?.(goals);
     onClose();
+  };
+
+  const handleFloatingSave = () => {
+    if (currentGoals) {
+      handleSave(currentGoals);
+    }
   };
 
   return (
@@ -31,8 +41,24 @@ export function NutritionGoalsModal({
       onClose={onClose}
       title={t('nutritionGoals.title')}
       scrollable={false}
+      footer={
+        <Button
+          label={t('nutritionGoals.saveGoals')}
+          icon={ChevronRight}
+          iconPosition="right"
+          variant="gradientCta"
+          size="md"
+          width="full"
+          onPress={handleFloatingSave}
+        />
+      }
     >
-      <NutritionGoalsBody onSave={handleSave} initialGoals={initialGoals} />
+      <NutritionGoalsBody
+        onSave={handleSave}
+        onFormChange={setCurrentGoals}
+        initialGoals={initialGoals}
+        showSaveButton={false}
+      />
     </FullScreenModal>
   );
 }
