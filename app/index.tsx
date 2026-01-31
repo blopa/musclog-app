@@ -32,6 +32,9 @@ import { useCurrentNutritionGoal } from '../hooks/useCurrentNutritionGoal';
 import { useNutritionLogs } from '../hooks/useNutritionLogs';
 import { getAvatarDisplayProps } from '../utils/avatarUtils';
 
+// TODO: implement notifications eventually
+const SHOW_NOTIFICATIONS = false;
+
 export default function HomeScreen() {
   const { t } = useTranslation();
   const router = useRouter();
@@ -188,18 +191,18 @@ export default function HomeScreen() {
               </Text>
             </View>
           </Pressable>
-          <Pressable
-            className="relative rounded-full bg-bg-overlay p-3"
-            onPress={() => setIsNotificationsVisible(true)}
-          >
-            <Bell size={theme.iconSize.md} color={theme.colors.text.primary} />
-            {false ? ( // TODO: Implement notifications logic
+          {SHOW_NOTIFICATIONS ? (
+            <Pressable
+              className="relative rounded-full bg-bg-overlay p-3"
+              onPress={() => setIsNotificationsVisible(true)}
+            >
+              <Bell size={theme.iconSize.md} color={theme.colors.text.primary} />
               <View
                 className="absolute right-2 top-2 h-2.5 w-2.5 rounded-full"
                 style={{ backgroundColor: theme.colors.status.notificationBadge }}
               />
-            ) : null}
-          </Pressable>
+            </Pressable>
+          ) : null}
         </View>
 
         {/* Daily Summary Card */}

@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { View, ScrollView, Pressable, Share } from 'react-native';
+import { View, ScrollView, Pressable } from 'react-native';
 import { Search, SlidersHorizontal, Dumbbell, WifiOff, Plus } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';

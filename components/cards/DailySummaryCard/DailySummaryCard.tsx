@@ -81,20 +81,33 @@ export function DailySummaryCard({
 
         {/* Main calorie section */}
         <View className="gap-3">
-          <View className="flex-row items-baseline justify-between">
-            <View className="flex-row items-baseline gap-1.5">
+          <View className="flex-row items-center justify-between">
+            <View className="flex-row items-start gap-1">
               <Text className="text-5xl font-extrabold tracking-tighter text-text-primary">
                 {calories.consumed.toLocaleString()}
               </Text>
-              <Text
-                className="font-bold uppercase"
-                style={{
-                  fontSize: theme.typography.fontSize.sm,
-                  color: theme.colors.overlay.white70,
-                }}
-              >
-                {t('dailySummaryCard.kcal', 'Kcal')}
-              </Text>
+
+              <View className="flex-col">
+                <Text
+                  className="font-bold uppercase"
+                  style={{
+                    fontSize: theme.typography.fontSize.sm,
+                    color: theme.colors.overlay.white70,
+                    marginTop: theme.spacing.margin.md,
+                  }}
+                >
+                  {`/ ${calories.goal.toLocaleString()}`}
+                </Text>
+                <Text
+                  className="font-bold uppercase"
+                  style={{
+                    fontSize: theme.typography.fontSize.xs,
+                    color: theme.colors.overlay.white70,
+                  }}
+                >
+                  {t('dailySummaryCard.kcal', 'Kcal')}
+                </Text>
+              </View>
             </View>
 
             {/* Status icon for calories */}
