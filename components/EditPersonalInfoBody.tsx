@@ -17,6 +17,7 @@ type EditPersonalInfoBodyProps = {
   onFormChange?: (data: PersonalInfo) => void;
   isLoading?: boolean;
   hideSaveButton?: boolean;
+  showEmailInput?: boolean;
 };
 
 export type PersonalInfo = {
@@ -34,6 +35,7 @@ export function EditPersonalInfoBody({
   initialData,
   isLoading,
   hideSaveButton = false,
+  showEmailInput = false,
 }: EditPersonalInfoBodyProps) {
   const { t } = useTranslation();
   const [fullName, setFullName] = useState(initialData?.fullName ?? '');
@@ -119,14 +121,16 @@ export function EditPersonalInfoBody({
           icon={<User size={theme.iconSize.lg} color={theme.colors.text.tertiary} />}
         />
 
-        <TextInput
-          label={t('editPersonalInfo.emailAddress')}
-          value={email}
-          onChangeText={setEmail}
-          placeholder={t('editPersonalInfo.emailPlaceholder')}
-          keyboardType="email-address"
-          icon={<Mail size={theme.iconSize.lg} color={theme.colors.text.tertiary} />}
-        />
+        {showEmailInput ? (
+          <TextInput
+            label={t('editPersonalInfo.emailAddress')}
+            value={email}
+            onChangeText={setEmail}
+            placeholder={t('editPersonalInfo.emailPlaceholder')}
+            keyboardType="email-address"
+            icon={<Mail size={theme.iconSize.lg} color={theme.colors.text.tertiary} />}
+          />
+        ) : null}
 
         <View className="flex-col gap-2">
           <Text className="ml-1 text-sm font-medium text-text-secondary">
