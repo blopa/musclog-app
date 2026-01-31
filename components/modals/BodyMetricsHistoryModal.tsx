@@ -14,6 +14,7 @@ import UserMetric from '../../database/models/UserMetric';
 import { SkeletonLoader } from '../theme/SkeletonLoader';
 import { useSettings } from '../../hooks/useSettings';
 import { useUserMetrics } from '../../hooks/useUserMetrics';
+import type { TFunction } from 'i18next';
 
 type MetricType = 'weight' | 'bodyFat' | 'bmi' | 'ffmi';
 type TimePeriod = '30D' | '3M' | '1Y';
@@ -38,7 +39,7 @@ type MetricData = {
 };
 
 // Helper function to format relative date
-function formatRelativeDate(timestamp: number, t: (key: string) => string): string {
+function formatRelativeDate(timestamp: number, t: TFunction): string {
   const date = new Date(timestamp);
   const timeStr = format(date, 'hh:mm a');
 

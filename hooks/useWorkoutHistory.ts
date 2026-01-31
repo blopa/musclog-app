@@ -2,8 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Q } from '@nozbe/watermelondb';
 import { database } from '../database';
 import WorkoutLog from '../database/models/WorkoutLog';
-import { WorkoutService } from '../database/services/WorkoutService';
-import { WorkoutAnalytics } from '../database/services/WorkoutAnalytics';
+import { WorkoutAnalytics, WorkoutService } from '../database/services';
 import { format, isToday, isYesterday, isThisWeek } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
@@ -18,6 +17,7 @@ import {
   filterWorkoutsBySearch,
 } from '../utils/workoutHistory';
 import { DEFAULT_BATCH_SIZE } from '../constants/database';
+import type { TFunction } from 'i18next';
 
 // Types for simple workout format (home screen)
 export type ProcessedRecentWorkout = {
@@ -69,7 +69,7 @@ export type UseWorkoutHistoryResultGrouped = {
 export type UseWorkoutHistoryResult = UseWorkoutHistoryResultFlat | UseWorkoutHistoryResultGrouped;
 
 // Format relative date for simple display (home screen)
-function formatRelativeDate(timestamp: number, t: (key: string) => string): string {
+function formatRelativeDate(timestamp: number, t: TFunction): string {
   const date = new Date(timestamp);
   if (isToday(date)) {
     return t('common.today');
@@ -96,7 +96,7 @@ function formatDuration(minutes: number): string {
 // Process workout for simple display (home screen)
 async function processWorkoutSimple(
   workout: WorkoutLog,
-  t: (key: string) => string
+  t: TFunction
 ): Promise<ProcessedRecentWorkout> {
   // Calculate duration
   const durationMinutes =

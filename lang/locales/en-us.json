@@ -19,6 +19,18 @@
     "save": "Save",
     "edit": "Edit"
   },
+  "emptyState": {
+    "workout": {
+      "title": "No workouts yet",
+      "description": "Ready for your first session?",
+      "button": "Plan"
+    },
+    "food": {
+      "title": "Nothing logged today",
+      "description": "Fuel your body!",
+      "button": "Log"
+    }
+  },
   "home": {
     "greeting": {
       "goodMorning": "Good Morning",

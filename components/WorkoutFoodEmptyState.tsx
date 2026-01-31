@@ -1,9 +1,11 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { Dumbbell, Utensils } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import { theme } from '../theme';
 import { GenericCard } from './cards/GenericCard';
 import { Button } from './theme/Button';
+import type { TFunction } from 'i18next';
 
 type EmptyStateType = 'workout' | 'food';
 
@@ -12,29 +14,30 @@ type WorkoutFoodEmptyStateProps = {
   onButtonPress?: () => void;
 };
 
-const getConfig = (type: EmptyStateType) => {
+const getConfig = (type: EmptyStateType, t: TFunction) => {
   switch (type) {
     case 'workout':
       return {
         icon: Dumbbell,
-        title: 'No workouts yet',
-        description: 'Ready for your first session?',
-        buttonLabel: 'Plan',
+        title: t('emptyState.workout.title'),
+        description: t('emptyState.workout.description'),
+        buttonLabel: t('emptyState.workout.button'),
         buttonVariant: 'accent' as const,
       };
     case 'food':
       return {
         icon: Utensils,
-        title: 'Nothing logged today',
-        description: 'Fuel your body!',
-        buttonLabel: 'Log',
+        title: t('emptyState.food.title'),
+        description: t('emptyState.food.description'),
+        buttonLabel: t('emptyState.food.button'),
         buttonVariant: 'outline' as const,
       };
   }
 };
 
 export function WorkoutFoodEmptyState({ type, onButtonPress }: WorkoutFoodEmptyStateProps) {
-  const config = getConfig(type);
+  const { t } = useTranslation();
+  const config = getConfig(type, t);
   const Icon = config.icon;
 
   return (

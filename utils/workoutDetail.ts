@@ -2,12 +2,12 @@ import { format } from 'date-fns';
 import WorkoutLog from '../database/models/WorkoutLog';
 import WorkoutLogSet from '../database/models/WorkoutLogSet';
 import Exercise from '../database/models/Exercise';
-import { WorkoutAnalytics } from '../database/services/WorkoutAnalytics';
-import { WorkoutService } from '../database/services/WorkoutService';
+import { WorkoutService, WorkoutAnalytics } from '../database/services';
 import { getWorkoutIcon } from './workoutHistory';
 import type { LineChartDataPoint } from '../components/LineChart';
 import type { Units } from '../constants/settings';
 import { getWeightUnitI18nKey } from './units';
+import type { TFunction } from 'i18next';
 
 export type WorkoutSet = {
   setNumber: number;
@@ -45,12 +45,7 @@ export type WorkoutDetailData = {
 /**
  * Format weight for display
  */
-function formatWeight(
-  weight: number,
-  isBodyweight: boolean,
-  t: (key: string) => string,
-  units: Units
-): string {
+function formatWeight(weight: number, isBodyweight: boolean, t: TFunction, units: Units): string {
   const unitKey = getWeightUnitI18nKey(units);
   if (isBodyweight) {
     return weight > 0 ? `+${weight} ${t(unitKey)}` : t('workoutSession.bodyweight');
@@ -75,7 +70,7 @@ function formatRestTime(seconds: number): string {
  */
 async function calculateVolumeTrend(
   currentWorkoutLog: WorkoutLog,
-  t: (key: string) => string
+  t: TFunction
 ): Promise<{
   percentage: number;
   data: LineChartDataPoint[];
@@ -183,7 +178,7 @@ export async function transformWorkoutToDetailData(
   workoutLog: WorkoutLog,
   sets: WorkoutLogSet[],
   exercises: Exercise[],
-  t: (key: string) => string,
+  t: TFunction,
   units: Units
 ): Promise<WorkoutDetailData> {
   const exerciseMap = new Map<string, Exercise>();

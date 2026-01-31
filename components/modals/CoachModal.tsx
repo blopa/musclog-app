@@ -24,6 +24,7 @@ import { theme } from '../../theme';
 import { MenuButton } from '../theme/MenuButton';
 import { FullScreenModal } from './FullScreenModal';
 import { ChatWorkoutCard } from '../cards/ChatWorkoutCard';
+import type { TFunction } from 'i18next';
 
 // AI Coach avatar URL
 const AI_COACH_AVATAR =
@@ -236,7 +237,7 @@ const renderAvatar = (props: any) => {
   return <Image source={{ uri: AI_COACH_AVATAR }} style={styles.avatar} resizeMode="cover" />;
 };
 
-const renderDay = (props: any, t: any) => {
+const renderDay = (props: any, t: TFunction) => {
   if (!props.currentMessage?.createdAt) return null;
   const date = new Date(props.currentMessage.createdAt);
   const now = new Date();
@@ -271,7 +272,7 @@ const renderSend = (props: SendProps<ExtendedIMessage>) => {
   );
 };
 
-const renderComposer = (props: ComposerProps, t: any) => {
+const renderComposer = (props: ComposerProps, t: TFunction) => {
   return (
     <View style={styles.composerWrapper}>
       <Composer
