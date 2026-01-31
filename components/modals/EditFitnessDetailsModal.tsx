@@ -28,7 +28,9 @@ export function EditFitnessDetailsModal({
   initialData,
 }: EditFitnessDetailsModalProps) {
   const { t } = useTranslation();
-  const [currentFormData, setCurrentFormData] = useState<Partial<FitnessDetails> | undefined>(undefined);
+  const [currentFormData, setCurrentFormData] = useState<Partial<FitnessDetails> | undefined>(
+    undefined
+  );
 
   const handleSave = ({
     units,
@@ -50,13 +52,15 @@ export function EditFitnessDetailsModal({
   };
 
   const handleFloatingSave = () => {
-    if (currentFormData && 
-        currentFormData.units && 
-        currentFormData.weight && 
-        currentFormData.height && 
-        currentFormData.fitnessGoal && 
-        currentFormData.activityLevel && 
-        currentFormData.experience) {
+    if (
+      currentFormData &&
+      currentFormData.units &&
+      currentFormData.weight &&
+      currentFormData.height &&
+      currentFormData.fitnessGoal &&
+      currentFormData.activityLevel &&
+      currentFormData.experience
+    ) {
       handleSave(currentFormData as FitnessDetails);
     }
   };

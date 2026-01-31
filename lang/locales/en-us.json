@@ -825,10 +825,13 @@
       }
     },
     "fitnessInfo": {
-      "title": "Set Fitness Details"
+      "title": "Set Fitness Details",
+      "maybeLater": "Maybe later",
+      "save": "Save"
     },
     "personalInfo": {
-      "title": "Set Personal Information"
+      "title": "Set Personal Information",
+      "save": "Save"
     },
     "connectGoogle": {
       "title": "Connect Your Google Account"

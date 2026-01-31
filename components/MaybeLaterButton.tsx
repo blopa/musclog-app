@@ -5,11 +5,15 @@ import { theme } from '../theme';
 interface MaybeLaterButtonProps {
   onPress: () => void;
   text: string;
+  fullWidth?: boolean;
 }
 
-export function MaybeLaterButton({ onPress, text }: MaybeLaterButtonProps) {
+export function MaybeLaterButton({ onPress, text, fullWidth = true }: MaybeLaterButtonProps) {
   return (
-    <Pressable className="w-full items-center py-2 active:opacity-70" onPress={onPress}>
+    <Pressable
+      className={`${fullWidth ? 'w-full' : ''} items-center py-2 active:opacity-70`}
+      onPress={onPress}
+    >
       <Text className="text-sm font-medium" style={{ color: theme.colors.text.gray500 }}>
         {text}
       </Text>

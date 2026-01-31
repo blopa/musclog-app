@@ -10,6 +10,7 @@ import { theme } from '../../theme';
 import { GradientText } from '../../components/GradientText';
 import { PageIndicators } from '../../components/theme/PageIndicators';
 import { Button } from '../../components/theme/Button';
+import { MaybeLaterButton } from '../../components/MaybeLaterButton';
 import PreRegistrationIntro from '../../components/PreRegistrationIntro';
 
 type OnboardingBodyProps = {
@@ -479,20 +480,14 @@ export default function OnboardingScreen() {
       <SafeAreaView edges={['top']} className="z-20">
         <View className="flex-row items-center justify-between p-6">
           <View style={{ width: theme.size['12'] }} />
-          <Pressable
-            className="flex-row items-center justify-center rounded-full px-4 py-2 active:opacity-70"
+          <MaybeLaterButton
             onPress={() => {
               // Navigate to home or skip onboarding
               router.push('/onboarding/health-connect');
             }}
-          >
-            <Text
-              className="text-sm font-bold leading-normal tracking-wide"
-              style={{ color: theme.colors.text.gray500 }}
-            >
-              {t('onboarding.skip')}
-            </Text>
-          </Pressable>
+            text={t('onboarding.skip')}
+            fullWidth={false}
+          />
         </View>
       </SafeAreaView>
 
