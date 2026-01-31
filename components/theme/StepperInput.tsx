@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, FC } from 'react';
 import { View, Text, Pressable, TextInput } from 'react-native';
 import { Minus, Plus } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
@@ -13,7 +13,7 @@ interface StepperInputProps {
   unit?: string;
 }
 
-export const StepperInput: React.FC<StepperInputProps> = ({
+export const StepperInput: FC<StepperInputProps> = ({
   label,
   value,
   onIncrement,

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { View, TextInput, ScrollView, Image } from 'react-native';
 import { Search, Repeat } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo, createElement } from 'react';
 import { View, Text, ScrollView, Pressable, Image } from 'react-native';
 import { Settings, Edit, TrendingUp, CheckCircle, User, Dumbbell, List } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
@@ -266,7 +266,7 @@ export default function ProfileScreen() {
             >
               {dbUser?.avatarIcon ? (
                 <View className="h-full w-full items-center justify-center rounded-full">
-                  {React.createElement(
+                  {createElement(
                     getAvatarDisplayProps(dbUser.avatarIcon, dbUser.avatarColor).IconComponent,
                     {
                       size: 40,

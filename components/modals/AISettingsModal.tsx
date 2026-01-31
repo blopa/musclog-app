@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { ReactNode, useState } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Bot, Link, ChevronDown, Apple, Dumbbell } from 'lucide-react-native';
@@ -16,10 +16,10 @@ type AIIntegrationCardProps = {
     label: string;
     value: boolean;
     onValueChange: (value: boolean) => void;
-    icon?: React.ReactNode;
+    icon?: ReactNode;
     subtitle?: string;
   }[];
-  headerContent?: React.ReactNode;
+  headerContent?: ReactNode;
   apiKeyLabel: string;
   apiKeyValue: string;
   onApiKeyChange: (value: string) => void;

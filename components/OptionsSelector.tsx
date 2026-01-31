@@ -1,4 +1,4 @@
-import React, { memo, useMemo, useCallback } from 'react';
+import { memo, useMemo, useCallback, ComponentType, ReactElement } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { Check, LucideIcon } from 'lucide-react-native';
 import { theme } from '../theme';
@@ -7,7 +7,7 @@ export type SelectorOption<T extends string | number> = {
   id: T;
   label: string;
   description: string;
-  icon: LucideIcon | React.ComponentType<{ size: number; color: string }>;
+  icon: LucideIcon | ComponentType<{ size: number; color: string }>;
   iconBgColor: string;
   iconColor: string;
 };
@@ -121,7 +121,7 @@ const OptionItem = memo(
   option: SelectorOption<T>;
   isSelected: boolean;
   onSelect: (id: T) => void;
-}) => React.ReactElement;
+}) => ReactElement;
 
 export function OptionsSelector<T extends string | number>({
   title,

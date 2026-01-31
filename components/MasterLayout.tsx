@@ -4,7 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useRouter, usePathname } from 'expo-router';
 import { Home, Dumbbell, MessageSquare, Camera, UtensilsCrossed } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import React, { ReactNode, useState } from 'react';
+import { ReactNode, useState } from 'react';
 import { theme } from '../theme';
 import { CoachModal } from './modals/CoachModal';
 import CameraModal from './modals/CameraModal';

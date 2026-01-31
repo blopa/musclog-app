@@ -1,4 +1,4 @@
-import React from 'react';
+import { FC } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../../theme';
@@ -8,7 +8,7 @@ type GroupActionButtonProps = {
   allSelectedInSameGroup: boolean;
 };
 
-export const GroupActionButton: React.FC<GroupActionButtonProps> = ({
+export const GroupActionButton: FC<GroupActionButtonProps> = ({
   onPress,
   allSelectedInSameGroup,
 }) => {

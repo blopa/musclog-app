@@ -3,6 +3,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { ChevronRight, LucideIcon } from 'lucide-react-native';
 import { theme } from '../../theme';
 import { GenericCard } from './GenericCard';
+import { ReactNode } from 'react';
 
 type DetailedItemCardProps = {
   item: {
@@ -13,7 +14,7 @@ type DetailedItemCardProps = {
     itemThree: { value: string | number; icon: LucideIcon };
   };
   onPress?: () => void;
-  ctaLabel?: React.ReactNode;
+  ctaLabel?: ReactNode;
   description?: string;
 };
 

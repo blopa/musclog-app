@@ -1,7 +1,7 @@
 import { Text, Pressable, ViewStyle, View, ActivityIndicator } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { LucideIcon } from 'lucide-react-native';
-import React, { useState, isValidElement } from 'react';
+import { ReactNode, useState, isValidElement } from 'react';
 import { theme } from '../../theme';
 
 type ThemeButtonSize = 'sm' | 'md' | 'lg';
@@ -24,8 +24,8 @@ type ThemeButtonProps = {
   iconColor?: string;
   icon?:
     | LucideIcon
-    | React.ReactNode
-    | ((props: { size?: number; color?: string }) => React.ReactNode);
+    | ReactNode
+    | ((props: { size?: number; color?: string }) => ReactNode);
   iconPosition?: 'left' | 'right';
   size?: ThemeButtonSize;
   width?: ThemeButtonWidth;
@@ -156,7 +156,7 @@ export function Button({
   const finalIconColor = customIconColor || iconColor;
   const iconSize = iconBgColor ? theme.iconSize.sm : config.iconSize;
 
-  let iconElement: React.ReactNode = null;
+  let iconElement: ReactNode = null;
   if (loading) {
     // Show ActivityIndicator when loading (replaces icon)
     iconElement = (
@@ -222,7 +222,7 @@ export function Button({
       }
     } else {
       // Unknown type, attempt to render directly
-      iconElement = Icon as React.ReactNode;
+      iconElement = Icon as ReactNode;
     }
   }
 

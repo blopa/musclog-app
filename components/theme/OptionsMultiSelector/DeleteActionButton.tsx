@@ -1,4 +1,4 @@
-import React from 'react';
+import { FC } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { Trash2 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
@@ -9,7 +9,7 @@ type DeleteActionButtonProps = {
   selectedCount: number;
 };
 
-export const DeleteActionButton: React.FC<DeleteActionButtonProps> = ({
+export const DeleteActionButton: FC<DeleteActionButtonProps> = ({
   onPress,
   selectedCount,
 }) => {

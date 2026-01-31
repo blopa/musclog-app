@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, Pressable, ScrollView, Platform, useWindowDimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
@@ -261,7 +261,7 @@ export function NutritionGoalsBody({
   };
 
   // Calculate total calories from macros (protein and carbs are 4 kcal/g, fats are 9 kcal/g, fiber is typically ~2 kcal/g or ignored, but we'll include it for accuracy if needed)
-  React.useEffect(() => {
+  useEffect(() => {
     // Note: Fiber is often included in total carbs (4kcal/g) or sometimes calculated as 2kcal/g.
     // Most food labels include fiber in the carb count.
     const calculatedCalories = protein * 4 + carbs * 4 + fats * 9 + fiber * 2;

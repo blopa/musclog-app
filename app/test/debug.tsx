@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Pressable, TextInput } from 'react-native';
 import { Plus, Trash2, RefreshCw, ArrowRight } from 'lucide-react-native';
 import { useRouter } from 'expo-router';

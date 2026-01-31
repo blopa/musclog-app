@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { View, Text, ScrollView, Pressable } from 'react-native';
 import { CheckCircle, Minus, Plus } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';

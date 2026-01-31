@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { Check, Dumbbell, LucideFootprints, PersonStanding } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';

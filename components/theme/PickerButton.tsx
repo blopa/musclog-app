@@ -1,11 +1,11 @@
-import React from 'react';
+import { ReactNode } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { ChevronDown } from 'lucide-react-native';
 import { theme } from '../../theme';
 
 type TestPickerButtonProps = {
   label: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
   onPress: () => void;
 };
 

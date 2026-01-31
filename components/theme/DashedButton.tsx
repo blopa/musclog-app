@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { ReactNode, useState } from 'react';
 import { Pressable, Text, View, ViewStyle } from 'react-native';
 import { theme } from '../../theme';
 
@@ -6,7 +6,7 @@ type DashedButtonProps = {
   label: string;
   onPress?: () => void;
   size?: 'sm' | 'lg';
-  icon?: React.ReactNode;
+  icon?: ReactNode;
   style?: ViewStyle;
 };
 

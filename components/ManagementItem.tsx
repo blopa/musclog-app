@@ -1,4 +1,4 @@
-import React from 'react';
+import { ComponentType } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { ChevronRight } from 'lucide-react-native';
 import { theme, addOpacityToHex } from '../theme';
@@ -6,7 +6,7 @@ import { theme, addOpacityToHex } from '../theme';
 type ManagementItemProps = {
   title: string;
   description: string;
-  icon: React.ComponentType<{ size: number; color: string }>;
+  icon: ComponentType<{ size: number; color: string }>;
   iconColor: string;
   onPress?: () => void;
 };

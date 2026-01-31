@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, ReactNode } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { Check, GripVertical } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
@@ -18,7 +18,7 @@ const ScaleDecorator = ({
   children,
   isActive,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
   isActive?: boolean;
 }) => {
   const scale = useSharedValue(1);

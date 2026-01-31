@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { ReactNode, useState } from 'react';
 import { Text, TextInput as RNTextInput, View } from 'react-native';
 import { theme } from '../theme';
 
@@ -9,7 +9,7 @@ type MacroInputProps = {
   label: string;
   value: string;
   onChange: (value: string) => void;
-  topRightElement: React.ReactNode;
+  topRightElement: ReactNode;
   variant?: MacroInputVariant;
   size?: MacroInputSize;
 };

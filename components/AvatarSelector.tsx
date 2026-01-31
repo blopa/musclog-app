@@ -1,4 +1,4 @@
-import React from 'react';
+import { ComponentType, createElement } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import {
   Dumbbell,
@@ -24,7 +24,7 @@ interface AvatarSelectorProps {
   onColorSelect: (color: AvatarColor) => void;
 }
 
-const avatarOptions: { icon: AvatarIcon; component: React.ComponentType<any> }[] = [
+const avatarOptions: { icon: AvatarIcon; component: ComponentType<any> }[] = [
   { icon: 'person', component: User },
   { icon: 'fitness_center', component: Dumbbell },
   { icon: 'bolt', component: Zap },
@@ -68,7 +68,7 @@ export function AvatarSelector({
               backgroundColor: getAvatarBackgroundColor(selectedColor),
             }}
           >
-            {React.createElement(getAvatarIcon(selectedAvatar), {
+            {createElement(getAvatarIcon(selectedAvatar), {
               size: 40,
               color: getAvatarColor(selectedColor),
             })}

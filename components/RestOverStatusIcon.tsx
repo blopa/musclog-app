@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { View, Animated } from 'react-native';
 import { Dumbbell, AlertCircle } from 'lucide-react-native';
 import { theme } from '../theme';

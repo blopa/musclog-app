@@ -1,10 +1,10 @@
-import React from 'react';
+import { ComponentType } from 'react';
 import { View, Text } from 'react-native';
 import { Star } from 'lucide-react-native';
 import { theme } from '../theme';
 
 export type StatRowProps = {
-  icon: React.ComponentType<{ size: number; color: string }>;
+  icon: ComponentType<{ size: number; color: string }>;
   label: string;
   value: string | number;
   valueSuffix?: string;

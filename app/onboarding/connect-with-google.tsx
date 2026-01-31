@@ -1,7 +1,7 @@
 import { View, Text, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { theme } from '../../theme';
 import { ConnectGoogleAccountBody } from '../../components/ConnectGoogleAccountBody';
 import { useRouter } from 'expo-router';

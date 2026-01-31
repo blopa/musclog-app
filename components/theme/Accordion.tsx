@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { ComponentType, ReactNode, useEffect } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { ChevronDown } from 'lucide-react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
@@ -8,11 +8,11 @@ type AccordionProps = {
   title: string;
   isOpen: boolean;
   onToggle: () => void;
-  children: React.ReactNode;
+  children: ReactNode;
   // Optional props for customization
   count?: number;
-  icon?: React.ComponentType<{ size: number; color: string }>;
-  headerContent?: React.ReactNode; // Custom header content if icon/count doesn't fit
+  icon?: ComponentType<{ size: number; color: string }>;
+  headerContent?: ReactNode; // Custom header content if icon/count doesn't fit
   className?: string;
   animationDuration?: number;
   maxHeight?: number; // Max height for content animation

@@ -1,10 +1,10 @@
-import React from 'react';
+import { ReactNode } from 'react';
 import { View, Text } from 'react-native';
 
 type TestSectionProps = {
   title: string;
   subtitle: string;
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 export function TestSection({ title, subtitle, children }: TestSectionProps) {

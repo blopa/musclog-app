@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Pressable } from 'react-native';
 import { Eye, EyeOff } from 'lucide-react-native';
 import { TextInput } from './TextInput';

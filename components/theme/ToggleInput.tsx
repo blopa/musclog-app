@@ -1,4 +1,4 @@
-import React from 'react';
+import { Fragment, ReactNode } from 'react';
 import { View, Text, Switch, Pressable } from 'react-native';
 import { theme } from '../../theme';
 
@@ -6,14 +6,14 @@ type ToggleItem = {
   key: string;
   label: string;
   subtitle?: string;
-  icon?: React.ReactNode;
+  icon?: ReactNode;
   value: boolean;
   onValueChange: (v: boolean) => void;
 };
 
 type TogglableSettingsProps = {
   items: ToggleItem[];
-  header?: React.ReactNode;
+  header?: ReactNode;
 };
 
 export function ToggleInput(props: TogglableSettingsProps) {
@@ -38,7 +38,7 @@ export function ToggleInput(props: TogglableSettingsProps) {
     >
       {props.header}
       {items.map((it, idx) => (
-        <React.Fragment key={it.key}>
+        <Fragment key={it.key}>
           <Pressable onPress={() => it.onValueChange(!it.value)}>
             {({ pressed }) => (
               <View
@@ -103,7 +103,7 @@ export function ToggleInput(props: TogglableSettingsProps) {
               }}
             />
           ) : null}
-        </React.Fragment>
+        </Fragment>
       ))}
     </View>
   );

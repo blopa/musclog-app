@@ -1,4 +1,4 @@
-import React from 'react';
+import { ReactNode } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { theme } from '../../theme';
@@ -6,7 +6,7 @@ import { theme } from '../../theme';
 type Option = {
   label: string;
   value: string;
-  icon?: React.ReactNode;
+  icon?: ReactNode;
 };
 
 type SegmentedControlVariant = 'clean' | 'elevated' | 'outline' | 'gradient';

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { Share2, Weight, Dumbbell } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';

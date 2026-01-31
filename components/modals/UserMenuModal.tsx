@@ -1,4 +1,4 @@
-import React from 'react';
+import { createElement, ReactNode } from 'react';
 import { View, Text, Pressable, Modal, Image, ImageSourcePropType, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { X, User, Settings, BarChart3 } from 'lucide-react-native';
@@ -24,7 +24,7 @@ type UserMenuModalProps = {
 };
 
 type MenuItemProps = {
-  icon: React.ReactNode;
+  icon: ReactNode;
   label: string;
   onPress: () => void;
 };
@@ -118,7 +118,7 @@ export function UserMenuModal({
                   >
                     {user.avatarIcon ? (
                       <View className="h-full w-full items-center justify-center rounded-full">
-                        {React.createElement(
+                        {createElement(
                           getAvatarDisplayProps(user.avatarIcon, user.avatarColor).IconComponent,
                           {
                             size: 24,

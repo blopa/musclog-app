@@ -2,6 +2,7 @@ import { View, Text } from 'react-native';
 import { TrendingDown, TrendingUp } from 'lucide-react-native';
 import { theme } from '../../theme';
 import { GenericCard } from './GenericCard';
+import { ComponentType } from 'react';
 
 type HistoryEntry = {
   id: string;
@@ -10,7 +11,7 @@ type HistoryEntry = {
   change: string | null;
   changeType: 'down' | 'up' | null;
   note: string;
-  icon: React.ComponentType<{ size: number; color: string }>;
+  icon: ComponentType<{ size: number; color: string }>;
   iconColor: string;
   iconBg: string;
   opacity?: number;

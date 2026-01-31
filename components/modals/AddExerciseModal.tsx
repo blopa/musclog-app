@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { View, Text, TextInput, Switch, ActivityIndicator } from 'react-native';
 import { Search, Dumbbell, User, PlusCircle } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';

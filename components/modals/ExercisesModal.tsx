@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, ComponentType } from 'react';
 import { View, Text, ScrollView, Pressable, TextInput, Image } from 'react-native';
 import { Q } from '@nozbe/watermelondb';
 import { Search, Dumbbell, ChevronRight, Activity, Footprints } from 'lucide-react-native';
@@ -116,7 +116,7 @@ export default function ExercisesModal({ visible, onClose }: ExercisesModalProps
   // Map muscle groups to display names and icons (using translations)
   const MUSCLE_GROUP_CONFIG: Record<
     string,
-    { name: string; icon: React.ComponentType<{ size: number; color: string }> }
+    { name: string; icon: ComponentType<{ size: number; color: string }> }
   > = {
     chest: { name: t('exercises.muscleGroups.chest'), icon: Activity },
     back: { name: t('exercises.muscleGroups.back'), icon: Dumbbell },

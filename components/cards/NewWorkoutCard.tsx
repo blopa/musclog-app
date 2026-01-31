@@ -4,10 +4,11 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';
 import { GenericCard } from './GenericCard';
+import { ReactNode } from 'react';
 
 type NewWorkoutCardProps = {
   variant?: 'default' | 'popular';
-  icon: React.ReactNode;
+  icon: ReactNode;
   title: string;
   subtitle?: string;
   onPress: () => void;

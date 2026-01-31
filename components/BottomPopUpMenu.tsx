@@ -1,11 +1,11 @@
-import React, { ReactNode } from 'react';
+import { ComponentType, ReactNode } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { ChevronRight } from 'lucide-react-native';
 import { BottomPopUp } from './BottomPopUp';
 import { theme } from '../theme';
 
 export type BottomPopUpMenuItem = {
-  icon: React.ComponentType<{ size: number; color: string }>;
+  icon: ComponentType<{ size: number; color: string }>;
   iconColor: string;
   iconBgColor: string;
   title: string;

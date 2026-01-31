@@ -1,9 +1,10 @@
 import { Pressable, View, ViewStyle, StyleProp } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { theme } from '../../theme';
+import { ReactNode } from 'react';
 
 type GenericCardProps = {
-  children: React.ReactNode;
+  children: ReactNode;
   isPopular?: boolean;
   onPress?: () => void;
   variant?: 'default' | 'workout' | 'highlighted' | 'card';

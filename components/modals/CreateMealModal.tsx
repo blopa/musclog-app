@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { ElementType, useState } from 'react';
 import { View, Text, TextInput, Pressable } from 'react-native';
 import { Trash2, Plus, CheckCircle2, Egg, Info, Apple } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
@@ -13,7 +13,7 @@ type Ingredient = {
   name: string;
   amount: string;
   calories: number;
-  icon: React.ElementType;
+  icon: ElementType;
 };
 
 const INITIAL_INGREDIENTS: Ingredient[] = [

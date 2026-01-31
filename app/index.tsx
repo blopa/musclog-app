@@ -1,4 +1,4 @@
-import React, { lazy, useState, useEffect, useMemo } from 'react';
+import { lazy, useState, useEffect, useMemo, createElement } from 'react';
 import { View, Text, Pressable, ScrollView, ActivityIndicator } from 'react-native';
 import {
   Bell,
@@ -191,7 +191,7 @@ export default function HomeScreen() {
               >
                 {dbUser?.avatarIcon ? (
                   <View className="h-full w-full items-center justify-center rounded-full">
-                    {React.createElement(
+                    {createElement(
                       getAvatarDisplayProps(dbUser.avatarIcon, dbUser.avatarColor).IconComponent,
                       {
                         size: 24,

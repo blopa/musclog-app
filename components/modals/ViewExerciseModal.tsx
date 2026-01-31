@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { View, Text, ScrollView, Pressable, Image } from 'react-native';
 import { ChevronRight, Video, Pencil, Copy, Share2, Trash2, Zap, Heart } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';

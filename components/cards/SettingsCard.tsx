@@ -1,6 +1,7 @@
 import { View, Text } from 'react-native';
 import { theme } from '../../theme';
 import { GenericCard } from './GenericCard';
+import { ReactNode } from 'react';
 
 export function SettingsCard({
   icon,
@@ -11,11 +12,11 @@ export function SettingsCard({
   titleColor,
   iconContainerStyle,
 }: {
-  icon: React.ReactNode;
+  icon: ReactNode;
   title: string;
   subtitle: string;
   onPress: () => void;
-  rightIcon?: React.ReactNode;
+  rightIcon?: ReactNode;
   titleColor?: string;
   iconContainerStyle?: object;
 }) {

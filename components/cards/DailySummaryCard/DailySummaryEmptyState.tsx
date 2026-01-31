@@ -1,4 +1,4 @@
-import React from 'react';
+import { FC } from 'react';
 import { View, Text } from 'react-native';
 import { Button } from '../../theme/Button';
 import { theme } from '../../../theme';
@@ -9,7 +9,7 @@ interface DailySummaryEmptyStateProps {
   onSetGoals?: () => void;
 }
 
-export const DailySummaryEmptyState: React.FC<DailySummaryEmptyStateProps> = ({ onSetGoals }) => {
+export const DailySummaryEmptyState: FC<DailySummaryEmptyStateProps> = ({ onSetGoals }) => {
   const { t } = useTranslation();
 
   return (

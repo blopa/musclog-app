@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { View, Text, Pressable, Modal, Animated, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { X, Flag, Save, Trash2 } from 'lucide-react-native';

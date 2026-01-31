@@ -1,4 +1,4 @@
-import React from 'react';
+import { createElement, useState } from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
 import { Trophy, Edit } from 'lucide-react-native';
 import { MenuButton } from '../theme/MenuButton';
@@ -296,7 +296,7 @@ function ExerciseCard({ exercise, onEdit, onClose }: ExerciseCardProps) {
             className="h-10 w-10 items-center justify-center rounded-full"
             style={{ backgroundColor: exercise.iconBgColor }}
           >
-            {React.createElement(exercise.icon, {
+            {createElement(exercise.icon, {
               size: theme.iconSize.md,
               color: exercise.iconColor,
             })}
@@ -384,8 +384,8 @@ export default function PastWorkoutDetailModal({
 
   const { isSaving: isSavingSets, error: saveError, saveSets } = useEditWorkoutSets();
 
-  const [editingExerciseId, setEditingExerciseId] = React.useState<string | null>(null);
-  const [isEditModalVisible, setIsEditModalVisible] = React.useState(false);
+  const [editingExerciseId, setEditingExerciseId] = useState<string | null>(null);
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
 
   const formatDate = (date: Date) => {
     return format(date, 'EEEE, MMM d • hh:mm a');

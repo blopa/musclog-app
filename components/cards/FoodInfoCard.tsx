@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../theme';

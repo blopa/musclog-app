@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { View, Animated, ActivityIndicator } from 'react-native';
 import { Play, WifiOff } from 'lucide-react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';

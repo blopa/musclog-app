@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { View, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { addOpacityToHex, theme } from '../theme';

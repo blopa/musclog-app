@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { View, Text, ScrollView, Pressable } from 'react-native';
 import { SlidersHorizontal, Calendar, Clock, Plus } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';

@@ -1,6 +1,5 @@
-import React from 'react';
+import { FC } from 'react';
 import { View } from 'react-native';
-import { Trash2 } from 'lucide-react-native';
 import { theme } from '../../../theme';
 import { GroupActionButton } from './GroupActionButton';
 import { DeleteActionButton } from './DeleteActionButton';
@@ -14,7 +13,7 @@ type ActionButtonsAreaProps = {
   onDelete: () => void;
 };
 
-export const ActionButtonsArea: React.FC<ActionButtonsAreaProps> = ({
+export const ActionButtonsArea: FC<ActionButtonsAreaProps> = ({
   canGroup,
   canDelete,
   allSelectedInSameGroup,

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { View, ActivityIndicator } from 'react-native';
 import { WorkoutSummaryCelebration } from '../../components/WorkoutSummaryCelebration';
 import { useRouter, useLocalSearchParams } from 'expo-router';

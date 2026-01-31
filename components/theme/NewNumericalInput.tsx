@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { View, Text, TextInput, Pressable } from 'react-native';
 import { Minus, Plus } from 'lucide-react-native';
 import { theme } from '../../theme';

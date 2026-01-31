@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { View, Text, Pressable, Alert } from 'react-native';
 import { Calendar, Edit, PlusCircle } from 'lucide-react-native';
 import { format, isSameDay } from 'date-fns';

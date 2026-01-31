@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowRight, CheckCircle, X } from 'lucide-react-native';
@@ -62,7 +62,7 @@ function ButtonExample({
 
 type SectionProps = {
   title: string;
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 function Section({ title, children }: SectionProps) {

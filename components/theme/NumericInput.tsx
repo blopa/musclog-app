@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import { View, Text, TextInput, Pressable, TextInput as RNTextInput } from 'react-native';
 import { ChevronUp, ChevronDown } from 'lucide-react-native';
 import { theme } from '../../theme';

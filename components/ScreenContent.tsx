@@ -1,4 +1,4 @@
-import React from 'react';
+import { ReactNode } from 'react';
 import { Text, View } from 'react-native';
 import { EditScreenInfo } from './EditScreenInfo';
 import { theme } from '../theme';
@@ -6,7 +6,7 @@ import { theme } from '../theme';
 type ScreenContentProps = {
   title: string;
   path: string;
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 export const ScreenContent = ({ title, path, children }: ScreenContentProps) => {

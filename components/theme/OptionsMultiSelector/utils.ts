@@ -1,5 +1,6 @@
 import { LucideIcon } from 'lucide-react-native';
 import { theme } from '../../../theme';
+import { ComponentType } from 'react';
 
 // Helper to determine an item's position within its group
 export type GroupPosition = 'none' | 'first' | 'middle' | 'last' | 'only';
@@ -8,7 +9,7 @@ export type SelectorOption<T extends string | number> = {
   id: T;
   label: string;
   description: string;
-  icon: LucideIcon | React.ComponentType<{ size: number; color: string }>;
+  icon: LucideIcon | ComponentType<{ size: number; color: string }>;
   iconBgColor: string;
   iconColor: string;
   groupId?: string;

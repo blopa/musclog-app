@@ -1,16 +1,16 @@
-import React from 'react';
+import { ComponentType, ReactNode } from 'react';
 import { View, Text } from 'react-native';
 import { TrendingUp } from 'lucide-react-native';
 import { theme } from '../../theme';
 import { GenericCard } from './GenericCard';
 
 type StatCardProps = {
-  title: string | React.ReactNode;
+  title: string | ReactNode;
   value: string;
   unit?: string;
   change?: string;
   changeType?: 'positive' | 'warning' | 'negative';
-  icon: React.ComponentType<{ size: number; color: string }>;
+  icon: ComponentType<{ size: number; color: string }>;
   iconColor: string;
 };
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, ReactNode } from 'react';
+import { useEffect, useRef, ReactNode } from 'react';
 import {
   View,
   Text,
