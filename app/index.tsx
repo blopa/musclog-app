@@ -16,13 +16,6 @@ import { MasterLayout } from '../components/MasterLayout';
 import { DetailedItemCard } from '../components/cards/DetailedItemCard';
 import { ActionButton } from '../components/ActionButton';
 import ShowMoreButton from '../components/ShowMoreButton';
-import { DailySummaryCard } from '../components/cards/DailySummaryCard/DailySummaryCard';
-import { DailySummaryEmptyState } from '../components/cards/DailySummaryCard/DailySummaryEmptyState';
-import { UserMenuModal } from '../components/modals/UserMenuModal';
-import { NotificationsModal } from '../components/modals/NotificationsModal';
-import { AddFoodModal } from '../components/modals/AddFoodModal';
-import PastWorkoutsHistoryModal from '../components/modals/PastWorkoutsHistoryModal';
-import PastWorkoutDetailModal from '../components/modals/PastWorkoutDetailModal';
 import { useRouter } from 'expo-router';
 import { SkeletonLoader } from '../components/theme/SkeletonLoader';
 import { WorkoutFoodEmptyState } from '../components/WorkoutFoodEmptyState';
@@ -32,6 +25,14 @@ import { useUser } from '../hooks/useUser';
 import { useCurrentNutritionGoal } from '../hooks/useCurrentNutritionGoal';
 import { useNutritionLogs } from '../hooks/useNutritionLogs';
 import { getAvatarDisplayProps } from '../utils/avatarUtils';
+
+import { DailySummaryCard } from '../components/cards/DailySummaryCard/DailySummaryCard';
+import { DailySummaryEmptyState } from '../components/cards/DailySummaryCard/DailySummaryEmptyState';
+import { UserMenuModal } from '../components/modals/UserMenuModal';
+import { NotificationsModal } from '../components/modals/NotificationsModal';
+import { AddFoodModal } from '../components/modals/AddFoodModal';
+import PastWorkoutsHistoryModal from '../components/modals/PastWorkoutsHistoryModal';
+import PastWorkoutDetailModal from '../components/modals/PastWorkoutDetailModal';
 
 // TODO: implement notifications eventually
 const SHOW_NOTIFICATIONS = false;
