@@ -27,10 +27,12 @@ type DailySummaryCardProps = {
 export function DailySummaryCard({
   calories,
   macros,
-  highlightThresholdStyle = 'none',
+  highlightThresholdStyle = 'simple',
 }: DailySummaryCardProps) {
   const { t } = useTranslation();
   const highlightThresholds = highlightThresholdStyle === 'default';
+  const showColoredIndicators =
+    highlightThresholdStyle === 'default' || highlightThresholdStyle === 'simple';
 
   const {
     calorieProgress,
@@ -114,7 +116,7 @@ export function DailySummaryCard({
                 className="h-full rounded-full"
                 style={{
                   width: `${Math.min(calorieProgress, 100)}%`,
-                  backgroundColor: highlightThresholds
+                  backgroundColor: showColoredIndicators
                     ? getProgressBarColor(calorieStatus)
                     : theme.colors.text.primary,
                 }}
@@ -162,7 +164,14 @@ export function DailySummaryCard({
                   <AlertCircle size={16} color="#f97316" strokeWidth={2.5} />
                 ) : null}
                 {!highlightThresholds || proteinStatus === 'not-reached' ? (
-                  <Text className="text-xs font-bold text-text-primary">
+                  <Text
+                    className="text-xs font-bold"
+                    style={{
+                      color: showColoredIndicators
+                        ? getProgressBarColor(proteinStatus)
+                        : theme.colors.text.primary,
+                    }}
+                  >
                     {macros.protein.value}/{macros.protein.goal}g
                   </Text>
                 ) : null}
@@ -175,7 +184,7 @@ export function DailySummaryCard({
                   className="h-full rounded-full"
                   style={{
                     width: `${Math.min(proteinProgress, 100)}%`,
-                    backgroundColor: highlightThresholds
+                    backgroundColor: showColoredIndicators
                       ? getProgressBarColor(proteinStatus)
                       : theme.colors.overlay.white90,
                   }}
@@ -202,7 +211,14 @@ export function DailySummaryCard({
                   <AlertCircle size={16} color="#f97316" strokeWidth={2.5} />
                 ) : null}
                 {!highlightThresholds || carbsStatus === 'not-reached' ? (
-                  <Text className="text-xs font-bold text-text-primary">
+                  <Text
+                    className="text-xs font-bold"
+                    style={{
+                      color: showColoredIndicators
+                        ? getProgressBarColor(carbsStatus)
+                        : theme.colors.text.primary,
+                    }}
+                  >
                     {macros.carbs.value}/{macros.carbs.goal}g
                   </Text>
                 ) : null}
@@ -215,7 +231,7 @@ export function DailySummaryCard({
                   className="h-full rounded-full"
                   style={{
                     width: `${Math.min(carbsProgress, 100)}%`,
-                    backgroundColor: highlightThresholds
+                    backgroundColor: showColoredIndicators
                       ? getProgressBarColor(carbsStatus)
                       : theme.colors.overlay.white90,
                   }}
@@ -242,7 +258,14 @@ export function DailySummaryCard({
                   <AlertCircle size={16} color="#f97316" strokeWidth={2.5} />
                 ) : null}
                 {!highlightThresholds || fatsStatus === 'not-reached' ? (
-                  <Text className="text-xs font-bold text-text-primary">
+                  <Text
+                    className="text-xs font-bold"
+                    style={{
+                      color: showColoredIndicators
+                        ? getProgressBarColor(fatsStatus)
+                        : theme.colors.text.primary,
+                    }}
+                  >
                     {macros.fats.value}/{macros.fats.goal}g
                   </Text>
                 ) : null}
@@ -255,7 +278,7 @@ export function DailySummaryCard({
                   className="h-full rounded-full"
                   style={{
                     width: `${Math.min(fatsProgress, 100)}%`,
-                    backgroundColor: highlightThresholds
+                    backgroundColor: showColoredIndicators
                       ? getProgressBarColor(fatsStatus)
                       : theme.colors.overlay.white90,
                   }}
