@@ -20,6 +20,7 @@ import ShowMoreButton from '../components/ShowMoreButton';
 import { DailySummaryCard } from '../components/cards/DailySummaryCard';
 import { UserMenuModal } from '../components/modals/UserMenuModal';
 import { NotificationsModal } from '../components/modals/NotificationsModal';
+import { AddFoodModal } from '../components/modals/AddFoodModal';
 import PastWorkoutsHistoryModal from '../components/modals/PastWorkoutsHistoryModal';
 import PastWorkoutDetailModal from '../components/modals/PastWorkoutDetailModal';
 import { useRouter } from 'expo-router';
@@ -96,6 +97,7 @@ export default function HomeScreen() {
   const [isUserMenuVisible, setIsUserMenuVisible] = useState(false);
   const [isNotificationsVisible, setIsNotificationsVisible] = useState(false);
   const [isWorkoutHistoryVisible, setIsWorkoutHistoryVisible] = useState(false);
+  const [isAddFoodVisible, setIsAddFoodVisible] = useState(false);
   const [selectedWorkoutId, setSelectedWorkoutId] = useState<string | undefined>(undefined);
   const [isCheckingOnboarding, setIsCheckingOnboarding] = useState(true);
 
@@ -213,7 +215,7 @@ export default function HomeScreen() {
         {/* Action Buttons */}
         <View className="mx-6 mb-8 flex-row gap-4">
           <ActionButton variant="workout" label={t('home.actions.startWorkout')} />
-          <ActionButton variant="food" label={t('home.actions.trackFood')} />
+          <ActionButton variant="food" label={t('home.actions.trackFood')} onPress={() => setIsAddFoodVisible(true)} />
         </View>
         <View className="mx-6 mb-8">
           <View className="mb-4 flex-row items-center justify-between">
@@ -393,6 +395,42 @@ export default function HomeScreen() {
         visible={!!selectedWorkoutId}
         onClose={() => setSelectedWorkoutId(undefined)}
         workoutId={selectedWorkoutId}
+      />
+
+      {/* Add Food Modal */}
+      <AddFoodModal
+        visible={isAddFoodVisible}
+        onClose={() => setIsAddFoodVisible(false)}
+        onMealTypeSelect={(mealType) => {
+          console.log('Selected meal type:', mealType);
+          setIsAddFoodVisible(false);
+          // TODO: Navigate to food search or other appropriate screen
+        }}
+        onAiCameraPress={() => {
+          console.log('AI Camera pressed');
+          setIsAddFoodVisible(false);
+          // TODO: Navigate to AI camera screen
+        }}
+        onScanBarcodePress={() => {
+          console.log('Scan barcode pressed');
+          setIsAddFoodVisible(false);
+          // TODO: Navigate to barcode scanner
+        }}
+        onSearchFoodPress={() => {
+          console.log('Search food pressed');
+          setIsAddFoodVisible(false);
+          router.push('/food/search');
+        }}
+        onCreateCustomFoodPress={() => {
+          console.log('Create custom food pressed');
+          setIsAddFoodVisible(false);
+          // TODO: Navigate to create custom food screen
+        }}
+        onTrackCustomMealPress={() => {
+          console.log('Track custom meal pressed');
+          setIsAddFoodVisible(false);
+          // TODO: Navigate to track custom meal screen
+        }}
       />
     </MasterLayout>
   );
