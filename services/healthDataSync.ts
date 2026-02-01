@@ -227,19 +227,19 @@ class HealthDataSyncService {
         return result;
       }
 
-      // Verify permissions
-      const hasPermissions = await healthConnectService.hasAllRequiredPermissions();
-      if (!hasPermissions) {
+      // Check if at least one permission is granted (no longer requiring all)
+      const hasAnyPermission = await healthConnectService.hasAnyPermission();
+      if (!hasAnyPermission) {
         throw new HealthConnectError(
           HealthConnectErrorCode.INSUFFICIENT_PERMISSIONS,
-          'Missing required Health Connect permissions',
+          'No Health Connect permissions granted', // TODO: use translatons here
           { retryable: false }
         );
       }
 
       // Calculate time range
       const endTime = Date.now();
-      const startTime = endTime - lookbackDays * 24 * 60 * 60 * 1000;
+      const startTimeMs = endTime - lookbackDays * 24 * 60 * 60 * 1000;
 
       // Sync each metric type
       const metricTypes: { hcType: string; transformer: (record: any) => any }[] = [
@@ -275,9 +275,21 @@ class HealthDataSyncService {
 
       for (const { hcType, transformer } of metricTypes) {
         try {
+          // Check if user has permission for this record type
+          const hasPermission = await healthConnectService.hasPermissionForRecordType(
+            hcType,
+            'read'
+          );
+          if (!hasPermission) {
+            console.log(`Skipping ${hcType}: no permission granted`);
+            // Count as skipped but don't error
+            result.recordsSkipped += 1;
+            continue;
+          }
+
           const records = await this.syncMetricTypeWithRetry(
             hcType,
-            { startTime, endTime },
+            { startTime: startTimeMs, endTime },
             transformer,
             {
               retryAttempts,

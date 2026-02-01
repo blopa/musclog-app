@@ -257,6 +257,97 @@ class HealthConnectService {
   }
 
   /**
+   * Check if at least one permission is granted
+   */
+  async hasAnyPermission(): Promise<boolean> {
+    try {
+      const granted = await this.getGrantedPermissions();
+      return granted.length > 0;
+    } catch (error) {
+      console.error('Error checking any permissions:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Check if a specific record type and access type are granted
+   */
+  async hasPermissionForRecordType(
+    recordType: string,
+    accessType: 'read' | 'write' = 'read'
+  ): Promise<boolean> {
+    try {
+      const granted = await this.getGrantedPermissions();
+      return granted.some((g) => g.recordType === recordType && g.accessType === accessType);
+    } catch (error) {
+      console.error(`Error checking permission for ${recordType}:`, error);
+      return false;
+    }
+  }
+
+  /**
+   * Get permissions grouped by record type
+   */
+  async getGrantedPermissionsByType(): Promise<Map<string, { read: boolean; write: boolean }>> {
+    try {
+      const granted = await this.getGrantedPermissions();
+      const permMap = new Map<string, { read: boolean; write: boolean }>();
+
+      // Initialize all record types
+      const allRecordTypes = Array.from(new Set(REQUIRED_PERMISSIONS.map((p) => p.recordType)));
+
+      for (const recordType of allRecordTypes) {
+        permMap.set(recordType, {
+          read: granted.some((g) => g.recordType === recordType && g.accessType === 'read'),
+          write: granted.some((g) => g.recordType === recordType && g.accessType === 'write'),
+        });
+      }
+
+      return permMap;
+    } catch (error) {
+      console.error('Error getting permissions by type:', error);
+      return new Map();
+    }
+  }
+
+  /**
+   * Get permission statistics
+   */
+  async getPermissionStats(): Promise<{
+    total: number;
+    granted: number;
+    percentage: number;
+    permissions: { recordType: string; read: boolean; write: boolean }[];
+  }> {
+    try {
+      const permMap = await this.getGrantedPermissionsByType();
+      const allRecordTypes = Array.from(new Set(REQUIRED_PERMISSIONS.map((p) => p.recordType)));
+
+      const permissions = allRecordTypes.map((recordType) => ({
+        recordType,
+        ...(permMap.get(recordType) || { read: false, write: false }),
+      }));
+
+      const grantedCount = permissions.filter((p) => p.read || p.write).length;
+
+      return {
+        total: permissions.length,
+        granted: grantedCount,
+        percentage: Math.round((grantedCount / permissions.length) * 100),
+        permissions,
+      };
+    } catch (error) {
+      console.error('Error getting permission stats:', error);
+      return {
+        total: 0,
+        granted: 0,
+        percentage: 0,
+        permissions: [],
+      };
+    }
+  }
+
+  /**
    * Revoke all Health Connect permissions
    */
   async revokeAllPermissions(): Promise<void> {

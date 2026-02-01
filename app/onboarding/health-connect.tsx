@@ -43,9 +43,8 @@ export default function HealthConnectScreen() {
   const {
     isAvailable,
     isInitializing,
-    // TODO: it's fine if they don't share all permissions, as long as they allowed at least one
-    // we can update the UI to be the "happy path"
-    hasAllPermissions,
+    hasAnyPermission,
+    permissionStats,
     requestPermissions,
     openSettings,
     error: hcError,
@@ -176,8 +175,9 @@ export default function HealthConnectScreen() {
             {/* Primary Button */}
             <Button
               label={
-                hasAllPermissions
-                  ? t('onboarding.healthConnect.syncComplete') || 'Connected'
+                hasAnyPermission
+                  ? // TODO: use translations here
+                    `Connected (${permissionStats?.granted || 0}/${permissionStats?.total || 0})`
                   : t('onboarding.healthConnect.allowHealthAccess')
               }
               onPress={async () => {
@@ -189,8 +189,8 @@ export default function HealthConnectScreen() {
                     return;
                   }
 
-                  if (hasAllPermissions) {
-                    // Already has permissions, navigate to next screen
+                  if (hasAnyPermission) {
+                    // Already has at least one permission, navigate to next screen
                     router.push('/onboarding/connect-with-google');
                     return;
                   }
@@ -210,7 +210,7 @@ export default function HealthConnectScreen() {
                   setIsProcessing(false);
                 }
               }}
-              icon={hasAllPermissions ? undefined : RefreshCw}
+              icon={hasAnyPermission ? undefined : RefreshCw}
               iconPosition="left"
               variant="gradientCta"
               size="md"

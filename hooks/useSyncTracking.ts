@@ -71,27 +71,51 @@ export const useSyncTracking = (): UseSyncTrackingResult => {
         if (result.status === SyncStatus.SUCCESS) {
           setLastSyncTime(result.endTime);
 
-          // Show success notification if significant data was synced
-          if (result.recordsWritten > 0) {
-            Alert.alert(
-              'Sync Complete',
-              `Successfully synced ${result.recordsWritten} health records.`,
-              [{ text: 'OK' }]
-            );
+          // Show success notification - silently skip unavailable metrics
+          if (result.recordsWritten > 0 || result.recordsSkipped > 0) {
+            const message =
+              result.recordsWritten > 0
+                ? // TODO: use translations here
+                  `Synced ${result.recordsWritten} health record${result.recordsWritten !== 1 ? 's' : ''}.`
+                : 'No new data to sync.';
+
+            Alert.alert('Sync Complete', message, [{ text: 'OK' }]);
           }
         } else if (result.status === SyncStatus.ERROR && result.errors.length > 0) {
-          // Show first error to user
+          // Show first error to user (but only if it's a real error, not missing permission)
           const firstError = result.errors[0];
-          Alert.alert('Sync Error', firstError.getUserMessage(), [{ text: 'OK' }]);
-          setError(firstError);
+          // Silent skip for permission errors - don't show alert
+          if (
+            firstError.code !== 'INSUFFICIENT_PERMISSIONS' &&
+            firstError.code !== 'PERMISSION_DENIED'
+          ) {
+            Alert.alert('Sync Error', firstError.getUserMessage(), [{ text: 'OK' }]);
+            setError(firstError);
+          }
         }
 
         return result;
       } catch (err) {
         const hcError = err as HealthConnectError;
         console.error('Sync failed:', hcError);
-        setError(hcError);
 
+        // Silent skip for no permissions scenario
+        if (hcError.code === 'INSUFFICIENT_PERMISSIONS' || hcError.code === 'PERMISSION_DENIED') {
+          const errorResult: SyncResult = {
+            status: SyncStatus.ERROR,
+            recordsRead: 0,
+            recordsWritten: 0,
+            recordsSkipped: 0,
+            errors: [hcError],
+            startTime: Date.now(),
+            endTime: Date.now(),
+            duration: 0,
+          };
+          setLastSyncResult(errorResult);
+          return errorResult;
+        }
+
+        setError(hcError);
         Alert.alert('Sync Failed', hcError.getUserMessage(), [{ text: 'OK' }]);
 
         // Return error result

@@ -9,6 +9,13 @@ import { Alert, Platform } from 'react-native';
 import { healthConnectService, HealthConnectStatus } from '../services/healthConnect';
 import { HealthConnectError } from '../services/healthConnectErrors';
 
+export interface PermissionStats {
+  total: number;
+  granted: number;
+  percentage: number;
+  permissions: { recordType: string; read: boolean; write: boolean }[];
+}
+
 export interface UseHealthConnectResult {
   // Status
   status: HealthConnectStatus;
@@ -16,8 +23,10 @@ export interface UseHealthConnectResult {
   isInitialized: boolean;
   isInitializing: boolean;
 
-  // Permissions
+  // Permissions (updated for partial support)
   hasAllPermissions: boolean;
+  hasAnyPermission: boolean;
+  permissionStats: PermissionStats | null;
   isCheckingPermissions: boolean;
 
   // Actions
@@ -38,6 +47,8 @@ export interface UseHealthConnectResult {
 export const useHealthConnect = (): UseHealthConnectResult => {
   const [status, setStatus] = useState<HealthConnectStatus>(HealthConnectStatus.NOT_INITIALIZED);
   const [hasAllPermissions, setHasAllPermissions] = useState(false);
+  const [hasAnyPermission, setHasAnyPermission] = useState(false);
+  const [permissionStats, setPermissionStats] = useState<PermissionStats | null>(null);
   const [isCheckingPermissions, setIsCheckingPermissions] = useState(false);
   const [error, setError] = useState<HealthConnectError | null>(null);
 
@@ -98,15 +109,43 @@ export const useHealthConnect = (): UseHealthConnectResult => {
     try {
       setIsCheckingPermissions(true);
       setError(null);
-      const hasAll = await healthConnectService.hasAllRequiredPermissions();
+
+      // Check all and any permissions
+      const [hasAll, hasAny, stats] = await Promise.all([
+        healthConnectService.hasAllRequiredPermissions(),
+        healthConnectService.hasAnyPermission(),
+        healthConnectService.getPermissionStats(),
+      ]);
+
       setHasAllPermissions(hasAll);
+      setHasAnyPermission(hasAny);
+      setPermissionStats(stats);
     } catch (err) {
       const hcError = err as HealthConnectError;
       console.error('Error checking permissions:', hcError);
       setError(hcError);
       setHasAllPermissions(false);
+      setHasAnyPermission(false);
+      setPermissionStats(null);
     } finally {
       setIsCheckingPermissions(false);
+    }
+  }, [isAvailable]);
+
+  /**
+   * Open Health Connect settings
+   */
+  const openSettings = useCallback(async (): Promise<void> => {
+    if (!isAvailable) {
+      return;
+    }
+
+    try {
+      await healthConnectService.openSettings();
+    } catch (err) {
+      const hcError = err as HealthConnectError;
+      console.error('Error opening settings:', hcError);
+      setError(hcError);
     }
   }, [isAvailable]);
 
@@ -152,24 +191,7 @@ export const useHealthConnect = (): UseHealthConnectResult => {
       Alert.alert('Permission Error', hcError.getUserMessage(), [{ text: 'OK' }]);
       return false;
     }
-  }, [isAvailable]);
-
-  /**
-   * Open Health Connect settings
-   */
-  const openSettings = useCallback(async (): Promise<void> => {
-    if (!isAvailable) {
-      return;
-    }
-
-    try {
-      await healthConnectService.openSettings();
-    } catch (err) {
-      const hcError = err as HealthConnectError;
-      console.error('Error opening settings:', hcError);
-      setError(hcError);
-    }
-  }, [isAvailable]);
+  }, [isAvailable, openSettings]);
 
   /**
    * Open Health Connect data management
@@ -216,8 +238,10 @@ export const useHealthConnect = (): UseHealthConnectResult => {
     isInitialized,
     isInitializing,
 
-    // Permissions
+    // Permissions (updated for partial support)
     hasAllPermissions,
+    hasAnyPermission,
+    permissionStats,
     isCheckingPermissions,
 
     // Actions
