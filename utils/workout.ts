@@ -111,7 +111,7 @@ export function createExerciseOption(params: CreateExerciseOptionParams): Select
 
   return {
     id: exercise.id,
-    label: exercise.name,
+    label: exercise.name ?? '',
     description: formatExerciseDescription(sets, reps),
     icon: iconConfig.icon,
     iconBgColor: iconConfig.iconBgColor,
@@ -226,7 +226,7 @@ export function transformExercisesToOptions(
  * Transform schedule days to WeekdayPicker indices
  */
 export function transformScheduleDays(schedule: Schedule[]): number[] {
-  return schedule.map((s) => dayNameToIndex(s.dayOfWeek)).filter((idx) => idx !== -1);
+  return schedule.map((s) => dayNameToIndex(s.dayOfWeek ?? '')).filter((idx) => idx !== -1);
 }
 
 // ============================================================================

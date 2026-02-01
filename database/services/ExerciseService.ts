@@ -148,7 +148,7 @@ export class ExerciseService {
       .fetch();
 
     // Extract unique muscle groups
-    const muscleGroups = [...new Set(exercises.map((ex) => ex.muscleGroup))];
+    const muscleGroups = [...new Set(exercises.map((e) => e.muscleGroup ?? ''))].filter((m) => m);
     return muscleGroups.sort();
   }
 
@@ -162,7 +162,9 @@ export class ExerciseService {
       .fetch();
 
     // Extract unique equipment types
-    const equipmentTypes = [...new Set(exercises.map((ex) => ex.equipmentType))];
+    const equipmentTypes = [...new Set(exercises.map((e) => e.equipmentType ?? ''))].filter(
+      (t) => t
+    );
     return equipmentTypes.sort();
   }
 

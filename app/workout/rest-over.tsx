@@ -91,9 +91,9 @@ export default function RestOverScreen() {
             const setNumber = exerciseSets.findIndex((s) => s.id === next.set.id) + 1;
 
             setNextExercise({
-              name: next.exercise.name,
-              weight: `${next.set.weight}kg`,
-              reps: next.set.reps,
+              name: next.exercise.name ?? '',
+              weight: `${next.set.weight ?? 0}kg`,
+              reps: next.set.reps ?? 0,
               set: setNumber,
               totalSets: exerciseSets.length,
             });
@@ -109,9 +109,9 @@ export default function RestOverScreen() {
             const setNumber = exerciseSets.findIndex((s) => s.id === current.set.id) + 1;
 
             setNextExercise({
-              name: current.exercise.name,
-              weight: `${current.set.weight}kg`,
-              reps: current.set.reps,
+              name: current.exercise.name ?? '',
+              weight: `${current.set.weight ?? 0}kg`,
+              reps: current.set.reps ?? 0,
               set: setNumber,
               totalSets: exerciseSets.length,
             });

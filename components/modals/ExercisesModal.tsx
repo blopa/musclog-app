@@ -161,14 +161,14 @@ export default function ExercisesModal({ visible, onClose }: ExercisesModalProps
           const allExercises = await exercisesCollection.query().fetch();
           fetchedExercises = allExercises
             .filter((e) => !e.deletedAt)
-            .sort((a, b) => a.name.localeCompare(b.name));
+            .sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''));
         }
 
         const exercisesData: ExerciseData[] = fetchedExercises.map((exercise) => ({
           id: exercise.id,
-          name: exercise.name,
-          type: mapEquipmentTypeToType(exercise.equipmentType),
-          muscleGroup: exercise.muscleGroup,
+          name: exercise.name ?? '',
+          type: mapEquipmentTypeToType(exercise.equipmentType ?? ''),
+          muscleGroup: exercise.muscleGroup ?? '',
           imageUrl: exercise.imageUrl || undefined,
         }));
 

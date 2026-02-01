@@ -100,7 +100,9 @@ async function loadExercisesFromJson(): Promise<{ created: number; skipped: numb
   await database.write(async () => {
     // Get all existing exercises to check for duplicates
     const existingExercises = await database.get<Exercise>('exercises').query().fetch();
-    const existingNames = new Set(existingExercises.map((ex: Exercise) => ex.name.toLowerCase()));
+    const existingNames = new Set(
+      existingExercises.map((ex: Exercise) => (ex.name ?? '').toLowerCase())
+    );
 
     // Prepare all new exercises
     const exercisesToCreate = exercises
@@ -211,7 +213,7 @@ async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false):
 
       // Helper to find exercises by name
       const findExercise = (name: string): Exercise | undefined => {
-        return exercises.find((ex) => ex.name.toLowerCase().includes(name.toLowerCase()));
+        return exercises.find((ex) => (ex.name ?? '').toLowerCase().includes(name.toLowerCase()));
       };
 
       // Helper to get or create a default exercise
@@ -796,7 +798,7 @@ async function seedWorkoutHistory(): Promise<{ created: number }> {
 
       // Helper to find exercises by name
       const findExercise = (name: string): Exercise | undefined => {
-        return exercises.find((ex) => ex.name.toLowerCase().includes(name.toLowerCase()));
+        return exercises.find((ex) => (ex.name ?? '').toLowerCase().includes(name.toLowerCase()));
       };
 
       // Helper to get or create a default exercise
@@ -1477,7 +1479,9 @@ async function seedFoods(): Promise<{ created: number }> {
 
       // Seed a few nutrition logs referencing the foods we just created
       const seededFoods = await database.get<Food>('foods').query().fetch();
-      const foodByName = new Map<string, Food>(seededFoods.map((f) => [f.name.toLowerCase(), f]));
+      const foodByName = new Map<string, Food>(
+        seededFoods.map((f) => [(f.name ?? '').toLowerCase(), f])
+      );
 
       const daysAgo = (days: number): number => {
         const date = new Date();

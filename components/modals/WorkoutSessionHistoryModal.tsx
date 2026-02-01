@@ -50,15 +50,16 @@ export function WorkoutSessionHistoryModal({
 
     const exerciseGroups = new Map<string, WorkoutLogSet[]>();
     sets.forEach((set) => {
-      if (!exerciseGroups.has(set.exerciseId)) {
-        exerciseGroups.set(set.exerciseId, []);
+      const exerciseId = set.exerciseId ?? '';
+      if (!exerciseGroups.has(exerciseId)) {
+        exerciseGroups.set(exerciseId, []);
       }
-      exerciseGroups.get(set.exerciseId)!.push(set);
+      exerciseGroups.get(exerciseId)!.push(set);
     });
 
     // Sort sets within each exercise by set_order
     exerciseGroups.forEach((exerciseSets) => {
-      exerciseSets.sort((a, b) => a.setOrder - b.setOrder);
+      exerciseSets.sort((a, b) => (a.setOrder ?? 0) - (b.setOrder ?? 0));
     });
 
     // Create exercise data list
@@ -87,11 +88,11 @@ export function WorkoutSessionHistoryModal({
 
       // Transform sets
       const transformedSets = exerciseSets.map((set, setIndex) => {
-        const isCurrent = set.setOrder === currentSetOrder;
+        const isCurrent = (set.setOrder ?? 0) === currentSetOrder;
         return {
           setNumber: setIndex + 1,
-          weight: set.weight,
-          reps: set.reps,
+          weight: set.weight ?? 0,
+          reps: set.reps ?? 0,
           partials: set.partials || 0,
           isCurrent,
         };
@@ -99,7 +100,7 @@ export function WorkoutSessionHistoryModal({
 
       // Calculate set progress (100% if completed, 0% if not started, partial if current)
       const setProgress = exerciseSets.map((set) => {
-        if (set.difficultyLevel > 0) {
+        if ((set.difficultyLevel ?? 0) > 0) {
           return 100; // Completed
         } else if (set.setOrder === currentSetOrder) {
           return 50; // Current set (in progress)
@@ -110,7 +111,7 @@ export function WorkoutSessionHistoryModal({
 
       result.push({
         id: exerciseId,
-        name: exercise.name,
+        name: exercise.name ?? '',
         time: exerciseTime,
         exerciseNumber: index + 1,
         sets: transformedSets,
@@ -140,9 +141,9 @@ export function WorkoutSessionHistoryModal({
   // Calculate total volume
   const totalVolume = useMemo(() => {
     return sets.reduce((sum, set) => {
-      if (set.difficultyLevel > 0) {
+      if ((set.difficultyLevel ?? 0) > 0) {
         // Only count completed sets
-        return sum + set.reps * set.weight;
+        return sum + (set.reps ?? 0) * (set.weight ?? 0);
       }
       return sum;
     }, 0);
@@ -150,7 +151,7 @@ export function WorkoutSessionHistoryModal({
 
   // Count completed sets
   const completedSetsCount = useMemo(() => {
-    return sets.filter((set) => set.difficultyLevel > 0).length;
+    return sets.filter((set) => (set.difficultyLevel ?? 0) > 0).length;
   }, [sets]);
 
   const workoutName = workoutLog?.workoutName || 'Workout';

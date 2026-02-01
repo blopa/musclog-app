@@ -14,17 +14,17 @@ export default class MealFood extends Model {
     food_portions: { type: 'belongs_to' as const, key: 'portion_id' },
   };
 
-  @field('meal_id') mealId!: string;
-  @field('food_id') foodId!: string;
-  @field('amount') amount!: number; // How much of the food
+  @field('meal_id') mealId?: string;
+  @field('food_id') foodId?: string;
+  @field('amount') amount?: number; // How much of the food
   @field('portion_id') portionId?: string; // If null, assume base unit (grams)
 
-  @field('created_at') createdAt!: number;
-  @field('updated_at') updatedAt!: number;
+  @field('created_at') createdAt?: number;
+  @field('updated_at') updatedAt?: number;
   @field('deleted_at') deletedAt?: number;
 
-  @relation('meals', 'meal_id') meal!: Meal;
-  @relation('foods', 'food_id') food!: Food;
+  @relation('meals', 'meal_id') meal?: Meal;
+  @relation('foods', 'food_id') food?: Food;
   @relation('food_portions', 'portion_id') portion?: FoodPortion;
 
   @writer
@@ -56,12 +56,12 @@ export default class MealFood extends Model {
     if (this.portionId) {
       const portion = await this.portion;
       if (portion) {
-        return this.amount * portion.gramWeight;
+        return (this.amount ?? 0) * (portion.gramWeight ?? 0);
       }
     }
 
     // If no portion, assume amount is in grams
-    return this.amount;
+    return this.amount ?? 0;
   }
 
   // Get nutrients for this specific meal food entry
@@ -74,22 +74,45 @@ export default class MealFood extends Model {
   }> {
     const food = await this.food;
 
+    if (!food) {
+      return {
+        calories: 0,
+        protein: 0,
+        carbs: 0,
+        fat: 0,
+        fiber: 0,
+      };
+    }
+
     if (this.portionId) {
       const portion = await this.portion;
       if (portion) {
         // Use portion-based calculation
-        const multiplier = this.amount; // Number of portions
+        const multiplier = this.amount ?? 0; // Number of portions
         return {
-          calories: food.calories * (portion.gramWeight / food.servingAmount) * multiplier,
-          protein: food.protein * (portion.gramWeight / food.servingAmount) * multiplier,
-          carbs: food.carbs * (portion.gramWeight / food.servingAmount) * multiplier,
-          fat: food.fat * (portion.gramWeight / food.servingAmount) * multiplier,
-          fiber: food.fiber * (portion.gramWeight / food.servingAmount) * multiplier,
+          calories:
+            (food.calories ?? 0) *
+            ((portion.gramWeight ?? 0) / (food.servingAmount ?? 1)) *
+            multiplier,
+          protein:
+            (food.protein ?? 0) *
+            ((portion.gramWeight ?? 0) / (food.servingAmount ?? 1)) *
+            multiplier,
+          carbs:
+            (food.carbs ?? 0) *
+            ((portion.gramWeight ?? 0) / (food.servingAmount ?? 1)) *
+            multiplier,
+          fat:
+            (food.fat ?? 0) * ((portion.gramWeight ?? 0) / (food.servingAmount ?? 1)) * multiplier,
+          fiber:
+            (food.fiber ?? 0) *
+            ((portion.gramWeight ?? 0) / (food.servingAmount ?? 1)) *
+            multiplier,
         };
       }
     }
 
     // Use direct amount (assume grams)
-    return food.getNutrientsForAmount(this.amount, 'g');
+    return food.getNutrientsForAmount(this.amount ?? 0, 'g');
   }
 }

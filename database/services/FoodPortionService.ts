@@ -93,7 +93,10 @@ export class FoodPortionService {
     const portions: FoodPortion[] = [];
 
     // Common portion sizes based on food type
-    const commonPortions = this.getCommonPortionsForFoodType(food.name, food.servingUnit);
+    const commonPortions = this.getCommonPortionsForFoodType(
+      food.name ?? '',
+      food.servingUnit ?? ''
+    );
 
     return await database.write(async () => {
       const now = Date.now();

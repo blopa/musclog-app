@@ -80,7 +80,7 @@ export default function RestTimerScreen() {
           .fetch();
 
         // Find completed set
-        const completed = sets.find((s) => s.setOrder === completedSetOrder);
+        const completed = sets.find((s) => (s.setOrder ?? 0) === completedSetOrder);
         if (!completed) {
           throw new Error('Completed set not found');
         }
@@ -88,7 +88,7 @@ export default function RestTimerScreen() {
         // Load exercise for completed set
         const completedExercise = await database
           .get<Exercise>('exercises')
-          .find(completed.exerciseId);
+          .find(completed.exerciseId ?? '');
 
         setCompletedSet({ set: completed, exercise: completedExercise });
 
@@ -100,11 +100,13 @@ export default function RestTimerScreen() {
 
         // Find the next set to be done (first unlogged, non-skipped set in workout order)
         const next = sets
-          .filter((s) => s.difficultyLevel === 0 && !s.isSkipped)
-          .sort((a, b) => a.setOrder - b.setOrder)[0];
+          .filter((s) => (s.difficultyLevel ?? 0) === 0 && !s.isSkipped)
+          .sort((a, b) => (a.setOrder ?? 0) - (b.setOrder ?? 0))[0];
 
         if (next) {
-          const nextExercise = await database.get<Exercise>('exercises').find(next.exerciseId);
+          const nextExercise = await database
+            .get<Exercise>('exercises')
+            .find(next.exerciseId ?? '');
           setNextSet({ set: next, exercise: nextExercise });
         }
 
@@ -271,13 +273,15 @@ export default function RestTimerScreen() {
               <CheckCircle size={theme.iconSize.md} color={theme.colors.accent.primary} />
               <Text className="text-sm" style={{ color: theme.colors.overlay.white50 }}>
                 {t('restTimer.done')}:{' '}
-                <Text className="font-medium text-text-primary">{completedSet.exercise.name}</Text>
+                <Text className="font-medium text-text-primary">
+                  {completedSet.exercise.name ?? ''}
+                </Text>
               </Text>
             </View>
             <Text className="font-medium" style={{ color: theme.colors.overlay.white70 }}>
-              {completedSet.set.weight} {t(weightUnitKey)}{' '}
-              <Text style={{ color: theme.colors.overlay.white30 }}>×</Text> {completedSet.set.reps}{' '}
-              {t('restTimer.reps')}
+              {completedSet.set.weight ?? 0} {t(weightUnitKey)}{' '}
+              <Text style={{ color: theme.colors.overlay.white30 }}>×</Text>{' '}
+              {completedSet.set.reps ?? 0} {t('restTimer.reps')}
             </Text>
           </View>
 
@@ -285,11 +289,14 @@ export default function RestTimerScreen() {
           {nextSet ? (
             <DetailedItemCard
               item={{
-                name: nextSet.exercise.name,
+                name: nextSet.exercise.name ?? '',
                 media: require('../../assets/icon.png'), // Default image for now
-                itemOne: { value: `${nextSet.set.weight} ${t(weightUnitKey)}`, icon: Dumbbell },
-                itemTwo: { value: `${nextSet.set.reps} reps`, icon: Repeat },
-                itemThree: { value: `${nextSet.set.reps} reps`, icon: ChevronRight },
+                itemOne: {
+                  value: `${nextSet.set.weight ?? 0} ${t(weightUnitKey)}`,
+                  icon: Dumbbell,
+                },
+                itemTwo: { value: `${nextSet.set.reps ?? 0} reps`, icon: Repeat },
+                itemThree: { value: `${nextSet.set.reps ?? 0} reps`, icon: ChevronRight },
               }}
               onPress={() => {
                 // Navigate to next set

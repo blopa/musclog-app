@@ -450,16 +450,19 @@ export function FoodSearchModal({
                             <View className="h-0.5 flex-1 bg-accent-primary/20" />
                           </View>
                           <View className="gap-1.5">
-                            {resultsBySource.local.map((food: UnifiedFoodResult) => (
+                            {(resultsBySource.local || []).map((food) => (
                               <FoodItemCard
                                 key={`local-${food.id}`}
                                 food={{
                                   ...food,
+                                  name: food.name ?? '',
                                   icon: '🍽️',
                                   iconColor: theme.colors.accent.primary,
                                   iconBgColor: theme.colors.accent.primary10,
                                 }}
-                                onAddPress={() => handleFoodClick(food)}
+                                onAddPress={() =>
+                                  handleFoodClick({ ...food, name: food.name ?? '' })
+                                }
                               />
                             ))}
                           </View>
@@ -581,7 +584,7 @@ export function FoodSearchModal({
                       const foodItem: FoodItem = {
                         ...food,
                         id: food.id,
-                        name: food.name,
+                        name: food.name ?? '',
                         description: `${food.brand || 'Custom Food'} • ${food.calories || 0} kcal per 100g`,
                         brand: food.brand,
                         serving_size: `${food.servingAmount || 100} ${food.servingUnit || 'g'}`,

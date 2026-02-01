@@ -115,7 +115,7 @@ async function processWorkoutSimple(
 
   return {
     id: workout.id,
-    name: workout.workoutName,
+    name: workout.workoutName ?? '',
     date: dateStr,
     duration: formatDuration(durationMinutes),
     calories: workout.caloriesBurned || 0,

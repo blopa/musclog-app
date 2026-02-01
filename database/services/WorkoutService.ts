@@ -135,7 +135,7 @@ export class WorkoutService {
       .query(Q.where('day_of_week', dayOfWeek), Q.where('deleted_at', Q.eq(null)))
       .fetch();
 
-    const templateIds = [...new Set(schedules.map((s) => s.templateId))];
+    const templateIds = [...new Set(schedules.map((s) => s.templateId ?? ''))].filter(Boolean);
 
     if (templateIds.length === 0) {
       return [];
@@ -243,7 +243,7 @@ export class WorkoutService {
       )
       .fetch();
 
-    const exerciseIds = [...new Set(sets.map((set) => set.exerciseId))];
+    const exerciseIds = [...new Set(sets.map((set) => set.exerciseId ?? ''))].filter(Boolean);
     const exercises =
       exerciseIds.length > 0
         ? await database
@@ -353,7 +353,7 @@ export class WorkoutService {
           .fetch();
 
         const totalVolume = sets.reduce(
-          (sum: number, s: WorkoutLogSet) => sum + (s.reps * s.weight || 0),
+          (sum: number, s: WorkoutLogSet) => sum + ((s.reps ?? 0) * (s.weight ?? 0) || 0),
           0
         );
 
@@ -410,12 +410,12 @@ export class WorkoutService {
       .fetch();
 
     // Find first set with difficultyLevel === 0 (unlogged) and not skipped
-    const currentSet = sets.find((set) => set.difficultyLevel === 0 && !set.isSkipped);
+    const currentSet = sets.find((set) => (set.difficultyLevel ?? 0) === 0 && !set.isSkipped);
     if (!currentSet) {
       return null;
     }
 
-    const exercise = await database.get<Exercise>('exercises').find(currentSet.exerciseId);
+    const exercise = await database.get<Exercise>('exercises').find(currentSet.exerciseId ?? '');
     return { set: currentSet, exercise };
   }
 
@@ -440,14 +440,15 @@ export class WorkoutService {
 
     // Find next unlogged, non-skipped set after current set order
     const nextSet = sets.find(
-      (set) => set.setOrder > currentSetOrder && set.difficultyLevel === 0 && !set.isSkipped
+      (set) =>
+        (set.setOrder ?? 0) > currentSetOrder && (set.difficultyLevel ?? 0) === 0 && !set.isSkipped
     );
 
     if (!nextSet) {
       return null;
     }
 
-    const exercise = await database.get<Exercise>('exercises').find(nextSet.exerciseId);
+    const exercise = await database.get<Exercise>('exercises').find(nextSet.exerciseId ?? '');
     return { set: nextSet, exercise };
   }
 
@@ -470,17 +471,18 @@ export class WorkoutService {
       .fetch();
 
     const totalSets = sets.length;
-    const completedSets = sets.filter((set) => set.difficultyLevel > 0).length;
+    const completedSets = sets.filter((set) => (set.difficultyLevel ?? 0) > 0).length;
     const currentSet = sets.find((set) => set.difficultyLevel === 0 && !set.isSkipped);
     const currentSetOrder = currentSet?.setOrder ?? null;
 
     // Group sets by exercise
     const exerciseGrouping = new Map<string, number[]>();
     sets.forEach((set) => {
-      if (!exerciseGrouping.has(set.exerciseId)) {
-        exerciseGrouping.set(set.exerciseId, []);
+      const exerciseId = set.exerciseId ?? '';
+      if (!exerciseGrouping.has(exerciseId)) {
+        exerciseGrouping.set(exerciseId, []);
       }
-      exerciseGrouping.get(set.exerciseId)!.push(set.setOrder);
+      exerciseGrouping.get(exerciseId)!.push(set.setOrder ?? 0);
     });
 
     return {

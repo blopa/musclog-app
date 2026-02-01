@@ -58,7 +58,7 @@ export function useWorkoutForm({ templateId }: UseWorkoutFormParams = {}) {
       const { template, sets, schedule } =
         await WorkoutTemplateService.getTemplateWithDetails(templateId);
 
-      setWorkoutTitle(template.name);
+      setWorkoutTitle(template.name ?? '');
       setDescription(template.description || '');
 
       const dayIndices = transformScheduleDays(schedule);

@@ -76,14 +76,17 @@ export function useActiveWorkout(workoutLogId?: string) {
         exerciseIds.length > 0
           ? await database
               .get<Exercise>('exercises')
-              .query(Q.where('id', Q.oneOf(exerciseIds)), Q.where('deleted_at', Q.eq(null)))
+              .query(
+                Q.where('id', Q.oneOf(exerciseIds.filter((id) => id !== undefined))),
+                Q.where('deleted_at', Q.eq(null))
+              )
               .fetch()
           : [];
 
       setExercises(exerciseList);
 
       // Calculate progress with proper completion logic
-      const completedSets = workoutSets.filter((set) => set.difficultyLevel > 0).length;
+      const completedSets = workoutSets.filter((set) => (set.difficultyLevel ?? 0) > 0).length;
       const skippedSets = workoutSets.filter((set) => set.isSkipped).length;
       const totalSets = workoutSets.length;
 
@@ -142,7 +145,7 @@ export function useActiveWorkout(workoutLogId?: string) {
     const exerciseMap = new Map<string, Exercise>();
     exercises.forEach((ex) => exerciseMap.set(ex.id, ex));
 
-    const currentExercise = exerciseMap.get(currentSet.exerciseId);
+    const currentExercise = exerciseMap.get(currentSet.exerciseId ?? '');
     if (!currentExercise) {
       console.error(`Exercise not found for set: ${currentSet.exerciseId}`);
       return;
@@ -151,46 +154,50 @@ export function useActiveWorkout(workoutLogId?: string) {
     // Group sets by exercise to calculate set numbers
     const exerciseGroups = new Map<string, WorkoutLogSet[]>();
     sets.forEach((set) => {
-      if (!exerciseGroups.has(set.exerciseId)) {
-        exerciseGroups.set(set.exerciseId, []);
+      const exerciseId = set.exerciseId ?? '';
+      if (!exerciseGroups.has(exerciseId)) {
+        exerciseGroups.set(exerciseId, []);
       }
-      exerciseGroups.get(set.exerciseId)!.push(set);
+      exerciseGroups.get(exerciseId)!.push(set);
     });
 
     // Sort sets within each exercise by set_order
     exerciseGroups.forEach((exerciseSets) => {
-      exerciseSets.sort((a, b) => a.setOrder - b.setOrder);
+      exerciseSets.sort((a, b) => (a.setOrder ?? 0) - (b.setOrder ?? 0));
     });
 
-    const currentExerciseSets = exerciseGroups.get(currentSet.exerciseId) || [];
+    const currentExerciseSets = exerciseGroups.get(currentSet.exerciseId ?? '') || [];
     const setNumber = currentExerciseSets.findIndex((s) => s.id === currentSet.id) + 1;
     const totalSetsInExercise = currentExerciseSets.length;
 
     // Calculate exercise number (order of first appearance in workout)
     const exerciseOrder = Array.from(exerciseGroups.keys());
-    const exerciseNumber = exerciseOrder.indexOf(currentSet.exerciseId) + 1;
+    const exerciseNumber = exerciseOrder.indexOf(currentSet.exerciseId ?? '') + 1;
 
     // Find previous set (last completed set before current set)
     let previousSet: CurrentSetData['previousSet'] | undefined;
     const previousSets = sets.filter(
-      (set) => set.setOrder < currentSet.setOrder && set.difficultyLevel > 0
+      (set) => (set.setOrder ?? 0) < (currentSet.setOrder ?? 0) && (set.difficultyLevel ?? 0) > 0
     );
     if (previousSets.length > 0) {
       const lastPreviousSet = previousSets[previousSets.length - 1];
       previousSet = {
-        weight: lastPreviousSet.weight,
-        reps: lastPreviousSet.reps,
-        exerciseId: lastPreviousSet.exerciseId,
+        weight: lastPreviousSet.weight ?? 0,
+        reps: lastPreviousSet.reps ?? 0,
+        exerciseId: lastPreviousSet.exerciseId ?? '',
       };
     }
 
     // Find next set that is not skipped
     const nextSet = sets.find(
-      (set) => set.setOrder > currentSet.setOrder && set.difficultyLevel === 0 && !set.isSkipped
+      (set) =>
+        (set.setOrder ?? 0) > (currentSet.setOrder ?? 0) &&
+        (set.difficultyLevel ?? 0) === 0 &&
+        !set.isSkipped
     );
     let nextSetData: CurrentSetData['nextSet'] | undefined;
     if (nextSet) {
-      const nextExercise = exerciseMap.get(nextSet.exerciseId);
+      const nextExercise = exerciseMap.get(nextSet.exerciseId ?? '');
       if (nextExercise) {
         nextSetData = {
           set: nextSet,

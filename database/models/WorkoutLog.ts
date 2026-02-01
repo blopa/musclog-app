@@ -13,22 +13,23 @@ export default class WorkoutLog extends Model {
   };
 
   @field('template_id') templateId?: string;
-  @field('workout_name') workoutName!: string;
-  @field('started_at') startedAt!: number;
+  @field('workout_name') workoutName?: string;
+  @field('started_at') startedAt?: number;
   @field('completed_at') completedAt?: number;
   @field('total_volume') totalVolume?: number;
   @field('calories_burned') caloriesBurned?: number;
-  @field('created_at') createdAt!: number;
-  @field('updated_at') updatedAt!: number;
+  @field('created_at') createdAt?: number;
+  @field('updated_at') updatedAt?: number;
   @field('deleted_at') deletedAt?: number;
 
-  @children('workout_log_sets') logSets!: Query<WorkoutLogSet>;
+  @children('workout_log_sets') logSets?: Query<WorkoutLogSet>;
   @relation('workout_templates', 'template_id') template?: WorkoutTemplate;
 
   async calculateVolume(): Promise<number> {
-    const sets = await this.logSets.fetch();
+    const sets = await this.logSets?.fetch();
+    if (!sets) return 0;
     return sets.reduce((total: number, set: WorkoutLogSet) => {
-      return total + set.reps * set.weight;
+      return total + (set.reps ?? 0) * (set.weight ?? 0);
     }, 0);
   }
 
@@ -50,7 +51,7 @@ export default class WorkoutLog extends Model {
       throw new Error('Cannot update sets in a completed workout');
     }
 
-    const sets = await this.logSets.fetch();
+    const sets = (await this.logSets?.fetch()) ?? [];
     const set = sets.find((s: WorkoutLogSet) => s.id === setId);
 
     if (!set) {
@@ -92,8 +93,9 @@ export default class WorkoutLog extends Model {
       throw new Error('Cannot add exercises to a completed workout');
     }
 
-    const sets = await this.logSets.fetch();
-    const maxOrder = sets.length > 0 ? Math.max(...sets.map((s: WorkoutLogSet) => s.setOrder)) : 0;
+    const sets = (await this.logSets?.fetch()) ?? [];
+    const maxOrder =
+      sets.length > 0 ? Math.max(...sets.map((s: WorkoutLogSet) => s.setOrder ?? 0)) : 0;
     const newOrder = setOrder ?? maxOrder + 1;
 
     const logSetsCollection = this.collections.get<WorkoutLogSet>('workout_log_sets');
@@ -127,7 +129,7 @@ export default class WorkoutLog extends Model {
       throw new Error('Cannot remove sets from a completed workout');
     }
 
-    const sets = await this.logSets.fetch();
+    const sets = (await this.logSets?.fetch()) ?? [];
     const set = sets.find((s: WorkoutLogSet) => s.id === setId);
 
     if (!set) {

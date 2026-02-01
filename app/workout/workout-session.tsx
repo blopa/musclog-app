@@ -71,8 +71,8 @@ export default function WorkoutSessionScreen() {
   // Update weight/reps when current set changes
   useEffect(() => {
     if (currentSetData) {
-      setWeight(currentSetData.set.weight);
-      setReps(currentSetData.set.reps);
+      setWeight(currentSetData.set.weight ?? 0);
+      setReps(currentSetData.set.reps ?? 0);
       setPartials(currentSetData.set.partials || 0);
       setRepsInReserve(currentSetData.set.repsInReserve ?? 0);
     }
@@ -109,7 +109,7 @@ export default function WorkoutSessionScreen() {
         currentSetData.set.restTimeAfter && currentSetData.set.restTimeAfter > 0
           ? currentSetData.set.restTimeAfter
           : 60;
-      const completedSetOrder = currentSetData.set.setOrder;
+      const completedSetOrder = currentSetData.set.setOrder ?? 0;
 
       await workoutLog.updateSet(currentSetData.set.id, {
         difficultyLevel: rpe,
@@ -211,8 +211,8 @@ export default function WorkoutSessionScreen() {
         .get<WorkoutLogSet>('workout_log_sets')
         .query(
           Q.where('workout_log_id', workoutLog.id),
-          Q.where('exercise_id', currentSetData.set.exerciseId),
-          Q.where('set_order', Q.gte(currentSetData.set.setOrder))
+          Q.where('exercise_id', currentSetData.set.exerciseId ?? ''),
+          Q.where('set_order', Q.gte(currentSetData.set.setOrder ?? 0))
         )
         .fetch();
 
@@ -332,7 +332,7 @@ export default function WorkoutSessionScreen() {
           {/* Exercise Info */}
           <View className="mt-48 px-6">
             <Text className="mb-3 text-5xl font-bold text-text-primary">
-              {currentSetData.exercise.name}
+              {currentSetData.exercise.name ?? ''}
             </Text>
             <View className="mb-2 flex-row items-center gap-3">
               <View className="rounded-full bg-accent-primary px-4 py-1.5">
@@ -485,7 +485,7 @@ export default function WorkoutSessionScreen() {
         <LogSetPerformanceModal
           visible={isLogSetModalVisible}
           onClose={() => setIsLogSetModalVisible(false)}
-          exerciseName={currentSetData.exercise.name}
+          exerciseName={currentSetData.exercise.name ?? ''}
           setLabel={t('workoutSession.setOf', {
             current: currentSetData.setNumber,
             total: currentSetData.totalSetsInExercise,

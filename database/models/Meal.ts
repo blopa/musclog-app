@@ -12,13 +12,13 @@ export default class Meal extends Model {
 
   @field('is_ai_generated') isAiGenerated!: boolean;
   @field('name') name!: string;
-  @field('description') description?: string;
-  @field('image_url') imageUrl?: string; // URL to meal image
+  @field('description') description!: string;
+  @field('image_url') imageUrl!: string; // URL to meal image
   @field('is_favorite') isFavorite!: boolean;
 
   @field('created_at') createdAt!: number;
   @field('updated_at') updatedAt!: number;
-  @field('deleted_at') deletedAt?: number;
+  @field('deleted_at') deletedAt!: number;
 
   @children('meal_foods') mealFoods!: Query<MealFood>;
 
@@ -49,7 +49,7 @@ export default class Meal extends Model {
   @writer
   async updateDescription(description?: string): Promise<void> {
     await this.update((record) => {
-      record.description = description;
+      record.description = description ?? '';
       record.updatedAt = Date.now();
     });
   }
@@ -98,13 +98,14 @@ export default class Meal extends Model {
     fiber: number;
   }> {
     const totals = await this.getTotalNutrients();
+    const divisor = servings ?? 1;
 
     return {
-      calories: totals.calories / servings,
-      protein: totals.protein / servings,
-      carbs: totals.carbs / servings,
-      fat: totals.fat / servings,
-      fiber: totals.fiber / servings,
+      calories: totals.calories / divisor,
+      protein: totals.protein / divisor,
+      carbs: totals.carbs / divisor,
+      fat: totals.fat / divisor,
+      fiber: totals.fiber / divisor,
     };
   }
 }

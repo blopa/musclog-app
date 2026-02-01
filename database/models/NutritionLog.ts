@@ -14,18 +14,18 @@ export default class NutritionLog extends Model {
     food_portions: { type: 'belongs_to' as const, key: 'portion_id' },
   };
 
-  @field('food_id') foodId!: string;
-  @field('date') date!: number; // Midnight timestamp for the day
-  @field('type') type!: MealType; // 'breakfast', 'lunch', 'dinner', 'snack', 'other'
+  @field('food_id') foodId?: string;
+  @field('date') date?: number; // Midnight timestamp for the day
+  @field('type') type?: MealType; // 'breakfast', 'lunch', 'dinner', 'snack', 'other'
 
-  @field('amount') amount!: number; // Quantity eaten
+  @field('amount') amount?: number; // Quantity eaten
   @field('portion_id') portionId?: string; // Unit used (e.g., linked to food_portions)
 
-  @field('created_at') createdAt!: number;
-  @field('updated_at') updatedAt!: number;
+  @field('created_at') createdAt?: number;
+  @field('updated_at') updatedAt?: number;
   @field('deleted_at') deletedAt?: number;
 
-  @relation('foods', 'food_id') food!: Food;
+  @relation('foods', 'food_id') food?: Food;
   @relation('food_portions', 'portion_id') portion?: FoodPortion;
 
   @writer
@@ -65,12 +65,12 @@ export default class NutritionLog extends Model {
     if (this.portionId) {
       const portion = await this.portion;
       if (portion) {
-        return this.amount * portion.gramWeight;
+        return (this.amount ?? 0) * (portion.gramWeight ?? 0);
       }
     }
 
     // If no portion, assume amount is in grams
-    return this.amount;
+    return this.amount ?? 0;
   }
 
   // Get nutrients for this specific nutrition log entry
@@ -92,19 +92,34 @@ export default class NutritionLog extends Model {
         const portion = await this.portion;
         if (portion) {
           // Use portion-based calculation
-          const multiplier = this.amount; // Number of portions
+          const multiplier = this.amount ?? 0; // Number of portions
           return {
-            calories: food.calories * (portion.gramWeight / food.servingAmount) * multiplier,
-            protein: food.protein * (portion.gramWeight / food.servingAmount) * multiplier,
-            carbs: food.carbs * (portion.gramWeight / food.servingAmount) * multiplier,
-            fat: food.fat * (portion.gramWeight / food.servingAmount) * multiplier,
-            fiber: food.fiber * (portion.gramWeight / food.servingAmount) * multiplier,
+            calories:
+              (food.calories ?? 0) *
+              ((portion.gramWeight ?? 0) / (food.servingAmount ?? 1)) *
+              multiplier,
+            protein:
+              (food.protein ?? 0) *
+              ((portion.gramWeight ?? 0) / (food.servingAmount ?? 1)) *
+              multiplier,
+            carbs:
+              (food.carbs ?? 0) *
+              ((portion.gramWeight ?? 0) / (food.servingAmount ?? 1)) *
+              multiplier,
+            fat:
+              (food.fat ?? 0) *
+              ((portion.gramWeight ?? 0) / (food.servingAmount ?? 1)) *
+              multiplier,
+            fiber:
+              (food.fiber ?? 0) *
+              ((portion.gramWeight ?? 0) / (food.servingAmount ?? 1)) *
+              multiplier,
           };
         }
       }
 
       // Use direct amount (assume grams)
-      return food.getNutrientsForAmount(this.amount, 'g');
+      return food.getNutrientsForAmount(this.amount ?? 0, 'g');
     } catch (error) {
       console.error('Error getting nutrients for nutrition log:', error);
       // Return default values to prevent crashes
@@ -120,7 +135,7 @@ export default class NutritionLog extends Model {
 
   // Helper method to get formatted date string
   getDateString(): string {
-    const date = new Date(this.date);
+    const date = new Date(this.date ?? 0);
     return date.toISOString().split('T')[0]; // YYYY-MM-DD format
   }
 
@@ -133,6 +148,6 @@ export default class NutritionLog extends Model {
       snack: 'Snack',
       other: 'Other',
     };
-    return labels[this.type] || this.type;
+    return labels[this.type ?? 'breakfast'] || (this.type ?? 'breakfast');
   }
 }

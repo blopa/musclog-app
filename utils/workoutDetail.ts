@@ -187,10 +187,11 @@ export async function transformWorkoutToDetailData(
 
   const setsByExercise = new Map<string, WorkoutLogSet[]>();
   sets.forEach((set) => {
-    if (!setsByExercise.has(set.exerciseId)) {
-      setsByExercise.set(set.exerciseId, []);
+    const exerciseId = set.exerciseId ?? '';
+    if (!setsByExercise.has(exerciseId)) {
+      setsByExercise.set(exerciseId, []);
     }
-    setsByExercise.get(set.exerciseId)!.push(set);
+    setsByExercise.get(exerciseId)!.push(set);
   });
 
   const personalRecords = await WorkoutAnalytics.detectPersonalRecords(workoutLog);
@@ -201,7 +202,7 @@ export async function transformWorkoutToDetailData(
         if (
           (pr.type === 'weight' && set.weight === pr.newRecord.weight) ||
           (pr.type === 'reps' && set.reps === pr.newRecord.reps) ||
-          (pr.type === 'volume' && set.reps * set.weight === pr.newRecord.volume)
+          (pr.type === 'volume' && (set.reps ?? 0) * (set.weight ?? 0) === pr.newRecord.volume)
         ) {
           prSetIds.add(set.id);
         }
@@ -218,16 +219,16 @@ export async function transformWorkoutToDetailData(
 
       const isBodyweight = exercise.equipmentType?.toLowerCase().includes('bodyweight') || false;
 
-      const iconData = getWorkoutIcon(exercise.name);
-      const sortedSets = exerciseSets.sort((a, b) => a.setOrder - b.setOrder);
+      const iconData = getWorkoutIcon(exercise.name ?? '');
+      const sortedSets = exerciseSets.sort((a, b) => (a.setOrder ?? 0) - (b.setOrder ?? 0));
 
       const workoutSets: WorkoutSet[] = sortedSets.map((set, index) => {
         const isHighlighted = prSetIds.has(set.id);
         return {
           setNumber: index + 1,
-          weight: formatWeight(set.weight, isBodyweight, t, units),
-          reps: set.reps,
-          partial: set.difficultyLevel > 0 ? set.difficultyLevel.toString() : '-',
+          weight: formatWeight(set.weight ?? 0, isBodyweight, t, units),
+          reps: set.reps ?? 0,
+          partial: (set.difficultyLevel ?? 0) > 0 ? (set.difficultyLevel ?? 0).toString() : '-',
           repsInReserve: set.repsInReserve ?? 0,
           isHighlighted,
         };
@@ -237,7 +238,7 @@ export async function transformWorkoutToDetailData(
 
       return {
         id: exerciseId,
-        name: exercise.name,
+        name: exercise.name ?? '',
         timeSpent,
         iconColor: iconData.iconBgColor,
         iconBgColor: iconData.iconBgOpacity,
@@ -257,7 +258,7 @@ export async function transformWorkoutToDetailData(
   const volumeTrend = await calculateVolumeTrend(workoutLog, t);
 
   return {
-    name: workoutLog.workoutName,
+    name: workoutLog.workoutName ?? '',
     date: workoutDate,
     totalTime: durationMinutes,
     volume: workoutLog.totalVolume || 0,

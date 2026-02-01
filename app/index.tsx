@@ -279,15 +279,15 @@ export default function HomeScreen() {
                 <DetailedItemCard
                   key={food.id}
                   item={{
-                    name: food.name,
+                    name: food.name ?? '',
                     media: { icon: UtensilsCrossed, color: theme.colors.text.secondary },
-                    itemOne: { value: `${Math.round(food.protein)}G P`, icon: Zap },
-                    itemTwo: { value: `${Math.round(food.carbs)}G C`, icon: Wheat },
-                    itemThree: { value: `${Math.round(food.fat)}G F`, icon: Droplet },
+                    itemOne: { value: `${Math.round(food.protein ?? 0)}G P`, icon: Zap },
+                    itemTwo: { value: `${Math.round(food.carbs ?? 0)}G C`, icon: Wheat },
+                    itemThree: { value: `${Math.round(food.fat ?? 0)}G F`, icon: Droplet },
                   }}
                   ctaLabel={
                     <Text className="text-lg font-bold text-text-primary">
-                      {Math.round(food.calories)} {t('common.kcal')}
+                      {Math.round(food.calories ?? 0)} {t('common.kcal')}
                     </Text>
                   }
                 />

@@ -245,10 +245,11 @@ export default function WorkoutSessionOverviewModal({
     // Group sets by exercise
     const exerciseGroups = new Map<string, WorkoutLogSet[]>();
     sets.forEach((set) => {
-      if (!exerciseGroups.has(set.exerciseId)) {
-        exerciseGroups.set(set.exerciseId, []);
+      const exerciseId = set.exerciseId ?? '';
+      if (!exerciseGroups.has(exerciseId)) {
+        exerciseGroups.set(exerciseId, []);
       }
-      exerciseGroups.get(set.exerciseId)!.push(set);
+      exerciseGroups.get(exerciseId)!.push(set);
     });
 
     // Transform to UI format
@@ -257,7 +258,7 @@ export default function WorkoutSessionOverviewModal({
       const exercise = dbExercises.find((ex) => ex.id === exerciseId);
       if (!exercise) return;
 
-      const completedSets = exerciseSets.filter((set) => set.difficultyLevel > 0).length;
+      const completedSets = exerciseSets.filter((set) => (set.difficultyLevel ?? 0) > 0).length;
       const skippedSets = exerciseSets.filter((set) => set.isSkipped).length;
       const totalSets = exerciseSets.length;
 
@@ -274,7 +275,7 @@ export default function WorkoutSessionOverviewModal({
 
       exerciseList.push({
         id: exercise.id,
-        name: exercise.name,
+        name: exercise.name ?? '',
         imageUrl: exercise.imageUrl || '',
         status,
         setsCompleted: completedSets,

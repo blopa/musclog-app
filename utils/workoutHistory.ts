@@ -143,11 +143,14 @@ export async function getMuscleGroupsFromWorkout(workoutId: string): Promise<str
     // Get exercises and their muscle groups
     const exercises = await database
       .get<Exercise>('exercises')
-      .query(Q.where('id', Q.oneOf(exerciseIds)), Q.where('deleted_at', Q.eq(null)))
+      .query(
+        Q.where('id', Q.oneOf(exerciseIds.filter((id) => id !== undefined))),
+        Q.where('deleted_at', Q.eq(null))
+      )
       .fetch();
 
     // Get unique muscle groups
-    return [...new Set(exercises.map((ex) => ex.muscleGroup.toLowerCase()))];
+    return [...new Set(exercises.map((ex) => (ex.muscleGroup ?? '').toLowerCase()))];
   } catch (error) {
     console.error('Error getting muscle groups from workout:', error);
     return [];
@@ -210,7 +213,7 @@ export async function processWorkouts(
 
       // Get workout type and apply filter
       if (filters.workoutType !== 'all') {
-        const workoutType = getWorkoutTypeFromName(workout.workoutName);
+        const workoutType = getWorkoutTypeFromName(workout.workoutName ?? '');
         if (workoutType !== filters.workoutType) {
           return null;
         }
@@ -244,7 +247,7 @@ export async function processWorkouts(
       const dateStr = format(workoutDate, 'MMM d • hh:mm a');
 
       // Get icon and colors
-      const iconData = getWorkoutIcon(workout.workoutName);
+      const iconData = getWorkoutIcon(workout.workoutName ?? '');
 
       // Format stats
       const stats: { label: string; value: string }[] = [
@@ -272,7 +275,7 @@ export async function processWorkouts(
 
       return {
         id: workout.id,
-        name: workout.workoutName,
+        name: workout.workoutName ?? '',
         date: dateStr,
         dateTimestamp,
         iconBgColor: iconData.iconBgColor,

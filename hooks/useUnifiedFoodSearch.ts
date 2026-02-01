@@ -220,7 +220,7 @@ export function useUnifiedFoodSearch({
 
     return allResults.filter((result) => {
       const barcode = result.id; // Both local and API foods use 'id' for barcode
-      const normalizedName = result.name.toLowerCase().trim();
+      const normalizedName = (result.name ?? '').toLowerCase().trim();
 
       // Priority 1: Deduplicate by barcode
       if (barcode) {

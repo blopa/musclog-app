@@ -62,14 +62,14 @@ export class UserService {
     return await database.write(async () => {
       return await database.get<User>('users').create((u) => {
         u.fullName = initialData.fullName;
-        u.email = initialData.email;
+        u.email = initialData.email ?? '';
         u.dateOfBirth = initialData.dateOfBirth;
         u.gender = initialData.gender;
         u.fitnessGoal = initialData.fitnessGoal;
         u.activityLevel = initialData.activityLevel;
         u.liftingExperience = initialData.liftingExperience;
-        u.avatarIcon = initialData.avatarIcon;
-        u.avatarColor = initialData.avatarColor;
+        u.avatarIcon = initialData.avatarIcon ?? 'person';
+        u.avatarColor = initialData.avatarColor ?? 'blue';
         u.syncId = syncId;
         u.createdAt = now;
         u.updatedAt = now;
@@ -174,8 +174,8 @@ export class UserService {
 
     await database.write(async () => {
       await user.update((u) => {
-        u.externalAccountId = undefined;
-        u.externalAccountProvider = undefined;
+        u.externalAccountId = '';
+        u.externalAccountProvider = '';
         u.updatedAt = Date.now();
       });
     });

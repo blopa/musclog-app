@@ -71,17 +71,24 @@ export default function FoodScreen() {
       setResolvedLogs([]);
 
       try {
-        const resolved = await Promise.all(
-          logs.map(async (log) => {
-            const [food, nutrients, gramWeight] = await Promise.all([
-              log.food,
-              log.getNutrients(),
-              log.getGramWeight(),
-            ]);
+        const resolved = (
+          await Promise.all(
+            logs.map(async (log) => {
+              const [food, nutrients, gramWeight] = await Promise.all([
+                log.food,
+                log.getNutrients(),
+                log.getGramWeight(),
+              ]);
 
-            return { log, food, nutrients, gramWeight };
-          })
-        );
+              return food ? { log, food, nutrients, gramWeight } : null;
+            })
+          )
+        ).filter((item) => item !== null) as {
+          log: any;
+          food: any;
+          nutrients: any;
+          gramWeight: any;
+        }[];
 
         if (!cancelled) {
           setResolvedLogs(resolved);
@@ -356,11 +363,11 @@ export default function FoodScreen() {
                     {mealsByType.breakfast.map((entry) => (
                       <FoodItemCard
                         key={entry.log.id}
-                        name={entry.food.name}
-                        description={`${Math.round(entry.gramWeight)} ${entry.food.servingUnit || 'g'}`}
+                        name={entry.food?.name ?? ''}
+                        description={`${Math.round(entry.gramWeight)} ${entry.food?.servingUnit || 'g'}`}
                         calories={Math.ceil(entry.nutrients.calories)}
                         image={
-                          entry.food.imageUrl
+                          entry.food?.imageUrl
                             ? { uri: entry.food.imageUrl }
                             : require('../../assets/icon.png')
                         }
@@ -378,11 +385,11 @@ export default function FoodScreen() {
                     {mealsByType.lunch.map((entry) => (
                       <FoodItemCard
                         key={entry.log.id}
-                        name={entry.food.name}
-                        description={`${Math.round(entry.gramWeight)} ${entry.food.servingUnit || 'g'}`}
+                        name={entry.food?.name ?? ''}
+                        description={`${Math.round(entry.gramWeight)} ${entry.food?.servingUnit || 'g'}`}
                         calories={Math.ceil(entry.nutrients.calories)}
                         image={
-                          entry.food.imageUrl
+                          entry.food?.imageUrl
                             ? { uri: entry.food.imageUrl }
                             : require('../../assets/icon.png')
                         }
@@ -400,11 +407,11 @@ export default function FoodScreen() {
                     {mealsByType.dinner.map((entry) => (
                       <FoodItemCard
                         key={entry.log.id}
-                        name={entry.food.name}
-                        description={`${Math.round(entry.gramWeight)} ${entry.food.servingUnit || 'g'}`}
+                        name={entry.food?.name ?? ''}
+                        description={`${Math.round(entry.gramWeight)} ${entry.food?.servingUnit || 'g'}`}
                         calories={Math.ceil(entry.nutrients.calories)}
                         image={
-                          entry.food.imageUrl
+                          entry.food?.imageUrl
                             ? { uri: entry.food.imageUrl }
                             : require('../../assets/icon.png')
                         }
@@ -422,11 +429,11 @@ export default function FoodScreen() {
                     {mealsByType.snack.map((entry) => (
                       <FoodItemCard
                         key={entry.log.id}
-                        name={entry.food.name}
-                        description={`${Math.round(entry.gramWeight)} ${entry.food.servingUnit || 'g'}`}
+                        name={entry.food?.name ?? ''}
+                        description={`${Math.round(entry.gramWeight)} ${entry.food?.servingUnit || 'g'}`}
                         calories={Math.ceil(entry.nutrients.calories)}
                         image={
-                          entry.food.imageUrl
+                          entry.food?.imageUrl
                             ? { uri: entry.food.imageUrl }
                             : require('../../assets/icon.png')
                         }

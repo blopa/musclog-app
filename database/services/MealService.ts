@@ -17,7 +17,7 @@ export class MealService {
       return await database.get<Meal>('meals').create((meal) => {
         meal.isAiGenerated = false;
         meal.name = name;
-        meal.description = description;
+        meal.description = description ?? '';
         meal.isFavorite = false;
         meal.createdAt = now;
         meal.updatedAt = now;
@@ -233,7 +233,7 @@ export class MealService {
       const meal = await database.get<Meal>('meals').create((mealRecord) => {
         mealRecord.isAiGenerated = false;
         mealRecord.name = name;
-        mealRecord.description = description;
+        mealRecord.description = description ?? '';
         mealRecord.isFavorite = false;
         mealRecord.createdAt = now;
         mealRecord.updatedAt = now;

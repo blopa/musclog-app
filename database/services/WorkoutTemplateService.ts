@@ -79,7 +79,10 @@ export class WorkoutTemplateService {
     // Fetch exercise details
     const exercises = await database
       .get<Exercise>('exercises')
-      .query(Q.where('id', Q.oneOf(exerciseIds)), Q.where('deleted_at', Q.eq(null)))
+      .query(
+        Q.where('id', Q.oneOf(exerciseIds.filter((id) => id !== undefined))),
+        Q.where('deleted_at', Q.eq(null))
+      )
       .fetch();
 
     // Create map for quick lookup
@@ -89,10 +92,11 @@ export class WorkoutTemplateService {
     // Group sets by exercise
     const exerciseGroups = new Map<string, WorkoutTemplateSet[]>();
     sets.forEach((set) => {
-      if (!exerciseGroups.has(set.exerciseId)) {
-        exerciseGroups.set(set.exerciseId, []);
+      const exerciseId = set.exerciseId ?? '';
+      if (!exerciseGroups.has(exerciseId)) {
+        exerciseGroups.set(exerciseId, []);
       }
-      exerciseGroups.get(set.exerciseId)!.push(set);
+      exerciseGroups.get(exerciseId)!.push(set);
     });
 
     // Convert to ExerciseInWorkout format
@@ -125,15 +129,15 @@ export class WorkoutTemplateService {
 
       exercisesInWorkout.push({
         id: exerciseId,
-        label: exercise.name,
+        label: exercise.name ?? '',
         description,
         icon: Icon,
         iconBgColor,
         iconColor,
         groupId: firstSet.groupId, // Load groupId from database
         sets: setsCount,
-        reps: firstSet.targetReps,
-        weight: firstSet.targetWeight,
+        reps: firstSet.targetReps ?? 0,
+        weight: firstSet.targetWeight ?? 0,
         isBodyweight,
         restTimeAfter: firstSet.restTimeAfter,
       });
@@ -145,7 +149,7 @@ export class WorkoutTemplateService {
       const bSets = exerciseGroups.get(b.id)!;
       const aOrder = aSets[0].setOrder;
       const bOrder = bSets[0].setOrder;
-      return aOrder - bOrder;
+      return (aOrder ?? 0) - (bOrder ?? 0);
     });
 
     return exercisesInWorkout;
@@ -319,7 +323,7 @@ export class WorkoutTemplateService {
     image?: any;
   }> {
     // Get exercise count from template sets (count unique exercises)
-    const templateSets = await template.templateSets.fetch();
+    const templateSets = (await template.templateSets?.fetch()) ?? [];
     const uniqueExerciseIds = new Set(
       templateSets.filter((set) => !set.deletedAt).map((set) => set.exerciseId)
     );
@@ -384,7 +388,7 @@ export class WorkoutTemplateService {
 
     return {
       id: template.id,
-      name: template.name,
+      name: template.name ?? '',
       description: template.description || undefined,
       exerciseCount,
       lastCompleted,

@@ -120,18 +120,21 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
     };
 
     allExercises.forEach((exercise) => {
-      const muscleGroup = normalizeMuscleGroup(exercise.muscleGroup);
+      const muscleGroup = normalizeMuscleGroup(exercise.muscleGroup ?? '');
       if (!muscleGroup) {
         return; // Skip exercises that don't match our categories
       }
 
-      const exerciseType = getExerciseType(exercise.mechanicType, exercise.equipmentType);
+      const exerciseType = getExerciseType(
+        exercise.mechanicType ?? '',
+        exercise.equipmentType ?? ''
+      );
       const Icon = getExerciseIcon(exerciseType);
 
       const exerciseOption: ExerciseOption = {
         id: exercise.id,
-        label: exercise.name,
-        description: `${exercise.muscleGroup} • ${exerciseType.charAt(0).toUpperCase() + exerciseType.slice(1)}`,
+        label: exercise.name ?? '',
+        description: `${exercise.muscleGroup ?? ''} • ${exerciseType.charAt(0).toUpperCase() + exerciseType.slice(1)}`,
         icon: Icon,
         iconBgColor:
           exerciseType === 'bodyweight'
@@ -139,7 +142,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
             : theme.colors.accent.primary10,
         iconColor:
           exerciseType === 'bodyweight' ? theme.colors.text.secondary : theme.colors.accent.primary,
-        category: exercise.muscleGroup,
+        category: exercise.muscleGroup ?? '',
         type: exerciseType,
       };
 

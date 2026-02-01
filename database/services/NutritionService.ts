@@ -125,6 +125,7 @@ export class NutritionService {
       for (const log of logs) {
         try {
           const nutrients = await log.getNutrients();
+          const mealType = log.type ?? 'breakfast';
 
           totals.calories += nutrients.calories;
           totals.protein += nutrients.protein;
@@ -132,11 +133,11 @@ export class NutritionService {
           totals.fat += nutrients.fat;
           totals.fiber += nutrients.fiber;
 
-          totals.byMealType[log.type].calories += nutrients.calories;
-          totals.byMealType[log.type].protein += nutrients.protein;
-          totals.byMealType[log.type].carbs += nutrients.carbs;
-          totals.byMealType[log.type].fat += nutrients.fat;
-          totals.byMealType[log.type].fiber += nutrients.fiber;
+          totals.byMealType[mealType].calories += nutrients.calories;
+          totals.byMealType[mealType].protein += nutrients.protein;
+          totals.byMealType[mealType].carbs += nutrients.carbs;
+          totals.byMealType[mealType].fat += nutrients.fat;
+          totals.byMealType[mealType].fiber += nutrients.fiber;
         } catch (error) {
           // Skip individual log errors to prevent total failure
           console.error('Error calculating nutrients for log:', error);
@@ -267,7 +268,7 @@ export class NutritionService {
 
     for (const foodId of foodIds) {
       try {
-        const food = await database.get<Food>('foods').find(foodId);
+        const food = await database.get<Food>('foods').find(foodId ?? '');
         if (!food.deletedAt) {
           foods.push(food);
         }
@@ -292,8 +293,8 @@ export class NutritionService {
     const foodCounts = new Map<string, number>();
 
     for (const log of logs) {
-      const count = foodCounts.get(log.foodId) || 0;
-      foodCounts.set(log.foodId, count + 1);
+      const count = foodCounts.get(log.foodId ?? '') || 0;
+      foodCounts.set(log.foodId ?? '', count + 1);
     }
 
     const sortedFoods = Array.from(foodCounts.entries())
@@ -327,14 +328,16 @@ export class NutritionService {
 
     if (logs.length === 0) return 0;
 
-    const uniqueDates = [...new Set(logs.map((log) => log.date))].sort((a, b) => b - a);
+    const uniqueDates = [...new Set(logs.map((log) => log.date ?? 0))].sort(
+      (a, b) => (b ?? 0) - (a ?? 0)
+    );
 
     let streak = 0;
     let expectedDate = new Date();
     expectedDate.setHours(0, 0, 0, 0);
 
     for (const dateTimestamp of uniqueDates) {
-      const currentDate = new Date(dateTimestamp);
+      const currentDate = new Date(dateTimestamp ?? Date.now());
       currentDate.setHours(0, 0, 0, 0);
 
       const daysDiff = Math.floor(
