@@ -3,7 +3,7 @@ import { useRouter } from 'expo-router';
 import { ArrowLeft, ArrowRight, LucideIcon } from 'lucide-react-native';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Dimensions, ImageBackground, Pressable, Text, View } from 'react-native';
+import { Dimensions, ImageBackground, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GradientText } from '../../components/GradientText';
@@ -13,6 +13,7 @@ import PreRegistrationIntro from '../../components/PreRegistrationIntro';
 import { Button } from '../../components/theme/Button';
 import { PageIndicators } from '../../components/theme/PageIndicators';
 import { theme } from '../../theme';
+import { MasterLayout } from '../../components/MasterLayout';
 
 type OnboardingBodyProps = {
   imageUrl?: string;
@@ -476,7 +477,7 @@ export default function OnboardingScreen() {
   };
 
   return (
-    <View className="flex-1 bg-bg-primary">
+    <MasterLayout showNavigationMenu={false}>
       {/* Top Bar */}
       <SafeAreaView edges={['top']} className="z-20">
         <View className="flex-row items-center justify-between p-6">
@@ -582,6 +583,6 @@ export default function OnboardingScreen() {
           </View>
         </SafeAreaView>
       </View>
-    </View>
+    </MasterLayout>
   );
 }

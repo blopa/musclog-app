@@ -1,6 +1,6 @@
 import { CheckCircle2, LucideChartSpline, Sparkles } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 
 import { theme } from '../theme';
 import { GoogleGeminiIllustration } from './GoogleGeminiIllustration';
@@ -35,7 +35,7 @@ export function ConnectGoogleAccountBody({
   };
 
   return (
-    <>
+    <ScrollView>
       <View className="flex-1 px-5 pb-6">
         {/* Main Visual Card */}
         <GoogleGeminiIllustration />
@@ -138,6 +138,6 @@ export function ConnectGoogleAccountBody({
         </View>
         <MaybeLaterButton onPress={handleMaybeLater} text={t('connectGoogleAccount.maybeLater')} />
       </View>
-    </>
+    </ScrollView>
   );
 }

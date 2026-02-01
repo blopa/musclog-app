@@ -4,11 +4,11 @@ import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { names, uniqueNamesGenerator } from 'unique-names-generator';
 
 import { BottomButtonWrapper } from '../../components/BottomButtonWrapper';
 import { EditFitnessDetailsBody, FitnessDetails } from '../../components/EditFitnessDetailsBody';
+import { MasterLayout } from '../../components/MasterLayout';
 import { MaybeLaterButton } from '../../components/MaybeLaterButton';
 import { useSnackbar } from '../../components/SnackbarContext';
 import { Button } from '../../components/theme/Button';
@@ -30,8 +30,6 @@ export default function FitnessInfo() {
   const [currentFormData, setCurrentFormData] = useState<Partial<FitnessDetails> | undefined>(
     undefined
   );
-
-  const insets = useSafeAreaInsets();
 
   // Load user data and metrics on mount (units come from useSettings)
   useEffect(() => {
@@ -251,14 +249,14 @@ export default function FitnessInfo() {
 
   if (isSettingsLoading || isLoading) {
     return (
-      <View className="flex-1 items-center justify-center" style={{ paddingTop: insets.top }}>
+      <MasterLayout showNavigationMenu={false}>
         <ActivityIndicator size="large" color={theme.colors.accent.primary} />
-      </View>
+      </MasterLayout>
     );
   }
 
   return (
-    <View className="flex-1" style={{ paddingTop: insets.top }}>
+    <MasterLayout showNavigationMenu={false}>
       <View className="flex-1">
         <ScrollView
           className="flex-1"
@@ -303,6 +301,6 @@ export default function FitnessInfo() {
           </View>
         </BottomButtonWrapper>
       </View>
-    </View>
+    </MasterLayout>
   );
 }

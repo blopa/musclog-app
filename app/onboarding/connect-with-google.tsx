@@ -1,11 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ConnectGoogleAccountBody } from '../../components/ConnectGoogleAccountBody';
+import { MasterLayout } from '../../components/MasterLayout';
 import { TEMP_GOOGLE_USER_NAME } from '../../constants/auth';
 import { useGoogleAuth } from '../../hooks/useGoogleAuth';
 import { theme } from '../../theme';
@@ -18,14 +18,14 @@ export default function ConnectWithGoogle() {
   const { authData, isSigningIn, promptAsync } = useGoogleAuth();
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const handleConnect = async () => {
+  const handleConnect = useCallback(async () => {
     try {
       await promptAsync();
     } catch (error) {
       showSnackbar('error', t('onboarding.connectGoogle.error'));
       console.error('Error initiating Google sign-in:', error);
     }
-  };
+  }, [promptAsync, t]);
 
   // Handle auth data when it becomes available
   useEffect(() => {
@@ -56,13 +56,14 @@ export default function ConnectWithGoogle() {
           setIsProcessing(false);
         }
       };
+
       processAuth();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authData, router]);
+  }, [authData, router, t]);
 
   return (
-    <SafeAreaView className="flex-1" edges={['top', 'bottom']}>
+    <MasterLayout showNavigationMenu={false}>
       <ScrollView>
         <View className="px-6 pb-2 pt-4">
           <Text
@@ -81,6 +82,6 @@ export default function ConnectWithGoogle() {
           isSigningIn={isSigningIn || isProcessing}
         />
       </ScrollView>
-    </SafeAreaView>
+    </MasterLayout>
   );
 }
