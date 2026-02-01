@@ -55,6 +55,7 @@ export default function HealthConnectScreen() {
   // Sync tracking
   const { enableSync, isSyncing, error: syncError } = useSyncTracking();
 
+  // TODO: use the useSafeAreaInsets in this screen like the other onboarding screens
   return (
     <View className="flex-1 bg-bg-primary" style={{ paddingTop: insets.top }}>
       <ScrollView

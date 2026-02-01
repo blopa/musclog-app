@@ -10,7 +10,8 @@
       "favicon": "./assets/favicon.png"
     },
     "experiments": {
-      "tsconfigPaths": true
+      "tsconfigPaths": true,
+      "baseUrl": "/musclog-app"
     },
     "plugins": [
       "expo-localization",
@@ -49,7 +50,7 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.pablopirata.musclog"
+      "bundleIdentifier": "com.werules.logger"
     },
     "android": {
       "adaptiveIcon": {
@@ -73,7 +74,7 @@
         "android.permission.health.READ_LEAN_BODY_MASS",
         "android.permission.health.WRITE_LEAN_BODY_MASS"
       ],
-      "package": "com.pablopirata.musclog",
+      "package": "com.werules.logger",
       "softwareKeyboardLayoutMode": "pan"
     }
   }
