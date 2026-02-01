@@ -2,7 +2,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { ArrowRight, Dumbbell } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { Dimensions, Text, View } from 'react-native';
+import { Dimensions, Linking, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { MasterLayout } from '../../components/MasterLayout';
@@ -135,16 +135,37 @@ export default function LandingScreen() {
             />
 
             {/* Terms / Footer Text */}
-            <Text
-              className="mt-2 text-center"
-              style={{
-                color: theme.colors.text.gray500,
-                fontSize: theme.typography.fontSize.xs,
-              }}
-            >
-              {/*TODO: add privacy link here - https://werules.com/musclog/terms */}
-              {t('onboarding.landing.termsAndPrivacy')}
-            </Text>
+            <View className="mt-2">
+              <Text
+                className="text-center"
+                style={{
+                  color: theme.colors.text.gray500,
+                  fontSize: theme.typography.fontSize.xs,
+                }}
+              >
+                {t('onboarding.landing.termsAndPrivacy')}
+              </Text>
+
+              <Text
+                accessibilityRole="link"
+                onPress={async () => {
+                  const url = 'https://werules.com/musclog/terms';
+                  try {
+                    await Linking.openURL(url);
+                  } catch (e) {
+                    console.error('Failed to open privacy link', e);
+                  }
+                }}
+                className="mt-1 text-center"
+                style={{
+                  color: theme.colors.accent.primary,
+                  fontSize: theme.typography.fontSize.xs,
+                  textDecorationLine: 'underline',
+                }}
+              >
+                {t('onboarding.landing.connectGoogle')}
+              </Text>
+            </View>
           </View>
         </View>
       </SafeAreaView>
