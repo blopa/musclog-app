@@ -199,16 +199,14 @@ export function EditPersonalInfoBody({
       ) : null}
 
       {/* Date Picker Modal */}
-      {isDatePickerVisible ? (
-        <DatePickerModal
-          visible={isDatePickerVisible}
-          onClose={() => setIsDatePickerVisible(false)}
-          selectedDate={currentDate}
-          onDateSelect={handleDateSelect}
-          minYear={1900}
-          maxYear={new Date().getFullYear()}
-        />
-      ) : null}
+      <DatePickerModal
+        visible={isDatePickerVisible}
+        onClose={() => setIsDatePickerVisible(false)}
+        selectedDate={currentDate}
+        onDateSelect={handleDateSelect}
+        minYear={1900}
+        maxYear={new Date().getFullYear()}
+      />
     </View>
   );
 }

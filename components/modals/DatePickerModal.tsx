@@ -269,14 +269,14 @@ export function DatePickerModal({
         </View>
 
         {/* Footer */}
-        <View className="p-6 pt-4">
+        <View className="p-6 pt-4" pointerEvents="auto">
           <View
             className="mb-6 h-px"
             style={{
               backgroundColor: theme.colors.background.white10,
             }}
           />
-          <View className="flex-row items-center gap-4">
+          <View className="flex-row items-center gap-4" pointerEvents="auto">
             <Button
               label={t('datePicker.cancel')}
               variant="outline"

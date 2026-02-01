@@ -68,6 +68,7 @@ export function FullScreenModal({
     >
       <View
         className="flex-1 bg-bg-primary"
+        pointerEvents="auto"
         style={[
           webModalStyle,
           {
