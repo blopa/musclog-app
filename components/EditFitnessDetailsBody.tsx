@@ -15,13 +15,14 @@ import {
 } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { theme } from '../theme';
 import { getHeightUnit, getWeightUnit } from '../utils/units';
 import { BottomPopUpMenu } from './BottomPopUpMenu';
 import { MaybeLaterButton } from './MaybeLaterButton';
 import { Button } from './theme/Button';
+import { OptionsSelector } from './OptionsSelector';
 import { PickerButton } from './theme/PickerButton';
 import { SegmentedControl } from './theme/SegmentedControl';
 import { TextInput } from './theme/TextInput';
@@ -182,21 +183,27 @@ export function EditFitnessDetailsBody({
   const experienceOptions = [
     {
       id: 'beginner' as const,
-      title: t('editFitnessDetails.experienceLabels.beginner'),
+      label: t('editFitnessDetails.experienceLabels.beginner'),
       description: t('editFitnessDetails.experienceDescriptions.beginner'),
       icon: Dumbbell,
+      iconBgColor: theme.colors.background.white5,
+      iconColor: theme.colors.text.tertiary,
     },
     {
       id: 'intermediate' as const,
-      title: t('editFitnessDetails.experienceLabels.intermediate'),
+      label: t('editFitnessDetails.experienceLabels.intermediate'),
       description: t('editFitnessDetails.experienceDescriptions.intermediate'),
       icon: Trophy,
+      iconBgColor: theme.colors.accent.primary10,
+      iconColor: theme.colors.accent.primary,
     },
     {
       id: 'advanced' as const,
-      title: t('editFitnessDetails.experienceLabels.advanced'),
+      label: t('editFitnessDetails.experienceLabels.advanced'),
       description: t('editFitnessDetails.experienceDescriptions.advanced'),
       icon: Medal,
+      iconBgColor: theme.colors.rose.brand10,
+      iconColor: theme.colors.rose.brand,
     },
   ];
 
@@ -315,56 +322,12 @@ export function EditFitnessDetailsBody({
           </View>
 
           {/* Lifting Experience */}
-          <View className="gap-2">
-            <Text className="ml-1 text-sm font-medium text-text-secondary">
-              {t('editFitnessDetails.liftingExperience')}
-            </Text>
-            <View className="gap-2">
-              {experienceOptions.map((option) => {
-                const isSelected = experience === option.id;
-                const Icon = option.icon;
-                return (
-                  <Pressable
-                    key={option.id}
-                    onPress={() => setExperience(option.id)}
-                    className={`flex-row items-center gap-3 rounded-xl border p-4 transition-all ${
-                      isSelected
-                        ? 'border-accent-primary bg-bg-card'
-                        : 'bg-bg-card active:bg-white/5'
-                    }`}
-                    style={{
-                      borderColor: isSelected
-                        ? theme.colors.accent.primary
-                        : theme.colors.background.white5,
-                    }}
-                  >
-                    <View
-                      className={`h-10 w-10 items-center justify-center rounded-full ${
-                        isSelected ? 'bg-accent-primary' : ''
-                      }`}
-                      style={{
-                        backgroundColor: isSelected
-                          ? theme.colors.accent.primary
-                          : theme.colors.background.white5,
-                      }}
-                    >
-                      <Icon
-                        size={theme.iconSize.lg}
-                        color={isSelected ? theme.colors.text.black : theme.colors.text.tertiary}
-                      />
-                    </View>
-                    <View className="flex-1">
-                      <Text className="text-sm font-bold text-text-primary">{option.title}</Text>
-                      <Text className="text-xs text-text-tertiary">{option.description}</Text>
-                    </View>
-                    {isSelected ? (
-                      <CheckCircle2 size={theme.iconSize.lg} color={theme.colors.accent.primary} />
-                    ) : null}
-                  </Pressable>
-                );
-              })}
-            </View>
-          </View>
+          <OptionsSelector
+            title={t('editFitnessDetails.liftingExperience')}
+            options={experienceOptions}
+            selectedId={experience}
+            onSelect={setExperience}
+          />
         </View>
 
         {!hideSaveButton ? (
