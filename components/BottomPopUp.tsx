@@ -97,9 +97,6 @@ export function BottomPopUp({
             <TouchableWithoutFeedback>
               <Animated.View
                 className="border-t border-border-dark"
-                onStartShouldSetResponder={() => true}
-                onMoveShouldSetResponder={() => true}
-                onResponderTerminationRequest={() => false}
                 style={{
                   transform: [{ translateY: slideAnim }],
                   backgroundColor: theme.colors.background.cardElevated,
