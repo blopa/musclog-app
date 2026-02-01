@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -5,9 +6,10 @@ import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ConnectGoogleAccountBody } from '../../components/ConnectGoogleAccountBody';
+import { TEMP_GOOGLE_USER_NAME } from '../../constants/auth';
 import { useGoogleAuth } from '../../hooks/useGoogleAuth';
 import { theme } from '../../theme';
-import { handleGoogleSignIn } from '../../utils/googleAuth';
+import { getAccessToken, getGoogleUserInfo, handleGoogleSignIn } from '../../utils/googleAuth';
 import { showSnackbar } from '../../utils/snackbarService';
 
 export default function ConnectWithGoogle() {
@@ -33,9 +35,22 @@ export default function ConnectWithGoogle() {
           setIsProcessing(true);
           const isValid = await handleGoogleSignIn(authData);
           if (isValid) {
+            const token = await getAccessToken();
+            if (token) {
+              const userInfo = await getGoogleUserInfo(token);
+              if (userInfo && userInfo.name) {
+                try {
+                  await AsyncStorage.setItem(TEMP_GOOGLE_USER_NAME, userInfo.name);
+                } catch (e) {
+                  console.warn('Failed to persist temp google user name', e);
+                }
+              }
+            }
+
             router.push('/onboarding/fitness-info');
           }
         } catch (error) {
+          showSnackbar('error', t('onboarding.connectGoogle.errorProcessing'));
           console.error('Error processing Google sign-in:', error);
         } finally {
           setIsProcessing(false);

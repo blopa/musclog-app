@@ -4,6 +4,7 @@ import {
   CURRENT_ONBOARDING_VERSION,
   ONBOARDING_COMPLETED,
   ONBOARDING_VERSION,
+  TEMP_GOOGLE_USER_NAME,
 } from '../constants/auth';
 
 export interface OnboardingStatus {
@@ -19,6 +20,7 @@ export const getOnboardingStatus = async (): Promise<OnboardingStatus> => {
     ONBOARDING_COMPLETED,
     ONBOARDING_VERSION,
   ]);
+
   return {
     completed: completed[1] === 'true',
     version: version[1] ?? null,
@@ -50,11 +52,13 @@ export const setOnboardingCompleted = async (
     [ONBOARDING_COMPLETED, 'true'],
     [ONBOARDING_VERSION, version],
   ]);
+
+  await AsyncStorage.removeItem(TEMP_GOOGLE_USER_NAME);
 };
 
 /**
  * Reset onboarding status (for testing/debugging)
  */
 export const resetOnboarding = async (): Promise<void> => {
-  await AsyncStorage.multiRemove([ONBOARDING_COMPLETED, ONBOARDING_VERSION]);
+  await AsyncStorage.multiRemove([ONBOARDING_COMPLETED, ONBOARDING_VERSION, TEMP_GOOGLE_USER_NAME]);
 };

@@ -7,8 +7,8 @@ import {
   GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE,
   GOOGLE_CLIENT_ID_MOBILE,
   GOOGLE_CLIENT_ID_WEB,
-  HAS_COMPLETED_ONBOARDING,
   LAST_TIME_GOOGLE_AUTH_ERROR_WAS_SHOWN,
+  ONBOARDING_COMPLETED,
 } from '../constants/auth';
 import { GoogleAuthService } from '../database/services';
 import i18n from '../lang/lang';
@@ -35,6 +35,7 @@ export interface RefreshTokenResponse {
  * Validate if an access token is valid by making a test API call
  */
 export async function isValidAccessToken(accessToken: string): Promise<boolean> {
+  // TODO: use getGoogleUserInfo here
   if (!accessToken) return false;
 
   try {
@@ -59,7 +60,7 @@ export const getGoogleClientId = (): string => {
 
 const handleGoogleAuthError = async () => {
   // Don't show auth errors before onboarding is complete
-  const hasCompletedOnboarding = await AsyncStorage.getItem(HAS_COMPLETED_ONBOARDING);
+  const hasCompletedOnboarding = await AsyncStorage.getItem(ONBOARDING_COMPLETED);
   if (hasCompletedOnboarding !== 'true') {
     return;
   }
@@ -168,6 +169,34 @@ export const getAccessToken = async (): Promise<string | undefined> => {
   }
 
   return await refreshAccessToken();
+};
+
+/**
+ * Fetch the user's profile information from Google using an access token
+ */
+export const getGoogleUserInfo = async (accessToken: string): Promise<GoogleUserInfo | null> => {
+  if (!accessToken) {
+    return null;
+  }
+
+  try {
+    const response = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const data = (await response.json()) as GoogleUserInfo;
+    return data;
+  } catch (error) {
+    console.error('Error fetching Google user info:', error);
+    return null;
+  }
 };
 
 // Export type for use in hooks

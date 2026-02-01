@@ -24,7 +24,7 @@ export const AI_SETTINGS_TYPE = 'ai_settings_type';
 export const GOOGLE_ACCESS_TOKEN = 'googleAccessToken';
 export const GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE = 'googleAccessTokenExpirationDate';
 export const LAST_TIME_GOOGLE_AUTH_ERROR_WAS_SHOWN = 'lastTimeGoogleAuthErrorWasShown';
-export const HAS_COMPLETED_ONBOARDING = 'hasCompletedOnboarding';
+export const TEMP_GOOGLE_USER_NAME = 'tempGoogleUserName';
 
 // Onboarding Keys
 export const ONBOARDING_COMPLETED = 'onboardingCompleted';
