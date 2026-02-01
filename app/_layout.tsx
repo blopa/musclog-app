@@ -12,6 +12,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { SnackbarProvider } from '../components/SnackbarContext';
 import { seedDevData } from '../database/dev';
+import { verifyDatabaseTables } from '../database/verify';
 import { theme } from '../theme';
 
 const queryClient = new QueryClient({
@@ -47,8 +48,21 @@ export default function RootLayout() {
       NavigationBar.setButtonStyleAsync('light');
     }
 
-    // Seed exercises database
+    // Verify database tables exist (development only)
     if (__DEV__) {
+      verifyDatabaseTables()
+        .then((result) => {
+          if (!result.success) {
+            console.error('⚠️  DATABASE NOT INITIALIZED PROPERLY');
+            console.error('Missing tables:', result.missingTables);
+            console.error('Solution: Uninstall the app completely and reinstall it.');
+          }
+        })
+        .catch((error) => {
+          console.error('Error verifying database:', error);
+        });
+
+      // Seed exercises database
       seedDevData().catch((error) => {
         console.error('Error seeding exercises database:', error);
       });
