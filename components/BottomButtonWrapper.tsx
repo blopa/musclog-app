@@ -33,7 +33,10 @@ export function BottomButtonWrapper({ children }: BottomButtonWrapperProps) {
         <View
           className="px-6 pb-6 pt-6"
           style={{
-            paddingBottom: Platform.OS === 'web' ? theme.spacing.padding.lg : insets.bottom,
+            paddingBottom:
+              Platform.OS === 'web'
+                ? theme.spacing.padding.lg
+                : Math.max(insets.bottom, theme.spacing.padding.base),
           }}
         >
           {children}

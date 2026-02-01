@@ -7,13 +7,13 @@ import { Dimensions, ImageBackground, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GradientText } from '../../components/GradientText';
+import { MasterLayout } from '../../components/MasterLayout';
 import { MaybeLaterButton } from '../../components/MaybeLaterButton';
 import { PagerView, type PagerViewRef } from '../../components/PagerView/PagerView';
 import PreRegistrationIntro from '../../components/PreRegistrationIntro';
 import { Button } from '../../components/theme/Button';
 import { PageIndicators } from '../../components/theme/PageIndicators';
 import { theme } from '../../theme';
-import { MasterLayout } from '../../components/MasterLayout';
 
 type OnboardingBodyProps = {
   imageUrl?: string;

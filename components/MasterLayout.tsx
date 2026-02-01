@@ -40,7 +40,10 @@ export function MasterLayout({ children, showNavigationMenu = true }: MasterLayo
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-bg-primary" edges={['top']}>
+    <SafeAreaView
+      className="flex-1 bg-bg-primary"
+      edges={showNavigationMenu ? ['top'] : ['top', 'bottom']}
+    >
       <StatusBar style="light" />
       {isCoachModalVisible ? (
         <CoachModal visible={isCoachModalVisible} onClose={() => setIsCoachModalVisible(false)} />
