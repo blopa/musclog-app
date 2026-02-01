@@ -115,7 +115,12 @@ export function EditPersonalInfoBody({
       {/* Form Fields */}
       <View className="mt-2 gap-6">
         <TextInput
-          label={t('editPersonalInfo.fullName')}
+          label={
+            <View className="flex-row items-center gap-1">
+              <Text>{t('editPersonalInfo.fullName')}</Text>
+              <Text style={{ color: theme.colors.status.error }}>*</Text>
+            </View>
+          }
           value={fullName}
           onChangeText={setFullName}
           placeholder={t('editPersonalInfo.fullNamePlaceholder')}
@@ -135,7 +140,10 @@ export function EditPersonalInfoBody({
 
         <View className="flex-col gap-2">
           <Text className="ml-1 text-sm font-medium text-text-secondary">
-            {t('editPersonalInfo.dateOfBirth')}
+            <View className="flex-row items-center gap-1">
+              <Text>{t('editPersonalInfo.dateOfBirth')}</Text>
+              <Text style={{ color: theme.colors.status.error }}>*</Text>
+            </View>
           </Text>
           <Pressable
             className="h-14 w-full flex-row items-center rounded-lg border-2 border-white/10 bg-bg-card px-4 active:opacity-80"
@@ -152,7 +160,10 @@ export function EditPersonalInfoBody({
 
         <View className="gap-2">
           <Text className="ml-1 text-sm font-medium text-text-secondary">
-            {t('editPersonalInfo.gender')}
+            <View className="flex-row items-center gap-1">
+              <Text>{t('editPersonalInfo.gender')}</Text>
+              <Text style={{ color: theme.colors.status.error }}>*</Text>
+            </View>
           </Text>
           <SegmentedControl options={genderOptions} value={gender} onValueChange={setGender} />
         </View>

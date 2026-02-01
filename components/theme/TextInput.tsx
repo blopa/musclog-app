@@ -4,7 +4,7 @@ import { Text, TextInput as RNTextInput, View } from 'react-native';
 import { theme } from '../../theme';
 
 type TestInputProps = {
-  label: string;
+  label: ReactNode;
   value: string;
   onChangeText: (text: string) => void;
   placeholder?: string;
