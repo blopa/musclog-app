@@ -15,11 +15,14 @@ import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, ScrollView, Text, useWindowDimensions, View } from 'react-native';
 
 import { theme } from '../theme';
-import { DatePickerModal } from './modals/DatePickerModal';
 import { MacrosPizzaChart } from './theme/MacrosPizzaChart';
 import { SegmentedControl } from './theme/SegmentedControl';
 import { Slider } from './theme/Slider';
 import { StepperInlineInput } from './theme/StepperInlineInput';
+const DatePickerModal = lazy(() =>
+  import('./modals/DatePickerModal').then(({ DatePickerModal }) => ({ default: DatePickerModal }))
+);
+
 const Button = lazy(() => import('./theme/Button').then(({ Button }) => ({ default: Button })));
 
 export type NutritionGoals = {
@@ -476,15 +479,17 @@ export function NutritionGoalsBody({
           </Pressable>
         </View>
 
-        <DatePickerModal
-          visible={isTargetDatePickerVisible}
-          onClose={() => setIsTargetDatePickerVisible(false)}
-          selectedDate={targetDate != null ? new Date(targetDate) : new Date()}
-          onDateSelect={(date) => {
-            setTargetDate(date.getTime());
-            setIsTargetDatePickerVisible(false);
-          }}
-        />
+        {isTargetDatePickerVisible ? (
+          <DatePickerModal
+            visible={isTargetDatePickerVisible}
+            onClose={() => setIsTargetDatePickerVisible(false)}
+            selectedDate={targetDate != null ? new Date(targetDate) : new Date()}
+            onDateSelect={(date) => {
+              setTargetDate(date.getTime());
+              setIsTargetDatePickerVisible(false);
+            }}
+          />
+        ) : null}
 
         {/* Save Button */}
         {showSaveButton ? (

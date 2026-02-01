@@ -10,8 +10,11 @@ import { Button } from '../theme/Button';
 import type { SelectorOption } from '../theme/OptionsMultiSelector/utils';
 import { SegmentedControl } from '../theme/SegmentedControl';
 import { WeekdayPicker } from '../theme/WeekdayPicker';
-import { AddExerciseModal } from './AddExerciseModal';
 import { FullScreenModal } from './FullScreenModal';
+const AddExerciseModal = lazy(() =>
+  import('./AddExerciseModal').then(({ AddExerciseModal }) => ({ default: AddExerciseModal }))
+);
+
 const OptionsMultiSelector = lazy(() =>
   import('../theme/OptionsMultiSelector/OptionsMultiSelector').then(({ OptionsMultiSelector }) => ({
     default: OptionsMultiSelector,
@@ -437,11 +440,13 @@ export default function CreateWorkoutModal({
           </View>
         </View>
       </ScrollView>
-      <AddExerciseModal
-        visible={addExerciseVisible}
-        onClose={() => setAddExerciseVisible(false)}
-        onAddExercise={handleAddExerciseWithMetadata}
-      />
+      {addExerciseVisible ? (
+        <AddExerciseModal
+          visible={addExerciseVisible}
+          onClose={() => setAddExerciseVisible(false)}
+          onAddExercise={handleAddExerciseWithMetadata}
+        />
+      ) : null}
     </FullScreenModal>
   );
 }

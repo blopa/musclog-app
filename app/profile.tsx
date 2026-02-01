@@ -7,13 +7,14 @@ import { Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { StatCard } from '../components/cards/StatCard';
 import { ManagementItem } from '../components/ManagementItem';
 import { MasterLayout } from '../components/MasterLayout';
-import BodyMetricsHistoryModal from '../components/modals/BodyMetricsHistoryModal';
 import ShowMoreButton from '../components/ShowMoreButton';
 import { useSettings } from '../hooks/useSettings';
 import { useUser } from '../hooks/useUser';
 import { useUserMetrics } from '../hooks/useUserMetrics';
 import { theme } from '../theme';
 import { getAvatarDisplayProps } from '../utils/avatarUtils';
+const BodyMetricsHistoryModal = lazy(() => import('../components/modals/BodyMetricsHistoryModal'));
+
 const ProgressIndicator = lazy(() =>
   import('../components/theme/ProgressIndicator').then(({ ProgressIndicator }) => ({
     default: ProgressIndicator,
@@ -364,10 +365,12 @@ export default function ProfileScreen() {
         <View className="h-24" />
       </ScrollView>
 
-      <BodyMetricsHistoryModal
-        visible={isBodyMetricsHistoryVisible}
-        onClose={() => setIsBodyMetricsHistoryVisible(false)}
-      />
+      {isBodyMetricsHistoryVisible ? (
+        <BodyMetricsHistoryModal
+          visible={isBodyMetricsHistoryVisible}
+          onClose={() => setIsBodyMetricsHistoryVisible(false)}
+        />
+      ) : null}
     </MasterLayout>
   );
 }

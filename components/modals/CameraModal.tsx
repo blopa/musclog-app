@@ -10,7 +10,7 @@ import {
   Sparkles,
   X,
 } from 'lucide-react-native';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { lazy, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Alert,
@@ -27,11 +27,23 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../../theme';
 import { detectBarcodes } from '../../utils/file';
 import { CameraView, useCameraPermissions } from '../CameraView';
-import { AddFoodModal } from './AddFoodModal';
-import { AINutritionTrackingContextModal } from './AINutritionTrackingContextModal';
-import { FoodDetailsModal } from './FoodDetailsModal';
-import { FullScreenModal } from './FullScreenModal';
-import NewCustomFoodModal from './NewCustomFoodModal';
+
+const NewCustomFoodModal = lazy(() => import('./NewCustomFoodModal'));
+const FoodDetailsModal = lazy(() =>
+  import('./FoodDetailsModal').then(({ FoodDetailsModal }) => ({ default: FoodDetailsModal }))
+);
+const AddFoodModal = lazy(() =>
+  import('./AddFoodModal').then(({ AddFoodModal }) => ({ default: AddFoodModal }))
+);
+const AINutritionTrackingContextModal = lazy(() =>
+  import('./AINutritionTrackingContextModal').then(({ AINutritionTrackingContextModal }) => ({
+    default: AINutritionTrackingContextModal,
+  }))
+);
+
+const FullScreenModal = lazy(() =>
+  import('./FullScreenModal').then(({ FullScreenModal }) => ({ default: FullScreenModal }))
+);
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const CAMERA_ASPECT_RATIO = theme.aspectRatio.portrait;
@@ -609,37 +621,45 @@ export default function CameraModal({ visible, onClose, mode = 'barcode-scan' }:
         </SafeAreaView>
 
         {/* Context Modal */}
-        <AINutritionTrackingContextModal
-          visible={isContextModalVisible}
-          onClose={() => setIsContextModalVisible(false)}
-          onApply={handleApplyContext}
-        />
+        {isContextModalVisible ? (
+          <AINutritionTrackingContextModal
+            visible={isContextModalVisible}
+            onClose={() => setIsContextModalVisible(false)}
+            onApply={handleApplyContext}
+          />
+        ) : null}
 
         {/* Food Details Modal */}
-        <FoodDetailsModal
-          visible={isFoodDetailsModalVisible}
-          onClose={handleFoodDetailsClose}
-          barcode={detectedBarcode}
-        />
+        {isFoodDetailsModalVisible ? (
+          <FoodDetailsModal
+            visible={isFoodDetailsModalVisible}
+            onClose={handleFoodDetailsClose}
+            barcode={detectedBarcode}
+          />
+        ) : null}
 
         {/* Add Food Modal */}
-        <AddFoodModal
-          visible={isAddFoodModalVisible}
-          onClose={handleAddFoodClose}
-          onMealTypeSelect={handleMealTypeSelect}
-          onAiCameraPress={handleAiCameraPress}
-          onScanBarcodePress={handleScanBarcodePress}
-          onSearchFoodPress={handleSearchFoodPress}
-          onCreateCustomFoodPress={handleCreateCustomFood}
-          onTrackCustomMealPress={handleTrackCustomMeal}
-        />
+        {isAddFoodModalVisible ? (
+          <AddFoodModal
+            visible={isAddFoodModalVisible}
+            onClose={handleAddFoodClose}
+            onMealTypeSelect={handleMealTypeSelect}
+            onAiCameraPress={handleAiCameraPress}
+            onScanBarcodePress={handleScanBarcodePress}
+            onSearchFoodPress={handleSearchFoodPress}
+            onCreateCustomFoodPress={handleCreateCustomFood}
+            onTrackCustomMealPress={handleTrackCustomMeal}
+          />
+        ) : null}
 
         {/* New Custom Food Modal */}
-        <NewCustomFoodModal
-          visible={isNewCustomFoodModalVisible}
-          onClose={handleNewCustomFoodClose}
-          onSave={handleNewCustomFoodSave}
-        />
+        {isNewCustomFoodModalVisible ? (
+          <NewCustomFoodModal
+            visible={isNewCustomFoodModalVisible}
+            onClose={handleNewCustomFoodClose}
+            onSave={handleNewCustomFoodSave}
+          />
+        ) : null}
       </View>
     </FullScreenModal>
   );

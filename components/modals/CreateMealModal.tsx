@@ -1,13 +1,17 @@
 import { Apple, CheckCircle2, Egg, Info, Plus, Trash2 } from 'lucide-react-native';
-import { ElementType, useState } from 'react';
+import { ElementType, lazy, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, TextInput, View } from 'react-native';
 
 import { theme } from '../../theme';
 import { Button } from '../theme/Button';
 import { MenuButton } from '../theme/MenuButton';
-import { AddFoodItemToMealModal } from './AddFoodItemToMealModal';
 import { FullScreenModal } from './FullScreenModal';
+const AddFoodItemToMealModal = lazy(() =>
+  import('./AddFoodItemToMealModal').then(({ AddFoodItemToMealModal }) => ({
+    default: AddFoodItemToMealModal,
+  }))
+);
 
 type Ingredient = {
   id: string;
@@ -483,16 +487,18 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
         </View>
       </View>
 
-      <AddFoodItemToMealModal
-        visible={isAddFoodVisible}
-        onClose={() => setIsAddFoodVisible(false)}
-        onAddFoods={(foods) => {
-          console.log('Foods added to meal:', foods);
-          // Here you would typically add these to the ingredients state
-          // but for now we just close the modal as per the prompt
-          setIsAddFoodVisible(false);
-        }}
-      />
+      {isAddFoodVisible ? (
+        <AddFoodItemToMealModal
+          visible={isAddFoodVisible}
+          onClose={() => setIsAddFoodVisible(false)}
+          onAddFoods={(foods) => {
+            console.log('Foods added to meal:', foods);
+            // Here you would typically add these to the ingredients state
+            // but for now we just close the modal as per the prompt
+            setIsAddFoodVisible(false);
+          }}
+        />
+      ) : null}
     </FullScreenModal>
   );
 }

@@ -1,6 +1,6 @@
 import { format, isSameDay } from 'date-fns';
 import { Calendar, Edit, PlusCircle } from 'lucide-react-native';
-import { useCallback, useEffect, useState } from 'react';
+import { lazy, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Pressable, Text, View } from 'react-native';
 
@@ -12,9 +12,11 @@ import { FoodInfoCard } from '../cards/FoodInfoCard';
 import { FilterTabs } from '../FilterTabs';
 import { ServingSizeSelector } from '../ServingSizeSelector';
 import { Button } from '../theme/Button';
-import { DatePickerModal } from './DatePickerModal';
 import { FoodNotFoundModal } from './FoodNotFoundModal';
 import { FullScreenModal } from './FullScreenModal';
+const DatePickerModal = lazy(() =>
+  import('./DatePickerModal').then(({ DatePickerModal }) => ({ default: DatePickerModal }))
+);
 
 type FoodDetailsModalProps = {
   visible: boolean;
@@ -389,15 +391,17 @@ export function FoodDetailsModal({ visible, onClose, barcode, onAddFood }: FoodD
         {/* footer is handled by FullScreenModal */}
 
         {/* Date Picker Modal */}
-        <DatePickerModal
-          visible={isDatePickerVisible}
-          onClose={() => setIsDatePickerVisible(false)}
-          selectedDate={selectedDate}
-          onDateSelect={(date) => {
-            setSelectedDate(date);
-            setIsDatePickerVisible(false);
-          }}
-        />
+        {isDatePickerVisible ? (
+          <DatePickerModal
+            visible={isDatePickerVisible}
+            onClose={() => setIsDatePickerVisible(false)}
+            selectedDate={selectedDate}
+            onDateSelect={(date) => {
+              setSelectedDate(date);
+              setIsDatePickerVisible(false);
+            }}
+          />
+        ) : null}
       </FullScreenModal>
     </>
   );

@@ -7,9 +7,6 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Animated, ScrollView, Text, View } from 'react-native';
 
 import { MasterLayout } from '../../components/MasterLayout';
-import { EndWorkoutModal } from '../../components/modals/EndWorkoutModal';
-import { WorkoutOptionsModal } from '../../components/modals/WorkoutOptionsModal';
-import WorkoutSessionOverviewModal from '../../components/modals/WorkoutSessionOverviewModal';
 import { RestTimer } from '../../components/RestTimer';
 import { RestTimerControls } from '../../components/RestTimerControls';
 import { WorkoutTimeTracker } from '../../components/WorkoutTimeTracker';
@@ -22,6 +19,20 @@ import { useSettings } from '../../hooks/useSettings';
 import { theme } from '../../theme';
 import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
 import { getWeightUnitI18nKey } from '../../utils/units';
+const EndWorkoutModal = lazy(() =>
+  import('../../components/modals/EndWorkoutModal').then(({ EndWorkoutModal }) => ({
+    default: EndWorkoutModal,
+  }))
+);
+const WorkoutSessionOverviewModal = lazy(
+  () => import('../../components/modals/WorkoutSessionOverviewModal')
+);
+const WorkoutOptionsModal = lazy(() =>
+  import('../../components/modals/WorkoutOptionsModal').then(({ WorkoutOptionsModal }) => ({
+    default: WorkoutOptionsModal,
+  }))
+);
+
 const DetailedItemCard = lazy(() =>
   import('../../components/cards/DetailedItemCard').then(({ DetailedItemCard }) => ({
     default: DetailedItemCard,
@@ -306,71 +317,77 @@ export default function RestTimerScreen() {
           ) : null}
         </View>
       </View>
-      <WorkoutOptionsModal
-        visible={isOptionsModalVisible}
-        onClose={() => setIsOptionsModalVisible(false)}
-        onPreviewWorkout={() => {
-          setIsOptionsModalVisible(false);
-          setIsWorkoutOverviewModalVisible(true);
-        }}
-        onWorkoutSettings={() => router.push('/workout-settings')}
-        onEndWorkout={handleEndWorkout}
-      />
-      <EndWorkoutModal
-        visible={isEndWorkoutModalVisible}
-        onClose={() => setIsEndWorkoutModalVisible(false)}
-        onFinishAndSave={async () => {
-          if (workoutLog) {
-            await WorkoutService.completeWorkout(workoutLog.id);
-            router.replace(`/workout/workout-summary?workoutLogId=${workoutLog.id}`);
-          }
-        }}
-        onFinishAndDiscard={async () => {
-          // Clear active workout from storage when discarding
-          if (workoutLog) {
-            await clearActiveWorkoutLogId();
-          }
-
-          // navigate to workout screen
-          router.replace('/workout/workouts');
-        }}
-      />
-
-      {/* Workout Session Overview Modal */}
-      <WorkoutSessionOverviewModal
-        visible={isWorkoutOverviewModalVisible}
-        onClose={() => setIsWorkoutOverviewModalVisible(false)}
-        workoutLogId={workoutLogId}
-        onStartWorkout={() => {
-          setIsWorkoutOverviewModalVisible(false);
-          router.replace(`/workout/workout-session?workoutLogId=${workoutLogId}`);
-        }}
-        onResumeSession={() => {
-          setIsWorkoutOverviewModalVisible(false);
-          router.replace(`/workout/workout-session?workoutLogId=${workoutLogId}`);
-        }}
-        onSelectExercise={(exerciseId) => {
-          setIsWorkoutOverviewModalVisible(false);
-          router.replace(
-            `/workout/workout-session?workoutLogId=${workoutLogId}&exerciseId=${exerciseId}`
-          );
-        }}
-        onCancelWorkout={() => {
-          setIsWorkoutOverviewModalVisible(false);
-          setIsEndWorkoutModalVisible(true);
-        }}
-        onFinishWorkout={async () => {
-          setIsWorkoutOverviewModalVisible(false);
-          if (workoutLog) {
-            try {
+      {isOptionsModalVisible ? (
+        <WorkoutOptionsModal
+          visible={isOptionsModalVisible}
+          onClose={() => setIsOptionsModalVisible(false)}
+          onPreviewWorkout={() => {
+            setIsOptionsModalVisible(false);
+            setIsWorkoutOverviewModalVisible(true);
+          }}
+          onWorkoutSettings={() => router.push('/workout-settings')}
+          onEndWorkout={handleEndWorkout}
+        />
+      ) : null}
+      {isEndWorkoutModalVisible ? (
+        <EndWorkoutModal
+          visible={isEndWorkoutModalVisible}
+          onClose={() => setIsEndWorkoutModalVisible(false)}
+          onFinishAndSave={async () => {
+            if (workoutLog) {
               await WorkoutService.completeWorkout(workoutLog.id);
               router.replace(`/workout/workout-summary?workoutLogId=${workoutLog.id}`);
-            } catch (err) {
-              console.error('Error completing workout:', err);
             }
-          }
-        }}
-      />
+          }}
+          onFinishAndDiscard={async () => {
+            // Clear active workout from storage when discarding
+            if (workoutLog) {
+              await clearActiveWorkoutLogId();
+            }
+
+            // navigate to workout screen
+            router.replace('/workout/workouts');
+          }}
+        />
+      ) : null}
+
+      {/* Workout Session Overview Modal */}
+      {isWorkoutOverviewModalVisible ? (
+        <WorkoutSessionOverviewModal
+          visible={isWorkoutOverviewModalVisible}
+          onClose={() => setIsWorkoutOverviewModalVisible(false)}
+          workoutLogId={workoutLogId}
+          onStartWorkout={() => {
+            setIsWorkoutOverviewModalVisible(false);
+            router.replace(`/workout/workout-session?workoutLogId=${workoutLogId}`);
+          }}
+          onResumeSession={() => {
+            setIsWorkoutOverviewModalVisible(false);
+            router.replace(`/workout/workout-session?workoutLogId=${workoutLogId}`);
+          }}
+          onSelectExercise={(exerciseId) => {
+            setIsWorkoutOverviewModalVisible(false);
+            router.replace(
+              `/workout/workout-session?workoutLogId=${workoutLogId}&exerciseId=${exerciseId}`
+            );
+          }}
+          onCancelWorkout={() => {
+            setIsWorkoutOverviewModalVisible(false);
+            setIsEndWorkoutModalVisible(true);
+          }}
+          onFinishWorkout={async () => {
+            setIsWorkoutOverviewModalVisible(false);
+            if (workoutLog) {
+              try {
+                await WorkoutService.completeWorkout(workoutLog.id);
+                router.replace(`/workout/workout-summary?workoutLogId=${workoutLog.id}`);
+              } catch (err) {
+                console.error('Error completing workout:', err);
+              }
+            }
+          }}
+        />
+      ) : null}
     </MasterLayout>
   );
 }

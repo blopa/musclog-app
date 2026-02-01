@@ -1,15 +1,23 @@
 import { Search } from 'lucide-react-native';
-import { useState } from 'react';
+import { lazy, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { MealItemCard } from '../../components/cards/MealItemCard';
 import { FilterTabs } from '../../components/FilterTabs';
 import { MasterLayout } from '../../components/MasterLayout';
-import { AddMealModal } from '../../components/modals/AddMealModal';
-import { CreateMealModal } from '../../components/modals/CreateMealModal';
 import { MenuButton } from '../../components/theme/MenuButton';
 import { theme } from '../../theme';
+const CreateMealModal = lazy(() =>
+  import('../../components/modals/CreateMealModal').then(({ CreateMealModal }) => ({
+    default: CreateMealModal,
+  }))
+);
+const AddMealModal = lazy(() =>
+  import('../../components/modals/AddMealModal').then(({ AddMealModal }) => ({
+    default: AddMealModal,
+  }))
+);
 
 const MEALS_DATA = [
   {
@@ -158,18 +166,22 @@ export default function MyMealsScreen() {
         </ScrollView>
 
         {/* AddMealModal */}
-        <AddMealModal
-          visible={addMealModalVisible}
-          onClose={() => setAddMealModalVisible(false)}
-          onCreateMeal={handleCreateMeal}
-          onGenerateMealAI={handleGenerateMealAI}
-          onManageCategories={handleManageCategories}
-        />
+        {addMealModalVisible ? (
+          <AddMealModal
+            visible={addMealModalVisible}
+            onClose={() => setAddMealModalVisible(false)}
+            onCreateMeal={handleCreateMeal}
+            onGenerateMealAI={handleGenerateMealAI}
+            onManageCategories={handleManageCategories}
+          />
+        ) : null}
         {/* CreateMealModal */}
-        <CreateMealModal
-          visible={createMealModalVisible}
-          onClose={() => setCreateMealModalVisible(false)}
-        />
+        {createMealModalVisible ? (
+          <CreateMealModal
+            visible={createMealModalVisible}
+            onClose={() => setCreateMealModalVisible(false)}
+          />
+        ) : null}
       </View>
     </MasterLayout>
   );

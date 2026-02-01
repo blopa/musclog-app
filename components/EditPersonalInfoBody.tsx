@@ -7,8 +7,11 @@ import { theme } from '../theme';
 import { AvatarColor } from '../types/AvatarColor';
 import { AvatarIcon } from '../types/AvatarIcon';
 import { AvatarSelector } from './AvatarSelector';
-import { DatePickerModal } from './modals/DatePickerModal';
 import { SegmentedControl } from './theme/SegmentedControl';
+const DatePickerModal = lazy(() =>
+  import('./modals/DatePickerModal').then(({ DatePickerModal }) => ({ default: DatePickerModal }))
+);
+
 const TextInput = lazy(() =>
   import('./theme/TextInput').then(({ TextInput }) => ({ default: TextInput }))
 );
@@ -184,14 +187,16 @@ export function EditPersonalInfoBody({
       ) : null}
 
       {/* Date Picker Modal */}
-      <DatePickerModal
-        visible={isDatePickerVisible}
-        onClose={() => setIsDatePickerVisible(false)}
-        selectedDate={currentDate}
-        onDateSelect={handleDateSelect}
-        minYear={1900}
-        maxYear={new Date().getFullYear()}
-      />
+      {isDatePickerVisible ? (
+        <DatePickerModal
+          visible={isDatePickerVisible}
+          onClose={() => setIsDatePickerVisible(false)}
+          selectedDate={currentDate}
+          onDateSelect={handleDateSelect}
+          minYear={1900}
+          maxYear={new Date().getFullYear()}
+        />
+      ) : null}
     </View>
   );
 }

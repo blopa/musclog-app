@@ -397,80 +397,90 @@ export default function HomeScreen() {
       </ScrollView>
 
       {/* User Menu Modal */}
-      <UserMenuModal
-        visible={isUserMenuVisible}
-        onClose={() => setIsUserMenuVisible(false)}
-        user={{
-          name: dbUser?.fullName || 'Guest',
-          avatarIcon: dbUser?.avatarIcon,
-          avatarColor: dbUser?.avatarColor,
-        }}
-        onProfilePress={() => router.push('/profile')}
-        onSettingsPress={() => router.push('/settings')}
-        onProgressPress={() => router.push('/progress')}
-        {...(__DEV__ && {
-          onDebugMenuPress: () => router.push('/test/debug'),
-        })}
-      />
+      {isUserMenuVisible ? (
+        <UserMenuModal
+          visible={isUserMenuVisible}
+          onClose={() => setIsUserMenuVisible(false)}
+          user={{
+            name: dbUser?.fullName || 'Guest',
+            avatarIcon: dbUser?.avatarIcon,
+            avatarColor: dbUser?.avatarColor,
+          }}
+          onProfilePress={() => router.push('/profile')}
+          onSettingsPress={() => router.push('/settings')}
+          onProgressPress={() => router.push('/progress')}
+          {...(__DEV__ && {
+            onDebugMenuPress: () => router.push('/test/debug'),
+          })}
+        />
+      ) : null}
 
       {/* Notifications Modal */}
-      <NotificationsModal
-        visible={isNotificationsVisible}
-        onClose={() => setIsNotificationsVisible(false)}
-        onClearAll={() => {
-          // Handle clear all notifications
-          console.log('Clear all notifications');
-        }}
-      />
+      {isNotificationsVisible ? (
+        <NotificationsModal
+          visible={isNotificationsVisible}
+          onClose={() => setIsNotificationsVisible(false)}
+          onClearAll={() => {
+            // Handle clear all notifications
+            console.log('Clear all notifications');
+          }}
+        />
+      ) : null}
 
       {/* Workout History Modal */}
-      <PastWorkoutsHistoryModal
-        visible={isWorkoutHistoryVisible}
-        onClose={() => setIsWorkoutHistoryVisible(false)}
-      />
+      {isWorkoutHistoryVisible ? (
+        <PastWorkoutsHistoryModal
+          visible={isWorkoutHistoryVisible}
+          onClose={() => setIsWorkoutHistoryVisible(false)}
+        />
+      ) : null}
 
       {/* Workout Detail Modal */}
-      <PastWorkoutDetailModal
-        visible={!!selectedWorkoutId}
-        onClose={() => setSelectedWorkoutId(undefined)}
-        workoutId={selectedWorkoutId}
-      />
+      {!!selectedWorkoutId ? (
+        <PastWorkoutDetailModal
+          visible={!!selectedWorkoutId}
+          onClose={() => setSelectedWorkoutId(undefined)}
+          workoutId={selectedWorkoutId}
+        />
+      ) : null}
 
       {/* Add Food Modal */}
-      <AddFoodModal
-        visible={isAddFoodVisible}
-        onClose={() => setIsAddFoodVisible(false)}
-        onMealTypeSelect={(mealType) => {
-          console.log('Selected meal type:', mealType);
-          setIsAddFoodVisible(false);
-          // TODO: Navigate to food search or other appropriate screen
-        }}
-        onAiCameraPress={() => {
-          console.log('AI Camera pressed');
-          setIsAddFoodVisible(false);
-          // TODO: Navigate to AI camera screen
-        }}
-        onScanBarcodePress={() => {
-          console.log('Scan barcode pressed');
-          setIsAddFoodVisible(false);
-          // TODO: Navigate to barcode scanner
-        }}
-        onSearchFoodPress={() => {
-          console.log('Search food pressed');
-          setIsAddFoodVisible(false);
-          router.push('/food/search');
-        }}
-        onCreateCustomFoodPress={() => {
-          console.log('Create custom food pressed');
-          setIsAddFoodVisible(false);
-          // TODO: Navigate to create custom food screen
-        }}
-        onTrackCustomMealPress={() => {
-          console.log('Track custom meal pressed');
-          setIsAddFoodVisible(false);
-          // TODO: Navigate to track custom meal screen
-        }}
-      />
+      {isAddFoodVisible ? (
+        <AddFoodModal
+          visible={isAddFoodVisible}
+          onClose={() => setIsAddFoodVisible(false)}
+          onMealTypeSelect={(mealType) => {
+            console.log('Selected meal type:', mealType);
+            setIsAddFoodVisible(false);
+            // TODO: Navigate to food search or other appropriate screen
+          }}
+          onAiCameraPress={() => {
+            console.log('AI Camera pressed');
+            setIsAddFoodVisible(false);
+            // TODO: Navigate to AI camera screen
+          }}
+          onScanBarcodePress={() => {
+            console.log('Scan barcode pressed');
+            setIsAddFoodVisible(false);
+            // TODO: Navigate to barcode scanner
+          }}
+          onSearchFoodPress={() => {
+            console.log('Search food pressed');
+            setIsAddFoodVisible(false);
+            router.push('/food/search');
+          }}
+          onCreateCustomFoodPress={() => {
+            console.log('Create custom food pressed');
+            setIsAddFoodVisible(false);
+            // TODO: Navigate to create custom food screen
+          }}
+          onTrackCustomMealPress={() => {
+            console.log('Track custom meal pressed');
+            setIsAddFoodVisible(false);
+            // TODO: Navigate to track custom meal screen
+          }}
+        />
+      ) : null}
     </MasterLayout>
   );
 }

@@ -14,8 +14,6 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { FoodItemCard } from '../../components/cards/FoodItemCard';
 import { MasterLayout } from '../../components/MasterLayout';
-import { AddFoodModal } from '../../components/modals/AddFoodModal';
-import { FoodSearchModal } from '../../components/modals/FoodSearchModal';
 import Food from '../../database/models/Food';
 import NutritionLog from '../../database/models/NutritionLog';
 import { useCurrentNutritionGoal } from '../../hooks/useCurrentNutritionGoal';
@@ -23,6 +21,17 @@ import { useNutritionLogs } from '../../hooks/useNutritionLogs';
 import { useSettings } from '../../hooks/useSettings';
 import i18n, { LanguageKeys, LOCALE_MAP } from '../../lang/lang';
 import { theme } from '../../theme';
+const FoodSearchModal = lazy(() =>
+  import('../../components/modals/FoodSearchModal').then(({ FoodSearchModal }) => ({
+    default: FoodSearchModal,
+  }))
+);
+const AddFoodModal = lazy(() =>
+  import('../../components/modals/AddFoodModal').then(({ AddFoodModal }) => ({
+    default: AddFoodModal,
+  }))
+);
+
 const CaloriesRemainingCard = lazy(() =>
   import('../../components/cards/CaloriesRemainingCard').then(({ CaloriesRemainingCard }) => ({
     default: CaloriesRemainingCard,
@@ -460,56 +469,60 @@ export default function FoodScreen() {
       </View>
 
       {/* Add Food Modal */}
-      <AddFoodModal
-        visible={isAddFoodModalVisible}
-        onClose={() => setIsAddFoodModalVisible(false)}
-        onMealTypeSelect={(mealType) => {
-          // Map meal type to display name
-          const mealTypeMap: Record<string, string> = {
-            breakfast: t('food.meals.breakfast'),
-            lunch: t('food.meals.lunch'),
-            dinner: t('food.meals.dinner'),
-            snack: t('food.meals.snacks'),
-            other: t('food.meals.other'),
-          };
-          setSelectedMealType(mealTypeMap[mealType] || t('food.meals.breakfast'));
-          setIsAddFoodModalVisible(false);
-          setIsFoodSearchModalVisible(true);
-        }}
-        onAiCameraPress={() => {
-          console.log('AI Camera pressed');
-        }}
-        onScanBarcodePress={() => {
-          console.log('Scan Barcode pressed');
-        }}
-        onSearchFoodPress={() => {
-          setIsAddFoodModalVisible(false);
-          setIsFoodSearchModalVisible(true);
-        }}
-        onCreateCustomFoodPress={() => {
-          console.log('Create Custom Food pressed');
-        }}
-        onTrackCustomMealPress={() => {
-          console.log('Track Custom Meal pressed');
-        }}
-      />
+      {isAddFoodModalVisible ? (
+        <AddFoodModal
+          visible={isAddFoodModalVisible}
+          onClose={() => setIsAddFoodModalVisible(false)}
+          onMealTypeSelect={(mealType) => {
+            // Map meal type to display name
+            const mealTypeMap: Record<string, string> = {
+              breakfast: t('food.meals.breakfast'),
+              lunch: t('food.meals.lunch'),
+              dinner: t('food.meals.dinner'),
+              snack: t('food.meals.snacks'),
+              other: t('food.meals.other'),
+            };
+            setSelectedMealType(mealTypeMap[mealType] || t('food.meals.breakfast'));
+            setIsAddFoodModalVisible(false);
+            setIsFoodSearchModalVisible(true);
+          }}
+          onAiCameraPress={() => {
+            console.log('AI Camera pressed');
+          }}
+          onScanBarcodePress={() => {
+            console.log('Scan Barcode pressed');
+          }}
+          onSearchFoodPress={() => {
+            setIsAddFoodModalVisible(false);
+            setIsFoodSearchModalVisible(true);
+          }}
+          onCreateCustomFoodPress={() => {
+            console.log('Create Custom Food pressed');
+          }}
+          onTrackCustomMealPress={() => {
+            console.log('Track Custom Meal pressed');
+          }}
+        />
+      ) : null}
 
       {/* Food Search Modal */}
-      <FoodSearchModal
-        visible={isFoodSearchModalVisible}
-        onClose={() => setIsFoodSearchModalVisible(false)}
-        mealType={selectedMealType}
-        onCreatePress={() => {
-          console.log('Create food pressed');
-        }}
-        onBarcodeScanPress={() => {
-          console.log('Barcode scan pressed');
-        }}
-        onFoodSelect={(food) => {
-          // Handle food selection (e.g., add to meal)
-          setIsFoodSearchModalVisible(false);
-        }}
-      />
+      {isFoodSearchModalVisible ? (
+        <FoodSearchModal
+          visible={isFoodSearchModalVisible}
+          onClose={() => setIsFoodSearchModalVisible(false)}
+          mealType={selectedMealType}
+          onCreatePress={() => {
+            console.log('Create food pressed');
+          }}
+          onBarcodeScanPress={() => {
+            console.log('Barcode scan pressed');
+          }}
+          onFoodSelect={(food) => {
+            // Handle food selection (e.g., add to meal)
+            setIsFoodSearchModalVisible(false);
+          }}
+        />
+      ) : null}
     </MasterLayout>
   );
 }
