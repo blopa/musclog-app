@@ -1,7 +1,8 @@
 import { useRouter } from 'expo-router';
 import { Heart, Moon, RefreshCw, Scale, UtensilsCrossed } from 'lucide-react-native';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { HealthCategoryCard } from '../../components/cards/HealthCategoryCard';
@@ -9,25 +10,49 @@ import { GradientText } from '../../components/GradientText';
 import { HealthConnectIllustration } from '../../components/HealthConnectIllustration';
 import { MaybeLaterButton } from '../../components/MaybeLaterButton';
 import { Button } from '../../components/theme/Button';
+import { useHealthConnect } from '../../hooks/useHealthConnect';
+import { useSyncTracking } from '../../hooks/useSyncTracking';
 import { theme } from '../../theme';
 
-// TODO: implement accessing the Health Connect data with the react-native-health-connect package.
-// we need access to: read/write nutrition, read/write calories burned, read/write lean body mass, read/write exercise/activity/workout, read weight, read height
-// read body fat, basal metabolic rate read, I think the names are:
-
-// 'Height',
-// 'Weight',
-// 'BodyFat',
-// 'Nutrition',
-// 'TotalCaloriesBurned',
-// 'ActiveCaloriesBurned',
-// 'BasalMetabolicRateRecord',
-// 'ExerciseSessionRecord',
-// 'LeanBodyMassRecord',
-
+/**
+ * Health Connect Onboarding Screen
+ * Allows users to connect and sync health data from Health Connect
+ *
+ * Implemented features:
+ * - SDK availability check and initialization
+ * - Permission request for all required data types:
+ *   - Height (read)
+ *   - Weight (read)
+ *   - BodyFat (read)
+ *   - Nutrition (read/write)
+ *   - TotalCaloriesBurned (read/write)
+ *   - ActiveCaloriesBurned (read/write)
+ *   - BasalMetabolicRate (read)
+ *   - ExerciseSession (read/write)
+ *   - LeanBodyMass (read/write)
+ * - Data sync orchestration with error handling
+ * - Retry logic and offline support
+ * - Data validation and deduplication
+ */
 export default function HealthConnectScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  // Health Connect initialization and permissions
+  const {
+    isAvailable,
+    isInitializing,
+    // TODO: it's fine if they don't share all permissions, as long as they allowed at least one
+    // we can update the UI to be the "happy path"
+    hasAllPermissions,
+    requestPermissions,
+    openSettings,
+    error: hcError,
+  } = useHealthConnect();
+
+  // Sync tracking
+  const { enableSync, isSyncing, error: syncError } = useSyncTracking();
 
   return (
     <View className="flex-1 bg-bg-primary">
@@ -114,18 +139,83 @@ export default function HealthConnectScreen() {
             </View>
           </View>
           <View className="px-6 pb-6">
+            {/* Error Display */}
+            {hcError || syncError ? (
+              <View
+                className="mb-4 rounded-lg p-3"
+                style={{ backgroundColor: theme.colors.status.error10 }}
+              >
+                <Text
+                  style={{
+                    fontSize: theme.typography.fontSize.sm,
+                    color: theme.colors.status.error,
+                  }}
+                >
+                  {hcError?.getUserMessage() || syncError?.getUserMessage()}
+                </Text>
+              </View>
+            ) : null}
+
+            {/* Loading State */}
+            {isInitializing || isSyncing || isProcessing ? (
+              <View className="mb-4 flex-row items-center justify-center gap-2">
+                <ActivityIndicator size="small" color={theme.colors.status.emeraldLight} />
+                <Text
+                  style={{
+                    fontSize: theme.typography.fontSize.sm,
+                    color: theme.colors.text.secondary,
+                  }}
+                >
+                  {isInitializing ? 'Initializing Health Connect...' : null}
+                  {isSyncing ? 'Syncing health data...' : null}
+                  {isProcessing ? 'Processing...' : null}
+                </Text>
+              </View>
+            ) : null}
+
             {/* Primary Button */}
             <Button
-              label={t('onboarding.healthConnect.allowHealthAccess')}
-              onPress={() => {
-                // Handle health access permission
-                console.log('Allow Health Access');
+              label={
+                hasAllPermissions
+                  ? t('onboarding.healthConnect.syncComplete') || 'Connected'
+                  : t('onboarding.healthConnect.allowHealthAccess')
+              }
+              onPress={async () => {
+                setIsProcessing(true);
+                try {
+                  if (!isAvailable) {
+                    // Not available, show settings to install
+                    await openSettings();
+                    return;
+                  }
+
+                  if (hasAllPermissions) {
+                    // Already has permissions, navigate to next screen
+                    router.push('/onboarding/connect-with-google');
+                    return;
+                  }
+
+                  // Request permissions
+                  const granted = await requestPermissions();
+
+                  if (granted) {
+                    // Enable sync and trigger initial sync
+                    await enableSync();
+                    // Navigate to next screen after successful setup
+                    router.push('/onboarding/connect-with-google');
+                  }
+                } catch (error) {
+                  console.error('Error setting up Health Connect:', error);
+                } finally {
+                  setIsProcessing(false);
+                }
               }}
-              icon={RefreshCw}
+              icon={hasAllPermissions ? undefined : RefreshCw}
               iconPosition="left"
               variant="gradientCta"
               size="md"
               width="full"
+              disabled={isInitializing || isSyncing || isProcessing}
               style={{
                 ...theme.shadows.lg,
                 shadowColor: theme.colors.status.emeraldLight,
