@@ -1,7 +1,7 @@
 import { format, isThisWeek, isToday, isYesterday } from 'date-fns';
 import type { TFunction } from 'i18next';
 import { Calendar, Clock, Plus, SlidersHorizontal } from 'lucide-react-native';
-import { lazy, useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
@@ -9,19 +9,13 @@ import UserMetric from '../../database/models/UserMetric';
 import { useSettings } from '../../hooks/useSettings';
 import { useUserMetrics } from '../../hooks/useUserMetrics';
 import { theme } from '../../theme';
+import { GenericCard } from '../cards/GenericCard';
 import { HistoryBodyMetricCard } from '../cards/HistoryBodyMetricCard';
+import { LineChart } from '../LineChart';
+import { Button } from '../theme/Button';
 import { SegmentedControl } from '../theme/SegmentedControl';
+import { SkeletonLoader } from '../theme/SkeletonLoader';
 import { FullScreenModal } from './FullScreenModal';
-const LineChart = lazy(() =>
-  import('../LineChart').then(({ LineChart }) => ({ default: LineChart }))
-);
-const GenericCard = lazy(() =>
-  import('../cards/GenericCard').then(({ GenericCard }) => ({ default: GenericCard }))
-);
-const SkeletonLoader = lazy(() =>
-  import('../theme/SkeletonLoader').then(({ SkeletonLoader }) => ({ default: SkeletonLoader }))
-);
-const Button = lazy(() => import('../theme/Button').then(({ Button }) => ({ default: Button })));
 
 type MetricType = 'weight' | 'bodyFat' | 'bmi' | 'ffmi';
 type TimePeriod = '30D' | '3M' | '1Y';

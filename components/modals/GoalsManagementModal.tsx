@@ -1,20 +1,16 @@
 import { format } from 'date-fns';
 import { Plus } from 'lucide-react-native';
-import { lazy, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
 import { NutritionGoalService } from '../../database/services/NutritionGoalService';
 import { theme } from '../../theme';
+import { CurrentGoalsCard } from '../cards/CurrentGoalsCard';
 import { GoalHistoryCard } from '../cards/GoalHistoryCard';
 import { Button } from '../theme/Button';
 import { FullScreenModal } from './FullScreenModal';
 import { NutritionGoals, NutritionGoalsModal } from './NutritionGoalsModal';
-const CurrentGoalsCard = lazy(() =>
-  import('../cards/CurrentGoalsCard').then(({ CurrentGoalsCard }) => ({
-    default: CurrentGoalsCard,
-  }))
-);
 
 type EatingPhase = 'cutting' | 'maintenance' | 'bulking' | 'lean-bulk';
 

@@ -17,14 +17,14 @@ import {
   subMonths,
 } from 'date-fns';
 import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react-native';
-import { lazy, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal, Pressable, ScrollView, Text, View } from 'react-native';
 
 import i18n, { LanguageKeys, LOCALE_MAP } from '../../lang/lang';
 import { theme } from '../../theme';
+import { Button } from '../theme/Button';
 import { FullScreenModal } from './FullScreenModal';
-const Button = lazy(() => import('../theme/Button').then(({ Button }) => ({ default: Button })));
 
 type DatePickerModalProps = {
   visible: boolean;

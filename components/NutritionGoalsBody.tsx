@@ -10,20 +10,17 @@ import {
   Scale,
   TrendingUp,
 } from 'lucide-react-native';
-import { lazy, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, ScrollView, Text, useWindowDimensions, View } from 'react-native';
 
 import { theme } from '../theme';
+import { DatePickerModal } from './modals/DatePickerModal';
+import { Button } from './theme/Button';
 import { MacrosPizzaChart } from './theme/MacrosPizzaChart';
 import { SegmentedControl } from './theme/SegmentedControl';
 import { Slider } from './theme/Slider';
 import { StepperInlineInput } from './theme/StepperInlineInput';
-const DatePickerModal = lazy(() =>
-  import('./modals/DatePickerModal').then(({ DatePickerModal }) => ({ default: DatePickerModal }))
-);
-
-const Button = lazy(() => import('./theme/Button').then(({ Button }) => ({ default: Button })));
 
 export type NutritionGoals = {
   totalCalories: number;

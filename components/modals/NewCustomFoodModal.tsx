@@ -14,18 +14,16 @@ import {
   Waves,
   Wine,
 } from 'lucide-react-native';
-import { lazy, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { theme } from '../../theme';
+import { MacroInput } from '../MacroInput';
 import { Button } from '../theme/Button';
 import { SegmentedControl } from '../theme/SegmentedControl';
 import { TextInput } from '../theme/TextInput';
 import { FullScreenModal } from './FullScreenModal';
-const MacroInput = lazy(() =>
-  import('../MacroInput').then(({ MacroInput }) => ({ default: MacroInput }))
-);
 
 type MeasurementUnit = '100g' | 'serving' | 'container';
 

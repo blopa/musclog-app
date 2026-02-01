@@ -1,17 +1,14 @@
 import { usePathname, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { Camera, Dumbbell, Home, MessageSquare, UtensilsCrossed } from 'lucide-react-native';
-import { lazy, ReactNode, useState } from 'react';
+import { ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { theme } from '../theme';
-const CameraModal = lazy(() => import('./modals/CameraModal'));
-
-const CoachModal = lazy(() =>
-  import('./modals/CoachModal').then(({ CoachModal }) => ({ default: CoachModal }))
-);
+import CameraModal from './modals/CameraModal';
+import { CoachModal } from './modals/CoachModal';
 
 type MasterLayoutProps = {
   children: ReactNode;

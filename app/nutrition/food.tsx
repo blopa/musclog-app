@@ -12,8 +12,15 @@ import { lazy, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
+import { CaloriesRemainingCard } from '../../components/cards/CaloriesRemainingCard';
 import { FoodItemCard } from '../../components/cards/FoodItemCard';
 import { MasterLayout } from '../../components/MasterLayout';
+import { MealSection } from '../../components/MealSection';
+import { AddFoodModal } from '../../components/modals/AddFoodModal';
+import { FoodSearchModal } from '../../components/modals/FoodSearchModal';
+import { Button } from '../../components/theme/Button';
+import { EmptyStateCard } from '../../components/theme/EmptyStateCard';
+import { SkeletonLoader } from '../../components/theme/SkeletonLoader';
 import Food from '../../database/models/Food';
 import NutritionLog from '../../database/models/NutritionLog';
 import { useCurrentNutritionGoal } from '../../hooks/useCurrentNutritionGoal';
@@ -21,38 +28,6 @@ import { useNutritionLogs } from '../../hooks/useNutritionLogs';
 import { useSettings } from '../../hooks/useSettings';
 import i18n, { LanguageKeys, LOCALE_MAP } from '../../lang/lang';
 import { theme } from '../../theme';
-const FoodSearchModal = lazy(() =>
-  import('../../components/modals/FoodSearchModal').then(({ FoodSearchModal }) => ({
-    default: FoodSearchModal,
-  }))
-);
-const AddFoodModal = lazy(() =>
-  import('../../components/modals/AddFoodModal').then(({ AddFoodModal }) => ({
-    default: AddFoodModal,
-  }))
-);
-
-const CaloriesRemainingCard = lazy(() =>
-  import('../../components/cards/CaloriesRemainingCard').then(({ CaloriesRemainingCard }) => ({
-    default: CaloriesRemainingCard,
-  }))
-);
-const EmptyStateCard = lazy(() =>
-  import('../../components/theme/EmptyStateCard').then(({ EmptyStateCard }) => ({
-    default: EmptyStateCard,
-  }))
-);
-const MealSection = lazy(() =>
-  import('../../components/MealSection').then(({ MealSection }) => ({ default: MealSection }))
-);
-const SkeletonLoader = lazy(() =>
-  import('../../components/theme/SkeletonLoader').then(({ SkeletonLoader }) => ({
-    default: SkeletonLoader,
-  }))
-);
-const Button = lazy(() =>
-  import('../../components/theme/Button').then(({ Button }) => ({ default: Button }))
-);
 
 export default function FoodScreen() {
   const { t } = useTranslation();

@@ -1,15 +1,11 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { ArrowLeft } from 'lucide-react-native';
-import { lazy, ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { Modal, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { theme } from '../../theme';
-const BottomButtonWrapper = lazy(() =>
-  import('../BottomButtonWrapper').then(({ BottomButtonWrapper }) => ({
-    default: BottomButtonWrapper,
-  }))
-);
+import { BottomButtonWrapper } from '../BottomButtonWrapper';
 
 type FullScreenModalProps = {
   visible: boolean;

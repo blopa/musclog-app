@@ -1,7 +1,7 @@
 import { format } from 'date-fns';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Edit, Trophy } from 'lucide-react-native';
-import { createElement, lazy, useState } from 'react';
+import { createElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Text, View } from 'react-native';
 
@@ -13,9 +13,9 @@ import { getWeightUnitI18nKey } from '../../utils/units';
 import { GenericCard } from '../cards/GenericCard';
 import { LineChart, LineChartDataPoint } from '../LineChart';
 import { MenuButton } from '../theme/MenuButton';
+import EditPastWorkoutDataModal from './EditPastWorkoutDataModal';
 import { FullScreenModal } from './FullScreenModal';
 import { PastWorkoutBottomMenu } from './PastWorkoutBottomMenu';
-const EditPastWorkoutDataModal = lazy(() => import('./EditPastWorkoutDataModal'));
 
 // Types
 type WorkoutSet = {

@@ -22,7 +22,9 @@ module.exports = defineConfig([
       // Disallow using `&&` inside JSX expression containers (fixable)
       'local/no-jsx-logical-expression': 'error',
       // Require lazy imports for conditionally rendered components (fixable)
-      'local/prefer-react-lazy': 'warn',
+      'local/prefer-react-lazy': 'off',
+      // Disallow React.lazy and convert back to regular imports (fixable)
+      'local/no-react-lazy': 'warn',
       // Sort and group imports
       'simple-import-sort/imports': 'warn',
       'simple-import-sort/exports': 'warn',

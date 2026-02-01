@@ -4,49 +4,24 @@ import { lazy, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, View } from 'react-native';
 
+import { WorkoutCard } from '../../components/cards/WorkoutCard';
 import { FilterTabs } from '../../components/FilterTabs';
 import { GradientText } from '../../components/GradientText';
 import { MasterLayout } from '../../components/MasterLayout';
+import CreateWorkoutModal from '../../components/modals/CreateWorkoutModal';
+import { CreateWorkoutOptionsModal } from '../../components/modals/CreateWorkoutOptionsModal';
+import WorkoutSessionOverviewModal from '../../components/modals/WorkoutSessionOverviewModal';
+import DashedButton from '../../components/theme/DashedButton';
+import { EmptyStateCard } from '../../components/theme/EmptyStateCard';
+import { ErrorStateCard } from '../../components/theme/ErrorStateCard';
+import { SkeletonLoader } from '../../components/theme/SkeletonLoader';
+import { WorkoutDetailsMenu } from '../../components/WorkoutDetailsMenu';
 import { database } from '../../database';
 import WorkoutTemplate from '../../database/models/WorkoutTemplate';
 import { WorkoutService } from '../../database/services';
 import { useWorkoutTemplates } from '../../hooks/useWorkoutTemplates';
 import { theme } from '../../theme';
 import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
-const CreateWorkoutOptionsModal = lazy(() =>
-  import('../../components/modals/CreateWorkoutOptionsModal').then(
-    ({ CreateWorkoutOptionsModal }) => ({ default: CreateWorkoutOptionsModal })
-  )
-);
-const WorkoutSessionOverviewModal = lazy(
-  () => import('../../components/modals/WorkoutSessionOverviewModal')
-);
-const CreateWorkoutModal = lazy(() => import('../../components/modals/CreateWorkoutModal'));
-const WorkoutDetailsMenu = lazy(() =>
-  import('../../components/WorkoutDetailsMenu').then(({ WorkoutDetailsMenu }) => ({
-    default: WorkoutDetailsMenu,
-  }))
-);
-
-const EmptyStateCard = lazy(() =>
-  import('../../components/theme/EmptyStateCard').then(({ EmptyStateCard }) => ({
-    default: EmptyStateCard,
-  }))
-);
-const DashedButton = lazy(() => import('../../components/theme/DashedButton'));
-const SkeletonLoader = lazy(() =>
-  import('../../components/theme/SkeletonLoader').then(({ SkeletonLoader }) => ({
-    default: SkeletonLoader,
-  }))
-);
-const ErrorStateCard = lazy(() =>
-  import('../../components/theme/ErrorStateCard').then(({ ErrorStateCard }) => ({
-    default: ErrorStateCard,
-  }))
-);
-const WorkoutCard = lazy(() =>
-  import('../../components/cards/WorkoutCard').then(({ WorkoutCard }) => ({ default: WorkoutCard }))
-);
 
 export default function WorkoutsScreen() {
   const { t } = useTranslation();

@@ -1,25 +1,20 @@
 import { useRouter } from 'expo-router';
 import { CheckCircle, Dumbbell, Edit, List, Settings, TrendingUp, User } from 'lucide-react-native';
-import { createElement, lazy, useMemo, useState } from 'react';
+import { createElement, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { StatCard } from '../components/cards/StatCard';
 import { ManagementItem } from '../components/ManagementItem';
 import { MasterLayout } from '../components/MasterLayout';
+import BodyMetricsHistoryModal from '../components/modals/BodyMetricsHistoryModal';
 import ShowMoreButton from '../components/ShowMoreButton';
+import { ProgressIndicator } from '../components/theme/ProgressIndicator';
 import { useSettings } from '../hooks/useSettings';
 import { useUser } from '../hooks/useUser';
 import { useUserMetrics } from '../hooks/useUserMetrics';
 import { theme } from '../theme';
 import { getAvatarDisplayProps } from '../utils/avatarUtils';
-const BodyMetricsHistoryModal = lazy(() => import('../components/modals/BodyMetricsHistoryModal'));
-
-const ProgressIndicator = lazy(() =>
-  import('../components/theme/ProgressIndicator').then(({ ProgressIndicator }) => ({
-    default: ProgressIndicator,
-  }))
-);
 
 const PROFILE_DATA = {
   user: {

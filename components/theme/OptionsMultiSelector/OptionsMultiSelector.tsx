@@ -1,11 +1,12 @@
 import { Check, GripVertical } from 'lucide-react-native';
-import { lazy, ReactNode, useEffect, useMemo, useState } from 'react';
+import { ReactNode, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
 import { theme } from '../../../theme';
+import { ActionButtonsArea } from './ActionButtonsArea';
 import {
   getGroupColor,
   getGroupPosition,
@@ -13,9 +14,6 @@ import {
   normalizeGroups,
   SelectorOption,
 } from './utils';
-const ActionButtonsArea = lazy(() =>
-  import('./ActionButtonsArea').then(({ ActionButtonsArea }) => ({ default: ActionButtonsArea }))
-);
 
 const ScaleDecorator = ({ children, isActive }: { children: ReactNode; isActive?: boolean }) => {
   const scale = useSharedValue(1);

@@ -10,7 +10,7 @@ import {
   Sparkles,
   X,
 } from 'lucide-react-native';
-import { lazy, useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Alert,
@@ -27,23 +27,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../../theme';
 import { detectBarcodes } from '../../utils/file';
 import { CameraView, useCameraPermissions } from '../CameraView';
-
-const NewCustomFoodModal = lazy(() => import('./NewCustomFoodModal'));
-const FoodDetailsModal = lazy(() =>
-  import('./FoodDetailsModal').then(({ FoodDetailsModal }) => ({ default: FoodDetailsModal }))
-);
-const AddFoodModal = lazy(() =>
-  import('./AddFoodModal').then(({ AddFoodModal }) => ({ default: AddFoodModal }))
-);
-const AINutritionTrackingContextModal = lazy(() =>
-  import('./AINutritionTrackingContextModal').then(({ AINutritionTrackingContextModal }) => ({
-    default: AINutritionTrackingContextModal,
-  }))
-);
-
-const FullScreenModal = lazy(() =>
-  import('./FullScreenModal').then(({ FullScreenModal }) => ({ default: FullScreenModal }))
-);
+import { AddFoodModal } from './AddFoodModal';
+import { AINutritionTrackingContextModal } from './AINutritionTrackingContextModal';
+import { FoodDetailsModal } from './FoodDetailsModal';
+import { FullScreenModal } from './FullScreenModal';
+import NewCustomFoodModal from './NewCustomFoodModal';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const CAMERA_ASPECT_RATIO = theme.aspectRatio.portrait;

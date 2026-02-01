@@ -13,20 +13,18 @@ import {
   Trophy,
   Zap,
 } from 'lucide-react-native';
-import { lazy, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
 import { theme } from '../theme';
 import { getHeightUnit, getWeightUnit } from '../utils/units';
 import { BottomPopUpMenu } from './BottomPopUpMenu';
+import { MaybeLaterButton } from './MaybeLaterButton';
+import { Button } from './theme/Button';
 import { PickerButton } from './theme/PickerButton';
 import { SegmentedControl } from './theme/SegmentedControl';
 import { TextInput } from './theme/TextInput';
-const Button = lazy(() => import('./theme/Button').then(({ Button }) => ({ default: Button })));
-const MaybeLaterButton = lazy(() =>
-  import('./MaybeLaterButton').then(({ MaybeLaterButton }) => ({ default: MaybeLaterButton }))
-);
 
 type EditFitnessDetailsBodyProps = {
   onClose: () => void;

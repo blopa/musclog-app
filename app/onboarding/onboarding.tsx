@@ -1,7 +1,7 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { ArrowLeft, ArrowRight, LucideIcon } from 'lucide-react-native';
-import { lazy, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Dimensions, ImageBackground, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -10,11 +10,9 @@ import { GradientText } from '../../components/GradientText';
 import { MaybeLaterButton } from '../../components/MaybeLaterButton';
 import { PagerView, type PagerViewRef } from '../../components/PagerView/PagerView';
 import PreRegistrationIntro from '../../components/PreRegistrationIntro';
+import { Button } from '../../components/theme/Button';
 import { PageIndicators } from '../../components/theme/PageIndicators';
 import { theme } from '../../theme';
-const Button = lazy(() =>
-  import('../../components/theme/Button').then(({ Button }) => ({ default: Button }))
-);
 
 type OnboardingBodyProps = {
   imageUrl?: string;

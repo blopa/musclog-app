@@ -1,11 +1,15 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { Play, WifiOff } from 'lucide-react-native';
-import { lazy, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Animated, View } from 'react-native';
 
 import { MasterLayout } from '../../components/MasterLayout';
+import { EndWorkoutModal } from '../../components/modals/EndWorkoutModal';
+import { WorkoutOptionsModal } from '../../components/modals/WorkoutOptionsModal';
+import WorkoutSessionOverviewModal from '../../components/modals/WorkoutSessionOverviewModal';
+import { RestOverNextExercise } from '../../components/RestOverNextExercise';
 import { RestOverStatusIcon } from '../../components/RestOverStatusIcon';
 import { RestOverTitle } from '../../components/RestOverTitle';
 import { Button } from '../../components/theme/Button';
@@ -16,25 +20,6 @@ import WorkoutLog from '../../database/models/WorkoutLog';
 import { WorkoutService } from '../../database/services/WorkoutService';
 import { theme } from '../../theme';
 import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
-const EndWorkoutModal = lazy(() =>
-  import('../../components/modals/EndWorkoutModal').then(({ EndWorkoutModal }) => ({
-    default: EndWorkoutModal,
-  }))
-);
-const WorkoutSessionOverviewModal = lazy(
-  () => import('../../components/modals/WorkoutSessionOverviewModal')
-);
-const WorkoutOptionsModal = lazy(() =>
-  import('../../components/modals/WorkoutOptionsModal').then(({ WorkoutOptionsModal }) => ({
-    default: WorkoutOptionsModal,
-  }))
-);
-
-const RestOverNextExercise = lazy(() =>
-  import('../../components/RestOverNextExercise').then(({ RestOverNextExercise }) => ({
-    default: RestOverNextExercise,
-  }))
-);
 
 export default function RestOverScreen() {
   const { t } = useTranslation();

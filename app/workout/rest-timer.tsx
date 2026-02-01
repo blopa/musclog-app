@@ -2,13 +2,18 @@ import { Q } from '@nozbe/watermelondb';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { CheckCircle, ChevronRight, Dumbbell, Repeat } from 'lucide-react-native';
-import { lazy, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Animated, ScrollView, Text, View } from 'react-native';
 
+import { DetailedItemCard } from '../../components/cards/DetailedItemCard';
 import { MasterLayout } from '../../components/MasterLayout';
+import { EndWorkoutModal } from '../../components/modals/EndWorkoutModal';
+import { WorkoutOptionsModal } from '../../components/modals/WorkoutOptionsModal';
+import WorkoutSessionOverviewModal from '../../components/modals/WorkoutSessionOverviewModal';
 import { RestTimer } from '../../components/RestTimer';
 import { RestTimerControls } from '../../components/RestTimerControls';
+import { UpNextLabel } from '../../components/UpNextLabel';
 import { WorkoutTimeTracker } from '../../components/WorkoutTimeTracker';
 import { database } from '../../database';
 import Exercise from '../../database/models/Exercise';
@@ -19,28 +24,6 @@ import { useSettings } from '../../hooks/useSettings';
 import { theme } from '../../theme';
 import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
 import { getWeightUnitI18nKey } from '../../utils/units';
-const EndWorkoutModal = lazy(() =>
-  import('../../components/modals/EndWorkoutModal').then(({ EndWorkoutModal }) => ({
-    default: EndWorkoutModal,
-  }))
-);
-const WorkoutSessionOverviewModal = lazy(
-  () => import('../../components/modals/WorkoutSessionOverviewModal')
-);
-const WorkoutOptionsModal = lazy(() =>
-  import('../../components/modals/WorkoutOptionsModal').then(({ WorkoutOptionsModal }) => ({
-    default: WorkoutOptionsModal,
-  }))
-);
-
-const DetailedItemCard = lazy(() =>
-  import('../../components/cards/DetailedItemCard').then(({ DetailedItemCard }) => ({
-    default: DetailedItemCard,
-  }))
-);
-const UpNextLabel = lazy(() =>
-  import('../../components/UpNextLabel').then(({ UpNextLabel }) => ({ default: UpNextLabel }))
-);
 
 export default function RestTimerScreen() {
   const { t } = useTranslation();

@@ -1,12 +1,12 @@
-import { lazy, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
 import { useSettings } from '../../hooks/useSettings';
 import { getWeightUnitI18nKey } from '../../utils/units';
 import { Button } from '../theme/Button';
+import NewNumericalInput from '../theme/NewNumericalInput';
 import { CenteredModal } from './CenteredModal';
-const NewNumericalInput = lazy(() => import('../theme/NewNumericalInput'));
 
 type EditSetDetailsModalProps = {
   visible: boolean;

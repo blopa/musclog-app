@@ -8,7 +8,15 @@ import { ActivityIndicator, ImageBackground, ScrollView, Text, View } from 'reac
 
 import { WorkoutStatCard } from '../../components/cards/WorkoutStatCard';
 import { MasterLayout } from '../../components/MasterLayout';
-import { Exercise } from '../../components/modals/ReplaceExerciseModal';
+import { ConfirmationModal } from '../../components/modals/ConfirmationModal';
+import { EditSetDetailsModal } from '../../components/modals/EditSetDetailsModal';
+import { EndWorkoutModal } from '../../components/modals/EndWorkoutModal';
+import { LogSetPerformanceModal } from '../../components/modals/LogSetPerformanceModal';
+import { Exercise, ReplaceExerciseModal } from '../../components/modals/ReplaceExerciseModal';
+import { SessionFeedbackModal } from '../../components/modals/SessionFeedbackModal';
+import { WorkoutOptionsModal } from '../../components/modals/WorkoutOptionsModal';
+import { WorkoutSessionHistoryModal } from '../../components/modals/WorkoutSessionHistoryModal';
+import WorkoutSessionOverviewModal from '../../components/modals/WorkoutSessionOverviewModal';
 import ShowMoreButton from '../../components/ShowMoreButton';
 import { Button } from '../../components/theme/Button';
 import { ErrorStateCard } from '../../components/theme/ErrorStateCard';
@@ -22,50 +30,6 @@ import { useSettings } from '../../hooks/useSettings';
 import { theme } from '../../theme';
 import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
 import { getWeightUnitI18nKey } from '../../utils/units';
-const WorkoutSessionOverviewModal = lazy(
-  () => import('../../components/modals/WorkoutSessionOverviewModal')
-);
-const WorkoutSessionHistoryModal = lazy(() =>
-  import('../../components/modals/WorkoutSessionHistoryModal').then(
-    ({ WorkoutSessionHistoryModal }) => ({ default: WorkoutSessionHistoryModal })
-  )
-);
-
-const EndWorkoutModal = lazy(() =>
-  import('../../components/modals/EndWorkoutModal').then(({ EndWorkoutModal }) => ({
-    default: EndWorkoutModal,
-  }))
-);
-const LogSetPerformanceModal = lazy(() =>
-  import('../../components/modals/LogSetPerformanceModal').then(({ LogSetPerformanceModal }) => ({
-    default: LogSetPerformanceModal,
-  }))
-);
-const WorkoutOptionsModal = lazy(() =>
-  import('../../components/modals/WorkoutOptionsModal').then(({ WorkoutOptionsModal }) => ({
-    default: WorkoutOptionsModal,
-  }))
-);
-const SessionFeedbackModal = lazy(() =>
-  import('../../components/modals/SessionFeedbackModal').then(({ SessionFeedbackModal }) => ({
-    default: SessionFeedbackModal,
-  }))
-);
-const ConfirmationModal = lazy(() =>
-  import('../../components/modals/ConfirmationModal').then(({ ConfirmationModal }) => ({
-    default: ConfirmationModal,
-  }))
-);
-const ReplaceExerciseModal = lazy(() =>
-  import('../../components/modals/ReplaceExerciseModal').then(({ ReplaceExerciseModal }) => ({
-    default: ReplaceExerciseModal,
-  }))
-);
-const EditSetDetailsModal = lazy(() =>
-  import('../../components/modals/EditSetDetailsModal').then(({ EditSetDetailsModal }) => ({
-    default: EditSetDetailsModal,
-  }))
-);
 
 export default function WorkoutSessionScreen() {
   const { t } = useTranslation();

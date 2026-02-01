@@ -1,14 +1,9 @@
-import { FC, lazy } from 'react';
+import { FC } from 'react';
 import { View } from 'react-native';
 
 import { theme } from '../../../theme';
-
-const DeleteActionButton = lazy(() =>
-  import('./DeleteActionButton').then(({ DeleteActionButton }) => ({ default: DeleteActionButton }))
-);
-const GroupActionButton = lazy(() =>
-  import('./GroupActionButton').then(({ GroupActionButton }) => ({ default: GroupActionButton }))
-);
+import { DeleteActionButton } from './DeleteActionButton';
+import { GroupActionButton } from './GroupActionButton';
 
 type ActionButtonsAreaProps = {
   canGroup: boolean;

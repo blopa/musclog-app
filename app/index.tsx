@@ -14,10 +14,18 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { ActionButton } from '../components/ActionButton';
+import { DailySummaryCard } from '../components/cards/DailySummaryCard/DailySummaryCard';
+import { DailySummaryEmptyState } from '../components/cards/DailySummaryCard/DailySummaryEmptyState';
 import { DetailedItemCard } from '../components/cards/DetailedItemCard';
 import { MasterLayout } from '../components/MasterLayout';
+import { AddFoodModal } from '../components/modals/AddFoodModal';
+import { NotificationsModal } from '../components/modals/NotificationsModal';
+import PastWorkoutDetailModal from '../components/modals/PastWorkoutDetailModal';
+import PastWorkoutsHistoryModal from '../components/modals/PastWorkoutsHistoryModal';
+import { UserMenuModal } from '../components/modals/UserMenuModal';
 import ShowMoreButton from '../components/ShowMoreButton';
 import { SkeletonLoader } from '../components/theme/SkeletonLoader';
+import { WorkoutFoodEmptyState } from '../components/WorkoutFoodEmptyState';
 import { useCurrentNutritionGoal } from '../hooks/useCurrentNutritionGoal';
 import { useNutritionLogs } from '../hooks/useNutritionLogs';
 import { useUser } from '../hooks/useUser';
@@ -25,48 +33,6 @@ import { useWorkoutHistory } from '../hooks/useWorkoutHistory';
 import { theme } from '../theme';
 import { getAvatarDisplayProps } from '../utils/avatarUtils';
 import { isOnboardingCompleted } from '../utils/onboardingService';
-const WorkoutFoodEmptyState = lazy(() =>
-  import('../components/WorkoutFoodEmptyState').then(({ WorkoutFoodEmptyState }) => ({
-    default: WorkoutFoodEmptyState,
-  }))
-);
-
-// Lazy load components
-const DailySummaryCard = lazy(() =>
-  import('../components/cards/DailySummaryCard/DailySummaryCard').then((m) => ({
-    default: m.DailySummaryCard,
-  }))
-);
-
-const DailySummaryEmptyState = lazy(() =>
-  import('../components/cards/DailySummaryCard/DailySummaryEmptyState').then((m) => ({
-    default: m.DailySummaryEmptyState,
-  }))
-);
-
-const UserMenuModal = lazy(() =>
-  import('../components/modals/UserMenuModal').then((m) => ({
-    default: m.UserMenuModal,
-  }))
-);
-
-const NotificationsModal = lazy(() =>
-  import('../components/modals/NotificationsModal').then((m) => ({
-    default: m.NotificationsModal,
-  }))
-);
-
-const AddFoodModal = lazy(() =>
-  import('../components/modals/AddFoodModal').then((m) => ({
-    default: m.AddFoodModal,
-  }))
-);
-
-const PastWorkoutsHistoryModal = lazy(
-  () => import('../components/modals/PastWorkoutsHistoryModal')
-);
-
-const PastWorkoutDetailModal = lazy(() => import('../components/modals/PastWorkoutDetailModal'));
 
 // TODO: implement notifications eventually
 const SHOW_NOTIFICATIONS = false;
