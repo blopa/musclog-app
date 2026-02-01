@@ -8,6 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { HealthCategoryCard } from '../../components/cards/HealthCategoryCard';
 import { GradientText } from '../../components/GradientText';
 import { HealthConnectIllustration } from '../../components/HealthConnectIllustration';
+import { MasterLayout } from '../../components/MasterLayout';
 import { MaybeLaterButton } from '../../components/MaybeLaterButton';
 import { Button } from '../../components/theme/Button';
 import { useHealthConnect } from '../../hooks/useHealthConnect';
@@ -55,9 +56,8 @@ export default function HealthConnectScreen() {
   // Sync tracking
   const { enableSync, isSyncing, error: syncError } = useSyncTracking();
 
-  // TODO: use the useSafeAreaInsets in this screen like the other onboarding screens
   return (
-    <View className="flex-1 bg-bg-primary" style={{ paddingTop: insets.top }}>
+    <MasterLayout showNavigationMenu={false}>
       <ScrollView
         className="flex-1"
         contentContainerStyle={{ flexGrow: 1 }}
@@ -256,6 +256,6 @@ export default function HealthConnectScreen() {
           </Text>
         </View>
       </ScrollView>
-    </View>
+    </MasterLayout>
   );
 }
