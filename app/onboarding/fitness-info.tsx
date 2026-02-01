@@ -11,11 +11,9 @@ import { EditFitnessDetailsBody, FitnessDetails } from '../../components/EditFit
 import { MaybeLaterButton } from '../../components/MaybeLaterButton';
 import { useSnackbar } from '../../components/SnackbarContext';
 import { Button } from '../../components/theme/Button';
-import { UNITS_SETTING_TYPE } from '../../constants/settings';
 import { database } from '../../database';
-import Setting from '../../database/models/Setting';
 import UserMetric from '../../database/models/UserMetric';
-import { UserService } from '../../database/services';
+import { SettingsService, UserService } from '../../database/services';
 import { useSettings } from '../../hooks/useSettings';
 import { theme } from '../../theme';
 
@@ -207,32 +205,8 @@ export default function FitnessInfo() {
         });
       }
 
-      // TODO: cant we get this from the useSettings hook?
-      const existingUnitsSetting = await database
-        .get<Setting>('settings')
-        .query(Q.where('type', UNITS_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)))
-        .fetch();
-
-      // Convert units to numeric value (0 = metric, 1 = imperial)
-      const unitsValue = data.units === 'imperial' ? 1 : 0;
-
-      await database.write(async () => {
-        if (existingUnitsSetting.length > 0) {
-          // Update existing setting
-          await existingUnitsSetting[0].update((setting) => {
-            setting.value = unitsValue.toString();
-            setting.updatedAt = now;
-          });
-        } else {
-          // Create new setting
-          await database.get<Setting>('settings').create((setting) => {
-            setting.type = UNITS_SETTING_TYPE;
-            setting.value = unitsValue.toString();
-            setting.createdAt = now;
-            setting.updatedAt = now;
-          });
-        }
-      });
+      // Persist units setting via SettingsService
+      await SettingsService.setUnits(data.units);
 
       // Navigate to next step (personal-info)
       router.push('/onboarding/personal-info');

@@ -10,6 +10,7 @@ export { ExerciseService } from './ExerciseService';
 // Export existing services
 export { GoogleAuthService } from './GoogleAuthService';
 export { NutritionGoalService } from './NutritionGoalService';
+export { SettingsService } from './SettingsService';
 export { UserMetricService } from './UserMetricService';
 export { UserService } from './UserService';
 export { WorkoutAnalytics } from './WorkoutAnalytics';
