@@ -10,12 +10,13 @@ export default class Schedule extends Model {
     workout_templates: { type: 'belongs_to' as const, key: 'template_id' },
   };
 
-  @field('template_id') templateId!: string;
-  @field('day_of_week') dayOfWeek!: string;
+  @field('template_id') templateId: string = '';
+  @field('day_of_week') dayOfWeek: string = '';
   @field('reminder_time') reminderTime?: string;
-  @field('created_at') createdAt!: number;
-  @field('updated_at') updatedAt!: number;
+  @field('created_at') createdAt: number = 0;
+  @field('updated_at') updatedAt: number = 0;
   @field('deleted_at') deletedAt?: number;
 
-  @relation('workout_templates', 'template_id') template!: WorkoutTemplate;
+  @relation('workout_templates', 'template_id') template: WorkoutTemplate =
+    null as unknown as WorkoutTemplate;
 }
