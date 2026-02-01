@@ -38,6 +38,7 @@ export default function HealthConnectScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const [isProcessing, setIsProcessing] = useState(false);
+  const [permissionsRequested, setPermissionsRequested] = useState(false);
   const insets = useSafeAreaInsets();
 
   // Health Connect initialization and permissions
@@ -176,8 +177,11 @@ export default function HealthConnectScreen() {
           <Button
             label={
               hasAnyPermission
-                ? // TODO: use translations here
+                ? // TODO: move the "Connect 9/9" count to an external <Text> using t for translations
+                // and make the button say "Continue"
                   `Connected (${permissionStats?.granted || 0}/${permissionStats?.total || 0})`
+                : permissionsRequested
+                ? t('onboarding.healthConnect.continue') || 'Continue'
                 : t('onboarding.healthConnect.allowHealthAccess')
             }
             onPress={async () => {
@@ -196,14 +200,16 @@ export default function HealthConnectScreen() {
                 }
 
                 // Request permissions
+                setPermissionsRequested(true);
                 const granted = await requestPermissions();
 
+                // Enable sync only if all required permissions were granted
                 if (granted) {
-                  // Enable sync and trigger initial sync
                   await enableSync();
-                  // Navigate to next screen after successful setup
-                  router.push('/onboarding/connect-with-google');
                 }
+
+                // Navigate to next screen regardless of granted permissions
+                router.push('/onboarding/connect-with-google');
               } catch (error) {
                 console.error('Error setting up Health Connect:', error);
               } finally {
