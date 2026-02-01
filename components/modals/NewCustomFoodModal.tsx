@@ -1,4 +1,3 @@
-import { useRouter } from 'expo-router';
 import {
   BarChart,
   ChevronDown,
@@ -34,7 +33,6 @@ type NewCustomFoodModalProps = {
 };
 
 export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCustomFoodModalProps) {
-  const router = useRouter();
   const [foodName, setFoodName] = useState('');
   const [barcode, setBarcode] = useState('');
   const [measurementUnit, setMeasurementUnit] = useState<MeasurementUnit>('100g');
@@ -51,7 +49,7 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
   const { t } = useTranslation();
 
   const handleSave = () => {
-    console.log('Saving food:', {
+    const foodData = {
       foodName,
       barcode,
       measurementUnit,
@@ -64,9 +62,12 @@ export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCust
       alcohol,
       monoFat,
       polyFat,
-    });
-    // Navigate back or show success
-    router.back();
+    };
+
+    if (onSave) {
+      onSave(foodData);
+    }
+    onClose();
   };
 
   // Filter to only allow numeric input

@@ -1,5 +1,4 @@
 import { format } from 'date-fns';
-import { useRouter } from 'expo-router';
 import { CheckCircle, Minus, Plus } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -29,6 +28,7 @@ type MetricConfig = {
 type AddUserMetricEntryModalProps = {
   visible: boolean;
   onClose: () => void;
+  onSave?: () => void;
 };
 
 // Map metric types to page indices
@@ -41,9 +41,9 @@ const metricToPageIndex: Record<MetricType, number> = {
 export default function AddUserMetricEntryModal({
   visible,
   onClose,
+  onSave: onSaveCallback,
 }: AddUserMetricEntryModalProps) {
   const { t } = useTranslation();
-  const router = useRouter();
   const pagerRef = useRef<PagerViewRef>(null);
   const [selectedMetric, setSelectedMetric] = useState<MetricType>('weight');
   const [weight, setWeight] = useState(78.5);
@@ -204,8 +204,12 @@ export default function AddUserMetricEntryModal({
         });
       });
 
-      // Navigate back after successful save
-      router.back();
+      // Call onSave callback if provided
+      if (onSaveCallback) {
+        onSaveCallback();
+      }
+
+      onClose();
     } catch (error) {
       console.error('Error saving user metrics:', error);
       // TODO: Show error message to user
