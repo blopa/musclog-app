@@ -1,4 +1,5 @@
 import { Q } from '@nozbe/watermelondb';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +12,7 @@ import { EditFitnessDetailsBody, FitnessDetails } from '../../components/EditFit
 import { MaybeLaterButton } from '../../components/MaybeLaterButton';
 import { useSnackbar } from '../../components/SnackbarContext';
 import { Button } from '../../components/theme/Button';
+import { TEMP_GOOGLE_USER_NAME } from '../../constants/auth';
 import { database } from '../../database';
 import UserMetric from '../../database/models/UserMetric';
 import { SettingsService, UserService } from '../../database/services';
@@ -102,15 +104,24 @@ export default function FitnessInfo() {
       // Get or ensure user exists
       let user = await UserService.getCurrentUser();
       if (!user) {
-        // TODO: get the user name from the TEMP_GOOGLE_USER_NAME AsyncStorage, if any, otherwise generate it
-        const generatedName = uniqueNamesGenerator({
+        // Try to use the temporary Google name saved during OAuth flow, otherwise generate one
+        let fullName = uniqueNamesGenerator({
           dictionaries: [names],
           style: 'capital',
           separator: ' ',
         });
 
+        try {
+          const tempName = await AsyncStorage.getItem(TEMP_GOOGLE_USER_NAME);
+          if (tempName && tempName.length > 0) {
+            fullName = tempName;
+          }
+        } catch (e) {
+          console.warn('Failed to read TEMP_GOOGLE_USER_NAME from storage', e);
+        }
+
         user = await UserService.initializeUser({
-          fullName: generatedName,
+          fullName,
           dateOfBirth: new Date().getTime(),
           gender: 'other',
           fitnessGoal: data.fitnessGoal,
