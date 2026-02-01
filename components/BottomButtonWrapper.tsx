@@ -1,7 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { ReactNode } from 'react';
 import { Platform, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { addOpacityToHex, theme } from '../theme';
 
@@ -10,8 +9,6 @@ type BottomButtonWrapperProps = {
 };
 
 export function BottomButtonWrapper({ children }: BottomButtonWrapperProps) {
-  const insets = useSafeAreaInsets();
-
   return (
     <View
       className="absolute bottom-0 left-0 right-0"
