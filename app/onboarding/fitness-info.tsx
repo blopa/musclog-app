@@ -3,7 +3,7 @@ import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { names, uniqueNamesGenerator } from 'unique-names-generator';
 
 import { BottomButtonWrapper } from '../../components/BottomButtonWrapper';
@@ -28,6 +28,8 @@ export default function FitnessInfo() {
   const [currentFormData, setCurrentFormData] = useState<Partial<FitnessDetails> | undefined>(
     undefined
   );
+
+  const insets = useSafeAreaInsets();
 
   // Load user data and metrics on mount (units come from useSettings)
   useEffect(() => {
@@ -267,22 +269,20 @@ export default function FitnessInfo() {
 
   if (isSettingsLoading || isLoading) {
     return (
-      <SafeAreaView className="flex-1" edges={['top', 'bottom']}>
-        <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color={theme.colors.accent.primary} />
-        </View>
-      </SafeAreaView>
+      <View className="flex-1 items-center justify-center" style={{ paddingTop: insets.top }}>
+        <ActivityIndicator size="large" color={theme.colors.accent.primary} />
+      </View>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1" edges={['top', 'bottom']}>
+    <View className="flex-1" style={{ paddingTop: insets.top }}>
       <View className="flex-1">
         <ScrollView
           className="flex-1"
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
-            paddingBottom: theme.spacing.padding['4xl'],
+            paddingBottom: theme.spacing.padding.bottomButton,
           }}
         >
           <View className="px-6 pb-2 pt-4">
@@ -303,7 +303,6 @@ export default function FitnessInfo() {
             hideSaveButton
             hideMaybeLaterButton
           />
-          <View className="h-4" />
         </ScrollView>
 
         {/* Floating Action Buttons */}
@@ -318,9 +317,10 @@ export default function FitnessInfo() {
               loading={isSaving}
             />
             <MaybeLaterButton onPress={handleSkip} text={t('onboarding.fitnessInfo.maybeLater')} />
+            <View style={{ height: theme.spacing.gap.xs }} />
           </View>
         </BottomButtonWrapper>
       </View>
-    </SafeAreaView>
+    </View>
   );
 }

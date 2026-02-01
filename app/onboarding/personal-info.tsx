@@ -157,6 +157,7 @@ export default function PersonalInfo() {
 
         {/* Floating Save Button */}
         <BottomButtonWrapper>
+          {/* TODO: make the button to be disabled until this form is filled in */}
           <Button
             label={t('onboarding.personalInfo.save')}
             onPress={handleFloatingSave}
@@ -165,6 +166,7 @@ export default function PersonalInfo() {
             width="full"
             loading={isSaving}
           />
+          <View style={{ height: theme.spacing.gap.md }} />
         </BottomButtonWrapper>
       </View>
     </MasterLayout>

@@ -345,6 +345,7 @@ export const theme = {
       '4xl': 120, // Large padding for footer spacing
       // Fractional padding values
       xsHalf: 2, // xs / 2 = 4 / 2 = 2px
+      bottomButton: 165,
     },
 
     // Margin/Gap

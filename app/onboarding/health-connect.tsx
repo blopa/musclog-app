@@ -3,7 +3,7 @@ import { Heart, Moon, RefreshCw, Scale, UtensilsCrossed } from 'lucide-react-nat
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { HealthCategoryCard } from '../../components/cards/HealthCategoryCard';
 import { GradientText } from '../../components/GradientText';
@@ -38,6 +38,7 @@ export default function HealthConnectScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const [isProcessing, setIsProcessing] = useState(false);
+  const insets = useSafeAreaInsets();
 
   // Health Connect initialization and permissions
   const {
@@ -54,13 +55,12 @@ export default function HealthConnectScreen() {
   const { enableSync, isSyncing, error: syncError } = useSyncTracking();
 
   return (
-    <View className="flex-1 bg-bg-primary">
-      <SafeAreaView edges={['top']} className="flex-1">
-        <ScrollView
-          className="flex-1"
-          contentContainerStyle={{ flexGrow: 1 }}
-          showsVerticalScrollIndicator={false}
-        >
+    <View className="flex-1 bg-bg-primary" style={{ paddingTop: insets.top }}>
+      <ScrollView
+        className="flex-1"
+        contentContainerStyle={{ flexGrow: 1 }}
+        showsVerticalScrollIndicator={false}
+      >
           {/* Main Content */}
           <View className="flex-col items-center px-6 pt-4">
             {/* Illustration Section */}
@@ -237,7 +237,6 @@ export default function HealthConnectScreen() {
             </Text>
           </View>
         </ScrollView>
-      </SafeAreaView>
     </View>
   );
 }
