@@ -11,6 +11,20 @@ import { MaybeLaterButton } from '../../components/MaybeLaterButton';
 import { Button } from '../../components/theme/Button';
 import { theme } from '../../theme';
 
+// TODO: implement accessing the Health Connect data with the react-native-health-connect package.
+// we need access to: read/write nutrition, read/write calories burned, read/write lean body mass, read/write exercise/activity/workout, read weight, read height
+// read body fat, basal metabolic rate read, I think the names are:
+
+// 'Height',
+// 'Weight',
+// 'BodyFat',
+// 'Nutrition',
+// 'TotalCaloriesBurned',
+// 'ActiveCaloriesBurned',
+// 'BasalMetabolicRateRecord',
+// 'ExerciseSessionRecord',
+// 'LeanBodyMassRecord',
+
 export default function HealthConnectScreen() {
   const { t } = useTranslation();
   const router = useRouter();
