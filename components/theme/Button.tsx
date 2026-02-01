@@ -329,9 +329,9 @@ export function Button({
         },
         style,
       ]}
-      onPress={isDisabled || loading ? undefined : onPress}
-      onPressIn={() => !isDisabled && setIsPressed(true)}
-      onPressOut={() => setIsPressed(false)}
+      onPress={isDisabled ? undefined : onPress}
+      onPressIn={isDisabled ? undefined : () => setIsPressed(true)}
+      onPressOut={isDisabled ? undefined : () => setIsPressed(false)}
       disabled={isDisabled}
     >
       {isOutlineVariant || isSecondaryVariant || isDashedVariant ? (
