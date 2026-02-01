@@ -18,7 +18,7 @@ export default class FoodPortion extends Model {
 
   @field('created_at') createdAt!: number;
   @field('updated_at') updatedAt!: number;
-  @field('deleted_at') deletedAt!: number;
+  @field('deleted_at') deletedAt?: number;
 
   @relation('foods', 'food_id') food!: Food;
 

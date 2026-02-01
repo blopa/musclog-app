@@ -25,20 +25,20 @@ export default class User extends Model {
   static table = 'users';
 
   @field('full_name') fullName!: string;
-  @field('email') email!: string;
+  @field('email') email?: string;
   @field('date_of_birth') dateOfBirth!: number;
   @field('gender') gender!: Gender;
   @field('fitness_goal') fitnessGoal!: string;
   @field('activity_level') activityLevel!: number;
   @field('lifting_experience') liftingExperience!: LiftingExperience;
-  @field('avatar_icon') avatarIcon!: AvatarIcon;
-  @field('avatar_color') avatarColor!: AvatarColor;
+  @field('avatar_icon') avatarIcon?: AvatarIcon;
+  @field('avatar_color') avatarColor?: AvatarColor;
   @field('sync_id') syncId!: string;
-  @field('external_account_id') externalAccountId!: string;
-  @field('external_account_provider') externalAccountProvider!: string;
+  @field('external_account_id') externalAccountId?: string;
+  @field('external_account_provider') externalAccountProvider?: string;
   @field('created_at') createdAt!: number;
   @field('updated_at') updatedAt!: number;
-  @field('deleted_at') deletedAt!: number;
+  @field('deleted_at') deletedAt?: number;
 
   /**
    * Calculate age from date of birth

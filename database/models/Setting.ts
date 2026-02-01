@@ -8,5 +8,5 @@ export default class Setting extends Model {
   @field('value') value!: string;
   @field('created_at') createdAt!: number;
   @field('updated_at') updatedAt!: number;
-  @field('deleted_at') deletedAt!: number;
+  @field('deleted_at') deletedAt?: number;
 }

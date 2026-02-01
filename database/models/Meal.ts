@@ -12,13 +12,13 @@ export default class Meal extends Model {
 
   @field('is_ai_generated') isAiGenerated!: boolean;
   @field('name') name!: string;
-  @field('description') description!: string;
-  @field('image_url') imageUrl!: string; // URL to meal image
+  @field('description') description?: string;
+  @field('image_url') imageUrl?: string; // URL to meal image
   @field('is_favorite') isFavorite!: boolean;
 
   @field('created_at') createdAt!: number;
   @field('updated_at') updatedAt!: number;
-  @field('deleted_at') deletedAt!: number;
+  @field('deleted_at') deletedAt?: number;
 
   @children('meal_foods') mealFoods!: Query<MealFood>;
 

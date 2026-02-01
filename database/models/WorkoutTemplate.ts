@@ -15,15 +15,15 @@ export default class WorkoutTemplate extends Model {
     workout_logs: { type: 'has_many' as const, foreignKey: 'template_id' },
   };
 
-  @field('name') name?: string;
+  @field('name') name!: string;
   @field('description') description?: string;
-  @field('created_at') createdAt?: number;
-  @field('updated_at') updatedAt?: number;
+  @field('created_at') createdAt!: number;
+  @field('updated_at') updatedAt!: number;
   @field('deleted_at') deletedAt?: number;
 
-  @children('workout_template_sets') templateSets?: Query<WorkoutTemplateSet>;
-  @children('schedules') schedules?: Query<Schedule>;
-  @children('workout_logs') workoutLogs?: Query<WorkoutLog>;
+  @children('workout_template_sets') templateSets!: Query<WorkoutTemplateSet>;
+  @children('schedules') schedules!: Query<Schedule>;
+  @children('workout_logs') workoutLogs!: Query<WorkoutLog>;
 
   @writer
   async startWorkout(): Promise<WorkoutLog> {

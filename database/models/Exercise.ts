@@ -13,23 +13,23 @@ export default class Exercise extends Model {
     workout_log_sets: { type: 'has_many' as const, foreignKey: 'exercise_id' },
   };
 
-  @field('name') name?: string;
-  @field('description') description?: string;
+  @field('name') name!: string;
+  @field('description') description!: string;
   @field('image_url') imageUrl?: string;
-  @field('muscle_group') muscleGroup?: string;
-  @field('equipment_type') equipmentType?: string;
-  @field('mechanic_type') mechanicType?: string;
-  @field('created_at') createdAt?: number;
-  @field('updated_at') updatedAt?: number;
+  @field('muscle_group') muscleGroup!: string;
+  @field('equipment_type') equipmentType!: string;
+  @field('mechanic_type') mechanicType!: string;
+  @field('created_at') createdAt!: number;
+  @field('updated_at') updatedAt!: number;
   @field('deleted_at') deletedAt?: number;
 
-  @children('workout_template_sets') templateSets?: Query<WorkoutTemplateSet>;
-  @children('workout_log_sets') logSets?: Query<WorkoutLogSet>;
+  @children('workout_template_sets') templateSets!: Query<WorkoutTemplateSet>;
+  @children('workout_log_sets') logSets!: Query<WorkoutLogSet>;
 
   @writer
   async markAsDeleted(): Promise<void> {
     // Check if exercise is referenced in any workout logs (historical data)
-    const logSets = (await this.logSets?.fetch()) ?? [];
+    const logSets = await this.logSets.fetch();
 
     // Filter out soft-deleted sets
     const activeLogSets = logSets.filter((set: WorkoutLogSet) => !set.deletedAt);
