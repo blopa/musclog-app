@@ -156,6 +156,22 @@ export default function HealthConnectScreen() {
             </View>
           ) : null}
 
+          {/* Connected count (moved out of button) */}
+          {hasAnyPermission ? (
+            <Text
+              className="mb-2 text-center"
+              style={{
+                fontSize: theme.typography.fontSize.sm,
+                color: theme.colors.text.secondary,
+              }}
+            >
+              {t('onboarding.healthConnect.connectedCount', {
+                granted: permissionStats?.granted || 0,
+                total: permissionStats?.total || 0,
+              }) || `Connected (${permissionStats?.granted || 0}/${permissionStats?.total || 0})`}
+            </Text>
+          ) : null}
+
           {/* Loading State */}
           {isInitializing || isSyncing || isProcessing ? (
             <View className="mb-4 flex-row items-center justify-center gap-2">
@@ -176,12 +192,8 @@ export default function HealthConnectScreen() {
           {/* Primary Button */}
           <Button
             label={
-              hasAnyPermission
-                ? // TODO: move the "Connect 9/9" count to an external <Text> using t for translations
-                // and make the button say "Continue"
-                  `Connected (${permissionStats?.granted || 0}/${permissionStats?.total || 0})`
-                : permissionsRequested
-                ? t('onboarding.healthConnect.continue') || 'Continue'
+              permissionsRequested || hasAnyPermission
+                ? t('onboarding.healthConnect.continue')
                 : t('onboarding.healthConnect.allowHealthAccess')
             }
             onPress={async () => {

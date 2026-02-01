@@ -117,7 +117,9 @@ export function EditPersonalInfoBody({
         <TextInput
           label={
             <View className="flex-row items-center gap-1">
-              <Text>{t('editPersonalInfo.fullName')}</Text>
+              <Text className="text-lg font-bold text-text-primary">
+                {t('editPersonalInfo.fullName')}
+              </Text>
               <Text style={{ color: theme.colors.status.error }}>*</Text>
             </View>
           }
@@ -141,7 +143,9 @@ export function EditPersonalInfoBody({
         <View className="flex-col gap-2">
           <Text className="ml-1 text-sm font-medium text-text-secondary">
             <View className="flex-row items-center gap-1">
-              <Text>{t('editPersonalInfo.dateOfBirth')}</Text>
+              <Text className="text-lg font-bold text-text-primary">
+                {t('editPersonalInfo.dateOfBirth')}
+              </Text>
               <Text style={{ color: theme.colors.status.error }}>*</Text>
             </View>
           </Text>
@@ -161,7 +165,9 @@ export function EditPersonalInfoBody({
         <View className="gap-2">
           <Text className="ml-1 text-sm font-medium text-text-secondary">
             <View className="flex-row items-center gap-1">
-              <Text>{t('editPersonalInfo.gender')}</Text>
+              <Text className="text-lg font-bold text-text-primary">
+                {t('editPersonalInfo.gender')}
+              </Text>
               <Text style={{ color: theme.colors.status.error }}>*</Text>
             </View>
           </Text>
