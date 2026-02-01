@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
+import { useSnackbar } from '../../components/SnackbarContext';
 import { database } from '../../database';
 import UserMetric from '../../database/models/UserMetric';
 import { theme } from '../../theme';
@@ -44,6 +45,7 @@ export default function AddUserMetricEntryModal({
   onSave: onSaveCallback,
 }: AddUserMetricEntryModalProps) {
   const { t } = useTranslation();
+  const { showSnackbar } = useSnackbar();
   const pagerRef = useRef<PagerViewRef>(null);
   const [selectedMetric, setSelectedMetric] = useState<MetricType>('weight');
   const [weight, setWeight] = useState(78.5);
@@ -212,7 +214,7 @@ export default function AddUserMetricEntryModal({
       onClose();
     } catch (error) {
       console.error('Error saving user metrics:', error);
-      // TODO: Show error message to user
+      showSnackbar('error', t('bodyMetrics.addEntry.errorSaving'));
     } finally {
       setIsSaving(false);
     }

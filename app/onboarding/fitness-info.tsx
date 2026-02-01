@@ -1,6 +1,6 @@
 import { Q } from '@nozbe/watermelondb';
 import { useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -9,6 +9,7 @@ import { names, uniqueNamesGenerator } from 'unique-names-generator';
 import { BottomButtonWrapper } from '../../components/BottomButtonWrapper';
 import { EditFitnessDetailsBody, FitnessDetails } from '../../components/EditFitnessDetailsBody';
 import { MaybeLaterButton } from '../../components/MaybeLaterButton';
+import { useSnackbar } from '../../components/SnackbarContext';
 import { Button } from '../../components/theme/Button';
 import { UNITS_SETTING_TYPE } from '../../constants/settings';
 import { database } from '../../database';
@@ -21,6 +22,7 @@ import { theme } from '../../theme';
 export default function FitnessInfo() {
   const { t } = useTranslation();
   const router = useRouter();
+  const { showSnackbar } = useSnackbar();
   const { units, isLoading: isSettingsLoading } = useSettings();
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -236,22 +238,16 @@ export default function FitnessInfo() {
       router.push('/onboarding/personal-info');
     } catch (error) {
       console.error('Error saving fitness info:', error);
-      // TODO: Show error message to user
+      showSnackbar('error', t('onboarding.fitnessInfo.errorSaving'));
     } finally {
       setIsSaving(false);
     }
   };
 
-  const handleSkip = async () => {
-    try {
-      // Navigate to personal-info even when skipping
-      router.push('/onboarding/personal-info');
-    } catch (error) {
-      console.error('Error skipping fitness info:', error);
-      // Still navigate to personal-info even if an error occurs
-      router.push('/onboarding/personal-info');
-    }
-  };
+  const handleSkip = useCallback(async () => {
+    // Navigate to personal-info even when skipping
+    router.push('/onboarding/personal-info');
+  }, [router]);
 
   const handleFloatingSave = async () => {
     if (

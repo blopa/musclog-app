@@ -19,6 +19,7 @@ export default function ConnectWithGoogle() {
     try {
       await promptAsync();
     } catch (error) {
+      // TODO: Show error message to user
       console.error('Error initiating Google sign-in:', error);
     }
   };

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
 import { BottomButtonWrapper } from '../../components/BottomButtonWrapper';
+import { useSnackbar } from '../../components/SnackbarContext';
 import {
   EditPersonalInfoBody,
   PersonalInfo as PersonalInfoType,
@@ -26,6 +27,7 @@ function formatDateOfBirth(timestamp: number): string {
 export default function PersonalInfo() {
   const { t } = useTranslation();
   const router = useRouter();
+  const { showSnackbar } = useSnackbar();
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [initialData, setInitialData] = useState<PersonalInfoType | undefined>(undefined);
@@ -105,7 +107,7 @@ export default function PersonalInfo() {
       router.push('/');
     } catch (error) {
       console.error('Error saving personal info:', error);
-      // TODO: Show error message to user
+      showSnackbar('error', t('onboarding.personalInfo.errorSaving'));
     } finally {
       setIsSaving(false);
     }

@@ -51,6 +51,7 @@ export default function NutritionGoalsScreen() {
       });
       router.back();
     } catch (e) {
+      // TODO: Show error message to user
       console.error('Error saving nutrition goals:', e);
     }
   };
