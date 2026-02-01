@@ -128,71 +128,71 @@ export default function CameraModal({ visible, onClose, mode = 'barcode-scan' }:
     setCameraMode(mode);
   }, []);
 
-  const handleApplyContext = (context: { description: string; tags: string[] }) => {
+  const handleApplyContext = useCallback((context: { description: string; tags: string[] }) => {
     // TODO: LATER: Apply context to AI processing
     console.log('Context applied:', context);
-  };
+  }, []);
 
-  const handleFoodDetailsClose = () => {
+  const handleFoodDetailsClose = useCallback(() => {
     setIsFoodDetailsModalVisible(false);
     setDetectedBarcode(null);
-  };
+  }, []);
 
-  const handleFoodNotFoundClose = () => {
+  const handleFoodNotFoundClose = useCallback(() => {
     setIsFoodDetailsModalVisible(false);
     setDetectedBarcode(null);
-  };
+  }, []);
 
-  const handleTryAiScan = () => {
+  const handleTryAiScan = useCallback(() => {
     setCameraMode('ai-meal-photo');
-  };
+  }, []);
 
-  const handleSearchAgain = () => {
+  const handleSearchAgain = useCallback(() => {
     setCameraMode('barcode-scan');
-  };
+  }, []);
 
-  const handleCreateCustom = () => {
+  const handleCreateCustom = useCallback(() => {
     setIsAddFoodModalVisible(true);
-  };
+  }, []);
 
-  const handleAddFoodClose = () => {
+  const handleAddFoodClose = useCallback(() => {
     setIsAddFoodModalVisible(false);
-  };
+  }, []);
 
-  const handleCreateCustomFood = () => {
+  const handleCreateCustomFood = useCallback(() => {
     setIsNewCustomFoodModalVisible(true);
-  };
+  }, []);
 
-  const handleNewCustomFoodClose = () => {
+  const handleNewCustomFoodClose = useCallback(() => {
     setIsNewCustomFoodModalVisible(false);
-  };
+  }, []);
 
-  const handleNewCustomFoodSave = (data: any) => {
+  const handleNewCustomFoodSave = useCallback((data: any) => {
     setIsNewCustomFoodModalVisible(false);
-  };
+  }, []);
 
-  const handleTrackCustomMeal = () => {
+  const handleTrackCustomMeal = useCallback(() => {
     // TODO: Navigate to custom meal tracking
     console.log('Track custom meal');
-  };
+  }, []);
 
-  const handleMealTypeSelect = (mealType: string) => {
+  const handleMealTypeSelect = useCallback((mealType: string) => {
     // TODO: do something with this
     console.log('Selected meal type:', mealType);
-  };
+  }, []);
 
-  const handleAiCameraPress = () => {
+  const handleAiCameraPress = useCallback(() => {
     setCameraMode('ai-meal-photo');
-  };
+  }, []);
 
-  const handleScanBarcodePress = () => {
+  const handleScanBarcodePress = useCallback(() => {
     setCameraMode('barcode-scan');
-  };
+  }, []);
 
-  const handleSearchFoodPress = () => {
+  const handleSearchFoodPress = useCallback(() => {
     // TODO: Navigate to food search
     console.log('Search food');
-  };
+  }, []);
 
   const handleGalleryPress = useCallback(async () => {
     try {
@@ -236,6 +236,10 @@ export default function CameraModal({ visible, onClose, mode = 'barcode-scan' }:
       Alert.alert(t('common.error'), t('food.aiCamera.galleryError'), [{ text: t('common.ok') }]);
     }
   }, [cameraMode, t]);
+
+  if (!visible) {
+    return null;
+  }
 
   if (!permission) {
     return (
@@ -302,6 +306,7 @@ export default function CameraModal({ visible, onClose, mode = 'barcode-scan' }:
               style={StyleSheet.absoluteFill}
               facing="back"
               flash={flashEnabled ? 'on' : 'off'}
+              active={visible}
             />
             {/* Gradient Overlay */}
             <LinearGradient

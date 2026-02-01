@@ -11,15 +11,17 @@ type CameraViewProps = Omit<ExpoCameraViewProps, 'style'> & {
   children?: ReactNode;
   onBarcodeScanned?: (_: { data: string; type: string }) => void;
   style?: StyleProp<ViewStyle>;
+  active?: boolean;
 };
 
 export const CameraView = forwardRef<ExpoCameraView, CameraViewProps>(
-  ({ children, onBarcodeScanned, style, ...otherProps }, ref) => {
+  ({ children, onBarcodeScanned, style, active, ...otherProps }, ref) => {
     return (
       <ExpoCameraView
         onBarcodeScanned={onBarcodeScanned}
         ref={ref}
         style={style as any}
+        active={active}
         {...otherProps}
       >
         {children}

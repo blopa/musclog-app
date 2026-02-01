@@ -1,14 +1,17 @@
 import { usePathname, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { Camera, Dumbbell, Home, MessageSquare, UtensilsCrossed } from 'lucide-react-native';
-import { ReactNode, useState } from 'react';
+import { lazy, ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { theme } from '../theme';
-import CameraModal from './modals/CameraModal';
-import { CoachModal } from './modals/CoachModal';
+const CameraModal = lazy(() => import('./modals/CameraModal'));
+
+const CoachModal = lazy(() =>
+  import('./modals/CoachModal').then(({ CoachModal }) => ({ default: CoachModal }))
+);
 
 type MasterLayoutProps = {
   children: ReactNode;
@@ -42,8 +45,15 @@ export function MasterLayout({ children, showNavigationMenu = true }: MasterLayo
   return (
     <SafeAreaView className="flex-1 bg-bg-primary" edges={['top']}>
       <StatusBar style="light" />
-      <CoachModal visible={isCoachModalVisible} onClose={() => setIsCoachModalVisible(false)} />
-      <CameraModal visible={isCameraModalVisible} onClose={() => setIsCameraModalVisible(false)} />
+      {isCoachModalVisible ? (
+        <CoachModal visible={isCoachModalVisible} onClose={() => setIsCoachModalVisible(false)} />
+      ) : null}
+      {isCameraModalVisible ? (
+        <CameraModal
+          visible={isCameraModalVisible}
+          onClose={() => setIsCameraModalVisible(false)}
+        />
+      ) : null}
       <View className="relative flex-1 overflow-hidden">{children}</View>
       {showNavigationMenu ? (
         <View className="absolute bottom-0 left-0 right-0 border-t border-border-dark bg-bg-navBar">

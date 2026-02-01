@@ -8,10 +8,17 @@ type CameraViewProps = {
   children?: ReactNode;
   onBarcodeScanned?: (event: { data: string; type: string }) => void;
   style?: StyleProp<ViewStyle>;
+  active?: boolean;
 };
 
 /** Web-only camera that uses react-zxing under the hood */
-const WebCameraView = ({ children, onBarcodeScanned, style, ...otherProps }: CameraViewProps) => {
+const WebCameraView = ({
+  children,
+  onBarcodeScanned,
+  style,
+  active,
+  ...otherProps
+}: CameraViewProps) => {
   const { ref } = useZxing({
     constraints: {
       audio: false,
@@ -83,8 +90,13 @@ export const CameraView = ({
   children,
   onBarcodeScanned,
   style,
+  active,
   ...otherProps
 }: CameraViewProps) => {
+  if (!active) {
+    return null;
+  }
+
   return (
     <WebCameraView onBarcodeScanned={onBarcodeScanned} style={style} {...otherProps}>
       {children}
