@@ -216,11 +216,6 @@ export default function HealthConnectScreen() {
               size="md"
               width="full"
               disabled={isInitializing || isSyncing || isProcessing}
-              style={{
-                ...theme.shadows.lg,
-                shadowColor: theme.colors.status.emeraldLight,
-                shadowOpacity: theme.colors.opacity.subtle,
-              }}
             />
             <MaybeLaterButton
               onPress={() => {
