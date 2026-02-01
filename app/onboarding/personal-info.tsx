@@ -117,6 +117,20 @@ export default function PersonalInfo() {
     }
   };
 
+  // Form validation: check if required fields are filled
+  const isFormValid = (): boolean => {
+    if (!currentFormData) {
+      return false;
+    }
+
+    // Required fields: fullName, dob, gender
+    const hasFullName = currentFormData.fullName.trim().length > 0;
+    const hasDob = currentFormData.dob.trim().length > 0;
+    const hasGender = currentFormData.gender && currentFormData.gender !== '';
+
+    return Boolean(hasFullName && hasDob && hasGender);
+  };
+
   if (isLoading) {
     return (
       <MasterLayout showNavigationMenu={false}>
@@ -157,14 +171,14 @@ export default function PersonalInfo() {
 
         {/* Floating Save Button */}
         <BottomButtonWrapper>
-          {/* TODO: make the button to be disabled until this form is filled in */}
           <Button
-            label={t('onboarding.personalInfo.save')}
+            label={t('onboarding.personalInfo.finish')}
             onPress={handleFloatingSave}
             variant="accent"
             size="md"
             width="full"
             loading={isSaving}
+            disabled={!isFormValid() || isSaving}
           />
           <View style={{ height: theme.spacing.gap.md }} />
         </BottomButtonWrapper>

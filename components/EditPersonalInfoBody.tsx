@@ -42,7 +42,7 @@ export function EditPersonalInfoBody({
   const [fullName, setFullName] = useState(initialData?.fullName ?? '');
   const [email, setEmail] = useState(initialData?.email ?? '');
   const [dob, setDob] = useState(initialData?.dob ?? '');
-  const [gender, setGender] = useState(initialData?.gender ?? 'male');
+  const [gender, setGender] = useState(initialData?.gender ?? 'other');
   const [avatarIcon, setAvatarIcon] = useState<AvatarIcon>(initialData?.avatarIcon ?? 'person');
   const [avatarColor, setAvatarColor] = useState<AvatarColor>(
     initialData?.avatarColor ?? 'emerald'
@@ -95,9 +95,9 @@ export function EditPersonalInfoBody({
   }, [fullName, email, dob, gender, avatarIcon, avatarColor, onFormChange]);
 
   const genderOptions = [
+    { label: t('editPersonalInfo.other'), value: 'other' },
     { label: t('editPersonalInfo.male'), value: 'male' },
     { label: t('editPersonalInfo.female'), value: 'female' },
-    { label: t('editPersonalInfo.other'), value: 'other' },
   ];
 
   return (
