@@ -541,47 +541,45 @@ export default function OnboardingScreen() {
       </View>
 
       {/* Footer / Navigation */}
-      <View className="z-20 w-full max-w-md self-center">
-        <SafeAreaView edges={['bottom']}>
-          <View className="flex-col items-center gap-8 px-6 pb-8 pt-4">
-            {/* Page Indicators */}
-            <PageIndicators totalPages={4} currentPage={currentStep} />
+      <View className="w-full max-w-md self-center">
+        <View className="flex-col items-center gap-8 px-6 pb-8 pt-4">
+          {/* Page Indicators */}
+          <PageIndicators totalPages={4} currentPage={currentStep} />
 
-            {/* Navigation Buttons */}
-            <View className="w-full flex-row items-center justify-between">
-              {currentStep > 0 ? (
-                <Button
-                  label={t('onboarding.back')}
-                  variant="outline"
-                  size="sm"
-                  icon={ArrowLeft}
-                  iconPosition="left"
-                  onPress={handleBack}
-                  style={{
-                    borderColor: theme.colors.background.white10,
-                  }}
-                />
-              ) : (
-                <View style={{ width: theme.size['14'] }} />
-              )}
-
+          {/* Navigation Buttons */}
+          <View className="w-full flex-row items-center justify-between">
+            {currentStep > 0 ? (
               <Button
-                label={currentStep === 3 ? t('onboarding.getStarted') : t('onboarding.next')}
-                variant="gradientCta"
+                label={t('onboarding.back')}
+                variant="outline"
                 size="sm"
-                icon={ArrowRight}
-                iconPosition="right"
-                onPress={handleNext}
+                icon={ArrowLeft}
+                iconPosition="left"
+                onPress={handleBack}
                 style={{
-                  backgroundColor: theme.colors.status.emeraldLight,
-                  ...theme.shadows.lg,
-                  shadowColor: theme.colors.status.emeraldLight,
-                  shadowOpacity: theme.colors.opacity.subtle,
+                  borderColor: theme.colors.background.white10,
                 }}
               />
-            </View>
+            ) : (
+              <View style={{ width: theme.size['14'] }} />
+            )}
+
+            <Button
+              label={currentStep === 3 ? t('onboarding.getStarted') : t('onboarding.next')}
+              variant="gradientCta"
+              size="sm"
+              icon={ArrowRight}
+              iconPosition="right"
+              onPress={handleNext}
+              style={{
+                backgroundColor: theme.colors.status.emeraldLight,
+                ...theme.shadows.lg,
+                shadowColor: theme.colors.status.emeraldLight,
+                shadowOpacity: theme.colors.opacity.subtle,
+              }}
+            />
           </View>
-        </SafeAreaView>
+        </View>
       </View>
     </MasterLayout>
   );

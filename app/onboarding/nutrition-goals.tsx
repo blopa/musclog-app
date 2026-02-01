@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { MasterLayout } from '../../components/MasterLayout';
 import { NutritionGoals, NutritionGoalsBody } from '../../components/NutritionGoalsBody';
 import { NutritionGoalService } from '../../database/services';
 import { useCurrentNutritionGoal } from '../../hooks/useCurrentNutritionGoal';
@@ -59,16 +60,16 @@ export default function NutritionGoalsScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1" edges={['top', 'bottom']}>
+      <MasterLayout showNavigationMenu={false}>
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color={theme.colors.accent.primary} />
         </View>
-      </SafeAreaView>
+      </MasterLayout>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1" edges={['top', 'bottom']}>
+    <MasterLayout showNavigationMenu={false}>
       <ScrollView>
         <View className="px-6 pb-2 pt-4">
           <Text
@@ -80,6 +81,6 @@ export default function NutritionGoalsScreen() {
         </View>
         <NutritionGoalsBody onSave={handleSave} initialGoals={initialGoals} />
       </ScrollView>
-    </SafeAreaView>
+    </MasterLayout>
   );
 }

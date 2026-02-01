@@ -2,9 +2,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { ArrowRight, Dumbbell } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { Dimensions, Pressable, Text, View } from 'react-native';
+import { Dimensions, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { MasterLayout } from '../../components/MasterLayout';
 import { Button } from '../../components/theme/Button';
 import { theme } from '../../theme';
 
@@ -15,7 +16,7 @@ export default function LandingScreen() {
   const router = useRouter();
 
   return (
-    <View className="flex-1">
+    <MasterLayout showNavigationMenu={false}>
       {/* Main Background Gradient */}
       <LinearGradient
         colors={theme.colors.gradients.landingBackground}
@@ -141,11 +142,12 @@ export default function LandingScreen() {
                 fontSize: theme.typography.fontSize.xs,
               }}
             >
+              {/*TODO: add privacy link here - https://werules.com/musclog/terms */}
               {t('onboarding.landing.termsAndPrivacy')}
             </Text>
           </View>
         </View>
       </SafeAreaView>
-    </View>
+    </MasterLayout>
   );
 }

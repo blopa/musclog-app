@@ -3,7 +3,6 @@ import { Heart, Moon, RefreshCw, Scale, UtensilsCrossed } from 'lucide-react-nat
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { HealthCategoryCard } from '../../components/cards/HealthCategoryCard';
 import { GradientText } from '../../components/GradientText';
@@ -40,7 +39,6 @@ export default function HealthConnectScreen() {
   const router = useRouter();
   const [isProcessing, setIsProcessing] = useState(false);
   const [permissionsRequested, setPermissionsRequested] = useState(false);
-  const insets = useSafeAreaInsets();
 
   // Health Connect initialization and permissions
   const {
