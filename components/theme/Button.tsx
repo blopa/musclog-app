@@ -295,44 +295,103 @@ export function Button({
   // This ensures buttons of the same size have consistent heights
   const minHeight = config.paddingVertical * 2 + config.fontSize * 1.5;
 
+  const buttonStyle = {
+    borderRadius: config.borderRadius,
+    ...shadow,
+    opacity: isDisabled ? theme.colors.opacity.full : undefined,
+    backgroundColor: outlineBackgroundColor,
+    borderWidth:
+      isOutlineVariant || isSecondaryVariant || isSecondaryGradientVariant || isDashedVariant
+        ? isOutlineVariant || isDashedVariant
+          ? theme.borderWidth.medium
+          : theme.borderWidth.thin
+        : theme.borderWidth.none,
+    borderStyle: borderStyle as 'solid' | 'dashed',
+    borderColor: isOutlineVariant
+      ? theme.colors.background.white10
+      : isDashedVariant
+        ? theme.colors.border.dashed
+        : isSecondaryGradientVariant
+          ? theme.colors.border.emerald
+          : isSecondaryVariant
+            ? theme.colors.border.default
+            : 'transparent',
+    overflow: 'hidden' as const,
+    // Prevent stretching in flex containers
+    alignSelf: 'flex-start' as const,
+    minHeight: minHeight,
+    // Prevent horizontal stretching when width is 'auto'
+    ...(width === 'auto' ? { flexShrink: 0 } : {}),
+    ...style,
+  };
+
+  // If disabled, render as a View to avoid any interaction issues
+  if (isDisabled) {
+    return (
+      <View className={`${widthClass}`} style={buttonStyle}>
+        {isOutlineVariant || isSecondaryVariant || isDashedVariant ? (
+          <View
+            style={{
+              borderRadius: config.borderRadius,
+              paddingVertical: config.paddingVertical,
+              paddingHorizontal: theme.spacing.padding.base,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: isSecondaryVariant ? theme.colors.background.overlay : undefined,
+              minHeight: minHeight,
+              ...(width === 'auto' ? {} : { width: '100%' }),
+            }}
+          >
+            {buttonContent}
+          </View>
+        ) : (
+          <View
+            style={{
+              position: 'relative',
+              borderRadius: config.borderRadius,
+              overflow: 'hidden',
+              minHeight: minHeight,
+              ...(width === 'auto' ? {} : { width: '100%' }),
+            }}
+          >
+            <LinearGradient
+              colors={gradientColors}
+              start={{
+                x: isSecondaryGradientVariant || isGradientCtaVariant ? 0 : 0,
+                y: isSecondaryGradientVariant ? 0 : 0,
+              }}
+              end={{
+                x: isSecondaryGradientVariant || isGradientCtaVariant ? 1 : 1,
+                y: isSecondaryGradientVariant ? 1 : 0,
+              }}
+              style={{
+                borderRadius: config.borderRadius,
+                paddingVertical: config.paddingVertical,
+                paddingHorizontal: theme.spacing.padding.base,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                minHeight: minHeight,
+                ...(width === 'auto' ? {} : { width: '100%' }),
+              }}
+            >
+              {buttonContent}
+            </LinearGradient>
+          </View>
+        )}
+      </View>
+    );
+  }
+
   return (
     <Pressable
-      className={`${widthClass} ${isDisabled ? '' : 'active:scale-[0.98]'}`}
-      style={[
-        {
-          borderRadius: config.borderRadius,
-          ...shadow,
-          opacity: isDisabled ? theme.colors.opacity.full : undefined,
-          backgroundColor: outlineBackgroundColor,
-          borderWidth:
-            isOutlineVariant || isSecondaryVariant || isSecondaryGradientVariant || isDashedVariant
-              ? isOutlineVariant || isDashedVariant
-                ? theme.borderWidth.medium
-                : theme.borderWidth.thin
-              : theme.borderWidth.none,
-          borderStyle: borderStyle,
-          borderColor: isOutlineVariant
-            ? theme.colors.background.white10
-            : isDashedVariant
-              ? theme.colors.border.dashed
-              : isSecondaryGradientVariant
-                ? theme.colors.border.emerald
-                : isSecondaryVariant
-                  ? theme.colors.border.default
-                  : 'transparent',
-          overflow: 'hidden',
-          // Prevent stretching in flex containers
-          alignSelf: 'flex-start',
-          minHeight: minHeight,
-          // Prevent horizontal stretching when width is 'auto'
-          ...(width === 'auto' ? { flexShrink: 0 } : {}),
-        },
-        style,
-      ]}
-      onPress={isDisabled ? undefined : onPress}
-      onPressIn={isDisabled ? undefined : () => setIsPressed(true)}
-      onPressOut={isDisabled ? undefined : () => setIsPressed(false)}
-      disabled={isDisabled}
+      className={`${widthClass} active:scale-[0.98]`}
+      style={buttonStyle}
+      onPress={onPress}
+      onPressIn={() => setIsPressed(true)}
+      onPressOut={() => setIsPressed(false)}
+      disabled={false}
     >
       {isOutlineVariant || isSecondaryVariant || isDashedVariant ? (
         <View
@@ -343,8 +402,7 @@ export function Button({
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundColor:
-              isSecondaryVariant && !isDisabled ? theme.colors.background.overlay : undefined,
+            backgroundColor: isSecondaryVariant ? theme.colors.background.overlay : undefined,
             minHeight: minHeight,
             ...(width === 'auto' ? {} : { width: '100%' }),
           }}
@@ -384,7 +442,7 @@ export function Button({
           >
             {buttonContent}
           </LinearGradient>
-          {isGradientCtaVariant && isPressed && !isDisabled ? (
+          {isGradientCtaVariant && isPressed ? (
             <View
               style={{
                 position: 'absolute',
