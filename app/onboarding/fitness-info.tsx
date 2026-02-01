@@ -102,6 +102,7 @@ export default function FitnessInfo() {
       // Get or ensure user exists
       let user = await UserService.getCurrentUser();
       if (!user) {
+        // TODO: get the user name from the TEMP_GOOGLE_USER_NAME AsyncStorage, if any, otherwise generate it
         const generatedName = uniqueNamesGenerator({
           dictionaries: [names],
           style: 'capital',

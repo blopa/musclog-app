@@ -16,6 +16,7 @@ export class UserService {
       .query(Q.where('deleted_at', Q.eq(null)))
       .fetch();
 
+    // TODO: use userId? maybe saved on AsyncStorage
     return users.length > 0 ? users[0] : null;
   }
 
