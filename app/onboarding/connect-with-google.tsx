@@ -8,6 +8,7 @@ import { ConnectGoogleAccountBody } from '../../components/ConnectGoogleAccountB
 import { useGoogleAuth } from '../../hooks/useGoogleAuth';
 import { theme } from '../../theme';
 import { handleGoogleSignIn } from '../../utils/googleAuth';
+import { showSnackbar } from '../../utils/snackbarService';
 
 export default function ConnectWithGoogle() {
   const { t } = useTranslation();
@@ -19,7 +20,7 @@ export default function ConnectWithGoogle() {
     try {
       await promptAsync();
     } catch (error) {
-      // TODO: Show error message to user
+      showSnackbar('error', t('onboarding.connectGoogle.error'));
       console.error('Error initiating Google sign-in:', error);
     }
   };

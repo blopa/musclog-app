@@ -5,9 +5,10 @@ import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { NutritionGoals, NutritionGoalsBody } from '../../components/NutritionGoalsBody';
-import { NutritionGoalService } from '../../database/services/NutritionGoalService';
+import { NutritionGoalService } from '../../database/services';
 import { useCurrentNutritionGoal } from '../../hooks/useCurrentNutritionGoal';
 import { theme } from '../../theme';
+import { showSnackbar } from '../../utils/snackbarService';
 
 export default function NutritionGoalsScreen() {
   const { t } = useTranslation();
@@ -51,7 +52,7 @@ export default function NutritionGoalsScreen() {
       });
       router.back();
     } catch (e) {
-      // TODO: Show error message to user
+      showSnackbar('error', t('nutritionGoals.errorSaving'));
       console.error('Error saving nutrition goals:', e);
     }
   };

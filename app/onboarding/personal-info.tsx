@@ -4,12 +4,12 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
 import { BottomButtonWrapper } from '../../components/BottomButtonWrapper';
-import { useSnackbar } from '../../components/SnackbarContext';
 import {
   EditPersonalInfoBody,
   PersonalInfo as PersonalInfoType,
 } from '../../components/EditPersonalInfoBody';
 import { MasterLayout } from '../../components/MasterLayout';
+import { useSnackbar } from '../../components/SnackbarContext';
 import { Button } from '../../components/theme/Button';
 import { UserService } from '../../database/services';
 import { theme } from '../../theme';
