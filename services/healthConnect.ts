@@ -6,10 +6,13 @@
 import { Platform } from 'react-native';
 import {
   aggregateRecord,
+  type AggregateResult,
+  type AggregateResultRecordType,
   deleteRecordsByTimeRange,
   deleteRecordsByUuids,
   getGrantedPermissions,
   getSdkStatus,
+  type HealthConnectRecord,
   initialize,
   insertRecords,
   openHealthConnectDataManagement,
@@ -17,6 +20,7 @@ import {
   type Permission,
   readRecords,
   type ReadRecordsResult,
+  type RecordType,
   requestPermission,
   revokeAllPermissions,
   SdkAvailabilityStatus,
@@ -273,7 +277,7 @@ class HealthConnectService {
    * Check if a specific record type and access type are granted
    */
   async hasPermissionForRecordType(
-    recordType: string,
+    recordType: RecordType,
     accessType: 'read' | 'write' = 'read'
   ): Promise<boolean> {
     try {
@@ -288,13 +292,15 @@ class HealthConnectService {
   /**
    * Get permissions grouped by record type
    */
-  async getGrantedPermissionsByType(): Promise<Map<string, { read: boolean; write: boolean }>> {
+  async getGrantedPermissionsByType(): Promise<Map<RecordType, { read: boolean; write: boolean }>> {
     try {
       const granted = await this.getGrantedPermissions();
-      const permMap = new Map<string, { read: boolean; write: boolean }>();
+      const permMap = new Map<RecordType, { read: boolean; write: boolean }>();
 
       // Initialize all record types
-      const allRecordTypes = Array.from(new Set(REQUIRED_PERMISSIONS.map((p) => p.recordType)));
+      const allRecordTypes = Array.from(
+        new Set(REQUIRED_PERMISSIONS.map((p) => p.recordType))
+      ) as RecordType[];
 
       for (const recordType of allRecordTypes) {
         permMap.set(recordType, {
@@ -317,11 +323,13 @@ class HealthConnectService {
     total: number;
     granted: number;
     percentage: number;
-    permissions: { recordType: string; read: boolean; write: boolean }[];
+    permissions: { recordType: RecordType; read: boolean; write: boolean }[];
   }> {
     try {
       const permMap = await this.getGrantedPermissionsByType();
-      const allRecordTypes = Array.from(new Set(REQUIRED_PERMISSIONS.map((p) => p.recordType)));
+      const allRecordTypes = Array.from(
+        new Set(REQUIRED_PERMISSIONS.map((p) => p.recordType))
+      ) as RecordType[];
 
       const permissions = allRecordTypes.map((recordType) => ({
         recordType,
@@ -363,10 +371,10 @@ class HealthConnectService {
   /**
    * Read records from Health Connect
    */
-  async readRecords(
-    recordType: string,
+  async readRecords<T extends RecordType>(
+    recordType: T,
     timeRangeFilter: TimeRangeFilter
-  ): Promise<ReadRecordsResult<any>> {
+  ): Promise<ReadRecordsResult<T>> {
     try {
       await this.ensureInitialized();
 
@@ -379,10 +387,10 @@ class HealthConnectService {
         );
       }
 
-      const result = await readRecords(recordType as any, {
+      const result = await readRecords(recordType, {
         timeRangeFilter,
       });
-      return result;
+      return result as ReadRecordsResult<T>;
     } catch (error) {
       if (error instanceof HealthConnectError) {
         throw error;
@@ -395,7 +403,7 @@ class HealthConnectService {
   /**
    * Insert records to Health Connect
    */
-  async insertRecords(records: any[]): Promise<string[]> {
+  async insertRecords(records: HealthConnectRecord[]): Promise<string[]> {
     try {
       await this.ensureInitialized();
 
@@ -422,21 +430,21 @@ class HealthConnectService {
   /**
    * Aggregate records for analysis
    */
-  async aggregateRecords(
-    recordType: string,
+  async aggregateRecords<T extends AggregateResultRecordType>(
+    recordType: T,
     timeRangeFilter: TimeRangeFilter,
     metricTypes?: string[]
-  ): Promise<any> {
+  ): Promise<AggregateResult<T>> {
     try {
       await this.ensureInitialized();
 
-      const result = await aggregateRecord({
-        recordType: recordType as any,
+      const result = await aggregateRecord<T>({
+        recordType,
         timeRangeFilter,
         dataOriginFilter: [], // Include all data sources
       });
 
-      return result;
+      return result as AggregateResult<T>;
     } catch (error) {
       console.error(`Error aggregating ${recordType} records:`, error);
       throw HealthConnectErrorFactory.readFailed(recordType, error as Error);
@@ -446,7 +454,7 @@ class HealthConnectService {
   /**
    * Delete records by UUIDs
    */
-  async deleteRecordsByUuids(recordType: string, recordIdsList: string[]): Promise<void> {
+  async deleteRecordsByUuids(recordType: RecordType, recordIdsList: string[]): Promise<void> {
     try {
       await this.ensureInitialized();
 
@@ -454,7 +462,7 @@ class HealthConnectService {
         return;
       }
 
-      await deleteRecordsByUuids(recordType as any, recordIdsList, []);
+      await deleteRecordsByUuids(recordType, recordIdsList, []);
     } catch (error) {
       console.error(`Error deleting ${recordType} records by UUIDs:`, error);
       throw HealthConnectErrorFactory.writeFailed(recordType, error as Error);
@@ -465,13 +473,13 @@ class HealthConnectService {
    * Delete records by time range
    */
   async deleteRecordsByTimeRange(
-    recordType: string,
+    recordType: RecordType,
     timeRangeFilter: TimeRangeFilter
   ): Promise<void> {
     try {
       await this.ensureInitialized();
 
-      await deleteRecordsByTimeRange(recordType as any, timeRangeFilter);
+      await deleteRecordsByTimeRange(recordType, timeRangeFilter);
     } catch (error) {
       console.error(`Error deleting ${recordType} records by time range:`, error);
       throw HealthConnectErrorFactory.writeFailed(recordType, error as Error);

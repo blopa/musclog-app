@@ -4,6 +4,7 @@
  */
 
 import { Q } from '@nozbe/watermelondb';
+import type { RecordType } from 'react-native-health-connect';
 
 import { database } from '../database/database-instance';
 import Setting from '../database/models/Setting';
@@ -242,7 +243,7 @@ class HealthDataSyncService {
       const startTimeMs = endTime - lookbackDays * 24 * 60 * 60 * 1000;
 
       // Sync each metric type
-      const metricTypes: { hcType: string; transformer: (record: any) => any }[] = [
+      const metricTypes: { hcType: RecordType; transformer: (record: any) => any }[] = [
         {
           hcType: 'Height',
           transformer: HealthDataTransformer.transformHeight,
@@ -335,7 +336,7 @@ class HealthDataSyncService {
    * Sync a specific metric type with retry logic
    */
   private async syncMetricTypeWithRetry(
-    recordType: string,
+    recordType: RecordType,
     timeRange: { startTime: number; endTime: number },
     transformer: (record: any) => any,
     options: { retryAttempts: number; skipValidation: boolean }
@@ -381,7 +382,7 @@ class HealthDataSyncService {
    * Sync a specific metric type from Health Connect
    */
   private async syncMetricType(
-    recordType: string,
+    recordType: RecordType,
     timeRange: { startTime: number; endTime: number },
     transformer: (record: any) => any,
     skipValidation: boolean
