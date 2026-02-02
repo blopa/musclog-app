@@ -23,7 +23,7 @@ const getConfig = (type: EmptyStateType, t: TFunction) => {
         title: t('emptyState.workout.title'),
         description: t('emptyState.workout.description'),
         buttonLabel: t('emptyState.workout.button'),
-        buttonVariant: 'accent' as const,
+        buttonVariant: 'outline' as const,
       };
     case 'food':
       return {

@@ -20,7 +20,11 @@ import { DailySummaryEmptyState } from '../components/cards/DailySummaryCard/Dai
 import { DetailedItemCard } from '../components/cards/DetailedItemCard';
 import { MasterLayout } from '../components/MasterLayout';
 import { AddFoodModal } from '../components/modals/AddFoodModal';
+import CameraModal from '../components/modals/CameraModal';
+import CreateCustomFoodModal from '../components/modals/CreateCustomFoodModal';
+import { FoodSearchModal } from '../components/modals/FoodSearchModal';
 import { NotificationsModal } from '../components/modals/NotificationsModal';
+import { NutritionGoalsModal } from '../components/modals/NutritionGoalsModal';
 import PastWorkoutDetailModal from '../components/modals/PastWorkoutDetailModal';
 import PastWorkoutsHistoryModal from '../components/modals/PastWorkoutsHistoryModal';
 import { UserMenuModal } from '../components/modals/UserMenuModal';
@@ -103,6 +107,14 @@ export default function HomeScreen() {
   const [isAddFoodVisible, setIsAddFoodVisible] = useState(false);
   const [selectedWorkoutId, setSelectedWorkoutId] = useState<string | undefined>(undefined);
   const [isCheckingOnboarding, setIsCheckingOnboarding] = useState(true);
+  const [isNutritionGoalsVisible, setIsNutritionGoalsVisible] = useState(false);
+  const [isFoodSearchVisible, setIsFoodSearchVisible] = useState(false);
+  const [isCameraVisible, setIsCameraVisible] = useState(false);
+  const [isCreateCustomFoodVisible, setIsCreateCustomFoodVisible] = useState(false);
+  const [selectedMealType, setSelectedMealType] = useState<string>('');
+  const [cameraMode, setCameraMode] = useState<'ai-meal-photo' | 'ai-label-scan' | 'barcode-scan'>(
+    'ai-meal-photo'
+  );
 
   // Use reactive hook for recent workouts
   const { workouts: recentWorkouts, isLoading: isLoadingRecent } = useWorkoutHistory({
@@ -149,8 +161,9 @@ export default function HomeScreen() {
         setIsCheckingOnboarding(false);
       }
     };
+
     checkOnboarding();
-  }, [router]);
+  }, [params.code, router]);
 
   // Show loading spinner while checking onboarding
   if (isCheckingOnboarding) {
@@ -233,17 +246,19 @@ export default function HomeScreen() {
           {nutritionGoal ? (
             <DailySummaryCard calories={dailySummary.calories} macros={macros} />
           ) : (
-            <DailySummaryEmptyState
-              onSetGoals={() => {
-                // TODO: open the NutritionGoalsModal modal
-              }}
-            />
+            <DailySummaryEmptyState onSetGoals={() => setIsNutritionGoalsVisible(true)} />
           )}
         </View>
 
         {/* Action Buttons */}
         <View className="mx-6 mb-8 flex-row gap-4">
-          <ActionButton variant="workout" label={t('home.actions.startWorkout')} />
+          <ActionButton
+            variant="workout"
+            label={t('home.actions.startWorkout')}
+            onPress={() => {
+              // TODO: Implement start workout
+            }}
+          />
           <ActionButton
             variant="food"
             label={t('home.actions.trackFood')}
@@ -256,7 +271,7 @@ export default function HomeScreen() {
               {t('home.sections.recentFoods')}
             </Text>
             <ShowMoreButton
-              onPress={() => router.push('/food/recent')}
+              onPress={() => router.push('/nutrition/food')}
               label={t('common.seeAll')}
             />
           </View>
@@ -358,7 +373,9 @@ export default function HomeScreen() {
           ) : recentWorkouts.length === 0 ? (
             <WorkoutFoodEmptyState
               type="workout"
-              onButtonPress={() => router.push('/workout/plan')}
+              onButtonPress={() => {
+                // TODO: Implement start workout
+              }}
             />
           ) : (
             <View className="gap-3">
@@ -441,33 +458,89 @@ export default function HomeScreen() {
           visible={isAddFoodVisible}
           onClose={() => setIsAddFoodVisible(false)}
           onMealTypeSelect={(mealType) => {
-            console.log('Selected meal type:', mealType);
+            setSelectedMealType(mealType);
             setIsAddFoodVisible(false);
-            // TODO: Open FoodSearchModal
+            setIsFoodSearchVisible(true);
           }}
           onAiCameraPress={() => {
-            console.log('AI Camera pressed');
             setIsAddFoodVisible(false);
-            // TODO: Open CameraModal with AI mode
+            setCameraMode('ai-meal-photo');
+            setIsCameraVisible(true);
           }}
           onScanBarcodePress={() => {
-            console.log('Scan barcode pressed');
             setIsAddFoodVisible(false);
-            // TODO: Open CameraModal with barcode mode
+            setCameraMode('barcode-scan');
+            setIsCameraVisible(true);
           }}
           onSearchFoodPress={() => {
-            console.log('Search food pressed');
-            // TODO: Open FoodSearchModal
+            setIsAddFoodVisible(false);
+            setSelectedMealType('snack');
+            setIsFoodSearchVisible(true);
           }}
           onCreateCustomFoodPress={() => {
-            console.log('Create custom food pressed');
             setIsAddFoodVisible(false);
-            // TODO: Open CreateCustomFoodModal
+            setIsCreateCustomFoodVisible(true);
           }}
           onTrackCustomMealPress={() => {
             console.log('Track custom meal pressed');
             setIsAddFoodVisible(false);
             // Do nothing for now, it's ok
+          }}
+        />
+      ) : null}
+
+      {/* Nutrition Goals Modal */}
+      {isNutritionGoalsVisible ? (
+        <NutritionGoalsModal
+          visible={isNutritionGoalsVisible}
+          onClose={() => setIsNutritionGoalsVisible(false)}
+          onSave={(goals) => {
+            console.log('Nutrition goals saved:', goals);
+            setIsNutritionGoalsVisible(false);
+          }}
+        />
+      ) : null}
+
+      {/* Food Search Modal */}
+      {isFoodSearchVisible ? (
+        <FoodSearchModal
+          visible={isFoodSearchVisible}
+          onClose={() => setIsFoodSearchVisible(false)}
+          mealType={selectedMealType}
+          onFoodSelect={(food) => {
+            console.log('Food selected:', food);
+            setIsFoodSearchVisible(false);
+          }}
+          onCreatePress={() => {
+            console.log('Create meal pressed');
+            setIsFoodSearchVisible(false);
+            setIsCreateCustomFoodVisible(true);
+          }}
+          onBarcodeScanPress={() => {
+            setIsFoodSearchVisible(false);
+            setCameraMode('barcode-scan');
+            setIsCameraVisible(true);
+          }}
+        />
+      ) : null}
+
+      {/* Camera Modal */}
+      {isCameraVisible ? (
+        <CameraModal
+          visible={isCameraVisible}
+          onClose={() => setIsCameraVisible(false)}
+          mode={cameraMode}
+        />
+      ) : null}
+
+      {/* Create Custom Food Modal */}
+      {isCreateCustomFoodVisible ? (
+        <CreateCustomFoodModal
+          visible={isCreateCustomFoodVisible}
+          onClose={() => setIsCreateCustomFoodVisible(false)}
+          onSave={(data) => {
+            console.log('Custom food saved:', data);
+            setIsCreateCustomFoodVisible(false);
           }}
         />
       ) : null}
