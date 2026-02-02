@@ -14,14 +14,14 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		13B07F961A680F5B00A75B9A /* musclog.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = musclog.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = musclog/Images.xcassets; sourceTree = "<group>"; };
-		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = musclog/Info.plist; sourceTree = "<group>"; };
-		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = musclog/SplashScreen.storyboard; sourceTree = "<group>"; };
+		13B07F961A680F5B00A75B9A /* MusclogLiftLogRepeat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MusclogLiftLogRepeat.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = MusclogLiftLogRepeat/Images.xcassets; sourceTree = "<group>"; };
+		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = MusclogLiftLogRepeat/Info.plist; sourceTree = "<group>"; };
+		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = MusclogLiftLogRepeat/SplashScreen.storyboard; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = musclog/AppDelegate.swift; sourceTree = "<group>"; };
-		F11748442D0722820044C1D9 /* musclog-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "musclog-Bridging-Header.h"; path = "musclog/musclog-Bridging-Header.h"; sourceTree = "<group>"; };
+		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = MusclogLiftLogRepeat/AppDelegate.swift; sourceTree = "<group>"; };
+		F11748442D0722820044C1D9 /* MusclogLiftLogRepeat-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "MusclogLiftLogRepeat-Bridging-Header.h"; path = "MusclogLiftLogRepeat/MusclogLiftLogRepeat-Bridging-Header.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -35,17 +35,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		13B07FAE1A68108700A75B9A /* musclog */ = {
+		13B07FAE1A68108700A75B9A /* MusclogLiftLogRepeat */ = {
 			isa = PBXGroup;
 			children = (
 				F11748412D0307B40044C1D9 /* AppDelegate.swift */,
-				F11748442D0722820044C1D9 /* musclog-Bridging-Header.h */,
+				F11748442D0722820044C1D9 /* MusclogLiftLogRepeat-Bridging-Header.h */,
 				BB2F792B24A3F905000567C9 /* Supporting */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
 			);
-			name = musclog;
+			name = MusclogLiftLogRepeat;
 			sourceTree = "<group>";
 		};
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
@@ -66,7 +66,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				13B07FAE1A68108700A75B9A /* musclog */,
+				13B07FAE1A68108700A75B9A /* MusclogLiftLogRepeat */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
@@ -79,7 +79,7 @@
 		83CBBA001A601CBA00E9B192 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				13B07F961A680F5B00A75B9A /* musclog.app */,
+				13B07F961A680F5B00A75B9A /* MusclogLiftLogRepeat.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -90,15 +90,15 @@
 				BB2F792C24A3F905000567C9 /* Expo.plist */,
 			);
 			name = Supporting;
-			path = musclog/Supporting;
+			path = MusclogLiftLogRepeat/Supporting;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		13B07F861A680F5B00A75B9A /* musclog */ = {
+		13B07F861A680F5B00A75B9A /* MusclogLiftLogRepeat */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "musclog" */;
+			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "MusclogLiftLogRepeat" */;
 			buildPhases = (
 				08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */,
 				13B07F871A680F5B00A75B9A /* Sources */,
@@ -106,15 +106,15 @@
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */,
-				C2B974B5058749AC92011555 /* Upload Debug Symbols to Sentry */,
+				088D9AFBC2634B539AED4D35 /* Upload Debug Symbols to Sentry */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = musclog;
-			productName = musclog;
-			productReference = 13B07F961A680F5B00A75B9A /* musclog.app */;
+			name = MusclogLiftLogRepeat;
+			productName = MusclogLiftLogRepeat;
+			productReference = 13B07F961A680F5B00A75B9A /* MusclogLiftLogRepeat.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -130,7 +130,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "musclog" */;
+			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "MusclogLiftLogRepeat" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -143,7 +143,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				13B07F861A680F5B00A75B9A /* musclog */,
+				13B07F861A680F5B00A75B9A /* MusclogLiftLogRepeat */,
 			);
 		};
 /* End PBXProject section */
@@ -194,7 +194,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-musclog-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-MusclogLiftLogRepeat-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -207,7 +207,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-musclog/Pods-musclog-resources.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-MusclogLiftLogRepeat/Pods-MusclogLiftLogRepeat-resources.sh",
 				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/EXConstants.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/EXUpdates/EXUpdates.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/RCTI18nStrings.bundle",
@@ -220,10 +220,10 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-musclog/Pods-musclog-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MusclogLiftLogRepeat/Pods-MusclogLiftLogRepeat-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		C2B974B5058749AC92011555 /* Upload Debug Symbols to Sentry */ = {
+		088D9AFBC2634B539AED4D35 /* Upload Debug Symbols to Sentry */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -262,7 +262,7 @@
 					"$(inherited)",
 					"FB_SONARKIT_ENABLED=1",
 				);
-				INFOPLIST_FILE = musclog/Info.plist;
+				INFOPLIST_FILE = MusclogLiftLogRepeat/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -275,13 +275,13 @@
 					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.werules.logger";
-				PRODUCT_NAME = "musclog";
-				SWIFT_OBJC_BRIDGING_HEADER = "musclog/musclog-Bridging-Header.h";
+				PRODUCT_NAME = "MusclogLiftLogRepeat";
+				SWIFT_OBJC_BRIDGING_HEADER = "MusclogLiftLogRepeat/MusclogLiftLogRepeat-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 				TARGETED_DEVICE_FAMILY = "1,2";
-				CODE_SIGN_ENTITLEMENTS = musclog/musclog.entitlements;
+				CODE_SIGN_ENTITLEMENTS = MusclogLiftLogRepeat/MusclogLiftLogRepeat.entitlements;
 			};
 			name = Debug;
 		};
@@ -291,7 +291,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				INFOPLIST_FILE = musclog/Info.plist;
+				INFOPLIST_FILE = MusclogLiftLogRepeat/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -304,12 +304,12 @@
 					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.werules.logger";
-				PRODUCT_NAME = "musclog";
-				SWIFT_OBJC_BRIDGING_HEADER = "musclog/musclog-Bridging-Header.h";
+				PRODUCT_NAME = "MusclogLiftLogRepeat";
+				SWIFT_OBJC_BRIDGING_HEADER = "MusclogLiftLogRepeat/MusclogLiftLogRepeat-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 				TARGETED_DEVICE_FAMILY = "1,2";
-				CODE_SIGN_ENTITLEMENTS = musclog/musclog.entitlements;
+				CODE_SIGN_ENTITLEMENTS = MusclogLiftLogRepeat/MusclogLiftLogRepeat.entitlements;
 			};
 			name = Release;
 		};
@@ -427,7 +427,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "musclog" */ = {
+		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "MusclogLiftLogRepeat" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				13B07F941A680F5B00A75B9A /* Debug */,
@@ -436,7 +436,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "musclog" */ = {
+		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "MusclogLiftLogRepeat" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				83CBBA201A601CBA00E9B192 /* Debug */,

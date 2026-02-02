@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "musclog",
+    "name": "Musclog - Lift, Log, Repeat",
     "slug": "musclog",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "scheme": "musclog",
     "userInterfaceStyle": "automatic",
     "jsEngine": "hermes",
@@ -53,8 +53,7 @@
         }
       ],
       "expo-background-task",
-      "expo-web-browser",
-      "@sentry/react-native"
+      "expo-web-browser"
     ],
     "orientation": "portrait",
     "icon": "./assets/icon.png",
