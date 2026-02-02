@@ -6,12 +6,15 @@ import { theme } from '../theme';
 import { GoogleGeminiIllustration } from './GoogleGeminiIllustration';
 import { GoogleSignInButton } from './GoogleSignInButton';
 import { MaybeLaterButton } from './MaybeLaterButton';
+import { Button } from './theme/Button';
 
 // Illustration Component
 type ConnectGoogleAccountBodyProps = {
   onClose: () => void;
   onConnect?: () => void;
   onMaybeLater?: () => void;
+  onContinue?: () => void;
+  googleAuthName?: string | undefined;
   isSigningIn?: boolean;
 };
 
@@ -20,6 +23,8 @@ export function ConnectGoogleAccountBody({
   onConnect,
   onMaybeLater,
   isSigningIn = false,
+  onContinue,
+  googleAuthName,
 }: ConnectGoogleAccountBodyProps) {
   const { t } = useTranslation();
 
@@ -134,7 +139,27 @@ export function ConnectGoogleAccountBody({
       </View>
       <View className="bg-transparent px-5 pb-2 pt-4">
         <View className="w-full items-center">
-          <GoogleSignInButton onPress={handleConnect} variant="dark" disabled={isSigningIn} />
+          {googleAuthName ? (
+            <View className="px-5 pb-6">
+              <View className="mb-6">
+                <Text className="text-center text-2xl font-bold text-white">
+                  {t('onboarding.connectGoogle.welcome', { name: googleAuthName })}
+                </Text>
+                <Text className="mt-2 text-center text-sm text-text-secondary">
+                  {t('onboarding.connectGoogle.welcomeDescription')}
+                </Text>
+              </View>
+              <Button
+                label={t('onboarding.connectGoogle.continue')}
+                onPress={() => onContinue?.()}
+                variant="gradientCta"
+                size="md"
+                width="full"
+              />
+            </View>
+          ) : (
+            <GoogleSignInButton onPress={handleConnect} variant="dark" disabled={isSigningIn} />
+          )}
         </View>
         <MaybeLaterButton onPress={handleMaybeLater} text={t('connectGoogleAccount.maybeLater')} />
       </View>

@@ -58,7 +58,7 @@ const exchangeCodeForToken = async (code: string, redirectUri: string) => {
     return data;
   } catch (error) {
     console.error('Token exchange failed:', error);
-    Alert.alert('Error', 'Failed to sign in with Google.'); // TODO: use the snackbar system
+    Alert.alert('Error', 'Failed to sign in with Google.' + error?.toString()); // TODO: use the snackbar system
     throw error;
   }
 };

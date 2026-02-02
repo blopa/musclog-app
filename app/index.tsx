@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import {
   Bell,
@@ -26,14 +27,13 @@ import { UserMenuModal } from '../components/modals/UserMenuModal';
 import ShowMoreButton from '../components/ShowMoreButton';
 import { SkeletonLoader } from '../components/theme/SkeletonLoader';
 import { WorkoutFoodEmptyState } from '../components/WorkoutFoodEmptyState';
+import { TEMP_GOOGLE_USER_NAME } from '../constants/auth';
 import { useCurrentNutritionGoal } from '../hooks/useCurrentNutritionGoal';
 import { useNutritionLogs } from '../hooks/useNutritionLogs';
 import { useUser } from '../hooks/useUser';
 import { useWorkoutHistory } from '../hooks/useWorkoutHistory';
 import { theme } from '../theme';
 import { getAvatarDisplayProps } from '../utils/avatarUtils';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { TEMP_GOOGLE_USER_NAME } from '../constants/auth';
 import { getCurrentOnboardingStep, isOnboardingCompleted } from '../utils/onboardingService';
 
 // TODO: implement notifications eventually
@@ -116,7 +116,7 @@ export default function HomeScreen() {
         const completed = await isOnboardingCompleted();
         if (!completed) {
           // If we persisted the user's current onboarding step (e.g. before external auth), restore it.
-            try {
+          try {
             const saved = await getCurrentOnboardingStep();
             if (saved) {
               try {
