@@ -107,25 +107,20 @@ export const useGoogleAuth = (shouldExchangeCode = false) => {
   const promptAsync = async (shouldExchangeCode = false) => {
     try {
       const authUrl = buildAuthUrl(GOOGLE_REDIRECT_URI_MOBILE);
-      console.debug('[useGoogleAuth] promptAsync authUrl:', authUrl);
 
       const result = await WebBrowser.openAuthSessionAsync(authUrl, GOOGLE_REDIRECT_URI_MOBILE);
-      console.debug('[useGoogleAuth] promptAsync WebBrowser result:', result);
 
       if (result.type === 'success' && result.url) {
         const queryParams = Linking.parse(result.url);
-        console.debug('[useGoogleAuth] promptAsync parsed queryParams:', queryParams);
         const { code } = queryParams.queryParams || {};
 
         if (code) {
           // Handle case where code might be an array (shouldn't happen, but TypeScript requires it)
           const authCode = Array.isArray(code) ? code[0] : code;
-          console.debug('[useGoogleAuth] promptAsync authorization authCode:', authCode);
           setIsSigningIn(true);
 
           if (shouldExchangeCode) {
             const tokenData = await exchangeCodeForToken(authCode, GOOGLE_REDIRECT_URI_MOBILE);
-            console.debug('[useGoogleAuth] promptAsync authorization tokenData:', tokenData);
             setAuthData(tokenData);
           }
 

@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +12,7 @@ import {
 import { MasterLayout } from '../../components/MasterLayout';
 import { useSnackbar } from '../../components/SnackbarContext';
 import { Button } from '../../components/theme/Button';
+import { TEMP_GOOGLE_USER_NAME } from '../../constants/auth';
 import { UserService } from '../../database/services';
 import { theme } from '../../theme';
 import { setOnboardingCompleted } from '../../utils/onboardingService';
@@ -47,6 +49,14 @@ export default function PersonalInfo() {
             gender: user.gender,
             avatarIcon: user.avatarIcon || undefined,
             avatarColor: user.avatarColor || undefined,
+          });
+        } else {
+          const tempName = await AsyncStorage.getItem(TEMP_GOOGLE_USER_NAME);
+          setInitialData({
+            fullName: tempName || '',
+            email: '',
+            dob: '',
+            gender: '',
           });
         }
       } catch (error) {

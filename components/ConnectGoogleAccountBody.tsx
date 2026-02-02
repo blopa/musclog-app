@@ -40,7 +40,6 @@ export function ConnectGoogleAccountBody({
 
   const getSetUSerInfo = useCallback(async (token: string) => {
     const userInfo = await getGoogleUserInfo(token);
-    console.debug('[ConnectGoogleAccountBody] getGoogleUserInfo:', userInfo);
     if (userInfo?.name) {
       setUserName(userInfo.name);
       await AsyncStorage.setItem(TEMP_GOOGLE_USER_NAME, userInfo.name);
@@ -57,7 +56,6 @@ export function ConnectGoogleAccountBody({
           const { isValid, accessToken } = await handleGoogleSignIn(tokenData);
 
           if (isValid) {
-            console.debug('[ConnectGoogleAccountBody] getAccessToken 1:', accessToken);
             await getSetUSerInfo(accessToken);
           }
         }
@@ -73,7 +71,6 @@ export function ConnectGoogleAccountBody({
     const checkForExistingToken = async () => {
       try {
         const token = await getAccessToken();
-        console.debug('[ConnectGoogleAccountBody] getAccessToken 2:', token);
         if (token) {
           await getSetUSerInfo(token);
         }

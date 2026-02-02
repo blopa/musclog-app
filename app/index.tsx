@@ -27,6 +27,7 @@ import { UserMenuModal } from '../components/modals/UserMenuModal';
 import ShowMoreButton from '../components/ShowMoreButton';
 import { SkeletonLoader } from '../components/theme/SkeletonLoader';
 import { WorkoutFoodEmptyState } from '../components/WorkoutFoodEmptyState';
+import { TEMP_GOOGLE_AUTH_CODE } from '../constants/auth';
 import { useCurrentNutritionGoal } from '../hooks/useCurrentNutritionGoal';
 import { useNutritionLogs } from '../hooks/useNutritionLogs';
 import { useUser } from '../hooks/useUser';
@@ -34,7 +35,6 @@ import { useWorkoutHistory } from '../hooks/useWorkoutHistory';
 import { theme } from '../theme';
 import { getAvatarDisplayProps } from '../utils/avatarUtils';
 import { getCurrentOnboardingStep, isOnboardingCompleted } from '../utils/onboardingService';
-import { TEMP_GOOGLE_AUTH_CODE } from '../constants/auth';
 
 // TODO: implement notifications eventually
 const SHOW_NOTIFICATIONS = false;
@@ -44,7 +44,6 @@ export default function HomeScreen() {
   const router = useRouter();
   const { user: dbUser, isLoading: isLoadingUser } = useUser();
   const params = useLocalSearchParams<{ code?: string }>();
-  console.debug('[HomeScreen] code param:', JSON.stringify(params));
 
   // Memoize today's date to prevent infinite re-renders
   const today = useMemo(() => new Date(), []);

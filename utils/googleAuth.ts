@@ -211,7 +211,9 @@ export type GoogleAuthData = {
 /**
  * Save tokens and user info after sign-in
  */
-export const handleGoogleSignIn = async (response: GoogleAuthData | null): Promise<{
+export const handleGoogleSignIn = async (
+  response: GoogleAuthData | null
+): Promise<{
   isValid: boolean;
   refreshToken: string;
   accessToken: string;
