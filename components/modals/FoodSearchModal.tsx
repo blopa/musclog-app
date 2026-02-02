@@ -316,7 +316,7 @@ export function FoodSearchModal({
 
   const FILTER_TABS = [
     { id: 'all', label: `${t('foodSearch.filters.allResults')} (${resultsBySource.all.length})` },
-    { id: 'myFoods', label: `${t('foodSearch.filters.myFoods')} (${localCount})` },
+    { id: 'myFoods', label: `${t('foodSearch.filters.favorites')} (${localCount})` },
     { id: 'api', label: `${t('foodSearch.filters.openFoodFacts')} (${apiCount})` },
     { id: 'meals', label: t('foodSearch.filters.meals') },
     { id: 'recipes', label: t('foodSearch.filters.recipes') },

@@ -540,7 +540,7 @@
     "openFoodFacts": "🌐 Open Food Facts ({{count}}) 🌐",
     "filters": {
       "allResults": "All Results",
-      "myFoods": "My Foods",
+      "myFoods": "Favorites",
       "openFoodFacts": "Open Food Facts",
       "meals": "Meals",
       "recipes": "Recipes"

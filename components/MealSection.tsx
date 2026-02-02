@@ -13,14 +13,14 @@ type MealSectionProps = {
 };
 
 type AddFoodButtonProps = {
-  mealName?: string;
+  mealType?: string;
   onPress?: () => void;
 };
 
-function AddFoodButton({ mealName, onPress }: AddFoodButtonProps) {
+function AddFoodButton({ mealType, onPress }: AddFoodButtonProps) {
   const { t } = useTranslation();
-  const buttonText = mealName
-    ? t('food.meals.addFoodTo', { meal: mealName })
+  const buttonText = mealType
+    ? t('food.meals.addFoodTo', { meal: mealType })
     : t('food.meals.addFood');
 
   return (
@@ -51,7 +51,7 @@ export function MealSection({ title, totalCalories, children, onAddFood }: MealS
         {children}
 
         {/* Add Food Button */}
-        <AddFoodButton mealName={title} onPress={onAddFood} />
+        <AddFoodButton mealType={title} onPress={onAddFood} />
       </View>
     </View>
   );
