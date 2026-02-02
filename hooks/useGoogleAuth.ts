@@ -7,6 +7,9 @@ import { Alert } from 'react-native';
 import { GOOGLE_REDIRECT_URI_MOBILE, GOOGLE_SCOPES } from '../constants/auth';
 import { getGoogleClientId } from '../utils/googleAuth';
 
+// This is required for the OAuth flow to work correctly on mobile
+WebBrowser.maybeCompleteAuthSession();
+
 const GOOGLE_AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
 const GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token';
 
@@ -117,8 +120,9 @@ export const useGoogleAuth = () => {
       } else if (result.type === 'dismiss') {
         // User canceled the auth flow
       }
-    } catch (error) {
-      Alert.alert('Error', 'Failed to initiate Google sign-in.'); // TODO: use the snackbar system
+    } catch (_error) {
+      // TODO: use the snackbar system
+      Alert.alert('Error', 'Failed to initiate Google sign-in.');
     }
   };
 
