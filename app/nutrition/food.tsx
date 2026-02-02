@@ -8,7 +8,7 @@ import {
   Sparkles,
   UtensilsCrossed,
 } from 'lucide-react-native';
-import { lazy, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 

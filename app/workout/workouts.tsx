@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { Dumbbell, Plus, Search, SlidersHorizontal, WifiOff } from 'lucide-react-native';
-import { lazy, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, View } from 'react-native';
 

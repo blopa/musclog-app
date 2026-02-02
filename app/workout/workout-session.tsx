@@ -2,7 +2,7 @@ import { Q } from '@nozbe/watermelondb';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { CheckCircle, Edit, Repeat, SkipForward, WifiOff } from 'lucide-react-native';
-import { lazy, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ImageBackground, ScrollView, Text, View } from 'react-native';
 

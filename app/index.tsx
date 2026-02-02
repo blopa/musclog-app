@@ -10,7 +10,7 @@ import {
   Wheat,
   Zap,
 } from 'lucide-react-native';
-import { createElement, lazy, useEffect, useMemo, useState } from 'react';
+import { createElement, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 

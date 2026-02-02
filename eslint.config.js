@@ -24,7 +24,7 @@ module.exports = defineConfig([
       // Require lazy imports for conditionally rendered components (fixable)
       'local/prefer-react-lazy': 'off',
       // Disallow React.lazy and convert back to regular imports (fixable)
-      'local/no-react-lazy': 'warn',
+      'local/no-react-lazy': 'off',
       // Sort and group imports
       'simple-import-sort/imports': 'warn',
       'simple-import-sort/exports': 'warn',
