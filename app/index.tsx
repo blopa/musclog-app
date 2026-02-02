@@ -122,10 +122,14 @@ export default function HomeScreen() {
             const saved = await getCurrentOnboardingStep();
             if (saved) {
               if (saved === '/onboarding/connect-with-google' && codeParam) {
-                router.replace(`${saved}?code=${encodeURIComponent(codeParam)}`);
-              } else {
-                router.replace(saved);
+                try {
+                  await AsyncStorage.setItem('googleAuthCode', codeParam);
+                } catch (e) {
+                  console.warn('Failed to save auth code to AsyncStorage', e);
+                }
               }
+
+              router.replace(saved);
             } else {
               router.replace('/onboarding/landing');
             }

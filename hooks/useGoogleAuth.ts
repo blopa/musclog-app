@@ -34,7 +34,7 @@ const buildAuthUrl = (redirectUri: string) => {
   return `${GOOGLE_AUTH_URL}?${params.toString()}`;
 };
 
-const exchangeCodeForToken = async (code: string, redirectUri: string) => {
+export const exchangeCodeForToken = async (code: string, redirectUri: string) => {
   try {
     const clientId = getGoogleClientId();
     const body = new URLSearchParams({

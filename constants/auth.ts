@@ -25,6 +25,7 @@ export const GOOGLE_ACCESS_TOKEN = 'googleAccessToken';
 export const GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE = 'googleAccessTokenExpirationDate';
 export const LAST_TIME_GOOGLE_AUTH_ERROR_WAS_SHOWN = 'lastTimeGoogleAuthErrorWasShown';
 export const TEMP_GOOGLE_USER_NAME = 'tempGoogleUserName';
+export const GOOGLE_AUTH_CODE = 'googleAuthCode';
 
 // Onboarding Keys
 export const ONBOARDING_COMPLETED = 'onboardingCompleted';

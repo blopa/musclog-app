@@ -1,10 +1,15 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CheckCircle2, LucideChartSpline, Sparkles } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
 
+import { GOOGLE_REDIRECT_URI_MOBILE } from '../constants/auth';
+import { exchangeCodeForToken } from '../hooks/useGoogleAuth';
 import { theme } from '../theme';
 import { getAccessToken, getGoogleUserInfo } from '../utils/googleAuth';
+import { setCurrentOnboardingStep } from '../utils/onboardingService';
+import { showSnackbar } from '../utils/snackbarService';
 import { GoogleGeminiIllustration } from './GoogleGeminiIllustration';
 import { GoogleSignInButton } from './GoogleSignInButton';
 import { MaybeLaterButton } from './MaybeLaterButton';
@@ -29,17 +34,37 @@ export function ConnectGoogleAccountBody({
   const { t } = useTranslation();
   const [userName, setUserName] = useState<string | undefined>(undefined);
 
+  const getSetUSerInfo = useCallback(async (token: string) => {
+    const userInfo = await getGoogleUserInfo(token);
+    console.debug('[ConnectGoogleAccountBody] getGoogleUserInfo:', userInfo);
+    if (userInfo?.name) {
+      setUserName(userInfo.name);
+    }
+  }, []);
+
+  useEffect(() => {
+    const loadCodeParam = async () => {
+      try {
+        const code = await AsyncStorage.getItem('googleAuthCode');
+        if (code) {
+          const tokenData = await exchangeCodeForToken(code, GOOGLE_REDIRECT_URI_MOBILE);
+          await getSetUSerInfo(tokenData);
+        }
+      } catch (e) {
+        console.warn('Failed to load auth code from AsyncStorage', e);
+      }
+    };
+
+    loadCodeParam();
+  }, [getSetUSerInfo]);
+
   useEffect(() => {
     const checkForExistingToken = async () => {
       try {
         const token = await getAccessToken();
         console.debug('[ConnectGoogleAccountBody] getAccessToken:', token);
         if (token) {
-          const userInfo = await getGoogleUserInfo(token);
-          console.debug('[ConnectGoogleAccountBody] getGoogleUserInfo:', userInfo);
-          if (userInfo?.name) {
-            setUserName(userInfo.name);
-          }
+          await getSetUSerInfo(token);
         }
       } catch (error) {
         console.error('Error checking for existing token:', error);
@@ -47,7 +72,7 @@ export function ConnectGoogleAccountBody({
     };
 
     checkForExistingToken();
-  }, []);
+  }, [getSetUSerInfo]);
 
   const handleConnect = () => {
     if (!isSigningIn) {
