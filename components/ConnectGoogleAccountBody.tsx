@@ -33,8 +33,10 @@ export function ConnectGoogleAccountBody({
     const checkForExistingToken = async () => {
       try {
         const token = await getAccessToken();
+        console.debug('[ConnectGoogleAccountBody] getAccessToken:', token);
         if (token) {
           const userInfo = await getGoogleUserInfo(token);
+          console.debug('[ConnectGoogleAccountBody] getGoogleUserInfo:', userInfo);
           if (userInfo?.name) {
             setUserName(userInfo.name);
           }
