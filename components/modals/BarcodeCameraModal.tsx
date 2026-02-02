@@ -2,6 +2,7 @@ import type { CameraView as CameraViewType } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { Image, Lightbulb, LightbulbOff, X } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Pressable, StatusBar, StyleSheet, Text, View } from 'react-native';
 import Animated, {
   Easing,
@@ -14,6 +15,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { theme } from '../../theme';
 import { detectBarcodes } from '../../utils/file';
+import { Button } from '../theme/Button';
 import { CameraView, useCameraPermissions } from '../CameraView';
 import { FullScreenModal } from './FullScreenModal';
 
@@ -28,6 +30,7 @@ export function BarcodeCameraModal({
   onClose,
   onBarcodeScanned,
 }: BarcodeCameraModalProps) {
+  const { t } = useTranslation();
   const [permission, requestPermission] = useCameraPermissions();
   const [torchEnabled, setTorchEnabled] = useState(false);
   const scanLineY = useSharedValue(0);
@@ -88,16 +91,17 @@ export function BarcodeCameraModal({
       <FullScreenModal
         visible={visible}
         onClose={onClose}
-        title="Camera Permission Required"
+        title={t('camera.title')}
         showHeader={false}
       >
         <View className="flex-1 items-center justify-center p-8">
           <Text className="mb-8 text-center text-text-primary">
-            We need camera permission to scan barcodes. Please enable camera access in your device
-            settings.
+            {t('food.aiCamera.permissionRequired')}
           </Text>
           <Pressable className="rounded-xl bg-accent-primary px-8 py-4" onPress={requestPermission}>
-            <Text className="text-base font-semibold text-black">Grant Permission</Text>
+            <Text className="text-base font-semibold text-black">
+              {t('food.aiCamera.grantPermission')}
+            </Text>
           </Pressable>
         </View>
       </FullScreenModal>
@@ -132,17 +136,8 @@ export function BarcodeCameraModal({
 
           {/* Scanner Overlay */}
           <View className="absolute inset-0 bg-black/40">
-            {/* Header with instruction */}
-            <View className="items-center px-6 pt-16">
-              <View className="rounded-full border border-white/10 bg-black/40 px-4 py-2 backdrop-blur-md">
-                <Text className="text-sm font-medium tracking-wide text-white">
-                  Align barcode within the frame to scan
-                </Text>
-              </View>
-            </View>
-
-            {/* Scanner Frame */}
-            <View className="flex-1 items-center justify-center">
+            {/* Scanner Frame - Centered Higher */}
+            <View className="absolute inset-0 items-center justify-center" style={{ top: '-10%' }}>
               <View className="relative h-64 w-64">
                 {/* Corner Brackets */}
                 <View className="absolute left-0 top-0 h-10 w-10 rounded-tl-xl border-l-4 border-t-4 border-emerald-400" />
@@ -195,30 +190,25 @@ export function BarcodeCameraModal({
           <View className="absolute bottom-0 left-0 right-0 border-t border-white/10 bg-black/60 px-6 pb-12 pt-8 backdrop-blur-xl">
             <View className="gap-4">
               {/* Upload from Gallery Button */}
-              <Pressable
-                className="w-full flex-row items-center justify-center gap-3 rounded-xl border border-white/5 bg-white/5 py-4"
+              <Button
+                label={t('food.aiCamera.uploadFromGallery')}
                 onPress={handleGalleryUpload}
-              >
-                <Image size={theme.iconSize.lg} color={theme.colors.text.muted} />
-                <Text className="text-base font-semibold text-white">Upload from Gallery</Text>
-              </Pressable>
+                icon={Image}
+                iconColor={theme.colors.text.muted}
+                variant="secondary"
+                width="full"
+                size="md"
+              />
 
               {/* Close Scanner Button */}
-              <Pressable
-                className="h-14 w-full flex-row items-center justify-center gap-2 rounded-xl"
-                style={{
-                  backgroundColor: theme.colors.status.emeraldLight,
-                  shadowColor: theme.colors.status.emeraldLight,
-                  shadowOffset: { width: 0, height: 0 },
-                  shadowOpacity: 0.2,
-                  shadowRadius: 25,
-                  elevation: 5,
-                }}
+              <Button
+                label={t('food.aiCamera.closeScanner')}
                 onPress={onClose}
-              >
-                <X size={theme.iconSize.lg} color="black" />
-                <Text className="text-lg font-bold text-black">Close Scanner</Text>
-              </Pressable>
+                icon={X}
+                variant="outline"
+                width="full"
+                size="md"
+              />
             </View>
           </View>
         </SafeAreaView>
