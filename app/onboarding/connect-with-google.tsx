@@ -24,7 +24,7 @@ export default function ConnectWithGoogle() {
         console.warn('Failed to persist onboarding step before Google auth', e);
       }
 
-      await promptAsync();
+      await promptAsync(false);
     } catch (error) {
       showSnackbar('error', t('onboarding.connectGoogle.error'));
       console.error('Error initiating Google sign-in:', error);

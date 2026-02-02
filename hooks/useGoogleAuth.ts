@@ -67,12 +67,15 @@ export const exchangeCodeForToken = async (code: string, redirectUri: string) =>
   }
 };
 
-export const useGoogleAuth = () => {
+export const useGoogleAuth = (shouldExchangeCode = false) => {
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [authData, setAuthData] = useState<GoogleAuthData | null>(null);
 
   useEffect(() => {
-    // Handle deep links on mobile
+    if (!shouldExchangeCode) {
+      return;
+    }
+
     const handleDeepLink = async (event: Linking.EventType) => {
       const { url } = event;
       const queryParams = Linking.parse(url);
@@ -103,7 +106,7 @@ export const useGoogleAuth = () => {
     };
   }, []);
 
-  const promptAsync = async () => {
+  const promptAsync = async (shouldExchangeCode = false) => {
     try {
       const authUrl = buildAuthUrl(GOOGLE_REDIRECT_URI_MOBILE);
       console.debug('[useGoogleAuth] promptAsync authUrl:', authUrl);
@@ -121,9 +124,13 @@ export const useGoogleAuth = () => {
           const authCode = Array.isArray(code) ? code[0] : code;
           console.debug('[useGoogleAuth] promptAsync authorization authCode:', authCode);
           setIsSigningIn(true);
-          const tokenData = await exchangeCodeForToken(authCode, GOOGLE_REDIRECT_URI_MOBILE);
-          console.debug('[useGoogleAuth] promptAsync authorization tokenData:', tokenData);
-          setAuthData(tokenData);
+
+          if (shouldExchangeCode) {
+            const tokenData = await exchangeCodeForToken(authCode, GOOGLE_REDIRECT_URI_MOBILE);
+            console.debug('[useGoogleAuth] promptAsync authorization tokenData:', tokenData);
+            setAuthData(tokenData);
+          }
+
           setIsSigningIn(false);
         }
       } else if (result.type === 'dismiss') {
