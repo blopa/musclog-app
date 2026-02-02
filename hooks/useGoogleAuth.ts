@@ -58,7 +58,7 @@ const exchangeCodeForToken = async (code: string, redirectUri: string) => {
     return data;
   } catch (error) {
     console.error('Token exchange failed:', error);
-    Alert.alert('Error', 'Failed to sign in with Google.' + error?.toString()); // TODO: use the snackbar system
+    Alert.alert('Error', 'Failed to sign in with Google: ' + error?.toString()); // TODO: use the snackbar system
     throw error;
   }
 };
@@ -120,9 +120,9 @@ export const useGoogleAuth = () => {
       } else if (result.type === 'dismiss') {
         // User canceled the auth flow
       }
-    } catch (_error) {
+    } catch (error) {
       // TODO: use the snackbar system
-      Alert.alert('Error', 'Failed to initiate Google sign-in.');
+      Alert.alert('Error', 'Failed to initiate Google sign-in: ' + error?.toString());
     }
   };
 
