@@ -34,6 +34,7 @@ import { useWorkoutHistory } from '../hooks/useWorkoutHistory';
 import { theme } from '../theme';
 import { getAvatarDisplayProps } from '../utils/avatarUtils';
 import { getCurrentOnboardingStep, isOnboardingCompleted } from '../utils/onboardingService';
+import { TEMP_GOOGLE_AUTH_CODE } from '../constants/auth';
 
 // TODO: implement notifications eventually
 const SHOW_NOTIFICATIONS = false;
@@ -123,13 +124,18 @@ export default function HomeScreen() {
             if (saved) {
               if (saved === '/onboarding/connect-with-google' && codeParam) {
                 try {
-                  await AsyncStorage.setItem('googleAuthCode', codeParam);
+                  await AsyncStorage.setItem(TEMP_GOOGLE_AUTH_CODE, codeParam);
                 } catch (e) {
                   console.warn('Failed to save auth code to AsyncStorage', e);
                 }
-              }
 
-              router.replace(saved);
+                router.replace({
+                  pathname: '/onboarding/connect-with-google',
+                  params: { loading: 'true' },
+                });
+              } else {
+                router.replace(saved);
+              }
             } else {
               router.replace('/onboarding/landing');
             }

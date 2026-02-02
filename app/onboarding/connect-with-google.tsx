@@ -1,4 +1,4 @@
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
@@ -14,6 +14,7 @@ export default function ConnectWithGoogle() {
   const { t } = useTranslation();
   const router = useRouter();
   const { isSigningIn, promptAsync } = useGoogleAuth();
+  const params = useLocalSearchParams<{ loading?: string }>();
 
   const handleConnect = useCallback(async () => {
     try {
@@ -49,7 +50,7 @@ export default function ConnectWithGoogle() {
           onConnect={handleConnect}
           onContinue={() => router.push('/onboarding/fitness-info')}
           onClose={() => {}}
-          isSigningIn={isSigningIn}
+          isSigningIn={isSigningIn || params?.loading === 'true'}
         />
       </ScrollView>
     </MasterLayout>
