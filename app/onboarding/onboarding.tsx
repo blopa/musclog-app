@@ -3,7 +3,7 @@ import { useRouter } from 'expo-router';
 import { ArrowLeft, ArrowRight, LucideIcon } from 'lucide-react-native';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Dimensions, ImageBackground, Text, View } from 'react-native';
+import { Dimensions, ImageBackground, Platform, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GradientText } from '../../components/GradientText';
@@ -14,6 +14,7 @@ import PreRegistrationIntro from '../../components/PreRegistrationIntro';
 import { Button } from '../../components/theme/Button';
 import { PageIndicators } from '../../components/theme/PageIndicators';
 import { theme } from '../../theme';
+import { focusManager } from '@tanstack/react-query';
 
 type OnboardingBodyProps = {
   imageUrl?: string;
@@ -462,7 +463,11 @@ export default function OnboardingScreen() {
       pagerRef.current?.setPage(nextStep);
     } else {
       // Navigate to home when on last step
-      router.push('/onboarding/health-connect');
+      if (!__DEV__ && Platform.OS === 'web') {
+        router.push('/onboarding/connect-with-google');
+      } else {
+        router.push('/onboarding/health-connect');
+      }
     }
   };
 
@@ -485,7 +490,11 @@ export default function OnboardingScreen() {
           <MaybeLaterButton
             onPress={() => {
               // Navigate to home or skip onboarding
-              router.push('/onboarding/health-connect');
+              if (!__DEV__ && Platform.OS === 'web') {
+                router.push('/onboarding/connect-with-google');
+              } else {
+                router.push('/onboarding/health-connect');
+              }
             }}
             text={t('onboarding.skip')}
             fullWidth={false}
