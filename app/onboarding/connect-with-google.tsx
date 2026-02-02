@@ -11,6 +11,8 @@ import { useGoogleAuth } from '../../hooks/useGoogleAuth';
 import { theme } from '../../theme';
 import { getAccessToken, getGoogleUserInfo, handleGoogleSignIn } from '../../utils/googleAuth';
 import { showSnackbar } from '../../utils/snackbarService';
+import { Button } from '../../components/theme/Button';
+import { MaybeLaterButton } from '../../components/MaybeLaterButton';
 
 export default function ConnectWithGoogle() {
   const { t } = useTranslation();
@@ -36,9 +38,11 @@ export default function ConnectWithGoogle() {
           const isValid = await handleGoogleSignIn(authData);
           if (isValid) {
             const token = await getAccessToken();
+            let userName: string | undefined;
             if (token) {
               const userInfo = await getGoogleUserInfo(token);
               if (userInfo && userInfo.name) {
+                userName = userInfo.name;
                 try {
                   await AsyncStorage.setItem(TEMP_GOOGLE_USER_NAME, userInfo.name);
                 } catch (e) {
@@ -47,9 +51,11 @@ export default function ConnectWithGoogle() {
               }
             }
 
-            // TODO: instead of forwarding right away, just update the current UI with a like "welcome, User Name"
-            // and then a continue button
-            router.push('/onboarding/fitness-info');
+            // Show a welcome UI with the user's name and a Continue button instead of forwarding immediately
+            if (userName) {
+              setTempName(userName);
+            }
+            setShowWelcome(true);
           }
         } catch (error) {
           showSnackbar('error', t('onboarding.connectGoogle.errorProcessing'));
@@ -64,6 +70,9 @@ export default function ConnectWithGoogle() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authData, router, t]);
 
+  const [showWelcome, setShowWelcome] = useState(false);
+  const [tempName, setTempName] = useState<string | undefined>(undefined);
+
   return (
     <MasterLayout showNavigationMenu={false}>
       <ScrollView>
@@ -75,14 +84,47 @@ export default function ConnectWithGoogle() {
             {t('onboarding.connectGoogle.title')}
           </Text>
         </View>
-        <ConnectGoogleAccountBody
-          onMaybeLater={() => {
-            router.push('/onboarding/fitness-info');
-          }}
-          onConnect={handleConnect}
-          onClose={() => {}}
-          isSigningIn={isSigningIn || isProcessing}
-        />
+        {showWelcome ? (
+          <View className="px-5 pb-6">
+            <View className="mb-6">
+              <Text className="text-center text-2xl font-bold text-white">
+                {t('onboarding.connectGoogle.welcome')}{' '}
+                <Text style={{ color: theme.colors.accent.primary }}>{tempName || ''}</Text>
+              </Text>
+              <Text className="mt-2 text-center text-sm text-text-secondary">
+                {t('onboarding.connectGoogle.welcomeDescription')}
+              </Text>
+            </View>
+
+            <View className="w-full items-center mb-4">
+              <Button
+                label={t('onboarding.connectGoogle.continue') || 'Continue'}
+                onPress={() => {
+                  router.push('/onboarding/fitness-info');
+                }}
+                variant="gradientCta"
+                size="md"
+                width="full"
+              />
+            </View>
+
+            <MaybeLaterButton
+              onPress={() => {
+                router.push('/onboarding/fitness-info');
+              }}
+              text={t('connectGoogleAccount.maybeLater')}
+            />
+          </View>
+        ) : (
+          <ConnectGoogleAccountBody
+            onMaybeLater={() => {
+              router.push('/onboarding/fitness-info');
+            }}
+            onConnect={handleConnect}
+            onClose={() => {}}
+            isSigningIn={isSigningIn || isProcessing}
+          />
+        )}
       </ScrollView>
     </MasterLayout>
   );

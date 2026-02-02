@@ -68,6 +68,7 @@ export default function PersonalInfo() {
       if (dobParts.length !== 3) {
         throw new Error('Invalid date format. Please use MM/DD/YYYY');
       }
+
       const month = parseInt(dobParts[0], 10) - 1; // Month is 0-indexed
       const day = parseInt(dobParts[1], 10);
       const year = parseInt(dobParts[2], 10);
