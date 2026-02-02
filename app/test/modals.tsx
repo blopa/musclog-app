@@ -9,6 +9,7 @@ import { AddMealModal } from '../../components/modals/AddMealModal';
 import AddUserMetricEntryModal from '../../components/modals/AddUserMetricEntryModal';
 import { AdvancedSettingsModal } from '../../components/modals/AdvancedSettingsModal';
 import { AISettingsModal } from '../../components/modals/AISettingsModal';
+import { BarcodeCameraModal } from '../../components/modals/BarcodeCameraModal';
 import { BasicSettingsModal } from '../../components/modals/BasicSettingsModal';
 import BodyMetricsHistoryModal from '../../components/modals/BodyMetricsHistoryModal';
 import { CenteredModal } from '../../components/modals/CenteredModal';
@@ -94,6 +95,7 @@ export default function ModalsTestScreen() {
 
   // Add Food Modal
   const [isAddFoodVisible, setIsAddFoodVisible] = useState(false);
+  const [isBarcodeCameraVisible, setIsBarcodeCameraVisible] = useState(false);
 
   // Add Meal Modal
   const [isAddMealVisible, setIsAddMealVisible] = useState(false);
@@ -501,6 +503,18 @@ export default function ModalsTestScreen() {
             />
           </View>
           <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Barcode Camera Modal</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Open camera to scan product barcodes.
+            </Text>
+            <Button
+              label="Open Barcode Camera Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsBarcodeCameraVisible(true)}
+            />
+          </View>
+          <View className="mb-6">
             <Text className="mb-2 text-lg font-bold text-text-primary">
               Connect Google Account Modal
             </Text>
@@ -841,6 +855,12 @@ export default function ModalsTestScreen() {
         onClose={() => setIsBasicSettingsVisible(false)}
       />
 
+      <BarcodeCameraModal
+        visible={isBarcodeCameraVisible}
+        onClose={() => setIsBarcodeCameraVisible(false)}
+        onBarcodeScanned={(data) => console.log('Barcode scanned:', data)}
+      />
+
       <AdvancedSettingsModal
         visible={isAdvancedSettingsVisible}
         onClose={() => setIsAdvancedSettingsVisible(false)}
@@ -970,9 +990,7 @@ export default function ModalsTestScreen() {
         onAiCameraPress={() => {
           console.log('AI Camera pressed');
         }}
-        onScanBarcodePress={() => {
-          console.log('Barcode scan pressed');
-        }}
+        onScanBarcodePress={() => setIsBarcodeCameraVisible(true)}
         onSearchFoodPress={() => {
           console.log('Search food pressed');
         }}

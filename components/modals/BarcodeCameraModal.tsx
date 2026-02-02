@@ -108,13 +108,9 @@ export function BarcodeCameraModal({
       scrollable={false}
     >
       <View className="relative flex-1 bg-black">
-        {/* Camera View */}
+        {/* Camera View - Full Screen */}
         <CameraView
-          style={{
-            width: SCREEN_WIDTH,
-            height: CAMERA_MAX_HEIGHT,
-            aspectRatio: CAMERA_ASPECT_RATIO,
-          }}
+          className="absolute inset-0"
           barcodeScannerSettings={{
             barcodeTypes: ['ean13', 'ean8', 'upc_a', 'upc_e', 'code128', 'code39', 'qr'],
           }}
@@ -172,24 +168,19 @@ export function BarcodeCameraModal({
           <View className="absolute right-6 top-16">
             <Pressable
               onPress={toggleTorch}
-              className="h-10 w-10 items-center justify-center rounded-full"
-              style={{
-                backgroundColor: theme.colors.background.darkGray,
-                borderWidth: theme.borderWidth.thin,
-                borderColor: theme.colors.background.white10,
-              }}
+              className="h-12 w-12 items-center justify-center rounded-full bg-black/40 backdrop-blur-md"
             >
               {torchEnabled ? (
-                <Lightbulb size={theme.iconSize.lg} color={theme.colors.text.primary} />
+                <Lightbulb size={24} color="white" />
               ) : (
-                <LightbulbOff size={theme.iconSize.lg} color={theme.colors.text.primary} />
+                <LightbulbOff size={24} color="white" />
               )}
             </Pressable>
           </View>
         </View>
 
-        {/* Bottom Controls */}
-        <View className="border-t border-white/10 bg-black/60 px-6 pb-12 pt-8 backdrop-blur-xl">
+        {/* Bottom Controls - Fixed at bottom */}
+        <View className="absolute bottom-0 left-0 right-0 border-t border-white/10 bg-black/60 backdrop-blur-xl px-6 pb-12 pt-8">
           <View className="gap-4">
             {/* Upload from Gallery Button */}
             <Pressable
