@@ -53,7 +53,7 @@ export function SegmentedControl({
                 end={{ x: 1, y: 0 }}
                 style={{
                   paddingVertical: 8,
-                  borderRadius: 8,
+                  borderRadius: theme.borderRadius.sm,
                   alignItems: 'center',
                   justifyContent: 'center',
                   shadowColor: theme.colors.accent.primary,

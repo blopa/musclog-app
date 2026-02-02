@@ -5,14 +5,14 @@ export function getAvatarColor(avatarColor?: AvatarColor | null) {
   if (!avatarColor) return theme.colors.accent.primary;
 
   const colorMap = {
-    emerald: theme.colors.accent.primary,
-    blue: '#3B82F6',
-    purple: '#8B5CF6',
-    pink: '#EC4899',
-    orange: '#F97316',
-    teal: '#14B8A6',
-    yellow: '#EAB308',
-    indigo: '#6366F1',
+    emerald: theme.colors.avatar.emerald,
+    blue: theme.colors.avatar.blue,
+    purple: theme.colors.avatar.purple,
+    pink: theme.colors.avatar.pink,
+    orange: theme.colors.avatar.orange,
+    teal: theme.colors.avatar.teal,
+    yellow: theme.colors.avatar.yellow,
+    indigo: theme.colors.avatar.indigo,
   };
 
   return colorMap[avatarColor] || theme.colors.accent.primary;
@@ -22,14 +22,14 @@ export function getAvatarBackgroundColor(avatarColor?: AvatarColor | null) {
   if (!avatarColor) return theme.colors.accent.primary20;
 
   const bgColorMap = {
-    emerald: theme.colors.accent.primary20,
-    blue: '#3B82F620',
-    purple: '#8B5CF620',
-    pink: '#EC489920',
-    orange: '#F9731620',
-    teal: '#14B8A620',
-    yellow: '#EAB30820',
-    indigo: '#6366F120',
+    emerald: theme.colors.avatarBg.emerald,
+    blue: theme.colors.avatarBg.blue,
+    purple: theme.colors.avatarBg.purple,
+    pink: theme.colors.avatarBg.pink,
+    orange: theme.colors.avatarBg.orange,
+    teal: theme.colors.avatarBg.teal,
+    yellow: theme.colors.avatarBg.yellow,
+    indigo: theme.colors.avatarBg.indigo,
   };
 
   return bgColorMap[avatarColor] || theme.colors.accent.primary20;

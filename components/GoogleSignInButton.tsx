@@ -3,6 +3,7 @@ import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, PressableProps, Text, View } from 'react-native';
 
+import { theme } from '../theme';
 import { GoogleLogoSvg } from './icons/GoogleLogoSvg';
 
 interface GoogleSignInButtonProps extends PressableProps {
@@ -31,13 +32,13 @@ export function GoogleSignInButton({
         'hover:shadow-[0_1px_2px_0_rgba(60,64,67,0.30),0_1px_3px_1px_rgba(60,64,67,0.15)]',
 
         isLight && [
-          'border-[#747775] bg-white',
-          'disabled:border-[#1f1f1f1f] disabled:bg-[#ffffff61]',
+          `border-[${theme.colors.google.borderLight}] bg-white`,
+          `disabled:border-[${theme.colors.google.disabledBorderLight}] disabled:bg-[${theme.colors.google.disabledBgLight}]`,
         ],
 
         !isLight && [
-          'border-[#8e918f] bg-[#131314]',
-          'disabled:border-[#8e918f1f] disabled:bg-[#13131461]',
+          `border-[${theme.colors.google.borderDark}] bg-[${theme.colors.google.backgroundDark}]`,
+          `disabled:border-[${theme.colors.google.disabledBorderDark}] disabled:bg-[${theme.colors.google.disabledBgDark}]`,
         ],
 
         className
@@ -49,14 +50,16 @@ export function GoogleSignInButton({
         pointerEvents="none"
         className={classNames(
           'absolute inset-0 opacity-0 transition-opacity duration-[218ms]',
-          isLight ? 'bg-[#303030]' : 'bg-white',
+          isLight ? `bg-[${theme.colors.google.overlayDark}]` : 'bg-white',
           !disabled && 'hover:opacity-[8%] focus:opacity-[12%] active:opacity-[12%]'
         )}
       />
 
       {/* Disabled overlay (dark only) */}
       {!isLight && disabled ? (
-        <View className="absolute inset-0 bg-[#e3e3e3] opacity-[12%]" />
+        <View
+          className={`absolute inset-0 bg-[${theme.colors.google.overlayLight}] opacity-[12%]`}
+        />
       ) : null}
 
       <View className="flex-row items-center">
@@ -68,7 +71,9 @@ export function GoogleSignInButton({
           numberOfLines={1}
           className={classNames(
             'text-base font-medium tracking-[0.25px]',
-            isLight ? 'text-[#1f1f1f]' : 'text-[#e3e3e3]',
+            isLight
+              ? `text-[${theme.colors.google.textLight}]`
+              : `text-[${theme.colors.google.textDark}]`,
             disabled && 'opacity-[38%]'
           )}
         >

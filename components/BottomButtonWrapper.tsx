@@ -13,7 +13,7 @@ export function BottomButtonWrapper({ children }: BottomButtonWrapperProps) {
     <View
       className="absolute bottom-0 left-0 right-0"
       style={{
-        paddingBottom: 0,
+        paddingBottom: theme.spacing.padding.zero,
         paddingHorizontal: theme.spacing.padding.zero,
         backgroundColor: 'transparent',
       }}

@@ -244,7 +244,7 @@ function WorkoutCard({ workout, opacity, onPress }: WorkoutCardPropsWithHandler)
                 <Trophy size={theme.iconSize.xs} color={theme.colors.status.emeraldLight} />
                 <Text
                   style={{
-                    fontSize: 10,
+                    fontSize: theme.typography.fontSize.xxs,
                     fontWeight: theme.typography.fontWeight.bold,
                     color: theme.colors.status.emeraldLight,
                     textTransform: 'uppercase',

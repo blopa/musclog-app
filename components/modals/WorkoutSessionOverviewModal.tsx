@@ -371,7 +371,7 @@ export default function WorkoutSessionOverviewModal({
         <ScrollView
           className="flex-1"
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 160 }}
+          contentContainerStyle={{ paddingBottom: theme.spacing.padding['5xl'] }}
         >
           <View style={{ height: theme.spacing.gap.lg }} />
           <View className="gap-4 px-4">

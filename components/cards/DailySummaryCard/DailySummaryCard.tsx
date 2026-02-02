@@ -113,10 +113,10 @@ export function DailySummaryCard({
 
             {/* Status icon for calories */}
             {highlightThresholds && calorieStatus === 'reached' ? (
-              <CheckCircle2 size={24} color="#22c55e" strokeWidth={2.5} />
+              <CheckCircle2 size={24} color={theme.colors.status.success} strokeWidth={2.5} />
             ) : null}
             {highlightThresholds && calorieStatus === 'exceeded' ? (
-              <AlertCircle size={24} color="#f97316" strokeWidth={2.5} />
+              <AlertCircle size={24} color={theme.colors.status.warning} strokeWidth={2.5} />
             ) : null}
           </View>
 
@@ -172,10 +172,10 @@ export function DailySummaryCard({
                   {t('dailySummaryCard.protein', 'Prot')}
                 </Text>
                 {highlightThresholds && proteinStatus === 'reached' ? (
-                  <CheckCircle2 size={16} color="#22c55e" strokeWidth={2.5} />
+                  <CheckCircle2 size={16} color={theme.colors.status.success} strokeWidth={2.5} />
                 ) : null}
                 {highlightThresholds && proteinStatus === 'exceeded' ? (
-                  <AlertCircle size={16} color="#f97316" strokeWidth={2.5} />
+                  <AlertCircle size={16} color={theme.colors.status.warning} strokeWidth={2.5} />
                 ) : null}
                 {!highlightThresholds || proteinStatus === 'not-reached' ? (
                   <Text
@@ -220,10 +220,10 @@ export function DailySummaryCard({
                   {t('dailySummaryCard.carbs', 'Carb')}
                 </Text>
                 {highlightThresholds && carbsStatus === 'reached' ? (
-                  <CheckCircle2 size={16} color="#22c55e" strokeWidth={2.5} />
+                  <CheckCircle2 size={16} color={theme.colors.status.success} strokeWidth={2.5} />
                 ) : null}
                 {highlightThresholds && carbsStatus === 'exceeded' ? (
-                  <AlertCircle size={16} color="#f97316" strokeWidth={2.5} />
+                  <AlertCircle size={16} color={theme.colors.status.warning} strokeWidth={2.5} />
                 ) : null}
                 {!highlightThresholds || carbsStatus === 'not-reached' ? (
                   <Text
@@ -268,10 +268,10 @@ export function DailySummaryCard({
                   {t('dailySummaryCard.fats', 'Fat')}
                 </Text>
                 {highlightThresholds && fatsStatus === 'reached' ? (
-                  <CheckCircle2 size={16} color="#22c55e" strokeWidth={2.5} />
+                  <CheckCircle2 size={16} color={theme.colors.status.success} strokeWidth={2.5} />
                 ) : null}
                 {highlightThresholds && fatsStatus === 'exceeded' ? (
-                  <AlertCircle size={16} color="#f97316" strokeWidth={2.5} />
+                  <AlertCircle size={16} color={theme.colors.status.warning} strokeWidth={2.5} />
                 ) : null}
                 {!highlightThresholds || fatsStatus === 'not-reached' ? (
                   <Text

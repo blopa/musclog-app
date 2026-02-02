@@ -362,7 +362,7 @@ export function PastWorkoutsHistoryFilterMenu({
           >
             <Text
               style={{
-                fontSize: 10,
+                fontSize: theme.typography.fontSize.xxs,
                 fontWeight: theme.typography.fontWeight.medium,
                 color: theme.colors.text.tertiary,
               }}
@@ -371,7 +371,7 @@ export function PastWorkoutsHistoryFilterMenu({
             </Text>
             <Text
               style={{
-                fontSize: 10,
+                fontSize: theme.typography.fontSize.xxs,
                 fontWeight: theme.typography.fontWeight.medium,
                 color: theme.colors.text.tertiary,
               }}
