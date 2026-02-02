@@ -313,9 +313,9 @@ export default function ProfileScreen() {
               label={t('profile.history')}
             />
           </View>
-          <View className="flex-row flex-wrap" style={{ gap: theme.spacing.gap.md }}>
+          <View className="flex-row flex-wrap -mx-2">
             {stats.map((stat) => (
-              <View key={stat.id} style={{ width: '31%' }}>
+              <View key={stat.id} className="w-1/2 px-2 mb-4">
                 <StatCard
                   title={t(stat.titleKey)}
                   value={stat.value}
