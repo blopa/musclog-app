@@ -18,11 +18,27 @@
       "expo-router",
       "expo-health-connect",
       [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/notification-icon.png",
+          "color": "#ffffff",
+          "defaultChannel": "default",
+          "enableBackgroundRemoteNotifications": false
+        }
+      ],
+      [
         "expo-camera",
         {
           "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
           "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
           "recordAudioAndroid": false
+        }
+      ],
+      [
+        "@sentry/react-native/expo",
+        {
+          "organization": "werules",
+          "project": "workout"
         }
       ],
       "expo-font",
@@ -53,12 +69,21 @@
       "bundleIdentifier": "com.werules.logger"
     },
     "android": {
+      "softwareKeyboardLayoutMode": "pan",
+      "package": "com.werules.logger",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0a1f1a"
       },
       "permissions": [
+        "android.permission.INTERNET",
         "android.permission.CAMERA",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.WAKE_LOCK",
+        "android.permission.POST_NOTIFICATIONS",
+        "android.permission.VIBRATE",
+        "android.permission.WRITE_CALENDAR",
         "android.permission.health.READ_HEIGHT",
         "android.permission.health.READ_WEIGHT",
         "android.permission.health.READ_BODY_FAT",
@@ -73,9 +98,12 @@
         "android.permission.health.WRITE_EXERCISE",
         "android.permission.health.READ_LEAN_BODY_MASS",
         "android.permission.health.WRITE_LEAN_BODY_MASS"
-      ],
-      "package": "com.werules.logger",
-      "softwareKeyboardLayoutMode": "pan"
+      ]
+    },
+    "extra": {
+      "eas": {
+        "projectId": "7a194e96-295d-44a1-8324-78e776fe0807"
+      }
     }
   }
 }
