@@ -7,7 +7,7 @@ import { ScrollView, Text, View } from 'react-native';
 import { GOOGLE_REDIRECT_URI_MOBILE } from '../constants/auth';
 import { exchangeCodeForToken } from '../hooks/useGoogleAuth';
 import { theme } from '../theme';
-import { getAccessToken, getGoogleUserInfo } from '../utils/googleAuth';
+import { getAccessToken, getGoogleUserInfo, handleGoogleSignIn } from '../utils/googleAuth';
 import { setCurrentOnboardingStep } from '../utils/onboardingService';
 import { showSnackbar } from '../utils/snackbarService';
 import { GoogleGeminiIllustration } from './GoogleGeminiIllustration';
@@ -47,8 +47,14 @@ export function ConnectGoogleAccountBody({
       try {
         const code = await AsyncStorage.getItem('googleAuthCode');
         if (code) {
+          await AsyncStorage.removeItem('googleAuthCode');
           const tokenData = await exchangeCodeForToken(code, GOOGLE_REDIRECT_URI_MOBILE);
-          await getSetUSerInfo(tokenData);
+          const { isValid, accessToken } = await handleGoogleSignIn(tokenData);
+
+          if (isValid) {
+            console.debug('[ConnectGoogleAccountBody] getAccessToken 1:', accessToken);
+            await getSetUSerInfo(accessToken);
+          }
         }
       } catch (e) {
         console.warn('Failed to load auth code from AsyncStorage', e);
@@ -62,7 +68,7 @@ export function ConnectGoogleAccountBody({
     const checkForExistingToken = async () => {
       try {
         const token = await getAccessToken();
-        console.debug('[ConnectGoogleAccountBody] getAccessToken:', token);
+        console.debug('[ConnectGoogleAccountBody] getAccessToken 2:', token);
         if (token) {
           await getSetUSerInfo(token);
         }

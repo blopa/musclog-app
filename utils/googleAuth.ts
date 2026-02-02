@@ -211,7 +211,11 @@ export type GoogleAuthData = {
 /**
  * Save tokens and user info after sign-in
  */
-export const handleGoogleSignIn = async (response: GoogleAuthData | null): Promise<boolean> => {
+export const handleGoogleSignIn = async (response: GoogleAuthData | null): Promise<{
+  isValid: boolean;
+  refreshToken: string;
+  accessToken: string;
+}> => {
   if (response) {
     const {
       access_token: accessToken,
@@ -236,7 +240,11 @@ export const handleGoogleSignIn = async (response: GoogleAuthData | null): Promi
     await AsyncStorage.setItem(GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE, expirationTime.toString());
 
     // Validate access token by checking if it works with Gemini
-    return await isValidAccessToken(accessToken);
+    return {
+      isValid: await isValidAccessToken(accessToken),
+      refreshToken,
+      accessToken,
+    };
   }
   throw new Error('Google sign-in failed or cancelled.');
 };

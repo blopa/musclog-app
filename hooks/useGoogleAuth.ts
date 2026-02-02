@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 
 import { GOOGLE_REDIRECT_URI_MOBILE, GOOGLE_SCOPES } from '../constants/auth';
-import { getGoogleClientId, handleGoogleSignIn } from '../utils/googleAuth';
+import { getGoogleClientId } from '../utils/googleAuth';
 
 // This is required for the OAuth flow to work correctly on mobile
 WebBrowser.maybeCompleteAuthSession();
@@ -57,8 +57,6 @@ export const exchangeCodeForToken = async (code: string, redirectUri: string) =>
       throw new Error(data.error_description || data.error);
     }
 
-    await handleGoogleSignIn(data);
-
     return data;
   } catch (error) {
     console.error('Token exchange failed:', error);
@@ -104,7 +102,7 @@ export const useGoogleAuth = (shouldExchangeCode = false) => {
         subscription.remove();
       }
     };
-  }, []);
+  }, [shouldExchangeCode]);
 
   const promptAsync = async (shouldExchangeCode = false) => {
     try {
