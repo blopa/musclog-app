@@ -16,6 +16,7 @@ import { useUserMetrics } from '../hooks/useUserMetrics';
 import { theme } from '../theme';
 import { getAvatarDisplayProps } from '../utils/avatarUtils';
 
+// TODO: remove hardcoded data
 const PROFILE_DATA = {
   user: {
     name: 'Alex Johnson',
@@ -167,6 +168,7 @@ export default function ProfileScreen() {
     if (metrics?.bmi !== undefined) {
       const bmiStatus =
         metrics.bmi < 18.5
+          // TODO: use translation here
           ? 'Underweight'
           : metrics.bmi < 25
             ? 'Normal'
