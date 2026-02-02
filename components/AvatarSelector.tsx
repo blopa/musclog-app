@@ -10,6 +10,7 @@ import {
   Zap,
 } from 'lucide-react-native';
 import { ComponentType, createElement } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { theme } from '../theme';
@@ -55,9 +56,13 @@ export function AvatarSelector({
   onAvatarSelect,
   onColorSelect,
 }: AvatarSelectorProps) {
+  const { t } = useTranslation();
+
   return (
     <View className="flex-col gap-2">
-      <Text className="ml-1 text-sm font-medium text-text-secondary">Choose Avatar</Text>
+      <Text className="ml-1 text-sm font-medium text-text-secondary">
+        {t('chooseAvatar')}
+      </Text>
 
       <View className="flex-row items-center gap-4 rounded-2xl border border-white/10 bg-bg-card p-4">
         {/* Default avatar with gradient background */}
@@ -109,26 +114,37 @@ export function AvatarSelector({
 
       {/* Color Selection */}
       <View className="flex-col gap-2">
-        <Text className="ml-1 text-sm font-medium text-text-secondary">Choose Color</Text>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ gap: 12 }}
-          className="rounded-2xl border border-white/10 bg-bg-card p-4"
+        <Text className="ml-1 text-sm font-medium text-text-secondary">{t('chooseColor')}</Text>
+        <View
+          className="rounded-2xl border border-white/10 bg-bg-card"
+          style={{
+            paddingHorizontal: 14,
+          }}
         >
-          {colorOptions.map((color) => (
-            <Pressable
-              key={color}
-              className={`h-12 w-12 items-center justify-center rounded-full border-2 ${
-                selectedColor === color ? 'border-white/50' : 'border-transparent'
-              }`}
-              style={{ backgroundColor: getAvatarColor(color) }}
-              onPress={() => onColorSelect(color)}
-            >
-              {selectedColor === color ? <View className="h-2 w-2 rounded-full bg-white" /> : null}
-            </Pressable>
-          ))}
-        </ScrollView>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{
+              gap: theme.spacing.gap.md,
+              paddingVertical: theme.spacing.padding.base,
+            }}
+          >
+            {colorOptions.map((color) => (
+              <Pressable
+                key={color}
+                className={`h-12 w-12 items-center justify-center rounded-full border-2 ${
+                  selectedColor === color ? 'border-white/50' : 'border-transparent'
+                }`}
+                style={{ backgroundColor: getAvatarColor(color) }}
+                onPress={() => onColorSelect(color)}
+              >
+                {selectedColor === color ? (
+                  <View className="h-2 w-2 rounded-full bg-white" />
+                ) : null}
+              </Pressable>
+            ))}
+          </ScrollView>
+        </View>
       </View>
     </View>
   );
