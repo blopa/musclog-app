@@ -32,7 +32,11 @@ type NewCustomFoodModalProps = {
   onSave?: (data: any) => void;
 };
 
-export default function NewCustomFoodModal({ visible, onClose, onSave }: NewCustomFoodModalProps) {
+export default function CreateCustomFoodModal({
+  visible,
+  onClose,
+  onSave,
+}: NewCustomFoodModalProps) {
   const [foodName, setFoodName] = useState('');
   const [barcode, setBarcode] = useState('');
   const [measurementUnit, setMeasurementUnit] = useState<MeasurementUnit>('100g');

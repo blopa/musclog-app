@@ -36,7 +36,7 @@ import { theme } from '../theme';
 import { getAvatarDisplayProps } from '../utils/avatarUtils';
 import { getCurrentOnboardingStep, isOnboardingCompleted } from '../utils/onboardingService';
 
-// TODO: implement notifications eventually
+// No notification system yet, so leave it like this for now
 const SHOW_NOTIFICATIONS = false;
 
 export default function HomeScreen() {
@@ -443,17 +443,17 @@ export default function HomeScreen() {
           onMealTypeSelect={(mealType) => {
             console.log('Selected meal type:', mealType);
             setIsAddFoodVisible(false);
-            // TODO: Navigate to food search or other appropriate screen
+            // TODO: Open FoodSearchModal
           }}
           onAiCameraPress={() => {
             console.log('AI Camera pressed');
             setIsAddFoodVisible(false);
-            // TODO: Navigate to AI camera screen
+            // TODO: Open CameraModal with AI mode
           }}
           onScanBarcodePress={() => {
             console.log('Scan barcode pressed');
             setIsAddFoodVisible(false);
-            // TODO: Navigate to barcode scanner
+            // TODO: Open CameraModal with barcode mode
           }}
           onSearchFoodPress={() => {
             console.log('Search food pressed');
@@ -463,12 +463,12 @@ export default function HomeScreen() {
           onCreateCustomFoodPress={() => {
             console.log('Create custom food pressed');
             setIsAddFoodVisible(false);
-            // TODO: Navigate to create custom food screen
+            // TODO: Open CreateCustomFoodModal
           }}
           onTrackCustomMealPress={() => {
             console.log('Track custom meal pressed');
             setIsAddFoodVisible(false);
-            // TODO: Navigate to track custom meal screen
+            // Do nothing for now, it's ok
           }}
         />
       ) : null}

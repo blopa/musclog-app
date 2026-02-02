@@ -15,6 +15,7 @@ import { CenteredModal } from '../../components/modals/CenteredModal';
 import { CoachModal } from '../../components/modals/CoachModal';
 import { ConfirmationModal } from '../../components/modals/ConfirmationModal';
 import { ConnectGoogleAccountModal } from '../../components/modals/ConnectGoogleAccountModal';
+import CreateCustomFoodModal from '../../components/modals/CreateCustomFoodModal';
 import CreateExerciseModal from '../../components/modals/CreateExerciseModal';
 import { CreateMealModal } from '../../components/modals/CreateMealModal';
 import CreateWorkoutModal from '../../components/modals/CreateWorkoutModal';
@@ -34,7 +35,6 @@ import { FullScreenModal } from '../../components/modals/FullScreenModal';
 import GoalsManagementModal from '../../components/modals/GoalsManagementModal';
 import { LogSetPerformanceModal } from '../../components/modals/LogSetPerformanceModal';
 import { MainSettingsModal } from '../../components/modals/MainSettingsModal';
-import NewCustomFoodModal from '../../components/modals/NewCustomFoodModal';
 import { NotificationsModal } from '../../components/modals/NotificationsModal';
 import { NutritionGoals, NutritionGoalsModal } from '../../components/modals/NutritionGoalsModal';
 import PastWorkoutDetailModal from '../../components/modals/PastWorkoutDetailModal';
@@ -1187,7 +1187,7 @@ export default function ModalsTestScreen() {
         visible={isCreateExerciseVisible}
         onClose={() => setIsCreateExerciseVisible(false)}
       />
-      <NewCustomFoodModal
+      <CreateCustomFoodModal
         visible={isNewCustomFoodVisible}
         onClose={() => setIsNewCustomFoodVisible(false)}
         onSave={(data) => console.log('New custom food saved:', data)}

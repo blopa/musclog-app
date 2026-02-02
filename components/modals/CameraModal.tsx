@@ -29,9 +29,9 @@ import { detectBarcodes } from '../../utils/file';
 import { CameraView, useCameraPermissions } from '../CameraView';
 import { AddFoodModal } from './AddFoodModal';
 import { AINutritionTrackingContextModal } from './AINutritionTrackingContextModal';
+import CreateCustomFoodModal from './CreateCustomFoodModal';
 import { FoodDetailsModal } from './FoodDetailsModal';
 import { FullScreenModal } from './FullScreenModal';
-import NewCustomFoodModal from './NewCustomFoodModal';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const CAMERA_ASPECT_RATIO = theme.aspectRatio.portrait;
@@ -642,7 +642,7 @@ export default function CameraModal({ visible, onClose, mode = 'barcode-scan' }:
 
         {/* New Custom Food Modal */}
         {isNewCustomFoodModalVisible ? (
-          <NewCustomFoodModal
+          <CreateCustomFoodModal
             visible={isNewCustomFoodModalVisible}
             onClose={handleNewCustomFoodClose}
             onSave={handleNewCustomFoodSave}
