@@ -17,7 +17,7 @@ import { ErrorStateCard } from '../../components/theme/ErrorStateCard';
 import { WorkoutTimeTracker } from '../../components/WorkoutTimeTracker';
 import { database } from '../../database';
 import WorkoutLog from '../../database/models/WorkoutLog';
-import { WorkoutService } from '../../database/services/WorkoutService';
+import { WorkoutService } from '../../database/services';
 import { theme } from '../../theme';
 import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
 

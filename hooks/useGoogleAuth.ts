@@ -51,6 +51,7 @@ const exchangeCodeForToken = async (code: string, redirectUri: string) => {
     });
 
     const data = await response.json();
+
     if (data.error) {
       throw new Error(data.error_description || data.error);
     }
@@ -58,7 +59,7 @@ const exchangeCodeForToken = async (code: string, redirectUri: string) => {
     return data;
   } catch (error) {
     console.error('Token exchange failed:', error);
-    Alert.alert('Error', 'Failed to sign in with Google: ' + error?.toString()); // TODO: use the snackbar system
+    Alert.alert('Error', 'Failed to sign in with Google.'); // TODO: use the snackbar system
     throw error;
   }
 };
@@ -120,9 +121,9 @@ export const useGoogleAuth = () => {
       } else if (result.type === 'dismiss') {
         // User canceled the auth flow
       }
-    } catch (error) {
+    } catch (_error) {
       // TODO: use the snackbar system
-      Alert.alert('Error', 'Failed to initiate Google sign-in: ' + error?.toString());
+      Alert.alert('Error', 'Failed to initiate Google sign-in.');
     }
   };
 

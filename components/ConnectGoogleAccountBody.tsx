@@ -1,8 +1,10 @@
 import { CheckCircle2, LucideChartSpline, Sparkles } from 'lucide-react-native';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
 
 import { theme } from '../theme';
+import { getAccessToken, getGoogleUserInfo } from '../utils/googleAuth';
 import { GoogleGeminiIllustration } from './GoogleGeminiIllustration';
 import { GoogleSignInButton } from './GoogleSignInButton';
 import { MaybeLaterButton } from './MaybeLaterButton';
@@ -14,7 +16,6 @@ type ConnectGoogleAccountBodyProps = {
   onConnect?: () => void;
   onMaybeLater?: () => void;
   onContinue?: () => void;
-  googleAuthName?: string | undefined;
   isSigningIn?: boolean;
 };
 
@@ -24,9 +25,27 @@ export function ConnectGoogleAccountBody({
   onMaybeLater,
   isSigningIn = false,
   onContinue,
-  googleAuthName,
 }: ConnectGoogleAccountBodyProps) {
   const { t } = useTranslation();
+  const [userName, setUserName] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    const checkForExistingToken = async () => {
+      try {
+        const token = await getAccessToken();
+        if (token) {
+          const userInfo = await getGoogleUserInfo(token);
+          if (userInfo?.name) {
+            setUserName(userInfo.name);
+          }
+        }
+      } catch (error) {
+        console.error('Error checking for existing token:', error);
+      }
+    };
+
+    checkForExistingToken();
+  }, []);
 
   const handleConnect = () => {
     if (!isSigningIn) {
@@ -139,11 +158,11 @@ export function ConnectGoogleAccountBody({
       </View>
       <View className="bg-transparent px-5 pb-2 pt-4">
         <View className="w-full items-center">
-          {googleAuthName ? (
+          {userName ? (
             <View className="px-5 pb-6">
               <View className="mb-6">
                 <Text className="text-center text-2xl font-bold text-white">
-                  {t('onboarding.connectGoogle.welcome', { name: googleAuthName })}
+                  {t('onboarding.connectGoogle.welcome', { name: userName })}
                 </Text>
                 <Text className="mt-2 text-center text-sm text-text-secondary">
                   {t('onboarding.connectGoogle.welcomeDescription')}

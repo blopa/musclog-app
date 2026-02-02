@@ -27,13 +27,12 @@ import { UserMenuModal } from '../components/modals/UserMenuModal';
 import ShowMoreButton from '../components/ShowMoreButton';
 import { SkeletonLoader } from '../components/theme/SkeletonLoader';
 import { WorkoutFoodEmptyState } from '../components/WorkoutFoodEmptyState';
-import { TEMP_GOOGLE_USER_NAME } from '../constants/auth';
+import { theme } from '../theme';
+import { getAvatarDisplayProps } from '../utils/avatarUtils';
 import { useCurrentNutritionGoal } from '../hooks/useCurrentNutritionGoal';
 import { useNutritionLogs } from '../hooks/useNutritionLogs';
 import { useUser } from '../hooks/useUser';
 import { useWorkoutHistory } from '../hooks/useWorkoutHistory';
-import { theme } from '../theme';
-import { getAvatarDisplayProps } from '../utils/avatarUtils';
 import { getCurrentOnboardingStep, isOnboardingCompleted } from '../utils/onboardingService';
 
 // TODO: implement notifications eventually
@@ -119,22 +118,7 @@ export default function HomeScreen() {
           try {
             const saved = await getCurrentOnboardingStep();
             if (saved) {
-              try {
-                if (saved === '/onboarding/connect-with-google') {
-                  const name = await AsyncStorage.getItem(TEMP_GOOGLE_USER_NAME);
-                  if (name) {
-                    const encoded = encodeURIComponent(name);
-                    router.replace(`${saved}?googleAuthName=${encoded}`);
-                  } else {
-                    router.replace(saved);
-                  }
-                } else {
-                  router.replace(saved);
-                }
-              } catch (innerErr) {
-                console.error('Error reading temp google name', innerErr);
-                router.replace(saved);
-              }
+              router.replace(saved);
             } else {
               router.replace('/onboarding/landing');
             }
