@@ -864,7 +864,10 @@
       "allowHealthAccess": "Allow Health Access",
       "connectedCount": "Connected {{granted}}/{{total}}",
       "maybeLater": "Maybe later",
-      "privacyStatement": "Musclog values your privacy. Your data is encrypted and used only for your personal analytics."
+      "privacyStatement": "Musclog values your privacy. Your data is encrypted and used only for your personal analytics.",
+      "initializing": "Initializing Health Connect...",
+      "syncing": "Syncing health data...",
+      "processing": "Processing..."
     },
     "landing": {
       "getStarted": "Get Started",

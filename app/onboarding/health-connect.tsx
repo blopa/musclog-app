@@ -181,9 +181,9 @@ export default function HealthConnectScreen() {
                   color: theme.colors.text.secondary,
                 }}
               >
-                {isInitializing ? 'Initializing Health Connect...' : null}
-                {isSyncing ? 'Syncing health data...' : null}
-                {isProcessing ? 'Processing...' : null}
+                {isInitializing ? t('onboarding.healthConnect.initializing') : null}
+                {isSyncing ? t('onboarding.healthConnect.syncing') : null}
+                {isProcessing ? t('onboarding.healthConnect.processing') : null}
               </Text>
             </View>
           ) : null}
