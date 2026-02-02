@@ -7,7 +7,7 @@ import { Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { theme } from '../theme';
-import CameraModal from './modals/CameraModal';
+import SmartCameraModal from './modals/SmartCameraModal';
 import { CoachModal } from './modals/CoachModal';
 
 type MasterLayoutProps = {
@@ -49,7 +49,7 @@ export function MasterLayout({ children, showNavigationMenu = true }: MasterLayo
         <CoachModal visible={isCoachModalVisible} onClose={() => setIsCoachModalVisible(false)} />
       ) : null}
       {isCameraModalVisible ? (
-        <CameraModal
+        <SmartCameraModal
           visible={isCameraModalVisible}
           onClose={() => setIsCameraModalVisible(false)}
         />

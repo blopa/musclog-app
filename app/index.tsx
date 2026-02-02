@@ -20,7 +20,7 @@ import { DailySummaryEmptyState } from '../components/cards/DailySummaryCard/Dai
 import { DetailedItemCard } from '../components/cards/DetailedItemCard';
 import { MasterLayout } from '../components/MasterLayout';
 import { AddFoodModal } from '../components/modals/AddFoodModal';
-import CameraModal from '../components/modals/CameraModal';
+import SmartCameraModal from '../components/modals/SmartCameraModal';
 import CreateCustomFoodModal from '../components/modals/CreateCustomFoodModal';
 import { FoodSearchModal } from '../components/modals/FoodSearchModal';
 import { NotificationsModal } from '../components/modals/NotificationsModal';
@@ -526,7 +526,7 @@ export default function HomeScreen() {
 
       {/* Camera Modal */}
       {isCameraVisible ? (
-        <CameraModal
+        <SmartCameraModal
           visible={isCameraVisible}
           onClose={() => setIsCameraVisible(false)}
           mode={cameraMode}

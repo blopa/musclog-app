@@ -45,7 +45,7 @@ type CameraModalProps = {
   mode?: CameraMode;
 };
 
-export default function CameraModal({ visible, onClose, mode = 'barcode-scan' }: CameraModalProps) {
+export default function SmartCameraModal({ visible, onClose, mode = 'barcode-scan' }: CameraModalProps) {
   const { t } = useTranslation();
   const [permission, requestPermission] = useCameraPermissions();
   const [flashEnabled, setFlashEnabled] = useState(false);
