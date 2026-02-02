@@ -10,7 +10,7 @@ import {
   Zap,
 } from 'lucide-react-native';
 import { ComponentType, createElement } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { theme } from '../theme';
 import { AvatarColor } from '../types/AvatarColor';
@@ -80,7 +80,12 @@ export function AvatarSelector({
         <View className="h-12 w-px flex-shrink-0 bg-white/10" />
 
         {/* Avatar options */}
-        <View className="flex-1 flex-row gap-3 overflow-x-auto">
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ gap: 12 }}
+          className="flex-1"
+        >
           {avatarOptions.map(({ icon, component: IconComponent }) => (
             <Pressable
               key={icon}
@@ -99,13 +104,18 @@ export function AvatarSelector({
               />
             </Pressable>
           ))}
-        </View>
+        </ScrollView>
       </View>
 
       {/* Color Selection */}
       <View className="flex-col gap-2">
         <Text className="ml-1 text-sm font-medium text-text-secondary">Choose Color</Text>
-        <View className="flex-row gap-3 overflow-x-auto rounded-2xl border border-white/10 bg-bg-card p-4">
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ gap: 12 }}
+          className="rounded-2xl border border-white/10 bg-bg-card p-4"
+        >
           {colorOptions.map((color) => (
             <Pressable
               key={color}
@@ -118,7 +128,7 @@ export function AvatarSelector({
               {selectedColor === color ? <View className="h-2 w-2 rounded-full bg-white" /> : null}
             </Pressable>
           ))}
-        </View>
+        </ScrollView>
       </View>
     </View>
   );

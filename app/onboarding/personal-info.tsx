@@ -56,7 +56,7 @@ export default function PersonalInfo() {
             fullName: tempName || '',
             email: '',
             dob: '',
-            gender: '',
+            gender: 'other',
           });
         }
       } catch (error) {
