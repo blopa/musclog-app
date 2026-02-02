@@ -137,6 +137,9 @@ export default function CreateCustomFoodModal({
                 backgroundColor: theme.colors.accent.primary10,
                 borderRadius: theme.borderRadius.sm,
               }}
+              onPress={() => {
+                // TODO: open barcode scanner
+              }}
             >
               <ScanLine size={theme.iconSize.md} color={theme.colors.accent.primary} />
             </Pressable>
