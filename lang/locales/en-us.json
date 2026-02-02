@@ -846,7 +846,10 @@
       "save": "Save"
     },
     "connectGoogle": {
-      "title": "Connect Your Google Account"
+      "title": "Connect Your Google Account",
+      "welcome": "Welcome, {{name}}",
+      "welcomeDescription": "You're connected — personalize your experience before continuing.",
+      "continue": "Continue"
     },
     "healthConnect": {
       "connectYour": "Connect Your",
@@ -859,6 +862,7 @@
         "vitals": "Vitals"
       },
       "allowHealthAccess": "Allow Health Access",
+      "connectedCount": "Connected {{granted}}/{{total}}",
       "maybeLater": "Maybe later",
       "privacyStatement": "Musclog values your privacy. Your data is encrypted and used only for your personal analytics."
     },

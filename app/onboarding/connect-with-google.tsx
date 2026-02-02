@@ -6,13 +6,14 @@ import { ScrollView, Text, View } from 'react-native';
 
 import { ConnectGoogleAccountBody } from '../../components/ConnectGoogleAccountBody';
 import { MasterLayout } from '../../components/MasterLayout';
+import { MaybeLaterButton } from '../../components/MaybeLaterButton';
+import { Button } from '../../components/theme/Button';
 import { TEMP_GOOGLE_USER_NAME } from '../../constants/auth';
 import { useGoogleAuth } from '../../hooks/useGoogleAuth';
 import { theme } from '../../theme';
 import { getAccessToken, getGoogleUserInfo, handleGoogleSignIn } from '../../utils/googleAuth';
+import { setCurrentOnboardingStep } from '../../utils/onboardingService';
 import { showSnackbar } from '../../utils/snackbarService';
-import { Button } from '../../components/theme/Button';
-import { MaybeLaterButton } from '../../components/MaybeLaterButton';
 
 export default function ConnectWithGoogle() {
   const { t } = useTranslation();
@@ -22,6 +23,13 @@ export default function ConnectWithGoogle() {
 
   const handleConnect = useCallback(async () => {
     try {
+      // Persist current onboarding step so we can return here after external auth
+      try {
+        await setCurrentOnboardingStep('/onboarding/connect-with-google');
+      } catch (e) {
+        console.warn('Failed to persist onboarding step before Google auth', e);
+      }
+
       await promptAsync();
     } catch (error) {
       showSnackbar('error', t('onboarding.connectGoogle.error'));
@@ -96,9 +104,9 @@ export default function ConnectWithGoogle() {
               </Text>
             </View>
 
-            <View className="w-full items-center mb-4">
+            <View className="mb-4 w-full items-center">
               <Button
-                label={t('onboarding.connectGoogle.continue') || 'Continue'}
+                label={t('onboarding.connectGoogle.continue')}
                 onPress={() => {
                   router.push('/onboarding/fitness-info');
                 }}

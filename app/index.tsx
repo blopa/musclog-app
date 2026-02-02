@@ -32,7 +32,7 @@ import { useUser } from '../hooks/useUser';
 import { useWorkoutHistory } from '../hooks/useWorkoutHistory';
 import { theme } from '../theme';
 import { getAvatarDisplayProps } from '../utils/avatarUtils';
-import { isOnboardingCompleted } from '../utils/onboardingService';
+import { getCurrentOnboardingStep, isOnboardingCompleted } from '../utils/onboardingService';
 
 // TODO: implement notifications eventually
 const SHOW_NOTIFICATIONS = false;
@@ -113,8 +113,18 @@ export default function HomeScreen() {
       try {
         const completed = await isOnboardingCompleted();
         if (!completed) {
-          // Redirect to onboarding if not completed
-          router.replace('/onboarding/landing');
+          // If we persisted the user's current onboarding step (e.g. before external auth), restore it.
+          try {
+            const saved = await getCurrentOnboardingStep();
+            if (saved) {
+              router.replace(saved);
+            } else {
+              router.replace('/onboarding/landing');
+            }
+          } catch (e) {
+            console.error('Error restoring onboarding step, falling back to landing', e);
+            router.replace('/onboarding/landing');
+          }
         }
       } catch (error) {
         console.error('Error checking onboarding status:', error);

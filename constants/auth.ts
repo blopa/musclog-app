@@ -30,3 +30,5 @@ export const TEMP_GOOGLE_USER_NAME = 'tempGoogleUserName';
 export const ONBOARDING_COMPLETED = 'onboardingCompleted';
 export const ONBOARDING_VERSION = 'onboardingVersion';
 export const CURRENT_ONBOARDING_VERSION = '1.0.0';
+// Persist the current onboarding step so we can return after external auth
+export const ONBOARDING_CURRENT_STEP = 'onboardingCurrentStep';
