@@ -1,3 +1,4 @@
+import { focusManager } from '@tanstack/react-query';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { ArrowLeft, ArrowRight, LucideIcon } from 'lucide-react-native';
@@ -14,7 +15,6 @@ import PreRegistrationIntro from '../../components/PreRegistrationIntro';
 import { Button } from '../../components/theme/Button';
 import { PageIndicators } from '../../components/theme/PageIndicators';
 import { theme } from '../../theme';
-import { focusManager } from '@tanstack/react-query';
 
 type OnboardingBodyProps = {
   imageUrl?: string;

@@ -7,8 +7,8 @@ import { Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { theme } from '../theme';
-import SmartCameraModal from './modals/SmartCameraModal';
 import { CoachModal } from './modals/CoachModal';
+import SmartCameraModal from './modals/SmartCameraModal';
 
 type MasterLayoutProps = {
   children: ReactNode;

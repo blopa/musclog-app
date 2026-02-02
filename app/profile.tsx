@@ -168,8 +168,8 @@ export default function ProfileScreen() {
     if (metrics?.bmi !== undefined) {
       const bmiStatus =
         metrics.bmi < 18.5
-          // TODO: use translation here
-          ? 'Underweight'
+          ? // TODO: use translation here
+            'Underweight'
           : metrics.bmi < 25
             ? 'Normal'
             : metrics.bmi < 30
@@ -313,9 +313,9 @@ export default function ProfileScreen() {
               label={t('profile.history')}
             />
           </View>
-          <View className="flex-row flex-wrap -mx-2">
+          <View className="-mx-2 flex-row flex-wrap">
             {stats.map((stat) => (
-              <View key={stat.id} className="w-1/2 px-2 mb-4">
+              <View key={stat.id} className="mb-4 w-1/2 px-2">
                 <StatCard
                   title={t(stat.titleKey)}
                   value={stat.value}

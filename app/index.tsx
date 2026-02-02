@@ -20,13 +20,13 @@ import { DailySummaryEmptyState } from '../components/cards/DailySummaryCard/Dai
 import { DetailedItemCard } from '../components/cards/DetailedItemCard';
 import { MasterLayout } from '../components/MasterLayout';
 import { AddFoodModal } from '../components/modals/AddFoodModal';
-import SmartCameraModal from '../components/modals/SmartCameraModal';
 import CreateCustomFoodModal from '../components/modals/CreateCustomFoodModal';
 import { FoodSearchModal } from '../components/modals/FoodSearchModal';
 import { NotificationsModal } from '../components/modals/NotificationsModal';
 import { NutritionGoalsModal } from '../components/modals/NutritionGoalsModal';
 import PastWorkoutDetailModal from '../components/modals/PastWorkoutDetailModal';
 import PastWorkoutsHistoryModal from '../components/modals/PastWorkoutsHistoryModal';
+import SmartCameraModal from '../components/modals/SmartCameraModal';
 import { UserMenuModal } from '../components/modals/UserMenuModal';
 import ShowMoreButton from '../components/ShowMoreButton';
 import { SkeletonLoader } from '../components/theme/SkeletonLoader';
