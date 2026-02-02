@@ -47,6 +47,8 @@ export default function ConnectWithGoogle() {
               }
             }
 
+            // TODO: instead of forwarding right away, just update the current UI with a like "welcome, User Name"
+            // and then a continue button
             router.push('/onboarding/fitness-info');
           }
         } catch (error) {
