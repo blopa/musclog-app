@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
@@ -18,6 +18,7 @@ import { showSnackbar } from '../../utils/snackbarService';
 export default function ConnectWithGoogle() {
   const { t } = useTranslation();
   const router = useRouter();
+  const searchParams = useLocalSearchParams<{ googleAuthName?: string }>();
   const { authData, isSigningIn, promptAsync } = useGoogleAuth();
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -78,6 +79,27 @@ export default function ConnectWithGoogle() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authData, router, t]);
 
+    // If we were restored via the onboarding restore flow, we may have a query param with the name
+    useEffect(() => {
+      try {
+        const nameParam = searchParams?.googleAuthName;
+        if (nameParam) {
+          // searchParams comes decoded in expo-router, but be defensive
+          const decoded = Array.isArray(nameParam) ? nameParam[0] : nameParam;
+          setTempName(decodeURIComponent(decoded));
+          setShowWelcome(true);
+
+          // Clean up the persisted temp name so it doesn't get reused later
+          AsyncStorage.removeItem(TEMP_GOOGLE_USER_NAME).catch((e) =>
+            console.warn('Failed to remove temp google user name', e)
+          );
+        }
+      } catch (e) {
+        console.warn('Error reading googleAuthName param', e);
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
   const [showWelcome, setShowWelcome] = useState(false);
   const [tempName, setTempName] = useState<string | undefined>(undefined);
 
@@ -96,8 +118,7 @@ export default function ConnectWithGoogle() {
           <View className="px-5 pb-6">
             <View className="mb-6">
               <Text className="text-center text-2xl font-bold text-white">
-                {t('onboarding.connectGoogle.welcome')}{' '}
-                <Text style={{ color: theme.colors.accent.primary }}>{tempName || ''}</Text>
+                {t('onboarding.connectGoogle.welcome', { name: tempName })}
               </Text>
               <Text className="mt-2 text-center text-sm text-text-secondary">
                 {t('onboarding.connectGoogle.welcomeDescription')}

@@ -32,6 +32,8 @@ import { useUser } from '../hooks/useUser';
 import { useWorkoutHistory } from '../hooks/useWorkoutHistory';
 import { theme } from '../theme';
 import { getAvatarDisplayProps } from '../utils/avatarUtils';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { TEMP_GOOGLE_USER_NAME } from '../constants/auth';
 import { getCurrentOnboardingStep, isOnboardingCompleted } from '../utils/onboardingService';
 
 // TODO: implement notifications eventually
@@ -114,10 +116,25 @@ export default function HomeScreen() {
         const completed = await isOnboardingCompleted();
         if (!completed) {
           // If we persisted the user's current onboarding step (e.g. before external auth), restore it.
-          try {
+            try {
             const saved = await getCurrentOnboardingStep();
             if (saved) {
-              router.replace(saved);
+              try {
+                if (saved === '/onboarding/connect-with-google') {
+                  const name = await AsyncStorage.getItem(TEMP_GOOGLE_USER_NAME);
+                  if (name) {
+                    const encoded = encodeURIComponent(name);
+                    router.replace(`${saved}?googleAuthName=${encoded}`);
+                  } else {
+                    router.replace(saved);
+                  }
+                } else {
+                  router.replace(saved);
+                }
+              } catch (innerErr) {
+                console.error('Error reading temp google name', innerErr);
+                router.replace(saved);
+              }
             } else {
               router.replace('/onboarding/landing');
             }
