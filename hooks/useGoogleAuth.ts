@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 
 import { GOOGLE_REDIRECT_URI_MOBILE, GOOGLE_SCOPES } from '../constants/auth';
-import { getGoogleClientId } from '../utils/googleAuth';
+import { getGoogleClientId, handleGoogleSignIn } from '../utils/googleAuth';
 
 // This is required for the OAuth flow to work correctly on mobile
 WebBrowser.maybeCompleteAuthSession();
@@ -115,6 +115,7 @@ export const useGoogleAuth = () => {
           const authCode = Array.isArray(code) ? code[0] : code;
           setIsSigningIn(true);
           const tokenData = await exchangeCodeForToken(authCode, GOOGLE_REDIRECT_URI_MOBILE);
+          await handleGoogleSignIn(tokenData);
           setAuthData(tokenData);
           setIsSigningIn(false);
         }
