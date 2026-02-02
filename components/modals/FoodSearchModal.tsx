@@ -441,11 +441,9 @@ export function FoodSearchModal({
                           <View className="mb-3 flex-row items-center gap-2">
                             <View className="h-0.5 flex-1 bg-accent-primary/20" />
                             <View className="flex-row items-center gap-2">
-                              <Text className="text-xs font-medium text-accent-primary">🍽️</Text>
                               <Text className="text-xs font-medium uppercase text-accent-primary">
-                                Your Foods ({resultsBySource.local.length})
+                                {t('foodSearch.yourFoods', { count: resultsBySource.local.length })}
                               </Text>
-                              <Text className="text-xs font-medium text-accent-primary">🍽️</Text>
                             </View>
                             <View className="h-0.5 flex-1 bg-accent-primary/20" />
                           </View>
@@ -495,11 +493,11 @@ export function FoodSearchModal({
                           <View className="mb-3 flex-row items-center gap-2">
                             <View className="h-0.5 flex-1 bg-text-tertiary/30" />
                             <View className="flex-row items-center gap-2">
-                              <Text className="text-xs font-medium text-text-tertiary">🌐</Text>
                               <Text className="text-xs font-medium uppercase text-text-tertiary">
-                                Open Food Facts ({resultsBySource.api.length})
+                                {t('foodSearch.openFoodFacts', {
+                                  count: resultsBySource.api.length,
+                                })}
                               </Text>
-                              <Text className="text-xs font-medium text-text-tertiary">🌐</Text>
                             </View>
                             <View className="h-0.5 flex-1 bg-text-tertiary/30" />
                           </View>

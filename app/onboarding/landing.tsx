@@ -88,7 +88,7 @@ export default function LandingScreen() {
                   lineHeight: theme.typography.fontSize['4xl'] * 1.1,
                 }}
               >
-                Musclog
+                {t('onboarding.landing.appName')}
               </Text>
 
               {/* Tagline */}
@@ -100,7 +100,7 @@ export default function LandingScreen() {
                   letterSpacing: theme.typography.letterSpacing.wide,
                 }}
               >
-                Lift, Log, Repeat
+                {t('onboarding.landing.tagline')}
               </Text>
 
               {/* Description */}
@@ -113,7 +113,7 @@ export default function LandingScreen() {
                   lineHeight: theme.typography.fontSize.sm * 1.5,
                 }}
               >
-                Track your progress with data-driven insights and crush your fitness goals.
+                {t('onboarding.landing.description')}
               </Text>
             </View>
           </View>

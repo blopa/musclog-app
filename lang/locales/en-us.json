@@ -536,6 +536,8 @@
     "viewAll": "View All",
     "commonBreakfastFoods": "Common Breakfast Foods",
     "createMeal": "+ Create Meal",
+    "yourFoods": "🍽️ Your Foods ({{count}}) 🍽️",
+    "openFoodFacts": "🌐 Open Food Facts ({{count}}) 🌐",
     "filters": {
       "allResults": "All Results",
       "myFoods": "My Foods",
@@ -871,7 +873,11 @@
     },
     "landing": {
       "getStarted": "Get Started",
-      "termsAndPrivacy": "By continuing, you agree to our Terms & Privacy Policy."
+      "termsAndPrivacy": "By continuing, you agree to our Terms & Privacy Policy.",
+      "appName": "Musclog",
+      "tagline": "Lift, Log, Repeat",
+      "description": "Track your progress with data-driven insights and crush your fitness goals.",
+      "connectGoogle": "View Terms"
     }
   },
   "settings": {
