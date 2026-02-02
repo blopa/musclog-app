@@ -457,8 +457,7 @@ export default function HomeScreen() {
           }}
           onSearchFoodPress={() => {
             console.log('Search food pressed');
-            setIsAddFoodVisible(false);
-            router.push('/food/search');
+            // TODO: Open FoodSearchModal
           }}
           onCreateCustomFoodPress={() => {
             console.log('Create custom food pressed');
