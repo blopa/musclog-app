@@ -37,6 +37,7 @@ type FoodSearchModalProps = {
   onFoodSelect?: (food: FoodItem) => void;
 };
 
+// TODO: remove this
 const COMMON_FOODS: FoodItem[] = [
   {
     id: '3',
@@ -617,7 +618,8 @@ export function FoodSearchModal({
               </View>
             ) : null}
 
-            {/* Common Foods Section - Only show when not searching */}
+            {/* TODO: check the time of the year, and depending, select 5 foods based on the tracking history */}
+            {/* instead of hardcoded COMMON_FOODS */}
             {!searchQuery ? (
               <View>
                 <SectionHeader title={t('foodSearch.commonBreakfastFoods')} icon={Sparkles} />
