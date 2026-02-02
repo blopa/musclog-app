@@ -1,5 +1,5 @@
-import { useRouter } from 'expo-router';
-import { useCallback } from 'react';
+import { useLocalSearchParams,useRouter  } from 'expo-router';
+import { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
 
@@ -14,6 +14,8 @@ export default function ConnectWithGoogle() {
   const { t } = useTranslation();
   const router = useRouter();
   const { isSigningIn, promptAsync } = useGoogleAuth();
+  const params = useLocalSearchParams<{ code?: string }>();
+  console.debug('[ConnectWithGoogle] code param:', JSON.stringify(params));
 
   const handleConnect = useCallback(async () => {
     try {

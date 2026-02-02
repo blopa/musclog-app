@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import {
   Bell,
   Clock,
@@ -27,12 +27,12 @@ import { UserMenuModal } from '../components/modals/UserMenuModal';
 import ShowMoreButton from '../components/ShowMoreButton';
 import { SkeletonLoader } from '../components/theme/SkeletonLoader';
 import { WorkoutFoodEmptyState } from '../components/WorkoutFoodEmptyState';
-import { theme } from '../theme';
-import { getAvatarDisplayProps } from '../utils/avatarUtils';
 import { useCurrentNutritionGoal } from '../hooks/useCurrentNutritionGoal';
 import { useNutritionLogs } from '../hooks/useNutritionLogs';
 import { useUser } from '../hooks/useUser';
 import { useWorkoutHistory } from '../hooks/useWorkoutHistory';
+import { theme } from '../theme';
+import { getAvatarDisplayProps } from '../utils/avatarUtils';
 import { getCurrentOnboardingStep, isOnboardingCompleted } from '../utils/onboardingService';
 
 // TODO: implement notifications eventually
@@ -42,6 +42,8 @@ export default function HomeScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const { user: dbUser, isLoading: isLoadingUser } = useUser();
+  const params = useLocalSearchParams<{ code?: string }>();
+  console.debug('[HomeScreen] code param:', JSON.stringify(params));
 
   // Memoize today's date to prevent infinite re-renders
   const today = useMemo(() => new Date(), []);
@@ -112,13 +114,18 @@ export default function HomeScreen() {
   useEffect(() => {
     const checkOnboarding = async () => {
       try {
+        const codeParam = params.code;
         const completed = await isOnboardingCompleted();
+
         if (!completed) {
-          // If we persisted the user's current onboarding step (e.g. before external auth), restore it.
           try {
             const saved = await getCurrentOnboardingStep();
             if (saved) {
-              router.replace(saved);
+              if (saved === '/onboarding/connect-with-google' && codeParam) {
+                router.replace(`${saved}?code=${encodeURIComponent(codeParam)}`);
+              } else {
+                router.replace(saved);
+              }
             } else {
               router.replace('/onboarding/landing');
             }
@@ -129,12 +136,10 @@ export default function HomeScreen() {
         }
       } catch (error) {
         console.error('Error checking onboarding status:', error);
-        // On error, allow access (don't block user)
       } finally {
         setIsCheckingOnboarding(false);
       }
     };
-
     checkOnboarding();
   }, [router]);
 
