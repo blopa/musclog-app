@@ -114,7 +114,7 @@ export const schema = appSchema({
         { name: 'fat', type: 'number' },
         { name: 'fiber', type: 'number' },
 
-        // Base measurement (e.g., 100g) that the above numbers refer to
+        // TODO: remove these two and instead use food_portions - dont forget to update the models
         { name: 'serving_unit', type: 'string' }, // 'g', 'ml', 'oz'
         { name: 'serving_amount', type: 'number' }, // e.g., 100
 

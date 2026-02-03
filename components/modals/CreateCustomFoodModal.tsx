@@ -53,6 +53,10 @@ export default function CreateCustomFoodModal({
   onClose,
   onSave,
 }: NewCustomFoodModalProps) {
+  // TODO: add inputs for:
+  //  - brand
+  //  - is_favorite
+  //  - image_url
   const [foodName, setFoodName] = useState('');
   const [barcode, setBarcode] = useState('');
   const [showBarcodeScanner, setShowBarcodeScanner] = useState(false);
