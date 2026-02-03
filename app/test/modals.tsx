@@ -48,6 +48,7 @@ import { WorkoutOptionsModal } from '../../components/modals/WorkoutOptionsModal
 import { WorkoutSessionHistoryModal } from '../../components/modals/WorkoutSessionHistoryModal';
 import WorkoutSessionOverviewModal from '../../components/modals/WorkoutSessionOverviewModal';
 import { Button } from '../../components/theme/Button';
+import { PortionSizesPickerModal } from '../../components/modals/PortionSizesPickerModal';
 
 export default function ModalsTestScreen() {
   // Nutrition Goals Modal
@@ -170,6 +171,8 @@ export default function ModalsTestScreen() {
   const [isEditPastWorkoutDataVisible, setIsEditPastWorkoutDataVisible] = useState(false);
   // Create Workout Modal
   const [isCreateWorkoutVisible, setIsCreateWorkoutVisible] = useState(false);
+  // Portion Sizes Picker Modal
+  const [isPortionSizesPickerVisible, setIsPortionSizesPickerVisible] = useState(false);
 
   const handleSaveGoals = (goals: NutritionGoals) => {
     console.log('Goals saved:', goals);
@@ -842,6 +845,20 @@ export default function ModalsTestScreen() {
             />
           </View>
 
+          {/* Portion Sizes Picker Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Portion Sizes Picker Modal</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Modal for selecting portion sizes with categories for standard, weight, and volume units.
+            </Text>
+            <Button
+              label="Open Portion Sizes Picker Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsPortionSizesPickerVisible(true)}
+            />
+          </View>
+
           {/* Bottom spacing */}
           <View className="h-8" />
         </View>
@@ -1251,6 +1268,15 @@ export default function ModalsTestScreen() {
       <CreateWorkoutModal
         visible={isCreateWorkoutVisible}
         onClose={() => setIsCreateWorkoutVisible(false)}
+      />
+
+      <PortionSizesPickerModal
+        visible={isPortionSizesPickerVisible}
+        onClose={() => setIsPortionSizesPickerVisible(false)}
+        onConfirm={(selectedIds) => {
+          console.log('Selected portion sizes:', selectedIds);
+        }}
+        selectedIds={['grams', 'cups']}
       />
     </SafeAreaView>
   );
