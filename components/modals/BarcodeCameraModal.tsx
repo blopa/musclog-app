@@ -167,12 +167,7 @@ export function BarcodeCameraModal({
           </View>
 
           {/* Scanner Overlay */}
-          <View
-            className="absolute inset-0"
-            // TODO: sure there's a backgroud overlay here
-            // but we should NOT have this overlay inside the green frame thingie
-            style={{ backgroundColor: theme.colors.background.black40 }}
-          >
+          <View className="absolute inset-0">
             {/* Scanner Frame - Centered Higher */}
             <View className="absolute inset-0 items-center justify-center" style={{ top: '-10%' }}>
               <View className="relative h-64 w-80">
