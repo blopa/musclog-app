@@ -37,6 +37,7 @@ import { MacroInput } from '../MacroInput';
 import { Button } from '../theme/Button';
 import { SegmentedControl } from '../theme/SegmentedControl';
 import { TextInput } from '../theme/TextInput';
+import { ToggleInput } from '../theme/ToggleInput';
 import { BarcodeCameraModal } from './BarcodeCameraModal';
 import { FullScreenModal } from './FullScreenModal';
 
@@ -53,12 +54,11 @@ export default function CreateCustomFoodModal({
   onClose,
   onSave,
 }: NewCustomFoodModalProps) {
-  // TODO: add inputs for:
-  //  - brand
-  //  - is_favorite
-  //  - image_url
   const [foodName, setFoodName] = useState('');
+  const [brand, setBrand] = useState('');
   const [barcode, setBarcode] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
+  const [isFavorite, setIsFavorite] = useState(false);
   const [showBarcodeScanner, setShowBarcodeScanner] = useState(false);
   const [measurementUnit, setMeasurementUnit] = useState<MeasurementUnit>('100g');
   const [calories, setCalories] = useState('');
@@ -112,7 +112,10 @@ export default function CreateCustomFoodModal({
   const handleSave = () => {
     const foodData = {
       foodName,
+      brand,
       barcode,
+      imageUrl,
+      isFavorite,
       measurementUnit,
       calories,
       protein,
@@ -521,6 +524,43 @@ export default function CreateCustomFoodModal({
               <ScanLine size={theme.iconSize.md} color={theme.colors.accent.primary} />
             </Pressable>
           </View>
+
+          {/* Brand */}
+          <TextInput
+            label="Brand"
+            value={brand}
+            onChangeText={setBrand}
+            placeholder="Enter brand name (optional)"
+            icon={<Cookie size={theme.iconSize.md} color={theme.colors.text.tertiary} />}
+          />
+
+          {/* Image URL */}
+          <TextInput
+            label="Image URL"
+            value={imageUrl}
+            onChangeText={setImageUrl}
+            placeholder="Enter image URL (optional)"
+            icon={<Activity size={theme.iconSize.md} color={theme.colors.text.tertiary} />}
+          />
+
+          {/* Favorite Toggle */}
+          <ToggleInput
+            items={[
+              {
+                key: 'favorite',
+                label: 'Add to Favorites',
+                icon: (
+                  <Heart
+                    size={theme.iconSize.md}
+                    color={isFavorite ? theme.colors.status.red400 : theme.colors.text.tertiary}
+                    fill={isFavorite ? theme.colors.status.red400 : 'transparent'}
+                  />
+                ),
+                value: isFavorite,
+                onValueChange: setIsFavorite,
+              },
+            ]}
+          />
 
           {/* Measurement Unit */}
           <View>
