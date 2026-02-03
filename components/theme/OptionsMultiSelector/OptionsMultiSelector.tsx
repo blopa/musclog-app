@@ -257,7 +257,8 @@ export function OptionsMultiSelector<T extends string | number>({
     const index = getIndex() ?? 0;
     const groupPosition = hasGroups ? getGroupPosition(orderedOptions, index) : 'none';
     const isFirstInGroup = groupPosition === 'first' || groupPosition === 'only';
-    const groupColor = hasGroups && item.groupId ? getGroupColor(item.groupId, orderedOptions) : undefined;
+    const groupColor =
+      hasGroups && item.groupId ? getGroupColor(item.groupId, orderedOptions) : undefined;
 
     return (
       <ScaleDecorator isActive={isActive}>
@@ -405,7 +406,8 @@ export function OptionsMultiSelector<T extends string | number>({
     const selected = showCheckboxes && isSelected(option.id);
     const groupPosition = hasGroups ? getGroupPosition(orderedOptions, index) : 'none';
     const isFirstInGroup = groupPosition === 'first' || groupPosition === 'only';
-    const groupColor = hasGroups && option.groupId ? getGroupColor(option.groupId, orderedOptions) : undefined;
+    const groupColor =
+      hasGroups && option.groupId ? getGroupColor(option.groupId, orderedOptions) : undefined;
 
     return (
       <View
@@ -437,7 +439,8 @@ export function OptionsMultiSelector<T extends string | number>({
                     : hasGroups && groupColor
                       ? groupColor + '40'
                       : theme.colors.border.light,
-                  backgroundColor: hasGroups && groupColor ? groupColor + '08' : theme.colors.background.card,
+                  backgroundColor:
+                    hasGroups && groupColor ? groupColor + '08' : theme.colors.background.card,
                   transform: [{ scale: pressed ? 0.98 : 1 }],
                   ...(selected ? theme.shadows.accentGlow : {}),
                 }}

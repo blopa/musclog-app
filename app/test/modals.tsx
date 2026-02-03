@@ -40,6 +40,7 @@ import { NotificationsModal } from '../../components/modals/NotificationsModal';
 import { NutritionGoals, NutritionGoalsModal } from '../../components/modals/NutritionGoalsModal';
 import PastWorkoutDetailModal from '../../components/modals/PastWorkoutDetailModal';
 import PastWorkoutsHistoryModal from '../../components/modals/PastWorkoutsHistoryModal';
+import { PortionSizesPickerModal } from '../../components/modals/PortionSizesPickerModal';
 import { ReplaceExerciseModal } from '../../components/modals/ReplaceExerciseModal';
 import { SessionFeedbackModal } from '../../components/modals/SessionFeedbackModal';
 import { UserMenuModal } from '../../components/modals/UserMenuModal';
@@ -48,7 +49,6 @@ import { WorkoutOptionsModal } from '../../components/modals/WorkoutOptionsModal
 import { WorkoutSessionHistoryModal } from '../../components/modals/WorkoutSessionHistoryModal';
 import WorkoutSessionOverviewModal from '../../components/modals/WorkoutSessionOverviewModal';
 import { Button } from '../../components/theme/Button';
-import { PortionSizesPickerModal } from '../../components/modals/PortionSizesPickerModal';
 
 export default function ModalsTestScreen() {
   // Nutrition Goals Modal
@@ -847,9 +847,12 @@ export default function ModalsTestScreen() {
 
           {/* Portion Sizes Picker Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Portion Sizes Picker Modal</Text>
+            <Text className="mb-2 text-lg font-bold text-text-primary">
+              Portion Sizes Picker Modal
+            </Text>
             <Text className="mb-4 text-sm text-text-secondary">
-              Modal for selecting portion sizes with categories for standard, weight, and volume units.
+              Modal for selecting portion sizes with categories for standard, weight, and volume
+              units.
             </Text>
             <Button
               label="Open Portion Sizes Picker Modal"
