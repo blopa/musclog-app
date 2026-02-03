@@ -12,6 +12,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { SnackbarProvider } from '../components/SnackbarContext';
 import { seedDevData } from '../database/seeders/dev';
+import { seedProductionData } from '../database/seeders/prod';
 import { verifyDatabaseTables } from '../database/verify';
 import { theme } from '../theme';
 
@@ -67,7 +68,10 @@ export default function RootLayout() {
         console.error('Error seeding exercises database:', error);
       });
     } else {
-      // TODO: Seed production data
+      // Seed production data
+      seedProductionData().catch((error) => {
+        console.error('Error seeding production data:', error);
+      });
     }
 
     // Cleanup listeners
