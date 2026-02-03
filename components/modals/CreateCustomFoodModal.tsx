@@ -47,10 +47,12 @@ export default function CreateCustomFoodModal({
   const [carbs, setCarbs] = useState('');
   const [fat, setFat] = useState('');
   const [fiber, setFiber] = useState('');
-  const [sugar, setSugar] = useState('');
-  const [alcohol, setAlcohol] = useState('');
-  const [monoFat, setMonoFat] = useState('');
-  const [polyFat, setPolyFat] = useState('');
+  const [micronutrients, setMicronutrients] = useState({
+    sugar: '',
+    alcohol: '',
+    monoFat: '',
+    polyFat: '',
+  });
   const [microOpen, setMicroOpen] = useState(false);
   const { t } = useTranslation();
 
@@ -64,10 +66,7 @@ export default function CreateCustomFoodModal({
       carbs,
       fat,
       fiber,
-      sugar,
-      alcohol,
-      monoFat,
-      polyFat,
+      micronutrients,
     };
 
     if (onSave) {
@@ -83,6 +82,15 @@ export default function CreateCustomFoodModal({
     setter(numericValue);
   };
 
+  // Handle micronutrient changes
+  const handleMicronutrientChange = (key: keyof typeof micronutrients, value: string) => {
+    const numericValue = value.replace(/[^0-9]/g, '');
+    setMicronutrients((prev) => ({
+      ...prev,
+      [key]: numericValue,
+    }));
+  };
+
   const handleBarcodeScanned = (scannedBarcode: string) => {
     setBarcode(scannedBarcode);
     setShowBarcodeScanner(false);
@@ -96,6 +104,41 @@ export default function CreateCustomFoodModal({
     { label: t('food.newCustomFood.measurementOptions.per100g'), value: '100g' },
     { label: t('food.newCustomFood.measurementOptions.perServing'), value: 'serving' },
     { label: t('food.newCustomFood.measurementOptions.container'), value: 'container' },
+  ];
+
+  const micronutrientsData = [
+    {
+      key: 'sugar' as const,
+      label: t('food.newCustomFood.sugar'),
+      value: micronutrients.sugar,
+      icon: IceCream,
+      iconColor: theme.colors.status.pink500,
+      variant: 'accent' as const,
+    },
+    {
+      key: 'alcohol' as const,
+      label: t('food.newCustomFood.alcohol'),
+      value: micronutrients.alcohol,
+      icon: Wine,
+      iconColor: theme.colors.status.indigo,
+      variant: 'info' as const,
+    },
+    {
+      key: 'monoFat' as const,
+      label: t('food.newCustomFood.monounsatFat'),
+      value: micronutrients.monoFat,
+      icon: Droplet,
+      iconColor: theme.colors.status.teal400,
+      variant: 'success' as const,
+    },
+    {
+      key: 'polyFat' as const,
+      label: t('food.newCustomFood.polyunsatFat'),
+      value: micronutrients.polyFat,
+      icon: Waves,
+      iconColor: theme.colors.status.violet500,
+      variant: 'warning' as const,
+    },
   ];
 
   return (
@@ -263,48 +306,20 @@ export default function CreateCustomFoodModal({
             </Pressable>
 
             {microOpen ? (
-              // TODO: move this data into an array of objects, and map it
               <View className="flex-row flex-wrap gap-4">
-                <MacroInput
-                  label={t('food.newCustomFood.sugar')}
-                  value={sugar}
-                  onChange={(value) => handleNumericChange(value, setSugar)}
-                  topRightElement={
-                    <IceCream size={theme.iconSize.sm} color={theme.colors.status.pink500} />
-                  }
-                  variant="accent"
-                  size="half"
-                />
-                <MacroInput
-                  label={t('food.newCustomFood.alcohol')}
-                  value={alcohol}
-                  onChange={(value) => handleNumericChange(value, setAlcohol)}
-                  topRightElement={
-                    <Wine size={theme.iconSize.sm} color={theme.colors.status.indigo} />
-                  }
-                  variant="info"
-                  size="half"
-                />
-                <MacroInput
-                  label={t('food.newCustomFood.monounsatFat')}
-                  value={monoFat}
-                  onChange={(value) => handleNumericChange(value, setMonoFat)}
-                  topRightElement={
-                    <Droplet size={theme.iconSize.sm} color={theme.colors.status.teal400} />
-                  }
-                  variant="accent"
-                  size="half"
-                />
-                <MacroInput
-                  label={t('food.newCustomFood.polyunsatFat')}
-                  value={polyFat}
-                  onChange={(value) => handleNumericChange(value, setPolyFat)}
-                  topRightElement={
-                    <Waves size={theme.iconSize.sm} color={theme.colors.status.violet500} />
-                  }
-                  variant="accent"
-                  size="half"
-                />
+                {micronutrientsData.map((nutrient) => (
+                  <MacroInput
+                    key={nutrient.key}
+                    label={nutrient.label}
+                    value={nutrient.value}
+                    onChange={(value: string) => handleMicronutrientChange(nutrient.key, value)}
+                    topRightElement={
+                      <nutrient.icon size={theme.iconSize.sm} color={nutrient.iconColor} />
+                    }
+                    variant={nutrient.variant}
+                    size="half"
+                  />
+                ))}
               </View>
             ) : null}
           </View>
