@@ -3,7 +3,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { Image, Lightbulb, LightbulbOff, X } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StatusBar, StyleSheet, Text, View } from 'react-native';
+import { Alert, Pressable, StatusBar, StyleSheet, Text, View } from 'react-native';
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -66,14 +66,22 @@ export function BarcodeCameraModal({
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
       allowsEditing: true,
-      quality: 1,
+      aspect: [4, 3],
+      quality: 0.8,
+      base64: false,
     });
 
-    if (!result.canceled && result.assets[0]) {
-      const barcodes = await detectBarcodes(result.assets[0].uri);
-      if (barcodes && barcodes.length > 0) {
-        onBarcodeScanned(barcodes[0]);
+    if (!result.canceled && result.assets && result.assets.length > 0) {
+      const selectedAsset = result.assets[0];
+      console.log('Image selected from gallery:', selectedAsset.uri);
+
+      const barcode = await detectBarcodes(selectedAsset.uri);
+
+      if (barcode) {
+        onBarcodeScanned(barcode);
         onClose();
+      } else {
+        // TODO: show snackbar error message
       }
     }
   };
@@ -94,12 +102,36 @@ export function BarcodeCameraModal({
         title={t('camera.title')}
         showHeader={false}
       >
-        <View className="flex-1 items-center justify-center p-8">
-          <Text className="mb-8 text-center text-text-primary">
+        <View
+          className="flex-1 items-center justify-center"
+          style={{ padding: theme.spacing.padding['2xl'] }}
+        >
+          <Text
+            className="mb-8 text-center text-text-primary"
+            style={{
+              marginBottom: theme.spacing.margin['2xl'],
+              color: theme.colors.text.primary,
+              textAlign: 'center',
+            }}
+          >
             {t('food.aiCamera.permissionRequired')}
           </Text>
-          <Pressable className="rounded-xl bg-accent-primary px-8 py-4" onPress={requestPermission}>
-            <Text className="text-base font-semibold text-black">
+          <Pressable
+            onPress={requestPermission}
+            style={{
+              borderRadius: theme.borderRadius.xl,
+              paddingHorizontal: theme.spacing.padding['2xl'],
+              paddingVertical: theme.spacing.padding.lg,
+              backgroundColor: theme.colors.accent.primary,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: theme.typography.fontSize.base,
+                fontWeight: theme.typography.fontWeight.bold,
+                color: theme.colors.text.black,
+              }}
+            >
               {t('food.aiCamera.grantPermission')}
             </Text>
           </Pressable>
@@ -135,38 +167,106 @@ export function BarcodeCameraModal({
           </View>
 
           {/* Scanner Overlay */}
-          <View className="absolute inset-0 bg-black/40">
+          <View
+            className="absolute inset-0"
+            // TODO: sure there's a backgroud overlay here
+            // but we should NOT have this overlay inside the green frame thingie
+            style={{ backgroundColor: theme.colors.background.black40 }}
+          >
             {/* Scanner Frame - Centered Higher */}
             <View className="absolute inset-0 items-center justify-center" style={{ top: '-10%' }}>
               <View className="relative h-64 w-80">
                 {/* Corner Brackets */}
-                <View className="absolute -left-4 top-0 h-10 w-10 rounded-tl-xl border-l-4 border-t-4 border-emerald-400" />
-                <View className="absolute -right-4 top-0 h-10 w-10 rounded-tr-xl border-r-4 border-t-4 border-emerald-400" />
-                <View className="absolute -left-4 bottom-0 h-10 w-10 rounded-bl-xl border-b-4 border-l-4 border-emerald-400" />
-                <View className="absolute -right-4 bottom-0 h-10 w-10 rounded-br-xl border-b-4 border-r-4 border-emerald-400" />
+                <View
+                  className="absolute -left-4 top-0 h-10 w-10 rounded-tl-xl"
+                  style={{
+                    borderLeftColor: theme.colors.status.emerald,
+                    borderLeftWidth: theme.borderWidth.thick,
+                    borderTopColor: theme.colors.status.emerald,
+                    borderTopWidth: theme.borderWidth.thick,
+                    borderTopLeftRadius: theme.borderRadius['2xl'],
+                  }}
+                />
+                <View
+                  className="absolute -right-4 top-0 h-10 w-10 rounded-tr-xl"
+                  style={{
+                    borderRightColor: theme.colors.status.emerald,
+                    borderRightWidth: theme.borderWidth.thick,
+                    borderTopColor: theme.colors.status.emerald,
+                    borderTopWidth: theme.borderWidth.thick,
+                    borderTopRightRadius: theme.borderRadius['2xl'],
+                  }}
+                />
+                <View
+                  className="absolute -left-4 bottom-0 h-10 w-10 rounded-bl-xl"
+                  style={{
+                    borderLeftColor: theme.colors.status.emerald,
+                    borderLeftWidth: theme.borderWidth.thick,
+                    borderBottomColor: theme.colors.status.emerald,
+                    borderBottomWidth: theme.borderWidth.thick,
+                    borderBottomLeftRadius: theme.borderRadius['2xl'],
+                  }}
+                />
+                <View
+                  className="absolute -right-4 bottom-0 h-10 w-10 rounded-br-xl"
+                  style={{
+                    borderRightColor: theme.colors.status.emerald,
+                    borderRightWidth: theme.borderWidth.thick,
+                    borderBottomColor: theme.colors.status.emerald,
+                    borderBottomWidth: theme.borderWidth.thick,
+                    borderBottomRightRadius: theme.borderRadius['2xl'],
+                  }}
+                />
 
                 {/* Animated Scan Line */}
                 <Animated.View
-                  className="absolute left-0 right-0 h-0.5 bg-emerald-400"
-                  style={[
-                    scanLineStyle,
-                    {
-                      shadowColor: theme.colors.accent.primary,
-                      shadowOffset: { width: 0, height: 0 },
-                      shadowOpacity: 0.8,
-                      shadowRadius: 15,
-                      elevation: 5,
-                    },
-                  ]}
+                  className="absolute left-0 right-0"
+                  style={{
+                    height: theme.borderWidth.thin,
+                    backgroundColor: theme.colors.status.emerald,
+                    ...scanLineStyle,
+                    shadowColor: theme.colors.accent.primary,
+                    shadowOffset: theme.shadowOffset.zero,
+                    shadowOpacity: theme.shadowOpacity.mediumHeavy,
+                    shadowRadius: theme.shadowRadius.md,
+                    elevation: theme.elevation.lg,
+                  }}
                 />
 
                 {/* Scan Lines Pattern */}
                 <View className="absolute inset-8 flex justify-between">
-                  <View className="h-0.5 w-full bg-white/20" />
-                  <View className="h-0.5 w-3/4 bg-white/20" />
-                  <View className="h-0.5 w-full bg-white/20" />
-                  <View className="h-0.5 w-1/2 bg-white/20" />
-                  <View className="h-0.5 w-full bg-white/20" />
+                  <View
+                    style={{
+                      height: theme.borderWidth.thin,
+                      backgroundColor: theme.colors.background.white20,
+                    }}
+                  />
+                  <View
+                    style={{
+                      height: theme.borderWidth.thin,
+                      backgroundColor: theme.colors.background.white20,
+                      width: '75%',
+                    }}
+                  />
+                  <View
+                    style={{
+                      height: theme.borderWidth.thin,
+                      backgroundColor: theme.colors.background.white20,
+                    }}
+                  />
+                  <View
+                    style={{
+                      height: theme.borderWidth.thin,
+                      backgroundColor: theme.colors.background.white20,
+                      width: '50%',
+                    }}
+                  />
+                  <View
+                    style={{
+                      height: theme.borderWidth.thin,
+                      backgroundColor: theme.colors.background.white20,
+                    }}
+                  />
                 </View>
               </View>
             </View>
@@ -175,20 +275,33 @@ export function BarcodeCameraModal({
             <View className="absolute right-6 top-16">
               <Pressable
                 onPress={toggleTorch}
-                className="h-12 w-12 items-center justify-center rounded-full bg-black/40 backdrop-blur-md"
+                className="h-12 w-12 items-center justify-center rounded-full backdrop-blur-md"
+                style={{
+                  backgroundColor: theme.colors.background.black40,
+                  width: theme.size['12'],
+                  height: theme.size['12'],
+                  borderRadius: theme.borderRadius.full,
+                }}
               >
                 {torchEnabled ? (
-                  <Lightbulb size={24} color="white" />
+                  <Lightbulb size={theme.iconSize.lg} color={theme.colors.text.white} />
                 ) : (
-                  <LightbulbOff size={24} color="white" />
+                  <LightbulbOff size={theme.iconSize.lg} color={theme.colors.text.white} />
                 )}
               </Pressable>
             </View>
           </View>
 
           {/* Bottom Controls - Fixed at bottom */}
-          <View className="absolute bottom-0 left-0 right-0 border-t border-white/10 bg-black/60 px-6 pb-12 pt-8 backdrop-blur-xl">
-            <View className="gap-4">
+          <View
+            className="absolute bottom-0 left-0 right-0 px-6 pb-12 pt-8 backdrop-blur-xl"
+            style={{
+              borderTopColor: theme.colors.background.white10,
+              borderTopWidth: theme.borderWidth.thin,
+              backgroundColor: theme.colors.background.black80,
+            }}
+          >
+            <View style={{ gap: theme.spacing.gap.md }}>
               {/* Upload from Gallery Button */}
               <Button
                 label={t('food.aiCamera.uploadFromGallery')}
