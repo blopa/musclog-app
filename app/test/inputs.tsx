@@ -136,6 +136,13 @@ export default function InputsTestScreen() {
             placeholder="Enter your name"
           />
           <TextInput
+            label="Name (Mandatory)"
+            value={name}
+            onChangeText={setName}
+            placeholder="Enter your name"
+            required
+          />
+          <TextInput
             label="Email (Focused)"
             value={email}
             onChangeText={setEmail}

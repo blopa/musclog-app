@@ -12,6 +12,7 @@ type TestInputProps = {
   keyboardType?: 'default' | 'email-address' | 'numeric';
   icon?: ReactNode;
   secureTextEntry?: boolean;
+  required?: boolean;
   onFocus?: () => void;
   onBlur?: () => void;
 };
@@ -27,14 +28,16 @@ export function TextInput({
   secureTextEntry,
   onFocus,
   onBlur,
+  required = false,
 }: TestInputProps) {
   return (
     <View className="flex-col gap-2">
-      <Text
-        className={`ml-1 text-sm font-medium ${focused ? 'text-accent-primary' : 'text-text-secondary'}`}
-      >
-        {label}
-      </Text>
+      <View className="ml-1 flex-row items-center">
+        <Text className={`text-sm font-medium ${focused ? 'text-accent-primary' : 'text-text-secondary'}`}>
+          {label}
+        </Text>
+        {required ? <Text className="ml-1 text-sm font-medium text-red-500">*</Text> : null}
+      </View>
       <View
         className={`h-14 w-full flex-row items-center rounded-lg border-2 bg-bg-card px-4 ${
           focused ? 'border-accent-primary/50' : 'border-white/10'

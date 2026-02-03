@@ -116,6 +116,7 @@ export function EditPersonalInfoBody({
       <View className="mt-2 gap-6">
         <TextInput
           label={
+          // TODO: update here to use the new required prop
             <View className="flex-row items-center gap-1">
               <Text className="text-lg font-bold text-text-primary">
                 {t('editPersonalInfo.fullName')}

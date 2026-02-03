@@ -109,6 +109,8 @@ export default function CreateCustomFoodModal({
   const [microOpen, setMicroOpen] = useState(false);
   const { t } = useTranslation();
 
+  const isSaveDisabled = !foodName.trim();
+
   const handleSave = () => {
     const foodData = {
       foodName,
@@ -480,6 +482,7 @@ export default function CreateCustomFoodModal({
           variant="gradientCta"
           size="md"
           width="full"
+          disabled={isSaveDisabled}
           icon={PlusCircle}
           onPress={handleSave}
         />

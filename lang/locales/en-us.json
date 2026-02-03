@@ -195,7 +195,7 @@
       "title": "Create Custom Food",
       "foodName": "Food Name",
       "foodNamePlaceholder": "e.g., Homemade Chicken Salad",
-      "barcode": "Barcode (Optional)",
+      "barcode": "Barcode",
       "barcodePlaceholder": "Scan or enter barcode",
       "measurementUnit": "Measurement Unit",
       "measurementOptions": {
