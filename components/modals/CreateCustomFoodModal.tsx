@@ -22,6 +22,7 @@ import { MacroInput } from '../MacroInput';
 import { Button } from '../theme/Button';
 import { SegmentedControl } from '../theme/SegmentedControl';
 import { TextInput } from '../theme/TextInput';
+import { BarcodeCameraModal } from './BarcodeCameraModal';
 import { FullScreenModal } from './FullScreenModal';
 
 type MeasurementUnit = '100g' | 'serving' | 'container';
@@ -39,6 +40,7 @@ export default function CreateCustomFoodModal({
 }: NewCustomFoodModalProps) {
   const [foodName, setFoodName] = useState('');
   const [barcode, setBarcode] = useState('');
+  const [showBarcodeScanner, setShowBarcodeScanner] = useState(false);
   const [measurementUnit, setMeasurementUnit] = useState<MeasurementUnit>('100g');
   const [calories, setCalories] = useState('');
   const [protein, setProtein] = useState('');
@@ -79,6 +81,15 @@ export default function CreateCustomFoodModal({
     // Remove any non-numeric characters (allow digits only)
     const numericValue = value.replace(/[^0-9]/g, '');
     setter(numericValue);
+  };
+
+  const handleBarcodeScanned = (scannedBarcode: string) => {
+    setBarcode(scannedBarcode);
+    setShowBarcodeScanner(false);
+  };
+
+  const openBarcodeScanner = () => {
+    setShowBarcodeScanner(true);
   };
 
   const measurementOptions = [
@@ -137,9 +148,7 @@ export default function CreateCustomFoodModal({
                 backgroundColor: theme.colors.accent.primary10,
                 borderRadius: theme.borderRadius.sm,
               }}
-              onPress={() => {
-                // TODO: open barcode scanner
-              }}
+              onPress={openBarcodeScanner}
             >
               <ScanLine size={theme.iconSize.md} color={theme.colors.accent.primary} />
             </Pressable>
@@ -300,6 +309,11 @@ export default function CreateCustomFoodModal({
           </View>
         </View>
       </ScrollView>
+      <BarcodeCameraModal
+        visible={showBarcodeScanner}
+        onClose={() => setShowBarcodeScanner(false)}
+        onBarcodeScanned={handleBarcodeScanned}
+      />
     </FullScreenModal>
   );
 }
