@@ -497,6 +497,7 @@ export default function CreateCustomFoodModal({
             onChangeText={setFoodName}
             placeholder={t('food.newCustomFood.foodNamePlaceholder')}
             icon={<Pencil size={theme.iconSize.md} color={theme.colors.text.tertiary} />}
+            required
           />
 
           {/* Barcode */}
