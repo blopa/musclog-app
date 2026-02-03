@@ -15,6 +15,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { theme } from '../../theme';
 import { detectBarcodes } from '../../utils/file';
+import { showSnackbar } from '../../utils/snackbarService';
 import { CameraView, useCameraPermissions } from '../CameraView';
 import { Button } from '../theme/Button';
 import { FullScreenModal } from './FullScreenModal';
@@ -81,7 +82,7 @@ export function BarcodeCameraModal({
         onBarcodeScanned(barcode);
         onClose();
       } else {
-        // TODO: show snackbar error message
+        showSnackbar('error', t('food.aiCamera.noBarcodeDetected'));
       }
     }
   };
