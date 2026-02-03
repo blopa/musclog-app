@@ -1,6 +1,7 @@
 // Export all models
 export { default as Exercise } from './Exercise';
 export { default as Food } from './Food';
+export { default as FoodFoodPortion } from './FoodFoodPortion';
 export { default as FoodPortion } from './FoodPortion';
 export { default as Meal } from './Meal';
 export { default as MealFood } from './MealFood';

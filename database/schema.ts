@@ -98,7 +98,7 @@ export const schema = appSchema({
       ],
     }),
 
-    // Represents a food item with macros per its default portion
+    // Represents a food item with macros per 100g standard
     tableSchema({
       name: 'foods',
       columns: [
@@ -106,9 +106,6 @@ export const schema = appSchema({
         { name: 'name', type: 'string', isIndexed: true },
         { name: 'brand', type: 'string', isOptional: true, isIndexed: true },
         { name: 'barcode', type: 'string', isOptional: true, isIndexed: true },
-
-        // Default portion for this food (mandatory FK to food_portions)
-        { name: 'food_portion_id', type: 'string', isIndexed: true },
 
         // Macros per standard serving (usually 100g or 1 serving)
         { name: 'calories', type: 'number' },
@@ -138,6 +135,20 @@ export const schema = appSchema({
       columns: [
         { name: 'name', type: 'string' }, // e.g., "1 Cup", "1 Slice", "3 oz", "100g"
         { name: 'gram_weight', type: 'number' }, // How many grams is this portion?
+        { name: 'created_at', type: 'number' },
+        { name: 'updated_at', type: 'number' },
+        { name: 'deleted_at', type: 'number', isOptional: true },
+      ],
+    }),
+
+    // Junction table: Food -> Food Portions (Many-to-Many)
+    // Links foods to their applicable portions
+    tableSchema({
+      name: 'food_food_portions',
+      columns: [
+        { name: 'food_id', type: 'string', isIndexed: true },
+        { name: 'food_portion_id', type: 'string', isIndexed: true },
+        { name: 'is_default', type: 'boolean' }, // Exactly one per food should be true
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },

@@ -1,7 +1,10 @@
+import { Q } from '@nozbe/watermelondb';
+
 import exercisesData from '../../data/exercisesEnUS.json';
 import { database } from '../index';
 import Exercise from '../models/Exercise';
 import Food from '../models/Food';
+import FoodFoodPortion from '../models/FoodFoodPortion';
 import FoodPortion from '../models/FoodPortion';
 import UserMetric from '../models/UserMetric';
 import WorkoutLog from '../models/WorkoutLog';
@@ -1474,20 +1477,29 @@ async function seedFoods(): Promise<{ created: number }> {
           food.updatedAt = now;
         });
 
-        // Create default portion (100g) - global, not tied to this food
-        const defaultPortion = await database
+        // Create or find the default 100g portion (global, reusable)
+        const existingPortion = await database
           .get<FoodPortion>('food_portions')
-          .create((portion) => {
-            portion.name = 'Default';
-            portion.gramWeight = 100;
-            portion.createdAt = now;
-            portion.updatedAt = now;
-          });
+          .query(Q.where('name', '100g'), Q.where('gram_weight', 100))
+          .fetch();
 
-        // Update food to link to the default portion
-        await food.update((f) => {
-          f.foodPortionId = defaultPortion.id;
-          f.updatedAt = now;
+        const defaultPortion =
+          existingPortion.length > 0
+            ? existingPortion[0]
+            : await database.get<FoodPortion>('food_portions').create((portion) => {
+                portion.name = '100g';
+                portion.gramWeight = 100;
+                portion.createdAt = now;
+                portion.updatedAt = now;
+              });
+
+        // Link food to portion via junction table
+        await database.get<FoodFoodPortion>('food_food_portions').create((ffp) => {
+          ffp.foodId = food.id;
+          ffp.foodPortionId = defaultPortion.id;
+          ffp.isDefault = true;
+          ffp.createdAt = now;
+          ffp.updatedAt = now;
         });
 
         created++;

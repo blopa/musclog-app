@@ -1,7 +1,7 @@
 import { Model, Query } from '@nozbe/watermelondb';
-import { children, field, json, relation, writer } from '@nozbe/watermelondb/decorators';
+import { children, field, json, writer } from '@nozbe/watermelondb/decorators';
 
-import { FoodPortion, MealFood, NutritionLog } from './index';
+import { MealFood, NutritionLog } from './index';
 
 export interface MicrosData {
   // Basic micronutrients
@@ -59,7 +59,7 @@ export default class Food extends Model {
   static table = 'foods';
 
   static associations = {
-    food_portion: { type: 'belongs_to' as const, key: 'food_portion_id' },
+    food_food_portions: { type: 'has_many' as const, foreignKey: 'food_id' },
     nutrition_logs: { type: 'has_many' as const, foreignKey: 'food_id' },
     meal_foods: { type: 'has_many' as const, foreignKey: 'food_id' },
   };
@@ -68,10 +68,6 @@ export default class Food extends Model {
   @field('name') name!: string;
   @field('brand') brand?: string;
   @field('barcode') barcode?: string;
-
-  // Default portion for this food
-  @field('food_portion_id') foodPortionId!: string;
-  @relation('food_portion', 'food_portion_id') defaultPortion!: FoodPortion;
 
   // Macros per standard serving (usually 100g or 1 serving)
   @field('calories') calories!: number;
@@ -147,6 +143,7 @@ export default class Food extends Model {
   @field('updated_at') updatedAt!: number;
   @field('deleted_at') deletedAt?: number;
 
+  @children('food_food_portions') foodPortions!: Query<any>; // FoodFoodPortion
   @children('nutrition_logs') nutritionLogs!: Query<NutritionLog>;
   @children('meal_foods') mealFoods!: Query<MealFood>;
 
@@ -178,8 +175,30 @@ export default class Food extends Model {
   /**
    * Get the default portion for this food
    */
-  async getDefaultPortionAsync(): Promise<FoodPortion> {
-    return this.defaultPortion;
+  async getDefaultPortionAsync() {
+    try {
+      const ffp = await this.foodPortions.fetch();
+      const defaultEntry = ffp.find((entry: any) => entry.isDefault);
+      if (defaultEntry) {
+        return defaultEntry.foodPortion;
+      }
+    } catch (error) {
+      console.warn('Error getting default portion:', error);
+    }
+    return null;
+  }
+
+  /**
+   * Get all portions for this food
+   */
+  async getPortionsAsync() {
+    try {
+      const ffp = await this.foodPortions.fetch();
+      return Promise.all(ffp.map((fp: any) => fp.foodPortion));
+    } catch (error) {
+      console.warn('Error getting portions:', error);
+      return [];
+    }
   }
 
   /**

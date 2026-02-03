@@ -1,6 +1,7 @@
 import { Q } from '@nozbe/watermelondb';
 
 import { database } from '../index';
+import FoodFoodPortion from '../models/FoodFoodPortion';
 import FoodPortion from '../models/FoodPortion';
 
 export class FoodPortionService {
@@ -160,5 +161,112 @@ export class FoodPortionService {
       .get<FoodPortion>('food_portions')
       .query(Q.where('deleted_at', Q.eq(null)), Q.where('name', Q.like(`%${searchTerm}%`)))
       .fetch();
+  }
+
+  /**
+   * Add a portion to a food
+   */
+  static async addPortionToFood(
+    foodId: string,
+    foodPortionId: string,
+    isDefault = false
+  ): Promise<FoodFoodPortion> {
+    return await database.write(async () => {
+      const FFP = database.get<FoodFoodPortion>('food_food_portions');
+      const now = Date.now();
+
+      // If marking as default, unset default for other portions of this food
+      if (isDefault) {
+        const currentDefault = await FFP.query(
+          Q.where('food_id', foodId),
+          Q.where('is_default', true)
+        ).fetch();
+
+        for (const ffp of currentDefault) {
+          await ffp.update((record) => {
+            record.isDefault = false;
+            record.updatedAt = now;
+          });
+        }
+      }
+
+      // Create new food-portion link
+      return await FFP.create((ffp) => {
+        ffp.foodId = foodId;
+        ffp.foodPortionId = foodPortionId;
+        ffp.isDefault = isDefault;
+        ffp.createdAt = now;
+        ffp.updatedAt = now;
+      });
+    });
+  }
+
+  /**
+   * Set a portion as the default for a food
+   */
+  static async setDefaultPortionForFood(foodId: string, foodPortionId: string): Promise<void> {
+    return await database.write(async () => {
+      const FFP = database.get<FoodFoodPortion>('food_food_portions');
+      const now = Date.now();
+
+      // Unset current default
+      const currentDefault = await FFP.query(
+        Q.where('food_id', foodId),
+        Q.where('is_default', true)
+      ).fetch();
+
+      for (const ffp of currentDefault) {
+        await ffp.update((record) => {
+          record.isDefault = false;
+          record.updatedAt = now;
+        });
+      }
+
+      // Set new default
+      const foodFoodPortion = await FFP.query(
+        Q.where('food_id', foodId),
+        Q.where('food_portion_id', foodPortionId)
+      ).fetch();
+
+      if (foodFoodPortion.length > 0) {
+        await foodFoodPortion[0].update((record) => {
+          record.isDefault = true;
+          record.updatedAt = now;
+        });
+      }
+    });
+  }
+
+  /**
+   * Remove a portion from a food
+   */
+  static async removePortionFromFood(foodId: string, foodPortionId: string): Promise<void> {
+    return await database.write(async () => {
+      const FFP = database.get<FoodFoodPortion>('food_food_portions');
+
+      const ffp = await FFP.query(
+        Q.where('food_id', foodId),
+        Q.where('food_portion_id', foodPortionId)
+      ).fetch();
+
+      if (ffp.length > 0) {
+        await ffp[0].markAsDeleted();
+      }
+    });
+  }
+
+  /**
+   * Get all portions for a specific food
+   */
+  static async getPortionsForFood(foodId: string): Promise<FoodPortion[]> {
+    const FFP = database.get<FoodFoodPortion>('food_food_portions');
+
+    const foodFoodPortions = await FFP.query(
+      Q.where('food_id', foodId),
+      Q.where('deleted_at', Q.eq(null))
+    ).fetch();
+
+    // Extract the FoodPortion objects from each junction entry
+    return Promise.all(foodFoodPortions.map((ffp) => ffp.foodPortion));
   }
 }

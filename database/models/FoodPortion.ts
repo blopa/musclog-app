@@ -1,10 +1,11 @@
 import { Model } from '@nozbe/watermelondb';
-import { field, writer } from '@nozbe/watermelondb/decorators';
+import { children, field, writer } from '@nozbe/watermelondb/decorators';
 
 export default class FoodPortion extends Model {
   static table = 'food_portions';
 
   static associations = {
+    food_food_portions: { type: 'has_many' as const, foreignKey: 'food_portion_id' },
     meal_foods: { type: 'has_many' as const, foreignKey: 'portion_id' },
     nutrition_logs: { type: 'has_many' as const, foreignKey: 'portion_id' },
   };
@@ -15,6 +16,8 @@ export default class FoodPortion extends Model {
   @field('created_at') createdAt!: number;
   @field('updated_at') updatedAt!: number;
   @field('deleted_at') deletedAt?: number;
+
+  @children('food_food_portions') foodFoodPortions!: any; // Query<FoodFoodPortion>
 
   @writer
   async markAsDeleted(): Promise<void> {

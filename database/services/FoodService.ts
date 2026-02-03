@@ -3,6 +3,7 @@ import { Q } from '@nozbe/watermelondb';
 import { ProductV3 } from '../../types/openFoodFacts';
 import { database } from '../index';
 import Food from '../models/Food';
+import FoodFoodPortion from '../models/FoodFoodPortion';
 import FoodPortion from '../models/FoodPortion';
 
 export class FoodService {
@@ -26,13 +27,21 @@ export class FoodService {
     return await database.write(async () => {
       const now = Date.now();
 
-      // Create default portion (100g) - global, not tied to any food
-      const defaultPortion = await database.get<FoodPortion>('food_portions').create((portion) => {
-        portion.name = 'Default';
-        portion.gramWeight = 100;
-        portion.createdAt = now;
-        portion.updatedAt = now;
-      });
+      // Find or create a "100g" portion (global, reusable)
+      const existingPortion = await database
+        .get<FoodPortion>('food_portions')
+        .query(Q.where('name', '100g'), Q.where('gram_weight', 100))
+        .fetch();
+
+      const defaultPortion =
+        existingPortion.length > 0
+          ? existingPortion[0]
+          : await database.get<FoodPortion>('food_portions').create((portion) => {
+              portion.name = '100g';
+              portion.gramWeight = 100;
+              portion.createdAt = now;
+              portion.updatedAt = now;
+            });
 
       const food = await database.get<Food>('foods').create((food) => {
         food.isAiGenerated = false;
@@ -61,9 +70,17 @@ export class FoodService {
 
         food.isFavorite = false;
         food.source = 'api';
-        food.foodPortionId = defaultPortion.id; // Link to the global portion
         food.createdAt = now;
         food.updatedAt = now;
+      });
+
+      // Link food to the default portion
+      await database.get<FoodFoodPortion>('food_food_portions').create((ffp) => {
+        ffp.foodId = food.id;
+        ffp.foodPortionId = defaultPortion.id;
+        ffp.isDefault = true;
+        ffp.createdAt = now;
+        ffp.updatedAt = now;
       });
 
       return food;
@@ -103,12 +120,15 @@ export class FoodService {
       }
       // For 'g' or other units, assume gramWeight = servingAmount
 
-      // Create default portion with the specified serving amount/unit - global, not tied to any food
-      const defaultPortion = await database.get<FoodPortion>('food_portions').create((portion) => {
-        portion.name = 'Default';
-        portion.gramWeight = gramWeight;
-        portion.createdAt = now;
-        portion.updatedAt = now;
+      // Create portion label
+      const portionName = servingAmount === 100 && servingUnit === 'g' ? '100g' : 'Default';
+
+      // Create a new portion for this food's serving amount (global, can be reused)
+      const portion = await database.get<FoodPortion>('food_portions').create((p) => {
+        p.name = portionName;
+        p.gramWeight = gramWeight;
+        p.createdAt = now;
+        p.updatedAt = now;
       });
 
       const food = await database.get<Food>('foods').create((food) => {
@@ -136,9 +156,17 @@ export class FoodService {
 
         food.isFavorite = false;
         food.source = 'user';
-        food.foodPortionId = defaultPortion.id; // Link to the global portion
         food.createdAt = now;
         food.updatedAt = now;
+      });
+
+      // Link food to the portion as default
+      await database.get<FoodFoodPortion>('food_food_portions').create((ffp) => {
+        ffp.foodId = food.id;
+        ffp.foodPortionId = portion.id;
+        ffp.isDefault = true;
+        ffp.createdAt = now;
+        ffp.updatedAt = now;
       });
 
       return food;

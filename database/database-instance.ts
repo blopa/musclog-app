@@ -4,6 +4,7 @@ import adapter from './adapter';
 // Import all models
 import Exercise from './models/Exercise';
 import Food from './models/Food';
+import FoodFoodPortion from './models/FoodFoodPortion';
 import FoodPortion from './models/FoodPortion';
 import Meal from './models/Meal';
 import MealFood from './models/MealFood';
@@ -36,6 +37,7 @@ export const database = new Database({
     NutritionGoal,
     Food,
     FoodPortion,
+    FoodFoodPortion,
     Meal,
     MealFood,
     NutritionLog,
