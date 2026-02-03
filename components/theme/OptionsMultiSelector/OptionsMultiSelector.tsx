@@ -39,6 +39,7 @@ type OptionsMultiSelectorProps<T extends string | number> = {
   selectedIds?: T[];
   onChange: (ids: T[]) => void;
   isEditable?: boolean;
+  hasGroups?: boolean;
   onOrderChange?: (reorderedOptions: SelectorOption<T>[]) => void;
   onDelete?: (ids: T[]) => void;
 };
@@ -49,6 +50,7 @@ export function OptionsMultiSelector<T extends string | number>({
   selectedIds = [],
   onChange,
   isEditable = false,
+  hasGroups = false,
   onOrderChange,
   onDelete,
 }: OptionsMultiSelectorProps<T>) {
