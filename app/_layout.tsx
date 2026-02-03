@@ -62,10 +62,12 @@ export default function RootLayout() {
           console.error('Error verifying database:', error);
         });
 
-      // Seed exercises database
+      // Seed development data
       seedDevData().catch((error) => {
         console.error('Error seeding exercises database:', error);
       });
+    } else {
+      // TODO: Seed production data
     }
 
     // Cleanup listeners
