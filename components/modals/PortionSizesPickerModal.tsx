@@ -1,19 +1,14 @@
 import { Search, X } from 'lucide-react-native';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, TextInput, View } from 'react-native';
+import { ActivityIndicator, Pressable, Text, TextInput, View } from 'react-native';
 
+import { useFoodPortions } from '../../hooks/useFoodPortions';
 import { theme } from '../../theme';
 import { Button } from '../theme/Button';
 import { OptionsMultiSelector } from '../theme/OptionsMultiSelector/OptionsMultiSelector';
 import type { SelectorOption } from '../theme/OptionsMultiSelector/utils';
 import { FullScreenModal } from './FullScreenModal';
-
-type PortionSize = {
-  id: string;
-  label: string;
-  description: string;
-};
 
 type PortionSizesPickerModalProps = {
   visible: boolean;
@@ -21,23 +16,6 @@ type PortionSizesPickerModalProps = {
   onConfirm: (selectedIds: string[]) => void;
   selectedIds?: string[];
 };
-
-const PORTION_SIZES: PortionSize[] = [
-  // Standard
-  { id: 'servings', label: 'Servings', description: 'serving' },
-  { id: 'containers', label: 'Containers', description: 'container' },
-  // Weight
-  { id: 'grams', label: 'Grams (g)', description: 'g' },
-  { id: 'ounces', label: 'Ounces (oz)', description: 'oz' },
-  { id: 'kilograms', label: 'Kilograms (kg)', description: 'kg' },
-  { id: 'pounds', label: 'Pounds (lb)', description: 'lb' },
-  // Volume
-  { id: 'milliliters', label: 'Milliliters (ml)', description: 'ml' },
-  { id: 'cups', label: 'Cups', description: 'cup' },
-  { id: 'tablespoons', label: 'Tablespoons (tbsp)', description: 'tbsp' },
-  { id: 'teaspoons', label: 'Teaspoons (tsp)', description: 'tsp' },
-  { id: 'liters', label: 'Liters (L)', description: 'L' },
-];
 
 export function PortionSizesPickerModal({
   visible,
@@ -49,17 +27,28 @@ export function PortionSizesPickerModal({
   const [searchQuery, setSearchQuery] = useState('');
   const [localSelectedIds, setLocalSelectedIds] = useState<string[]>(selectedIds);
 
-  // Convert portion sizes to selector options
+  // Load food portions from database
+  const { portions, isLoading } = useFoodPortions({
+    mode: 'all',
+    visible,
+  });
+
+  // Sync localSelectedIds when selectedIds prop changes
+  useEffect(() => {
+    setLocalSelectedIds(selectedIds);
+  }, [selectedIds]);
+
+  // Convert food portions to selector options
   const selectorOptions = useMemo((): SelectorOption<string>[] => {
-    return PORTION_SIZES.map((size) => ({
-      id: size.id,
-      label: size.label,
-      description: size.description,
+    return portions.map((portion) => ({
+      id: portion.id,
+      label: portion.name,
+      description: `${portion.gramWeight}g`,
       icon: () => null as any,
       iconBgColor: theme.colors.accent.primary,
       iconColor: theme.colors.text.black,
     }));
-  }, []);
+  }, [portions]);
 
   // Filter options based on search query
   const filteredOptions = useMemo(() => {
@@ -154,15 +143,35 @@ export function PortionSizesPickerModal({
           </View>
         </View>
 
-        {/* OptionsMultiSelector */}
-        <View style={{ flex: 1 }}>
-          <OptionsMultiSelector
-            title=""
-            options={filteredOptions}
-            selectedIds={localSelectedIds}
-            onChange={setLocalSelectedIds}
-          />
-        </View>
+        {/* Loading State */}
+        {isLoading ? (
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <ActivityIndicator size="large" color={theme.colors.accent.primary} />
+          </View>
+        ) : (
+          /* OptionsMultiSelector */
+          <View style={{ flex: 1 }}>
+            {filteredOptions.length > 0 ? (
+              <OptionsMultiSelector
+                title=""
+                options={filteredOptions}
+                selectedIds={localSelectedIds}
+                onChange={setLocalSelectedIds}
+              />
+            ) : (
+              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <Text
+                  style={{
+                    fontSize: theme.typography.fontSize.base,
+                    color: theme.colors.text.secondary,
+                  }}
+                >
+                  {t('portionSizes.noResults', 'No portion sizes found')}
+                </Text>
+              </View>
+            )}
+          </View>
+        )}
       </View>
     </FullScreenModal>
   );
