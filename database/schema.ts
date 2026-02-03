@@ -135,6 +135,7 @@ export const schema = appSchema({
       columns: [
         { name: 'name', type: 'string' }, // e.g., "1 Cup", "1 Slice", "3 oz", "100g"
         { name: 'gram_weight', type: 'number' }, // How many grams is this portion?
+        { name: 'icon', type: 'string', isOptional: true }, // e.g., 'droplet', 'scale', 'egg', 'cup'
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },

@@ -12,6 +12,7 @@ export default class FoodPortion extends Model {
 
   @field('name') name!: string; // e.g., "Slice", "Cup", "Bowl"
   @field('gram_weight') gramWeight!: number; // How many grams is this portion?
+  @field('icon') icon?: string; // e.g., 'droplet', 'scale', 'egg', 'cup'
 
   @field('created_at') createdAt!: number;
   @field('updated_at') updatedAt!: number;
@@ -39,6 +40,14 @@ export default class FoodPortion extends Model {
   async updateGramWeight(gramWeight: number): Promise<void> {
     await this.update((record) => {
       record.gramWeight = gramWeight;
+      record.updatedAt = Date.now();
+    });
+  }
+
+  @writer
+  async updateIcon(icon: string | undefined): Promise<void> {
+    await this.update((record) => {
+      record.icon = icon;
       record.updatedAt = Date.now();
     });
   }

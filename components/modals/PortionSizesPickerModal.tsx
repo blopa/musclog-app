@@ -1,5 +1,15 @@
-import { Search, X } from 'lucide-react-native';
-import { useEffect, useMemo, useState } from 'react';
+import {
+  Droplet,
+  Egg,
+  Flame,
+  Lightbulb,
+  Popcorn,
+  Scale,
+  Search,
+  Wind,
+  X,
+} from 'lucide-react-native';
+import { ComponentType, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, Text, TextInput, View } from 'react-native';
 
@@ -16,6 +26,22 @@ type PortionSizesPickerModalProps = {
   onConfirm: (selectedIds: string[]) => void;
   selectedIds?: string[];
 };
+
+// Map icon names to lucide components
+const ICON_MAP: Record<string, ComponentType<any>> = {
+  droplet: Droplet,
+  scale: Scale,
+  egg: Egg,
+  cup: Popcorn,
+  flame: Flame,
+  lightbulb: Lightbulb,
+  wind: Wind,
+};
+
+function getIconComponent(iconName?: string | null): ComponentType<any> | null {
+  if (!iconName) return null;
+  return ICON_MAP[iconName] || null;
+}
 
 export function PortionSizesPickerModal({
   visible,
@@ -40,14 +66,17 @@ export function PortionSizesPickerModal({
 
   // Convert food portions to selector options
   const selectorOptions = useMemo((): SelectorOption<string>[] => {
-    return portions.map((portion) => ({
-      id: portion.id,
-      label: portion.name,
-      description: `${portion.gramWeight}g`,
-      icon: () => null as any,
-      iconBgColor: theme.colors.accent.primary,
-      iconColor: theme.colors.text.black,
-    }));
+    return portions.map((portion) => {
+      const IconComponent = getIconComponent(portion.icon);
+      return {
+        id: portion.id,
+        label: portion.name,
+        description: `${portion.gramWeight}g`,
+        icon: IconComponent || (() => null as any),
+        iconBgColor: theme.colors.accent.primary,
+        iconColor: theme.colors.text.black,
+      };
+    });
   }, [portions]);
 
   // Filter options based on search query

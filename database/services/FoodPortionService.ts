@@ -8,13 +8,20 @@ export class FoodPortionService {
   /**
    * Create a new global portion (not tied to any specific food)
    */
-  static async createFoodPortion(name: string, gramWeight: number): Promise<FoodPortion> {
+  static async createFoodPortion(
+    name: string,
+    gramWeight: number,
+    icon?: string
+  ): Promise<FoodPortion> {
     return await database.write(async () => {
       const now = Date.now();
 
       return await database.get<FoodPortion>('food_portions').create((portion) => {
         portion.name = name;
         portion.gramWeight = gramWeight;
+        if (icon) {
+          portion.icon = icon;
+        }
         portion.createdAt = now;
         portion.updatedAt = now;
       });
@@ -25,7 +32,11 @@ export class FoodPortionService {
    * Get or create a portion by name and gram weight
    * Returns existing portion if found, creates new one if not
    */
-  static async getOrCreatePortion(name: string, gramWeight: number): Promise<FoodPortion> {
+  static async getOrCreatePortion(
+    name: string,
+    gramWeight: number,
+    icon?: string
+  ): Promise<FoodPortion> {
     // Try to find existing portion with same name and gram weight
     const existing = await database
       .get<FoodPortion>('food_portions')
@@ -41,7 +52,7 @@ export class FoodPortionService {
     }
 
     // Create new portion
-    return this.createFoodPortion(name, gramWeight);
+    return this.createFoodPortion(name, gramWeight, icon);
   }
 
   /**
@@ -74,6 +85,7 @@ export class FoodPortionService {
     updates: {
       name?: string;
       gramWeight?: number;
+      icon?: string;
     }
   ): Promise<FoodPortion> {
     return await database.write(async () => {
@@ -86,6 +98,7 @@ export class FoodPortionService {
       await portion.update((record) => {
         if (updates.name !== undefined) record.name = updates.name;
         if (updates.gramWeight !== undefined) record.gramWeight = updates.gramWeight;
+        if (updates.icon !== undefined) record.icon = updates.icon;
         record.updatedAt = Date.now();
       });
 
@@ -113,16 +126,16 @@ export class FoodPortionService {
     // Standard portions (global, not tied to any specific food)
     const commonPortions = [
       // TODO: use translations here
-      { name: 'Slice', gramWeight: 25 },
-      { name: '2 Slices', gramWeight: 50 },
-      { name: 'Cup', gramWeight: 240 },
-      { name: 'Tbsp', gramWeight: 15 },
-      { name: 'Tsp', gramWeight: 5 },
-      { name: 'Oz', gramWeight: 28.35 },
-      { name: '100g', gramWeight: 100 },
-      { name: '50g', gramWeight: 50 },
-      { name: '200g', gramWeight: 200 },
-      { name: '250g', gramWeight: 250 },
+      { name: 'Slice', gramWeight: 25, icon: 'egg' },
+      { name: '2 Slices', gramWeight: 50, icon: 'egg' },
+      { name: 'Cup', gramWeight: 240, icon: 'cup' },
+      { name: 'Tbsp', gramWeight: 15, icon: 'droplet' },
+      { name: 'Tsp', gramWeight: 5, icon: 'droplet' },
+      { name: 'Oz', gramWeight: 28.35, icon: 'scale' },
+      { name: '100g', gramWeight: 100, icon: 'scale' },
+      { name: '50g', gramWeight: 50, icon: 'scale' },
+      { name: '200g', gramWeight: 200, icon: 'scale' },
+      { name: '250g', gramWeight: 250, icon: 'scale' },
     ];
 
     return await database.write(async () => {
@@ -139,6 +152,9 @@ export class FoodPortionService {
           const newPortion = await database.get<FoodPortion>('food_portions').create((p) => {
             p.name = portion.name;
             p.gramWeight = portion.gramWeight;
+            if (portion.icon) {
+              p.icon = portion.icon;
+            }
             p.createdAt = now;
             p.updatedAt = now;
           });
