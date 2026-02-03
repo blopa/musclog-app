@@ -92,11 +92,8 @@ export class FoodPortionService {
     const food = await database.get<Food>('foods').find(foodId);
     const portions: FoodPortion[] = [];
 
-    // Common portion sizes based on food type
-    const commonPortions = this.getCommonPortionsForFoodType(
-      food.name ?? '',
-      food.servingUnit ?? ''
-    );
+    // Common portion sizes based on food type (food name only, no longer use servingUnit)
+    const commonPortions = this.getCommonPortionsForFoodType(food.name ?? '');
 
     return await database.write(async () => {
       const now = Date.now();
@@ -118,11 +115,10 @@ export class FoodPortionService {
   }
 
   /**
-   * Get common portions based on food name and serving unit
+   * Get common portions based on food name
    */
   private static getCommonPortionsForFoodType(
-    foodName: string,
-    servingUnit: string
+    foodName: string
   ): { name: string; gramWeight: number }[] {
     const name = foodName.toLowerCase();
     const portions: { name: string; gramWeight: number }[] = [];
@@ -174,15 +170,9 @@ export class FoodPortionService {
 
     // Add some generic portions if no specific ones were added
     if (portions.length === 0) {
-      if (servingUnit === 'g') {
-        portions.push({ name: '25g', gramWeight: 25 });
-        portions.push({ name: '50g', gramWeight: 50 });
-        portions.push({ name: '100g', gramWeight: 100 });
-      } else if (servingUnit === 'ml') {
-        portions.push({ name: '100ml', gramWeight: 100 });
-        portions.push({ name: '200ml', gramWeight: 200 });
-        portions.push({ name: '250ml', gramWeight: 250 });
-      }
+      portions.push({ name: '25g', gramWeight: 25 });
+      portions.push({ name: '50g', gramWeight: 50 });
+      portions.push({ name: '100g', gramWeight: 100 });
     }
 
     return portions;

@@ -3,6 +3,7 @@ import { Q } from '@nozbe/watermelondb';
 import { ProductV3 } from '../../types/openFoodFacts';
 import { database } from '../index';
 import Food from '../models/Food';
+import FoodPortion from '../models/FoodPortion';
 
 export class FoodService {
   /**
@@ -25,7 +26,7 @@ export class FoodService {
     return await database.write(async () => {
       const now = Date.now();
 
-      return await database.get<Food>('foods').create((food) => {
+      const food = await database.get<Food>('foods').create((food) => {
         food.isAiGenerated = false;
         food.name = product.product_name || 'Unknown Product';
         food.brand = product.brands;
@@ -37,9 +38,6 @@ export class FoodService {
         food.carbs = nutritionData.carbs;
         food.fat = nutritionData.fat;
         food.fiber = nutritionData.fiber || 0;
-
-        food.servingUnit = 'g';
-        food.servingAmount = 100;
 
         // Store micros
         const micros = {
@@ -58,6 +56,17 @@ export class FoodService {
         food.createdAt = now;
         food.updatedAt = now;
       });
+
+      // Create default portion (100g)
+      await database.get<FoodPortion>('food_portions').create((portion) => {
+        portion.foodId = food.id;
+        portion.name = 'Default';
+        portion.gramWeight = 100;
+        portion.createdAt = now;
+        portion.updatedAt = now;
+      });
+
+      return food;
     });
   }
 
@@ -84,7 +93,7 @@ export class FoodService {
     return await database.write(async () => {
       const now = Date.now();
 
-      return await database.get<Food>('foods').create((food) => {
+      const food = await database.get<Food>('foods').create((food) => {
         food.isAiGenerated = false;
         food.name = name;
         food.brand = brand;
@@ -94,9 +103,6 @@ export class FoodService {
         food.carbs = nutritionData.carbs;
         food.fat = nutritionData.fat;
         food.fiber = nutritionData.fiber || 0;
-
-        food.servingUnit = servingUnit;
-        food.servingAmount = servingAmount;
 
         // Store micros
         const micros = {
@@ -115,6 +121,26 @@ export class FoodService {
         food.createdAt = now;
         food.updatedAt = now;
       });
+
+      // Create default portion with the specified serving amount/unit
+      let gramWeight = servingAmount;
+      if (servingUnit === 'oz') {
+        gramWeight = servingAmount * 28.3495; // TODO: move this to an util file with various conversion functions
+      } else if (servingUnit === 'ml') {
+        // For ml, assume 1:1 with grams
+        gramWeight = servingAmount;
+      }
+      // For 'g' or other units, assume gramWeight = servingAmount
+
+      await database.get<FoodPortion>('food_portions').create((portion) => {
+        portion.foodId = food.id;
+        portion.name = 'Default';
+        portion.gramWeight = gramWeight;
+        portion.createdAt = now;
+        portion.updatedAt = now;
+      });
+
+      return food;
     });
   }
 
@@ -201,8 +227,6 @@ export class FoodService {
       carbs?: number;
       fat?: number;
       fiber?: number;
-      servingAmount?: number;
-      servingUnit?: string;
       micros?: any;
     }
   ): Promise<Food> {
@@ -221,8 +245,6 @@ export class FoodService {
         if (updates.carbs !== undefined) record.carbs = updates.carbs;
         if (updates.fat !== undefined) record.fat = updates.fat;
         if (updates.fiber !== undefined) record.fiber = updates.fiber;
-        if (updates.servingAmount !== undefined) record.servingAmount = updates.servingAmount;
-        if (updates.servingUnit !== undefined) record.servingUnit = updates.servingUnit;
         if (updates.micros !== undefined) record.micros = updates.micros;
         record.updatedAt = Date.now();
       });

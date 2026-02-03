@@ -33,7 +33,9 @@ export function TextInput({
   return (
     <View className="flex-col gap-2">
       <View className="ml-1 flex-row items-center">
-        <Text className={`text-sm font-medium ${focused ? 'text-accent-primary' : 'text-text-secondary'}`}>
+        <Text
+          className={`text-sm font-medium ${focused ? 'text-accent-primary' : 'text-text-secondary'}`}
+        >
           {label}
         </Text>
         {required ? <Text className="ml-1 text-sm font-medium text-red-500">*</Text> : null}

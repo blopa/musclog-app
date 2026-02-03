@@ -88,18 +88,13 @@ export default class MealFood extends Model {
       const portion = await this.portion;
       if (portion) {
         // Use portion-based calculation
-        const multiplier = this.amount; // Number of portions
-        return {
-          calories: food.calories * ((portion.gramWeight ?? 0) / food.servingAmount) * multiplier,
-          protein: food.protein * ((portion.gramWeight ?? 0) / food.servingAmount) * multiplier,
-          carbs: food.carbs * ((portion.gramWeight ?? 0) / food.servingAmount) * multiplier,
-          fat: food.fat * ((portion.gramWeight ?? 0) / food.servingAmount) * multiplier,
-          fiber: food.fiber * ((portion.gramWeight ?? 0) / food.servingAmount) * multiplier,
-        };
+        // amount = number of portions
+        const totalGrams = this.amount * (portion.gramWeight ?? 0);
+        return food.getNutrientsForAmount(totalGrams);
       }
     }
 
     // Use direct amount (assume grams)
-    return food.getNutrientsForAmount(this.amount, 'g');
+    return food.getNutrientsForAmount(this.amount);
   }
 }

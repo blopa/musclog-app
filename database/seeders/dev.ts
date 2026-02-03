@@ -2,6 +2,7 @@ import exercisesData from '../../data/exercisesEnUS.json';
 import { database } from '../index';
 import Exercise from '../models/Exercise';
 import Food from '../models/Food';
+import FoodPortion from '../models/FoodPortion';
 import UserMetric from '../models/UserMetric';
 import WorkoutLog from '../models/WorkoutLog';
 import WorkoutLogSet from '../models/WorkoutLogSet';
@@ -1456,7 +1457,7 @@ async function seedFoods(): Promise<{ created: number }> {
       const allFoods = [...simpleFoods, ...complexFoods];
 
       for (const foodData of allFoods) {
-        await database.get<Food>('foods').create((food) => {
+        const food = await database.get<Food>('foods').create((food) => {
           food.isAiGenerated = false;
           food.name = foodData.name;
           food.brand = foodData.brand;
@@ -1466,14 +1467,22 @@ async function seedFoods(): Promise<{ created: number }> {
           food.carbs = foodData.carbs;
           food.fat = foodData.fat;
           food.fiber = foodData.fiber;
-          food.servingUnit = 'g';
-          food.servingAmount = 100;
           food.micros = {}; // Empty micros for now
           food.isFavorite = foodData.isFavorite;
           food.source = 'user';
           food.createdAt = now;
           food.updatedAt = now;
         });
+
+        // Create default portion (100g)
+        await database.get<FoodPortion>('food_portions').create((portion) => {
+          portion.foodId = food.id;
+          portion.name = 'Default';
+          portion.gramWeight = 100;
+          portion.createdAt = now;
+          portion.updatedAt = now;
+        });
+
         created++;
       }
 

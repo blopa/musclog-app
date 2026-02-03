@@ -157,7 +157,7 @@ export function useUnifiedFoodSearch({
       description: `${food.brand || 'Custom Food'} • ${food.calories || 0} kcal per 100g`,
       brand: food.brand,
       imageUrl: food.imageUrl, // Include image URL from local database
-      serving_size: `${food.servingAmount || 100} ${food.servingUnit || 'g'}`,
+      serving_size: '100 g', // Display standard serving
       calories: food.calories,
       protein: food.protein,
       carbs: food.carbs,
@@ -166,7 +166,7 @@ export function useUnifiedFoodSearch({
       source: 'local' as const,
       _raw: food,
     }));
-  }, [localFoods, includeLocal, localLimit]);
+  }, [localFoods, includeLocal]);
 
   // Convert API results to unified format
   const apiResultsFormatted = useMemo(() => {

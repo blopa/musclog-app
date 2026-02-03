@@ -586,7 +586,7 @@ export function FoodSearchModal({
                         name: food.name ?? '',
                         description: `${food.brand || 'Custom Food'} • ${food.calories || 0} kcal per 100g`,
                         brand: food.brand,
-                        serving_size: `${food.servingAmount || 100} ${food.servingUnit || 'g'}`,
+                        serving_size: '100 g',
                         calories: food.calories,
                         protein: food.protein,
                         carbs: food.carbs,

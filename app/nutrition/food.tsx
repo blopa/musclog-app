@@ -364,7 +364,7 @@ export default function FoodScreen() {
                       <FoodItemCard
                         key={entry.log.id}
                         name={entry.food?.name ?? ''}
-                        description={`${Math.round(entry.gramWeight)} ${entry.food?.servingUnit || 'g'}`}
+                        description={`${Math.round(entry.gramWeight)} g`}
                         calories={Math.ceil(entry.nutrients.calories)}
                         image={
                           entry.food?.imageUrl
@@ -386,7 +386,7 @@ export default function FoodScreen() {
                       <FoodItemCard
                         key={entry.log.id}
                         name={entry.food?.name ?? ''}
-                        description={`${Math.round(entry.gramWeight)} ${entry.food?.servingUnit || 'g'}`}
+                        description={`${Math.round(entry.gramWeight)} g`}
                         calories={Math.ceil(entry.nutrients.calories)}
                         image={
                           entry.food?.imageUrl
@@ -408,7 +408,7 @@ export default function FoodScreen() {
                       <FoodItemCard
                         key={entry.log.id}
                         name={entry.food?.name ?? ''}
-                        description={`${Math.round(entry.gramWeight)} ${entry.food?.servingUnit || 'g'}`}
+                        description={`${Math.round(entry.gramWeight)} g`}
                         calories={Math.ceil(entry.nutrients.calories)}
                         image={
                           entry.food?.imageUrl
@@ -430,7 +430,7 @@ export default function FoodScreen() {
                       <FoodItemCard
                         key={entry.log.id}
                         name={entry.food?.name ?? ''}
-                        description={`${Math.round(entry.gramWeight)} ${entry.food?.servingUnit || 'g'}`}
+                        description={`${Math.round(entry.gramWeight)} g`}
                         calories={Math.ceil(entry.nutrients.calories)}
                         image={
                           entry.food?.imageUrl

@@ -76,10 +76,6 @@ export default class Food extends Model {
   @field('fat') fat!: number;
   @field('fiber') fiber!: number;
 
-  // Base measurement that the above numbers refer to
-  @field('serving_unit') servingUnit!: string; // 'g', 'ml', 'oz'
-  @field('serving_amount') servingAmount!: number; // e.g., 100
-
   // Extended data stored as JSON
   @json('micros_json', (data: any): MicrosData => {
     if (typeof data === 'object' && data !== null) {
@@ -176,45 +172,51 @@ export default class Food extends Model {
   }
 
   // Helper methods for nutritional calculations
+  /**
+   * Get the default portion for this food (first portion created, usually during migration or creation)
+   * Defaults to 100g if no portion exists
+   */
+  async getDefaultPortion(): Promise<FoodPortion | null> {
+    const portions = await this.portions.fetch();
+    return portions.length > 0 ? portions[0] : null;
+  }
+
+  /**
+   * Get the base gram weight to use for calculations
+   * This is the gram weight of the default portion, or 100 if no portions exist
+   */
+  async getBaseGramWeight(): Promise<number> {
+    const defaultPortion = await this.getDefaultPortion();
+    return defaultPortion?.gramWeight ?? 100;
+  }
+
   getCaloriesPer100g(): number {
-    if (this.servingUnit === 'g' && this.servingAmount === 100) {
-      return this.calories;
-    }
-    return (this.calories / this.servingAmount) * 100;
+    // Macros are stored as-is; we assume they refer to a standard 100g serving
+    // New code should use portion-based calculations instead
+    return this.calories;
   }
 
   getProteinPer100g(): number {
-    if (this.servingUnit === 'g' && this.servingAmount === 100) {
-      return this.protein;
-    }
-    return (this.protein / this.servingAmount) * 100;
+    return this.protein;
   }
 
   getCarbsPer100g(): number {
-    if (this.servingUnit === 'g' && this.servingAmount === 100) {
-      return this.carbs;
-    }
-    return (this.carbs / this.servingAmount) * 100;
+    return this.carbs;
   }
 
   getFiberPer100g(): number {
-    if (this.servingUnit === 'g' && this.servingAmount === 100) {
-      return this.fiber;
-    }
-    return (this.fiber / this.servingAmount) * 100;
+    return this.fiber;
   }
 
   getFatPer100g(): number {
-    if (this.servingUnit === 'g' && this.servingAmount === 100) {
-      return this.fat;
-    }
-    return (this.fat / this.servingAmount) * 100;
+    return this.fat;
   }
 
-  getNutrientsForAmount(
-    amount: number,
-    unit: string = this.servingUnit
-  ): {
+  /**
+   * Get nutrients for a given amount in grams
+   * @param amountInGrams - Amount in grams to calculate nutrients for
+   */
+  getNutrientsForAmount(amountInGrams: number): {
     calories: number;
     protein: number;
     carbs: number;
@@ -222,47 +224,20 @@ export default class Food extends Model {
     fiber: number;
     micros?: MicrosData;
   } {
-    // Prevent division by zero
-    if (this.servingAmount <= 0) {
-      console.error('Invalid serving amount:', this.servingAmount);
-      return {
-        calories: 0,
-        protein: 0,
-        carbs: 0,
-        fat: 0,
-        fiber: 0,
-      };
-    }
-
-    // Convert to base unit (grams) for calculation
-    let multiplier = 1;
-
-    if (unit === 'g') {
-      multiplier = amount / this.servingAmount;
-    } else if (unit === 'ml' && this.servingUnit === 'ml') {
-      multiplier = amount / this.servingAmount;
-    } else {
-      // For other units, assume they're equivalent to the base serving amount
-      multiplier = amount / this.servingAmount;
-    }
-
-    // Ensure multiplier is a valid number
-    if (!isFinite(multiplier) || isNaN(multiplier)) {
-      console.error('Invalid multiplier calculated:', multiplier);
-      multiplier = 1;
-    }
+    // All macros are stored per 100g by convention
+    const gramMultiplier = amountInGrams / 100;
 
     return {
-      calories: this.calories * multiplier,
-      protein: this.protein * multiplier,
-      carbs: this.carbs * multiplier,
-      fat: this.fat * multiplier,
-      fiber: this.fiber * multiplier,
+      calories: this.calories * gramMultiplier,
+      protein: this.protein * gramMultiplier,
+      carbs: this.carbs * gramMultiplier,
+      fat: this.fat * gramMultiplier,
+      fiber: this.fiber * gramMultiplier,
       micros: this.micros
         ? Object.fromEntries(
             Object.entries(this.micros).map(([key, value]) => [
               key,
-              value ? value * multiplier : undefined,
+              value ? value * gramMultiplier : undefined,
             ])
           )
         : undefined,
