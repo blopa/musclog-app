@@ -566,7 +566,7 @@ export default function CreateCustomFoodModal({
             ]}
           />
 
-          {/* Measurement Unit */}
+          {/* TODO: change this from measurement unit to portion, by loading all portion sizes in the PortionSizesPickerModal */}
           <View>
             <Text className="mb-2 ml-1 text-sm font-medium text-text-secondary">
               {t('food.newCustomFood.measurementUnit')}
