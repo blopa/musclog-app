@@ -84,7 +84,7 @@ export function PortionSizesPickerModal({
       visible={visible}
       onClose={onClose}
       title={t('portionSizes.selectTitle', 'Select Portion Sizes')}
-      scrollable={false}
+      scrollable={true}
       footer={
         <View
           style={{
