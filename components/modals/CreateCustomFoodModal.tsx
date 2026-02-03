@@ -263,6 +263,7 @@ export default function CreateCustomFoodModal({
             </Pressable>
 
             {microOpen ? (
+              // TODO: move this data into an array of objects, and map it
               <View className="flex-row flex-wrap gap-4">
                 <MacroInput
                   label={t('food.newCustomFood.sugar')}
