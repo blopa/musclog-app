@@ -1,5 +1,5 @@
 import { Model, Query } from '@nozbe/watermelondb';
-import { children, field, json, writer } from '@nozbe/watermelondb/decorators';
+import { children, field, json, relation, writer } from '@nozbe/watermelondb/decorators';
 
 import { FoodPortion, MealFood, NutritionLog } from './index';
 
@@ -59,7 +59,7 @@ export default class Food extends Model {
   static table = 'foods';
 
   static associations = {
-    food_portions: { type: 'has_many' as const, foreignKey: 'food_id' },
+    food_portion: { type: 'belongs_to' as const, key: 'food_portion_id' },
     nutrition_logs: { type: 'has_many' as const, foreignKey: 'food_id' },
     meal_foods: { type: 'has_many' as const, foreignKey: 'food_id' },
   };
@@ -68,6 +68,10 @@ export default class Food extends Model {
   @field('name') name!: string;
   @field('brand') brand?: string;
   @field('barcode') barcode?: string;
+
+  // Default portion for this food
+  @field('food_portion_id') foodPortionId!: string;
+  @relation('food_portion', 'food_portion_id') defaultPortion!: FoodPortion;
 
   // Macros per standard serving (usually 100g or 1 serving)
   @field('calories') calories!: number;
@@ -143,7 +147,6 @@ export default class Food extends Model {
   @field('updated_at') updatedAt!: number;
   @field('deleted_at') deletedAt?: number;
 
-  @children('food_portions') portions!: Query<FoodPortion>;
   @children('nutrition_logs') nutritionLogs!: Query<NutritionLog>;
   @children('meal_foods') mealFoods!: Query<MealFood>;
 
@@ -173,21 +176,18 @@ export default class Food extends Model {
 
   // Helper methods for nutritional calculations
   /**
-   * Get the default portion for this food (first portion created, usually during migration or creation)
-   * Defaults to 100g if no portion exists
+   * Get the default portion for this food
    */
-  async getDefaultPortion(): Promise<FoodPortion | null> {
-    const portions = await this.portions.fetch();
-    return portions.length > 0 ? portions[0] : null;
+  async getDefaultPortionAsync(): Promise<FoodPortion> {
+    return this.defaultPortion;
   }
 
   /**
-   * Get the base gram weight to use for calculations
-   * This is the gram weight of the default portion, or 100 if no portions exist
+   * Get the base gram weight for this food's default portion
    */
   async getBaseGramWeight(): Promise<number> {
-    const defaultPortion = await this.getDefaultPortion();
-    return defaultPortion?.gramWeight ?? 100;
+    const portion = await this.getDefaultPortionAsync();
+    return portion?.gramWeight ?? 100;
   }
 
   getCaloriesPer100g(): number {

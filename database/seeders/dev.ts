@@ -1474,13 +1474,20 @@ async function seedFoods(): Promise<{ created: number }> {
           food.updatedAt = now;
         });
 
-        // Create default portion (100g)
-        await database.get<FoodPortion>('food_portions').create((portion) => {
-          portion.foodId = food.id;
-          portion.name = 'Default';
-          portion.gramWeight = 100;
-          portion.createdAt = now;
-          portion.updatedAt = now;
+        // Create default portion (100g) - global, not tied to this food
+        const defaultPortion = await database
+          .get<FoodPortion>('food_portions')
+          .create((portion) => {
+            portion.name = 'Default';
+            portion.gramWeight = 100;
+            portion.createdAt = now;
+            portion.updatedAt = now;
+          });
+
+        // Update food to link to the default portion
+        await food.update((f) => {
+          f.foodPortionId = defaultPortion.id;
+          f.updatedAt = now;
         });
 
         created++;

@@ -6,7 +6,7 @@ import Food from '../database/models/Food';
  */
 export async function getFoodServingDisplay(food: Food): Promise<string> {
   try {
-    const defaultPortion = await food.getDefaultPortion();
+    const defaultPortion = await food.getDefaultPortionAsync();
     if (defaultPortion) {
       // Format as "100 g" or "1 Slice" etc.
       return `${Math.round(defaultPortion.gramWeight)} ${defaultPortion.name}`;

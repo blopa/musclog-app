@@ -26,6 +26,14 @@ export class FoodService {
     return await database.write(async () => {
       const now = Date.now();
 
+      // Create default portion (100g) - global, not tied to any food
+      const defaultPortion = await database.get<FoodPortion>('food_portions').create((portion) => {
+        portion.name = 'Default';
+        portion.gramWeight = 100;
+        portion.createdAt = now;
+        portion.updatedAt = now;
+      });
+
       const food = await database.get<Food>('foods').create((food) => {
         food.isAiGenerated = false;
         food.name = product.product_name || 'Unknown Product';
@@ -53,17 +61,9 @@ export class FoodService {
 
         food.isFavorite = false;
         food.source = 'api';
+        food.foodPortionId = defaultPortion.id; // Link to the global portion
         food.createdAt = now;
         food.updatedAt = now;
-      });
-
-      // Create default portion (100g)
-      await database.get<FoodPortion>('food_portions').create((portion) => {
-        portion.foodId = food.id;
-        portion.name = 'Default';
-        portion.gramWeight = 100;
-        portion.createdAt = now;
-        portion.updatedAt = now;
       });
 
       return food;
@@ -93,6 +93,24 @@ export class FoodService {
     return await database.write(async () => {
       const now = Date.now();
 
+      // Convert serving amount to grams
+      let gramWeight = servingAmount;
+      if (servingUnit === 'oz') {
+        gramWeight = servingAmount * 28.3495; // TODO: move this to an util file with various conversion functions
+      } else if (servingUnit === 'ml') {
+        // For ml, assume 1:1 with grams
+        gramWeight = servingAmount;
+      }
+      // For 'g' or other units, assume gramWeight = servingAmount
+
+      // Create default portion with the specified serving amount/unit - global, not tied to any food
+      const defaultPortion = await database.get<FoodPortion>('food_portions').create((portion) => {
+        portion.name = 'Default';
+        portion.gramWeight = gramWeight;
+        portion.createdAt = now;
+        portion.updatedAt = now;
+      });
+
       const food = await database.get<Food>('foods').create((food) => {
         food.isAiGenerated = false;
         food.name = name;
@@ -118,26 +136,9 @@ export class FoodService {
 
         food.isFavorite = false;
         food.source = 'user';
+        food.foodPortionId = defaultPortion.id; // Link to the global portion
         food.createdAt = now;
         food.updatedAt = now;
-      });
-
-      // Create default portion with the specified serving amount/unit
-      let gramWeight = servingAmount;
-      if (servingUnit === 'oz') {
-        gramWeight = servingAmount * 28.3495; // TODO: move this to an util file with various conversion functions
-      } else if (servingUnit === 'ml') {
-        // For ml, assume 1:1 with grams
-        gramWeight = servingAmount;
-      }
-      // For 'g' or other units, assume gramWeight = servingAmount
-
-      await database.get<FoodPortion>('food_portions').create((portion) => {
-        portion.foodId = food.id;
-        portion.name = 'Default';
-        portion.gramWeight = gramWeight;
-        portion.createdAt = now;
-        portion.updatedAt = now;
       });
 
       return food;

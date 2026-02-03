@@ -1,23 +1,17 @@
 import { Q } from '@nozbe/watermelondb';
 
 import { database } from '../index';
-import Food from '../models/Food';
 import FoodPortion from '../models/FoodPortion';
 
 export class FoodPortionService {
   /**
-   * Create a new food portion
+   * Create a new global portion (not tied to any specific food)
    */
-  static async createFoodPortion(
-    foodId: string,
-    name: string,
-    gramWeight: number
-  ): Promise<FoodPortion> {
+  static async createFoodPortion(name: string, gramWeight: number): Promise<FoodPortion> {
     return await database.write(async () => {
       const now = Date.now();
 
       return await database.get<FoodPortion>('food_portions').create((portion) => {
-        portion.foodId = foodId;
         portion.name = name;
         portion.gramWeight = gramWeight;
         portion.createdAt = now;
@@ -27,12 +21,35 @@ export class FoodPortionService {
   }
 
   /**
-   * Get all portions for a food
+   * Get or create a portion by name and gram weight
+   * Returns existing portion if found, creates new one if not
    */
-  static async getFoodPortions(foodId: string): Promise<FoodPortion[]> {
+  static async getOrCreatePortion(name: string, gramWeight: number): Promise<FoodPortion> {
+    // Try to find existing portion with same name and gram weight
+    const existing = await database
+      .get<FoodPortion>('food_portions')
+      .query(
+        Q.where('name', name),
+        Q.where('gram_weight', gramWeight),
+        Q.where('deleted_at', Q.eq(null))
+      )
+      .fetch();
+
+    if (existing.length > 0) {
+      return existing[0];
+    }
+
+    // Create new portion
+    return this.createFoodPortion(name, gramWeight);
+  }
+
+  /**
+   * Get all global portions (not deleted)
+   */
+  static async getAllPortions(): Promise<FoodPortion[]> {
     return await database
       .get<FoodPortion>('food_portions')
-      .query(Q.where('deleted_at', Q.eq(null)), Q.where('food_id', foodId))
+      .query(Q.where('deleted_at', Q.eq(null)))
       .fetch();
   }
 
@@ -86,106 +103,52 @@ export class FoodPortionService {
   }
 
   /**
-   * Create common portions for a food
+   * Create common portions for a food type
+   * Returns array of global portion definitions
    */
-  static async createCommonPortions(foodId: string): Promise<FoodPortion[]> {
-    const food = await database.get<Food>('foods').find(foodId);
+  static async createCommonPortions(): Promise<FoodPortion[]> {
     const portions: FoodPortion[] = [];
 
-    // Common portion sizes based on food type (food name only, no longer use servingUnit)
-    const commonPortions = this.getCommonPortionsForFoodType(food.name ?? '');
+    // Standard portions (global, not tied to any specific food)
+    const commonPortions = [
+      { name: 'Slice', gramWeight: 25 },
+      { name: '2 Slices', gramWeight: 50 },
+      { name: 'Cup', gramWeight: 240 },
+      { name: 'Tbsp', gramWeight: 15 },
+      { name: 'Tsp', gramWeight: 5 },
+      { name: 'Oz', gramWeight: 28.35 },
+      { name: '100g', gramWeight: 100 },
+      { name: '50g', gramWeight: 50 },
+      { name: '200g', gramWeight: 200 },
+      { name: '250g', gramWeight: 250 },
+    ];
 
     return await database.write(async () => {
       const now = Date.now();
 
       for (const portion of commonPortions) {
-        const newPortion = await database.get<FoodPortion>('food_portions').create((p) => {
-          p.foodId = foodId;
-          p.name = portion.name;
-          p.gramWeight = portion.gramWeight;
-          p.createdAt = now;
-          p.updatedAt = now;
-        });
+        // Check if portion already exists
+        const existing = await database
+          .get<FoodPortion>('food_portions')
+          .query(Q.where('name', portion.name), Q.where('gram_weight', portion.gramWeight))
+          .fetch();
 
-        portions.push(newPortion);
+        if (existing.length === 0) {
+          const newPortion = await database.get<FoodPortion>('food_portions').create((p) => {
+            p.name = portion.name;
+            p.gramWeight = portion.gramWeight;
+            p.createdAt = now;
+            p.updatedAt = now;
+          });
+
+          portions.push(newPortion);
+        } else {
+          portions.push(existing[0]);
+        }
       }
 
       return portions;
     });
-  }
-
-  /**
-   * Get common portions based on food name
-   */
-  private static getCommonPortionsForFoodType(
-    foodName: string
-  ): { name: string; gramWeight: number }[] {
-    const name = foodName.toLowerCase();
-    const portions: { name: string; gramWeight: number }[] = [];
-
-    // Common portions for different food types
-    if (name.includes('bread') || name.includes('slice')) {
-      portions.push({ name: 'Slice', gramWeight: 25 });
-      portions.push({ name: '2 Slices', gramWeight: 50 });
-    }
-
-    if (name.includes('rice') || name.includes('pasta')) {
-      portions.push({ name: '1 Cup (cooked)', gramWeight: 158 });
-      portions.push({ name: '1/2 Cup (cooked)', gramWeight: 79 });
-    }
-
-    if (name.includes('chicken') || name.includes('meat') || name.includes('fish')) {
-      portions.push({ name: '3 oz', gramWeight: 85 });
-      portions.push({ name: '4 oz', gramWeight: 113 });
-      portions.push({ name: '6 oz', gramWeight: 170 });
-    }
-
-    if (name.includes('egg')) {
-      portions.push({ name: '1 Large', gramWeight: 50 });
-      portions.push({ name: '2 Large', gramWeight: 100 });
-    }
-
-    if (name.includes('milk') || name.includes('juice') || name.includes('water')) {
-      portions.push({ name: '1 Cup', gramWeight: 240 });
-      portions.push({ name: '1/2 Cup', gramWeight: 120 });
-      portions.push({ name: '1 Glass', gramWeight: 200 });
-    }
-
-    if (name.includes('cheese')) {
-      portions.push({ name: '1 Slice', gramWeight: 20 });
-      portions.push({ name: '1 oz', gramWeight: 28 });
-    }
-
-    if (name.includes('banana')) {
-      portions.push({ name: '1 Small', gramWeight: 90 });
-      portions.push({ name: '1 Medium', gramWeight: 118 });
-      portions.push({ name: '1 Large', gramWeight: 136 });
-    }
-
-    if (name.includes('apple')) {
-      portions.push({ name: '1 Small', gramWeight: 149 });
-      portions.push({ name: '1 Medium', gramWeight: 182 });
-      portions.push({ name: '1 Large', gramWeight: 223 });
-    }
-
-    // Add some generic portions if no specific ones were added
-    if (portions.length === 0) {
-      portions.push({ name: '25g', gramWeight: 25 });
-      portions.push({ name: '50g', gramWeight: 50 });
-      portions.push({ name: '100g', gramWeight: 100 });
-    }
-
-    return portions;
-  }
-
-  /**
-   * Get all portions across all foods (for management)
-   */
-  static async getAllPortions(): Promise<FoodPortion[]> {
-    return await database
-      .get<FoodPortion>('food_portions')
-      .query(Q.where('deleted_at', Q.eq(null)))
-      .fetch();
   }
 
   /**
@@ -196,35 +159,5 @@ export class FoodPortionService {
       .get<FoodPortion>('food_portions')
       .query(Q.where('deleted_at', Q.eq(null)), Q.where('name', Q.like(`%${searchTerm}%`)))
       .fetch();
-  }
-
-  /**
-   * Bulk create portions for multiple foods
-   */
-  static async bulkCreatePortions(
-    foodPortions: {
-      foodId: string;
-      name: string;
-      gramWeight: number;
-    }[]
-  ): Promise<FoodPortion[]> {
-    return await database.write(async () => {
-      const now = Date.now();
-      const createdPortions: FoodPortion[] = [];
-
-      for (const portionData of foodPortions) {
-        const portion = await database.get<FoodPortion>('food_portions').create((p) => {
-          p.foodId = portionData.foodId;
-          p.name = portionData.name;
-          p.gramWeight = portionData.gramWeight;
-          p.createdAt = now;
-          p.updatedAt = now;
-        });
-
-        createdPortions.push(portion);
-      }
-
-      return createdPortions;
-    });
   }
 }
