@@ -11,7 +11,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { SnackbarProvider } from '../components/SnackbarContext';
-import { seedDevData } from '../database/dev';
+import { seedDevData } from '../database/seeders/dev';
 import { verifyDatabaseTables } from '../database/verify';
 import { theme } from '../theme';
 

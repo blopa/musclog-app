@@ -1,12 +1,12 @@
-import exercisesData from '../data/exercisesEnUS.json';
-import { database } from './index';
-import Exercise from './models/Exercise';
-import Food from './models/Food';
-import UserMetric from './models/UserMetric';
-import WorkoutLog from './models/WorkoutLog';
-import WorkoutLogSet from './models/WorkoutLogSet';
-import WorkoutTemplate from './models/WorkoutTemplate';
-import WorkoutTemplateSet from './models/WorkoutTemplateSet';
+import exercisesData from '../../data/exercisesEnUS.json';
+import { database } from '../index';
+import Exercise from '../models/Exercise';
+import Food from '../models/Food';
+import UserMetric from '../models/UserMetric';
+import WorkoutLog from '../models/WorkoutLog';
+import WorkoutLogSet from '../models/WorkoutLogSet';
+import WorkoutTemplate from '../models/WorkoutTemplate';
+import WorkoutTemplateSet from '../models/WorkoutTemplateSet';
 
 interface ExerciseJsonData {
   name: string;
