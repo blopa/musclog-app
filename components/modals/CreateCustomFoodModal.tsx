@@ -527,19 +527,19 @@ export default function CreateCustomFoodModal({
 
           {/* Brand */}
           <TextInput
-            label="Brand"
+            label={t('food.newCustomFood.brand')}
             value={brand}
             onChangeText={setBrand}
-            placeholder="Enter brand name (optional)"
+            placeholder={t('food.newCustomFood.brandPlaceholder')}
             icon={<Cookie size={theme.iconSize.md} color={theme.colors.text.tertiary} />}
           />
 
           {/* Image URL */}
           <TextInput
-            label="Image URL"
+            label={t('food.newCustomFood.imageUrl')}
             value={imageUrl}
             onChangeText={setImageUrl}
-            placeholder="Enter image URL (optional)"
+            placeholder={t('food.newCustomFood.imageUrlPlaceholder')}
             icon={<Activity size={theme.iconSize.md} color={theme.colors.text.tertiary} />}
           />
 
@@ -548,7 +548,7 @@ export default function CreateCustomFoodModal({
             items={[
               {
                 key: 'favorite',
-                label: 'Add to Favorites',
+                label: t('food.newCustomFood.addToFavorites'),
                 icon: (
                   <Heart
                     size={theme.iconSize.md}
