@@ -1,5 +1,19 @@
-import { Calendar, Check, Mail, User } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import {
+  Activity,
+  Calendar,
+  Check,
+  Dumbbell,
+  Flame,
+  Heart,
+  Mail,
+  SunMedium,
+  Target,
+  Trophy,
+  User,
+  User as UserIcon,
+  Zap,
+} from 'lucide-react-native';
+import { ComponentType, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
@@ -29,6 +43,19 @@ export type PersonalInfo = {
   avatarIcon?: AvatarIcon;
   avatarColor?: AvatarColor;
 };
+
+const avatarOptions: { icon: AvatarIcon; component: ComponentType<any> }[] = [
+  { icon: 'person', component: UserIcon },
+  { icon: 'fitness_center', component: Dumbbell },
+  { icon: 'bolt', component: Zap },
+  { icon: 'monitoring', component: Activity },
+  { icon: 'directions_run', component: Target },
+  { icon: 'sports', component: Dumbbell },
+  { icon: 'emoji_events', component: Trophy },
+  { icon: 'heart', component: Heart },
+  { icon: 'flame', component: Flame },
+  { icon: 'meditation', component: SunMedium },
+];
 
 export function EditPersonalInfoBody({
   onSave,
@@ -109,6 +136,7 @@ export function EditPersonalInfoBody({
           selectedColor={avatarColor}
           onAvatarSelect={setAvatarIcon}
           onColorSelect={setAvatarColor}
+          avatarOptions={avatarOptions}
         />
       </View>
 

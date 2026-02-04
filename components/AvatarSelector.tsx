@@ -1,14 +1,3 @@
-import {
-  Activity,
-  Dumbbell,
-  Flame,
-  Heart,
-  SunMedium,
-  Target,
-  Trophy,
-  User,
-  Zap,
-} from 'lucide-react-native';
 import { ComponentType, createElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
@@ -24,20 +13,8 @@ interface AvatarSelectorProps {
   selectedColor: AvatarColor;
   onAvatarSelect: (avatar: AvatarIcon) => void;
   onColorSelect: (color: AvatarColor) => void;
+  avatarOptions: { icon: AvatarIcon; component: ComponentType<any> }[];
 }
-
-const avatarOptions: { icon: AvatarIcon; component: ComponentType<any> }[] = [
-  { icon: 'person', component: User },
-  { icon: 'fitness_center', component: Dumbbell },
-  { icon: 'bolt', component: Zap },
-  { icon: 'monitoring', component: Activity },
-  { icon: 'directions_run', component: Target },
-  { icon: 'sports', component: Dumbbell },
-  { icon: 'emoji_events', component: Trophy },
-  { icon: 'heart', component: Heart },
-  { icon: 'flame', component: Flame },
-  { icon: 'meditation', component: SunMedium },
-];
 
 const colorOptions: AvatarColor[] = [
   'emerald',
@@ -55,6 +32,7 @@ export function AvatarSelector({
   selectedColor,
   onAvatarSelect,
   onColorSelect,
+  avatarOptions,
 }: AvatarSelectorProps) {
   const { t } = useTranslation();
 

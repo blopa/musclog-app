@@ -19,11 +19,7 @@ const FOOD_ICONS = [
 type CreateFoodPortionModalProps = {
   visible: boolean;
   onClose: () => void;
-  onCreatePortion?: (portion: {
-    name: string;
-    weight: number;
-    icon: string;
-  }) => void;
+  onCreatePortion?: (portion: { name: string; weight: number; icon: string }) => void;
 };
 
 export function CreateFoodPortionModal({
@@ -70,13 +66,7 @@ export function CreateFoodPortionModal({
 
   const footer = (
     <View className="flex-row gap-4">
-      <Button
-        label="Cancel"
-        variant="secondary"
-        onPress={handleCancel}
-        width="flex-1"
-        size="lg"
-      />
+      <Button label="Cancel" variant="secondary" onPress={handleCancel} width="flex-1" size="lg" />
       <Button
         label="Create Portion"
         onPress={handleCreatePortion}
@@ -98,11 +88,11 @@ export function CreateFoodPortionModal({
         <View className="space-y-6">
           {/* Portion Name Input */}
           <View className="space-y-2">
-            <Text className="text-text-muted text-[10px] font-bold uppercase tracking-[0.15em] px-1">
+            <Text className="px-1 text-[10px] font-bold uppercase tracking-[0.15em] text-text-muted">
               Portion Name
             </Text>
             <TextInput
-              className="block w-full rounded-xl border border-border-dark bg-card-dark/50 py-4 px-4 text-white placeholder-text-muted/50 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all"
+              className="bg-card-dark/50 focus:border-primary focus:ring-primary block w-full rounded-xl border border-border-dark px-4 py-4 text-white placeholder-text-muted/50 transition-all focus:outline-none focus:ring-1"
               placeholder="e.g., Large Bowl or Slice"
               placeholderTextColor={theme.colors.text.muted}
               value={portionName}
@@ -128,7 +118,7 @@ export function CreateFoodPortionModal({
 
           {/* Icon Selection */}
           <View className="space-y-3">
-            <Text className="text-text-muted text-[10px] font-bold uppercase tracking-[0.15em] px-1">
+            <Text className="px-1 text-[10px] font-bold uppercase tracking-[0.15em] text-text-muted">
               Select Icon
             </Text>
             <View
@@ -147,14 +137,16 @@ export function CreateFoodPortionModal({
                     onPress={() => setSelectedIcon(icon)}
                   >
                     <View
-                      className="w-14 h-14 rounded-xl flex items-center justify-center transition-all"
+                      className="flex h-14 w-14 items-center justify-center rounded-xl transition-all"
                       style={{
-                        backgroundColor: selectedIcon === icon
-                          ? theme.colors.accent.primary20
-                          : theme.colors.background.cardElevated,
-                        borderColor: selectedIcon === icon
-                          ? theme.colors.accent.primary
-                          : theme.colors.border.dark,
+                        backgroundColor:
+                          selectedIcon === icon
+                            ? theme.colors.accent.primary20
+                            : theme.colors.background.cardElevated,
+                        borderColor:
+                          selectedIcon === icon
+                            ? theme.colors.accent.primary
+                            : theme.colors.border.dark,
                         borderWidth: 1,
                         ...(selectedIcon === icon && {
                           shadowColor: theme.colors.accent.primary,
