@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text, TextInput, View } from 'react-native';
+import { Text, View } from 'react-native';
 
-import { theme } from '../../theme';
 import { AvatarIcon } from '../../types/AvatarIcon';
 import { getAvatarIcon } from '../../utils/avatarUtils';
 import { AvatarSelector } from '../AvatarSelector';
 import { Button } from '../theme/Button';
 import { StepperInput } from '../theme/StepperInput';
+import { TextInput } from '../theme/TextInput';
 import { FullScreenModal } from './FullScreenModal';
 
 const FOOD_ICONS = [
@@ -104,17 +104,11 @@ export function CreateFoodPortionModal({
               {t('portionName')}
             </Text>
             <TextInput
-              className="bg-card-dark/50 focus:border-primary focus:ring-primary block w-full rounded-xl border border-border-dark px-4 py-4 text-white placeholder-text-muted/50 transition-all focus:outline-none focus:ring-1"
-              placeholder={t('portionNamePlaceholder')}
-              placeholderTextColor={theme.colors.text.muted}
+              label={t('portionName')}
               value={portionName}
               onChangeText={setPortionName}
-              style={{
-                color: theme.colors.text.primary,
-                backgroundColor: theme.colors.background.cardElevated,
-                borderColor: theme.colors.border.dark,
-                borderRadius: theme.borderRadius.xl,
-              }}
+              placeholder={t('portionNamePlaceholder')}
+              required
             />
           </View>
 
