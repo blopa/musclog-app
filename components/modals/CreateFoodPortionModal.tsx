@@ -1,10 +1,10 @@
 import { MaterialIcons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
 
 import { theme } from '../../theme';
 import { Button } from '../theme/Button';
+import { StepperInput } from '../theme/StepperInput';
 import { FullScreenModal } from './FullScreenModal';
 
 const FOOD_ICONS = [
@@ -32,19 +32,19 @@ export function CreateFoodPortionModal({
   onCreatePortion,
 }: CreateFoodPortionModalProps) {
   const [portionName, setPortionName] = useState('');
-  const [weight, setWeight] = useState('100');
+  const [weight, setWeight] = useState(100);
   const [selectedIcon, setSelectedIcon] = useState('ramen-dining');
 
   const handleCreatePortion = () => {
     if (portionName.trim() && weight && selectedIcon) {
       onCreatePortion?.({
         name: portionName.trim(),
-        weight: parseInt(weight, 10),
+        weight: weight,
         icon: selectedIcon,
       });
       // Reset form
       setPortionName('');
-      setWeight('100');
+      setWeight(100);
       setSelectedIcon('ramen-dining');
       onClose();
     }
@@ -53,21 +53,19 @@ export function CreateFoodPortionModal({
   const handleCancel = () => {
     // Reset form
     setPortionName('');
-    setWeight('100');
+    setWeight(100);
     setSelectedIcon('ramen-dining');
     onClose();
   };
 
-  const decrementWeight = () => {
-    const currentWeight = parseInt(weight, 10) || 0;
-    if (currentWeight > 0) {
-      setWeight(String(currentWeight - 10));
-    }
+  const incrementWeight = () => {
+    setWeight(weight + 10);
   };
 
-  const incrementWeight = () => {
-    const currentWeight = parseInt(weight, 10) || 0;
-    setWeight(String(currentWeight + 10));
+  const decrementWeight = () => {
+    if (weight > 0) {
+      setWeight(weight - 10);
+    }
   };
 
   const footer = (
@@ -119,68 +117,14 @@ export function CreateFoodPortionModal({
           </View>
 
           {/* Weight Input */}
-          <View className="space-y-2">
-            <Text className="text-text-muted text-[10px] font-bold uppercase tracking-[0.15em] px-1">
-              Weight (grams)
-            </Text>
-            <View className="flex-row items-center gap-3">
-              <Pressable
-                className="w-14 h-14 rounded-xl bg-card-dark border border-border-dark/50 flex items-center justify-center active:bg-border-dark/30 transition-all"
-                onPress={decrementWeight}
-                style={{
-                  backgroundColor: theme.colors.background.card,
-                  borderColor: theme.colors.border.dark,
-                }}
-              >
-                <MaterialIcons
-                  name="remove"
-                  size={theme.iconSize.lg}
-                  color={theme.colors.text.primary}
-                />
-              </Pressable>
-              <View className="flex-1 relative">
-                <TextInput
-                  className="block w-full text-center rounded-xl border border-border-dark bg-card-dark/50 py-4 px-4 font-bold text-xl focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all"
-                  value={weight}
-                  onChangeText={setWeight}
-                  keyboardType="numeric"
-                  style={{
-                    color: theme.colors.text.primary,
-                    backgroundColor: theme.colors.background.cardElevated,
-                    borderColor: theme.colors.border.dark,
-                    borderRadius: theme.borderRadius.xl,
-                    fontSize: theme.typography.fontSize['2xl'],
-                    fontWeight: theme.typography.fontWeight.bold,
-                    textAlign: 'center',
-                  }}
-                />
-                <Text
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted/50 font-medium"
-                  style={{
-                    color: theme.colors.text.muted,
-                    top: '50%',
-                    transform: [{ translateY: -12 }],
-                  }}
-                >
-                  g
-                </Text>
-              </View>
-              <Pressable
-                className="w-14 h-14 rounded-xl bg-card-dark border border-border-dark/50 flex items-center justify-center active:bg-border-dark/30 transition-all"
-                onPress={incrementWeight}
-                style={{
-                  backgroundColor: theme.colors.background.card,
-                  borderColor: theme.colors.border.dark,
-                }}
-              >
-                <MaterialIcons
-                  name="add"
-                  size={theme.iconSize.lg}
-                  color={theme.colors.text.primary}
-                />
-              </Pressable>
-            </View>
-          </View>
+          <StepperInput
+            label="Weight (grams)"
+            value={weight}
+            onIncrement={incrementWeight}
+            onDecrement={decrementWeight}
+            onChangeValue={setWeight}
+            unit="g"
+          />
 
           {/* Icon Selection */}
           <View className="space-y-3">
