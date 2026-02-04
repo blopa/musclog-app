@@ -1,7 +1,7 @@
 import { Dumbbell, PlusCircle, Search, User } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Switch, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Switch, Text, View } from 'react-native';
 
 import { useExercises } from '../../hooks/useExercises';
 import { useSettings } from '../../hooks/useSettings';
@@ -12,6 +12,7 @@ import { FilterTabs } from '../FilterTabs';
 import { OptionsSelector, SelectorOption } from '../OptionsSelector';
 import { Button } from '../theme/Button';
 import { StepperInlineInput } from '../theme/StepperInlineInput';
+import { TextInput } from '../theme/TextInput';
 import { FullScreenModal } from './FullScreenModal';
 
 type MuscleGroup = 'all' | 'chest' | 'back' | 'legs' | 'arms';
@@ -322,21 +323,14 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
               />
             </View>
 
-            {/* TODO: use TextInput instead, check the example from app/test/inputs.tsx line 245 */}
-            <View
-              className="mb-6 flex-row items-center rounded-xl border bg-bg-card px-4 py-3"
-              style={{
-                height: theme.components.button.height.md,
-                borderColor: theme.colors.background.white5,
-              }}
-            >
-              <Search size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
+            {/* Search Input (themed) */}
+            <View className="mb-6">
               <TextInput
-                className="ml-3 flex-1 text-base text-text-primary"
-                placeholder={placeholderText}
-                placeholderTextColor={theme.colors.text.tertiary}
+                label=""
                 value={searchQuery}
                 onChangeText={setSearchQuery}
+                placeholder={placeholderText}
+                icon={<Search size={theme.iconSize.lg} color={theme.colors.text.tertiary} />}
               />
             </View>
 

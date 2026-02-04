@@ -2,13 +2,14 @@ import { Q } from '@nozbe/watermelondb';
 import { Activity, ChevronRight, Dumbbell, Footprints, Search } from 'lucide-react-native';
 import { ComponentType, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { Image, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { database } from '../../database';
 import Exercise from '../../database/models/Exercise';
 import { theme } from '../../theme';
 import { Accordion } from '../theme/Accordion';
 import { SkeletonLoader } from '../theme/SkeletonLoader';
+import { TextInput } from '../theme/TextInput';
 import { FullScreenModal } from './FullScreenModal';
 
 // Type for exercise data used in the component
@@ -252,17 +253,14 @@ export default function ExercisesModal({ visible, onClose }: ExercisesModalProps
     >
       <ScrollView className="flex-1 px-4 pb-32" showsVerticalScrollIndicator={false}>
         <View className="py-3">
-          {/* TODO: use TextInput instead, check the example from app/test/inputs.tsx line 245 */}
-          <View className="flex-row items-stretch overflow-hidden rounded-lg bg-bg-card">
-            <View className="items-center justify-center border-none bg-bg-card pl-4">
-              <Search size={theme.iconSize.md} color={theme.colors.status.customGreen} />
-            </View>
+          {/* Search Input (themed) */}
+          <View className="py-3">
             <TextInput
-              className="flex-1 border-none bg-bg-card px-3 py-3 text-base font-normal text-text-primary"
-              placeholder={t('exercises.searchPlaceholder')}
-              placeholderTextColor={theme.colors.status.customGreen}
+              label=""
               value={searchQuery}
               onChangeText={setSearchQuery}
+              placeholder={t('exercises.searchPlaceholder')}
+              icon={<Search size={theme.iconSize.md} color={theme.colors.status.customGreen} />}
             />
           </View>
         </View>
