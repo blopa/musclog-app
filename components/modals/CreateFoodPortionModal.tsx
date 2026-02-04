@@ -79,13 +79,6 @@ export function CreateFoodPortionModal({
   const footer = (
     <View className="flex-row gap-4">
       <Button
-        label={t('cancel')}
-        variant="secondary"
-        onPress={handleCancel}
-        width="flex-1"
-        size="sm"
-      />
-      <Button
         label={t('createPortion')}
         onPress={handleCreatePortion}
         width="flex-2"
