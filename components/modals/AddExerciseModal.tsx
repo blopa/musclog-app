@@ -322,7 +322,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
               />
             </View>
 
-            {/* Search Bar */}
+            {/* TODO: use TextInput instead, check the example from app/test/inputs.tsx line 245 */}
             <View
               className="mb-6 flex-row items-center rounded-xl border bg-bg-card px-4 py-3"
               style={{

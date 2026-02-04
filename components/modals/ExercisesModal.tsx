@@ -252,6 +252,7 @@ export default function ExercisesModal({ visible, onClose }: ExercisesModalProps
     >
       <ScrollView className="flex-1 px-4 pb-32" showsVerticalScrollIndicator={false}>
         <View className="py-3">
+          {/* TODO: use TextInput instead, check the example from app/test/inputs.tsx line 245 */}
           <View className="flex-row items-stretch overflow-hidden rounded-lg bg-bg-card">
             <View className="items-center justify-center border-none bg-bg-card pl-4">
               <Search size={theme.iconSize.md} color={theme.colors.status.customGreen} />
