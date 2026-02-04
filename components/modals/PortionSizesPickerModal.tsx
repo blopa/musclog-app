@@ -1,4 +1,7 @@
 import {
+  Apple,
+  Coffee,
+  Croissant,
   Droplet,
   Egg,
   Flame,
@@ -6,15 +9,17 @@ import {
   Popcorn,
   Scale,
   Search,
+  Soup,
+  UtensilsCrossed,
   Wind,
   X,
 } from 'lucide-react-native';
 import { ComponentType, useEffect, useMemo, useState } from 'react';
-import FoodPortion from '../../database/models/FoodPortion';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, Text, TextInput, View } from 'react-native';
-import { FoodPortionService } from '../../database/services';
 
+import FoodPortion from '../../database/models/FoodPortion';
+import { FoodPortionService } from '../../database/services';
 import { useFoodPortions } from '../../hooks/useFoodPortions';
 import { theme } from '../../theme';
 import { Button } from '../theme/Button';
@@ -39,6 +44,12 @@ const ICON_MAP: Record<string, ComponentType<any>> = {
   flame: Flame,
   lightbulb: Lightbulb,
   wind: Wind,
+  restaurant: UtensilsCrossed,
+  'ramen-dining': Soup,
+  'dinner-dining': UtensilsCrossed,
+  'bakery-dining': Croissant,
+  'local-cafe': Coffee,
+  nutrition: Apple,
 };
 
 function getIconComponent(iconName?: string | null): ComponentType<any> | null {
@@ -109,7 +120,11 @@ export function PortionSizesPickerModal({
     setCreateModalVisible(true);
   };
 
-  const handleCreatePortion = async (newPortion: { name: string; weight: number; icon: string }) => {
+  const handleCreatePortion = async (newPortion: {
+    name: string;
+    weight: number;
+    icon: string;
+  }) => {
     try {
       // Create or get existing portion
       const created = await FoodPortionService.getOrCreatePortion(

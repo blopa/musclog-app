@@ -3,16 +3,22 @@ import {
   Apple,
   Coffee,
   Croissant,
+  Droplet,
   Dumbbell,
+  Egg,
   Flame,
   ForkKnifeIcon,
   Heart,
+  Lightbulb,
+  Popcorn,
+  Scale,
   Soup,
   SunMedium,
   Target,
   Trophy,
   User,
   UtensilsCrossed,
+  Wind,
   Zap,
 } from 'lucide-react-native';
 
@@ -42,6 +48,12 @@ export function getAvatarIcon(avatarIcon?: AvatarIcon | null) {
     'bakery-dining': Croissant,
     'local-cafe': Coffee,
     nutrition: Apple,
+    droplet: Droplet,
+    scale: Scale,
+    egg: Egg,
+    cup: Popcorn,
+    lightbulb: Lightbulb,
+    wind: Wind,
   };
 
   return iconMap[avatarIcon] || User;

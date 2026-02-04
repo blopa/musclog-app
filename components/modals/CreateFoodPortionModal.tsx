@@ -17,6 +17,12 @@ const FOOD_ICONS = [
   'bakery-dining',
   'local-cafe',
   'nutrition',
+  'droplet',
+  'scale',
+  'egg',
+  'cup',
+  'lightbulb',
+  'wind',
 ] as const;
 
 type FoodIcon = (typeof FOOD_ICONS)[number];

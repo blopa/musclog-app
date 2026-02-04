@@ -14,4 +14,10 @@ export type AvatarIcon =
   | 'dinner-dining'
   | 'bakery-dining'
   | 'local-cafe'
+  | 'droplet'
+  | 'scale'
+  | 'egg'
+  | 'cup'
+  | 'lightbulb'
+  | 'wind'
   | 'nutrition';
