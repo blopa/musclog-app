@@ -10,8 +10,10 @@ import {
   X,
 } from 'lucide-react-native';
 import { ComponentType, useEffect, useMemo, useState } from 'react';
+import FoodPortion from '../../database/models/FoodPortion';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, Text, TextInput, View } from 'react-native';
+import { FoodPortionService } from '../../database/services';
 
 import { useFoodPortions } from '../../hooks/useFoodPortions';
 import { theme } from '../../theme';
@@ -59,10 +61,10 @@ export function PortionSizesPickerModal({
   const [isCreateModalVisible, setCreateModalVisible] = useState(false);
 
   // Load food portions from database
-  const { portions, isLoading } = useFoodPortions({
+  const { portions, isLoading, refresh } = useFoodPortions({
     mode: 'all',
     visible,
-  });
+  }) as any;
 
   // Sync localSelectedIds when selectedIds prop changes
   useEffect(() => {
@@ -71,7 +73,7 @@ export function PortionSizesPickerModal({
 
   // Convert food portions to selector options
   const selectorOptions = useMemo((): SelectorOption<string>[] => {
-    return portions.map((portion) => {
+    return (portions as FoodPortion[]).map((portion: FoodPortion) => {
       const IconComponent = getIconComponent(portion.icon);
       return {
         id: portion.id,
@@ -107,9 +109,32 @@ export function PortionSizesPickerModal({
     setCreateModalVisible(true);
   };
 
-  const handleCreatePortion = (newPortion: { name: string; weight: number; icon: string }) => {
-    // TODO: actually create and save the new portion
-    setCreateModalVisible(false);
+  const handleCreatePortion = async (newPortion: { name: string; weight: number; icon: string }) => {
+    try {
+      // Create or get existing portion
+      const created = await FoodPortionService.getOrCreatePortion(
+        newPortion.name,
+        newPortion.weight,
+        newPortion.icon
+      );
+
+      // Refresh portions list from DB
+      try {
+        await refresh?.();
+      } catch (err) {
+        // ignore refresh errors but log
+        console.error('Error refreshing portions after create:', err);
+      }
+
+      // Select the newly created portion
+      if (created && created.id) {
+        setLocalSelectedIds((prev) => Array.from(new Set([...prev, created.id])));
+      }
+    } catch (err) {
+      console.error('Error creating food portion:', err);
+    } finally {
+      setCreateModalVisible(false);
+    }
   };
 
   return (
@@ -144,7 +169,12 @@ export function PortionSizesPickerModal({
         }
       >
         {/* Search Input */}
-        <View style={{ marginBottom: theme.spacing.padding.lg }}>
+        <View
+          style={{
+            marginBottom: theme.spacing.padding.lg,
+            paddingHorizontal: theme.spacing.padding.base,
+          }}
+        >
           <View
             style={{
               borderRadius: theme.borderRadius.xl,
@@ -153,7 +183,6 @@ export function PortionSizesPickerModal({
               backgroundColor: theme.colors.background.cardElevated,
               flexDirection: 'row',
               alignItems: 'center',
-              paddingHorizontal: theme.spacing.padding.base,
             }}
           >
             <Search size={theme.iconSize.lg} color={theme.colors.text.secondary} />
@@ -176,37 +205,37 @@ export function PortionSizesPickerModal({
               </Pressable>
             ) : null}
           </View>
-        </View>
 
-        {/* Loading State */}
-        {isLoading ? (
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <ActivityIndicator size="large" color={theme.colors.accent.primary} />
-          </View>
-        ) : (
-          /* OptionsMultiSelector */
-          <View style={{ flex: 1 }}>
-            {filteredOptions.length > 0 ? (
-              <OptionsMultiSelector
-                title=""
-                options={filteredOptions}
-                selectedIds={localSelectedIds}
-                onChange={setLocalSelectedIds}
-              />
-            ) : (
-              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <Text
-                  style={{
-                    fontSize: theme.typography.fontSize.base,
-                    color: theme.colors.text.secondary,
-                  }}
-                >
-                  {t('portionSizes.noResults')}
-                </Text>
-              </View>
-            )}
-          </View>
-        )}
+          {/* Loading State */}
+          {isLoading ? (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+              <ActivityIndicator size="large" color={theme.colors.accent.primary} />
+            </View>
+          ) : (
+            /* OptionsMultiSelector */
+            <View style={{ flex: 1 }}>
+              {filteredOptions.length > 0 ? (
+                <OptionsMultiSelector
+                  title="Portions"
+                  options={filteredOptions}
+                  selectedIds={localSelectedIds}
+                  onChange={setLocalSelectedIds}
+                />
+              ) : (
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                  <Text
+                    style={{
+                      fontSize: theme.typography.fontSize.base,
+                      color: theme.colors.text.secondary,
+                    }}
+                  >
+                    {t('portionSizes.noResults')}
+                  </Text>
+                </View>
+              )}
+            </View>
+          )}
+        </View>
       </FullScreenModal>
 
       <CreateFoodPortionModal
