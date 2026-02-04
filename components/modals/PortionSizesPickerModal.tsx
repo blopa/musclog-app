@@ -64,7 +64,7 @@ export function PortionSizesPickerModal({
   const { portions, isLoading, refresh } = useFoodPortions({
     mode: 'all',
     visible,
-  }) as any;
+  });
 
   // Sync localSelectedIds when selectedIds prop changes
   useEffect(() => {
