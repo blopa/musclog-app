@@ -1,4 +1,4 @@
-import { Apple, Bot, ChevronDown, Dumbbell, Link } from 'lucide-react-native';
+import { Apple, Bot, ChevronDown, Dumbbell } from 'lucide-react-native';
 import { ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
@@ -301,7 +301,7 @@ export function AISettingsModal({
         {/* OpenAI Integration Section */}
         <AIIntegrationCard
           sectionTitle={t('settings.aiSettings.openAiIntegration')}
-          sectionTitleColor={theme.colors.status.indigoLight}
+          sectionTitleColor={theme.colors.accent.primary}
           toggleItems={openAiToggleItems}
           apiKeyLabel={t('settings.aiSettings.openAiApiKey')}
           apiKeyValue={openAiApiKey}

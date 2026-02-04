@@ -12,7 +12,7 @@ import { TextInput } from '../components/theme/TextInput';
 import { ToggleInput } from '../components/theme/ToggleInput';
 import { theme } from '../theme';
 
-export function SettingsScreen() {
+export default function SettingsScreen() {
   const { t } = useTranslation();
   const [darkMode, setDarkMode] = useState(true);
   const [notifications, setNotifications] = useState(true);
@@ -48,21 +48,7 @@ export function SettingsScreen() {
           marginHorizontal: theme.spacing.padding.base,
         }}
       >
-        <View
-          style={{
-            marginTop: theme.spacing.padding.base,
-            marginBottom: theme.spacing.padding.sm,
-          }}
-        >
-          <TextInput
-            label=""
-            value={search}
-            onChangeText={setSearch}
-            placeholder={t('settings.searchPlaceholder')}
-            icon={<Search size={theme.iconSize.lg} color={theme.colors.text.tertiary} />}
-          />
-        </View>
-
+        <View style={{ height: theme.size['6'] }} />
         {/* Configuration Section */}
         <Text
           style={{
@@ -214,6 +200,7 @@ export function SettingsScreen() {
                 color: theme.colors.text.secondary,
               }}
             >
+              {/* TODO: load from package.json */}
               v1.0.4
             </Text>
           </Pressable>
@@ -242,22 +229,6 @@ export function SettingsScreen() {
             </Text>
           </Pressable>
         </View>
-
-        <View
-          style={{
-            marginTop: theme.spacing.padding.md,
-          }}
-        >
-          <Button
-            label={t('settings.signOut')}
-            variant="discard"
-            width="full"
-            size="sm"
-            onPress={() => {}}
-          />
-        </View>
-
-        {/* Spacer for bottom nav */}
         <View style={{ height: theme.size['8'] }} />
       </View>
     </MasterLayout>
