@@ -23,12 +23,7 @@ export default function SettingsScreen() {
   return (
     <MasterLayout showNavigationMenu={false}>
       <View className="border-b border-border-light bg-bg-primary">
-        <LinearGradient
-          colors={['transparent', 'transparent']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          className="flex-row items-center gap-4 px-4 py-4"
-        >
+        <View className="flex-row items-center gap-4 px-4 py-4">
           <Pressable
             className="-ml-2 rounded-full p-2"
             onPress={() => {
@@ -42,7 +37,7 @@ export default function SettingsScreen() {
               {t('settings.title')}
             </Text>
           </View>
-        </LinearGradient>
+        </View>
       </View>
       <View
         style={{
