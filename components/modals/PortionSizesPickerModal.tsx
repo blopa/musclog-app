@@ -16,7 +16,7 @@ import {
 } from 'lucide-react-native';
 import { ComponentType, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Pressable, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 
 import FoodPortion from '../../database/models/FoodPortion';
 import { FoodPortionService } from '../../database/services';
@@ -25,6 +25,7 @@ import { theme } from '../../theme';
 import { Button } from '../theme/Button';
 import { OptionsMultiSelector } from '../theme/OptionsMultiSelector/OptionsMultiSelector';
 import type { SelectorOption } from '../theme/OptionsMultiSelector/utils';
+import { TextInput } from '../theme/TextInput';
 import { CreateFoodPortionModal } from './CreateFoodPortionModal';
 import { FullScreenModal } from './FullScreenModal';
 
@@ -183,73 +184,71 @@ export function PortionSizesPickerModal({
           </View>
         }
       >
-        {/* TODO: use TextInput instead, check the example from app/test/inputs.tsx line 245 */}
         <View
           style={{
-            marginBottom: theme.spacing.padding.lg,
-            paddingHorizontal: theme.spacing.padding.base,
+            flex: 1,
+            paddingVertical: theme.spacing.padding.sm,
           }}
         >
+          {/* Search Input (themed) */}
           <View
             style={{
-              borderRadius: theme.borderRadius.xl,
-              borderWidth: theme.borderWidth.thin,
-              borderColor: theme.colors.border.light,
-              backgroundColor: theme.colors.background.cardElevated,
-              flexDirection: 'row',
-              alignItems: 'center',
+              marginBottom: theme.spacing.padding.lg,
+              paddingHorizontal: theme.spacing.padding.base,
             }}
           >
-            <Search size={theme.iconSize.lg} color={theme.colors.text.secondary} />
             <TextInput
-              style={{
-                flex: 1,
-                paddingVertical: theme.spacing.padding.base,
-                paddingHorizontal: theme.spacing.padding.sm,
-                fontSize: theme.typography.fontSize.base,
-                color: theme.colors.text.primary,
-              }}
-              placeholder={t('portionSizes.searchPlaceholder')}
-              placeholderTextColor={theme.colors.text.tertiary}
+              label=""
               value={searchQuery}
               onChangeText={setSearchQuery}
+              placeholder={t('portionSizes.searchPlaceholder')}
+              icon={
+                searchQuery ? (
+                  <Pressable onPress={() => setSearchQuery('')}>
+                    <X size={theme.iconSize.lg} color={theme.colors.text.secondary} />
+                  </Pressable>
+                ) : (
+                  <Search size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
+                )
+              }
             />
-            {searchQuery ? (
-              <Pressable onPress={() => setSearchQuery('')}>
-                <X size={theme.iconSize.lg} color={theme.colors.text.secondary} />
-              </Pressable>
-            ) : null}
           </View>
 
-          {/* Loading State */}
-          {isLoading ? (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-              <ActivityIndicator size="large" color={theme.colors.accent.primary} />
-            </View>
-          ) : (
-            /* OptionsMultiSelector */
-            <View style={{ flex: 1 }}>
-              {filteredOptions.length > 0 ? (
-                <OptionsMultiSelector
-                  title="Portions"
-                  options={filteredOptions}
-                  selectedIds={localSelectedIds}
-                  onChange={setLocalSelectedIds}
-                />
-              ) : (
-                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                  <Text
-                    style={{
-                      fontSize: theme.typography.fontSize.base,
-                      color: theme.colors.text.secondary,
-                    }}
-                  >
-                    {t('portionSizes.noResults')}
-                  </Text>
-                </View>
-              )}
-            </View>
-          )}
+          <View
+            style={{
+              paddingHorizontal: theme.spacing.padding.base,
+            }}
+          >
+            {/* Loading State */}
+            {isLoading ? (
+              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <ActivityIndicator size="large" color={theme.colors.accent.primary} />
+              </View>
+            ) : (
+              /* OptionsMultiSelector */
+              <View style={{ flex: 1 }}>
+                {filteredOptions.length > 0 ? (
+                  <OptionsMultiSelector
+                    title=""
+                    options={filteredOptions}
+                    selectedIds={localSelectedIds}
+                    onChange={setLocalSelectedIds}
+                  />
+                ) : (
+                  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <Text
+                      style={{
+                        fontSize: theme.typography.fontSize.base,
+                        color: theme.colors.text.secondary,
+                      }}
+                    >
+                      {t('portionSizes.noResults')}
+                    </Text>
+                  </View>
+                )}
+              </View>
+            )}
+          </View>
         </View>
       </FullScreenModal>
 
