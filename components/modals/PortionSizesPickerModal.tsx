@@ -40,7 +40,10 @@ const ICON_MAP: Record<string, ComponentType<any>> = {
 };
 
 function getIconComponent(iconName?: string | null): ComponentType<any> | null {
-  if (!iconName) return null;
+  if (!iconName) {
+    return null;
+  }
+
   return ICON_MAP[iconName] || null;
 }
 
