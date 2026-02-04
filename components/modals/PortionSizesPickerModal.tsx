@@ -18,6 +18,7 @@ import { theme } from '../../theme';
 import { Button } from '../theme/Button';
 import { OptionsMultiSelector } from '../theme/OptionsMultiSelector/OptionsMultiSelector';
 import type { SelectorOption } from '../theme/OptionsMultiSelector/utils';
+import { CreateFoodPortionModal } from './CreateFoodPortionModal';
 import { FullScreenModal } from './FullScreenModal';
 
 type PortionSizesPickerModalProps = {
@@ -52,6 +53,7 @@ export function PortionSizesPickerModal({
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [localSelectedIds, setLocalSelectedIds] = useState<string[]>(selectedIds);
+  const [isCreateModalVisible, setCreateModalVisible] = useState(false);
 
   // Load food portions from database
   const { portions, isLoading } = useFoodPortions({
@@ -97,43 +99,45 @@ export function PortionSizesPickerModal({
     onClose();
   };
 
+  const handleAddNew = () => {
+    setCreateModalVisible(true);
+  };
+
+  const handleCreatePortion = (newPortion: { name: string; weight: number; icon: string }) => {
+    // Logic to handle the new portion (e.g., add to the list)
+    setCreateModalVisible(false);
+  };
+
   return (
-    <FullScreenModal
-      visible={visible}
-      onClose={onClose}
-      title={t('portionSizes.selectTitle')}
-      scrollable={true}
-      footer={
-        <View
-          style={{
-            flexDirection: 'row',
-            gap: theme.spacing.gap.base,
-          }}
-        >
-          {/*TODO: instead of cancel, let's have a button called "Add New" that opens the CreateFoodPortionModal */}
-          <Button
-            label={t('common.cancel')}
-            variant="secondary"
-            size="sm"
-            width="flex-1"
-            onPress={onClose}
-          />
-          <Button
-            label={t('common.confirm', `Confirm (${localSelectedIds.length})`)}
-            variant="gradientCta"
-            size="sm"
-            width="flex-2"
-            onPress={handleConfirm}
-          />
-        </View>
-      }
-    >
-      <View
-        style={{
-          flex: 1,
-          paddingHorizontal: theme.spacing.padding.base,
-          paddingVertical: theme.spacing.padding.sm,
-        }}
+    <>
+      <FullScreenModal
+        visible={visible}
+        onClose={onClose}
+        title={t('portionSizes.selectTitle')}
+        scrollable={true}
+        footer={
+          <View
+            style={{
+              flexDirection: 'row',
+              gap: theme.spacing.gap.base,
+            }}
+          >
+            <Button
+              label={t('portionSizes.addNew')}
+              variant="secondaryGradient"
+              size="sm"
+              width="flex-1"
+              onPress={handleAddNew}
+            />
+            <Button
+              label={t('common.confirm', `Confirm (${localSelectedIds.length})`)}
+              variant="gradientCta"
+              size="sm"
+              width="flex-2"
+              onPress={handleConfirm}
+            />
+          </View>
+        }
       >
         {/* Search Input */}
         <View style={{ marginBottom: theme.spacing.padding.lg }}>
@@ -199,7 +203,13 @@ export function PortionSizesPickerModal({
             )}
           </View>
         )}
-      </View>
-    </FullScreenModal>
+      </FullScreenModal>
+
+      <CreateFoodPortionModal
+        visible={isCreateModalVisible}
+        onClose={() => setCreateModalVisible(false)}
+        onCreatePortion={handleCreatePortion}
+      />
+    </>
   );
 }
