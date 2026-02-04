@@ -1,24 +1,47 @@
 import { MaterialIcons } from '@expo/vector-icons';
-import { Search } from 'lucide-react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { ArrowLeft, Search } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
-import { theme } from '../../theme';
-import { SettingsCard } from '../cards/SettingsCard';
-import { Button } from '../theme/Button';
-import { TextInput } from '../theme/TextInput';
-import { ToggleInput } from '../theme/ToggleInput';
-import { FullScreenModal } from './FullScreenModal';
+import { SettingsCard } from '../components/cards/SettingsCard';
+import { MasterLayout } from '../components/MasterLayout';
+import { Button } from '../components/theme/Button';
+import { TextInput } from '../components/theme/TextInput';
+import { ToggleInput } from '../components/theme/ToggleInput';
+import { theme } from '../theme';
 
-export function MainSettingsModal({ visible, onClose }: { visible: boolean; onClose: () => void }) {
+export function SettingsScreen() {
   const { t } = useTranslation();
   const [darkMode, setDarkMode] = useState(true);
   const [notifications, setNotifications] = useState(true);
   const [search, setSearch] = useState('');
 
   return (
-    <FullScreenModal visible={visible} onClose={onClose} title={t('settings.title')}>
+    <MasterLayout showNavigationMenu={false}>
+      <View className="border-b border-border-light bg-bg-primary">
+        <LinearGradient
+          colors={['transparent', 'transparent']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          className="flex-row items-center gap-4 px-4 py-4"
+        >
+          <Pressable
+            className="-ml-2 rounded-full p-2"
+            onPress={() => {
+              // TODO: navigate to home screen
+            }}
+          >
+            <ArrowLeft size={theme.iconSize.md} color={theme.colors.text.primary} />
+          </Pressable>
+          <View className="flex-1">
+            <Text className="text-xl font-bold tracking-tight text-text-primary">
+              {t('settings.title')}
+            </Text>
+          </View>
+        </LinearGradient>
+      </View>
       <View
         style={{
           flex: 1,
@@ -237,6 +260,6 @@ export function MainSettingsModal({ visible, onClose }: { visible: boolean; onCl
         {/* Spacer for bottom nav */}
         <View style={{ height: theme.size['8'] }} />
       </View>
-    </FullScreenModal>
+    </MasterLayout>
   );
 }

@@ -36,7 +36,6 @@ import { FoodSearchModal } from '../../components/modals/FoodSearchModal';
 import { FullScreenModal } from '../../components/modals/FullScreenModal';
 import GoalsManagementModal from '../../components/modals/GoalsManagementModal';
 import { LogSetPerformanceModal } from '../../components/modals/LogSetPerformanceModal';
-import { MainSettingsModal } from '../../components/modals/MainSettingsModal';
 import { NotificationsModal } from '../../components/modals/NotificationsModal';
 import { NutritionGoals, NutritionGoalsModal } from '../../components/modals/NutritionGoalsModal';
 import PastWorkoutDetailModal from '../../components/modals/PastWorkoutDetailModal';
@@ -56,7 +55,6 @@ export default function ModalsTestScreen() {
   const [isNutritionGoalsVisible, setIsNutritionGoalsVisible] = useState(false);
 
   // Setting Modal
-  const [isSettingsVisible, setIsSettingsVisible] = useState(false);
   const [isBasicSettingsVisible, setIsBasicSettingsVisible] = useState(false);
 
   // Edit Personal Info Modal
@@ -234,21 +232,6 @@ export default function ModalsTestScreen() {
               variant="accent"
               width="full"
               onPress={() => setIsBasicSettingsVisible(true)}
-            />
-          </View>
-
-          {/* Main Settings Modal */}
-          <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Settings Modal</Text>
-            <Text className="mb-4 text-sm text-text-secondary">
-              A modal for adjusting app settings including notifications, privacy, and account
-              preferences.
-            </Text>
-            <Button
-              label="Open Settings Modal"
-              variant="accent"
-              width="full"
-              onPress={() => setIsSettingsVisible(true)}
             />
           </View>
 
@@ -887,8 +870,6 @@ export default function ModalsTestScreen() {
       </ScrollView>
 
       {/* Modals */}
-      <MainSettingsModal visible={isSettingsVisible} onClose={() => setIsSettingsVisible(false)} />
-
       <BasicSettingsModal
         visible={isBasicSettingsVisible}
         onClose={() => setIsBasicSettingsVisible(false)}
