@@ -183,7 +183,7 @@ export function PortionSizesPickerModal({
           </View>
         }
       >
-        {/* Search Input */}
+        {/* TODO: use TextInput instead, check the example from app/test/inputs.tsx line 245 */}
         <View
           style={{
             marginBottom: theme.spacing.padding.lg,
