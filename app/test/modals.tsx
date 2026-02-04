@@ -18,6 +18,7 @@ import { ConfirmationModal } from '../../components/modals/ConfirmationModal';
 import { ConnectGoogleAccountModal } from '../../components/modals/ConnectGoogleAccountModal';
 import CreateCustomFoodModal from '../../components/modals/CreateCustomFoodModal';
 import CreateExerciseModal from '../../components/modals/CreateExerciseModal';
+import { CreateFoodPortionModal } from '../../components/modals/CreateFoodPortionModal';
 import { CreateMealModal } from '../../components/modals/CreateMealModal';
 import CreateWorkoutModal from '../../components/modals/CreateWorkoutModal';
 import { CreateWorkoutOptionsModal } from '../../components/modals/CreateWorkoutOptionsModal';
@@ -173,6 +174,8 @@ export default function ModalsTestScreen() {
   const [isCreateWorkoutVisible, setIsCreateWorkoutVisible] = useState(false);
   // Portion Sizes Picker Modal
   const [isPortionSizesPickerVisible, setIsPortionSizesPickerVisible] = useState(false);
+  // Create Food Portion Modal
+  const [isCreateFoodPortionVisible, setIsCreateFoodPortionVisible] = useState(false);
 
   const handleSaveGoals = (goals: NutritionGoals) => {
     console.log('Goals saved:', goals);
@@ -862,6 +865,22 @@ export default function ModalsTestScreen() {
             />
           </View>
 
+          {/* Create Food Portion Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">
+              Create Food Portion Modal
+            </Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Modal for creating custom food portions with name, weight, and icon selection.
+            </Text>
+            <Button
+              label="Open Create Food Portion Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsCreateFoodPortionVisible(true)}
+            />
+          </View>
+
           {/* Bottom spacing */}
           <View className="h-8" />
         </View>
@@ -1280,6 +1299,14 @@ export default function ModalsTestScreen() {
           console.log('Selected portion sizes:', selectedIds);
         }}
         selectedIds={['grams', 'cups']}
+      />
+
+      <CreateFoodPortionModal
+        visible={isCreateFoodPortionVisible}
+        onClose={() => setIsCreateFoodPortionVisible(false)}
+        onCreatePortion={(portion) => {
+          console.log('Food portion created:', portion);
+        }}
       />
     </SafeAreaView>
   );
