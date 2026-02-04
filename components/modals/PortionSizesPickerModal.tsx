@@ -89,6 +89,7 @@ export function PortionSizesPickerModal({
     if (!searchQuery.trim()) {
       return selectorOptions;
     }
+
     const query = searchQuery.toLowerCase();
     return selectorOptions.filter(
       (option) =>
