@@ -1,25 +1,12 @@
-import {
-  Activity,
-  Calendar,
-  Check,
-  Dumbbell,
-  Flame,
-  Heart,
-  Mail,
-  SunMedium,
-  Target,
-  Trophy,
-  User,
-  User as UserIcon,
-  Zap,
-} from 'lucide-react-native';
-import { ComponentType, useEffect, useState } from 'react';
+import { Calendar, Check, Mail, User } from 'lucide-react-native';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
 import { theme } from '../theme';
 import { AvatarColor } from '../types/AvatarColor';
 import { AvatarIcon } from '../types/AvatarIcon';
+import { getAvatarIcon } from '../utils/avatarUtils';
 import { AvatarSelector } from './AvatarSelector';
 import { DatePickerModal } from './modals/DatePickerModal';
 import { Button } from './theme/Button';
@@ -44,18 +31,18 @@ export type PersonalInfo = {
   avatarColor?: AvatarColor;
 };
 
-const avatarOptions: { icon: AvatarIcon; component: ComponentType<any> }[] = [
-  { icon: 'person', component: UserIcon },
-  { icon: 'fitness_center', component: Dumbbell },
-  { icon: 'bolt', component: Zap },
-  { icon: 'monitoring', component: Activity },
-  { icon: 'directions_run', component: Target },
-  { icon: 'sports', component: Dumbbell },
-  { icon: 'emoji_events', component: Trophy },
-  { icon: 'heart', component: Heart },
-  { icon: 'flame', component: Flame },
-  { icon: 'meditation', component: SunMedium },
-];
+const AVATAR_ICONS = [
+  'sports',
+  'directions_run',
+  'monitoring',
+  'person',
+  'fitness_center',
+  'bolt',
+  'emoji_events',
+  'heart',
+  'flame',
+  'meditation',
+] as const;
 
 export function EditPersonalInfoBody({
   onSave,
@@ -136,7 +123,11 @@ export function EditPersonalInfoBody({
           selectedColor={avatarColor}
           onAvatarSelect={setAvatarIcon}
           onColorSelect={setAvatarColor}
-          avatarOptions={avatarOptions}
+          label={t('chooseAvatar')}
+          avatarOptions={AVATAR_ICONS.map((icon) => ({
+            icon,
+            component: getAvatarIcon(icon),
+          }))}
         />
       </View>
 

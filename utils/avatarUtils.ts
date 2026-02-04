@@ -15,7 +15,9 @@ import { AvatarIcon } from '../types/AvatarIcon';
 import { getAvatarBackgroundColor, getAvatarColor } from './avatarColorUtils';
 
 export function getAvatarIcon(avatarIcon?: AvatarIcon | null) {
-  if (!avatarIcon) return User;
+  if (!avatarIcon) {
+    return User;
+  }
 
   const iconMap = {
     person: User,
@@ -28,6 +30,13 @@ export function getAvatarIcon(avatarIcon?: AvatarIcon | null) {
     heart: Heart,
     flame: Flame,
     meditation: SunMedium,
+    // TODO: add proper icons here
+    restaurant: User,
+    'ramen-dining': User,
+    'dinner-dining': User,
+    'bakery-dining': User,
+    'local-cafe': User,
+    nutrition: User,
   };
 
   return iconMap[avatarIcon] || User;

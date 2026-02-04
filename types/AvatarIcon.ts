@@ -8,4 +8,10 @@ export type AvatarIcon =
   | 'emoji_events'
   | 'heart'
   | 'flame'
-  | 'meditation';
+  | 'meditation'
+  | 'restaurant'
+  | 'ramen-dining'
+  | 'dinner-dining'
+  | 'bakery-dining'
+  | 'local-cafe'
+  | 'nutrition';

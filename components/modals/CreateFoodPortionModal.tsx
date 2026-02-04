@@ -1,11 +1,14 @@
-import { MaterialIcons } from '@expo/vector-icons';
 import { useState } from 'react';
-import { Pressable, Text, TextInput, View } from 'react-native';
+import { Text, TextInput, View } from 'react-native';
 
 import { theme } from '../../theme';
+import { AvatarIcon } from '../../types/AvatarIcon';
+import { getAvatarIcon } from '../../utils/avatarUtils';
+import { AvatarSelector } from '../AvatarSelector';
 import { Button } from '../theme/Button';
 import { StepperInput } from '../theme/StepperInput';
 import { FullScreenModal } from './FullScreenModal';
+import { useTranslation } from 'react-i18next';
 
 const FOOD_ICONS = [
   'restaurant',
@@ -15,6 +18,8 @@ const FOOD_ICONS = [
   'local-cafe',
   'nutrition',
 ] as const;
+
+type FoodIcon = (typeof FOOD_ICONS)[number];
 
 type CreateFoodPortionModalProps = {
   visible: boolean;
@@ -29,7 +34,8 @@ export function CreateFoodPortionModal({
 }: CreateFoodPortionModalProps) {
   const [portionName, setPortionName] = useState('');
   const [weight, setWeight] = useState(100);
-  const [selectedIcon, setSelectedIcon] = useState('ramen-dining');
+  const [selectedIcon, setSelectedIcon] = useState<FoodIcon>('ramen-dining');
+  const { t } = useTranslation();
 
   const handleCreatePortion = () => {
     if (portionName.trim() && weight && selectedIcon) {
@@ -121,56 +127,17 @@ export function CreateFoodPortionModal({
             <Text className="px-1 text-[10px] font-bold uppercase tracking-[0.15em] text-text-muted">
               Select Icon
             </Text>
-            <View
-              className="rounded-xl p-3"
-              style={{
-                backgroundColor: theme.colors.background.secondary,
-                borderColor: theme.colors.border.dark,
-                borderWidth: 1,
-              }}
-            >
-              <View className="flex-row gap-3 overflow-x-auto">
-                {FOOD_ICONS.map((icon) => (
-                  <Pressable
-                    key={icon}
-                    className="flex-shrink-0"
-                    onPress={() => setSelectedIcon(icon)}
-                  >
-                    <View
-                      className="flex h-14 w-14 items-center justify-center rounded-xl transition-all"
-                      style={{
-                        backgroundColor:
-                          selectedIcon === icon
-                            ? theme.colors.accent.primary20
-                            : theme.colors.background.cardElevated,
-                        borderColor:
-                          selectedIcon === icon
-                            ? theme.colors.accent.primary
-                            : theme.colors.border.dark,
-                        borderWidth: 1,
-                        ...(selectedIcon === icon && {
-                          shadowColor: theme.colors.accent.primary,
-                          shadowOffset: { width: 0, height: 0 },
-                          shadowOpacity: 0.4,
-                          shadowRadius: 8,
-                          elevation: 4,
-                        }),
-                      }}
-                    >
-                      <MaterialIcons
-                        name={icon}
-                        size={theme.iconSize.lg}
-                        color={
-                          selectedIcon === icon
-                            ? theme.colors.accent.primary
-                            : theme.colors.text.primary
-                        }
-                      />
-                    </View>
-                  </Pressable>
-                ))}
-              </View>
-            </View>
+            <AvatarSelector
+              avatarOptions={FOOD_ICONS.map((icon) => ({
+                icon,
+                component: getAvatarIcon(icon),
+              }))}
+              selectedAvatar={selectedIcon as AvatarIcon}
+              onAvatarSelect={(avatar: AvatarIcon) => setSelectedIcon(avatar as FoodIcon)}
+              selectedColor="blue"
+              label={t('chooseIcon')}
+              showColorPicker={false}
+            />
           </View>
         </View>
       </View>

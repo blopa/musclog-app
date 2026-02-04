@@ -12,8 +12,10 @@ interface AvatarSelectorProps {
   selectedAvatar: AvatarIcon;
   selectedColor: AvatarColor;
   onAvatarSelect: (avatar: AvatarIcon) => void;
-  onColorSelect: (color: AvatarColor) => void;
+  onColorSelect?: (color: AvatarColor) => void;
   avatarOptions: { icon: AvatarIcon; component: ComponentType<any> }[];
+  showColorPicker?: boolean;
+  label: string;
 }
 
 const colorOptions: AvatarColor[] = [
@@ -33,12 +35,16 @@ export function AvatarSelector({
   onAvatarSelect,
   onColorSelect,
   avatarOptions,
+  showColorPicker = true,
+  label,
 }: AvatarSelectorProps) {
   const { t } = useTranslation();
 
   return (
     <View className="flex-col gap-2">
-      <Text className="ml-1 text-sm font-medium text-text-secondary">{t('chooseAvatar')}</Text>
+      <Text className="ml-1 text-sm font-medium text-text-secondary">
+        {label}
+      </Text>
 
       <View className="flex-row items-center gap-4 rounded-2xl border border-white/10 bg-bg-card p-4">
         {/* Default avatar with gradient background */}
@@ -89,39 +95,41 @@ export function AvatarSelector({
       </View>
 
       {/* Color Selection */}
-      <View className="flex-col gap-2">
-        <Text className="ml-1 text-sm font-medium text-text-secondary">{t('chooseColor')}</Text>
-        <View
-          className="rounded-2xl border border-white/10 bg-bg-card"
-          style={{
-            paddingHorizontal: 14,
-          }}
-        >
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{
-              gap: theme.spacing.gap.md,
-              paddingVertical: theme.spacing.padding.base,
+      {showColorPicker ? (
+        <View className="flex-col gap-2">
+          <Text className="ml-1 text-sm font-medium text-text-secondary">{t('chooseColor')}</Text>
+          <View
+            className="rounded-2xl border border-white/10 bg-bg-card"
+            style={{
+              paddingHorizontal: 14,
             }}
           >
-            {colorOptions.map((color) => (
-              <Pressable
-                key={color}
-                className={`h-12 w-12 items-center justify-center rounded-full border-2 ${
-                  selectedColor === color ? 'border-white/50' : 'border-transparent'
-                }`}
-                style={{ backgroundColor: getAvatarColor(color) }}
-                onPress={() => onColorSelect(color)}
-              >
-                {selectedColor === color ? (
-                  <View className="h-2 w-2 rounded-full bg-white" />
-                ) : null}
-              </Pressable>
-            ))}
-          </ScrollView>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{
+                gap: theme.spacing.gap.md,
+                paddingVertical: theme.spacing.padding.base,
+              }}
+            >
+              {colorOptions.map((color) => (
+                <Pressable
+                  key={color}
+                  className={`h-12 w-12 items-center justify-center rounded-full border-2 ${
+                    selectedColor === color ? 'border-white/50' : 'border-transparent'
+                  }`}
+                  style={{ backgroundColor: getAvatarColor(color) }}
+                  onPress={() => onColorSelect?.(color)}
+                >
+                  {selectedColor === color ? (
+                    <View className="h-2 w-2 rounded-full bg-white" />
+                  ) : null}
+                </Pressable>
+              ))}
+            </ScrollView>
+          </View>
         </View>
-      </View>
+      ) : null}
     </View>
   );
 }
