@@ -101,7 +101,7 @@ export function PortionSizesPickerModal({
     <FullScreenModal
       visible={visible}
       onClose={onClose}
-      title={t('portionSizes.selectTitle', 'Select Portion Sizes')}
+      title={t('portionSizes.selectTitle')}
       scrollable={true}
       footer={
         <View
@@ -111,7 +111,7 @@ export function PortionSizesPickerModal({
           }}
         >
           <Button
-            label={t('common.cancel', 'Cancel')}
+            label={t('common.cancel')}
             variant="secondary"
             size="sm"
             width="flex-1"
@@ -157,8 +157,7 @@ export function PortionSizesPickerModal({
                 color: theme.colors.text.primary,
               }}
               placeholder={t(
-                'portionSizes.searchPlaceholder',
-                'Search units (e.g. Cups, Grams...)'
+                'portionSizes.searchPlaceholder'
               )}
               placeholderTextColor={theme.colors.text.tertiary}
               value={searchQuery}
@@ -195,7 +194,7 @@ export function PortionSizesPickerModal({
                     color: theme.colors.text.secondary,
                   }}
                 >
-                  {t('portionSizes.noResults', 'No portion sizes found')}
+                  {t('portionSizes.noResults')}
                 </Text>
               </View>
             )}
