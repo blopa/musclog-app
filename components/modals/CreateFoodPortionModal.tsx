@@ -72,9 +72,15 @@ export function CreateFoodPortionModal({
 
   const footer = (
     <View className="flex-row gap-4">
-      <Button label="Cancel" variant="secondary" onPress={handleCancel} width="flex-1" size="sm" />
       <Button
-        label="Create Portion"
+        label={t('cancel')}
+        variant="secondary"
+        onPress={handleCancel}
+        width="flex-1"
+        size="sm"
+      />
+      <Button
+        label={t('createPortion')}
         onPress={handleCreatePortion}
         width="flex-2"
         size="sm"
@@ -87,7 +93,7 @@ export function CreateFoodPortionModal({
     <FullScreenModal
       visible={visible}
       onClose={onClose}
-      title="Create Food Portion"
+      title={t('createFoodPortion')}
       footer={footer}
     >
       <View className="flex-1 px-4 pt-4">
@@ -95,11 +101,11 @@ export function CreateFoodPortionModal({
           {/* Portion Name Input */}
           <View className="space-y-2">
             <Text className="px-1 text-[10px] font-bold uppercase tracking-[0.15em] text-text-muted">
-              Portion Name
+              {t('portionName')}
             </Text>
             <TextInput
               className="bg-card-dark/50 focus:border-primary focus:ring-primary block w-full rounded-xl border border-border-dark px-4 py-4 text-white placeholder-text-muted/50 transition-all focus:outline-none focus:ring-1"
-              placeholder="e.g., Large Bowl or Slice"
+              placeholder={t('portionNamePlaceholder')}
               placeholderTextColor={theme.colors.text.muted}
               value={portionName}
               onChangeText={setPortionName}
@@ -114,7 +120,7 @@ export function CreateFoodPortionModal({
 
           {/* Weight Input */}
           <StepperInput
-            label="Weight (grams)"
+            label={t('weightGrams')}
             value={weight}
             onIncrement={incrementWeight}
             onDecrement={decrementWeight}
@@ -125,7 +131,7 @@ export function CreateFoodPortionModal({
           {/* Icon Selection */}
           <View className="space-y-3">
             <Text className="px-1 text-[10px] font-bold uppercase tracking-[0.15em] text-text-muted">
-              Select Icon
+              {t('selectIcon')}
             </Text>
             <AvatarSelector
               avatarOptions={FOOD_ICONS.map((icon) => ({
