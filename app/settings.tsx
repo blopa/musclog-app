@@ -1,22 +1,24 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ArrowLeft, Search } from 'lucide-react-native';
+import { ArrowLeft } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
 import { SettingsCard } from '../components/cards/SettingsCard';
 import { MasterLayout } from '../components/MasterLayout';
-import { Button } from '../components/theme/Button';
-import { TextInput } from '../components/theme/TextInput';
+import { AdvancedSettingsModal } from '../components/modals/AdvancedSettingsModal';
+import { AISettingsModal } from '../components/modals/AISettingsModal';
+import { BasicSettingsModal } from '../components/modals/BasicSettingsModal';
 import { ToggleInput } from '../components/theme/ToggleInput';
 import { theme } from '../theme';
 
 export default function SettingsScreen() {
   const { t } = useTranslation();
-  const [darkMode, setDarkMode] = useState(true);
   const [notifications, setNotifications] = useState(true);
-  const [search, setSearch] = useState('');
+  const [isAISettingsVisible, setAISettingsVisible] = useState(false);
+  const [isBasicSettingsVisible, setBasicSettingsVisible] = useState(false);
+  const [isAdvancedSettingsVisible, setAdvancedSettingsVisible] = useState(false);
 
   return (
     <MasterLayout showNavigationMenu={false}>
@@ -75,7 +77,7 @@ export default function SettingsScreen() {
           }
           title={t('settings.basicSettings.title')}
           subtitle={t('settings.basicSettings.subtitle')}
-          onPress={() => {}}
+          onPress={() => setBasicSettingsVisible(true)}
           rightIcon={
             <MaterialIcons
               name="chevron-right"
@@ -95,7 +97,7 @@ export default function SettingsScreen() {
           }
           title={t('settings.advancedSettings.title')}
           subtitle={t('settings.advancedSettings.subtitle')}
-          onPress={() => {}}
+          onPress={() => setAdvancedSettingsVisible(true)}
           rightIcon={
             <MaterialIcons
               name="chevron-right"
@@ -115,7 +117,7 @@ export default function SettingsScreen() {
           }
           title={t('settings.aiSettings.title')}
           subtitle={t('settings.aiSettings.subtitle')}
-          onPress={() => {}}
+          onPress={() => setAISettingsVisible(true)}
           rightIcon={
             <MaterialIcons
               name="chevron-right"
@@ -136,19 +138,6 @@ export default function SettingsScreen() {
 
         <ToggleInput
           items={[
-            {
-              key: 'darkMode',
-              label: t('settings.darkMode'),
-              icon: (
-                <MaterialIcons
-                  name="dark-mode"
-                  size={theme.iconSize.xl}
-                  color={theme.colors.text.secondary}
-                />
-              ),
-              value: darkMode,
-              onValueChange: setDarkMode,
-            },
             {
               key: 'notifications',
               label: t('settings.notifications'),
@@ -231,6 +220,16 @@ export default function SettingsScreen() {
         </View>
         <View style={{ height: theme.size['8'] }} />
       </View>
+
+      <AISettingsModal visible={isAISettingsVisible} onClose={() => setAISettingsVisible(false)} />
+      <BasicSettingsModal
+        visible={isBasicSettingsVisible}
+        onClose={() => setBasicSettingsVisible(false)}
+      />
+      <AdvancedSettingsModal
+        visible={isAdvancedSettingsVisible}
+        onClose={() => setAdvancedSettingsVisible(false)}
+      />
     </MasterLayout>
   );
 }
