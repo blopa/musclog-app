@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Text, TextInput, View } from 'react-native';
 
 import { theme } from '../../theme';
@@ -8,7 +9,6 @@ import { AvatarSelector } from '../AvatarSelector';
 import { Button } from '../theme/Button';
 import { StepperInput } from '../theme/StepperInput';
 import { FullScreenModal } from './FullScreenModal';
-import { useTranslation } from 'react-i18next';
 
 const FOOD_ICONS = [
   'restaurant',
@@ -72,12 +72,12 @@ export function CreateFoodPortionModal({
 
   const footer = (
     <View className="flex-row gap-4">
-      <Button label="Cancel" variant="secondary" onPress={handleCancel} width="flex-1" size="lg" />
+      <Button label="Cancel" variant="secondary" onPress={handleCancel} width="flex-1" size="sm" />
       <Button
         label="Create Portion"
         onPress={handleCreatePortion}
         width="flex-2"
-        size="lg"
+        size="sm"
         variant="gradientCta"
       />
     </View>
@@ -134,7 +134,7 @@ export function CreateFoodPortionModal({
               }))}
               selectedAvatar={selectedIcon as AvatarIcon}
               onAvatarSelect={(avatar: AvatarIcon) => setSelectedIcon(avatar as FoodIcon)}
-              selectedColor="blue"
+              selectedColor="emerald"
               label={t('chooseIcon')}
               showColorPicker={false}
             />

@@ -42,9 +42,7 @@ export function AvatarSelector({
 
   return (
     <View className="flex-col gap-2">
-      <Text className="ml-1 text-sm font-medium text-text-secondary">
-        {label}
-      </Text>
+      <Text className="ml-1 text-sm font-medium text-text-secondary">{label}</Text>
 
       <View className="flex-row items-center gap-4 rounded-2xl border border-white/10 bg-bg-card p-4">
         {/* Default avatar with gradient background */}

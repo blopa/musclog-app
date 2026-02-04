@@ -1,12 +1,18 @@
 import {
   Activity,
+  Apple,
+  Coffee,
+  Croissant,
   Dumbbell,
   Flame,
+  ForkKnifeIcon,
   Heart,
+  Soup,
   SunMedium,
   Target,
   Trophy,
   User,
+  UtensilsCrossed,
   Zap,
 } from 'lucide-react-native';
 
@@ -30,13 +36,12 @@ export function getAvatarIcon(avatarIcon?: AvatarIcon | null) {
     heart: Heart,
     flame: Flame,
     meditation: SunMedium,
-    // TODO: add proper lucide icons here
-    restaurant: User,
-    'ramen-dining': User,
-    'dinner-dining': User,
-    'bakery-dining': User,
-    'local-cafe': User,
-    nutrition: User,
+    restaurant: UtensilsCrossed,
+    'ramen-dining': Soup,
+    'dinner-dining': ForkKnifeIcon,
+    'bakery-dining': Croissant,
+    'local-cafe': Coffee,
+    nutrition: Apple,
   };
 
   return iconMap[avatarIcon] || User;
