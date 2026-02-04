@@ -30,7 +30,7 @@ export function getAvatarIcon(avatarIcon?: AvatarIcon | null) {
     heart: Heart,
     flame: Flame,
     meditation: SunMedium,
-    // TODO: add proper icons here
+    // TODO: add proper lucide icons here
     restaurant: User,
     'ramen-dining': User,
     'dinner-dining': User,
