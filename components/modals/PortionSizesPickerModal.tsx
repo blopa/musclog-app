@@ -110,6 +110,7 @@ export function PortionSizesPickerModal({
             gap: theme.spacing.gap.base,
           }}
         >
+          {/*TODO: instead of cancel, let's have a button called "Add New" that opens the CreateFoodPortionModal */}
           <Button
             label={t('common.cancel')}
             variant="secondary"
@@ -156,9 +157,7 @@ export function PortionSizesPickerModal({
                 fontSize: theme.typography.fontSize.base,
                 color: theme.colors.text.primary,
               }}
-              placeholder={t(
-                'portionSizes.searchPlaceholder'
-              )}
+              placeholder={t('portionSizes.searchPlaceholder')}
               placeholderTextColor={theme.colors.text.tertiary}
               value={searchQuery}
               onChangeText={setSearchQuery}
