@@ -108,7 +108,7 @@ export function PortionSizesPickerModal({
   };
 
   const handleCreatePortion = (newPortion: { name: string; weight: number; icon: string }) => {
-    // Logic to handle the new portion (e.g., add to the list)
+    // TODO: actually create and save the new portion
     setCreateModalVisible(false);
   };
 
