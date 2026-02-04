@@ -6,9 +6,10 @@ import { Pressable, Text, View } from 'react-native';
 import { theme } from '../../theme';
 import { SettingsCard } from '../cards/SettingsCard';
 import { Button } from '../theme/Button';
-import { TextInput as ThemedTextInput } from '../theme/TextInput';
+import { TextInput } from '../theme/TextInput';
 import { ToggleInput } from '../theme/ToggleInput';
 import { FullScreenModal } from './FullScreenModal';
+import { Search } from 'lucide-react-native';
 
 export function MainSettingsModal({ visible, onClose }: { visible: boolean; onClose: () => void }) {
   const { t } = useTranslation();
@@ -30,18 +31,12 @@ export function MainSettingsModal({ visible, onClose }: { visible: boolean; onCl
             marginBottom: theme.spacing.padding.sm,
           }}
         >
-          <ThemedTextInput
+          <TextInput
             label=""
             value={search}
             onChangeText={setSearch}
             placeholder={t('settings.searchPlaceholder')}
-            icon={
-              <MaterialIcons
-                name="search"
-                size={theme.iconSize.lg}
-                color={theme.colors.text.secondary}
-              />
-            }
+            icon={<Search size={theme.iconSize.lg} color={theme.colors.text.tertiary} />}
           />
         </View>
 
