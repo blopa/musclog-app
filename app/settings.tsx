@@ -1,5 +1,5 @@
 import { MaterialIcons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
 import { ArrowLeft } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -15,6 +15,7 @@ import { theme } from '../theme';
 
 export default function SettingsScreen() {
   const { t } = useTranslation();
+  const router = useRouter();
   const [notifications, setNotifications] = useState(true);
   const [isAISettingsVisible, setAISettingsVisible] = useState(false);
   const [isBasicSettingsVisible, setBasicSettingsVisible] = useState(false);
@@ -27,7 +28,7 @@ export default function SettingsScreen() {
           <Pressable
             className="-ml-2 rounded-full p-2"
             onPress={() => {
-              // TODO: navigate to home screen
+              router.push('/');
             }}
           >
             <ArrowLeft size={theme.iconSize.md} color={theme.colors.text.primary} />
