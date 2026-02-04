@@ -1,4 +1,5 @@
 import { MaterialIcons } from '@expo/vector-icons';
+import { Search } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
@@ -9,7 +10,6 @@ import { Button } from '../theme/Button';
 import { TextInput } from '../theme/TextInput';
 import { ToggleInput } from '../theme/ToggleInput';
 import { FullScreenModal } from './FullScreenModal';
-import { Search } from 'lucide-react-native';
 
 export function MainSettingsModal({ visible, onClose }: { visible: boolean; onClose: () => void }) {
   const { t } = useTranslation();
@@ -86,6 +86,26 @@ export function MainSettingsModal({ visible, onClose }: { visible: boolean; onCl
           }
           title={t('settings.advancedSettings.title')}
           subtitle={t('settings.advancedSettings.subtitle')}
+          onPress={() => {}}
+          rightIcon={
+            <MaterialIcons
+              name="chevron-right"
+              size={theme.iconSize.xl}
+              color={theme.colors.text.secondary}
+            />
+          }
+        />
+
+        <SettingsCard
+          icon={
+            <MaterialIcons
+              name="smart-toy"
+              size={theme.iconSize['2xl']}
+              color={theme.colors.accent.primary}
+            />
+          }
+          title={t('settings.aiSettings.title')}
+          subtitle={t('settings.aiSettings.subtitle')}
           onPress={() => {}}
           rightIcon={
             <MaterialIcons
