@@ -1,7 +1,7 @@
 import { Search, SlidersHorizontal, Trophy } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { useWorkoutHistory } from '../../hooks/useWorkoutHistory';
 import { theme } from '../../theme';
@@ -9,6 +9,7 @@ import { type WorkoutHistoryItem, WorkoutHistorySection } from '../../utils/work
 import { GenericCard } from '../cards/GenericCard';
 import { Button } from '../theme/Button';
 import { SkeletonLoader } from '../theme/SkeletonLoader';
+import { TextInput } from '../theme/TextInput';
 import { FullScreenModal } from './FullScreenModal';
 import PastWorkoutDetailModal from './PastWorkoutDetailModal';
 import { PastWorkoutsHistoryFilterMenu } from './PastWorkoutsHistoryFilterMenu';
@@ -41,33 +42,12 @@ function SearchAndFilterHeader({
     >
       <View className="flex-row items-center gap-2">
         <View className="relative flex-1">
-          <View
-            style={{
-              position: 'absolute',
-              left: theme.spacing.padding.md,
-              top: 0,
-              bottom: 0,
-              justifyContent: 'center',
-              zIndex: 1,
-            }}
-          >
-            <Search size={theme.iconSize.sm} color={theme.colors.text.secondary} />
-          </View>
           <TextInput
-            className="h-11 w-full pl-10 pr-4"
             placeholder={t('pastWorkoutHistory.searchPlaceholder')}
-            placeholderTextColor={theme.colors.text.secondary}
+            label=""
             value={searchQuery}
             onChangeText={onSearchChange}
-            style={{
-              backgroundColor: theme.colors.background.card,
-              borderWidth: theme.borderWidth.thin,
-              borderColor: theme.colors.background.white5,
-              borderRadius: theme.borderRadius.md,
-              fontSize: theme.typography.fontSize.sm,
-              color: theme.colors.text.primary,
-              height: 44,
-            }}
+            icon={<Search size={theme.iconSize.lg} color={theme.colors.text.tertiary} />}
           />
         </View>
         <Pressable
@@ -76,6 +56,7 @@ function SearchAndFilterHeader({
             backgroundColor: theme.colors.background.card,
             borderColor: theme.colors.background.white5,
             borderRadius: theme.borderRadius.md,
+            marginTop: theme.spacing.margin.sm,
           }}
           onPress={onFilterPress}
         >
