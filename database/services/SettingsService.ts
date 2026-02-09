@@ -8,6 +8,7 @@ import {
   ENABLE_OPENAI_SETTING_TYPE,
   GOOGLE_GEMINI_API_KEY_SETTING_TYPE,
   GOOGLE_GEMINI_MODEL_SETTING_TYPE,
+  NOTIFICATIONS_SETTING_TYPE,
   OPENAI_API_KEY_SETTING_TYPE,
   OPENAI_MODEL_SETTING_TYPE,
   READ_HEALTH_DATA_SETTING_TYPE,
@@ -180,6 +181,13 @@ export class SettingsService {
       console.error('[SettingsService] Error in setWorkoutInsights:', error);
       throw error;
     }
+  }
+
+  /**
+   * Upsert the notifications setting
+   */
+  static async setNotifications(value: boolean) {
+    await this.setBooleanSetting(NOTIFICATIONS_SETTING_TYPE, value);
   }
 
   /**

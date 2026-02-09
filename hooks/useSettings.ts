@@ -10,6 +10,7 @@ import {
   ENABLE_OPENAI_SETTING_TYPE,
   GOOGLE_GEMINI_API_KEY_SETTING_TYPE,
   GOOGLE_GEMINI_MODEL_SETTING_TYPE,
+  NOTIFICATIONS_SETTING_TYPE,
   OPENAI_API_KEY_SETTING_TYPE,
   OPENAI_MODEL_SETTING_TYPE,
   READ_HEALTH_DATA_SETTING_TYPE,
@@ -66,6 +67,7 @@ export function useSettings(): UseSettingsResult & {
   enableOpenAi: boolean;
   dailyNutritionInsights: boolean;
   workoutInsights: boolean;
+  notifications: boolean;
 } {
   const [units, setUnits] = useState<Units>('metric');
   const [theme, setTheme] = useState<ThemeOption>('system');
@@ -81,6 +83,7 @@ export function useSettings(): UseSettingsResult & {
   const [enableOpenAi, setEnableOpenAi] = useState(true);
   const [dailyNutritionInsights, setDailyNutritionInsights] = useState(true);
   const [workoutInsights, setWorkoutInsights] = useState(false);
+  const [notifications, setNotifications] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -145,6 +148,10 @@ export function useSettings(): UseSettingsResult & {
     const workoutInsightsQuery = database
       .get<Setting>('settings')
       .query(Q.where('type', WORKOUT_INSIGHTS_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)));
+
+    const notificationsQuery = database
+      .get<Setting>('settings')
+      .query(Q.where('type', NOTIFICATIONS_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)));
 
     const unitsSubscription = unitsQuery.observe().subscribe({
       next: (settings) => {
@@ -284,6 +291,15 @@ export function useSettings(): UseSettingsResult & {
         },
       });
 
+    const notificationsSubscription = notificationsQuery.observeWithColumns(['value']).subscribe({
+      next: (settings) => {
+        setNotifications(parseBooleanFromSettings(settings));
+      },
+      error: () => {
+        setNotifications(true);
+      },
+    });
+
     // Set loading to false once all subscriptions have had a chance to load
     const timeout = setTimeout(() => {
       setIsLoading(false);
@@ -304,6 +320,7 @@ export function useSettings(): UseSettingsResult & {
       enableOpenAiSubscription.unsubscribe();
       dailyNutritionInsightsSubscription.unsubscribe();
       workoutInsightsSubscription.unsubscribe();
+      notificationsSubscription.unsubscribe();
       clearTimeout(timeout);
     };
   }, []);
@@ -325,6 +342,7 @@ export function useSettings(): UseSettingsResult & {
       enableOpenAi,
       dailyNutritionInsights,
       workoutInsights,
+      notifications,
       isLoading,
       weightUnit: getWeightUnit(units),
       heightUnit: getHeightUnit(units),
@@ -344,6 +362,7 @@ export function useSettings(): UseSettingsResult & {
       enableOpenAi,
       dailyNutritionInsights,
       workoutInsights,
+      notifications,
       isLoading,
     ]
   );

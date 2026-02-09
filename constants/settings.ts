@@ -82,6 +82,12 @@ export const DAILY_NUTRITION_INSIGHTS_SETTING_TYPE = 'daily_nutrition_insights';
  */
 export const WORKOUT_INSIGHTS_SETTING_TYPE = 'workout_insights';
 
+/**
+ * Setting type for notifications (stored in WatermelonDB settings table).
+ * value: 'true' | 'false'.
+ */
+export const NOTIFICATIONS_SETTING_TYPE = 'notifications';
+
 export type Units = 'metric' | 'imperial';
 export type ThemeOption = 'system' | 'light' | 'dark';
 

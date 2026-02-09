@@ -33,8 +33,8 @@ export default function SettingsScreen() {
     enableOpenAi,
     dailyNutritionInsights,
     workoutInsights,
+    notifications,
   } = useSettings();
-  const [notifications, setNotifications] = useState(true);
   const [isAISettingsVisible, setAISettingsVisible] = useState(false);
   const [isBasicSettingsVisible, setBasicSettingsVisible] = useState(false);
   const [isAdvancedSettingsVisible, setAdvancedSettingsVisible] = useState(false);
@@ -89,6 +89,10 @@ export default function SettingsScreen() {
 
   const handleWorkoutInsightsChange = async (value: boolean) => {
     await SettingsService.setWorkoutInsights(value);
+  };
+
+  const handleNotificationsChange = async (value: boolean) => {
+    await SettingsService.setNotifications(value);
   };
 
   return (
@@ -215,7 +219,7 @@ export default function SettingsScreen() {
                 />
               ),
               value: notifications,
-              onValueChange: setNotifications,
+              onValueChange: handleNotificationsChange,
             },
           ]}
         />
