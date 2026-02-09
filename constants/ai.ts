@@ -1,12 +1,19 @@
 // IMPORTANT: only list models that support vision and language
+// Last updated: February 2026
 
-// https://ai.google.dev/gemini-api/docs/models/gemini
+// Documentation: https://ai.google.dev/gemini-api/docs/models
 export const GEMINI_MODELS = {
-  GEMINI_2_0_FLASH: { model: 'gemini-2.0-flash', value: 'gemini-2.0-flash' },
-  GEMINI_2_0_FLASH_LITE: { model: 'gemini-2.0-flash-lite', value: 'gemini-2.0-flash-lite' },
+  // Gemini 3 Series: Latest reasoning and agentic capabilities
+  GEMINI_3_PRO: { model: 'gemini-3-pro-preview', value: 'gemini-3-pro-preview' },
+  GEMINI_3_FLASH: { model: 'gemini-3-flash-preview', value: 'gemini-3-flash-preview' },
+
+  // Gemini 2.5 Series: Stable production-grade models
+  GEMINI_2_5_PRO: { model: 'gemini-2.5-pro', value: 'gemini-2.5-pro' },
   GEMINI_2_5_FLASH: { model: 'gemini-2.5-flash', value: 'gemini-2.5-flash' },
   GEMINI_2_5_FLASH_LITE: { model: 'gemini-2.5-flash-lite', value: 'gemini-2.5-flash-lite' },
-  GEMINI_2_5_PRO: { model: 'gemini-2.5-pro', value: 'gemini-2.5-pro' },
+
+  // Specialized Multimodal
+  GEMINI_2_5_FLASH_IMAGE: { model: 'gemini-2.5-flash-image', value: 'gemini-2.5-flash-image' },
 } as const;
 
 // https://platform.openai.com/docs/models/gp
