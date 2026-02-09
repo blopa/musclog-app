@@ -168,17 +168,9 @@ export function useSettings(): UseSettingsResult & {
       .observeWithColumns(['value'])
       .subscribe({
         next: (settings) => {
-          console.log(
-            '[useSettings] connectHealthData observable fired, settings:',
-            settings.length,
-            settings.map((s) => ({ type: s.type, value: s.value }))
-          );
-          const parsedValue = parseBooleanFromSettings(settings);
-          console.log('[useSettings] Setting connectHealthData to:', parsedValue);
-          setConnectHealthData(parsedValue);
+          setConnectHealthData(parseBooleanFromSettings(settings));
         },
-        error: (err) => {
-          console.error('[useSettings] Error in connectHealthData observable:', err);
+        error: () => {
           setConnectHealthData(false);
         },
       });
@@ -254,34 +246,18 @@ export function useSettings(): UseSettingsResult & {
       .observeWithColumns(['value'])
       .subscribe({
         next: (settings) => {
-          console.log(
-            '[useSettings] enableGoogleGemini observable fired, settings:',
-            settings.length,
-            settings.map((s) => ({ type: s.type, value: s.value }))
-          );
-          const parsedValue = parseBooleanFromSettings(settings);
-          console.log('[useSettings] Setting enableGoogleGemini to:', parsedValue);
-          setEnableGoogleGemini(parsedValue);
+          setEnableGoogleGemini(parseBooleanFromSettings(settings));
         },
-        error: (err) => {
-          console.error('[useSettings] Error in enableGoogleGemini observable:', err);
+        error: () => {
           setEnableGoogleGemini(true);
         },
       });
 
     const enableOpenAiSubscription = enableOpenAiQuery.observeWithColumns(['value']).subscribe({
       next: (settings) => {
-        console.log(
-          '[useSettings] enableOpenAi observable fired, settings:',
-          settings.length,
-          settings.map((s) => ({ type: s.type, value: s.value }))
-        );
-        const parsedValue = parseBooleanFromSettings(settings);
-        console.log('[useSettings] Setting enableOpenAi to:', parsedValue);
-        setEnableOpenAi(parsedValue);
+        setEnableOpenAi(parseBooleanFromSettings(settings));
       },
-      error: (err) => {
-        console.error('[useSettings] Error in enableOpenAi observable:', err);
+      error: () => {
         setEnableOpenAi(true);
       },
     });
@@ -290,17 +266,9 @@ export function useSettings(): UseSettingsResult & {
       .observeWithColumns(['value'])
       .subscribe({
         next: (settings) => {
-          console.log(
-            '[useSettings] dailyNutritionInsights observable fired, settings:',
-            settings.length,
-            settings.map((s) => ({ type: s.type, value: s.value }))
-          );
-          const parsedValue = parseBooleanFromSettings(settings);
-          console.log('[useSettings] Setting dailyNutritionInsights to:', parsedValue);
-          setDailyNutritionInsights(parsedValue);
+          setDailyNutritionInsights(parseBooleanFromSettings(settings));
         },
-        error: (err) => {
-          console.error('[useSettings] Error in dailyNutritionInsights observable:', err);
+        error: () => {
           setDailyNutritionInsights(true);
         },
       });
@@ -309,17 +277,9 @@ export function useSettings(): UseSettingsResult & {
       .observeWithColumns(['value'])
       .subscribe({
         next: (settings) => {
-          console.log(
-            '[useSettings] workoutInsights observable fired, settings:',
-            settings.length,
-            settings.map((s) => ({ type: s.type, value: s.value }))
-          );
-          const parsedValue = parseBooleanFromSettings(settings);
-          console.log('[useSettings] Setting workoutInsights to:', parsedValue);
-          setWorkoutInsights(parsedValue);
+          setWorkoutInsights(parseBooleanFromSettings(settings));
         },
-        error: (err) => {
-          console.error('[useSettings] Error in workoutInsights observable:', err);
+        error: () => {
           setWorkoutInsights(false);
         },
       });
