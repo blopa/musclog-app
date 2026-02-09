@@ -2,6 +2,8 @@ import { Check } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { AvatarColor } from '../../types/AvatarColor';
+import { AvatarIcon } from '../../types/AvatarIcon';
 import { EditPersonalInfoBody } from '../EditPersonalInfoBody';
 import { Button } from '../theme/Button';
 import { FullScreenModal } from './FullScreenModal';
@@ -19,6 +21,8 @@ export type PersonalInfo = {
   dob: string;
   gender: string;
   photoUri?: string;
+  avatarIcon?: AvatarIcon;
+  avatarColor?: AvatarColor;
 };
 
 export function EditPersonalInfoModal({
@@ -30,13 +34,15 @@ export function EditPersonalInfoModal({
   const { t } = useTranslation();
   const [currentFormData, setCurrentFormData] = useState<PersonalInfo | undefined>(undefined);
 
-  const handleSave = ({ fullName, email, dob, gender, photoUri }: PersonalInfo) => {
+  const handleSave = ({ fullName, email, dob, gender, photoUri, avatarIcon, avatarColor }: PersonalInfo) => {
     onSave?.({
       fullName,
       email,
       dob,
       gender,
       photoUri,
+      avatarIcon,
+      avatarColor,
     });
     onClose();
   };

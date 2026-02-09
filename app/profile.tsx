@@ -179,6 +179,8 @@ export default function ProfileScreen() {
         email: data.email,
         dateOfBirth: new Date(data.dob).getTime(),
         gender: data.gender as 'male' | 'female' | 'other',
+        avatarIcon: data.avatarIcon || null,
+        avatarColor: data.avatarColor || null,
       });
     } catch (err) {
       console.error('Failed to save personal info:', err);
@@ -250,6 +252,7 @@ export default function ProfileScreen() {
             <Pressable
               className="absolute bottom-0 right-0 h-10 w-10 items-center justify-center rounded-full border-2 border-bg-primary"
               style={{ backgroundColor: theme.colors.accent.primary }}
+              onPress={() => setIsEditPersonalVisible(true)}
             >
               <Edit size={theme.iconSize.sm} color={theme.colors.text.black} />
             </Pressable>
@@ -341,6 +344,8 @@ export default function ProfileScreen() {
                 email: dbUser.email || '',
                 dob: new Date(dbUser.dateOfBirth).toISOString().split('T')[0],
                 gender: dbUser.gender,
+                avatarIcon: dbUser.avatarIcon,
+                avatarColor: dbUser.avatarColor,
               }
             : undefined
         }
