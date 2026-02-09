@@ -5,9 +5,17 @@ import type { ThemeOption, Units, UseSettingsResult } from '../constants/setting
 import {
   ANONYMOUS_BUG_REPORT_SETTING_TYPE,
   CONNECT_HEALTH_DATA_SETTING_TYPE,
+  DAILY_NUTRITION_INSIGHTS_SETTING_TYPE,
+  ENABLE_GOOGLE_GEMINI_SETTING_TYPE,
+  ENABLE_OPENAI_SETTING_TYPE,
+  GOOGLE_GEMINI_API_KEY_SETTING_TYPE,
+  GOOGLE_GEMINI_MODEL_SETTING_TYPE,
+  OPENAI_API_KEY_SETTING_TYPE,
+  OPENAI_MODEL_SETTING_TYPE,
   READ_HEALTH_DATA_SETTING_TYPE,
   THEME_SETTING_TYPE,
   UNITS_SETTING_TYPE,
+  WORKOUT_INSIGHTS_SETTING_TYPE,
   WRITE_HEALTH_DATA_SETTING_TYPE,
 } from '../constants/settings';
 import { database } from '../database';
@@ -31,12 +39,25 @@ function parseBooleanFromSettings(settings: Setting[]): boolean {
   return settings[0].value === 'true';
 }
 
+function parseStringFromSettings(settings: Setting[]): string {
+  if (settings.length === 0) return '';
+  return settings[0].value;
+}
+
 export function useSettings(): UseSettingsResult & {
   theme: ThemeOption;
   connectHealthData: boolean;
   readHealthData: boolean;
   writeHealthData: boolean;
   anonymousBugReport: boolean;
+  googleGeminiApiKey: string;
+  googleGeminiModel: string;
+  openAiApiKey: string;
+  openAiModel: string;
+  enableGoogleGemini: boolean;
+  enableOpenAi: boolean;
+  dailyNutritionInsights: boolean;
+  workoutInsights: boolean;
 } {
   const [units, setUnits] = useState<Units>('metric');
   const [theme, setTheme] = useState<ThemeOption>('system');
@@ -44,6 +65,14 @@ export function useSettings(): UseSettingsResult & {
   const [readHealthData, setReadHealthData] = useState(false);
   const [writeHealthData, setWriteHealthData] = useState(false);
   const [anonymousBugReport, setAnonymousBugReport] = useState(true);
+  const [googleGeminiApiKey, setGoogleGeminiApiKey] = useState('');
+  const [googleGeminiModel, setGoogleGeminiModel] = useState('gemini-2.0-flash');
+  const [openAiApiKey, setOpenAiApiKey] = useState('');
+  const [openAiModel, setOpenAiModel] = useState('gpt-4o');
+  const [enableGoogleGemini, setEnableGoogleGemini] = useState(true);
+  const [enableOpenAi, setEnableOpenAi] = useState(true);
+  const [dailyNutritionInsights, setDailyNutritionInsights] = useState(true);
+  const [workoutInsights, setWorkoutInsights] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -70,6 +99,44 @@ export function useSettings(): UseSettingsResult & {
     const anonymousBugReportQuery = database
       .get<Setting>('settings')
       .query(Q.where('type', ANONYMOUS_BUG_REPORT_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)));
+
+    const googleGeminiApiKeyQuery = database
+      .get<Setting>('settings')
+      .query(
+        Q.where('type', GOOGLE_GEMINI_API_KEY_SETTING_TYPE),
+        Q.where('deleted_at', Q.eq(null))
+      );
+
+    const googleGeminiModelQuery = database
+      .get<Setting>('settings')
+      .query(Q.where('type', GOOGLE_GEMINI_MODEL_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)));
+
+    const openAiApiKeyQuery = database
+      .get<Setting>('settings')
+      .query(Q.where('type', OPENAI_API_KEY_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)));
+
+    const openAiModelQuery = database
+      .get<Setting>('settings')
+      .query(Q.where('type', OPENAI_MODEL_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)));
+
+    const enableGoogleGeminiQuery = database
+      .get<Setting>('settings')
+      .query(Q.where('type', ENABLE_GOOGLE_GEMINI_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)));
+
+    const enableOpenAiQuery = database
+      .get<Setting>('settings')
+      .query(Q.where('type', ENABLE_OPENAI_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)));
+
+    const dailyNutritionInsightsQuery = database
+      .get<Setting>('settings')
+      .query(
+        Q.where('type', DAILY_NUTRITION_INSIGHTS_SETTING_TYPE),
+        Q.where('deleted_at', Q.eq(null))
+      );
+
+    const workoutInsightsQuery = database
+      .get<Setting>('settings')
+      .query(Q.where('type', WORKOUT_INSIGHTS_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)));
 
     const unitsSubscription = unitsQuery.observe().subscribe({
       next: (settings) => {
@@ -125,6 +192,78 @@ export function useSettings(): UseSettingsResult & {
       },
     });
 
+    const googleGeminiApiKeySubscription = googleGeminiApiKeyQuery.observe().subscribe({
+      next: (settings) => {
+        setGoogleGeminiApiKey(parseStringFromSettings(settings));
+      },
+      error: () => {
+        setGoogleGeminiApiKey('');
+      },
+    });
+
+    const googleGeminiModelSubscription = googleGeminiModelQuery.observe().subscribe({
+      next: (settings) => {
+        setGoogleGeminiModel(parseStringFromSettings(settings));
+      },
+      error: () => {
+        setGoogleGeminiModel('gemini-2.0-flash');
+      },
+    });
+
+    const openAiApiKeySubscription = openAiApiKeyQuery.observe().subscribe({
+      next: (settings) => {
+        setOpenAiApiKey(parseStringFromSettings(settings));
+      },
+      error: () => {
+        setOpenAiApiKey('');
+      },
+    });
+
+    const openAiModelSubscription = openAiModelQuery.observe().subscribe({
+      next: (settings) => {
+        setOpenAiModel(parseStringFromSettings(settings));
+      },
+      error: () => {
+        setOpenAiModel('gpt-4o');
+      },
+    });
+
+    const enableGoogleGeminiSubscription = enableGoogleGeminiQuery.observe().subscribe({
+      next: (settings) => {
+        setEnableGoogleGemini(parseBooleanFromSettings(settings));
+      },
+      error: () => {
+        setEnableGoogleGemini(true);
+      },
+    });
+
+    const enableOpenAiSubscription = enableOpenAiQuery.observe().subscribe({
+      next: (settings) => {
+        setEnableOpenAi(parseBooleanFromSettings(settings));
+      },
+      error: () => {
+        setEnableOpenAi(true);
+      },
+    });
+
+    const dailyNutritionInsightsSubscription = dailyNutritionInsightsQuery.observe().subscribe({
+      next: (settings) => {
+        setDailyNutritionInsights(parseBooleanFromSettings(settings));
+      },
+      error: () => {
+        setDailyNutritionInsights(true);
+      },
+    });
+
+    const workoutInsightsSubscription = workoutInsightsQuery.observe().subscribe({
+      next: (settings) => {
+        setWorkoutInsights(parseBooleanFromSettings(settings));
+      },
+      error: () => {
+        setWorkoutInsights(false);
+      },
+    });
+
     // Set loading to false once all subscriptions have had a chance to load
     const timeout = setTimeout(() => {
       setIsLoading(false);
@@ -137,6 +276,14 @@ export function useSettings(): UseSettingsResult & {
       readHealthDataSubscription.unsubscribe();
       writeHealthDataSubscription.unsubscribe();
       anonymousBugReportSubscription.unsubscribe();
+      googleGeminiApiKeySubscription.unsubscribe();
+      googleGeminiModelSubscription.unsubscribe();
+      openAiApiKeySubscription.unsubscribe();
+      openAiModelSubscription.unsubscribe();
+      enableGoogleGeminiSubscription.unsubscribe();
+      enableOpenAiSubscription.unsubscribe();
+      dailyNutritionInsightsSubscription.unsubscribe();
+      workoutInsightsSubscription.unsubscribe();
       clearTimeout(timeout);
     };
   }, []);
@@ -150,6 +297,14 @@ export function useSettings(): UseSettingsResult & {
       readHealthData,
       writeHealthData,
       anonymousBugReport,
+      googleGeminiApiKey,
+      googleGeminiModel,
+      openAiApiKey,
+      openAiModel,
+      enableGoogleGemini,
+      enableOpenAi,
+      dailyNutritionInsights,
+      workoutInsights,
       isLoading,
       weightUnit: getWeightUnit(units),
       heightUnit: getHeightUnit(units),
@@ -161,6 +316,14 @@ export function useSettings(): UseSettingsResult & {
       readHealthData,
       writeHealthData,
       anonymousBugReport,
+      googleGeminiApiKey,
+      googleGeminiModel,
+      openAiApiKey,
+      openAiModel,
+      enableGoogleGemini,
+      enableOpenAi,
+      dailyNutritionInsights,
+      workoutInsights,
       isLoading,
     ]
   );

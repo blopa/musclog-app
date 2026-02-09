@@ -3,7 +3,9 @@ import { ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
+import { GEMINI_MODELS, OPENAI_MODELS } from '../../constants/ai';
 import { theme } from '../../theme';
+import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { GoogleSignInButton } from '../GoogleSignInButton';
 import { SecretInput } from '../theme/SecretInput';
 import { ToggleInput } from '../theme/ToggleInput';
@@ -144,13 +146,13 @@ type AISettingsModalProps = {
   googleGeminiApiKey?: string;
   onGoogleGeminiApiKeyChange?: (value: string) => void;
   geminiModel?: string;
-  onGeminiModelPress?: () => void;
+  onGeminiModelPress?: (model: string) => void;
   // OpenAI
   openAiApiKey?: string;
   onOpenAiApiKeyChange?: (value: string) => void;
   onGetOpenAiKeyPress?: () => void;
   openAiModel?: string;
-  onOpenAiModelPress?: () => void;
+  onOpenAiModelPress?: (model: string) => void;
   enableOpenAi?: boolean;
   onEnableOpenAiChange?: (value: boolean) => void;
   // Insights & Alerts
@@ -187,6 +189,8 @@ export function AISettingsModal({
 }: AISettingsModalProps) {
   const { t } = useTranslation();
   const [openAiKeyVisible, setOpenAiKeyVisible] = useState(false);
+  const [geminiModelMenuVisible, setGeminiModelMenuVisible] = useState(false);
+  const [openAiModelMenuVisible, setOpenAiModelMenuVisible] = useState(false);
 
   const geminiToggleItems = [
     {
@@ -279,6 +283,24 @@ export function AISettingsModal({
     },
   ];
 
+  const geminiModelMenuItems: BottomPopUpMenuItem[] = Object.values(GEMINI_MODELS).map((model) => ({
+    icon: Bot,
+    iconColor: theme.colors.status.info,
+    iconBgColor: theme.colors.status.info10,
+    title: model.model,
+    description: `Google Gemini ${model.model}`,
+    onPress: () => onGeminiModelPress?.(model.model),
+  }));
+
+  const openAiModelMenuItems: BottomPopUpMenuItem[] = Object.values(OPENAI_MODELS).map((model) => ({
+    icon: Bot,
+    iconColor: theme.colors.status.indigo,
+    iconBgColor: theme.colors.status.indigo10,
+    title: model.model,
+    description: `OpenAI ${model.model}`,
+    onPress: () => onOpenAiModelPress?.(model.model),
+  }));
+
   return (
     <FullScreenModal visible={visible} onClose={onClose} title={t('settings.aiSettings.title')}>
       <View className="gap-6 px-4 py-6" style={{ minHeight: '100%' }}>
@@ -295,7 +317,7 @@ export function AISettingsModal({
           apiKeyHelper={t('settings.aiSettings.apiKeyHelper')}
           modelLabel={t('settings.aiSettings.geminiModel')}
           modelValue={geminiModel}
-          onModelPress={onGeminiModelPress}
+          onModelPress={() => setGeminiModelMenuVisible(true)}
         />
 
         {/* OpenAI Integration Section */}
@@ -309,7 +331,7 @@ export function AISettingsModal({
           apiKeyPlaceholder={t('settings.aiSettings.apiKeyPlaceholder')}
           modelLabel={t('settings.aiSettings.openAiModel')}
           modelValue={openAiModel}
-          onModelPress={onOpenAiModelPress}
+          onModelPress={() => setOpenAiModelMenuVisible(true)}
           modelFallbackText={t('settings.aiSettings.selectModel')}
         />
 
@@ -365,6 +387,23 @@ export function AISettingsModal({
             {t('settings.aiSettings.version', { version })}
           </Text>
         </View>
+
+        {/* Model Selection Menus */}
+        <BottomPopUpMenu
+          visible={geminiModelMenuVisible}
+          onClose={() => setGeminiModelMenuVisible(false)}
+          title={t('settings.aiSettings.selectGeminiModel')}
+          subtitle={t('settings.aiSettings.selectGeminiModelSubtitle')}
+          items={geminiModelMenuItems}
+        />
+
+        <BottomPopUpMenu
+          visible={openAiModelMenuVisible}
+          onClose={() => setOpenAiModelMenuVisible(false)}
+          title={t('settings.aiSettings.selectOpenAiModel')}
+          subtitle={t('settings.aiSettings.selectOpenAiModelSubtitle')}
+          items={openAiModelMenuItems}
+        />
       </View>
     </FullScreenModal>
   );

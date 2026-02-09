@@ -25,6 +25,14 @@ export default function SettingsScreen() {
     readHealthData,
     writeHealthData,
     anonymousBugReport,
+    googleGeminiApiKey,
+    googleGeminiModel,
+    openAiApiKey,
+    openAiModel,
+    enableGoogleGemini,
+    enableOpenAi,
+    dailyNutritionInsights,
+    workoutInsights,
   } = useSettings();
   const [notifications, setNotifications] = useState(true);
   const [isAISettingsVisible, setAISettingsVisible] = useState(false);
@@ -49,6 +57,38 @@ export default function SettingsScreen() {
 
   const handleAnonymousBugReportChange = async (value: boolean) => {
     await SettingsService.setAnonymousBugReport(value);
+  };
+
+  const handleGoogleGeminiApiKeyChange = async (value: string) => {
+    await SettingsService.setGoogleGeminiApiKey(value);
+  };
+
+  const handleGoogleGeminiModelChange = async (value: string) => {
+    await SettingsService.setGoogleGeminiModel(value);
+  };
+
+  const handleOpenAiApiKeyChange = async (value: string) => {
+    await SettingsService.setOpenAiApiKey(value);
+  };
+
+  const handleOpenAiModelChange = async (value: string) => {
+    await SettingsService.setOpenAiModel(value);
+  };
+
+  const handleEnableGoogleGeminiChange = async (value: boolean) => {
+    await SettingsService.setEnableGoogleGemini(value);
+  };
+
+  const handleEnableOpenAiChange = async (value: boolean) => {
+    await SettingsService.setEnableOpenAi(value);
+  };
+
+  const handleDailyNutritionInsightsChange = async (value: boolean) => {
+    await SettingsService.setDailyNutritionInsights(value);
+  };
+
+  const handleWorkoutInsightsChange = async (value: boolean) => {
+    await SettingsService.setWorkoutInsights(value);
   };
 
   return (
@@ -246,7 +286,26 @@ export default function SettingsScreen() {
         <View style={{ height: theme.size['8'] }} />
       </View>
 
-      <AISettingsModal visible={isAISettingsVisible} onClose={() => setAISettingsVisible(false)} />
+      <AISettingsModal
+        visible={isAISettingsVisible}
+        onClose={() => setAISettingsVisible(false)}
+        enableGoogleGemini={enableGoogleGemini}
+        onEnableGoogleGeminiChange={handleEnableGoogleGeminiChange}
+        googleGeminiApiKey={googleGeminiApiKey}
+        onGoogleGeminiApiKeyChange={handleGoogleGeminiApiKeyChange}
+        geminiModel={googleGeminiModel}
+        onGeminiModelPress={handleGoogleGeminiModelChange}
+        openAiApiKey={openAiApiKey}
+        onOpenAiApiKeyChange={handleOpenAiApiKeyChange}
+        openAiModel={openAiModel}
+        onOpenAiModelPress={handleOpenAiModelChange}
+        enableOpenAi={enableOpenAi}
+        onEnableOpenAiChange={handleEnableOpenAiChange}
+        dailyNutritionInsights={dailyNutritionInsights}
+        onDailyNutritionInsightsChange={handleDailyNutritionInsightsChange}
+        workoutInsights={workoutInsights}
+        onWorkoutInsightsChange={handleWorkoutInsightsChange}
+      />
       <BasicSettingsModal
         visible={isBasicSettingsVisible}
         onClose={() => setBasicSettingsVisible(false)}
