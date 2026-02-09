@@ -211,11 +211,11 @@ const themeColors = {
     darkGreenVariant: colors.deepGreen, // Dark green variant for tags/badges
     darkGreenOverlay: colors.deepTealAlpha90, // Dark green overlay (rgba(26, 46, 42, 0.9))
     darkGreenSolid: colors.darkSlateGreen, // Dark green solid color
-    darkGray: 'rgba(30, 35, 33, 0.4)', // Dark gray background with opacity
-    darkGray50: 'rgba(30, 35, 33, 0.5)', // Dark gray with 50% opacity
-    darkGray90: 'rgba(30, 35, 33, 0.9)', // Dark gray with 90% opacity
-    darkGraySolid: 'rgba(17, 20, 19, 0.5)', // Dark gray solid with opacity
-    darkGreenSolidAlt: 'rgba(42, 50, 46, 1)', // Alternative dark green solid
+    darkGray: colors.blackGrayAlpha40, // Dark gray background with opacity
+    darkGray50: colors.blackGrayAlpha50, // Dark gray with 50% opacity
+    darkGray90: colors.blackGrayAlpha90, // Dark gray with 90% opacity
+    darkGraySolid: colors.darkMossAlpha50, // Dark gray solid with opacity
+    darkGreenSolidAlt: colors.darkTaupeSolid, // Alternative dark green solid
     exerciseCardBackground: colors.hunterGreen, // Exercise card background
     darkBackground: colors.darkMoss, // Dark background color (landing page, etc.)
     snackbarSuccess: colors.darkForest, // Success snackbar background
@@ -224,14 +224,14 @@ const themeColors = {
     buttonCardActive: colors.darkTealBg, // Active button/card background
     separatorLight: colors.gray200Tailwind, // Light separator (gray-200)
     // White background with opacity
-    white3: 'rgba(255, 255, 255, 0.03)', // White with ~3% opacity
-    white5: 'rgba(255, 255, 255, 0.05)', // White with 5% opacity
-    white10: 'rgba(255, 255, 255, 0.1)', // White with 10% opacity
-    white12: 'rgba(255, 255, 255, 0.125)', // White with ~12.5% opacity
-    white20: 'rgba(255, 255, 255, 0.2)', // White with 20% opacity
-    white30: 'rgba(255, 255, 255, 0.3)', // White with 30% opacity
+    white3: colors.whiteAlpha03, // White with ~3% opacity
+    white5: colors.surfaceHighlight05, // White with 5% opacity
+    white10: colors.whiteAlpha10, // White with 10% opacity
+    white12: colors.surfaceHighlight12, // White with ~12.5% opacity
+    white20: colors.borderWhite20, // White with 20% opacity
+    white30: colors.borderWhite30, // White with 30% opacity
     // Background primary with opacity
-    primary20: 'rgba(10, 31, 26, 0.2)', // Background primary with 20% opacity
+    primary20: colors.darkJungleAlpha20, // Background primary with 20% opacity
   },
 
   // Text colors
@@ -247,9 +247,9 @@ const themeColors = {
     gray500: colors.gray500, // Gray-500
     white: colors.white, // White
     // Text colors with opacity
-    primary12: 'rgba(255, 255, 255, 0.125)', // Primary with 12.5% opacity
-    primary20: 'rgba(255, 255, 255, 0.2)', // Primary with 20% opacity
-    primary30: 'rgba(255, 255, 255, 0.3)', // Primary with 30% opacity
+    primary12: colors.surfaceHighlight12, // Primary with 12.5% opacity
+    primary20: colors.borderWhite20, // Primary with 20% opacity
+    primary30: colors.borderWhite30, // Primary with 30% opacity
   },
 
   // Accent colors
@@ -262,27 +262,27 @@ const themeColors = {
       end: colors.teal500,
     },
     // Accent colors with opacity
-    primary10: 'rgba(34, 197, 94, 0.1)', // Primary with 10% opacity
-    primary30: 'rgba(34, 197, 94, 0.3)', // Primary with 30% opacity
-    primary20: 'rgba(34, 197, 94, 0.2)', // Primary with 20% opacity
-    primary40: 'rgba(34, 197, 94, 0.4)', // Primary with 40% opacity
-    primary50: 'rgba(34, 197, 94, 0.5)', // Primary with 50% opacity
-    primary5: 'rgba(34, 197, 94, 0.05)', // Primary with 5% opacity
-    secondary10: 'rgba(52, 211, 153, 0.1)', // Secondary with 10% opacity
-    secondary20: 'rgba(52, 211, 153, 0.2)', // Secondary with 20% opacity
-    secondary31: 'rgba(52, 211, 153, 0.31)', // Secondary with 31% opacity
+    primary10: colors.greenAlpha10, // Primary with 10% opacity
+    primary30: colors.greenAlpha30, // Primary with 30% opacity
+    primary20: colors.successBg20, // Primary with 20% opacity
+    primary40: colors.greenAlpha40, // Primary with 40% opacity
+    primary50: colors.greenAlpha50, // Primary with 50% opacity
+    primary5: colors.greenAlpha05, // Primary with 5% opacity
+    secondary10: colors.emerald300Alpha10, // Secondary with 10% opacity
+    secondary20: colors.emerald300Alpha20, // Secondary with 20% opacity
+    secondary31: colors.emerald300Alpha31, // Secondary with 31% opacity
   },
 
   // Border colors
   border: {
-    default: 'rgba(75, 85, 99, 0.5)', // gray-800/50
-    light: 'rgba(55, 65, 81, 0.3)', // gray-700/30
+    default: colors.gray600Alpha50, // gray-800/50
+    light: colors.gray700Alpha30, // gray-700/30
     dark: colors.jungleCard, // Dark border
     accent: colors.darkViridian, // Accent border
     dashed: colors.gray700, // Dashed border (gray-700)
-    emerald: 'rgba(6, 78, 59, 0.3)', // emerald-900/30
-    blue: 'rgba(59, 130, 246, 0.4)', // blue-500/40
-    gray600: 'rgba(75, 85, 99, 0.4)', // gray-600/40
+    emerald: colors.emerald900Alpha30, // emerald-900/30
+    blue: colors.blueAlpha40, // blue-500/40
+    gray600: colors.gray600Alpha40, // gray-600/40
   },
 
   // Status colors
@@ -303,31 +303,31 @@ const themeColors = {
     indigoVeryLight: colors.indigo200, // Indigo-100
     emeraldVeryLight: colors.emerald200, // Emerald-200
     // Status colors with opacity
-    success20: 'rgba(34, 197, 94, 0.2)', // Success with 20% opacity
-    error8: 'rgba(239, 68, 68, 0.08)', // Error with 8% opacity
-    error10: 'rgba(239, 68, 68, 0.1)', // Error with 10% opacity
-    error12: 'rgba(239, 68, 68, 0.125)', // Error with 12.5% opacity
-    error20: 'rgba(239, 68, 68, 0.2)', // Error with 20% opacity
-    error50: 'rgba(239, 68, 68, 0.5)', // Error with 50% opacity
-    info20: 'rgba(59, 130, 246, 0.2)', // Info with 20% opacity
-    info10: 'rgba(59, 130, 246, 0.1)', // Info with 10% opacity
-    info50: 'rgba(59, 130, 246, 0.5)', // Info with 50% opacity
-    warning50: 'rgba(249, 115, 22, 0.5)', // Warning with 50% opacity
-    purple40: 'rgba(168, 85, 247, 0.4)', // Purple with 40% opacity
-    purple20: 'rgba(168, 85, 247, 0.2)', // Purple with 20% opacity
-    purple13: 'rgba(168, 85, 247, 0.13)', // Purple with 13% opacity (hex '22')
-    purple10: 'rgba(168, 85, 247, 0.1)', // Purple with 10% opacity
-    amber10: 'rgba(251, 191, 36, 0.1)', // Amber with 10% opacity
-    warning10: 'rgba(249, 115, 22, 0.1)', // Warning with 10% opacity
-    emerald10: 'rgba(16, 185, 129, 0.1)', // Emerald with 10% opacity
-    emerald20: 'rgba(16, 185, 129, 0.2)', // Emerald with 20% opacity
-    emerald30: 'rgba(16, 185, 129, 0.3)', // Emerald with 30% opacity
-    emerald400_10: 'rgba(41, 224, 142, 0.1)', // Emerald-400 with 10% opacity
-    emerald400_20: 'rgba(41, 224, 142, 0.2)', // Emerald-400 with 20% opacity
-    yellow10: 'rgba(234, 179, 8, 0.1)', // Yellow with 10% opacity
-    indigo10: 'rgba(99, 102, 241, 0.1)', // Indigo with 10% opacity
-    indigo20: 'rgba(99, 102, 241, 0.2)', // Indigo with 20% opacity
-    indigo30: 'rgba(79, 70, 229, 0.3)', // Indigo-600 with 30% opacity
+    success20: colors.successBg20, // Success with 20% opacity
+    error8: colors.redAlpha08, // Error with 8% opacity
+    error10: colors.redAlpha10, // Error with 10% opacity
+    error12: colors.redAlpha12, // Error with 12.5% opacity
+    error20: colors.redAlpha20, // Error with 20% opacity
+    error50: colors.redAlpha50, // Error with 50% opacity
+    info20: colors.infoBg20, // Info with 20% opacity
+    info10: colors.blueAlpha10, // Info with 10% opacity
+    info50: colors.blueAlpha50, // Info with 50% opacity
+    warning50: colors.orangeAlpha50, // Warning with 50% opacity
+    purple40: colors.purpleAlpha40, // Purple with 40% opacity
+    purple20: colors.purpleAlpha20, // Purple with 20% opacity
+    purple13: colors.purpleAlpha13, // Purple with 13% opacity (hex '22')
+    purple10: colors.purpleAlpha10, // Purple with 10% opacity
+    amber10: colors.amberAlpha10, // Amber with 10% opacity
+    warning10: colors.orangeAlpha10, // Warning with 10% opacity
+    emerald10: colors.emeraldAlpha10, // Emerald with 10% opacity
+    emerald20: colors.emeraldAlpha20, // Emerald with 20% opacity
+    emerald30: colors.emeraldAlpha30, // Emerald with 30% opacity
+    emerald400_10: colors.neonMintAlpha10, // Emerald-400 with 10% opacity
+    emerald400_20: colors.neonMintAlpha20, // Emerald-400 with 20% opacity
+    yellow10: colors.yellowAlpha10, // Yellow with 10% opacity
+    indigo10: colors.indigoLightAlpha10, // Indigo with 10% opacity
+    indigo20: colors.indigoLightAlpha20Alt, // Indigo with 20% opacity
+    indigo30: colors.indigoAlpha30, // Indigo-600 with 30% opacity
     indigo600: colors.indigo600, // Indigo-600
     // Red border colors for ungroup action
     redDark: colors.red900, // Dark red border
@@ -339,7 +339,7 @@ const themeColors = {
     rose600: colors.rose600, // Rose-600
     customGreen: colors.sage, // Custom green used in components
     emeraldTeal: colors.teal600, // Teal-600 (for emerald-teal gradient)
-    gray10: 'rgba(107, 114, 128, 0.1)', // Gray with 10% opacity
+    gray10: colors.gray500Alpha10, // Gray with 10% opacity
     // Error colors for ungroup action
     errorSolid: colors.red500, // Solid red for ungroup
     // Success colors for group action
@@ -356,8 +356,8 @@ const themeColors = {
     brand: colors.rose500, // Rose-700 (darker, less bright)
     dark: colors.rose900, // Rose-800 (darker variant)
     // Rose colors with opacity
-    brand10: 'rgba(218, 37, 82, 0.1)', // Rose-brand with 10% opacity
-    brand20: 'rgba(190, 18, 60, 0.2)', // Rose-brand with 20% opacity
+    brand10: colors.pinkRedAlpha10, // Rose-brand with 10% opacity
+    brand20: colors.roseAlpha20, // Rose-brand with 20% opacity
   },
 
   // Macro colors
@@ -394,14 +394,14 @@ const themeColors = {
 
   // Avatar background colors (with opacity)
   avatarBg: {
-    emerald: 'rgba(34, 197, 94, 0.2)', // emerald/20
-    blue: 'rgba(59, 130, 246, 0.2)', // blue-500/20
-    purple: 'rgba(139, 92, 246, 0.2)', // violet-500/20
-    pink: 'rgba(236, 72, 153, 0.2)', // pink-500/20
-    orange: 'rgba(249, 115, 22, 0.2)', // orange-500/20
-    teal: 'rgba(20, 184, 166, 0.2)', // teal-500/20
-    yellow: 'rgba(234, 179, 8, 0.2)', // yellow-500/20
-    indigo: 'rgba(99, 102, 241, 0.2)', // indigo-500/20
+    emerald: colors.successBg20, // emerald/20
+    blue: colors.infoBg20, // blue-500/20
+    purple: colors.violetAlpha20, // violet-500/20
+    pink: colors.pinkAlpha20, // pink-500/20
+    orange: colors.orangeAlpha20, // orange-500/20
+    teal: colors.tealAlpha20, // teal-500/20
+    yellow: colors.yellowAlpha20, // yellow-500/20
+    indigo: colors.indigoLightAlpha20Alt, // indigo-500/20
   },
 
   // Google brand colors
@@ -422,18 +422,18 @@ const themeColors = {
   // Overlay and opacity colors
   overlay: {
     black60: colors.blackAlpha60, // Black with 60% opacity
-    black90: 'rgba(0, 0, 0, 0.9)', // Black with 90% opacity
-    white50: 'rgba(255, 255, 255, 0.5)', // White with 50% opacity
-    white60: 'rgba(255, 255, 255, 0.6)', // White with 60% opacity
-    white70: 'rgba(255, 255, 255, 0.7)', // White with 70% opacity
-    white90: 'rgba(255, 255, 255, 0.9)', // White with 90% opacity
-    white80: 'rgba(255, 255, 255, 0.8)', // White with 80% opacity
-    white30: 'rgba(255, 255, 255, 0.3)', // White with 30% opacity
-    white20: 'rgba(255, 255, 255, 0.2)', // White with 20% opacity
-    white5: 'rgba(255, 255, 255, 0.05)', // White with 5% opacity
+    black90: colors.overlayDarker, // Black with 90% opacity
+    white50: colors.whiteAlpha50, // White with 50% opacity
+    white60: colors.whiteAlpha60, // White with 60% opacity
+    white70: colors.whiteAlpha70, // White with 70% opacity
+    white90: colors.whiteAlpha90, // White with 90% opacity
+    white80: colors.whiteAlpha80, // White with 80% opacity
+    white30: colors.borderWhite30, // White with 30% opacity
+    white20: colors.borderWhite20, // White with 20% opacity
+    white5: colors.surfaceHighlight05, // White with 5% opacity
     black60Opacity: colors.blackAlpha60, // Black with 60% opacity (for gradients)
-    backdrop: 'rgba(10, 31, 26, 0.8)', // Background primary with 80% opacity (for modals)
-    backdrop90: 'rgba(10, 31, 26, 0.9)', // Background primary with 90% opacity
+    backdrop: colors.darkJungleAlpha80, // Background primary with 80% opacity (for modals)
+    backdrop90: colors.darkJungleAlpha90, // Background primary with 90% opacity
     darkGreenOverlayGradient: colors.deepTealAlpha90, // Dark green overlay gradient
   },
 
@@ -476,13 +476,13 @@ const themeColors = {
     overlayDark: ['transparent', colors.deepTealAlpha90, colors.darkSlateGreen] as const, // Dark overlay gradient
     cameraOverlay: ['rgba(0,0,0,0.6)', 'transparent', 'rgba(0,0,0,0.9)'] as const, // Camera overlay gradient
     onboardingAmbient: [
-      'rgba(99, 102, 241, 0.2)', // indigo-600/20
-      'rgba(41, 224, 142, 0.2)', // primary/20
-      'rgba(16, 185, 129, 0.2)', // emerald-400/20
+      colors.indigoLightAlpha20Alt, // indigo-600/20
+      colors.neonMintAlpha20, // primary/20
+      colors.emeraldAlpha20, // emerald-400/20
     ] as const,
     landingBackground: [colors.darkMoss, colors.deepJungle, colors.darkPine] as const, // Landing page background gradient
-    whiteSubtle: ['rgba(255, 255, 255, 0.1)', 'rgba(255, 255, 255, 0.05)'] as const, // Subtle white gradient
-    backdrop90: 'rgba(10, 31, 26, 0.9)', // Background with 90% opacity
+    whiteSubtle: [colors.whiteAlpha10, colors.surfaceHighlight05] as const, // Subtle white gradient
+    backdrop90: colors.darkJungleAlpha90, // Background with 90% opacity
   },
 };
 
