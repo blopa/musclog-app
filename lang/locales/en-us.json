@@ -894,14 +894,14 @@
       "themeDark": "Dark",
       "localization": "Localization",
       "language": "Language",
-      "languageSubtitle": "Choose your preferred language",
+      "languageSubtitle": "Pick preferred language",
       "integrations": "Integrations",
       "connectHealthData": "Connect Health Data",
       "readHealthData": "Read Health Data",
       "writeHealthData": "Write Health Data",
       "healthData": "Health Data",
       "healthDataSubtitle": "Sync your workouts and body metrics",
-      "healthDataPrivacy": "Data privacy is important to us. Your health data is never shared with third parties without your consent."
+      "healthDataPrivacy": "Your health data is only stored locally."
     },
     "advancedSettings": {
       "title": "Advanced Settings",
