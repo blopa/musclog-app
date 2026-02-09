@@ -138,34 +138,63 @@ export class SettingsService {
    * Upsert the enable Google Gemini setting
    */
   static async setEnableGoogleGemini(value: boolean) {
-    await this.setBooleanSetting(ENABLE_GOOGLE_GEMINI_SETTING_TYPE, value);
+    console.log('[SettingsService] setEnableGoogleGemini called with:', value);
+    try {
+      await this.setBooleanSetting(ENABLE_GOOGLE_GEMINI_SETTING_TYPE, value);
+      console.log('[SettingsService] setEnableGoogleGemini completed');
+    } catch (error) {
+      console.error('[SettingsService] Error in setEnableGoogleGemini:', error);
+      throw error;
+    }
   }
 
   /**
    * Upsert the enable OpenAI setting
    */
   static async setEnableOpenAi(value: boolean) {
-    await this.setBooleanSetting(ENABLE_OPENAI_SETTING_TYPE, value);
+    console.log('[SettingsService] setEnableOpenAi called with:', value);
+    try {
+      await this.setBooleanSetting(ENABLE_OPENAI_SETTING_TYPE, value);
+      console.log('[SettingsService] setEnableOpenAi completed');
+    } catch (error) {
+      console.error('[SettingsService] Error in setEnableOpenAi:', error);
+      throw error;
+    }
   }
 
   /**
    * Upsert the daily nutrition insights setting
    */
   static async setDailyNutritionInsights(value: boolean) {
-    await this.setBooleanSetting(DAILY_NUTRITION_INSIGHTS_SETTING_TYPE, value);
+    console.log('[SettingsService] setDailyNutritionInsights called with:', value);
+    try {
+      await this.setBooleanSetting(DAILY_NUTRITION_INSIGHTS_SETTING_TYPE, value);
+      console.log('[SettingsService] setDailyNutritionInsights completed');
+    } catch (error) {
+      console.error('[SettingsService] Error in setDailyNutritionInsights:', error);
+      throw error;
+    }
   }
 
   /**
    * Upsert the workout insights setting
    */
   static async setWorkoutInsights(value: boolean) {
-    await this.setBooleanSetting(WORKOUT_INSIGHTS_SETTING_TYPE, value);
+    console.log('[SettingsService] setWorkoutInsights called with:', value);
+    try {
+      await this.setBooleanSetting(WORKOUT_INSIGHTS_SETTING_TYPE, value);
+      console.log('[SettingsService] setWorkoutInsights completed');
+    } catch (error) {
+      console.error('[SettingsService] Error in setWorkoutInsights:', error);
+      throw error;
+    }
   }
 
   /**
    * Helper method to upsert boolean settings
    */
   private static async setBooleanSetting(type: string, value: boolean) {
+    console.log(`[SettingsService] setBooleanSetting called - type: ${type}, value: ${value}`);
     const now = Date.now();
 
     const existingSetting = await database
@@ -173,21 +202,53 @@ export class SettingsService {
       .query(Q.where('type', type), Q.where('deleted_at', Q.eq(null)))
       .fetch();
 
+    console.log(
+      `[SettingsService] Found ${existingSetting.length} existing settings for type: ${type}`
+    );
+    if (existingSetting.length > 0) {
+      console.log(`[SettingsService] Existing setting value: ${existingSetting[0].value}`);
+    }
+
     await database.write(async () => {
       if (existingSetting.length > 0) {
-        await existingSetting[0].update((setting) => {
+        // Find the most recent setting
+        const mostRecent = existingSetting.reduce((latest, current) =>
+          current.updatedAt > latest.updatedAt ? current : latest
+        );
+
+        console.log(`[SettingsService] Updating most recent setting for type: ${type}`);
+        await mostRecent.update((setting) => {
           setting.value = value.toString();
           setting.updatedAt = now;
         });
+        console.log(`[SettingsService] Updated setting to value: ${value.toString()}`);
+
+        // Clean up any duplicate settings
+        if (existingSetting.length > 1) {
+          console.log(
+            `[SettingsService] Cleaning up ${existingSetting.length - 1} duplicate settings`
+          );
+          for (const setting of existingSetting) {
+            if (setting.id !== mostRecent.id) {
+              await setting.update((s) => {
+                s.deletedAt = now;
+              });
+            }
+          }
+          console.log(`[SettingsService] Duplicates cleaned up`);
+        }
       } else {
+        console.log(`[SettingsService] Creating new setting for type: ${type}`);
         await database.get<Setting>('settings').create((setting) => {
           setting.type = type;
           setting.value = value.toString();
           setting.createdAt = now;
           setting.updatedAt = now;
         });
+        console.log(`[SettingsService] Created new setting with value: ${value.toString()}`);
       }
     });
+    console.log(`[SettingsService] setBooleanSetting completed for type: ${type}`);
   }
 
   /**

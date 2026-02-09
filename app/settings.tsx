@@ -76,19 +76,43 @@ export default function SettingsScreen() {
   };
 
   const handleEnableGoogleGeminiChange = async (value: boolean) => {
-    await SettingsService.setEnableGoogleGemini(value);
+    console.log('[Settings] handleEnableGoogleGeminiChange called with:', value);
+    try {
+      await SettingsService.setEnableGoogleGemini(value);
+      console.log('[Settings] handleEnableGoogleGeminiChange completed successfully');
+    } catch (error) {
+      console.error('[Settings] Error in handleEnableGoogleGeminiChange:', error);
+    }
   };
 
   const handleEnableOpenAiChange = async (value: boolean) => {
-    await SettingsService.setEnableOpenAi(value);
+    console.log('[Settings] handleEnableOpenAiChange called with:', value);
+    try {
+      await SettingsService.setEnableOpenAi(value);
+      console.log('[Settings] handleEnableOpenAiChange completed successfully');
+    } catch (error) {
+      console.error('[Settings] Error in handleEnableOpenAiChange:', error);
+    }
   };
 
   const handleDailyNutritionInsightsChange = async (value: boolean) => {
-    await SettingsService.setDailyNutritionInsights(value);
+    console.log('[Settings] handleDailyNutritionInsightsChange called with:', value);
+    try {
+      await SettingsService.setDailyNutritionInsights(value);
+      console.log('[Settings] handleDailyNutritionInsightsChange completed successfully');
+    } catch (error) {
+      console.error('[Settings] Error in handleDailyNutritionInsightsChange:', error);
+    }
   };
 
   const handleWorkoutInsightsChange = async (value: boolean) => {
-    await SettingsService.setWorkoutInsights(value);
+    console.log('[Settings] handleWorkoutInsightsChange called with:', value);
+    try {
+      await SettingsService.setWorkoutInsights(value);
+      console.log('[Settings] handleWorkoutInsightsChange completed successfully');
+    } catch (error) {
+      console.error('[Settings] Error in handleWorkoutInsightsChange:', error);
+    }
   };
 
   return (

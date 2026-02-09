@@ -85,7 +85,11 @@ export function ToggleInput(props: TogglableSettingsProps) {
                 </View>
                 <Switch
                   value={it.value}
-                  onValueChange={it.onValueChange}
+                  onValueChange={(value) => {
+                    // Prevent double-firing by doing nothing here
+                    // The Pressable already handles the toggle
+                  }}
+                  pointerEvents="none"
                   trackColor={{
                     false: theme.colors.background.overlay,
                     true: theme.colors.accent.primary,

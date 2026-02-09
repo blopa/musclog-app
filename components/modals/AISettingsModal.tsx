@@ -24,6 +24,7 @@ type AIIntegrationCardProps = {
     icon?: ReactNode;
     subtitle?: string;
   }[];
+  enabled?: boolean;
   headerContent?: ReactNode;
   apiKeyLabel: string;
   apiKeyValue: string;
@@ -42,6 +43,7 @@ function AIIntegrationCard({
   sectionTitle,
   sectionTitleColor,
   toggleItems,
+  enabled = true,
   headerContent,
   apiKeyLabel,
   apiKeyValue,
@@ -70,88 +72,90 @@ function AIIntegrationCard({
       <ToggleInput items={toggleItems} />
 
       {/* Settings Block */}
-      <View
-        style={{
-          backgroundColor: theme.colors.background.card,
-          borderRadius: theme.borderRadius.lg,
-          borderWidth: theme.borderWidth.thin,
-          borderColor: theme.colors.border.light,
-          overflow: 'hidden',
-        }}
-      >
-        {/* Optional Header Content (e.g., Connect Button) */}
-        {headerContent ? (
+      {enabled ? (
+        <View
+          style={{
+            backgroundColor: theme.colors.background.card,
+            borderRadius: theme.borderRadius.lg,
+            borderWidth: theme.borderWidth.thin,
+            borderColor: theme.colors.border.light,
+            overflow: 'hidden',
+          }}
+        >
+          {/* Optional Header Content (e.g., Connect Button) */}
+          {headerContent ? (
+            <View
+              className="w-full items-center"
+              style={{
+                padding: theme.spacing.padding.base,
+                borderBottomWidth: theme.borderWidth.thin,
+                borderBottomColor: theme.colors.border.light,
+              }}
+            >
+              {headerContent}
+            </View>
+          ) : null}
+
+          {/* API Key Input */}
           <View
-            className="w-full items-center"
             style={{
               padding: theme.spacing.padding.base,
               borderBottomWidth: theme.borderWidth.thin,
               borderBottomColor: theme.colors.border.light,
             }}
           >
-            {headerContent}
-          </View>
-        ) : null}
-
-        {/* API Key Input */}
-        <View
-          style={{
-            padding: theme.spacing.padding.base,
-            borderBottomWidth: theme.borderWidth.thin,
-            borderBottomColor: theme.colors.border.light,
-          }}
-        >
-          <SecretInput
-            label={apiKeyLabel}
-            value={apiKeyValue}
-            onChangeText={onApiKeyChange}
-            placeholder={apiKeyPlaceholder}
-          />
-          {apiKeyHelper ? (
-            <Text
-              style={{
-                fontSize: theme.typography.fontSize.xs,
-                color: theme.colors.text.tertiary,
-                marginTop: theme.spacing.padding.sm,
-                marginLeft: theme.spacing.padding.xs,
-              }}
-            >
-              {apiKeyHelper}
-            </Text>
-          ) : null}
-
-          {/* Save Button */}
-          <View className="mb-2 mt-3">
-            <Button
-              label={hasUnsavedChanges ? t('save') : t('saved')}
-              onPress={onSaveApiKey}
-              disabled={!hasUnsavedChanges}
-              size="sm"
-              width="full"
-              variant={hasUnsavedChanges ? 'accent' : 'outline'}
+            <SecretInput
+              label={apiKeyLabel}
+              value={apiKeyValue}
+              onChangeText={onApiKeyChange}
+              placeholder={apiKeyPlaceholder}
             />
-          </View>
-        </View>
+            {apiKeyHelper ? (
+              <Text
+                style={{
+                  fontSize: theme.typography.fontSize.xs,
+                  color: theme.colors.text.tertiary,
+                  marginTop: theme.spacing.padding.sm,
+                  marginLeft: theme.spacing.padding.xs,
+                }}
+              >
+                {apiKeyHelper}
+              </Text>
+            ) : null}
 
-        {/* Model Selector */}
-        <Pressable
-          onPress={onModelPress}
-          className="flex-row items-center justify-between p-4 active:bg-bg-overlay"
-        >
-          <View className="min-w-0 flex-1">
-            <Text className="text-sm font-medium text-text-primary">{modelLabel}</Text>
-            <Text
-              className="text-xs text-accent-primary"
-              style={{
-                marginTop: theme.spacing.padding.xsHalf,
-              }}
-            >
-              {modelValue || modelFallbackText}
-            </Text>
+            {/* Save Button */}
+            <View className="mb-2 mt-3">
+              <Button
+                label={hasUnsavedChanges ? t('save') : t('saved')}
+                onPress={onSaveApiKey}
+                disabled={!hasUnsavedChanges}
+                size="sm"
+                width="full"
+                variant={hasUnsavedChanges ? 'accent' : 'outline'}
+              />
+            </View>
           </View>
-          <ChevronDown size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
-        </Pressable>
-      </View>
+
+          {/* Model Selector */}
+          <Pressable
+            onPress={onModelPress}
+            className="flex-row items-center justify-between p-4 active:bg-bg-overlay"
+          >
+            <View className="min-w-0 flex-1">
+              <Text className="text-sm font-medium text-text-primary">{modelLabel}</Text>
+              <Text
+                className="text-xs text-accent-primary"
+                style={{
+                  marginTop: theme.spacing.padding.xsHalf,
+                }}
+              >
+                {modelValue || modelFallbackText}
+              </Text>
+            </View>
+            <ChevronDown size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
+          </Pressable>
+        </View>
+      ) : null}
     </View>
   );
 }
@@ -349,6 +353,7 @@ export function AISettingsModal({
           sectionTitle={t('settings.aiSettings.googleGeminiIntegration')}
           sectionTitleColor={theme.colors.accent.primary}
           toggleItems={geminiToggleItems}
+          enabled={enableGoogleGemini}
           headerContent={<GoogleSignInButton onPress={onConnectGoogleAccount} variant="dark" />}
           apiKeyLabel={t('settings.aiSettings.googleGeminiApiKey')}
           apiKeyValue={localGeminiApiKey}
@@ -367,6 +372,7 @@ export function AISettingsModal({
           sectionTitle={t('settings.aiSettings.openAiIntegration')}
           sectionTitleColor={theme.colors.accent.primary}
           toggleItems={openAiToggleItems}
+          enabled={enableOpenAi}
           apiKeyLabel={t('settings.aiSettings.openAiApiKey')}
           apiKeyValue={localOpenAiApiKey}
           onApiKeyChange={setLocalOpenAiApiKey}

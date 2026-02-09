@@ -36,12 +36,20 @@ function parseThemeFromSettings(settings: Setting[]): ThemeOption {
 
 function parseBooleanFromSettings(settings: Setting[]): boolean {
   if (settings.length === 0) return false;
-  return settings[0].value === 'true';
+  // If multiple settings exist, use the most recent one
+  const mostRecent = settings.reduce((latest, current) =>
+    current.updatedAt > latest.updatedAt ? current : latest
+  );
+  return mostRecent.value === 'true';
 }
 
 function parseStringFromSettings(settings: Setting[]): string {
   if (settings.length === 0) return '';
-  return settings[0].value;
+  // If multiple settings exist, use the most recent one
+  const mostRecent = settings.reduce((latest, current) =>
+    current.updatedAt > latest.updatedAt ? current : latest
+  );
+  return mostRecent.value;
 }
 
 export function useSettings(): UseSettingsResult & {
@@ -156,16 +164,26 @@ export function useSettings(): UseSettingsResult & {
       },
     });
 
-    const connectHealthDataSubscription = connectHealthDataQuery.observe().subscribe({
-      next: (settings) => {
-        setConnectHealthData(parseBooleanFromSettings(settings));
-      },
-      error: () => {
-        setConnectHealthData(false);
-      },
-    });
+    const connectHealthDataSubscription = connectHealthDataQuery
+      .observeWithColumns(['value'])
+      .subscribe({
+        next: (settings) => {
+          console.log(
+            '[useSettings] connectHealthData observable fired, settings:',
+            settings.length,
+            settings.map((s) => ({ type: s.type, value: s.value }))
+          );
+          const parsedValue = parseBooleanFromSettings(settings);
+          console.log('[useSettings] Setting connectHealthData to:', parsedValue);
+          setConnectHealthData(parsedValue);
+        },
+        error: (err) => {
+          console.error('[useSettings] Error in connectHealthData observable:', err);
+          setConnectHealthData(false);
+        },
+      });
 
-    const readHealthDataSubscription = readHealthDataQuery.observe().subscribe({
+    const readHealthDataSubscription = readHealthDataQuery.observeWithColumns(['value']).subscribe({
       next: (settings) => {
         setReadHealthData(parseBooleanFromSettings(settings));
       },
@@ -174,23 +192,27 @@ export function useSettings(): UseSettingsResult & {
       },
     });
 
-    const writeHealthDataSubscription = writeHealthDataQuery.observe().subscribe({
-      next: (settings) => {
-        setWriteHealthData(parseBooleanFromSettings(settings));
-      },
-      error: () => {
-        setWriteHealthData(false);
-      },
-    });
+    const writeHealthDataSubscription = writeHealthDataQuery
+      .observeWithColumns(['value'])
+      .subscribe({
+        next: (settings) => {
+          setWriteHealthData(parseBooleanFromSettings(settings));
+        },
+        error: () => {
+          setWriteHealthData(false);
+        },
+      });
 
-    const anonymousBugReportSubscription = anonymousBugReportQuery.observe().subscribe({
-      next: (settings) => {
-        setAnonymousBugReport(parseBooleanFromSettings(settings));
-      },
-      error: () => {
-        setAnonymousBugReport(true);
-      },
-    });
+    const anonymousBugReportSubscription = anonymousBugReportQuery
+      .observeWithColumns(['value'])
+      .subscribe({
+        next: (settings) => {
+          setAnonymousBugReport(parseBooleanFromSettings(settings));
+        },
+        error: () => {
+          setAnonymousBugReport(true);
+        },
+      });
 
     const googleGeminiApiKeySubscription = googleGeminiApiKeyQuery.observe().subscribe({
       next: (settings) => {
@@ -228,41 +250,79 @@ export function useSettings(): UseSettingsResult & {
       },
     });
 
-    const enableGoogleGeminiSubscription = enableGoogleGeminiQuery.observe().subscribe({
-      next: (settings) => {
-        setEnableGoogleGemini(parseBooleanFromSettings(settings));
-      },
-      error: () => {
-        setEnableGoogleGemini(true);
-      },
-    });
+    const enableGoogleGeminiSubscription = enableGoogleGeminiQuery
+      .observeWithColumns(['value'])
+      .subscribe({
+        next: (settings) => {
+          console.log(
+            '[useSettings] enableGoogleGemini observable fired, settings:',
+            settings.length,
+            settings.map((s) => ({ type: s.type, value: s.value }))
+          );
+          const parsedValue = parseBooleanFromSettings(settings);
+          console.log('[useSettings] Setting enableGoogleGemini to:', parsedValue);
+          setEnableGoogleGemini(parsedValue);
+        },
+        error: (err) => {
+          console.error('[useSettings] Error in enableGoogleGemini observable:', err);
+          setEnableGoogleGemini(true);
+        },
+      });
 
-    const enableOpenAiSubscription = enableOpenAiQuery.observe().subscribe({
+    const enableOpenAiSubscription = enableOpenAiQuery.observeWithColumns(['value']).subscribe({
       next: (settings) => {
-        setEnableOpenAi(parseBooleanFromSettings(settings));
+        console.log(
+          '[useSettings] enableOpenAi observable fired, settings:',
+          settings.length,
+          settings.map((s) => ({ type: s.type, value: s.value }))
+        );
+        const parsedValue = parseBooleanFromSettings(settings);
+        console.log('[useSettings] Setting enableOpenAi to:', parsedValue);
+        setEnableOpenAi(parsedValue);
       },
-      error: () => {
+      error: (err) => {
+        console.error('[useSettings] Error in enableOpenAi observable:', err);
         setEnableOpenAi(true);
       },
     });
 
-    const dailyNutritionInsightsSubscription = dailyNutritionInsightsQuery.observe().subscribe({
-      next: (settings) => {
-        setDailyNutritionInsights(parseBooleanFromSettings(settings));
-      },
-      error: () => {
-        setDailyNutritionInsights(true);
-      },
-    });
+    const dailyNutritionInsightsSubscription = dailyNutritionInsightsQuery
+      .observeWithColumns(['value'])
+      .subscribe({
+        next: (settings) => {
+          console.log(
+            '[useSettings] dailyNutritionInsights observable fired, settings:',
+            settings.length,
+            settings.map((s) => ({ type: s.type, value: s.value }))
+          );
+          const parsedValue = parseBooleanFromSettings(settings);
+          console.log('[useSettings] Setting dailyNutritionInsights to:', parsedValue);
+          setDailyNutritionInsights(parsedValue);
+        },
+        error: (err) => {
+          console.error('[useSettings] Error in dailyNutritionInsights observable:', err);
+          setDailyNutritionInsights(true);
+        },
+      });
 
-    const workoutInsightsSubscription = workoutInsightsQuery.observe().subscribe({
-      next: (settings) => {
-        setWorkoutInsights(parseBooleanFromSettings(settings));
-      },
-      error: () => {
-        setWorkoutInsights(false);
-      },
-    });
+    const workoutInsightsSubscription = workoutInsightsQuery
+      .observeWithColumns(['value'])
+      .subscribe({
+        next: (settings) => {
+          console.log(
+            '[useSettings] workoutInsights observable fired, settings:',
+            settings.length,
+            settings.map((s) => ({ type: s.type, value: s.value }))
+          );
+          const parsedValue = parseBooleanFromSettings(settings);
+          console.log('[useSettings] Setting workoutInsights to:', parsedValue);
+          setWorkoutInsights(parsedValue);
+        },
+        error: (err) => {
+          console.error('[useSettings] Error in workoutInsights observable:', err);
+          setWorkoutInsights(false);
+        },
+      });
 
     // Set loading to false once all subscriptions have had a chance to load
     const timeout = setTimeout(() => {
