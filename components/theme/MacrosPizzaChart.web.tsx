@@ -32,7 +32,7 @@ export function MacrosPizzaChart({
 }: MacrosPizzaChartProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const sizeFinal = theme.size['48'];
+  const sizeFinal = size || theme.size['48'];
 
   const data: MacroDatum[] = [
     { x: 'P', value: protein, color: theme.colors.macros.protein.bg as MacroColor },
