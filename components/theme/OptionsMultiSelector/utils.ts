@@ -65,20 +65,20 @@ export function getGroupPosition<T extends string | number>(
 
 // 14 distinct colors for exercise groups
 const GROUP_COLORS = [
-  theme.colors.accent.primary, // Green - #22c55e
-  theme.colors.status.purple, // Purple - #a855f7
-  theme.colors.status.indigo, // Indigo - #6366f1
-  theme.colors.status.info, // Blue - #3b82f6
-  theme.colors.status.amber, // Amber - #fbbf24
-  theme.colors.status.warning, // Orange - #f97316
-  theme.colors.status.error, // Red - #ef4444
-  theme.colors.status.pink500, // Pink - #ec4899
-  theme.colors.status.rose600, // Rose - #e11d48
-  theme.colors.status.emerald, // Emerald - #10b981
-  theme.colors.status.yellow, // Yellow - #eab308
-  theme.colors.status.teal400, // Teal - #2dd4bf
-  theme.colors.status.violet500, // Violet - #8b5cf6
-  theme.colors.status.purple400, // Purple-400 - #a78bfa
+  theme.colors.accent.primary,
+  theme.colors.status.purple,
+  theme.colors.status.indigo,
+  theme.colors.status.info,
+  theme.colors.status.amber,
+  theme.colors.status.warning,
+  theme.colors.status.error,
+  theme.colors.status.pink500,
+  theme.colors.status.rose600,
+  theme.colors.status.emerald,
+  theme.colors.status.yellow,
+  theme.colors.status.teal400,
+  theme.colors.status.violet500,
+  theme.colors.status.purple400,
 ] as const;
 
 // Helper to get a consistent color for each group

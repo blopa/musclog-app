@@ -138,6 +138,7 @@ const colors = {
   redAlpha12: addOpacityToHex(baseColors.red500, 0.125),
   redAlpha20: addOpacityToHex(baseColors.red500, 0.2),
   redAlpha50: addOpacityToHex(baseColors.red500, 0.5),
+  whiteAlpha02: addOpacityToHex(baseColors.white, 0.02),
   whiteAlpha03: addOpacityToHex(baseColors.white, 0.03),
   whiteAlpha05: addOpacityToHex(baseColors.white, 0.05),
   surfaceHighlight05: addOpacityToHex(baseColors.white, 0.05),
@@ -228,6 +229,7 @@ const themeColors = {
     buttonCardActive: colors.darkTealBg, // Active button/card background
     separatorLight: colors.gray200Tailwind, // Light separator (gray-200)
     // White background with opacity
+    white2: colors.whiteAlpha02, // White with ~3% opacity
     white3: colors.whiteAlpha03, // White with ~3% opacity
     white5: colors.surfaceHighlight05, // White with 5% opacity
     white10: colors.whiteAlpha10, // White with 10% opacity

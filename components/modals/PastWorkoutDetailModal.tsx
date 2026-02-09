@@ -84,7 +84,7 @@ function WorkoutSummaryCard({
           {/* Volume */}
           <View
             className="flex-1 flex-col border-l pl-4"
-            style={{ borderLeftColor: 'rgba(255, 255, 255, 0.2)' }}
+            style={{ borderLeftColor: theme.colors.background.white2 }}
           >
             <Text
               className="text-[10px] font-bold uppercase tracking-wider text-white"
@@ -105,7 +105,7 @@ function WorkoutSummaryCard({
           {/* Calories */}
           <View
             className="flex-1 flex-col border-l pl-4"
-            style={{ borderLeftColor: 'rgba(255, 255, 255, 0.2)' }}
+            style={{ borderLeftColor: theme.colors.background.white2 }}
           >
             <Text
               className="text-[10px] font-bold uppercase tracking-wider text-white"

@@ -50,11 +50,11 @@ export function getMacroGoalStatus(value: number | undefined, goal: number): Goa
 export function getProgressBarColor(status: GoalStatus): string {
   switch (status) {
     case 'reached':
-      return '#54f18c'; // Green for reached
+      return theme.colors.status.emeraldLight;
     case 'exceeded':
-      return '#df6363'; // Orange for exceeded
+      return theme.colors.status.red400;
     default:
-      return theme.colors.text.primary; // White for not reached
+      return theme.colors.text.primary;
   }
 }
 
