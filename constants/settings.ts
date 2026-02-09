@@ -28,6 +28,12 @@ export const READ_HEALTH_DATA_SETTING_TYPE = 'read_health_data';
  */
 export const WRITE_HEALTH_DATA_SETTING_TYPE = 'write_health_data';
 
+/**
+ * Setting type for anonymous bug report (stored in WatermelonDB settings table).
+ * value: 'true' | 'false'.
+ */
+export const ANONYMOUS_BUG_REPORT_SETTING_TYPE = 'anonymous_bug_report';
+
 export type Units = 'metric' | 'imperial';
 export type ThemeOption = 'system' | 'light' | 'dark';
 

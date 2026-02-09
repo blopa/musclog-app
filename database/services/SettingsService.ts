@@ -1,6 +1,7 @@
 import { Q } from '@nozbe/watermelondb';
 
 import {
+  ANONYMOUS_BUG_REPORT_SETTING_TYPE,
   CONNECT_HEALTH_DATA_SETTING_TYPE,
   READ_HEALTH_DATA_SETTING_TYPE,
   THEME_SETTING_TYPE,
@@ -88,6 +89,13 @@ export class SettingsService {
    */
   static async setWriteHealthData(value: boolean) {
     await this.setBooleanSetting(WRITE_HEALTH_DATA_SETTING_TYPE, value);
+  }
+
+  /**
+   * Upsert the anonymous bug report setting
+   */
+  static async setAnonymousBugReport(value: boolean) {
+    await this.setBooleanSetting(ANONYMOUS_BUG_REPORT_SETTING_TYPE, value);
   }
 
   /**

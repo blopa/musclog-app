@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 
 import type { ThemeOption, Units, UseSettingsResult } from '../constants/settings';
 import {
+  ANONYMOUS_BUG_REPORT_SETTING_TYPE,
   CONNECT_HEALTH_DATA_SETTING_TYPE,
   READ_HEALTH_DATA_SETTING_TYPE,
   THEME_SETTING_TYPE,
@@ -35,12 +36,14 @@ export function useSettings(): UseSettingsResult & {
   connectHealthData: boolean;
   readHealthData: boolean;
   writeHealthData: boolean;
+  anonymousBugReport: boolean;
 } {
   const [units, setUnits] = useState<Units>('metric');
   const [theme, setTheme] = useState<ThemeOption>('system');
   const [connectHealthData, setConnectHealthData] = useState(false);
   const [readHealthData, setReadHealthData] = useState(false);
   const [writeHealthData, setWriteHealthData] = useState(false);
+  const [anonymousBugReport, setAnonymousBugReport] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -63,6 +66,10 @@ export function useSettings(): UseSettingsResult & {
     const writeHealthDataQuery = database
       .get<Setting>('settings')
       .query(Q.where('type', WRITE_HEALTH_DATA_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)));
+
+    const anonymousBugReportQuery = database
+      .get<Setting>('settings')
+      .query(Q.where('type', ANONYMOUS_BUG_REPORT_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)));
 
     const unitsSubscription = unitsQuery.observe().subscribe({
       next: (settings) => {
@@ -109,6 +116,15 @@ export function useSettings(): UseSettingsResult & {
       },
     });
 
+    const anonymousBugReportSubscription = anonymousBugReportQuery.observe().subscribe({
+      next: (settings) => {
+        setAnonymousBugReport(parseBooleanFromSettings(settings));
+      },
+      error: () => {
+        setAnonymousBugReport(true);
+      },
+    });
+
     // Set loading to false once all subscriptions have had a chance to load
     const timeout = setTimeout(() => {
       setIsLoading(false);
@@ -120,6 +136,7 @@ export function useSettings(): UseSettingsResult & {
       connectHealthDataSubscription.unsubscribe();
       readHealthDataSubscription.unsubscribe();
       writeHealthDataSubscription.unsubscribe();
+      anonymousBugReportSubscription.unsubscribe();
       clearTimeout(timeout);
     };
   }, []);
@@ -132,10 +149,19 @@ export function useSettings(): UseSettingsResult & {
       connectHealthData,
       readHealthData,
       writeHealthData,
+      anonymousBugReport,
       isLoading,
       weightUnit: getWeightUnit(units),
       heightUnit: getHeightUnit(units),
     }),
-    [units, theme, connectHealthData, readHealthData, writeHealthData, isLoading]
+    [
+      units,
+      theme,
+      connectHealthData,
+      readHealthData,
+      writeHealthData,
+      anonymousBugReport,
+      isLoading,
+    ]
   );
 }

@@ -19,7 +19,13 @@ import { theme } from '../theme';
 export default function SettingsScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { theme: themeValue, connectHealthData, readHealthData, writeHealthData } = useSettings();
+  const {
+    theme: themeValue,
+    connectHealthData,
+    readHealthData,
+    writeHealthData,
+    anonymousBugReport,
+  } = useSettings();
   const [notifications, setNotifications] = useState(true);
   const [isAISettingsVisible, setAISettingsVisible] = useState(false);
   const [isBasicSettingsVisible, setBasicSettingsVisible] = useState(false);
@@ -39,6 +45,10 @@ export default function SettingsScreen() {
 
   const handleWriteHealthDataChange = async (value: boolean) => {
     await SettingsService.setWriteHealthData(value);
+  };
+
+  const handleAnonymousBugReportChange = async (value: boolean) => {
+    await SettingsService.setAnonymousBugReport(value);
   };
 
   return (
@@ -252,6 +262,8 @@ export default function SettingsScreen() {
       <AdvancedSettingsModal
         visible={isAdvancedSettingsVisible}
         onClose={() => setAdvancedSettingsVisible(false)}
+        anonymousBugReport={anonymousBugReport}
+        onAnonymousBugReportChange={handleAnonymousBugReportChange}
       />
     </MasterLayout>
   );

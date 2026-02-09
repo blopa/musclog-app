@@ -3,11 +3,11 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
+import packageJson from '../../package.json';
 import { theme } from '../../theme';
 import { SettingsCard } from '../cards/SettingsCard';
 import { ToggleInput } from '../theme/ToggleInput';
 import { FullScreenModal } from './FullScreenModal';
-import packageJson from '../../package.json';
 
 type AdvancedSettingsModalProps = {
   visible: boolean;
@@ -71,6 +71,7 @@ export function AdvancedSettingsModal({
           >
             {t('settings.advancedSettings.dataPortability')}
           </Text>
+          {/* TODO: make import and export work */}
           <SettingsCard
             icon={<Download size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
             iconContainerStyle={{
@@ -110,7 +111,7 @@ export function AdvancedSettingsModal({
           <ToggleInput items={bugReportItems} />
         </View>
 
-        {/* Danger Zone Section */}
+        {/* TODO: simply open the Android cache and data settings from the app, since all data is stored locally */}
         <View style={{ paddingTop: theme.spacing.padding['2xl'] }}>
           <Text
             className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
