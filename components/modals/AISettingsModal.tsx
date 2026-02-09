@@ -1,16 +1,16 @@
-import { Apple, Bot, ChevronDown, Dumbbell } from 'lucide-react-native';
-import { ReactNode, useState } from 'react';
+import { Apple, Bot, Check, ChevronDown, Dumbbell } from 'lucide-react-native';
+import { ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
 import { GEMINI_MODELS, OPENAI_MODELS } from '../../constants/ai';
+import packageJson from '../../package.json';
 import { theme } from '../../theme';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { GoogleSignInButton } from '../GoogleSignInButton';
 import { SecretInput } from '../theme/SecretInput';
 import { ToggleInput } from '../theme/ToggleInput';
 import { FullScreenModal } from './FullScreenModal';
-import packageJson from '../../package.json';
 
 type AIIntegrationCardProps = {
   sectionTitle: string;
@@ -29,6 +29,8 @@ type AIIntegrationCardProps = {
   onApiKeyChange: (value: string) => void;
   apiKeyPlaceholder: string;
   apiKeyHelper?: string;
+  onSaveApiKey: () => void;
+  hasUnsavedChanges?: boolean;
   modelLabel: string;
   modelValue: string;
   onModelPress?: () => void;
@@ -45,6 +47,8 @@ function AIIntegrationCard({
   onApiKeyChange,
   apiKeyPlaceholder,
   apiKeyHelper,
+  onSaveApiKey,
+  hasUnsavedChanges,
   modelLabel,
   modelValue,
   onModelPress,
@@ -112,6 +116,33 @@ function AIIntegrationCard({
               {apiKeyHelper}
             </Text>
           ) : null}
+
+          {/* Save Button */}
+          <Pressable
+            onPress={onSaveApiKey}
+            disabled={!hasUnsavedChanges}
+            className={`mt-3 flex-row items-center justify-center rounded-lg p-3 ${
+              hasUnsavedChanges
+                ? 'active:bg-accent-primaryPressed bg-accent-primary'
+                : 'bg-bg-disabled'
+            }`}
+            style={{
+              opacity: hasUnsavedChanges ? 1 : 0.5,
+            }}
+          >
+            <Check
+              size={theme.iconSize.sm}
+              color={hasUnsavedChanges ? theme.colors.text.white : theme.colors.text.tertiary}
+            />
+            <Text
+              className="ml-2 text-sm font-medium"
+              style={{
+                color: hasUnsavedChanges ? theme.colors.text.white : theme.colors.text.tertiary,
+              }}
+            >
+              {hasUnsavedChanges ? 'Save' : 'Saved'}
+            </Text>
+          </Pressable>
         </View>
 
         {/* Model Selector */}
@@ -189,6 +220,29 @@ export function AISettingsModal({
   const [openAiKeyVisible, setOpenAiKeyVisible] = useState(false);
   const [geminiModelMenuVisible, setGeminiModelMenuVisible] = useState(false);
   const [openAiModelMenuVisible, setOpenAiModelMenuVisible] = useState(false);
+
+  // Local state for API keys (to avoid saving on every keystroke)
+  const [localGeminiApiKey, setLocalGeminiApiKey] = useState(googleGeminiApiKey);
+  const [localOpenAiApiKey, setLocalOpenAiApiKey] = useState(openAiApiKey);
+
+  // Track if there are unsaved changes
+  const hasGeminiKeyChanges = localGeminiApiKey !== googleGeminiApiKey;
+  const hasOpenAiKeyChanges = localOpenAiApiKey !== openAiApiKey;
+
+  // Save handlers
+  const handleSaveGeminiApiKey = () => {
+    onGoogleGeminiApiKeyChange?.(localGeminiApiKey);
+  };
+
+  const handleSaveOpenAiApiKey = () => {
+    onOpenAiApiKeyChange?.(localOpenAiApiKey);
+  };
+
+  // Sync local state when props change (e.g., when modal opens with saved values)
+  useEffect(() => {
+    setLocalGeminiApiKey(googleGeminiApiKey);
+    setLocalOpenAiApiKey(openAiApiKey);
+  }, [googleGeminiApiKey, openAiApiKey]);
 
   const geminiToggleItems = [
     {
@@ -309,10 +363,12 @@ export function AISettingsModal({
           toggleItems={geminiToggleItems}
           headerContent={<GoogleSignInButton onPress={onConnectGoogleAccount} variant="dark" />}
           apiKeyLabel={t('settings.aiSettings.googleGeminiApiKey')}
-          apiKeyValue={googleGeminiApiKey}
-          onApiKeyChange={onGoogleGeminiApiKeyChange || (() => {})}
+          apiKeyValue={localGeminiApiKey}
+          onApiKeyChange={setLocalGeminiApiKey}
           apiKeyPlaceholder={t('settings.aiSettings.apiKeyPlaceholder')}
           apiKeyHelper={t('settings.aiSettings.apiKeyHelper')}
+          onSaveApiKey={handleSaveGeminiApiKey}
+          hasUnsavedChanges={hasGeminiKeyChanges}
           modelLabel={t('settings.aiSettings.geminiModel')}
           modelValue={geminiModel}
           onModelPress={() => setGeminiModelMenuVisible(true)}
@@ -324,9 +380,11 @@ export function AISettingsModal({
           sectionTitleColor={theme.colors.accent.primary}
           toggleItems={openAiToggleItems}
           apiKeyLabel={t('settings.aiSettings.openAiApiKey')}
-          apiKeyValue={openAiApiKey}
-          onApiKeyChange={onOpenAiApiKeyChange || (() => {})}
+          apiKeyValue={localOpenAiApiKey}
+          onApiKeyChange={setLocalOpenAiApiKey}
           apiKeyPlaceholder={t('settings.aiSettings.apiKeyPlaceholder')}
+          onSaveApiKey={handleSaveOpenAiApiKey}
+          hasUnsavedChanges={hasOpenAiKeyChanges}
           modelLabel={t('settings.aiSettings.openAiModel')}
           modelValue={openAiModel}
           onModelPress={() => setOpenAiModelMenuVisible(true)}
