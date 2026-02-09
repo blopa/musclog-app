@@ -32,7 +32,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { MacroInput } from '../MacroInput';
 import { Button } from '../theme/Button';
 import { SegmentedControl } from '../theme/SegmentedControl';
@@ -54,6 +54,7 @@ export default function CreateCustomFoodModal({
   onClose,
   onSave,
 }: NewCustomFoodModalProps) {
+  const theme = useTheme();
   const [foodName, setFoodName] = useState('');
   const [brand, setBrand] = useState('');
   const [barcode, setBarcode] = useState('');

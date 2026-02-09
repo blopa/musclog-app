@@ -24,7 +24,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { detectBarcodes } from '../../utils/file';
 import { CameraView, useCameraPermissions } from '../CameraView';
 import { AddFoodModal } from './AddFoodModal';
@@ -34,7 +34,6 @@ import { FoodDetailsModal } from './FoodDetailsModal';
 import { FullScreenModal } from './FullScreenModal';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
-const CAMERA_ASPECT_RATIO = theme.aspectRatio.portrait;
 const CAMERA_MAX_HEIGHT = SCREEN_HEIGHT * 0.6;
 
 type CameraMode = 'ai-meal-photo' | 'ai-label-scan' | 'barcode-scan';
@@ -50,6 +49,7 @@ export default function SmartCameraModal({
   onClose,
   mode = 'barcode-scan',
 }: CameraModalProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const [permission, requestPermission] = useCameraPermissions();
   const [flashEnabled, setFlashEnabled] = useState(false);
@@ -357,7 +357,7 @@ export default function SmartCameraModal({
             <View
               className="relative w-full rounded-2xl"
               style={{
-                aspectRatio: CAMERA_ASPECT_RATIO,
+                aspectRatio: theme.aspectRatio.portrait,
                 maxHeight: CAMERA_MAX_HEIGHT,
                 borderWidth: theme.borderWidth.thin,
                 borderColor: theme.colors.background.white20,

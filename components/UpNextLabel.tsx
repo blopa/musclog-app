@@ -1,9 +1,10 @@
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { theme } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 
 export function UpNextLabel() {
+  const theme = useTheme();
   const { t } = useTranslation();
 
   return (

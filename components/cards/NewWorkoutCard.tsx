@@ -4,7 +4,7 @@ import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { GenericCard } from './GenericCard';
 
 type NewWorkoutCardProps = {
@@ -22,6 +22,7 @@ export function NewWorkoutCard({
   subtitle,
   onPress,
 }: NewWorkoutCardProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const isPopular = variant === 'popular';
 

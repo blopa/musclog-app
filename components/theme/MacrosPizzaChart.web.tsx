@@ -1,15 +1,16 @@
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 import { VictoryPie } from 'victory';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
+import { Theme } from '../../theme';
 
 type MacroColor =
-  | typeof theme.colors.macros.protein.bg
-  | typeof theme.colors.macros.carbs.bg
-  | typeof theme.colors.macros.fat.bg
-  | typeof theme.colors.macros.fiber.bg;
+  | Theme['colors']['macros']['protein']['bg']
+  | Theme['colors']['macros']['carbs']['bg']
+  | Theme['colors']['macros']['fat']['bg']
+  | Theme['colors']['macros']['fiber']['bg'];
+
 type MacroDatum = { value: number; color: MacroColor; x: string };
 
 type MacrosPizzaChartProps = {
@@ -26,10 +27,12 @@ export function MacrosPizzaChart({
   carbs,
   fats,
   fiber = 0,
-  size = theme.size['48'],
+  size,
   showInsight = true,
 }: MacrosPizzaChartProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
+  const sizeFinal = theme.size['48'];
 
   const data: MacroDatum[] = [
     { x: 'P', value: protein, color: theme.colors.macros.protein.bg as MacroColor },
@@ -46,16 +49,19 @@ export function MacrosPizzaChart({
   }
 
   return (
-    <View className="relative items-center justify-center" style={{ width: size, height: size }}>
+    <View
+      className="relative items-center justify-center"
+      style={{ width: sizeFinal, height: sizeFinal }}
+    >
       <VictoryPie
         standalone={true}
-        width={size}
-        height={size}
+        width={sizeFinal}
+        height={sizeFinal}
         padding={0}
         data={data}
         y="value"
         x="x"
-        innerRadius={size * 0.38}
+        innerRadius={sizeFinal * 0.38}
         labels={() => null} // Disable default labels
         colorScale={data.map((d) => d.color)}
         style={{

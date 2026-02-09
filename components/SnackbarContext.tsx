@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Platform, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { theme } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 import { registerSnackbarService, unregisterSnackbarService } from '../utils/snackbarService';
 import { Snackbar, type SnackbarType } from './Snackbar';
 
@@ -26,6 +26,7 @@ export function SnackbarProvider({ children }: { children: ReactNode }) {
   const [snackbars, setSnackbars] = useState<SnackbarType[]>([]);
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
+  const theme = useTheme();
 
   const showSnackbar = useCallback(
     (

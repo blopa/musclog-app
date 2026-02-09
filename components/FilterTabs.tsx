@@ -1,7 +1,7 @@
 import { Check } from 'lucide-react-native';
 import { Pressable, ScrollView, Text, View, ViewStyle } from 'react-native';
 
-import { theme } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 
 type FilterTab = {
   id: string;
@@ -27,6 +27,7 @@ export function FilterTabs({
   showContainer = true,
   withCheckmark = false,
 }: FilterTabsProps) {
+  const theme = useTheme();
   const content = (
     <ScrollView
       horizontal

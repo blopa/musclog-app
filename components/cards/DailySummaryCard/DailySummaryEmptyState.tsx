@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { theme } from '../../../theme';
+import { useTheme } from '../../../hooks/useTheme';
 import { Button } from '../../theme/Button';
 import { GenericCard } from '../GenericCard';
 
@@ -11,6 +11,7 @@ interface DailySummaryEmptyStateProps {
 }
 
 export const DailySummaryEmptyState: FC<DailySummaryEmptyStateProps> = ({ onSetGoals }) => {
+  const theme = useTheme();
   const { t } = useTranslation();
 
   return (

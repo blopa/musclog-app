@@ -10,10 +10,8 @@ import {
   TEMP_GOOGLE_USER_NAME,
 } from '../constants/auth';
 import { exchangeCodeForToken } from '../hooks/useGoogleAuth';
-import { theme } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 import { getAccessToken, getGoogleUserInfo, handleGoogleSignIn } from '../utils/googleAuth';
-import { setCurrentOnboardingStep } from '../utils/onboardingService';
-import { showSnackbar } from '../utils/snackbarService';
 import { GoogleGeminiIllustration } from './GoogleGeminiIllustration';
 import { GoogleSignInButton } from './GoogleSignInButton';
 import { MaybeLaterButton } from './MaybeLaterButton';
@@ -35,6 +33,7 @@ export function ConnectGoogleAccountBody({
   isSigningIn = false,
   onContinue,
 }: ConnectGoogleAccountBodyProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const [userName, setUserName] = useState<string | undefined>(undefined);
 

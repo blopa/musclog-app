@@ -2,9 +2,10 @@ import { AlertCircle, Dumbbell } from 'lucide-react-native';
 import { useEffect, useRef } from 'react';
 import { Animated, View } from 'react-native';
 
-import { theme } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 
 export function RestOverStatusIcon() {
+  const theme = useTheme();
   const glowAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {

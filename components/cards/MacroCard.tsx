@@ -1,6 +1,6 @@
 import { Text, View } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { GenericCard } from './GenericCard';
 
 type MacroCardProps = {
@@ -12,6 +12,7 @@ type MacroCardProps = {
 };
 
 export function MacroCard({ name, percentage, amount, color, progressColor }: MacroCardProps) {
+  const theme = useTheme();
   return (
     <GenericCard variant="default" size="sm">
       <View className="p-4">

@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 // ---- CONFIG ----
-const ROOT_DIR = path.join(__dirname); // scan current folder
+const ROOT_DIR = path.join(path.dirname()); // scan current folder
 const IGNORED_DIRS = ['node_modules', '.git', 'dist', 'build'];
 const FILE_EXTENSIONS = ['.ts', '.tsx', '.js', '.jsx'];
 // ----------------

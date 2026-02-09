@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, TextInput as RNTextInput, View } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { BottomPopUp } from '../BottomPopUp';
 
 type AINutritionTrackingContextModalProps = {
@@ -18,6 +18,7 @@ export function AINutritionTrackingContextModal({
   onClose,
   onApply,
 }: AINutritionTrackingContextModalProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const [mealDescription, setMealDescription] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);

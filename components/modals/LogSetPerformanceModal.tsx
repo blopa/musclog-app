@@ -1,16 +1,15 @@
-import { Edit, Save } from 'lucide-react-native';
+import { Save } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
+import { Platform, ScrollView, Text, View } from 'react-native';
 
 import { useSettings } from '../../hooks/useSettings';
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { getWeightUnitI18nKey } from '../../utils/units';
 import { BottomPopUpMenu } from '../BottomPopUpMenu';
 import { Button } from '../theme/Button';
 import NewNumericalInput from '../theme/NewNumericalInput';
 import { Slider } from '../theme/Slider';
-import { EditSetDetailsModal } from './EditSetDetailsModal';
 
 type LogSetPerformanceModalProps = {
   visible: boolean;
@@ -39,6 +38,7 @@ type StatCardProps = {
 };
 
 function StatCard({ label, value, suffix, muted }: StatCardProps) {
+  const theme = useTheme();
   return (
     <View className="flex-1 rounded-xl border border-border-accent bg-bg-overlay p-4">
       <Text className="mb-1 text-xs font-semibold uppercase tracking-wider text-text-secondary">
@@ -70,6 +70,7 @@ export function LogSetPerformanceModal({
   onConfirm,
   onEditSetDetails,
 }: LogSetPerformanceModalProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const { units } = useSettings();
   const weightUnitKey = getWeightUnitI18nKey(units);

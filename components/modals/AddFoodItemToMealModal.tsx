@@ -10,7 +10,7 @@ import {
   View,
 } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { Button } from '../theme/Button';
 import { TextInput } from '../theme/TextInput';
 import { FullScreenModal } from './FullScreenModal';
@@ -88,6 +88,7 @@ function FoodResultCard({
   onToggle,
   onAmountChange,
 }: FoodResultCardProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const calories = Math.round((food.caloriesPer100g * (parseInt(amount) || 0)) / 100);
   const amountInputRef = useRef<RNTextInput>(null);
@@ -338,6 +339,7 @@ export function AddFoodItemToMealModal({
   onClose,
   onAddFoods,
 }: AddFoodItemToMealModalProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('Chicken');
   const [selectedItems, setSelectedItems] = useState<

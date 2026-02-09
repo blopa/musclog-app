@@ -2,7 +2,7 @@ import { Minus, Plus } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 
 interface NewNumericalInputProps {
   label: string;
@@ -19,6 +19,7 @@ export default function NewNumericalInput({
   min = 0,
   step = 1,
 }: NewNumericalInputProps) {
+  const theme = useTheme();
   const [inputValue, setInputValue] = useState(value.toString());
   const inputRef = useRef<TextInput | null>(null);
 

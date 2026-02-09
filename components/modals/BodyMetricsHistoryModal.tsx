@@ -7,8 +7,8 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import UserMetric from '../../database/models/UserMetric';
 import { useSettings } from '../../hooks/useSettings';
+import { useTheme } from '../../hooks/useTheme';
 import { useUserMetrics } from '../../hooks/useUserMetrics';
-import { theme } from '../../theme';
 import { GenericCard } from '../cards/GenericCard';
 import { HistoryBodyMetricCard } from '../cards/HistoryBodyMetricCard';
 import { LineChart } from '../LineChart';
@@ -65,6 +65,7 @@ export default function BodyMetricsHistoryModal({
   visible,
   onClose,
 }: BodyMetricsHistoryModalProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const { units } = useSettings();
   const [selectedMetric, setSelectedMetric] = useState<MetricType>('weight');
@@ -192,7 +193,14 @@ export default function BodyMetricsHistoryModal({
         };
       });
     },
-    [selectedMetric, t]
+    [
+      selectedMetric,
+      t,
+      theme.colors.border.light,
+      theme.colors.status.indigo600,
+      theme.colors.text.primary,
+      theme.colors.text.secondary,
+    ]
   );
 
   // Process paginated metrics into history entries

@@ -1,9 +1,8 @@
-import { isToday, isYesterday } from 'date-fns';
 import { Archive, Clock } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { Image, ImageSourcePropType, Pressable, Text, View } from 'react-native';
+import { Image, ImageSourcePropType, Text, View } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { StartWorkoutButton } from '../StartWorkoutButton';
 import { Button } from '../theme/Button';
 import { MenuButton } from '../theme/MenuButton';
@@ -34,6 +33,7 @@ export function WorkoutCard({
   onArchive,
   variant = 'featured',
 }: FeaturedWorkoutCardProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
 
   // Format lastCompleted with translations if timestamp is available

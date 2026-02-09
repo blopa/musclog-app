@@ -6,7 +6,7 @@ import { Image, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { database } from '../../database';
 import Exercise from '../../database/models/Exercise';
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { Accordion } from '../theme/Accordion';
 import { SkeletonLoader } from '../theme/SkeletonLoader';
 import { TextInput } from '../theme/TextInput';
@@ -47,6 +47,7 @@ function ExerciseListItem({
   onPress: () => void;
   getTypeTagLabel: (type: string) => { label: string; variant: 'primary' | 'secondary' };
 }) {
+  const theme = useTheme();
   const tag = getTypeTagLabel(type);
 
   return (
@@ -106,6 +107,7 @@ type ExercisesModalProps = {
 };
 
 export default function ExercisesModal({ visible, onClose }: ExercisesModalProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
 
   const [searchQuery, setSearchQuery] = useState('');

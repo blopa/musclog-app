@@ -1,10 +1,9 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { ArrowRight, Dumbbell, Flame } from 'lucide-react-native';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, ImageSourcePropType, Pressable, Text, View } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { GenericCard } from './GenericCard';
 
 type ChatWorkoutCardProps = {
@@ -26,6 +25,7 @@ export function ChatWorkoutCard({
   image,
   onStartWorkout,
 }: ChatWorkoutCardProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   return (
     <GenericCard variant="card" size="sm">

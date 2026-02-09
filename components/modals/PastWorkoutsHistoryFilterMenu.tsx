@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { BottomPopUp } from '../BottomPopUp';
 import { FilterTabs } from '../FilterTabs';
 import { Button } from '../theme/Button';
@@ -39,6 +39,7 @@ export function PastWorkoutsHistoryFilterMenu({
   onClearFilters,
   initialFilters,
 }: PastWorkoutsHistoryFilterMenuProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
 
   const [selectedWorkoutType, setSelectedWorkoutType] = useState<WorkoutType>(

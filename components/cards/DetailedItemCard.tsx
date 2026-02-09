@@ -3,7 +3,7 @@ import { ChevronRight, LucideIcon } from 'lucide-react-native';
 import { ReactNode } from 'react';
 import { Image, ImageSourcePropType, Text, View } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { GenericCard } from './GenericCard';
 
 type DetailedItemCardProps = {
@@ -20,6 +20,7 @@ type DetailedItemCardProps = {
 };
 
 export function DetailedItemCard({ item, onPress, ctaLabel, description }: DetailedItemCardProps) {
+  const theme = useTheme();
   return (
     <GenericCard variant="highlighted" isPressable={true} onPress={onPress} size="sm">
       <View className="flex-row items-center gap-4 p-4">

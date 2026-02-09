@@ -3,7 +3,7 @@ import { ComponentType, ReactNode, useEffect } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 
 type AccordionProps = {
   title: string;
@@ -29,17 +29,19 @@ export function Accordion({
   headerContent,
   className = '',
   animationDuration = 300,
-  maxHeight = theme.size['250'] * 10, // Default max height
+  maxHeight,
 }: AccordionProps) {
+  const theme = useTheme();
+  const maxHeightFinal = maxHeight || theme.size['250'] * 10;
   const rotation = useSharedValue(isOpen ? 180 : 0);
   const opacity = useSharedValue(isOpen ? 1 : 0);
-  const height = useSharedValue(isOpen ? maxHeight : 0);
+  const height = useSharedValue(isOpen ? maxHeightFinal : 0);
 
   useEffect(() => {
     rotation.value = withTiming(isOpen ? 180 : 0, { duration: 200 });
     opacity.value = withTiming(isOpen ? 1 : 0, { duration: 250 });
-    height.value = withTiming(isOpen ? maxHeight : 0, { duration: animationDuration });
-  }, [isOpen, rotation, opacity, height, maxHeight, animationDuration]);
+    height.value = withTiming(isOpen ? maxHeightFinal : 0, { duration: animationDuration });
+  }, [isOpen, rotation, opacity, height, maxHeightFinal, animationDuration]);
 
   const animatedChevronStyle = useAnimatedStyle(() => ({
     transform: [{ rotate: `${rotation.value}deg` }],

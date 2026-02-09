@@ -1,9 +1,8 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal, Platform, Pressable, Text, View } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { Button } from '../theme/Button';
 
 export type ConfirmationModalVariant = 'destructive' | 'primary' | 'default';
@@ -31,6 +30,7 @@ export function ConfirmationModal({
   variant = 'default',
   maxWidth,
 }: ConfirmationModalProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const defaultCancelLabel = cancelLabel || t('common.cancel');
   // Default maxWidth is 30% larger than 320px (416px)

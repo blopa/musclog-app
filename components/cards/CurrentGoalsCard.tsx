@@ -1,9 +1,8 @@
 import { Activity, Calculator, Calendar, Percent, Scale } from 'lucide-react-native';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { EatingPhaseBadge } from '../EatingPhaseBadge';
 import { GenericCard } from './GenericCard';
 
@@ -27,6 +26,7 @@ interface CurrentGoalsCardProps {
 }
 
 export function CurrentGoalsCard({ goal }: CurrentGoalsCardProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
 
   return (

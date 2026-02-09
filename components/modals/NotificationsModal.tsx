@@ -2,7 +2,7 @@ import { CheckCircle2, Clock, Dumbbell, Sparkles, ThumbsUp } from 'lucide-react-
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { NotificationCard } from '../cards/NotificationCard';
 import { FullScreenModal } from './FullScreenModal';
 
@@ -13,6 +13,7 @@ type NotificationsModalProps = {
 };
 
 export function NotificationsModal({ visible, onClose, onClearAll }: NotificationsModalProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
 
   const NOTIFICATIONS_DATA = [

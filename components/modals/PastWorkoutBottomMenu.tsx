@@ -1,7 +1,7 @@
 import { Pencil, Share2, Trash2 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
 
 type PastWorkoutBottomMenuProps = {
@@ -21,6 +21,7 @@ export function PastWorkoutBottomMenu({
   onShare,
   onDelete,
 }: PastWorkoutBottomMenuProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
 
   const menuItems: BottomPopUpMenuItem[] = [

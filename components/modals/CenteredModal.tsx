@@ -3,7 +3,7 @@ import { X } from 'lucide-react-native';
 import { ReactNode } from 'react';
 import { Modal, Platform, Pressable, Text, View } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 
 type CenteredModalProps = {
   visible: boolean;
@@ -22,8 +22,9 @@ export function CenteredModal({
   subtitle,
   children,
   footer,
-  maxWidth = theme.size['384'], // max-w-sm equivalent
+  maxWidth,
 }: CenteredModalProps) {
+  const theme = useTheme();
   // Web-specific styles for proper viewport positioning
   const webBackdropStyle =
     Platform.OS === 'web'
@@ -60,7 +61,7 @@ export function CenteredModal({
           className="w-full overflow-hidden rounded-xl border border-border-dark"
           style={{
             backgroundColor: theme.colors.background.cardElevated,
-            maxWidth,
+            maxWidth: maxWidth || theme.size['384'],
           }}
           onPress={(e) => e.stopPropagation()}
         >

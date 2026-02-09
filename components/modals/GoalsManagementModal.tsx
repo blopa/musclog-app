@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
-import { NutritionGoalService } from '../../database/services/NutritionGoalService';
-import { theme } from '../../theme';
+import { NutritionGoalService } from '../../database/services';
+import { useTheme } from '../../hooks/useTheme';
 import { CurrentGoalsCard } from '../cards/CurrentGoalsCard';
 import { GoalHistoryCard } from '../cards/GoalHistoryCard';
 import { Button } from '../theme/Button';
@@ -59,6 +59,7 @@ type GoalsManagementModalProps = {
 };
 
 export default function GoalsManagementModal({ visible, onClose }: GoalsManagementModalProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const [nutritionGoalsModalVisible, setNutritionGoalsModalVisible] = useState(false);
   const [currentGoal, setCurrentGoal] = useState<CurrentGoal | null>(null);

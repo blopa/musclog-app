@@ -3,12 +3,11 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 
+import { useTheme } from '../../hooks/useTheme';
 import { useWorkoutForm } from '../../hooks/useWorkoutForm';
-import { theme } from '../../theme';
 import { WEEKDAY_LABELS } from '../../utils/workout';
 import { Button } from '../theme/Button';
 import { OptionsMultiSelector } from '../theme/OptionsMultiSelector/OptionsMultiSelector';
-import type { SelectorOption } from '../theme/OptionsMultiSelector/utils';
 import { SegmentedControl } from '../theme/SegmentedControl';
 import { WeekdayPicker } from '../theme/WeekdayPicker';
 import { AddExerciseModal } from './AddExerciseModal';
@@ -25,6 +24,7 @@ export default function CreateWorkoutModal({
   onClose,
   templateId,
 }: CreateWorkoutModalProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
 
   const [addExerciseVisible, setAddExerciseVisible] = useState(false);

@@ -1,9 +1,8 @@
 import { LucideIcon, RefreshCw } from 'lucide-react-native';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 
 type ErrorStateCardProps = {
   icon: LucideIcon;
@@ -20,6 +19,7 @@ export function ErrorStateCard({
   buttonLabel,
   onButtonPress,
 }: ErrorStateCardProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const defaultButtonLabel = buttonLabel || t('common.tryAgain');
   return (

@@ -1,7 +1,7 @@
 import { LucideIcon } from 'lucide-react-native';
 import { Pressable, Text, View } from 'react-native';
 
-import { theme } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 
 type WorkoutActionButtonProps = {
   icon: LucideIcon;
@@ -10,6 +10,7 @@ type WorkoutActionButtonProps = {
 };
 
 export function WorkoutActionButton({ icon: Icon, label, onPress }: WorkoutActionButtonProps) {
+  const theme = useTheme();
   return (
     <Pressable className="flex-1 items-center gap-2" onPress={onPress}>
       <View className="h-20 w-20 items-center justify-center rounded-full border border-border-accent bg-bg-overlay/80">

@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import { Text, TextInput as RNTextInput, View } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 
 type TestInputProps = {
   label: ReactNode;
@@ -30,6 +30,7 @@ export function TextInput({
   onBlur,
   required = false,
 }: TestInputProps) {
+  const theme = useTheme();
   return (
     <View className="flex-col gap-2">
       <View className="ml-1 flex-row items-center">

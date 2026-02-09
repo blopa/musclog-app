@@ -1,8 +1,7 @@
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, ImageSourcePropType, Text, View } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { Button } from '../theme/Button';
 import { GenericCard } from './GenericCard';
 
@@ -12,19 +11,26 @@ type MacroProps = {
   color: string;
 };
 
-const Macro = ({ label, value, color }: MacroProps) => (
-  <View className="flex-col gap-y-0.5">
-    <Text className="font-bold uppercase" style={{ color, fontSize: theme.typography.fontSize.xs }}>
-      {label}
-    </Text>
-    <Text
-      className="font-bold"
-      style={{ color: theme.colors.text.gray300, fontSize: theme.typography.fontSize.sm }}
-    >
-      {value}
-    </Text>
-  </View>
-);
+const Macro = ({ label, value, color }: MacroProps) => {
+  const theme = useTheme();
+
+  return (
+    <View className="flex-col gap-y-0.5">
+      <Text
+        className="font-bold uppercase"
+        style={{ color, fontSize: theme.typography.fontSize.xs }}
+      >
+        {label}
+      </Text>
+      <Text
+        className="font-bold"
+        style={{ color: theme.colors.text.gray300, fontSize: theme.typography.fontSize.sm }}
+      >
+        {value}
+      </Text>
+    </View>
+  );
+};
 
 type MealItemCardProps = {
   title: string;
@@ -48,6 +54,7 @@ export function MealItemCard({
   image,
   onTrackPress,
 }: MealItemCardProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
 
   return (

@@ -2,7 +2,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { ReactNode } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 
 type Option = {
   label: string;
@@ -25,6 +25,7 @@ export function SegmentedControl({
   onValueChange,
   variant = 'outline',
 }: TestSegmentedControlProps) {
+  const theme = useTheme();
   const containerBase = 'flex-row rounded-lg p-1';
 
   const containerClass =

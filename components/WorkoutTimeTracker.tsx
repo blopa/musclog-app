@@ -1,10 +1,9 @@
 import { X } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
 import { useSessionTotalTime } from '../hooks/useSessionTotalTime';
-import { theme } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 import { MenuButton } from './theme/MenuButton';
 
 type WorkoutTimeTrackerProps = {
@@ -20,6 +19,7 @@ export function WorkoutTimeTracker({
   startTime,
   initialTime = { hours: 0, minutes: 0, seconds: 0 },
 }: WorkoutTimeTrackerProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const time = useSessionTotalTime({ startTime, initialTime });
 

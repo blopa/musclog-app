@@ -21,7 +21,7 @@ import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import FoodPortion from '../../database/models/FoodPortion';
 import { FoodPortionService } from '../../database/services';
 import { useFoodPortions } from '../../hooks/useFoodPortions';
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { Button } from '../theme/Button';
 import { OptionsMultiSelector } from '../theme/OptionsMultiSelector/OptionsMultiSelector';
 import type { SelectorOption } from '../theme/OptionsMultiSelector/utils';
@@ -67,6 +67,7 @@ export function PortionSizesPickerModal({
   onConfirm,
   selectedIds = [],
 }: PortionSizesPickerModalProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [localSelectedIds, setLocalSelectedIds] = useState<string[]>(selectedIds);

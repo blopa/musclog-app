@@ -1,9 +1,8 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { ArrowRight, ChevronRight, LucideIcon } from 'lucide-react-native';
-import React from 'react';
 import { Pressable, Text, View } from 'react-native';
 
-import { theme } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 
 type TrackingMethodButtonProps = {
   icon: LucideIcon;
@@ -26,6 +25,7 @@ export function TrackingMethodButton({
   highlighted = false,
   onPress,
 }: TrackingMethodButtonProps) {
+  const theme = useTheme();
   const IconContainer = iconGradient ? (
     <LinearGradient
       colors={iconGradient as readonly [string, string, ...string[]]}

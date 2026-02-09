@@ -1,10 +1,9 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { AlertTriangle, ChevronRight, Edit, Search } from 'lucide-react-native';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { BottomPopUpMenu } from '../BottomPopUpMenu';
 
 type FoodNotFoundModalProps = {
@@ -22,6 +21,7 @@ export function FoodNotFoundModal({
   onSearchAgain,
   onCreateCustom,
 }: FoodNotFoundModalProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
 
   return (

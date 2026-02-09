@@ -4,7 +4,7 @@ import { ReactNode } from 'react';
 import { Modal, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { BottomButtonWrapper } from '../BottomButtonWrapper';
 
 type FullScreenModalProps = {
@@ -32,6 +32,7 @@ export function FullScreenModal({
   withGradient = false,
   showHeader = true,
 }: FullScreenModalProps) {
+  const theme = useTheme();
   const insets = useSafeAreaInsets();
   // Web-specific styles for proper viewport positioning
   const webModalStyle =

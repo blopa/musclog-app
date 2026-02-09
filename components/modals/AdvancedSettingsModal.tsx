@@ -1,10 +1,9 @@
 import { Bug, ChevronRight, Download, Trash2, Upload } from 'lucide-react-native';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
+import { useTheme } from '../../hooks/useTheme';
 import packageJson from '../../package.json';
-import { theme } from '../../theme';
 import { SettingsCard } from '../cards/SettingsCard';
 import { ToggleInput } from '../theme/ToggleInput';
 import { FullScreenModal } from './FullScreenModal';
@@ -31,6 +30,7 @@ export function AdvancedSettingsModal({
   onAnonymousBugReportChange,
   onAccountDeletionPress,
 }: AdvancedSettingsModalProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const bugReportItems = [
     {

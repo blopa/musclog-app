@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { theme } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 
 type BottomPopUpProps = {
   visible: boolean;
@@ -36,6 +36,7 @@ export function BottomPopUp({
   maxHeight,
   headerIcon,
 }: BottomPopUpProps) {
+  const theme = useTheme();
   const insets = useSafeAreaInsets();
   const slideAnim = useRef(new Animated.Value(theme.size['300'])).current; // Start off-screen
 
@@ -56,7 +57,7 @@ export function BottomPopUp({
         useNativeDriver: true,
       }).start();
     }
-  }, [visible, slideAnim]);
+  }, [visible, slideAnim, theme.size]);
 
   // Web-specific styles for proper viewport positioning
   const webBackdropStyle =

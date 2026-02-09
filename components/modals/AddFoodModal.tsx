@@ -8,11 +8,10 @@ import {
   Sparkles,
   UtensilsCrossed,
 } from 'lucide-react-native';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { BottomPopUpMenu } from '../BottomPopUpMenu';
 import { MealTypeButton } from '../MealTypeButton';
 import { Button } from '../theme/Button';
@@ -39,6 +38,7 @@ export function AddFoodModal({
   onCreateCustomFoodPress,
   onTrackCustomMealPress,
 }: AddFoodModalProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
 
   const mealTypes = [

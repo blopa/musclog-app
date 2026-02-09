@@ -1,10 +1,9 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { ChevronRight, Heart, Moon, Settings, Sun } from 'lucide-react-native';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { SettingsCard } from '../cards/SettingsCard';
 import { SegmentedControl } from '../theme/SegmentedControl';
 import { ToggleInput } from '../theme/ToggleInput';
@@ -44,6 +43,7 @@ export function BasicSettingsModal({
   writeHealthData = false,
   onWriteHealthDataChange,
 }: BasicSettingsModalProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const themeOptions = [
     {

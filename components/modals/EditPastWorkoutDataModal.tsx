@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { GenericCard } from '../cards/GenericCard';
 import DashedButton from '../theme/DashedButton';
 import NewNumericalInput from '../theme/NewNumericalInput';
@@ -35,6 +35,7 @@ function SetCard({
   drag?: () => void;
   isActive?: boolean;
 }) {
+  const theme = useTheme();
   const accentStyle = item.isPR
     ? { borderLeftColor: theme.colors.accent.primary, borderLeftWidth: theme.borderWidth.thick6 }
     : { borderLeftColor: theme.colors.border.gray600, borderLeftWidth: theme.borderWidth.thin };
@@ -156,6 +157,7 @@ export default function EditPastWorkoutDataModal({
   onSave,
   initialSets,
 }: EditPastWorkoutDataModalProps) {
+  const theme = useTheme();
   const [sets, setSets] = useState<SetItem[]>(initialSets ?? []);
   const [isSaving, setIsSaving] = useState(false);
   const { t } = useTranslation();

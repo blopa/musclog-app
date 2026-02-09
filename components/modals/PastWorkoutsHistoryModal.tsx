@@ -3,8 +3,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
+import { useTheme } from '../../hooks/useTheme';
 import { useWorkoutHistory } from '../../hooks/useWorkoutHistory';
-import { theme } from '../../theme';
 import { type WorkoutHistoryItem, WorkoutHistorySection } from '../../utils/workoutHistory';
 import { GenericCard } from '../cards/GenericCard';
 import { Button } from '../theme/Button';
@@ -31,6 +31,7 @@ function SearchAndFilterHeader({
   onSearchChange,
   onFilterPress,
 }: SearchAndFilterHeaderProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
 
   return (
@@ -69,6 +70,7 @@ function SearchAndFilterHeader({
 
 // Loading Skeleton Component
 function WorkoutHistorySkeleton() {
+  const theme = useTheme();
   return (
     <View className="flex-1 gap-6 p-4">
       <View>
@@ -144,6 +146,7 @@ type EmptyStateProps = {
 };
 
 function EmptyState({ hasSearchQuery }: EmptyStateProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
 
   return (
@@ -174,6 +177,7 @@ type WorkoutCardPropsWithHandler = WorkoutCardProps & {
 };
 
 function WorkoutCard({ workout, opacity, onPress }: WorkoutCardPropsWithHandler) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const Icon = workout.icon;
 
@@ -288,6 +292,7 @@ type WorkoutMonthSectionProps = {
 };
 
 function WorkoutMonthSection({ section, isLastMonth, onWorkoutPress }: WorkoutMonthSectionProps) {
+  const theme = useTheme();
   return (
     <View>
       <Text
@@ -322,6 +327,7 @@ type LoadMoreButtonProps = {
 };
 
 function LoadMoreButton({ isLoadingMore, onPress }: LoadMoreButtonProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
 
   return (
@@ -342,6 +348,7 @@ function LoadMoreButton({ isLoadingMore, onPress }: LoadMoreButtonProps) {
 }
 
 export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHistoryModalProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const [isFilterMenuVisible, setIsFilterMenuVisible] = useState(false);
   const [selectedWorkoutId, setSelectedWorkoutId] = useState<string | null>(null);

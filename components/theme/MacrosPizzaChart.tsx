@@ -1,15 +1,16 @@
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 import { Pie, PolarChart } from 'victory-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
+import { Theme } from '../../theme';
 
 type MacroColor =
-  | typeof theme.colors.macros.protein.bg
-  | typeof theme.colors.macros.carbs.bg
-  | typeof theme.colors.macros.fat.bg
-  | typeof theme.colors.macros.fiber.bg;
+  | Theme['colors']['macros']['protein']['bg']
+  | Theme['colors']['macros']['carbs']['bg']
+  | Theme['colors']['macros']['fat']['bg']
+  | Theme['colors']['macros']['fiber']['bg'];
+
 type MacroDatum = { value: number; color: MacroColor; label: string };
 
 type MacrosPizzaChartProps = {
@@ -26,10 +27,12 @@ export function MacrosPizzaChart({
   carbs,
   fats,
   fiber = 0,
-  size = theme.size['48'],
+  size,
   showInsight = true,
 }: MacrosPizzaChartProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
+  const sizeFinal = size || theme.size['48'];
 
   const data: MacroDatum[] = [
     { value: protein, color: theme.colors.macros.protein.bg as MacroColor, label: 'protein' },
@@ -46,15 +49,18 @@ export function MacrosPizzaChart({
   }
 
   return (
-    <View className="relative items-center justify-center" style={{ width: size, height: size }}>
-      <View style={{ width: size, height: size }}>
+    <View
+      className="relative items-center justify-center"
+      style={{ width: sizeFinal, height: sizeFinal }}
+    >
+      <View style={{ width: sizeFinal, height: sizeFinal }}>
         <PolarChart<MacroDatum, 'label', 'value', 'color'>
           data={data}
           colorKey="color"
           valueKey="value"
           labelKey="label"
         >
-          <Pie.Chart innerRadius={size * 0.38} />
+          <Pie.Chart innerRadius={sizeFinal * 0.38} />
         </PolarChart>
       </View>
 

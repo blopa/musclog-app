@@ -3,7 +3,7 @@ import { ElementType, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, TextInput, View } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { Button } from '../theme/Button';
 import { MenuButton } from '../theme/MenuButton';
 import { AddFoodItemToMealModal } from './AddFoodItemToMealModal';
@@ -57,60 +57,63 @@ const MacroCard = ({
   value: string;
   progress: number;
   color: string;
-}) => (
-  <View
-    style={{
-      flex: 1,
-      backgroundColor: theme.colors.overlay.backdrop,
-      borderRadius: theme.borderRadius.md,
-      padding: theme.spacing.padding['2half'],
-      borderWidth: theme.borderWidth.thin,
-      borderColor: theme.colors.border.light,
-      alignItems: 'center',
-    }}
-  >
-    <Text
-      style={{
-        fontSize: theme.typography.fontSize.xs,
-        fontWeight: theme.typography.fontWeight.bold,
-        color: theme.colors.text.secondary,
-        textTransform: 'uppercase',
-        letterSpacing: theme.typography.letterSpacing.wider,
-        marginBottom: theme.spacing.padding.xsHalf,
-      }}
-    >
-      {label}
-    </Text>
-    <Text
-      style={{
-        fontSize: theme.typography.fontSize.sm,
-        fontWeight: theme.typography.fontWeight.bold,
-        color: theme.colors.text.primary,
-      }}
-    >
-      {value}
-    </Text>
+}) => {
+  const theme = useTheme();
+  return (
     <View
       style={{
-        width: '100%',
-        height: theme.size.xs,
-        backgroundColor: theme.colors.background.white10,
-        borderRadius: theme.borderRadius.xs / 2,
-        marginTop: theme.spacing.padding.sm,
-        overflow: 'hidden',
+        flex: 1,
+        backgroundColor: theme.colors.overlay.backdrop,
+        borderRadius: theme.borderRadius.md,
+        padding: theme.spacing.padding['2half'],
+        borderWidth: theme.borderWidth.thin,
+        borderColor: theme.colors.border.light,
+        alignItems: 'center',
       }}
     >
+      <Text
+        style={{
+          fontSize: theme.typography.fontSize.xs,
+          fontWeight: theme.typography.fontWeight.bold,
+          color: theme.colors.text.secondary,
+          textTransform: 'uppercase',
+          letterSpacing: theme.typography.letterSpacing.wider,
+          marginBottom: theme.spacing.padding.xsHalf,
+        }}
+      >
+        {label}
+      </Text>
+      <Text
+        style={{
+          fontSize: theme.typography.fontSize.sm,
+          fontWeight: theme.typography.fontWeight.bold,
+          color: theme.colors.text.primary,
+        }}
+      >
+        {value}
+      </Text>
       <View
         style={{
-          height: '100%',
-          width: `${progress}%`,
-          backgroundColor: color,
+          width: '100%',
+          height: theme.size.xs,
+          backgroundColor: theme.colors.background.white10,
           borderRadius: theme.borderRadius.xs / 2,
+          marginTop: theme.spacing.padding.sm,
+          overflow: 'hidden',
         }}
-      />
+      >
+        <View
+          style={{
+            height: '100%',
+            width: `${progress}%`,
+            backgroundColor: color,
+            borderRadius: theme.borderRadius.xs / 2,
+          }}
+        />
+      </View>
     </View>
-  </View>
-);
+  );
+};
 
 // Local component for Meal Macros Summary
 const MealMacrosSummary = ({
@@ -118,6 +121,7 @@ const MealMacrosSummary = ({
 }: {
   macros: { protein: number; carbs: number; fat: number };
 }) => {
+  const theme = useTheme();
   const { t } = useTranslation();
   return (
     <View
@@ -237,6 +241,7 @@ const MealMacrosSummary = ({
 };
 
 export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const [mealName, setMealName] = useState('');
   const [isFocused, setIsFocused] = useState(false);

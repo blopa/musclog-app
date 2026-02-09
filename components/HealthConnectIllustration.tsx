@@ -2,12 +2,13 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Apple, Dumbbell, Heart, Scale, Shield } from 'lucide-react-native';
 import { Dimensions, View } from 'react-native';
 
-import { theme } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const ILLUSTRATION_SIZE = SCREEN_WIDTH * 0.4; // 40% of screen width
 
 export function HealthConnectIllustration() {
+  const theme = useTheme();
   return (
     <View
       className="relative mb-8 mt-4 w-full items-center justify-center"

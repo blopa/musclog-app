@@ -2,7 +2,7 @@ import { BookmarkPlus, Minus, Plus } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, TextInput, View } from 'react-native';
 
-import { theme } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 
 type ServingSizeSelectorProps = {
   value: number;
@@ -11,6 +11,7 @@ type ServingSizeSelectorProps = {
 };
 
 export function ServingSizeSelector({ value, onChange, quickSizes }: ServingSizeSelectorProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
 
   const defaultQuickSizes = [

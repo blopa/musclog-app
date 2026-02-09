@@ -1,9 +1,8 @@
 import { MaterialIcons } from '@expo/vector-icons';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { GenericCard } from './GenericCard';
 
 type SelectedExerciseCardProps = {
@@ -23,6 +22,7 @@ export function SelectedExerciseCard({
   exerciseType,
   onChange,
 }: SelectedExerciseCardProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const detailsText = [exerciseCategory, exerciseType].filter(Boolean).join(' • ');
 

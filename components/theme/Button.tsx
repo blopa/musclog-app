@@ -3,7 +3,8 @@ import { LucideIcon } from 'lucide-react-native';
 import { isValidElement, ReactNode, useState } from 'react';
 import { ActivityIndicator, Pressable, Text, View, ViewStyle } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
+import { Theme } from '../../theme';
 
 type ThemeButtonSize = 'sm' | 'md' | 'lg';
 
@@ -34,34 +35,36 @@ type ThemeButtonProps = {
   style?: ViewStyle;
 };
 
-const sizeConfig = {
-  sm: {
-    paddingVertical: theme.spacing.padding.md,
-    borderRadius: theme.borderRadius.lg,
-    fontSize: theme.typography.fontSize.sm,
-    fontWeight: theme.typography.fontWeight.bold,
-    iconSize: theme.iconSize.sm,
-    gap: theme.spacing.gap.sm,
-    shadow: theme.shadows.md,
-  },
-  md: {
-    paddingVertical: theme.spacing.padding.lg,
-    borderRadius: theme.borderRadius.xl,
-    fontSize: theme.typography.fontSize.base,
-    fontWeight: theme.typography.fontWeight.bold,
-    iconSize: theme.iconSize.md,
-    gap: theme.spacing.gap.md,
-    shadow: theme.shadows.accentGlow,
-  },
-  lg: {
-    paddingVertical: theme.spacing.padding.xl,
-    borderRadius: theme.borderRadius['2xl'],
-    fontSize: theme.typography.fontSize.xl,
-    fontWeight: theme.typography.fontWeight.bold,
-    iconSize: theme.iconSize.lg,
-    gap: theme.spacing.gap.md,
-    shadow: theme.shadows.accentGlowLarge,
-  },
+const getSizeConfig = (theme: Theme) => {
+  return {
+    sm: {
+      paddingVertical: theme.spacing.padding.md,
+      borderRadius: theme.borderRadius.lg,
+      fontSize: theme.typography.fontSize.sm,
+      fontWeight: theme.typography.fontWeight.bold,
+      iconSize: theme.iconSize.sm,
+      gap: theme.spacing.gap.sm,
+      shadow: theme.shadows.md,
+    },
+    md: {
+      paddingVertical: theme.spacing.padding.lg,
+      borderRadius: theme.borderRadius.xl,
+      fontSize: theme.typography.fontSize.base,
+      fontWeight: theme.typography.fontWeight.bold,
+      iconSize: theme.iconSize.md,
+      gap: theme.spacing.gap.md,
+      shadow: theme.shadows.accentGlow,
+    },
+    lg: {
+      paddingVertical: theme.spacing.padding.xl,
+      borderRadius: theme.borderRadius['2xl'],
+      fontSize: theme.typography.fontSize.xl,
+      fontWeight: theme.typography.fontWeight.bold,
+      iconSize: theme.iconSize.lg,
+      gap: theme.spacing.gap.md,
+      shadow: theme.shadows.accentGlowLarge,
+    },
+  };
 };
 
 const widthClasses = {
@@ -85,6 +88,8 @@ export function Button({
   loading = false,
   style,
 }: ThemeButtonProps) {
+  const theme = useTheme();
+  const sizeConfig = getSizeConfig(theme);
   const config = sizeConfig[size];
   const widthClass = widthClasses[width];
   const [isPressed, setIsPressed] = useState(false);

@@ -2,7 +2,7 @@ import { SkipForward } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
-import { theme } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 import { Button } from './theme/Button';
 
 type RestTimerControlsProps = {
@@ -12,6 +12,7 @@ type RestTimerControlsProps = {
 };
 
 export function RestTimerControls({ onMinus5s, onSkipRest, onPlus5s }: RestTimerControlsProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
 
   return (

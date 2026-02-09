@@ -2,7 +2,7 @@ import { ChevronRight } from 'lucide-react-native';
 import { ComponentType, ReactNode } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
-import { theme } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 import { BottomPopUp } from './BottomPopUp';
 
 export type BottomPopUpMenuItem = {
@@ -41,6 +41,7 @@ function OptionItem({
   descriptionColor,
   onPress,
 }: OptionItemProps) {
+  const theme = useTheme();
   return (
     <Pressable className="flex-row items-center gap-4 py-3 active:opacity-70" onPress={onPress}>
       <View

@@ -21,8 +21,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal, Pressable, ScrollView, Text, View } from 'react-native';
 
+import { useTheme } from '../../hooks/useTheme';
 import i18n, { LanguageKeys, LOCALE_MAP } from '../../lang/lang';
-import { theme } from '../../theme';
 import { Button } from '../theme/Button';
 import { FullScreenModal } from './FullScreenModal';
 
@@ -43,6 +43,7 @@ export function DatePickerModal({
   minYear,
   maxYear,
 }: DatePickerModalProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const [currentMonth, setCurrentMonth] = useState(selectedDate);
   const [tempSelectedDate, setTempSelectedDate] = useState(selectedDate);

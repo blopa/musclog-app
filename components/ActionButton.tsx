@@ -1,7 +1,7 @@
 import { Dumbbell, UtensilsCrossed } from 'lucide-react-native';
 import { Pressable, Text, View } from 'react-native';
 
-import { theme } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 
 type ActionButtonVariant = 'workout' | 'food';
 
@@ -11,26 +11,28 @@ type ActionButtonProps = {
   onPress?: () => void;
 };
 
-const variantConfig = {
-  workout: {
-    bgColor: 'bg-accent-primary',
-    iconBgColor: theme.colors.background.workoutIcon,
-    icon: Dumbbell,
-    iconColor: theme.colors.background.primary,
-    textColor: 'text-bg-primary',
-    backgroundIconColor: theme.colors.background.primary,
-  },
-  food: {
-    bgColor: 'bg-bg-overlay',
-    iconBgColor: theme.colors.background.iconDarker,
-    icon: UtensilsCrossed,
-    iconColor: theme.colors.text.primary,
-    textColor: 'text-text-primary',
-    backgroundIconColor: theme.colors.text.muted,
-  },
-};
-
 export function ActionButton({ variant, label, onPress }: ActionButtonProps) {
+  const theme = useTheme();
+
+  const variantConfig = {
+    workout: {
+      bgColor: 'bg-accent-primary',
+      iconBgColor: theme.colors.background.workoutIcon,
+      icon: Dumbbell,
+      iconColor: theme.colors.background.primary,
+      textColor: 'text-bg-primary',
+      backgroundIconColor: theme.colors.background.primary,
+    },
+    food: {
+      bgColor: 'bg-bg-overlay',
+      iconBgColor: theme.colors.background.iconDarker,
+      icon: UtensilsCrossed,
+      iconColor: theme.colors.text.primary,
+      textColor: 'text-text-primary',
+      backgroundIconColor: theme.colors.text.muted,
+    },
+  };
+
   const config = variantConfig[variant];
   const Icon = config.icon;
 

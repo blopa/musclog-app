@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Animated, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { theme } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 import { WorkoutSummaryStatsCard } from './cards/WorkoutSummaryStatsCard';
 import { Button } from './theme/Button';
 import { WorkoutSummaryHeader } from './WorkoutSummaryHeader';
@@ -26,6 +26,7 @@ export function WorkoutSummaryCelebration({
   volume = '12,450 kg',
   personalRecords = 2,
 }: WorkoutSummaryCelebrationProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const glowAnim1 = useRef(new Animated.Value(0.6)).current;

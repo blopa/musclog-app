@@ -17,7 +17,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { theme } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 import { getHeightUnit, getWeightUnit } from '../utils/units';
 import { BottomPopUpMenu } from './BottomPopUpMenu';
 import { MaybeLaterButton } from './MaybeLaterButton';
@@ -57,6 +57,7 @@ export function EditFitnessDetailsBody({
   hideSaveButton = false,
   hideMaybeLaterButton = false,
 }: EditFitnessDetailsBodyProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const [units, setUnits] = useState<'imperial' | 'metric'>(initialData?.units ?? 'metric');
   const [weight, setWeight] = useState(initialData?.weight ?? '0.0');

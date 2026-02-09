@@ -1,8 +1,7 @@
 import { Copy, Pencil, Share2, Trash2 } from 'lucide-react-native';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { theme } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 import { BottomPopUpMenu, BottomPopUpMenuItem } from './BottomPopUpMenu';
 
 type WorkoutDetailsMenuProps = {
@@ -24,6 +23,7 @@ export function WorkoutDetailsMenu({
   onShare,
   onDelete,
 }: WorkoutDetailsMenuProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
 
   const items: BottomPopUpMenuItem[] = [

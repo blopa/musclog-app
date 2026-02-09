@@ -1,4 +1,3 @@
-import React from 'react';
 import { Pressable, PressableProps, Text } from 'react-native';
 
 type ShowMoreButtonProps = {

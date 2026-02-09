@@ -1,10 +1,9 @@
 import type { TFunction } from 'i18next';
 import { Dumbbell, Utensils } from 'lucide-react-native';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { theme } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 import { GenericCard } from './cards/GenericCard';
 import { Button } from './theme/Button';
 
@@ -37,6 +36,7 @@ const getConfig = (type: EmptyStateType, t: TFunction) => {
 };
 
 export function WorkoutFoodEmptyState({ type, onButtonPress }: WorkoutFoodEmptyStateProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const config = getConfig(type, t);
   const Icon = config.icon;

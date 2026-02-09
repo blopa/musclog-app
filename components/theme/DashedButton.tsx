@@ -1,7 +1,7 @@
 import { ReactNode, useState } from 'react';
 import { Pressable, Text, View, ViewStyle } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 
 type DashedButtonProps = {
   label: string;
@@ -18,6 +18,7 @@ export default function DashedButton({
   icon,
   style,
 }: DashedButtonProps) {
+  const theme = useTheme();
   const [isPressed, setIsPressed] = useState(false);
   const isLarge = size === 'lg';
 

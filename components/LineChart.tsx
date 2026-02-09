@@ -1,8 +1,7 @@
-import React from 'react';
 import { Text, View } from 'react-native';
 import { VictoryArea, VictoryAxis, VictoryChart, VictoryLine, VictoryScatter } from 'victory';
 
-import { theme } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 
 export type LineChartDataPoint = {
   x: number;
@@ -83,24 +82,26 @@ export function LineChart({
   height = 192,
   chartWidth = 400,
   chartHeight = 150,
-  lineColor = theme.colors.accent.primary,
-  areaColor = theme.colors.accent.primary30,
+  lineColor,
+  areaColor,
   lineWidth = 3,
   showLastPoint = true,
   lastPointSize = 10,
-  lastPointStrokeColor = theme.colors.background.card,
+  lastPointStrokeColor,
   lastPointStrokeWidth = 2,
   xDomain,
   yDomain,
   interpolation = 'monotoneX',
   showGridLines = true,
-  gridLineColor = theme.colors.border.light,
+  gridLineColor,
   gridTickValues,
   xAxisLabels,
   marginTop = 16,
   marginBottom = 16,
   className,
 }: LineChartProps) {
+  const theme = useTheme();
+
   if (data.length === 0) {
     return null;
   }
@@ -139,7 +140,7 @@ export function LineChart({
             style={{
               axis: { stroke: 'transparent' },
               grid: {
-                stroke: gridLineColor,
+                stroke: gridLineColor || theme.colors.border.light,
                 strokeDasharray: '4,4',
                 strokeWidth: 1,
               },
@@ -155,7 +156,7 @@ export function LineChart({
           interpolation={interpolation}
           style={{
             data: {
-              fill: areaColor,
+              fill: areaColor || theme.colors.accent.primary30,
             },
           }}
         />
@@ -165,7 +166,7 @@ export function LineChart({
           interpolation={interpolation}
           style={{
             data: {
-              stroke: lineColor,
+              stroke: lineColor || theme.colors.accent.primary,
               strokeWidth: lineWidth,
               strokeLinecap: 'round',
             },
@@ -178,8 +179,8 @@ export function LineChart({
             size={lastPointSize}
             style={{
               data: {
-                fill: lineColor,
-                stroke: lastPointStrokeColor,
+                fill: lineColor || theme.colors.accent.primary,
+                stroke: lastPointStrokeColor || theme.colors.background.card,
                 strokeWidth: lastPointStrokeWidth,
               },
             }}

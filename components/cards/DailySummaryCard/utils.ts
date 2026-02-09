@@ -1,6 +1,6 @@
 import { TFunction } from 'i18next';
 
-import { theme } from '../../../theme';
+import type { Theme } from '../../../theme';
 
 export type MacroValue = {
   value: number;
@@ -47,7 +47,7 @@ export function getMacroGoalStatus(value: number | undefined, goal: number): Goa
 /**
  * Gets the progress bar color based on goal status
  */
-export function getProgressBarColor(status: GoalStatus): string {
+export function getProgressBarColor(status: GoalStatus, theme: Theme): string {
   switch (status) {
     case 'reached':
       return theme.colors.status.emeraldLight;

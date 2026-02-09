@@ -4,7 +4,7 @@ import { createElement, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, ImageSourcePropType, Modal, Platform, Pressable, Text, View } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { AvatarColor } from '../../types/AvatarColor';
 import { AvatarIcon } from '../../types/AvatarIcon';
 import { getAvatarDisplayProps } from '../../utils/avatarUtils';
@@ -31,6 +31,7 @@ type MenuItemProps = {
 };
 
 function MenuItem({ icon, label, onPress }: MenuItemProps) {
+  const theme = useTheme();
   return (
     <Pressable
       className="active:bg-bg-card-elevated flex-row items-center gap-4 rounded-2xl bg-bg-overlay p-4"
@@ -53,6 +54,7 @@ export function UserMenuModal({
   onProgressPress,
   onDebugMenuPress,
 }: UserMenuModalProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
 
   // Web-specific styles for proper viewport positioning

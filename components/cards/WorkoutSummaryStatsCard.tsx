@@ -1,9 +1,8 @@
 import { Dumbbell, Timer, TrendingUp } from 'lucide-react-native';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { WorkoutSummaryStatRow } from '../WorkoutSummaryStatRow';
 import { GenericCard } from './GenericCard';
 
@@ -18,6 +17,7 @@ export function WorkoutSummaryStatsCard({
   volume,
   personalRecords,
 }: WorkoutSummaryStatsCardProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   return (
     <GenericCard variant="workout">

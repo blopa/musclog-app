@@ -1,9 +1,8 @@
 import { Smile } from 'lucide-react-native';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { Slider } from '../theme/Slider';
 import { GenericCard } from './GenericCard';
 
@@ -15,6 +14,7 @@ type MoodSelectorCardProps = {
 const MOOD_EMOJIS = ['😫', '😔', '😐', '😊', '🤩'];
 
 export function MoodSelectorCard({ value, onChange }: MoodSelectorCardProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
 
   return (

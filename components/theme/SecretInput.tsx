@@ -2,7 +2,7 @@ import { Eye, EyeOff } from 'lucide-react-native';
 import { useState } from 'react';
 import { Pressable } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { TextInput } from './TextInput';
 
 type SecretInputProps = {
@@ -13,6 +13,7 @@ type SecretInputProps = {
 };
 
 export function SecretInput({ label = '', value, onChangeText, placeholder }: SecretInputProps) {
+  const theme = useTheme();
   const [visible, setVisible] = useState(false);
 
   return (

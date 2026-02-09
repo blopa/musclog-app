@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { MacrosPizzaChart } from '../theme/MacrosPizzaChart';
 import { GenericCard } from './GenericCard';
 
@@ -18,6 +18,7 @@ type FoodInfoCardProps = {
 };
 
 export function FoodInfoCard({ food }: FoodInfoCardProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const [macroViewIndex, setMacroViewIndex] = useState(0);
   const [scrollViewWidth, setScrollViewWidth] = useState(0);

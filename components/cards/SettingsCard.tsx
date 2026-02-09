@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import { Text, View } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { GenericCard } from './GenericCard';
 
 export function SettingsCard({
@@ -21,6 +21,7 @@ export function SettingsCard({
   titleColor?: string;
   iconContainerStyle?: object;
 }) {
+  const theme = useTheme();
   return (
     <View style={{ marginBottom: theme.spacing.padding.sm }}>
       <GenericCard variant="default" size="sm" isPressable={true} onPress={onPress}>

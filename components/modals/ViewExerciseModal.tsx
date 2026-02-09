@@ -2,9 +2,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { ChevronRight, Copy, Heart, Pencil, Share2, Trash2, Video, Zap } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image, Pressable, ScrollView, Text, View } from 'react-native';
+import { Image, ScrollView, Text, View } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { BottomPopUpMenu, BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { GenericCard } from '../cards/GenericCard';
 import { SettingsCard } from '../cards/SettingsCard';
@@ -25,21 +25,21 @@ const EXERCISE_DATA = {
       id: '1',
       name: 'Push Day Hypertrophy',
       subtitle: 'Last performed 2 days ago',
-      iconGradient: theme.colors.gradients.indigoPurple,
+      iconGradient: ['#4f46e5', '#4f46e5'] as const,
       icon: Zap,
     },
     {
       id: '2',
       name: 'Upper Body Blast',
       subtitle: 'Created on Oct 12, 2023',
-      iconGradient: theme.colors.gradients.emeraldTeal,
+      iconGradient: ['#4f46e5', '#4f46e5'] as const,
       icon: Zap,
     },
     {
       id: '3',
       name: 'Full Body Foundation',
       subtitle: 'Used in 12 sessions',
-      iconGradient: theme.colors.gradients.pinkRose,
+      iconGradient: ['#4f46e5', '#4f46e5'] as const,
       icon: Heart,
     },
   ],
@@ -51,6 +51,7 @@ type ViewExerciseModalProps = {
 };
 
 export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModalProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const [isMenuVisible, setIsMenuVisible] = useState(false);
 

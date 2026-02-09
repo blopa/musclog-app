@@ -2,7 +2,7 @@ import { ChevronDown, ChevronUp } from 'lucide-react-native';
 import { useRef } from 'react';
 import { Pressable, Text, TextInput as RNTextInput, TextInput, View } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 
 type TestNumericInputProps = {
   label: string;
@@ -20,11 +20,13 @@ export function NumericInput({
   value,
   onChangeText,
   unit,
-  unitColor = theme.colors.accent.primary,
+  unitColor,
   onIncrement,
   onDecrement,
   // variant = 'vertical',
 }: TestNumericInputProps) {
+  const theme = useTheme();
+  const unitColorFinal = unitColor || theme.colors.accent.primary;
   const inputRef = useRef<RNTextInput | null>(null);
 
   const handleFocus = () => {
@@ -64,7 +66,7 @@ export function NumericInput({
         onFocus={handleFocus}
         style={{ borderWidth: theme.borderWidth.none }}
       />
-      <Text className="text-xs font-medium" style={{ color: unitColor }}>
+      <Text className="text-xs font-medium" style={{ color: unitColorFinal }}>
         {unit}
       </Text>
       {onDecrement ? (

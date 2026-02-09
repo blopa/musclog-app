@@ -13,7 +13,7 @@ import { Image, ScrollView, Text, View } from 'react-native';
 
 import WorkoutLogSet from '../../database/models/WorkoutLogSet';
 import { useActiveWorkout } from '../../hooks/useActiveWorkout';
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { BottomPopUpMenu, BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { GenericCard } from '../cards/GenericCard';
 import { Button } from '../theme/Button';
@@ -40,6 +40,7 @@ function WorkoutInfo({
   exerciseCount: number;
   isLoading: boolean;
 }) {
+  const theme = useTheme();
   const { t } = useTranslation();
 
   if (isLoading) {
@@ -107,6 +108,7 @@ function ExerciseCard({
   totalSets: number;
   onPress?: () => void;
 }) {
+  const theme = useTheme();
   const isCompleted = status === 'completed';
   const isSkipped = status === 'skipped';
   const isInProgress = status === 'in-progress';
@@ -180,6 +182,7 @@ function ExerciseList({
   exercises: ExerciseUIData[];
   onSelectExercise?: (exerciseId: string) => void;
 }) {
+  const theme = useTheme();
   const { t } = useTranslation();
 
   return (
@@ -225,6 +228,7 @@ export default function WorkoutSessionOverviewModal({
   onCancelWorkout,
   onFinishWorkout,
 }: WorkoutSessionOverviewModalProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const [isMenuVisible, setIsMenuVisible] = useState(false);
 

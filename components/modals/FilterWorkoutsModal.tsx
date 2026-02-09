@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { OptionsSelector, SelectorOption } from '../OptionsSelector';
 import { Button } from '../theme/Button';
 import { Slider } from '../theme/Slider';
@@ -30,6 +30,7 @@ export function FilterWorkoutsModal({
   onApplyFilters,
   onClearFilters,
 }: FilterWorkoutsModalProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const [selectedWorkoutType, setSelectedWorkoutType] = useState<WorkoutType | undefined>(
     'strength'
@@ -64,7 +65,15 @@ export function FilterWorkoutsModal({
         iconColor: theme.colors.status.purple,
       },
     ],
-    [t]
+    [
+      t,
+      theme.colors.status.emerald,
+      theme.colors.status.emerald10,
+      theme.colors.status.indigo,
+      theme.colors.status.indigo10,
+      theme.colors.status.purple,
+      theme.colors.status.purple10,
+    ]
   );
 
   const targetMuscles: { id: TargetMuscle; label: string }[] = useMemo(

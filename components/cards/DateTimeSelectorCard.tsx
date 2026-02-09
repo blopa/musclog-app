@@ -1,9 +1,8 @@
 import { Calendar, Clock, LucideIcon } from 'lucide-react-native';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { GenericCard } from './GenericCard';
 
 type DateTimeSelectorCardProps = {
@@ -23,6 +22,7 @@ export function DateTimeSelectorCard({
   formattedValue,
   noCard = false,
 }: DateTimeSelectorCardProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const Icon: LucideIcon = type === 'date' ? Calendar : Clock;
   const iconBg = type === 'date' ? theme.colors.status.indigo10 : theme.colors.accent.primary10;

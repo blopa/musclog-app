@@ -1,4 +1,20 @@
-const { theme } = require('./theme');
+const { darkTheme } = require('./theme');
+
+/**
+ * Tailwind Configuration for NativeWind
+ *
+ * NOTE: NativeWind compiles styles at build time, so Tailwind classes cannot
+ * dynamically switch between themes. For dynamic theme support:
+ *
+ * 1. Use inline styles with the theme object from useThemeContext():
+ *    const { theme } = useThemeContext();
+ *    <View style={{ backgroundColor: theme.colors.background.primary }} />
+ *
+ * 2. Or use Tailwind classes for static elements:
+ *    <View className="bg-bg-primary" />
+ *
+ * This config uses dark theme colors for Tailwind classes as the default.
+ */
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -10,41 +26,41 @@ module.exports = {
       colors: {
         // Background colors
         bg: {
-          primary: theme.colors.background.primary,
-          secondary: theme.colors.background.secondary,
-          tertiary: theme.colors.background.tertiary,
-          card: theme.colors.background.card,
-          cardElevated: theme.colors.background.cardElevated,
-          cardDark: theme.colors.background.secondaryDark,
-          navBar: theme.colors.background.secondary,
-          navActive: theme.colors.background.secondaryDark,
-          screen: theme.colors.background.primary,
-          overlay: theme.colors.background.overlay,
-          filterTab: theme.colors.background.filterTab,
+          primary: darkTheme.colors.background.primary,
+          secondary: darkTheme.colors.background.secondary,
+          tertiary: darkTheme.colors.background.tertiary,
+          card: darkTheme.colors.background.card,
+          cardElevated: darkTheme.colors.background.cardElevated,
+          cardDark: darkTheme.colors.background.secondaryDark,
+          navBar: darkTheme.colors.background.secondary,
+          navActive: darkTheme.colors.background.secondaryDark,
+          screen: darkTheme.colors.background.primary,
+          overlay: darkTheme.colors.background.overlay,
+          filterTab: darkTheme.colors.background.filterTab,
         },
         // Text colors
         text: {
-          primary: theme.colors.text.primary,
-          secondary: theme.colors.text.secondary,
-          tertiary: theme.colors.text.tertiary,
-          muted: theme.colors.text.muted,
-          accent: theme.colors.text.accent,
-          accentLight: theme.colors.text.accentLight,
-          black: theme.colors.text.black,
+          primary: darkTheme.colors.text.primary,
+          secondary: darkTheme.colors.text.secondary,
+          tertiary: darkTheme.colors.text.tertiary,
+          muted: darkTheme.colors.text.muted,
+          accent: darkTheme.colors.text.accent,
+          accentLight: darkTheme.colors.text.accentLight,
+          black: darkTheme.colors.text.black,
         },
         // Accent colors
         accent: {
-          primary: theme.colors.accent.primary,
-          secondary: theme.colors.accent.secondary,
-          tertiary: theme.colors.accent.tertiary,
+          primary: darkTheme.colors.accent.primary,
+          secondary: darkTheme.colors.accent.secondary,
+          tertiary: darkTheme.colors.accent.tertiary,
         },
         // Border colors
         border: {
-          default: theme.colors.border.default,
-          light: theme.colors.border.light,
-          dark: theme.colors.border.dark,
-          accent: theme.colors.border.accent,
-          dashed: theme.colors.border.dashed,
+          default: darkTheme.colors.border.default,
+          light: darkTheme.colors.border.light,
+          dark: darkTheme.colors.border.dark,
+          accent: darkTheme.colors.border.accent,
+          dashed: darkTheme.colors.border.dashed,
         },
       },
     },

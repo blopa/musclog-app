@@ -8,7 +8,7 @@ import { ActivityIndicator, Text, View } from 'react-native';
 import { useEditWorkoutSets } from '../../hooks/useEditWorkoutSets';
 import { usePastWorkoutDetail } from '../../hooks/usePastWorkoutDetail';
 import { useSettings } from '../../hooks/useSettings';
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { getWeightUnitI18nKey } from '../../utils/units';
 import { GenericCard } from '../cards/GenericCard';
 import { LineChart, LineChartDataPoint } from '../LineChart';
@@ -51,6 +51,7 @@ function WorkoutSummaryCard({
   calories,
   weightUnitKey,
 }: WorkoutSummaryCardProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
 
   return (
@@ -134,6 +135,7 @@ type VolumeTrendCardProps = {
 };
 
 function VolumeTrendCard({ percentage, data, labels }: VolumeTrendCardProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
 
   return (
@@ -174,6 +176,7 @@ type SetRowProps = {
 };
 
 function SetRow({ set }: SetRowProps) {
+  const theme = useTheme();
   return (
     <View
       className="flex-row items-center border-b"
@@ -217,6 +220,7 @@ type SetsTableProps = {
 };
 
 function SetsTable({ sets }: SetsTableProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
 
   return (
@@ -280,6 +284,7 @@ type ExerciseCardProps = {
 };
 
 function ExerciseCard({ exercise, onEdit, onClose }: ExerciseCardProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
 
   return (
@@ -337,6 +342,7 @@ type ExercisesSectionProps = {
 };
 
 function ExercisesSection({ exercises, onEdit, onClose }: ExercisesSectionProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
 
   return (
@@ -373,6 +379,7 @@ export default function PastWorkoutDetailModal({
   onShare,
   onDelete,
 }: PastWorkoutDetailModalProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const { units } = useSettings();
   const weightUnitKey = getWeightUnitI18nKey(units);

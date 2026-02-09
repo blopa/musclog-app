@@ -1,7 +1,7 @@
 import { LucideIcon } from 'lucide-react-native';
 import { Text, View } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { GenericCard } from './GenericCard';
 
 interface HealthCategoryCardProps {
@@ -17,6 +17,7 @@ export function HealthCategoryCard({
   backgroundColor,
   iconColor,
 }: HealthCategoryCardProps) {
+  const theme = useTheme();
   return (
     <View className="flex-1 basis-[48%]">
       <GenericCard variant="card" size="sm">

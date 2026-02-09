@@ -3,7 +3,7 @@ import { FC, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, TextInput, View } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 
 interface StepperInputProps {
   label: string;
@@ -22,6 +22,7 @@ export const StepperInput: FC<StepperInputProps> = ({
   onChangeValue,
   unit,
 }) => {
+  const theme = useTheme();
   const { t } = useTranslation();
   const [internalValue, setInternalValue] = useState<number>(value);
   const [editing, setEditing] = useState(false);

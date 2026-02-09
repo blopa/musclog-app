@@ -13,8 +13,9 @@ import {
 } from 'react-native';
 
 import { useFoods } from '../../hooks/useFoods';
+import { useTheme } from '../../hooks/useTheme';
 import { type UnifiedFoodResult, useUnifiedFoodSearch } from '../../hooks/useUnifiedFoodSearch';
-import { addOpacityToHex, theme } from '../../theme';
+import { addOpacityToHex } from '../../theme';
 import { Button } from '../theme/Button';
 import { FoodDetailsModal } from './FoodDetailsModal';
 import { FullScreenModal } from './FullScreenModal';
@@ -53,8 +54,8 @@ const COMMON_FOODS: FoodItem[] = [
     id: '4',
     name: 'Black Coffee',
     description: '1 cup (8oz) • 2 kcal',
-    iconColor: theme.colors.status.warning,
-    iconBgColor: theme.colors.status.warning10,
+    iconColor: '#4f46e5',
+    iconBgColor: '#4f46e5',
     calories: 2,
     protein: 0.3,
     carbs: 0,
@@ -65,8 +66,8 @@ const COMMON_FOODS: FoodItem[] = [
     id: '5',
     name: 'Whole Wheat Toast',
     description: '2 slices • 180 kcal',
-    iconColor: theme.colors.status.purple,
-    iconBgColor: theme.colors.status.purple20,
+    iconColor: '#4f46e5',
+    iconBgColor: '#4f46e5',
     calories: 180,
     protein: 8,
     carbs: 32,
@@ -77,8 +78,8 @@ const COMMON_FOODS: FoodItem[] = [
     id: '6',
     name: 'Greek Yogurt',
     description: '1 cup (170g) • 100 kcal • 18g Protein',
-    iconColor: theme.colors.status.error,
-    iconBgColor: theme.colors.status.error20,
+    iconColor: '#4f46e5',
+    iconBgColor: '#4f46e5',
     calories: 100,
     protein: 18,
     carbs: 6,
@@ -94,6 +95,7 @@ type UnderlineTabsProps = {
 };
 
 function UnderlineTabs({ tabs, activeTab, onTabChange }: UnderlineTabsProps) {
+  const theme = useTheme();
   return (
     <ScrollView
       horizontal
@@ -141,6 +143,7 @@ type FoodItemCardProps = {
 };
 
 function FoodItemCard({ food, onAddPress }: FoodItemCardProps) {
+  const theme = useTheme();
   return (
     <Pressable className="flex-row items-center gap-3 rounded-2xl border border-border-light bg-bg-overlay p-3 active:scale-[0.98]">
       {/* Icon/Image */}
@@ -233,6 +236,7 @@ type SectionHeaderProps = {
 };
 
 function SectionHeader({ title, icon: Icon, rightAction }: SectionHeaderProps) {
+  const theme = useTheme();
   return (
     <View className="mb-3 flex-row items-center justify-between px-1">
       <View className="flex-row items-center gap-2">
@@ -258,6 +262,7 @@ export function FoodSearchModal({
   onBarcodeScanPress,
   onFoodSelect,
 }: FoodSearchModalProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState('all');

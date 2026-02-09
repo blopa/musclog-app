@@ -1,6 +1,6 @@
 import { Pressable, Text, View } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 
 type WeekdayPickerProps = {
   days: string[];
@@ -9,6 +9,7 @@ type WeekdayPickerProps = {
 };
 
 export function WeekdayPicker({ days, selectedDays, onToggleDay }: WeekdayPickerProps) {
+  const theme = useTheme();
   return (
     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
       {days.map((day, index) => {

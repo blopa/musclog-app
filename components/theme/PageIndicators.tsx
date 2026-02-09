@@ -1,6 +1,6 @@
 import { View } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 
 type PageIndicatorsProps = {
   totalPages: number;
@@ -8,6 +8,7 @@ type PageIndicatorsProps = {
 };
 
 export function PageIndicators({ totalPages, currentPage }: PageIndicatorsProps) {
+  const theme = useTheme();
   return (
     <View className="flex-row items-center justify-center gap-2">
       {Array.from({ length: totalPages }).map((_, index) => {

@@ -6,7 +6,7 @@ import { Alert, Pressable, Text, View } from 'react-native';
 
 import { FoodService, NutritionService } from '../../database/services';
 import { useFoodProductDetails } from '../../hooks/useFoodProductDetails';
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { isSuccessFoodDetailProductState } from '../../types/guards/openFoodFacts';
 import { FoodInfoCard } from '../cards/FoodInfoCard';
 import { FilterTabs } from '../FilterTabs';
@@ -24,6 +24,7 @@ type FoodDetailsModalProps = {
 };
 
 export function FoodDetailsModal({ visible, onClose, barcode, onAddFood }: FoodDetailsModalProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const [servingSize, setServingSize] = useState(100);
   const [selectedMeal, setSelectedMeal] = useState('lunch');

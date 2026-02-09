@@ -2,7 +2,7 @@ import { ChevronDown } from 'lucide-react-native';
 import { ReactNode } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 
 type TestPickerButtonProps = {
   label: string;
@@ -11,6 +11,7 @@ type TestPickerButtonProps = {
 };
 
 export function PickerButton({ label, icon, onPress }: TestPickerButtonProps) {
+  const theme = useTheme();
   return (
     <Pressable
       className="h-14 w-full flex-row items-center justify-between rounded-lg border border-white/10 bg-bg-card px-4 active:bg-white/5"

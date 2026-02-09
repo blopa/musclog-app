@@ -2,13 +2,15 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { ReactNode } from 'react';
 import { Platform, View } from 'react-native';
 
-import { addOpacityToHex, theme } from '../theme';
+import { useTheme } from '../hooks/useTheme';
+import { addOpacityToHex } from '../theme';
 
 type BottomButtonWrapperProps = {
   children: ReactNode;
 };
 
 export function BottomButtonWrapper({ children }: BottomButtonWrapperProps) {
+  const theme = useTheme();
   return (
     <View
       className="absolute bottom-0 left-0 right-0"

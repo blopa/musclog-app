@@ -4,14 +4,14 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
-import { useSnackbar } from '../../components/SnackbarContext';
 import { database } from '../../database';
 import UserMetric from '../../database/models/UserMetric';
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { DateTimeSelectorCard } from '../cards/DateTimeSelectorCard';
 import { GenericCard } from '../cards/GenericCard';
 import { MoodSelectorCard } from '../cards/MoodSelectorCard';
 import { PagerView, type PagerViewRef } from '../PagerView/PagerView';
+import { useSnackbar } from '../SnackbarContext';
 import { Button } from '../theme/Button';
 import { SegmentedControl } from '../theme/SegmentedControl';
 import { FullScreenModal } from './FullScreenModal';
@@ -44,6 +44,7 @@ export default function AddUserMetricEntryModal({
   onClose,
   onSave: onSaveCallback,
 }: AddUserMetricEntryModalProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const { showSnackbar } = useSnackbar();
   const pagerRef = useRef<PagerViewRef>(null);

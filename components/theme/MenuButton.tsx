@@ -1,7 +1,8 @@
 import { LucideIcon, MoreVertical } from 'lucide-react-native';
 import { Pressable, ViewStyle } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
+import { Theme } from '../../theme';
 
 type MenuButtonSize = 'sm' | 'md' | 'lg';
 
@@ -14,19 +15,21 @@ type MenuButtonProps = {
   style?: ViewStyle;
 };
 
-const sizeConfig = {
-  sm: {
-    iconSize: theme.iconSize.sm,
-    touchableSize: undefined, // No fixed size for smallest
-  },
-  md: {
-    iconSize: theme.iconSize.md,
-    touchableSize: undefined,
-  },
-  lg: {
-    iconSize: theme.iconSize.lg,
-    touchableSize: 'h-12 w-12',
-  },
+const getSizeConfig = (theme: Theme) => {
+  return {
+    sm: {
+      iconSize: theme.iconSize.sm,
+      touchableSize: undefined, // No fixed size for smallest
+    },
+    md: {
+      iconSize: theme.iconSize.md,
+      touchableSize: undefined,
+    },
+    lg: {
+      iconSize: theme.iconSize.lg,
+      touchableSize: 'h-12 w-12',
+    },
+  };
 };
 
 export function MenuButton({
@@ -37,6 +40,8 @@ export function MenuButton({
   className = '',
   style,
 }: MenuButtonProps) {
+  const theme = useTheme();
+  const sizeConfig = getSizeConfig(theme);
   const config = sizeConfig[size];
   const iconColor = color || theme.colors.text.secondary;
 

@@ -1,9 +1,11 @@
 import { ChevronRight } from 'lucide-react-native';
 import { View } from 'react-native';
 
-import { theme } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 
 export function CircularArrow() {
+  const theme = useTheme();
+
   return (
     <View
       className="h-8 w-8 items-center justify-center rounded-full"

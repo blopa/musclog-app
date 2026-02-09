@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Animated, Text, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 
-import { theme } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 
 type RestTimerProps = {
   restTime: number; // in seconds
@@ -13,6 +13,7 @@ type RestTimerProps = {
 };
 
 export function RestTimer({ restTime, rotationAnim, initialRestTime }: RestTimerProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
 
   const formatTime = (value: number) => String(value).padStart(2, '0');

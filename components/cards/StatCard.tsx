@@ -2,7 +2,7 @@ import { TrendingUp } from 'lucide-react-native';
 import { ComponentType, ReactNode } from 'react';
 import { Text, View } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { GenericCard } from './GenericCard';
 
 type StatCardProps = {
@@ -24,6 +24,7 @@ export function StatCard({
   icon: Icon,
   iconColor,
 }: StatCardProps) {
+  const theme = useTheme();
   return (
     <GenericCard variant="default" size="sm">
       <View className="p-4">

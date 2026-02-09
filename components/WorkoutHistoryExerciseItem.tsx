@@ -2,7 +2,7 @@ import { Check } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Image, Text, View } from 'react-native';
 
-import { theme } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 import { SetData, SetRow } from './WorkoutHistorySetRow';
 
 export type ExerciseData = {
@@ -26,6 +26,7 @@ export function ExerciseItem({
   isLast,
   weightUnitKey = 'workoutSession.kg',
 }: ExerciseItemProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const hasCurrentSet = exercise.sets.some((set) => set.isCurrent);
 

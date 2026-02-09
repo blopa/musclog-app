@@ -2,7 +2,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { GenericCard } from './GenericCard';
 import { MacroCard } from './MacroCard';
 
@@ -35,6 +35,7 @@ type CaloriesRemainingCardProps = {
 };
 
 export function CaloriesRemainingCard({ calories, macros }: CaloriesRemainingCardProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
 
   return (

@@ -1,8 +1,7 @@
 import { List, Settings, Square } from 'lucide-react-native';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { BottomPopUpMenu } from '../BottomPopUpMenu';
 
 type WorkoutOptionsModalProps = {
@@ -20,6 +19,7 @@ export function WorkoutOptionsModal({
   onWorkoutSettings,
   onEndWorkout,
 }: WorkoutOptionsModalProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
 
   const items = [

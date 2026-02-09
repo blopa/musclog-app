@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Animated, Modal, Platform, Pressable, Text, View } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { Button } from '../theme/Button';
 
 type EndWorkoutModalProps = {
@@ -20,6 +20,7 @@ export function EndWorkoutModal({
   onFinishAndSave,
   onFinishAndDiscard,
 }: EndWorkoutModalProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;

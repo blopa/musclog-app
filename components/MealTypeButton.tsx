@@ -1,8 +1,7 @@
 import { LucideIcon } from 'lucide-react-native';
-import React from 'react';
 import { Pressable, Text, View } from 'react-native';
 
-import { theme } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 
 type MealTypeButtonProps = {
   icon: LucideIcon;
@@ -21,6 +20,7 @@ export function MealTypeButton({
   onPress,
   span = 1,
 }: MealTypeButtonProps) {
+  const theme = useTheme();
   return (
     <Pressable
       className={`${

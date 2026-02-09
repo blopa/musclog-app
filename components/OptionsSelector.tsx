@@ -2,7 +2,7 @@ import { Check, LucideIcon } from 'lucide-react-native';
 import { ComponentType, memo, ReactElement, useCallback, useMemo } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
-import { theme } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 
 export type SelectorOption<T extends string | number> = {
   id: T;
@@ -30,6 +30,7 @@ const OptionItem = memo(
     isSelected: boolean;
     onSelect: (id: T) => void;
   }) => {
+    const theme = useTheme();
     const Icon = option.icon as any;
     const handlePress = useCallback(() => {
       onSelect(option.id);
@@ -130,6 +131,7 @@ export function OptionsSelector<T extends string | number>({
   selectedId,
   onSelect,
 }: OptionsSelectorProps<T>) {
+  const theme = useTheme();
   // Memoize the onSelect callback to prevent OptionItem re-renders
   const stableOnSelect = useCallback(
     (id: T) => {

@@ -2,7 +2,7 @@ import { ComponentType, createElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
-import { theme } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 import { AvatarColor } from '../types/AvatarColor';
 import { AvatarIcon } from '../types/AvatarIcon';
 import { getAvatarBackgroundColor, getAvatarColor } from '../utils/avatarColorUtils';
@@ -38,6 +38,7 @@ export function AvatarSelector({
   showColorPicker = true,
   label,
 }: AvatarSelectorProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
 
   return (

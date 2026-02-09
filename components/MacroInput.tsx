@@ -1,7 +1,8 @@
 import { ReactNode, useState } from 'react';
 import { Text, TextInput as RNTextInput, View } from 'react-native';
 
-import { theme } from '../theme';
+import { useTheme } from '../hooks/useTheme';
+import type { Theme } from '../theme';
 
 type MacroInputVariant = 'default' | 'success' | 'warning' | 'error' | 'info' | 'accent';
 type MacroInputSize = 'full' | 'half';
@@ -15,33 +16,41 @@ type MacroInputProps = {
   size?: MacroInputSize;
 };
 
-const sizeConfig = {
-  full: {
-    padding: theme.spacing.padding['5'], // 20px
-    fontSize: theme.typography.fontSize['5xl'], // 48px
-  },
-  half: {
-    padding: theme.spacing.padding.base, // 16px
-    fontSize: theme.typography.fontSize['4xl'], // 36px
-  },
-};
+const getVariantsData = (theme: Theme) => {
+  const sizeConfig = {
+    full: {
+      padding: theme.spacing.padding['5'], // 20px
+      fontSize: theme.typography.fontSize['5xl'], // 48px
+    },
+    half: {
+      padding: theme.spacing.padding.base, // 16px
+      fontSize: theme.typography.fontSize['4xl'], // 36px
+    },
+  };
 
-const variantColors: Record<MacroInputVariant, string> = {
-  default: theme.colors.accent.primary,
-  success: theme.colors.status.success,
-  warning: theme.colors.status.warning,
-  error: theme.colors.status.error,
-  info: theme.colors.status.info,
-  accent: theme.colors.accent.secondary,
-};
+  const variantColors: Record<MacroInputVariant, string> = {
+    default: theme.colors.accent.primary,
+    success: theme.colors.status.success,
+    warning: theme.colors.status.warning,
+    error: theme.colors.status.error,
+    info: theme.colors.status.info,
+    accent: theme.colors.accent.secondary,
+  };
 
-const variantBorderColors: Record<MacroInputVariant, string> = {
-  default: theme.colors.accent.primary50,
-  success: theme.colors.accent.primary50,
-  warning: theme.colors.status.warning50,
-  error: theme.colors.status.error50,
-  info: theme.colors.status.info50,
-  accent: theme.colors.accent.secondary20,
+  const variantBorderColors: Record<MacroInputVariant, string> = {
+    default: theme.colors.accent.primary50,
+    success: theme.colors.accent.primary50,
+    warning: theme.colors.status.warning50,
+    error: theme.colors.status.error50,
+    info: theme.colors.status.info50,
+    accent: theme.colors.accent.secondary20,
+  };
+
+  return {
+    sizeConfig,
+    variantColors,
+    variantBorderColors,
+  };
 };
 
 export function MacroInput({
@@ -52,7 +61,9 @@ export function MacroInput({
   variant = 'default',
   size = 'full',
 }: MacroInputProps) {
+  const theme = useTheme();
   const [isFocused, setIsFocused] = useState(false);
+  const { sizeConfig, variantColors, variantBorderColors } = getVariantsData(theme);
 
   const highlightColor = variantColors[variant];
   const borderColor = variantBorderColors[variant];

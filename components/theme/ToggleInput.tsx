@@ -1,7 +1,7 @@
 import { Fragment, ReactNode } from 'react';
 import { Pressable, Switch, Text, View } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 
 type ToggleItem = {
   key: string;
@@ -18,6 +18,7 @@ type TogglableSettingsProps = {
 };
 
 export function ToggleInput(props: TogglableSettingsProps) {
+  const theme = useTheme();
   const items: ToggleItem[] = props.items;
   const hasHeader = !!props.header;
 

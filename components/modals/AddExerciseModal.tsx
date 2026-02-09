@@ -5,7 +5,7 @@ import { ActivityIndicator, Switch, Text, View } from 'react-native';
 
 import { useExercises } from '../../hooks/useExercises';
 import { useSettings } from '../../hooks/useSettings';
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { getWeightUnitI18nKey } from '../../utils/units';
 import { SelectedExerciseCard } from '../cards/SelectedExerciseCard';
 import { FilterTabs } from '../FilterTabs';
@@ -89,6 +89,7 @@ const getExerciseIcon = (type: string) => {
 };
 
 export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExerciseModalProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const { units } = useSettings();
   const weightUnitKey = getWeightUnitI18nKey(units);
@@ -160,7 +161,13 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
     });
 
     return groupedExercises;
-  }, [allExercises]);
+  }, [
+    allExercises,
+    theme.colors.accent.primary,
+    theme.colors.accent.primary10,
+    theme.colors.background.white5,
+    theme.colors.text.secondary,
+  ]);
 
   // Memoize muscleTabs to avoid recreating array and translation calls on every render
   const muscleTabs = useMemo(

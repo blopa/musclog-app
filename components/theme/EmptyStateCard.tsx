@@ -1,9 +1,8 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { LucideIcon } from 'lucide-react-native';
-import React from 'react';
 import { Text, View } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { GenericCard } from '../cards/GenericCard';
 import { Button } from './Button';
 
@@ -26,6 +25,7 @@ export function EmptyStateCard({
   iconGradient = false,
   buttonVariant = 'gradientCta',
 }: EmptyStateCardProps) {
+  const theme = useTheme();
   return (
     <GenericCard variant="card">
       <View className="flex-col items-center gap-6 p-8">

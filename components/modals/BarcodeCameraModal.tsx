@@ -13,7 +13,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { detectBarcodes } from '../../utils/file';
 import { showSnackbar } from '../../utils/snackbarService';
 import { CameraView, useCameraPermissions } from '../CameraView';
@@ -31,6 +31,7 @@ export function BarcodeCameraModal({
   onClose,
   onBarcodeScanned,
 }: BarcodeCameraModalProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const [permission, requestPermission] = useCameraPermissions();
   const [torchEnabled, setTorchEnabled] = useState(false);

@@ -1,11 +1,11 @@
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text } from 'react-native';
 
-import { theme } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 import { GradientText } from './GradientText';
 
 export function WorkoutSummaryHeader() {
+  const theme = useTheme();
   const { t } = useTranslation();
   return (
     <>

@@ -1,6 +1,6 @@
 import { Text, View } from 'react-native';
 
-import { theme } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 
 type ProgressMetricProps = {
   value: number;
@@ -17,6 +17,7 @@ export function ProgressMetric({
   bottomText,
   formatValue = (v) => v.toString(),
 }: ProgressMetricProps) {
+  const theme = useTheme();
   return (
     <View className="flex-1">
       <View className="mb-2 flex-row items-baseline gap-1">

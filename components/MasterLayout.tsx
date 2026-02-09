@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { theme } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 import { CoachModal } from './modals/CoachModal';
 import SmartCameraModal from './modals/SmartCameraModal';
 
@@ -16,6 +16,7 @@ type MasterLayoutProps = {
 };
 
 export function MasterLayout({ children, showNavigationMenu = true }: MasterLayoutProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
   const pathname = usePathname();

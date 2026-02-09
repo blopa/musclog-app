@@ -2,7 +2,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { ReactNode } from 'react';
 import { Pressable, StyleProp, View, ViewStyle } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 
 type GenericCardProps = {
   children: ReactNode;
@@ -29,6 +29,7 @@ export function GenericCard({
   size = 'default',
   containerStyle,
 }: GenericCardProps) {
+  const theme = useTheme();
   // ============================================================================
   // Computed Values
   // ============================================================================

@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, ScrollView, Text, View } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { BottomPopUpMenu } from '../BottomPopUpMenu';
 import { Button } from '../theme/Button';
 import { Slider } from '../theme/Slider';
@@ -23,6 +23,7 @@ type RatingSliderProps = {
 };
 
 function RatingSlider({ label, value, onChange, leftLabel, rightLabel }: RatingSliderProps) {
+  const theme = useTheme();
   // Web-specific styles to allow horizontal gestures on slider area
   const webSliderContainerStyle =
     Platform.OS === 'web'
@@ -76,6 +77,7 @@ function RatingSlider({ label, value, onChange, leftLabel, rightLabel }: RatingS
 }
 
 export function SessionFeedbackModal({ visible, onClose, onSubmit }: SessionFeedbackModalProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const [difficulty, setDifficulty] = useState(7);
   const [exhaustion, setExhaustion] = useState(5);

@@ -9,9 +9,10 @@ import Svg, {
   Stop,
 } from 'react-native-svg';
 
-import { theme } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 
 export default function PreRegistrationIntro() {
+  const theme = useTheme();
   const screenWidth = Dimensions.get('window').width;
   const containerSize = screenWidth * 0.64; // w-64 equivalent (256px on standard screen)
   const innerCircleSize = screenWidth * 0.4; // w-40 equivalent (160px on standard screen)

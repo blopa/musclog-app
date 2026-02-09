@@ -5,7 +5,8 @@ import { Pressable, Text, View } from 'react-native';
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
-import { theme } from '../../../theme';
+import { useTheme } from '../../../hooks/useTheme';
+import { Theme } from '../../../theme';
 import { ActionButtonsArea } from './ActionButtonsArea';
 import {
   getGroupColor,
@@ -16,6 +17,7 @@ import {
 } from './utils';
 
 const ScaleDecorator = ({ children, isActive }: { children: ReactNode; isActive?: boolean }) => {
+  const theme = useTheme();
   const scale = useSharedValue(1);
 
   useEffect(() => {
@@ -54,6 +56,7 @@ export function OptionsMultiSelector<T extends string | number>({
   onOrderChange,
   onDelete,
 }: OptionsMultiSelectorProps<T>) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const [selectionEnabled, setSelectionEnabled] = useState(false);
   const [orderedOptions, setOrderedOptions] = useState<SelectorOption<T>[]>(options);
@@ -189,6 +192,7 @@ export function OptionsMultiSelector<T extends string | number>({
 
   const renderGroupIndicator = (
     groupPosition: GroupPosition,
+    theme: Theme,
     groupId?: string,
     isFirstInGroup: boolean = false
   ) => {
@@ -197,7 +201,7 @@ export function OptionsMultiSelector<T extends string | number>({
       return null;
     }
 
-    const lineColor = getGroupColor(groupId, orderedOptions);
+    const lineColor = getGroupColor(groupId, theme, orderedOptions);
     const lineWidth = theme.borderWidth.thick;
     const indicatorWidth = theme.size['4'];
 
@@ -258,7 +262,7 @@ export function OptionsMultiSelector<T extends string | number>({
     const groupPosition = hasGroups ? getGroupPosition(orderedOptions, index) : 'none';
     const isFirstInGroup = groupPosition === 'first' || groupPosition === 'only';
     const groupColor =
-      hasGroups && item.groupId ? getGroupColor(item.groupId, orderedOptions) : undefined;
+      hasGroups && item.groupId ? getGroupColor(item.groupId, theme, orderedOptions) : undefined;
 
     return (
       <ScaleDecorator isActive={isActive}>
@@ -268,7 +272,7 @@ export function OptionsMultiSelector<T extends string | number>({
             alignItems: 'stretch',
           }}
         >
-          {renderGroupIndicator(groupPosition, item.groupId, isFirstInGroup)}
+          {renderGroupIndicator(groupPosition, theme, item.groupId, isFirstInGroup)}
           <View style={{ flex: 1 }}>
             <Pressable
               onLongPress={drag}
@@ -401,13 +405,15 @@ export function OptionsMultiSelector<T extends string | number>({
     );
   };
 
-  const renderRegularItem = (option: SelectorOption<T>, index: number) => {
+  const renderRegularItem = (option: SelectorOption<T>, index: number, theme: Theme) => {
     const Icon = option.icon as any;
     const selected = showCheckboxes && isSelected(option.id);
     const groupPosition = hasGroups ? getGroupPosition(orderedOptions, index) : 'none';
     const isFirstInGroup = groupPosition === 'first' || groupPosition === 'only';
     const groupColor =
-      hasGroups && option.groupId ? getGroupColor(option.groupId, orderedOptions) : undefined;
+      hasGroups && option.groupId
+        ? getGroupColor(option.groupId, theme, orderedOptions)
+        : undefined;
 
     return (
       <View
@@ -417,7 +423,7 @@ export function OptionsMultiSelector<T extends string | number>({
           alignItems: 'stretch',
         }}
       >
-        {renderGroupIndicator(groupPosition, option.groupId, isFirstInGroup)}
+        {renderGroupIndicator(groupPosition, theme, option.groupId, isFirstInGroup)}
         <View style={{ flex: 1 }}>
           <Pressable
             onPress={() => showCheckboxes && toggle(option.id)}
@@ -609,7 +615,7 @@ export function OptionsMultiSelector<T extends string | number>({
         />
       ) : (
         <View style={{ gap: theme.spacing.gap.md }}>
-          {orderedOptions.map((option, index) => renderRegularItem(option, index))}
+          {orderedOptions.map((option, index) => renderRegularItem(option, index, theme))}
         </View>
       )}
     </View>

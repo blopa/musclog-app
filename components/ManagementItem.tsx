@@ -2,7 +2,8 @@ import { ChevronRight } from 'lucide-react-native';
 import { ComponentType } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
-import { addOpacityToHex, theme } from '../theme';
+import { useTheme } from '../hooks/useTheme';
+import { addOpacityToHex } from '../theme';
 
 type ManagementItemProps = {
   title: string;
@@ -19,6 +20,7 @@ export function ManagementItem({
   iconColor,
   onPress,
 }: ManagementItemProps) {
+  const theme = useTheme();
   return (
     <Pressable
       className="active:bg-bg-card-elevated flex-row items-center gap-4 rounded-2xl border border-border-default bg-bg-overlay p-4"

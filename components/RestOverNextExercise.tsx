@@ -1,8 +1,7 @@
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { theme } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 
 type RestOverNextExerciseProps = {
   exercise: {
@@ -15,6 +14,7 @@ type RestOverNextExerciseProps = {
 };
 
 export function RestOverNextExercise({ exercise }: RestOverNextExerciseProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
 
   return (

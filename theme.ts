@@ -178,7 +178,112 @@ const colors = {
   indigoLightAlpha20Alt: addOpacityToHex(baseColors.indigo500, 0.2),
 };
 
-const themeColors = {
+// Light theme base colors
+const lightBaseColors = {
+  white: '#ffffff',
+  gray50: '#f9fafb',
+  gray100: '#f3f4f6',
+  gray150: '#eef0f2',
+  gray200: '#e5e7eb',
+  gray250: '#dfe2e6',
+  gray300: '#d1d5db',
+  gray350: '#c4c9cf',
+  gray400: '#9ca3af',
+  gray450: '#8891a0',
+  gray500: '#6b7280',
+  gray550: '#5d6775',
+  gray600: '#4b5563',
+  gray700: '#374151',
+  gray750: '#2d3748',
+  gray800: '#1f2937',
+  gray850: '#1a202c',
+  gray900: '#111827',
+  emerald50: '#ecfdf5',
+  emerald100: '#d1fae5',
+  emerald200: '#a7f3d0',
+  emerald300: '#6ee7b7',
+  emerald400: '#34d399',
+  emerald500: '#10b981',
+  emerald600: '#059669',
+  teal50: '#f0fdfa',
+  teal100: '#ccfbf1',
+  teal200: '#99f6e4',
+  teal300: '#5eead4',
+  teal400: '#2dd4bf',
+  teal500: '#14b8a6',
+  green50: '#f0fdf4',
+  green100: '#dcfce7',
+  green200: '#bbf7d0',
+  green300: '#86efac',
+  green400: '#4ade80',
+  green500: '#22c55e',
+  green600: '#16a34a',
+  blue50: '#eff6ff',
+  blue100: '#dbeafe',
+  blue200: '#bfdbfe',
+  blue300: '#93c5fd',
+  blue400: '#60a5fa',
+  blue500: '#3b82f6',
+  blue600: '#2563eb',
+  indigo50: '#eef2ff',
+  indigo100: '#e0e7ff',
+  indigo200: '#c7d2fe',
+  indigo300: '#a5b4fc',
+  indigo400: '#818cf8',
+  indigo500: '#6366f1',
+  indigo600: '#4f46e5',
+  violet50: '#f5f3ff',
+  violet100: '#ede9fe',
+  violet200: '#ddd6fe',
+  violet300: '#c4b5fd',
+  violet400: '#a78bfa',
+  violet500: '#8b5cf6',
+  purple50: '#faf5ff',
+  purple100: '#f3e8ff',
+  purple200: '#e9d5ff',
+  purple300: '#d8b4fe',
+  purple400: '#c084fc',
+  purple500: '#a855f7',
+  pink50: '#fdf2f8',
+  pink100: '#fce7f3',
+  pink200: '#fbcfe8',
+  pink300: '#f9a8d4',
+  pink400: '#f472b6',
+  pink500: '#ec4899',
+  rose50: '#fff1f2',
+  rose100: '#ffe4e6',
+  rose200: '#fecdd3',
+  rose300: '#fda4af',
+  rose400: '#fb7185',
+  rose500: '#f43f5e',
+  rose600: '#e11d48',
+  red50: '#fef2f2',
+  red100: '#fee2e2',
+  red200: '#fecaca',
+  red300: '#fca5a5',
+  red400: '#f87171',
+  red500: '#ef4444',
+  orange50: '#fff7ed',
+  orange100: '#ffedd5',
+  orange200: '#fed7aa',
+  orange300: '#fdba74',
+  orange400: '#fb923c',
+  orange500: '#f97316',
+  amber50: '#fffbeb',
+  amber100: '#fef3c7',
+  amber200: '#fde68a',
+  amber300: '#fcd34d',
+  amber400: '#fbbf24',
+  amber500: '#f59e0b',
+  yellow50: '#fefce8',
+  yellow100: '#fef9c3',
+  yellow200: '#fef08a',
+  yellow300: '#fde047',
+  yellow400: '#facc15',
+  yellow500: '#eab308',
+};
+
+const darkThemeColors = {
   // Background colors
   background: {
     primary: colors.deepJungle, // Main app background
@@ -491,8 +596,351 @@ const themeColors = {
   },
 };
 
-export const theme = {
-  colors: themeColors,
+// Light theme colors - inverted from dark theme with light-optimized palette
+const lightThemeColors = {
+  // Background colors
+  background: {
+    primary: lightBaseColors.white, // Main app background
+    secondary: lightBaseColors.gray50, // Secondary backgrounds (nav bar, cards)
+    tertiary: lightBaseColors.gray100, // Lighter backgrounds (food page)
+    card: lightBaseColors.white, // Card backgrounds
+    cardElevated: lightBaseColors.gray50, // Elevated card backgrounds
+    secondaryDark: lightBaseColors.gray100, // Card backgrounds (active states)
+    overlay: lightBaseColors.gray100, // Overlay backgrounds
+    filterTab: lightBaseColors.gray150, // Filter tab background
+    iconDark: lightBaseColors.emerald50, // Light icon backgrounds
+    iconDarker: lightBaseColors.emerald100, // Lighter icon backgrounds
+    iconDarkest: lightBaseColors.emerald200, // Lightest icon backgrounds
+    workoutIcon: lightBaseColors.green600, // Workout action button icon background
+    imageLight: lightBaseColors.gray200, // Light image background
+    imageMedium: lightBaseColors.gray300, // Medium image background
+    notificationCard: lightBaseColors.gray100, // Notification card gradient start
+    gray700: lightBaseColors.gray700, // Gray-700
+    gray800: lightBaseColors.gray800, // Gray-800
+    gray800Opacity50: addOpacityToHex(lightBaseColors.gray800, 0.5), // Gray-800/50
+    white: lightBaseColors.white, // White background
+    overlayDark: addOpacityToHex(lightBaseColors.gray900, 0.6), // Dark overlay with 60% opacity
+    purpleBlob: lightBaseColors.purple50, // Purple blob background
+    greenBlob: lightBaseColors.green100, // Green blob background
+    darkGreen50: addOpacityToHex(lightBaseColors.emerald600, 0.5), // Dark green with 50% opacity
+    darkGreen80: addOpacityToHex(lightBaseColors.emerald600, 0.8), // Dark green with 80% opacity
+    black10: addOpacityToHex(lightBaseColors.gray900, 0.1), // Black with 10% opacity
+    black15: addOpacityToHex(lightBaseColors.gray900, 0.15), // Black with 15% opacity
+    black20: addOpacityToHex(lightBaseColors.gray900, 0.2), // Black with 20% opacity
+    black30: addOpacityToHex(lightBaseColors.gray900, 0.3), // Black with 30% opacity
+    black40: addOpacityToHex(lightBaseColors.gray900, 0.4), // Black with 40% opacity
+    black80: addOpacityToHex(lightBaseColors.gray900, 0.8), // Black with 80% opacity
+    black90: addOpacityToHex(lightBaseColors.gray900, 0.9), // Black with 90% opacity
+    aiCardBackground: lightBaseColors.emerald50, // Light green for AI card background
+    darkGreenVariant: lightBaseColors.emerald100, // Light green variant for tags/badges
+    darkGreenOverlay: addOpacityToHex(lightBaseColors.gray100, 0.9), // Light overlay
+    darkGreenSolid: lightBaseColors.gray200, // Light solid color
+    darkGray: addOpacityToHex(lightBaseColors.gray900, 0.4), // Gray background with opacity
+    darkGray50: addOpacityToHex(lightBaseColors.gray900, 0.5), // Gray with 50% opacity
+    darkGray90: addOpacityToHex(lightBaseColors.gray900, 0.9), // Gray with 90% opacity
+    darkGraySolid: addOpacityToHex(lightBaseColors.gray200, 0.5), // Gray solid with opacity
+    darkGreenSolidAlt: lightBaseColors.gray250, // Alternative light solid
+    exerciseCardBackground: lightBaseColors.emerald50, // Exercise card background
+    darkBackground: lightBaseColors.gray100, // Light background color (landing page, etc.)
+    snackbarSuccess: lightBaseColors.green50, // Success snackbar background
+    snackbarError: lightBaseColors.red50, // Error snackbar background
+    buttonCard: lightBaseColors.emerald50, // Button/card background
+    buttonCardActive: lightBaseColors.emerald100, // Active button/card background
+    separatorLight: lightBaseColors.gray200, // Light separator
+    // White background with opacity
+    white2: addOpacityToHex(lightBaseColors.white, 0.02), // White with ~2% opacity
+    white3: addOpacityToHex(lightBaseColors.white, 0.03), // White with ~3% opacity
+    white5: addOpacityToHex(lightBaseColors.white, 0.05), // White with 5% opacity
+    white10: addOpacityToHex(lightBaseColors.white, 0.1), // White with 10% opacity
+    white12: addOpacityToHex(lightBaseColors.white, 0.125), // White with ~12.5% opacity
+    white20: addOpacityToHex(lightBaseColors.white, 0.2), // White with 20% opacity
+    white30: addOpacityToHex(lightBaseColors.white, 0.3), // White with 30% opacity
+    // Background primary with opacity
+    primary20: addOpacityToHex(lightBaseColors.white, 0.2), // Background primary with 20% opacity
+  },
+
+  // Text colors
+  text: {
+    primary: lightBaseColors.gray900, // Primary text (dark gray)
+    secondary: lightBaseColors.gray600, // Secondary text (medium gray)
+    tertiary: lightBaseColors.gray500, // Tertiary text (lighter gray)
+    muted: lightBaseColors.gray500, // Muted text
+    accent: lightBaseColors.green600, // Accent text (green)
+    accentLight: lightBaseColors.emerald500, // Light accent text (emerald)
+    black: lightBaseColors.gray900, // Black text
+    gray300: lightBaseColors.gray300, // Gray-300
+    gray500: lightBaseColors.gray500, // Gray-500
+    white: lightBaseColors.white, // White
+    // Text colors with opacity
+    primary12: addOpacityToHex(lightBaseColors.gray900, 0.125), // Primary with 12.5% opacity
+    primary20: addOpacityToHex(lightBaseColors.gray900, 0.2), // Primary with 20% opacity
+    primary30: addOpacityToHex(lightBaseColors.gray900, 0.3), // Primary with 30% opacity
+  },
+
+  // Accent colors
+  accent: {
+    primary: lightBaseColors.green600, // Primary green
+    secondary: lightBaseColors.emerald500, // Secondary green (emerald)
+    tertiary: lightBaseColors.teal500, // Tertiary green (teal)
+    gradient: {
+      start: lightBaseColors.emerald500,
+      end: lightBaseColors.teal500,
+    },
+    // Accent colors with opacity
+    primary10: addOpacityToHex(lightBaseColors.green600, 0.1), // Primary with 10% opacity
+    primary30: addOpacityToHex(lightBaseColors.green600, 0.3), // Primary with 30% opacity
+    primary20: addOpacityToHex(lightBaseColors.green600, 0.2), // Primary with 20% opacity
+    primary40: addOpacityToHex(lightBaseColors.green600, 0.4), // Primary with 40% opacity
+    primary50: addOpacityToHex(lightBaseColors.green600, 0.5), // Primary with 50% opacity
+    primary5: addOpacityToHex(lightBaseColors.green600, 0.05), // Primary with 5% opacity
+    secondary10: addOpacityToHex(lightBaseColors.emerald500, 0.1), // Secondary with 10% opacity
+    secondary20: addOpacityToHex(lightBaseColors.emerald500, 0.2), // Secondary with 20% opacity
+    secondary31: addOpacityToHex(lightBaseColors.emerald500, 0.31), // Secondary with 31% opacity
+  },
+
+  // Border colors
+  border: {
+    default: addOpacityToHex(lightBaseColors.gray300, 0.5), // Light border
+    light: addOpacityToHex(lightBaseColors.gray200, 0.8), // Lighter border
+    dark: lightBaseColors.gray300, // Darker border
+    accent: lightBaseColors.emerald300, // Accent border
+    dashed: lightBaseColors.gray300, // Dashed border
+    emerald: addOpacityToHex(lightBaseColors.emerald500, 0.3), // emerald/30
+    blue: addOpacityToHex(lightBaseColors.blue500, 0.4), // blue-500/40
+    gray600: addOpacityToHex(lightBaseColors.gray400, 0.4), // gray-400/40
+  },
+
+  // Status colors
+  status: {
+    success: lightBaseColors.green600,
+    warning: lightBaseColors.orange500,
+    error: lightBaseColors.red500,
+    info: lightBaseColors.blue500,
+    purple: lightBaseColors.purple500,
+    notificationBadge: lightBaseColors.red500,
+    amber: lightBaseColors.amber400,
+    yellow: lightBaseColors.yellow500,
+    indigo: lightBaseColors.indigo500,
+    indigoLight: lightBaseColors.indigo400,
+    emerald: lightBaseColors.emerald500,
+    emeraldLight: lightBaseColors.emerald400,
+    greenDark: lightBaseColors.green600,
+    indigoVeryLight: lightBaseColors.indigo200,
+    emeraldVeryLight: lightBaseColors.emerald200,
+    // Status colors with opacity
+    success20: addOpacityToHex(lightBaseColors.green600, 0.2),
+    error8: addOpacityToHex(lightBaseColors.red500, 0.08),
+    error10: addOpacityToHex(lightBaseColors.red500, 0.1),
+    error12: addOpacityToHex(lightBaseColors.red500, 0.125),
+    error20: addOpacityToHex(lightBaseColors.red500, 0.2),
+    error50: addOpacityToHex(lightBaseColors.red500, 0.5),
+    info20: addOpacityToHex(lightBaseColors.blue500, 0.2),
+    info10: addOpacityToHex(lightBaseColors.blue500, 0.1),
+    info50: addOpacityToHex(lightBaseColors.blue500, 0.5),
+    warning50: addOpacityToHex(lightBaseColors.orange500, 0.5),
+    purple40: addOpacityToHex(lightBaseColors.purple500, 0.4),
+    purple20: addOpacityToHex(lightBaseColors.purple500, 0.2),
+    purple13: addOpacityToHex(lightBaseColors.purple500, 0.13),
+    purple10: addOpacityToHex(lightBaseColors.purple500, 0.1),
+    amber10: addOpacityToHex(lightBaseColors.amber400, 0.1),
+    warning10: addOpacityToHex(lightBaseColors.orange500, 0.1),
+    emerald10: addOpacityToHex(lightBaseColors.emerald500, 0.1),
+    emerald20: addOpacityToHex(lightBaseColors.emerald500, 0.2),
+    emerald30: addOpacityToHex(lightBaseColors.emerald500, 0.3),
+    emerald400_10: addOpacityToHex(lightBaseColors.emerald400, 0.1),
+    emerald400_20: addOpacityToHex(lightBaseColors.emerald400, 0.2),
+    yellow10: addOpacityToHex(lightBaseColors.yellow500, 0.1),
+    indigo10: addOpacityToHex(lightBaseColors.indigo500, 0.1),
+    indigo20: addOpacityToHex(lightBaseColors.indigo500, 0.2),
+    indigo30: addOpacityToHex(lightBaseColors.indigo600, 0.3),
+    indigo600: lightBaseColors.indigo600,
+    redDark: lightBaseColors.red400,
+    emeraldDark: lightBaseColors.emerald600,
+    indigo600Purple: lightBaseColors.violet500,
+    blue600: lightBaseColors.blue600,
+    pink500: lightBaseColors.pink500,
+    rose600: lightBaseColors.rose600,
+    customGreen: lightBaseColors.emerald400,
+    emeraldTeal: lightBaseColors.teal500,
+    gray10: addOpacityToHex(lightBaseColors.gray500, 0.1),
+    errorSolid: lightBaseColors.red500,
+    emeraldSolid: lightBaseColors.emerald500,
+    red400: lightBaseColors.red400,
+    teal400: lightBaseColors.teal400,
+    purple400: lightBaseColors.purple400,
+    violet500: lightBaseColors.violet500,
+  },
+
+  // Rose colors
+  rose: {
+    brand: lightBaseColors.rose500,
+    dark: lightBaseColors.rose600,
+    brand10: addOpacityToHex(lightBaseColors.rose500, 0.1),
+    brand20: addOpacityToHex(lightBaseColors.rose600, 0.2),
+  },
+
+  // Macro colors
+  macros: {
+    protein: {
+      text: lightBaseColors.indigo500,
+      bg: lightBaseColors.indigo500,
+    },
+    carbs: {
+      text: lightBaseColors.emerald500,
+      bg: lightBaseColors.emerald500,
+    },
+    fat: {
+      text: lightBaseColors.amber500,
+      bg: lightBaseColors.amber500,
+    },
+    fiber: {
+      text: lightBaseColors.pink500,
+      bg: lightBaseColors.pink500,
+    },
+  },
+
+  // Avatar colors
+  avatar: {
+    emerald: lightBaseColors.green600,
+    blue: lightBaseColors.blue500,
+    purple: lightBaseColors.violet500,
+    pink: lightBaseColors.pink500,
+    orange: lightBaseColors.orange500,
+    teal: lightBaseColors.teal500,
+    yellow: lightBaseColors.yellow500,
+    indigo: lightBaseColors.indigo500,
+  },
+
+  // Avatar background colors (with opacity)
+  avatarBg: {
+    emerald: addOpacityToHex(lightBaseColors.green600, 0.2),
+    blue: addOpacityToHex(lightBaseColors.blue500, 0.2),
+    purple: addOpacityToHex(lightBaseColors.violet500, 0.2),
+    pink: addOpacityToHex(lightBaseColors.pink500, 0.2),
+    orange: addOpacityToHex(lightBaseColors.orange500, 0.2),
+    teal: addOpacityToHex(lightBaseColors.teal500, 0.2),
+    yellow: addOpacityToHex(lightBaseColors.yellow500, 0.2),
+    indigo: addOpacityToHex(lightBaseColors.indigo500, 0.2),
+  },
+
+  // Google brand colors
+  google: {
+    borderLight: lightBaseColors.gray300,
+    borderDark: lightBaseColors.gray400,
+    backgroundDark: lightBaseColors.white,
+    textLight: lightBaseColors.gray900,
+    textDark: lightBaseColors.gray700,
+    overlayDark: lightBaseColors.gray100,
+    overlayLight: lightBaseColors.gray50,
+    disabledBorderLight: addOpacityToHex(lightBaseColors.gray300, 0.12),
+    disabledBorderDark: addOpacityToHex(lightBaseColors.gray400, 0.12),
+    disabledBgLight: addOpacityToHex(lightBaseColors.gray900, 0.38),
+    disabledBgDark: addOpacityToHex(lightBaseColors.gray100, 0.38),
+  },
+
+  // Overlay and opacity colors
+  overlay: {
+    black60: addOpacityToHex(lightBaseColors.gray900, 0.6),
+    black90: addOpacityToHex(lightBaseColors.gray900, 0.9),
+    white50: addOpacityToHex(lightBaseColors.white, 0.5),
+    white60: addOpacityToHex(lightBaseColors.white, 0.6),
+    white70: addOpacityToHex(lightBaseColors.white, 0.7),
+    white90: addOpacityToHex(lightBaseColors.white, 0.9),
+    white80: addOpacityToHex(lightBaseColors.white, 0.8),
+    white30: addOpacityToHex(lightBaseColors.white, 0.3),
+    white20: addOpacityToHex(lightBaseColors.white, 0.2),
+    white5: addOpacityToHex(lightBaseColors.white, 0.05),
+    black60Opacity: addOpacityToHex(lightBaseColors.gray900, 0.6),
+    backdrop: addOpacityToHex(lightBaseColors.white, 0.8),
+    backdrop90: addOpacityToHex(lightBaseColors.white, 0.9),
+    darkGreenOverlayGradient: addOpacityToHex(lightBaseColors.gray100, 0.9),
+  },
+
+  // Opacity values (for use in style objects)
+  opacity: {
+    zero: 0,
+    veryLight: 0.1,
+    subtle: 0.2,
+    medium: 0.5,
+    strong: 0.7,
+    ultra: 0.9,
+    full: 1.0,
+  },
+
+  // Gradient colors
+  gradients: {
+    primary: [
+      lightBaseColors.blue500,
+      lightBaseColors.teal500,
+      lightBaseColors.emerald500,
+    ] as const,
+    accent: [lightBaseColors.emerald500, lightBaseColors.teal500] as const,
+    card: [lightBaseColors.gray50, lightBaseColors.white] as const,
+    button: [lightBaseColors.emerald50, lightBaseColors.emerald100] as const,
+    progress: [
+      lightBaseColors.indigo500,
+      lightBaseColors.teal500,
+      lightBaseColors.emerald500,
+    ] as const,
+    workoutsTitle: [
+      lightBaseColors.violet400,
+      lightBaseColors.blue500,
+      lightBaseColors.emerald400,
+    ] as const,
+    notification: [lightBaseColors.gray100, lightBaseColors.gray50] as const,
+    upNextCard: [lightBaseColors.gray100, lightBaseColors.gray50, lightBaseColors.white] as const,
+    cta: [lightBaseColors.indigo600, lightBaseColors.emerald500] as const,
+    userBubble: [lightBaseColors.green600, lightBaseColors.emerald600] as const,
+    celebrationGlow: [
+      lightBaseColors.indigo200,
+      lightBaseColors.white,
+      lightBaseColors.emerald200,
+    ] as const,
+    restOverTitle: [lightBaseColors.green600, lightBaseColors.indigo400] as const,
+    workoutStats: [
+      lightBaseColors.indigo400,
+      lightBaseColors.green600,
+      lightBaseColors.emerald400,
+    ] as const,
+    workoutSessionOverlay: [
+      addOpacityToHex(lightBaseColors.white, 0.95),
+      addOpacityToHex(lightBaseColors.white, 0.85),
+      addOpacityToHex(lightBaseColors.white, 0.7),
+    ] as const,
+    indigoPurple: [lightBaseColors.indigo600, lightBaseColors.violet500] as const,
+    emeraldTeal: [lightBaseColors.emerald500, lightBaseColors.teal500] as const,
+    pinkRose: [lightBaseColors.pink500, lightBaseColors.rose600] as const,
+    blueEmerald: [lightBaseColors.blue600, lightBaseColors.emerald500] as const,
+    overlayDark: [
+      'transparent',
+      addOpacityToHex(lightBaseColors.gray100, 0.9),
+      lightBaseColors.gray200,
+    ] as const,
+    cameraOverlay: [
+      addOpacityToHex(lightBaseColors.gray900, 0.6),
+      'transparent',
+      addOpacityToHex(lightBaseColors.gray900, 0.9),
+    ] as const,
+    onboardingAmbient: [
+      addOpacityToHex(lightBaseColors.indigo500, 0.2),
+      addOpacityToHex(lightBaseColors.emerald500, 0.2),
+      addOpacityToHex(lightBaseColors.emerald400, 0.2),
+    ] as const,
+    landingBackground: [
+      lightBaseColors.gray50,
+      lightBaseColors.white,
+      lightBaseColors.gray100,
+    ] as const,
+    whiteSubtle: [
+      addOpacityToHex(lightBaseColors.gray900, 0.1),
+      addOpacityToHex(lightBaseColors.gray900, 0.05),
+    ] as const,
+    backdrop90: addOpacityToHex(lightBaseColors.white, 0.9),
+  },
+};
+
+export const darkTheme = {
+  colors: darkThemeColors,
   typography: {
     // Font sizes
     fontSize: {
@@ -651,28 +1099,28 @@ export const theme = {
 
   shadows: {
     sm: {
-      shadowColor: themeColors.text.black,
+      shadowColor: darkThemeColors.text.black,
       shadowOffset: { width: 0, height: 1 },
       shadowOpacity: 0.05,
       shadowRadius: 2,
       elevation: 1,
     },
     md: {
-      shadowColor: themeColors.text.black,
+      shadowColor: darkThemeColors.text.black,
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.1,
       shadowRadius: 4,
       elevation: 3,
     },
     lg: {
-      shadowColor: themeColors.text.black,
+      shadowColor: darkThemeColors.text.black,
       shadowOffset: { width: 0, height: 4 },
       shadowOpacity: 0.15,
       shadowRadius: 8,
       elevation: 5,
     },
     accent: {
-      shadowColor: themeColors.accent.primary,
+      shadowColor: darkThemeColors.accent.primary,
       shadowOffset: { width: 0, height: 4 },
       shadowOpacity: 0.3,
       shadowRadius: 8,
@@ -680,7 +1128,7 @@ export const theme = {
     },
     // Additional shadow variants
     none: {
-      shadowColor: themeColors.text.black,
+      shadowColor: darkThemeColors.text.black,
       shadowOffset: { width: 0, height: 0 },
       shadowOpacity: 0,
       shadowRadius: 0,
@@ -688,42 +1136,42 @@ export const theme = {
     },
     // Specific shadow radius values
     radius3: {
-      shadowColor: themeColors.text.black,
+      shadowColor: darkThemeColors.text.black,
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.2,
       shadowRadius: 3,
       elevation: 3,
     },
     radius4: {
-      shadowColor: themeColors.text.black,
+      shadowColor: darkThemeColors.text.black,
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.3,
       shadowRadius: 4,
       elevation: 3,
     },
     radius8: {
-      shadowColor: themeColors.text.black,
+      shadowColor: darkThemeColors.text.black,
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.2,
       shadowRadius: 8,
       elevation: 3,
     },
     radius15: {
-      shadowColor: themeColors.text.black,
+      shadowColor: darkThemeColors.text.black,
       shadowOffset: { width: 0, height: 0 },
       shadowOpacity: 0.3,
       shadowRadius: 15,
       elevation: 5,
     },
     radius20: {
-      shadowColor: themeColors.text.black,
+      shadowColor: darkThemeColors.text.black,
       shadowOffset: { width: 0, height: 0 },
       shadowOpacity: 0.3,
       shadowRadius: 20,
       elevation: 10,
     },
     radius40: {
-      shadowColor: themeColors.text.black,
+      shadowColor: darkThemeColors.text.black,
       shadowOffset: { width: 0, height: 0 },
       shadowOpacity: 0.1,
       shadowRadius: 40,
@@ -731,42 +1179,42 @@ export const theme = {
     },
     // Custom shadow for sliders
     slider: {
-      shadowColor: themeColors.text.black,
+      shadowColor: darkThemeColors.text.black,
       shadowOffset: { width: 0, height: 0 },
       shadowOpacity: 0.4,
       shadowRadius: 6,
       elevation: 5,
     },
     accentGlow: {
-      shadowColor: themeColors.accent.primary,
+      shadowColor: darkThemeColors.accent.primary,
       shadowOffset: { width: 0, height: 0 },
       shadowOpacity: 0.3,
       shadowRadius: 15,
       elevation: 5,
     },
     error: {
-      shadowColor: themeColors.status.error,
+      shadowColor: darkThemeColors.status.error,
       shadowOffset: { width: 0, height: 4 },
       shadowOpacity: 0.3,
       shadowRadius: 12,
       elevation: 4,
     },
     purpleGlow: {
-      shadowColor: themeColors.status.purple,
+      shadowColor: darkThemeColors.status.purple,
       shadowOffset: { width: 0, height: 0 },
       shadowOpacity: 0.8,
       shadowRadius: 200,
       elevation: 0,
     },
     accentGlowLarge: {
-      shadowColor: themeColors.accent.primary,
+      shadowColor: darkThemeColors.accent.primary,
       shadowOffset: { width: 0, height: 0 },
       shadowOpacity: 0.4,
       shadowRadius: 10,
       elevation: 5,
     },
     roseGlow: {
-      shadowColor: themeColors.rose.brand,
+      shadowColor: darkThemeColors.rose.brand,
       shadowOffset: { width: 0, height: 4 },
       shadowOpacity: 0.2,
       shadowRadius: 8,
@@ -928,10 +1376,18 @@ export const theme = {
   },
 } as const;
 
+export const lightTheme = {
+  ...darkTheme,
+  colors: lightThemeColors,
+} as const;
+
+// Default export is dark theme for backward compatibility
+export const theme = darkTheme;
+
 // Type exports for TypeScript
-export type Theme = typeof theme;
-export type ThemeColors = typeof theme.colors;
-export type ThemeTypography = typeof theme.typography;
+export type Theme = typeof darkTheme;
+export type ThemeColors = typeof darkTheme.colors;
+export type ThemeTypography = typeof darkTheme.typography;
 
 /**
  * Utility functions for accessing theme values

@@ -1,8 +1,7 @@
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Text, View } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 
 type ProgressIndicatorProps = {
   message?: string;
@@ -10,6 +9,7 @@ type ProgressIndicatorProps = {
 };
 
 export function ProgressIndicator({ message, size = 'large' }: ProgressIndicatorProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const displayMessage = message || t('common.loading');
   return (

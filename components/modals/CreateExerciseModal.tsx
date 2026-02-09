@@ -2,9 +2,8 @@ import { Camera, ChevronDown, Dumbbell, Link } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { BottomPopUpMenu } from '../BottomPopUpMenu';
 import { Button } from '../theme/Button';
 import { TextInput } from '../theme/TextInput';
@@ -21,8 +20,8 @@ type CreateExerciseModalProps = {
 };
 
 export default function CreateExerciseModal({ visible, onClose }: CreateExerciseModalProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
-  const insets = useSafeAreaInsets();
   const [exerciseName, setExerciseName] = useState('');
   const [primaryMuscle, setPrimaryMuscle] = useState<string | null>(null);
   const [secondaryMuscles, setSecondaryMuscles] = useState<string[]>(['abs', 'traps']);

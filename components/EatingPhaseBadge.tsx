@@ -1,8 +1,7 @@
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { theme } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 
 type EatingPhase = 'cutting' | 'maintenance' | 'bulking' | 'lean-bulk';
 
@@ -17,6 +16,7 @@ export function EatingPhaseBadge({
   variant = 'default',
   showBorder = true,
 }: EatingPhaseBadgeProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const fontSize =
     variant === 'compact' ? theme.typography.fontSize.xxs : theme.typography.fontSize.xs;

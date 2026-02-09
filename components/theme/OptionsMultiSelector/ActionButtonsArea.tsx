@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { View } from 'react-native';
 
-import { theme } from '../../../theme';
+import { useTheme } from '../../../hooks/useTheme';
 import { DeleteActionButton } from './DeleteActionButton';
 import { GroupActionButton } from './GroupActionButton';
 
@@ -22,6 +22,7 @@ export const ActionButtonsArea: FC<ActionButtonsAreaProps> = ({
   onGroupAction,
   onDelete,
 }) => {
+  const theme = useTheme();
   const showGroupButton = canGroup;
   const showDeleteButton = canDelete;
 

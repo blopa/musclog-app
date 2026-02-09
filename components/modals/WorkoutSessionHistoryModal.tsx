@@ -8,7 +8,7 @@ import WorkoutLog from '../../database/models/WorkoutLog';
 import WorkoutLogSet from '../../database/models/WorkoutLogSet';
 import { useSessionTotalTime } from '../../hooks/useSessionTotalTime';
 import { useSettings } from '../../hooks/useSettings';
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { getWeightUnitI18nKey } from '../../utils/units';
 import { ExerciseData, ExerciseItem } from '../WorkoutHistoryExerciseItem';
 import { FullScreenModal } from './FullScreenModal';
@@ -32,6 +32,7 @@ export function WorkoutSessionHistoryModal({
   exercises = [],
   currentSetOrder = null,
 }: WorkoutHistoryModalProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const { units } = useSettings();
   const weightUnitKey = getWeightUnitI18nKey(units);

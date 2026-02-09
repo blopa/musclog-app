@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Image, ImageSourcePropType, Text, View } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { MenuButton } from '../theme/MenuButton';
 import { GenericCard } from './GenericCard';
 
@@ -20,6 +20,7 @@ export function FoodItemCard({
   image,
   onMorePress,
 }: FoodItemCardProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
 
   return (

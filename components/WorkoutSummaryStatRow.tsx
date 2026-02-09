@@ -2,7 +2,7 @@ import { Star } from 'lucide-react-native';
 import { ComponentType } from 'react';
 import { Text, View } from 'react-native';
 
-import { theme } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 
 export type StatRowProps = {
   icon: ComponentType<{ size: number; color: string }>;
@@ -25,6 +25,7 @@ export function WorkoutSummaryStatRow({
   showDivider = true,
   showStarIcon = false,
 }: StatRowProps) {
+  const theme = useTheme();
   return (
     <View
       className={`flex-row items-center justify-between ${showDivider ? 'border-b border-white/5 pb-4' : ''}`}

@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
 import { GEMINI_MODELS, OPENAI_MODELS } from '../../constants/ai';
+import { useTheme } from '../../hooks/useTheme';
 import packageJson from '../../package.json';
-import { theme } from '../../theme';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { GoogleSignInButton } from '../GoogleSignInButton';
 import { Button } from '../theme/Button';
@@ -57,6 +57,7 @@ function AIIntegrationCard({
   onModelPress,
   modelFallbackText,
 }: AIIntegrationCardProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
 
   return (
@@ -208,6 +209,7 @@ export function AISettingsModal({
   workoutInsights = false,
   onWorkoutInsightsChange,
 }: AISettingsModalProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const [openAiKeyVisible, setOpenAiKeyVisible] = useState(false);
   const [geminiModelMenuVisible, setGeminiModelMenuVisible] = useState(false);

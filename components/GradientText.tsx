@@ -3,7 +3,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { ReactNode } from 'react';
 import { Platform, StyleSheet, Text } from 'react-native';
 
-import { theme } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 
 type GradientTextProps = {
   colors: readonly [string, string, ...string[]];
@@ -12,6 +12,7 @@ type GradientTextProps = {
 };
 
 export function GradientText({ colors, style, children }: GradientTextProps) {
+  const theme = useTheme();
   // For web, use a CSS-based approach with inline styles
   if (Platform.OS === 'web') {
     // const gradientId = `gradient-${Math.random().toString(36).substr(2, 9)}`;

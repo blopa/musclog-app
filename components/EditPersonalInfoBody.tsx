@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
-import { theme } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 import { AvatarColor } from '../types/AvatarColor';
 import { AvatarIcon } from '../types/AvatarIcon';
 import { getAvatarIcon } from '../utils/avatarUtils';
@@ -52,6 +52,7 @@ export function EditPersonalInfoBody({
   hideSaveButton = false,
   showEmailInput = false,
 }: EditPersonalInfoBodyProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const [fullName, setFullName] = useState(initialData?.fullName ?? '');
   const [email, setEmail] = useState(initialData?.email ?? '');

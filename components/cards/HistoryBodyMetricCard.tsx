@@ -2,7 +2,7 @@ import { TrendingDown, TrendingUp } from 'lucide-react-native';
 import { ComponentType } from 'react';
 import { Text, View } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { GenericCard } from './GenericCard';
 
 type HistoryEntry = {
@@ -20,6 +20,7 @@ type HistoryEntry = {
 
 // History Entry Card Component
 export function HistoryBodyMetricCard({ entry }: { entry: HistoryEntry }) {
+  const theme = useTheme();
   const IconComponent = entry.icon;
 
   return (

@@ -1,11 +1,11 @@
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { theme } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 import { GradientText } from './GradientText';
 
 export function RestOverTitle() {
+  const theme = useTheme();
   const { t } = useTranslation();
   return (
     <View className="mx-auto max-w-xs gap-3">

@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
-import { theme } from '../../../theme';
+import { useTheme } from '../../../hooks/useTheme';
 
 type GroupActionButtonProps = {
   onPress: () => void;
@@ -13,6 +13,7 @@ export const GroupActionButton: FC<GroupActionButtonProps> = ({
   onPress,
   allSelectedInSameGroup,
 }) => {
+  const theme = useTheme();
   const { t } = useTranslation();
   // Custom icon to match the image (4 dots with a horizontal line)
   const ActionIcon = ({ color }: { color: string }) => (

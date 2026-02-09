@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import { Text, View } from 'react-native';
 
-import { theme } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 import { EditScreenInfo } from './EditScreenInfo';
 
 type ScreenContentProps = {
@@ -11,6 +11,7 @@ type ScreenContentProps = {
 };
 
 export const ScreenContent = ({ title, path, children }: ScreenContentProps) => {
+  const theme = useTheme();
   return (
     <View className={styles.container}>
       <Text className={styles.title}>{title}</Text>

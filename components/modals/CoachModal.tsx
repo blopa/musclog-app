@@ -22,7 +22,8 @@ import {
   SendProps,
 } from 'react-native-gifted-chat';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
+import type { Theme } from '../../theme';
 import { ChatWorkoutCard } from '../cards/ChatWorkoutCard';
 import { MenuButton } from '../theme/MenuButton';
 import { FullScreenModal } from './FullScreenModal';
@@ -145,7 +146,7 @@ const getInitialMessages = (): ExtendedIMessage[] => {
 
 // --- Custom Render Functions (Defined Outside for Stability) ---
 
-const renderMessageText = (props: any) => {
+const renderMessageText = (props: any, theme: Theme) => {
   return (
     <Text
       style={{
@@ -182,9 +183,10 @@ const renderCustomView = (props: BubbleProps<ExtendedIMessage>) => {
   return null;
 };
 
-const renderBubble = (props: BubbleProps<ExtendedIMessage>) => {
+const renderBubble = (props: BubbleProps<ExtendedIMessage>, theme: Theme) => {
   const { currentMessage, user } = props;
   const isUser = user && currentMessage?.user._id === user._id;
+  const styles = getStyles(theme);
 
   if (isUser) {
     return (
@@ -196,7 +198,7 @@ const renderBubble = (props: BubbleProps<ExtendedIMessage>) => {
             end={{ x: 1, y: 1 }}
             style={styles.userBubbleGradient}
           >
-            {renderMessageText(props)}
+            {renderMessageText(props, theme)}
           </LinearGradient>
         ) : null}
         {!!currentMessage?.workout ? renderCustomView(props) : null}
@@ -222,7 +224,7 @@ const renderBubble = (props: BubbleProps<ExtendedIMessage>) => {
           </Text>
         ) : null}
         {!!currentMessage?.text ? (
-          <View style={styles.aiBubbleContent}>{renderMessageText(props)}</View>
+          <View style={styles.aiBubbleContent}>{renderMessageText(props, theme)}</View>
         ) : null}
         {!!currentMessage?.workout ? renderCustomView(props) : null}
       </View>
@@ -230,7 +232,9 @@ const renderBubble = (props: BubbleProps<ExtendedIMessage>) => {
   }
 };
 
-const renderAvatar = (props: any) => {
+const renderAvatar = (props: any, theme: Theme) => {
+  const styles = getStyles(theme);
+
   if (props.currentMessage?.user._id === 1) return null;
   if (!props.currentMessage?.text && props.currentMessage?.workout) {
     return <View style={{ width: theme.size['8'] }} />;
@@ -238,7 +242,7 @@ const renderAvatar = (props: any) => {
   return <Image source={{ uri: AI_COACH_AVATAR }} style={styles.avatar} resizeMode="cover" />;
 };
 
-const renderDay = (props: any, t: TFunction) => {
+const renderDay = (props: any, t: TFunction, theme: Theme) => {
   if (!props.currentMessage?.createdAt) return null;
   const date = new Date(props.currentMessage.createdAt);
   const now = new Date();
@@ -260,7 +264,9 @@ const renderDay = (props: any, t: TFunction) => {
   return null;
 };
 
-const renderSend = (props: SendProps<ExtendedIMessage>) => {
+const renderSend = (props: SendProps<ExtendedIMessage>, theme: Theme) => {
+  const styles = getStyles(theme);
+
   return (
     <Send {...props} containerStyle={styles.sendContainer}>
       <View
@@ -273,7 +279,9 @@ const renderSend = (props: SendProps<ExtendedIMessage>) => {
   );
 };
 
-const renderComposer = (props: ComposerProps, t: TFunction) => {
+const renderComposer = (props: ComposerProps, t: TFunction, theme: Theme) => {
+  const styles = getStyles(theme);
+
   return (
     <View style={styles.composerWrapper}>
       <Composer
@@ -293,7 +301,9 @@ const renderComposer = (props: ComposerProps, t: TFunction) => {
   );
 };
 
-const renderInputToolbar = (props: InputToolbarProps<ExtendedIMessage>) => {
+const renderInputToolbar = (props: InputToolbarProps<ExtendedIMessage>, theme: Theme) => {
+  const styles = getStyles(theme);
+
   return (
     <InputToolbar
       {...props}
@@ -311,6 +321,7 @@ type CoachModalProps = {
 };
 
 export function CoachModal({ visible, onClose }: CoachModalProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const [messages, setMessages] = useState<ExtendedIMessage[]>([]);
 
@@ -364,7 +375,17 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
         </Pressable>
       </ScrollView>
     );
-  }, [t]);
+  }, [
+    t,
+    theme.colors.accent.primary,
+    theme.colors.accent.primary30,
+    theme.colors.border.light,
+    theme.colors.status.indigo10,
+    theme.colors.status.info,
+    theme.colors.status.warning,
+    theme.iconSize.md,
+    theme.spacing.gap.sm,
+  ]);
 
   const headerRight = useMemo(
     () => <MenuButton size="lg" onPress={() => {}} className="h-10 w-10 active:bg-white/5" />,
@@ -422,14 +443,14 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
             messages={messages}
             onSend={onSend}
             user={{ _id: 1 }}
-            renderBubble={renderBubble}
-            renderAvatar={renderAvatar}
+            renderBubble={(props) => renderBubble(props, theme)}
+            renderAvatar={(props) => renderAvatar(props, theme)}
             renderCustomView={renderCustomView}
-            renderInputToolbar={renderInputToolbar}
-            renderComposer={(props) => renderComposer(props, t)}
-            renderSend={renderSend}
+            renderInputToolbar={(props) => renderInputToolbar(props, theme)}
+            renderComposer={(props) => renderComposer(props, t, theme)}
+            renderSend={(props) => renderSend(props, theme)}
             renderAccessory={renderAccessory}
-            renderDay={(props) => renderDay(props, t)}
+            renderDay={(props) => renderDay(props, t, theme)}
             scrollToBottomComponent={() => null}
             minInputToolbarHeight={0}
             listProps={{
@@ -445,68 +466,69 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
   );
 }
 
-const styles = StyleSheet.create({
-  userBubbleContainer: {
-    maxWidth: '85%',
-    marginRight: theme.spacing.margin.zero,
-    marginLeft: 'auto',
-    alignItems: 'flex-end',
-  },
-  userBubbleGradient: {
-    paddingHorizontal: theme.spacing.padding.base,
-    paddingVertical: theme.spacing.padding.md,
-    borderRadius: theme.borderRadius.xl,
-    borderBottomRightRadius: theme.spacing.padding.xs,
-  },
-  aiBubbleContainer: {
-    maxWidth: '85%',
-    marginLeft: theme.spacing.margin.zero,
-    marginRight: 'auto',
-    alignItems: 'flex-start',
-  },
-  aiBubbleContent: {
-    backgroundColor: theme.colors.background.cardElevated,
-    paddingHorizontal: theme.spacing.padding.base,
-    paddingVertical: theme.spacing.padding.md,
-    borderRadius: theme.borderRadius.xl,
-    borderBottomLeftRadius: theme.spacing.padding.xs,
-  },
-  avatar: {
-    width: theme.size['8'],
-    height: theme.size['8'],
-    borderRadius: theme.borderRadius.full / 2,
-    marginRight: theme.spacing.padding.sm,
-    marginBottom: theme.spacing.padding.xs,
-  },
-  sendContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'flex-end',
-    marginLeft: theme.spacing.padding.sm,
-  },
-  composerWrapper: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: theme.borderRadius.xl,
-    borderWidth: theme.borderWidth.thin,
-    borderColor: theme.colors.border.light,
-    backgroundColor: theme.colors.background.card,
-    paddingLeft: theme.spacing.padding.xs,
-  },
-  composerTextInput: {
-    fontSize: theme.typography.fontSize.base,
-    color: theme.colors.text.primary,
-    marginTop: theme.spacing.padding.sm,
-    marginBottom: theme.spacing.padding.sm,
-  },
-  inputToolbarContainer: {
-    backgroundColor: 'transparent',
-    borderTopWidth: theme.borderWidth.none,
-    paddingHorizontal: theme.spacing.padding.base,
-    paddingBottom: theme.spacing.padding.sm,
-  },
-  inputToolbarPrimary: {
-    alignItems: 'flex-end',
-  },
-});
+const getStyles = (theme: Theme) =>
+  StyleSheet.create({
+    userBubbleContainer: {
+      maxWidth: '85%',
+      marginRight: theme.spacing.margin.zero,
+      marginLeft: 'auto',
+      alignItems: 'flex-end',
+    },
+    userBubbleGradient: {
+      paddingHorizontal: theme.spacing.padding.base,
+      paddingVertical: theme.spacing.padding.md,
+      borderRadius: theme.borderRadius.xl,
+      borderBottomRightRadius: theme.spacing.padding.xs,
+    },
+    aiBubbleContainer: {
+      maxWidth: '85%',
+      marginLeft: theme.spacing.margin.zero,
+      marginRight: 'auto',
+      alignItems: 'flex-start',
+    },
+    aiBubbleContent: {
+      backgroundColor: theme.colors.background.cardElevated,
+      paddingHorizontal: theme.spacing.padding.base,
+      paddingVertical: theme.spacing.padding.md,
+      borderRadius: theme.borderRadius.xl,
+      borderBottomLeftRadius: theme.spacing.padding.xs,
+    },
+    avatar: {
+      width: theme.size['8'],
+      height: theme.size['8'],
+      borderRadius: theme.borderRadius.full / 2,
+      marginRight: theme.spacing.padding.sm,
+      marginBottom: theme.spacing.padding.xs,
+    },
+    sendContainer: {
+      justifyContent: 'center',
+      alignItems: 'center',
+      alignSelf: 'flex-end',
+      marginLeft: theme.spacing.padding.sm,
+    },
+    composerWrapper: {
+      flex: 1,
+      flexDirection: 'row',
+      alignItems: 'center',
+      borderRadius: theme.borderRadius.xl,
+      borderWidth: theme.borderWidth.thin,
+      borderColor: theme.colors.border.light,
+      backgroundColor: theme.colors.background.card,
+      paddingLeft: theme.spacing.padding.xs,
+    },
+    composerTextInput: {
+      fontSize: theme.typography.fontSize.base,
+      color: theme.colors.text.primary,
+      marginTop: theme.spacing.padding.sm,
+      marginBottom: theme.spacing.padding.sm,
+    },
+    inputToolbarContainer: {
+      backgroundColor: 'transparent',
+      borderTopWidth: theme.borderWidth.none,
+      paddingHorizontal: theme.spacing.padding.base,
+      paddingBottom: theme.spacing.padding.sm,
+    },
+    inputToolbarPrimary: {
+      alignItems: 'flex-end',
+    },
+  });

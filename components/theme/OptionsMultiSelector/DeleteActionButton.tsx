@@ -1,9 +1,9 @@
 import { Trash2 } from 'lucide-react-native';
 import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, Text } from 'react-native';
 
-import { theme } from '../../../theme';
+import { useTheme } from '../../../hooks/useTheme';
 
 type DeleteActionButtonProps = {
   onPress: () => void;
@@ -11,6 +11,7 @@ type DeleteActionButtonProps = {
 };
 
 export const DeleteActionButton: FC<DeleteActionButtonProps> = ({ onPress, selectedCount }) => {
+  const theme = useTheme();
   const { t } = useTranslation();
 
   return (

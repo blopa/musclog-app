@@ -1,8 +1,7 @@
 import { Folder, Plus, Sparkles } from 'lucide-react-native';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { BottomPopUpMenu } from '../BottomPopUpMenu';
 
 export type AddMealModalProps = {
@@ -20,6 +19,7 @@ export function AddMealModal({
   onGenerateMealAI,
   onManageCategories,
 }: AddMealModalProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
 
   const items = [

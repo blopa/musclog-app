@@ -1,7 +1,6 @@
-import React from 'react';
 import { Text, View } from 'react-native';
 
-import { theme } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 
 export type SetData = {
   setNumber: number;
@@ -17,6 +16,7 @@ type SetRowProps = {
 };
 
 export function SetRow({ set }: SetRowProps) {
+  const theme = useTheme();
   const isCurrent = set.isCurrent;
 
   return (

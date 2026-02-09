@@ -2,7 +2,7 @@ import { AlertCircle, CheckCircle2 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { theme } from '../../../theme';
+import { useTheme } from '../../../hooks/useTheme';
 import { GenericCard } from '../GenericCard';
 import {
   calculateDailySummaryMetrics,
@@ -30,6 +30,7 @@ export function DailySummaryCard({
   macros,
   highlightThresholdStyle = 'simple',
 }: DailySummaryCardProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const highlightThresholds = highlightThresholdStyle === 'default';
   const showColoredIndicators =
@@ -131,7 +132,7 @@ export function DailySummaryCard({
                 style={{
                   width: `${Math.min(calorieProgress, 100)}%`,
                   backgroundColor: showColoredIndicators
-                    ? getProgressBarColor(calorieStatus)
+                    ? getProgressBarColor(calorieStatus, theme)
                     : theme.colors.text.primary,
                 }}
               />
@@ -146,7 +147,7 @@ export function DailySummaryCard({
                 <Text
                   className="text-xs font-bold"
                   style={{
-                    color: getProgressBarColor(calorieStatus),
+                    color: getProgressBarColor(calorieStatus, theme),
                   }}
                 >
                   {getStatusLabel(calorieStatus, t)}
@@ -182,7 +183,7 @@ export function DailySummaryCard({
                     className="text-xs"
                     style={{
                       color: showColoredIndicators
-                        ? getProgressBarColor(proteinStatus)
+                        ? getProgressBarColor(proteinStatus, theme)
                         : theme.colors.text.primary,
                     }}
                   >
@@ -200,7 +201,7 @@ export function DailySummaryCard({
                   style={{
                     width: `${Math.min(proteinProgress, 100)}%`,
                     backgroundColor: showColoredIndicators
-                      ? getProgressBarColor(proteinStatus)
+                      ? getProgressBarColor(proteinStatus, theme)
                       : theme.colors.overlay.white90,
                   }}
                 />
@@ -230,7 +231,7 @@ export function DailySummaryCard({
                     className="text-xs"
                     style={{
                       color: showColoredIndicators
-                        ? getProgressBarColor(carbsStatus)
+                        ? getProgressBarColor(carbsStatus, theme)
                         : theme.colors.text.primary,
                     }}
                   >
@@ -248,7 +249,7 @@ export function DailySummaryCard({
                   style={{
                     width: `${Math.min(carbsProgress, 100)}%`,
                     backgroundColor: showColoredIndicators
-                      ? getProgressBarColor(carbsStatus)
+                      ? getProgressBarColor(carbsStatus, theme)
                       : theme.colors.overlay.white90,
                   }}
                 />
@@ -278,7 +279,7 @@ export function DailySummaryCard({
                     className="text-xs"
                     style={{
                       color: showColoredIndicators
-                        ? getProgressBarColor(fatsStatus)
+                        ? getProgressBarColor(fatsStatus, theme)
                         : theme.colors.text.primary,
                     }}
                   >
@@ -296,7 +297,7 @@ export function DailySummaryCard({
                   style={{
                     width: `${Math.min(fatsProgress, 100)}%`,
                     backgroundColor: showColoredIndicators
-                      ? getProgressBarColor(fatsStatus)
+                      ? getProgressBarColor(fatsStatus, theme)
                       : theme.colors.overlay.white90,
                   }}
                 />

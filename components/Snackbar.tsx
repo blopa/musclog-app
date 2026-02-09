@@ -2,7 +2,7 @@ import { AlertTriangle, CheckCircle } from 'lucide-react-native';
 import { useRef } from 'react';
 import { Animated, PanResponder, Pressable, Text, View } from 'react-native';
 
-import { theme } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 
 export type SnackbarType = {
   id: number;
@@ -18,6 +18,7 @@ type SnackbarProps = {
 };
 
 export function Snackbar({ snackbar, onDismiss }: SnackbarProps) {
+  const theme = useTheme();
   const pan = useRef(new Animated.ValueXY()).current;
   const opacity = useRef(new Animated.Value(1)).current;
 

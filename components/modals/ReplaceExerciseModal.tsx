@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, ScrollView, TextInput, View } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { BottomPopUpMenu } from '../BottomPopUpMenu';
 import { FilterTabs } from '../FilterTabs';
 import { OptionsSelector, SelectorOption } from '../OptionsSelector';
@@ -59,6 +59,7 @@ export function ReplaceExerciseModal({
   currentExercise,
   exercises = DEFAULT_EXERCISES,
 }: ReplaceExerciseModalProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const [selectedExercise, setSelectedExercise] = useState<string>(exercises[0]?.id || '');
   const [searchQuery, setSearchQuery] = useState('');

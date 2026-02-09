@@ -3,7 +3,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 
 type SliderProps = {
   value: number;
@@ -24,14 +24,15 @@ export function Slider({
   min,
   max,
   onChange,
-  trackColor = theme.colors.background.white10,
-  thumbColor = theme.colors.background.white,
+  trackColor,
+  thumbColor,
   useGradient = true,
-  gradientColors = theme.colors.gradients.progress,
+  gradientColors,
   variant = 'solid',
-  solidColor = theme.colors.accent.primary,
+  solidColor,
   step = 1,
 }: SliderProps) {
+  const theme = useTheme();
   const [containerWidth, setContainerWidth] = useState(0);
   const [displayValue, setDisplayValue] = useState(value);
 
@@ -60,7 +61,7 @@ export function Slider({
       {variant === 'gradient' ? (
         <View
           className="absolute left-0.5 right-0.5 h-1.5 rounded-full"
-          style={{ backgroundColor: trackColor }}
+          style={{ backgroundColor: trackColor || theme.colors.background.white10 }}
         />
       ) : null}
 
@@ -71,7 +72,7 @@ export function Slider({
           style={{ width: fillWidth }}
         >
           <LinearGradient
-            colors={gradientColors}
+            colors={gradientColors || theme.colors.gradients.progress}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             style={{ width: containerWidth, height: '100%' }}
@@ -89,9 +90,13 @@ export function Slider({
         minimumValue={min}
         maximumValue={max}
         onValueChange={handleValueChange}
-        minimumTrackTintColor={variant === 'solid' ? solidColor : 'transparent'}
-        maximumTrackTintColor={variant === 'solid' ? trackColor : 'transparent'}
-        thumbTintColor={thumbColor}
+        minimumTrackTintColor={
+          variant === 'solid' ? solidColor || theme.colors.accent.primary : 'transparent'
+        }
+        maximumTrackTintColor={
+          variant === 'solid' ? trackColor || theme.colors.background.white10 : 'transparent'
+        }
+        thumbTintColor={thumbColor || theme.colors.background.white}
         step={step}
       />
     </View>

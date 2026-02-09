@@ -2,7 +2,7 @@ import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { Button } from '../theme/Button';
 import { GenericCard } from './GenericCard';
 
@@ -29,6 +29,7 @@ export function NotificationCard({
   hasAction,
   onActionPress,
 }: NotificationCardProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const content = (
     <View className="flex-row gap-4">

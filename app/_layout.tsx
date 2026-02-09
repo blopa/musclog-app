@@ -11,10 +11,10 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { SnackbarProvider } from '../components/SnackbarContext';
+import { ThemeProvider, useThemeContext } from '../components/ThemeContext';
 import { seedDevData } from '../database/seeders/dev';
 import { seedProductionData } from '../database/seeders/prod';
 import { verifyDatabaseTables } from '../database/verify';
-import { theme } from '../theme';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -23,6 +23,44 @@ const queryClient = new QueryClient({
     },
   },
 });
+
+// Inner component that has access to theme context
+function AppContent() {
+  const { theme, isDark } = useThemeContext();
+
+  useEffect(() => {
+    // Setup Android Navigation Bar with dynamic theme
+    if (Platform.OS === 'android') {
+      NavigationBar.setBackgroundColorAsync(theme.colors.background.primary).catch((error) => {
+        if (__DEV__) {
+          console.warn(
+            'NavigationBar.setBackgroundColorAsync not available (edge-to-edge enabled):',
+            error.message
+          );
+        }
+      });
+      NavigationBar.setButtonStyleAsync(isDark ? 'light' : 'dark');
+    }
+  }, [theme, isDark]);
+
+  return (
+    <>
+      {Platform.OS === 'android' ? (
+        <StatusBar
+          barStyle={isDark ? 'light-content' : 'dark-content'}
+          backgroundColor="transparent"
+          translucent
+        />
+      ) : null}
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          contentStyle: { backgroundColor: theme.colors.background.primary },
+        }}
+      />
+    </>
+  );
+}
 
 export default function RootLayout() {
   useEffect(() => {
@@ -35,19 +73,6 @@ export default function RootLayout() {
     }
 
     const subscription = AppState.addEventListener('change', onAppStateChange);
-
-    // Existing Android Navigation Bar Logic
-    if (Platform.OS === 'android') {
-      NavigationBar.setBackgroundColorAsync(theme.colors.background.primary).catch((error) => {
-        if (__DEV__) {
-          console.warn(
-            'NavigationBar.setBackgroundColorAsync not available (edge-to-edge enabled):',
-            error.message
-          );
-        }
-      });
-      NavigationBar.setButtonStyleAsync('light');
-    }
 
     // Verify database tables exist (development only)
     if (__DEV__) {
@@ -87,17 +112,11 @@ export default function RootLayout() {
     <GestureHandlerRootView>
       <QueryClientProvider client={queryClient}>
         <SafeAreaProvider>
-          <SnackbarProvider>
-            {Platform.OS === 'android' ? (
-              <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
-            ) : null}
-            <Stack
-              screenOptions={{
-                headerShown: false,
-                contentStyle: { backgroundColor: theme.colors.background.primary },
-              }}
-            />
-          </SnackbarProvider>
+          <ThemeProvider>
+            <SnackbarProvider>
+              <AppContent />
+            </SnackbarProvider>
+          </ThemeProvider>
         </SafeAreaProvider>
       </QueryClientProvider>
     </GestureHandlerRootView>
