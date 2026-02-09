@@ -11,6 +11,7 @@ import { AdvancedSettingsModal } from '../components/modals/AdvancedSettingsModa
 import { AISettingsModal } from '../components/modals/AISettingsModal';
 import { BasicSettingsModal } from '../components/modals/BasicSettingsModal';
 import { ToggleInput } from '../components/theme/ToggleInput';
+import packageJson from '../package.json';
 import { theme } from '../theme';
 
 export default function SettingsScreen() {
@@ -189,8 +190,7 @@ export default function SettingsScreen() {
                 color: theme.colors.text.secondary,
               }}
             >
-              {/* TODO: load from package.json */}
-              v1.0.4
+              {packageJson.version}
             </Text>
           </Pressable>
           <Pressable
