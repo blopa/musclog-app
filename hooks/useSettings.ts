@@ -325,9 +325,12 @@ export function useSettings(): UseSettingsResult & {
     };
   }, []);
 
-  // TODO: check if either google gemini or openai are enabled
-  // and if any of them are enabled, then check if the api key is set
-  const isAiFeaturesEnabled = false;
+  const isAiFeaturesEnabled = useMemo(() => {
+    return (
+      (enableGoogleGemini && googleGeminiApiKey.trim() !== '') ||
+      (enableOpenAi && openAiApiKey.trim() !== '')
+    );
+  }, [enableGoogleGemini, googleGeminiApiKey, enableOpenAi, openAiApiKey]);
 
   // Memoize the return value to prevent unnecessary re-renders
   return useMemo(
@@ -369,6 +372,7 @@ export function useSettings(): UseSettingsResult & {
       workoutInsights,
       notifications,
       isLoading,
+      isAiFeaturesEnabled,
     ]
   );
 }
