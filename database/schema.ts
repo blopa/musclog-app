@@ -204,12 +204,13 @@ export const schema = appSchema({
         { name: 'amount', type: 'number' }, // Quantity eaten
         { name: 'portion_id', type: 'string', isOptional: true }, // Unit used (e.g., linked to food_portions)
 
-        // Snapshot of macros at time of logging - not really needed now
+        // MAYBE: implement log for the main macros and micros, since the original food might not be available or be changed
         // { name: 'logged_calories', type: 'number' },
         // { name: 'logged_protein', type: 'number' },
         // { name: 'logged_carbs', type: 'number' },
         // { name: 'logged_fat', type: 'number' },
         // { name: 'logged_fiber', type: 'number' },
+        // { name: 'micros_json', type: 'string', isOptional: true },
 
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
