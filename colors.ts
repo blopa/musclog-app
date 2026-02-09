@@ -106,6 +106,7 @@ const colors = {
   surfaceWhite: '#ffffff',
   textWhite: '#ffffff',
   whiteFade: '#ffffff61',
+  // TODO: instead of using rgba, use the colors defined above with a helper function to add transparency
   blackAlpha10: 'rgba(0, 0, 0, 0.1)',
   blackAlpha15: 'rgba(0, 0, 0, 0.15)',
   blackAlpha20: 'rgba(0, 0, 0, 0.2)',
@@ -198,3 +199,15 @@ const colors = {
   indigoLightAlpha20: 'rgba(99, 102, 241, 0.2)',
   indigoLightAlpha20Alt: 'rgba(99, 102, 241, 0.2)',
 };
+
+function addOpacityToHex(hexColor: string, opacity: number): string {
+  // Remove # if present
+  const hex = hexColor.replace('#', '');
+
+  // Parse RGB values
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+
+  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+}
