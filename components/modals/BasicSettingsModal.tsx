@@ -85,18 +85,22 @@ export function BasicSettingsModal({
       value: connectHealthData,
       onValueChange: onConnectHealthDataChange || (() => {}),
     },
-    {
-      key: 'read',
-      label: t('settings.basicSettings.readHealthData'),
-      value: readHealthData,
-      onValueChange: onReadHealthDataChange || (() => {}),
-    },
-    {
-      key: 'write',
-      label: t('settings.basicSettings.writeHealthData'),
-      value: writeHealthData,
-      onValueChange: onWriteHealthDataChange || (() => {}),
-    },
+    ...(connectHealthData
+      ? [
+          {
+            key: 'read',
+            label: t('settings.basicSettings.readHealthData'),
+            value: readHealthData,
+            onValueChange: onReadHealthDataChange || (() => {}),
+          },
+          {
+            key: 'write',
+            label: t('settings.basicSettings.writeHealthData'),
+            value: writeHealthData,
+            onValueChange: onWriteHealthDataChange || (() => {}),
+          },
+        ]
+      : []),
   ];
 
   return (

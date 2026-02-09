@@ -20,6 +20,10 @@ export default function SettingsScreen() {
   const [isAISettingsVisible, setAISettingsVisible] = useState(false);
   const [isBasicSettingsVisible, setBasicSettingsVisible] = useState(false);
   const [isAdvancedSettingsVisible, setAdvancedSettingsVisible] = useState(false);
+  const [themeValue, setThemeValue] = useState<'system' | 'light' | 'dark'>('system');
+  const [connectHealthData, setConnectHealthData] = useState(false);
+  const [readHealthData, setReadHealthData] = useState(false);
+  const [writeHealthData, setWriteHealthData] = useState(false);
 
   return (
     <MasterLayout showNavigationMenu={false}>
@@ -221,6 +225,14 @@ export default function SettingsScreen() {
       <BasicSettingsModal
         visible={isBasicSettingsVisible}
         onClose={() => setBasicSettingsVisible(false)}
+        themeValue={themeValue}
+        onThemeChange={setThemeValue}
+        connectHealthData={connectHealthData}
+        onConnectHealthDataChange={setConnectHealthData}
+        readHealthData={readHealthData}
+        onReadHealthDataChange={setReadHealthData}
+        writeHealthData={writeHealthData}
+        onWriteHealthDataChange={setWriteHealthData}
       />
       <AdvancedSettingsModal
         visible={isAdvancedSettingsVisible}
