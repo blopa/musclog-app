@@ -78,7 +78,7 @@ const colors = {
   orange500: '#f97316',
   amber400: '#fbbf24',
   white: '#ffffff',
-  // TODO: remove these
+  // TODO: use these in the theme variable
   surfaceBlackFade: 'rgba(19, 19, 20, 0.38)',
   gray900Fade: 'rgba(31, 31, 31, 0.12)',
   zinc400Fade: 'rgba(142, 145, 143, 0.12)',
