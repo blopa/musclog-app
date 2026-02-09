@@ -45,6 +45,8 @@ export function BasicSettingsModal({
 }: BasicSettingsModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+
+  // TODO: actually implement light theme OR remove/hide this option
   const themeOptions = [
     {
       value: 'system',
