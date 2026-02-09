@@ -153,7 +153,7 @@ export function useSettings(): UseSettingsResult & {
       .get<Setting>('settings')
       .query(Q.where('type', NOTIFICATIONS_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)));
 
-    const unitsSubscription = unitsQuery.observe().subscribe({
+    const unitsSubscription = unitsQuery.observeWithColumns(['value']).subscribe({
       next: (settings) => {
         setUnits(parseUnitsFromSettings(settings));
       },
@@ -162,7 +162,7 @@ export function useSettings(): UseSettingsResult & {
       },
     });
 
-    const themeSubscription = themeQuery.observe().subscribe({
+    const themeSubscription = themeQuery.observeWithColumns(['value']).subscribe({
       next: (settings) => {
         setTheme(parseThemeFromSettings(settings));
       },
@@ -213,25 +213,29 @@ export function useSettings(): UseSettingsResult & {
         },
       });
 
-    const googleGeminiApiKeySubscription = googleGeminiApiKeyQuery.observe().subscribe({
-      next: (settings) => {
-        setGoogleGeminiApiKey(parseStringFromSettings(settings));
-      },
-      error: () => {
-        setGoogleGeminiApiKey('');
-      },
-    });
+    const googleGeminiApiKeySubscription = googleGeminiApiKeyQuery
+      .observeWithColumns(['value'])
+      .subscribe({
+        next: (settings) => {
+          setGoogleGeminiApiKey(parseStringFromSettings(settings));
+        },
+        error: () => {
+          setGoogleGeminiApiKey('');
+        },
+      });
 
-    const googleGeminiModelSubscription = googleGeminiModelQuery.observe().subscribe({
-      next: (settings) => {
-        setGoogleGeminiModel(parseStringFromSettings(settings));
-      },
-      error: () => {
-        setGoogleGeminiModel('gemini-2.0-flash');
-      },
-    });
+    const googleGeminiModelSubscription = googleGeminiModelQuery
+      .observeWithColumns(['value'])
+      .subscribe({
+        next: (settings) => {
+          setGoogleGeminiModel(parseStringFromSettings(settings));
+        },
+        error: () => {
+          setGoogleGeminiModel('gemini-2.0-flash');
+        },
+      });
 
-    const openAiApiKeySubscription = openAiApiKeyQuery.observe().subscribe({
+    const openAiApiKeySubscription = openAiApiKeyQuery.observeWithColumns(['value']).subscribe({
       next: (settings) => {
         setOpenAiApiKey(parseStringFromSettings(settings));
       },
@@ -240,7 +244,7 @@ export function useSettings(): UseSettingsResult & {
       },
     });
 
-    const openAiModelSubscription = openAiModelQuery.observe().subscribe({
+    const openAiModelSubscription = openAiModelQuery.observeWithColumns(['value']).subscribe({
       next: (settings) => {
         setOpenAiModel(parseStringFromSettings(settings));
       },
