@@ -18,8 +18,8 @@ import {
 } from '../components/modals/EditPersonalInfoModal';
 import ShowMoreButton from '../components/ShowMoreButton';
 import { ProgressIndicator } from '../components/theme/ProgressIndicator';
-import { SettingsService } from '../database/services/SettingsService';
 import { UserService } from '../database/services';
+import { SettingsService } from '../database/services/SettingsService';
 import { useSettings } from '../hooks/useSettings';
 import { useUser } from '../hooks/useUser';
 import { useUserMetrics } from '../hooks/useUserMetrics';
@@ -164,7 +164,16 @@ export default function ProfileScreen() {
     }
 
     return statsArray;
-  }, [metrics?.weight, metrics?.height, metrics?.bodyFat, metrics?.bmi, dbUser, weightUnit, heightUnit, t]);
+  }, [
+    metrics?.weight,
+    metrics?.height,
+    metrics?.bodyFat,
+    metrics?.bmi,
+    dbUser,
+    weightUnit,
+    heightUnit,
+    t,
+  ]);
 
   const getStatUnit = (stat: (typeof stats)[0]) => {
     if (stat.id === 'weight') return weightUnit;

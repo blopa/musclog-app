@@ -102,8 +102,11 @@ export default function SettingsScreen() {
           <Pressable
             className="-ml-2 rounded-full p-2"
             onPress={() => {
-              // TODO: navigate to last visited screen OR home screen as fallback
-              router.push('/');
+              if (router.canGoBack()) {
+                router.back();
+              } else {
+                router.push('/');
+              }
             }}
           >
             <ArrowLeft size={theme.iconSize.md} color={theme.colors.text.primary} />

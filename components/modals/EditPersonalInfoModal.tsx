@@ -34,7 +34,15 @@ export function EditPersonalInfoModal({
   const { t } = useTranslation();
   const [currentFormData, setCurrentFormData] = useState<PersonalInfo | undefined>(undefined);
 
-  const handleSave = ({ fullName, email, dob, gender, photoUri, avatarIcon, avatarColor }: PersonalInfo) => {
+  const handleSave = ({
+    fullName,
+    email,
+    dob,
+    gender,
+    photoUri,
+    avatarIcon,
+    avatarColor,
+  }: PersonalInfo) => {
     onSave?.({
       fullName,
       email,
