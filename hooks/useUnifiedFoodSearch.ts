@@ -202,16 +202,6 @@ export function useUnifiedFoodSearch({
 
     const allResults = [...localResults, ...apiResultsFormatted];
 
-    // Debug logging
-    console.log('🔍 Deduplication Debug:', {
-      searchTerm: debouncedSearchTerm,
-      localCount: localResults.length,
-      apiCount: apiResultsFormatted.length,
-      totalBefore: allResults.length,
-      localItems: localResults.map((r) => ({ name: r.name, barcode: r.id })),
-      apiItems: apiResultsFormatted.map((r) => ({ name: r.name, barcode: r.id })),
-    });
-
     // Deduplication logic:
     // 1. If same barcode exists, keep local version (user's data)
     // 2. If no barcode, deduplicate by name (case-insensitive)
