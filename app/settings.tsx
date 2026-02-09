@@ -11,20 +11,35 @@ import { AdvancedSettingsModal } from '../components/modals/AdvancedSettingsModa
 import { AISettingsModal } from '../components/modals/AISettingsModal';
 import { BasicSettingsModal } from '../components/modals/BasicSettingsModal';
 import { ToggleInput } from '../components/theme/ToggleInput';
+import { SettingsService } from '../database/services/SettingsService';
+import { useSettings } from '../hooks/useSettings';
 import packageJson from '../package.json';
 import { theme } from '../theme';
 
 export default function SettingsScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const { theme: themeValue, connectHealthData, readHealthData, writeHealthData } = useSettings();
   const [notifications, setNotifications] = useState(true);
   const [isAISettingsVisible, setAISettingsVisible] = useState(false);
   const [isBasicSettingsVisible, setBasicSettingsVisible] = useState(false);
   const [isAdvancedSettingsVisible, setAdvancedSettingsVisible] = useState(false);
-  const [themeValue, setThemeValue] = useState<'system' | 'light' | 'dark'>('system');
-  const [connectHealthData, setConnectHealthData] = useState(false);
-  const [readHealthData, setReadHealthData] = useState(false);
-  const [writeHealthData, setWriteHealthData] = useState(false);
+
+  const handleThemeChange = async (newTheme: 'system' | 'light' | 'dark') => {
+    await SettingsService.setTheme(newTheme);
+  };
+
+  const handleConnectHealthDataChange = async (value: boolean) => {
+    await SettingsService.setConnectHealthData(value);
+  };
+
+  const handleReadHealthDataChange = async (value: boolean) => {
+    await SettingsService.setReadHealthData(value);
+  };
+
+  const handleWriteHealthDataChange = async (value: boolean) => {
+    await SettingsService.setWriteHealthData(value);
+  };
 
   return (
     <MasterLayout showNavigationMenu={false}>
@@ -226,13 +241,13 @@ export default function SettingsScreen() {
         visible={isBasicSettingsVisible}
         onClose={() => setBasicSettingsVisible(false)}
         themeValue={themeValue}
-        onThemeChange={setThemeValue}
+        onThemeChange={handleThemeChange}
         connectHealthData={connectHealthData}
-        onConnectHealthDataChange={setConnectHealthData}
+        onConnectHealthDataChange={handleConnectHealthDataChange}
         readHealthData={readHealthData}
-        onReadHealthDataChange={setReadHealthData}
+        onReadHealthDataChange={handleReadHealthDataChange}
         writeHealthData={writeHealthData}
-        onWriteHealthDataChange={setWriteHealthData}
+        onWriteHealthDataChange={handleWriteHealthDataChange}
       />
       <AdvancedSettingsModal
         visible={isAdvancedSettingsVisible}

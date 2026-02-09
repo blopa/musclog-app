@@ -7,6 +7,7 @@ import { theme } from '../../theme';
 import { SettingsCard } from '../cards/SettingsCard';
 import { ToggleInput } from '../theme/ToggleInput';
 import { FullScreenModal } from './FullScreenModal';
+import packageJson from '../../package.json';
 
 type AdvancedSettingsModalProps = {
   visible: boolean;
@@ -19,9 +20,6 @@ type AdvancedSettingsModalProps = {
   onAnonymousBugReportChange?: (value: boolean) => void;
   // Danger Zone
   onAccountDeletionPress?: () => void;
-  // Version info
-  version?: string;
-  build?: string;
 };
 
 export function AdvancedSettingsModal({
@@ -32,8 +30,6 @@ export function AdvancedSettingsModal({
   anonymousBugReport = true,
   onAnonymousBugReportChange,
   onAccountDeletionPress,
-  version = '2.4.0',
-  build = '1024',
 }: AdvancedSettingsModalProps) {
   const { t } = useTranslation();
   const bugReportItems = [
@@ -142,7 +138,7 @@ export function AdvancedSettingsModal({
             className="mt-3 px-4 text-center text-xs"
             style={{ color: theme.colors.text.tertiary }}
           >
-            {t('settings.advancedSettings.version', { version, build })}
+            {t('settings.advancedSettings.version', { version: packageJson.version })}
           </Text>
         </View>
       </View>

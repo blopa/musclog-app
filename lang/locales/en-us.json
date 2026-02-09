@@ -917,7 +917,7 @@
       "dangerZone": "DANGER ZONE",
       "requestAccountDeletion": "Request Account Deletion",
       "requestAccountDeletionSubtitle": "Permanently remove all data",
-      "version": "Version {{version}} (Build {{build}})"
+      "version": "Version {{version}}"
     },
     "aiSettings": {
       "title": "AI Settings",
@@ -940,7 +940,7 @@
       "selectModel": "Select a model",
       "apiKeyHelp": "Need help finding your API keys?",
       "setupGuide": "Read the setup guide",
-      "version": "Musclog AI v{{version}}"
+      "version": "Musclog AI {{version}}"
     },
     "darkMode": "Dark Mode",
     "notifications": "Notifications",

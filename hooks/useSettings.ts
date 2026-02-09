@@ -1,8 +1,14 @@
 import { Q } from '@nozbe/watermelondb';
 import { useEffect, useMemo, useState } from 'react';
 
-import type { Units, UseSettingsResult } from '../constants/settings';
-import { UNITS_SETTING_TYPE } from '../constants/settings';
+import type { ThemeOption, Units, UseSettingsResult } from '../constants/settings';
+import {
+  CONNECT_HEALTH_DATA_SETTING_TYPE,
+  READ_HEALTH_DATA_SETTING_TYPE,
+  THEME_SETTING_TYPE,
+  UNITS_SETTING_TYPE,
+  WRITE_HEALTH_DATA_SETTING_TYPE,
+} from '../constants/settings';
 import { database } from '../database';
 import Setting from '../database/models/Setting';
 import { getHeightUnit, getWeightUnit } from '../utils/units';
@@ -13,37 +19,123 @@ function parseUnitsFromSettings(settings: Setting[]): Units {
   return value === '1' ? 'imperial' : 'metric';
 }
 
-export function useSettings(): UseSettingsResult {
+function parseThemeFromSettings(settings: Setting[]): ThemeOption {
+  if (settings.length === 0) return 'system';
+  const value = settings[0].value;
+  return value === 'light' || value === 'dark' ? value : 'system';
+}
+
+function parseBooleanFromSettings(settings: Setting[]): boolean {
+  if (settings.length === 0) return false;
+  return settings[0].value === 'true';
+}
+
+export function useSettings(): UseSettingsResult & {
+  theme: ThemeOption;
+  connectHealthData: boolean;
+  readHealthData: boolean;
+  writeHealthData: boolean;
+} {
   const [units, setUnits] = useState<Units>('metric');
+  const [theme, setTheme] = useState<ThemeOption>('system');
+  const [connectHealthData, setConnectHealthData] = useState(false);
+  const [readHealthData, setReadHealthData] = useState(false);
+  const [writeHealthData, setWriteHealthData] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const query = database
+    const unitsQuery = database
       .get<Setting>('settings')
       .query(Q.where('type', UNITS_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)));
 
-    const subscription = query.observe().subscribe({
+    const themeQuery = database
+      .get<Setting>('settings')
+      .query(Q.where('type', THEME_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)));
+
+    const connectHealthDataQuery = database
+      .get<Setting>('settings')
+      .query(Q.where('type', CONNECT_HEALTH_DATA_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)));
+
+    const readHealthDataQuery = database
+      .get<Setting>('settings')
+      .query(Q.where('type', READ_HEALTH_DATA_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)));
+
+    const writeHealthDataQuery = database
+      .get<Setting>('settings')
+      .query(Q.where('type', WRITE_HEALTH_DATA_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)));
+
+    const unitsSubscription = unitsQuery.observe().subscribe({
       next: (settings) => {
         setUnits(parseUnitsFromSettings(settings));
-        setIsLoading(false);
       },
       error: () => {
         setUnits('metric');
-        setIsLoading(false);
       },
     });
 
-    return () => subscription.unsubscribe();
+    const themeSubscription = themeQuery.observe().subscribe({
+      next: (settings) => {
+        setTheme(parseThemeFromSettings(settings));
+      },
+      error: () => {
+        setTheme('system');
+      },
+    });
+
+    const connectHealthDataSubscription = connectHealthDataQuery.observe().subscribe({
+      next: (settings) => {
+        setConnectHealthData(parseBooleanFromSettings(settings));
+      },
+      error: () => {
+        setConnectHealthData(false);
+      },
+    });
+
+    const readHealthDataSubscription = readHealthDataQuery.observe().subscribe({
+      next: (settings) => {
+        setReadHealthData(parseBooleanFromSettings(settings));
+      },
+      error: () => {
+        setReadHealthData(false);
+      },
+    });
+
+    const writeHealthDataSubscription = writeHealthDataQuery.observe().subscribe({
+      next: (settings) => {
+        setWriteHealthData(parseBooleanFromSettings(settings));
+      },
+      error: () => {
+        setWriteHealthData(false);
+      },
+    });
+
+    // Set loading to false once all subscriptions have had a chance to load
+    const timeout = setTimeout(() => {
+      setIsLoading(false);
+    }, 100);
+
+    return () => {
+      unitsSubscription.unsubscribe();
+      themeSubscription.unsubscribe();
+      connectHealthDataSubscription.unsubscribe();
+      readHealthDataSubscription.unsubscribe();
+      writeHealthDataSubscription.unsubscribe();
+      clearTimeout(timeout);
+    };
   }, []);
 
   // Memoize the return value to prevent unnecessary re-renders
   return useMemo(
     () => ({
       units,
+      theme,
+      connectHealthData,
+      readHealthData,
+      writeHealthData,
       isLoading,
       weightUnit: getWeightUnit(units),
       heightUnit: getHeightUnit(units),
     }),
-    [units, isLoading]
+    [units, theme, connectHealthData, readHealthData, writeHealthData, isLoading]
   );
 }
