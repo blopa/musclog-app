@@ -10,6 +10,7 @@ import { GoogleSignInButton } from '../GoogleSignInButton';
 import { SecretInput } from '../theme/SecretInput';
 import { ToggleInput } from '../theme/ToggleInput';
 import { FullScreenModal } from './FullScreenModal';
+import packageJson from '../../package.json';
 
 type AIIntegrationCardProps = {
   sectionTitle: string;
@@ -160,8 +161,6 @@ type AISettingsModalProps = {
   onDailyNutritionInsightsChange?: (value: boolean) => void;
   workoutInsights?: boolean;
   onWorkoutInsightsChange?: (value: boolean) => void;
-  // Version
-  version?: string;
 };
 
 export function AISettingsModal({
@@ -185,7 +184,6 @@ export function AISettingsModal({
   onDailyNutritionInsightsChange,
   workoutInsights = false,
   onWorkoutInsightsChange,
-  version = '2.4.1',
 }: AISettingsModalProps) {
   const { t } = useTranslation();
   const [openAiKeyVisible, setOpenAiKeyVisible] = useState(false);
@@ -384,7 +382,7 @@ export function AISettingsModal({
               marginTop: theme.spacing.padding['6'],
             }}
           >
-            {t('settings.aiSettings.version', { version })}
+            {t('settings.aiSettings.version', { version: packageJson.version })}
           </Text>
         </View>
 
