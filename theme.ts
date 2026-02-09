@@ -454,13 +454,12 @@ const themeColors = {
 
   // Gradient colors
   gradients: {
-    primary: ['#5b7cf5', '#4a9d8f', '#47d9ba'] as const,
+    primary: [colors.blue500, colors.teal600, colors.emerald500] as const,
     accent: [colors.emerald300, colors.teal500] as const,
-    card: [colors.gunmetalGreenDark, '#0f1812'] as const,
-    button: [colors.deepAquamarine, '#0f1f1a'] as const,
-    // progress: [colors.indigo500, '#40bdae', '#25956c'] as const,
-    progress: [colors.indigo500, '#337e75', '#25956c'] as const,
-    workoutsTitle: ['#a78bfa', '#60a5fa', colors.emerald300] as const,
+    card: [colors.gunmetalGreenDark, colors.darkMossAlpha50] as const,
+    button: [colors.deepAquamarine, colors.charcoalGreen] as const,
+    progress: [colors.indigo500, colors.teal600, colors.emerald500] as const,
+    workoutsTitle: [colors.violet300, colors.blue500, colors.emerald300] as const,
     notification: [colors.pineShadow, colors.darkMint] as const,
     upNextCard: [colors.jungleCard, colors.charcoalGreen, colors.gunmetalGreenDark] as const,
     cta: [colors.indigo600, colors.neonMint] as const, // Indigo to primary green gradient
@@ -469,16 +468,16 @@ const themeColors = {
     restOverTitle: [colors.green500, colors.indigo400] as const, // Rest over title gradient
     workoutStats: [colors.indigo400, colors.green500, colors.emerald300] as const, // Workout stats gradient
     workoutSessionOverlay: [
-      'rgba(10, 31, 26, 0.95)',
-      'rgba(10, 31, 26, 0.85)',
-      'rgba(10, 31, 26, 0.7)',
+      addOpacityToHex(colors.deepJungle, 0.95),
+      addOpacityToHex(colors.deepJungle, 0.85),
+      addOpacityToHex(colors.deepJungle, 0.7),
     ] as const,
     indigoPurple: [colors.indigo600, colors.violet800] as const, // Indigo to purple gradient
     emeraldTeal: [colors.emerald500, colors.teal600] as const, // Emerald to teal gradient
     pinkRose: [colors.pink500, colors.rose600] as const, // Pink to rose gradient
     blueEmerald: [colors.blue600, colors.emerald500] as const, // Blue to emerald gradient
     overlayDark: ['transparent', colors.deepTealAlpha90, colors.darkSlateGreen] as const, // Dark overlay gradient
-    cameraOverlay: ['rgba(0,0,0,0.6)', 'transparent', 'rgba(0,0,0,0.9)'] as const, // Camera overlay gradient
+    cameraOverlay: [colors.blackAlpha60, 'transparent', colors.blackAlpha90] as const, // Camera overlay gradient
     onboardingAmbient: [
       colors.indigoLightAlpha20Alt, // indigo-600/20
       colors.neonMintAlpha20, // primary/20
