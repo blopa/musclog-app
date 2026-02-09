@@ -243,10 +243,10 @@ const colors = {
     textDark: '#e3e3e3', // Dark text for Google button
     overlayDark: '#303030', // Dark overlay for Google button
     overlayLight: '#e3e3e3', // Light overlay for Google button
-    disabledBorderLight: '#1f1f1f1f', // Disabled border (light variant)
-    disabledBorderDark: '#8e918f1f', // Disabled border (dark variant)
-    disabledBgLight: '#ffffff61', // Disabled background (light variant)
-    disabledBgDark: '#13131461', // Disabled background (dark variant)
+    disabledBorderLight: 'rgba(31, 31, 31, 0.12)', // Disabled border (light variant)
+    disabledBorderDark: 'rgba(142, 145, 143, 0.12)', // Disabled border (dark variant)
+    disabledBgLight: 'rgba(255, 255, 255, 0.38)', // Disabled background (light variant)
+    disabledBgDark: 'rgba(19, 19, 20, 0.38)', // Disabled background (dark variant)
   },
 
   // Overlay and opacity colors
