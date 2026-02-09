@@ -1,3 +1,5 @@
+// TODO: these are all the colors I use in my workout app, but I don't know how to name them. please help
+
 const colors = {
   TODO_NAME_THIS_COLOR: '#000000',
   TODO_NAME_THIS_COLOR: '#064e3b',
