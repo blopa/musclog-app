@@ -1,11 +1,12 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { X } from 'lucide-react-native';
-import { ReactNode, useEffect, useRef } from 'react';
+import React, { ReactNode, useEffect, useRef } from 'react';
 import {
   Animated,
   Modal,
   Platform,
   Pressable,
+  ScrollView,
   Text,
   TouchableWithoutFeedback, // it's deprecated, but using Pressable instead causes a gap below the modal on mobile
   View,
@@ -97,6 +98,9 @@ export function BottomPopUp({
             <TouchableWithoutFeedback>
               <Animated.View
                 className="border-t border-border-dark"
+                onStartShouldSetResponder={() => true}
+                onMoveShouldSetResponder={() => true}
+                onResponderTerminationRequest={() => false}
                 style={{
                   transform: [{ translateY: slideAnim }],
                   backgroundColor: theme.colors.background.cardElevated,
@@ -139,16 +143,18 @@ export function BottomPopUp({
 
                 {/* Content */}
                 {children ? (
-                  <View
+                  <ScrollView
                     className="p-6"
                     style={
                       !footer
                         ? { paddingBottom: Math.max(insets.bottom, theme.spacing.padding.xl) }
                         : undefined
                     }
+                    scrollEnabled={true}
+                    nestedScrollEnabled={true}
                   >
                     {children}
-                  </View>
+                  </ScrollView>
                 ) : null}
 
                 {/* Footer */}
