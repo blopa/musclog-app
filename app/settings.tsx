@@ -102,6 +102,7 @@ export default function SettingsScreen() {
           <Pressable
             className="-ml-2 rounded-full p-2"
             onPress={() => {
+              // TODO: navigate to last visited screen OR home screen as fallback
               router.push('/');
             }}
           >
