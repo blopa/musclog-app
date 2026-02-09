@@ -1,4 +1,4 @@
-import { Apple, Bot, Check, ChevronDown, Dumbbell } from 'lucide-react-native';
+import { Apple, Bot, ChevronDown, Dumbbell } from 'lucide-react-native';
 import { ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
@@ -8,6 +8,7 @@ import packageJson from '../../package.json';
 import { theme } from '../../theme';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { GoogleSignInButton } from '../GoogleSignInButton';
+import { Button } from '../theme/Button';
 import { SecretInput } from '../theme/SecretInput';
 import { ToggleInput } from '../theme/ToggleInput';
 import { FullScreenModal } from './FullScreenModal';
@@ -54,6 +55,8 @@ function AIIntegrationCard({
   onModelPress,
   modelFallbackText,
 }: AIIntegrationCardProps) {
+  const { t } = useTranslation();
+
   return (
     <View>
       <Text
@@ -118,31 +121,16 @@ function AIIntegrationCard({
           ) : null}
 
           {/* Save Button */}
-          <Pressable
-            onPress={onSaveApiKey}
-            disabled={!hasUnsavedChanges}
-            className={`mt-3 flex-row items-center justify-center rounded-lg p-3 ${
-              hasUnsavedChanges
-                ? 'active:bg-accent-primaryPressed bg-accent-primary'
-                : 'bg-bg-disabled'
-            }`}
-            style={{
-              opacity: hasUnsavedChanges ? 1 : 0.5,
-            }}
-          >
-            <Check
-              size={theme.iconSize.sm}
-              color={hasUnsavedChanges ? theme.colors.text.white : theme.colors.text.tertiary}
+          <View className="mb-2 mt-3">
+            <Button
+              label={hasUnsavedChanges ? t('save') : t('saved')}
+              onPress={onSaveApiKey}
+              disabled={!hasUnsavedChanges}
+              size="sm"
+              width="full"
+              variant={hasUnsavedChanges ? 'accent' : 'outline'}
             />
-            <Text
-              className="ml-2 text-sm font-medium"
-              style={{
-                color: hasUnsavedChanges ? theme.colors.text.white : theme.colors.text.tertiary,
-              }}
-            >
-              {hasUnsavedChanges ? 'Save' : 'Saved'}
-            </Text>
-          </Pressable>
+          </View>
         </View>
 
         {/* Model Selector */}
