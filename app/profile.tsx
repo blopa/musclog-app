@@ -8,109 +8,58 @@ import { StatCard } from '../components/cards/StatCard';
 import { ManagementItem } from '../components/ManagementItem';
 import { MasterLayout } from '../components/MasterLayout';
 import BodyMetricsHistoryModal from '../components/modals/BodyMetricsHistoryModal';
+import {
+  EditFitnessDetailsModal,
+  type FitnessDetails,
+} from '../components/modals/EditFitnessDetailsModal';
+import {
+  EditPersonalInfoModal,
+  type PersonalInfo,
+} from '../components/modals/EditPersonalInfoModal';
 import ShowMoreButton from '../components/ShowMoreButton';
 import { ProgressIndicator } from '../components/theme/ProgressIndicator';
+import { SettingsService } from '../database/services/SettingsService';
+import { UserService } from '../database/services';
 import { useSettings } from '../hooks/useSettings';
 import { useUser } from '../hooks/useUser';
 import { useUserMetrics } from '../hooks/useUserMetrics';
 import { theme } from '../theme';
 import { getAvatarDisplayProps } from '../utils/avatarUtils';
 
-// TODO: remove hardcoded data
-const PROFILE_DATA = {
-  user: {
-    name: 'Alex Johnson',
-    avatar: require('../assets/icon.png'),
-    goal: 'Muscle Gain',
+const MANAGEMENT_ITEMS = [
+  {
+    id: 'personal',
+    titleKey: 'profile.managementItems.editPersonal',
+    descriptionKey: 'profile.managementItems.editPersonalDesc',
+    icon: User,
+    iconColor: theme.colors.accent.primary,
   },
-  stats: [
-    {
-      id: 'weight',
-      titleKey: 'profile.stats.weight',
-      value: '78.5',
-      unit: 'kg',
-      change: '+1.2%',
-      changeType: 'positive' as const,
-      icon: TrendingUp,
-      iconColor: theme.colors.accent.primary,
-    },
-    {
-      id: 'height',
-      titleKey: 'profile.stats.height',
-      value: '180',
-      unit: 'cm',
-      status: 'Verified',
-      icon: CheckCircle,
-      iconColor: theme.colors.text.secondary,
-    },
-    {
-      id: 'bodyFat',
-      titleKey: 'profile.stats.bodyFat',
-      value: '15',
-      unit: '%',
-      change: '+0.5%',
-      changeType: 'warning' as const,
-      icon: TrendingUp,
-      iconColor: theme.colors.status.warning,
-    },
-    {
-      id: 'bmi',
-      titleKey: 'profile.stats.bmi',
-      value: '24.2',
-      status: 'Normal',
-      statusColor: theme.colors.status.info,
-      icon: User,
-      iconColor: theme.colors.status.info,
-    },
-    {
-      id: 'age',
-      titleKey: 'profile.stats.age',
-      value: '26',
-      icon: User,
-      iconColor: theme.colors.text.secondary,
-    },
-    {
-      id: 'gender',
-      titleKey: 'profile.stats.gender',
-      value: 'Male',
-      icon: User,
-      iconColor: theme.colors.text.secondary,
-    },
-  ],
-  management: [
-    {
-      id: 'personal',
-      titleKey: 'profile.managementItems.editPersonal',
-      descriptionKey: 'profile.managementItems.editPersonalDesc',
-      icon: User,
-      iconColor: theme.colors.accent.primary,
-    },
-    {
-      id: 'fitness',
-      titleKey: 'profile.managementItems.editFitness',
-      descriptionKey: 'profile.managementItems.editFitnessDesc',
-      icon: Dumbbell,
-      iconColor: theme.colors.status.purple,
-    },
-    {
-      id: 'preferences',
-      titleKey: 'profile.managementItems.appPreferences',
-      descriptionKey: 'profile.managementItems.appPreferencesDesc',
-      icon: List,
-      iconColor: theme.colors.text.secondary,
-    },
-  ],
-};
+  {
+    id: 'fitness',
+    titleKey: 'profile.managementItems.editFitness',
+    descriptionKey: 'profile.managementItems.editFitnessDesc',
+    icon: Dumbbell,
+    iconColor: theme.colors.status.purple,
+  },
+  {
+    id: 'preferences',
+    titleKey: 'profile.managementItems.appPreferences',
+    descriptionKey: 'profile.managementItems.appPreferencesDesc',
+    icon: List,
+    iconColor: theme.colors.text.secondary,
+  },
+];
 
 export default function ProfileScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { weightUnit, heightUnit } = useSettings();
+  const { units, weightUnit, heightUnit } = useSettings();
   const { user: dbUser, isLoading: isLoadingUser } = useUser();
   const { metrics, isLoading: isLoadingMetrics } = useUserMetrics();
-  const { management } = PROFILE_DATA;
   const [isSyncing, setIsSyncing] = useState(false);
   const [isBodyMetricsHistoryVisible, setIsBodyMetricsHistoryVisible] = useState(false);
+  const [isEditPersonalVisible, setIsEditPersonalVisible] = useState(false);
+  const [isEditFitnessVisible, setIsEditFitnessVisible] = useState(false);
 
   // Transform metrics and user data into stats array format
   const stats = useMemo(() => {
@@ -166,20 +115,20 @@ export default function ProfileScreen() {
 
     // BMI stat
     if (metrics?.bmi !== undefined) {
-      const bmiStatus =
+      // TODO: properly implement BMI logic later
+      const bmiStatusKey =
         metrics.bmi < 18.5
-          ? // TODO: use translation here
-            'Underweight'
+          ? 'profile.bmiStatus.underweight'
           : metrics.bmi < 25
-            ? 'Normal'
+            ? 'profile.bmiStatus.normal'
             : metrics.bmi < 30
-              ? 'Overweight'
-              : 'Obese';
+              ? 'profile.bmiStatus.overweight'
+              : 'profile.bmiStatus.obese';
       statsArray.push({
         id: 'bmi',
         titleKey: 'profile.stats.bmi',
         value: metrics.bmi.toFixed(1),
-        status: bmiStatus,
+        status: t(bmiStatusKey),
         statusColor: theme.colors.status.info,
         icon: User,
         iconColor: theme.colors.status.info,
@@ -199,19 +148,23 @@ export default function ProfileScreen() {
 
     // Gender stat (from user)
     if (dbUser) {
-      const genderLabel =
-        dbUser.gender === 'male' ? 'Male' : dbUser.gender === 'female' ? 'Female' : 'Other';
+      const genderKey =
+        dbUser.gender === 'male'
+          ? 'profile.gender.male'
+          : dbUser.gender === 'female'
+            ? 'profile.gender.female'
+            : 'profile.gender.other';
       statsArray.push({
         id: 'gender',
         titleKey: 'profile.stats.gender',
-        value: genderLabel,
+        value: t(genderKey),
         icon: User,
         iconColor: theme.colors.text.secondary,
       });
     }
 
     return statsArray;
-  }, [metrics, dbUser, weightUnit, heightUnit]);
+  }, [metrics?.weight, metrics?.height, metrics?.bodyFat, metrics?.bmi, dbUser, weightUnit, heightUnit, t]);
 
   const getStatUnit = (stat: (typeof stats)[0]) => {
     if (stat.id === 'weight') return weightUnit;
@@ -219,17 +172,32 @@ export default function ProfileScreen() {
     return stat.unit;
   };
 
-  // Simulate syncing with HealthKit or external services
-  const syncData = async () => {
-    setIsSyncing(true);
+  const handleSavePersonalInfo = async (data: PersonalInfo) => {
     try {
-      // Simulate sync operation
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      // In real app: await syncWithHealthKit();
+      await UserService.updateUserProfile({
+        fullName: data.fullName,
+        email: data.email,
+        dateOfBirth: new Date(data.dob).getTime(),
+        gender: data.gender as 'male' | 'female' | 'other',
+      });
     } catch (err) {
-      console.error('Sync failed:', err);
-    } finally {
-      setIsSyncing(false);
+      console.error('Failed to save personal info:', err);
+    }
+  };
+
+  const handleSaveFitnessDetails = async (data: FitnessDetails) => {
+    try {
+      // Update units setting
+      await SettingsService.setUnits(data.units);
+
+      // Update user fitness details
+      await UserService.updateUserProfile({
+        fitnessGoal: data.fitnessGoal,
+        activityLevel: data.activityLevel,
+        liftingExperience: data.experience,
+      });
+    } catch (err) {
+      console.error('Failed to save fitness details:', err);
     }
   };
 
@@ -277,13 +245,7 @@ export default function ProfileScreen() {
                     }
                   )}
                 </View>
-              ) : (
-                <Image
-                  source={PROFILE_DATA.user.avatar}
-                  className="h-full w-full"
-                  resizeMode="cover"
-                />
-              )}
+              ) : null}
             </View>
             <Pressable
               className="absolute bottom-0 right-0 h-10 w-10 items-center justify-center rounded-full border-2 border-bg-primary"
@@ -293,7 +255,7 @@ export default function ProfileScreen() {
             </Pressable>
           </View>
           <Text className="mb-3 text-3xl font-bold text-text-primary">
-            {dbUser?.fullName || PROFILE_DATA.user.name}
+            {dbUser?.fullName || t('profile.loading')}
           </Text>
           {dbUser?.fitnessGoal ? (
             <Text className="text-base text-text-primary">
@@ -336,7 +298,7 @@ export default function ProfileScreen() {
             {t('profile.management')}
           </Text>
           <View className="gap-3">
-            {management.map((item) => (
+            {MANAGEMENT_ITEMS.map((item) => (
               <ManagementItem
                 key={item.id}
                 title={t(item.titleKey)}
@@ -344,11 +306,10 @@ export default function ProfileScreen() {
                 icon={item.icon}
                 iconColor={item.iconColor}
                 onPress={() => {
-                  // Handle navigation based on item.id
                   if (item.id === 'personal') {
-                    router.push('/profile/edit-personal');
+                    setIsEditPersonalVisible(true);
                   } else if (item.id === 'fitness') {
-                    router.push('/profile/edit-fitness');
+                    setIsEditFitnessVisible(true);
                   } else if (item.id === 'preferences') {
                     router.push('/settings');
                   }
@@ -368,6 +329,40 @@ export default function ProfileScreen() {
           onClose={() => setIsBodyMetricsHistoryVisible(false)}
         />
       ) : null}
+
+      <EditPersonalInfoModal
+        visible={isEditPersonalVisible}
+        onClose={() => setIsEditPersonalVisible(false)}
+        onSave={handleSavePersonalInfo}
+        initialData={
+          dbUser
+            ? {
+                fullName: dbUser.fullName,
+                email: dbUser.email || '',
+                dob: new Date(dbUser.dateOfBirth).toISOString().split('T')[0],
+                gender: dbUser.gender,
+              }
+            : undefined
+        }
+      />
+
+      <EditFitnessDetailsModal
+        visible={isEditFitnessVisible}
+        onClose={() => setIsEditFitnessVisible(false)}
+        onSave={handleSaveFitnessDetails}
+        initialData={
+          dbUser && metrics
+            ? {
+                units,
+                weight: metrics.weight?.toString() || '',
+                height: metrics.height?.toString() || '',
+                fitnessGoal: dbUser.fitnessGoal,
+                activityLevel: dbUser.activityLevel,
+                experience: dbUser.liftingExperience,
+              }
+            : undefined
+        }
+      />
     </MasterLayout>
   );
 }

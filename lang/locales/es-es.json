@@ -453,6 +453,7 @@
     "currentStats": "Estadísticas Actuales",
     "history": "Historial",
     "management": "Gestión",
+    "loading": "Cargando...",
     "stats": {
       "weight": "Peso",
       "height": "Altura",
@@ -461,6 +462,17 @@
       "age": "Edad",
       "gender": "Género"
     },
+    "bmiStatus": {
+      "underweight": "Bajo Peso",
+      "normal": "Normal",
+      "overweight": "Sobrepeso",
+      "obese": "Obeso"
+    },
+    "gender": {
+      "male": "Masculino",
+      "female": "Femenino",
+      "other": "Otro"
+    },
     "managementItems": {
       "editPersonal": "Editar Información Personal",
       "editPersonalDesc": "Nombre, Email, Cumpleaños",
@@ -468,6 +480,9 @@
       "editFitnessDesc": "Objetivos, Nivel de Experiencia",
       "appPreferences": "Preferencias de la App",
       "appPreferencesDesc": "Unidades, Notificaciones, Privacidad"
+    },
+    "syncing": {
+      "healthKit": "Sincronizando con HealthKit..."
     }
   },
   "recentWorkouts": {

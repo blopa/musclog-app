@@ -576,6 +576,7 @@
     "currentStats": "Current Stats",
     "history": "History",
     "management": "Management",
+    "loading": "Loading...",
     "stats": {
       "weight": "Weight",
       "height": "Height",
@@ -583,6 +584,17 @@
       "bmi": "BMI",
       "age": "Age",
       "gender": "Gender"
+    },
+    "bmiStatus": {
+      "underweight": "Underweight",
+      "normal": "Normal",
+      "overweight": "Overweight",
+      "obese": "Obese"
+    },
+    "gender": {
+      "male": "Male",
+      "female": "Female",
+      "other": "Other"
     },
     "managementItems": {
       "editPersonal": "Edit Personal Information",
