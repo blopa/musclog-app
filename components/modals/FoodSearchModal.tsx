@@ -637,6 +637,7 @@ export function FoodSearchModal({
                         carbs: food.carbs,
                         fat: food.fat,
                         fiber: food.fiber,
+                        imageUrl: food.imageUrl,
                         source: 'local',
                         icon: '🍽️',
                         iconColor: theme.colors.accent.primary,
