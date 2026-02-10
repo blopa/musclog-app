@@ -130,7 +130,9 @@
       "date": "Date",
       "today": "Today",
       "addFood": "Add Food",
-      "macro": "MACRO"
+      "macro": "MACRO",
+      "successMessage": "Food tracked successfully!",
+      "errorMessage": "Failed to track food. Please try again."
     },
     "datePicker": {
       "selectDate": "Select Date",
@@ -629,7 +631,8 @@
   },
   "snackbar": {
     "view": "VIEW",
-    "retry": "RETRY"
+    "retry": "RETRY",
+    "ok": "OK"
   },
   "optionsSelector": {
     "link": "Link",

@@ -144,7 +144,8 @@ export const useGoogleAuth = () => {
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      Alert.alert('Error', `Failed to sign in with Google: ${errorMessage}`); // TODO: use the snackbar system
+      // TODO: use the snackbar system
+      Alert.alert('Error', `Failed to sign in with Google: ${errorMessage}`);
     } finally {
       setIsSigningIn(false);
     }

@@ -79,6 +79,7 @@ export const useSyncTracking = (): UseSyncTrackingResult => {
                   `Synced ${result.recordsWritten} health record${result.recordsWritten !== 1 ? 's' : ''}.`
                 : 'No new data to sync.';
 
+            // TODO: use the snackbar system
             Alert.alert('Sync Complete', message, [{ text: 'OK' }]);
           }
         } else if (result.status === SyncStatus.ERROR && result.errors.length > 0) {
@@ -89,6 +90,7 @@ export const useSyncTracking = (): UseSyncTrackingResult => {
             firstError.code !== 'INSUFFICIENT_PERMISSIONS' &&
             firstError.code !== 'PERMISSION_DENIED'
           ) {
+            // TODO: use the snackbar system
             Alert.alert('Sync Error', firstError.getUserMessage(), [{ text: 'OK' }]);
             setError(firstError);
           }
@@ -116,6 +118,7 @@ export const useSyncTracking = (): UseSyncTrackingResult => {
         }
 
         setError(hcError);
+        // TODO: use the snackbar system
         Alert.alert('Sync Failed', hcError.getUserMessage(), [{ text: 'OK' }]);
 
         // Return error result
@@ -154,6 +157,7 @@ export const useSyncTracking = (): UseSyncTrackingResult => {
       const hcError = err as HealthConnectError;
       console.error('Error enabling sync:', hcError);
       setError(hcError);
+      // TODO: use the snackbar system
       Alert.alert('Error', 'Failed to enable Health Connect sync.', [{ text: 'OK' }]);
     }
   }, [syncNow]);
@@ -166,11 +170,13 @@ export const useSyncTracking = (): UseSyncTrackingResult => {
       setError(null);
       await healthDataSyncService.disableSync();
       setIsSyncEnabled(false);
+      // TODO: use the snackbar system
       Alert.alert('Sync Disabled', 'Health Connect sync has been disabled.', [{ text: 'OK' }]);
     } catch (err) {
       const hcError = err as HealthConnectError;
       console.error('Error disabling sync:', hcError);
       setError(hcError);
+      // TODO: use the snackbar system
       Alert.alert('Error', 'Failed to disable Health Connect sync.', [{ text: 'OK' }]);
     }
   }, []);

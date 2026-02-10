@@ -204,6 +204,7 @@ export default function SmartCameraModal({
       const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
       if (!permissionResult.granted) {
+        // TODO: use snackbar here instead
         Alert.alert(t('common.permissionRequired'), t('food.aiCamera.galleryPermissionRequired'), [
           { text: t('common.ok') },
         ]);
@@ -229,6 +230,7 @@ export default function SmartCameraModal({
           if (barcode) {
             setDetectedBarcode(barcode);
           } else {
+            // TODO: use snackbar here instead
             Alert.alert(t('common.noBarcode'), t('food.aiCamera.noBarcodeFound'), [
               { text: t('common.ok') },
             ]);
@@ -237,6 +239,7 @@ export default function SmartCameraModal({
       }
     } catch (error) {
       console.error('Error picking image from gallery:', error);
+      // TODO: use snackbar here instead
       Alert.alert(t('common.error'), t('food.aiCamera.galleryError'), [{ text: t('common.ok') }]);
     }
   }, [cameraMode, t]);

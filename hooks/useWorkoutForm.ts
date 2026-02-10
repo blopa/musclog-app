@@ -76,6 +76,7 @@ export function useWorkoutForm({ templateId }: UseWorkoutFormParams = {}) {
       setExerciseMetadata(metadataMap);
     } catch (error) {
       console.error('Error loading template:', error);
+      // TODO: use the snackbar system
       Alert.alert(
         t('common.error', 'Error'),
         t('createWorkout.loadError', 'Failed to load workout template')
@@ -131,6 +132,7 @@ export function useWorkoutForm({ templateId }: UseWorkoutFormParams = {}) {
         setExercises((prev) => [...prev, newExercise]);
       } catch (error) {
         console.error('Error adding exercise:', error);
+        // TODO: use the snackbar system
         Alert.alert(
           t('common.error', 'Error'),
           t('createWorkout.addExerciseError', 'Failed to add exercise')
@@ -143,6 +145,7 @@ export function useWorkoutForm({ templateId }: UseWorkoutFormParams = {}) {
   const handleSave = useCallback(async () => {
     const titleValidation = validateWorkoutTitle(workoutTitle);
     if (!titleValidation.valid) {
+      // TODO: use the snackbar system
       Alert.alert(
         t('createWorkout.validation.titleRequired', 'Title Required'),
         t('createWorkout.validation.titleRequiredMessage', 'Please enter a workout title')
@@ -165,6 +168,7 @@ export function useWorkoutForm({ templateId }: UseWorkoutFormParams = {}) {
       router.back();
     } catch (error) {
       console.error('Error saving template:', error);
+      // TODO: use the snackbar system
       Alert.alert(
         t('common.error', 'Error'),
         t('createWorkout.saveError', 'Failed to save workout template')

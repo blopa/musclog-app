@@ -2,7 +2,7 @@ import { format, isSameDay } from 'date-fns';
 import { BookmarkPlus, Calendar, Edit, PlusCircle } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Pressable, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
 import type { MealType } from '../../database/models';
 import Food from '../../database/models/Food';
@@ -13,6 +13,7 @@ import { isSuccessFoodDetailProductState } from '../../types/guards/openFoodFact
 import { FoodInfoCard } from '../cards/FoodInfoCard';
 import { FilterTabs } from '../FilterTabs';
 import { ServingSizeSelector } from '../ServingSizeSelector';
+import { useSnackbar } from '../SnackbarContext';
 import { Button } from '../theme/Button';
 import { DatePickerModal } from './DatePickerModal';
 import { FoodNotFoundModal } from './FoodNotFoundModal';
@@ -35,6 +36,7 @@ export function FoodDetailsModal({
 }: FoodDetailsModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { showSnackbar } = useSnackbar();
   const [servingSize, setServingSize] = useState(100);
   const [selectedMeal, setSelectedMeal] = useState('lunch');
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -244,8 +246,9 @@ export function FoodDetailsModal({
 
         onClose();
 
-        // TODO: use a snackbar with an "Ok" button
-        Alert.alert('Success', 'Food tracked successfully!', [{ text: 'OK' }]);
+        showSnackbar('success', t('food.foodDetails.successMessage'), {
+          action: t('snackbar.ok'),
+        });
         return;
       }
 
@@ -287,13 +290,15 @@ export function FoodDetailsModal({
 
       onClose();
 
-      // TODO: use a snackbar with an "Ok" button
-      Alert.alert('Success', 'Food tracked successfully!', [{ text: 'OK' }]);
+      showSnackbar('success', t('food.foodDetails.successMessage'), {
+        action: t('snackbar.ok'),
+      });
     } catch (error) {
       console.error('Error tracking food:', error);
 
-      // TODO: use a snackbar with an "Ok" button
-      Alert.alert('Error', 'Failed to track food. Please try again.', [{ text: 'OK' }]);
+      showSnackbar('error', t('food.foodDetails.errorMessage'), {
+        action: t('snackbar.ok'),
+      });
     } finally {
       setIsAddingFood(false);
     }
