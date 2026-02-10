@@ -698,7 +698,8 @@ export function FoodSearchModal({
             setIsFoodDetailsVisible(false);
             setSelectedFood(null);
           }}
-          barcode={selectedFood.id}
+          barcode={selectedFood.source === 'local' ? undefined : selectedFood.id}
+          food={selectedFood.source === 'local' ? (selectedFood._raw as any) : undefined}
           onAddFood={(data) => {
             // Call the original onFoodSelect with the food and additional data
             onFoodSelect?.({

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Pressable, Text, View } from 'react-native';
 
+import Food from '../../database/models/Food';
 import { FoodService, NutritionService } from '../../database/services';
 import { useFoodProductDetails } from '../../hooks/useFoodProductDetails';
 import { useTheme } from '../../hooks/useTheme';
@@ -20,10 +21,17 @@ type FoodDetailsModalProps = {
   visible: boolean;
   onClose: () => void;
   barcode?: string | null;
+  food?: Food | null; // Local food object
   onAddFood?: (data: { servingSize: number; meal: string; date: Date }) => void;
 };
 
-export function FoodDetailsModal({ visible, onClose, barcode, onAddFood }: FoodDetailsModalProps) {
+export function FoodDetailsModal({
+  visible,
+  onClose,
+  barcode,
+  food,
+  onAddFood,
+}: FoodDetailsModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const [servingSize, setServingSize] = useState(100);
@@ -33,10 +41,17 @@ export function FoodDetailsModal({ visible, onClose, barcode, onAddFood }: FoodD
   const [isFoodNotFoundModalVisible, setIsFoodNotFoundModalVisible] = useState(false);
   const [isFoodDetailsModalVisible, setIsFoodDetailsModalVisible] = useState(false);
 
-  // Fetch detailed product data if barcode is provided
-  const { data: productDetails } = useFoodProductDetails(barcode || null);
+  // Fetch detailed product data only if barcode is provided and no local food
+  const { data: productDetails } = useFoodProductDetails(barcode && !food ? barcode : null);
 
   useEffect(() => {
+    if (food) {
+      // Local food already available, show details
+      setIsFoodDetailsModalVisible(true);
+      setServingSize(100);
+      return;
+    }
+
     if (productDetails) {
       if (productDetails?.status !== 'success') {
         setIsFoodNotFoundModalVisible(true);
@@ -44,10 +59,25 @@ export function FoodDetailsModal({ visible, onClose, barcode, onAddFood }: FoodD
         setIsFoodDetailsModalVisible(true);
       }
     }
-  }, [productDetails]);
+  }, [productDetails, food]);
 
-  // Extract nutritional data from barcode lookup
+  // Extract nutritional data from barcode lookup or local food
   const getNutritionalData = useCallback(() => {
+    // If we have a local food, use its data directly
+    if (food) {
+      return {
+        calories: food.calories || 0,
+        protein: food.protein || 0,
+        carbs: food.carbs || 0,
+        fat: food.fat || 0,
+        fiber: food.fiber || 0,
+        sugars: 0,
+        saturatedFat: 0,
+        sodium: 0,
+        salt: 0,
+      };
+    }
+
     if (isSuccessFoodDetailProductState(productDetails)) {
       const nutrients = productDetails.product.nutriments || {};
       return {
@@ -76,20 +106,28 @@ export function FoodDetailsModal({ visible, onClose, barcode, onAddFood }: FoodD
       sodium: 0,
       salt: 0,
     };
-  }, [productDetails]);
+  }, [productDetails, food]);
 
   const nutritionalData = getNutritionalData();
 
-  // Get product name from barcode lookup
+  // Get product name from barcode lookup or local food
   const getProductName = useCallback(() => {
+    if (food) {
+      return food.name || 'Unknown Food';
+    }
+
     if (isSuccessFoodDetailProductState(productDetails)) {
       return productDetails.product.product_name || 'Unknown Food';
     }
     return 'Unknown Food';
-  }, [productDetails]);
+  }, [productDetails, food]);
 
-  // Get product category/brand from barcode lookup
+  // Get product category/brand from barcode lookup or local food
   const getProductCategory = useCallback(() => {
+    if (food) {
+      return food.brand || '';
+    }
+
     if (isSuccessFoodDetailProductState(productDetails)) {
       const brand = productDetails.product.brands;
       const categories = productDetails.product.categories;
@@ -105,7 +143,7 @@ export function FoodDetailsModal({ visible, onClose, barcode, onAddFood }: FoodD
       }
     }
     return '';
-  }, [productDetails]);
+  }, [productDetails, food]);
 
   // Get default serving size from barcode lookup
   const getDefaultServingSize = useCallback(() => {
