@@ -623,8 +623,10 @@ export function FoodSearchModal({
               </View>
             ) : null}
 
-            {/* TODO: check the time of the year, and depending, select 5 foods based on the tracking history */}
+            {/* TODO: check the time of the day, and depending, select 5 foods based on the tracking history */}
             {/* instead of hardcoded COMMON_FOODS */}
+            {/* If none, then show the most recent favorite foods */}
+            {/* If none, then just latest tracked foods, period */}
             {!searchQuery ? (
               <View>
                 <SectionHeader title={t('foodSearch.commonBreakfastFoods')} icon={Sparkles} />
