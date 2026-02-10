@@ -1,5 +1,5 @@
 import { Plus, QrCode, Search, Sparkles } from 'lucide-react-native';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
@@ -12,6 +12,7 @@ import {
   View,
 } from 'react-native';
 
+import { NutritionService } from '../../database/services';
 import { useFoods } from '../../hooks/useFoods';
 import { useTheme } from '../../hooks/useTheme';
 import { type UnifiedFoodResult, useUnifiedFoodSearch } from '../../hooks/useUnifiedFoodSearch';
@@ -37,56 +38,6 @@ type FoodSearchModalProps = {
   onBarcodeScanPress?: () => void;
   onFoodSelect?: (food: FoodItem) => void;
 };
-
-// TODO: remove this
-const COMMON_FOODS: FoodItem[] = [
-  {
-    id: '3',
-    name: 'Oatmeal & Berries',
-    description: '1 bowl • 350 kcal',
-    calories: 350,
-    protein: 12,
-    carbs: 55,
-    fat: 8,
-    source: 'local',
-  },
-  {
-    id: '4',
-    name: 'Black Coffee',
-    description: '1 cup (8oz) • 2 kcal',
-    iconColor: '#4f46e5',
-    iconBgColor: '#4f46e5',
-    calories: 2,
-    protein: 0.3,
-    carbs: 0,
-    fat: 0,
-    source: 'local',
-  },
-  {
-    id: '5',
-    name: 'Whole Wheat Toast',
-    description: '2 slices • 180 kcal',
-    iconColor: '#4f46e5',
-    iconBgColor: '#4f46e5',
-    calories: 180,
-    protein: 8,
-    carbs: 32,
-    fat: 3,
-    source: 'local',
-  },
-  {
-    id: '6',
-    name: 'Greek Yogurt',
-    description: '1 cup (170g) • 100 kcal • 18g Protein',
-    iconColor: '#4f46e5',
-    iconBgColor: '#4f46e5',
-    calories: 100,
-    protein: 18,
-    carbs: 6,
-    fat: 0,
-    source: 'local',
-  },
-];
 
 type UnderlineTabsProps = {
   tabs: { id: string; label: string }[];
@@ -305,6 +256,93 @@ export function FoodSearchModal({
     apiLimit: 20,
     debounceMs: 300,
   });
+
+  const [suggestedFoods, setSuggestedFoods] = useState<FoodItem[] | null>(null);
+  const [isLoadingSuggested, setIsLoadingSuggested] = useState(false);
+  const [suggestedTitle, setSuggestedTitle] = useState('');
+
+  useEffect(() => {
+    let mounted = true;
+
+    const loadSuggestions = async () => {
+      if (!visible || searchQuery) {
+        if (mounted) setSuggestedFoods(null);
+        return;
+      }
+
+      setIsLoadingSuggested(true);
+
+      try {
+        const hour = new Date().getHours();
+        let mealKey: 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'other' = 'other';
+        let titleKey = 'foodSearch.commonFoods';
+
+        if (hour < 10) {
+          mealKey = 'breakfast';
+          titleKey = 'foodSearch.commonBreakfastFoods';
+        } else if (hour < 14) {
+          mealKey = 'lunch';
+          titleKey = 'foodSearch.commonLunchFoods';
+        } else if (hour < 17) {
+          mealKey = 'snack';
+          titleKey = 'foodSearch.commonSnackFoods';
+        } else if (hour < 21) {
+          mealKey = 'dinner';
+          titleKey = 'foodSearch.commonDinnerFoods';
+        }
+
+        // Try to get most eaten for this meal type
+        const byMeal = await NutritionService.getMostEatenFoodsByMealType(mealKey as any, 5);
+        let foodsArr = byMeal.map((r) => r.food).filter(Boolean);
+
+        // Fallback to most eaten overall
+        if (!foodsArr || foodsArr.length === 0) {
+          const most = await NutritionService.getMostEatenFoods(5);
+          foodsArr = most.map((r) => r.food).filter(Boolean);
+          titleKey = 'foodSearch.yourFavoriteFoods';
+        }
+
+        if (mounted) {
+          setSuggestedTitle(t(titleKey));
+        }
+
+        // Map to FoodItem
+        const mapped = foodsArr.map(
+          (f) =>
+            ({
+              id: f.id,
+              name: f.name ?? '',
+              description: `${f.brand || 'Custom Food'} • ${f.calories || 0} kcal`,
+              brand: (f as any).brand,
+              serving_size: '100 g',
+              calories: f.calories,
+              protein: f.protein,
+              carbs: f.carbs,
+              fat: f.fat,
+              fiber: f.fiber,
+              source: 'local',
+              icon: '🍽️',
+              iconColor: theme.colors.accent.primary,
+              iconBgColor: theme.colors.accent.primary10,
+              _raw: f,
+            }) as FoodItem
+        );
+
+        if (mounted) setSuggestedFoods(mapped);
+      } catch (err) {
+        console.error('Error loading suggested foods:', err);
+        if (mounted) setSuggestedFoods([]);
+      } finally {
+        if (mounted) setIsLoadingSuggested(false);
+      }
+    };
+
+    loadSuggestions();
+
+    return () => {
+      mounted = false;
+    };
+  }, [visible, searchQuery, t, theme.colors.accent.primary, theme.colors.accent.primary10]);
 
   // Get filtered results based on active filter
   const filteredResults = useMemo(() => {
@@ -623,24 +661,26 @@ export function FoodSearchModal({
               </View>
             ) : null}
 
-            {/* TODO: check the time of the day, and depending, select 5 foods based on the tracking history */}
-            {/* instead of hardcoded COMMON_FOODS */}
-            {/* If none, then show the most recent favorite foods */}
-            {/* If none, then dont show this section */}
-            {!searchQuery ? (
+            {!searchQuery && suggestedFoods && suggestedFoods.length > 0 ? (
               <View>
-                <SectionHeader title={t('foodSearch.commonBreakfastFoods')} icon={Sparkles} />
+                <SectionHeader title={suggestedTitle} icon={Sparkles} />
                 <View className="gap-1.5">
-                  {COMMON_FOODS.map((food) => (
-                    <FoodItemCard
-                      key={food.id}
-                      food={food}
-                      onAddPress={() => {
-                        setSelectedFood(food);
-                        setIsFoodDetailsVisible(true);
-                      }}
-                    />
-                  ))}
+                  {isLoadingSuggested ? (
+                    <View className="py-4">
+                      <ActivityIndicator size="small" color={theme.colors.accent.primary} />
+                    </View>
+                  ) : (
+                    suggestedFoods.map((food) => (
+                      <FoodItemCard
+                        key={food.id}
+                        food={food}
+                        onAddPress={() => {
+                          setSelectedFood(food);
+                          setIsFoodDetailsVisible(true);
+                        }}
+                      />
+                    ))
+                  )}
                 </View>
               </View>
             ) : null}

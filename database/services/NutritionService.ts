@@ -326,6 +326,45 @@ export class NutritionService {
   }
 
   /**
+   * Get most eaten foods filtered by meal type
+   */
+  static async getMostEatenFoodsByMealType(
+    mealType: MealType,
+    limit: number = 10
+  ): Promise<{ food: Food; count: number }[]> {
+    const logs = await database
+      .get<NutritionLog>('nutrition_logs')
+      .query(Q.where('deleted_at', Q.eq(null)), Q.where('type', mealType))
+      .fetch();
+
+    const foodCounts = new Map<string, number>();
+
+    for (const log of logs) {
+      const count = foodCounts.get(log.foodId ?? '') || 0;
+      foodCounts.set(log.foodId ?? '', count + 1);
+    }
+
+    const sortedFoods = Array.from(foodCounts.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, limit);
+
+    const results: { food: Food; count: number }[] = [];
+
+    for (const [foodId, count] of sortedFoods) {
+      try {
+        const food = await database.get<Food>('foods').find(foodId);
+        if (!food.deletedAt) {
+          results.push({ food, count });
+        }
+      } catch (error) {
+        // Food might have been deleted, skip
+      }
+    }
+
+    return results;
+  }
+
+  /**
    * Get nutrition streak (consecutive days with logged food)
    */
   static async getNutritionStreak(): Promise<number> {
