@@ -63,9 +63,10 @@ export default function HomeScreen() {
     date: today,
   });
 
-  // Get recent foods for display
+  // Get recent foods for display (limit to today's logs)
   const { recentFoods, isLoading: isLoadingRecentFoods } = useNutritionLogs({
     mode: 'recent',
+    date: today,
   });
 
   // Calculate daily summary from real data

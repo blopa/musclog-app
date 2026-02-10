@@ -216,7 +216,7 @@ export function useNutritionLogs({
         setHasMore(false); // No pagination for meal-type mode
       } else if (mode === 'recent') {
         // Recent mode: return recently eaten foods for quick logging
-        const recent = await NutritionService.getRecentFoods(initialLimit);
+        const recent = await NutritionService.getRecentFoods(initialLimit, date);
         setRecentFoods(recent);
         logsList = [];
         setHasMore(false);

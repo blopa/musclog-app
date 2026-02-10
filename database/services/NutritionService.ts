@@ -257,11 +257,19 @@ export class NutritionService {
   /**
    * Get recent foods (for quick logging)
    */
-  static async getRecentFoods(limit: number = 10): Promise<Food[]> {
-    const recentLogs = await database
+  static async getRecentFoods(limit: number = 10, date?: Date): Promise<Food[]> {
+    // If a date is provided, limit recent logs to that date (today by default).
+    let query = database
       .get<NutritionLog>('nutrition_logs')
-      .query(Q.where('deleted_at', Q.eq(null)), Q.sortBy('created_at', Q.desc), Q.take(limit))
-      .fetch();
+      .query(Q.where('deleted_at', Q.eq(null)));
+
+    if (date) {
+      const dateTimestamp = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+      const nextDayTimestamp = dateTimestamp + 24 * 60 * 60 * 1000;
+      query = query.extend(Q.where('date', Q.between(dateTimestamp, nextDayTimestamp - 1)));
+    }
+
+    const recentLogs = await query.extend(Q.sortBy('created_at', Q.desc), Q.take(limit)).fetch();
 
     const foodIds = [...new Set(recentLogs.map((log) => log.foodId))];
     const foods: Food[] = [];
