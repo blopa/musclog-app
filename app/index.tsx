@@ -320,7 +320,9 @@ export default function HomeScreen() {
                   key={food.id}
                   item={{
                     name: food.name ?? '',
-                    media: food.imageUrl ? { uri: food.imageUrl } : { icon: UtensilsCrossed, color: theme.colors.text.secondary },
+                    media: food.imageUrl
+                      ? { uri: food.imageUrl }
+                      : { icon: UtensilsCrossed, color: theme.colors.text.secondary },
                     itemOne: { value: `${Math.round(food.protein ?? 0)}G P`, icon: Zap },
                     itemTwo: { value: `${Math.round(food.carbs ?? 0)}G C`, icon: Wheat },
                     itemThree: { value: `${Math.round(food.fat ?? 0)}G F`, icon: Droplet },

@@ -3,6 +3,7 @@ import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
+import { theme } from '../theme';
 import { Button } from './theme/Button';
 
 type MealSectionProps = {
@@ -51,20 +52,28 @@ export function MealSection({
 
   return (
     <View>
-      <View className="mb-4 flex-col gap-2">
-        <View className="flex-row items-center justify-between">
-          <Text className="text-2xl font-bold text-text-primary">{title}</Text>
+      <View className="items-flex-start mb-4 flex-row justify-between">
+        <Text className="text-2xl font-bold text-text-primary">{title}</Text>
+        <View className="items-end">
           <Text className="text-lg text-text-secondary">
             {totalCalories.toLocaleString('en-US', { useGrouping: false })} {t('food.common.kcal')}
           </Text>
+          {totalProtein > 0 || totalCarbs > 0 || totalFat > 0 ? (
+            <Text className="text-sm">
+              <Text style={{ color: theme.colors.macros.protein.text }}>
+                P: {Math.round(totalProtein)}g
+              </Text>{' '}
+              <Text className="text-text-secondary">•</Text>{' '}
+              <Text style={{ color: theme.colors.macros.carbs.text }}>
+                C: {Math.round(totalCarbs)}g
+              </Text>{' '}
+              <Text className="text-text-secondary">•</Text>{' '}
+              <Text style={{ color: theme.colors.macros.fat.text }}>
+                F: {Math.round(totalFat)}g
+              </Text>
+            </Text>
+          ) : null}
         </View>
-        {totalProtein > 0 || totalCarbs > 0 || totalFat > 0 ? (
-          <View className="flex-row gap-4 text-sm text-text-secondary">
-            <Text className="text-sm text-text-secondary">P: {Math.round(totalProtein)}g</Text>
-            <Text className="text-sm text-text-secondary">C: {Math.round(totalCarbs)}g</Text>
-            <Text className="text-sm text-text-secondary">F: {Math.round(totalFat)}g</Text>
-          </View>
-        ) : null}
       </View>
 
       <View className="gap-3">
