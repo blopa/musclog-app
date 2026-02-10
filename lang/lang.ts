@@ -11,9 +11,10 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
 import enUs from './locales/en-us.json';
-import es from './locales/es-es.json';
-import nl from './locales/nl-nl.json';
-import ptBR from './locales/pt-br.json';
+// TODO: implement other languages
+import es from './locales/en-us.json';
+import nl from './locales/en-us.json';
+import ptBR from './locales/en-us.json';
 
 export const EN_US = 'en-US';
 export const ES_ES = 'es-ES';

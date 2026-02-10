@@ -359,6 +359,9 @@ export default function FoodScreen() {
                   <MealSection
                     title={t('food.meals.breakfast')}
                     totalCalories={Math.ceil(dailyNutrients?.byMealType?.breakfast?.calories || 0)}
+                    totalProtein={dailyNutrients?.byMealType?.breakfast?.protein || 0}
+                    totalCarbs={dailyNutrients?.byMealType?.breakfast?.carbs || 0}
+                    totalFat={dailyNutrients?.byMealType?.breakfast?.fat || 0}
                   >
                     {mealsByType.breakfast.map((entry) => (
                       <FoodItemCard
@@ -381,6 +384,9 @@ export default function FoodScreen() {
                   <MealSection
                     title={t('food.meals.lunch')}
                     totalCalories={Math.ceil(dailyNutrients?.byMealType?.lunch?.calories || 0)}
+                    totalProtein={dailyNutrients?.byMealType?.lunch?.protein || 0}
+                    totalCarbs={dailyNutrients?.byMealType?.lunch?.carbs || 0}
+                    totalFat={dailyNutrients?.byMealType?.lunch?.fat || 0}
                   >
                     {mealsByType.lunch.map((entry) => (
                       <FoodItemCard
@@ -403,6 +409,9 @@ export default function FoodScreen() {
                   <MealSection
                     title={t('food.meals.dinner')}
                     totalCalories={Math.ceil(dailyNutrients?.byMealType?.dinner?.calories || 0)}
+                    totalProtein={dailyNutrients?.byMealType?.dinner?.protein || 0}
+                    totalCarbs={dailyNutrients?.byMealType?.dinner?.carbs || 0}
+                    totalFat={dailyNutrients?.byMealType?.dinner?.fat || 0}
                   >
                     {mealsByType.dinner.map((entry) => (
                       <FoodItemCard
@@ -425,6 +434,9 @@ export default function FoodScreen() {
                   <MealSection
                     title={t('food.meals.snacks')}
                     totalCalories={Math.ceil(dailyNutrients?.byMealType?.snack?.calories || 0)}
+                    totalProtein={dailyNutrients?.byMealType?.snack?.protein || 0}
+                    totalCarbs={dailyNutrients?.byMealType?.snack?.carbs || 0}
+                    totalFat={dailyNutrients?.byMealType?.snack?.fat || 0}
                   >
                     {mealsByType.snack.map((entry) => (
                       <FoodItemCard
