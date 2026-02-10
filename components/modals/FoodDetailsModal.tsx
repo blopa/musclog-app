@@ -41,6 +41,7 @@ export function FoodDetailsModal({
   const [isFoodNotFoundModalVisible, setIsFoodNotFoundModalVisible] = useState(false);
   const [isFoodDetailsModalVisible, setIsFoodDetailsModalVisible] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [isAddingFood, setIsAddingFood] = useState(false);
 
   // Fetch detailed product data only if barcode is provided and no local food
   const { data: productDetails } = useFoodProductDetails(barcode && !food ? barcode : null);
@@ -205,6 +206,9 @@ export function FoodDetailsModal({
   ];
 
   const handleAddFood = useCallback(async () => {
+    setIsAddingFood(true);
+    await new Promise((resolve) => setTimeout(resolve, 10));
+
     try {
       // Handle local food
       if (food) {
@@ -273,6 +277,8 @@ export function FoodDetailsModal({
     } catch (error) {
       console.error('Error tracking food:', error);
       Alert.alert('Error', 'Failed to track food. Please try again.', [{ text: 'OK' }]);
+    } finally {
+      setIsAddingFood(false);
     }
   }, [
     productDetails,
@@ -361,6 +367,8 @@ export function FoodDetailsModal({
               size="sm"
               width="full"
               onPress={handleAddFood}
+              disabled={isAddingFood}
+              loading={isAddingFood}
             />
           </View>
         }
