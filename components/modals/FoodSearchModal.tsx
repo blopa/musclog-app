@@ -479,8 +479,9 @@ export function FoodSearchModal({
                   {/* Show results when available */}
                   {!isInitialLoad && !error && filteredResults.length > 0 ? (
                     <>
-                      {/* Local Results Section */}
-                      {resultsBySource.local.length > 0 ? (
+                      {/* Local Results Section - only show if filter includes local or 'all' */}
+                      {(activeFilter === 'all' || activeFilter === 'myFoods') &&
+                      resultsBySource.local.length > 0 ? (
                         <View className="mb-4">
                           <View className="mb-3 flex-row items-center gap-2">
                             <View className="h-0.5 flex-1 bg-accent-primary/20" />
@@ -531,8 +532,9 @@ export function FoodSearchModal({
                         </View>
                       ) : null}
 
-                      {/* API Results Section */}
-                      {resultsBySource.api.length > 0 ? (
+                      {/* API Results Section - only show if filter includes api or 'all' */}
+                      {(activeFilter === 'all' || activeFilter === 'api') &&
+                      resultsBySource.api.length > 0 ? (
                         <View className="mb-4">
                           <View className="mb-3 flex-row items-center gap-2">
                             <View className="h-0.5 flex-1 bg-text-tertiary/30" />
