@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Pressable, Text, View } from 'react-native';
 
+import type { MealType } from '../../database/models';
 import Food from '../../database/models/Food';
 import { FoodService, NutritionService } from '../../database/services';
 import { useFoodProductDetails } from '../../hooks/useFoodProductDetails';
@@ -21,7 +22,7 @@ type FoodDetailsModalProps = {
   visible: boolean;
   onClose: () => void;
   barcode?: string | null;
-  food?: Food | null; // Local food object
+  food?: Food | null;
   onAddFood?: (data: { servingSize: number; meal: string; date: Date }) => void;
 };
 
@@ -213,14 +214,26 @@ export function FoodDetailsModal({
       // Handle local food
       if (food) {
         // Create nutrition log with local food
-        await NutritionService.logFood(food.id, selectedDate, selectedMeal as any, servingSize);
+        const logFoodPromise = NutritionService.logFood(
+          food.id,
+          selectedDate,
+          selectedMeal as MealType,
+          servingSize
+        );
+        let foodUpdatePromise = null;
 
         // Update favorite status if needed
         if (isFavorite && !food.isFavorite) {
-          await food.update((record: any) => {
+          foodUpdatePromise = food.update((record: any) => {
             record.isFavorite = true;
           });
         }
+
+        await Promise.all([
+          logFoodPromise,
+          foodUpdatePromise,
+          new Promise((resolve) => setTimeout(resolve, 100)),
+        ]);
 
         // Call the original callback if provided
         onAddFood?.({
@@ -256,12 +269,14 @@ export function FoodDetailsModal({
       });
 
       // Create nutrition log
-      await NutritionService.logFood(
+      const logFoodPromise = NutritionService.logFood(
         newFood.id,
         selectedDate,
-        selectedMeal as any, // Type assertion since our meal types match
+        selectedMeal as MealType,
         servingSize
       );
+
+      await Promise.all([logFoodPromise, new Promise((resolve) => setTimeout(resolve, 100))]);
 
       // Call the original callback if provided
       onAddFood?.({
@@ -272,10 +287,12 @@ export function FoodDetailsModal({
 
       onClose();
 
-      // Show success message
+      // TODO: use a snackbar with an "Ok" button
       Alert.alert('Success', 'Food tracked successfully!', [{ text: 'OK' }]);
     } catch (error) {
       console.error('Error tracking food:', error);
+
+      // TODO: use a snackbar with an "Ok" button
       Alert.alert('Error', 'Failed to track food. Please try again.', [{ text: 'OK' }]);
     } finally {
       setIsAddingFood(false);
