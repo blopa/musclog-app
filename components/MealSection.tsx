@@ -52,9 +52,14 @@ export function MealSection({
 
   return (
     <View>
-      <View className="items-flex-start mb-4 flex-row justify-between">
+      <View className="items-flex-start mb-4 mt-4 flex-row justify-between">
         <Text className="text-2xl font-bold text-text-primary">{title}</Text>
-        <View className="items-end">
+        <View
+          className="items-end"
+          style={{
+            marginTop: -theme.spacing.padding.base,
+          }}
+        >
           <Text className="text-lg text-text-secondary">
             {totalCalories.toLocaleString('en-US', { useGrouping: false })} {t('food.common.kcal')}
           </Text>
