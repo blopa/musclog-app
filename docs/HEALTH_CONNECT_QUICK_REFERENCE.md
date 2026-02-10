@@ -275,7 +275,7 @@ async function setupHealthConnect() {
     console.log(`Setup complete. Synced ${result.recordsWritten} records.`);
   } catch (error) {
     if (error instanceof HealthConnectError) {
-       // TODO: use snackbar here instead
+      // TODO: use snackbar here instead
       Alert.alert('Setup Failed', error.getUserMessage());
     }
   }
