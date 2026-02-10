@@ -22,6 +22,7 @@ export class FoodService {
       saturatedFat?: number;
       sodium?: number;
       salt?: number;
+      isFavorite?: boolean;
     }
   ): Promise<Food> {
     return await database.write(async () => {
@@ -68,7 +69,7 @@ export class FoodService {
           Object.entries(micros).filter(([_, value]) => value !== undefined)
         );
 
-        food.isFavorite = false;
+        food.isFavorite = nutritionData.isFavorite ?? false;
         food.source = 'api';
         food.createdAt = now;
         food.updatedAt = now;

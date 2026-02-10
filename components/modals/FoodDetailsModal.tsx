@@ -1,5 +1,5 @@
 import { format, isSameDay } from 'date-fns';
-import { Calendar, Edit, PlusCircle } from 'lucide-react-native';
+import { BookmarkPlus, Calendar, Edit, PlusCircle } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Pressable, Text, View } from 'react-native';
@@ -40,6 +40,7 @@ export function FoodDetailsModal({
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [isFoodNotFoundModalVisible, setIsFoodNotFoundModalVisible] = useState(false);
   const [isFoodDetailsModalVisible, setIsFoodDetailsModalVisible] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
 
   // Fetch detailed product data only if barcode is provided and no local food
   const { data: productDetails } = useFoodProductDetails(barcode && !food ? barcode : null);
@@ -205,6 +206,33 @@ export function FoodDetailsModal({
 
   const handleAddFood = useCallback(async () => {
     try {
+      // Handle local food
+      if (food) {
+        // Create nutrition log with local food
+        await NutritionService.logFood(food.id, selectedDate, selectedMeal as any, servingSize);
+
+        // Update favorite status if needed
+        if (isFavorite && !food.isFavorite) {
+          await food.update((record: any) => {
+            record.isFavorite = true;
+          });
+        }
+
+        // Call the original callback if provided
+        onAddFood?.({
+          servingSize,
+          meal: selectedMeal,
+          date: selectedDate,
+        });
+
+        onClose();
+
+        // TODO: use a snackbar with an "Ok" button
+        Alert.alert('Success', 'Food tracked successfully!', [{ text: 'OK' }]);
+        return;
+      }
+
+      // Handle API food (barcode)
       if (!isSuccessFoodDetailProductState(productDetails)) {
         throw new Error('Product details not loaded');
       }
@@ -220,6 +248,7 @@ export function FoodDetailsModal({
         saturatedFat: nutritionalData.saturatedFat,
         sodium: nutritionalData.sodium,
         salt: nutritionalData.salt,
+        isFavorite: isFavorite,
       });
 
       // Create nutrition log
@@ -247,6 +276,8 @@ export function FoodDetailsModal({
     }
   }, [
     productDetails,
+    food,
+    isFavorite,
     nutritionalData.calories,
     nutritionalData.carbs,
     nutritionalData.fat,
@@ -306,6 +337,21 @@ export function FoodDetailsModal({
         onClose={onClose}
         title={t('food.foodDetails.title')}
         scrollable={true}
+        headerRight={
+          <Pressable
+            onPress={() => setIsFavorite(!isFavorite)}
+            className="flex-row items-center gap-1"
+          >
+            <BookmarkPlus
+              size={theme.iconSize.sm}
+              color={theme.colors.accent.primary}
+              fill={isFavorite ? theme.colors.accent.primary : 'none'}
+            />
+            <Text className="text-sm font-medium text-accent-primary">
+              {t('food.foodDetails.addFavorite')}
+            </Text>
+          </Pressable>
+        }
         footer={
           <View className="bg-transparent px-4 pb-6 pt-3">
             <Button

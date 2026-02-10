@@ -1,4 +1,4 @@
-import { BookmarkPlus, Minus, Plus } from 'lucide-react-native';
+import { Minus, Plus } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, TextInput, View } from 'react-native';
 
@@ -14,6 +14,7 @@ export function ServingSizeSelector({ value, onChange, quickSizes }: ServingSize
   const theme = useTheme();
   const { t } = useTranslation();
 
+  // TODO: load from database instead
   const defaultQuickSizes = [
     { label: `50${t('food.foodDetails.unitGrams')}`, value: 50 },
     { label: `100${t('food.foodDetails.unitGrams')}`, value: 100 },
@@ -37,12 +38,6 @@ export function ServingSizeSelector({ value, onChange, quickSizes }: ServingSize
         <Text className="text-xs font-bold uppercase tracking-wider text-text-secondary">
           {t('food.foodDetails.servingSize')}
         </Text>
-        <Pressable className="flex-row items-center gap-1">
-          <BookmarkPlus size={theme.iconSize.sm} color={theme.colors.accent.primary} />
-          <Text className="text-xs font-medium text-accent-primary">
-            {t('food.foodDetails.addFavorite')}
-          </Text>
-        </Pressable>
       </View>
       <View
         className="rounded-xl border bg-bg-cardDark p-2"
@@ -73,6 +68,7 @@ export function ServingSizeSelector({ value, onChange, quickSizes }: ServingSize
                 keyboardType="numeric"
                 placeholder="0"
                 placeholderTextColor={theme.colors.text.primary20}
+                selectTextOnFocus={true}
               />
               <Text className="absolute -right-6 bottom-1.5 text-lg font-bold text-text-secondary">
                 {t('food.foodDetails.unitGrams')}
