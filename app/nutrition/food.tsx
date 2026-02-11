@@ -54,7 +54,7 @@ export default function FoodScreen() {
   const currentLanguage = (i18n.language || 'en-US') as LanguageKeys;
   const locale = LOCALE_MAP[currentLanguage] || LOCALE_MAP['en-US'];
 
-  const { logs, dailyNutrients, isLoading } = useNutritionLogs({
+  const { logs, dailyNutrients, isLoading, refresh } = useNutritionLogs({
     mode: 'daily',
     date: selectedDate,
     enableReactivity: true,
@@ -647,6 +647,13 @@ export default function FoodScreen() {
           }}
           food={selectedFoodItem.food}
           foodLog={selectedFoodItem.log}
+          onAddFood={async (_data) => {
+            try {
+              await refresh();
+            } catch (_error) {
+              // TODO: reload the screen
+            }
+          }}
         />
       ) : null}
     </MasterLayout>
