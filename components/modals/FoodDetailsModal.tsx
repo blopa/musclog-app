@@ -21,6 +21,7 @@ import { FullScreenModal } from './FullScreenModal';
 
 type FoodDetailsModalProps = {
   visible: boolean;
+  foodLog?: any;
   onClose: () => void;
   barcode?: string | null;
   food?: Food | null;
@@ -33,6 +34,9 @@ export function FoodDetailsModal({
   barcode,
   food,
   onAddFood,
+  // TODO: implement edit mode, if we pass a foodLog, when we track the food, instead of creating a new log, edit the current one
+  // also load the grams value from the log
+  foodLog,
 }: FoodDetailsModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();

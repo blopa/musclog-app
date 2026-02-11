@@ -218,6 +218,7 @@ export default function FoodScreen() {
   };
 
   const handleEditFood = () => {
+    // TODO: open the FoodDetailsModal passing a foodLog to it, so we can edit it
     console.log('Edit food:', selectedFoodItem?.food?.name);
   };
 
