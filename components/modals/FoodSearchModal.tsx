@@ -372,7 +372,8 @@ export function FoodSearchModal({
               fat: f.fat,
               fiber: f.fiber,
               source: 'local',
-              icon: '🍽️', // TODO: load the food image, if none, then use icon, just like the other parts of the code
+              imageUrl: f.imageUrl ? f.imageUrl : undefined,
+              icon: f.imageUrl ? undefined : '🍽️',
               iconColor: theme.colors.accent.primary,
               iconBgColor: theme.colors.accent.primary10,
               _raw: f,
