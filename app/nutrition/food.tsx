@@ -22,11 +22,11 @@ import { FoodItemCard } from '../../components/cards/FoodItemCard';
 import { MasterLayout } from '../../components/MasterLayout';
 import { MealSection } from '../../components/MealSection';
 import { AddFoodModal } from '../../components/modals/AddFoodModal';
+import CreateCustomFoodModal from '../../components/modals/CreateCustomFoodModal';
 import { DatePickerModal } from '../../components/modals/DatePickerModal';
 import { FoodDetailsModal } from '../../components/modals/FoodDetailsModal';
 import { FoodSearchModal } from '../../components/modals/FoodSearchModal';
 import SmartCameraModal from '../../components/modals/SmartCameraModal';
-import CreateCustomFoodModal from '../../components/modals/CreateCustomFoodModal';
 import { useSnackbar } from '../../components/SnackbarContext';
 import { Button } from '../../components/theme/Button';
 import { EmptyStateCard } from '../../components/theme/EmptyStateCard';
@@ -45,7 +45,9 @@ export default function FoodScreen() {
   const { showSnackbar } = useSnackbar();
   const router = useRouter();
   const [isCameraVisible, setIsCameraVisible] = useState(false);
-  const [cameraMode, setCameraMode] = useState<'ai-meal-photo' | 'ai-label-scan' | 'barcode-scan'>('ai-meal-photo');
+  const [cameraMode, setCameraMode] = useState<'ai-meal-photo' | 'ai-label-scan' | 'barcode-scan'>(
+    'ai-meal-photo'
+  );
   const [isCreateCustomFoodVisible, setIsCreateCustomFoodVisible] = useState(false);
   const [isAddFoodModalVisible, setIsAddFoodModalVisible] = useState(false);
   const [isFoodSearchModalVisible, setIsFoodSearchModalVisible] = useState(false);
@@ -631,11 +633,8 @@ export default function FoodScreen() {
       {isCreateCustomFoodVisible ? (
         <CreateCustomFoodModal
           visible={isCreateCustomFoodVisible}
+          trackFoodAfterSave={true}
           onClose={() => setIsCreateCustomFoodVisible(false)}
-          onSave={(data) => {
-            console.log('Custom food saved:', data);
-            setIsCreateCustomFoodVisible(false);
-          }}
         />
       ) : null}
 

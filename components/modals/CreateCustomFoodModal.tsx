@@ -31,6 +31,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
 
+import Food from '../../database/models/Food';
+import { FoodService } from '../../database/services';
 import { useTheme } from '../../hooks/useTheme';
 import { MacroInput } from '../MacroInput';
 import { Button } from '../theme/Button';
@@ -38,6 +40,7 @@ import { SegmentedControl } from '../theme/SegmentedControl';
 import { TextInput } from '../theme/TextInput';
 import { ToggleInput } from '../theme/ToggleInput';
 import { BarcodeCameraModal } from './BarcodeCameraModal';
+import { FoodDetailsModal } from './FoodDetailsModal';
 import { FullScreenModal } from './FullScreenModal';
 
 type MeasurementUnit = '100g' | 'serving' | 'container';
@@ -53,11 +56,12 @@ export default function CreateCustomFoodModal({
   visible,
   onClose,
   onSave,
-  // TODO: implement this prop, if is set to true, after saving this, we should
-  // open the FoodDetailsModal with the newly added food passed to it
   trackFoodAfterSave = false,
 }: NewCustomFoodModalProps) {
   const theme = useTheme();
+  const [isSaving, setIsSaving] = useState(false);
+  const [createdFood, setCreatedFood] = useState<Food | null>(null);
+  const [isFoodDetailsVisible, setIsFoodDetailsVisible] = useState(false);
   const [foodName, setFoodName] = useState('');
   const [brand, setBrand] = useState('');
   const [barcode, setBarcode] = useState('');
@@ -115,7 +119,7 @@ export default function CreateCustomFoodModal({
 
   const isSaveDisabled = !foodName.trim();
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const foodData = {
       foodName,
       brand,
@@ -131,6 +135,61 @@ export default function CreateCustomFoodModal({
       micronutrients,
     };
 
+    // If caller wants to track food after save, create the Food in DB here
+    if (trackFoodAfterSave) {
+      setIsSaving(true);
+      try {
+        // Parse numeric values
+        const nutrition = {
+          calories: parseInt(calories || '0', 10) || 0,
+          protein: parseFloat(protein || '0') || 0,
+          carbs: parseFloat(carbs || '0') || 0,
+          fat: parseFloat(fat || '0') || 0,
+          fiber: parseFloat(fiber || '0') || 0,
+        };
+
+        // Determine serving amount/unit
+        let servingAmount = 100;
+        let servingUnit = 'g';
+        if (measurementUnit === '100g') {
+          servingAmount = 100;
+          servingUnit = 'g';
+        } else if (measurementUnit === 'serving') {
+          servingAmount = 1;
+          servingUnit = 'serving';
+        } else if (measurementUnit === 'container') {
+          servingAmount = 1;
+          servingUnit = 'container';
+        }
+
+        const newFood = await FoodService.createCustomFood(
+          foodName,
+          nutrition,
+          brand || undefined,
+          servingAmount,
+          servingUnit
+        );
+
+        setCreatedFood(newFood);
+
+        // Call onSave with created food object for parent if provided
+        if (onSave) {
+          onSave({ ...foodData, createdFood: newFood });
+        }
+
+        // Open FoodDetailsModal to allow tracking/editing the newly created food
+        setIsFoodDetailsVisible(true);
+      } catch (err) {
+        console.error('Error creating custom food:', err);
+      } finally {
+        setIsSaving(false);
+      }
+
+      // Keep the modal open while the details modal is shown; parent closes after details modal if needed
+      return;
+    }
+
+    // Default behavior: call onSave and close
     if (onSave) {
       onSave(foodData);
     }
@@ -486,7 +545,8 @@ export default function CreateCustomFoodModal({
           variant="gradientCta"
           size="md"
           width="full"
-          disabled={isSaveDisabled}
+          disabled={isSaveDisabled || isSaving}
+          loading={isSaving}
           icon={PlusCircle}
           onPress={handleSave}
         />
@@ -703,6 +763,18 @@ export default function CreateCustomFoodModal({
         onClose={() => setShowBarcodeScanner(false)}
         onBarcodeScanned={handleBarcodeScanned}
       />
+      {isFoodDetailsVisible && createdFood ? (
+        <FoodDetailsModal
+          visible={isFoodDetailsVisible}
+          onClose={() => {
+            setIsFoodDetailsVisible(false);
+            setCreatedFood(null);
+            // After closing the details modal, close the create modal as well
+            onClose();
+          }}
+          food={createdFood}
+        />
+      ) : null}
     </FullScreenModal>
   );
 }
