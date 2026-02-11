@@ -17,6 +17,7 @@ import { FoodItemCard } from '../../components/cards/FoodItemCard';
 import { MasterLayout } from '../../components/MasterLayout';
 import { MealSection } from '../../components/MealSection';
 import { AddFoodModal } from '../../components/modals/AddFoodModal';
+import { DatePickerModal } from '../../components/modals/DatePickerModal';
 import { FoodSearchModal } from '../../components/modals/FoodSearchModal';
 import { Button } from '../../components/theme/Button';
 import { EmptyStateCard } from '../../components/theme/EmptyStateCard';
@@ -34,6 +35,7 @@ export default function FoodScreen() {
   const { units } = useSettings();
   const [isAddFoodModalVisible, setIsAddFoodModalVisible] = useState(false);
   const [isFoodSearchModalVisible, setIsFoodSearchModalVisible] = useState(false);
+  const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState(t('food.meals.breakfast'));
   const [selectedDate, setSelectedDate] = useState(new Date()); // Add date state
   const currentLanguage = (i18n.language || 'en-US') as LanguageKeys;
@@ -190,6 +192,10 @@ export default function FoodScreen() {
     setSelectedDate(new Date());
   };
 
+  const handleDateSelect = (date: Date) => {
+    setSelectedDate(date);
+  };
+
   // Format date for display
   const getDisplayDate = () => {
     const now = new Date();
@@ -216,10 +222,10 @@ export default function FoodScreen() {
             <Pressable onPress={goToPreviousDay}>
               <ChevronLeft size={theme.iconSize.md} color={theme.colors.text.primary} />
             </Pressable>
-            <View className="flex-row items-center gap-2">
+            <Pressable onPress={() => setIsDatePickerVisible(true)} className="flex-row items-center gap-2">
               <Text className="text-xl font-semibold text-text-primary">{getDisplayDate()}</Text>
               <Calendar size={theme.iconSize.sm} color={theme.colors.accent.secondary} />
-            </View>
+            </Pressable>
             <Pressable onPress={goToNextDay}>
               <ChevronRight size={theme.iconSize.md} color={theme.colors.text.primary} />
             </Pressable>
@@ -517,6 +523,14 @@ export default function FoodScreen() {
           }}
         />
       ) : null}
+
+      {/* Date Picker Modal */}
+      <DatePickerModal
+        visible={isDatePickerVisible}
+        onClose={() => setIsDatePickerVisible(false)}
+        selectedDate={selectedDate}
+        onDateSelect={handleDateSelect}
+      />
     </MasterLayout>
   );
 }
