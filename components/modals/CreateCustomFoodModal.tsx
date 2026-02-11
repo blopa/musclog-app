@@ -21,7 +21,6 @@ import {
   Sparkles,
   Stethoscope,
   Sun,
-  Syringe,
   TestTube,
   Thermometer,
   Waves,
@@ -47,12 +46,16 @@ type NewCustomFoodModalProps = {
   visible: boolean;
   onClose: () => void;
   onSave?: (data: any) => void;
+  trackFoodAfterSave?: boolean;
 };
 
 export default function CreateCustomFoodModal({
   visible,
   onClose,
   onSave,
+  // TODO: implement this prop, if is set to true, after saving this, we should
+  // open the FoodDetailsModal with the newly added food passed to it
+  trackFoodAfterSave = false,
 }: NewCustomFoodModalProps) {
   const theme = useTheme();
   const [foodName, setFoodName] = useState('');

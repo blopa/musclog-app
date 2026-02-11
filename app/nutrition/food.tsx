@@ -587,9 +587,11 @@ export default function FoodScreen() {
             setIsFoodSearchModalVisible(true);
           }}
           onAiCameraPress={() => {
+            // TODO: open CameraModal with the AI mode selected
             console.log('AI Camera pressed');
           }}
           onScanBarcodePress={() => {
+            // TODO: open CameraModal with the barcode mode selected
             console.log('Scan Barcode pressed');
           }}
           onSearchFoodPress={() => {
@@ -597,6 +599,7 @@ export default function FoodScreen() {
             setIsFoodSearchModalVisible(true);
           }}
           onCreateCustomFoodPress={() => {
+            // TODO: open CreateCustomFoodModal
             console.log('Create Custom Food pressed');
           }}
           onTrackCustomMealPress={() => {
