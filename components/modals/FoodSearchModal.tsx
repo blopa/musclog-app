@@ -260,6 +260,8 @@ export function FoodSearchModal({
   const [suggestedFoods, setSuggestedFoods] = useState<FoodItem[] | null>(null);
   const [isLoadingSuggested, setIsLoadingSuggested] = useState(false);
   const [suggestedTitle, setSuggestedTitle] = useState('');
+  const [favoriteFoods, setFavoriteFoods] = useState<FoodItem[]>([]);
+  const [isLoadingFavorites, setIsLoadingFavorites] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -343,6 +345,55 @@ export function FoodSearchModal({
       mounted = false;
     };
   }, [visible, searchQuery, t, theme.colors.accent.primary, theme.colors.accent.primary10]);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const loadFavorites = async () => {
+      if (!visible || activeFilter !== 'myFoods') {
+        if (mounted) setFavoriteFoods([]);
+        return;
+      }
+
+      setIsLoadingFavorites(true);
+      try {
+        const favs = await NutritionService.getFavoriteFoods();
+        const mapped = favs.map(
+          (f) =>
+            ({
+              id: f.id,
+              name: f.name ?? '',
+              description: `${f.brand || 'Custom Food'} • ${f.calories || 0} kcal`,
+              brand: f.brand,
+              serving_size: '100 g',
+              calories: f.calories,
+              protein: f.protein,
+              carbs: f.carbs,
+              fat: f.fat,
+              fiber: f.fiber,
+              source: 'local',
+              icon: '🍽️', // TODO: load the food image, if none, then use icon, just like the other parts of the code
+              iconColor: theme.colors.accent.primary,
+              iconBgColor: theme.colors.accent.primary10,
+              _raw: f,
+            }) as FoodItem
+        );
+
+        if (mounted) setFavoriteFoods(mapped);
+      } catch (err) {
+        console.error('Error loading favorite foods:', err);
+        if (mounted) setFavoriteFoods([]);
+      } finally {
+        if (mounted) setIsLoadingFavorites(false);
+      }
+    };
+
+    loadFavorites();
+
+    return () => {
+      mounted = false;
+    };
+  }, [visible, activeFilter, theme.colors.accent.primary, theme.colors.accent.primary10]);
 
   // Get filtered results based on active filter
   const filteredResults = useMemo(() => {
@@ -610,57 +661,86 @@ export function FoodSearchModal({
               </View>
             ) : null}
 
-            {/* Recent History Section - Only show when not searching */}
+            {/* Non-search area: show favorites when "myFoods" tab is active, otherwise recent history */}
             {!searchQuery ? (
               <View>
-                <SectionHeader
-                  title={t('foodSearch.recentHistory')}
-                  rightAction={{
-                    label: t('foodSearch.viewAll'),
-                    onPress: () => {
-                      // Handle view all
-                    },
-                  }}
-                />
-                <View className="gap-1.5">
-                  {recentFoods.length > 0 ? (
-                    recentFoods.map((food) => {
-                      const foodItem: FoodItem = {
-                        ...food,
-                        id: food.id,
-                        name: food.name ?? '',
-                        description: `${food.brand || 'Custom Food'} • ${food.calories || 0} kcal per 100g`,
-                        brand: food.brand,
-                        serving_size: '100 g',
-                        calories: food.calories,
-                        protein: food.protein,
-                        carbs: food.carbs,
-                        fat: food.fat,
-                        fiber: food.fiber,
-                        imageUrl: food.imageUrl,
-                        source: 'local',
-                        icon: '🍽️',
-                        iconColor: theme.colors.accent.primary,
-                        iconBgColor: theme.colors.accent.primary10,
-                        _raw: food,
-                      };
-
-                      return (
-                        <FoodItemCard
-                          key={food.id}
-                          food={foodItem}
-                          onAddPress={() => handleFoodClick(foodItem)}
-                        />
-                      );
-                    })
-                  ) : (
-                    <View className="py-8 text-center">
-                      <Text className="text-center text-text-tertiary">
-                        {t('foodSearch.noRecentFoods')}
-                      </Text>
+                {activeFilter === 'myFoods' ? (
+                  <View>
+                    <SectionHeader title={t('foodSearch.yourFavoriteFoods')} />
+                    <View className="gap-1.5">
+                      {isLoadingFavorites ? (
+                        <View className="py-4">
+                          <ActivityIndicator size="small" color={theme.colors.accent.primary} />
+                        </View>
+                      ) : favoriteFoods.length > 0 ? (
+                        favoriteFoods.map((food) => (
+                          <FoodItemCard
+                            key={food.id}
+                            food={food}
+                            onAddPress={() => handleFoodClick(food)}
+                          />
+                        ))
+                      ) : (
+                        <View className="py-8 text-center">
+                          <Text className="text-center text-text-tertiary">
+                            {t('foodSearch.noFavoriteFoods')}
+                          </Text>
+                        </View>
+                      )}
                     </View>
-                  )}
-                </View>
+                  </View>
+                ) : (
+                  <View>
+                    <SectionHeader
+                      title={t('foodSearch.recentHistory')}
+                      rightAction={{
+                        label: t('foodSearch.viewAll'),
+                        onPress: () => {
+                          // Handle view all
+                        },
+                      }}
+                    />
+                    <View className="gap-1.5">
+                      {recentFoods.length > 0 ? (
+                        recentFoods.map((food) => {
+                          const foodItem: FoodItem = {
+                            ...food,
+                            id: food.id,
+                            name: food.name ?? '',
+                            description: `${food.brand || 'Custom Food'} • ${food.calories || 0} kcal per 100g`,
+                            brand: food.brand,
+                            serving_size: '100 g',
+                            calories: food.calories,
+                            protein: food.protein,
+                            carbs: food.carbs,
+                            fat: food.fat,
+                            fiber: food.fiber,
+                            imageUrl: food.imageUrl,
+                            source: 'local',
+                            icon: '🍽️',
+                            iconColor: theme.colors.accent.primary,
+                            iconBgColor: theme.colors.accent.primary10,
+                            _raw: food,
+                          };
+
+                          return (
+                            <FoodItemCard
+                              key={food.id}
+                              food={foodItem}
+                              onAddPress={() => handleFoodClick(foodItem)}
+                            />
+                          );
+                        })
+                      ) : (
+                        <View className="py-8 text-center">
+                          <Text className="text-center text-text-tertiary">
+                            {t('foodSearch.noRecentFoods')}
+                          </Text>
+                        </View>
+                      )}
+                    </View>
+                  </View>
+                )}
               </View>
             ) : null}
 

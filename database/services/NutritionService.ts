@@ -289,6 +289,18 @@ export class NutritionService {
   }
 
   /**
+   * Get favorite foods
+   */
+  static async getFavoriteFoods(limit: number = 10): Promise<Food[]> {
+    if (!database) return [];
+
+    return await database
+      .get<Food>('foods')
+      .query(Q.where('deleted_at', Q.eq(null)), Q.where('is_favorite', true), Q.take(limit))
+      .fetch();
+  }
+
+  /**
    * Get most eaten foods
    */
   static async getMostEatenFoods(limit: number = 10): Promise<{ food: Food; count: number }[]> {
