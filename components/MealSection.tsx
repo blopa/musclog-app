@@ -57,7 +57,7 @@ export function MealSection({
         <View
           className="items-end"
           style={{
-            marginTop: -theme.spacing.padding.base,
+            ...totalCalories > 0 && ({ marginTop: -theme.spacing.padding.base }),
           }}
         >
           <Text className="text-lg text-text-secondary">

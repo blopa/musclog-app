@@ -196,6 +196,11 @@ export default function FoodScreen() {
     setSelectedDate(date);
   };
 
+  const handleAddFoodToMeal = (mealType: string) => {
+    setSelectedMealType(mealType);
+    setIsFoodSearchModalVisible(true);
+  };
+
   // Format date for display
   const getDisplayDate = () => {
     const now = new Date();
@@ -222,7 +227,10 @@ export default function FoodScreen() {
             <Pressable onPress={goToPreviousDay}>
               <ChevronLeft size={theme.iconSize.md} color={theme.colors.text.primary} />
             </Pressable>
-            <Pressable onPress={() => setIsDatePickerVisible(true)} className="flex-row items-center gap-2">
+            <Pressable
+              onPress={() => setIsDatePickerVisible(true)}
+              className="flex-row items-center gap-2"
+            >
               <Text className="text-xl font-semibold text-text-primary">{getDisplayDate()}</Text>
               <Calendar size={theme.iconSize.sm} color={theme.colors.accent.secondary} />
             </Pressable>
@@ -361,104 +369,124 @@ export default function FoodScreen() {
                 </View>
 
                 {/* Breakfast Section */}
-                {mealsByType.breakfast && mealsByType.breakfast.length > 0 ? (
-                  <MealSection
-                    title={t('food.meals.breakfast')}
-                    totalCalories={Math.ceil(dailyNutrients?.byMealType?.breakfast?.calories || 0)}
-                    totalProtein={dailyNutrients?.byMealType?.breakfast?.protein || 0}
-                    totalCarbs={dailyNutrients?.byMealType?.breakfast?.carbs || 0}
-                    totalFat={dailyNutrients?.byMealType?.breakfast?.fat || 0}
-                  >
-                    {mealsByType.breakfast.map((entry) => (
-                      <FoodItemCard
-                        key={entry.log.id}
-                        name={entry.food?.name ?? ''}
-                        description={`${Math.round(entry.gramWeight)} g`}
-                        calories={Math.ceil(entry.nutrients.calories)}
-                        image={
-                          entry.food?.imageUrl
-                            ? { uri: entry.food.imageUrl }
-                            : require('../../assets/icon.png')
-                        }
-                      />
-                    ))}
-                  </MealSection>
-                ) : null}
+                <MealSection
+                  title={t('food.meals.breakfast')}
+                  totalCalories={Math.ceil(dailyNutrients?.byMealType?.breakfast?.calories || 0)}
+                  totalProtein={dailyNutrients?.byMealType?.breakfast?.protein || 0}
+                  totalCarbs={dailyNutrients?.byMealType?.breakfast?.carbs || 0}
+                  totalFat={dailyNutrients?.byMealType?.breakfast?.fat || 0}
+                  onAddFood={() => handleAddFoodToMeal(t('food.meals.breakfast'))}
+                >
+                  {mealsByType.breakfast.map((entry) => (
+                    <FoodItemCard
+                      key={entry.log.id}
+                      name={entry.food?.name ?? ''}
+                      description={`${Math.round(entry.gramWeight)} g`}
+                      calories={Math.ceil(entry.nutrients.calories)}
+                      image={
+                        entry.food?.imageUrl
+                          ? { uri: entry.food.imageUrl }
+                          : require('../../assets/icon.png')
+                      }
+                    />
+                  ))}
+                </MealSection>
 
                 {/* Lunch Section */}
-                {mealsByType.lunch && mealsByType.lunch.length > 0 ? (
-                  <MealSection
-                    title={t('food.meals.lunch')}
-                    totalCalories={Math.ceil(dailyNutrients?.byMealType?.lunch?.calories || 0)}
-                    totalProtein={dailyNutrients?.byMealType?.lunch?.protein || 0}
-                    totalCarbs={dailyNutrients?.byMealType?.lunch?.carbs || 0}
-                    totalFat={dailyNutrients?.byMealType?.lunch?.fat || 0}
-                  >
-                    {mealsByType.lunch.map((entry) => (
-                      <FoodItemCard
-                        key={entry.log.id}
-                        name={entry.food?.name ?? ''}
-                        description={`${Math.round(entry.gramWeight)} g`}
-                        calories={Math.ceil(entry.nutrients.calories)}
-                        image={
-                          entry.food?.imageUrl
-                            ? { uri: entry.food.imageUrl }
-                            : require('../../assets/icon.png')
-                        }
-                      />
-                    ))}
-                  </MealSection>
-                ) : null}
+                <MealSection
+                  title={t('food.meals.lunch')}
+                  totalCalories={Math.ceil(dailyNutrients?.byMealType?.lunch?.calories || 0)}
+                  totalProtein={dailyNutrients?.byMealType?.lunch?.protein || 0}
+                  totalCarbs={dailyNutrients?.byMealType?.lunch?.carbs || 0}
+                  totalFat={dailyNutrients?.byMealType?.lunch?.fat || 0}
+                  onAddFood={() => handleAddFoodToMeal(t('food.meals.lunch'))}
+                >
+                  {mealsByType.lunch.map((entry) => (
+                    <FoodItemCard
+                      key={entry.log.id}
+                      name={entry.food?.name ?? ''}
+                      description={`${Math.round(entry.gramWeight)} g`}
+                      calories={Math.ceil(entry.nutrients.calories)}
+                      image={
+                        entry.food?.imageUrl
+                          ? { uri: entry.food.imageUrl }
+                          : require('../../assets/icon.png')
+                      }
+                    />
+                  ))}
+                </MealSection>
 
                 {/* Dinner Section */}
-                {mealsByType.dinner && mealsByType.dinner.length > 0 ? (
-                  <MealSection
-                    title={t('food.meals.dinner')}
-                    totalCalories={Math.ceil(dailyNutrients?.byMealType?.dinner?.calories || 0)}
-                    totalProtein={dailyNutrients?.byMealType?.dinner?.protein || 0}
-                    totalCarbs={dailyNutrients?.byMealType?.dinner?.carbs || 0}
-                    totalFat={dailyNutrients?.byMealType?.dinner?.fat || 0}
-                  >
-                    {mealsByType.dinner.map((entry) => (
-                      <FoodItemCard
-                        key={entry.log.id}
-                        name={entry.food?.name ?? ''}
-                        description={`${Math.round(entry.gramWeight)} g`}
-                        calories={Math.ceil(entry.nutrients.calories)}
-                        image={
-                          entry.food?.imageUrl
-                            ? { uri: entry.food.imageUrl }
-                            : require('../../assets/icon.png')
-                        }
-                      />
-                    ))}
-                  </MealSection>
-                ) : null}
+                <MealSection
+                  title={t('food.meals.dinner')}
+                  totalCalories={Math.ceil(dailyNutrients?.byMealType?.dinner?.calories || 0)}
+                  totalProtein={dailyNutrients?.byMealType?.dinner?.protein || 0}
+                  totalCarbs={dailyNutrients?.byMealType?.dinner?.carbs || 0}
+                  totalFat={dailyNutrients?.byMealType?.dinner?.fat || 0}
+                  onAddFood={() => handleAddFoodToMeal(t('food.meals.dinner'))}
+                >
+                  {mealsByType.dinner.map((entry) => (
+                    <FoodItemCard
+                      key={entry.log.id}
+                      name={entry.food?.name ?? ''}
+                      description={`${Math.round(entry.gramWeight)} g`}
+                      calories={Math.ceil(entry.nutrients.calories)}
+                      image={
+                        entry.food?.imageUrl
+                          ? { uri: entry.food.imageUrl }
+                          : require('../../assets/icon.png')
+                      }
+                    />
+                  ))}
+                </MealSection>
 
                 {/* Snack Section */}
-                {mealsByType.snack && mealsByType.snack.length > 0 ? (
-                  <MealSection
-                    title={t('food.meals.snacks')}
-                    totalCalories={Math.ceil(dailyNutrients?.byMealType?.snack?.calories || 0)}
-                    totalProtein={dailyNutrients?.byMealType?.snack?.protein || 0}
-                    totalCarbs={dailyNutrients?.byMealType?.snack?.carbs || 0}
-                    totalFat={dailyNutrients?.byMealType?.snack?.fat || 0}
-                  >
-                    {mealsByType.snack.map((entry) => (
-                      <FoodItemCard
-                        key={entry.log.id}
-                        name={entry.food?.name ?? ''}
-                        description={`${Math.round(entry.gramWeight)} g`}
-                        calories={Math.ceil(entry.nutrients.calories)}
-                        image={
-                          entry.food?.imageUrl
-                            ? { uri: entry.food.imageUrl }
-                            : require('../../assets/icon.png')
-                        }
-                      />
-                    ))}
-                  </MealSection>
-                ) : null}
+                <MealSection
+                  title={t('food.meals.snacks')}
+                  totalCalories={Math.ceil(dailyNutrients?.byMealType?.snack?.calories || 0)}
+                  totalProtein={dailyNutrients?.byMealType?.snack?.protein || 0}
+                  totalCarbs={dailyNutrients?.byMealType?.snack?.carbs || 0}
+                  totalFat={dailyNutrients?.byMealType?.snack?.fat || 0}
+                  onAddFood={() => handleAddFoodToMeal(t('food.meals.snacks'))}
+                >
+                  {mealsByType.snack.map((entry) => (
+                    <FoodItemCard
+                      key={entry.log.id}
+                      name={entry.food?.name ?? ''}
+                      description={`${Math.round(entry.gramWeight)} g`}
+                      calories={Math.ceil(entry.nutrients.calories)}
+                      image={
+                        entry.food?.imageUrl
+                          ? { uri: entry.food.imageUrl }
+                          : require('../../assets/icon.png')
+                      }
+                    />
+                  ))}
+                </MealSection>
+
+                {/* Other Section */}
+                <MealSection
+                  title={t('food.meals.other')}
+                  totalCalories={Math.ceil(dailyNutrients?.byMealType?.other?.calories || 0)}
+                  totalProtein={dailyNutrients?.byMealType?.other?.protein || 0}
+                  totalCarbs={dailyNutrients?.byMealType?.other?.carbs || 0}
+                  totalFat={dailyNutrients?.byMealType?.other?.fat || 0}
+                  onAddFood={() => handleAddFoodToMeal(t('food.meals.other'))}
+                >
+                  {mealsByType.other.map((entry) => (
+                    <FoodItemCard
+                      key={entry.log.id}
+                      name={entry.food?.name ?? ''}
+                      description={`${Math.round(entry.gramWeight)} g`}
+                      calories={Math.ceil(entry.nutrients.calories)}
+                      image={
+                        entry.food?.imageUrl
+                          ? { uri: entry.food.imageUrl }
+                          : require('../../assets/icon.png')
+                      }
+                    />
+                  ))}
+                </MealSection>
               </>
             ) : null}
 
