@@ -22,6 +22,7 @@ import { MasterLayout } from '../../components/MasterLayout';
 import { MealSection } from '../../components/MealSection';
 import { AddFoodModal } from '../../components/modals/AddFoodModal';
 import { DatePickerModal } from '../../components/modals/DatePickerModal';
+import { FoodDetailsModal } from '../../components/modals/FoodDetailsModal';
 import { FoodSearchModal } from '../../components/modals/FoodSearchModal';
 import { Button } from '../../components/theme/Button';
 import { EmptyStateCard } from '../../components/theme/EmptyStateCard';
@@ -47,6 +48,7 @@ export default function FoodScreen() {
     nutrients: any;
     gramWeight: number;
   } | null>(null);
+  const [isFoodDetailsModalVisible, setIsFoodDetailsModalVisible] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState(t('food.meals.breakfast'));
   const [selectedDate, setSelectedDate] = useState(new Date()); // Add date state
   const currentLanguage = (i18n.language || 'en-US') as LanguageKeys;
@@ -218,8 +220,8 @@ export default function FoodScreen() {
   };
 
   const handleEditFood = () => {
-    // TODO: open the FoodDetailsModal passing a foodLog to it, so we can edit it
-    console.log('Edit food:', selectedFoodItem?.food?.name);
+    setIsFoodMenuVisible(false);
+    setIsFoodDetailsModalVisible(true);
   };
 
   const handleDuplicateFood = () => {
@@ -634,6 +636,19 @@ export default function FoodScreen() {
         subtitle={`${Math.round(selectedFoodItem?.gramWeight || 0)}g • ${Math.ceil(selectedFoodItem?.nutrients?.calories || 0)} kcal`}
         items={foodMenuItems}
       />
+
+      {/* Food Details Modal (edit mode) */}
+      {isFoodDetailsModalVisible && selectedFoodItem ? (
+        <FoodDetailsModal
+          visible={isFoodDetailsModalVisible}
+          onClose={() => {
+            setIsFoodDetailsModalVisible(false);
+            setSelectedFoodItem(null);
+          }}
+          food={selectedFoodItem.food}
+          foodLog={selectedFoodItem.log}
+        />
+      ) : null}
     </MasterLayout>
   );
 }

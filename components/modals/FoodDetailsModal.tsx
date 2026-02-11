@@ -34,8 +34,6 @@ export function FoodDetailsModal({
   barcode,
   food,
   onAddFood,
-  // TODO: implement edit mode, if we pass a foodLog, when we track the food, instead of creating a new log, edit the current one
-  // also load the grams value from the log
   foodLog,
 }: FoodDetailsModalProps) {
   const theme = useTheme();
@@ -69,6 +67,40 @@ export function FoodDetailsModal({
       }
     }
   }, [productDetails, food]);
+
+  // If we are given a foodLog, initialize edit mode values from it
+  useEffect(() => {
+    if (!foodLog) {
+      return;
+    }
+
+    setIsFoodDetailsModalVisible(true);
+
+    // Initialize meal and date from the log
+    try {
+      setSelectedMeal(foodLog.type || 'other');
+    } catch (e) {
+      setSelectedMeal('lunch');
+    }
+
+    try {
+      setSelectedDate(new Date(foodLog.date));
+    } catch (e) {
+      setSelectedDate(new Date());
+    }
+
+    // Load gram weight from the log (async)
+    (async () => {
+      try {
+        const grams = await foodLog.getGramWeight();
+        if (typeof grams === 'number' && !Number.isNaN(grams)) {
+          setServingSize(Math.round(grams));
+        }
+      } catch (e) {
+        // ignore
+      }
+    })();
+  }, [foodLog]);
 
   // Extract nutritional data from barcode lookup or local food
   const getNutritionalData = useCallback(() => {
@@ -217,6 +249,35 @@ export function FoodDetailsModal({
     await new Promise((resolve) => setTimeout(resolve, 10));
 
     try {
+      // If editing an existing food log, update it instead of creating a new one
+      if (foodLog) {
+        try {
+          await Promise.all([
+            // Update amount in grams (set portion to undefined so amount is grams)
+            foodLog.updateAmount(servingSize),
+            foodLog.updateMealType(selectedMeal as MealType),
+            foodLog.updatePortion(undefined),
+          ]);
+
+          // Call callback if provided
+          onAddFood?.({ servingSize, meal: selectedMeal, date: selectedDate });
+
+          onClose();
+
+          showSnackbar('success', t('food.foodDetails.successMessage'), {
+            action: t('snackbar.ok'),
+          });
+        } catch (err) {
+          console.error('Error updating food log:', err);
+          showSnackbar('error', t('food.foodDetails.errorMessage'), {
+            action: t('snackbar.ok'),
+          });
+        } finally {
+          setIsAddingFood(false);
+        }
+
+        return;
+      }
       // Handle local food
       if (food) {
         // Create nutrition log with local food
@@ -362,6 +423,8 @@ export function FoodDetailsModal({
     );
   }
 
+  const actionLabel = foodLog ? t('food.foodDetails.updateFood') : t('food.foodDetails.addFood');
+
   return (
     <>
       <FullScreenModal
@@ -387,7 +450,7 @@ export function FoodDetailsModal({
         footer={
           <View className="bg-transparent px-4 pb-6 pt-3">
             <Button
-              label={t('food.foodDetails.addFood')}
+              label={actionLabel}
               icon={PlusCircle}
               variant="gradientCta"
               size="sm"
