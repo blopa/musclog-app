@@ -3,15 +3,19 @@ import {
   Calendar,
   ChevronLeft,
   ChevronRight,
+  Copy,
+  Edit,
   ListPlus,
   ScanLine,
   Sparkles,
+  Trash2,
   UtensilsCrossed,
 } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
+import { BottomPopUpMenu } from '../../components/BottomPopUpMenu';
 import { CaloriesRemainingCard } from '../../components/cards/CaloriesRemainingCard';
 import { FoodItemCard } from '../../components/cards/FoodItemCard';
 import { MasterLayout } from '../../components/MasterLayout';
@@ -36,6 +40,13 @@ export default function FoodScreen() {
   const [isAddFoodModalVisible, setIsAddFoodModalVisible] = useState(false);
   const [isFoodSearchModalVisible, setIsFoodSearchModalVisible] = useState(false);
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
+  const [isFoodMenuVisible, setIsFoodMenuVisible] = useState(false);
+  const [selectedFoodItem, setSelectedFoodItem] = useState<{
+    log: any;
+    food: any;
+    nutrients: any;
+    gramWeight: number;
+  } | null>(null);
   const [selectedMealType, setSelectedMealType] = useState(t('food.meals.breakfast'));
   const [selectedDate, setSelectedDate] = useState(new Date()); // Add date state
   const currentLanguage = (i18n.language || 'en-US') as LanguageKeys;
@@ -195,6 +206,55 @@ export default function FoodScreen() {
   const handleDateSelect = (date: Date) => {
     setSelectedDate(date);
   };
+
+  const handleFoodMenuPress = (entry: {
+    log: any;
+    food: any;
+    nutrients: any;
+    gramWeight: number;
+  }) => {
+    setSelectedFoodItem(entry);
+    setIsFoodMenuVisible(true);
+  };
+
+  const handleEditFood = () => {
+    console.log('Edit food:', selectedFoodItem?.food?.name);
+  };
+
+  const handleDuplicateFood = () => {
+    console.log('Duplicate food:', selectedFoodItem?.food?.name);
+  };
+
+  const handleDeleteFood = () => {
+    console.log('Delete food:', selectedFoodItem?.food?.name);
+  };
+
+  const foodMenuItems = [
+    {
+      icon: Edit,
+      iconColor: theme.colors.accent.primary,
+      iconBgColor: theme.colors.accent.primary10,
+      title: t('food.actions.edit'),
+      description: t('food.actions.editDesc'),
+      onPress: handleEditFood,
+    },
+    {
+      icon: Copy,
+      iconColor: theme.colors.status.purple,
+      iconBgColor: theme.colors.status.purple10,
+      title: t('food.actions.duplicate'),
+      description: t('food.actions.duplicateDesc'),
+      onPress: handleDuplicateFood,
+    },
+    {
+      icon: Trash2,
+      iconColor: theme.colors.status.error,
+      iconBgColor: theme.colors.status.error20,
+      title: t('food.actions.delete'),
+      description: t('food.actions.deleteDesc'),
+      onPress: handleDeleteFood,
+    },
+  ];
 
   const handleAddFoodToMeal = (mealType: string) => {
     setSelectedMealType(mealType);
@@ -388,6 +448,7 @@ export default function FoodScreen() {
                           ? { uri: entry.food.imageUrl }
                           : require('../../assets/icon.png')
                       }
+                      onMorePress={() => handleFoodMenuPress(entry)}
                     />
                   ))}
                 </MealSection>
@@ -412,6 +473,7 @@ export default function FoodScreen() {
                           ? { uri: entry.food.imageUrl }
                           : require('../../assets/icon.png')
                       }
+                      onMorePress={() => handleFoodMenuPress(entry)}
                     />
                   ))}
                 </MealSection>
@@ -436,6 +498,7 @@ export default function FoodScreen() {
                           ? { uri: entry.food.imageUrl }
                           : require('../../assets/icon.png')
                       }
+                      onMorePress={() => handleFoodMenuPress(entry)}
                     />
                   ))}
                 </MealSection>
@@ -460,6 +523,7 @@ export default function FoodScreen() {
                           ? { uri: entry.food.imageUrl }
                           : require('../../assets/icon.png')
                       }
+                      onMorePress={() => handleFoodMenuPress(entry)}
                     />
                   ))}
                 </MealSection>
@@ -484,6 +548,7 @@ export default function FoodScreen() {
                           ? { uri: entry.food.imageUrl }
                           : require('../../assets/icon.png')
                       }
+                      onMorePress={() => handleFoodMenuPress(entry)}
                     />
                   ))}
                 </MealSection>
@@ -558,6 +623,15 @@ export default function FoodScreen() {
         onClose={() => setIsDatePickerVisible(false)}
         selectedDate={selectedDate}
         onDateSelect={handleDateSelect}
+      />
+
+      {/* Food Menu Modal */}
+      <BottomPopUpMenu
+        visible={isFoodMenuVisible}
+        onClose={() => setIsFoodMenuVisible(false)}
+        title={selectedFoodItem?.food?.name || ''}
+        subtitle={`${Math.round(selectedFoodItem?.gramWeight || 0)}g • ${Math.ceil(selectedFoodItem?.nutrients?.calories || 0)} kcal`}
+        items={foodMenuItems}
       />
     </MasterLayout>
   );
