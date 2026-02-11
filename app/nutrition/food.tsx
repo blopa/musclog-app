@@ -1,4 +1,5 @@
 import { format } from 'date-fns';
+import { useRouter } from 'expo-router';
 import {
   Calendar,
   ChevronLeft,
@@ -24,6 +25,7 @@ import { AddFoodModal } from '../../components/modals/AddFoodModal';
 import { DatePickerModal } from '../../components/modals/DatePickerModal';
 import { FoodDetailsModal } from '../../components/modals/FoodDetailsModal';
 import { FoodSearchModal } from '../../components/modals/FoodSearchModal';
+import { useSnackbar } from '../../components/SnackbarContext';
 import { Button } from '../../components/theme/Button';
 import { EmptyStateCard } from '../../components/theme/EmptyStateCard';
 import { SkeletonLoader } from '../../components/theme/SkeletonLoader';
@@ -38,6 +40,8 @@ import { theme } from '../../theme';
 export default function FoodScreen() {
   const { t } = useTranslation();
   const { units } = useSettings();
+  const { showSnackbar } = useSnackbar();
+  const router = useRouter();
   const [isAddFoodModalVisible, setIsAddFoodModalVisible] = useState(false);
   const [isFoodSearchModalVisible, setIsFoodSearchModalVisible] = useState(false);
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
@@ -651,7 +655,11 @@ export default function FoodScreen() {
             try {
               await refresh();
             } catch (_error) {
-              // TODO: reload the screen
+              // Show error snackbar to user
+              showSnackbar('error', t('food.errors.refreshFailed'));
+
+              // Reload the current screen using expo-router
+              router.replace('/nutrition/food');
             }
           }}
         />
