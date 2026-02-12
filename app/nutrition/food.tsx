@@ -408,7 +408,7 @@ export default function FoodScreen() {
                       size="md"
                       width="flex-1"
                       onPress={() => {
-                        // Handle scan barcode action
+                        // TODO: open camera modal with barcode mode
                       }}
                     />
                     <Button
@@ -418,7 +418,7 @@ export default function FoodScreen() {
                       size="md"
                       width="flex-1"
                       onPress={() => {
-                        // Handle AI camera action
+                        // TODO: open camera modal with ai mode
                       }}
                     />
                   </View>
