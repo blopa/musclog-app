@@ -408,7 +408,8 @@ export default function FoodScreen() {
                       size="md"
                       width="flex-1"
                       onPress={() => {
-                        // TODO: open camera modal with barcode mode
+                        setCameraMode('barcode-scan');
+                        setIsCameraVisible(true);
                       }}
                     />
                     <Button
@@ -418,7 +419,8 @@ export default function FoodScreen() {
                       size="md"
                       width="flex-1"
                       onPress={() => {
-                        // TODO: open camera modal with ai mode
+                        setCameraMode('ai-meal-photo');
+                        setIsCameraVisible(true);
                       }}
                     />
                   </View>
