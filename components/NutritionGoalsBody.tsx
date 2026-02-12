@@ -118,6 +118,88 @@ function MacroCard({ label, kcalPerGram, value, min, max, color, onChange }: Mac
   );
 }
 
+function getMacroInsight(
+  proteinPercentage: number,
+  carbsPercentage: number,
+  fatsPercentage: number
+) {
+  // Keto: Very low carbs (5-15%), high fat (55-65%), moderate protein (25-35%)
+  if (carbsPercentage <= 15 && fatsPercentage >= 55 && fatsPercentage <= 65) {
+    return {
+      title: 'Keto',
+      subtitle: 'Low Carb',
+    };
+  }
+
+  // Low Carb: Low carbs (10-25%), higher fat (45-60%)
+  if (carbsPercentage <= 25 && carbsPercentage > 15 && fatsPercentage >= 45) {
+    return {
+      title: 'Low Carb',
+      subtitle: 'Fat Adapted',
+    };
+  }
+
+  // High Protein: 35%+ protein
+  if (proteinPercentage >= 35) {
+    if (carbsPercentage >= 40) {
+      return {
+        title: 'High Protein',
+        subtitle: 'Muscle Building',
+      };
+    } else {
+      return {
+        title: 'High Protein',
+        subtitle: 'Fat Loss',
+      };
+    }
+  }
+
+  // High Carb: 50%+ carbs
+  if (carbsPercentage >= 50) {
+    return {
+      title: 'High Carb',
+      subtitle: 'Energy Focus',
+    };
+  }
+
+  // Balanced: More flexible range around balanced macros
+  if (
+    carbsPercentage >= 30 &&
+    carbsPercentage <= 50 &&
+    proteinPercentage >= 25 &&
+    proteinPercentage <= 40 &&
+    fatsPercentage >= 20 &&
+    fatsPercentage <= 40
+  ) {
+    return {
+      title: 'Balanced',
+      subtitle: 'Optimal',
+    };
+  }
+
+  // Moderate Fat: Higher fat (40-50%), moderate protein/carbs
+  if (fatsPercentage >= 40 && fatsPercentage <= 50) {
+    return {
+      title: 'Moderate Fat',
+      subtitle: 'Sustained Energy',
+    };
+  }
+
+  // Low Fat: Low fat (<20%), higher protein/carbs
+  if (fatsPercentage < 20) {
+    return {
+      title: 'Low Fat',
+      subtitle: 'Lean Diet',
+    };
+  }
+
+  // Default/Fallback
+  return {
+    title: 'Custom',
+    subtitle: 'Your Plan',
+  };
+}
+
 function MacrosDistributionChart({
   protein,
   carbs,
@@ -131,11 +213,14 @@ function MacrosDistributionChart({
 }) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const total = protein + carbs + fats + fiber;
+  const total = protein + carbs + fats; // Exclude fiber from macro total
+  const fiberTotal = total + fiber; // Include fiber for display percentages
   const proteinPercentage = total > 0 ? (protein / total) * 100 : 0;
   const carbsPercentage = total > 0 ? (carbs / total) * 100 : 0;
   const fatsPercentage = total > 0 ? (fats / total) * 100 : 0;
-  const fiberPercentage = total > 0 ? (fiber / total) * 100 : 0;
+  const fiberPercentage = fiberTotal > 0 ? (fiber / fiberTotal) * 100 : 0;
+
+  const macroInsight = getMacroInsight(proteinPercentage, carbsPercentage, fatsPercentage);
 
   return (
     <View className="items-center py-10">
@@ -143,7 +228,13 @@ function MacrosDistributionChart({
         {t('nutritionGoals.macrosDistribution')}
       </Text>
 
-      <MacrosPizzaChart protein={protein} carbs={carbs} fats={fats} fiber={fiber} />
+      <MacrosPizzaChart
+        protein={protein}
+        carbs={carbs}
+        fats={fats}
+        fiber={fiber}
+        insightMessage={macroInsight}
+      />
 
       <View className="mt-8 flex-row flex-wrap justify-center gap-x-6 gap-y-3 px-4">
         <View className="flex-row items-center gap-2">

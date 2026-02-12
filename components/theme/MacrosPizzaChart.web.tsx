@@ -20,6 +20,10 @@ type MacrosPizzaChartProps = {
   fiber?: number;
   size?: number;
   showInsight?: boolean;
+  insightMessage?: {
+    title: string;
+    subtitle: string;
+  };
 };
 
 export function MacrosPizzaChart({
@@ -29,6 +33,7 @@ export function MacrosPizzaChart({
   fiber = 0,
   size,
   showInsight = true,
+  insightMessage,
 }: MacrosPizzaChartProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -78,9 +83,11 @@ export function MacrosPizzaChart({
             className="font-bold uppercase text-text-secondary"
             style={{ fontSize: theme.typography.fontSize.xs }}
           >
-            {t('nutritionGoals.balance')}
+            {insightMessage?.title || t('nutritionGoals.balance')}
           </Text>
-          <Text className="text-lg font-bold text-text-primary">{t('nutritionGoals.optimal')}</Text>
+          <Text className="text-md font-bold text-text-primary">
+            {insightMessage?.subtitle || t('nutritionGoals.optimal')}
+          </Text>
         </View>
       ) : null}
     </View>
