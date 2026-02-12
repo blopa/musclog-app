@@ -3,10 +3,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from 'hooks/useTheme';
 import { Text, View } from 'react-native';
 
-import { GenericCard } from './cards/GenericCard';
-import { Button } from './theme/Button';
+import { GenericCard } from '../../components/cards/GenericCard';
+import { Button } from '../../components/theme/Button';
 
-export function AINutritionGoalsResults() {
+export default function NutritionGoalsResults() {
   const theme = useTheme();
 
   return (
