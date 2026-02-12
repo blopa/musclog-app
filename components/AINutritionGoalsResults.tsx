@@ -61,7 +61,9 @@ export function AINutritionGoalsResults() {
             Your{' '}
             <Text
               style={{
-                background: 'linear-gradient(135deg, #818cf8 0%, #29e08e 100%)',
+                color: theme.colors.status.indigoLight,
+                fontSize: 32,
+                fontWeight: theme.typography.fontWeight.black,
               }}
             >
               Nutrition Plan
@@ -86,7 +88,7 @@ export function AINutritionGoalsResults() {
           style={{
             borderRadius: theme.borderRadius['3xl'],
             padding: theme.spacing.padding['2xl'],
-            marginBottom: theme.spacing.marginBase.lg,
+            marginBottom: theme.spacing.margin.lg,
           }}
         >
           <LinearGradient
@@ -154,7 +156,7 @@ export function AINutritionGoalsResults() {
               style={{
                 borderTopColor: `${theme.colors.text.white}1A`,
                 borderTopWidth: 1,
-                marginTop: theme.spacing.marginBase.md,
+                marginTop: theme.spacing.margin.md,
                 paddingTop: theme.spacing.padding.md,
               }}
             >
@@ -194,7 +196,15 @@ export function AINutritionGoalsResults() {
         {/* Macros Grid */}
         <View className="mb-8 w-full flex-row gap-3">
           {/* Protein */}
-          <GenericCard variant="default" size="sm" className="flex-1 items-center py-4">
+          <GenericCard
+            variant="default"
+            size="sm"
+            containerStyle={{
+              flex: 1,
+              alignItems: 'center',
+              paddingVertical: theme.spacing.padding.md,
+            }}
+          >
             <Text
               className="mb-1 text-center text-[10px] font-bold uppercase tracking-tighter text-indigo-400"
               style={{
@@ -202,7 +212,7 @@ export function AINutritionGoalsResults() {
                 fontSize: 10,
                 fontWeight: theme.typography.fontWeight.bold,
                 letterSpacing: -0.5,
-                marginBottom: theme.spacing.marginBase.xs,
+                marginBottom: theme.spacing.margin.xs,
               }}
             >
               Protein
@@ -230,7 +240,15 @@ export function AINutritionGoalsResults() {
           </GenericCard>
 
           {/* Carbs */}
-          <GenericCard variant="default" size="sm" className="flex-1 items-center py-4">
+          <GenericCard
+            variant="default"
+            size="sm"
+            containerStyle={{
+              flex: 1,
+              alignItems: 'center',
+              paddingVertical: theme.spacing.padding.md,
+            }}
+          >
             <Text
               className="text-primary mb-1 text-center text-[10px] font-bold uppercase tracking-tighter"
               style={{
@@ -238,7 +256,7 @@ export function AINutritionGoalsResults() {
                 fontSize: 10,
                 fontWeight: theme.typography.fontWeight.bold,
                 letterSpacing: -0.5,
-                marginBottom: theme.spacing.marginBase.xs,
+                marginBottom: theme.spacing.margin.xs,
               }}
             >
               Carbs
@@ -266,7 +284,15 @@ export function AINutritionGoalsResults() {
           </GenericCard>
 
           {/* Fats */}
-          <GenericCard variant="default" size="sm" className="flex-1 items-center py-4">
+          <GenericCard
+            variant="default"
+            size="sm"
+            containerStyle={{
+              flex: 1,
+              alignItems: 'center',
+              paddingVertical: theme.spacing.padding.md,
+            }}
+          >
             <Text
               className="mb-1 text-center text-[10px] font-bold uppercase tracking-tighter text-pink-400"
               style={{
@@ -274,7 +300,7 @@ export function AINutritionGoalsResults() {
                 fontSize: 10,
                 fontWeight: theme.typography.fontWeight.bold,
                 letterSpacing: -0.5,
-                marginBottom: theme.spacing.marginBase.xs,
+                marginBottom: theme.spacing.margin.xs,
               }}
             >
               Fats
@@ -305,14 +331,15 @@ export function AINutritionGoalsResults() {
         {/* 90-Day Projection Card */}
         <GenericCard
           variant="default"
-          className="w-full border-emerald-500/20 p-6"
-          style={{
+          containerStyle={{
+            width: '100%',
             borderWidth: 1,
             borderColor: `${theme.colors.accent.primary}33`,
+            padding: theme.spacing.padding.lg,
           }}
         >
           <View className="mb-4 flex-row items-center gap-2">
-            <MaterialIcons name="trending_down" size={18} color={theme.colors.accent.primary} />
+            <MaterialIcons name="trending-down" size={18} color={theme.colors.accent.primary} />
             <Text
               className="text-sm font-bold text-white"
               style={{
@@ -332,7 +359,7 @@ export function AINutritionGoalsResults() {
                 color: theme.colors.text.secondary,
                 fontSize: theme.typography.fontSize.xxs,
                 fontWeight: theme.typography.fontWeight.medium,
-                marginBottom: theme.spacing.marginBase.xs,
+                marginBottom: theme.spacing.margin.xs,
               }}
             >
               Estimated Weight Loss
@@ -420,7 +447,7 @@ export function AINutritionGoalsResults() {
           width="full"
           size="md"
           icon={() => (
-            <MaterialIcons name="arrow_forward" size={20} color={theme.colors.text.white} />
+            <MaterialIcons name="arrow-forward" size={20} color={theme.colors.text.white} />
           )}
           iconPosition="right"
           onPress={() => {
