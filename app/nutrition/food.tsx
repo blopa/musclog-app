@@ -239,10 +239,8 @@ export default function FoodScreen() {
   };
 
   const handleDuplicateFood = () => {
-    // TODO: implement duplicate food functionality
-    // for this we should open the FoodDetailModal of this food
-    // then the user can track it again
-    console.log('Duplicate food:', selectedFoodItem?.food?.name);
+    setIsFoodMenuVisible(false);
+    setIsFoodDetailsModalVisible(true);
   };
 
   const handleDeleteFood = () => {
