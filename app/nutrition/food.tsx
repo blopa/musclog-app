@@ -22,6 +22,7 @@ import { FoodItemCard } from '../../components/cards/FoodItemCard';
 import { MasterLayout } from '../../components/MasterLayout';
 import { MealSection } from '../../components/MealSection';
 import { AddFoodModal } from '../../components/modals/AddFoodModal';
+import { ConfirmationModal } from '../../components/modals/ConfirmationModal';
 import CreateCustomFoodModal from '../../components/modals/CreateCustomFoodModal';
 import { DatePickerModal } from '../../components/modals/DatePickerModal';
 import { FoodDetailsModal } from '../../components/modals/FoodDetailsModal';
@@ -33,6 +34,7 @@ import { EmptyStateCard } from '../../components/theme/EmptyStateCard';
 import { SkeletonLoader } from '../../components/theme/SkeletonLoader';
 import Food from '../../database/models/Food';
 import NutritionLog from '../../database/models/NutritionLog';
+import { NutritionService } from '../../database/services';
 import { useCurrentNutritionGoal } from '../../hooks/useCurrentNutritionGoal';
 import { useNutritionLogs } from '../../hooks/useNutritionLogs';
 import { useSettings } from '../../hooks/useSettings';
@@ -60,6 +62,7 @@ export default function FoodScreen() {
     gramWeight: number;
   } | null>(null);
   const [isFoodDetailsModalVisible, setIsFoodDetailsModalVisible] = useState(false);
+  const [isDeleteConfirmationVisible, setIsDeleteConfirmationVisible] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState(t('food.meals.breakfast'));
   const [selectedDate, setSelectedDate] = useState(new Date()); // Add date state
   const currentLanguage = (i18n.language || 'en-US') as LanguageKeys;
@@ -237,12 +240,34 @@ export default function FoodScreen() {
 
   const handleDuplicateFood = () => {
     // TODO: implement duplicate food functionality
+    // for this we should open the FoodDetailModal of this food
+    // then the user can track it again
     console.log('Duplicate food:', selectedFoodItem?.food?.name);
   };
 
   const handleDeleteFood = () => {
-    // TODO: implement delete food functionality with confirmation dialog
-    console.log('Delete food:', selectedFoodItem?.food?.name);
+    setIsDeleteConfirmationVisible(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!selectedFoodItem) {
+      return;
+    }
+
+    try {
+      await NutritionService.deleteNutritionLog(selectedFoodItem.log.id);
+      showSnackbar('success', t('food.actions.deleteSuccess'));
+      setIsFoodMenuVisible(false);
+      setSelectedFoodItem(null);
+      await refresh();
+    } catch (error) {
+      console.error('Error deleting food:', error);
+      showSnackbar('error', t('food.actions.deleteError'));
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setIsDeleteConfirmationVisible(false);
   };
 
   const foodMenuItems = [
@@ -660,6 +685,20 @@ export default function FoodScreen() {
             setCameraMode('barcode-scan');
             setIsCameraVisible(true);
           }}
+        />
+      ) : null}
+
+      {/* Delete Confirmation Modal */}
+      {isDeleteConfirmationVisible && selectedFoodItem ? (
+        <ConfirmationModal
+          visible={isDeleteConfirmationVisible}
+          onClose={handleCancelDelete}
+          onConfirm={handleConfirmDelete}
+          title={t('food.actions.deleteConfirmTitle')}
+          message={t('food.actions.deleteConfirmMessage', { foodName: selectedFoodItem.food?.name })}
+          confirmLabel={t('common.delete')}
+          cancelLabel={t('common.cancel')}
+          variant="destructive"
         />
       ) : null}
 
