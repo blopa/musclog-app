@@ -693,7 +693,9 @@ export default function FoodScreen() {
           onClose={handleCancelDelete}
           onConfirm={handleConfirmDelete}
           title={t('food.actions.deleteConfirmTitle')}
-          message={t('food.actions.deleteConfirmMessage', { foodName: selectedFoodItem.food?.name })}
+          message={t('food.actions.deleteConfirmMessage', {
+            foodName: selectedFoodItem.food?.name,
+          })}
           confirmLabel={t('common.delete')}
           cancelLabel={t('common.cancel')}
           variant="destructive"

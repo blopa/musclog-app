@@ -1,10 +1,13 @@
 import { useRouter } from 'expo-router';
-import { useMemo } from 'react';
+import { ChevronRight } from 'lucide-react-native';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
+import { BottomButtonWrapper } from '../../components/BottomButtonWrapper';
 import { MasterLayout } from '../../components/MasterLayout';
 import { NutritionGoals, NutritionGoalsBody } from '../../components/NutritionGoalsBody';
+import { Button } from '../../components/theme/Button';
 import { NutritionGoalService } from '../../database/services';
 import { useCurrentNutritionGoal } from '../../hooks/useCurrentNutritionGoal';
 import { theme } from '../../theme';
@@ -14,6 +17,7 @@ export default function NutritionGoalsScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const { goal, isLoading } = useCurrentNutritionGoal();
+  const [currentGoals, setCurrentGoals] = useState<NutritionGoals | null>(null);
 
   // Map goal data to initialGoals format when goal changes
   const initialGoals = useMemo<Partial<NutritionGoals> | undefined>(() => {
@@ -69,17 +73,40 @@ export default function NutritionGoalsScreen() {
 
   return (
     <MasterLayout showNavigationMenu={false}>
-      <ScrollView>
-        <View className="px-6 pb-2 pt-4">
-          <Text
-            className="text-2xl font-bold tracking-tight"
-            style={{ color: theme.colors.text.white }}
-          >
-            {t('nutritionGoals.title')}
-          </Text>
-        </View>
-        <NutritionGoalsBody onSave={handleSave} initialGoals={initialGoals} />
-      </ScrollView>
+      <View className="flex-1">
+        <ScrollView
+          className="flex-1"
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: theme.spacing.padding['4xl'] }}
+        >
+          <View className="px-6 pb-2 pt-4">
+            <Text
+              className="text-2xl font-bold tracking-tight"
+              style={{ color: theme.colors.text.white }}
+            >
+              {t('nutritionGoals.title')}
+            </Text>
+          </View>
+          <NutritionGoalsBody
+            onSave={handleSave}
+            initialGoals={initialGoals}
+            showSaveButton={false}
+            onFormChange={setCurrentGoals}
+          />
+        </ScrollView>
+        <BottomButtonWrapper>
+          <Button
+            label={t('nutritionGoals.saveGoals')}
+            icon={ChevronRight}
+            iconPosition="right"
+            variant="gradientCta"
+            size="md"
+            width="full"
+            onPress={() => currentGoals && handleSave(currentGoals)}
+            disabled={!currentGoals}
+          />
+        </BottomButtonWrapper>
+      </View>
     </MasterLayout>
   );
 }
