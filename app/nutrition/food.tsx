@@ -431,7 +431,7 @@ export default function FoodScreen() {
                       label={t('food.actions.goToToday')}
                       icon={Calendar}
                       variant="secondary"
-                      size="md"
+                      size="sm"
                       width="flex-1"
                       onPress={goToToday}
                     />
@@ -439,7 +439,7 @@ export default function FoodScreen() {
                       label={t('food.actions.moreFoodOptions')}
                       icon={ListPlus}
                       variant="secondaryGradient"
-                      size="md"
+                      size="sm"
                       width="flex-1"
                       onPress={() => setIsAddFoodModalVisible(true)}
                     />
@@ -650,17 +650,15 @@ export default function FoodScreen() {
           onClose={() => setIsFoodSearchModalVisible(false)}
           mealType={selectedMealType}
           onCreatePress={() => {
-            // TODO: implement create custom food from search modal
-            console.log('Create food pressed');
+            // Open CreateCustomFoodModal
+            setIsFoodSearchModalVisible(false);
+            setIsCreateCustomFoodVisible(true);
           }}
           onBarcodeScanPress={() => {
-            // TODO: open camera modal with barcode mode from search modal
-            console.log('Barcode scan pressed');
-          }}
-          onFoodSelect={(food) => {
-            // TODO: implement food selection and add to selected meal type
-            // Handle food selection (e.g., add to meal)
+            // Open camera modal with barcode mode
             setIsFoodSearchModalVisible(false);
+            setCameraMode('barcode-scan');
+            setIsCameraVisible(true);
           }}
         />
       ) : null}

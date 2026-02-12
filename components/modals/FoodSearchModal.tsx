@@ -433,7 +433,7 @@ export function FoodSearchModal({
   const headerRight = (
     <Pressable onPress={onCreatePress}>
       <Text className="text-sm font-semibold text-accent-secondary">
-        {t('foodSearch.createMeal')}
+        {t('foodSearch.createFood')}
       </Text>
     </Pressable>
   );
@@ -790,6 +790,7 @@ export function FoodSearchModal({
               meal: data.meal,
               date: data.date,
             } as any);
+
             setIsFoodDetailsVisible(false);
             setSelectedFood(null);
           }}

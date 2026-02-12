@@ -510,12 +510,7 @@ export default function HomeScreen() {
           visible={isFoodSearchVisible}
           onClose={() => setIsFoodSearchVisible(false)}
           mealType={selectedMealType}
-          onFoodSelect={(food) => {
-            console.log('Food selected:', food);
-            setIsFoodSearchVisible(false);
-          }}
           onCreatePress={() => {
-            console.log('Create meal pressed');
             setIsFoodSearchVisible(false);
             setIsCreateCustomFoodVisible(true);
           }}
