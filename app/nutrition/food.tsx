@@ -236,10 +236,12 @@ export default function FoodScreen() {
   };
 
   const handleDuplicateFood = () => {
+    // TODO: implement duplicate food functionality
     console.log('Duplicate food:', selectedFoodItem?.food?.name);
   };
 
   const handleDeleteFood = () => {
+    // TODO: implement delete food functionality with confirmation dialog
     console.log('Delete food:', selectedFoodItem?.food?.name);
   };
 
@@ -617,6 +619,7 @@ export default function FoodScreen() {
             setIsCreateCustomFoodVisible(true);
           }}
           onTrackCustomMealPress={() => {
+            // TODO: implement track custom meal functionality
             console.log('Track Custom Meal pressed');
           }}
         />
@@ -647,12 +650,15 @@ export default function FoodScreen() {
           onClose={() => setIsFoodSearchModalVisible(false)}
           mealType={selectedMealType}
           onCreatePress={() => {
+            // TODO: implement create custom food from search modal
             console.log('Create food pressed');
           }}
           onBarcodeScanPress={() => {
+            // TODO: open camera modal with barcode mode from search modal
             console.log('Barcode scan pressed');
           }}
           onFoodSelect={(food) => {
+            // TODO: implement food selection and add to selected meal type
             // Handle food selection (e.g., add to meal)
             setIsFoodSearchModalVisible(false);
           }}
