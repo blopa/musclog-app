@@ -17,7 +17,6 @@ const ILLUSTRATION_VIEWBOX = 400;
 // Orbital Illustration Component – matches design: glass nodes, dashed gradient lines, orbit paths
 function OrbitalIllustration() {
   const theme = useTheme();
-  const { t } = useTranslation();
   const [layoutSize, setLayoutSize] = useState(0);
 
   const onLayout = useCallback(
@@ -266,6 +265,7 @@ function OrbitalIllustration() {
 
 export default function SetGoals() {
   const theme = useTheme();
+  const { t } = useTranslation();
 
   return (
     <MasterLayout showNavigationMenu={false}>
@@ -284,7 +284,7 @@ export default function SetGoals() {
               fontWeight: theme.typography.fontWeight.bold,
             }}
           >
-            Smart Goal{' '}
+            {t('onboarding.setGoals.title')}{' '}
             <GradientText
               colors={theme.colors.gradients.cta}
               style={{
@@ -292,7 +292,7 @@ export default function SetGoals() {
                 fontWeight: theme.typography.fontWeight.bold,
               }}
             >
-              Calculation
+              {t('onboarding.setGoals.calculation')}
             </GradientText>
           </Text>
 
@@ -305,8 +305,7 @@ export default function SetGoals() {
               maxWidth: '90%',
             }}
           >
-            Based on your activity level and fitness goals, our AI can calculate your optimal daily
-            calorie and macro targets for you.
+            {t('onboarding.setGoals.description')}
           </Text>
 
           {/* Feature Tags */}
@@ -328,7 +327,7 @@ export default function SetGoals() {
                   fontWeight: theme.typography.fontWeight.medium,
                 }}
               >
-                Personalized Macros
+                {t('onboarding.setGoals.personalizedMacros')}
               </Text>
             </View>
 
@@ -349,7 +348,7 @@ export default function SetGoals() {
                   fontWeight: theme.typography.fontWeight.medium,
                 }}
               >
-                Dynamic Adjustments
+                {t('onboarding.setGoals.dynamicAdjustments')}
               </Text>
             </View>
           </View>
@@ -359,7 +358,7 @@ export default function SetGoals() {
       {/* Bottom Actions */}
       <BottomButtonWrapper>
         <Button
-          label="Calculate for Me"
+          label={t('onboarding.setGoals.calculateForMe')}
           variant="gradientCta"
           width="full"
           size="md"
@@ -376,7 +375,7 @@ export default function SetGoals() {
         <View style={{ height: theme.spacing.margin.sm }} />
 
         <Button
-          label="I'll Set Them Myself"
+          label={t('onboarding.setGoals.setThemMyself')}
           variant="secondary"
           width="full"
           size="md"
@@ -394,8 +393,7 @@ export default function SetGoals() {
             marginTop: theme.spacing.margin.sm,
           }}
         >
-          Musclogs AI engine uses verified metabolic formulas to ensure your safety and progress
-          efficiency.
+          {t('onboarding.setGoals.aiEngineDisclaimer')}
         </Text>
       </BottomButtonWrapper>
     </MasterLayout>
