@@ -292,6 +292,7 @@ export default function SetGoals() {
                 fontWeight: theme.typography.fontWeight.bold,
               }}
             >
+              {/* TODO: this should be text with gradient - look for other examples in the code */}
               Calculation
             </Text>
           </Text>
