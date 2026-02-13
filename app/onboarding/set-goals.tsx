@@ -56,41 +56,6 @@ function OrbitalIllustration() {
           elevation: 0,
         }}
       />
-      <View
-        className="absolute h-64 w-64 rounded-full"
-        style={{
-          backgroundColor: `${theme.colors.accent.primary}33`,
-          width: 256,
-          height: 256,
-          transform: [{ translateX: 48 }],
-          borderRadius: 128,
-          shadowColor: theme.colors.accent.primary,
-          shadowOffset: { width: 0, height: 0 },
-          shadowOpacity: 0.6,
-          shadowRadius: 100,
-          elevation: 0,
-        }}
-      />
-
-      {/* Orbit paths – border-white/5 */}
-      <View
-        className="absolute rounded-full border"
-        style={{
-          width: 280,
-          height: 280,
-          borderColor: `${theme.colors.text.white}0D`,
-          transform: [{ rotate: '-15deg' }],
-        }}
-      />
-      <View
-        className="absolute rounded-full border"
-        style={{
-          width: 220,
-          height: 220,
-          borderColor: `${theme.colors.text.white}0D`,
-          transform: [{ rotate: '10deg' }],
-        }}
-      />
 
       {/* Central icon – brand gradient, auto_awesome, decorative dots */}
       <View className="relative z-20 h-32 w-32 items-center justify-center">
