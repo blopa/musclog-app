@@ -454,8 +454,10 @@ export default function NutritionGoalsResults() {
           onPress={() => {
             // Handle accept action
           }}
-          className="mb-4"
+          style={{ marginBottom: theme.spacing.margin.sm }}
         />
+
+        <View style={{ height: theme.spacing.margin.md }} />
 
         <Button
           label="Adjust Goals Manually"
