@@ -36,14 +36,22 @@ export function Slider({
   const [containerWidth, setContainerWidth] = useState(0);
   const [displayValue, setDisplayValue] = useState(value);
 
-  // Sync display value when prop changes
+  // Sync display value when prop changes (e.g. external reset). Skip if already equal to avoid
+  // unnecessary setState and potential feedback loops with native slider's onValueChange.
   useEffect(() => {
-    setDisplayValue(value);
-  }, [value]);
+    if (value !== displayValue) {
+      setDisplayValue(value);
+    }
+  }, [displayValue, value]);
 
   const handleValueChange = (val: number) => {
     setDisplayValue(val);
-    onChange(val);
+    // Only notify parent when value actually changed to avoid feedback loop:
+    // native slider can fire onValueChange when receiving new `value` prop, which would
+    // call setState in parent → re-render → effect syncs displayValue → loop.
+    if (val !== value) {
+      onChange(val);
+    }
   };
 
   // Math for gradient variant only
