@@ -11,6 +11,7 @@ import { BottomButtonWrapper } from '../../components/BottomButtonWrapper';
 import { GradientText } from '../../components/GradientText';
 import { MasterLayout } from '../../components/MasterLayout';
 import { Button } from '../../components/theme/Button';
+import { MaybeLaterButton } from '../../components/MaybeLaterButton';
 
 const ILLUSTRATION_VIEWBOX = 400;
 
@@ -384,17 +385,12 @@ export default function SetGoals() {
           }}
         />
 
-        <Text
-          className="mt-2 text-center text-[11px] leading-relaxed"
-          style={{
-            color: theme.colors.text.tertiary,
-            fontSize: 11,
-            textAlign: 'center',
-            marginTop: theme.spacing.margin.sm,
+        <MaybeLaterButton
+          onPress={() => {
+            // TODO: Navigate away or skip
           }}
-        >
-          {t('onboarding.setGoals.aiEngineDisclaimer')}
-        </Text>
+          text={t('onboarding.healthConnect.maybeLater')}
+        />
       </BottomButtonWrapper>
     </MasterLayout>
   );
