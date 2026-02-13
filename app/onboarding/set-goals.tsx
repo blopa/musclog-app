@@ -387,7 +387,7 @@ export default function SetGoals() {
 
         <MaybeLaterButton
           onPress={() => {
-            // TODO: Navigate away or skip
+            // TODO: Navigate to personal-info
           }}
           text={t('onboarding.healthConnect.maybeLater')}
         />
