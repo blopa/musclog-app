@@ -546,11 +546,6 @@
       "restSec": "Rest (sec)"
     }
   },
-  "replaceExercise": {
-    "title": "Replace Exercise",
-    "cancel": "Cancel",
-    "replace": "Replace"
-  },
   "foodSearch": {
     "recentHistory": "Recent History",
     "viewAll": "View All",
@@ -821,6 +816,9 @@
       "targetBMI": "Body Mass Index",
       "targetFFMI": "Fat-Free Mass Index"
     },
+    "aiCalculationComplete": "AI Calculation Complete",
+    "calculationComplete": "Calculation Complete",
+    "planDescription": "Here's a personalized nutrition plan based on your goals. You can accept it or adjust it manually.",
     "acceptAndContinue": "Accept and Continue",
     "adjustGoalsManually": "Adjust Goals Manually",
     "continue": "Continue"
