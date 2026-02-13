@@ -367,7 +367,7 @@ export default function SetGoals() {
             <MaterialIcons name="auto-awesome" size={20} color={theme.colors.text.white} />
           )}
           onPress={() => {
-            // Handle AI calculation
+            // TODO: Navigate to nutrition-goals-results
           }}
           style={{ marginBottom: theme.spacing.margin.sm }}
         />
@@ -381,7 +381,7 @@ export default function SetGoals() {
           width="full"
           size="md"
           onPress={() => {
-            // Handle manual setup
+            // TODO: Navigate to nutrition-goals
           }}
         />
 

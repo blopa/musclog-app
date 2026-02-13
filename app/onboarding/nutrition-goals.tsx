@@ -54,7 +54,8 @@ export default function NutritionGoalsScreen() {
         targetFFMI: goals.targetFFMI,
         targetDate: goals.targetDate ?? null,
       });
-      router.back();
+
+      // TODO: Navigate to nutrition-goals-results
     } catch (e) {
       showSnackbar('error', t('nutritionGoals.errorSaving'));
       console.error('Error saving nutrition goals:', e);

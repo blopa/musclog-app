@@ -60,7 +60,7 @@ export default function NutritionGoalsResults() {
               className="mb-2 text-center text-[32px] font-bold leading-[1.1]"
               style={{
                 color: theme.colors.text.primary,
-                fontSize: 32,
+                fontSize: theme.typography.fontSize['3xl'],
                 fontWeight: theme.typography.fontWeight.black,
               }}
             >
@@ -68,7 +68,7 @@ export default function NutritionGoalsResults() {
               <Text
                 style={{
                   color: theme.colors.status.indigoLight,
-                  fontSize: 32,
+                  fontSize: theme.typography.fontSize['3xl'],
                   fontWeight: theme.typography.fontWeight.black,
                 }}
               >
@@ -80,7 +80,7 @@ export default function NutritionGoalsResults() {
               className="max-w-[300px] text-center text-[15px] font-normal leading-relaxed"
               style={{
                 color: theme.colors.text.secondary,
-                fontSize: 15,
+                fontSize: theme.typography.fontSize.sm,
                 fontWeight: theme.typography.fontWeight.normal,
               }}
             >
@@ -238,7 +238,7 @@ export default function NutritionGoalsResults() {
                 className="text-center text-[11px] font-medium text-slate-500"
                 style={{
                   color: theme.colors.text.tertiary,
-                  fontSize: 11,
+                  fontSize: theme.typography.fontSize.xs,
                   fontWeight: theme.typography.fontWeight.medium,
                 }}
               >
@@ -260,7 +260,7 @@ export default function NutritionGoalsResults() {
                 className="text-primary mb-1 text-center text-[10px] font-bold uppercase tracking-tighter"
                 style={{
                   color: theme.colors.accent.primary,
-                  fontSize: 10,
+                  fontSize: theme.typography.fontSize.xxs,
                   fontWeight: theme.typography.fontWeight.bold,
                   letterSpacing: -0.5,
                   marginBottom: theme.spacing.margin.xs,
@@ -282,7 +282,7 @@ export default function NutritionGoalsResults() {
                 className="text-center text-[11px] font-medium text-slate-500"
                 style={{
                   color: theme.colors.text.tertiary,
-                  fontSize: 11,
+                  fontSize: theme.typography.fontSize.xxs,
                   fontWeight: theme.typography.fontWeight.medium,
                 }}
               >
@@ -304,7 +304,7 @@ export default function NutritionGoalsResults() {
                 className="mb-1 text-center text-[10px] font-bold uppercase tracking-tighter text-pink-400"
                 style={{
                   color: theme.colors.status.pink500,
-                  fontSize: 10,
+                  fontSize: theme.typography.fontSize.xxs,
                   fontWeight: theme.typography.fontWeight.bold,
                   letterSpacing: -0.5,
                   marginBottom: theme.spacing.margin.xs,
@@ -326,7 +326,7 @@ export default function NutritionGoalsResults() {
                 className="text-center text-[11px] font-medium text-slate-500"
                 style={{
                   color: theme.colors.text.tertiary,
-                  fontSize: 11,
+                  fontSize: theme.typography.fontSize.xxs,
                   fontWeight: theme.typography.fontWeight.medium,
                 }}
               >
@@ -398,7 +398,7 @@ export default function NutritionGoalsResults() {
                 className="max-w-[200px] text-center text-[11px] text-slate-500"
                 style={{
                   color: theme.colors.text.tertiary,
-                  fontSize: 11,
+                  fontSize: theme.typography.fontSize.xxs,
                   fontWeight: theme.typography.fontWeight.medium,
                   textAlign: 'center',
                   maxWidth: 200,
